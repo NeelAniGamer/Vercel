@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+// --- GLOBAL ADMIN CONFIG CHECKER ---
+(function() {
+    try {
+        const configStr = localStorage.getItem('col_admin_config');
+        if (configStr) {
+            const config = JSON.parse(configStr);
+            const path = window.location.pathname.split('/').pop() || 'index.html';
+            const status = config.pages[path] || '200';
+            
+            if (status === '503') {
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#94a3b8;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
+                window.stop();
+            } else if (status === '404') {
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#94a3b8;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
+                window.stop();
+            }
+        }
+    } catch(e) {}
+})();
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATI Web Demo | Class Of Learners</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        /* ── GLOBAL THEME VARIABLES (ATI CYBER THEME) ── */
+        :root, body { 
+            --bg-1: #0a0f1a; 
+            --bg-2: #020617; 
+            --primary: #38bdf8; 
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --card-bg: #0f172a; 
+            --text-main: #f8fafc; 
+            --nav-bg: rgba(2, 6, 23, 0.95);
+            --border-light: #1e293b;
+            --text-muted: #94a3b8;
+            --ati-err: #ef4444;
+            --google-blue: #2563eb;
+        }
+        body.light-mode { /* Failsafe fallback */
+            --bg-1: #f8f9fa; --bg-2: #ffffff; --primary: #2563eb; --primary-glow: rgba(37,99,235,0.4); --card-bg: #ffffff; --text-main: #111827; --border-light: #e5e7eb; --nav-bg: rgba(255,255,255,0.9); --text-muted: #4b5563;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-2); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; background-image: radial-gradient(circle at top center, var(--bg-1) 0%, var(--bg-2) 100%); font-family: 'Inter', sans-serif; text-transform: capitalize;}
+        code, pre, .tech-tag, kbd, .brand, [style*="monospace"], .term-dot { text-transform: none; }
+        
+        /* ── CUSTOM SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: var(--bg-1); border-left: 1px solid var(--border-light); }
+        ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.2); border-radius: 10px; border: 3px solid var(--bg-1); transition: 0.3s; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* ── GLOBAL NAVBAR (RESTORED STANDARD STRUCTURE) ── */
+        .top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s;}
+        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; text-transform: none;}
+        .brand-logo { height: 36px; width: auto; object-fit: contain; filter: drop-shadow(0 0 8px var(--primary-glow));}
+        
+        .nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center;}
+        .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; }
+        .nav-link:hover { color: var(--primary); }
+
+        /* Hide Theme Switcher for ATI specifically */
+        .theme-switch-wrapper { display: none; }
+
+        /* ── UTILITY BUTTONS ── */
+        .nav-dl-btn { background: var(--primary); color: #000; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 800; transition: 0.2s; box-shadow: 0 0 15px var(--primary-glow); font-size: 0.9rem;}
+        .nav-dl-btn:hover { background: #fff; box-shadow: 0 0 25px var(--primary); }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
+        .mobile-dl { display: none; }
+        
+        .nav-login-btn { background: rgba(56,189,248,0.1); color: var(--primary); border: 1px solid var(--primary); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-decoration:none; }
+        .nav-login-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary-glow); }
+        .nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: transparent; border: 1px solid var(--border-light); border-radius: 30px; cursor: pointer; transition: 0.3s; }
+        .nav-user-profile:hover { border-color: var(--primary); }
+        .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
+
+        /* ── ATI MODULAR DASHBOARD UI ── */
+        .container { max-width: 1200px; margin: 40px auto 80px; padding: 0 20px; width: 100%; flex:1; display: flex; flex-direction: column; align-items: center;}
+        
+        .demo-header { text-align: center; margin-bottom: 40px; }
+        .demo-badge { display: inline-block; padding: 6px 15px; border-radius: 20px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--primary); font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+        .demo-header h1 { font-size: 2.8rem; font-weight: 800; color: var(--text-main); margin-bottom: 10px; letter-spacing: -1px; text-transform: none;}
+        .demo-header p { font-size: 1.1rem; color: var(--text-muted); text-transform: none;}
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 25px;
+            width: 100%;
+        }
+
+        /* Sidebar Elements */
+        .sidebar-panel {
+            background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 12px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); display: flex; flex-direction: column; position: relative; opacity: 0; transform: translateY(30px);
+        }
+
+        .panel-header { font-size: 0.85rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 10px; }
+        
+        .settings-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .settings-group:last-child { margin-bottom: 0; }
+        .set-lbl { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .set-sel { background: var(--bg-1); border: 1px solid var(--border-light); color: var(--text-main); padding: 12px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; outline: none; cursor: pointer; transition: 0.2s; text-transform: uppercase;}
+        .set-sel:focus, .set-sel:hover { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+
+        .info-list { list-style: none; display: flex; flex-direction: column; gap: 15px;}
+        .info-list li { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; text-transform: none;}
+        .info-list strong { color: var(--text-main); display: block; margin-bottom: 4px; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px;}
+        .info-formula { background: var(--bg-1); padding: 8px 10px; border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--primary); border: 1px solid var(--border-light); margin-top: 5px; display: block;}
+
+        /* Main Arena Elements */
+        .telemetry-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; opacity: 0; transform: translateY(30px); }
+        .stat { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .stat-val { font-size: 2.2rem; font-weight: 800; color: var(--primary); font-family: 'Space Mono', monospace; line-height: 1; text-shadow: 0 0 15px var(--primary-glow); transition: 0.2s;}
+        .stat-lbl { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 8px; }
+
+        /* Terminal Arena Specifics */
+        .terminal-panel {
+            background: #000; border: 1px solid var(--border-light); border-left: 4px solid var(--primary);
+            padding: 40px 30px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative; overflow: hidden; display: flex; flex-direction: column;
+            opacity: 0; transform: translateY(30px); min-height: 300px;
+        }
+        
+        .terminal-header { 
+            position: absolute; top: 0; left: 0; right: 0; 
+            background: var(--border-light); padding: 6px 15px; 
+            font-size: 0.75rem; color: var(--text-muted); 
+            display: flex; gap: 8px; align-items: center;
+            overflow: hidden;
+        }
+        .terminal-header::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.6), transparent);
+            animation: scanline 2.5s infinite linear;
+        }
+        @keyframes scanline { 0% { left: -100%; } 100% { left: 200%; } }
+
+        .term-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444;}
+        .term-dot:nth-child(2) { background: #eab308; }
+        .term-dot:nth-child(3) { background: #22c55e; }
+
+        .typing-area {
+            font-family: 'Space Mono', monospace; font-size: 1.4rem; line-height: 1.8;
+            color: var(--text-muted); position: relative; cursor: text;
+            user-select: none; outline: none; text-transform: none;
+            word-wrap: break-word; white-space: pre-wrap; flex: 1; margin-top: 10px;
+        }
+        
+        .char { transition: color 0.1s, text-shadow 0.1s, background 0.1s; }
+        .char.correct { color: var(--text-main); text-shadow: 0 0 8px rgba(255,255,255,0.3); }
+        .char.incorrect { color: var(--ati-err); background: rgba(239, 68, 68, 0.2); border-radius: 2px;}
+        
+        .cursor {
+            position: absolute; width: 2px; height: 1.4rem; background: var(--primary);
+            animation: blink 1s infinite; transition: all 0.1s ease;
+            box-shadow: 0 0 8px var(--primary); z-index: 10;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .btn-restart {
+            margin-top: 25px; padding: 16px 35px; background: rgba(56, 189, 248, 0.05); border: 1px solid var(--primary);
+            color: var(--primary); font-weight: 800; border-radius: 12px; cursor: pointer;
+            transition: 0.3s; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; align-self: center; width: 100%;
+        }
+        .btn-restart:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary-glow);}
+        
+        .hidden-input { position: absolute; opacity: 0; top: -9999px; }
+
+        /* Results Overlay */
+        .results-overlay { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(8px); z-index: 20; display: none; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; text-transform:none;}
+        .results-overlay.show { display: flex; opacity: 1; }
+        .res-title { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 20px; }
+        .res-score { font-size: 5rem; font-weight: 800; color: var(--primary); font-family: 'Space Mono', monospace; text-shadow: 0 0 30px var(--primary-glow); line-height: 1;}
+        .res-lbl { font-size: 1rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px; margin-bottom: 30px;}
+
+        /* Animation Classes applied by JS */
+        .animate-in { animation: slideUpFade 0.6s ease-out forwards; }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── FOOTER ── */
+        .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-light); background: var(--nav-bg); backdrop-filter: blur(10px); margin-top: auto; }
+        .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s; text-transform:none;}
+        .footer-links a:hover { color: var(--primary); }
+        .footer-copy { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform:none;}
+
+        /* ── UNIVERSAL AUTH MODAL ── */
+        .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .mo.open { opacity: 1; pointer-events: auto; }
+        .md { background: var(--card-bg, #1e293b); border: 1px solid var(--border-light, #334155); border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); color: var(--text-main, #f8fafc); text-transform:none;}
+        .mo.open .md { transform: translateY(0) scale(1); }
+        .md-hd { padding: 30px; border-bottom: 1px solid var(--border-light, #334155); background: var(--bg-1, #0f172a); text-align: center; }
+        .md-hd h2 { font-size: 1.6rem; font-weight: 800; margin:0; color: var(--text-main);}
+        .md-hd p { font-size: 0.95rem; color: var(--text-muted, #94a3b8); margin-top: 5px; }
+        .md-body { padding: 30px; display: flex; flex-direction: column; }
+        .ml { font-size: 0.8rem; font-weight: 800; color: var(--text-muted, #94a3b8); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+        .mi { width: 100%; padding: 15px; border: 1px solid var(--border-light, #334155); border-radius: 12px; font-size: 1rem; outline: none; margin-bottom: 20px; transition: 0.3s; color: var(--text-main, #f8fafc); background: var(--bg-1, #0f172a); }
+        .mi:focus { border-color: var(--primary, #38bdf8); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
+        
+        .gbtn { width: 100%; padding: 12px; background: #ffffff; border: 1px solid #dadce0; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; color: #3c4043; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; transition: 0.2s; font-family:'Inter',sans-serif;}
+        .gbtn { background: #4285f4; border: none; color: #ffffff; }
+
+        .ms { width: 100%; padding: 15px; background: var(--primary, #38bdf8); border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;}
+        .ms:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--primary-glow); }
+        
+        .msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.9rem; font-weight: 700; color: var(--text-muted, #94a3b8); cursor: pointer; margin-top: 5px; transition: 0.3s; }
+        .msk:hover { color: var(--text-main, #f8fafc); }
+        
+        .msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--ati-err, #ef4444); border-radius: 12px; font-size: 1rem; font-weight: 800; color: var(--ati-err, #ef4444); cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
+        .msk-danger:hover { background: rgba(239, 68, 68, 0.1); }
+
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--card-bg, #1e293b); border: 1px solid var(--border-light, #334155); color: var(--text-main, #f8fafc); padding: 15px 25px; border-radius: 12px; font-size: 0.95rem; font-weight: 800; z-index: 3000; transform: translateY(20px); opacity: 0; transition: 0.3s; text-transform:none;}
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.green { border-color: var(--primary, #38bdf8); color: var(--primary, #38bdf8); }
+
+        @media (max-width: 900px) { 
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .telemetry-row { grid-template-columns: 1fr; gap: 10px; }
+            .typing-area { font-size: 1.1rem; }
+        }
+        @media (max-width: 768px) {
+            .desktop-dl { display: none; }
+            .mobile-dl { display: block; text-align: center; width: 100%; margin-top: 5px; }
+            .top-nav { width: 95%; margin: 15px auto 0; border-radius: 20px; top: 15px; padding: 10px 15px; flex-direction: row; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--border-light); }
+            .mobile-menu-btn { display: block; }
+            .nav-brand { gap: 8px; font-size: 1.05rem; }
+            .brand-logo { height: 32px; }
+            .nav-links { display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--nav-bg); backdrop-filter: blur(15px); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+            .nav-links.active { display: flex; }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">
+            <img src="class.png" alt="Class Of Learners Logo" class="brand-logo">
+            <span>Class Of Learners</span>
+        </a>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
+        
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home Hub</a>
+            <a href="ati.html" class="nav-link" style="color: var(--text-muted);">← Back To ATI</a>
+            
+            <div class="theme-switch-wrapper" style="display:none;"></div>
+
+            <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg> Sign In
+            </button>
+            <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+                <div class="nav-user-avatar" id="navUserAv">?</div>
+                <span id="navUserName" style="font-size:0.85rem; font-weight:800; color:var(--text-main);">User</span>
+            </div>
+            
+            <a href="download.html" class="nav-dl-btn mobile-dl">Downloads Hub</a>
+        </div>
+        <a href="download.html" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+    </nav>
+
+    <div class="container">
+        <div class="demo-header">
+            <div class="demo-badge">Interactive Terminal</div>
+            <h1>Syntax & Speed Engine</h1>
+            <p>Select your mode, adjust the time, and test your performance in the decentralized web sandbox.</p>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <div class="sidebar-col" style="display: flex; flex-direction: column; gap: 25px;">
+                
+                <div class="sidebar-panel anim-target">
+                    <div class="panel-header">⚙️ Configuration</div>
+                    <div class="settings-group">
+                        <div class="set-lbl">Content Mode:</div>
+                        <select class="set-sel" id="modeSelect" onchange="initGame()">
+                            <option value="code">Code Snippets</option>
+                            <option value="literature">Literature</option>
+                            <option value="words" selected>Random Words</option>
+                        </select>
+                    </div>
+                    <div class="settings-group">
+                        <div class="set-lbl">Sprint Duration:</div>
+                        <select class="set-sel" id="timeSelect" onchange="initGame()">
+                            <option value="15">15 Seconds</option>
+                            <option value="30" selected>30 Seconds</option>
+                            <option value="60">60 Seconds</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="sidebar-panel anim-target" style="flex: 1;">
+                    <div class="panel-header">📖 System Manual</div>
+                    <ul class="info-list">
+                        <li><strong>Calculated WPM:</strong>
+                            Calculated using the typographic standard where 1 "word" = 5 characters.
+                            <span class="info-formula">WPM = (Correct / 5) / Mins</span>
+                        </li>
+                        <li><strong>Accuracy:</strong>
+                            <span class="info-formula">ACC = (Correct / Total) * 100</span>
+                        </li>
+                        <li><strong>Code Mode:</strong> Requires exact syntax. Press 'Enter' at the (↵) symbol.</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="main-col">
+                
+                <div class="telemetry-row anim-target">
+                    <div class="stat"><div class="stat-val" id="statTime">30</div><div class="stat-lbl">Time Left</div></div>
+                    <div class="stat"><div class="stat-val" id="statWPM">0</div><div class="stat-lbl">Live WPM</div></div>
+                    <div class="stat"><div class="stat-val" id="statAcc">100%</div><div class="stat-lbl">Accuracy</div></div>
+                </div>
+
+                <div class="terminal-panel anim-target">
+                    <div class="terminal-header">
+                        <div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div>
+                        <span style="font-weight:bold; letter-spacing:1px; margin-left:5px;">ati_eval_sys.exe</span>
+                    </div>
+
+                    <div class="typing-area" id="typingArea" onclick="focusInput()">
+                        <div class="cursor" id="cursor"></div>
+                        <div id="textDisplay"></div>
+                        
+                        <div class="results-overlay" id="resultsOverlay">
+                            <div class="res-title">Evaluation Complete</div>
+                            <div class="res-score" id="resWPM">0</div>
+                            <div class="res-lbl">Final WPM</div>
+                            <div style="display:flex; gap:30px; margin-bottom: 30px;">
+                                <div style="text-align: center;"><span style="color:var(--text-muted); font-size:0.8rem; font-weight:700;">ACCURACY</span><br><strong style="font-size:1.8rem; color:#fff; font-family: 'Space Mono', monospace;" id="resAcc">0%</strong></div>
+                                <div style="text-align: center;"><span style="color:var(--text-muted); font-size:0.8rem; font-weight:700;">KEYSTROKES</span><br><strong style="font-size:1.8rem; color:#fff; font-family: 'Space Mono', monospace;" id="resKeys">0</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-restart anim-target" onclick="initGame()">↻ Restart Evaluation Engine</button>
+
+            </div>
+        </div>
+        
+        <input type="text" class="hidden-input" id="hiddenInput" autocomplete="off" spellcheck="false" autocorrect="off">
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="feedback.html">Provide Feedback</a>
+        </div>
+        <div class="footer-copy">
+            &copy; 2026 Class Of Learners. Developed By Neel And Ansh. All Rights Reserved.
+        </div>
+    </footer>
+
+    <div class="mo" id="loginMo">
+      <div class="md">
+        <div class="md-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div>
+        <div class="md-body">
+          
+          <div id="loggedOutPanel">
+              <button class="gbtn" id="gSignInBtn" onclick="gSignIn()">
+                <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google
+              </button>
+          </div>
+
+          <div id="loggedInPanel" style="display: none;">
+              <label class="ml">Google Email</label>
+              <input class="mi" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;">
+              <label class="ml">Display Username</label>
+              <input class="mi" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;">
+              <button class="ms" onclick="updateUsername()">Save Username</button>
+              <button class="msk-danger" onclick="doLogout()">Disconnect Account</button>
+          </div>
+
+          <button class="msk" onclick="closeMo()">Close / Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script>
+    // ── GAME ENGINE LOGIC ──
+    const dbCode = [
+        "function calculateWPM(chars, time) {\n  return Math.round((chars / 5) / (time / 60));\n}",
+        "import numpy as np\nimport pandas as pd\ndf = pd.read_csv('data.csv')",
+        "std::cout << \"System Online.\" << std::endl;\nreturn 0;",
+        "const user = await db.collection('users').findOne({ _id: userId });",
+        "if (temperature > max_temp):\n    trigger_cooling_system()\n    print(\"Warning: High Temp\")",
+        "public static void main(String[] args) {\n    System.out.println(\"Hello World\");\n}",
+        "SELECT first_name, last_name\nFROM employees\nWHERE department = 'Engineering';",
+        "<div class=\"container\">\n  <h1>Title</h1>\n  <p>Paragraph text.</p>\n</div>"
+    ];
+
+    const dbLit = [
+        "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness.",
+        "Call me Ishmael. Some years ago - never mind how long precisely - having little or no money in my purse.",
+        "All human beings are born free and equal in dignity and rights. They are endowed with reason and conscience.",
+        "The quick brown fox jumps over the lazy dog as the typing instructor watches carefully from the terminal.",
+        "To be, or not to be, that is the question: Whether 'tis nobler in the mind to suffer the slings and arrows of outrageous fortune."
+    ];
+
+    const wordList = ["the", "be", "to", "of", "and", "a", "in", "that", "have", "I", "it", "for", "not", "on", "with", "he", "as", "you", "do", "at", "this", "but", "his", "by", "from", "they", "we", "say", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their", "what", "so", "up", "out", "if", "about", "who", "get", "which", "go", "me", "when", "make", "can", "like", "time", "no", "just", "him", "know", "take", "people", "into", "year", "your", "good", "some", "could", "them", "see", "other", "than", "then", "now", "look", "only", "come", "its", "over", "think", "also", "back", "after", "use", "two", "how", "our", "work", "first", "well", "way", "even", "new", "want", "because", "any", "these", "give", "day", "most", "us"];
+
+    let currentText = ""; let charIndex = 0; let timer = 30; let timeElapsed = 0; let timerInterval = null;
+    let isPlaying = false; let totalKeystrokes = 0; let correctKeystrokes = 0;
+
+    const display = document.getElementById('textDisplay');
+    const input = document.getElementById('hiddenInput');
+    const cursor = document.getElementById('cursor');
+    const timeUI = document.getElementById('statTime');
+    const wpmUI = document.getElementById('statWPM');
+    const accUI = document.getElementById('statAcc');
+    const overlay = document.getElementById('resultsOverlay');
+
+    function focusInput() { if(!overlay.classList.contains('show')) input.focus(); }
+
+    function generateText(mode) {
+        if (mode === 'code') return dbCode[Math.floor(Math.random() * dbCode.length)];
+        if (mode === 'literature') return dbLit[Math.floor(Math.random() * dbLit.length)];
+        if (mode === 'words') { let str = []; for(let i=0; i<40; i++) str.push(wordList[Math.floor(Math.random() * wordList.length)]); return str.join(' '); }
+        return "System Ready.";
+    }
+
+    function initGame() {
+        clearInterval(timerInterval);
+        const mode = document.getElementById('modeSelect').value;
+        timer = parseInt(document.getElementById('timeSelect').value);
+        currentText = generateText(mode); charIndex = 0; timeElapsed = 0; isPlaying = false; totalKeystrokes = 0; correctKeystrokes = 0;
+        input.value = ''; input.disabled = false; timeUI.textContent = timer; wpmUI.textContent = '0'; accUI.textContent = '100%';
+        overlay.classList.remove('show'); display.innerHTML = '';
+        for(let i=0; i<currentText.length; i++) {
+            const span = document.createElement('span');
+            if(currentText[i] === '\n') { span.textContent = '↵\n'; span.className = 'char newline'; } 
+            else { span.textContent = currentText[i]; span.className = 'char'; }
+            display.appendChild(span);
+        }
+        updateCursor(); focusInput();
+    }
+
+    function startGame() {
+        isPlaying = true;
+        timerInterval = setInterval(() => {
+            timer--; timeElapsed++; timeUI.textContent = timer;
+            const wpm = Math.round((correctKeystrokes / 5) / (timeElapsed / 60));
+            wpmUI.textContent = wpm > 0 && wpm !== Infinity ? wpm : 0;
+            if (timer <= 0) endGame();
+        }, 1000);
+    }
+
+    function endGame() {
+        clearInterval(timerInterval); isPlaying = false; input.disabled = true; input.blur();
+        document.getElementById('resWPM').textContent = wpmUI.textContent;
+        document.getElementById('resAcc').textContent = accUI.textContent;
+        document.getElementById('resKeys').textContent = totalKeystrokes;
+        overlay.classList.add('show');
+    }
+
+    function updateCursor() {
+        const spans = display.querySelectorAll('span');
+        if (charIndex < spans.length) {
+            const targetSpan = spans[charIndex];
+            cursor.style.left = targetSpan.offsetLeft + 'px';
+            cursor.style.top = targetSpan.offsetTop + 'px';
+            cursor.style.display = 'block';
+            const container = document.getElementById('typingArea');
+            if (targetSpan.offsetTop > container.scrollTop + container.clientHeight - 40) {
+                container.scrollTop = targetSpan.offsetTop - 40;
+            }
+        } else { cursor.style.display = 'none'; }
+    }
+
+    input.addEventListener('input', (e) => {
+        if (!isPlaying && timer > 0) startGame();
+        if (timer <= 0) return;
+
+        let typedVal = input.value;
+        const spans = display.querySelectorAll('span');
+        if(typedVal.length > currentText.length) { input.value = typedVal.substring(0, currentText.length); typedVal = input.value; }
+
+        totalKeystrokes++; correctKeystrokes = 0;
+        spans.forEach((span, index) => {
+            const typedChar = typedVal[index];
+            const expectedChar = currentText[index];
+            if (typedChar == null) { span.className = expectedChar === '\n' ? 'char newline' : 'char'; } 
+            else if (typedChar === expectedChar) { span.className = 'char correct'; correctKeystrokes++; } 
+            else { span.className = 'char incorrect'; }
+        });
+
+        charIndex = typedVal.length;
+        const acc = Math.round((correctKeystrokes / (typedVal.length || 1)) * 100);
+        accUI.textContent = acc + '%';
+        updateCursor();
+
+        if (charIndex >= currentText.length) {
+            const mode = document.getElementById('modeSelect').value;
+            currentText = generateText(mode); charIndex = 0; input.value = ''; display.innerHTML = '';
+            for(let i=0; i<currentText.length; i++) {
+                const span = document.createElement('span');
+                if(currentText[i] === '\n') { span.textContent = '↵\n'; span.className = 'char newline'; }
+                else { span.textContent = currentText[i]; span.className = 'char'; }
+                display.appendChild(span);
+            }
+            document.getElementById('typingArea').scrollTop = 0;
+            updateCursor();
+        }
+    });
+
+    function triggerAnimations() { document.querySelectorAll('.anim-target').forEach(t => t.classList.add('animate-in')); }
+
+    // --- UNIVERSAL ACCOUNT LOGIC WITH GOOGLE ONE TAP ---
+    const Storage = { get: k=>{try{return localStorage.getItem(k);}catch(e){return null;}}, set: (k,v)=>{try{localStorage.setItem(k,v);}catch(e){}} };
+    const GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+    let curUser = null; let googleAccessToken = null;
+
+    function toast(msg, cls){ let t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.className='toast '+(cls||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);}
+
+    function initGoogle() {
+        if (typeof google === 'undefined' || !google.accounts) return;
+        google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleOneTapResponse,
+            auto_select: true, 
+            cancel_on_tap_outside: false
+        });
+        if (!curUser) google.accounts.id.prompt();
+    }
+
+    function decodeJWT(token) {
+        try { return JSON.parse(decodeURIComponent(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''))); } catch(e) { return null; }
+    }
+
+    function handleOneTapResponse(response) {
+        const payload = decodeJWT(response.credential);
+        if (!payload) return;
+        let savedName = payload.name;
+        const existing = Storage.get('qrs_user');
+        if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === payload.email && parsed.name) savedName = parsed.name; } catch(e){} }
+        curUser = { name: savedName, email: payload.email, picture: payload.picture, google: true };
+        Storage.set('qrs_user', JSON.stringify(curUser));
+        updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+    }
+
+    function gSignIn() {
+        toast('Redirecting to Google...', '');
+        const redirectUri = window.location.href.split('#')[0].split('?')[0]; 
+        const scope = encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
+        window.location.href = authUrl;
+    }
+
+    function checkURLForToken() {
+        const hash = window.location.hash.substring(1);
+        if (hash.includes('access_token=')) {
+            const params = new URLSearchParams(hash);
+            const token = params.get('access_token');
+            if (token) {
+                googleAccessToken = token;
+                window.history.replaceState(null, null, window.location.pathname);
+                fetchGoogleProfile(token);
+            }
+        }
+    }
+
+    async function fetchGoogleProfile(token) {
+        try {
+            const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } });
+            if (r.ok) {
+                const info = await r.json();
+                let savedName = info.name;
+                const existing = Storage.get('qrs_user');
+                if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === info.email && parsed.name) savedName = parsed.name; } catch(e){} }
+                curUser = { name: savedName, email: info.email, picture: info.picture, google: true };
+                Storage.set('qrs_user', JSON.stringify(curUser));
+                updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+            } else { toast('Authentication failed.', ''); }
+        } catch (e) { toast('Network error.', ''); }
+    }
+
+    function loadUser(){ const u=Storage.get('qrs_user'); if(u){ try{ curUser=JSON.parse(u); updatePUI(); }catch(e){} } }
+
+    function updatePUI(){ 
+      const nlb=document.getElementById('navLoginBtn');
+      const nup=document.getElementById('navUserProfile'); 
+      if(!curUser){ 
+          if(nlb) nlb.style.display='flex'; 
+          if(nup) nup.style.display='none'; return; 
+      } 
+      if(nlb) nlb.style.display='none'; 
+      if(nup) nup.style.display='flex'; 
+      
+      const nun=document.getElementById('navUserName'); if(nun) nun.textContent=curUser.name.split(' ')[0]; 
+      const navAv=document.getElementById('navUserAv'); 
+      if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; } 
+      else { if(navAv){ navAv.innerHTML=''; navAv.textContent=curUser.name.charAt(0).toUpperCase(); } } 
+    }
+
+    function openLogin(){ 
+        const mo = document.getElementById('loginMo'); if(!mo) return; mo.classList.add('open'); 
+        const mt = document.getElementById('moAuthTitle'), mSub = document.getElementById('moAuthSub');
+        const loggedOutPanel = document.getElementById('loggedOutPanel'), loggedInPanel = document.getElementById('loggedInPanel');
+        const mn = document.getElementById('miName'), me = document.getElementById('miEmail'); 
+
+        if(curUser){ 
+            if(mt) mt.textContent = 'Google Account'; 
+            if(mSub) mSub.textContent = 'Manage your profile and username.';
+            if(loggedOutPanel) loggedOutPanel.style.display = 'none';
+            if(loggedInPanel) loggedInPanel.style.display = 'block';
+            if(mn) mn.value = curUser.name; 
+            if(me) me.value = curUser.email || ''; 
+        } else { 
+            if(mt) mt.textContent = 'Authenticate'; 
+            if(mSub) mSub.textContent = 'Unlock dashboard storage and cloud sync.';
+            if(loggedOutPanel) loggedOutPanel.style.display = 'block';
+            if(loggedInPanel) loggedInPanel.style.display = 'none';
+        } 
+    }
+
+    function closeMo(){ const mo=document.getElementById('loginMo'); if(mo) mo.classList.remove('open'); }
+
+    function updateUsername(){
+        const mn=document.getElementById('miName'); if(!mn) return;
+        const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
+        if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Username Updated','green'); }
+    }
+
+    function doLogout() {
+        curUser = null; googleAccessToken = null; Storage.set('qrs_user', '');
+        if(typeof google !== 'undefined' && google.accounts) google.accounts.id.disableAutoSelect();
+        updatePUI(); closeMo(); toast('Logged out successfully.', '');
+    }
+
+    window.addEventListener('load', () => { 
+        loadUser(); 
+        checkURLForToken(); 
+        setTimeout(initGoogle, 400); 
+        initGame();
+        setTimeout(triggerAnimations, 200);
+        const lm=document.getElementById('loginMo'); if(lm) lm.addEventListener('click',function(e){if(e.target===this)closeMo();}); 
+    });
+    </script>
+</body>
+</html>

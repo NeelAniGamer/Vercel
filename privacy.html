@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+// --- GLOBAL ADMIN CONFIG CHECKER ---
+(function() {
+    try {
+        const configStr = localStorage.getItem('col_admin_config');
+        if (configStr) {
+            const config = JSON.parse(configStr);
+            const path = window.location.pathname.split('/').pop() || 'index.html';
+            const status = config.pages[path] || '200';
+            
+            if (status === '503') {
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#94a3b8;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
+                window.stop();
+            } else if (status === '404') {
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#94a3b8;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
+                window.stop();
+            }
+        }
+    } catch(e) {}
+})();
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | Class Of Learners</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root { --bg-color: #f8f9fa; --card-bg: #ffffff; --primary: #10b981; --text-main: #0f172a; --text-muted: #64748b; --border-color: #e2e8f0; --nav-bg: rgba(255, 255, 255, 0.95); --google-blue: #2563eb; --border-light: #e5e7eb;}
+        body.dark { --bg-color: #06080d; --card-bg: #0a0d14; --primary: #10b981; --text-main: #f8fafc; --text-muted: #94a3b8; --border-color: #161d2b; --nav-bg: rgba(6, 8, 13, 0.95); --google-blue: #34d399; --border-light: #334155;}
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; transition: 0.3s; text-transform: capitalize; }
+        code, pre, li, p { text-transform: none; }
+
+        /* ── CUSTOM SCROLLBAR (ADAPTIVE) ── */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); border-left: 1px solid var(--border-light); }
+        ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.2); border-radius: 10px; border: 3px solid var(--bg-color); transition: 0.3s; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* ── GLOBAL NAVBAR ── */
+        nav { width: 100%; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background: var(--nav-bg); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s; }
+        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; text-transform: none; }
+        .brand-logo { height: 40px; width: auto; object-fit: contain; }
+        
+        .nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+        .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; }
+        .nav-link:hover { color: var(--primary); }
+
+        /* ── PROJECTS DROPDOWN ── */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-btn { color: var(--text-muted); background: none; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; transition: color 0.2s ease; padding: 0; }
+        .dropdown-btn:hover, .dropdown.active .dropdown-btn { color: var(--primary); }
+        .dropdown-btn span { font-size: 0.7rem; transition: transform 0.3s ease; }
+        .dropdown.active .dropdown-btn span { transform: rotate(180deg); }
+        .dropdown-content { display: flex; flex-direction: column; position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: transparent; min-width: 220px; z-index: 1001; padding-top: 15px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.5s; }
+        .dropdown-content-inner { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; padding: 10px 0; }
+        body.dark .dropdown-content-inner { box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .dropdown.active .dropdown-content { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); transition-delay: 0s; }
+        .dropdown.active:not(:hover) .dropdown-content { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px); transition-delay: 0.5s; }
+        .dropdown-content a { color: var(--text-muted); padding: 12px 20px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: space-between;}
+        .dropdown-content a:hover { background: rgba(16, 185, 129, 0.08); color: var(--primary); padding-left: 25px;}
+
+        .theme-switch-wrapper { display: flex; align-items: center; gap: 8px; margin-left: 10px; border-left: 1px solid var(--border-color); padding-left: 15px; }
+        .theme-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .theme-switch { position: relative; width: 44px; height: 24px; cursor: pointer; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; inset: 0; background-color: #cbd5e1; border-radius: 24px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .4s; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+        
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-main); }
+        .nav-pill { background: var(--google-blue); color: #fff; padding: 10px 22px; border-radius: 30px; text-decoration: none; font-weight: 800; font-size: 0.85rem; transition: 0.3s; }
+
+        /* ── POLICY CONTENT ── */
+        .policy-container { width: 90%; max-width: 900px; margin: 60px auto 80px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 50px 60px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); transition: 0.3s; }
+        body.dark .policy-container { box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        .policy-header { text-align: center; margin-bottom: 50px; padding-bottom: 30px; border-bottom: 1px solid var(--border-color); }
+        .policy-header h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; color: var(--text-main); margin-bottom: 10px; }
+        .policy-header p { color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.9rem; }
+        .policy-section { margin-bottom: 40px; }
+        .policy-section h2 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .policy-section h2::before { content: ''; display: block; width: 12px; height: 12px; background: var(--primary); border-radius: 3px; }
+        .policy-section p, .policy-section ul { font-size: 1.05rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 15px; }
+        .policy-section ul { margin-left: 25px; }
+
+        /* ── FOOTER ── */
+        .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-color); background: var(--card-bg); z-index: 100; margin-top: auto; transition: 0.3s; }
+        .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s; text-transform:none;}
+        .footer-links a:hover { color: var(--primary); }
+        .footer-copy { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform:none;}
+
+        @media (max-width: 860px) {
+            nav { padding: 15px 20px; }
+            .mobile-menu-btn { display: block; }
+            .nav-links { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--nav-bg); padding: 20px; flex-direction: column; border-bottom: 1px solid var(--border-color); gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); z-index: 1000; }
+            .nav-links.open { display: flex; }
+            .theme-switch-wrapper { border-left: none; padding-left: 0; margin-top: 10px; justify-content: center;}
+            .policy-container { width: 95%; padding: 30px 20px; margin: 40px auto; }
+            .policy-header h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body class="dark">
+
+    <nav>
+        <a href="index.html" class="nav-brand">
+            <img src="class.png" alt="Class Of Learners" class="brand-logo">
+            <span>Class Of Learners</span>
+        </a>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home Hub</a>
+            <a href="about.html" class="nav-link">About Us</a>
+            <a href="school.html" class="nav-link">Our School</a>
+            <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+            <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
+                <button class="dropdown-btn">Projects <span>▼</span></button>
+                <div class="dropdown-content">
+                    <div class="dropdown-content-inner">
+                        <a href="ati.html">Typing Instructor <span>⌨️</span></a>
+                        <a href="solar.html">Solar Engine <span>🪐</span></a>
+                        <a href="gesture.html">Gesture Control <span>🖐️</span></a>
+                        <a href="rpg.html">RPG Game <span>⚔️</span></a>
+                        <a href="qr.html">QR Generator <span>⬛</span></a>
+                    </div>
+                </div>
+            </div>
+            <label class="theme-switch-wrapper">
+                <span class="theme-label">Theme</span>
+                <label class="theme-switch">
+                    <input type="checkbox" id="themeChk" onchange="toggleTheme()" checked>
+                    <span class="slider"></span>
+                </label>
+            </label>
+            <a href="download.html" class="nav-pill">Downloads</a>
+        </div>
+    </nav>
+
+    <div class="policy-container">
+        <div class="policy-header">
+            <h1>Privacy Policy</h1>
+            <p>Effective Date: April 2026</p>
+        </div>
+        <div class="policy-section">
+            <h2>1. Introduction</h2>
+            <p>We are committed to protecting your privacy across our applications, including ATI, Solar Engine, Gesture Controller, and QR Studio.</p>
+        </div>
+        <div class="policy-section">
+            <h2>2. Local Processing</h2>
+            <p>Most of our software is engineered to run entirely on your local machine without phoning home to external servers.</p>
+        </div>
+        <div class="policy-section">
+            <h2>3. QR Studio Sync</h2>
+            <p>QR Studio utilizes the Google Drive `appDataFolder` scope to securely store your QR history in an isolated folder.</p>
+        </div>
+        <div class="policy-section">
+            <h2>4. Contact</h2>
+            <p>Developed and maintained by Neel and Ansh as a student software initiative.</p>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="feedback.html">Provide Feedback</a>
+        </div>
+        <div class="footer-copy">&copy; 2026 Class Of Learners. Developed By Neel And Ansh. All Rights Reserved.</div>
+    </footer>
+
+    <script>
+        const toggleSwitch = document.getElementById('themeChk');
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.remove('dark');
+            if (toggleSwitch) toggleSwitch.checked = false;
+        }
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        }
+        window.onclick = e => { if (!e.target.matches('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
+    </script>
+</body>
+</html>

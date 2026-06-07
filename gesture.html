@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+// --- GLOBAL ADMIN CONFIG CHECKER ---
+(function() {
+    try {
+        const configStr = localStorage.getItem('col_admin_config');
+        if (configStr) {
+            const config = JSON.parse(configStr);
+            const path = window.location.pathname.split('/').pop() || 'index.html';
+            const status = config.pages[path] || '200';
+            
+            if (status === '503') {
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#94a3b8;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
+                window.stop();
+            } else if (status === '404') {
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#94a3b8;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
+                window.stop();
+            }
+        }
+    } catch(e) {}
+})();
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture Controller | Class Of Learners</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        /* ── CYBER THEME VARIABLES ── */
+        :root { 
+            --bg: #06080d; 
+            --panel: #0a0d14; 
+            --border: #161d2b; 
+            --accent: #00ffcc; 
+            --accent-dim: rgba(0, 255, 204, 0.15); 
+            --text: #bbc8de; 
+            --text-bright: #ffffff; 
+            --muted: #4a5870; 
+            --nav-bg: rgba(6, 8, 13, 0.85); 
+            --click-l: #facc15; 
+            --click-r: #c084fc; 
+            --scroll: #38bdf8; 
+            --term: #ef4444; 
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif;}
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; position: relative; }
+        body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1; background: repeating-linear-gradient(0deg, transparent 0, transparent 39px, rgba(0,255,204,0.03) 39px, rgba(0,255,204,0.03) 40px), repeating-linear-gradient(90deg, transparent 0, transparent 39px, rgba(0,255,204,0.02) 39px, rgba(0,255,204,0.02) 40px); }
+        
+        /* ── CUSTOM SCROLLBAR (GESTURE) ── */
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: var(--bg); border-left: 1px solid var(--border); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 255, 204, 0.2); border-radius: 10px; border: 3px solid var(--bg); transition: 0.3s; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* ── GLOBAL NAVBAR ── */
+        .top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--nav-bg); backdrop-filter: blur(15px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; transition: 0.3s; flex-wrap: wrap; gap: 15px;}
+        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-bright); font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
+        .brand-logo { height: 36px; width: auto; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0, 255, 204, 0.4)); }
+        
+        .nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center;}
+        .nav-link { color: var(--muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; }
+        .nav-link:hover { color: var(--accent); }
+
+        /* ── PROJECTS DROPDOWN ── */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-btn { color: var(--muted); background: none; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; transition: color 0.2s ease; padding: 0; }
+        .dropdown-btn:hover, .dropdown.active .dropdown-btn { color: var(--accent); }
+        .dropdown-btn span { font-size: 0.7rem; transition: transform 0.3s ease; }
+        .dropdown.active .dropdown-btn span { transform: rotate(180deg); }
+
+        .dropdown-content { display: flex; flex-direction: column; position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: transparent; min-width: 220px; z-index: 1001; padding-top: 15px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.5s; }
+        .dropdown-content-inner { background: var(--panel); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.8); overflow: hidden; display: flex; flex-direction: column; padding: 10px 0; }
+        .dropdown.active .dropdown-content { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); transition-delay: 0s; }
+        .dropdown.active:not(:hover) .dropdown-content { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px); transition-delay: 0.5s; }
+        
+        .dropdown-content a { color: var(--muted); padding: 12px 20px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: space-between;}
+        .dropdown-content a:hover { background: rgba(0, 255, 204, 0.08); color: var(--accent); padding-left: 25px;}
+
+        /* ── UTILITY BUTTONS ── */
+        .nav-dl-btn { background: var(--accent); color: #000; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 800; transition: 0.2s; box-shadow: 0 0 15px var(--accent-dim); font-size: 0.9rem;}
+        .nav-dl-btn:hover { background: #fff; box-shadow: 0 0 25px var(--accent); }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-bright); }
+        .mobile-dl { display: none; }
+        
+        /* ── GLOBAL ACCOUNT UI ── */
+        .nav-login-btn { background: rgba(0,255,204,0.1); color: var(--accent); border: 1px solid var(--accent); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-decoration:none; }
+        .nav-login-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px rgba(0,255,204,0.4); }
+        .nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: transparent; border: 1px solid var(--border); border-radius: 30px; cursor: pointer; transition: 0.3s; }
+        .nav-user-profile:hover { border-color: var(--accent); }
+        .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
+
+        /* ── CENTERED HERO SECTION ── */
+        .game-hero { width: 100%; padding: 160px 20px 80px; text-align: center; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, var(--bg) 0%, rgba(0, 255, 204, 0.05) 100%); transition: 0.3s;}
+        .hero-badge { display: inline-block; padding: 6px 16px; border-radius: 20px; background: rgba(0, 255, 204, 0.1); border: 1px solid rgba(0, 255, 204, 0.3); color: var(--accent); font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px; }
+        .game-hero h1 { font-size: 4.5rem; font-weight: 800; color: var(--text-bright); margin-bottom: 20px; letter-spacing: -2px; font-family: 'Space Mono', monospace;}
+        .game-hero p { font-size: 1.25rem; color: var(--text); max-width: 800px; line-height: 1.6; margin-bottom: 35px;}
+        .hero-cta { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        
+        .btn-download { background: var(--accent); color: #000; padding: 16px 32px; border-radius: 12px; font-weight: 800; font-size: 1.1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 10px 30px var(--accent-dim); border: none; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-download:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 15px 40px rgba(0,255,204,0.4); }
+        .btn-demo { background: rgba(0, 255, 204, 0.05); color: var(--accent); border: 2px solid var(--accent); padding: 16px 32px; border-radius: 12px; font-weight: 800; font-size: 1.1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(5px);}
+        .btn-demo:hover { background: var(--accent); color: #000; transform: translateY(-2px); box-shadow: 0 10px 30px var(--accent-dim); }
+
+        /* ── ANIMATION TRIGGERS ── */
+        .anim-target { opacity: 0; transform: translateY(30px); transition: 0.6s ease-out; }
+        .animate-in { opacity: 1 !important; transform: translateY(0) !important; }
+        .cursor-blink { animation: blink 1s step-end infinite; color: var(--accent);}
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .hero-reveal { opacity: 0; transform: translateY(15px); transition: 0.8s ease; }
+        .hero-reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* ── UPGRADED ENGINE CONTAINER BOX (GESTURE) ── */
+        .engine-container { 
+            width: 90%; max-width: 1100px; height: 60vh; min-height: 450px; 
+            background: #020305; margin: 40px auto 100px; position: relative; display: flex; flex-direction: column; overflow: hidden; 
+            border: 1px solid rgba(0, 255, 204, 0.3); 
+            border-radius: 12px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px rgba(0, 255, 204, 0.08); 
+        }
+        
+        .engine-hud-header { 
+            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-family: 'Space Mono', monospace; text-transform: uppercase; z-index: 20;
+            background: linear-gradient(90deg, rgba(10, 13, 20, 1) 0%, rgba(0, 255, 204, 0.05) 100%);
+            border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+        }
+        
+        .hud-title { color: var(--text-bright); font-weight: 700; font-size: 0.75rem; letter-spacing: 1px; }
+        #local-engine-status { padding: 4px 10px; border: 1px solid var(--term); border-radius: 4px; color: var(--term); font-size: 0.65rem; transition: 0.3s; font-weight: 700; letter-spacing: 1px; }
+        
+        /* ── UPGRADED ENGINE OVERLAY ── */
+        .engine-overlay { 
+            position: absolute; top: 41px; left: 0; right: 0; bottom: 0; 
+            background: radial-gradient(circle at center, rgba(10, 13, 20, 0.9) 0%, rgba(2, 3, 5, 0.98) 100%);
+            backdrop-filter: blur(8px); display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            z-index: 10; cursor: pointer; transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        /* Cyber Scan Line */
+        .scan-line {
+            position: absolute; width: 100%; height: 3px; background: rgba(0, 255, 204, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.6); top: 0; left: 0;
+            animation: scan 3s linear infinite; opacity: 0.5; pointer-events: none;
+        }
+        @keyframes scan { 0% { top: -10%; } 100% { top: 110%; } }
+
+        .overlay-content { display: flex; flex-direction: column; align-items: center; z-index: 2; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .engine-overlay:hover .overlay-content { transform: scale(1.03); }
+
+        /* Glowing Cyber Button */
+        .cyber-play-btn {
+            position: relative; width: 90px; height: 90px; display: flex; justify-content: center; align-items: center;
+            margin-bottom: 25px; border-radius: 50%; background: rgba(0, 255, 204, 0.05);
+            border: 1px solid rgba(0, 255, 204, 0.3); box-shadow: 0 0 30px rgba(0, 255, 204, 0.1);
+            transition: all 0.3s ease;
+        }
+        .cyber-play-btn svg { width: 36px; height: 36px; color: var(--accent); transition: 0.3s; filter: drop-shadow(0 0 5px var(--accent)); }
+        
+        .ring { position: absolute; border-radius: 50%; border: 1px solid var(--accent); opacity: 0; }
+        .ring-1 { width: 100%; height: 100%; animation: radarPulse 2s infinite ease-out; }
+        .ring-2 { width: 100%; height: 100%; animation: radarPulse 2s infinite ease-out 1s; }
+        
+        @keyframes radarPulse {
+            0% { transform: scale(1); opacity: 0.8; border-width: 2px; }
+            100% { transform: scale(1.8); opacity: 0; border-width: 1px; }
+        }
+
+        .engine-overlay:hover .cyber-play-btn { background: rgba(0, 255, 204, 0.15); box-shadow: 0 0 50px rgba(0, 255, 204, 0.3); transform: scale(1.1); }
+        .engine-overlay:hover .cyber-play-btn svg { transform: scale(1.1); }
+
+        .overlay-content h2 { font-family: 'Space Mono', monospace; color: var(--text-bright); font-size: 1.8rem; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 0 15px rgba(255,255,255,0.1);}
+        .overlay-content p { color: var(--muted); font-size: 1rem; margin-bottom: 35px; max-width: 450px; text-align: center; }
+
+        /* Gesture Grid Cards */
+        .gesture-grid { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .gesture-card { 
+            background: rgba(10, 13, 20, 0.6); border: 1px solid var(--border); padding: 12px 20px; 
+            border-radius: 12px; display: flex; align-items: center; gap: 15px; 
+            backdrop-filter: blur(5px); transition: 0.3s;
+        }
+        .gesture-card:hover { transform: translateY(-5px); background: rgba(15, 20, 30, 0.8); }
+        
+        .left-click { border-left: 3px solid var(--click-l); }
+        .right-click { border-left: 3px solid var(--click-r); }
+        .scroll-ui { border-left: 3px solid var(--scroll); }
+
+        .left-click:hover { box-shadow: 0 5px 15px rgba(250, 204, 21, 0.15); border-color: var(--click-l); }
+        .right-click:hover { box-shadow: 0 5px 15px rgba(192, 132, 252, 0.15); border-color: var(--click-r); }
+        .scroll-ui:hover { box-shadow: 0 5px 15px rgba(56, 189, 248, 0.15); border-color: var(--scroll); }
+
+        .g-icon { font-size: 1.5rem; background: rgba(255,255,255,0.05); width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 8px; }
+        .g-text { display: flex; flex-direction: column; text-align: left; }
+        .g-title { font-weight: 700; font-size: 0.95rem; color: var(--text-bright); font-family: 'Space Mono', monospace; letter-spacing: -0.5px;}
+        
+        .left-click .g-title { color: var(--click-l); }
+        .right-click .g-title { color: var(--click-r); }
+        .scroll-ui .g-title { color: var(--scroll); }
+        
+        .g-desc { font-size: 0.75rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;}
+
+        .video-container { width: 100%; height: 100%; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #000; }
+        #output_canvas { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+
+        /* ── FOOTER ── */
+        .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--bg); color: var(--muted); font-size: 0.85rem; font-weight: 600; margin-top: auto; }
+        .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 10px; }
+        .footer-links a { color: var(--muted); text-decoration: none; }
+        .footer-links a:hover { color: var(--accent); }
+
+        /* ── UPGRADED AUTHENTICATION MODAL BOX (GESTURE) ── */
+        .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s ease; }
+        .mo.open { opacity: 1; pointer-events: auto; }
+        
+        .md { 
+            background: rgba(10, 13, 20, 0.85); 
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 204, 0.3); 
+            border-radius: 24px; width: 90%; max-width: 450px; 
+            transform: translateY(30px) scale(0.95); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px rgba(0, 255, 204, 0.1); 
+            color: #fff; overflow: hidden;
+        }
+        .mo.open .md { transform: translateY(0) scale(1); }
+        
+        .md-hd { 
+            padding: 30px; text-align: center; 
+            border-bottom: 1px solid rgba(0, 255, 204, 0.15); 
+            background: linear-gradient(180deg, rgba(0, 255, 204, 0.08) 0%, transparent 100%); 
+        }
+        .md-hd h2 { font-size: 1.8rem; font-weight: 800; margin:0; font-family: 'Space Mono', monospace; letter-spacing: -1px; color: var(--text-bright); text-shadow: 0 0 10px rgba(0, 255, 204, 0.2);}
+        .md-hd p { font-size: 0.95rem; color: #94a3b8; margin-top: 5px; }
+        .md-body { padding: 30px; display: flex; flex-direction: column;}
+        .ml { font-size: 0.8rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+        
+        .mi { 
+            width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; 
+            font-size: 1rem; outline: none; margin-bottom: 20px; transition: 0.3s; 
+            color: #fff; background: rgba(0,0,0,0.5); 
+        }
+        .mi:focus { border-color: var(--accent); box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.1), 0 0 15px rgba(0, 255, 204, 0.2); }
+        
+        .gbtn { width: 100%; padding: 12px; background: #4285f4; border: none; border-radius: 6px; font-weight: 500; font-family: 'Inter', sans-serif; font-size: 14px; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; transition: 0.2s; }
+        .gbtn:hover { background: #3367d6; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.3); }
+        
+        .ms { 
+            width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 12px; 
+            font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 10px 20px rgba(0, 255, 204, 0.2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+        }
+        .ms:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0, 255, 204, 0.4); }
+        
+        .msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.9rem; font-weight: 700; color: #94a3b8; cursor: pointer; margin-top: 5px; transition: 0.3s;}
+        .msk:hover { color: #fff; }
+
+        .msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid #ef4444; border-radius: 12px; font-size: 1rem; font-weight: 800; color: #ef4444; cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
+        .msk-danger:hover { background: rgba(239, 68, 68, 0.1); }
+        
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--panel); border: 1px solid var(--border); color: #fff; padding: 15px 25px; border-radius: 12px; font-size: 0.95rem; font-weight: 800; z-index: 3000; transform: translateY(20px); opacity: 0; transition: 0.3s; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.green { border-color: var(--accent); color: var(--accent); }
+
+        @media (max-width: 768px) { 
+            .desktop-dl { display: none; }
+            .mobile-dl { display: block; text-align: center; width: 100%; margin-top: 5px; }
+            .top-nav { width: 95%; margin: 15px auto 0; border-radius: 20px; top: 15px; padding: 10px 15px; flex-direction: row; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid var(--border); }
+            .mobile-menu-btn { display: block; }
+            .nav-brand { gap: 8px; font-size: 1.05rem; }
+            .brand-logo { height: 32px; }
+            .nav-links { display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--nav-bg); backdrop-filter: blur(15px); border-radius: 16px; padding: 20px; flex-direction: column; gap: 15px; border: 1px solid var(--border); }
+            .nav-links.active { display: flex; }
+            
+            .game-hero h1 { font-size: 2.5rem; }
+            .engine-container { height: 60vh; min-height: 400px; }
+            .gesture-grid { flex-direction: column; width: 80%; }
+            .gesture-card { width: 100%; justify-content: flex-start; }
+            .cyber-play-btn { width: 70px; height: 70px; margin-bottom: 20px;}
+            .overlay-content h2 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">
+            <img src="class.png" alt="Class Of Learners Logo" class="brand-logo">
+            <span>Class Of Learners</span>
+        </a>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
+
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home Hub</a>
+            <a href="about.html" class="nav-link">About Us</a>
+            <a href="school.html" class="nav-link">Our School</a>
+            <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+            
+            <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
+                <button class="dropdown-btn" style="color: var(--accent);">Projects <span>▼</span></button>
+                <div class="dropdown-content">
+                    <div class="dropdown-content-inner">
+                        <a href="ati.html">Typing Instructor <span>⌨️</span></a>
+                        <a href="solar.html">Solar Engine <span>🪐</span></a>
+                        <a href="gesture.html" style="color: var(--accent);">Gesture Control <span>🖐️</span></a>
+                        <a href="rpg.html">RPG Game <span>⚔️</span></a>
+                        <a href="qr.html">QR Generator <span>⬛</span></a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg> Sign In
+            </button>
+            <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+                <div class="nav-user-avatar" id="navUserAv">?</div>
+                <span id="navUserName" style="font-size:0.85rem; font-weight:800; color:var(--text-bright);">User</span>
+            </div>
+            
+            <a href="download.html" class="nav-dl-btn mobile-dl" style="color: var(--bg);">Downloads Hub</a>
+        </div>
+        <a href="download.html" class="nav-dl-btn desktop-dl" style="color: var(--bg);">Downloads Hub</a>
+    </nav>
+
+    <header class="game-hero">
+        <div class="hero-badge anim-target">Machine Vision Engine</div>
+        
+        <h1><span id="typewriter-text"></span><span class="cursor-blink">_</span></h1>
+        
+        <div class="hero-reveal" id="heroReveal">
+            <p>Control Windows, type, and draw using live hand tracking. Experience seamless navigation without touching a physical mouse.</p>
+            <div class="hero-cta">
+                <a href="download.html" class="btn-download">Initialize Download</a>
+                <a href="#local-webcam-overlay" class="btn-demo">▶ Test Live Global Scope</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="engine-container anim-target">
+        <div class="engine-hud-header">
+            <div class="hud-title">GESTURECTRL <span style="color: var(--muted); font-weight: 400; margin-left: 5px;"> V1.2 (GLOBAL SCOPE)</span></div>
+            <div id="local-engine-status">● OFFLINE</div>
+        </div>
+        
+        <div class="engine-overlay" id="local-webcam-overlay" onclick="window.startGlobalGesture && window.startGlobalGesture()">
+            <div class="scan-line"></div>
+            
+            <div class="overlay-content">
+                <div class="cyber-play-btn">
+                    <div class="ring ring-1"></div>
+                    <div class="ring ring-2"></div>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                </div>
+                
+                <h2>INITIALIZE VISION ENGINE</h2>
+                <p>Grant camera access to enable spatial hand tracking.</p>
+                
+                <div class="gesture-grid">
+                    <div class="gesture-card left-click">
+                        <div class="g-icon">🤏</div>
+                        <div class="g-text">
+                            <span class="g-title">Left Click</span>
+                            <span class="g-desc">Thumb + Index</span>
+                        </div>
+                    </div>
+                    <div class="gesture-card right-click">
+                        <div class="g-icon">✌️</div>
+                        <div class="g-text">
+                            <span class="g-title">Right Click</span>
+                            <span class="g-desc">Thumb + Middle</span>
+                        </div>
+                    </div>
+                    <div class="gesture-card scroll-ui">
+                        <div class="g-icon">👆</div>
+                        <div class="g-text">
+                            <span class="g-title">Scroll</span>
+                            <span class="g-desc">Index + Middle Up</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="video-container">
+            <canvas id="output_canvas" width="1280" height="720"></canvas>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="feedback.html">Provide Feedback</a>
+        </div>
+        <div class="footer-copy">&copy; 2026 Class Of Learners. Developed By Neel And Ansh. All Rights Reserved.</div>
+    </footer>
+
+    <div class="mo" id="loginMo">
+      <div class="md">
+        <div class="md-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div>
+        <div class="md-body">
+          
+          <div id="loggedOutPanel">
+              <button class="gbtn" id="gSignInBtn" onclick="gSignIn()">
+                <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google
+              </button>
+          </div>
+
+          <div id="loggedInPanel" style="display: none;">
+              <label class="ml">Google Email</label>
+              <input class="mi" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;">
+              <label class="ml">Display Username</label>
+              <input class="mi" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;">
+              <button class="ms" onclick="updateUsername()">Save Username</button>
+              <button class="msk-danger" onclick="doLogout()">Disconnect Account</button>
+          </div>
+
+          <button class="msk" onclick="closeMo()">Close / Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script src="global-gesture.js"></script>
+
+    <script>
+        function toggleMenu() { document.querySelector('.nav-links').classList.toggle('active'); }
+
+        // --- EXACT JAVASCRIPT TYPEWRITER EFFECT ---
+        const textToType = "> GESTURE CONTROLLER_ /";
+        const typeTarget = document.getElementById('typewriter-text');
+        const revealTarget = document.getElementById('heroReveal');
+        let typeIndex = 0;
+
+        function typeWriter() {
+            if (typeIndex < textToType.length) {
+                typeTarget.innerHTML += textToType.charAt(typeIndex);
+                typeIndex++;
+                setTimeout(typeWriter, Math.floor(Math.random() * 50) + 40); 
+            } else {
+                setTimeout(() => {
+                    if(revealTarget) revealTarget.classList.add('visible');
+                }, 300);
+            }
+        }
+
+        window.onclick = function(e) {
+            if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) {
+                document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+            }
+        }
+
+        // --- UNIVERSAL ACCOUNT LOGIC WITH GOOGLE ONE TAP ---
+        const Storage = { get: k=>{try{return localStorage.getItem(k);}catch(e){return null;}}, set: (k,v)=>{try{localStorage.setItem(k,v);}catch(e){}} };
+        const GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+        let curUser = null; let googleAccessToken = null;
+
+        function toast(msg, cls){ let t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.className='toast '+(cls||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);}
+
+        function initGoogle() {
+            if (typeof google === 'undefined' || !google.accounts) return;
+            google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleOneTapResponse, auto_select: true, cancel_on_tap_outside: false });
+            if (!curUser) google.accounts.id.prompt();
+        }
+        function decodeJWT(token) { try { return JSON.parse(decodeURIComponent(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''))); } catch(e) { return null; } }
+        function handleOneTapResponse(response) {
+            const payload = decodeJWT(response.credential); if (!payload) return;
+            let savedName = payload.name; const existing = Storage.get('qrs_user');
+            if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === payload.email && parsed.name) savedName = parsed.name; } catch(e){} }
+            curUser = { name: savedName, email: payload.email, picture: payload.picture, google: true }; Storage.set('qrs_user', JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+        }
+        function gSignIn() {
+            toast('Redirecting to Google...', ''); const redirectUri = window.location.href.split('#')[0].split('?')[0]; 
+            const scope = encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
+            window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
+        }
+        function checkURLForToken() {
+            const hash = window.location.hash.substring(1);
+            if (hash.includes('access_token=')) {
+                const params = new URLSearchParams(hash); const token = params.get('access_token');
+                if (token) { googleAccessToken = token; window.history.replaceState(null, null, window.location.pathname); fetchGoogleProfile(token); }
+            }
+        }
+        async function fetchGoogleProfile(token) {
+            try {
+                const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } });
+                if (r.ok) {
+                    const info = await r.json(); let savedName = info.name; const existing = Storage.get('qrs_user');
+                    if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === info.email && parsed.name) savedName = parsed.name; } catch(e){} }
+                    curUser = { name: savedName, email: info.email, picture: info.picture, google: true }; Storage.set('qrs_user', JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+                } else { toast('Authentication failed.', ''); }
+            } catch (e) { toast('Network error.', ''); }
+        }
+
+        function loadUser(){ const u=Storage.get('qrs_user'); if(u){ try{ curUser=JSON.parse(u); updatePUI(); }catch(e){} } }
+        function updatePUI(){ 
+          const nlb=document.querySelector('.nav-login-btn'), nup=document.getElementById('navUserProfile'); 
+          if(!curUser){ if(nlb) nlb.style.display='flex'; if(nup) nup.style.display='none'; return; } 
+          if(nlb) nlb.style.display='none'; if(nup) nup.style.display='flex'; 
+          const nun=document.getElementById('navUserName'); if(nun) nun.textContent=curUser.name.split(' ')[0]; 
+          const navAv=document.getElementById('navUserAv'); 
+          if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; } 
+          else { if(navAv){ navAv.innerHTML=''; navAv.textContent=curUser.name.charAt(0).toUpperCase(); } } 
+        }
+
+        function openLogin(){ 
+            const mo = document.getElementById('loginMo'); if(!mo) return; mo.classList.add('open'); 
+            const mt = document.getElementById('moAuthTitle'), mSub = document.getElementById('moAuthSub');
+            const loggedOutPanel = document.getElementById('loggedOutPanel'), loggedInPanel = document.getElementById('loggedInPanel');
+            const mn = document.getElementById('miName'), me = document.getElementById('miEmail'); 
+            if(curUser){ 
+                if(mt) mt.textContent = 'Google Account'; if(mSub) mSub.textContent = 'Manage your profile and username.';
+                if(loggedOutPanel) loggedOutPanel.style.display = 'none'; if(loggedInPanel) loggedInPanel.style.display = 'block';
+                if(mn) mn.value = curUser.name; if(me) me.value = curUser.email || ''; 
+            } else { 
+                if(mt) mt.textContent = 'Authenticate'; if(mSub) mSub.textContent = 'Unlock dashboard storage and cloud sync.';
+                if(loggedOutPanel) loggedOutPanel.style.display = 'block'; if(loggedInPanel) loggedInPanel.style.display = 'none';
+            } 
+        }
+
+        function closeMo(){ const mo=document.getElementById('loginMo'); if(mo) mo.classList.remove('open'); }
+        function updateUsername(){
+            const mn=document.getElementById('miName'); if(!mn) return;
+            const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
+            if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Username Updated','green'); }
+        }
+        function doLogout() {
+            curUser = null; googleAccessToken = null; Storage.set('qrs_user', '');
+            if(typeof google !== 'undefined' && google.accounts) google.accounts.id.disableAutoSelect();
+            updatePUI(); closeMo(); toast('Logged out successfully.', '');
+        }
+
+        window.addEventListener('load', () => { 
+            setTimeout(typeWriter, 400); 
+            document.querySelectorAll('.anim-target').forEach(t => t.classList.add('animate-in'));
+            loadUser(); checkURLForToken(); setTimeout(initGoogle, 400); 
+            const lm=document.getElementById('loginMo'); if(lm) lm.addEventListener('click',function(e){if(e.target===this)closeMo();}); 
+        });
+    </script>
+</body>
+</html>

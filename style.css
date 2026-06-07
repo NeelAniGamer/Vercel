@@ -1,0 +1,144 @@
+/* --- PREMIUM COMMERCIAL THEME --- */
+:root {
+    --bg-1: #0f172a; /* Deep Slate Navy */
+    --bg-2: #1e293b; /* Secondary Slate */
+    --primary: #3b82f6; /* Trustworthy Commercial Blue */
+    --primary-hover: #2563eb;
+    --card-border: #334155;
+    --card-shadow: rgba(0, 0, 0, 0.15);
+    --text-shadow: none; /* Removed Neon Glows */
+    --currency: #10b981; /* Clean Emerald Green */
+    --wrong: #ef4444; /* Clean Error Red */
+    --kb-bg: #0f172a;
+    --kb-border: #334155;
+    --key-bg: #1e293b;
+    --key-border: #0f172a;
+    --prog-grad-1: #3b82f6;
+    --prog-grad-2: #60a5fa;
+}
+
+/* --- THEME OVERRIDE (CODING MODE) --- */
+body.theme-red {
+    --bg-1: #1a0f14;
+    --bg-2: #2a1720;
+    --primary: #e11d48; /* Professional Crimson */
+    --primary-hover: #be123c;
+    --card-border: #4c1d2e;
+    --kb-bg: #1a0f14;
+    --kb-border: #4c1d2e;
+    --key-bg: #2a1720;
+    --key-border: #1a0f14;
+    --prog-grad-1: #e11d48;
+    --prog-grad-2: #fb7185;
+}
+
+body {
+    background-color: var(--bg-1);
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    height: 100vh; 
+    margin: 0; 
+    font-family: 'Inter', -apple-system, sans-serif; /* Premium SaaS Font */
+    color: #f8fafc; 
+    padding: 10px; 
+    overflow: hidden; 
+    transition: background-color 0.5s ease;
+}
+
+.glass-card {
+    width: 100%; 
+    max-width: 1000px; 
+    padding: 2rem; 
+    background: var(--bg-2);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 10px 15px -3px var(--card-shadow), 0 4px 6px -4px var(--card-shadow);
+    border-radius: 12px;
+    margin-bottom: 10px; 
+    position: relative;
+    backdrop-filter: none; /* Removed Blurry Glass For Sharp Corporate Look */
+    transition: border-color 0.5s ease;
+}
+
+.mega-title { 
+    font-family: 'Inter', sans-serif; 
+    font-size: 4.5rem; 
+    margin-bottom: 0px; 
+    color: var(--primary); 
+    text-shadow: none; 
+    line-height: 1.1; 
+    font-weight: 800; 
+    letter-spacing: -1px;
+}
+
+.massive-btn { 
+    font-size: 1.3rem; 
+    padding: 14px 40px; 
+    background: var(--primary); 
+    color: #ffffff; 
+    border: none; 
+    border-radius: 8px; /* Modern Smooth Edges */
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: 0.2s; 
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39); 
+    display: block; 
+    margin: 0 auto; 
+}
+
+.massive-btn:hover { 
+    transform: translateY(-2px); 
+    background: var(--primary-hover); 
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.23); 
+}
+
+/* --- APPLE/MECHANICAL STYLE KEYBOARD --- */
+.keyboard { 
+    background: var(--bg-2); 
+    padding: 20px; 
+    border-radius: 12px; 
+    border: 1px solid var(--kb-border); 
+    box-shadow: 0 4px 6px -1px var(--card-shadow); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 6px; 
+    margin-top: 10px; 
+}
+
+.key { 
+    width: 42px; 
+    height: 42px; 
+    background: var(--key-bg); 
+    box-shadow: 0 3px 0 var(--key-border); /* Solid 3D Pop Like Real Keys */
+    border-radius: 6px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    font-weight: 600; 
+    font-size: 1rem; 
+    color: #cbd5e1;
+    transition: 0.1s; 
+    text-transform: uppercase; 
+    cursor: default; 
+}
+
+/* --- CLEANED UP SHOP ICONS --- */
+.compact-shop-icon { 
+    background: var(--bg-2) !important; 
+    color: #f8fafc !important; 
+    border: 1px solid var(--card-border) !important; 
+    padding: 8px 14px; 
+    border-radius: 6px; 
+    font-size: 0.95rem; 
+    font-weight: 600; 
+    cursor: pointer; 
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
+    transition: 0.2s; 
+}
+
+.compact-shop-icon:hover { 
+    border-color: var(--primary) !important; 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+}

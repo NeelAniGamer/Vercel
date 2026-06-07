@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar System Visualization Engine v3.3</title>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="visual.css">
+</head>
+<body>
+
+<div id="measure-display" style="display:none">
+  <span id="measure-icon">⟺</span>
+  <span id="measure-text">Select first object…</span>
+  <button id="measure-close" onclick="window.toggleMeasure && window.toggleMeasure()">✕</button>
+</div>
+
+<div id="homepage">
+  <canvas id="home-canvas"></canvas>
+
+  <div id="home-solar-rings">
+    <div class="ring ring-1"></div>
+    <div class="ring ring-2"></div>
+    <div class="ring ring-3"></div>
+    <div class="ring-planet rp-1"></div>
+    <div class="ring-planet rp-2"></div>
+    <div class="ring-planet rp-3"></div>
+    <div id="home-sun-core"></div>
+  </div>
+
+  <div id="home-content">
+    <div id="home-badge">
+      <span class="badge-dot"></span>
+      SOLAR ENGINE  ·  v3.3
+      <span class="badge-dot"></span>
+    </div>
+
+    <h1 id="home-title">
+      <span class="ht-line">EXPLORE</span>
+      <span class="ht-line ht-accent">THE UNIVERSE</span>
+    </h1>
+
+    <p id="home-tagline">
+      Journey through 100+ celestial objects — from Mercury's scorched plains<br>
+      to dark energy at the edge of the observable universe.
+    </p>
+
+    <div id="home-stats">
+      <div class="hs-item" data-count="8" data-label="PLANETS"></div>
+      <div class="hs-divider"></div>
+      <div class="hs-item" data-count="100" data-label="OBJECTS" data-suffix="+"></div>
+      <div class="hs-divider"></div>
+      <div class="hs-item" data-count="20" data-label="MOONS" data-suffix="+"></div>
+      <div class="hs-divider"></div>
+      <div class="hs-item" data-count="∞" data-label="DISCOVERY"></div>
+    </div>
+
+    <div id="home-features">
+      <div class="hf-card">
+        <div class="hf-icon">⟡</div>
+        <div class="hf-text">
+          <div class="hf-title">REAL ORBITAL MECHANICS</div>
+          <div class="hf-sub">Accurate period simulation at variable speed</div>
+        </div>
+      </div>
+      <div class="hf-card">
+        <div class="hf-icon">◈</div>
+        <div class="hf-text">
+          <div class="hf-title">GALACTIC ZOOM</div>
+          <div class="hf-sub">Pan from Earth orbit to the Milky Way</div>
+        </div>
+      </div>
+      <div class="hf-card">
+        <div class="hf-icon">⬡</div>
+        <div class="hf-text">
+          <div class="hf-title">DEEP DATABANK</div>
+          <div class="hf-sub">Physics, atmosphere & mission data for every object</div>
+        </div>
+      </div>
+    </div>
+
+    <button id="launch-btn" onclick="enterApp()">
+      <span class="lb-icon">▶</span>
+      <span class="lb-text">ENTER THE SOLAR SYSTEM</span>
+      <span class="lb-arrow">→</span>
+    </button>
+
+    <div id="home-keys">
+      <span>SCROLL to zoom</span>
+      <span class="hk-dot">·</span>
+      <span>DRAG to orbit</span>
+      <span class="hk-dot">·</span>
+      <span>CLICK to explore</span>
+      <button class="tab-btn" data-tab="discover">DISCOVER.</button>
+    </div>
+  </div>
+
+  <div id="home-credits">Engine Architecture · Ansh &amp; Neel</div>
+</div>
+
+<div id="top-bar">
+  <div id="brand">
+    <span class="brand-icon">✦</span>
+    <span class="brand-text">SOLAR ENGINE <span class="brand-ver">v3.3</span></span>
+  </div>
+
+  <div id="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input id="search-input" type="text" placeholder="Search planets, stars, anomalies…" autocomplete="off" spellcheck="false">
+    <div id="search-results"></div>
+  </div>
+
+  <div id="time-controls">
+    <button class="tc-btn" id="btn-rewind"   title="Slow down (-)">«</button>
+    <button class="tc-btn" id="btn-pause"    title="Pause / Resume (Space)">⏸</button>
+    <button class="tc-btn" id="btn-forward"  title="Speed up (+)">»</button>
+    <span id="speed-display" title="Simulation speed">1000×</span>
+  </div>
+
+  <div id="top-right-btns">
+    <button class="icon-btn" id="btn-reset-cam"    title="Reset camera (H)">⌂</button>
+    <button class="icon-btn" id="btn-toggle-orbits" title="Toggle orbits (O)">⊙</button>
+    <button class="icon-btn" id="btn-random-fact"   title="Random Discovery (D)">💡</button>
+    <button class="icon-btn" id="btn-compare"       title="Compare two objects (C)">⚖</button>
+    <button class="icon-btn" id="btn-timeline"      title="Cosmic Timeline (T)">🕐</button>
+    <button class="icon-btn" id="btn-settings"      title="Settings">⚙</button>
+    <button class="icon-btn" id="btn-shortcuts"     title="Keyboard shortcuts (?)">?</button>
+    <button class="icon-btn" id="btn-screenshot"    title="Screenshot">⬡</button>
+    <button class="icon-btn" id="btn-fullscreen"    title="Fullscreen (F11)">⤢</button>
+  </div>
+</div>
+
+<div id="favorites-bar" style="display:none"></div>
+
+<div id="scale-indicator">
+  <div id="scale-label">SOLAR SYSTEM</div>
+  <div id="scale-bar-wrap"><div id="scale-bar-fill"></div></div>
+</div>
+
+<div id="settings-panel">
+  <div id="sp-header">
+    <span class="sp-title">⚙ CONTROLS &amp; SETTINGS</span>
+    <button id="sp-close" onclick="toggleSettings(false)">✕</button>
+  </div>
+
+  <div class="sp-section">
+    <div class="sp-section-label">MOUSE SENSITIVITY</div>
+    <div class="sp-row">
+      <label class="sp-label">Rotate Speed</label>
+      <div class="sp-slider-wrap">
+        <input type="range" class="sp-slider" id="sl-rotate" min="0.1" max="2" step="0.05" value="0.6">
+        <span class="sp-val" id="sv-rotate">0.60</span>
+      </div>
+    </div>
+    <div class="sp-row">
+      <label class="sp-label">Zoom Speed</label>
+      <div class="sp-slider-wrap">
+        <input type="range" class="sp-slider" id="sl-zoom" min="0.2" max="3" step="0.1" value="1.2">
+        <span class="sp-val" id="sv-zoom">1.20</span>
+      </div>
+    </div>
+    <div class="sp-row">
+      <label class="sp-label">Pan Speed</label>
+      <div class="sp-slider-wrap">
+        <input type="range" class="sp-slider" id="sl-pan" min="0.1" max="2" step="0.05" value="0.8">
+        <span class="sp-val" id="sv-pan">0.80</span>
+      </div>
+    </div>
+    <div class="sp-row">
+      <label class="sp-label">Damping</label>
+      <div class="sp-slider-wrap">
+        <input type="range" class="sp-slider" id="sl-damp" min="0.02" max="0.2" step="0.01" value="0.08">
+        <span class="sp-val" id="sv-damp">0.08</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sp-section">
+    <div class="sp-section-label">DISPLAY</div>
+    <div class="sp-row">
+      <label class="sp-label">Label Visibility</label>
+      <div class="sp-slider-wrap">
+        <input type="range" class="sp-slider" id="sl-labels" min="0" max="1" step="0.05" value="1">
+        <span class="sp-val" id="sv-labels">1.00</span>
+      </div>
+    </div>
+    <div class="sp-row">
+      <label class="sp-label">Star Brightness</label>
+      <div class="sp-slider-wrap">
+        <input type="range" class="sp-slider" id="sl-stars" min="0.3" max="1.5" step="0.05" value="0.9">
+        <span class="sp-val" id="sv-stars">0.90</span>
+      </div>
+    </div>
+    <div class="sp-row">
+      <label class="sp-label">Render Quality</label>
+      <div class="sp-slider-wrap">
+        <input type="range" class="sp-slider" id="sl-quality" min="0.5" max="2" step="0.25" value="1.5">
+        <span class="sp-val" id="sv-quality">1.50</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sp-section">
+    <div class="sp-section-label">TOGGLES</div>
+    <div class="sp-toggles">
+      <button class="sp-toggle active" id="tog-orbits" onclick="toggleOrbitsBtn(this)">ORBIT LINES</button>
+      <button class="sp-toggle active" id="tog-labels" onclick="toggleLabelsBtn(this)">LABELS</button>
+      <button class="sp-toggle active" id="tog-glow"   onclick="toggleGlowBtn(this)">SUN GLOW</button>
+      <button class="sp-toggle"        id="tog-perf"   onclick="togglePerfBtn(this)">PERF MODE</button>
+    </div>
+  </div>
+
+  <button class="sp-reset" onclick="resetSettings()">↺ RESET TO DEFAULTS</button>
+</div>
+
+<div id="shortcuts-overlay" onclick="if(event.target===this)closeShortcuts()">
+  <div id="shortcuts-modal">
+    <div id="sm-header">
+      <span>⌨ KEYBOARD SHORTCUTS</span>
+      <button onclick="closeShortcuts()">✕</button>
+    </div>
+    <div id="sm-grid">
+      <div class="sm-group">
+        <div class="sm-group-title">NAVIGATION</div>
+        <div class="sm-row"><kbd>H</kbd><span>Reset Camera</span></div>
+        <div class="sm-row"><kbd>F11</kbd><span>Fullscreen</span></div>
+        <div class="sm-row"><kbd>ESC</kbd><span>Exit fullscreen / close panels</span></div>
+        <div class="sm-row"><kbd>R</kbd><span>Reload</span></div>
+        <div class="sm-row"><kbd>M</kbd><span>Measure distance between two objects</span></div>
+        <div class="sm-row"><kbd>F</kbd><span>Bookmark / favourite selected object</span></div>
+      </div>
+      <div class="sm-group">
+        <div class="sm-group-title">SIMULATION</div>
+        <div class="sm-row"><kbd>Space</kbd><span>Pause / Resume</span></div>
+        <div class="sm-row"><kbd>+</kbd><span>Speed up time</span></div>
+        <div class="sm-row"><kbd>-</kbd><span>Slow down time</span></div>
+        <div class="sm-row"><kbd>O</kbd><span>Toggle orbit lines</span></div>
+      </div>
+      <div class="sm-group">
+        <div class="sm-group-title">VIEW</div>
+        <div class="sm-row"><kbd>?</kbd><span>This help panel</span></div>
+        <div class="sm-row"><kbd>S</kbd><span>Settings panel</span></div>
+        <div class="sm-row"><kbd>P</kbd><span>Screenshot</span></div>
+        <div class="sm-row"><kbd>L</kbd><span>Toggle labels</span></div>
+      </div>
+      <div class="sm-group">
+        <div class="sm-group-title">MOUSE</div>
+        <div class="sm-row"><kbd>LMB</kbd><span>Click to select object</span></div>
+        <div class="sm-row"><kbd>RMB</kbd><span>Pan camera</span></div>
+        <div class="sm-row"><kbd>Scroll</kbd><span>Zoom in / out</span></div>
+        <div class="sm-row"><kbd>Drag</kbd><span>Orbit camera</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="hud">
+  <div id="hud-header">
+    <div>
+      <div id="hud-type-badge">OBJECT</div>
+      <h1 id="hud-title">—</h1>
+    </div>
+    <button id="close-btn" onclick="closeHUD()" title="Close">✕</button>
+  </div>
+
+  <div id="hud-surface">
+    <img id="hud-img" src="" alt="Surface">
+    <div id="hud-img-overlay"></div>
+  </div>
+
+  <div id="quick-stats">
+    <div class="qs-pill"><div class="qs-val" id="qs-dist">—</div><div class="qs-lbl">DISTANCE AU</div></div>
+    <div class="qs-pill"><div class="qs-val" id="qs-period">—</div><div class="qs-lbl">PERIOD DAYS</div></div>
+    <div class="qs-pill"><div class="qs-val" id="qs-moons">—</div><div class="qs-lbl">MOONS</div></div>
+    <div class="qs-pill"><div class="qs-val" id="qs-type">—</div><div class="qs-lbl">CLASS</div></div>
+  </div>
+
+  <div id="hud-tabs">
+    <button class="tab-btn active" data-tab="overview">OVERVIEW</button>
+    <button class="tab-btn" data-tab="physics">PHYSICS</button>
+    <button class="tab-btn" data-tab="atmosphere">ATMOS.</button>
+    <button class="tab-btn" data-tab="explore">EXPLORE</button>
+    <button class="tab-btn" data-tab="discover">DISCOVER.</button>
+    <button class="tab-btn" data-tab="moons">MOONS</button>
+  </div>
+
+  <div id="hud-tab-body">
+    <div class="tab-pane active" id="tab-overview">
+      <p id="tab-overview-text" class="description"></p>
+      <div id="tab-overview-fact" class="fun-fact-box"></div>
+    </div>
+    <div class="tab-pane" id="tab-physics">
+      <div id="tab-physics-rows"></div>
+    </div>
+    <div class="tab-pane" id="tab-atmosphere">
+      <div id="tab-atmos-rows"></div>
+    </div>
+    <div class="tab-pane" id="tab-explore">
+      <div id="tab-explore-rows"></div>
+    </div>
+    <div class="tab-pane" id="tab-discover">
+      <div id="tab-discover-rows"></div>
+    </div>
+    <div class="tab-pane" id="tab-moons">
+      <div id="tab-moons-rows"></div>
+    </div>
+  </div>
+
+  <button id="focus-btn" onclick="focusSelectedPlanet()">▶ FOCUS CAMERA</button>
+</div>
+
+<div id="status-bar">
+  <span id="sb-date">—</span>
+  <span class="sb-sep">|</span>
+  <span id="sb-fps">— FPS</span>
+  <span class="sb-sep">|</span>
+  <span id="sb-cam">CAM —</span>
+  <span class="sb-sep">|</span>
+  <span id="sb-selected">No object selected</span>
+  <span class="sb-sep" style="margin-left:auto">|</span>
+  <span id="sb-hint">Click object to explore  ·  ? for shortcuts</span>
+</div>
+
+<div id="dev-credits">Engine Architecture · Ansh &amp; Neel</div>
+
+<div id="galaxy-label">
+  <div id="gl-name">MILKY WAY GALAXY</div>
+  <div id="gl-sub">Diameter: ~105,700 light-years · ~400 billion stars</div>
+  <div id="gl-you">☉ Our Solar System</div>
+</div>
+
+<div id="fact-toast">
+  <div id="fact-toast-header">
+    <span>💡 RANDOM DISCOVERY</span>
+    <button onclick="document.getElementById('fact-toast').classList.remove('active')">✕</button>
+  </div>
+  <div id="fact-toast-object"></div>
+  <div id="fact-toast-text"></div>
+</div>
+
+<div id="compare-panel">
+  <div id="cp-header">
+    <span>⚖ OBJECT COMPARISON</span>
+    <button onclick="closeCompare()">✕</button>
+  </div>
+  <div id="cp-hint">Click any object in the scene to add it to the comparison (max 2).</div>
+  <div id="cp-body">
+    <div class="cp-col" id="cp-col-a">
+      <div class="cp-name">—</div>
+      <div class="cp-rows"></div>
+    </div>
+    <div id="cp-divider">VS</div>
+    <div class="cp-col" id="cp-col-b">
+      <div class="cp-name">—</div>
+      <div class="cp-rows"></div>
+    </div>
+  </div>
+</div>
+
+<div id="timeline-panel">
+  <div id="tp-header">
+    <span>🕐 COSMIC TIMELINE &amp; SCALE</span>
+    <button onclick="document.getElementById('timeline-panel').classList.remove('active')">✕</button>
+  </div>
+  <div id="tp-body">
+    <div class="tp-scale-title">THE COSMIC SCALE</div>
+    <div class="tp-scale-row"><span class="tp-icon">🔬</span><span class="tp-label">SUBATOMIC</span><span class="tp-val">~10⁻¹⁵ m — Quarks, protons, neutrons</span></div>
+    <div class="tp-scale-row"><span class="tp-icon">⚛</span><span class="tp-label">ATOMIC</span><span class="tp-val">~10⁻¹⁰ m — Atoms, molecules</span></div>
+    <div class="tp-scale-row"><span class="tp-icon">🦠</span><span class="tp-label">BIOLOGICAL</span><span class="tp-val">~10⁻⁶ m — Cells, organisms</span></div>
+    <div class="tp-scale-row tp-highlight"><span class="tp-icon">🌍</span><span class="tp-label">PLANETARY</span><span class="tp-val">~10⁷ m — Moons, planets, dwarf planets</span></div>
+    <div class="tp-scale-row tp-highlight"><span class="tp-icon">☀</span><span class="tp-label">STELLAR</span><span class="tp-val">~10⁹ m — Stars, star systems, nebulae</span></div>
+    <div class="tp-scale-row tp-highlight"><span class="tp-icon">🌌</span><span class="tp-label">GALACTIC</span><span class="tp-val">~10²⁰ m — Galaxies (Milky Way: 10²¹ m)</span></div>
+    <div class="tp-scale-row"><span class="tp-icon">🕸</span><span class="tp-label">SUPERCLUSTER</span><span class="tp-val">~10²³ m — Laniakea: 520M light-years</span></div>
+    <div class="tp-scale-row"><span class="tp-icon">∞</span><span class="tp-label">OBSERVABLE UNIVERSE</span><span class="tp-val">~8.8×10²⁶ m — 93 billion light-years</span></div>
+    <div class="tp-divider"></div>
+    <div class="tp-scale-title">UNIVERSE HISTORY</div>
+    <div class="tp-time-row"><span class="tp-time">t = 0</span><span class="tp-event">Big Bang — all energy in a single point</span></div>
+    <div class="tp-time-row"><span class="tp-time">10⁻³⁵ s</span><span class="tp-event">Cosmic Inflation — universe expands faster than light</span></div>
+    <div class="tp-time-row"><span class="tp-time">3 min</span><span class="tp-event">Big Bang Nucleosynthesis — H, He, Li nuclei form</span></div>
+    <div class="tp-time-row"><span class="tp-time">380,000 yr</span><span class="tp-event">Recombination — CMB released; universe becomes transparent</span></div>
+    <div class="tp-time-row"><span class="tp-time">200M yr</span><span class="tp-event">First Stars (Population III) ignite — end of the Cosmic Dark Ages</span></div>
+    <div class="tp-time-row"><span class="tp-time">1B yr</span><span class="tp-event">First galaxies form; quasars at peak activity</span></div>
+    <div class="tp-time-row"><span class="tp-time">4.6B yr</span><span class="tp-event">Milky Way disk forms; Population II stars present</span></div>
+    <div class="tp-time-row"><span class="tp-time">9.2B yr</span><span class="tp-event">Solar System forms from molecular cloud collapse</span></div>
+    <div class="tp-time-row"><span class="tp-time">9.6B yr</span><span class="tp-event">Earth forms; Moon-forming giant impact ~30M yr later</span></div>
+    <div class="tp-time-row"><span class="tp-time">10.1B yr</span><span class="tp-event">First life on Earth — simple prokaryotes</span></div>
+    <div class="tp-time-row"><span class="tp-time">13.5B yr</span><span class="tp-event">Homo sapiens evolve; first astronomy begins</span></div>
+    <div class="tp-time-row tp-now"><span class="tp-time">13.8B yr</span><span class="tp-event">⬤ NOW — You are here, reading this</span></div>
+    <div class="tp-time-row"><span class="tp-time">+4.5B yr</span><span class="tp-event">Andromeda-Milky Way collision begins</span></div>
+    <div class="tp-time-row"><span class="tp-time">+5B yr</span><span class="tp-event">Sun becomes red giant; Earth's surface sterilized</span></div>
+    <div class="tp-time-row"><span class="tp-time">+10¹⁴ yr</span><span class="tp-event">Last stars exhaust fuel; universe goes dark</span></div>
+    <div class="tp-time-row"><span class="tp-time">+10¹⁰⁰ yr</span><span class="tp-event">Proton decay — all ordinary matter gone</span></div>
+  </div>
+</div>
+
+<div id="screenshot-flash"></div>
+
+<script id="patch-fullscreen">
+document.getElementById('btn-fullscreen').addEventListener('click', () => {
+  try {
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    } else {
+      document.documentElement.requestFullscreen().catch(() => {
+        // Running inside Qt — fullscreen is owned by the native window (F11).
+      });
+    }
+  } catch(e) { /* Qt WebEngine does not support the Fullscreen API */ }
+});
+</script>
+
+<script id="patch-hud-image">
+/**
+ * Generates a 400×160 canvas thumbnail for any celestial object.
+ * Used by openHUD when data.texture is absent.
+ */
+function generateHudImage(data) {
+  const W = 400, H = 160;
+  const cvs = document.createElement('canvas');
+  cvs.width = W; cvs.height = H;
+  const ctx = cvs.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#060810';
+  ctx.fillRect(0, 0, W, H);
+
+  // Colour from hex int
+  const col = data.color || 0x4488ff;
+  const r   = (col >> 16) & 0xff;
+  const g   = (col >>  8) & 0xff;
+  const b   =  col        & 0xff;
+
+  // Radial colour glow
+  const grd = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, H * 0.85);
+  grd.addColorStop(0,   `rgba(${r},${g},${b},0.60)`);
+  grd.addColorStop(0.45,`rgba(${r},${g},${b},0.14)`);
+  grd.addColorStop(1,   'rgba(0,0,0,0)');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle star field
+  for (let i = 0; i < 80; i++) {
+    ctx.fillStyle = `rgba(200,215,255,${(Math.random() * 0.28 + 0.04).toFixed(2)})`;
+    ctx.fillRect(Math.random() * W | 0, Math.random() * H | 0, 1, 1);
+  }
+
+  // Type icon — centred
+  const icons = {
+    star        : '☀',
+    planet      : '◉',
+    dwarf       : '◎',
+    comet       : '☄',
+    probe       : '⬡',
+    blackhole   : '⬤',
+    pulsar      : '⊕',
+    galaxy      : '✦',
+    interstellar: '◆',
+  };
+  const icon = icons[data.type] || '◉';
+  ctx.font         = `bold ${Math.round(H * 0.44)}px Arial, sans-serif`;
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.globalAlpha  = 0.52;
+  ctx.fillStyle    = `rgb(${r},${g},${b})`;
+  ctx.fillText(icon, W / 2, H / 2);
+  ctx.globalAlpha  = 1;
+
+  // Horizontal accent line
+  ctx.strokeStyle = `rgba(${r},${g},${b},0.28)`;
+  ctx.lineWidth   = 1;
+  ctx.beginPath();
+  ctx.moveTo(W * 0.12, H - 42);
+  ctx.lineTo(W * 0.88, H - 42);
+  ctx.stroke();
+
+  // Type badge text
+  ctx.fillStyle    = `rgb(${r},${g},${b})`;
+  ctx.font         = `10px 'Space Mono', monospace`;
+  ctx.textBaseline = 'bottom';
+  ctx.fillText((data.typeBadge || (data.type || 'OBJECT').toUpperCase()), W / 2, H - 30);
+
+  // Object name
+  ctx.fillStyle    = 'rgba(255,255,255,0.88)';
+  ctx.font         = `bold 15px 'Exo 2', Arial, sans-serif`;
+  ctx.fillText((data.name || '').toUpperCase(), W / 2, H - 10);
+
+  return cvs.toDataURL('image/png');
+}
+</script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   UI CONTROLLER
+════════════════════════════════════════════════════════════ */
+
+// ── Homepage ──────────────────────────────────────────────
+let appEntered = false;
+
+function enterApp() {
+  if (appEntered) return;
+  appEntered = true;
+  const hp = document.getElementById('homepage');
+  hp.classList.add('exiting');
+  setTimeout(() => { hp.style.display = 'none'; }, 900);
+}
+
+// Homepage canvas star animation
+(function() {
+  const canvas = document.getElementById('home-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [], animId;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function initStars() {
+    stars = [];
+    const N = Math.min(Math.floor((W * H) / 3000), 500);
+    for (let i = 0; i < N; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.4 + 0.2,
+        a: Math.random(),
+        da: (Math.random() * 0.4 + 0.1) * (Math.random() < 0.5 ? 1 : -1),
+        dx: (Math.random() - 0.5) * 0.12,
+        dy: (Math.random() - 0.5) * 0.12,
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const t = performance.now() * 0.001;
+    for (const s of stars) {
+      s.a += s.da * 0.01;
+      if (s.a > 1 || s.a < 0) s.da *= -1;
+      s.x += s.dx; s.y += s.dy;
+      if (s.x < 0) s.x = W; if (s.x > W) s.x = 0;
+      if (s.y < 0) s.y = H; if (s.y > H) s.y = 0;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,215,255,${Math.max(0.05, Math.abs(s.a))})`;
+      ctx.fill();
+    }
+    animId = requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); initStars(); });
+  resize(); initStars(); draw();
+
+  // Stop animation when homepage hidden
+  document.getElementById('launch-btn').addEventListener('click', () => {
+    setTimeout(() => cancelAnimationFrame(animId), 1000);
+  });
+})();
+
+// Stat counters on homepage
+(function() {
+  const items = document.querySelectorAll('.hs-item');
+  items.forEach(el => {
+    const cnt = el.dataset.count;
+    const lbl = el.dataset.label;
+    const sfx = el.dataset.suffix || '';
+    if (cnt === '∞') {
+      el.innerHTML = `<div class="hs-num">∞</div><div class="hs-label">${lbl}</div>`;
+      return;
+    }
+    let cur = 0;
+    const target = parseInt(cnt);
+    const duration = 1400;
+    const start = performance.now();
+    el.innerHTML = `<div class="hs-num">0${sfx}</div><div class="hs-label">${lbl}</div>`;
+    function tick(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.querySelector('.hs-num').textContent = Math.floor(ease * target) + sfx;
+      if (p < 1) requestAnimationFrame(tick);
+      else el.querySelector('.hs-num').textContent = target + sfx;
+    }
+    setTimeout(() => requestAnimationFrame(tick), 400);
+  });
+})();
+
+// ── Tab switching ──────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+function closeHUD() {
+  document.getElementById('hud').classList.remove('active');
+  document.getElementById('sb-selected').textContent = 'No object selected';
+}
+
+function resetHUDTabs() {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  document.querySelectorAll('.tab-pane').forEach((p,i) => p.classList.toggle('active', i===0));
+}
+
+// ── HUD population ─────────────────────────────────────────
+window.openHUD = function(data) {
+  resetHUDTabs();
+  document.getElementById('hud-title').textContent      = data.name;
+  document.getElementById('hud-type-badge').textContent = data.typeBadge || data.type?.toUpperCase() || 'OBJECT';
+  document.getElementById('sb-selected').textContent    = '✦ ' + data.name;
+
+  const AU = (data.dist / 149.6).toFixed(2);
+  document.getElementById('qs-dist').textContent   = data.dist > 0 ? AU : '0 (origin)';
+  document.getElementById('qs-period').textContent = data.period > 0 ? Number(data.period).toLocaleString() : '—';
+  document.getElementById('qs-moons').textContent  = data.moons || '0';
+  document.getElementById('qs-type').textContent   = (data.typeBadge || data.type || '—').split(' ')[0];
+
+  const img = document.getElementById('hud-img');
+  img.style.opacity = 0;
+  if (data.texture && data.texture !== '') {
+    img.onerror = () => {
+      // File missing — fall back to procedural thumbnail
+      img.onerror = null;
+      img.src = generateHudImage(data);
+      img.style.opacity = 1;
+    };
+    setTimeout(() => { img.src = data.texture; img.style.opacity = 1; }, 180);
+  } else {
+    img.src = generateHudImage(data);
+    img.style.opacity = 1;
+  }
+
+  document.getElementById('tab-overview-text').textContent = data.overview || data.desc || '—';
+  const factBox = document.getElementById('tab-overview-fact');
+  factBox.style.display = data.funFact ? 'block' : 'none';
+  factBox.textContent   = data.funFact ? '⚡ ' + data.funFact : '';
+
+  document.getElementById('tab-physics-rows').innerHTML  = buildRows(data.stats);
+  document.getElementById('tab-atmos-rows').innerHTML    = buildRows(data.atmosphere);
+  document.getElementById('tab-explore-rows').innerHTML  = buildRows(data.exploration);
+  document.getElementById('tab-discover-rows').innerHTML = buildRows(data.discoveries);
+  document.getElementById('tab-moons-rows').innerHTML    = buildMoonsTab(data.name);
+
+  document.getElementById('hud').classList.add('active');
+};
+
+function buildRows(obj) {
+  if (!obj) return '<p class="no-data">No data available.</p>';
+  if (typeof obj === 'string') return `<p class="description">${obj}</p>`;
+  const entries = Object.entries(obj);
+  if (!entries.length) return '<p class="no-data">No data available.</p>';
+  return entries.map(([k,v]) =>
+    `<div class="data-row"><span class="label">${k}</span><span class="value">${v}</span></div>`
+  ).join('');
+}
+
+function buildMoonsTab(parentName) {
+  const children = Object.entries(window.planetData || {}).filter(([,d]) => d.parent === parentName);
+  if (!children.length) return '<p class="no-moons-msg">No major moon data on record for this object.</p>';
+  return children.map(([name, d]) => {
+    const period = d.period > 0 ? d.period.toFixed(d.period < 10 ? 2 : 0) + (d.period < 2 ? ' Earth days' : ' Earth days') : '—';
+    const dia = d.stats && (d.stats['Diameter'] || d.stats['Dimensions']) || '—';
+    const summary = d.overview ? d.overview.slice(0, 120) + '…' : '—';
+    return `<div class="moon-entry">
+      <span class="moon-entry-name" onclick="if(window._searchSelect)window._searchSelect('${name}')">${name}</span>
+      <span class="moon-entry-badge">${d.typeBadge || 'MOON'}</span>
+      <div class="moon-entry-facts">
+        <b>Diameter:</b> ${dia} &nbsp;·&nbsp; <b>Period:</b> ${period}<br>
+        ${summary}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.focusSelectedPlanet = function() {
+  if (window._focusCallback) window._focusCallback();
+};
+
+// ── Settings panel ─────────────────────────────────────────
+let settingsOpen = false;
+
+window.toggleSettings = function(force) {
+  settingsOpen = force !== undefined ? force : !settingsOpen;
+  document.getElementById('settings-panel').classList.toggle('active', settingsOpen);
+};
+
+document.getElementById('btn-settings').addEventListener('click', () => toggleSettings());
+
+function setupSlider(id, valId, type, fmt) {
+  const sl = document.getElementById(id);
+  const vl = document.getElementById(valId);
+  sl.addEventListener('input', () => {
+    const v = parseFloat(sl.value);
+    vl.textContent = fmt ? v.toFixed(fmt) : v;
+    if (window.setSensitivity) window.setSensitivity(type, v);
+  });
+}
+
+setupSlider('sl-rotate', 'sv-rotate', 'rotate', 2);
+setupSlider('sl-zoom',   'sv-zoom',   'zoom',   2);
+setupSlider('sl-pan',    'sv-pan',    'pan',    2);
+setupSlider('sl-damp',   'sv-damp',   'damp',   2);
+setupSlider('sl-labels', 'sv-labels', 'labels', 2);
+setupSlider('sl-stars',  'sv-stars',  'stars',  2);
+setupSlider('sl-quality','sv-quality','quality',2);
+
+window.resetSettings = function() {
+  const defaults = { 'sl-rotate':0.6,'sl-zoom':1.2,'sl-pan':0.8,'sl-damp':0.08,'sl-labels':1,'sl-stars':0.9,'sl-quality':1.5 };
+  const vals     = { 'sl-rotate':'sv-rotate','sl-zoom':'sv-zoom','sl-pan':'sv-pan','sl-damp':'sv-damp','sl-labels':'sv-labels','sl-stars':'sv-stars','sl-quality':'sv-quality' };
+  const types    = { 'sl-rotate':'rotate','sl-zoom':'zoom','sl-pan':'pan','sl-damp':'damp','sl-labels':'labels','sl-stars':'stars','sl-quality':'quality' };
+  Object.entries(defaults).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    el.value = val;
+    document.getElementById(vals[id]).textContent = val.toFixed(2);
+    if (window.setSensitivity) window.setSensitivity(types[id], val);
+  });
+};
+
+// Toggle buttons in settings
+window.toggleOrbitsBtn = function(btn) {
+  btn.classList.toggle('active');
+  document.getElementById('btn-toggle-orbits').click();
+};
+window.toggleLabelsBtn = function(btn) {
+  btn.classList.toggle('active');
+  if (window.setSensitivity) window.setSensitivity('labels', btn.classList.contains('active') ? 1 : 0);
+};
+window.toggleGlowBtn = function(btn) {
+  btn.classList.toggle('active');
+  if (window.setSensitivity) window.setSensitivity('glow', btn.classList.contains('active') ? 1 : 0);
+};
+window.togglePerfBtn = function(btn) {
+  btn.classList.toggle('active');
+  if (window.setSensitivity) window.setSensitivity('perfMode', btn.classList.contains('active') ? 1 : 0);
+};
+
+// ── Shortcuts ──────────────────────────────────────────────
+window.closeShortcuts = function() {
+  document.getElementById('shortcuts-overlay').classList.remove('active');
+};
+document.getElementById('btn-shortcuts').addEventListener('click', () => {
+  document.getElementById('shortcuts-overlay').classList.toggle('active');
+});
+
+// ── Screenshot ─────────────────────────────────────────────
+document.getElementById('btn-screenshot').addEventListener('click', doScreenshot);
+function doScreenshot() {
+  if (!window._screenshotCallback) return;
+  window._screenshotCallback();
+  const flash = document.getElementById('screenshot-flash');
+  flash.classList.add('active');
+  setTimeout(() => flash.classList.remove('active'), 300);
+}
+
+// ── Orbit / Reset / Fullscreen ─────────────────────────────
+document.getElementById('btn-toggle-orbits').addEventListener('click', function() {
+  this.classList.toggle('active');
+  const hide = this.classList.contains('active');
+  if (window._setOrbitsVisible) window._setOrbitsVisible(!hide);
+});
+
+document.getElementById('btn-reset-cam').addEventListener('click', () => {
+  if (window._resetCamera) window._resetCamera();
+});
+
+// ── Time controls ──────────────────────────────────────────
+document.getElementById('btn-pause').addEventListener('click', () => { if(window.togglePause) window.togglePause(); });
+document.getElementById('btn-forward').addEventListener('click', () => { if(window.speedUp) window.speedUp(); });
+document.getElementById('btn-rewind').addEventListener('click', () => { if(window.speedDown) window.speedDown(); });
+
+// ── Search ─────────────────────────────────────────────────
+const searchInput   = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { searchInput.value = ''; searchResults.innerHTML = ''; searchInput.blur(); }
+});
+
+searchResults.addEventListener('click', e => {
+  const item = e.target.closest('.sr-item');
+  if (!item) return;
+  if (window._searchSelect) window._searchSelect(item.dataset.name);
+  searchInput.value = ''; searchResults.innerHTML = '';
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#search-wrap')) { searchResults.innerHTML = ''; }
+});
+
+// ── Random Fact ────────────────────────────────────
+document.getElementById('btn-random-fact').addEventListener('click', showRandomFact);
+function showRandomFact() {
+  if (window._showRandomFact) window._showRandomFact();
+}
+
+// ── Compare mode ───────────────────────────────────
+let compareMode = false;
+window.openCompare = function() {
+  compareMode = true;
+  document.getElementById('compare-panel').classList.add('active');
+  document.getElementById('cp-hint').style.display = 'block';
+};
+window.closeCompare = function() {
+  compareMode = false;
+  document.getElementById('compare-panel').classList.remove('active');
+  if (window._clearCompare) window._clearCompare();
+};
+window.isCompareMode = function() { return compareMode; };
+document.getElementById('btn-compare').addEventListener('click', () => {
+  if (document.getElementById('compare-panel').classList.contains('active')) closeCompare();
+  else window.openCompare();
+});
+
+// ── Cosmic Timeline ────────────────────────────────
+document.getElementById('btn-timeline').addEventListener('click', () => {
+  document.getElementById('timeline-panel').classList.toggle('active');
+});
+
+// ── Keyboard handling ──────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  const k = e.key;
+  if (k === 'h' || k === 'H') { if(window._resetCamera) window._resetCamera(); }
+  if (k === 'o' || k === 'O') { document.getElementById('btn-toggle-orbits').click(); }
+  if (k === '?') { document.getElementById('shortcuts-overlay').classList.toggle('active'); }
+  if (k === 's' || k === 'S') { toggleSettings(); }
+  if (k === 'p' || k === 'P') { doScreenshot(); }
+  if (k === 'l' || k === 'L') { document.getElementById('tog-labels').click(); }
+  if (k === 'Escape') {
+    closeShortcuts(); toggleSettings(false);
+    if(!document.fullscreenElement) closeHUD();
+  }
+  if (k === ' ') { e.preventDefault(); if(window.togglePause) window.togglePause(); }
+  if (k === '+' || k === '=') { if(window.speedUp) window.speedUp(); }
+  if (k === '-') { if(window.speedDown) window.speedDown(); }
+  if (k === 'd' || k === 'D') showRandomFact();
+  if (k === 'c' || k === 'C') {
+    if (document.getElementById('compare-panel').classList.contains('active')) closeCompare();
+    else window.openCompare();
+  }
+  if (k === 't' || k === 'T') document.getElementById('timeline-panel').classList.toggle('active');
+});
+</script>
+
+<script type="module" src="logic.js"></script>
+</body>
+</html>

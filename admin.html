@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Command Center | Class Of Learners</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+    /* ── ADMIN THEME VARIABLES ── */
+    :root { 
+        --bg-color: #0f172a; 
+        --text-main: #f8fafc; 
+        --text-muted: #94a3b8; 
+        --card-bg: #1e293b; 
+        --border-light: #334155; 
+        --nav-bg: rgba(15, 23, 42, 0.95);
+        --primary: #38bdf8;
+        --danger: #ef4444;
+        --success: #10b981;
+        --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    
+    body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; font-size: 14px;}
+    code, .mono { font-family: 'Space Mono', monospace; text-transform: none; }
+    
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-color); border-left: 1px solid var(--border-light); }
+    ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+    /* ── SECURE LOCK SCREEN ── */
+    .lock-screen {
+        position: fixed; inset: 0; background: var(--bg-color); z-index: 9999;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        transition: opacity 0.5s; background-image: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    }
+    .lock-box {
+        background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 20px;
+        padding: 40px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 90%; max-width: 420px;
+    }
+    .lock-box h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+    .lock-box p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 30px; }
+    .gbtn { width: 100%; padding: 14px; background: #4285f4; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; color: #ffffff; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.2s; box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);}
+    .gbtn:hover { background: #3367d6; transform: translateY(-2px); }
+
+    /* ── NAVBAR ── */
+    .top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 1000;}
+    .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.1rem; text-decoration: none; color: var(--text-main); }
+    .brand-logo { height: 32px; width: auto; }
+    .nav-dl-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 8px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; transition: 0.2s; border: 1px solid rgba(239, 68, 68, 0.3); cursor: pointer;}
+    .nav-dl-btn:hover { background: var(--danger); color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);}
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1400px; margin: 40px auto 80px; padding: 0 20px; width: 100%; flex:1;}
+    .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid var(--border-light); padding-bottom: 20px; flex-wrap: wrap; gap:20px;}
+    .header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; color: var(--text-main);}
+    .header p { color: var(--primary); font-size: 0.95rem; margin-top: 8px; font-family: 'Space Mono', monospace; }
+    
+    .admin-grid { display: grid; grid-template-columns: 1fr 450px; gap: 30px; align-items: start;}
+
+    /* ── FEEDBACK UI ── */
+    .btn-clear { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.3); padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;}
+    .btn-clear:hover { background: var(--success); color: #fff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16,185,129,0.3); }
+
+    .fb-container { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .fb-container-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); display: flex; align-items: center; justify-content: space-between;}
+    .fb-grid { display: flex; flex-direction: column; gap: 15px; max-height: 800px; overflow-y: auto; padding-right: 10px;}
+    .fb-card { background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-light); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; transition: 0.2s;}
+    .fb-card:hover { border-color: var(--primary); }
+    .fb-top { display: flex; justify-content: space-between; align-items: flex-start;}
+    .fb-user { font-weight: 800; font-size: 1.1rem; color: var(--text-main); display: flex; align-items: center; gap: 10px; flex-wrap: wrap;}
+    .fb-email { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
+    .fb-type { font-size: 0.7rem; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 4px 10px; border-radius: 20px; font-weight: 800; text-transform: uppercase; color: var(--primary); }
+    .fb-stars { color: var(--warning); font-size: 1.2rem; letter-spacing: 2px;}
+    .fb-msg { font-size: 0.95rem; color: var(--text-main); line-height: 1.5; background: var(--bg-color); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light); }
+    
+    .fb-device { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; font-family: 'Space Mono', monospace;}
+    .fb-steps { background: rgba(239, 68, 68, 0.05); border-left: 3px solid var(--danger); padding: 12px; margin-top: 10px; border-radius: 0 8px 8px 0; font-size: 0.85rem; color: var(--text-main); }
+
+    .fb-bot { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); font-weight: 600;}
+    .fb-del { color: var(--danger); cursor: pointer; font-weight: 800; text-transform: uppercase; border: none; background: none; letter-spacing:0.5px;}
+    .fb-del:hover { text-decoration: underline; }
+    .empty { text-align: center; padding: 60px 20px; color: var(--text-muted); border: 2px dashed var(--border-light); border-radius: 16px; }
+    .empty h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
+    
+    /* ── ROUTING CONTROLS UI ── */
+    .controls-panel { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .controls-panel h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 25px; color: var(--text-main); border-bottom: 1px solid var(--border-light); padding-bottom: 15px;}
+    
+    .route-group-label { font-size: 0.75rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1.5px; margin: 25px 0 15px; border-bottom: 1px solid var(--border-light); padding-bottom: 5px;}
+    .route-group-label:first-of-type { margin-top: 0; }
+
+    .control-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(15, 23, 42, 0.4); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-light);}
+    .control-row span { font-weight: 600; color: var(--text-main); font-size: 0.9rem; display: flex; align-items: center; gap: 8px;}
+    
+    /* Custom Segmented Control */
+    .segmented-control { display: flex; background: var(--bg-color); border: 1px solid var(--border-light); border-radius: 6px; overflow: hidden; }
+    .segmented-control input { display: none; }
+    .segmented-control label { padding: 6px 14px; font-size: 0.75rem; font-weight: 800; cursor: pointer; color: var(--text-muted); transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; border-right: 1px solid var(--border-light);}
+    .segmented-control label:last-child { border-right: none; }
+    .segmented-control label:hover { background: rgba(255,255,255,0.05); }
+    
+    .segmented-control input:checked + label.btn-200 { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .segmented-control input:checked + label.btn-404 { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+    .segmented-control input:checked + label.btn-503 { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+
+    /* Banner Controls */
+    .banner-controls { margin-top: 30px; background: rgba(56, 189, 248, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);}
+    .banner-controls h3 { font-size: 0.9rem; margin-bottom: 12px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;}
+    .banner-inp { width: 100%; padding: 12px 15px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--bg-color); color: var(--text-main); margin-bottom: 12px; font-size: 0.9rem; outline: none; transition: 0.2s;}
+    .banner-inp:focus { border-color: var(--primary); }
+    
+    .ms-save { width: 100%; padding: 16px; background: var(--primary); border: none; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px;}
+    .ms-save:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3); }
+
+    /* ── TOAST ── */
+    .toast { position: fixed; bottom: 30px; right: 30px; background: var(--danger); color: #fff; padding: 15px 25px; border-radius: 12px; font-weight: 800; font-size: 0.95rem; transform: translateY(20px); opacity: 0; transition: 0.3s; z-index: 15000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.green { background: var(--success); border-color: var(--success); }
+
+    /* ── CONFIRM MODAL CLASSES ── */
+    .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+    .mo.open { opacity: 1; pointer-events: auto; }
+    .md { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); color: var(--text-main); text-transform:none;}
+    .mo.open .md { transform: translateY(0) scale(1); }
+    .msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: 0.3s; }
+    .msk:hover { color: var(--text-main); }
+    .msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid #ef4444; border-radius: 12px; font-size: 1rem; font-weight: 800; color: #ef4444; cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
+    .msk-danger:hover { background: rgba(239, 68, 68, 0.1); }
+
+    /* ── MOBILE RESPONSIVENESS FIXES ── */
+    @media (max-width: 1000px) {
+        .admin-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+        .top-nav { flex-direction: column; padding: 15px; text-align: center; gap: 15px; }
+        .nav-brand { margin-bottom: 5px; }
+        .header { flex-direction: column; align-items: center; text-align: center; gap: 15px;}
+        .fb-container, .controls-panel { padding: 15px; }
+        .control-row { flex-direction: column; align-items: stretch; gap: 10px; }
+        .segmented-control { width: 100%; display: flex; }
+        .segmented-control label { flex: 1; text-align: center; }
+        .lock-box { width: 95%; padding: 20px; }
+        .fb-top { flex-direction: column; gap: 10px; }
+        .fb-bot { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="lock-screen" id="lockScreen">
+    <div class="lock-box" id="lockBoxContent">
+        <img src="class.png" alt="Class Of Learners Logo" style="height: 60px; margin-bottom: 20px; object-fit: contain;">
+        <h2>System Terminal</h2>
+        <p>Please authenticate with administrator credentials.</p>
+        <button class="gbtn" onclick="gSignIn()">
+            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Authenticate
+        </button>
+    </div>
+</div>
+
+<nav class="top-nav">
+    <a href="index.html" class="nav-brand">
+        <img src="class.png" alt="Class Of Learners Logo" class="brand-logo" style="margin-right: 10px;">
+        <span class="mono">C:\COL\ADMIN></span>
+    </a>
+    <div class="nav-links">
+        <a href="index.html" class="nav-brand" style="font-size: 0.9rem; color: var(--text-muted);">Exit Terminal</a>
+        <button class="nav-dl-btn" onclick="doLogoutAdmin()">Sign Out</button>
+    </div>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>Mission Control</h1>
+      <p id="subTxt">Routing Configurator & User Feedback Logging</p>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button class="btn-clear" onclick="renderFeedback()" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.3);">↻ Refresh Logs</button>
+        <button class="btn-clear" onclick="clearAll()" style="color:var(--danger); border-color:rgba(239,68,68,0.3);">Purge Database</button>
+    </div>
+  </div>
+
+  <div class="admin-grid">
+      <div class="fb-container">
+          <div class="fb-container-title"><span>User Submissions</span> <span id="fbCount" style="background:var(--bg-color); padding:4px 10px; border-radius:12px; font-size:0.8rem; border:1px solid var(--border-light);">0</span></div>
+          <div class="fb-grid" id="fbGrid"></div>
+      </div>
+      
+      <div class="controls-panel">
+          <h2>Routing Overrides</h2>
+          
+          <div id="routing-container">
+              </div>
+
+          <div class="banner-controls">
+              <h3>Global Announcement Banner</h3>
+              <input type="text" id="ctrl-banner-text" class="banner-inp" placeholder="Type alert message...">
+              <label style="display:flex; align-items:center; gap:10px; font-weight:700; color:var(--text-main); font-size:0.85rem;">
+                  <input type="checkbox" id="ctrl-banner-active" style="width:16px; height:16px; accent-color:var(--primary);"> Broadcast Banner
+              </label>
+          </div>
+
+          <button class="ms-save" onclick="saveSiteConfig()">Deploy Configuration</button>
+      </div>
+  </div>
+</div>
+
+<div class="mo" id="confirmMo">
+  <div class="md" style="max-width: 400px; text-align: center;">
+    <div class="md-body" style="padding: 40px 30px;">
+      <div style="font-size: 3rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(239,68,68,0.3));">⚠️</div>
+      <h2 id="confirmTitle" style="font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main); text-transform:none;">Confirm Action</h2>
+      <p id="confirmMsg" style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; text-transform:none;">Are you sure?</p>
+      <div style="display: flex; gap: 15px;">
+        <button class="msk" onclick="closeConfirm()" style="margin:0; flex:1; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-light); border-radius: 8px;">Cancel</button>
+        <button class="msk-danger" id="confirmBtn" style="margin:0; flex:1; padding: 12px; border-radius: 8px;">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// --- GOOGLE SHEETS APP SCRIPT URL ---
+// ⚠️ PASTE THE URL YOU COPIED FROM GOOGLE APPS SCRIPT BELOW ⚠️
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxN5tS8uTeW6KoX_sVOxjV_x7X2W67k9d9Ubb_iQvMPzZNXrP-93MtjFlhE3gtbDn8/exec";
+
+// ── CUSTOM CONFIRM UI LOGIC ──
+let confirmActionCallback = null;
+function showConfirm(title, msg, callback) {
+    document.getElementById('confirmTitle').innerText = title;
+    document.getElementById('confirmMsg').innerText = msg;
+    confirmActionCallback = callback;
+    document.getElementById('confirmMo').classList.add('open');
+}
+function closeConfirm() {
+    document.getElementById('confirmMo').classList.remove('open');
+    confirmActionCallback = null;
+}
+document.getElementById('confirmBtn').addEventListener('click', function() {
+    if(confirmActionCallback) confirmActionCallback();
+    closeConfirm();
+});
+
+
+// ── AUTHENTICATION ──
+const ADMIN_EMAIL = "subscriptionfound@gmail.com";
+const GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+let curUser = null; 
+
+function toast(msg, cls){ let t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.className='toast '+(cls||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);}
+
+function gSignIn() {
+    toast('Authenticating...', 'green');
+    const redirectUri = window.location.href.split('#')[0].split('?')[0]; 
+    const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
+}
+
+function checkURLForToken() {
+    const hash = window.location.hash.substring(1);
+    if (hash.includes('access_token=')) {
+        const params = new URLSearchParams(hash);
+        const token = params.get('access_token');
+        if (token) {
+            window.history.replaceState(null, null, window.location.pathname);
+            fetchGoogleProfile(token);
+        }
+    } else {
+        const u = localStorage.getItem('qrs_user');
+        if(u) { try { curUser = JSON.parse(u); checkAdminAccess(); } catch(e){} }
+    }
+}
+
+async function fetchGoogleProfile(token) {
+    try {
+        const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } });
+        if (r.ok) {
+            const info = await r.json();
+            curUser = { name: info.name, email: info.email, picture: info.picture, google: true };
+            localStorage.setItem('qrs_user', JSON.stringify(curUser));
+            checkAdminAccess();
+        } else { toast('Authentication failed.', ''); }
+    } catch (e) { toast('Network error.', ''); }
+}
+
+function checkAdminAccess() {
+    if (curUser && curUser.email === ADMIN_EMAIL) {
+        document.getElementById('lockScreen').style.opacity = '0';
+        setTimeout(() => document.getElementById('lockScreen').style.display = 'none', 500);
+        renderFeedback();
+        buildRoutingUI();
+    } else if (curUser) {
+        document.getElementById('lockBoxContent').innerHTML = `
+            <div style="font-size:3.5rem; margin-bottom:15px; filter:drop-shadow(0 0 15px var(--danger));">⛔</div>
+            <h2 style="color:var(--danger)">Access Denied</h2>
+            <p>The account <b style="color:var(--text-main)">${curUser.email}</b> lacks administrative privileges.</p>
+            <button style="width: 100%; padding: 14px; background: transparent; border: 1px solid var(--danger); border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; color: var(--danger); transition: 0.3s; margin-top: 10px;" onclick="doLogoutAdmin()">Sign Out & Retry</button>
+        `;
+    }
+}
+
+function doLogoutAdmin() {
+    curUser = null; localStorage.removeItem('qrs_user');
+    window.location.reload();
+}
+
+// ── DATA RENDERING FROM GOOGLE SHEETS ──
+function renderFeedback() {
+    const grid = document.getElementById('fbGrid');
+    
+    if (!WEB_APP_URL || WEB_APP_URL === "PASTE_YOUR_COPIED_URL_HERE") {
+        grid.innerHTML = `<div class="empty"><h3 style="color:var(--danger)">Configuration Needed</h3><p>Please paste your Web App URL into the admin.html file to connect the database.</p></div>`;
+        return;
+    }
+
+    grid.innerHTML = '<div class="empty"><h3>Loading Logs from Cloud...</h3></div>';
+    
+    fetch(WEB_APP_URL)
+    .then(res => res.json())
+    .then(arr => {
+        document.getElementById('fbCount').textContent = arr.length;
+        grid.innerHTML = '';
+
+        if(arr.length === 0) {
+            grid.innerHTML = `<div class="empty"><h3>No Data Logs Found</h3></div>`;
+            return;
+        }
+
+        arr.forEach(fb => {
+            let stars = ''; for(let i=0; i<fb.rating; i++) stars += '★';
+            let dynamicContent = `<div class="fb-msg">"${fb.message}"</div>`;
+            
+            if (fb.device) dynamicContent += `<div class="fb-device">💻 ${fb.device}</div>`;
+            if (fb.steps) dynamicContent += `<div class="fb-steps"><strong>Steps to Reproduce:</strong><br>${fb.steps.replace(/\n/g, '<br>')}</div>`;
+
+            const card = document.createElement('div');
+            card.className = 'fb-card';
+            card.innerHTML = `
+                <div class="fb-top">
+                    <div>
+                        <div class="fb-user">${fb.name} <span class="fb-type">${fb.type}</span></div>
+                        <div class="fb-email">${fb.email}</div>
+                    </div>
+                    <div class="fb-stars">${stars}</div>
+                </div>
+                ${dynamicContent}
+                <div class="fb-bot">
+                    <span class="mono">LOG_${fb.id.toString().slice(-6)} | ${fb.date}</span>
+                    <button class="fb-del" onclick="deleteFb(${fb.id})">Drop Log</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    })
+    .catch(err => {
+        grid.innerHTML = `<div class="empty"><h3 style="color:var(--danger)">Connection Error</h3><p>Could not reach the Google Sheets database.</p></div>`;
+    });
+}
+
+function deleteFb(id) {
+    showConfirm("Purge Log", "Are you sure you want to permanently drop this specific transmission log globally?", function() {
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "delete", id: id })
+        }).then(() => {
+            toast('Log dropped successfully.', 'green');
+            renderFeedback(); 
+        }).catch(err => toast('Error deleting log.', ''));
+    });
+}
+
+function clearAll() {
+    showConfirm("Purge Database", "CRITICAL WARNING: This will permanently wipe ALL feedback logs globally from the database. Proceed?", function() {
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "deleteAll" })
+        }).then(() => {
+            toast('All logs deleted successfully.', 'green');
+            renderFeedback(); 
+        }).catch(err => toast('Error clearing logs.', ''));
+    });
+}
+
+// ── SITE CONFIG CONTROLS DYNAMIC GENERATION ──
+const PAGE_GROUPS = {
+    "Core Hub": [
+        {id: "index", label: "📄 Home (index.html)"},
+        {id: "about", label: "📄 About Us (about.html)"},
+        {id: "school", label: "📄 School (school.html)"},
+        {id: "sneh-asha", label: "📄 Sneh Asha (sneh-asha.html)"},
+        {id: "download", label: "📦 Downloads (download.html)"}
+    ],
+    "Applications": [
+        {id: "ati", label: "⌨️ ATI Info (ati.html)"},
+        {id: "ati-demo", label: "⌨️ ATI Demo (ati-demo.html)"},
+        {id: "solar", label: "🪐 Solar Engine (solar.html)"},
+        {id: "gesture", label: "🖐️ Gesture (gesture.html)"},
+        {id: "rpg", label: "⚔️ RPG Game (rpg.html)"},
+        {id: "qr", label: "⬛ QR Dash (qr.html)"},
+        {id: "qr-editor", label: "⬛ QR Editor (qr-editor.html)"}
+    ],
+    "Support": [
+        {id: "feedback", label: "💬 Feedback (feedback.html)"},
+        {id: "privacy", label: "🛡️ Privacy (privacy.html)"},
+        {id: "terms", label: "⚖️ Terms (terms.html)"}
+    ]
+};
+
+function buildRoutingUI() {
+    const container = document.getElementById('routing-container');
+    container.innerHTML = '';
+
+    let conf = { pages: {}, banner: {active: false, text: ''} };
+    try { 
+        const stored = localStorage.getItem('col_admin_config');
+        if(stored) conf = JSON.parse(stored);
+    } catch(e){}
+
+    for (const [groupName, pages] of Object.entries(PAGE_GROUPS)) {
+        const label = document.createElement('div');
+        label.className = 'route-group-label';
+        label.innerText = groupName;
+        container.appendChild(label);
+
+        pages.forEach(p => {
+            const currentStatus = conf.pages[p.id + '.html'] || '200';
+            
+            const row = document.createElement('div');
+            row.className = 'control-row';
+            row.innerHTML = `
+                <span class="mono">${p.label}</span>
+                <div class="segmented-control">
+                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-200" value="200" ${currentStatus==='200'?'checked':''}>
+                    <label for="${p.id}-200" class="btn-200">LIVE</label>
+                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-404" value="404" ${currentStatus==='404'?'checked':''}>
+                    <label for="${p.id}-404" class="btn-404">404</label>
+                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-503" value="503" ${currentStatus==='503'?'checked':''}>
+                    <label for="${p.id}-503" class="btn-503">503</label>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    document.getElementById('ctrl-banner-text').value = conf.banner.text || '';
+    document.getElementById('ctrl-banner-active').checked = conf.banner.active || false;
+}
+
+function saveSiteConfig() {
+    const config = { pages: {}, banner: {} };
+    
+    for (const pages of Object.values(PAGE_GROUPS)) {
+        pages.forEach(p => {
+            const selected = document.querySelector(`input[name="ctrl-${p.id}"]:checked`).value;
+            config.pages[`${p.id}.html`] = selected;
+        });
+    }
+
+    config.banner.active = document.getElementById('ctrl-banner-active').checked;
+    config.banner.text = document.getElementById('ctrl-banner-text').value.trim();
+
+    localStorage.setItem('col_admin_config', JSON.stringify(config));
+    toast('✅ Configuration Successfully Deployed', 'green');
+}
+
+window.addEventListener('storage', function(e) {
+    if (e.key === 'col_admin_config') { buildRoutingUI(); }
+});
+
+window.addEventListener('load', function() { 
+    checkURLForToken(); 
+    const cm=document.getElementById('confirmMo'); if(cm) cm.addEventListener('click',function(e){if(e.target===this)closeConfirm();}); 
+});
+</script>
+</body>
+</html>

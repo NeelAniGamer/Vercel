@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Dashboard | Class Of Learners</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+/* ── EXACT UI THEME ── */
+:root {
+  --bg: #06080d; --panel: #0a0d14; --panel-hover: #0f1523;
+  --border: #161d2b; --border-focus: #10b981;
+  --pri: #10b981; --pri-hover: #059669;
+  --glow: rgba(16, 185, 129, 0.15); --glow-strong: rgba(16, 185, 129, 0.4);
+  --txt: #f8fafc; --txt-m: #94a3b8; --danger: #ef4444;
+  --nav: rgba(6, 8, 13, 0.85);
+  --font-main: 'Inter', sans-serif; --font-mono: 'Space Mono', monospace;
+}
+
+body.light {
+  --bg: #f8fafc; --panel: #ffffff; --panel-hover: #f1f5f9;
+  --border: #e2e8f0; --txt: #0f172a; --txt-m: #64748b;
+  --nav: rgba(255, 255, 255, 0.85);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); border-left: 1px solid var(--border); }
+::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.2); border-radius: 10px; border: 2px solid var(--bg); transition: 0.3s;}
+::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.6); }
+
+body { background: var(--bg); color: var(--txt); min-height: 100vh; transition: background-color 0.3s, color 0.3s; display: flex; flex-direction: column; overflow-x: hidden;}
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: -1;
+  background: repeating-linear-gradient(0deg, transparent 0, transparent 39px, rgba(16,185,129,0.02) 39px, rgba(16,185,129,0.02) 40px),
+              repeating-linear-gradient(90deg, transparent 0, transparent 39px, rgba(16,185,129,0.02) 39px, rgba(16,185,129,0.02) 40px);
+}
+
+@media (min-width: 1001px) {
+  body { overflow: hidden; }
+  .qr-app { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - 73px); width: 100%; max-width: 1600px; margin: 0 auto; overflow: hidden; }
+}
+
+.site-nav { width: 100%; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: var(--nav); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 1000; transition: 0.3s;}
+.nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--txt); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; }
+.brand-logo { height: 42px; object-fit: contain; }
+.nav-links { display: flex; gap: 20px; align-items: center; }
+.nav-link { color: var(--txt-m); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; }
+.nav-link:hover { color: var(--pri); }
+
+.dropdown { position: relative; display: inline-block; }
+.dropdown-btn { color: var(--txt-m); background: none; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: color 0.2s ease; padding: 0; }
+.dropdown-btn:hover, .dropdown.active .dropdown-btn { color: var(--pri); }
+.dropdown-btn span { font-size: 0.7rem; transition: transform 0.3s ease; }
+.dropdown.active .dropdown-btn span { transform: rotate(180deg); }
+.dropdown-content { display: flex; flex-direction: column; position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: transparent; min-width: 220px; z-index: 1001; padding-top: 15px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.5s; }
+.dropdown-content-inner { background: var(--panel); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.4); overflow: hidden; display: flex; flex-direction: column; padding: 10px 0; }
+body.light .dropdown-content-inner { box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+.dropdown.active .dropdown-content { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); transition-delay: 0s; }
+.dropdown.active:not(:hover) .dropdown-content { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px); transition-delay: 0.5s; }
+.dropdown-content a { color: var(--txt-m); padding: 12px 20px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: space-between;}
+.dropdown-content a:hover { background: rgba(16,185,129, 0.08); color: var(--pri); padding-left: 25px;}
+
+.theme-switch-wrapper { display: flex; align-items: center; gap: 8px; margin-left: 10px; border-left: 1px solid var(--border); padding-left: 15px; }
+.theme-label { font-size: 0.8rem; font-weight: 700; color: var(--txt-m); text-transform: uppercase; letter-spacing: 0.5px;}
+.theme-switch { display: inline-block; position: relative; width: 44px; height: 24px; cursor: pointer; }
+.theme-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: var(--txt-m); transition: .4s; }
+input:checked + .slider { background-color: var(--pri); }
+input:checked + .slider:before { transform: translateX(20px); background: #fff;}
+.slider.round { border-radius: 24px; }
+.slider.round:before { border-radius: 50%; }
+
+.nav-login-btn { background: rgba(16,185,129,0.1); color: var(--pri); border: 1px solid var(--pri); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-decoration:none;}
+.nav-login-btn:hover { background: var(--pri); color: #000; box-shadow: 0 0 20px var(--glow-strong); }
+.nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: var(--panel); border: 1px solid var(--border); border-radius: 30px; cursor: pointer; transition: 0.3s; }
+.nav-user-profile:hover { border-color: var(--pri); background: var(--panel-hover); }
+.nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--pri); color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
+
+.mmb { display: none; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--txt); }
+
+/* SIDEBAR */
+.app-sb { background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; padding: 20px 15px; }
+.sb-top { padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 15px; text-align: center; }
+.sb-top-title { color: var(--pri); font-weight: 800; font-size: 1.2rem; font-family: var(--font-mono); letter-spacing: -0.5px; }
+.sb-top-sub { color: var(--txt-m); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+.sb-lbl { padding: 15px 10px 5px; font-size: 0.7rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 1.5px; }
+.sb-btn { width: 100%; padding: 12px 15px; background: transparent; border: 1px solid transparent; border-radius: 10px; color: var(--txt); font-weight: 600; font-size: 0.9rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px; transition: 0.3s; margin-bottom: 5px; text-decoration: none;}
+.sb-btn:hover { background: var(--panel-hover); border-color: var(--border); transform: translateX(3px); }
+.sb-btn.act { background: rgba(16,185,129,0.1); color: var(--pri); border-color: rgba(16,185,129,0.2); box-shadow: inset 4px 0 0 var(--pri); }
+.sb-icon { font-size: 1.1rem; }
+.sb-foot { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border); }
+.sign-btn { width: 100%; padding: 12px; background: var(--pri); color: #000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px var(--glow); }
+.sign-btn:hover { background: #fff; box-shadow: 0 0 20px var(--pri); }
+.pcard { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--panel-hover); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: 0.3s; }
+.pcard:hover { border-color: var(--pri); box-shadow: 0 5px 15px var(--glow); }
+.pav { width: 40px; height: 40px; border-radius: 50%; background: var(--pri); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000; overflow: hidden; }
+.pinfo { overflow: hidden; }
+.pname { font-size: 0.9rem; font-weight: 700; color: var(--txt); }
+.pemail { font-size: 0.75rem; color: var(--txt-m); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* WORKSPACE - Dashboard Only */
+.workspace { flex: 1; overflow-y: auto; background: transparent; padding: 0; display: flex; flex-direction: column; }
+.db-container { padding: 30px 40px; flex: 1; }
+.db-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.db-hd h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; color: var(--txt); }
+.db-hd p { font-size: 1rem; color: var(--txt-m); margin-top: 5px; }
+.btn-nx { padding: 15px 30px; background: var(--pri); border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s; box-shadow: 0 10px 30px var(--glow-strong); text-decoration: none;}
+.btn-nx:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 15px 40px var(--pri); }
+
+.db-sync-bar { display: flex; align-items: center; justify-content: space-between; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 15px 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 15px;}
+.db-sync-info { font-size: 0.85rem; font-weight: 700; color: var(--txt-m); display: flex; align-items: center; gap: 10px; }
+.db-sync-info span { color: var(--pri); }
+.dbf { padding: 10px 20px; border: 1px solid var(--border); border-radius: 30px; background: var(--panel); font-weight: 700; font-size: 0.9rem; cursor: pointer; color: var(--txt-m); transition: 0.3s; }
+.dbf:hover, .dbf.act { border-color: var(--pri); color: var(--pri); background: rgba(16,185,129,0.1); box-shadow: 0 5px 15px var(--glow); }
+
+.db-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+.st-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.st-card .v { font-size: 2.5rem; font-weight: 800; color: var(--pri); font-family: var(--font-mono); }
+.st-card .l { font-size: 0.85rem; color: var(--txt-m); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+
+.db-filt { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+
+.db-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.dbc { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+.dbc:hover { border-color: var(--pri); transform: translateY(-5px); box-shadow: 0 20px 40px var(--glow-strong); }
+.dbt { background: #fff; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 180px; }
+.dbt img { max-width: 140px; max-height: 140px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15)); }
+.dbb { padding: 20px; flex: 1; }
+.dbb h3 { font-size: 1.05rem; font-weight: 800; color: var(--txt); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dbb .dtyp { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 800; background: rgba(16,185,129,0.15); color: var(--pri); padding: 4px 10px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.dbb .ddt { font-size: 0.8rem; color: var(--txt-m); font-weight: 600; }
+.dba { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid var(--border); background: var(--panel-hover); }
+.dba-btn { padding: 12px; border: none; border-right: 1px solid var(--border); background: transparent; cursor: pointer; font-size: 0.85rem; font-weight: 800; transition: 0.3s; color: var(--txt-m); }
+.dba-btn:last-child { border-right: none; }
+.dba-btn:hover { background: rgba(16,185,129,0.1); color: var(--pri); }
+.dba-btn.del:hover { background: rgba(239,68,68,0.1); color: var(--danger); }
+.db-emp { grid-column: 1/-1; text-align: center; padding: 80px 20px; background: var(--panel); border: 2px dashed var(--border); border-radius: 16px; }
+.db-emp .ei { font-size: 4rem; margin-bottom: 20px; filter: drop-shadow(0 0 20px var(--glow)); opacity: 0.7; }
+.db-emp h3 { font-size: 1.4rem; font-weight: 800; color: var(--txt); margin-bottom: 10px; }
+.db-emp p { font-size: 1rem; color: var(--txt-m); margin-bottom: 25px; }
+
+/* MODAL */
+.mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+.mo.open { opacity: 1; pointer-events: auto; }
+.md { background: var(--bg); border: 1px solid var(--border); border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 40px 100px rgba(0,0,0,0.8); }
+.mo.open .md { transform: translateY(0) scale(1); }
+.md-hd { padding: 30px; border-bottom: 1px solid var(--border); background: var(--panel); text-align: center; }
+.md-hd h2 { font-size: 1.6rem; font-weight: 800; color: var(--txt); letter-spacing: -0.5px; margin:0;}
+.md-hd p { font-size: 0.95rem; color: var(--txt-m); margin-top: 5px; }
+.md-body { padding: 30px; display: flex; flex-direction: column;}
+.ml { font-size: 0.8rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+.mi { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; outline: none; margin-bottom: 20px; transition: 0.3s; color: var(--txt); background: var(--panel); }
+.mi:focus { border-color: var(--pri); box-shadow: 0 0 0 3px var(--glow); }
+
+.gbtn { width: 100%; padding: 12px; background: #ffffff; border: 1px solid #dadce0; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; color: #3c4043; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; transition: 0.2s; font-family:'Inter',sans-serif;}
+body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
+
+.ms { width: 100%; padding: 15px; background: var(--pri); border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s; margin-bottom: 10px; }
+.ms:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 10px 20px var(--glow-strong); }
+.msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.9rem; font-weight: 700; color: var(--txt-m); cursor: pointer; transition: 0.3s; }
+.msk:hover { color: var(--txt); }
+.msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--danger); border-radius: 12px; font-size: 1rem; font-weight: 800; color: var(--danger); cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
+.msk-danger:hover { background: rgba(239, 68, 68, 0.1); }
+
+.toast { position: fixed; bottom: 30px; right: 30px; background: var(--panel); border: 1px solid var(--border); color: var(--txt); padding: 15px 25px; border-radius: 12px; font-size: 0.95rem; font-weight: 800; z-index: 3000; transform: translateY(20px); opacity: 0; transition: 0.3s; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.green { border-color: var(--pri); color: var(--pri); box-shadow: 0 15px 40px var(--glow); background: rgba(16,185,129,0.05); }
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 1000px) {
+  body { overflow-x: hidden; overflow-y: auto; }
+  .qr-app { display: flex; flex-direction: column; height: auto; overflow: visible; }
+  .app-sb { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 15px; display: none; }
+  .workspace { padding: 0; }
+  .db-container { padding: 20px 15px; }
+  .site-nav { padding: 15px 20px; }
+  .nav-brand { font-size: 1.2rem; }
+  .brand-logo { height: 35px; }
+  .mmb { display: block; }
+  .nav-links { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--nav); border-bottom: 1px solid var(--border); padding: 20px; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); z-index: 1001; }
+  .nav-links.open { display: flex; }
+  .theme-switch-wrapper { border-left: none; padding-left: 0; justify-content: center; margin-top: 10px; }
+  .db-hd { flex-direction: column; align-items: flex-start; gap: 15px; }
+  .db-stats { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body class="dark">
+<nav class="site-nav">
+  <a href="index.html" class="nav-brand">
+    <img src="class.png" alt="Class Of Learners" class="brand-logo">
+    <span>Class Of Learners</span>
+  </a>
+  <button class="mmb" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Home Hub</a>
+    <a href="about.html" class="nav-link">About Us</a>
+    <a href="school.html" class="nav-link">Our School</a>
+    <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+    
+    <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
+        <button class="dropdown-btn" style="color: var(--pri);">Projects <span>▼</span></button>
+        <div class="dropdown-content">
+            <div class="dropdown-content-inner">
+                <a href="ati.html">Typing Instructor <span>⌨️</span></a>
+                <a href="solar.html">Solar Engine <span>🪐</span></a>
+                <a href="gesture.html">Gesture Control <span>🖐️</span></a>
+                <a href="rpg.html">RPG Game <span>⚔️</span></a>
+                <a href="qr.html" style="color: var(--pri);">QR Generator <span>⬛</span></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="theme-switch-wrapper">
+        <span class="theme-label">Dark/Light</span>
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="themeChk" onchange="toggleTheme(this)">
+            <div class="slider round"></div>
+        </label>
+    </div>
+    
+    <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg> Sign In
+    </button>
+    <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+        <div class="nav-user-avatar" id="navUserAv">?</div>
+        <span id="navUserName" style="font-size:0.85rem; font-weight:800; color:var(--txt);">User</span>
+    </div>
+  </div>
+</nav>
+
+<div class="qr-app">
+<aside class="app-sb">
+  <div class="sb-top">
+    <div class="sb-top-title">⬛ QR STUDIO</div>
+    <div class="sb-top-sub">By Class Of Learners</div>
+  </div>
+  
+  <div class="sb-lbl">Create</div>
+  <a href="qr-editor.html" class="sb-btn"><span class="sb-icon">➕</span>New Code</a>
+  
+  <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
+  <button class="sb-btn act"><span class="sb-icon">🗂️</span>My Dashboard</button>
+  
+  <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
+  <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
+  
+  <div class="sb-foot">
+    <button class="sign-btn" id="sbSignBtn" onclick="openLogin()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>
+      Sign In To Save
+    </button>
+    <div class="pcard" id="pCard" style="display:none" onclick="openLogin()">
+      <div class="pav" id="pAv">?</div>
+      <div class="pinfo"><div class="pname" id="pName">User</div><div class="pemail" id="pEmail">tap to edit</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="workspace">
+  <div class="db-container">
+      <div class="db-hd">
+        <div><h1>My Saved Codes</h1><p id="dbSub">Manage your generated assets.</p></div>
+        <a href="qr-editor.html" class="btn-nx" style="height:fit-content; margin:0;">+ Create New</a>
+      </div>
+      
+      <div class="db-sync-bar" id="dbSyncBar" style="display:none">
+        <div class="db-sync-info">
+          <svg width="20" height="20" viewBox="0 0 87.3 78" fill="#10b981"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0a7.3 7.3 0 0 0 1 3.55z"/><path d="M43.65 25L29.9 1.2a8.8 8.8 0 0 0-3.3 3.3L1 65.2a7.3 7.3 0 0 0-1 3.65h27.45z"/><path d="M73.55 76.8a8.8 8.8 0 0 0 3.3-3.3l1.6-2.75 7.65-13.25a7.3 7.3 0 0 0 1-3.65H59.85l5.5 10.45z"/><path d="M43.65 25L57.4 1.2A8.6 8.6 0 0 0 53.73 0H33.58a8.6 8.6 0 0 0-3.68 1.2z" fill="#00832d"/><path d="M59.85 53.5H27.45L13.7 77.1c1.35.8 2.9 1.2 4.5 1.2h50.6c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="M73.4 26.5l-13-22.5a8.8 8.8 0 0 0-3-3.3L43.65 25 59.85 53.5h27.4a7.3 7.3 0 0 0-1-3.65z"/></svg>
+          Cloud Backup: <span id="driveStatus">Not Synced</span>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="dbf" onclick="syncDrive()">⬆ Upload to Drive</button>
+          <button class="dbf" onclick="loadFromDrive()">⬇ Fetch from Drive</button>
+        </div>
+      </div>
+
+      <div class="db-stats">
+        <div class="st-card"><div class="v" id="stTotal">0</div><div class="l">Total Generated</div></div>
+        <div class="st-card"><div class="v" id="stTypes">0</div><div class="l">Formats Used</div></div>
+        <div class="st-card"><div class="v" id="stLast">—</div><div class="l">Last Saved</div></div>
+      </div>
+      
+      <div class="db-filt">
+        <button class="dbf act" onclick="fDB('all',this)">All Types</button>
+        <button class="dbf" onclick="fDB('url',this)">Website</button>
+        <button class="dbf" onclick="fDB('wifi',this)">Wi-Fi</button>
+        <button class="dbf" onclick="fDB('vcard',this)">Contacts</button>
+        <button class="dbf" onclick="fDB('text',this)">Plain Text</button>
+      </div>
+      <div class="db-grid" id="dbG"></div>
+  </div>
+  
+  <footer class="site-footer" style="width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--nav); margin-top: auto;">
+      <div style="display:flex; justify-content:center; gap:25px; margin-bottom:15px; flex-wrap: wrap;">
+          <a href="privacy.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Privacy Policy</a>
+          <a href="terms.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Terms of Service</a>
+          <a href="feedback.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Provide Feedback</a>
+      </div>
+      <div style="color:var(--txt-m); font-size:0.85rem; font-weight:600;">© 2026 Class Of Learners. Developed By Neel And Ansh. All Rights Reserved.</div>
+  </footer>
+</div>
+</div>
+
+<div class="mo" id="loginMo">
+  <div class="md">
+    <div class="md-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div>
+    <div class="md-body">
+      
+      <div id="loggedOutPanel">
+          <button class="gbtn" id="gSignInBtn" onclick="gSignIn()">
+            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google
+          </button>
+      </div>
+
+      <div id="loggedInPanel" style="display: none;">
+          <label class="ml">Google Email</label>
+          <input class="mi" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;">
+          
+          <label class="ml">Display Username</label>
+          <input class="mi" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;">
+          
+          <button class="ms" onclick="updateUsername()">Save Username</button>
+          <button class="msk-danger" onclick="doLogout()">Disconnect Account</button>
+      </div>
+
+      <button class="msk" onclick="closeMo()">Close / Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const Storage = {
+  get: function(key) { try { return localStorage.getItem(key); } catch(e) { return null; } },
+  set: function(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+};
+
+const GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+let curUser=null, dbFil='all', googleAccessToken=null, driveFileId=null;
+let saved = [];
+
+try { const sData = Storage.get('qrs_min'); if (sData) saved = JSON.parse(sData); } catch(e) {}
+
+function renderDB(){
+  const filtered = dbFil==='all' ? saved : saved.filter(q=>q.type===dbFil);
+  document.getElementById('stTotal').textContent = saved.length;
+  
+  const uniqueTypes = [];
+  saved.forEach(function(q){ if(uniqueTypes.indexOf(q.type)===-1) uniqueTypes.push(q.type); });
+  document.getElementById('stTypes').textContent = uniqueTypes.length;
+  document.getElementById('stLast').textContent = saved.length>0 ? saved[0].date : '—';
+  
+  const dbs = document.getElementById('dbSub');
+  if(curUser && dbs) dbs.textContent = `Dashboard synced. ${saved.length} assets ready.`;
+  
+  const g = document.getElementById('dbG'); if(!g) return;
+  g.innerHTML = '';
+  if(!filtered.length){
+    g.innerHTML=`<div class="db-emp"><div class="ei">🔳</div><h3>Workspace Empty</h3><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
+    return;
+  }
+  filtered.forEach(q=>{
+    const c=document.createElement('div');c.className='dbc';
+    const shortC = q.content.length>38 ? q.content.substring(0,38)+'…' : q.content;
+    c.innerHTML=`<div class="dbt">${q.thumb?`<img src="${q.thumb}" alt="QR">`:'<div style="font-size:2rem;opacity:.25">🔳</div>'}</div>
+    <div class="dbb"><div class="dtyp">${q.typeIcon} ${q.typeName}</div><h3 title="${q.content}">${shortC}</h3><div class="ddt">📅 ${q.date}</div></div>
+    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})">✏️ Editor</button><button class="dba-btn" onclick="reDL(${q.id})">⬇ Export</button><button class="dba-btn del" onclick="delQR(${q.id})">🗑 Delete</button></div>`;
+    g.appendChild(c);
+  });
+}
+
+function fDB(type,btn){
+    dbFil=type;
+    document.querySelectorAll('.dbf').forEach(b=>{ if(b===btn) b.classList.add('act'); else b.classList.remove('act'); });
+    renderDB();
+}
+function delQR(id){
+    if(!confirm('Permanently purge this QR asset?'))return;
+    let idx = -1;
+    for(let i=0;i<saved.length;i++){ if(saved[i].id===id){idx=i;break;} }
+    if(idx>-1){
+        saved.splice(idx,1);
+        Storage.set('qrs_min',JSON.stringify(saved));
+        renderDB();
+    }
+}
+function editQR(id){ window.location.href = 'qr-editor.html?id=' + id; }
+function reDL(id){
+    let q=null;
+    for(let i=0;i<saved.length;i++){ if(saved[i].id===id){q=saved[i];break;} }
+    if(!q)return;
+    if(typeof QRCodeStyling === 'undefined') { toast('Library loading...', ''); return; }
+    const dlOpts = Object.assign({}, q.opts, {width:800,height:800});
+    new QRCodeStyling(dlOpts).download({name:'qr-'+q.type,extension:'png'});
+}
+
+// ── REDIRECT FIX FOR HUGGING FACE ──
+function toast(msg, cls){ let t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.className='toast '+(cls||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);}
+
+function gSignIn() {
+    toast('Redirecting to Google...', '');
+    const redirectUri = window.location.href.split('#')[0].split('?')[0]; 
+    const scope = encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
+    window.location.href = authUrl;
+}
+
+function checkURLForToken() {
+    const hash = window.location.hash.substring(1);
+    if (hash.includes('access_token=')) {
+        const params = new URLSearchParams(hash);
+        const token = params.get('access_token');
+        if (token) {
+            googleAccessToken = token;
+            window.history.replaceState(null, null, window.location.pathname + window.location.search);
+            fetchGoogleProfile(token);
+        }
+    }
+}
+
+async function fetchGoogleProfile(token) {
+    try {
+        const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } });
+        if (r.ok) {
+            const info = await r.json();
+            let savedName = info.name;
+            const existing = Storage.get('qrs_user');
+            if(existing) {
+                try {
+                    const parsed = JSON.parse(existing);
+                    if(parsed.email === info.email && parsed.name) savedName = parsed.name;
+                } catch(e){}
+            }
+
+            curUser = { name: savedName, email: info.email, picture: info.picture, google: true };
+            Storage.set('qrs_user', JSON.stringify(curUser));
+            updatePUI();
+            closeMo();
+            toast('✅ Authenticated: ' + savedName, 'green');
+
+            const intent = Storage.get('hf_redirect_intent');
+            Storage.set('hf_redirect_intent', '');
+            if(intent === 'upload') performUpload();
+            if(intent === 'fetch') performFetch();
+        } else {
+            toast('Authentication failed.', '');
+        }
+    } catch (e) { toast('Network error.', ''); }
+}
+
+// ── GOOGLE DRIVE SYNC ──
+const DRIVE_FILE_NAME='qrstudio_core_data.json';
+
+function syncDrive() {
+    if (!googleAccessToken) {
+        toast('Connecting to Drive...', '');
+        Storage.set('hf_redirect_intent', 'upload');
+        gSignIn();
+        return;
+    }
+    performUpload();
+}
+
+async function performUpload(){
+  try{
+    toast('☁ Transmitting to Cloud…','');
+    const data=JSON.stringify({saved:saved,exportedAt:new Date().toISOString()});
+    if(driveFileId){
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`,{
+        method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+googleAccessToken},body:data
+      });
+    } else {
+      const search=await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${DRIVE_FILE_NAME}'`,{headers:{Authorization:'Bearer '+googleAccessToken}});
+      const res=await search.json();
+      if(res.files&&res.files.length>0){
+        driveFileId=res.files[0].id;
+        await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+googleAccessToken},body:data});
+      } else {
+        const meta={name:DRIVE_FILE_NAME,parents:['appDataFolder']};
+        const boundary='qrstudio_bndry_'+Date.now();
+        const body=`--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(meta)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${data}\r\n--${boundary}--`;
+        const cr=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{
+          method:'POST',headers:{'Content-Type':`multipart/related; boundary=${boundary}`,'Authorization':'Bearer '+googleAccessToken},body:body
+        });
+        const cj=await cr.json();driveFileId=cj.id;
+      }
+    }
+    const ds = document.getElementById('driveStatus'); if(ds) ds.textContent='Last Sync: '+new Date().toLocaleTimeString();
+    toast('✅ Cloud upload complete.','green');
+  }catch(e){ toast('Transmission dropped.',''); }
+}
+
+function loadFromDrive() {
+    if (!googleAccessToken) {
+        toast('Connecting to Drive...', '');
+        Storage.set('hf_redirect_intent', 'fetch');
+        gSignIn();
+        return;
+    }
+    performFetch();
+}
+
+async function performFetch(){
+  try{
+    toast('☁ Fetching Cloud Block…','');
+    const search=await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${DRIVE_FILE_NAME}'`,{headers:{Authorization:'Bearer '+googleAccessToken}});
+    const res=await search.json();
+    if(!res.files||!res.files.length){toast('No cloud blocks found.','');return;}
+    driveFileId=res.files[0].id;
+    const fileRes=await fetch(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,{headers:{Authorization:'Bearer '+googleAccessToken}});
+    const json=await fileRes.json();
+    if(json.saved&&Array.isArray(json.saved)){
+      saved.length=0;
+      json.saved.forEach(function(x){saved.push(x);});
+      Storage.set('qrs_min',JSON.stringify(saved));
+      renderDB();
+      toast('✅ Downloaded '+saved.length+' assets!','green');
+      const ds = document.getElementById('driveStatus'); if(ds) ds.textContent='Synced '+saved.length+' files';
+    }
+  }catch(e){ toast('Fetch sequence failed.',''); }
+}
+
+
+function loadUser(){ const u=Storage.get('qrs_user'); if(u){ try{ curUser=JSON.parse(u); updatePUI(); }catch(e){} } }
+
+function updatePUI(){
+  const nlb = document.getElementById('navLoginBtn');
+  const nup = document.getElementById('navUserProfile');
+  const sBtn = document.getElementById('sbSignBtn');
+  const pc = document.getElementById('pCard');
+  const dbsb = document.getElementById('dbSyncBar');
+
+  if(!curUser){
+    if(nlb) nlb.style.display='flex'; if(nup) nup.style.display='none';
+    if(sBtn) sBtn.style.display='flex'; if(pc) pc.style.display='none';
+    if(dbsb) dbsb.style.display='none';
+    return;
+  }
+  
+  if(nlb) nlb.style.display='none'; if(nup) nup.style.display='flex';
+  if(sBtn) sBtn.style.display='none'; if(pc) pc.style.display='flex';
+  if(dbsb) dbsb.style.display='flex';
+
+  const nun = document.getElementById('navUserName'); if(nun) nun.textContent = curUser.name.split(' ')[0];
+  const pName = document.getElementById('pName'); if(pName) pName.textContent = curUser.name;
+  const pEmail = document.getElementById('pEmail'); if(pEmail) pEmail.textContent = curUser.email||'No email';
+
+  const navAv=document.getElementById('navUserAv');
+  const pav=document.getElementById('pAv');
+  
+  if(curUser.picture){
+    if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    if(pav) pav.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+  } else {
+    const initial = curUser.name.charAt(0).toUpperCase();
+    if(navAv){ navAv.innerHTML=''; navAv.textContent=initial; }
+    if(pav){ pav.innerHTML=''; pav.textContent=initial; }
+  }
+}
+
+function openLogin(){
+  const mo = document.getElementById('loginMo'); if(!mo) return; mo.classList.add('open');
+  const mt = document.getElementById('moAuthTitle');
+  const mSub = document.getElementById('moAuthSub');
+  const loggedOutPanel = document.getElementById('loggedOutPanel');
+  const loggedInPanel = document.getElementById('loggedInPanel');
+  const mn = document.getElementById('miName'); 
+  const me = document.getElementById('miEmail'); 
+
+  if(curUser){
+      if(mt) mt.textContent = 'Google Account'; 
+      if(mSub) mSub.textContent = 'Manage your profile and username.';
+      if(loggedOutPanel) loggedOutPanel.style.display = 'none';
+      if(loggedInPanel) loggedInPanel.style.display = 'block';
+      if(mn) mn.value = curUser.name; 
+      if(me) me.value = curUser.email || ''; 
+  }else{
+      if(mt) mt.textContent = 'Authenticate'; 
+      if(mSub) mSub.textContent = 'Unlock dashboard storage and cloud sync.';
+      if(loggedOutPanel) loggedOutPanel.style.display = 'block';
+      if(loggedInPanel) loggedInPanel.style.display = 'none';
+  }
+}
+
+function closeMo(){ const mo = document.getElementById('loginMo'); if(mo) mo.classList.remove('open'); }
+
+function updateUsername(){
+    const mn=document.getElementById('miName'); if(!mn) return;
+    const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
+    if(curUser) {
+        curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser));
+        updatePUI(); closeMo(); toast('✅ Username Updated','green');
+    }
+}
+
+function doLogout() {
+    curUser = null; googleAccessToken = null; Storage.set('qrs_user', '');
+    updatePUI(); closeMo(); toast('Logged out successfully.', '');
+}
+
+window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
+
+(function(){
+  const theme = Storage.get('theme');
+  const chk = document.getElementById('themeChk');
+  if(theme === 'light'){ document.body.classList.add('light'); if(chk) chk.checked=false; } 
+  else { document.body.classList.remove('light'); if(chk) chk.checked=true; }
+  
+  loadUser();
+  renderDB();
+  
+  window.addEventListener('load',function(){ checkURLForToken(); });
+})();
+
+function toggleTheme(element){
+    if(element && element.checked){ document.body.classList.remove('light'); Storage.set('theme', 'dark'); }
+    else{ document.body.classList.add('light'); Storage.set('theme', 'light'); }
+}
+</script>
+</body>
+</html>

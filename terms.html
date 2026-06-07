@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+// --- GLOBAL ADMIN CONFIG CHECKER ---
+(function() {
+    try {
+        const configStr = localStorage.getItem('col_admin_config');
+        if (configStr) {
+            const config = JSON.parse(configStr);
+            const path = window.location.pathname.split('/').pop() || 'index.html';
+            const status = config.pages[path] || '200';
+            
+            if (status === '503') {
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#94a3b8;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
+                window.stop();
+            } else if (status === '404') {
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#94a3b8;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
+                window.stop();
+            }
+        }
+    } catch(e) {}
+})();
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms & Licenses | Class Of Learners</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg-color: #f8f9fa; 
+            --text-main: #111827; 
+            --text-muted: #4b5563; 
+            --primary: #2563eb; 
+            --solar: #f97316;
+            --gesture: #00b38f;
+            --qr: #10b981;
+            --rpg: #8b5cf6;
+            --card-bg: #ffffff; 
+            --border-light: #e5e7eb; 
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --success: #10b981;
+        }
+
+        body.dark-mode {
+            --bg-color: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --solar: #fb923c;
+            --gesture: #00ffcc;
+            --qr: #34d399;
+            --rpg: #a78bfa;
+            --card-bg: #1e293b;
+            --border-light: #334155;
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --success: #22c55e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; text-transform: capitalize; transition: background-color 0.3s, color 0.3s; }
+        code, pre, .text-norm { text-transform: none; }
+
+        /* Progress bar */
+        .read-progress-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: rgba(0,0,0,0.06); z-index: 1001; }
+        body.dark-mode .read-progress-wrap { background: rgba(255,255,255,0.06); }
+        .read-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--success)); transition: width 0.15s ease; border-radius: 0 4px 4px 0; }
+
+        nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s;}
+        
+        .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; text-decoration: none; color: var(--text-main); transition: color 0.3s; font-family: 'Inter', sans-serif; text-transform: none;}
+        .brand-logo { height: 40px; width: auto; object-fit: contain; }
+        
+        .nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center;}
+        .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; }
+        .nav-link:hover { color: var(--primary); }
+
+        .theme-switch-wrapper { display: flex; align-items: center; gap: 8px; margin-left: 10px; }
+        .theme-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
+        .theme-switch { display: inline-block; position: relative; width: 44px; height: 24px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .slider.round { border-radius: 24px; }
+        .slider.round:before { border-radius: 50%; }
+
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
+
+        /* Hero */
+        .hero { text-align: center; padding: 60px 20px 30px; max-width: 800px; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: var(--primary); font-weight: 800; font-size: 0.78rem; padding: 7px 18px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px; }
+        .hero h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; color: var(--text-main); margin-bottom: 15px; }
+        .hero p { color: var(--text-muted); font-size: 1.05rem; line-height: 1.6; }
+
+        /* Progress indicator pill */
+        .progress-pill { display: flex; align-items: center; gap: 12px; background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 40px; padding: 10px 20px; margin: 10px auto 30px; width: fit-content; font-size: 0.82rem; font-weight: 700; color: var(--text-muted); transition: 0.3s; }
+        .pill-bar { width: 140px; height: 6px; background: rgba(0,0,0,0.08); border-radius: 6px; overflow: hidden; }
+        body.dark-mode .pill-bar { background: rgba(255,255,255,0.08); }
+        .pill-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--success)); border-radius: 6px; transition: width 0.3s; }
+        .pill-pct { color: var(--primary); font-weight: 800; min-width: 36px; text-align: right; }
+
+        /* Agreement Cards */
+        .agreement-card { width: 90%; max-width: 800px; background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 16px; padding: 40px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: left; transition: 0.3s; }
+        body.dark-mode .agreement-card { box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        
+        .agreement-card:hover { border-color: rgba(59,130,246,0.3); }
+        .solar-card:hover { border-color: rgba(249,115,22,0.3); }
+        .gesture-card:hover { border-color: rgba(0,255,204,0.3); }
+        .qr-card:hover { border-color: rgba(52,211,153,0.3); }
+        .rpg-card:hover { border-color: rgba(139,92,246,0.3); }
+
+        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 18px; border-bottom: 1px solid var(--border-light); }
+        .card-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        
+        /* Thematic Colors */
+        .ati-icon-bg { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); }
+        .solar-icon-bg { background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3); }
+        .gesture-icon-bg { background: rgba(0,204,170,0.1); border: 1px solid rgba(0,204,170,0.3); }
+        .qr-icon-bg { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); }
+        .rpg-icon-bg { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); }
+
+        body.dark-mode .gesture-icon-bg { background: rgba(0,255,204,0.1); border: 1px solid rgba(0,255,204,0.3); }
+        body.dark-mode .qr-icon-bg { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); }
+        body.dark-mode .rpg-icon-bg { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.3); }
+
+        .card-title { font-size: 1.25rem; font-weight: 800; color: var(--text-main); }
+        .card-subtitle { font-size: 0.82rem; color: var(--text-muted); margin-top: 3px; }
+
+        .agreement-section { margin-bottom: 18px; }
+        .agreement-section:last-child { margin-bottom: 0; }
+        .sec-title { display: flex; align-items: center; gap: 8px; font-size: 0.92rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        
+        .sec-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; color: var(--primary); flex-shrink: 0; }
+        .solar-card .sec-num { background: rgba(249,115,22,0.15); border-color: rgba(249,115,22,0.3); color: var(--solar); }
+        .gesture-card .sec-num { background: rgba(0,204,170,0.15); border-color: rgba(0,204,170,0.3); color: var(--gesture); }
+        .qr-card .sec-num { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); color: var(--qr); }
+        .rpg-card .sec-num { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.3); color: var(--rpg); }
+
+        body.dark-mode .gesture-card .sec-num { background: rgba(0,255,204,0.15); border-color: rgba(0,255,204,0.3); }
+        body.dark-mode .qr-card .sec-num { background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.3); }
+        body.dark-mode .rpg-card .sec-num { background: rgba(167,139,250,0.15); border-color: rgba(167,139,250,0.3); }
+
+        .agreement-section p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.65; padding-left: 30px; text-transform: none;}
+
+        /* Summary Banner */
+        .summary-banner { width: 90%; max-width: 800px; background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); border-radius: 16px; padding: 28px 35px; margin-bottom: 24px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; transition: 0.3s;}
+        .summary-checks { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+        .summary-check { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; font-weight: 600; color: var(--text-muted); }
+        .check-icon { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border-light); display: flex; align-items: center; justify-content: center; font-size: 0.6rem; flex-shrink: 0; transition: 0.4s; }
+        .check-icon.done { background: var(--success); border-color: var(--success); color: #fff; font-size: 0.7rem; }
+
+        /* Accept CTA */
+        .accept-section { width: 90%; max-width: 800px; display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 60px; }
+        .read-hint { font-size: 0.82rem; color: var(--text-muted); text-align: center; display: flex; align-items: center; gap: 6px; }
+        .accept-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: var(--success); color: #fff;
+            padding: 18px 40px; border-radius: 12px; border: none;
+            font-weight: 800; font-size: 1.05rem; cursor: pointer;
+            transition: 0.3s; text-decoration: none;
+            box-shadow: 0 4px 20px rgba(16,185,129,0.2);
+            font-family: 'Inter', sans-serif;
+            opacity: 0.5; pointer-events: none;
+            width: 100%; justify-content: center; max-width: 420px;
+        }
+        body.dark-mode .accept-btn { box-shadow: 0 4px 20px rgba(34,197,94,0.3); }
+        .accept-btn.ready { opacity: 1; pointer-events: auto; animation: btnPulse 2.5s ease-in-out infinite; }
+        .accept-btn.ready:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(16,185,129,0.4); }
+        @keyframes btnPulse { 0%,100%{ box-shadow: 0 4px 20px rgba(16,185,129,0.2); } 50%{ box-shadow: 0 4px 35px rgba(16,185,129,0.5); } }
+
+        /* --- GLOBAL FOOTER COMPLIANCE --- */
+        .site-footer {
+            width: 100%; padding: 40px 20px 30px; text-align: center; 
+            border-top: 1px solid var(--border-light); background: var(--nav-bg); 
+            backdrop-filter: blur(10px); z-index: 100; margin-top: auto;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .footer-links {
+            display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--primary); }
+        .footer-copy {
+            color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            nav { width: 95%; margin: 15px auto 0; border-radius: 20px; top: 15px; padding: 10px 15px; flex-direction: row; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-light); }
+            body.dark-mode nav { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+            .mobile-menu-btn { display: block; }
+            .nav-brand { gap: 8px; font-size: 1.05rem; }
+            .brand-logo { height: 32px; }
+            .nav-links { display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--nav-bg); backdrop-filter: blur(15px); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+            body.dark-mode .nav-links { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+            .nav-links.active { display: flex; }
+            .theme-switch-wrapper { margin: 10px auto 0; width: 100%; justify-content: center; }
+
+            .hero h1 { font-size: 2rem; }
+            .agreement-card { padding: 25px 18px; }
+            .summary-banner { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="read-progress-wrap"><div class="read-progress-fill" id="readFill"></div></div>
+
+    <nav>
+        <a href="index.html" class="nav-brand">
+            <img src="class.png" alt="Class Of Learners Logo" class="brand-logo">
+            <span>Class Of Learners</span>
+        </a>
+        
+        <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home Hub</a>
+            <a href="download.html" class="nav-link text-norm">← Back To Downloads</a>
+            
+            <div class="theme-switch-wrapper">
+                <span class="theme-label">Dark/Light</span>
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" onchange="toggleTheme(this)">
+                    <div class="slider round"></div>
+                </label>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-badge">📋 Software License Agreements</div>
+        <h1>Terms & Licenses</h1>
+        <p class="text-norm">Please read through the agreements for our software suite below. The Accept button will activate once you've reviewed everything.</p>
+    </div>
+
+    <div class="progress-pill">
+        <span>Reading Progress</span>
+        <div class="pill-bar"><div class="pill-fill" id="pillFill"></div></div>
+        <span class="pill-pct" id="pillPct">0%</span>
+    </div>
+
+    <div class="agreement-card ati-card">
+        <div class="card-header">
+            <div class="card-icon ati-icon-bg">⌨</div>
+            <div>
+                <div class="card-title">Advanced Typing Instructor</div>
+                <div class="card-subtitle text-norm">Desktop Application — Version 1.0 For Windows</div>
+            </div>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">1</div>About This Project</div>
+            <p>This application was created by Neel and Ansh as a student learning project focused on syntax mastery. We dedicated significant time to building emeralds, diamonds, XP mechanics, and epic boss battles to make typing practice actually fun and engaging.</p>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">2</div>Free To Use & Share</div>
+            <p>This software is provided completely free of charge. There are no strict copyrights attached. You are free to download, play, and share this setup file with friends, classmates, or anyone who wants to improve their typing speed.</p>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">3</div>Standard Disclaimer</div>
+            <p>Since this is a fun student project, the game is provided "As Is" without any official warranties or guarantees. If your keyboard breaks from typing too fast, or if the Wither Boss defeats you in hardcore mode, we are not responsible!</p>
+        </div>
+    </div>
+
+    <div class="agreement-card solar-card">
+        <div class="card-header">
+            <div class="card-icon solar-icon-bg">🪐</div>
+            <div>
+                <div class="card-title">Solar System Engine V3.3</div>
+                <div class="card-subtitle text-norm">Cross-Platform Desktop Simulation</div>
+            </div>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">1</div>About This Project</div>
+            <p>This simulation was created as an advanced physics and telemetry showcase. We put a tremendous amount of work into making orbital mechanics, deep-space exploration, and planetary physics accurate, performant, and visually stunning.</p>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">2</div>Free To Use & Explore</div>
+            <p>This software is provided completely free of charge. There are no strict copyrights attached. You are free to download, explore, and share this simulation with anyone interested in space, physics, or high-performance real-time rendering.</p>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">3</div>Standard Disclaimer</div>
+            <p>Since this is a high-performance student project, the engine is provided "As Is" without warranties. If your GPU overheats from rendering too many asteroids, or if you accidentally simulate crashing Earth into the Sun, we are not responsible for the consequences!</p>
+        </div>
+    </div>
+
+    <div class="agreement-card gesture-card">
+        <div class="card-header">
+            <div class="card-icon gesture-icon-bg">🖐️</div>
+            <div>
+                <div class="card-title">Hand Gesture Controller</div>
+                <div class="card-subtitle text-norm">Local Machine Vision & Webcam Tracking Server</div>
+            </div>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">1</div>Local Privacy First</div>
+            <p>This controller utilizes a local Python server. All webcam footage and machine vision hand-tracking happen entirely locally on your machine. No video data, coordinates, or images are ever transmitted to the cloud or saved.</p>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">2</div>Experimental Prototype</div>
+            <p>This software is currently in the prototype stage and acts as an experimental way to control your operating system mouse.</p>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">3</div>Usage Disclaimer</div>
+            <p>Use at your own risk. We are not responsible for accidental clicks, unintended file deletions, or rogue gestures triggering unwanted actions on your PC.</p>
+        </div>
+    </div>
+
+    <div class="agreement-card qr-card">
+        <div class="card-header">
+            <div class="card-icon qr-icon-bg">⬛</div>
+            <div>
+                <div class="card-title">QR Studio Generator</div>
+                <div class="card-subtitle text-norm">Web-Based Customization Utility</div>
+            </div>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">1</div>Cloud Syncing Privacy</div>
+            <p>If you choose to log in, QR Studio utilizes the Google Drive 'appDataFolder' to securely store your QR history. We cannot view your files, and the app only has access to the specific configuration file it creates.</p>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">2</div>Open Usage</div>
+            <p>You may use the generated QR codes for both personal and commercial purposes without royalties.</p>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">3</div>No Link Tracking</div>
+            <p>We do not inject tracking or analytics into the QR codes you generate. The codes scan directly to the URLs or raw text data you provide.</p>
+        </div>
+    </div>
+
+    <div class="agreement-card rpg-card">
+        <div class="card-header">
+            <div class="card-icon rpg-icon-bg">⚔️</div>
+            <div>
+                <div class="card-title">Epic RPG Adventure</div>
+                <div class="card-subtitle text-norm">Desktop Role-Playing Game — Alpha Build</div>
+            </div>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">1</div>Active Development Phase</div>
+            <p>This RPG is an upcoming title currently in active development by Class of Learners. The provided build is a test environment; expect bugs, balancing issues, and unfinished levels.</p>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">2</div>Free To Play</div>
+            <p>The game and its assets are provided free for testing and enjoyment.</p>
+        </div>
+        <div class="agreement-section">
+            <div class="sec-title"><div class="sec-num">3</div>Save Data Disclaimer</div>
+            <p>Because this is a development build, updates may corrupt or reset your save files. We are not responsible for the loss of character progress, loot, or levels.</p>
+        </div>
+    </div>
+
+    <div class="summary-banner">
+        <div class="summary-checks">
+            <div class="summary-check">
+                <div class="check-icon" id="check1">✓</div>
+                <span id="check1text" style="color:var(--text-muted);" class="text-norm">Advanced Typing Instructor — Terms Reviewed</span>
+            </div>
+            <div class="summary-check">
+                <div class="check-icon" id="check2">✓</div>
+                <span id="check2text" style="color:var(--text-muted);" class="text-norm">Solar System Engine V3.3 — Terms Reviewed</span>
+            </div>
+            <div class="summary-check">
+                <div class="check-icon" id="check3">✓</div>
+                <span id="check3text" style="color:var(--text-muted);" class="text-norm">Hand Gesture Controller — Terms Reviewed</span>
+            </div>
+            <div class="summary-check">
+                <div class="check-icon" id="check4">✓</div>
+                <span id="check4text" style="color:var(--text-muted);" class="text-norm">QR Studio Generator — Terms Reviewed</span>
+            </div>
+            <div class="summary-check">
+                <div class="check-icon" id="check5">✓</div>
+                <span id="check5text" style="color:var(--text-muted);" class="text-norm">Epic RPG Adventure — Terms Reviewed</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="accept-section">
+        <p class="read-hint text-norm" id="readHint">📖 Scroll through the agreements to activate the button below</p>
+        <button class="accept-btn" id="acceptBtn" onclick="acceptAndGo()">
+            ✅ Accept All Terms & Continue
+        </button>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-links text-norm">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="feedback.html">Provide Feedback</a>
+        </div>
+        <div class="footer-copy text-norm">
+            &copy; 2026 Class Of Learners. Developed By Neel And Ansh. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() { document.querySelector('.nav-links').classList.toggle('active'); }
+
+        // --- THEME LOGIC ---
+        function initializeTheme() {
+            const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (toggleSwitch) toggleSwitch.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (toggleSwitch) toggleSwitch.checked = false;
+            }
+        }
+
+        function toggleTheme(element) {
+            if (element.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        initializeTheme();
+
+        const fillEl = document.getElementById('readFill');
+        const pillFill = document.getElementById('pillFill');
+        const pillPct = document.getElementById('pillPct');
+        const acceptBtn = document.getElementById('acceptBtn');
+        const readHint = document.getElementById('readHint');
+
+        let unlocked = false;
+
+        // If already accepted, skip straight to downloads
+        if (localStorage.getItem('termsAccepted') === 'true') {
+            activateBtn();
+        }
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            
+            // Avoid division by zero on very short screens
+            let pct = 0;
+            if (docHeight > 0) {
+                pct = Math.min(100, Math.round((scrollTop / docHeight) * 100));
+            } else {
+                pct = 100;
+            }
+
+            fillEl.style.width = pct + '%';
+            pillFill.style.width = pct + '%';
+            pillPct.textContent = pct + '%';
+
+            // Activate checks progressively for 5 sections
+            if (pct >= 20) markCheck(1);
+            if (pct >= 40) markCheck(2);
+            if (pct >= 60) markCheck(3);
+            if (pct >= 80) markCheck(4);
+            if (pct >= 95) markCheck(5);
+
+            // Activate button at 95%
+            if (pct >= 95 && !unlocked) activateBtn();
+        });
+
+        function markCheck(n) {
+            const el = document.getElementById('check' + n);
+            const txt = document.getElementById('check' + n + 'text');
+            if (el && !el.classList.contains('done')) {
+                el.classList.add('done');
+                if(txt) txt.style.color = 'var(--text-main)';
+            }
+        }
+
+        function activateBtn() {
+            unlocked = true;
+            acceptBtn.classList.add('ready');
+            readHint.innerHTML = '🎉 You\'ve Reviewed All Agreements — Click To Accept And Proceed';
+            readHint.style.color = 'var(--success)';
+        }
+
+        function acceptAndGo() {
+            if (!unlocked) return;
+            localStorage.setItem('termsAccepted', 'true');
+            acceptBtn.innerHTML = '✅ Terms Accepted! Redirecting...';
+            acceptBtn.style.background = '#10b981';
+            setTimeout(() => { window.location.href = 'download.html'; }, 800);
+        }
+    </script>
+</body>
+</html>
