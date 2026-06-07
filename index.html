@@ -3,66 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Logic Labs - Storage Console</title>
+    <title>Advanced Logic Labs - Storage Cloud</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
-        input, button { display: block; width: 100%; margin: 15px 0; padding: 10px; font-size: 16px; box-sizing: border-box; }
-        button { background-color: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        #status { color: #555; font-weight: bold; }
-        #linkContainer { display: none; margin-top: 20px; padding: 15px; background: #e6f7ff; border-radius: 5px; text-align: center; }
+        body { font-family: system-ui, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h2 { border-bottom: 2px solid #0070f3; padding-bottom: 10px; color: #333; }
+        .refresh-btn { background-color: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; padding: 10px 15px; font-size: 14px; font-weight: bold; width: 100%; margin-bottom: 20px; }
+        .refresh-btn:hover { background-color: #0056b3; }
+        #status { color: #666; font-style: italic; text-align: center; margin: 20px 0; }
+        #fileList { list-style: none; padding: 0; margin: 0; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; background: #f9f9f9; border: 1px solid #eee; border-radius: 6px; }
+        .file-link { color: #0070f3; font-weight: bold; text-decoration: none; word-break: break-all; margin-right: 10px; }
+        .file-link:hover { text-decoration: underline; }
+        .file-meta { font-size: 12px; color: #888; white-space: nowrap; }
+        .empty-message { text-align: center; color: #999; padding: 20px; border: 2px dashed #eee; border-radius: 6px; }
     </style>
 </head>
 <body>
 
-    <h2>1GB Cloud File Storage Console</h2>
-    <p>Select a file below to securely stream it to your Supabase bucket.</p>
+    <h2>Advanced Logic Labs Cloud Drive</h2>
+    <p>Below are the active files currently hosted securely inside your Supabase Storage Bucket.</p>
     
-    <input type="file" id="fileSelector" />
-    <button onclick="executeCloudUpload()">Upload to Server Storage</button>
+    <button class="refresh-btn" onclick="fetchBucketFiles()">🔄 Refresh File Directory</button>
     
-    <p id="status"></p>
-    <div id="linkContainer">
-        <span style="color: green; display: block; margin-bottom: 10px;">✔ File successfully written to bucket!</span>
-        <a id="publicFileUrl" href="#" target="_blank" style="color: #0070f3; font-weight: bold;">Open Public File Link</a>
-    </div>
+    <div id="status">Loading cloud directory structure...</div>
+    <ul id="fileList"></ul>
 
     <script>
-        // 1. PASTE YOUR SUPABASE URL AND KEY HERE:
+        // === PASTE YOUR SUPABASE CREDENTIALS HERE ===
         const SUPABASE_URL = 'https://hvukxajztizsuhfubjws.supabase.co/rest/v1/'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2dWt4YWp6dGl6c3VoZnViandzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Mzc1MTAsImV4cCI6MjA5NjQxMzUxMH0.KqQRkmhuB_rFlzQ2N3NhSQrftmVZgGE3NUuVHYh3aYE';          
 
+        // Initialize Supabase Client
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        async function executeCloudUpload() {
-            const fileSelector = document.getElementById('fileSelector');
+        // Fetch files automatically when the page loads
+        window.onload = fetchBucketFiles;
+
+        async function fetchBucketFiles() {
+            const fileListContainer = document.getElementById('fileList');
             const statusLabel = document.getElementById('status');
-            const linkContainer = document.getElementById('linkContainer');
-            const publicFileUrl = document.getElementById('publicFileUrl');
+            
+            // Show loading indicator
+            statusLabel.style.display = 'block';
+            statusLabel.innerText = '⏳ Querying cloud bucket files...';
+            fileListContainer.innerHTML = '';
 
-            if (!fileSelector.files.length) {
-                alert('Please select a valid local file target first.');
-                return;
-            }
+            try {
+                // Read everything from the 'uploads' storage bucket
+                const { data: files, error } = await supabase.storage
+                    .from('uploads')
+                    .list('', {
+                        limit: 100,
+                        sortBy: { column: 'name', order: 'asc' }
+                    });
 
-            const activeFile = fileSelector.files[0];
-            statusLabel.innerText = 'Streaming packets to server storage...';
-            linkContainer.style.display = 'none';
+                if (error) {
+                    statusLabel.innerText = '❌ Access Error: ' + error.message;
+                    statusLabel.style.color = 'red';
+                    return;
+                }
 
-            const dynamicPathString = `${Date.now()}_${activeFile.name}`;
+                // Filter out any system placeholder files if empty
+                if (!files || files.length === 0 || (files.length === 1 && files[0].name === '.emptyFolderPlaceholder')) {
+                    statusLabel.style.display = 'none';
+                    fileListContainer.innerHTML = '<div class="empty-message">No files found inside the bucket database. Drag files into your Supabase dashboard to populate this view!</div>';
+                    return;
+                }
 
-            const { data, error } = await supabase.storage
-                .from('uploads') 
-                .upload(dynamicPathString, activeFile, { cacheControl: '3600' });
+                statusLabel.style.display = 'none';
 
-            if (error) {
-                statusLabel.innerText = 'Upload Error: ' + error.message;
+                // Loop through files and generate HTML links
+                files.forEach(file => {
+                    // Skip hidden placeholder files
+                    if (file.name === '.emptyFolderPlaceholder') return;
+
+                    // Generate the public sharing link for the file
+                    const { data: linkObject } = supabase.storage.from('uploads').getPublicUrl(file.name);
+
+                    // Create list item element
+                    const li = document.createElement('li');
+                    li.className = 'file-item';
+
+                    // Formatting file metadata sizes (bytes to KB/MB)
+                    let displaySize = '';
+                    if (file.metadata && file.metadata.size) {
+                        const sizeInKb = (file.metadata.size / 1024).toFixed(1);
+                        displaySize = sizeInKb > 1024 ? `${(sizeInKb / 1024).toFixed(1)} MB` : `${sizeInKb} KB`;
+                    }
+
+                    li.innerHTML = `
+                        <a class="file-link" href="${linkObject.publicUrl}" target="_blank">📄 ${file.name}</a>
+                        <span class="file-meta">${displaySize}</span>
+                    `;
+                    
+                    fileListContainer.appendChild(li);
+                });
+
+            } catch (err) {
+                statusLabel.innerText = '💥 Fatal Connection Error: ' + err.message;
                 statusLabel.style.color = 'red';
-            } else {
-                statusLabel.innerText = '';
-                const { data: linkObject } = supabase.storage.from('uploads').getPublicUrl(dynamicPathString);
-                publicFileUrl.href = linkObject.publicUrl;
-                linkContainer.style.display = 'block';
             }
         }
     </script>
