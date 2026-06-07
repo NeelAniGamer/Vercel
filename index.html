@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Logic Labs - Storage Console</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        input, button { display: block; width: 100%; margin: 15px 0; padding: 10px; font-size: 16px; box-sizing: border-box; }
+        button { background-color: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #status { color: #555; font-weight: bold; }
+        #linkContainer { display: none; margin-top: 20px; padding: 15px; background: #e6f7ff; border-radius: 5px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <h2>1GB Cloud File Storage Console</h2>
+    <p>Select a file below to securely stream it to your Supabase bucket.</p>
+    
+    <input type="file" id="fileSelector" />
+    <button onclick="executeCloudUpload()">Upload to Server Storage</button>
+    
+    <p id="status"></p>
+    <div id="linkContainer">
+        <span style="color: green; display: block; margin-bottom: 10px;">✔ File successfully written to bucket!</span>
+        <a id="publicFileUrl" href="#" target="_blank" style="color: #0070f3; font-weight: bold;">Open Public File Link</a>
+    </div>
+
+    <script>
+        // 1. PASTE YOUR SUPABASE URL AND KEY HERE:
+        const SUPABASE_URL = 'http://hvukxajztizsuhfubjws.superbase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2dWt4YWp6dGl6c3VoZnViandzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Mzc1MTAsImV4cCI6MjA5NjQxMzUxMH0.KqQRkmhuB_rFlzQ2N3NhSQrftmVZgGE3NUuVHYh3aYE';          
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function executeCloudUpload() {
+            const fileSelector = document.getElementById('fileSelector');
+            const statusLabel = document.getElementById('status');
+            const linkContainer = document.getElementById('linkContainer');
+            const publicFileUrl = document.getElementById('publicFileUrl');
+
+            if (!fileSelector.files.length) {
+                alert('Please select a valid local file target first.');
+                return;
+            }
+
+            const activeFile = fileSelector.files[0];
+            statusLabel.innerText = 'Streaming packets to server storage...';
+            linkContainer.style.display = 'none';
+
+            const dynamicPathString = `${Date.now()}_${activeFile.name}`;
+
+            const { data, error } = await supabase.storage
+                .from('uploads') 
+                .upload(dynamicPathString, activeFile, { cacheControl: '3600' });
+
+            if (error) {
+                statusLabel.innerText = 'Upload Error: ' + error.message;
+                statusLabel.style.color = 'red';
+            } else {
+                statusLabel.innerText = '';
+                const { data: linkObject } = supabase.storage.from('uploads').getPublicUrl(dynamicPathString);
+                publicFileUrl.href = linkObject.publicUrl;
+                linkContainer.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
