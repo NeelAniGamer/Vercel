@@ -316,27 +316,42 @@ document.getElementById('confirmBtn').addEventListener('click', function() {
 const ADMIN_EMAIL = "subscriptionfound@gmail.com";
 
 function checkAdminAccess() {
-    if (window.colUser && window.colUser.email === ADMIN_EMAIL) {
-        document.getElementById('lockScreen').style.opacity = '0';
-        setTimeout(() => document.getElementById('lockScreen').style.display = 'none', 500);
+    try {
+        if (!window.colUser) {
+            console.log("Admin Check: colUser is null");
+            return; // Not logged in yet
+        }
         
-        const navProfile = document.getElementById('navUserProfile');
-        if (navProfile) navProfile.style.display = 'none';
-        const pCard = document.getElementById('pCard');
-        if (pCard) pCard.style.display = 'none';
+        console.log("Admin Check User:", window.colUser.email);
         
-        toast(`Access Granted: ${window.colUser.email}`, 'green');
-        renderFeedback();
-        buildRoutingUI();
-    } else if (window.colUser) {
-        document.getElementById('lockBoxContent').innerHTML = `
-            <div style="font-size:3.5rem; margin-bottom:15px; filter:drop-shadow(0 0 15px var(--danger));">🚫</div>
-            <h2 style="color:var(--danger)">Access Denied</h2>
-            <p>The account <b style="color:var(--text-main)">${window.colUser.email}</b> lacks administrative privileges.</p>
-            <button style="width: 100%; padding: 14px; background: transparent; border: 1px solid var(--danger); border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; color: var(--danger); transition: 0.3s; margin-top: 10px;" onclick="doLogoutAdmin()">Sign Out & Retry</button>
-        `;
+        const userEmail = (window.colUser.email || "").toLowerCase().trim();
+        const adminEmail = ADMIN_EMAIL.toLowerCase().trim();
+        
+        if (userEmail === adminEmail) {
+            document.getElementById('lockScreen').style.opacity = '0';
+            setTimeout(() => document.getElementById('lockScreen').style.display = 'none', 500);
+            
+            const navProfile = document.getElementById('navUserProfile');
+            if (navProfile) navProfile.style.display = 'none';
+            const pCard = document.getElementById('pCard');
+            if (pCard) pCard.style.display = 'none';
+            
+            toast(`Access Granted: ${window.colUser.email}`, 'green');
+            renderFeedback();
+            buildRoutingUI();
+        } else {
+            document.getElementById('lockBoxContent').innerHTML = `
+                <div style="font-size:3.5rem; margin-bottom:15px; filter:drop-shadow(0 0 15px var(--danger));">🚫</div>
+                <h2 style="color:var(--danger)">Access Denied</h2>
+                <p>The account <b style="color:var(--text-main)">${window.colUser.email}</b> lacks administrative privileges.</p>
+                <button style="width: 100%; padding: 14px; background: transparent; border: 1px solid var(--danger); border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; color: var(--danger); transition: 0.3s; margin-top: 10px;" onclick="doLogoutAdmin()">Sign Out & Retry</button>
+            `;
+        }
+    } catch (e) {
+        console.error("Admin Check Error:", e);
+        alert("Login Error: " + e.message);
     }
-}
+};
 
 window.addEventListener('col-auth-changed', checkAdminAccess);
 
@@ -653,7 +668,7 @@ async function loadGhFileContent() {
         }
 
         // Fix relative paths for srcdoc
-        const baseUrl = \`<base href="https://\${GH_OWNER}.github.io/\${GH_REPO}/">\`;
+        const baseUrl = `<base href="https://${GH_OWNER}.github.io/${GH_REPO}/">`;
         if (content.includes('<head>')) {
             content = content.replace('<head>', '<head>' + baseUrl);
         }
@@ -691,7 +706,7 @@ async function deployGhFile() {
             const result = await fetchGh(`contents/${path}`, {
                 method: 'PUT',
                 body: JSON.stringify({
-                    message: \`Visual Builder Update: \${path}\`,
+                    message: `Visual Builder Update: ${path}`,
                     content: base64Content,
                     sha: currentFileSha
                 })
