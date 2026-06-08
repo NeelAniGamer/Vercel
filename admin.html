@@ -566,15 +566,15 @@ function initBuilder() {
     function renderStyles() {
         let css = '';
         css += '@media screen and (min-width: 1025px) {\\n';
-        for(let id in window.__colRules.desktop) css += `[data-col-id="${id}"], #${id} { ${window.__colRules.desktop[id]} }\\n`;
+        for(let id in window.__colRules.desktop) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.desktop[id]} }\\n\`;
         css += '}\\n';
 
         css += '@media screen and (min-width: 769px) and (max-width: 1024px) {\\n';
-        for(let id in window.__colRules.tablet) css += `[data-col-id="${id}"], #${id} { ${window.__colRules.tablet[id]} }\\n`;
+        for(let id in window.__colRules.tablet) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.tablet[id]} }\\n\`;
         css += '}\\n';
 
         css += '@media screen and (max-width: 768px) {\\n';
-        for(let id in window.__colRules.mobile) css += `[data-col-id="${id}"], #${id} { ${window.__colRules.mobile[id]} }\\n`;
+        for(let id in window.__colRules.mobile) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.mobile[id]} }\\n\`;
         css += '}\\n';
 
         styleBlock.innerHTML = css;
@@ -623,7 +623,7 @@ function initBuilder() {
                 const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
                 target.setAttribute('data-x', x);
                 target.setAttribute('data-y', y);
-                updateRule(target, { transform: `translate(${x}px, ${y}px)` });
+                updateRule(target, { transform: \`translate(\${x}px, \${y}px)\` });
             }
         }
     }).resizable({
@@ -636,9 +636,9 @@ function initBuilder() {
                 target.setAttribute('data-x', x);
                 target.setAttribute('data-y', y);
                 updateRule(target, { 
-                    width: `${event.rect.width}px`, 
-                    height: `${event.rect.height}px`, 
-                    transform: `translate(${x}px, ${y}px)` 
+                    width: \`\${event.rect.width}px\`, 
+                    height: \`\${event.rect.height}px\`, 
+                    transform: \`translate(\${x}px, \${y}px)\` 
                 });
             }
         }
