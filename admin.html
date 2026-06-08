@@ -437,11 +437,15 @@ function buildRoutingUI() {
             const row = document.createElement('div'); row.className = 'control-row';
             row.innerHTML = `
                 <span class="mono" style="flex:1">${p.label}</span>
-                <div class="segmented-control" style="flex:2">
-                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-200" value="200" ${currentStatus==='200'?'checked':''}><label for="${p.id}-200" class="btn-200">LIVE</label>
-                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-404" value="404" ${currentStatus==='404'?'checked':''}><label for="${p.id}-404" class="btn-404">404</label>
-                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-503" value="503" ${currentStatus==='503'?'checked':''}><label for="${p.id}-503" class="btn-503">503</label>
-                </div>
+                <select id="ctrl-${p.id}" class="banner-inp" style="flex:1; margin-bottom:0; padding:10px; font-family:var(--font-mono); font-weight:700; font-size:0.85rem; cursor:pointer;">
+                    <option value="200" ${currentStatus==='200'?'selected':''}>🟢 200 - LIVE</option>
+                    <option value="301" ${currentStatus==='301'?'selected':''}>↪️ 301 - Redirect</option>
+                    <option value="401" ${currentStatus==='401'?'selected':''}>🔒 401 - Unauthorized</option>
+                    <option value="403" ${currentStatus==='403'?'selected':''}>⛔ 403 - Forbidden</option>
+                    <option value="404" ${currentStatus==='404'?'selected':''}>❓ 404 - Not Found</option>
+                    <option value="500" ${currentStatus==='500'?'selected':''}>💥 500 - Server Error</option>
+                    <option value="503" ${currentStatus==='503'?'selected':''}>🚧 503 - Maintenance</option>
+                </select>
             `;
             container.appendChild(row);
         });
@@ -456,7 +460,7 @@ function saveSiteConfig() {
     const config = { pages: {}, banner: {}, auth: {} };
     for (const pages of Object.values(PAGE_GROUPS)) {
         pages.forEach(p => {
-            const selected = document.querySelector(`input[name="ctrl-${p.id}"]:checked`);
+            const selected = document.getElementById(`ctrl-${p.id}`);
             if (selected) config.pages[`${p.id}.html`] = selected.value;
         });
     }
