@@ -208,6 +208,26 @@
           <button class="ms-save" onclick="saveSiteConfig()">Deploy Configuration</button>
       </div>
   </div>
+
+  <!-- GitHub API Editor -->
+  <div class="editor-panel" style="margin-top: 30px; background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+      <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); border-bottom: 1px solid var(--border-light); padding-bottom: 15px;">Source Code Editor (Live Vercel Push)</h2>
+      
+      <div style="display:flex; gap:15px; margin-bottom: 15px; flex-wrap:wrap;">
+          <input type="password" id="gh-token" class="banner-inp" style="flex:1; margin-bottom:0;" placeholder="Enter GitHub Personal Access Token (PAT) with repo scope">
+          <button class="btn-clear" onclick="saveGhToken()" style="background:rgba(56,189,248,0.1); color:var(--primary); border-color:rgba(56,189,248,0.3);">Save Token</button>
+          <button class="btn-clear" onclick="loadGhFiles()" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.3);">↻ Fetch Files</button>
+      </div>
+
+      <div style="display:flex; gap:15px; margin-bottom: 15px; flex-wrap:wrap;">
+          <select id="gh-file-select" class="banner-inp" style="flex:1; margin-bottom:0;" onchange="loadGhFileContent()">
+              <option value="">-- Select a file to edit --</option>
+          </select>
+          <button class="ms-save" id="gh-deploy-btn" onclick="deployGhFile()" style="margin-top:0; padding:12px 25px; width:auto;" disabled>Deploy to Vercel</button>
+      </div>
+
+      <textarea id="gh-editor" style="width:100%; height:400px; background:var(--bg-color); color:var(--text-main); border:1px solid var(--border-light); border-radius:8px; padding:15px; font-family:'Space Mono', monospace; font-size:13px; outline:none; resize:vertical;" placeholder="File content will appear here..." disabled></textarea>
+  </div>
 </div>
 
 <div class="mo" id="confirmMo">
@@ -477,7 +497,123 @@ window.addEventListener('storage', function(e) {
 window.addEventListener('load', function() { 
     checkURLForToken(); 
     const cm=document.getElementById('confirmMo'); if(cm) cm.addEventListener('click',function(e){if(e.target===this)closeConfirm();}); 
+    
+    // Load GitHub token if exists
+    const t = localStorage.getItem('col_gh_token');
+    if (t) document.getElementById('gh-token').value = t;
 });
+
+// ── GITHUB API EDITOR LOGIC ──
+const GH_OWNER = "NeelAniGamer";
+const GH_REPO = "Vercel";
+let currentFileSha = "";
+
+function saveGhToken() {
+    const token = document.getElementById('gh-token').value.trim();
+    if (token) {
+        localStorage.setItem('col_gh_token', token);
+        toast('GitHub Token saved securely.', 'green');
+    } else {
+        localStorage.removeItem('col_gh_token');
+        toast('GitHub Token removed.', '');
+    }
+}
+
+async function fetchGh(endpoint, options = {}) {
+    const token = localStorage.getItem('col_gh_token');
+    if (!token) throw new Error("No GitHub Token. Please enter and save one first.");
+    
+    const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/${endpoint}`, {
+        ...options,
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github.v3+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            ...options.headers
+        }
+    });
+    
+    if (!res.ok) throw new Error(`GitHub API Error: ${res.statusText}`);
+    return res.json();
+}
+
+async function loadGhFiles() {
+    try {
+        toast('Fetching files from GitHub...', 'green');
+        const data = await fetchGh("contents/");
+        const select = document.getElementById('gh-file-select');
+        select.innerHTML = '<option value="">-- Select a file to edit --</option>';
+        
+        data.filter(f => f.type === 'file').forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f.path;
+            opt.textContent = f.path;
+            select.appendChild(opt);
+        });
+        toast('Files loaded!', 'green');
+    } catch(e) {
+        toast(e.message, '');
+    }
+}
+
+async function loadGhFileContent() {
+    const path = document.getElementById('gh-file-select').value;
+    const editor = document.getElementById('gh-editor');
+    const deployBtn = document.getElementById('gh-deploy-btn');
+    
+    if (!path) {
+        editor.value = "";
+        editor.disabled = true;
+        deployBtn.disabled = true;
+        return;
+    }
+    
+    try {
+        editor.value = "Loading...";
+        editor.disabled = true;
+        deployBtn.disabled = true;
+        
+        const data = await fetchGh(`contents/${path}`);
+        currentFileSha = data.sha;
+        const content = decodeURIComponent(escape(atob(data.content)));
+        
+        editor.value = content;
+        editor.disabled = false;
+        deployBtn.disabled = false;
+    } catch(e) {
+        editor.value = "Error loading file.";
+        toast(e.message, '');
+    }
+}
+
+async function deployGhFile() {
+    const path = document.getElementById('gh-file-select').value;
+    const content = document.getElementById('gh-editor').value;
+    
+    if (!path) return;
+    
+    showConfirm("Deploy to Vercel", `This will push changes directly to GitHub, overriding ${path} and triggering a live Vercel deployment. Proceed?`, async function() {
+        try {
+            toast('Pushing to GitHub...', 'green');
+            
+            const base64Content = btoa(unescape(encodeURIComponent(content)));
+            
+            const result = await fetchGh(`contents/${path}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    message: `Admin update: ${path}`,
+                    content: base64Content,
+                    sha: currentFileSha
+                })
+            });
+            
+            currentFileSha = result.content.sha;
+            toast('✅ Deployed Successfully! Vercel is building...', 'green');
+        } catch(e) {
+            toast(e.message, '');
+        }
+    });
+}
 </script>
 </body>
 </html>

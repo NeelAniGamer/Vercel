@@ -146,7 +146,7 @@ def make_splash():
     p.setFont(QFont("Consolas", 9))
     p.setPen(QColor("#334455"))
     p.drawText(0, H - 44, W, 36, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter,
-               "Engine Architecture  ·  Ansh & Neel")
+               "Engine Architecture  ·  Neel, Ansh & Aarush")
 
     p.end()
     splash = QSplashScreen(pix)
