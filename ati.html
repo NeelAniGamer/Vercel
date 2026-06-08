@@ -12,10 +12,12 @@
             const status = config.pages[path] || '200';
             
             if (status === '503') {
-                document.documentElement.innerHTML = '<head><title>Maintenance</title></head><body style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px; margin:0;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#94a3b8;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </body>';
+                document.documentElement.innerHTML = '<head><title>Maintenance</title><script src="col-router.js"></script>
+</head><body style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px; margin:0;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#94a3b8;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </body>';
                 window.stop();
             } else if (status === '404') {
-                document.documentElement.innerHTML = '<head><title>Not Found</title></head><body style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px; margin:0;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#94a3b8;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></body>';
+                document.documentElement.innerHTML = '<head><title>Not Found</title><script src="col-router.js"></script>
+</head><body style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px; margin:0;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#94a3b8;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></body>';
                 window.stop();
             }
         }
@@ -269,6 +271,7 @@
         }
 
     </style>
+<script src="col-router.js"></script>
 </head>
 <body class="dark-mode">
 

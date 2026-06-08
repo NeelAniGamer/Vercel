@@ -131,6 +131,16 @@
     .msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid #ef4444; border-radius: 12px; font-size: 1rem; font-weight: 800; color: #ef4444; cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
     .msk-danger:hover { background: rgba(239, 68, 68, 0.1); }
 
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; overflow-x: auto; width: 100%; justify-content: center;}
+    .tab-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); font-weight: 700; font-size: 0.95rem; padding: 12px 24px; border-radius: 8px; cursor: pointer; transition: 0.3s; white-space: nowrap; display:flex; align-items:center; gap:8px;}
+    .tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
+    .tab-btn.active { background: rgba(56, 189, 248, 0.1); color: var(--primary); border: 1px solid rgba(56, 189, 248, 0.3); }
+
+    .tab-content { display: none; width: 100%; animation: fadeIn 0.3s ease; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
     /* ── MOBILE RESPONSIVENESS FIXES ── */
     @media (max-width: 1000px) {
         .admin-grid { grid-template-columns: 1fr; }
@@ -179,19 +189,31 @@
       <h1>Mission Control</h1>
       <p id="subTxt">Routing Configurator & User Feedback Logging</p>
     </div>
-    <div style="display:flex; gap:10px;">
-        <button class="btn-clear" onclick="renderFeedback()" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.3);">↻ Refresh Logs</button>
-        <button class="btn-clear" onclick="clearAll()" style="color:var(--danger); border-color:rgba(239,68,68,0.3);">Purge Database</button>
-    </div>
   </div>
 
-  <div class="admin-grid">
-      <div class="fb-container">
-          <div class="fb-container-title"><span>User Submissions</span> <span id="fbCount" style="background:var(--bg-color); padding:4px 10px; border-radius:12px; font-size:0.8rem; border:1px solid var(--border-light);">0</span></div>
-          <div class="fb-grid" id="fbGrid"></div>
+  <!-- TABS NAV -->
+  <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-logs', event)">📊 Feedback Logs</button>
+      <button class="tab-btn" onclick="switchTab('tab-routing', event)">🚦 Routing Config</button>
+      <button class="tab-btn" onclick="switchTab('tab-editor', event)">💻 Source Code Editor</button>
+  </div>
+
+  <!-- TAB PANES -->
+  <div id="tab-logs" class="tab-content active">
+      <div class="fb-container" style="max-width: 1000px; margin: 0 auto;">
+          <div class="fb-container-title">
+              <div><span>User Submissions</span> <span id="fbCount" style="background:var(--bg-color); padding:4px 10px; border-radius:12px; font-size:0.8rem; border:1px solid var(--border-light);">0</span></div>
+              <div style="display:flex; gap:10px;">
+                  <button class="btn-clear" onclick="renderFeedback()" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.3); padding: 8px 15px;">↻ Refresh</button>
+                  <button class="btn-clear" onclick="clearAll()" style="color:var(--danger); border-color:rgba(239,68,68,0.3); padding: 8px 15px;">Purge</button>
+              </div>
+          </div>
+          <div class="fb-grid" id="fbGrid" style="max-height: 700px;"></div>
       </div>
-      
-      <div class="controls-panel">
+  </div>
+
+  <div id="tab-routing" class="tab-content">
+      <div class="controls-panel" style="max-width: 800px; margin: 0 auto;">
           <h2>Routing Overrides</h2>
           
           <div id="routing-container">
@@ -209,24 +231,33 @@
       </div>
   </div>
 
-  <!-- GitHub API Editor -->
-  <div class="editor-panel" style="margin-top: 30px; background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-      <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); border-bottom: 1px solid var(--border-light); padding-bottom: 15px;">Source Code Editor (Live Vercel Push)</h2>
-      
-      <div style="display:flex; gap:15px; margin-bottom: 15px; flex-wrap:wrap;">
-          <input type="password" id="gh-token" class="banner-inp" style="flex:1; margin-bottom:0;" placeholder="Enter GitHub Personal Access Token (PAT) with repo scope">
-          <button class="btn-clear" onclick="saveGhToken()" style="background:rgba(56,189,248,0.1); color:var(--primary); border-color:rgba(56,189,248,0.3);">Save Token</button>
-          <button class="btn-clear" onclick="loadGhFiles()" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.3);">↻ Fetch Files</button>
-      </div>
+  <div id="tab-editor" class="tab-content">
+      <div class="editor-panel" style="max-width: 1200px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+          <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); border-bottom: 1px solid var(--border-light); padding-bottom: 15px;">Visual Builder (Live Preview)</h2>
+          
+          <div style="display:flex; gap:15px; margin-bottom: 15px; flex-wrap:wrap;">
+              <input type="password" id="gh-token" class="banner-inp" style="flex:1; margin-bottom:0;" placeholder="Enter GitHub Personal Access Token (PAT) with repo scope">
+              <button class="btn-clear" onclick="saveGhToken()" style="background:rgba(56,189,248,0.1); color:var(--primary); border-color:rgba(56,189,248,0.3);">Save Token</button>
+              <button class="btn-clear" onclick="loadGhFiles()" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.3);">↻ Fetch Files</button>
+          </div>
 
-      <div style="display:flex; gap:15px; margin-bottom: 15px; flex-wrap:wrap;">
-          <select id="gh-file-select" class="banner-inp" style="flex:1; margin-bottom:0;" onchange="loadGhFileContent()">
-              <option value="">-- Select a file to edit --</option>
-          </select>
-          <button class="ms-save" id="gh-deploy-btn" onclick="deployGhFile()" style="margin-top:0; padding:12px 25px; width:auto;" disabled>Deploy to Vercel</button>
-      </div>
+          <div style="display:flex; gap:15px; margin-bottom: 15px; flex-wrap:wrap;">
+              <select id="gh-file-select" class="banner-inp" style="flex:1; margin-bottom:0;" onchange="loadGhFileContent()">
+                  <option value="">-- Select a file to edit visually --</option>
+              </select>
+          </div>
 
-      <textarea id="gh-editor" style="width:100%; height:400px; background:var(--bg-color); color:var(--text-main); border:1px solid var(--border-light); border-radius:8px; padding:15px; font-family:'Space Mono', monospace; font-size:13px; outline:none; resize:vertical;" placeholder="File content will appear here..." disabled></textarea>
+          <div id="builder-toolbar" style="display:none; gap:10px; margin-bottom:15px; flex-wrap:wrap; background:rgba(15,23,42,0.5); padding:10px; border-radius:8px; border:1px solid var(--border-light);">
+              <button class="btn-clear" onclick="setIframeSize('100%')" style="flex:1; border-color:var(--border-light); color:var(--text-main);">💻 Desktop</button>
+              <button class="btn-clear" onclick="setIframeSize('768px')" style="flex:1; border-color:var(--border-light); color:var(--text-main);">📱 Tablet</button>
+              <button class="btn-clear" onclick="setIframeSize('375px')" style="flex:1; border-color:var(--border-light); color:var(--text-main);">📱 Mobile</button>
+              <button class="ms-save" id="gh-deploy-btn" onclick="deployGhFile()" style="margin-top:0; padding:10px 20px; width:auto;">Deploy Changes Directly to Vercel</button>
+          </div>
+
+          <div style="width:100%; overflow-x:auto; padding-bottom: 20px;">
+              <iframe id="gh-preview" style="width:100%; height:600px; background:#fff; border:2px solid var(--border-light); border-radius:8px; transition: width 0.3s ease; margin: 0 auto; display:block;" src="about:blank"></iframe>
+          </div>
+      </div>
   </div>
 </div>
 
@@ -455,14 +486,18 @@ function buildRoutingUI() {
             const row = document.createElement('div');
             row.className = 'control-row';
             row.innerHTML = `
-                <span class="mono">${p.label}</span>
-                <div class="segmented-control">
+                <span class="mono" style="flex:1">${p.label}</span>
+                <div class="segmented-control" style="flex:2">
                     <input type="radio" name="ctrl-${p.id}" id="${p.id}-200" value="200" ${currentStatus==='200'?'checked':''}>
                     <label for="${p.id}-200" class="btn-200">LIVE</label>
                     <input type="radio" name="ctrl-${p.id}" id="${p.id}-404" value="404" ${currentStatus==='404'?'checked':''}>
                     <label for="${p.id}-404" class="btn-404">404</label>
                     <input type="radio" name="ctrl-${p.id}" id="${p.id}-503" value="503" ${currentStatus==='503'?'checked':''}>
                     <label for="${p.id}-503" class="btn-503">503</label>
+                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-401" value="401" ${currentStatus==='401'?'checked':''}>
+                    <label for="${p.id}-401" class="btn-404" style="color:#d946ef">401</label>
+                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-403" value="403" ${currentStatus==='403'?'checked':''}>
+                    <label for="${p.id}-403" class="btn-404" style="color:#f43f5e">403</label>
                 </div>
             `;
             container.appendChild(row);
@@ -478,8 +513,10 @@ function saveSiteConfig() {
     
     for (const pages of Object.values(PAGE_GROUPS)) {
         pages.forEach(p => {
-            const selected = document.querySelector(`input[name="ctrl-${p.id}"]:checked`).value;
-            config.pages[`${p.id}.html`] = selected;
+            const selected = document.querySelector(`input[name="ctrl-${p.id}"]:checked`);
+            if (selected) {
+                config.pages[`${p.id}.html`] = selected.value;
+            }
         });
     }
 
@@ -487,7 +524,39 @@ function saveSiteConfig() {
     config.banner.text = document.getElementById('ctrl-banner-text').value.trim();
 
     localStorage.setItem('col_admin_config', JSON.stringify(config));
-    toast('✅ Configuration Successfully Deployed', 'green');
+    
+    // Save to GitHub to deploy globally
+    saveConfigToGitHub(config);
+}
+
+async function saveConfigToGitHub(config) {
+    try {
+        toast('Deploying routing config globally...', 'green');
+        const token = localStorage.getItem('col_gh_token');
+        if (!token) throw new Error("Please enter your GitHub Token in the Visual Builder tab to deploy global routing configs.");
+        
+        // Try to get existing config.json to get its SHA
+        let sha = "";
+        try {
+            const data = await fetchGh("contents/config.json");
+            sha = data.sha;
+        } catch(e) {} // File might not exist yet
+        
+        const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
+        
+        await fetchGh("contents/config.json", {
+            method: 'PUT',
+            body: JSON.stringify({
+                message: "Admin update: routing config.json",
+                content: base64Content,
+                sha: sha || undefined
+            })
+        });
+        
+        toast('✅ Global Configuration Deployed! Live in seconds.', 'green');
+    } catch (e) {
+        toast('Save failed: ' + e.message, '');
+    }
 }
 
 window.addEventListener('storage', function(e) {
@@ -556,52 +625,179 @@ async function loadGhFiles() {
     }
 }
 
+const VISUAL_BUILDER_SCRIPT = `
+<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"><\\/script>
+<script id="col-builder-script">
+window.addEventListener('load', () => {
+    let styleBlock = document.getElementById('col-visual-styles');
+    if(!styleBlock) {
+        styleBlock = document.createElement('style');
+        styleBlock.id = 'col-visual-styles';
+        document.head.appendChild(styleBlock);
+    }
+    
+    let idCounter = 1;
+    document.querySelectorAll('body *').forEach(el => {
+        if(!el.id && !el.dataset.colId && el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
+            el.dataset.colId = 'col-el-' + Math.random().toString(36).substr(2, 9);
+        }
+    });
+
+    window.__colRules = window.__colRules || { desktop: {}, mobile: {}, tablet: {} };
+
+    function renderStyles() {
+        let css = '';
+        css += '@media screen and (min-width: 1025px) {\\n';
+        for(let id in window.__colRules.desktop) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.desktop[id]} }\\n\`;
+        css += '}\\n';
+
+        css += '@media screen and (min-width: 769px) and (max-width: 1024px) {\\n';
+        for(let id in window.__colRules.tablet) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.tablet[id]} }\\n\`;
+        css += '}\\n';
+
+        css += '@media screen and (max-width: 768px) {\\n';
+        for(let id in window.__colRules.mobile) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.mobile[id]} }\\n\`;
+        css += '}\\n';
+
+        styleBlock.innerHTML = css;
+    }
+
+    function getBreakpoint() {
+        const w = window.innerWidth;
+        if(w <= 768) return 'mobile';
+        if(w <= 1024) return 'tablet';
+        return 'desktop';
+    }
+
+    function updateRule(target, props) {
+        const id = target.id || target.dataset.colId;
+        if(!id) return;
+        const bp = getBreakpoint();
+        if(!window.__colRules[bp][id]) window.__colRules[bp][id] = '';
+        
+        let currentRule = window.__colRules[bp][id];
+        for(let p in props) {
+            const regex = new RegExp(p + '\\\\s*:[^;]+;', 'g');
+            if(regex.test(currentRule)) {
+                currentRule = currentRule.replace(regex, p + ': ' + props[p] + ' !important;');
+            } else {
+                currentRule += p + ': ' + props[p] + ' !important; ';
+            }
+        }
+        window.__colRules[bp][id] = currentRule;
+        renderStyles();
+    }
+
+    let selected = null;
+    document.addEventListener('click', e => {
+        if(selected) selected.style.outline = '';
+        selected = e.target;
+        selected.style.outline = '3px dashed #38bdf8';
+    });
+
+    interact('body *').draggable({
+        listeners: {
+            move(event) {
+                const target = event.target;
+                const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+                target.setAttribute('data-x', x);
+                target.setAttribute('data-y', y);
+                updateRule(target, { transform: \`translate(\${x}px, \${y}px)\` });
+            }
+        }
+    }).resizable({
+        edges: { left: true, right: true, bottom: true, top: true },
+        listeners: {
+            move(event) {
+                const target = event.target;
+                let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.deltaRect.left;
+                let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.deltaRect.top;
+                target.setAttribute('data-x', x);
+                target.setAttribute('data-y', y);
+                updateRule(target, { 
+                    width: \`\${event.rect.width}px\`, 
+                    height: \`\${event.rect.height}px\`, 
+                    transform: \`translate(\${x}px, \${y}px)\` 
+                });
+            }
+        }
+    });
+});
+<\\/script>
+`;
+
+function setIframeSize(width) {
+    document.getElementById('gh-preview').style.width = width;
+}
+
 async function loadGhFileContent() {
     const path = document.getElementById('gh-file-select').value;
-    const editor = document.getElementById('gh-editor');
-    const deployBtn = document.getElementById('gh-deploy-btn');
+    const iframe = document.getElementById('gh-preview');
+    const toolbar = document.getElementById('builder-toolbar');
     
     if (!path) {
-        editor.value = "";
-        editor.disabled = true;
-        deployBtn.disabled = true;
+        iframe.srcdoc = "";
+        toolbar.style.display = "none";
         return;
     }
     
     try {
-        editor.value = "Loading...";
-        editor.disabled = true;
-        deployBtn.disabled = true;
+        toast('Loading visual builder...', 'green');
+        toolbar.style.display = "flex";
+        iframe.srcdoc = "<html><body><h2>Loading preview...</h2></body></html>";
         
         const data = await fetchGh(`contents/${path}`);
         currentFileSha = data.sha;
-        const content = decodeURIComponent(escape(atob(data.content)));
+        let content = decodeURIComponent(escape(atob(data.content)));
         
-        editor.value = content;
-        editor.disabled = false;
-        deployBtn.disabled = false;
+        // Inject builder script before closing body tag
+        if (content.includes('</body>')) {
+            content = content.replace('</body>', VISUAL_BUILDER_SCRIPT + '</body>');
+        } else {
+            content += VISUAL_BUILDER_SCRIPT;
+        }
+
+        // Fix relative paths for srcdoc
+        const baseUrl = \`<base href="https://\${GH_OWNER}.github.io/\${GH_REPO}/">\`;
+        if (content.includes('<head>')) {
+            content = content.replace('<head>', '<head>' + baseUrl);
+        }
+
+        iframe.srcdoc = content;
+        toast('Builder Ready! Drag or resize elements.', 'green');
     } catch(e) {
-        editor.value = "Error loading file.";
         toast(e.message, '');
     }
 }
 
 async function deployGhFile() {
     const path = document.getElementById('gh-file-select').value;
-    const content = document.getElementById('gh-editor').value;
+    const iframe = document.getElementById('gh-preview');
     
     if (!path) return;
     
-    showConfirm("Deploy to Vercel", `This will push changes directly to GitHub, overriding ${path} and triggering a live Vercel deployment. Proceed?`, async function() {
+    showConfirm("Deploy Visual Changes", `This will push your dragged/resized layout directly to Vercel. Proceed?`, async function() {
         try {
             toast('Pushing to GitHub...', 'green');
             
-            const base64Content = btoa(unescape(encodeURIComponent(content)));
+            // Extract HTML from iframe
+            let finalHtml = iframe.contentWindow.document.documentElement.outerHTML;
+            
+            // Clean out builder scripts and base tags
+            finalHtml = finalHtml.replace(/<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/interactjs\/dist\/interact\.min\.js"><\/script>/g, '');
+            finalHtml = finalHtml.replace(/<script id="col-builder-script">[\s\S]*?<\/script>/g, '');
+            finalHtml = finalHtml.replace(new RegExp(\`<base href="https://\${GH_OWNER}.github.io/\${GH_REPO}/">\`, 'g'), '');
+            
+            // Restore doctype since outerHTML loses it
+            finalHtml = "<!DOCTYPE html>\\n" + finalHtml;
+
+            const base64Content = btoa(unescape(encodeURIComponent(finalHtml)));
             
             const result = await fetchGh(`contents/${path}`, {
                 method: 'PUT',
                 body: JSON.stringify({
-                    message: `Admin update: ${path}`,
+                    message: \`Visual Builder Update: \${path}\`,
                     content: base64Content,
                     sha: currentFileSha
                 })
@@ -613,6 +809,15 @@ async function deployGhFile() {
             toast(e.message, '');
         }
     });
+}
+
+
+function switchTab(tabId, event) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
 }
 </script>
 </body>
