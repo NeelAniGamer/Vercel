@@ -1,0 +1,27 @@
+{
+  "pages": {
+    "index.html": "200",
+    "about.html": "200",
+    "school.html": "200",
+    "sneh-asha.html": "200",
+    "download.html": "200",
+    "ati.html": "200",
+    "ati-demo.html": "200",
+    "solar.html": "200",
+    "gesture.html": "200",
+    "rpg.html": "200",
+    "qr.html": "200",
+    "qr-editor.html": "200",
+    "feedback.html": "200",
+    "privacy.html": "200",
+    "terms.html": "200"
+  },
+  "banner": {
+    "active": false,
+    "text": ""
+  },
+  "auth": {
+    "url": "https://hvukxajztizsuhfubjws.supabase.co",
+    "key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2dWt4YWp6dGl6c3VoZnViandzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Mzc1MTAsImV4cCI6MjA5NjQxMzUxMH0.KqQRkmhuB_rFlzQ2N3NhSQrftmVZgGE3NUuVHYh3aYE"
+  }
+}

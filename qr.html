@@ -6,7 +6,6 @@
 <title>QR Dashboard | Class Of Learners</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 /* ── EXACT UI THEME ── */
 :root {
@@ -190,6 +189,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 }
 </style>
 <script src="col-router.js"></script>
+<script src="col-auth.js"></script>
 </head>
 <body class="dark">
 <nav class="site-nav">
@@ -309,32 +309,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 </div>
 </div>
 
-<div class="mo" id="loginMo">
-  <div class="md">
-    <div class="md-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div>
-    <div class="md-body">
-      
-      <div id="loggedOutPanel">
-          <button class="gbtn" id="gSignInBtn" onclick="gSignIn()">
-            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google
-          </button>
-      </div>
 
-      <div id="loggedInPanel" style="display: none;">
-          <label class="ml">Google Email</label>
-          <input class="mi" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;">
-          
-          <label class="ml">Display Username</label>
-          <input class="mi" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;">
-          
-          <button class="ms" onclick="updateUsername()">Save Username</button>
-          <button class="msk-danger" onclick="doLogout()">Disconnect Account</button>
-      </div>
-
-      <button class="msk" onclick="closeMo()">Close / Cancel</button>
-    </div>
-  </div>
-</div>
 
 <div class="toast" id="toast"></div>
 
@@ -395,6 +370,183 @@ function delQR(id){
 }
 function editQR(id){ window.location.href = 'qr-editor.html?id=' + id; }
 function reDL(id){
+<script src="col-auth.js"></script>
+</head>
+<body class="dark">
+<nav class="site-nav">
+  <a href="index.html" class="nav-brand">
+    <img src="class.png" alt="Class Of Learners" class="brand-logo">
+    <span>Class Of Learners</span>
+  </a>
+  <button class="mmb" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Home Hub</a>
+    <a href="about.html" class="nav-link">About Us</a>
+    <a href="school.html" class="nav-link">Our School</a>
+    <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+    
+    <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
+        <button class="dropdown-btn" style="color: var(--pri);">Projects <span>▼</span></button>
+        <div class="dropdown-content">
+            <div class="dropdown-content-inner">
+                <a href="ati.html">Typing Instructor <span>⌨️</span></a>
+                <a href="solar.html">Solar Engine <span>🪐</span></a>
+                <a href="gesture.html">Gesture Control <span>🖐️</span></a>
+                <a href="rpg.html">RPG Game <span>⚔️</span></a>
+                <a href="qr.html" style="color: var(--pri);">QR Generator <span>⬛</span></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="theme-switch-wrapper">
+        <span class="theme-label">Dark/Light</span>
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="themeChk" onchange="toggleTheme(this)">
+            <div class="slider round"></div>
+        </label>
+    </div>
+    
+    <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg> Sign In
+    </button>
+    <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+        <div class="nav-user-avatar" id="navUserAv">?</div>
+        <span id="navUserName" style="font-size:0.85rem; font-weight:800; color:var(--txt);">User</span>
+    </div>
+  </div>
+</nav>
+
+<div class="qr-app">
+<aside class="app-sb">
+  <div class="sb-top">
+    <div class="sb-top-title">⬛ QR STUDIO</div>
+    <div class="sb-top-sub">By Class Of Learners</div>
+  </div>
+  
+  <div class="sb-lbl">Create</div>
+  <a href="qr-editor.html" class="sb-btn"><span class="sb-icon">➕</span>New Code</a>
+  
+  <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
+  <button class="sb-btn act"><span class="sb-icon">🗂️</span>My Dashboard</button>
+  
+  <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
+  <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
+  
+  <div class="sb-foot">
+    <button class="sign-btn" id="sbSignBtn" onclick="openLogin()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>
+      Sign In To Save
+    </button>
+    <div class="pcard" id="pCard" style="display:none" onclick="openLogin()">
+      <div class="pav" id="pAv">?</div>
+      <div class="pinfo"><div class="pname" id="pName">User</div><div class="pemail" id="pEmail">tap to edit</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="workspace">
+  <div class="db-container">
+      <div class="db-hd">
+        <div><h1>My Saved Codes</h1><p id="dbSub">Manage your generated assets.</p></div>
+        <a href="qr-editor.html" class="btn-nx" style="height:fit-content; margin:0;">+ Create New</a>
+      </div>
+      
+      <div class="db-sync-bar" id="dbSyncBar" style="display:none">
+        <div class="db-sync-info">
+          <svg width="20" height="20" viewBox="0 0 87.3 78" fill="#10b981"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0a7.3 7.3 0 0 0 1 3.55z"/><path d="M43.65 25L29.9 1.2a8.8 8.8 0 0 0-3.3 3.3L1 65.2a7.3 7.3 0 0 0-1 3.65h27.45z"/><path d="M73.55 76.8a8.8 8.8 0 0 0 3.3-3.3l1.6-2.75 7.65-13.25a7.3 7.3 0 0 0 1-3.65H59.85l5.5 10.45z"/><path d="M43.65 25L57.4 1.2A8.6 8.6 0 0 0 53.73 0H33.58a8.6 8.6 0 0 0-3.68 1.2z" fill="#00832d"/><path d="M59.85 53.5H27.45L13.7 77.1c1.35.8 2.9 1.2 4.5 1.2h50.6c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="M73.4 26.5l-13-22.5a8.8 8.8 0 0 0-3-3.3L43.65 25 59.85 53.5h27.4a7.3 7.3 0 0 0-1-3.65z"/></svg>
+          Cloud Backup: <span id="driveStatus">Not Synced</span>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="dbf" onclick="syncDrive()">⬆ Upload to Drive</button>
+          <button class="dbf" onclick="loadFromDrive()">⬇ Fetch from Drive</button>
+        </div>
+      </div>
+
+      <div class="db-stats">
+        <div class="st-card"><div class="v" id="stTotal">0</div><div class="l">Total Generated</div></div>
+        <div class="st-card"><div class="v" id="stTypes">0</div><div class="l">Formats Used</div></div>
+        <div class="st-card"><div class="v" id="stLast">—</div><div class="l">Last Saved</div></div>
+      </div>
+      
+      <div class="db-filt">
+        <button class="dbf act" onclick="fDB('all',this)">All Types</button>
+        <button class="dbf" onclick="fDB('url',this)">Website</button>
+        <button class="dbf" onclick="fDB('wifi',this)">Wi-Fi</button>
+        <button class="dbf" onclick="fDB('vcard',this)">Contacts</button>
+        <button class="dbf" onclick="fDB('text',this)">Plain Text</button>
+      </div>
+      <div class="db-grid" id="dbG"></div>
+  </div>
+  
+  <footer class="site-footer" style="width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--nav); margin-top: auto;">
+      <div style="display:flex; justify-content:center; gap:25px; margin-bottom:15px; flex-wrap: wrap;">
+          <a href="privacy.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Privacy Policy</a>
+          <a href="terms.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Terms of Service</a>
+          <a href="feedback.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Provide Feedback</a>
+      </div>
+      <div style="color:var(--txt-m); font-size:0.85rem; font-weight:600;">© 2026 Class Of Learners. Developed By Neel, Ansh And Aarush. All Rights Reserved.</div>
+  </footer>
+</div>
+</div>
+
+
+
+<div class="toast" id="toast"></div>
+
+<script>
+const Storage = {
+  get: function(key) { try { return localStorage.getItem(key); } catch(e) { return null; } },
+  set: function(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+};
+
+let dbFil='all';
+let saved = [];
+
+try { const sData = Storage.get('qrs_min'); if (sData) saved = JSON.parse(sData); } catch(e) {}
+
+function renderDB(){
+  const filtered = dbFil==='all' ? saved : saved.filter(q=>q.type===dbFil);
+  document.getElementById('stTotal').textContent = saved.length;
+  
+  const uniqueTypes = [];
+  saved.forEach(function(q){ if(uniqueTypes.indexOf(q.type)===-1) uniqueTypes.push(q.type); });
+  document.getElementById('stTypes').textContent = uniqueTypes.length;
+  document.getElementById('stLast').textContent = saved.length>0 ? saved[0].date : '—';
+  
+  const g = document.getElementById('dbG'); if(!g) return;
+  g.innerHTML = '';
+  if(!filtered.length){
+    g.innerHTML=`<div class="db-emp"><div class="ei">🔳</div><h3>Workspace Empty</h3><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
+    return;
+  }
+  filtered.forEach(q=>{
+    const c=document.createElement('div');c.className='dbc';
+    const shortC = q.content.length>38 ? q.content.substring(0,38)+'…' : q.content;
+    c.innerHTML=`<div class="dbt">${q.thumb?`<img src="${q.thumb}" alt="QR">`:'<div style="font-size:2rem;opacity:.25">🔳</div>'}</div>
+    <div class="dbb"><div class="dtyp">${q.typeIcon} ${q.typeName}</div><h3 title="${q.content}">${shortC}</h3><div class="ddt">📅 ${q.date}</div></div>
+    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})">✏️ Editor</button><button class="dba-btn" onclick="reDL(${q.id})">⬇ Export</button><button class="dba-btn del" onclick="delQR(${q.id})">🗑 Delete</button></div>`;
+    g.appendChild(c);
+  });
+}
+
+function fDB(type,btn){
+    dbFil=type;
+    document.querySelectorAll('.dbf').forEach(b=>{ if(b===btn) b.classList.add('act'); else b.classList.remove('act'); });
+    renderDB();
+}
+function delQR(id){
+    if(!confirm('Permanently purge this QR asset?'))return;
+    let idx = -1;
+    for(let i=0;i<saved.length;i++){ if(saved[i].id===id){idx=i;break;} }
+    if(idx>-1){
+        saved.splice(idx,1);
+        Storage.set('qrs_min',JSON.stringify(saved));
+        renderDB();
+    }
+}
+function editQR(id){ window.location.href = 'qr-editor.html?id=' + id; }
+function reDL(id){
     let q=null;
     for(let i=0;i<saved.length;i++){ if(saved[i].id===id){q=saved[i];break;} }
     if(!q)return;
@@ -403,209 +555,65 @@ function reDL(id){
     new QRCodeStyling(dlOpts).download({name:'qr-'+q.type,extension:'png'});
 }
 
-// ── REDIRECT FIX FOR HUGGING FACE ──
 function toast(msg, cls){ let t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.className='toast '+(cls||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);}
 
-function gSignIn() {
-    toast('Redirecting to Google...', '');
-    const redirectUri = window.location.href.split('#')[0].split('?')[0]; 
-    const scope = encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
-    window.location.href = authUrl;
-}
-
-function checkURLForToken() {
-    const hash = window.location.hash.substring(1);
-    if (hash.includes('access_token=')) {
-        const params = new URLSearchParams(hash);
-        const token = params.get('access_token');
-        if (token) {
-            googleAccessToken = token;
-            window.history.replaceState(null, null, window.location.pathname + window.location.search);
-            fetchGoogleProfile(token);
-        }
+// ── SUPABASE CLOUD SYNC ──
+async function syncDrive() {
+    if (!window.colUser || !window.supabaseClient) {
+        toast('Please sign in to sync with cloud.', '');
+        if(window.openGlobalLogin) window.openGlobalLogin();
+        return;
     }
-}
-
-async function fetchGoogleProfile(token) {
+    toast('☁ Transmitting to Cloud…', '');
     try {
-        const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } });
-        if (r.ok) {
-            const info = await r.json();
-            let savedName = info.name;
-            const existing = Storage.get('qrs_user');
-            if(existing) {
-                try {
-                    const parsed = JSON.parse(existing);
-                    if(parsed.email === info.email && parsed.name) savedName = parsed.name;
-                } catch(e){}
-            }
-
-            curUser = { name: savedName, email: info.email, picture: info.picture, google: true };
-            Storage.set('qrs_user', JSON.stringify(curUser));
-            updatePUI();
-            closeMo();
-            toast('✅ Authenticated: ' + savedName, 'green');
-
-            const intent = Storage.get('hf_redirect_intent');
-            Storage.set('hf_redirect_intent', '');
-            if(intent === 'upload') performUpload();
-            if(intent === 'fetch') performFetch();
-        } else {
-            toast('Authentication failed.', '');
-        }
-    } catch (e) { toast('Network error.', ''); }
-}
-
-// ── GOOGLE DRIVE SYNC ──
-const DRIVE_FILE_NAME='qrstudio_core_data.json';
-
-function syncDrive() {
-    if (!googleAccessToken) {
-        toast('Connecting to Drive...', '');
-        Storage.set('hf_redirect_intent', 'upload');
-        gSignIn();
-        return;
-    }
-    performUpload();
-}
-
-async function performUpload(){
-  try{
-    toast('☁ Transmitting to Cloud…','');
-    const data=JSON.stringify({saved:saved,exportedAt:new Date().toISOString()});
-    if(driveFileId){
-      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`,{
-        method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+googleAccessToken},body:data
-      });
-    } else {
-      const search=await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${DRIVE_FILE_NAME}'`,{headers:{Authorization:'Bearer '+googleAccessToken}});
-      const res=await search.json();
-      if(res.files&&res.files.length>0){
-        driveFileId=res.files[0].id;
-        await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+googleAccessToken},body:data});
-      } else {
-        const meta={name:DRIVE_FILE_NAME,parents:['appDataFolder']};
-        const boundary='qrstudio_bndry_'+Date.now();
-        const body=`--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(meta)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${data}\r\n--${boundary}--`;
-        const cr=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{
-          method:'POST',headers:{'Content-Type':`multipart/related; boundary=${boundary}`,'Authorization':'Bearer '+googleAccessToken},body:body
+        const { error } = await window.supabaseClient.from('qr_codes').upsert({
+            user_id: window.colUser.id,
+            qr_data: saved
         });
-        const cj=await cr.json();driveFileId=cj.id;
-      }
+        if (error) throw error;
+        
+        const ds = document.getElementById('driveStatus'); if(ds) ds.textContent='Last Sync: '+new Date().toLocaleTimeString();
+        toast('✅ Cloud upload complete.', 'green');
+    } catch (e) {
+        toast('Transmission dropped: ' + e.message, '');
     }
-    const ds = document.getElementById('driveStatus'); if(ds) ds.textContent='Last Sync: '+new Date().toLocaleTimeString();
-    toast('✅ Cloud upload complete.','green');
-  }catch(e){ toast('Transmission dropped.',''); }
 }
 
-function loadFromDrive() {
-    if (!googleAccessToken) {
-        toast('Connecting to Drive...', '');
-        Storage.set('hf_redirect_intent', 'fetch');
-        gSignIn();
+async function loadFromDrive() {
+    if (!window.colUser || !window.supabaseClient) {
+        toast('Please sign in to fetch from cloud.', '');
+        if(window.openGlobalLogin) window.openGlobalLogin();
         return;
     }
-    performFetch();
-}
-
-async function performFetch(){
-  try{
-    toast('☁ Fetching Cloud Block…','');
-    const search=await fetch(`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${DRIVE_FILE_NAME}'`,{headers:{Authorization:'Bearer '+googleAccessToken}});
-    const res=await search.json();
-    if(!res.files||!res.files.length){toast('No cloud blocks found.','');return;}
-    driveFileId=res.files[0].id;
-    const fileRes=await fetch(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,{headers:{Authorization:'Bearer '+googleAccessToken}});
-    const json=await fileRes.json();
-    if(json.saved&&Array.isArray(json.saved)){
-      saved.length=0;
-      json.saved.forEach(function(x){saved.push(x);});
-      Storage.set('qrs_min',JSON.stringify(saved));
-      renderDB();
-      toast('✅ Downloaded '+saved.length+' assets!','green');
-      const ds = document.getElementById('driveStatus'); if(ds) ds.textContent='Synced '+saved.length+' files';
-    }
-  }catch(e){ toast('Fetch sequence failed.',''); }
-}
-
-
-function loadUser(){ const u=Storage.get('qrs_user'); if(u){ try{ curUser=JSON.parse(u); updatePUI(); }catch(e){} } }
-
-function updatePUI(){
-  const nlb = document.getElementById('navLoginBtn');
-  const nup = document.getElementById('navUserProfile');
-  const sBtn = document.getElementById('sbSignBtn');
-  const pc = document.getElementById('pCard');
-  const dbsb = document.getElementById('dbSyncBar');
-
-  if(!curUser){
-    if(nlb) nlb.style.display='flex'; if(nup) nup.style.display='none';
-    if(sBtn) sBtn.style.display='flex'; if(pc) pc.style.display='none';
-    if(dbsb) dbsb.style.display='none';
-    return;
-  }
-  
-  if(nlb) nlb.style.display='none'; if(nup) nup.style.display='flex';
-  if(sBtn) sBtn.style.display='none'; if(pc) pc.style.display='flex';
-  if(dbsb) dbsb.style.display='flex';
-
-  const nun = document.getElementById('navUserName'); if(nun) nun.textContent = curUser.name.split(' ')[0];
-  const pName = document.getElementById('pName'); if(pName) pName.textContent = curUser.name;
-  const pEmail = document.getElementById('pEmail'); if(pEmail) pEmail.textContent = curUser.email||'No email';
-
-  const navAv=document.getElementById('navUserAv');
-  const pav=document.getElementById('pAv');
-  
-  if(curUser.picture){
-    if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-    if(pav) pav.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-  } else {
-    const initial = curUser.name.charAt(0).toUpperCase();
-    if(navAv){ navAv.innerHTML=''; navAv.textContent=initial; }
-    if(pav){ pav.innerHTML=''; pav.textContent=initial; }
-  }
-}
-
-function openLogin(){
-  const mo = document.getElementById('loginMo'); if(!mo) return; mo.classList.add('open');
-  const mt = document.getElementById('moAuthTitle');
-  const mSub = document.getElementById('moAuthSub');
-  const loggedOutPanel = document.getElementById('loggedOutPanel');
-  const loggedInPanel = document.getElementById('loggedInPanel');
-  const mn = document.getElementById('miName'); 
-  const me = document.getElementById('miEmail'); 
-
-  if(curUser){
-      if(mt) mt.textContent = 'Google Account'; 
-      if(mSub) mSub.textContent = 'Manage your profile and username.';
-      if(loggedOutPanel) loggedOutPanel.style.display = 'none';
-      if(loggedInPanel) loggedInPanel.style.display = 'block';
-      if(mn) mn.value = curUser.name; 
-      if(me) me.value = curUser.email || ''; 
-  }else{
-      if(mt) mt.textContent = 'Authenticate'; 
-      if(mSub) mSub.textContent = 'Unlock dashboard storage and cloud sync.';
-      if(loggedOutPanel) loggedOutPanel.style.display = 'block';
-      if(loggedInPanel) loggedInPanel.style.display = 'none';
-  }
-}
-
-function closeMo(){ const mo = document.getElementById('loginMo'); if(mo) mo.classList.remove('open'); }
-
-function updateUsername(){
-    const mn=document.getElementById('miName'); if(!mn) return;
-    const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
-    if(curUser) {
-        curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser));
-        updatePUI(); closeMo(); toast('✅ Username Updated','green');
+    toast('☁ Fetching Cloud Block…', '');
+    try {
+        const { data, error } = await window.supabaseClient.from('qr_codes').select('qr_data').eq('user_id', window.colUser.id).maybeSingle();
+        if (error) throw error;
+        
+        if (data && data.qr_data && Array.isArray(data.qr_data)) {
+            saved.length = 0;
+            data.qr_data.forEach(function(x){saved.push(x);});
+            Storage.set('qrs_min', JSON.stringify(saved));
+            renderDB();
+            toast('✅ Downloaded '+saved.length+' assets!', 'green');
+            const ds = document.getElementById('driveStatus'); if(ds) ds.textContent='Synced '+saved.length+' files';
+        } else {
+            toast('No cloud blocks found.', '');
+        }
+    } catch (e) {
+        toast('Fetch sequence failed.', '');
     }
 }
 
-function doLogout() {
-    curUser = null; googleAccessToken = null; Storage.set('qrs_user', '');
-    updatePUI(); closeMo(); toast('Logged out successfully.', '');
-}
+window.addEventListener('col-auth-changed', (e) => {
+    const dbsb = document.getElementById('dbSyncBar');
+    if (e.detail.user) {
+        if(dbsb) dbsb.style.display = 'flex';
+        loadFromDrive(); // Auto-load on sign in
+    } else {
+        if(dbsb) dbsb.style.display = 'none';
+    }
+});
 
 window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
 
@@ -615,10 +623,7 @@ window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.clos
   if(theme === 'light'){ document.body.classList.add('light'); if(chk) chk.checked=false; } 
   else { document.body.classList.remove('light'); if(chk) chk.checked=true; }
   
-  loadUser();
   renderDB();
-  
-  window.addEventListener('load',function(){ checkURLForToken(); });
 })();
 
 function toggleTheme(element){

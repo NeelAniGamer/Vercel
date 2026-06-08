@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Command Center | Class Of Learners</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="col-auth.js"></script>
 <style>
     /* ── ADMIN THEME VARIABLES ── */
     :root { 
@@ -166,8 +166,8 @@
         <img src="class.png" alt="Class Of Learners Logo" style="height: 60px; margin-bottom: 20px; object-fit: contain;">
         <h2>System Terminal</h2>
         <p>Please authenticate with administrator credentials.</p>
-        <button class="gbtn" onclick="gSignIn()">
-            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Authenticate
+        <button class="gbtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin();" style="background:#10b981;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Authenticate Securely
         </button>
     </div>
 </div>
@@ -195,6 +195,7 @@
   <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('tab-logs', event)">📊 Feedback Logs</button>
       <button class="tab-btn" onclick="switchTab('tab-routing', event)">🚦 Routing Config</button>
+      <button class="tab-btn" onclick="switchTab('tab-auth', event)">🔐 Auth Config</button>
       <button class="tab-btn" onclick="switchTab('tab-editor', event)">💻 Source Code Editor</button>
   </div>
 
@@ -228,6 +229,23 @@
           </div>
 
           <button class="ms-save" onclick="saveSiteConfig()">Deploy Configuration</button>
+      </div>
+  </div>
+
+  <div id="tab-auth" class="tab-content">
+      <div class="controls-panel" style="max-width: 800px; margin: 0 auto;">
+          <h2>Global Authentication (Supabase)</h2>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">Configure your Supabase Database to enable global cloud-syncing and account logins across the platform.</p>
+          
+          <div class="banner-controls">
+              <h3>Supabase Project URL</h3>
+              <input type="text" id="ctrl-supabase-url" class="banner-inp" placeholder="e.g., https://xyz.supabase.co">
+              
+              <h3 style="margin-top: 15px;">Supabase Anon/Public Key</h3>
+              <input type="password" id="ctrl-supabase-key" class="banner-inp" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+          </div>
+
+          <button class="ms-save" onclick="saveSiteConfig()">Deploy Auth Configuration</button>
       </div>
   </div>
 
@@ -278,11 +296,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// --- GOOGLE SHEETS APP SCRIPT URL ---
-// ⚠️ PASTE THE URL YOU COPIED FROM GOOGLE APPS SCRIPT BELOW ⚠️
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxN5tS8uTeW6KoX_sVOxjV_x7X2W67k9d9Ubb_iQvMPzZNXrP-93MtjFlhE3gtbDn8/exec";
-
-// ── CUSTOM CONFIRM UI LOGIC ──
 let confirmActionCallback = null;
 function showConfirm(title, msg, callback) {
     document.getElementById('confirmTitle').innerText = title;
@@ -299,106 +313,68 @@ document.getElementById('confirmBtn').addEventListener('click', function() {
     closeConfirm();
 });
 
-
-// ── AUTHENTICATION ──
 const ADMIN_EMAIL = "subscriptionfound@gmail.com";
-const GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
-let curUser = null; 
-
-function toast(msg, cls){ let t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.className='toast '+(cls||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);}
-
-function gSignIn() {
-    toast('Authenticating...', 'green');
-    const redirectUri = window.location.href.split('#')[0].split('?')[0]; 
-    const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
-    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
-}
-
-function checkURLForToken() {
-    const hash = window.location.hash.substring(1);
-    if (hash.includes('access_token=')) {
-        const params = new URLSearchParams(hash);
-        const token = params.get('access_token');
-        if (token) {
-            window.history.replaceState(null, null, window.location.pathname);
-            fetchGoogleProfile(token);
-        }
-    } else {
-        const u = localStorage.getItem('qrs_user');
-        if(u) { try { curUser = JSON.parse(u); checkAdminAccess(); } catch(e){} }
-    }
-}
-
-async function fetchGoogleProfile(token) {
-    try {
-        const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } });
-        if (r.ok) {
-            const info = await r.json();
-            curUser = { name: info.name, email: info.email, picture: info.picture, google: true };
-            localStorage.setItem('qrs_user', JSON.stringify(curUser));
-            checkAdminAccess();
-        } else { toast('Authentication failed.', ''); }
-    } catch (e) { toast('Network error.', ''); }
-}
 
 function checkAdminAccess() {
-    if (curUser && curUser.email === ADMIN_EMAIL) {
+    if (window.colUser && window.colUser.email === ADMIN_EMAIL) {
         document.getElementById('lockScreen').style.opacity = '0';
         setTimeout(() => document.getElementById('lockScreen').style.display = 'none', 500);
+        
+        const navProfile = document.getElementById('navUserProfile');
+        if (navProfile) navProfile.style.display = 'none';
+        const pCard = document.getElementById('pCard');
+        if (pCard) pCard.style.display = 'none';
+        
+        toast(`Access Granted: ${window.colUser.email}`, 'green');
         renderFeedback();
         buildRoutingUI();
-    } else if (curUser) {
+    } else if (window.colUser) {
         document.getElementById('lockBoxContent').innerHTML = `
-            <div style="font-size:3.5rem; margin-bottom:15px; filter:drop-shadow(0 0 15px var(--danger));">⛔</div>
+            <div style="font-size:3.5rem; margin-bottom:15px; filter:drop-shadow(0 0 15px var(--danger));">🚫</div>
             <h2 style="color:var(--danger)">Access Denied</h2>
-            <p>The account <b style="color:var(--text-main)">${curUser.email}</b> lacks administrative privileges.</p>
+            <p>The account <b style="color:var(--text-main)">${window.colUser.email}</b> lacks administrative privileges.</p>
             <button style="width: 100%; padding: 14px; background: transparent; border: 1px solid var(--danger); border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; color: var(--danger); transition: 0.3s; margin-top: 10px;" onclick="doLogoutAdmin()">Sign Out & Retry</button>
         `;
     }
 }
 
+window.addEventListener('col-auth-changed', checkAdminAccess);
+
 function doLogoutAdmin() {
-    curUser = null; localStorage.removeItem('qrs_user');
-    window.location.reload();
+    if(window.supabaseClient) {
+        window.supabaseClient.auth.signOut().then(() => {
+            window.location.reload();
+        });
+    } else {
+        window.location.reload();
+    }
 }
 
-// ── DATA RENDERING FROM GOOGLE SHEETS ──
+function toast(msg, cls){ let t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.className='toast '+(cls||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);}
+
 function renderFeedback() {
     const grid = document.getElementById('fbGrid');
-    
     if (!WEB_APP_URL || WEB_APP_URL === "PASTE_YOUR_COPIED_URL_HERE") {
         grid.innerHTML = `<div class="empty"><h3 style="color:var(--danger)">Configuration Needed</h3><p>Please paste your Web App URL into the admin.html file to connect the database.</p></div>`;
         return;
     }
-
     grid.innerHTML = '<div class="empty"><h3>Loading Logs from Cloud...</h3></div>';
-    
     fetch(WEB_APP_URL)
     .then(res => res.json())
     .then(arr => {
         document.getElementById('fbCount').textContent = arr.length;
         grid.innerHTML = '';
-
-        if(arr.length === 0) {
-            grid.innerHTML = `<div class="empty"><h3>No Data Logs Found</h3></div>`;
-            return;
-        }
-
+        if(arr.length === 0) { grid.innerHTML = `<div class="empty"><h3>No Data Logs Found</h3></div>`; return; }
         arr.forEach(fb => {
             let stars = ''; for(let i=0; i<fb.rating; i++) stars += '★';
             let dynamicContent = `<div class="fb-msg">"${fb.message}"</div>`;
-            
             if (fb.device) dynamicContent += `<div class="fb-device">💻 ${fb.device}</div>`;
             if (fb.steps) dynamicContent += `<div class="fb-steps"><strong>Steps to Reproduce:</strong><br>${fb.steps.replace(/\n/g, '<br>')}</div>`;
-
             const card = document.createElement('div');
             card.className = 'fb-card';
             card.innerHTML = `
                 <div class="fb-top">
-                    <div>
-                        <div class="fb-user">${fb.name} <span class="fb-type">${fb.type}</span></div>
-                        <div class="fb-email">${fb.email}</div>
-                    </div>
+                    <div><div class="fb-user">${fb.name} <span class="fb-type">${fb.type}</span></div><div class="fb-email">${fb.email}</div></div>
                     <div class="fb-stars">${stars}</div>
                 </div>
                 ${dynamicContent}
@@ -410,198 +386,116 @@ function renderFeedback() {
             grid.appendChild(card);
         });
     })
-    .catch(err => {
-        grid.innerHTML = `<div class="empty"><h3 style="color:var(--danger)">Connection Error</h3><p>Could not reach the Google Sheets database.</p></div>`;
-    });
+    .catch(err => { grid.innerHTML = `<div class="empty"><h3 style="color:var(--danger)">Connection Error</h3><p>Could not reach the Google Sheets database.</p></div>`; });
 }
 
 function deleteFb(id) {
     showConfirm("Purge Log", "Are you sure you want to permanently drop this specific transmission log globally?", function() {
-        fetch(WEB_APP_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: "delete", id: id })
-        }).then(() => {
-            toast('Log dropped successfully.', 'green');
-            renderFeedback(); 
-        }).catch(err => toast('Error deleting log.', ''));
+        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "delete", id: id }) }).then(() => { toast('Log dropped successfully.', 'green'); renderFeedback(); }).catch(err => toast('Error deleting log.', ''));
     });
 }
 
 function clearAll() {
     showConfirm("Purge Database", "CRITICAL WARNING: This will permanently wipe ALL feedback logs globally from the database. Proceed?", function() {
-        fetch(WEB_APP_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: "deleteAll" })
-        }).then(() => {
-            toast('All logs deleted successfully.', 'green');
-            renderFeedback(); 
-        }).catch(err => toast('Error clearing logs.', ''));
+        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteAll" }) }).then(() => { toast('All logs deleted successfully.', 'green'); renderFeedback(); }).catch(err => toast('Error clearing logs.', ''));
     });
 }
 
-// ── SITE CONFIG CONTROLS DYNAMIC GENERATION ──
 const PAGE_GROUPS = {
-    "Core Hub": [
-        {id: "index", label: "📄 Home (index.html)"},
-        {id: "about", label: "📄 About Us (about.html)"},
-        {id: "school", label: "📄 School (school.html)"},
-        {id: "sneh-asha", label: "📄 Sneh Asha (sneh-asha.html)"},
-        {id: "download", label: "📦 Downloads (download.html)"}
-    ],
-    "Applications": [
-        {id: "ati", label: "⌨️ ATI Info (ati.html)"},
-        {id: "ati-demo", label: "⌨️ ATI Demo (ati-demo.html)"},
-        {id: "solar", label: "🪐 Solar Engine (solar.html)"},
-        {id: "gesture", label: "🖐️ Gesture (gesture.html)"},
-        {id: "rpg", label: "⚔️ RPG Game (rpg.html)"},
-        {id: "qr", label: "⬛ QR Dash (qr.html)"},
-        {id: "qr-editor", label: "⬛ QR Editor (qr-editor.html)"}
-    ],
-    "Support": [
-        {id: "feedback", label: "💬 Feedback (feedback.html)"},
-        {id: "privacy", label: "🛡️ Privacy (privacy.html)"},
-        {id: "terms", label: "⚖️ Terms (terms.html)"}
-    ]
+    "Core Hub": [ {id: "index", label: "📄 Home (index.html)"}, {id: "about", label: "📄 About Us (about.html)"}, {id: "school", label: "📄 School (school.html)"}, {id: "sneh-asha", label: "📄 Sneh Asha (sneh-asha.html)"}, {id: "download", label: "📦 Downloads (download.html)"} ],
+    "Applications": [ {id: "ati", label: "⌨️ ATI Info (ati.html)"}, {id: "ati-demo", label: "⌨️ ATI Demo (ati-demo.html)"}, {id: "solar", label: "🪐 Solar Engine (solar.html)"}, {id: "gesture", label: "🖐️ Gesture (gesture.html)"}, {id: "rpg", label: "⚔️ RPG Game (rpg.html)"}, {id: "qr", label: "⬛ QR Dash (qr.html)"}, {id: "qr-editor", label: "⬛ QR Editor (qr-editor.html)"} ],
+    "Support": [ {id: "feedback", label: "💬 Feedback (feedback.html)"}, {id: "privacy", label: "🛡️ Privacy (privacy.html)"}, {id: "terms", label: "⚖️ Terms (terms.html)"} ]
 };
 
 function buildRoutingUI() {
     const container = document.getElementById('routing-container');
     container.innerHTML = '';
-
-    let conf = { pages: {}, banner: {active: false, text: ''} };
+    let conf = { pages: {}, banner: {active: false, text: ''}, auth: {url: '', key: ''} };
     try { 
         const stored = localStorage.getItem('col_admin_config');
-        if(stored) conf = JSON.parse(stored);
+        if(stored) { const parsed = JSON.parse(stored); conf.pages = parsed.pages || {}; conf.banner = parsed.banner || {active: false, text: ''}; conf.auth = parsed.auth || {url: '', key: ''}; }
     } catch(e){}
-
     for (const [groupName, pages] of Object.entries(PAGE_GROUPS)) {
-        const label = document.createElement('div');
-        label.className = 'route-group-label';
-        label.innerText = groupName;
-        container.appendChild(label);
-
+        const label = document.createElement('div'); label.className = 'route-group-label'; label.innerText = groupName; container.appendChild(label);
         pages.forEach(p => {
             const currentStatus = conf.pages[p.id + '.html'] || '200';
-            
-            const row = document.createElement('div');
-            row.className = 'control-row';
+            const row = document.createElement('div'); row.className = 'control-row';
             row.innerHTML = `
                 <span class="mono" style="flex:1">${p.label}</span>
                 <div class="segmented-control" style="flex:2">
-                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-200" value="200" ${currentStatus==='200'?'checked':''}>
-                    <label for="${p.id}-200" class="btn-200">LIVE</label>
-                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-404" value="404" ${currentStatus==='404'?'checked':''}>
-                    <label for="${p.id}-404" class="btn-404">404</label>
-                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-503" value="503" ${currentStatus==='503'?'checked':''}>
-                    <label for="${p.id}-503" class="btn-503">503</label>
-                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-401" value="401" ${currentStatus==='401'?'checked':''}>
-                    <label for="${p.id}-401" class="btn-404" style="color:#d946ef">401</label>
-                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-403" value="403" ${currentStatus==='403'?'checked':''}>
-                    <label for="${p.id}-403" class="btn-404" style="color:#f43f5e">403</label>
+                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-200" value="200" ${currentStatus==='200'?'checked':''}><label for="${p.id}-200" class="btn-200">LIVE</label>
+                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-404" value="404" ${currentStatus==='404'?'checked':''}><label for="${p.id}-404" class="btn-404">404</label>
+                    <input type="radio" name="ctrl-${p.id}" id="${p.id}-503" value="503" ${currentStatus==='503'?'checked':''}><label for="${p.id}-503" class="btn-503">503</label>
                 </div>
             `;
             container.appendChild(row);
         });
     }
-
     document.getElementById('ctrl-banner-text').value = conf.banner.text || '';
     document.getElementById('ctrl-banner-active').checked = conf.banner.active || false;
+    document.getElementById('ctrl-supabase-url').value = conf.auth.url || '';
+    document.getElementById('ctrl-supabase-key').value = conf.auth.key || '';
 }
 
 function saveSiteConfig() {
-    const config = { pages: {}, banner: {} };
-    
+    const config = { pages: {}, banner: {}, auth: {} };
     for (const pages of Object.values(PAGE_GROUPS)) {
         pages.forEach(p => {
             const selected = document.querySelector(`input[name="ctrl-${p.id}"]:checked`);
-            if (selected) {
-                config.pages[`${p.id}.html`] = selected.value;
-            }
+            if (selected) config.pages[`${p.id}.html`] = selected.value;
         });
     }
-
     config.banner.active = document.getElementById('ctrl-banner-active').checked;
     config.banner.text = document.getElementById('ctrl-banner-text').value.trim();
-
+    config.auth.url = document.getElementById('ctrl-supabase-url').value.trim();
+    config.auth.key = document.getElementById('ctrl-supabase-key').value.trim();
     localStorage.setItem('col_admin_config', JSON.stringify(config));
-    
-    // Save to GitHub to deploy globally
     saveConfigToGitHub(config);
 }
 
 async function saveConfigToGitHub(config) {
     try {
         toast('Deploying routing config globally...', 'green');
-        const token = localStorage.getItem('col_gh_token');
-        if (!token) throw new Error("Please enter your GitHub Token in the Visual Builder tab to deploy global routing configs.");
-        
-        // Try to get existing config.json to get its SHA
         let sha = "";
-        try {
-            const data = await fetchGh("contents/config.json");
-            sha = data.sha;
-        } catch(e) {} // File might not exist yet
-        
+        try { const data = await fetchGh("contents/config.json"); sha = data.sha; } catch(e) {} 
         const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
-        
-        await fetchGh("contents/config.json", {
-            method: 'PUT',
-            body: JSON.stringify({
-                message: "Admin update: routing config.json",
-                content: base64Content,
-                sha: sha || undefined
-            })
-        });
-        
-        toast('✅ Global Configuration Deployed! Live in seconds.', 'green');
-    } catch (e) {
-        toast('Save failed: ' + e.message, '');
-    }
+        await fetchGh("contents/config.json", { method: 'PUT', body: JSON.stringify({ message: "Admin update: routing config.json", content: base64Content, sha: sha || undefined }) });
+        toast('🚀 Global Configuration Deployed! Live in seconds.', 'green');
+    } catch (e) { toast('Save failed: ' + e.message, ''); }
 }
 
-window.addEventListener('storage', function(e) {
-    if (e.key === 'col_admin_config') { buildRoutingUI(); }
-});
-
 window.addEventListener('load', function() { 
-    checkURLForToken(); 
     const cm=document.getElementById('confirmMo'); if(cm) cm.addEventListener('click',function(e){if(e.target===this)closeConfirm();}); 
-    
-    // Load GitHub token if exists
-    const t = localStorage.getItem('col_gh_token');
-    if (t) document.getElementById('gh-token').value = t;
+    setTimeout(checkAdminAccess, 500);
 });
 
-// ── GITHUB API EDITOR LOGIC ──
 const GH_OWNER = "NeelAniGamer";
 const GH_REPO = "Vercel";
 let currentFileSha = "";
 
-function saveGhToken() {
+async function getGhToken() {
+    if (!window.supabaseClient || !window.colUser) throw new Error("Supabase Auth required to fetch secrets.");
+    const { data, error } = await window.supabaseClient.from('admin_secrets').select('secret_value').eq('key_name', 'github_pat').maybeSingle();
+    if (error) throw error;
+    if (!data || !data.secret_value) throw new Error("No GitHub PAT securely saved in Database. Please save one first.");
+    return data.secret_value;
+}
+
+async function saveGhToken() {
     const token = document.getElementById('gh-token').value.trim();
-    if (token) {
-        localStorage.setItem('col_gh_token', token);
-        toast('GitHub Token saved securely.', 'green');
-    } else {
-        localStorage.removeItem('col_gh_token');
-        toast('GitHub Token removed.', '');
-    }
+    if (!token) { toast('Please input a token.', ''); return; }
+    if (!window.supabaseClient || !window.colUser) { toast('Supabase Auth required.', ''); return; }
+    toast('Locking token in database...', 'green');
+    const { error } = await window.supabaseClient.from('admin_secrets').upsert({ key_name: 'github_pat', secret_value: token });
+    if (error) { toast('Database Error: ' + error.message, ''); } else { document.getElementById('gh-token').value = ''; toast('GitHub Token encrypted and secured!', 'green'); }
 }
 
 async function fetchGh(endpoint, options = {}) {
-    const token = localStorage.getItem('col_gh_token');
-    if (!token) throw new Error("No GitHub Token. Please enter and save one first.");
-    
+    const token = await getGhToken();
     const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/${endpoint}`, {
         ...options,
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Accept": "application/vnd.github.v3+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-            ...options.headers
-        }
+        headers: { "Authorization": `Bearer ${token}`, "Accept": "application/vnd.github.v3+json", "X-GitHub-Api-Version": "2022-11-28", ...options.headers }
     });
-    
     if (!res.ok) throw new Error(`GitHub API Error: ${res.statusText}`);
     return res.json();
 }
