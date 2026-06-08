@@ -541,7 +541,12 @@ async function loadGhFiles() {
 const VISUAL_BUILDER_SCRIPT = `
 <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"><\\/script>
 <script id="col-builder-script">
-window.addEventListener('load', () => {
+function initBuilder() {
+    if (typeof interact === 'undefined') {
+        setTimeout(initBuilder, 100);
+        return;
+    }
+
     let styleBlock = document.getElementById('col-visual-styles');
     if(!styleBlock) {
         styleBlock = document.createElement('style');
@@ -561,15 +566,15 @@ window.addEventListener('load', () => {
     function renderStyles() {
         let css = '';
         css += '@media screen and (min-width: 1025px) {\\n';
-        for(let id in window.__colRules.desktop) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.desktop[id]} }\\n\`;
+        for(let id in window.__colRules.desktop) css += `[data-col-id="${id}"], #${id} { ${window.__colRules.desktop[id]} }\\n`;
         css += '}\\n';
 
         css += '@media screen and (min-width: 769px) and (max-width: 1024px) {\\n';
-        for(let id in window.__colRules.tablet) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.tablet[id]} }\\n\`;
+        for(let id in window.__colRules.tablet) css += `[data-col-id="${id}"], #${id} { ${window.__colRules.tablet[id]} }\\n`;
         css += '}\\n';
 
         css += '@media screen and (max-width: 768px) {\\n';
-        for(let id in window.__colRules.mobile) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.mobile[id]} }\\n\`;
+        for(let id in window.__colRules.mobile) css += `[data-col-id="${id}"], #${id} { ${window.__colRules.mobile[id]} }\\n`;
         css += '}\\n';
 
         styleBlock.innerHTML = css;
@@ -603,10 +608,12 @@ window.addEventListener('load', () => {
 
     let selected = null;
     document.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopPropagation();
         if(selected) selected.style.outline = '';
         selected = e.target;
         selected.style.outline = '3px dashed #38bdf8';
-    });
+    }, true);
 
     interact('body *').draggable({
         listeners: {
@@ -616,7 +623,7 @@ window.addEventListener('load', () => {
                 const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
                 target.setAttribute('data-x', x);
                 target.setAttribute('data-y', y);
-                updateRule(target, { transform: \`translate(\${x}px, \${y}px)\` });
+                updateRule(target, { transform: `translate(${x}px, ${y}px)` });
             }
         }
     }).resizable({
@@ -629,15 +636,16 @@ window.addEventListener('load', () => {
                 target.setAttribute('data-x', x);
                 target.setAttribute('data-y', y);
                 updateRule(target, { 
-                    width: \`\${event.rect.width}px\`, 
-                    height: \`\${event.rect.height}px\`, 
-                    transform: \`translate(\${x}px, \${y}px)\` 
+                    width: `${event.rect.width}px`, 
+                    height: `${event.rect.height}px`, 
+                    transform: `translate(${x}px, ${y}px)` 
                 });
             }
         }
     });
-});
-<\\/script>
+}
+initBuilder();
+<\/script>
 `;
 
 function setIframeSize(width) {
