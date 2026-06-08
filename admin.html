@@ -696,7 +696,7 @@ async function deployGhFile() {
             // Clean out builder scripts and base tags
             finalHtml = finalHtml.replace(/<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/interactjs\/dist\/interact\.min\.js"><\/script>/g, '');
             finalHtml = finalHtml.replace(/<script id="col-builder-script">[\s\S]*?<\/script>/g, '');
-            finalHtml = finalHtml.replace(new RegExp(\`<base href="https://\${GH_OWNER}.github.io/\${GH_REPO}/">\`, 'g'), '');
+            finalHtml = finalHtml.replace(new RegExp(`<base href="https://${GH_OWNER}.github.io/${GH_REPO}/">`, 'g'), '');
             
             // Restore doctype since outerHTML loses it
             finalHtml = "<!DOCTYPE html>\\n" + finalHtml;
