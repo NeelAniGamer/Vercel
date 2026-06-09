@@ -651,14 +651,66 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <div class="toast" id="toast"></div>
 
 <!-- BULK MODAL -->
-<div class="modal" id="bulkModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
-    <div style="background:var(--nav); padding:30px; border-radius:12px; width:90%; max-width:600px; border:1px solid var(--border);">
-        <h2 style="margin-top:0; color:var(--txt);">Bulk QR Generation</h2>
-        <p style="color:var(--txt-m); margin-bottom:20px;">Paste a list of URLs/texts (one per line). We'll apply your current custom design to all of them and download them as a ZIP file.</p>
-        <textarea id="bulkData" style="width:100%; height:150px; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:var(--txt); padding:10px; border-radius:8px; margin-bottom:20px; font-family:monospace;" placeholder="https://example.com/1&#10;https://example.com/2&#10;https://example.com/3"></textarea>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <button class="btn-bk" onclick="document.getElementById('bulkModal').style.display='none'">Cancel</button>
-            <button class="btn-cp" id="bulkGenBtn" onclick="runBulkGeneration()">Generate & Download ZIP</button>
+<style>
+.modal-backdrop {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(10, 15, 26, 0.75); backdrop-filter: blur(8px);
+    z-index: 9999; display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.modal-backdrop.open {
+    opacity: 1; pointer-events: auto;
+}
+.modal-card {
+    background: var(--nav); padding: 35px; border-radius: 16px; width: 90%; max-width: 650px;
+    border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-backdrop.open .modal-card {
+    transform: translateY(0);
+}
+.modal-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+}
+.modal-icon {
+    width: 40px; height: 40px; border-radius: 10px; background: rgba(16, 185, 129, 0.1);
+    color: var(--prim); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+}
+.modal-title {
+    margin: 0; color: var(--txt); font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px;
+}
+.modal-desc {
+    color: var(--txt-m); font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5;
+}
+.modal-textarea {
+    width: 100%; height: 180px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border);
+    color: var(--txt); padding: 15px; border-radius: 12px; margin-bottom: 25px;
+    font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.6;
+    resize: none; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.modal-textarea:focus {
+    border-color: var(--prim); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+.modal-textarea::placeholder { color: rgba(255,255,255,0.2); }
+.modal-actions {
+    display: flex; justify-content: flex-end; gap: 15px;
+}
+</style>
+
+<div class="modal-backdrop" id="bulkModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div class="modal-icon">🎯</div>
+            <h2 class="modal-title">Bulk QR Generator</h2>
+        </div>
+        <p class="modal-desc">Paste a list of URLs or text strings (one per line). We'll apply your exact custom design to every single one and bundle them into a high-quality ZIP file.</p>
+        <textarea class="modal-textarea" id="bulkData" placeholder="https://example.com/promo-1&#10;https://example.com/promo-2&#10;https://example.com/promo-3"></textarea>
+        <div class="modal-actions">
+            <button class="btn-bk" style="background: rgba(255,255,255,0.05); color: var(--txt); border: 1px solid transparent;" onclick="closeBulkModal()" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Cancel</button>
+            <button class="btn-cp" id="bulkGenBtn" style="padding: 12px 24px; font-size: 0.95rem;" onclick="runBulkGeneration()">
+                <svg style="width:16px;height:16px;margin-right:8px;vertical-align:text-bottom" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Generate & Download ZIP
+            </button>
         </div>
     </div>
 </div>
@@ -1388,7 +1440,10 @@ function loadCustomPreset(name) {
 }
 
 function openBulkModal() {
-    document.getElementById('bulkModal').style.display = 'flex';
+    document.getElementById('bulkModal').classList.add('open');
+}
+function closeBulkModal() {
+    document.getElementById('bulkModal').classList.remove('open');
 }
 
 async function runBulkGeneration() {
@@ -1425,7 +1480,7 @@ async function runBulkGeneration() {
         a.click();
         
         toast('Bulk Generation Complete!', 'green');
-        document.getElementById('bulkModal').style.display = 'none';
+        closeBulkModal();
         
     } catch(err) {
         console.error(err);
