@@ -6,6 +6,8 @@
 <title>QR Editor | Class Of Learners</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
 <style>
 /* ── EXACT UI THEME ── */
 :root {
@@ -368,12 +370,17 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   </div>
   
   <div class="sb-lbl">Create</div>
-  <button class="sb-btn act" onclick="window.location.reload()"><span class="sb-icon">➕</span>New Code</button>
+  <a href="qr-editor.html" class="sb-btn act"><span class="sb-icon">⊕</span>New QR</a>
+  <a href="#" class="sb-btn"><span class="sb-icon">🎯</span>Bulk QR generation</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
-  <a href="qr.html" class="sb-btn"><span class="sb-icon">🗂️</span>My Dashboard</a>
+  <a href="qr.html" class="sb-btn"><span class="sb-icon">🔲</span>My QR codes</a>
+  <a href="#" class="sb-btn"><span class="sb-icon">📊</span>Stats</a>
+  <a href="#" class="sb-btn"><span class="sb-icon">📄</span>Templates</a>
+  <a href="#" class="sb-btn"><span class="sb-icon">🌐</span>My domains</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
+  <a href="#" class="sb-btn"><span class="sb-icon">💳</span>Plans and payments</a>
   <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
   
   <div class="sb-foot">
@@ -448,6 +455,11 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
           <div class="dsb open" id="dsFb">
               <div class="vg" id="frGrid"></div>
               
+              <div id="frTextDiv" style="display:none; margin-top: 15px;">
+                  <label class="ds-label">Frame Text</label>
+                  <input type="text" class="fi" id="frTextInput" value="SCAN NOW" oninput="setFrText(this.value)" style="margin-bottom:10px">
+              </div>
+
               <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 15px;">
                   <label class="ds-label">QR Internal Padding (White Space)</label>
                   <input type="range" class="ds-slider" min="0" max="50" step="5" value="0" oninput="setPad(this.value)">
@@ -860,8 +872,28 @@ function setFr(id){
   document.querySelectorAll('#frGrid .vb').forEach(b=>{ if(b.dataset.fr===id) b.classList.add('sel'); else b.classList.remove('sel'); });
   const w=document.getElementById('qrWrap');
   if(w) { w.className=''; if(id!=='none') w.classList.add('frame-'+id); }
+  
   const l=document.getElementById('frLbl');
-  if(l){ if(id==='scan'){l.textContent='SCAN NOW';l.classList.add('show');} else l.classList.remove('show'); }
+  const d=document.getElementById('frTextDiv');
+  const inp=document.getElementById('frTextInput');
+  
+  if(l){ 
+      if(id==='scan'){
+          l.textContent = inp ? (inp.value || 'SCAN NOW') : 'SCAN NOW';
+          l.classList.add('show');
+          if(d) d.style.display = 'block';
+      } else {
+          l.classList.remove('show');
+          if(d) d.style.display = 'none';
+      } 
+  }
+}
+
+function setFrText(val) {
+    const l=document.getElementById('frLbl');
+    if(l && selFrame === 'scan') {
+        l.textContent = val || ' ';
+    }
 }
 
 const DOTS=[ {id:'square',label:'Block'}, {id:'dots',label:'Dot'}, {id:'rounded',label:'Soft'}, {id:'extra-rounded',label:'Pill'}, {id:'classy',label:'Tech'}, {id:'classy-rounded',label:'Liquid'} ];
@@ -1016,12 +1048,56 @@ function dlQR(ext){
   if(!qrInst){toast('Complete setup to render QR.','');return;}
   const szInp = document.getElementById('dlSz');
   const sz=szInp ? parseInt(szInp.value) : 800;
-  // Ensure the actual download uses the correct dynamic link if applicable
   const realData = getQRDataString();
   const dlOpts = Object.assign({}, opts, {width:sz,height:sz, data: realData});
+  
+  // If no frame is selected or exporting SVG, use native download
+  if(selFrame === 'none' || ext === 'svg') {
+      const dl=new QRCodeStyling(dlOpts);
+      dl.download({name:'qr-'+selType+'-'+Date.now(),extension:ext});
+      saveQR(true); 
+      return;
+  }
+  
+  // For custom frames, use html2canvas
+  toast('Rendering high-res frame...', 'green');
+  const tmpWrapper = document.createElement('div');
+  tmpWrapper.style.position = 'fixed';
+  tmpWrapper.style.left = '-9999px';
+  tmpWrapper.style.top = '-9999px';
+  tmpWrapper.style.background = '#ffffff'; // Ensure background for frame
+  tmpWrapper.style.padding = '40px';
+  tmpWrapper.className = 'frame-' + selFrame; // Apply frame CSS
+  
+  // Copy styles manually for specific frames if needed, or rely on CSS classes
+  if(selFrame === 'border') tmpWrapper.style.outline = '8px solid var(--pri)';
+  if(selFrame === 'shadow') tmpWrapper.style.boxShadow = '0 30px 60px rgba(0,0,0,0.8)';
+  if(selFrame === 'ticket') tmpWrapper.style.outline = '8px dashed rgba(16,185,129,0.7)';
+  if(selFrame === 'phone') tmpWrapper.style.outline = '12px solid var(--pri)';
+  if(selFrame === 'badge') tmpWrapper.style.borderRadius = '50%';
+  
+  document.body.appendChild(tmpWrapper);
+  
   const dl=new QRCodeStyling(dlOpts);
-  dl.download({name:'qr-'+selType+'-'+Date.now(),extension:ext});
-  saveQR(true); 
+  dl.append(tmpWrapper);
+  
+  setTimeout(() => {
+      html2canvas(tmpWrapper, {
+          scale: 1, 
+          backgroundColor: null,
+          useCORS: true
+      }).then(canvas => {
+          const link = document.createElement('a');
+          link.download = 'qr-'+selType+'-'+Date.now()+'.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          document.body.removeChild(tmpWrapper);
+          saveQR(true);
+      }).catch(err => {
+          toast('Error rendering frame', '');
+          document.body.removeChild(tmpWrapper);
+      });
+  }, 1000); // Wait for QR code to fully render inside
 }
 
 function saveQR(silent = false){
