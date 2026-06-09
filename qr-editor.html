@@ -704,14 +704,24 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <div class="modal-icon">🎯</div>
             <h2 class="modal-title">Bulk QR Generator</h2>
         </div>
-        <p class="modal-desc">Paste a list of URLs or text strings (one per line). We'll apply your exact custom design to every single one and bundle them into a high-quality ZIP file.</p>
-        <textarea class="modal-textarea" id="bulkData" placeholder="https://example.com/promo-1&#10;https://example.com/promo-2&#10;https://example.com/promo-3"></textarea>
-        <div class="modal-actions">
-            <button class="btn-bk" style="background: rgba(255,255,255,0.05); color: var(--txt); border: 1px solid transparent;" onclick="closeBulkModal()" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Cancel</button>
-            <button class="btn-cp" id="bulkGenBtn" style="padding: 12px 24px; font-size: 0.95rem;" onclick="runBulkGeneration()">
-                <svg style="width:16px;height:16px;margin-right:8px;vertical-align:text-bottom" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Generate & Download ZIP
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <p class="modal-desc" style="margin-bottom:0; max-width: 75%;">Paste URLs (one per line) or upload a CSV (format: <code>filename,URL</code>) to auto-name files.</p>
+            <button class="btn-nx" style="font-size: 0.8rem; padding: 6px 12px; height: auto;" onclick="document.getElementById('bulkFileInput').click()">
+                <svg style="width:14px;height:14px;margin-right:4px;vertical-align:text-bottom" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Upload CSV/TXT
             </button>
+            <input type="file" id="bulkFileInput" accept=".txt,.csv" style="display:none" onchange="handleBulkFileUpload(event)">
+        </div>
+        <textarea class="modal-textarea" id="bulkData" placeholder="promo-1,https://example.com/promo-1&#10;promo-2,https://example.com/promo-2&#10;https://example.com/unnamed-promo"></textarea>
+        <div class="modal-actions" style="justify-content: space-between; align-items: center;">
+            <span id="bulkProgress" style="color: var(--prim); font-size: 0.9rem; font-weight: 600; opacity: 0; transition: opacity 0.3s;">Generating 0/0...</span>
+            <div style="display:flex; gap:15px;">
+                <button class="btn-bk" style="background: rgba(255,255,255,0.05); color: var(--txt); border: 1px solid transparent;" onclick="closeBulkModal()" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Cancel</button>
+                <button class="btn-cp" id="bulkGenBtn" style="padding: 12px 24px; font-size: 0.95rem;" onclick="runBulkGeneration()">
+                    <svg style="width:16px;height:16px;margin-right:8px;vertical-align:text-bottom" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Generate & Download
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1446,6 +1456,17 @@ function openBulkModal() {
 function closeBulkModal() {
     document.getElementById('bulkModal').classList.remove('open');
 }
+function handleBulkFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('bulkData').value = e.target.result;
+        toast(`Loaded ${file.name}`, 'green');
+    };
+    reader.readAsText(file);
+    event.target.value = ''; // Reset
+}
 
 async function runBulkGeneration() {
     const dataStr = document.getElementById('bulkData').value.trim();
@@ -1456,23 +1477,45 @@ async function runBulkGeneration() {
     if(lines.length > 500) { toast('Maximum 500 items at a time.', ''); return; }
 
     const btn = document.getElementById('bulkGenBtn');
-    btn.textContent = 'Generating... Please wait';
+    const prog = document.getElementById('bulkProgress');
+    btn.innerHTML = '<svg style="width:16px;height:16px;margin-right:8px;vertical-align:text-bottom;animation:spin 1s linear infinite" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Generating...';
     btn.disabled = true;
+    prog.style.opacity = 1;
+    prog.textContent = `Generating 0/${lines.length}...`;
 
     try {
         const zip = new JSZip();
-        
-        // Temporarily freeze main QR updates
         let originalData = opts.data;
 
         for(let i=0; i<lines.length; i++) {
-            qrInst.update({ data: lines[i] });
+            let line = lines[i];
+            let filename = `qr_code_${i+1}.png`;
+            let url = line;
+
+            // Handle CSV format: filename,url
+            const firstComma = line.indexOf(',');
+            if (firstComma > 0) {
+                const potentialName = line.substring(0, firstComma).trim();
+                const potentialUrl = line.substring(firstComma + 1).trim();
+                if (potentialName && potentialUrl) {
+                    // Sanitize filename
+                    filename = potentialName.replace(/[^a-z0-9_-]/gi, '_') + '.png';
+                    url = potentialUrl;
+                }
+            }
+
+            qrInst.update({ data: url });
             const blob = await qrInst.getRawData('png');
-            zip.file(`qr_code_${i+1}.png`, blob);
+            zip.file(filename, blob);
+            
+            prog.textContent = `Generating ${i+1}/${lines.length}...`;
+            // Brief pause to allow UI update
+            await new Promise(r => setTimeout(r, 10));
         }
 
         // Restore original data
         qrInst.update({ data: originalData });
+        prog.textContent = `Zipping files...`;
 
         const content = await zip.generateAsync({type:"blob"});
         const a = document.createElement('a');
@@ -1487,8 +1530,9 @@ async function runBulkGeneration() {
         console.error(err);
         toast('Error generating bulk QRs.', '');
     } finally {
-        btn.textContent = 'Generate & Download ZIP';
+        btn.innerHTML = `<svg style="width:16px;height:16px;margin-right:8px;vertical-align:text-bottom" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4-4m4 4V4"></path></svg> Generate & Download`;
         btn.disabled = false;
+        setTimeout(() => { prog.style.opacity = 0; }, 2000);
     }
 }
 
