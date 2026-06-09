@@ -319,10 +319,10 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
         </label>
     </div>
     
-    <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+    <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg> Sign In
     </button>
-    <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+    <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
         <div class="nav-user-avatar" id="navUserAv">?</div>
         <span id="navUserName" style="font-size:0.85rem; font-weight:800; color:var(--txt);">User</span>
     </div>
@@ -343,14 +343,14 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
   <a href="qr.html" class="sb-btn"><span class="sb-icon">🗂️</span>My Dashboard</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
-  <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
+  <button class="sb-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin()"><span class="sb-icon">⚙️</span>Account</button>
   
   <div class="sb-foot">
-    <button class="sign-btn" id="sbSignBtn" onclick="openLogin()">
+    <button class="sign-btn" id="sbSignBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>
       Sign In To Save
     </button>
-    <div class="pcard" id="pCard" style="display:none" onclick="openLogin()">
+    <div class="pcard" id="pCard" style="display:none" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
       <div class="pav" id="pAv">?</div>
       <div class="pinfo"><div class="pname" id="pName">User</div><div class="pemail" id="pEmail">tap to edit</div></div>
     </div>
@@ -718,7 +718,7 @@ function initQR(){
   const w=document.getElementById('qrWrap');
   if(w) w.innerHTML='';
   const c=getContent();
-  if(c&&c.trim()) opts.data=getQRDataString();
+  if(c&&c.trim()) opts.data=c; // raw content for real-time preview
   qrInst=new QRCodeStyling(Object.assign({}, opts));
   if(w) qrInst.append(w);
   updateInfo();
@@ -727,8 +727,17 @@ function initQR(){
 function lu(){
   const c=getContent();
   if(!c||!c.trim())return;
-  opts.data=getQRDataString();
-  if(qrInst){qrInst.update({data:opts.data});} else{initQR();}
+  // Use raw content for preview so the matrix dances in real time
+  opts.data=c;
+  if(qrInst){
+      qrInst.update({data:opts.data});
+      const qw = document.getElementById('qrWrap');
+      if(qw) {
+          qw.style.transition = 'none';
+          qw.style.opacity = '0.6';
+          setTimeout(() => { qw.style.transition = 'opacity 0.2s'; qw.style.opacity = '1'; }, 50);
+      }
+  } else{initQR();}
   updateInfo();
 }
 
@@ -946,7 +955,7 @@ function goStep(n){
     const to=DYN.concat(STA).filter(x=>x.id===selType)[0]; const h=document.getElementById('s2h'); if(h&&to) h.textContent='Content: '+to.name;
   }
   if(n===3){
-    const c=getContent(); if(c&&c.trim()) opts.data=getQRDataString();
+    const c=getContent(); if(c&&c.trim()) opts.data=c; // Real-time preview content
     if(!qrInst) initQR(); else {qrInst.update({data:opts.data}); updateInfo();}
   }
 }
@@ -976,7 +985,9 @@ function dlQR(ext){
   if(!qrInst){toast('Complete setup to render QR.','');return;}
   const szInp = document.getElementById('dlSz');
   const sz=szInp ? parseInt(szInp.value) : 800;
-  const dlOpts = Object.assign({}, opts, {width:sz,height:sz});
+  // Ensure the actual download uses the correct dynamic link if applicable
+  const realData = getQRDataString();
+  const dlOpts = Object.assign({}, opts, {width:sz,height:sz, data: realData});
   const dl=new QRCodeStyling(dlOpts);
   dl.download({name:'qr-'+selType+'-'+Date.now(),extension:ext});
   saveQR(true); 
@@ -987,7 +998,12 @@ function saveQR(silent = false){
   const tmp=document.createElement('div');
   tmp.style.cssText='position:fixed;left:-9999px;top:-9999px;width:200px;height:200px';
   document.body.appendChild(tmp);
-  const tOpts = Object.assign({}, opts, {width:200,height:200});
+  
+  // Create thumbnail and save state with the correct dynamic link
+  const realData = getQRDataString();
+  const finalOpts = Object.assign({}, opts, {data: realData});
+  
+  const tOpts = Object.assign({}, finalOpts, {width:200,height:200});
   const tq=new QRCodeStyling(tOpts);
   tq.append(tmp);
   
@@ -1006,7 +1022,7 @@ function saveQR(silent = false){
     const editId = urlParams.get('id');
     const idToSave = editId ? parseInt(editId) : window.activeQrId;
     
-    const entry={id: idToSave, type:selType, typeName:to.name, typeIcon:to.icon, content:getContent(), thumb:img, date:new Date().toLocaleDateString(), opts:Object.assign({},opts)};
+    const entry={id: idToSave, type:selType, typeName:to.name, typeIcon:to.icon, content:getContent(), thumb:img, date:new Date().toLocaleDateString(), opts:finalOpts};
     
     if (editId) {
         const idx = saved.findIndex(x => x.id === parseInt(editId));

@@ -226,10 +226,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         </label>
     </div>
     
-    <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+    <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg> Sign In
     </button>
-    <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+    <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
         <div class="nav-user-avatar" id="navUserAv">?</div>
         <span id="navUserName" style="font-size:0.85rem; font-weight:800; color:var(--txt);">User</span>
     </div>
@@ -250,14 +250,14 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   <button class="sb-btn act"><span class="sb-icon">🗂️</span>My Dashboard</button>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
-  <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
+  <button class="sb-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin()"><span class="sb-icon">⚙️</span>Account</button>
   
   <div class="sb-foot">
-    <button class="sign-btn" id="sbSignBtn" onclick="openLogin()">
+    <button class="sign-btn" id="sbSignBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>
       Sign In To Save
     </button>
-    <div class="pcard" id="pCard" style="display:none" onclick="openLogin()">
+    <div class="pcard" id="pCard" style="display:none" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
       <div class="pav" id="pAv">?</div>
       <div class="pinfo"><div class="pname" id="pName">User</div><div class="pemail" id="pEmail">tap to edit</div></div>
     </div>
@@ -336,183 +336,6 @@ function renderDB(){
   
   const dbs = document.getElementById('dbSub');
   if(curUser && dbs) dbs.textContent = `Dashboard synced. ${saved.length} assets ready.`;
-  
-  const g = document.getElementById('dbG'); if(!g) return;
-  g.innerHTML = '';
-  if(!filtered.length){
-    g.innerHTML=`<div class="db-emp"><div class="ei">🔳</div><h3>Workspace Empty</h3><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
-    return;
-  }
-  filtered.forEach(q=>{
-    const c=document.createElement('div');c.className='dbc';
-    const shortC = q.content.length>38 ? q.content.substring(0,38)+'…' : q.content;
-    c.innerHTML=`<div class="dbt">${q.thumb?`<img src="${q.thumb}" alt="QR">`:'<div style="font-size:2rem;opacity:.25">🔳</div>'}</div>
-    <div class="dbb"><div class="dtyp">${q.typeIcon} ${q.typeName}</div><h3 title="${q.content}">${shortC}</h3><div class="ddt">📅 ${q.date}</div></div>
-    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})">✏️ Editor</button><button class="dba-btn" onclick="reDL(${q.id})">⬇ Export</button><button class="dba-btn del" onclick="delQR(${q.id})">🗑 Delete</button></div>`;
-    g.appendChild(c);
-  });
-}
-
-function fDB(type,btn){
-    dbFil=type;
-    document.querySelectorAll('.dbf').forEach(b=>{ if(b===btn) b.classList.add('act'); else b.classList.remove('act'); });
-    renderDB();
-}
-function delQR(id){
-    if(!confirm('Permanently purge this QR asset?'))return;
-    let idx = -1;
-    for(let i=0;i<saved.length;i++){ if(saved[i].id===id){idx=i;break;} }
-    if(idx>-1){
-        saved.splice(idx,1);
-        Storage.set('qrs_min',JSON.stringify(saved));
-        renderDB();
-    }
-}
-function editQR(id){ window.location.href = 'qr-editor.html?id=' + id; }
-function reDL(id){
-<script src="col-auth.js"></script>
-</head>
-<body class="dark">
-<nav class="site-nav">
-  <a href="index.html" class="nav-brand">
-    <img src="class.png" alt="Class Of Learners" class="brand-logo">
-    <span>Class Of Learners</span>
-  </a>
-  <button class="mmb" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
-  
-  <div class="nav-links">
-    <a href="index.html" class="nav-link">Home Hub</a>
-    <a href="about.html" class="nav-link">About Us</a>
-    <a href="school.html" class="nav-link">Our School</a>
-    <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
-    
-    <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
-        <button class="dropdown-btn" style="color: var(--pri);">Projects <span>▼</span></button>
-        <div class="dropdown-content">
-            <div class="dropdown-content-inner">
-                <a href="ati.html">Typing Instructor <span>⌨️</span></a>
-                <a href="solar.html">Solar Engine <span>🪐</span></a>
-                <a href="gesture.html">Gesture Control <span>🖐️</span></a>
-                <a href="rpg.html">RPG Game <span>⚔️</span></a>
-                <a href="qr.html" style="color: var(--pri);">QR Generator <span>⬛</span></a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="theme-switch-wrapper">
-        <span class="theme-label">Dark/Light</span>
-        <label class="theme-switch" for="checkbox">
-            <input type="checkbox" id="themeChk" onchange="toggleTheme(this)">
-            <div class="slider round"></div>
-        </label>
-    </div>
-    
-    <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg> Sign In
-    </button>
-    <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
-        <div class="nav-user-avatar" id="navUserAv">?</div>
-        <span id="navUserName" style="font-size:0.85rem; font-weight:800; color:var(--txt);">User</span>
-    </div>
-  </div>
-</nav>
-
-<div class="qr-app">
-<aside class="app-sb">
-  <div class="sb-top">
-    <div class="sb-top-title">⬛ QR STUDIO</div>
-    <div class="sb-top-sub">By Class Of Learners</div>
-  </div>
-  
-  <div class="sb-lbl">Create</div>
-  <a href="qr-editor.html" class="sb-btn"><span class="sb-icon">➕</span>New Code</a>
-  
-  <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
-  <button class="sb-btn act"><span class="sb-icon">🗂️</span>My Dashboard</button>
-  
-  <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
-  <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
-  
-  <div class="sb-foot">
-    <button class="sign-btn" id="sbSignBtn" onclick="openLogin()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>
-      Sign In To Save
-    </button>
-    <div class="pcard" id="pCard" style="display:none" onclick="openLogin()">
-      <div class="pav" id="pAv">?</div>
-      <div class="pinfo"><div class="pname" id="pName">User</div><div class="pemail" id="pEmail">tap to edit</div></div>
-    </div>
-  </div>
-</aside>
-
-<div class="workspace">
-  <div class="db-container">
-      <div class="db-hd">
-        <div><h1>My Saved Codes</h1><p id="dbSub">Manage your generated assets.</p></div>
-        <a href="qr-editor.html" class="btn-nx" style="height:fit-content; margin:0;">+ Create New</a>
-      </div>
-      
-      <div class="db-sync-bar" id="dbSyncBar" style="display:none">
-        <div class="db-sync-info">
-          <svg width="20" height="20" viewBox="0 0 87.3 78" fill="#10b981"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0a7.3 7.3 0 0 0 1 3.55z"/><path d="M43.65 25L29.9 1.2a8.8 8.8 0 0 0-3.3 3.3L1 65.2a7.3 7.3 0 0 0-1 3.65h27.45z"/><path d="M73.55 76.8a8.8 8.8 0 0 0 3.3-3.3l1.6-2.75 7.65-13.25a7.3 7.3 0 0 0 1-3.65H59.85l5.5 10.45z"/><path d="M43.65 25L57.4 1.2A8.6 8.6 0 0 0 53.73 0H33.58a8.6 8.6 0 0 0-3.68 1.2z" fill="#00832d"/><path d="M59.85 53.5H27.45L13.7 77.1c1.35.8 2.9 1.2 4.5 1.2h50.6c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="M73.4 26.5l-13-22.5a8.8 8.8 0 0 0-3-3.3L43.65 25 59.85 53.5h27.4a7.3 7.3 0 0 0-1-3.65z"/></svg>
-          Cloud Backup: <span id="driveStatus">Not Synced</span>
-        </div>
-        <div style="display:flex;gap:10px">
-          <button class="dbf" onclick="syncDrive()">⬆ Upload to Drive</button>
-          <button class="dbf" onclick="loadFromDrive()">⬇ Fetch from Drive</button>
-        </div>
-      </div>
-
-      <div class="db-stats">
-        <div class="st-card"><div class="v" id="stTotal">0</div><div class="l">Total Generated</div></div>
-        <div class="st-card"><div class="v" id="stTypes">0</div><div class="l">Formats Used</div></div>
-        <div class="st-card"><div class="v" id="stLast">—</div><div class="l">Last Saved</div></div>
-      </div>
-      
-      <div class="db-filt">
-        <button class="dbf act" onclick="fDB('all',this)">All Types</button>
-        <button class="dbf" onclick="fDB('url',this)">Website</button>
-        <button class="dbf" onclick="fDB('wifi',this)">Wi-Fi</button>
-        <button class="dbf" onclick="fDB('vcard',this)">Contacts</button>
-        <button class="dbf" onclick="fDB('text',this)">Plain Text</button>
-      </div>
-      <div class="db-grid" id="dbG"></div>
-  </div>
-  
-  <footer class="site-footer" style="width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--nav); margin-top: auto;">
-      <div style="display:flex; justify-content:center; gap:25px; margin-bottom:15px; flex-wrap: wrap;">
-          <a href="privacy.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Privacy Policy</a>
-          <a href="terms.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Terms of Service</a>
-          <a href="feedback.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Provide Feedback</a>
-      </div>
-      <div style="color:var(--txt-m); font-size:0.85rem; font-weight:600;">© 2026 Class Of Learners. Developed By Neel, Ansh And Aarush. All Rights Reserved.</div>
-  </footer>
-</div>
-</div>
-
-
-
-<div class="toast" id="toast"></div>
-
-<script>
-const Storage = {
-  get: function(key) { try { return localStorage.getItem(key); } catch(e) { return null; } },
-  set: function(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
-};
-
-let dbFil='all';
-let saved = [];
-
-try { const sData = Storage.get('qrs_min'); if (sData) saved = JSON.parse(sData); } catch(e) {}
-
-function renderDB(){
-  const filtered = dbFil==='all' ? saved : saved.filter(q=>q.type===dbFil);
-  document.getElementById('stTotal').textContent = saved.length;
-  
-  const uniqueTypes = [];
-  saved.forEach(function(q){ if(uniqueTypes.indexOf(q.type)===-1) uniqueTypes.push(q.type); });
-  document.getElementById('stTypes').textContent = uniqueTypes.length;
-  document.getElementById('stLast').textContent = saved.length>0 ? saved[0].date : '—';
   
   const g = document.getElementById('dbG'); if(!g) return;
   g.innerHTML = '';
