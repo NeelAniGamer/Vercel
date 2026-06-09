@@ -508,6 +508,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <span class="dschev">▼</span>
           </div>
           <div class="dsb" id="dsClb">
+            <div style="margin-bottom: 20px;">
+                <label style="font-size: 0.8rem; font-weight: 800; color: var(--txt); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px;">Premium Palettes</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="premiumPalettes"></div>
+            </div>
             <div class="clr-row">
               <div class="clr-blk">
                 <label>Foreground</label>
@@ -884,13 +888,23 @@ function setPad(val) {
 }
 
 const FRAMES=[ {id:'none',label:'Borderless'}, {id:'border',label:'Container'}, {id:'shadow',label:'Elevated'}, {id:'rounded',label:'Smooth'}, {id:'scan',label:'CTA Tag'}, {id:'ticket',label:'Coupon'}, {id:'badge',label:'Circular'}, {id:'phone',label:'Mobile'} ];
+const F_SVG = {
+  none: '<svg width="54" height="54" viewBox="0 0 54 54"><rect x="15" y="15" width="24" height="24" rx="2" fill="#10b981" opacity=".8"/><path d="M21 21h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4z" fill="#fff"/></svg>',
+  border: '<svg width="54" height="54" viewBox="0 0 54 54"><rect x="8" y="8" width="38" height="38" fill="none" stroke="#10b981" stroke-width="2"/><rect x="15" y="15" width="24" height="24" rx="2" fill="#10b981" opacity=".5"/><path d="M21 21h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4z" fill="#fff"/></svg>',
+  shadow: '<svg width="54" height="54" viewBox="0 0 54 54"><defs><filter id="ds"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/></filter></defs><rect x="10" y="10" width="34" height="34" fill="#fff" filter="url(#ds)"/><rect x="15" y="15" width="24" height="24" rx="2" fill="#10b981" opacity=".5"/><path d="M21 21h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4z" fill="#fff"/></svg>',
+  rounded: '<svg width="54" height="54" viewBox="0 0 54 54"><rect x="8" y="8" width="38" height="38" rx="10" fill="none" stroke="#10b981" stroke-width="2"/><rect x="15" y="15" width="24" height="24" rx="2" fill="#10b981" opacity=".5"/><path d="M21 21h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4z" fill="#fff"/></svg>',
+  scan: '<svg width="54" height="54" viewBox="0 0 54 54"><path d="M8 8h38v38H8z" fill="none" stroke="#10b981" stroke-width="2"/><rect x="8" y="38" width="38" height="8" fill="#10b981"/><text x="27" y="44" font-size="6" fill="#fff" text-anchor="middle" font-weight="bold" font-family="sans-serif">SCAN</text><rect x="15" y="11" width="24" height="24" rx="2" fill="#10b981" opacity=".5"/><path d="M21 17h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4z" fill="#fff"/></svg>',
+  ticket: '<svg width="54" height="54" viewBox="0 0 54 54"><path d="M10 10h34v8a4 4 0 0 0 0 8v18H10V26a4 4 0 0 0 0-8v-8z" fill="none" stroke="#10b981" stroke-width="2"/><rect x="15" y="15" width="24" height="24" rx="2" fill="#10b981" opacity=".5"/><path d="M21 21h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4z" fill="#fff"/></svg>',
+  badge: '<svg width="54" height="54" viewBox="0 0 54 54"><circle cx="27" cy="27" r="20" fill="none" stroke="#10b981" stroke-width="2"/><rect x="18" y="18" width="18" height="18" rx="2" fill="#10b981" opacity=".5"/><path d="M21 21h3v3h-3zm6 0h3v3h-3zm-6 6h3v3h-3z" fill="#fff"/></svg>',
+  phone: '<svg width="54" height="54" viewBox="0 0 54 54"><rect x="14" y="6" width="26" height="42" rx="4" fill="none" stroke="#10b981" stroke-width="2"/><rect x="19" y="13" width="16" height="16" rx="1" fill="#10b981" opacity=".5"/><circle cx="27" cy="43" r="2" fill="#10b981"/><path d="M22 16h2v2h-2zm4 0h2v2h-2zm-4 4h2v2h-2z" fill="#fff"/></svg>'
+};
 function buildFrameGrid(){
   const g=document.getElementById('frGrid');if(!g)return;g.innerHTML='';
   FRAMES.forEach(f=>{
     const b=document.createElement('button');
     b.className='vb'+(f.id==='none'?' sel':''); b.dataset.fr=f.id;
     b.onclick=function(){setFr(f.id);};
-    b.innerHTML=`<svg width="54" height="54" viewBox="0 0 54 54"><rect x="19" y="19" width="16" height="16" rx="2" fill="#10b981" opacity=".3"/><rect x="22" y="22" width="4" height="4" fill="#10b981" opacity=".8"/><rect x="28" y="22" width="4" height="4" fill="#10b981" opacity=".8"/><rect x="22" y="28" width="4" height="4" fill="#10b981" opacity=".8"/></svg><span>${f.label}</span>`;
+    b.innerHTML=F_SVG[f.id] + `<span>${f.label}</span>`;
     g.appendChild(b);
   });
 }
@@ -1010,14 +1024,64 @@ function ug(side){
 }
 function tt(){ const on=document.getElementById('bgT').checked; opts.backgroundOptions=Object.assign({}, opts.backgroundOptions, {color:on?'#00000000':'#ffffff',gradient:undefined}); if(qrInst)qrInst.update({backgroundOptions:opts.backgroundOptions}); }
 
+const SVG_LOGOS = {
+  wa: 'data:image/svg+xml;utf8,<svg fill="%2325D366" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a5.8 5.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.82 9.82 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.81 11.81 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.88 11.88 0 0 0 5.683 1.448h.005c6.559 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.413Z"/></svg>',
+  wifi: 'data:image/svg+xml;utf8,<svg fill="%2310b981" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C7.2 3 2.8 4.7 0 7.5L2 9.5C4.4 7 8.1 5.5 12 5.5s7.6 1.5 10 4l2-2C21.2 4.7 16.8 3 12 3zm0 5C8.5 8 5.3 9.3 3.1 11.3l2 2C6.8 11.8 9.2 10.7 12 10.7s5.2 1.1 6.9 2.6l2-2C18.7 9.3 15.5 8 12 8zm0 5c-1.3 0-2.6.4-3.6 1.1l2 2c.5-.3 1-.5 1.6-.5s1.1.2 1.6.5l2-2c-1-.7-2.3-1.1-3.6-1.1zm0 5c-.8 0-1.5.7-1.5 1.5S11.2 21 12 21s1.5-.7 1.5-1.5S12.8 18 12 18z"/></svg>',
+  email: 'data:image/svg+xml;utf8,<svg fill="%233b82f6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>',
+  link: 'data:image/svg+xml;utf8,<svg fill="%238b5cf6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>',
+  star: 'data:image/svg+xml;utf8,<svg fill="%23f59e0b" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>'
+};
 const LOGO_PRESETS=[{id:'none',icon:'🚫'},{id:'wa',icon:'💬'},{id:'wifi',icon:'📶'},{id:'email',icon:'✉️'},{id:'link',icon:'🔗'},{id:'star',icon:'⭐'}];
 function buildLogoPresets(){
   const w=document.getElementById('logoPs');if(!w)return;w.innerHTML='';
   LOGO_PRESETS.forEach((p,i)=>{
     const b=document.createElement('button');b.className='logo-p'+(i===0?' sel':''); b.title=p.id;b.textContent=p.icon;b.dataset.lp=p.id;
-    b.onclick=function(){ document.querySelectorAll('.logo-p').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); if(p.id==='none')rmL(); }; w.appendChild(b);
+    b.onclick=function(){ 
+        document.querySelectorAll('.logo-p').forEach(x=>x.classList.remove('sel')); 
+        b.classList.add('sel'); 
+        if(p.id==='none') rmL(); 
+        else if(SVG_LOGOS[p.id]) applyLogo(SVG_LOGOS[p.id]); 
+    }; 
+    w.appendChild(b);
   });
 }
+const PREMIUM_PALETTES = [
+  {id:'neon', name:'Neon Cyber', fg:'#00ffcc', bg:'#0f172a', grad:['#00ffcc', '#3b82f6']},
+  {id:'sunset', name:'Sunset', fg:'#ffffff', bg:'#000000', grad:['#f43f5e', '#f59e0b']},
+  {id:'berry', name:'Berry', fg:'#ffffff', bg:'#000000', grad:['#d946ef', '#8b5cf6']},
+  {id:'emerald', name:'Emerald', fg:'#022c22', bg:'#ecfdf5', grad:null},
+  {id:'gold', name:'Gold Luxury', fg:'#000000', bg:'#111827', grad:['#fbbf24', '#f59e0b']},
+  {id:'monochrome', name:'Clean Mono', fg:'#000000', bg:'#ffffff', grad:null}
+];
+function buildPremiumPalettes(){
+  const w=document.getElementById('premiumPalettes'); if(!w)return; w.innerHTML='';
+  PREMIUM_PALETTES.forEach(p=>{
+    const b=document.createElement('div');
+    b.style.cssText = `width: 45px; height: 45px; border-radius: 50%; cursor: pointer; border: 2px solid var(--border); background: ${p.grad ? `linear-gradient(135deg, ${p.grad[0]}, ${p.grad[1]})` : p.fg}; position: relative; overflow: hidden;`;
+    b.title = p.name;
+    b.onclick = function(){
+      document.getElementById('fgP').value = p.fg;
+      document.getElementById('fgH').value = p.fg;
+      document.getElementById('bgP').value = p.bg;
+      document.getElementById('bgH').value = p.bg;
+      if(p.grad){
+          document.getElementById('fgG').checked = true;
+          document.getElementById('fg1').value = p.grad[0];
+          document.getElementById('fg2').value = p.grad[1];
+          document.getElementById('fgGC').style.display = 'flex';
+      } else {
+          document.getElementById('fgG').checked = false;
+          document.getElementById('fgGC').style.display = 'none';
+      }
+      document.getElementById('bgG').checked = false;
+      document.getElementById('bgGC').style.display = 'none';
+      uc('fg', p.fg); uc('bg', p.bg);
+      if(p.grad) ug('fg');
+    };
+    w.appendChild(b);
+  });
+}
+
 function handleLogo(input){
   const f=input.files[0];if(!f)return;
   const r=new FileReader(); r.onload=function(e){ applyLogo(e.target.result); document.querySelectorAll('.logo-p').forEach(x=>x.classList.remove('sel')); }; r.readAsDataURL(f);
@@ -1058,13 +1122,18 @@ function removeBgImage(){
     if(bgT) bgT.checked = false;
 }
 
-const CORR=[{id:'Q',p:'25%',l:'Level Q'},{id:'H',p:'30%',l:'Level H'},{id:'M',p:'15%',l:'Level M'},{id:'L',p:'7%',l:'Level L'}];
+const CORR=[
+  {id:'L',p:'7%',l:'Level L',desc:'Best for clean codes'},
+  {id:'M',p:'15%',l:'Level M',desc:'Good for general use'},
+  {id:'Q',p:'25%',l:'Level Q',desc:'Good for small logos'},
+  {id:'H',p:'30%',l:'Level H',desc:'Best for large logos'}
+];
 function buildCorrGrid(){
   const g=document.getElementById('corrG');if(!g)return;g.innerHTML='';
   CORR.forEach(c=>{
     const b=document.createElement('div');b.className='corr-b'+(c.id==='H'?' sel':'');b.dataset.cr=c.id; b.onclick=function(){setCorr(c.id);};
     const cv=document.createElement('canvas');cv.width=58;cv.height=58; drawCorrPrev(cv,c.id); b.appendChild(cv);
-    b.innerHTML+=`<div class="clv">${c.l}</div><div class="cpt">${c.p} Backup</div>`; g.appendChild(b);
+    b.innerHTML+=`<div class="clv">${c.l}</div><div class="cpt">${c.p} Backup</div><div style="font-size:0.65rem; color:var(--txt-m); margin-top:4px;">${c.desc}</div>`; g.appendChild(b);
   });
 }
 function drawCorrPrev(cv,level){
@@ -1442,6 +1511,7 @@ window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.clos
   buildFrameGrid(); 
   buildDotGrid(); 
   buildCornerGrids(); 
+  buildPremiumPalettes();
   buildLogoPresets(); 
   buildCorrGrid();
   
