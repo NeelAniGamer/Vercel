@@ -411,12 +411,99 @@ function delQR(id){
     }
 }
 
-function renderStats() {
+async function renderStats() {
     const v = document.getElementById('view-stats');
     if(v.innerHTML !== '') return;
     
-    let totalScans = Math.floor(Math.random() * 5000) + 1000;
+    v.innerHTML = `
+        <div class="db-hd">
+          <div><h1>Analytics Overview</h1><p>Track the performance of your dynamic QR campaigns.</p></div>
+        </div>
+        <div style="padding: 50px; text-align: center; color: var(--txt-m);">
+           <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+           <div style="margin: 0 auto 20px auto; width: 40px; height: 40px; border: 4px solid rgba(16, 185, 129, 0.2); border-top: 4px solid #10b981; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+           <p>Syncing analytics data from cloud...</p>
+        </div>
+    `;
+
+    // Initialize Supabase if needed
+    let sb = window.supabaseClient;
+    if (!sb) {
+        try {
+            const res = await fetch('config.json');
+            const config = await res.json();
+            if (config.auth && config.auth.url) {
+                if (typeof window.supabase === 'undefined') {
+                    await new Promise(resolve => {
+                        const script = document.createElement('script');
+                        script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+                        script.onload = resolve;
+                        document.head.appendChild(script);
+                    });
+                }
+                sb = window.supabase.createClient(config.auth.url, config.auth.key);
+                window.supabaseClient = sb;
+            }
+        } catch(e) {}
+    }
+
+    if (!sb) {
+        v.innerHTML = `
+        <div class="db-hd">
+          <div><h1>Analytics Overview</h1><p>Track the performance of your dynamic QR campaigns.</p></div>
+        </div>
+        <div style="padding: 50px; text-align: center; color: #ef4444;">
+           <p>⚠️ Database configuration is missing. Analytics requires Supabase integration.</p>
+        </div>`;
+        return;
+    }
+
+    const myQrIds = saved.map(q => String(q.id));
+    let scans = [];
     
+    if (myQrIds.length > 0) {
+        try {
+            const { data, error } = await sb
+                .from('qr_scans')
+                .select('*')
+                .in('qr_id', myQrIds);
+            if (data) scans = data;
+        } catch(e) {
+            console.error('Failed to load stats', e);
+        }
+    }
+
+    const totalScans = scans.length;
+    let mobileScans = 0;
+    let desktopScans = 0;
+    const countryMap = {};
+    const dateMap = {};
+
+    const today = new Date();
+    for(let i=29; i>=0; i--) {
+        const d = new Date();
+        d.setDate(today.getDate() - i);
+        dateMap[d.toISOString().split('T')[0]] = 0;
+    }
+
+    scans.forEach(s => {
+        if(s.device_type === 'Mobile') mobileScans++;
+        else desktopScans++;
+
+        if(s.country && s.country !== 'Unknown') {
+            countryMap[s.country] = (countryMap[s.country] || 0) + 1;
+        }
+
+        const dateStr = new Date(s.created_at).toISOString().split('T')[0];
+        if(dateMap[dateStr] !== undefined) {
+            dateMap[dateStr]++;
+        }
+    });
+
+    const dates = Object.keys(dateMap).sort();
+    const maxScansPerDay = Math.max(2, ...Object.values(dateMap));
+    const sortedCountries = Object.keys(countryMap).sort((a,b) => countryMap[b] - countryMap[a]).slice(0, 4);
+
     v.innerHTML = `
         <div class="db-hd">
           <div><h1>Analytics Overview</h1><p>Track the performance of your dynamic QR campaigns.</p></div>
@@ -428,11 +515,11 @@ function renderStats() {
               <div class="l">Total Unique Scans</div>
           </div>
           <div class="st-card">
-              <div class="v">${Math.floor(totalScans * 0.72).toLocaleString()}</div>
+              <div class="v">${mobileScans.toLocaleString()}</div>
               <div class="l">Mobile Devices</div>
           </div>
           <div class="st-card">
-              <div class="v">${Math.floor(totalScans * 0.28).toLocaleString()}</div>
+              <div class="v">${desktopScans.toLocaleString()}</div>
               <div class="l">Desktop Devices</div>
           </div>
         </div>
@@ -441,9 +528,10 @@ function renderStats() {
             <div class="dbc" style="padding: 30px;">
                 <h3 style="margin-bottom: 20px; font-weight: 800; font-size: 1.2rem; color: var(--txt);">Scans Over Time (Last 30 Days)</h3>
                 <div style="height: 250px; display: flex; align-items: flex-end; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-                    ${Array.from({length: 30}).map(() => {
-                        const h = Math.floor(Math.random() * 80) + 10;
-                        return '<div style="flex: 1; background: var(--pri); height: ' + h + '%; border-radius: 4px 4px 0 0; opacity: 0.8; transition: 0.3s;"></div>';
+                    ${dates.map(date => {
+                        const count = dateMap[date];
+                        const h = Math.max(2, (count / maxScansPerDay) * 100);
+                        return '<div title="' + date + ': ' + count + ' scans" style="flex: 1; background: var(--pri); height: ' + h + '%; border-radius: 4px 4px 0 0; opacity: 0.8; transition: 0.3s; cursor:pointer;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8"></div>';
                     }).join('')}
                 </div>
                 <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.8rem; color:var(--txt-m); font-weight:600;">
@@ -454,22 +542,17 @@ function renderStats() {
             <div class="dbc" style="padding: 30px;">
                 <h3 style="margin-bottom: 20px; font-weight: 800; font-size: 1.2rem; color: var(--txt);">Top Countries</h3>
                 <div style="display:flex; flex-direction:column; gap:20px;">
-                    <div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; color:var(--txt); font-weight:600;"><span>🇺🇸 United States</span> <strong>45%</strong></div>
-                        <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;"><div style="width:45%; height:100%; background:linear-gradient(90deg, var(--pri), #34d399); border-radius:4px;"></div></div>
-                    </div>
-                    <div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; color:var(--txt); font-weight:600;"><span>🇬🇧 United Kingdom</span> <strong>22%</strong></div>
-                        <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;"><div style="width:22%; height:100%; background:linear-gradient(90deg, var(--pri), #34d399); border-radius:4px;"></div></div>
-                    </div>
-                    <div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; color:var(--txt); font-weight:600;"><span>🇮🇳 India</span> <strong>15%</strong></div>
-                        <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;"><div style="width:15%; height:100%; background:linear-gradient(90deg, var(--pri), #34d399); border-radius:4px;"></div></div>
-                    </div>
-                    <div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; color:var(--txt); font-weight:600;"><span>🇨🇦 Canada</span> <strong>8%</strong></div>
-                        <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;"><div style="width:8%; height:100%; background:linear-gradient(90deg, var(--pri), #34d399); border-radius:4px;"></div></div>
-                    </div>
+                    ${sortedCountries.length === 0 ? '<div style="color:var(--txt-m); font-size:0.9rem;">No geographic data yet.</div>' : ''}
+                    ${sortedCountries.map(c => {
+                        const count = countryMap[c];
+                        const pct = Math.round((count / totalScans) * 100);
+                        return \`
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; color:var(--txt); font-weight:600;"><span>🗺️ \${c}</span> <strong>\${pct}%</strong></div>
+                            <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;"><div style="width:\${pct}%; height:100%; background:linear-gradient(90deg, var(--pri), #34d399); border-radius:4px;"></div></div>
+                        </div>
+                        \`;
+                    }).join('')}
                 </div>
             </div>
         </div>

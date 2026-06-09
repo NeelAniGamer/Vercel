@@ -111,6 +111,29 @@ async function processRedirect() {
         }
 
         msg.textContent = 'Redirecting...';
+        
+        // --- LOG SCAN DATA ---
+        try {
+            const ua = navigator.userAgent;
+            const isMobile = /Mobile|Android|iP(hone|od|ad)/i.test(ua);
+            const deviceType = isMobile ? 'Mobile' : 'Desktop';
+            
+            let country = 'Unknown';
+            try {
+                const geoRes = await fetch('https://get.geojs.io/v1/ip/country/name');
+                if (geoRes.ok) country = (await geoRes.text()).trim();
+            } catch(e) {}
+
+            await supabase.from('qr_scans').insert([{ 
+                qr_id: String(targetQR.id), 
+                device_type: deviceType, 
+                country: country 
+            }]);
+        } catch(e) {
+            console.error('Failed to log scan', e);
+        }
+        // ---------------------
+
         window.location.replace(finalUrl);
 
     } catch (err) {
