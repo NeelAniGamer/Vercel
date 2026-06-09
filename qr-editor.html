@@ -458,6 +458,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
               <div id="frTextDiv" style="display:none; margin-top: 15px;">
                   <label class="ds-label">Frame Text</label>
                   <input type="text" class="fi" id="frTextInput" value="SCAN NOW" oninput="setFrText(this.value)" style="margin-bottom:10px">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                      <label class="ds-label" style="margin:0;">Text Color</label>
+                      <input type="color" id="frTextColor" value="#ffffff" oninput="setFrTextCol(this.value)" style="border:none; border-radius:4px; cursor:pointer; padding:0; width:30px; height:30px; background:transparent;">
+                  </div>
               </div>
 
               <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 15px;">
@@ -510,14 +514,35 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
                 <label>Foreground</label>
                 <div class="clr-pr"><input type="color" id="fgP" value="#000000" oninput="uc('fg',this.value)"><input class="hex fi" id="fgH" value="#000000" maxlength="7" oninput="sc('fg',this.value)"></div>
                 <label class="gtog"><input type="checkbox" id="fgG" onchange="tg('fg')"> Use Gradient</label>
-                <div class="gcols" id="fgGC" style="display:none"><input type="color" id="fg1" value="#000000" oninput="ug('fg')"><input type="color" id="fg2" value="#10b981" oninput="ug('fg')"></div>
+                <div class="gcols" id="fgGC" style="display:none; flex-direction:column; gap:8px;">
+                    <div style="display:flex; gap:10px;"><input type="color" id="fg1" value="#000000" oninput="ug('fg')"><input type="color" id="fg2" value="#10b981" oninput="ug('fg')"></div>
+                    <select id="fgGType" onchange="ug('fg')" class="fi" style="padding: 8px;">
+                        <option value="linear">Linear</option>
+                        <option value="radial">Radial</option>
+                    </select>
+                    <div><label style="font-size: 0.75rem;">Angle</label><input type="range" id="fgGAngle" min="0" max="360" value="0" oninput="ug('fg')" style="width: 100%;"></div>
+                </div>
               </div>
               <div class="clr-blk">
                 <label>Background</label>
                 <div class="clr-pr"><input type="color" id="bgP" value="#ffffff" oninput="uc('bg',this.value)"><input class="hex fi" id="bgH" value="#ffffff" maxlength="7" oninput="sc('bg',this.value)"></div>
                 <label class="gtog"><input type="checkbox" id="bgG" onchange="tg('bg')"> Use Gradient</label>
-                <div class="gcols" id="bgGC" style="display:none"><input type="color" id="bg1" value="#ffffff" oninput="ug('bg')"><input type="color" id="bg2" value="#f0fdf4" oninput="ug('bg')"></div>
+                <div class="gcols" id="bgGC" style="display:none; flex-direction:column; gap:8px;">
+                    <div style="display:flex; gap:10px;"><input type="color" id="bg1" value="#ffffff" oninput="ug('bg')"><input type="color" id="bg2" value="#f0fdf4" oninput="ug('bg')"></div>
+                    <select id="bgGType" onchange="ug('bg')" class="fi" style="padding: 8px;">
+                        <option value="linear">Linear</option>
+                        <option value="radial">Radial</option>
+                    </select>
+                    <div><label style="font-size: 0.75rem;">Angle</label><input type="range" id="bgGAngle" min="0" max="360" value="0" oninput="ug('bg')" style="width: 100%;"></div>
+                </div>
                 <label class="trp"><input type="checkbox" id="bgT" onchange="tt()"> Transparent BG</label>
+                
+                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-light);">
+                    <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Background Image</label>
+                    <button class="fi" onclick="document.getElementById('bgImgFile').click()" style="width:100%; cursor:pointer; margin-top:5px;">Upload Image</button>
+                    <input type="file" id="bgImgFile" accept="image/*" style="display:none" onchange="handleBgImage(this)">
+                    <button id="rmBgImg" style="display:none; width:100%; padding:8px; margin-top:5px; background:transparent; border:1px solid #ef4444; color:#ef4444; border-radius:6px; cursor:pointer;" onclick="removeBgImage()">✕ Remove BG Image</button>
+                </div>
               </div>
             </div>
           </div>
@@ -541,6 +566,8 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
                
                <label class="ds-label">Logo Margin (Clearance)</label>
                <input type="range" class="ds-slider" min="0" max="25" step="1" value="8" oninput="setLogoOpt('margin', this.value)">
+               
+               <label class="trp" style="margin-top: 15px; display: block;"><input type="checkbox" id="logoBgHide" checked onchange="setLogoOpt('hideBackgroundDots', this.checked)"> Hide QR Dots Behind Logo</label>
             </div>
 
             <input type="file" id="lFile" accept="image/*" style="display:none" onchange="handleLogo(this)">
@@ -847,7 +874,8 @@ function setCrnCol(type, val) {
 }
 
 function setLogoOpt(key, val) {
-    opts.imageOptions = Object.assign({}, opts.imageOptions, {[key]: parseFloat(val)});
+    const finalVal = typeof val === 'boolean' ? val : parseFloat(val);
+    opts.imageOptions = Object.assign({}, opts.imageOptions, {[key]: finalVal});
     if(qrInst) qrInst.update({imageOptions: opts.imageOptions});
 }
 
@@ -893,6 +921,12 @@ function setFrText(val) {
     const l=document.getElementById('frLbl');
     if(l && selFrame === 'scan') {
         l.textContent = val || ' ';
+    }
+}
+function setFrTextCol(val) {
+    const l=document.getElementById('frLbl');
+    if(l && selFrame === 'scan') {
+        l.style.color = val;
     }
 }
 
@@ -967,7 +1001,11 @@ function sc(side,val){ if(!/^#[0-9A-Fa-f]{6}$/.test(val))return; const picker = 
 function tg(side){ const on=document.getElementById(side+'G').checked; const gc = document.getElementById(side+'GC'); if(gc) gc.style.display=on?'grid':'none'; if(on)ug(side); }
 function ug(side){
   const c1=document.getElementById(side+'1').value,c2=document.getElementById(side+'2').value;
-  const grad={type:'linear',rotation:0,colorStops:[{offset:0,color:c1},{offset:1,color:c2}]};
+  const tEl = document.getElementById(side+'GType');
+  const aEl = document.getElementById(side+'GAngle');
+  const type = tEl ? tEl.value : 'linear';
+  const rot = aEl ? parseInt(aEl.value) * (Math.PI / 180) : 0; // Convert degrees to radians
+  const grad={type:type, rotation:rot, colorStops:[{offset:0,color:c1},{offset:1,color:c2}]};
   if(side==='fg'){ opts.dotsOptions=Object.assign({}, opts.dotsOptions, {gradient:grad,color:undefined}); if(qrInst)qrInst.update({dotsOptions:opts.dotsOptions}); }
   else { opts.backgroundOptions=Object.assign({}, opts.backgroundOptions, {gradient:grad,color:undefined}); if(qrInst)qrInst.update({backgroundOptions:opts.backgroundOptions}); }
 }
@@ -987,6 +1025,39 @@ function handleLogo(input){
 }
 function applyLogo(src){ opts.image=src;if(qrInst)qrInst.update({image:src}); const rml = document.getElementById('rmLogo'); if(rml) rml.style.display='block'; }
 function rmL(){ opts.image=''; if(qrInst)qrInst.update({image:''}); const rml = document.getElementById('rmLogo'); if(rml) rml.style.display='none'; }
+
+function handleBgImage(input){
+  const f=input.files[0];if(!f)return;
+  const r=new FileReader(); 
+  r.onload=function(e){ 
+      const src = e.target.result;
+      document.getElementById('qrWrap').style.backgroundImage = `url(${src})`;
+      document.getElementById('qrWrap').style.backgroundSize = 'cover';
+      document.getElementById('qrWrap').style.backgroundPosition = 'center';
+      
+      // Auto-set QR background to transparent
+      opts.backgroundOptions = Object.assign({}, opts.backgroundOptions, {color: '#00000000'});
+      if(qrInst) qrInst.update({backgroundOptions: opts.backgroundOptions});
+      const bgT = document.getElementById('bgT');
+      if(bgT) bgT.checked = true;
+      
+      const rmb = document.getElementById('rmBgImg'); 
+      if(rmb) rmb.style.display='block'; 
+  }; 
+  r.readAsDataURL(f);
+}
+function removeBgImage(){ 
+    document.getElementById('qrWrap').style.backgroundImage = '';
+    const rmb = document.getElementById('rmBgImg'); 
+    if(rmb) rmb.style.display='none'; 
+    document.getElementById('bgImgFile').value = '';
+    
+    // Auto-set QR background back to white
+    opts.backgroundOptions = Object.assign({}, opts.backgroundOptions, {color: '#ffffff'});
+    if(qrInst) qrInst.update({backgroundOptions: opts.backgroundOptions});
+    const bgT = document.getElementById('bgT');
+    if(bgT) bgT.checked = false;
+}
 
 const CORR=[{id:'Q',p:'25%',l:'Level Q'},{id:'H',p:'30%',l:'Level H'},{id:'M',p:'15%',l:'Level M'},{id:'L',p:'7%',l:'Level L'}];
 function buildCorrGrid(){
@@ -1051,30 +1122,42 @@ function dlQR(ext){
   const realData = getQRDataString();
   const dlOpts = Object.assign({}, opts, {width:sz,height:sz, data: realData});
   
-  // If no frame is selected or exporting SVG, use native download
-  if(selFrame === 'none' || ext === 'svg') {
+  // Check if background image exists
+  const hasBgImg = document.getElementById('qrWrap').style.backgroundImage !== '';
+
+  // If no frame is selected, no background image is set, or exporting SVG, use native download
+  if((selFrame === 'none' && !hasBgImg) || ext === 'svg') {
       const dl=new QRCodeStyling(dlOpts);
       dl.download({name:'qr-'+selType+'-'+Date.now(),extension:ext});
       saveQR(true); 
       return;
   }
   
-  // For custom frames, use html2canvas
-  toast('Rendering high-res frame...', 'green');
+  // For custom frames or background images, use html2canvas
+  toast('Rendering high-res format...', 'green');
   const tmpWrapper = document.createElement('div');
   tmpWrapper.style.position = 'fixed';
   tmpWrapper.style.left = '-9999px';
   tmpWrapper.style.top = '-9999px';
   tmpWrapper.style.background = '#ffffff'; // Ensure background for frame
   tmpWrapper.style.padding = '40px';
-  tmpWrapper.className = 'frame-' + selFrame; // Apply frame CSS
   
-  // Copy styles manually for specific frames if needed, or rely on CSS classes
-  if(selFrame === 'border') tmpWrapper.style.outline = '8px solid var(--pri)';
-  if(selFrame === 'shadow') tmpWrapper.style.boxShadow = '0 30px 60px rgba(0,0,0,0.8)';
-  if(selFrame === 'ticket') tmpWrapper.style.outline = '8px dashed rgba(16,185,129,0.7)';
-  if(selFrame === 'phone') tmpWrapper.style.outline = '12px solid var(--pri)';
-  if(selFrame === 'badge') tmpWrapper.style.borderRadius = '50%';
+  if (selFrame !== 'none') {
+      tmpWrapper.className = 'frame-' + selFrame; // Apply frame CSS
+      if(selFrame === 'border') tmpWrapper.style.outline = '8px solid var(--pri)';
+      if(selFrame === 'shadow') tmpWrapper.style.boxShadow = '0 30px 60px rgba(0,0,0,0.8)';
+      if(selFrame === 'ticket') tmpWrapper.style.outline = '8px dashed rgba(16,185,129,0.7)';
+      if(selFrame === 'phone') tmpWrapper.style.outline = '12px solid var(--pri)';
+      if(selFrame === 'badge') tmpWrapper.style.borderRadius = '50%';
+  } else {
+      tmpWrapper.style.padding = '0'; // No padding if no frame
+  }
+  
+  if (hasBgImg) {
+      tmpWrapper.style.backgroundImage = document.getElementById('qrWrap').style.backgroundImage;
+      tmpWrapper.style.backgroundSize = 'cover';
+      tmpWrapper.style.backgroundPosition = 'center';
+  }
   
   document.body.appendChild(tmpWrapper);
   
