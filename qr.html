@@ -184,7 +184,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 @media (max-width: 1000px) {
   body { overflow-x: hidden; overflow-y: auto; }
   .qr-app { display: flex; flex-direction: column; height: auto; overflow: visible; }
-  .app-sb { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 15px; display: none; }
+  .app-sb { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 10px; display: flex; flex-direction: row; overflow-x: auto; gap: 10px; }
+  .app-sb::-webkit-scrollbar { height: 4px; }
+  .app-sb .sb-top, .app-sb .sb-lbl, .app-sb .sb-foot { display: none; }
+  .app-sb .sb-btn { width: auto; flex-shrink: 0; padding: 10px 15px; margin-bottom: 0; }
   .workspace { padding: 0; }
   .db-container { padding: 20px 15px; }
   .site-nav { padding: 15px 20px; }
@@ -196,6 +199,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   .theme-switch-wrapper { border-left: none; padding-left: 0; justify-content: center; margin-top: 10px; }
   .db-hd { flex-direction: column; align-items: flex-start; gap: 15px; }
   .db-stats { grid-template-columns: 1fr; }
+  .db-stats-ext { grid-template-columns: 1fr !important; }
 }
 </style>
 <script src="col-router.js"></script>
@@ -433,13 +437,13 @@ function renderStats() {
           </div>
         </div>
         
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-top: 30px;">
+        <div class="db-stats-ext" style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-top: 30px;">
             <div class="dbc" style="padding: 30px;">
                 <h3 style="margin-bottom: 20px; font-weight: 800; font-size: 1.2rem; color: var(--txt);">Scans Over Time (Last 30 Days)</h3>
                 <div style="height: 250px; display: flex; align-items: flex-end; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
                     ${Array.from({length: 30}).map(() => {
                         const h = Math.floor(Math.random() * 80) + 10;
-                        return \`<div style="flex: 1; background: var(--pri); height: \${h}%; border-radius: 4px 4px 0 0; opacity: 0.8; transition: 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'"></div>\`;
+                        return '<div style="flex: 1; background: var(--pri); height: ' + h + '%; border-radius: 4px 4px 0 0; opacity: 0.8; transition: 0.3s;"></div>';
                     }).join('')}
                 </div>
                 <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.8rem; color:var(--txt-m); font-weight:600;">
