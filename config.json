@@ -17,8 +17,8 @@
     "terms.html": "200"
   },
   "banner": {
-    "active": false,
-    "text": "Ansh Is Worst"
+    "active": true,
+    "text": "Test Subject"
   },
   "auth": {
     "url": "",
