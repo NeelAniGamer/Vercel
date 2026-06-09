@@ -380,7 +380,6 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   <a href="#" class="sb-btn"><span class="sb-icon">🌐</span>My domains</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
-  <a href="#" class="sb-btn"><span class="sb-icon">💳</span>Plans and payments</a>
   <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
   
   <div class="sb-foot">
@@ -1240,6 +1239,39 @@ function saveQR(silent = false){
 function loadEditData() {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
+    const tmpl = urlParams.get('template');
+    
+    if(tmpl) {
+        if(tmpl === 'business_card') {
+            selType = 'vcard';
+            opts.dotsOptions.color = '#3b82f6';
+            opts.cornersSquareOptions = { type: 'extra-rounded', color: '#2dd4bf' };
+        } else if(tmpl === 'wifi_neon') {
+            selType = 'wifi';
+            opts.dotsOptions.color = '#10b981';
+            opts.cornersSquareOptions = { type: 'extra-rounded', color: '#f59e0b' };
+        } else if(tmpl === 'minimal_menu') {
+            selType = 'url';
+            opts.dotsOptions.color = '#111827';
+            opts.cornersSquareOptions = { type: 'square', color: '#111827' };
+        } else if(tmpl === 'social_hub') {
+            selType = 'url';
+            opts.dotsOptions.color = '#8b5cf6';
+            opts.cornersSquareOptions = { type: 'dot', color: '#6366f1' };
+        }
+        
+        document.querySelectorAll('.tc').forEach(x => {
+            if(x.dataset.t === selType) x.classList.add('sel'); else x.classList.remove('sel');
+        });
+        buildCF();
+        if(opts.cornersSquareOptions && opts.cornersSquareOptions.color) {
+            const el = document.getElementById('csqC');
+            if(el) el.value = opts.cornersSquareOptions.color;
+        }
+        setTimeout(() => { if(qrInst) { qrInst.update(opts); updateInfo(); } }, 100);
+        return;
+    }
+    
     if(!id) return;
     
     const q = saved.find(x => x.id === parseInt(id));
@@ -1248,8 +1280,14 @@ function loadEditData() {
     selType = q.type;
     Object.assign(opts, q.opts);
     
-    if (opts.cornersSquareOptions && opts.cornersSquareOptions.color) document.getElementById('csqC').value = opts.cornersSquareOptions.color;
-    if (opts.cornersDotOptions && opts.cornersDotOptions.color) document.getElementById('cdC').value = opts.cornersDotOptions.color;
+    if (opts.cornersSquareOptions && opts.cornersSquareOptions.color) {
+        const el = document.getElementById('csqC');
+        if(el) el.value = opts.cornersSquareOptions.color;
+    }
+    if (opts.cornersDotOptions && opts.cornersDotOptions.color) {
+        const el = document.getElementById('cdC');
+        if(el) el.value = opts.cornersDotOptions.color;
+    }
     
     document.querySelectorAll('.tc').forEach(x => {
         if(x.dataset.t === q.type) x.classList.add('sel'); else x.classList.remove('sel');
@@ -1260,8 +1298,8 @@ function loadEditData() {
     setTimeout(() => {
         const inps = document.getElementById('cfArea').getElementsByTagName('input');
         const textareas = document.getElementById('cfArea').getElementsByTagName('textarea');
-        if(inps.length > 0) inps[0].value = q.content;
-        else if (textareas.length > 0) textareas[0].value = q.content;
+        if(inps.length > 0) inps[0].value = q.content || '';
+        else if (textareas.length > 0) textareas[0].value = q.content || '';
         
         if(qrInst) { qrInst.update(opts); updateInfo(); }
     }, 100);
