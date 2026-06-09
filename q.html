@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redirecting... | Class Of Learners</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body {
+    margin: 0; padding: 0;
+    background-color: #06080d;
+    color: #f8fafc;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+  }
+  .loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 4px solid rgba(16, 185, 129, 0.2);
+    border-top: 4px solid #10b981;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  #statusMsg {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #94a3b8;
+  }
+  .error-text { color: #ef4444 !important; }
+</style>
+</head>
+<body>
+
+<div class="loader-container">
+  <div class="spinner" id="spinner"></div>
+  <div id="statusMsg">Processing QR Code...</div>
+</div>
+
+<script>
+async function processRedirect() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    const msg = document.getElementById('statusMsg');
+    const spinner = document.getElementById('spinner');
+
+    if (!id) {
+        spinner.style.display = 'none';
+        msg.textContent = 'Invalid QR Code (Missing ID).';
+        msg.classList.add('error-text');
+        return;
+    }
+
+    try {
+        const res = await fetch('config.json');
+        const config = await res.json();
+        
+        if (!config.auth || !config.auth.url || !config.auth.key) {
+            throw new Error('Database configuration missing.');
+        }
+
+        const supabase = window.supabase.createClient(config.auth.url, config.auth.key);
+        
+        // Fetch QR data from database
+        const { data, error } = await supabase
+            .from('admin_secrets')
+            .select('secret_value')
+            .eq('key_name', 'qr_data')
+            .single();
+
+        if (error || !data || !data.secret_value) {
+            throw new Error('Could not retrieve QR routing data.');
+        }
+
+        let qrArray = [];
+        try {
+            qrArray = typeof data.secret_value === 'string' ? JSON.parse(data.secret_value) : data.secret_value;
+        } catch(e) {
+            throw new Error('QR data is corrupted.');
+        }
+
+        const targetQR = qrArray.find(q => q.id === parseInt(id) || q.id === id);
+
+        if (!targetQR) {
+            spinner.style.display = 'none';
+            msg.textContent = 'This QR Code no longer exists or was deleted.';
+            msg.classList.add('error-text');
+            return;
+        }
+
+        if (targetQR.type !== 'url' && targetQR.type !== 'text') {
+            spinner.style.display = 'none';
+            msg.innerHTML = `<strong>QR Content:</strong><br><br>${targetQR.data}`;
+            return;
+        }
+
+        // It's a URL or Text acting as a URL
+        let finalUrl = targetQR.data.trim();
+        if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+            finalUrl = 'https://' + finalUrl;
+        }
+
+        msg.textContent = 'Redirecting...';
+        window.location.replace(finalUrl);
+
+    } catch (err) {
+        console.error(err);
+        spinner.style.display = 'none';
+        msg.textContent = 'Error: ' + err.message;
+        msg.classList.add('error-text');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', processRedirect);
+</script>
+
+</body>
+</html>
