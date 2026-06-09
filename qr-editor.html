@@ -6,6 +6,7 @@
 <title>QR Editor | Class Of Learners</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <style>
@@ -371,13 +372,13 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   
   <div class="sb-lbl">Create</div>
   <a href="qr-editor.html" class="sb-btn act"><span class="sb-icon">⊕</span>New QR</a>
-  <a href="#" class="sb-btn"><span class="sb-icon">🎯</span>Bulk QR generation</a>
+  <a href="#" onclick="openBulkModal(); return false;" class="sb-btn"><span class="sb-icon">🎯</span>Bulk QR generation</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
-  <a href="qr.html" class="sb-btn"><span class="sb-icon">🔲</span>My QR codes</a>
-  <a href="#" class="sb-btn"><span class="sb-icon">📊</span>Stats</a>
-  <a href="#" class="sb-btn"><span class="sb-icon">📄</span>Templates</a>
-  <a href="#" class="sb-btn"><span class="sb-icon">🌐</span>My domains</a>
+  <a href="qr.html?view=qrs" class="sb-btn"><span class="sb-icon">🔲</span>My QR codes</a>
+  <a href="qr.html?view=stats" class="sb-btn"><span class="sb-icon">📊</span>Stats</a>
+  <a href="qr.html?view=templates" class="sb-btn"><span class="sb-icon">📄</span>Templates</a>
+  <a href="qr.html?view=domains" class="sb-btn"><span class="sb-icon">🌐</span>My domains</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
   <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
@@ -508,6 +509,18 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <span class="dschev">▼</span>
           </div>
           <div class="dsb" id="dsClb">
+            
+            <!-- Custom Presets Section -->
+            <div style="margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <label style="font-size: 0.8rem; font-weight: 800; color: var(--txt); text-transform: uppercase; letter-spacing: 1px;">My Custom Designs</label>
+                    <button class="btn-nx" style="font-size: 0.75rem; padding: 5px 10px; height: auto;" onclick="saveCustomPreset()">+ Save Current Design</button>
+                </div>
+                <select id="customPresetsList" class="dtp" onchange="loadCustomPreset(this.value)" style="width: 100%; margin-bottom: 10px;">
+                    <option value="">-- Load a saved design --</option>
+                </select>
+            </div>
+
             <div style="margin-bottom: 20px;">
                 <label style="font-size: 0.8rem; font-weight: 800; color: var(--txt); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px;">Premium Palettes</label>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="premiumPalettes"></div>
@@ -636,6 +649,19 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
 
 <div class="toast" id="toast"></div>
+
+<!-- BULK MODAL -->
+<div class="modal" id="bulkModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:var(--nav); padding:30px; border-radius:12px; width:90%; max-width:600px; border:1px solid var(--border);">
+        <h2 style="margin-top:0; color:var(--txt);">Bulk QR Generation</h2>
+        <p style="color:var(--txt-m); margin-bottom:20px;">Paste a list of URLs/texts (one per line). We'll apply your current custom design to all of them and download them as a ZIP file.</p>
+        <textarea id="bulkData" style="width:100%; height:150px; background:rgba(0,0,0,0.2); border:1px solid var(--border); color:var(--txt); padding:10px; border-radius:8px; margin-bottom:20px; font-family:monospace;" placeholder="https://example.com/1&#10;https://example.com/2&#10;https://example.com/3"></textarea>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <button class="btn-bk" onclick="document.getElementById('bulkModal').style.display='none'">Cancel</button>
+            <button class="btn-cp" id="bulkGenBtn" onclick="runBulkGeneration()">Generate & Download ZIP</button>
+        </div>
+    </div>
+</div>
 
 <style>
 .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
@@ -1303,6 +1329,111 @@ function saveQR(silent = false){
     
     if(!silent) window.location.href = 'qr.html';
   }, 350); 
+}
+
+// Custom Presets
+function getCustomPresets() {
+    try { return JSON.parse(Storage.get('qr_custom_presets')) || {}; } catch(e) { return {}; }
+}
+
+function renderCustomPresetsList() {
+    const list = document.getElementById('customPresetsList');
+    if(!list) return;
+    const presets = getCustomPresets();
+    const names = Object.keys(presets);
+    
+    let html = '<option value="">-- Load a saved design --</option>';
+    names.forEach(n => { html += `<option value="${n}">${n}</option>`; });
+    list.innerHTML = html;
+}
+
+function saveCustomPreset() {
+    const name = prompt("Enter a name for this custom design preset:");
+    if(!name || !name.trim()) return;
+    
+    const presets = getCustomPresets();
+    // We only want to save the visual design options, not the data or exact frame label if it varies
+    const presetOpts = JSON.parse(JSON.stringify(opts));
+    delete presetOpts.data; // Don't save the URL data
+    
+    presets[name.trim()] = presetOpts;
+    Storage.set('qr_custom_presets', JSON.stringify(presets));
+    renderCustomPresetsList();
+    
+    const list = document.getElementById('customPresetsList');
+    if(list) list.value = name.trim();
+    toast(`Preset '${name}' saved!`, 'green');
+}
+
+function loadCustomPreset(name) {
+    if(!name) return;
+    const presets = getCustomPresets();
+    if(presets[name]) {
+        // Apply design opts
+        const pOpts = presets[name];
+        opts.dotsOptions = pOpts.dotsOptions || opts.dotsOptions;
+        opts.cornersSquareOptions = pOpts.cornersSquareOptions || opts.cornersSquareOptions;
+        opts.cornersDotOptions = pOpts.cornersDotOptions || opts.cornersDotOptions;
+        opts.backgroundOptions = pOpts.backgroundOptions || opts.backgroundOptions;
+        opts.imageOptions = pOpts.imageOptions || opts.imageOptions;
+        if(pOpts.image !== undefined) opts.image = pOpts.image;
+        
+        // Re-render UI inputs to match
+        if(opts.dotsOptions.color) document.getElementById('cDot').value = opts.dotsOptions.color;
+        if(opts.backgroundOptions.color) document.getElementById('cBg').value = opts.backgroundOptions.color;
+        
+        applyQR();
+        toast(`Loaded design '${name}'`, 'green');
+    }
+}
+
+function openBulkModal() {
+    document.getElementById('bulkModal').style.display = 'flex';
+}
+
+async function runBulkGeneration() {
+    const dataStr = document.getElementById('bulkData').value.trim();
+    if(!dataStr) { toast('Please enter at least one URL.', ''); return; }
+    
+    const lines = dataStr.split('\n').map(l => l.trim()).filter(l => l);
+    if(lines.length === 0) { toast('No valid data found.', ''); return; }
+    if(lines.length > 500) { toast('Maximum 500 items at a time.', ''); return; }
+
+    const btn = document.getElementById('bulkGenBtn');
+    btn.textContent = 'Generating... Please wait';
+    btn.disabled = true;
+
+    try {
+        const zip = new JSZip();
+        
+        // Temporarily freeze main QR updates
+        let originalData = opts.data;
+
+        for(let i=0; i<lines.length; i++) {
+            qrInst.update({ data: lines[i] });
+            const blob = await qrInst.getRawData('png');
+            zip.file(`qr_code_${i+1}.png`, blob);
+        }
+
+        // Restore original data
+        qrInst.update({ data: originalData });
+
+        const content = await zip.generateAsync({type:"blob"});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(content);
+        a.download = "Bulk_QR_Codes.zip";
+        a.click();
+        
+        toast('Bulk Generation Complete!', 'green');
+        document.getElementById('bulkModal').style.display = 'none';
+        
+    } catch(err) {
+        console.error(err);
+        toast('Error generating bulk QRs.', '');
+    } finally {
+        btn.textContent = 'Generate & Download ZIP';
+        btn.disabled = false;
+    }
 }
 
 function loadEditData() {
