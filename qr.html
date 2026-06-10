@@ -344,12 +344,12 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <div class="toast" id="toast"></div>
 
 <script>
-const Storage = {
+var Storage = {
   get: function(key) { try { return localStorage.getItem(key); } catch(e) { return null; } },
   set: function(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
 };
 
-const GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+var GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
 let curUser=null, dbFil='all', googleAccessToken=null, driveFileId=null;
 let saved = [];
 

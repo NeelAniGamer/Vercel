@@ -759,7 +759,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
 <script>
 // ── SAFE LOCAL STORAGE ──
-const Storage = {
+var Storage = {
   get: function(key) { try { return localStorage.getItem(key); } catch(e) { return null; } },
   set: function(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
 };
