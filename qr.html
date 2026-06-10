@@ -48,7 +48,7 @@ body::after {
   .qr-app { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - 73px); width: 100%; max-width: 1800px; margin: 0 auto; overflow: hidden; }
 }
 
-.site-nav { width: 100%; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: var(--nav); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 1000; transition: 0.3s;}
+.site-nav { width: 100%; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: var(--nav); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 1000; transition: 0.3s; flex-wrap: wrap; gap: 15px; }
 .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--txt); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; white-space: nowrap; }
 .brand-logo { height: 42px; object-fit: contain; }
 .nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
