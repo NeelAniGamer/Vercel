@@ -77,7 +77,9 @@ body.light .dropdown-content-inner { box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
 input:checked + .slider { background-color: rgba(16,185,129,0.2); border-color: var(--pri); }
 input:checked + .slider:before { transform: translateX(20px); background: var(--pri); box-shadow: 0 0 10px var(--pri);}
 .slider.round { border-radius: 24px; }
-.slider.round:before { border-radius: 50%; }
+.nav-dl-btn { background: #3b82f6; color: white; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: 0.2s; white-space: nowrap; font-size: 0.95rem; }
+.nav-dl-btn:hover { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+.mobile-dl { display: none; }
 
 .nav-login-btn { background: rgba(16,185,129,0.1); color: var(--pri); border: 1px solid var(--pri); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-decoration:none; white-space: nowrap; }
 body.dark-mode .nav-login-btn { color: #34d399; border-color: #34d399; }
@@ -197,6 +199,9 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   .nav-brand { font-size: 1.2rem; }
   .brand-logo { height: 35px; }
   .mmb { display: block; }
+  .mobile-dl { display: block; width: 100%; text-align: center; }
+  .site-nav > div > .nav-dl-btn { display: none; }
+  .site-nav > div > div { display: none; } /* Hide divider */
   .nav-links { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--nav); border-bottom: 1px solid var(--border); padding: 20px; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); z-index: 1001; }
   .nav-links.open { display: flex; }
   .theme-switch-wrapper { border-left: none; padding-left: 0; justify-content: center; margin-top: 10px; }
@@ -219,10 +224,14 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
     })();
 </script>
 <nav class="site-nav">
-  <a href="index.html" class="nav-brand">
-    <img src="class.webp" alt="Class Of Learners" class="brand-logo" width="958" height="958" loading="lazy">
-    <span>Class Of Learners</span>
-  </a>
+  <div style="display: flex; gap: 20px; align-items: center;">
+    <a href="https://dl.classoflearners.com" class="nav-dl-btn">Downloads Hub</a>
+    <div style="width: 1px; height: 30px; background: var(--border); margin: 0 10px;"></div>
+    <a href="index.html" class="nav-brand">
+      <img src="class.webp" alt="Class Of Learners" class="brand-logo" width="958" height="958" loading="lazy">
+      <span>Class Of Learners</span>
+    </a>
+  </div>
   <button class="mmb" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
   
   <div class="nav-links">
@@ -244,7 +253,15 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         </div>
     </div>
     
+    <a href="https://dl.classoflearners.com" class="nav-dl-btn mobile-dl">Downloads Hub</a>
 
+    <div class="theme-switch-wrapper">
+        <span class="theme-label">DARK/LIGHT</span>
+        <label class="theme-switch">
+            <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+            <span class="slider round"></span>
+        </label>
+    </div>
     
     <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg> Sign In
