@@ -280,14 +280,14 @@
             .overlay-content h2 { font-size: 1.4rem; }
         }
     </style>
-<script src="col-router.js"></script>
-<script src="col-auth.js"></script>
+<script defer src="col-router.js"></script>
+<script defer src="col-auth.js"></script>
 </head>
 <body>
 
     <nav class="top-nav">
         <a href="index.html" class="nav-brand">
-            <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="958" height="958">
+            <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="958" height="958" loading="lazy">
             <span>Class Of Learners</span>
         </a>
         <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
@@ -403,7 +403,7 @@
     
     <div class="toast" id="toast"></div>
 
-    <script src="global-gesture.js"></script>
+    <script defer src="global-gesture.js"></script>
 
     <script>
         function toggleMenu() { document.querySelector('.nav-links').classList.toggle('active'); }
@@ -481,7 +481,7 @@
           if(nlb) nlb.style.display='none'; if(nup) nup.style.display='flex'; 
           const nun=document.getElementById('navUserName'); if(nun) nun.textContent=curUser.name.split(' ')[0]; 
           const navAv=document.getElementById('navUserAv'); 
-          if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; } 
+          if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">`; } 
           else { if(navAv){ navAv.innerHTML=''; navAv.textContent=curUser.name.charAt(0).toUpperCase(); } } 
         }
 

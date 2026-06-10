@@ -17,8 +17,8 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="visual.css">
-<script src="col-router.js"></script>
-<script src="col-auth.js"></script>
+<script defer src="col-router.js"></script>
+<script defer src="col-auth.js"></script>
 </head>
 <body>
 
@@ -277,7 +277,7 @@
   </div>
 
   <div id="hud-surface">
-    <img id="hud-img" src="" alt="Surface">
+    <img id="hud-img" src="" alt="Surface" loading="lazy">
     <div id="hud-img-overlay"></div>
   </div>
 
@@ -857,6 +857,6 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
-<script type="module" src="logic.js"></script>
+<script defer type="module" src="logic.js"></script>
 </body>
 </html>

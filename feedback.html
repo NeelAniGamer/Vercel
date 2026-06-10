@@ -18,10 +18,10 @@
             const status = config.pages[path] || '200';
             
             if (status === '503') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <img src="class.webp" alt="Logo" style="height:80px; margin-bottom:20px;" width="958" height="958"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#94a3b8;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <img src="class.webp" alt="Logo" style="height:80px; margin-bottom:20px;" width="958" height="958" loading="lazy"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#94a3b8;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
                 window.stop();
             } else if (status === '404') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <img src="class.webp" alt="Logo" style="height:80px; margin-bottom:20px;" width="958" height="958"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#94a3b8;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <img src="class.webp" alt="Logo" style="height:80px; margin-bottom:20px;" width="958" height="958" loading="lazy"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#94a3b8;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
                 window.stop();
             }
         }
@@ -183,14 +183,14 @@
         .field-grid { grid-template-columns: 1fr !important; }
     }
 </style>
-<script src="col-router.js"></script>
-<script src="col-auth.js"></script>
+<script defer src="col-router.js"></script>
+<script defer src="col-auth.js"></script>
 </head>
 <body class="dark-mode">
 
 <nav class="top-nav">
     <a href="index.html" class="nav-brand">
-        <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="958" height="958">
+        <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="958" height="958" loading="lazy">
         <span>Class Of Learners</span>
     </a>
     
@@ -553,7 +553,7 @@ function updatePUI(){
   if(nlb) nlb.style.display='none'; if(nup) nup.style.display='flex'; 
   const nun=document.getElementById('navUserName'); if(nun) nun.textContent=curUser.name.split(' ')[0]; 
   const navAv=document.getElementById('navUserAv'); 
-  if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; } 
+  if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">`; } 
   else { if(navAv){ navAv.innerHTML=''; navAv.textContent=curUser.name.charAt(0).toUpperCase(); } } 
   
   const fbName = document.getElementById('fbName'); const fbEmail = document.getElementById('fbEmail');

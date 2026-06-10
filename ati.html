@@ -275,7 +275,7 @@
 
     <nav class="top-nav">
         <a href="index.html" class="nav-brand">
-            <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="958" height="958">
+            <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="958" height="958" loading="lazy">
             <span>Class Of Learners</span>
         </a>
         <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
@@ -361,18 +361,18 @@
             <div class="display-corner tr"></div>
             <div class="display-corner bl"></div>
             <div class="display-corner br"></div>
-            <img id="mainShowcaseImg" src="ati.webp" alt="ATI Main Interface View" width="3839" height="2103">
+            <img id="mainShowcaseImg" src="ati.webp" alt="ATI Main Interface View" width="3839" height="2103" loading="lazy">
             <div class="scanline"></div>
         </div>
         <div class="thumbnail-track">
             <div class="thumb-card active" onclick="updateShowcase(this, 'ati.png')">
-                <img src="ati.webp" alt="Thumb 1" width="3839" height="2103">
+                <img src="ati.webp" alt="Thumb 1" width="3839" height="2103" loading="lazy">
             </div>
             <div class="thumb-card" onclick="updateShowcase(this, 'ati 2.png')">
-                <img src="ati 2.webp" alt="Thumb 2" width="2437" height="993">
+                <img src="ati 2.webp" alt="Thumb 2" width="2437" height="993" loading="lazy">
             </div>
             <div class="thumb-card" onclick="updateShowcase(this, 'ati 3.png')">
-                <img src="ati 3.webp" alt="Thumb 3" width="3839" height="2096">
+                <img src="ati 3.webp" alt="Thumb 3" width="3839" height="2096" loading="lazy">
             </div>
         </div>
     </div>
@@ -597,7 +597,7 @@
       
       const nun=document.getElementById('navUserName'); if(nun) nun.textContent=curUser.name.split(' ')[0]; 
       const navAv=document.getElementById('navUserAv'); 
-      if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`; } 
+      if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">`; } 
       else { if(navAv){ navAv.innerHTML=''; navAv.textContent=curUser.name.charAt(0).toUpperCase(); } } 
     }
 
