@@ -139,7 +139,7 @@
             height: 100%; width: 0%;
             background: linear-gradient(90deg, #7c3aed, var(--primary), var(--gold));
             border-radius: 8px;
-            animation: progressLoad 2s ease-out 0.5s forwards;
+            animation: progressLoad 2.5s ease-out forwards;
         }
         @keyframes progressLoad { to { width: 80%; } }
 
@@ -389,17 +389,22 @@
         }
         if(sf) sf.appendChild(frag);
 
-        var progressBar = document.getElementById('progressBar');
-        var pctLabel = document.getElementById('progressPct');
-        var current = 0;
-        var target = 80;
-        setTimeout(() => {
-            const interval = setInterval(() => {
-                current++;
-                if(pctLabel) pctLabel.textContent = current + '%';
-                if (current >= target) clearInterval(interval);
-            }, 25);
-        }, 500);
+        document.addEventListener('DOMContentLoaded', function() {
+            var progressBar = document.getElementById('progressBar');
+            var pctLabel = document.getElementById('progressPct');
+            var current = 0;
+            var target = 80;
+            
+            // Wait a tiny bit to ensure CSS animation starts
+            setTimeout(() => {
+                // 2.5 seconds total duration for 80% = ~31.25ms per 1%
+                const interval = setInterval(() => {
+                    current++;
+                    if(pctLabel) pctLabel.textContent = current + '%';
+                    if (current >= target) clearInterval(interval);
+                }, 31);
+            }, 50);
+        });
 
         window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
 

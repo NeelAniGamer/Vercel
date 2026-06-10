@@ -326,23 +326,25 @@
                     <div class="qr-grid-art" id="qrArt"></div>
                 </div>
                 <script>
-                    var qrArt = document.getElementById('qrArt');
-                    if (qrArt && qrArt.children.length === 0) {
-                        for(var i=0; i<81; i++){
-                            var c = document.createElement('div');
-                            c.className = 'qr-cell';
-                            if(Math.random() > 0.5) c.classList.add('on');
-                            qrArt.appendChild(c);
-                        }
-                        setInterval(function() {
-                            if (!document.getElementById('qrArt')) return;
-                            var cells = document.getElementById('qrArt').children;
-                            if(cells.length) {
-                                cells[Math.floor(Math.random()*cells.length)].classList.toggle('on');
-                                cells[Math.floor(Math.random()*cells.length)].classList.toggle('on');
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var qrArt = document.getElementById('qrArt');
+                        if (qrArt && qrArt.children.length === 0) {
+                            for(var i=0; i<81; i++){
+                                var c = document.createElement('div');
+                                c.className = 'qr-cell';
+                                if(Math.random() > 0.5) c.classList.add('on');
+                                qrArt.appendChild(c);
                             }
-                        }, 600);
-                    }
+                            setInterval(function() {
+                                if (!document.getElementById('qrArt')) return;
+                                var cells = document.getElementById('qrArt').children;
+                                if(cells.length) {
+                                    cells[Math.floor(Math.random()*cells.length)].classList.toggle('on');
+                                    cells[Math.floor(Math.random()*cells.length)].classList.toggle('on');
+                                }
+                            }, 600);
+                        }
+                    });
                 </script>
             </div>
             <div class="box-content">

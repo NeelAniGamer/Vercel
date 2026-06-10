@@ -314,6 +314,84 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 .toast.show { transform: translateY(0); opacity: 1; }
 .toast.green { border-color: var(--pri); color: var(--pri); box-shadow: 0 15px 40px var(--glow); background: rgba(16,185,129,0.05); }
 
+/* --- QRFY AESTHETIC OVERRIDES FOR STEP 3 --- */
+#sp3 {
+  --q-bg: #ffffff;
+  --q-panel: #ffffff;
+  --q-border: #e5e7eb;
+  --q-border-hover: #d1d5db;
+  --q-text: #111827;
+  --q-text-m: #6b7280;
+  --q-blue: #3b82f6;
+  --q-blue-light: #eff6ff;
+  --q-gray-light: #f8f9fa;
+  
+  background: var(--q-bg);
+  color: var(--q-text);
+  padding: 30px;
+  border-radius: 12px;
+}
+#sp3 .sh { color: var(--q-text); font-size: 1.8rem; font-weight: 700; letter-spacing: 0; }
+#sp3 .ss { color: var(--q-text-m); font-size: 0.9rem; }
+
+/* Tabs */
+.qrfy-tabs { display: flex; gap: 20px; margin: 20px 0; align-items: center; }
+.qrfy-tab { padding: 8px 16px; font-size: 0.9rem; font-weight: 600; color: var(--q-text-m); cursor: pointer; border-radius: 8px; transition: 0.2s; }
+.qrfy-tab.act { background: var(--q-blue-light); color: var(--q-blue); }
+
+/* Checkbox container */
+.qrfy-cb-box { padding: 15px 20px; border: 1px solid var(--q-border); border-radius: 8px; display: flex; align-items: center; gap: 10px; margin-bottom: 25px; }
+.qrfy-cb-box label { font-size: 0.9rem; font-weight: 600; color: var(--q-text); cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.qrfy-cb-box input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--q-text); cursor: pointer; }
+
+/* Accordions */
+#sp3 .ds { background: var(--q-panel); border: 1px solid var(--q-border); border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); margin-bottom: 15px; }
+#sp3 .ds:hover { border-color: var(--q-border-hover); }
+#sp3 .dsh { padding: 15px 20px; }
+#sp3 .dsh-l { gap: 15px; }
+#sp3 .dsi { width: 40px; height: 40px; border-radius: 8px; background: var(--q-blue-light); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; filter: none; color: var(--q-blue); }
+#sp3 .dst { font-size: 1rem; font-weight: 600; color: var(--q-text); }
+#sp3 .dss { font-size: 0.8rem; color: var(--q-text-m); font-weight: 400; }
+#sp3 .dschev { color: var(--q-text-m); font-size: 1.2rem; }
+#sp3 .dsb { border-top: 1px solid var(--q-border); background: var(--q-panel); padding: 20px; }
+
+/* Grid Items (Frames, Dots, Corners) */
+#sp3 .vg { gap: 10px; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+#sp3 .vb { padding: 10px; background: var(--q-panel); border: 1px solid var(--q-border); border-radius: 8px; box-shadow: none; aspect-ratio: 1; display: flex; justify-content: center; align-items: center; }
+#sp3 .vb:hover { border-color: var(--q-border-hover); transform: none; }
+#sp3 .vb.sel { border-color: var(--q-blue); background: var(--q-blue-light); box-shadow: none; }
+#sp3 .vb svg, #sp3 .vb canvas { max-width: 100%; max-height: 100%; object-fit: contain; }
+#sp3 .vb span { display: none; } /* Hide text inside tiles to match screenshots */
+
+/* Correction Levels */
+#sp3 .corr-g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+#sp3 .corr-b { padding: 15px; background: var(--q-panel); border: 1px solid var(--q-border); border-radius: 8px; box-shadow: none; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+#sp3 .corr-b:hover { border-color: var(--q-border-hover); transform: none; }
+#sp3 .corr-b.sel { border-color: var(--q-blue); background: var(--q-blue-light); }
+#sp3 .corr-b canvas { margin: 0; width: 40px !important; height: 40px !important; }
+#sp3 .clv { font-size: 0.85rem; font-weight: 600; color: var(--q-text); margin: 0; }
+#sp3 .cpt { font-size: 0.75rem; font-weight: 700; color: var(--q-blue); border: 1px solid var(--q-blue); padding: 2px 6px; border-radius: 4px; background: var(--q-bg); }
+#sp3 .corr-b.sel .clv { color: var(--q-blue); }
+
+/* Color Panels */
+#sp3 .qrfy-color-panel { background: var(--q-gray-light); border-radius: 8px; padding: 20px; margin-bottom: 15px; }
+#sp3 .qrfy-color-panel label.sec-lbl { font-size: 0.85rem; font-weight: 600; color: var(--q-text-m); margin-bottom: 15px; display: block; }
+#sp3 .qrfy-color-row { display: flex; align-items: center; gap: 15px; margin-top: 15px; }
+#sp3 .qrfy-color-input { display: flex; align-items: center; background: var(--q-bg); border: 1px solid var(--q-border); border-radius: 8px; padding: 5px 10px; width: 200px; gap: 10px; }
+#sp3 .qrfy-color-input input[type=color] { width: 24px; height: 24px; border: none; border-radius: 4px; padding: 0; cursor: pointer; }
+#sp3 .qrfy-color-input input[type=text] { border: none; background: transparent; outline: none; font-size: 0.85rem; color: var(--q-text); flex: 1; font-family: monospace; }
+#sp3 .qrfy-btn-invert { padding: 8px 16px; border: 1px solid var(--q-border); border-radius: 20px; background: var(--q-bg); color: var(--q-blue); font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+/* Logos */
+#sp3 .logo-ps { display: flex; flex-wrap: nowrap; gap: 12px; overflow-x: auto; padding-bottom: 10px; }
+#sp3 .logo-p { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--q-border); background: var(--q-bg); box-shadow: none; flex-shrink: 0; }
+#sp3 .logo-p.sel { border-color: var(--q-blue); background: var(--q-blue-light); }
+#sp3 .logo-p img { max-width: 24px; max-height: 24px; }
+#sp3 .logo-up { border: 1px dashed var(--q-border-hover); border-radius: 8px; padding: 20px; text-align: left; background: var(--q-bg); margin-top: 10px; display: flex; align-items: center; gap: 15px; }
+#sp3 .logo-up p { font-size: 0.9rem; font-weight: 600; color: var(--q-text); margin: 0; }
+#sp3 .logo-up p span { font-weight: 400; color: var(--q-text-m); }
+#sp3 .logo-up .up-icon { font-size: 1.2rem; }
+
 </style>
 
 <script>
@@ -460,28 +538,118 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
     <div class="sp" id="sp2">
       <div><div class="sh" id="s2h">Input Content</div><p class="ss">Provide the destination data.</p></div>
-      <div id="cfArea" class="cf" style="flex:1"></div>
+      <div style="display: flex; gap: 30px; flex-wrap: wrap; flex: 1;">
+          <div id="cfArea" class="cf" style="flex: 2; min-width: 300px;"></div>
+          <div class="cf-sidebar" style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
+              
+              <!-- Basic Information Panel -->
+              <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:25px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+                  <h3 style="font-size:1.1rem; font-weight:800; color:var(--txt); margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                      Basic information
+                  </h3>
+                  
+                  <div style="display:flex; flex-direction:column; gap:15px;">
+                      <!-- QR Name -->
+                      <div style="display:flex; justify-content:space-between; align-items:center;">
+                          <span style="font-size:0.9rem; font-weight:600; color:var(--txt);">QR Code name</span>
+                          <label class="theme-switch" style="transform: scale(0.85); margin:0;">
+                              <input type="checkbox" checked onchange="document.getElementById('advNameWrap').style.display=this.checked?'block':'none'">
+                              <div class="slider round"></div>
+                          </label>
+                      </div>
+                      <div id="advNameWrap" style="display:block;">
+                          <input type="text" id="advQrName" class="fi" value="My QR Code" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2);">
+                      </div>
+                      
+                      <!-- Domain -->
+                      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                          <span style="font-size:0.9rem; font-weight:600; color:var(--txt);">Domain</span>
+                          <label class="theme-switch" style="transform: scale(0.85); margin:0;">
+                              <input type="checkbox" checked>
+                              <div class="slider round"></div>
+                          </label>
+                      </div>
+                      <select class="fi" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2);"><option>qr.classoflearners.com</option></select>
+                      
+                      <!-- Password -->
+                      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                          <div style="display:flex; align-items:center; gap:8px;">
+                              <span style="font-size:0.9rem; font-weight:600; color:var(--txt);">Password</span>
+                              <span style="background:var(--pri); color:#000; font-size:0.6rem; font-weight:800; padding:2px 6px; border-radius:4px; text-transform:uppercase;">PRO</span>
+                          </div>
+                          <label class="theme-switch" style="transform: scale(0.85); margin:0;">
+                              <input type="checkbox">
+                              <div class="slider round"></div>
+                          </label>
+                      </div>
+                      
+                      <!-- Short URL -->
+                      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                          <span style="font-size:0.9rem; font-weight:600; color:var(--txt);">Customize Short URL</span>
+                          <label class="theme-switch" style="transform: scale(0.85); margin:0;">
+                              <input type="checkbox">
+                              <div class="slider round"></div>
+                          </label>
+                      </div>
+                  </div>
+              </div>
+              
+              <!-- Time Scheduling Panel -->
+              <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:25px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+                  <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="const b=document.getElementById('advTimeWrap'); b.style.display=b.style.display==='none'?'block':'none';">
+                      <h3 style="font-size:1.1rem; font-weight:800; color:var(--txt); margin:0; display:flex; align-items:center; gap:8px;">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                          Time scheduling
+                      </h3>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </div>
+                  
+                  <div id="advTimeWrap" style="display:none; margin-top:20px;">
+                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                          <span style="font-size:0.9rem; font-weight:600; color:var(--txt);">Set schedule</span>
+                          <label class="theme-switch" style="transform: scale(0.85); margin:0;">
+                              <input type="checkbox" id="advHasSchedule">
+                              <div class="slider round"></div>
+                          </label>
+                      </div>
+                      
+                      <label class="fl" style="font-size:0.75rem;">Starts at</label>
+                      <input type="datetime-local" class="fi" id="advSchedStart" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:15px;">
+                      
+                      <label class="fl" style="font-size:0.75rem;">Ends at</label>
+                      <input type="datetime-local" class="fi" id="advSchedEnd" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:15px;">
+                      
+                      <label class="fl" style="font-size:0.75rem;">Time zone</label>
+                      <select class="fi" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:15px;"><option>Asia/Calcutta</option></select>
+                      
+                      <label class="fl" style="font-size:0.75rem;">Behavior out of schedule</label>
+                      <select class="fi" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2);"><option>Redirect to other URL</option><option>Show custom message</option></select>
+                  </div>
+              </div>
+
+          </div>
+      </div>
       <div class="sn-row"><button class="btn-bk" onclick="goStep(1)">← Back</button><button class="btn-nx" onclick="nextFrom2()">Proceed to Design →</button></div>
     </div>
 
     <div class="sp" id="sp3">
-      <div><div class="sh">Customize Design</div><p class="ss">Adjust borders, colors, and logos.</p></div>
-      <div style="flex:1; display:flex; flex-direction:column;">
+      <div><div class="sh">Design the QR</div></div>
+      
+      <div class="qrfy-tabs">
+          <div class="qrfy-tab act">Personalized design</div>
+          <div class="qrfy-tab">Templates</div>
+      </div>
+      
+      <div class="qrfy-cb-box">
+          <label><input type="checkbox"> Save template when finished</label>
+      </div>
 
-        <div style="margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 25px;">
-          <p class="type-slbl" style="border:none; padding:0 0 15px; margin:0;">Quick Styles (QRFY Templates)</p>
-          <div class="vg" id="qsGrid">
-            <div class="vb" onclick="applyQS('modern')"><span style="font-size:1.5rem">🟢</span><span>Modern</span></div>
-            <div class="vb" onclick="applyQS('classy')"><span style="font-size:1.5rem">🎩</span><span>Classy</span></div>
-            <div class="vb" onclick="applyQS('liquid')"><span style="font-size:1.5rem">💧</span><span>Liquid</span></div>
-            <div class="vb" onclick="applyQS('heavy')"><span style="font-size:1.5rem">⬛</span><span>Heavy</span></div>
-            <div class="vb" onclick="applyQS('minimal')"><span style="font-size:1.5rem">⚪</span><span>Minimal</span></div>
-          </div>
-        </div>
+      <div style="flex:1; display:flex; flex-direction:column;">
 
         <div class="ds open" id="dsF">
           <div class="dsh" onclick="toggleDS('dsF')">
-            <div class="dsh-l"><div class="dsi">🖼️</div><div><div class="dst">Frame Border</div><div class="dss">Outer styling container</div></div></div>
+            <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div><div><div class="dst">Frame</div><div class="dss">Define the QR code outline by choosing from preset frames.</div></div></div>
             <span class="dschev">▼</span>
           </div>
           <div class="dsb open" id="dsFb">
@@ -496,7 +664,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
                   </div>
               </div>
 
-              <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 15px;">
+              <div style="margin-top: 25px; border-top: 1px solid var(--q-border); padding-top: 15px;">
                   <label class="ds-label">QR Internal Padding (White Space)</label>
                   <input type="range" class="ds-slider" min="0" max="50" step="5" value="0" oninput="setPad(this.value)">
               </div>
@@ -505,136 +673,132 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
         <div class="ds" id="dsD">
           <div class="dsh" onclick="toggleDS('dsD')">
-            <div class="dsh-l"><div class="dsi">⬛</div><div><div class="dst">Dot Pattern</div><div class="dss">Internal shape of data</div></div></div>
+            <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M7 7h10"></path><path d="M7 11h10"></path><path d="M7 15h10"></path></svg></div><div><div class="dst">QR code style</div><div class="dss">Customize the central area of the QR code by combining shapes and colors.</div></div></div>
             <span class="dschev">▼</span>
           </div>
           <div class="dsb" id="dsDb"><div class="vg" id="dotG"></div></div>
         </div>
+        
+        <div class="ds" id="dsCl">
+          <div class="dsh" onclick="toggleDS('dsCl')">
+            <div class="dsh-l"><div class="dsi">🎨</div><div><div class="dst">Border and background</div><div class="dss">Modify colours and gradients.</div></div></div>
+            <span class="dschev">▼</span>
+          </div>
+          <div class="dsb" id="dsClb">
+             <div class="qrfy-cb-box" style="background: transparent; border: none; padding: 0; margin-bottom: 15px;">
+                 <label style="color: var(--q-text-m); font-weight: 400; font-size: 0.85rem; align-items: flex-start;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> <span>Remember! For the optimal reading of the QR code, you need to use high contrast colours. We recommend selecting a light and a dark colour for your QR code.</span></label>
+             </div>
+             
+             <div class="qrfy-color-panel">
+                 <label class="sec-lbl" style="color: var(--q-text);">Border colour</label>
+                 <label class="gtog" style="margin:0;"><input type="checkbox" id="fgG" onchange="tg('fg')"> Use gradients?</label>
+                 <div class="qrfy-color-row">
+                     <div class="qrfy-color-input">
+                         <input type="text" id="fgH" value="#000000" maxlength="7" oninput="sc('fg',this.value)">
+                         <input type="color" id="fgP" value="#000000" oninput="uc('fg',this.value)">
+                     </div>
+                 </div>
+                 <div class="gcols" id="fgGC" style="display:none; flex-direction:column; gap:8px;">
+                     <div style="display:flex; gap:10px;"><input type="color" id="fg1" value="#000000" oninput="ug('fg')"><input type="color" id="fg2" value="#10b981" oninput="ug('fg')"></div>
+                     <select id="fgGType" onchange="ug('fg')" class="fi" style="padding: 8px;">
+                         <option value="linear">Linear</option>
+                         <option value="radial">Radial</option>
+                     </select>
+                     <div><label style="font-size: 0.75rem;">Angle</label><input type="range" id="fgGAngle" min="0" max="360" value="0" oninput="ug('fg')" style="width: 100%;"></div>
+                 </div>
+             </div>
+
+             <div class="qrfy-color-panel">
+                 <label class="sec-lbl" style="color: var(--q-text);">Background colour</label>
+                 <label class="gtog" style="margin:0;"><input type="checkbox" id="bgG" onchange="tg('bg')"> Use gradients?</label>
+                 <div class="qrfy-color-row">
+                     <div class="qrfy-color-input">
+                         <input type="text" id="bgH" value="#ffffff" maxlength="7" oninput="sc('bg',this.value)">
+                         <input type="color" id="bgP" value="#ffffff" oninput="uc('bg',this.value)">
+                     </div>
+                     <label class="trp" style="margin:0 0 0 15px;"><input type="checkbox" id="bgT" onchange="tt()"> Transparent background</label>
+                 </div>
+                 <div class="gcols" id="bgGC" style="display:none; flex-direction:column; gap:8px;">
+                     <div style="display:flex; gap:10px;"><input type="color" id="bg1" value="#ffffff" oninput="ug('bg')"><input type="color" id="bg2" value="#f0fdf4" oninput="ug('bg')"></div>
+                     <select id="bgGType" onchange="ug('bg')" class="fi" style="padding: 8px;">
+                         <option value="linear">Linear</option>
+                         <option value="radial">Radial</option>
+                     </select>
+                     <div><label style="font-size: 0.75rem;">Angle</label><input type="range" id="bgGAngle" min="0" max="360" value="0" oninput="ug('bg')" style="width: 100%;"></div>
+                 </div>
+             </div>
+             
+             <button class="qrfy-btn-invert" onclick="const t=document.getElementById('fgH').value;const c=document.getElementById('bgH').value;document.getElementById('fgH').value=c;document.getElementById('bgH').value=t;document.getElementById('fgP').value=c;document.getElementById('bgP').value=t;sc('fg',c);sc('bg',t);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Invert</button>
+          </div>
+        </div>
 
         <div class="ds" id="dsC">
           <div class="dsh" onclick="toggleDS('dsC')">
-            <div class="dsh-l"><div class="dsi">📐</div><div><div class="dst">Corner Eyes</div><div class="dss">Registration marks</div></div></div>
+            <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="10" height="10" rx="2" ry="2"></rect></svg></div><div><div class="dst">Corners</div><div class="dss">Modify the shape and color of the corners for a unique finish.</div></div></div>
             <span class="dschev">▼</span>
           </div>
           <div class="dsb" id="dsCb">
-            <p style="font-size:.74rem;font-weight:800;color:var(--txt-m);margin-top:10px;text-transform:uppercase;letter-spacing:1px">Outer Border</p>
-            <div class="vg sm" id="csqG"></div>
-            <p style="font-size:.74rem;font-weight:800;color:var(--txt-m);margin-top:20px;text-transform:uppercase;letter-spacing:1px">Inner Center</p>
+            <p style="font-size:.85rem;font-weight:600;color:var(--q-text-m);margin-top:10px;">Border style</p>
+            <div class="vg sm" id="csqG" style="margin-bottom: 25px;"></div>
+            <p style="font-size:.85rem;font-weight:600;color:var(--q-text-m);margin-top:20px;">Center style</p>
             <div class="vg sm" id="cdG"></div>
             
-            <div class="clr-row" style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 15px;">
-                <div class="clr-blk" style="padding: 15px;">
-                    <label>Outer Ring Color</label>
+            <div class="clr-row" style="margin-top: 25px; border-top: 1px solid var(--q-border); padding-top: 15px;">
+                <div class="clr-blk" style="box-shadow:none; border:1px solid var(--q-border); background:var(--q-bg); padding: 15px;">
+                    <label style="color:var(--q-text);">Border color</label>
                     <div class="clr-pr"><input type="color" id="csqC" value="#000000" oninput="setCrnCol('csq',this.value)"></div>
                 </div>
-                <div class="clr-blk" style="padding: 15px;">
-                    <label>Inner Dot Color</label>
+                <div class="clr-blk" style="box-shadow:none; border:1px solid var(--q-border); background:var(--q-bg); padding: 15px;">
+                    <label style="color:var(--q-text);">Center color</label>
                     <div class="clr-pr"><input type="color" id="cdC" value="#000000" oninput="setCrnCol('cd',this.value)"></div>
                 </div>
             </div>
           </div>
         </div>
 
-        <div class="ds" id="dsCl">
-          <div class="dsh" onclick="toggleDS('dsCl')">
-            <div class="dsh-l"><div class="dsi">🎨</div><div><div class="dst">Color Palette</div><div class="dss">Gradients & transparency</div></div></div>
+        <div class="ds" id="dsCr">
+          <div class="dsh" onclick="toggleDS('dsCr')">
+            <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div><div><div class="dst">Correction Level</div><div class="dss">Ensures a reliable reading by compensating for damage or distortion.</div></div></div>
             <span class="dschev">▼</span>
           </div>
-          <div class="dsb" id="dsClb">
-            
-            <!-- Custom Presets Section -->
-            <div style="margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <label style="font-size: 0.8rem; font-weight: 800; color: var(--txt); text-transform: uppercase; letter-spacing: 1px;">My Custom Designs</label>
-                    <button class="btn-nx" style="font-size: 0.75rem; padding: 5px 10px; height: auto;" onclick="saveCustomPreset()">+ Save Current Design</button>
-                </div>
-                <select id="customPresetsList" class="dtp" onchange="loadCustomPreset(this.value)" style="width: 100%; margin-bottom: 10px;">
-                    <option value="">-- Load a saved design --</option>
-                </select>
+          <div class="dsb" id="dsCrb">
+            <div class="qrfy-cb-box" style="background: var(--q-gray-light); border: none; padding: 15px; margin-bottom: 20px;">
+                <label style="color: var(--q-text-m); font-weight: 400; font-size: 0.85rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> Choosing a higher level improves readability, although it may increase the size of the QR code.</label>
             </div>
-
-            <div style="margin-bottom: 20px;">
-                <label style="font-size: 0.8rem; font-weight: 800; color: var(--txt); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px;">Premium Palettes</label>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="premiumPalettes"></div>
-            </div>
-            <div class="clr-row">
-              <div class="clr-blk">
-                <label>Foreground</label>
-                <div class="clr-pr"><input type="color" id="fgP" value="#000000" oninput="uc('fg',this.value)"><input class="hex fi" id="fgH" value="#000000" maxlength="7" oninput="sc('fg',this.value)"></div>
-                <label class="gtog"><input type="checkbox" id="fgG" onchange="tg('fg')"> Use Gradient</label>
-                <div class="gcols" id="fgGC" style="display:none; flex-direction:column; gap:8px;">
-                    <div style="display:flex; gap:10px;"><input type="color" id="fg1" value="#000000" oninput="ug('fg')"><input type="color" id="fg2" value="#10b981" oninput="ug('fg')"></div>
-                    <select id="fgGType" onchange="ug('fg')" class="fi" style="padding: 8px;">
-                        <option value="linear">Linear</option>
-                        <option value="radial">Radial</option>
-                    </select>
-                    <div><label style="font-size: 0.75rem;">Angle</label><input type="range" id="fgGAngle" min="0" max="360" value="0" oninput="ug('fg')" style="width: 100%;"></div>
-                </div>
-              </div>
-              <div class="clr-blk">
-                <label>Background</label>
-                <div class="clr-pr"><input type="color" id="bgP" value="#ffffff" oninput="uc('bg',this.value)"><input class="hex fi" id="bgH" value="#ffffff" maxlength="7" oninput="sc('bg',this.value)"></div>
-                <label class="gtog"><input type="checkbox" id="bgG" onchange="tg('bg')"> Use Gradient</label>
-                <div class="gcols" id="bgGC" style="display:none; flex-direction:column; gap:8px;">
-                    <div style="display:flex; gap:10px;"><input type="color" id="bg1" value="#ffffff" oninput="ug('bg')"><input type="color" id="bg2" value="#f0fdf4" oninput="ug('bg')"></div>
-                    <select id="bgGType" onchange="ug('bg')" class="fi" style="padding: 8px;">
-                        <option value="linear">Linear</option>
-                        <option value="radial">Radial</option>
-                    </select>
-                    <div><label style="font-size: 0.75rem;">Angle</label><input type="range" id="bgGAngle" min="0" max="360" value="0" oninput="ug('bg')" style="width: 100%;"></div>
-                </div>
-                <label class="trp"><input type="checkbox" id="bgT" onchange="tt()"> Transparent BG</label>
-                
-                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-light);">
-                    <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">Background Image</label>
-                    <button class="fi" onclick="document.getElementById('bgImgFile').click()" style="width:100%; cursor:pointer; margin-top:5px;">Upload Image</button>
-                    <input type="file" id="bgImgFile" accept="image/*" style="display:none" onchange="handleBgImage(this)">
-                    <button id="rmBgImg" style="display:none; width:100%; padding:8px; margin-top:5px; background:transparent; border:1px solid #ef4444; color:#ef4444; border-radius:6px; cursor:pointer;" onclick="removeBgImage()">✕ Remove BG Image</button>
-                </div>
-              </div>
-            </div>
+            <div class="corr-g" id="corrG"></div>
           </div>
         </div>
 
         <div class="ds" id="dsL">
           <div class="dsh" onclick="toggleDS('dsL')">
-            <div class="dsh-l"><div class="dsi">🔖</div><div><div class="dst">Center Logo</div><div class="dss">Branding icon overlay</div></div></div>
+            <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div><div><div class="dst">Add logo</div><div class="dss">Add a central logo by uploading your image or choosing one of our designs.</div></div></div>
             <span class="dschev">▼</span>
           </div>
           <div class="dsb" id="dsLb">
+            <label style="font-size:0.85rem; font-weight:600; color:var(--q-text-m); margin-bottom:10px; display:block;">Select a logo</label>
             <div class="logo-ps" id="logoPs"></div>
             <div class="logo-up" onclick="document.getElementById('lFile').click()">
-              <div style="font-size:2rem; margin-bottom: 10px;">📁</div>
-              <p>Click to Upload Custom Logo<br><span style="font-size:0.75rem; opacity:0.6;">PNG / JPG / SVG (Max 2MB)</span></p>
+              <div class="up-icon">☁️</div>
+              <p>Add your logo <span style="font-size:0.8rem; font-weight:400; color:var(--q-text-m);">(JPG, JPEG, or PNG / 2MB max)</span></p>
             </div>
             
-            <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 15px;">
+            <div style="margin-top: 25px; border-top: 1px solid var(--q-border); padding-top: 15px;">
                <label class="ds-label">Logo Scale (Size)</label>
                <input type="range" class="ds-slider" min="0.1" max="0.5" step="0.05" value="0.35" oninput="setLogoOpt('imageSize', this.value)">
                
                <label class="ds-label">Logo Margin (Clearance)</label>
                <input type="range" class="ds-slider" min="0" max="25" step="1" value="8" oninput="setLogoOpt('margin', this.value)">
                
-               <label class="trp" style="margin-top: 15px; display: block;"><input type="checkbox" id="logoBgHide" checked onchange="setLogoOpt('hideBackgroundDots', this.checked)"> Hide QR Dots Behind Logo</label>
+               <label class="trp" style="margin-top: 15px; display: block; color:var(--q-text);"><input type="checkbox" id="logoBgHide" checked onchange="setLogoOpt('hideBackgroundDots', this.checked)"> Hide QR Dots Behind Logo</label>
             </div>
 
             <input type="file" id="lFile" accept="image/*" style="display:none" onchange="handleLogo(this)">
-            <button id="rmLogo" style="display:none;width:100%;padding:12px;margin-top:15px;background:var(--panel);border:1px solid var(--danger);border-radius:12px;color:var(--danger);font-weight:800;cursor:pointer" onclick="rmL()">✕ Remove Current Logo</button>
+            <button id="rmLogo" style="display:none;width:100%;padding:12px;margin-top:15px;background:var(--q-panel);border:1px solid #ef4444;border-radius:12px;color:#ef4444;font-weight:600;cursor:pointer" onclick="rmL()">✕ Remove Current Logo</button>
           </div>
         </div>
 
-        <div class="ds" id="dsCr">
-          <div class="dsh" onclick="toggleDS('dsCr')">
-            <div class="dsh-l"><div class="dsi">🛡️</div><div><div class="dst">Error Correction</div><div class="dss">Data redundancy level</div></div></div>
-            <span class="dschev">▼</span>
-          </div>
-          <div class="dsb" id="dsCrb">
-            <p style="font-size:.85rem;color:var(--txt-m);padding:10px 0 0">Higher levels make the QR code denser but more resilient to damage/logos.</p>
-            <div class="corr-g" id="corrG"></div>
-          </div>
-        </div>
       </div>
-      <div class="sn-row"><button class="btn-bk" onclick="goStep(2)">← Back</button><button class="btn-cp" onclick="saveQR(false)">✅ Finalize & Save</button></div>
+      <div class="sn-row"><button class="btn-bk" onclick="goStep(2)" style="background:var(--q-bg); color:var(--q-text); border:1px solid var(--q-border);">← Back</button><button class="btn-cp" onclick="saveQR(false)">✅ Finalize & Save</button></div>
     </div>
     
     <footer class="site-footer" style="width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--nav); margin-top: auto;">
@@ -1152,11 +1316,18 @@ const SVG_LOGOS = {
   link: 'data:image/svg+xml;utf8,<svg fill="%238b5cf6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>',
   star: 'data:image/svg+xml;utf8,<svg fill="%23f59e0b" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>'
 };
-const LOGO_PRESETS=[{id:'none',icon:'🚫'},{id:'wa',icon:'💬'},{id:'wifi',icon:'📶'},{id:'email',icon:'✉️'},{id:'link',icon:'🔗'},{id:'star',icon:'⭐'}];
+const LOGO_PRESETS=[
+  {id:'none', icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--q-text-m)"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>'},
+  {id:'wa', icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="%2325D366" stroke="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a5.8 5.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.82 9.82 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.81 11.81 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.88 11.88 0 0 0 5.683 1.448h.005c6.559 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.413Z"/></svg>'},
+  {id:'link', icon:'<div style="background:%238b5cf6; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="3"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></div>'},
+  {id:'map', icon:'<div style="background:%23ef4444; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>'},
+  {id:'wifi', icon:'<div style="background:%2314b8a6; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="2.5"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg></div>'},
+  {id:'email', icon:'<div style="background:%23eab308; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>'}
+];
 function buildLogoPresets(){
   const w=document.getElementById('logoPs');if(!w)return;w.innerHTML='';
   LOGO_PRESETS.forEach((p,i)=>{
-    const b=document.createElement('button');b.className='logo-p'+(i===0?' sel':''); b.title=p.id;b.textContent=p.icon;b.dataset.lp=p.id;
+    const b=document.createElement('button');b.className='logo-p'+(i===0?' sel':''); b.title=p.id; b.innerHTML=p.icon; b.dataset.lp=p.id;
     b.onclick=function(){ 
         document.querySelectorAll('.logo-p').forEach(x=>x.classList.remove('sel')); 
         b.classList.add('sel'); 
@@ -1244,23 +1415,23 @@ function removeBgImage(){
 }
 
 const CORR=[
-  {id:'L',p:'7%',l:'Level L',desc:'Best for clean codes'},
-  {id:'M',p:'15%',l:'Level M',desc:'Good for general use'},
-  {id:'Q',p:'25%',l:'Level Q',desc:'Good for small logos'},
-  {id:'H',p:'30%',l:'Level H',desc:'Best for large logos'}
+  {id:'L',p:'7%',l:'Level L'},
+  {id:'M',p:'15%',l:'Level M'},
+  {id:'Q',p:'25%',l:'Level Q'},
+  {id:'H',p:'30%',l:'Level H'}
 ];
 function buildCorrGrid(){
   const g=document.getElementById('corrG');if(!g)return;g.innerHTML='';
   CORR.forEach(c=>{
-    const b=document.createElement('div');b.className='corr-b'+(c.id==='H'?' sel':'');b.dataset.cr=c.id; b.onclick=function(){setCorr(c.id);};
-    const cv=document.createElement('canvas');cv.width=58;cv.height=58; drawCorrPrev(cv,c.id); b.appendChild(cv);
-    b.innerHTML+=`<div class="clv">${c.l}</div><div class="cpt">${c.p} Backup</div><div style="font-size:0.65rem; color:var(--txt-m); margin-top:4px;">${c.desc}</div>`; g.appendChild(b);
+    const b=document.createElement('div');b.className='corr-b'+(c.id==='Q'?' sel':'');b.dataset.cr=c.id; b.onclick=function(){setCorr(c.id);};
+    const cv=document.createElement('canvas');cv.width=40;cv.height=40; drawCorrPrev(cv,c.id); b.appendChild(cv);
+    b.innerHTML+=`<div style="display:flex; justify-content:space-between; align-items:center; width:100%;"><div class="clv">${c.l}</div><div class="cpt">${c.p}</div></div>`; g.appendChild(b);
   });
 }
 function drawCorrPrev(cv,level){
-  const ctx=cv.getContext('2d');const sz=cv.width;const n=7;const cs=sz/n; const dens={L:0.3,M:0.48,Q:0.62,H:0.78};const d=dens[level]||0.5;
-  ctx.clearRect(0,0,sz,sz);ctx.fillStyle='#10b981';
-  for(let r=0;r<n;r++){ for(let c=0;c<n;c++){ if(Math.random()<d) ctx.fillRect(c*cs+1,r*cs+1,cs-2,cs-2); } }
+  const ctx=cv.getContext('2d');const sz=cv.width;const n=5;const cs=sz/n; const dens={L:0.3,M:0.5,Q:0.7,H:0.9};const d=dens[level]||0.5;
+  ctx.clearRect(0,0,sz,sz);ctx.fillStyle='#3b82f6';
+  for(let r=0;r<n;r++){ for(let c=0;c<n;c++){ if(Math.random()<d) { ctx.beginPath(); ctx.roundRect(c*cs+1, r*cs+1, cs-2, cs-2, 2); ctx.fill(); } } }
 }
 function setCorr(l){
   document.querySelectorAll('.corr-b').forEach(b=>{ if(b.dataset.cr===l) b.classList.add('sel'); else b.classList.remove('sel'); });
@@ -1399,15 +1570,35 @@ function saveQR(silent = false){
     
     const urlParams = new URLSearchParams(window.location.search);
     const editId = urlParams.get('id');
-    const idToSave = editId ? parseInt(editId) : window.activeQrId;
+    const idToSave = editId ? parseInt(editId) : (window.activeQrId || Date.now());
     
-    const entry={id: idToSave, type:selType, typeName:to.name, typeIcon:to.icon, content:getContent(), thumb:img, date:new Date().toLocaleDateString(), opts:finalOpts};
+    const isDynamic = DYN.some(x => x.id === selType);
+    const advSettings = {
+        name: document.getElementById('advQrName') ? document.getElementById('advQrName').value : to.name,
+        hasSchedule: document.getElementById('advHasSchedule') ? document.getElementById('advHasSchedule').checked : false,
+        schedStart: document.getElementById('advSchedStart') ? document.getElementById('advSchedStart').value : null,
+        schedEnd: document.getElementById('advSchedEnd') ? document.getElementById('advSchedEnd').value : null
+    };
+
+    const entry={
+        id: idToSave, 
+        type:selType, 
+        typeName:to.name, 
+        typeIcon:to.icon, 
+        content:getContent(), 
+        thumb:img, 
+        date:new Date().toLocaleDateString(), 
+        opts:finalOpts,
+        isDynamic: isDynamic,
+        advSettings: advSettings
+    };
     
     if (editId) {
         const idx = saved.findIndex(x => x.id === parseInt(editId));
         if (idx > -1) saved[idx] = entry; else saved.unshift(entry);
     } else {
-        saved.unshift(entry);
+        const idx = saved.findIndex(x => x.id === idToSave);
+        if (idx > -1) saved[idx] = entry; else saved.unshift(entry);
     }
     
     if(saved.length>500) saved.length=500;
