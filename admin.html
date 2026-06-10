@@ -608,11 +608,16 @@ function initBuilder() {
 
     let selected = null;
     document.addEventListener('click', e => {
-        e.preventDefault();
+        if(e.target.tagName === 'A') e.preventDefault();
         e.stopPropagation();
-        if(selected) selected.style.outline = '';
+        if(selected && selected !== e.target) {
+            selected.style.outline = '';
+            selected.removeAttribute('contenteditable');
+        }
         selected = e.target;
         selected.style.outline = '3px dashed #38bdf8';
+        selected.setAttribute('contenteditable', 'true');
+        selected.focus();
     }, true);
 
     interact('body *').draggable({
@@ -709,6 +714,10 @@ async function deployGhFile() {
             finalHtml = finalHtml.replace(/<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/interactjs\/dist\/interact\.min\.js"><\/script>/g, '');
             finalHtml = finalHtml.replace(/<script id="col-builder-script">[\s\S]*?<\/script>/g, '');
             finalHtml = finalHtml.replace(new RegExp(`<base href="https://${GH_OWNER}.github.io/${GH_REPO}/">`, 'g'), '');
+            
+            // Clean up visual selection artifacts
+            finalHtml = finalHtml.replace(/ outline: 3px dashed (rgb\(56, 189, 248\)|#38bdf8);?/g, '');
+            finalHtml = finalHtml.replace(/ contenteditable="true"/g, '');
             
             // Restore doctype since outerHTML loses it
             finalHtml = "<!DOCTYPE html>\\n" + finalHtml;
