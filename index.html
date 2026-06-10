@@ -40,7 +40,11 @@
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    </noscript>
     <style>
         :root { 
             --bg-color: #f8f9fa; 
@@ -233,7 +237,7 @@
 
     <nav class="top-nav">
         <a href="index.html" class="nav-brand">
-            <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="958" height="958" loading="lazy">
+            <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="958" height="958" fetchpriority="high">
             <span>Class Of Learners</span>
         </a>
         <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
@@ -284,7 +288,7 @@
 
     <main class="grid-container" style="padding-bottom: 80px;">
         <a href="ati.html" class="showcase-box">
-            <div class="box-visual"><img src="ati.webp" alt="Advanced Typing Instructor" width="3839" height="2103" loading="lazy"></div>
+            <div class="box-visual"><img src="ati.webp" alt="Advanced Typing Instructor" width="3839" height="2103" fetchpriority="high"></div>
             <div class="box-content">
                 <h2>Advanced Typing Instructor</h2>
                 <p>Master Python, C++, And JS Syntaxes. Featuring Heatmaps, Virtual Mechanical Keyboards, And Progression Mechanics.</p>
@@ -292,7 +296,7 @@
         </a>
 
         <a href="solar.html" class="showcase-box">
-            <div class="box-visual"><img src="solar.webp" alt="Solar System Engine" width="3839" height="2094" loading="lazy"></div>
+            <div class="box-visual"><img src="solar.webp" alt="Solar System Engine" width="3839" height="2094"></div>
             <div class="box-content">
                 <h2>Solar System Engine V3.3</h2>
                 <p>Deep-Space Telemetry And Accurate Orbital Mechanics Simulated Entirely In A Standalone 64-Bit Application.</p>

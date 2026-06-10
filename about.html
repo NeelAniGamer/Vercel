@@ -28,7 +28,11 @@
     <title>About Us | Class Of Learners</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    </noscript>
     <style>
         :root { --bg-color: #f8f9fa; --text-main: #111827; --text-muted: #374151; --google-blue: #2563eb; --card-bg: #ffffff; --border-light: #e5e7eb; --nav-bg: rgba(255, 255, 255, 0.9); }
         body.dark-mode { --bg-color: #0f172a; --text-main: #f8fafc; --text-muted: #cbd5e1; --card-bg: #1e293b; --border-light: #334155; --nav-bg: rgba(15, 23, 42, 0.9); }
