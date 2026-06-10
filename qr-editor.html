@@ -52,7 +52,7 @@ body::after {
   .qr-app { display: grid; grid-template-columns: 280px 1fr 360px; height: calc(100vh - 73px); width: 100%; max-width: 1800px; margin: 0 auto; overflow: hidden; }
 }
 
-.site-nav { width: 100%; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: var(--nav); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 1000; transition: 0.3s; flex-wrap: wrap; gap: 15px; }
+.top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--nav); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s;}
 .nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--txt); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; white-space: nowrap; }
 .brand-logo { height: 42px; object-fit: contain; }
 .nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
@@ -83,6 +83,7 @@ input:checked + .slider:before { transform: translateX(20px); background: var(--
 .slider.round { border-radius: 24px; }
 .nav-dl-btn { background: #3b82f6; color: white; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: 0.2s; white-space: nowrap; font-size: 0.95rem; }
 .nav-dl-btn:hover { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+.desktop-dl { display: block; }
 .mobile-dl { display: none; }
 
 .nav-login-btn { background: rgba(16,185,129,0.1); color: var(--pri); border: 1px solid var(--pri); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-decoration:none; white-space: nowrap; }
@@ -254,12 +255,11 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
   .panel { padding: 20px 15px; }
   .site-nav { padding: 15px 20px; }
   .nav-brand { font-size: 1.2rem; }
-  .brand-logo { height: 35px; }
   .mmb { display: block; }
+  .desktop-dl { display: none; }
   .mobile-dl { display: block; width: 100%; text-align: center; }
-  .site-nav > div > .nav-dl-btn { display: none; }
-  .site-nav > div > div { display: none; } /* Hide divider */
-  .nav-links { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--nav); border-bottom: 1px solid var(--border); padding: 20px; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); z-index: 1001; }
+  .top-nav { width: 95%; margin: 15px auto 0; border-radius: 20px; top: 15px; padding: 10px 15px; flex-direction: row; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--border); }
+  .nav-links { display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--nav); backdrop-filter: blur(15px); border-radius: 16px; padding: 20px; flex-direction: column; gap: 15px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1001; }
   .nav-links.open { display: flex; }
   .theme-switch-wrapper { border-left: none; padding-left: 0; justify-content: center; margin-top: 10px; }
   .type-grid { grid-template-columns: 1fr 1fr; }
@@ -337,15 +337,11 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         } catch(e) {}
     })();
 </script>
-<nav class="site-nav">
-  <div style="display: flex; gap: 20px; align-items: center;">
-    <a href="https://dl.classoflearners.com" class="nav-dl-btn">Downloads Hub</a>
-    <div style="width: 1px; height: 30px; background: var(--border); margin: 0 10px;"></div>
-    <a href="index.html" class="nav-brand">
-      <img src="class.webp" alt="Class Of Learners" class="brand-logo" width="958" height="958" loading="lazy">
-      <span>Class Of Learners</span>
-    </a>
-  </div>
+<nav class="top-nav">
+  <a href="index.html" class="nav-brand">
+    <img src="class.webp" alt="Class Of Learners" class="brand-logo" width="958" height="958" loading="lazy">
+    <span>Class Of Learners</span>
+  </a>
   <button class="mmb" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
   
   <div class="nav-links">
@@ -367,8 +363,6 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         </div>
     </div>
     
-    <a href="https://dl.classoflearners.com" class="nav-dl-btn mobile-dl">Downloads Hub</a>
-
     <div class="theme-switch-wrapper">
         <span class="theme-label">DARK/LIGHT</span>
         <label class="theme-switch">
@@ -384,7 +378,11 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <div class="nav-user-avatar" id="navUserAv">?</div>
         <span id="navUserName" style="font-size:0.85rem; font-weight:800; color:var(--txt);">User</span>
     </div>
+    
+    <a href="https://dl.classoflearners.com" class="nav-dl-btn mobile-dl">Downloads Hub</a>
   </div>
+  
+  <a href="https://dl.classoflearners.com" class="nav-dl-btn desktop-dl">Downloads Hub</a>
 </nav>
 
 <div class="qr-app">
