@@ -13,10 +13,10 @@
             const status = config.pages[path] || '200';
             
             if (status === '503') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#94a3b8;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#cbd5e1;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
                 window.stop();
             } else if (status === '404') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#94a3b8;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#cbd5e1;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
                 window.stop();
             }
         }
@@ -29,7 +29,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg-color: #f8f9fa; --card-bg: #ffffff; --primary: #10b981; --text-main: #0f172a; --text-muted: #64748b; --border-color: #e2e8f0; --nav-bg: rgba(255, 255, 255, 0.95); --google-blue: #2563eb; --border-light: #e5e7eb;}
-        body.dark { --bg-color: #06080d; --card-bg: #0a0d14; --primary: #10b981; --text-main: #f8fafc; --text-muted: #94a3b8; --border-color: #161d2b; --nav-bg: rgba(6, 8, 13, 0.95); --google-blue: #34d399; --border-light: #334155;}
+        body.dark { --bg-color: #06080d; --card-bg: #0a0d14; --primary: #10b981; --text-main: #f8fafc; --text-muted: #cbd5e1; --border-color: #161d2b; --nav-bg: rgba(6, 8, 13, 0.95); --google-blue: #34d399; --border-light: #334155;}
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; transition: 0.3s; text-transform: capitalize; }

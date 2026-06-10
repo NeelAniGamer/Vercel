@@ -16,7 +16,7 @@
             --primary-glow: rgba(167, 139, 250, 0.4);
             --gold: #fbbf24;
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --text-muted: #cbd5e1;
             --border-light: #1e1040;
             --nav-bg: rgba(4, 2, 12, 0.92);
             --ati-err: #ef4444;
@@ -187,9 +187,9 @@
         
         .md-hd { padding: 30px; text-align: center; border-bottom: 1px solid rgba(167,139,250,0.15); background: linear-gradient(180deg, rgba(167,139,250,0.08) 0%, transparent 100%); }
         .md-hd h2 { font-size: 1.8rem; font-weight: 800; margin:0; font-family: 'Space Mono', monospace; letter-spacing: -1px; color: var(--text-main); text-shadow: 0 0 10px rgba(167,139,250,0.2);}
-        .md-hd p { font-size: 0.95rem; color: #94a3b8; margin-top: 5px; text-transform:none;}
+        .md-hd p { font-size: 0.95rem; color: #cbd5e1; margin-top: 5px; text-transform:none;}
         .md-body { padding: 30px; display: flex; flex-direction: column;}
-        .ml { font-size: 0.8rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+        .ml { font-size: 0.8rem; font-weight: 800; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
         
         .mi { 
             width: 100%; padding: 15px; border: 1px solid var(--border-light); border-radius: 12px; 
@@ -207,7 +207,7 @@
         }
         .ms:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(167,139,250,0.4); }
 
-        .msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.9rem; font-weight: 700; color: #94a3b8; cursor: pointer; margin-top: 5px; transition: 0.3s;}
+        .msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.9rem; font-weight: 700; color: #cbd5e1; cursor: pointer; margin-top: 5px; transition: 0.3s;}
         .msk:hover { color: #fff; }
         
         .msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--ati-err); border-radius: 12px; font-size: 1rem; font-weight: 800; color: var(--ati-err); cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
@@ -244,10 +244,10 @@
                 const path = window.location.pathname.split('/').pop() || 'index.html';
                 const status = config.pages[path];
                 if (status === '503') {
-                    document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#f59e0b; font-family:monospace;">503</h1> <h2 style="margin:10px 0; font-size:2rem;">System Under Maintenance</h2> <p style="color:#94a3b8; font-size:1.1rem; max-width:500px;">Class Of Learners is currently undergoing scheduled upgrades. Please check back shortly.</p> </div>');
+                    document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#f59e0b; font-family:monospace;">503</h1> <h2 style="margin:10px 0; font-size:2rem;">System Under Maintenance</h2> <p style="color:#cbd5e1; font-size:1.1rem; max-width:500px;">Class Of Learners is currently undergoing scheduled upgrades. Please check back shortly.</p> </div>');
                     window.stop();
                 } else if (status === '404') {
-                    document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#ef4444; font-family:monospace;">404</h1> <h2 style="margin:10px 0; font-size:2rem;">Page Not Found</h2> <p style="color:#94a3b8; font-size:1.1rem; max-width:500px;">The requested directory has been removed by the administrator or does not exist.</p> <a href="index.html" style="margin-top:30px; color:#38bdf8; text-decoration:none; font-weight:bold; border:1px solid #38bdf8; padding:10px 20px; border-radius:8px;">Return to Home Hub</a></div>');
+                    document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#ef4444; font-family:monospace;">404</h1> <h2 style="margin:10px 0; font-size:2rem;">Page Not Found</h2> <p style="color:#cbd5e1; font-size:1.1rem; max-width:500px;">The requested directory has been removed by the administrator or does not exist.</p> <a href="index.html" style="margin-top:30px; color:#38bdf8; text-decoration:none; font-weight:bold; border:1px solid #38bdf8; padding:10px 20px; border-radius:8px;">Return to Home Hub</a></div>');
                     window.stop();
                 }
             }

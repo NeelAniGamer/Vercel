@@ -18,7 +18,7 @@
   --border: rgba(255, 255, 255, 0.08); --border-focus: #10b981;
   --pri: #10b981; --pri-hover: #34d399;
   --glow: rgba(16, 185, 129, 0.25); --glow-strong: rgba(16, 185, 129, 0.5);
-  --txt: #f8fafc; --txt-m: #94a3b8; --danger: #ef4444;
+  --txt: #f8fafc; --txt-m: #cbd5e1; --danger: #ef4444;
   --nav: rgba(3, 7, 18, 0.75);
   --font-main: 'Inter', sans-serif; --font-mono: 'Space Mono', monospace;
 }
@@ -306,10 +306,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             const path = window.location.pathname.split('/').pop() || 'index.html';
             const status = config.pages[path];
             if (status === '503') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#f59e0b; font-family:monospace;">503</h1> <h2 style="margin:10px 0; font-size:2rem;">System Under Maintenance</h2> <p style="color:#94a3b8; font-size:1.1rem; max-width:500px;">Class Of Learners is currently undergoing scheduled upgrades. Please check back shortly.</p> </div>');
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#f59e0b; font-family:monospace;">503</h1> <h2 style="margin:10px 0; font-size:2rem;">System Under Maintenance</h2> <p style="color:#cbd5e1; font-size:1.1rem; max-width:500px;">Class Of Learners is currently undergoing scheduled upgrades. Please check back shortly.</p> </div>');
                 window.stop();
             } else if (status === '404') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#ef4444; font-family:monospace;">404</h1> <h2 style="margin:10px 0; font-size:2rem;">Page Not Found</h2> <p style="color:#94a3b8; font-size:1.1rem; max-width:500px;">The requested directory has been removed by the administrator or does not exist.</p> <a href="index.html" style="margin-top:30px; color:#38bdf8; text-decoration:none; font-weight:bold; border:1px solid #38bdf8; padding:10px 20px; border-radius:8px;">Return to Home Hub</a></div>');
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#ef4444; font-family:monospace;">404</h1> <h2 style="margin:10px 0; font-size:2rem;">Page Not Found</h2> <p style="color:#cbd5e1; font-size:1.1rem; max-width:500px;">The requested directory has been removed by the administrator or does not exist.</p> <a href="index.html" style="margin-top:30px; color:#38bdf8; text-decoration:none; font-weight:bold; border:1px solid #38bdf8; padding:10px 20px; border-radius:8px;">Return to Home Hub</a></div>');
                 window.stop();
             }
         }

@@ -13,10 +13,10 @@
             const status = config.pages[path] || '200';
             
             if (status === '503') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#94a3b8;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#cbd5e1;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
                 window.stop();
             } else if (status === '404') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#94a3b8;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#cbd5e1;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
                 window.stop();
             }
         }
@@ -39,7 +39,7 @@
             --text-main: #f8fafc; 
             --nav-bg: rgba(5, 2, 0, 0.95);
             --border-light: #2a1508;
-            --text-muted: #94a3b8;
+            --text-muted: #cbd5e1;
             --warning: #ff3333;
             --google-blue: #2563eb;
         }
@@ -224,9 +224,9 @@
         .mo.open .md { transform: translateY(0) scale(1); }
         .md-hd { padding: 30px; text-align: center; border-bottom: 1px solid rgba(255, 153, 85, 0.15); background: linear-gradient(180deg, rgba(255, 153, 85, 0.08) 0%, transparent 100%); }
         .md-hd h2 { font-size: 1.8rem; font-weight: 800; margin:0; font-family: 'Space Mono', monospace; letter-spacing: -1px; color: var(--text-main); text-shadow: 0 0 10px rgba(255, 153, 85, 0.2);}
-        .md-hd p { font-size: 0.95rem; color: #94a3b8; margin-top: 5px; }
+        .md-hd p { font-size: 0.95rem; color: #cbd5e1; margin-top: 5px; }
         .md-body { padding: 30px; display: flex; flex-direction: column;}
-        .ml { font-size: 0.8rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+        .ml { font-size: 0.8rem; font-weight: 800; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
         .mi { width: 100%; padding: 15px; border: 1px solid var(--border-light); border-radius: 12px; font-size: 1rem; outline: none; margin-bottom: 20px; transition: 0.3s; color: #fff; background: rgba(0,0,0,0.5); }
         .mi:focus { border-color: var(--primary); box-shadow: inset 0 0 10px rgba(255, 153, 85, 0.1), 0 0 15px rgba(255, 153, 85, 0.2); }
         
@@ -235,7 +235,7 @@
         .ms { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 20px rgba(255, 153, 85, 0.2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;}
         .ms:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 153, 85, 0.4); }
 
-        .msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.9rem; font-weight: 700; color: #94a3b8; cursor: pointer; margin-top: 5px; transition: 0.3s;}
+        .msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.9rem; font-weight: 700; color: #cbd5e1; cursor: pointer; margin-top: 5px; transition: 0.3s;}
         .msk:hover { color: #fff; }
         
         .msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid #ef4444; border-radius: 12px; font-size: 1rem; font-weight: 800; color: #ef4444; cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
