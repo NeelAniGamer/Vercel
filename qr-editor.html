@@ -53,10 +53,10 @@ body::after {
 }
 
 .site-nav { width: 100%; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); background: var(--nav); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 1000; transition: 0.3s;}
-.nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--txt); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; }
+.nav-brand { display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--txt); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.5px; white-space: nowrap; }
 .brand-logo { height: 42px; object-fit: contain; }
-.nav-links { display: flex; gap: 20px; align-items: center; }
-.nav-link { color: var(--txt-m); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; }
+.nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+.nav-link { color: var(--txt-m); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; white-space: nowrap; }
 .nav-link:hover { color: var(--pri); text-shadow: 0 0 10px var(--glow); }
 
 .dropdown { position: relative; display: inline-block; }
@@ -83,7 +83,7 @@ input:checked + .slider:before { transform: translateX(20px); background: var(--
 .slider.round { border-radius: 24px; }
 .slider.round:before { border-radius: 50%; }
 
-.nav-login-btn { background: rgba(16,185,129,0.1); color: var(--pri); border: 1px solid var(--pri); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-decoration:none;}
+.nav-login-btn { background: rgba(16,185,129,0.1); color: var(--pri); border: 1px solid var(--pri); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-decoration:none; white-space: nowrap; }
 body.dark-mode .nav-login-btn { color: #34d399; border-color: #34d399; }
         body.dark-mode .nav-login-btn:hover { background: #34d399; color: #000; box-shadow: 0 0 20px rgba(52,211,153,0.4); }
         .nav-login-btn:hover { background: var(--pri); color: #000; box-shadow: 0 0 20px var(--glow-strong); transform: translateY(-1px); }
