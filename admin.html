@@ -161,6 +161,15 @@
 </style>
 </head>
 <body>
+<script>
+    (function(){
+        try {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        } catch(e) {}
+    })();
+</script>
 
 <div class="lock-screen" id="lockScreen">
     <div class="lock-box" id="lockBoxContent">

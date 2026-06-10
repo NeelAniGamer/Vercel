@@ -42,6 +42,15 @@
 </style>
 </head>
 <body>
+<script>
+    (function(){
+        try {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        } catch(e) {}
+    })();
+</script>
 
 <div class="loader-container">
   <div class="spinner" id="spinner"></div>

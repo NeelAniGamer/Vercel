@@ -108,7 +108,16 @@
 <script defer src="col-router.js"></script>
 <script defer src="col-auth.js"></script>
 </head>
-<body class="dark">
+<body>
+<script>
+    (function(){
+        try {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark');
+            }
+        } catch(e) {}
+    })();
+</script>
 
     <nav>
         <a href="index.html" class="nav-brand">

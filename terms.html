@@ -210,6 +210,15 @@
 <script defer src="col-auth.js"></script>
 </head>
 <body>
+<script>
+    (function(){
+        try {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        } catch(e) {}
+    })();
+</script>
     <div class="read-progress-wrap"><div class="read-progress-fill" id="readFill"></div></div>
 
     <nav>

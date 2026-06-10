@@ -273,7 +273,16 @@
 
     </style>
 </head>
-<body class="dark-mode">
+<body>
+<script>
+    (function(){
+        try {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        } catch(e) {}
+    })();
+</script>
 
     <nav class="top-nav">
         <a href="index.html" class="nav-brand">
