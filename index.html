@@ -1,19 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta name="description" content="Class of Learners - Index. An educational tool and resource.">
-    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>Advanced Logic Labs - Cloud Drive</title>
-    
-    <!-- This links your new PNG icon -->
-    <link rel="icon" type="image/png" href="icon.png">
-    
+    <meta name="description" content="Class of Learners - Index. An educational tool and resource.">
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+    <title>Class Of Learners | Studio Hub</title>
+    <link rel="icon" type="image/webp" href="icon.webp">
     <script defer src="supabase.js"></script>
-<head>
-  <script>
+    <script>
 // --- GLOBAL ADMIN CONFIG CHECKER ---
 (function() {
     try {
@@ -33,11 +28,7 @@
         }
     } catch(e) {}
 })();
-</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Class Of Learners | Studio Hub</title>
-    <link rel="icon" type="image/png" href="icon.png">
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
@@ -334,6 +325,25 @@
                     <div class="qr-scan-v"></div>
                     <div class="qr-grid-art" id="qrArt"></div>
                 </div>
+                <script>
+                    var qrArt = document.getElementById('qrArt');
+                    if (qrArt && qrArt.children.length === 0) {
+                        for(var i=0; i<81; i++){
+                            var c = document.createElement('div');
+                            c.className = 'qr-cell';
+                            if(Math.random() > 0.5) c.classList.add('on');
+                            qrArt.appendChild(c);
+                        }
+                        setInterval(function() {
+                            if (!document.getElementById('qrArt')) return;
+                            var cells = document.getElementById('qrArt').children;
+                            if(cells.length) {
+                                cells[Math.floor(Math.random()*cells.length)].classList.toggle('on');
+                                cells[Math.floor(Math.random()*cells.length)].classList.toggle('on');
+                            }
+                        }, 600);
+                    }
+                </script>
             </div>
             <div class="box-content">
                 <h2>QR Code Generator</h2>
@@ -536,12 +546,12 @@
         }
     }
 
-    window.addEventListener('load', function() { 
+    (function() { 
         initializeTheme(); 
         loadUser(); 
         checkURLForToken(); 
         const lm=document.getElementById('loginMo'); if(lm) lm.addEventListener('click',function(e){if(e.target===this)closeMo();}); 
-    });
+    })();
     </script>
 </body>
 </html>

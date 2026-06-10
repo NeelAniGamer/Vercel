@@ -1,0 +1,445 @@
+
+    (function(){
+        try {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        } catch(e) {}
+    })();
+
+
+---SCRIPT---
+
+
+var Storage = {
+  get: function(key) { try { return localStorage.getItem(key); } catch(e) { return null; } },
+  set: function(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+};
+
+var GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+let curUser=null, dbFil='all', googleAccessToken=null, driveFileId=null;
+let saved = [];
+
+try { const sData = Storage.get('qrs_min'); if (sData) saved = JSON.parse(sData); } catch(e) {}
+
+function switchView(viewId) {
+    document.querySelectorAll('.db-view').forEach(v => v.style.display = 'none');
+    const target = document.getElementById('view-' + viewId);
+    if(target) target.style.display = 'block';
+    
+    document.querySelectorAll('.app-sb .sb-btn').forEach(btn => {
+        if(btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(viewId)) {
+            btn.classList.add('act');
+        } else if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('switchView')) {
+            btn.classList.remove('act');
+        }
+    });
+    
+    if(viewId === 'stats') renderStats();
+    if(viewId === 'templates') renderTemplates();
+    if(viewId === 'domains') renderDomains();
+}
+
+function renderDB(){
+  const filtered = dbFil==='all' ? saved : saved.filter(q=>q.type===dbFil);
+  document.getElementById('stTotal').textContent = saved.length;
+  
+  const uniqueTypes = [];
+  saved.forEach(function(q){ if(uniqueTypes.indexOf(q.type)===-1) uniqueTypes.push(q.type); });
+  document.getElementById('stTypes').textContent = uniqueTypes.length;
+  document.getElementById('stLast').textContent = saved.length>0 ? saved[0].date : '—';
+  
+  const dbs = document.getElementById('dbSub');
+  if(curUser && dbs) dbs.textContent = `Dashboard synced. ${saved.length} assets ready.`;
+  
+  const g = document.getElementById('dbG'); if(!g) return;
+  g.innerHTML = '';
+  if(!filtered.length){
+    g.innerHTML=`<div class="db-emp"><div class="ei">🔳</div><h3>Workspace Empty</h3><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
+    return;
+  }
+  filtered.forEach(q=>{
+    const c=document.createElement('div');c.className='dbc';
+    const shortC = q.content.length>38 ? q.content.substring(0,38)+'…' : q.content;
+    c.innerHTML=`<div class="dbt">${q.thumb?`<img src="${q.thumb}" alt="QR" loading="lazy">`:'<div style="font-size:2rem;opacity:.25">🔳</div>'}</div>
+    <div class="dbb"><div class="dtyp">${q.typeIcon} ${q.typeName}</div><h3 title="${q.content}">${shortC}</h3><div class="ddt">📅 ${q.date}</div></div>
+    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})">✏️ Editor</button><button class="dba-btn" onclick="reDL(${q.id})">⬇ Export</button><button class="dba-btn del" onclick="delQR(${q.id})">🗑 Delete</button></div>`;
+    g.appendChild(c);
+  });
+}
+
+function fDB(type,btn){
+    dbFil=type;
+    document.querySelectorAll('.dbf').forEach(b=>{ if(b===btn) b.classList.add('act'); else b.classList.remove('act'); });
+    renderDB();
+}
+function delQR(id){
+    if(!confirm('Permanently purge this QR asset?'))return;
+    let idx = -1;
+    for(let i=0;i<saved.length;i++){ if(saved[i].id===id){idx=i;break;} }
+    if(idx>-1){
+        saved.splice(idx,1);
+        Storage.set('qrs_min',JSON.stringify(saved));
+        renderDB();
+    }
+}
+
+async function renderStats() {
+    const v = document.getElementById('view-stats');
+    if(v.innerHTML !== '') return;
+    
+    v.innerHTML = `
+        <div class="db-hd">
+          <div><h1>Analytics Overview</h1><p>Track the performance of your dynamic QR campaigns.</p></div>
+        </div>
+        <div style="padding: 50px; text-align: center; color: var(--txt-m);">
+           <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+           <div style="margin: 0 auto 20px auto; width: 40px; height: 40px; border: 4px solid rgba(16, 185, 129, 0.2); border-top: 4px solid #10b981; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+           <p>Syncing analytics data from cloud...</p>
+        </div>
+    `;
+
+    // Initialize Supabase if needed
+    let sb = window.supabaseClient;
+    if (!sb) {
+        try {
+            const res = await fetch('config.json');
+            const config = await res.json();
+            if (config.auth && config.auth.url) {
+                if (typeof window.supabase === 'undefined') {
+                    await new Promise(resolve => {
+                        const script = document.createElement('script');
+                        script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+                        script.onload = resolve;
+                        document.head.appendChild(script);
+                    });
+                }
+                sb = window.supabase.createClient(config.auth.url, config.auth.key);
+                window.supabaseClient = sb;
+            }
+        } catch(e) {}
+    }
+
+    if (!sb) {
+        v.innerHTML = `
+        <div class="db-hd">
+          <div><h1>Analytics Overview</h1><p>Track the performance of your dynamic QR campaigns.</p></div>
+        </div>
+        <div style="padding: 50px; text-align: center; color: #ef4444;">
+           <p>⚠️ Database configuration is missing. Analytics requires Supabase integration.</p>
+        </div>`;
+        return;
+    }
+
+    const myQrIds = saved.map(q => String(q.id));
+    let scans = [];
+    
+    if (myQrIds.length > 0) {
+        try {
+            const { data, error } = await sb
+                .from('qr_scans')
+                .select('*')
+                .in('qr_id', myQrIds);
+            if (data) scans = data;
+        } catch(e) {
+            console.error('Failed to load stats', e);
+        }
+    }
+
+    const totalScans = scans.length;
+    let mobileScans = 0;
+    let desktopScans = 0;
+    const countryMap = {};
+    const dateMap = {};
+
+    const today = new Date();
+    for(let i=29; i>=0; i--) {
+        const d = new Date();
+        d.setDate(today.getDate() - i);
+        dateMap[d.toISOString().split('T')[0]] = 0;
+    }
+
+    scans.forEach(s => {
+        if(s.device_type === 'Mobile') mobileScans++;
+        else desktopScans++;
+
+        if(s.country && s.country !== 'Unknown') {
+            countryMap[s.country] = (countryMap[s.country] || 0) + 1;
+        }
+
+        const dateStr = new Date(s.created_at).toISOString().split('T')[0];
+        if(dateMap[dateStr] !== undefined) {
+            dateMap[dateStr]++;
+        }
+    });
+
+    const dates = Object.keys(dateMap).sort();
+    const maxScansPerDay = Math.max(2, ...Object.values(dateMap));
+    const sortedCountries = Object.keys(countryMap).sort((a,b) => countryMap[b] - countryMap[a]).slice(0, 4);
+
+    v.innerHTML = `
+        <div class="db-hd">
+          <div><h1>Analytics Overview</h1><p>Track the performance of your dynamic QR campaigns.</p></div>
+        </div>
+        
+        <div class="db-stats" style="margin-top:20px;">
+          <div class="st-card" style="background: linear-gradient(135deg, rgba(16,185,129,0.1), transparent); border-color: var(--pri);">
+              <div class="v" style="font-size: 3.5rem;">${totalScans.toLocaleString()}</div>
+              <div class="l">Total Unique Scans</div>
+          </div>
+          <div class="st-card">
+              <div class="v">${mobileScans.toLocaleString()}</div>
+              <div class="l">Mobile Devices</div>
+          </div>
+          <div class="st-card">
+              <div class="v">${desktopScans.toLocaleString()}</div>
+              <div class="l">Desktop Devices</div>
+          </div>
+        </div>
+        
+        <div class="db-stats-ext" style="display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-top: 30px;">
+            <div class="dbc" style="padding: 30px;">
+                <h3 style="margin-bottom: 20px; font-weight: 800; font-size: 1.2rem; color: var(--txt);">Scans Over Time (Last 30 Days)</h3>
+                <div style="height: 250px; display: flex; align-items: flex-end; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                    ${dates.map(date => {
+                        const count = dateMap[date];
+                        const h = Math.max(2, (count / maxScansPerDay) * 100);
+                        return '<div title="' + date + ': ' + count + ' scans" style="flex: 1; background: var(--pri); height: ' + h + '%; border-radius: 4px 4px 0 0; opacity: 0.8; transition: 0.3s; cursor:pointer;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8"></div>';
+                    }).join('')}
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.8rem; color:var(--txt-m); font-weight:600;">
+                    <span>30 Days Ago</span><span>Today</span>
+                </div>
+            </div>
+            
+            <div class="dbc" style="padding: 30px;">
+                <h3 style="margin-bottom: 20px; font-weight: 800; font-size: 1.2rem; color: var(--txt);">Top Countries</h3>
+                <div style="display:flex; flex-direction:column; gap:20px;">
+                    ${sortedCountries.length === 0 ? '<div style="color:var(--txt-m); font-size:0.9rem;">No geographic data yet.</div>' : ''}
+                    ${sortedCountries.map(c => {
+                        const count = countryMap[c];
+                        const pct = Math.round((count / totalScans) * 100);
+                        return \`
+                        <div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; color:var(--txt); font-weight:600;"><span>🗺️ \${c}</span> <strong>\${pct}%</strong></div>
+                            <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden;"><div style="width:\${pct}%; height:100%; background:linear-gradient(90deg, var(--pri), #34d399); border-radius:4px;"></div></div>
+                        </div>
+                        \`;
+                    }).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderTemplates() {
+    const v = document.getElementById('view-templates');
+    if(v.innerHTML !== '') return;
+    
+    v.innerHTML = `
+        <div class="db-hd">
+          <div><h1>Template Gallery</h1><p>Start with a premium pre-designed template and customize it.</p></div>
+        </div>
+        
+        <div class="db-grid" style="margin-top:20px;">
+            <div class="dbc" onclick="window.location.href='qr-editor.html?template=business_card'" style="cursor:pointer;">
+                <div class="dbt" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf);"><div style="font-size: 4rem;">💼</div></div>
+                <div class="dbb"><h3>Modern Business Card</h3><div class="ddt">Professional layout with gradient logo support</div></div>
+            </div>
+            
+            <div class="dbc" onclick="window.location.href='qr-editor.html?template=wifi_neon'" style="cursor:pointer;">
+                <div class="dbt" style="background: linear-gradient(135deg, #10b981, #f59e0b);"><div style="font-size: 4rem;">📶</div></div>
+                <div class="dbb"><h3>Neon Wi-Fi Access</h3><div class="ddt">Vibrant styling for quick guest access</div></div>
+            </div>
+            
+            <div class="dbc" onclick="window.location.href='qr-editor.html?template=minimal_menu'" style="cursor:pointer;">
+                <div class="dbt" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"><div style="font-size: 4rem;">🍽️</div></div>
+                <div class="dbb"><h3>Minimalist Menu</h3><div class="ddt">Clean and scannable design for restaurants</div></div>
+            </div>
+            
+            <div class="dbc" onclick="window.location.href='qr-editor.html?template=social_hub'" style="cursor:pointer;">
+                <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="font-size: 4rem;">🔗</div></div>
+                <div class="dbb"><h3>Social Media Hub</h3><div class="ddt">Optimized for Linktree or social profiles</div></div>
+            </div>
+        </div>
+    `;
+}
+function renderDomains() {
+    const v = document.getElementById('view-domains');
+    if(v.innerHTML !== '') return;
+    
+    v.innerHTML = `
+        <div class="db-hd">
+          <div><h1>Custom Domains</h1><p>Connect your own domain to brand your dynamic short links.</p></div>
+        </div>
+        
+        <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 30px; margin-top: 20px;">
+            <h3 style="margin-bottom: 15px; color: var(--txt);">Add New Domain</h3>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <input type="text" placeholder="e.g. qr.yourcompany.com" style="flex: 1; min-width: 200px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: var(--txt); font-size: 1rem;">
+                <button class="btn-nx" onclick="alert('DNS configuration instructions would appear here. Please configure your CNAME record to point to domains.classoflearners.com')" style="margin:0; padding: 15px 30px; border-radius: 12px; font-size: 0.95rem;">Add Domain</button>
+            </div>
+            <p style="color: var(--txt-m); font-size: 0.85rem; margin-top: 10px;">You will need to update your DNS records (CNAME) with your registrar to complete setup.</p>
+        </div>
+        
+        <h3 style="margin: 40px 0 20px; color: var(--txt);">Connected Domains</h3>
+        
+        <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 20px; overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; border-bottom: 1px solid var(--border);">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--pri); box-shadow: 0 0 10px var(--glow);"></div>
+                    <span style="font-weight: 700; color: var(--txt);">qr.classoflearners.com</span>
+                </div>
+                <span style="font-size: 0.8rem; background: rgba(16,185,129,0.1); color: var(--pri); padding: 5px 12px; border-radius: 20px; font-weight: 800;">Active</span>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 30px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 10px rgba(245,158,11,0.5);"></div>
+                    <span style="font-weight: 700; color: var(--txt);">link.mybusiness.co</span>
+                </div>
+                <span style="font-size: 0.8rem; background: rgba(245,158,11,0.1); color: #f59e0b; padding: 5px 12px; border-radius: 20px; font-weight: 800;">Pending DNS</span>
+            </div>
+        </div>
+    `;
+}
+function editQR(id){ window.location.href = 'qr-editor.html?id=' + id; }
+function reDL(id){
+    let q=null;
+    for(let i=0;i<saved.length;i++){ if(saved[i].id===id){q=saved[i];break;} }
+    if(!q)return;
+    if(typeof QRCodeStyling === 'undefined') { toast('Library loading...', ''); return; }
+    const dlOpts = Object.assign({}, q.opts, {width:800,height:800});
+    new QRCodeStyling(dlOpts).download({name:'qr-'+q.type,extension:'png'});
+}
+
+
+---SCRIPT---
+
+
+
+
+
+function toast(msg, cls){ let t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.className='toast '+(cls||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);}
+
+function gSignIn() {
+    toast('Redirecting to Google...', '');
+    const redirectUri = window.location.href.split('#')[0].split('?')[0]; 
+    const scope = encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
+    window.location.href = authUrl;
+}
+
+function checkURLForToken() {
+    const hash = window.location.hash.substring(1);
+    if (hash.includes('access_token=')) {
+        const params = new URLSearchParams(hash);
+        const token = params.get('access_token');
+        if (token) {
+            googleAccessToken = token;
+            window.history.replaceState(null, null, window.location.pathname);
+            fetchGoogleProfile(token);
+        }
+    }
+}
+
+async function fetchGoogleProfile(token) {
+    try {
+        const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } });
+        if (r.ok) {
+            const info = await r.json();
+            let savedName = info.name;
+            const existing = Storage.get('qrs_user');
+            if(existing) {
+                try {
+                    const parsed = JSON.parse(existing);
+                    if(parsed.email === info.email && parsed.name) savedName = parsed.name;
+                } catch(e){}
+            }
+
+            curUser = { name: savedName, email: info.email, picture: info.picture, google: true };
+            Storage.set('qrs_user', JSON.stringify(curUser));
+            updatePUI();
+            closeMo();
+            toast('✅ Authenticated: ' + savedName, 'green');
+        } else {
+            toast('Authentication failed.', '');
+        }
+    } catch (e) {
+        toast('Network error.', '');
+    }
+}
+
+function loadUser(){ const u=Storage.get('qrs_user'); if(u){ try{ curUser=JSON.parse(u); updatePUI(); }catch(e){} } }
+
+function updatePUI(){ 
+  const nlb=document.getElementById('navLoginBtn'), nup=document.getElementById('navUserProfile'); 
+  const sbBtn=document.getElementById('sbSignBtn'), pCard=document.getElementById('pCard');
+  if(!curUser){ 
+      if(nlb) nlb.style.display='flex'; if(nup) nup.style.display='none'; 
+      if(sbBtn) sbBtn.style.display='flex'; if(pCard) pCard.style.display='none';
+      return; 
+  } 
+  if(nlb) nlb.style.display='none'; if(nup) nup.style.display='flex'; 
+  if(sbBtn) sbBtn.style.display='none'; if(pCard) pCard.style.display='flex';
+  const nun=document.getElementById('navUserName'); if(nun) nun.textContent=curUser.name.split(' ')[0]; 
+  const navAv=document.getElementById('navUserAv'); 
+  if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">`; } 
+  else { if(navAv){ navAv.innerHTML=''; navAv.textContent=curUser.name.charAt(0).toUpperCase(); } } 
+  const pName=document.getElementById('pName'), pEmail=document.getElementById('pEmail'), pAv=document.getElementById('pAv');
+  if(pName) pName.textContent=curUser.name;
+  if(pEmail) pEmail.textContent=curUser.email||'no email';
+  if(curUser.picture){ if(pAv) pAv.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:10px;object-fit:cover;" loading="lazy">`; } 
+  else { if(pAv){ pAv.innerHTML=''; pAv.textContent=curUser.name.charAt(0).toUpperCase(); } } 
+}
+
+function openLogin(){ 
+    const mo=document.getElementById('loginMo'); if(mo) mo.classList.add('open'); 
+    const mt=document.getElementById('moAuthTitle'), mSub=document.getElementById('moAuthSub'), mn=document.getElementById('miName'), me=document.getElementById('miEmail'), gBtn=document.getElementById('gSignInBtn'), loggedInPanel=document.getElementById('loggedInPanel');
+    if(curUser){ 
+        if(mt) mt.textContent = 'Google Account'; if(mSub) mSub.textContent = 'Manage your synced profile.';
+        if(gBtn) gBtn.parentElement.style.display = 'none'; if(loggedInPanel) loggedInPanel.style.display = 'block';
+        if(mn) mn.value = curUser.name; if(me) me.value = curUser.email || ''; 
+    } else { 
+        if(mt) mt.textContent='Authenticate'; if(mSub) mSub.textContent='Unlock dashboard storage and cloud sync.';
+        if(gBtn) gBtn.parentElement.style.display = 'block'; if(loggedInPanel) loggedInPanel.style.display = 'none';
+    } 
+}
+function closeMo(){ const mo=document.getElementById('loginMo'); if(mo) mo.classList.remove('open'); }
+function updateUsername(){
+    const mn=document.getElementById('miName'); if(!mn) return;
+    const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
+    if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Username Updated','green'); }
+}
+function doLogout() {
+    curUser = null; googleAccessToken = null; Storage.set('qrs_user', ''); updatePUI(); closeMo(); toast('Logged out successfully.', '');
+}
+
+
+async function syncDrive() {
+    toast('Cloud sync not yet implemented for QR Studio', 'yellow');
+}
+
+async function loadFromDrive() {
+    toast('Cloud sync not yet implemented for QR Studio', 'yellow');
+}
+
+window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
+
+(function(){
+  const theme = Storage.get('theme');
+  const chk = document.getElementById('themeChk');
+  if(theme === 'light'){ document.body.classList.add('light'); if(chk) chk.checked=false; } 
+  else { document.body.classList.remove('light'); if(chk) chk.checked=true; }
+  
+  const lm=document.getElementById('loginMo'); if(lm) lm.addEventListener('click',function(e){if(e.target===this)closeMo();});
+  
+  checkURLForToken();
+  loadUser();
+  renderDB();
+})();
+
+function toggleTheme(element){
+    if(element && element.checked){ document.body.classList.remove('light'); Storage.set('theme', 'dark'); }
+    else{ document.body.classList.add('light'); Storage.set('theme', 'light'); }
+}

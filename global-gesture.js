@@ -369,6 +369,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Re-sync the theme switch for the newly loaded DOM
             if (window.initializeTheme) window.initializeTheme();
             
+            // Dispatch load event to trigger inline script initializers attached to window.onload
+            setTimeout(() => window.dispatchEvent(new Event('load')), 50);
+            
         } catch (err) {
             console.error("Routing error:", err);
             window.location.href = url; 

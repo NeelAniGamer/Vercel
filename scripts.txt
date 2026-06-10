@@ -1,0 +1,201 @@
+
+// --- GLOBAL ADMIN CONFIG CHECKER ---
+(function() {
+    try {
+        const configStr = localStorage.getItem('col_admin_config');
+        if (configStr) {
+            const config = JSON.parse(configStr);
+            const path = window.location.pathname.split('/').pop() || 'index.html';
+            const status = config.pages[path] || '200';
+            
+            if (status === '503') {
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#cbd5e1;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
+                window.stop();
+            } else if (status === '404') {
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#cbd5e1;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
+                window.stop();
+            }
+        }
+    } catch(e) {}
+})();
+
+
+---SCRIPT---
+
+
+    (function(){
+        try {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        } catch(e) {}
+    })();
+
+
+---SCRIPT---
+
+
+    function toggleMenu() { document.querySelector('.nav-links').classList.toggle('active'); }
+    
+    // --- GLOBAL ACCOUNT LOGIC (STRICT GOOGLE ONLY) ---
+    var Storage = { get: k=>{try{return localStorage.getItem(k);}catch(e){return null;}}, set: (k,v)=>{try{localStorage.setItem(k,v);}catch(e){}} };
+    var GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+    var curUser = null; var googleAccessToken = null;
+    function toast(msg, cls){ let t=document.getElementById('toast'); if(t){t.textContent=msg; t.className='toast '+(cls||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);} }
+
+    function gSignIn() {
+        toast('Redirecting to Google...', '');
+        const redirectUri = window.location.href.split('#')[0].split('?')[0]; 
+        const scope = encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
+        window.location.href = authUrl;
+    }
+
+    function checkURLForToken() {
+        const hash = window.location.hash.substring(1);
+        if (hash.includes('access_token=')) {
+            const params = new URLSearchParams(hash);
+            const token = params.get('access_token');
+            if (token) {
+                googleAccessToken = token;
+                window.history.replaceState(null, null, window.location.pathname);
+                fetchGoogleProfile(token);
+            }
+        }
+    }
+
+    async function fetchGoogleProfile(token) {
+        try {
+            const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } });
+            if (r.ok) {
+                const info = await r.json();
+                let savedName = info.name;
+                const existing = Storage.get('qrs_user');
+                if(existing) {
+                    try {
+                        const parsed = JSON.parse(existing);
+                        if(parsed.email === info.email && parsed.name) savedName = parsed.name;
+                    } catch(e){}
+                }
+
+                curUser = { name: savedName, email: info.email, picture: info.picture, google: true };
+                Storage.set('qrs_user', JSON.stringify(curUser));
+                updatePUI();
+                closeMo();
+                toast('✅ Authenticated: ' + savedName, 'green');
+
+                if(typeof performUpload === 'function' && Storage.get('hf_redirect_intent') === 'upload') {
+                    Storage.set('hf_redirect_intent', '');
+                    performUpload();
+                }
+                if(typeof performFetch === 'function' && Storage.get('hf_redirect_intent') === 'fetch') {
+                    Storage.set('hf_redirect_intent', '');
+                    performFetch();
+                }
+            } else {
+                toast('Authentication failed.', '');
+            }
+        } catch (e) {
+            toast('Network error.', '');
+        }
+    }
+
+    function loadUser(){ const u=Storage.get('qrs_user'); if(u){ try{ curUser=JSON.parse(u); updatePUI(); }catch(e){} } }
+    
+    function updatePUI(){ 
+      const nlb=document.getElementById('navLoginBtn'), nup=document.getElementById('navUserProfile'); 
+      if(!curUser){ if(nlb) nlb.style.display='flex'; if(nup) nup.style.display='none'; return; } 
+      if(nlb) nlb.style.display='none'; if(nup) nup.style.display='flex'; 
+      const nun=document.getElementById('navUserName'); if(nun) nun.textContent=curUser.name.split(' ')[0]; 
+      const navAv=document.getElementById('navUserAv'); 
+      if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" alt="${curUser.name}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">`; } 
+      else { if(navAv){ navAv.innerHTML=''; navAv.textContent=curUser.name.charAt(0).toUpperCase(); } } 
+
+      // Feedback form integration
+      const fbName = document.getElementById('fbName');
+      const fbEmail = document.getElementById('fbEmail');
+      if (curUser && fbName) fbName.value = curUser.name;
+      if (curUser && fbEmail && curUser.email) fbEmail.value = curUser.email;
+    }
+    
+    function openLogin(){ 
+        const mo=document.getElementById('loginMo'); if(mo) mo.classList.add('open'); 
+        const mt=document.getElementById('moAuthTitle');
+        const mSub=document.getElementById('moAuthSub');
+        const mn=document.getElementById('miName'); 
+        const me=document.getElementById('miEmail'); 
+        const gBtn=document.getElementById('gSignInBtn');
+        const loggedInPanel=document.getElementById('loggedInPanel');
+
+        if(curUser){ 
+            if(mt) mt.textContent = 'Google Account'; 
+            if(mSub) mSub.textContent = 'Manage your synced profile.';
+            if(gBtn) gBtn.style.display = 'none';
+            if(loggedInPanel) loggedInPanel.style.display = 'block';
+            
+            if(mn) mn.value = curUser.name; 
+            if(me) me.value = curUser.email || ''; 
+        } else { 
+            if(mt) mt.textContent='Authenticate'; 
+            if(mSub) mSub.textContent='Unlock dashboard storage and cloud sync.';
+            if(gBtn) gBtn.style.display = 'flex';
+            if(loggedInPanel) loggedInPanel.style.display = 'none';
+        } 
+    }
+
+    function closeMo(){ const mo=document.getElementById('loginMo'); if(mo) mo.classList.remove('open'); }
+    
+    function updateUsername(){
+        const mn=document.getElementById('miName');
+        if(!mn) return;
+        const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
+        if(curUser) {
+            curUser.name = n;
+            Storage.set('qrs_user',JSON.stringify(curUser));
+            updatePUI();
+            closeMo();
+            toast('✅ Username Updated','green');
+        }
+    }
+
+    function doLogout() {
+        curUser = null;
+        googleAccessToken = null;
+        Storage.set('qrs_user', '');
+        updatePUI();
+        closeMo();
+        toast('Logged out successfully.', '');
+        const fbForm = document.getElementById('fbForm');
+        if(fbForm) fbForm.reset();
+    }
+    
+    window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
+
+    function initializeTheme() {
+        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        if (Storage.get('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            if (toggleSwitch) toggleSwitch.checked = true;
+        } else {
+            document.body.classList.remove('dark-mode');
+            if (toggleSwitch) toggleSwitch.checked = false;
+        }
+    }
+
+    function toggleTheme(element) {
+        if (element.checked) {
+            document.body.classList.add('dark-mode');
+            Storage.set('theme', 'dark');
+        } else {
+            document.body.classList.remove('dark-mode');
+            Storage.set('theme', 'light');
+        }
+    }
+
+    window.addEventListener('load', function() { 
+        initializeTheme(); 
+        loadUser(); 
+        checkURLForToken(); 
+        const lm=document.getElementById('loginMo'); if(lm) lm.addEventListener('click',function(e){if(e.target===this)closeMo();}); 
+    });
+    

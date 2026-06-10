@@ -12,7 +12,6 @@
             }
         }
     } catch (e) {
-        console.warn("COL Auth: Could not load config.json");
     }
 
     // 2. Load Supabase SDK if keys exist
@@ -26,7 +25,6 @@
             initSupabase(authConfig.url, authConfig.key);
         }
     } else {
-        console.warn("COL Auth: Supabase not configured. Global Auth disabled.");
         window.colUser = null;
         dispatchAuthEvent();
     }

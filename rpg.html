@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPG Game | Coming Soon | Class Of Learners</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -371,6 +373,7 @@
 
     <script>
         const sf = document.getElementById('starfield');
+        const frag = document.createDocumentFragment();
         for (let i = 0; i < 120; i++) {
             const s = document.createElement('div');
             s.className = 'star';
@@ -382,17 +385,18 @@
                 --dur: ${(Math.random() * 4 + 2).toFixed(1)}s;
                 --delay: ${(Math.random() * 5).toFixed(1)}s;
             `;
-            sf.appendChild(s);
+            frag.appendChild(s);
         }
+        if(sf) sf.appendChild(frag);
 
-        const progressBar = document.getElementById('progressBar');
-        const pctLabel = document.getElementById('progressPct');
-        let current = 0;
-        const target = 80;
+        var progressBar = document.getElementById('progressBar');
+        var pctLabel = document.getElementById('progressPct');
+        var current = 0;
+        var target = 80;
         setTimeout(() => {
             const interval = setInterval(() => {
                 current++;
-                pctLabel.textContent = current + '%';
+                if(pctLabel) pctLabel.textContent = current + '%';
                 if (current >= target) clearInterval(interval);
             }, 25);
         }, 500);
@@ -490,10 +494,10 @@
             updatePUI(); closeMo(); toast('Logged out successfully.', '');
         }
 
-        window.addEventListener('load', function() { 
+        (function() { 
             loadUser(); checkURLForToken(); setTimeout(initGoogle, 500); 
             const lm=document.getElementById('loginMo'); if(lm) lm.addEventListener('click',function(e){if(e.target===this)closeMo();}); 
-        });
+        })();
     </script>
 </body>
 </html>

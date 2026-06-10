@@ -25,7 +25,6 @@
         }
 
     } catch (e) {
-        console.warn("COL Router: Could not load configuration. Assuming LIVE status.");
     }
 
     function renderErrorScreen(code) {
