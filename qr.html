@@ -228,16 +228,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <script defer src="col-router.js"></script>
 
 </head>
-<body>
-<script>
-    (function(){
-        try {
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-mode');
-            }
-        } catch(e) {}
-    })();
-</script>
+<body class="dark-mode">
 <nav class="top-nav">
         <a href="index.html" class="nav-brand">
             <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
@@ -263,14 +254,6 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
                 </div>
             </div>
             
-            <div class="theme-switch-wrapper">
-                <span class="theme-label">Dark/Light</span>
-                <label class="theme-switch" for="checkbox">
-                    <input type="checkbox" id="checkbox" aria-label="Toggle Dark Mode" onchange="toggleTheme(this)">
-                    <div class="slider round"></div>
-                </label>
-            </div>
-
             <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg> Sign In
             </button>
