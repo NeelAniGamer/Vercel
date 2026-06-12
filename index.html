@@ -7,7 +7,6 @@
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
     <title>Class Of Learners | Studio Hub</title>
     <link rel="icon" type="image/webp" href="icon.webp">
-    <script defer src="supabase.js"></script>
     <script>
 // --- GLOBAL ADMIN CONFIG CHECKER ---
 (function() {
@@ -138,14 +137,14 @@
 
         .prototype-badge { position: absolute; top: 15px; right: 15px; background: #00ffcc; color: #000; font-size: 0.75rem; font-weight: 800; padding: 6px 12px; border-radius: 6px; z-index: 20; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0, 255, 204, 0.4); text-transform: uppercase; }
         .coming-soon-badge { position: absolute; top: 15px; right: 15px; background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; font-size: 0.75rem; font-weight: 800; padding: 6px 12px; border-radius: 6px; z-index: 20; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5); text-transform: uppercase; animation: pulseBadge 2.5s ease-in-out infinite; }
-        @keyframes pulseBadge { 0%, 100% { box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5); } 50% { box-shadow: 0 4px 25px rgba(139, 92, 246, 0.9); } }
+        @keyframes pulseBadge { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.05); opacity: 1; } }
 
         .css-art-bg { width: 100%; height: 100%; background: #0a0d14; position: relative; display: flex; justify-content: center; align-items: center; }
         .css-art-grid { position: absolute; inset: 0; opacity: 0.3; background: repeating-linear-gradient(0deg, transparent, transparent 19px, #00ffcc 19px, #00ffcc 20px), repeating-linear-gradient(90deg, transparent, transparent 19px, #00ffcc 19px, #00ffcc 20px); }
         .css-art-hand { font-size: 5rem; z-index: 2; filter: drop-shadow(0 0 20px rgba(0,255,204,0.6)); transition: transform 0.4s; }
         .showcase-box:hover .css-art-hand { transform: scale(1.1) translateY(-5px); }
         .scan-line { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #00ffcc; box-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc; animation: scan 2.5s linear infinite; z-index: 5; opacity: 0.8; }
-        @keyframes scan { 0% { top: -10%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 110%; opacity: 0; } }
+        @keyframes scan { 0% { transform: translateY(-22px); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(242px); opacity: 0; } }
 
         .rpg-art-bg { width: 100%; height: 100%; background: linear-gradient(180deg, #0a0514 0%, #150c2a 60%, #0d0a1a 100%); position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         .rpg-stars { position: absolute; inset: 0; background: radial-gradient(1px 1px at 20% 30%, rgba(167,139,250,0.8) 0%, transparent 100%), radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.7) 0%, transparent 100%), radial-gradient(1px 1px at 50% 60%, rgba(196,181,253,0.6) 0%, transparent 100%), radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.5) 0%, transparent 100%), radial-gradient(1px 1px at 10% 80%, rgba(167,139,250,0.7) 0%, transparent 100%), radial-gradient(1px 1px at 90% 50%, rgba(255,255,255,0.6) 0%, transparent 100%), radial-gradient(1px 1px at 35% 20%, rgba(196,181,253,0.9) 0%, transparent 100%), radial-gradient(2px 2px at 60% 40%, rgba(250,204,21,0.5) 0%, transparent 100%); background-size: 8px 8px; }
@@ -158,7 +157,7 @@
         .rpg-rune:nth-child(3) { animation-delay: 0.6s; background: rgba(196,181,253,0.6); }
         .rpg-rune:nth-child(4) { animation-delay: 0.9s; background: rgba(250,204,21,0.7); }
         .rpg-rune:nth-child(5) { animation-delay: 1.2s; background: rgba(167,139,250,0.6); }
-        @keyframes runeGlow { from { opacity: 0.3; transform: scale(1); } to { opacity: 1; transform: scale(1.4); box-shadow: 0 0 8px currentColor; } }
+        @keyframes runeGlow { from { opacity: 0.3; transform: scale(1); } to { opacity: 1; transform: scale(1.4); } }
 
         .qr-art-bg { width: 100%; height: 100%; background: #050f05; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         .qr-grid-art { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; width: 130px; height: 130px; z-index: 2; transition: transform 0.4s; }
@@ -329,12 +328,14 @@
                     document.addEventListener('DOMContentLoaded', function() {
                         var qrArt = document.getElementById('qrArt');
                         if (qrArt && qrArt.children.length === 0) {
+                            var frag = document.createDocumentFragment();
                             for(var i=0; i<81; i++){
                                 var c = document.createElement('div');
                                 c.className = 'qr-cell';
                                 if(Math.random() > 0.5) c.classList.add('on');
-                                qrArt.appendChild(c);
+                                frag.appendChild(c);
                             }
+                            qrArt.appendChild(frag);
                             setInterval(function() {
                                 if (!document.getElementById('qrArt')) return;
                                 var cells = document.getElementById('qrArt').children;
