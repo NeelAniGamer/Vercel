@@ -5,6 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QR Editor | Class Of Learners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script defer src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -417,16 +419,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <script defer src="col-router.js"></script>
 
 </head>
-<body>
-<script>
-    (function(){
-        try {
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-mode');
-            }
-        } catch(e) {}
-    })();
-</script>
+<body class="dark-mode">
 <nav class="top-nav">
         <a href="index.html" class="nav-brand">
             <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
@@ -452,18 +445,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
                 </div>
             </div>
             
-            <div class="theme-switch-wrapper">
-                <span class="theme-label">Dark/Light</span>
-                <label class="theme-switch" for="checkbox">
-                    <input type="checkbox" id="checkbox" aria-label="Toggle Dark Mode" onchange="toggleTheme(this)">
-                    <div class="slider round"></div>
-                </label>
-            </div>
-
-            <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+            <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else window.location.href='qr.html?login=true';">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg> Sign In
             </button>
-            <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+            <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else window.location.href='qr.html?login=true';">
                 <div class="nav-user-avatar" id="navUserAv">?</div>
                 <span id="navUserName" style="font-size:0.85rem; font-weight:800; color:var(--text-main);">User</span>
             </div>
@@ -473,7 +458,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <a href="download.html" class="nav-dl-btn desktop-dl">Downloads Hub</a>
     </nav>
 
-<div class="qr-app">
+<div class="qr-app" role="main">
 <aside class="app-sb">
   <div class="sb-top">
     <div class="sb-top-title">⬛ QR STUDIO</div>
@@ -488,10 +473,9 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   <a href="qr.html?view=qrs" class="sb-btn"><span class="sb-icon">🔲</span>My QR codes</a>
   <a href="qr.html?view=stats" class="sb-btn"><span class="sb-icon">📊</span>Stats</a>
   <a href="qr.html?view=templates" class="sb-btn"><span class="sb-icon">📄</span>Templates</a>
-  <a href="qr.html?view=domains" class="sb-btn"><span class="sb-icon">🌐</span>My domains</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
-  <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
+  <button class="sb-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else window.location.href='qr.html?login=true';"><span class="sb-icon">⚙️</span>Account</button>
   
   <div class="sb-foot">
     <button class="sign-btn" id="sbSignBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
@@ -521,7 +505,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
       <div class="sc" id="sc2"></div>
       <div class="si" id="si3" onclick="currentStep>=3&&goStep(3)">
         <div class="sn" id="sn3">3</div>
-        <div class="st"><p>Design</p><span>Stylize code</span></div>
+        <div class="st"><p>Theme</p><span>Stylize code</span></div>
       </div>
     </div>
 
@@ -562,15 +546,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
                           <input type="text" id="advQrName" class="fi" value="My QR Code" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2);">
                       </div>
                       
-                      <!-- Domain -->
-                      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
-                          <span style="font-size:0.9rem; font-weight:600; color:var(--txt);">Domain</span>
-                          <label class="theme-switch" style="transform: scale(0.85); margin:0;">
-                              <input type="checkbox" checked>
-                              <div class="slider round"></div>
-                          </label>
-                      </div>
-                      <select class="fi" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2);"><option>qr.classoflearners.com</option></select>
+                      <!-- Domain removed -->
                       
                       <!-- Password -->
                       <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">

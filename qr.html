@@ -5,9 +5,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QR Dashboard | Class Of Learners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script defer src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 /* ── EXACT UI THEME ── */
 :root {
@@ -282,7 +284,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <a href="download.html" class="nav-dl-btn desktop-dl">Downloads Hub</a>
     </nav>
 
-<div class="qr-app">
+<div class="qr-app" role="main">
 <aside class="app-sb">
   <div class="sb-top">
     <div class="sb-top-title">⬛ QR STUDIO</div>
@@ -294,9 +296,9 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon">🎯</span>Bulk QR generation</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
-  <a href="#" class="sb-btn act" onclick="switchView('qrs'); return false;"><span class="sb-icon">🔲</span>My QR codes</a>
-  <a href="#" class="sb-btn" onclick="switchView('stats'); return false;"><span class="sb-icon">📊</span>Stats</a>
-  <a href="#" class="sb-btn" onclick="switchView('templates'); return false;"><span class="sb-icon">📄</span>Templates</a>
+  <a href="?view=qrs" class="sb-btn" id="sbtn-qrs"><span class="sb-icon">🔲</span>My QR codes</a>
+  <a href="?view=stats" class="sb-btn" id="sbtn-stats"><span class="sb-icon">📊</span>Stats</a>
+  <a href="?view=templates" class="sb-btn" id="sbtn-templates"><span class="sb-icon">📄</span>Templates</a>
   <a href="#" class="sb-btn" onclick="switchView('domains'); return false;"><span class="sb-icon">🌐</span>My domains</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
@@ -414,7 +416,7 @@ function renderDB(){
   const g = document.getElementById('dbG'); if(!g) return;
   g.innerHTML = '';
   if(!filtered.length){
-    g.innerHTML=`<div class="db-emp"><div class="ei">🔳</div><h3>Workspace Empty</h3><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
+    g.innerHTML=`<div class="db-emp"><div class="ei">🔳</div><h2>Workspace Empty</h2><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
     return;
   }
   filtered.forEach(q=>{
@@ -570,25 +572,25 @@ async function renderStats() {
 
     const cardsHtml = `
          <div class="st-card" style="padding:35px 25px; border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:var(--panel); border:1px solid var(--border);">
-            <div class="v" style="font-size:3.5rem; color:var(--txt); -webkit-text-fill-color:var(--txt); background:none; text-shadow:none; font-family:var(--font-main);">\${totalQRs}</div>
+            <div class="v" style="font-size:3.5rem; color:var(--txt); -webkit-text-fill-color:var(--txt); background:none; text-shadow:none; font-family:var(--font-main);">${totalQRs}</div>
             <div class="l" style="text-transform:none; font-weight:600; margin-top:15px; color:var(--txt-m); display:flex; align-items:center; gap:8px; font-size:1rem;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg> Total QR Codes
             </div>
          </div>
          <div class="st-card" style="padding:35px 25px; border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:var(--panel); border:1px solid var(--border);">
-            <div class="v" style="font-size:3.5rem; color:var(--txt); -webkit-text-fill-color:var(--txt); background:none; text-shadow:none; font-family:var(--font-main);">\${totalScans}</div>
+            <div class="v" style="font-size:3.5rem; color:var(--txt); -webkit-text-fill-color:var(--txt); background:none; text-shadow:none; font-family:var(--font-main);">${totalScans}</div>
             <div class="l" style="text-transform:none; font-weight:600; margin-top:15px; color:var(--txt-m); display:flex; align-items:center; gap:8px; font-size:1rem;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Total Scans
             </div>
          </div>
          <div class="st-card" style="padding:35px 25px; border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:var(--panel); border:1px solid var(--border);">
-            <div class="v" style="font-size:3.5rem; color:var(--txt); -webkit-text-fill-color:var(--txt); background:none; text-shadow:none; font-family:var(--font-main);">\${totalUnique}</div>
+            <div class="v" style="font-size:3.5rem; color:var(--txt); -webkit-text-fill-color:var(--txt); background:none; text-shadow:none; font-family:var(--font-main);">${totalUnique}</div>
             <div class="l" style="text-transform:none; font-weight:600; margin-top:15px; color:var(--txt-m); display:flex; align-items:center; gap:8px; font-size:1rem;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Total Unique Scans
             </div>
          </div>
          <div class="st-card" style="padding:35px 25px; border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:var(--panel); border:1px solid var(--border);">
-            <div class="v" style="font-size:3.5rem; color:var(--txt); -webkit-text-fill-color:var(--txt); background:none; text-shadow:none; font-family:var(--font-main);">\${totalVisits}</div>
+            <div class="v" style="font-size:3.5rem; color:var(--txt); -webkit-text-fill-color:var(--txt); background:none; text-shadow:none; font-family:var(--font-main);">${totalVisits}</div>
             <div class="l" style="text-transform:none; font-weight:600; margin-top:15px; color:var(--txt-m); display:flex; align-items:center; gap:8px; font-size:1rem;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Total visits
             </div>
@@ -660,7 +662,7 @@ async function renderStats() {
         accHtml += `
             <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden; transition:0.3s;" class="acc-box">
                 <button style="width:100%; padding:20px; background:transparent; border:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer; color:var(--txt); font-weight:700; font-size:1rem;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('svg').style.transform = this.nextElementSibling.style.display === 'block' ? 'rotate(180deg)' : 'rotate(0deg)';">
-                    \${title}
+                    ${title}
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:0.3s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
                 <div style="display:none; padding: 0 20px 20px 20px; color:var(--txt-m); font-size:0.9rem; border-top:1px solid rgba(255,255,255,0.05);">
