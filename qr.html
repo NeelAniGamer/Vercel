@@ -171,28 +171,30 @@ body::after {
 .db-emp h3 { font-size: 1.6rem; font-weight: 800; color: var(--txt); margin-bottom: 15px; letter-spacing: -0.5px; }
 .db-emp p { font-size: 1.05rem; color: var(--txt-m); margin-bottom: 30px; max-width: 500px; margin-inline: auto; line-height: 1.6; }
 
-/* MODAL */
-.mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+/* MODAL REDESIGN */
+.mo { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 .mo.open { opacity: 1; pointer-events: auto; }
-.md { background: var(--bg); border: 1px solid var(--border); border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 40px 100px rgba(0,0,0,0.8); }
+.md { background: linear-gradient(180deg, rgba(17, 24, 39, 0.95), rgba(3, 7, 18, 0.95)); border: 1px solid rgba(255,255,255,0.08); border-radius: 28px; width: 90%; max-width: 420px; overflow: hidden; transform: translateY(40px) scale(0.95); transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 40px 100px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); }
 .mo.open .md { transform: translateY(0) scale(1); }
-.md-hd { padding: 30px; border-bottom: 1px solid var(--border); background: var(--panel); text-align: center; }
-.md-hd h2 { font-size: 1.6rem; font-weight: 800; color: var(--txt); letter-spacing: -0.5px; margin:0;}
-.md-hd p { font-size: 0.95rem; color: var(--txt-m); margin-top: 5px; }
+.md-hd { padding: 40px 30px 25px; border-bottom: 1px solid rgba(255,255,255,0.05); background: transparent; text-align: center; position: relative; overflow: hidden; }
+.md-hd::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 200px; height: 200px; background: var(--pri); filter: blur(80px); opacity: 0.15; pointer-events: none; }
+.md-hd h2 { font-size: 1.8rem; font-weight: 800; color: var(--txt); letter-spacing: -0.5px; margin:0; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+.md-hd p { font-size: 0.95rem; color: var(--txt-m); margin-top: 8px; font-weight: 500; }
 .md-body { padding: 30px; display: flex; flex-direction: column;}
-.ml { font-size: 0.8rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
-.mi { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; outline: none; margin-bottom: 20px; transition: 0.3s; color: var(--txt); background: var(--panel); }
-.mi:focus { border-color: var(--pri); box-shadow: 0 0 0 3px var(--glow); }
+.ml { font-size: 0.75rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 10px; margin-left: 4px; opacity: 0.8; }
+.mi { width: 100%; padding: 16px 20px; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; font-size: 1rem; outline: none; margin-bottom: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: var(--txt); background: rgba(0,0,0,0.3); font-family: var(--font-main); }
+.mi:focus { border-color: var(--pri); background: rgba(16,185,129,0.05); box-shadow: 0 0 0 4px rgba(16,185,129,0.15); transform: translateY(-2px); }
 
-.gbtn { width: 100%; padding: 12px; background: #ffffff; border: 1px solid #dadce0; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; color: #3c4043; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; transition: 0.2s; font-family:'Inter',sans-serif;}
+.gbtn { width: 100%; padding: 14px; background: #ffffff; border: 1px solid #dadce0; border-radius: 16px; font-weight: 600; font-size: 1.05rem; cursor: pointer; color: #3c4043; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-family: var(--font-main); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.gbtn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,255,255,0.1); }
 body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
-.ms { width: 100%; padding: 15px; background: var(--pri); border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s; margin-bottom: 10px; }
-.ms:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 10px 20px var(--glow-strong); }
-.msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.9rem; font-weight: 700; color: var(--txt-m); cursor: pointer; transition: 0.3s; }
+.ms { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--pri), #34d399); border: none; border-radius: 16px; font-weight: 800; font-size: 1.05rem; cursor: pointer; color: #000; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 15px; box-shadow: 0 10px 25px var(--glow); }
+.ms:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 15px 35px var(--glow-strong); }
+.msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: var(--txt-m); cursor: pointer; transition: 0.3s; margin-top: 5px; }
 .msk:hover { color: var(--txt); }
-.msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--danger); border-radius: 12px; font-size: 1rem; font-weight: 800; color: var(--danger); cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
-.msk-danger:hover { background: rgba(239, 68, 68, 0.1); }
+.msk-danger { width: 100%; padding: 16px; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 16px; font-size: 1rem; font-weight: 800; color: #f87171; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 10px; }
+.msk-danger:hover { background: rgba(239, 68, 68, 0.15); border-color: var(--danger); color: #fca5a5; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2); }
 
 .toast { position: fixed; bottom: 30px; right: 30px; background: var(--panel); border: 1px solid var(--border); color: var(--txt); padding: 15px 25px; border-radius: 12px; font-size: 0.95rem; font-weight: 800; z-index: 3000; transform: translateY(20px); opacity: 0; transition: 0.3s; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
 .toast.show { transform: translateY(0); opacity: 1; }
@@ -279,10 +281,9 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon">🎯</span>Bulk QR generation</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
-  <a href="?view=qrs" class="sb-btn" id="sbtn-qrs"><span class="sb-icon">🔲</span>My QR codes</a>
-  <a href="?view=stats" class="sb-btn" id="sbtn-stats"><span class="sb-icon">📊</span>Stats</a>
-  <a href="?view=templates" class="sb-btn" id="sbtn-templates"><span class="sb-icon">📄</span>Templates</a>
-  <a href="#" class="sb-btn" onclick="switchView('domains'); return false;"><span class="sb-icon">🌐</span>My domains</a>
+  <a href="#" class="sb-btn act" id="sbtn-qrs" onclick="switchView('qrs'); return false;"><span class="sb-icon">🔲</span>My QR codes</a>
+  <a href="#" class="sb-btn" id="sbtn-stats" onclick="switchView('stats'); return false;"><span class="sb-icon">📊</span>Stats</a>
+  <a href="#" class="sb-btn" id="sbtn-templates" onclick="switchView('templates'); return false;"><span class="sb-icon">📄</span>Templates</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
   <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
@@ -336,7 +337,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
       <div id="view-stats" class="db-view" style="display:none;"></div>
       <div id="view-templates" class="db-view" style="display:none;"></div>
-      <div id="view-domains" class="db-view" style="display:none;"></div>
+
   </div>
   
   <footer class="site-footer" style="width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--nav); margin-top: auto;">
@@ -381,7 +382,7 @@ function switchView(viewId) {
     
     if(viewId === 'stats') renderStats();
     if(viewId === 'templates') renderTemplates();
-    if(viewId === 'domains') renderDomains();
+
 }
 
 function renderDB(){
@@ -689,26 +690,6 @@ function renderTemplates() {
         </div>
     `;
 }
-function renderDomains() {
-    const v = document.getElementById('view-domains');
-    if(v.innerHTML !== '') return;
-    
-    v.innerHTML = `
-        <div class="db-hd">
-          <div><h1>Custom Domains</h1><p>Connect your own domain to brand your dynamic short links.</p></div>
-        </div>
-        
-        <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 30px; margin-top: 20px;">
-            <h3 style="margin-bottom: 15px; color: var(--txt);">Add New Domain</h3>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <input type="text" placeholder="e.g. qr.yourcompany.com" style="flex: 1; min-width: 200px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 12px; padding: 15px; color: var(--txt); font-size: 1rem;">
-                <button class="btn-nx" onclick="alert('DNS configuration instructions would appear here. Please configure your CNAME record to point to domains.classoflearners.com')" style="margin:0; padding: 15px 30px; border-radius: 12px; font-size: 0.95rem;">Add Domain</button>
-            </div>
-            <p style="color: var(--txt-m); font-size: 0.85rem; margin-top: 10px;">You will need to update your DNS records (CNAME) with your registrar to complete setup.</p>
-        </div>
-        
-        <h3 style="margin: 40px 0 20px; color: var(--txt);">Connected Domains</h3>
-        
         <div style="background: var(--panel); border: 1px solid var(--border); border-radius: 20px; overflow: hidden;">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; border-bottom: 1px solid var(--border);">
                 <div style="display: flex; align-items: center; gap: 15px;">
