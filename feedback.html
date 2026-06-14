@@ -11,7 +11,7 @@
             const config = JSON.parse(configStr);
             
             if (config.banner && config.banner.active && config.banner.text) {
-                document.write('<div style="background:#f59e0b; color:#000; text-align:center; padding:12px 20px; font-weight:800; font-family:\'Inter\', sans-serif; font-size:0.95rem; z-index:9999; position:relative; box-shadow:0 4px 15px rgba(0,0,0,0.2); text-transform:uppercase; letter-spacing:0.5px;">⚠️ ' + config.banner.text + '</div>');
+                document.write('<div style="background:#f59e0b; color:#000; text-align:center; padding:12px 20px; font-weight:800; font-family:\'Inter\', sans-serif; font-size:0.95rem; z-index:9999; position:relative; box-shadow:0 4px 15px rgba(0,0,0,0.2); text-transform:uppercase; letter-spacing:0.5px;">âš ï¸ ' + config.banner.text + '</div>');
             }
 
             const path = window.location.pathname.split('/').pop() || 'index.html';
@@ -39,7 +39,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     </noscript>
 <style>
-    /* ── GLOBAL THEME VARIABLES ── */
+    /* â”€â”€ GLOBAL THEME VARIABLES â”€â”€ */
     :root { 
         --bg-color: #f8f9fa; 
         --text-main: #111827; 
@@ -70,7 +70,7 @@
     ::-webkit-scrollbar-thumb { background: rgba(107, 114, 128, 0.3); border-radius: 10px; border: 3px solid var(--bg-color); transition: 0.3s; }
     ::-webkit-scrollbar-thumb:hover { background: var(--google-blue); }
 
-    /* ── GLOBAL NAVBAR ── */
+    /* â”€â”€ GLOBAL NAVBAR â”€â”€ */
     .top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s;}
     .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; text-decoration: none; color: var(--text-main); transition: color 0.3s; font-family: 'Inter', sans-serif; text-transform: none;}
     .brand-logo { height: 40px; width: auto; object-fit: contain; }
@@ -115,7 +115,7 @@
     .nav-user-profile:hover { border-color: #10b981; }
     .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #10b981; color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
 
-    /* ── FEEDBACK UI & LAYOUT ── */
+    /* â”€â”€ FEEDBACK UI & LAYOUT â”€â”€ */
     .container { max-width: 1200px; margin: 60px auto; padding: 0 20px; width: 100%; flex: 1;}
     .header { text-align: center; margin-bottom: 40px; }
     .header h1 { font-size: 3rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; color: var(--google-blue); text-transform: none;}
@@ -141,14 +141,14 @@
     .stars label { font-size: 2.5rem; color: var(--border-light); cursor: pointer; transition: 0.2s; }
     .stars label:hover, .stars label:hover ~ label, .stars input:checked ~ label { color: #fbbf24; }
 
-    /* ── GLOBAL FOOTER ── */
+    /* â”€â”€ GLOBAL FOOTER â”€â”€ */
     .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-light); background: var(--nav-bg); backdrop-filter: blur(10px); z-index: 100; margin-top: auto; transition: 0.3s; }
     .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
     .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s; text-transform:none;}
     .footer-links a:hover { color: var(--google-blue); }
     .footer-copy { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform:none;}
 
-    /* ── UNIVERSAL AUTH MODAL ── */
+    /* â”€â”€ UNIVERSAL AUTH MODAL â”€â”€ */
     .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
     .mo.open { opacity: 1; pointer-events: auto; }
     .md { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); color: var(--text-main); text-transform:none;}
@@ -193,6 +193,7 @@
 </style>
 <script defer src="col-router.js"></script>
 <script defer src="col-auth.js"></script>
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/feedback.html" />
 </head>
 <body>
 <script>
@@ -211,7 +212,7 @@
         <span>Class Of Learners</span>
     </a>
     
-    <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+    <button class="mobile-menu-btn" onclick="toggleMenu()">â˜°</button>
 
     <div class="nav-links">
         <a href="index.html" class="nav-link">Home Hub</a>
@@ -220,14 +221,14 @@
         <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
         
         <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
-            <button class="dropdown-btn">Projects <span>▼</span></button>
+            <button class="dropdown-btn">Projects <span>â–¼</span></button>
             <div class="dropdown-content">
                 <div class="dropdown-content-inner">
-                    <a href="ati.html">Typing Instructor <span>⌨️</span></a>
-                    <a href="solar.html">Solar Engine <span>🪐</span></a>
-                    <a href="gesture.html">Gesture Control <span>🖐️</span></a>
-                    <a href="rpg.html">RPG Game <span>⚔️</span></a>
-                    <a href="qr.html">QR Generator <span>⬛</span></a>
+                    <a href="ati.html">Typing Instructor <span>âŒ¨ï¸</span></a>
+                    <a href="solar.html">Solar Engine <span>ðŸª</span></a>
+                    <a href="gesture.html">Gesture Control <span>ðŸ–ï¸</span></a>
+                    <a href="rpg.html">RPG Game <span>âš”ï¸</span></a>
+                    <a href="qr.html">QR Generator <span>â¬›</span></a>
                 </div>
             </div>
         </div>
@@ -264,11 +265,11 @@
         <div class="field">
           <span class="lbl">Rate Your Experience</span>
           <div class="stars">
-            <input type="radio" id="star5" name="rating" value="5" checked><label for="star5">★</label>
-            <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
-            <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
-            <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
-            <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+            <input type="radio" id="star5" name="rating" value="5" checked><label for="star5">â˜…</label>
+            <input type="radio" id="star4" name="rating" value="4"><label for="star4">â˜…</label>
+            <input type="radio" id="star3" name="rating" value="3"><label for="star3">â˜…</label>
+            <input type="radio" id="star2" name="rating" value="2"><label for="star2">â˜…</label>
+            <input type="radio" id="star1" name="rating" value="1"><label for="star1">â˜…</label>
           </div>
         </div>
         
@@ -285,11 +286,11 @@
         <div class="field">
           <span class="lbl">Category</span>
           <select class="inp" id="fbType" onchange="handleCategoryChange()">
-            <option value="Suggestion">💡 Feature Suggestion</option>
-            <option value="Bug">🐛 Bug Report</option>
-            <option value="UI/UX">🎨 Design / UI</option>
-            <option value="Performance">⚡ Performance / Lag</option>
-            <option value="Other">💬 General / Other</option>
+            <option value="Suggestion">ðŸ’¡ Feature Suggestion</option>
+            <option value="Bug">ðŸ› Bug Report</option>
+            <option value="UI/UX">ðŸŽ¨ Design / UI</option>
+            <option value="Performance">âš¡ Performance / Lag</option>
+            <option value="Other">ðŸ’¬ General / Other</option>
           </select>
         </div>
         
@@ -326,7 +327,7 @@
 <div class="mo" id="confirmMo">
   <div class="md" style="max-width: 400px; text-align: center;">
     <div class="md-body" style="padding: 40px 30px;">
-      <div style="font-size: 3rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(239,68,68,0.3));">⚠️</div>
+      <div style="font-size: 3rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(239,68,68,0.3));">âš ï¸</div>
       <h2 id="confirmTitle" style="font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main); text-transform:none;">Confirm Action</h2>
       <p id="confirmMsg" style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; text-transform:none;">Are you sure?</p>
       <div style="display: flex; gap: 15px;">
@@ -341,10 +342,10 @@
 
 <script>
 // --- GOOGLE SHEETS APP SCRIPT URL ---
-// ⚠️ PASTE THE URL YOU COPIED FROM GOOGLE APPS SCRIPT BELOW ⚠️
+// âš ï¸ PASTE THE URL YOU COPIED FROM GOOGLE APPS SCRIPT BELOW âš ï¸
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxN5tS8uTeW6KoX_sVOxjV_x7X2W67k9d9Ubb_iQvMPzZNXrP-93MtjFlhE3gtbDn8/exec";
 
-// ── CUSTOM CONFIRM UI LOGIC ──
+// â”€â”€ CUSTOM CONFIRM UI LOGIC â”€â”€
 let confirmActionCallback = null;
 function showConfirm(title, msg, callback) {
     document.getElementById('confirmTitle').innerText = title;
@@ -364,7 +365,7 @@ document.getElementById('confirmBtn').addEventListener('click', function() {
 
 function toggleMenu() { document.querySelector('.nav-links').classList.toggle('active'); }
 
-// ── NEW: AUTO-DETECT SYSTEM INFO ──
+// â”€â”€ NEW: AUTO-DETECT SYSTEM INFO â”€â”€
 function detectSystem() {
     const ua = navigator.userAgent;
     let os = "Unknown OS";
@@ -424,7 +425,7 @@ function renderUserFeedback() {
     list.innerHTML = '';
     
     userArr.forEach(fb => {
-        let stars = '★'.repeat(parseInt(fb.rating)) + '☆'.repeat(5 - parseInt(fb.rating));
+        let stars = 'â˜…'.repeat(parseInt(fb.rating)) + 'â˜†'.repeat(5 - parseInt(fb.rating));
         list.innerHTML += `
             <div style="background: var(--bg-color); border: 1px solid var(--border-light); border-radius: 12px; padding: 15px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
@@ -448,7 +449,7 @@ function deleteMyFb(id) {
         arr = arr.filter(fb => fb.id !== id);
         localStorage.setItem('col_feedback', JSON.stringify(arr));
         renderUserFeedback();
-        toast('✅ Feedback Removed Locally', 'green');
+        toast('âœ… Feedback Removed Locally', 'green');
     });
 }
 
@@ -488,7 +489,7 @@ function submitFeedback(e) {
         }).catch(err => console.error(err));
     }
     
-    toast('✅ Feedback Submitted!', 'green');
+    toast('âœ… Feedback Submitted!', 'green');
     document.getElementById('fbForm').reset();
     handleCategoryChange(); 
     
@@ -526,7 +527,7 @@ function handleOneTapResponse(response) {
     if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === payload.email && parsed.name) savedName = parsed.name; } catch(e){} }
     curUser = { name: savedName, email: payload.email, picture: payload.picture, google: true };
     Storage.set('qrs_user', JSON.stringify(curUser));
-    updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+    updatePUI(); closeMo(); toast('âœ… Authenticated: ' + savedName, 'green');
 }
 
 function gSignIn() {
@@ -557,7 +558,7 @@ async function fetchGoogleProfile(token) {
             if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === info.email && parsed.name) savedName = parsed.name; } catch(e){} }
             curUser = { name: savedName, email: info.email, picture: info.picture, google: true };
             Storage.set('qrs_user', JSON.stringify(curUser));
-            updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+            updatePUI(); closeMo(); toast('âœ… Authenticated: ' + savedName, 'green');
         } else { toast('Authentication failed.', ''); }
     } catch (e) { toast('Network error.', ''); }
 }
@@ -604,7 +605,7 @@ function closeMo(){ const mo=document.getElementById('loginMo'); if(mo) mo.class
 function updateUsername(){
     const mn=document.getElementById('miName'); if(!mn) return;
     const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
-    if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Username Updated','green'); }
+    if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('âœ… Username Updated','green'); }
 }
 
 function doLogout() {

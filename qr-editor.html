@@ -12,9 +12,10 @@
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script defer src="col-auth.js"></script>
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr-editor.html" />
 </head>
 <style>
-/* ── EXACT UI THEME ── */
+/* â”€â”€ EXACT UI THEME â”€â”€ */
 :root {
   --bg: #030712; --panel: rgba(17, 24, 39, 0.6); --panel-hover: rgba(31, 41, 55, 0.8);
   --border: rgba(255, 255, 255, 0.08); --border-focus: #10b981;
@@ -227,7 +228,7 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
 .btn-nx, .btn-cp { padding: 15px 40px; background: var(--pri); border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s; box-shadow: 0 10px 30px var(--glow-strong); display: flex; align-items: center; gap: 10px; margin-left: auto; }
 .btn-nx:hover, .btn-cp:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 15px 40px var(--pri); }
 
-/* ── PREVIEW PANEL ── */
+/* â”€â”€ PREVIEW PANEL â”€â”€ */
 .prev-p { background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; box-shadow: -10px 0 30px rgba(0,0,0,0.2); z-index: 10;}
 .prev-hd { padding: 25px 25px 15px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; text-align: center; }
 .prev-hd h3 { font-size: 1rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 2px; }
@@ -418,6 +419,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
 <script defer src="col-router.js"></script>
 
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr-editor.html" />
 </head>
 <body class="dark-mode">
 <nav class="top-nav">
@@ -425,7 +427,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
             <span>Class Of Learners</span>
         </a>
-        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">â˜°</button>
         <div class="nav-links">
             <a href="index.html" class="nav-link" style="color: var(--google-blue);">Home Hub</a>
             <a href="about.html" class="nav-link">About Us</a>
@@ -433,14 +435,14 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
             
             <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
-                <button class="dropdown-btn">Projects <span>▼</span></button>
+                <button class="dropdown-btn">Projects <span>â–¼</span></button>
                 <div class="dropdown-content">
                     <div class="dropdown-content-inner">
-                        <a href="ati.html">Typing Instructor <span>⌨️</span></a>
-                        <a href="solar.html">Solar Engine <span>🪐</span></a>
-                        <a href="gesture.html">Gesture Control <span>🖐️</span></a>
-                        <a href="rpg.html">RPG Game <span>⚔️</span></a>
-                        <a href="qr.html">QR Generator <span>⬛</span></a>
+                        <a href="ati.html">Typing Instructor <span>âŒ¨ï¸</span></a>
+                        <a href="solar.html">Solar Engine <span>ðŸª</span></a>
+                        <a href="gesture.html">Gesture Control <span>ðŸ–ï¸</span></a>
+                        <a href="rpg.html">RPG Game <span>âš”ï¸</span></a>
+                        <a href="qr.html">QR Generator <span>â¬›</span></a>
                     </div>
                 </div>
             </div>
@@ -461,21 +463,21 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <div class="qr-app" role="main">
 <aside class="app-sb">
   <div class="sb-top">
-    <div class="sb-top-title">⬛ QR STUDIO</div>
+    <div class="sb-top-title">â¬› QR STUDIO</div>
     <div class="sb-top-sub">By Class Of Learners</div>
   </div>
   
   <div class="sb-lbl">Create</div>
-  <a href="qr-editor.html" class="sb-btn act"><span class="sb-icon">⊕</span>New QR</a>
-  <a href="#" onclick="openBulkModal(); return false;" class="sb-btn"><span class="sb-icon">🎯</span>Bulk QR generation</a>
+  <a href="qr-editor.html" class="sb-btn act"><span class="sb-icon">âŠ•</span>New QR</a>
+  <a href="#" onclick="openBulkModal(); return false;" class="sb-btn"><span class="sb-icon">ðŸŽ¯</span>Bulk QR generation</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
-  <a href="qr.html?view=qrs" class="sb-btn"><span class="sb-icon">🔲</span>My QR codes</a>
-  <a href="qr.html?view=stats" class="sb-btn"><span class="sb-icon">📊</span>Stats</a>
-  <a href="qr.html?view=templates" class="sb-btn"><span class="sb-icon">📄</span>Templates</a>
+  <a href="qr.html?view=qrs" class="sb-btn"><span class="sb-icon">ðŸ”²</span>My QR codes</a>
+  <a href="qr.html?view=stats" class="sb-btn"><span class="sb-icon">ðŸ“Š</span>Stats</a>
+  <a href="qr.html?view=templates" class="sb-btn"><span class="sb-icon">ðŸ“„</span>Templates</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
-  <button class="sb-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else window.location.href='qr.html?login=true';"><span class="sb-icon">⚙️</span>Account</button>
+  <button class="sb-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else window.location.href='qr.html?login=true';"><span class="sb-icon">âš™ï¸</span>Account</button>
   
   <div class="sb-foot">
     <button class="sign-btn" id="sbSignBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
@@ -517,7 +519,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <p class="type-slbl" style="margin-top: 30px;">Static Formats (Offline & Encoded)</p>
         <div class="type-grid" id="statG"></div>
       </div>
-      <div class="sn-row"><div style="flex:1"></div><button class="btn-nx" onclick="nextFrom1()">Continue to Content →</button></div>
+      <div class="sn-row"><div style="flex:1"></div><button class="btn-nx" onclick="nextFrom1()">Continue to Content â†’</button></div>
     </div>
 
     <div class="sp" id="sp2">
@@ -606,7 +608,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
           </div>
       </div>
-      <div class="sn-row"><button class="btn-bk" onclick="goStep(1)">← Back</button><button class="btn-nx" onclick="nextFrom2()">Proceed to Design →</button></div>
+      <div class="sn-row"><button class="btn-bk" onclick="goStep(1)">â† Back</button><button class="btn-nx" onclick="nextFrom2()">Proceed to Design â†’</button></div>
     </div>
 
     <div class="sp" id="sp3">
@@ -626,7 +628,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <div class="ds open" id="dsF">
           <div class="dsh" onclick="toggleDS('dsF')">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div><div><div class="dst">Frame</div><div class="dss">Define the QR code outline by choosing from preset frames.</div></div></div>
-            <span class="dschev">▼</span>
+            <span class="dschev">â–¼</span>
           </div>
           <div class="dsb open" id="dsFb">
               <div class="vg" id="frGrid"></div>
@@ -650,15 +652,15 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <div class="ds" id="dsD">
           <div class="dsh" onclick="toggleDS('dsD')">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M7 7h10"></path><path d="M7 11h10"></path><path d="M7 15h10"></path></svg></div><div><div class="dst">QR code style</div><div class="dss">Customize the central area of the QR code by combining shapes and colors.</div></div></div>
-            <span class="dschev">▼</span>
+            <span class="dschev">â–¼</span>
           </div>
           <div class="dsb" id="dsDb"><div class="vg" id="dotG"></div></div>
         </div>
         
         <div class="ds" id="dsCl">
           <div class="dsh" onclick="toggleDS('dsCl')">
-            <div class="dsh-l"><div class="dsi">🎨</div><div><div class="dst">Border and background</div><div class="dss">Modify colours and gradients.</div></div></div>
-            <span class="dschev">▼</span>
+            <div class="dsh-l"><div class="dsi">ðŸŽ¨</div><div><div class="dst">Border and background</div><div class="dss">Modify colours and gradients.</div></div></div>
+            <span class="dschev">â–¼</span>
           </div>
           <div class="dsb" id="dsClb">
              <div class="qrfy-cb-box" style="background: transparent; border: none; padding: 0; margin-bottom: 15px;">
@@ -711,7 +713,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <div class="ds" id="dsC">
           <div class="dsh" onclick="toggleDS('dsC')">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="10" height="10" rx="2" ry="2"></rect></svg></div><div><div class="dst">Corners</div><div class="dss">Modify the shape and color of the corners for a unique finish.</div></div></div>
-            <span class="dschev">▼</span>
+            <span class="dschev">â–¼</span>
           </div>
           <div class="dsb" id="dsCb">
             <p style="font-size:.85rem;font-weight:600;color:var(--q-text-m);margin-top:10px;">Border style</p>
@@ -735,7 +737,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <div class="ds" id="dsCr">
           <div class="dsh" onclick="toggleDS('dsCr')">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div><div><div class="dst">Correction Level</div><div class="dss">Ensures a reliable reading by compensating for damage or distortion.</div></div></div>
-            <span class="dschev">▼</span>
+            <span class="dschev">â–¼</span>
           </div>
           <div class="dsb" id="dsCrb">
             <div class="qrfy-cb-box" style="background: var(--q-gray-light); border: none; padding: 15px; margin-bottom: 20px;">
@@ -748,13 +750,13 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <div class="ds" id="dsL">
           <div class="dsh" onclick="toggleDS('dsL')">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div><div><div class="dst">Add logo</div><div class="dss">Add a central logo by uploading your image or choosing one of our designs.</div></div></div>
-            <span class="dschev">▼</span>
+            <span class="dschev">â–¼</span>
           </div>
           <div class="dsb" id="dsLb">
             <label style="font-size:0.85rem; font-weight:600; color:var(--q-text-m); margin-bottom:10px; display:block;">Select a logo</label>
             <div class="logo-ps" id="logoPs"></div>
             <div class="logo-up" onclick="document.getElementById('lFile').click()">
-              <div class="up-icon">☁️</div>
+              <div class="up-icon">â˜ï¸</div>
               <p>Add your logo <span style="font-size:0.8rem; font-weight:400; color:var(--q-text-m);">(JPG, JPEG, or PNG / 2MB max)</span></p>
             </div>
             
@@ -769,12 +771,12 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             </div>
 
             <input type="file" id="lFile" accept="image/*" style="display:none" onchange="handleLogo(this)">
-            <button id="rmLogo" style="display:none;width:100%;padding:12px;margin-top:15px;background:var(--q-panel);border:1px solid #ef4444;border-radius:12px;color:#ef4444;font-weight:600;cursor:pointer" onclick="rmL()">✕ Remove Current Logo</button>
+            <button id="rmLogo" style="display:none;width:100%;padding:12px;margin-top:15px;background:var(--q-panel);border:1px solid #ef4444;border-radius:12px;color:#ef4444;font-weight:600;cursor:pointer" onclick="rmL()">âœ• Remove Current Logo</button>
           </div>
         </div>
 
       </div>
-      <div class="sn-row"><button class="btn-bk" onclick="goStep(2)" style="background:var(--q-bg); color:var(--q-text); border:1px solid var(--q-border);">← Back</button><button class="btn-cp" onclick="saveQR(false)">✅ Finalize & Save</button></div>
+      <div class="sn-row"><button class="btn-bk" onclick="goStep(2)" style="background:var(--q-bg); color:var(--q-text); border:1px solid var(--q-border);">â† Back</button><button class="btn-cp" onclick="saveQR(false)">âœ… Finalize & Save</button></div>
     </div>
     
     <footer class="site-footer" style="width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--nav); margin-top: auto;">
@@ -783,7 +785,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <a href="terms.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Terms of Service</a>
             <a href="feedback.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Provide Feedback</a>
         </div>
-        <div style="color:var(--txt-m); font-size:0.85rem; font-weight:600;">© 2026 Class Of Learners. Developed By Neel, Ansh And Aarush. All Rights Reserved.</div>
+        <div style="color:var(--txt-m); font-size:0.85rem; font-weight:600;">Â© 2026 Class Of Learners. Developed By Neel, Ansh And Aarush. All Rights Reserved.</div>
     </footer>
   </div>
 </div>
@@ -791,20 +793,20 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <aside class="prev-p">
   <div class="prev-hd">
     <h3>Real-Time Preview</h3>
-    <div class="prev-typ" id="prevBadge">🌐 Website</div>
+    <div class="prev-typ" id="prevBadge">ðŸŒ Website</div>
   </div>
   <div class="prev-cw">
     <div id="qrWrap"></div>
     <div class="fr-lbl" id="frLbl"></div>
   </div>
   <div class="prev-inf">
-    <div class="pi"><span>Payload</span><strong id="piSz">—</strong></div>
-    <div class="pi"><span>Redundancy</span><strong id="piCr">H – 30%</strong></div>
+    <div class="pi"><span>Payload</span><strong id="piSz">â€”</strong></div>
+    <div class="pi"><span>Redundancy</span><strong id="piCr">H â€“ 30%</strong></div>
     <div class="pi"><span>Format</span><strong id="piFmt">Dynamic</strong></div>
   </div>
   <div class="prev-act">
     <div class="dlr">
-      <button class="dl-main" onclick="dlQR('png')">⬇ Download PNG</button>
+      <button class="dl-main" onclick="dlQR('png')">â¬‡ Download PNG</button>
       <select class="dl-sz" id="dlSz">
         <option value="400">400px</option>
         <option value="800" selected>800px</option>
@@ -813,7 +815,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
       </select>
     </div>
     <button class="dl-svg" onclick="dlQR('svg')">Download Vector (SVG)</button>
-    <button class="sv-btn" onclick="saveQR(false)">💾 Save to Dashboard</button>
+    <button class="sv-btn" onclick="saveQR(false)">ðŸ’¾ Save to Dashboard</button>
   </div>
 </aside>
 </div>
@@ -873,7 +875,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <div class="modal-backdrop" id="bulkModal">
     <div class="modal-card">
         <div class="modal-header">
-            <div class="modal-icon">🎯</div>
+            <div class="modal-icon">ðŸŽ¯</div>
             <h2 class="modal-title">Bulk QR Generator</h2>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
@@ -923,7 +925,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 </style>
 
 <script>
-// ── SAFE LOCAL STORAGE ──
+// â”€â”€ SAFE LOCAL STORAGE â”€â”€
 var Storage = {
   get: function(key) { try { return localStorage.getItem(key); } catch(e) { return null; } },
   set: function(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
@@ -949,27 +951,27 @@ const opts={
 function g(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 
 const DYN=[
-  {id:'url',icon:'🌐',name:'Website',desc:'Open a standard URL link'},
-  {id:'pdf',icon:'📄',name:'PDF Doc',desc:'Show a hosted PDF file'},
-  {id:'images',icon:'🖼️',name:'Gallery',desc:'View an image gallery'},
-  {id:'video',icon:'▶️',name:'Video',desc:'Play a hosted video'},
-  {id:'vcard+',icon:'👤',name:'Contact+',desc:'Interactive profile page'},
-  {id:'links',icon:'🔗',name:'Social Links',desc:'Linktree style hub'},
-  {id:'social',icon:'👍',name:'Social',desc:'Social media profile'},
-  {id:'business',icon:'🏪',name:'Business',desc:'Company info page'},
-  {id:'event',icon:'📅',name:'Event',desc:'Promote ticket sales'},
-  {id:'feedback',icon:'⭐',name:'Review',desc:'Collect customer ratings'},
-  {id:'maps',icon:'📍',name:'Location',desc:'Google Maps drop pin'},
-  {id:'menu',icon:'📋',name:'Menu',desc:'Restaurant digital menu'}
+  {id:'url',icon:'ðŸŒ',name:'Website',desc:'Open a standard URL link'},
+  {id:'pdf',icon:'ðŸ“„',name:'PDF Doc',desc:'Show a hosted PDF file'},
+  {id:'images',icon:'ðŸ–¼ï¸',name:'Gallery',desc:'View an image gallery'},
+  {id:'video',icon:'â–¶ï¸',name:'Video',desc:'Play a hosted video'},
+  {id:'vcard+',icon:'ðŸ‘¤',name:'Contact+',desc:'Interactive profile page'},
+  {id:'links',icon:'ðŸ”—',name:'Social Links',desc:'Linktree style hub'},
+  {id:'social',icon:'ðŸ‘',name:'Social',desc:'Social media profile'},
+  {id:'business',icon:'ðŸª',name:'Business',desc:'Company info page'},
+  {id:'event',icon:'ðŸ“…',name:'Event',desc:'Promote ticket sales'},
+  {id:'feedback',icon:'â­',name:'Review',desc:'Collect customer ratings'},
+  {id:'maps',icon:'ðŸ“',name:'Location',desc:'Google Maps drop pin'},
+  {id:'menu',icon:'ðŸ“‹',name:'Menu',desc:'Restaurant digital menu'}
 ];
 const STA=[
-  {id:'text',icon:'📝',name:'Raw Text',desc:'Displays encoded plain text'},
-  {id:'vcard',icon:'👤',name:'vCard',desc:'Offline contact details'},
-  {id:'wifi',icon:'📶',name:'Wi-Fi',desc:'Auto-connect to network'},
-  {id:'whatsapp',icon:'💬',name:'WhatsApp',desc:'Pre-fill a chat message'},
-  {id:'email',icon:'✉️',name:'Email',desc:'Compose a new email'},
-  {id:'sms',icon:'📱',name:'SMS',desc:'Draft a text message'},
-  {id:'phone',icon:'📞',name:'Phone',desc:'Auto-dial a phone number'}
+  {id:'text',icon:'ðŸ“',name:'Raw Text',desc:'Displays encoded plain text'},
+  {id:'vcard',icon:'ðŸ‘¤',name:'vCard',desc:'Offline contact details'},
+  {id:'wifi',icon:'ðŸ“¶',name:'Wi-Fi',desc:'Auto-connect to network'},
+  {id:'whatsapp',icon:'ðŸ’¬',name:'WhatsApp',desc:'Pre-fill a chat message'},
+  {id:'email',icon:'âœ‰ï¸',name:'Email',desc:'Compose a new email'},
+  {id:'sms',icon:'ðŸ“±',name:'SMS',desc:'Draft a text message'},
+  {id:'phone',icon:'ðŸ“ž',name:'Phone',desc:'Auto-dial a phone number'}
 ];
 
 const FORMS={
@@ -993,7 +995,7 @@ const FORMS={
     <div><label class="fl">Office Address</label><input class="fi" id="vc5" placeholder="City, Country" oninput="lu()"></div>`,
   wifi:`
     <div><label class="fl">SSID (Network Name) *</label><input class="fi" id="wf0" placeholder="MyWiFi_5G" oninput="lu()"></div>
-    <div><label class="fl">Password</label><input class="fi" id="wf1" type="password" placeholder="••••••••" oninput="lu()"></div>
+    <div><label class="fl">Password</label><input class="fi" id="wf1" type="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" oninput="lu()"></div>
     <div><label class="fl">Security Protocol</label><select class="fi" id="wf2" onchange="lu()"><option value="WPA">WPA / WPA2 (Secure)</option><option value="WEP">WEP (Legacy)</option><option value="">None (Open Network)</option></select></div>
     <label style="display:flex;align-items:center;gap:10px;font-size:0.9rem;color:var(--txt-m);font-weight:700;cursor:pointer"><input type="checkbox" id="wf3" style="width:16px;height:16px;accent-color:var(--pri);" onchange="lu()"> Hidden SSID Broadcast</label>`,
   whatsapp:`
@@ -1037,7 +1039,7 @@ function getContent(){
   }catch(e){return 'https://classoflearners.com';}
 }
 
-// ── QR ENGINE ──
+// â”€â”€ QR ENGINE â”€â”€
 function getQRDataString() {
     const isStatic = ['text','vcard','wifi','whatsapp','email','sms'].indexOf(selType) !== -1;
     if (isStatic) return getContent();
@@ -1116,7 +1118,7 @@ function updateInfo(){
   const c=getContent();
   const piSz = document.getElementById('piSz');
   if(piSz) piSz.textContent = c.length + ' bytes';
-  const cm={L:'L – 7%',M:'M – 15%',Q:'Q – 25%',H:'H – 30%'};
+  const cm={L:'L â€“ 7%',M:'M â€“ 15%',Q:'Q â€“ 25%',H:'H â€“ 30%'};
   const errLvl = (opts.qrOptions && opts.qrOptions.errorCorrectionLevel) ? opts.qrOptions.errorCorrectionLevel : 'H';
   const piCr = document.getElementById('piCr');
   if(piCr) piCr.textContent = cm[errLvl];
@@ -1431,7 +1433,7 @@ function goStep(n){
 }
 function nextFrom1(){
   const badge=document.getElementById('prevBadge');
-  const t=DYN.concat(STA).filter(x=>x.id===selType)[0]||{icon:'🌐',name:'URL'};
+  const t=DYN.concat(STA).filter(x=>x.id===selType)[0]||{icon:'ðŸŒ',name:'URL'};
   if(badge) badge.textContent=t.icon+' '+t.name;
   buildCF();goStep(2);
 }
@@ -1542,7 +1544,7 @@ function saveQR(silent = false){
       if(svg){ const s=new XMLSerializer().serializeToString(svg); img='data:image/svg+xml;base64,'+btoa(s); }
     }
     document.body.removeChild(tmp);
-    const to=DYN.concat(STA).filter(x=>x.id===selType)[0]||{name:'QR',icon:'⬛'};
+    const to=DYN.concat(STA).filter(x=>x.id===selType)[0]||{name:'QR',icon:'â¬›'};
     
     const urlParams = new URLSearchParams(window.location.search);
     const editId = urlParams.get('id');

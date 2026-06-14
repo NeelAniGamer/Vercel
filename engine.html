@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="visual.css">
 <script defer src="col-router.js"></script>
 <script defer src="col-auth.js"></script>
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/engine.html" />
 </head>
 <body>
 <script>
@@ -32,9 +33,9 @@
 </script>
 
 <div id="measure-display" style="display:none">
-  <span id="measure-icon">⟺</span>
-  <span id="measure-text">Select first object…</span>
-  <button id="measure-close" onclick="window.toggleMeasure && window.toggleMeasure()">✕</button>
+  <span id="measure-icon">âŸº</span>
+  <span id="measure-text">Select first objectâ€¦</span>
+  <button id="measure-close" onclick="window.toggleMeasure && window.toggleMeasure()">âœ•</button>
 </div>
 
 <div id="homepage">
@@ -53,7 +54,7 @@
   <div id="home-content">
     <div id="home-badge">
       <span class="badge-dot"></span>
-      SOLAR ENGINE  ·  v3.3
+      SOLAR ENGINE  Â·  v3.3
       <span class="badge-dot"></span>
     </div>
 
@@ -63,7 +64,7 @@
     </h1>
 
     <p id="home-tagline">
-      Journey through 100+ celestial objects — from Mercury's scorched plains<br>
+      Journey through 100+ celestial objects â€” from Mercury's scorched plains<br>
       to dark energy at the edge of the observable universe.
     </p>
 
@@ -74,26 +75,26 @@
       <div class="hs-divider"></div>
       <div class="hs-item" data-count="20" data-label="MOONS" data-suffix="+"></div>
       <div class="hs-divider"></div>
-      <div class="hs-item" data-count="∞" data-label="DISCOVERY"></div>
+      <div class="hs-item" data-count="âˆž" data-label="DISCOVERY"></div>
     </div>
 
     <div id="home-features">
       <div class="hf-card">
-        <div class="hf-icon">⟡</div>
+        <div class="hf-icon">âŸ¡</div>
         <div class="hf-text">
           <div class="hf-title">REAL ORBITAL MECHANICS</div>
           <div class="hf-sub">Accurate period simulation at variable speed</div>
         </div>
       </div>
       <div class="hf-card">
-        <div class="hf-icon">◈</div>
+        <div class="hf-icon">â—ˆ</div>
         <div class="hf-text">
           <div class="hf-title">GALACTIC ZOOM</div>
           <div class="hf-sub">Pan from Earth orbit to the Milky Way</div>
         </div>
       </div>
       <div class="hf-card">
-        <div class="hf-icon">⬡</div>
+        <div class="hf-icon">â¬¡</div>
         <div class="hf-text">
           <div class="hf-title">DEEP DATABANK</div>
           <div class="hf-sub">Physics, atmosphere & mission data for every object</div>
@@ -102,53 +103,53 @@
     </div>
 
     <button id="launch-btn" onclick="enterApp()">
-      <span class="lb-icon">▶</span>
+      <span class="lb-icon">â–¶</span>
       <span class="lb-text">ENTER THE SOLAR SYSTEM</span>
-      <span class="lb-arrow">→</span>
+      <span class="lb-arrow">â†’</span>
     </button>
 
     <div id="home-keys">
       <span>SCROLL to zoom</span>
-      <span class="hk-dot">·</span>
+      <span class="hk-dot">Â·</span>
       <span>DRAG to orbit</span>
-      <span class="hk-dot">·</span>
+      <span class="hk-dot">Â·</span>
       <span>CLICK to explore</span>
       <button class="tab-btn" data-tab="discover">DISCOVER.</button>
     </div>
   </div>
 
-  <div id="home-credits">Engine Architecture · Neel, Ansh &amp; Aarush</div>
+  <div id="home-credits">Engine Architecture Â· Neel, Ansh &amp; Aarush</div>
 </div>
 
 <div id="top-bar">
   <div id="brand">
-    <span class="brand-icon">✦</span>
+    <span class="brand-icon">âœ¦</span>
     <span class="brand-text">SOLAR ENGINE <span class="brand-ver">v3.3</span></span>
   </div>
 
   <div id="search-wrap">
-    <span class="search-icon">⌕</span>
-    <input id="search-input" type="text" placeholder="Search planets, stars, anomalies…" autocomplete="off" spellcheck="false">
+    <span class="search-icon">âŒ•</span>
+    <input id="search-input" type="text" placeholder="Search planets, stars, anomaliesâ€¦" autocomplete="off" spellcheck="false">
     <div id="search-results"></div>
   </div>
 
   <div id="time-controls">
-    <button class="tc-btn" id="btn-rewind"   title="Slow down (-)">«</button>
-    <button class="tc-btn" id="btn-pause"    title="Pause / Resume (Space)">⏸</button>
-    <button class="tc-btn" id="btn-forward"  title="Speed up (+)">»</button>
-    <span id="speed-display" title="Simulation speed">1000×</span>
+    <button class="tc-btn" id="btn-rewind"   title="Slow down (-)">Â«</button>
+    <button class="tc-btn" id="btn-pause"    title="Pause / Resume (Space)">â¸</button>
+    <button class="tc-btn" id="btn-forward"  title="Speed up (+)">Â»</button>
+    <span id="speed-display" title="Simulation speed">1000Ã—</span>
   </div>
 
   <div id="top-right-btns">
-    <button class="icon-btn" id="btn-reset-cam"    title="Reset camera (H)">⌂</button>
-    <button class="icon-btn" id="btn-toggle-orbits" title="Toggle orbits (O)">⊙</button>
-    <button class="icon-btn" id="btn-random-fact"   title="Random Discovery (D)">💡</button>
-    <button class="icon-btn" id="btn-compare"       title="Compare two objects (C)">⚖</button>
-    <button class="icon-btn" id="btn-timeline"      title="Cosmic Timeline (T)">🕐</button>
-    <button class="icon-btn" id="btn-settings"      title="Settings">⚙</button>
+    <button class="icon-btn" id="btn-reset-cam"    title="Reset camera (H)">âŒ‚</button>
+    <button class="icon-btn" id="btn-toggle-orbits" title="Toggle orbits (O)">âŠ™</button>
+    <button class="icon-btn" id="btn-random-fact"   title="Random Discovery (D)">ðŸ’¡</button>
+    <button class="icon-btn" id="btn-compare"       title="Compare two objects (C)">âš–</button>
+    <button class="icon-btn" id="btn-timeline"      title="Cosmic Timeline (T)">ðŸ•</button>
+    <button class="icon-btn" id="btn-settings"      title="Settings">âš™</button>
     <button class="icon-btn" id="btn-shortcuts"     title="Keyboard shortcuts (?)">?</button>
-    <button class="icon-btn" id="btn-screenshot"    title="Screenshot">⬡</button>
-    <button class="icon-btn" id="btn-fullscreen"    title="Fullscreen (F11)">⤢</button>
+    <button class="icon-btn" id="btn-screenshot"    title="Screenshot">â¬¡</button>
+    <button class="icon-btn" id="btn-fullscreen"    title="Fullscreen (F11)">â¤¢</button>
   </div>
 </div>
 
@@ -161,8 +162,8 @@
 
 <div id="settings-panel">
   <div id="sp-header">
-    <span class="sp-title">⚙ CONTROLS &amp; SETTINGS</span>
-    <button id="sp-close" onclick="toggleSettings(false)">✕</button>
+    <span class="sp-title">âš™ CONTROLS &amp; SETTINGS</span>
+    <button id="sp-close" onclick="toggleSettings(false)">âœ•</button>
   </div>
 
   <div class="sp-section">
@@ -232,14 +233,14 @@
     </div>
   </div>
 
-  <button class="sp-reset" onclick="resetSettings()">↺ RESET TO DEFAULTS</button>
+  <button class="sp-reset" onclick="resetSettings()">â†º RESET TO DEFAULTS</button>
 </div>
 
 <div id="shortcuts-overlay" onclick="if(event.target===this)closeShortcuts()">
   <div id="shortcuts-modal">
     <div id="sm-header">
-      <span>⌨ KEYBOARD SHORTCUTS</span>
-      <button onclick="closeShortcuts()">✕</button>
+      <span>âŒ¨ KEYBOARD SHORTCUTS</span>
+      <button onclick="closeShortcuts()">âœ•</button>
     </div>
     <div id="sm-grid">
       <div class="sm-group">
@@ -280,9 +281,9 @@
   <div id="hud-header">
     <div>
       <div id="hud-type-badge">OBJECT</div>
-      <h1 id="hud-title">—</h1>
+      <h1 id="hud-title">â€”</h1>
     </div>
-    <button id="close-btn" onclick="closeHUD()" title="Close">✕</button>
+    <button id="close-btn" onclick="closeHUD()" title="Close">âœ•</button>
   </div>
 
   <div id="hud-surface">
@@ -291,10 +292,10 @@
   </div>
 
   <div id="quick-stats">
-    <div class="qs-pill"><div class="qs-val" id="qs-dist">—</div><div class="qs-lbl">DISTANCE AU</div></div>
-    <div class="qs-pill"><div class="qs-val" id="qs-period">—</div><div class="qs-lbl">PERIOD DAYS</div></div>
-    <div class="qs-pill"><div class="qs-val" id="qs-moons">—</div><div class="qs-lbl">MOONS</div></div>
-    <div class="qs-pill"><div class="qs-val" id="qs-type">—</div><div class="qs-lbl">CLASS</div></div>
+    <div class="qs-pill"><div class="qs-val" id="qs-dist">â€”</div><div class="qs-lbl">DISTANCE AU</div></div>
+    <div class="qs-pill"><div class="qs-val" id="qs-period">â€”</div><div class="qs-lbl">PERIOD DAYS</div></div>
+    <div class="qs-pill"><div class="qs-val" id="qs-moons">â€”</div><div class="qs-lbl">MOONS</div></div>
+    <div class="qs-pill"><div class="qs-val" id="qs-type">â€”</div><div class="qs-lbl">CLASS</div></div>
   </div>
 
   <div id="hud-tabs">
@@ -328,33 +329,33 @@
     </div>
   </div>
 
-  <button id="focus-btn" onclick="focusSelectedPlanet()">▶ FOCUS CAMERA</button>
+  <button id="focus-btn" onclick="focusSelectedPlanet()">â–¶ FOCUS CAMERA</button>
 </div>
 
 <div id="status-bar">
-  <span id="sb-date">—</span>
+  <span id="sb-date">â€”</span>
   <span class="sb-sep">|</span>
-  <span id="sb-fps">— FPS</span>
+  <span id="sb-fps">â€” FPS</span>
   <span class="sb-sep">|</span>
-  <span id="sb-cam">CAM —</span>
+  <span id="sb-cam">CAM â€”</span>
   <span class="sb-sep">|</span>
   <span id="sb-selected">No object selected</span>
   <span class="sb-sep" style="margin-left:auto">|</span>
-  <span id="sb-hint">Click object to explore  ·  ? for shortcuts</span>
+  <span id="sb-hint">Click object to explore  Â·  ? for shortcuts</span>
 </div>
 
-<div id="dev-credits">Engine Architecture · Neel, Ansh &amp; Aarush</div>
+<div id="dev-credits">Engine Architecture Â· Neel, Ansh &amp; Aarush</div>
 
 <div id="galaxy-label">
   <div id="gl-name">MILKY WAY GALAXY</div>
-  <div id="gl-sub">Diameter: ~105,700 light-years · ~400 billion stars</div>
-  <div id="gl-you">☉ Our Solar System</div>
+  <div id="gl-sub">Diameter: ~105,700 light-years Â· ~400 billion stars</div>
+  <div id="gl-you">â˜‰ Our Solar System</div>
 </div>
 
 <div id="fact-toast">
   <div id="fact-toast-header">
-    <span>💡 RANDOM DISCOVERY</span>
-    <button onclick="document.getElementById('fact-toast').classList.remove('active')">✕</button>
+    <span>ðŸ’¡ RANDOM DISCOVERY</span>
+    <button onclick="document.getElementById('fact-toast').classList.remove('active')">âœ•</button>
   </div>
   <div id="fact-toast-object"></div>
   <div id="fact-toast-text"></div>
@@ -362,18 +363,18 @@
 
 <div id="compare-panel">
   <div id="cp-header">
-    <span>⚖ OBJECT COMPARISON</span>
-    <button onclick="closeCompare()">✕</button>
+    <span>âš– OBJECT COMPARISON</span>
+    <button onclick="closeCompare()">âœ•</button>
   </div>
   <div id="cp-hint">Click any object in the scene to add it to the comparison (max 2).</div>
   <div id="cp-body">
     <div class="cp-col" id="cp-col-a">
-      <div class="cp-name">—</div>
+      <div class="cp-name">â€”</div>
       <div class="cp-rows"></div>
     </div>
     <div id="cp-divider">VS</div>
     <div class="cp-col" id="cp-col-b">
-      <div class="cp-name">—</div>
+      <div class="cp-name">â€”</div>
       <div class="cp-rows"></div>
     </div>
   </div>
@@ -381,37 +382,37 @@
 
 <div id="timeline-panel">
   <div id="tp-header">
-    <span>🕐 COSMIC TIMELINE &amp; SCALE</span>
-    <button onclick="document.getElementById('timeline-panel').classList.remove('active')">✕</button>
+    <span>ðŸ• COSMIC TIMELINE &amp; SCALE</span>
+    <button onclick="document.getElementById('timeline-panel').classList.remove('active')">âœ•</button>
   </div>
   <div id="tp-body">
     <div class="tp-scale-title">THE COSMIC SCALE</div>
-    <div class="tp-scale-row"><span class="tp-icon">🔬</span><span class="tp-label">SUBATOMIC</span><span class="tp-val">~10⁻¹⁵ m — Quarks, protons, neutrons</span></div>
-    <div class="tp-scale-row"><span class="tp-icon">⚛</span><span class="tp-label">ATOMIC</span><span class="tp-val">~10⁻¹⁰ m — Atoms, molecules</span></div>
-    <div class="tp-scale-row"><span class="tp-icon">🦠</span><span class="tp-label">BIOLOGICAL</span><span class="tp-val">~10⁻⁶ m — Cells, organisms</span></div>
-    <div class="tp-scale-row tp-highlight"><span class="tp-icon">🌍</span><span class="tp-label">PLANETARY</span><span class="tp-val">~10⁷ m — Moons, planets, dwarf planets</span></div>
-    <div class="tp-scale-row tp-highlight"><span class="tp-icon">☀</span><span class="tp-label">STELLAR</span><span class="tp-val">~10⁹ m — Stars, star systems, nebulae</span></div>
-    <div class="tp-scale-row tp-highlight"><span class="tp-icon">🌌</span><span class="tp-label">GALACTIC</span><span class="tp-val">~10²⁰ m — Galaxies (Milky Way: 10²¹ m)</span></div>
-    <div class="tp-scale-row"><span class="tp-icon">🕸</span><span class="tp-label">SUPERCLUSTER</span><span class="tp-val">~10²³ m — Laniakea: 520M light-years</span></div>
-    <div class="tp-scale-row"><span class="tp-icon">∞</span><span class="tp-label">OBSERVABLE UNIVERSE</span><span class="tp-val">~8.8×10²⁶ m — 93 billion light-years</span></div>
+    <div class="tp-scale-row"><span class="tp-icon">ðŸ”¬</span><span class="tp-label">SUBATOMIC</span><span class="tp-val">~10â»Â¹âµ m â€” Quarks, protons, neutrons</span></div>
+    <div class="tp-scale-row"><span class="tp-icon">âš›</span><span class="tp-label">ATOMIC</span><span class="tp-val">~10â»Â¹â° m â€” Atoms, molecules</span></div>
+    <div class="tp-scale-row"><span class="tp-icon">ðŸ¦ </span><span class="tp-label">BIOLOGICAL</span><span class="tp-val">~10â»â¶ m â€” Cells, organisms</span></div>
+    <div class="tp-scale-row tp-highlight"><span class="tp-icon">ðŸŒ</span><span class="tp-label">PLANETARY</span><span class="tp-val">~10â· m â€” Moons, planets, dwarf planets</span></div>
+    <div class="tp-scale-row tp-highlight"><span class="tp-icon">â˜€</span><span class="tp-label">STELLAR</span><span class="tp-val">~10â¹ m â€” Stars, star systems, nebulae</span></div>
+    <div class="tp-scale-row tp-highlight"><span class="tp-icon">ðŸŒŒ</span><span class="tp-label">GALACTIC</span><span class="tp-val">~10Â²â° m â€” Galaxies (Milky Way: 10Â²Â¹ m)</span></div>
+    <div class="tp-scale-row"><span class="tp-icon">ðŸ•¸</span><span class="tp-label">SUPERCLUSTER</span><span class="tp-val">~10Â²Â³ m â€” Laniakea: 520M light-years</span></div>
+    <div class="tp-scale-row"><span class="tp-icon">âˆž</span><span class="tp-label">OBSERVABLE UNIVERSE</span><span class="tp-val">~8.8Ã—10Â²â¶ m â€” 93 billion light-years</span></div>
     <div class="tp-divider"></div>
     <div class="tp-scale-title">UNIVERSE HISTORY</div>
-    <div class="tp-time-row"><span class="tp-time">t = 0</span><span class="tp-event">Big Bang — all energy in a single point</span></div>
-    <div class="tp-time-row"><span class="tp-time">10⁻³⁵ s</span><span class="tp-event">Cosmic Inflation — universe expands faster than light</span></div>
-    <div class="tp-time-row"><span class="tp-time">3 min</span><span class="tp-event">Big Bang Nucleosynthesis — H, He, Li nuclei form</span></div>
-    <div class="tp-time-row"><span class="tp-time">380,000 yr</span><span class="tp-event">Recombination — CMB released; universe becomes transparent</span></div>
-    <div class="tp-time-row"><span class="tp-time">200M yr</span><span class="tp-event">First Stars (Population III) ignite — end of the Cosmic Dark Ages</span></div>
+    <div class="tp-time-row"><span class="tp-time">t = 0</span><span class="tp-event">Big Bang â€” all energy in a single point</span></div>
+    <div class="tp-time-row"><span class="tp-time">10â»Â³âµ s</span><span class="tp-event">Cosmic Inflation â€” universe expands faster than light</span></div>
+    <div class="tp-time-row"><span class="tp-time">3 min</span><span class="tp-event">Big Bang Nucleosynthesis â€” H, He, Li nuclei form</span></div>
+    <div class="tp-time-row"><span class="tp-time">380,000 yr</span><span class="tp-event">Recombination â€” CMB released; universe becomes transparent</span></div>
+    <div class="tp-time-row"><span class="tp-time">200M yr</span><span class="tp-event">First Stars (Population III) ignite â€” end of the Cosmic Dark Ages</span></div>
     <div class="tp-time-row"><span class="tp-time">1B yr</span><span class="tp-event">First galaxies form; quasars at peak activity</span></div>
     <div class="tp-time-row"><span class="tp-time">4.6B yr</span><span class="tp-event">Milky Way disk forms; Population II stars present</span></div>
     <div class="tp-time-row"><span class="tp-time">9.2B yr</span><span class="tp-event">Solar System forms from molecular cloud collapse</span></div>
     <div class="tp-time-row"><span class="tp-time">9.6B yr</span><span class="tp-event">Earth forms; Moon-forming giant impact ~30M yr later</span></div>
-    <div class="tp-time-row"><span class="tp-time">10.1B yr</span><span class="tp-event">First life on Earth — simple prokaryotes</span></div>
+    <div class="tp-time-row"><span class="tp-time">10.1B yr</span><span class="tp-event">First life on Earth â€” simple prokaryotes</span></div>
     <div class="tp-time-row"><span class="tp-time">13.5B yr</span><span class="tp-event">Homo sapiens evolve; first astronomy begins</span></div>
-    <div class="tp-time-row tp-now"><span class="tp-time">13.8B yr</span><span class="tp-event">⬤ NOW — You are here, reading this</span></div>
+    <div class="tp-time-row tp-now"><span class="tp-time">13.8B yr</span><span class="tp-event">â¬¤ NOW â€” You are here, reading this</span></div>
     <div class="tp-time-row"><span class="tp-time">+4.5B yr</span><span class="tp-event">Andromeda-Milky Way collision begins</span></div>
     <div class="tp-time-row"><span class="tp-time">+5B yr</span><span class="tp-event">Sun becomes red giant; Earth's surface sterilized</span></div>
-    <div class="tp-time-row"><span class="tp-time">+10¹⁴ yr</span><span class="tp-event">Last stars exhaust fuel; universe goes dark</span></div>
-    <div class="tp-time-row"><span class="tp-time">+10¹⁰⁰ yr</span><span class="tp-event">Proton decay — all ordinary matter gone</span></div>
+    <div class="tp-time-row"><span class="tp-time">+10Â¹â´ yr</span><span class="tp-event">Last stars exhaust fuel; universe goes dark</span></div>
+    <div class="tp-time-row"><span class="tp-time">+10Â¹â°â° yr</span><span class="tp-event">Proton decay â€” all ordinary matter gone</span></div>
   </div>
 </div>
 
@@ -424,7 +425,7 @@ document.getElementById('btn-fullscreen').addEventListener('click', () => {
       document.exitFullscreen().catch(() => {});
     } else {
       document.documentElement.requestFullscreen().catch(() => {
-        // Running inside Qt — fullscreen is owned by the native window (F11).
+        // Running inside Qt â€” fullscreen is owned by the native window (F11).
       });
     }
   } catch(e) { /* Qt WebEngine does not support the Fullscreen API */ }
@@ -433,7 +434,7 @@ document.getElementById('btn-fullscreen').addEventListener('click', () => {
 
 <script id="patch-hud-image">
 /**
- * Generates a 400×160 canvas thumbnail for any celestial object.
+ * Generates a 400Ã—160 canvas thumbnail for any celestial object.
  * Used by openHUD when data.texture is absent.
  */
 function generateHudImage(data) {
@@ -466,19 +467,19 @@ function generateHudImage(data) {
     ctx.fillRect(Math.random() * W | 0, Math.random() * H | 0, 1, 1);
   }
 
-  // Type icon — centred
+  // Type icon â€” centred
   const icons = {
-    star        : '☀',
-    planet      : '◉',
-    dwarf       : '◎',
-    comet       : '☄',
-    probe       : '⬡',
-    blackhole   : '⬤',
-    pulsar      : '⊕',
-    galaxy      : '✦',
-    interstellar: '◆',
+    star        : 'â˜€',
+    planet      : 'â—‰',
+    dwarf       : 'â—Ž',
+    comet       : 'â˜„',
+    probe       : 'â¬¡',
+    blackhole   : 'â¬¤',
+    pulsar      : 'âŠ•',
+    galaxy      : 'âœ¦',
+    interstellar: 'â—†',
   };
-  const icon = icons[data.type] || '◉';
+  const icon = icons[data.type] || 'â—‰';
   ctx.font         = `bold ${Math.round(H * 0.44)}px Arial, sans-serif`;
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'middle';
@@ -511,11 +512,11 @@ function generateHudImage(data) {
 </script>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    UI CONTROLLER
-════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-// ── Homepage ──────────────────────────────────────────────
+// â”€â”€ Homepage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let appEntered = false;
 
 function enterApp() {
@@ -586,8 +587,8 @@ function enterApp() {
     const cnt = el.dataset.count;
     const lbl = el.dataset.label;
     const sfx = el.dataset.suffix || '';
-    if (cnt === '∞') {
-      el.innerHTML = `<div class="hs-num">∞</div><div class="hs-label">${lbl}</div>`;
+    if (cnt === 'âˆž') {
+      el.innerHTML = `<div class="hs-num">âˆž</div><div class="hs-label">${lbl}</div>`;
       return;
     }
     let cur = 0;
@@ -606,7 +607,7 @@ function enterApp() {
   });
 })();
 
-// ── Tab switching ──────────────────────────────────────────
+// â”€â”€ Tab switching â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -626,24 +627,24 @@ function resetHUDTabs() {
   document.querySelectorAll('.tab-pane').forEach((p,i) => p.classList.toggle('active', i===0));
 }
 
-// ── HUD population ─────────────────────────────────────────
+// â”€â”€ HUD population â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 window.openHUD = function(data) {
   resetHUDTabs();
   document.getElementById('hud-title').textContent      = data.name;
   document.getElementById('hud-type-badge').textContent = data.typeBadge || data.type?.toUpperCase() || 'OBJECT';
-  document.getElementById('sb-selected').textContent    = '✦ ' + data.name;
+  document.getElementById('sb-selected').textContent    = 'âœ¦ ' + data.name;
 
   const AU = (data.dist / 149.6).toFixed(2);
   document.getElementById('qs-dist').textContent   = data.dist > 0 ? AU : '0 (origin)';
-  document.getElementById('qs-period').textContent = data.period > 0 ? Number(data.period).toLocaleString() : '—';
+  document.getElementById('qs-period').textContent = data.period > 0 ? Number(data.period).toLocaleString() : 'â€”';
   document.getElementById('qs-moons').textContent  = data.moons || '0';
-  document.getElementById('qs-type').textContent   = (data.typeBadge || data.type || '—').split(' ')[0];
+  document.getElementById('qs-type').textContent   = (data.typeBadge || data.type || 'â€”').split(' ')[0];
 
   const img = document.getElementById('hud-img');
   img.style.opacity = 0;
   if (data.texture && data.texture !== '') {
     img.onerror = () => {
-      // File missing — fall back to procedural thumbnail
+      // File missing â€” fall back to procedural thumbnail
       img.onerror = null;
       img.src = generateHudImage(data);
       img.style.opacity = 1;
@@ -654,10 +655,10 @@ window.openHUD = function(data) {
     img.style.opacity = 1;
   }
 
-  document.getElementById('tab-overview-text').textContent = data.overview || data.desc || '—';
+  document.getElementById('tab-overview-text').textContent = data.overview || data.desc || 'â€”';
   const factBox = document.getElementById('tab-overview-fact');
   factBox.style.display = data.funFact ? 'block' : 'none';
-  factBox.textContent   = data.funFact ? '⚡ ' + data.funFact : '';
+  factBox.textContent   = data.funFact ? 'âš¡ ' + data.funFact : '';
 
   document.getElementById('tab-physics-rows').innerHTML  = buildRows(data.stats);
   document.getElementById('tab-atmos-rows').innerHTML    = buildRows(data.atmosphere);
@@ -682,14 +683,14 @@ function buildMoonsTab(parentName) {
   const children = Object.entries(window.planetData || {}).filter(([,d]) => d.parent === parentName);
   if (!children.length) return '<p class="no-moons-msg">No major moon data on record for this object.</p>';
   return children.map(([name, d]) => {
-    const period = d.period > 0 ? d.period.toFixed(d.period < 10 ? 2 : 0) + (d.period < 2 ? ' Earth days' : ' Earth days') : '—';
-    const dia = d.stats && (d.stats['Diameter'] || d.stats['Dimensions']) || '—';
-    const summary = d.overview ? d.overview.slice(0, 120) + '…' : '—';
+    const period = d.period > 0 ? d.period.toFixed(d.period < 10 ? 2 : 0) + (d.period < 2 ? ' Earth days' : ' Earth days') : 'â€”';
+    const dia = d.stats && (d.stats['Diameter'] || d.stats['Dimensions']) || 'â€”';
+    const summary = d.overview ? d.overview.slice(0, 120) + 'â€¦' : 'â€”';
     return `<div class="moon-entry">
       <span class="moon-entry-name" onclick="if(window._searchSelect)window._searchSelect('${name}')">${name}</span>
       <span class="moon-entry-badge">${d.typeBadge || 'MOON'}</span>
       <div class="moon-entry-facts">
-        <b>Diameter:</b> ${dia} &nbsp;·&nbsp; <b>Period:</b> ${period}<br>
+        <b>Diameter:</b> ${dia} &nbsp;Â·&nbsp; <b>Period:</b> ${period}<br>
         ${summary}
       </div>
     </div>`;
@@ -700,7 +701,7 @@ window.focusSelectedPlanet = function() {
   if (window._focusCallback) window._focusCallback();
 };
 
-// ── Settings panel ─────────────────────────────────────────
+// â”€â”€ Settings panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let settingsOpen = false;
 
 window.toggleSettings = function(force) {
@@ -758,7 +759,7 @@ window.togglePerfBtn = function(btn) {
   if (window.setSensitivity) window.setSensitivity('perfMode', btn.classList.contains('active') ? 1 : 0);
 };
 
-// ── Shortcuts ──────────────────────────────────────────────
+// â”€â”€ Shortcuts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 window.closeShortcuts = function() {
   document.getElementById('shortcuts-overlay').classList.remove('active');
 };
@@ -766,7 +767,7 @@ document.getElementById('btn-shortcuts').addEventListener('click', () => {
   document.getElementById('shortcuts-overlay').classList.toggle('active');
 });
 
-// ── Screenshot ─────────────────────────────────────────────
+// â”€â”€ Screenshot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.getElementById('btn-screenshot').addEventListener('click', doScreenshot);
 function doScreenshot() {
   if (!window._screenshotCallback) return;
@@ -776,7 +777,7 @@ function doScreenshot() {
   setTimeout(() => flash.classList.remove('active'), 300);
 }
 
-// ── Orbit / Reset / Fullscreen ─────────────────────────────
+// â”€â”€ Orbit / Reset / Fullscreen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.getElementById('btn-toggle-orbits').addEventListener('click', function() {
   this.classList.toggle('active');
   const hide = this.classList.contains('active');
@@ -787,12 +788,12 @@ document.getElementById('btn-reset-cam').addEventListener('click', () => {
   if (window._resetCamera) window._resetCamera();
 });
 
-// ── Time controls ──────────────────────────────────────────
+// â”€â”€ Time controls â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.getElementById('btn-pause').addEventListener('click', () => { if(window.togglePause) window.togglePause(); });
 document.getElementById('btn-forward').addEventListener('click', () => { if(window.speedUp) window.speedUp(); });
 document.getElementById('btn-rewind').addEventListener('click', () => { if(window.speedDown) window.speedDown(); });
 
-// ── Search ─────────────────────────────────────────────────
+// â”€â”€ Search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const searchInput   = document.getElementById('search-input');
 const searchResults = document.getElementById('search-results');
 
@@ -811,13 +812,13 @@ document.addEventListener('click', e => {
   if (!e.target.closest('#search-wrap')) { searchResults.innerHTML = ''; }
 });
 
-// ── Random Fact ────────────────────────────────────
+// â”€â”€ Random Fact â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.getElementById('btn-random-fact').addEventListener('click', showRandomFact);
 function showRandomFact() {
   if (window._showRandomFact) window._showRandomFact();
 }
 
-// ── Compare mode ───────────────────────────────────
+// â”€â”€ Compare mode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let compareMode = false;
 window.openCompare = function() {
   compareMode = true;
@@ -835,12 +836,12 @@ document.getElementById('btn-compare').addEventListener('click', () => {
   else window.openCompare();
 });
 
-// ── Cosmic Timeline ────────────────────────────────
+// â”€â”€ Cosmic Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.getElementById('btn-timeline').addEventListener('click', () => {
   document.getElementById('timeline-panel').classList.toggle('active');
 });
 
-// ── Keyboard handling ──────────────────────────────
+// â”€â”€ Keyboard handling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT') return;
   const k = e.key;

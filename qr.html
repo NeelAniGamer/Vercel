@@ -11,7 +11,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-/* ── EXACT UI THEME ── */
+/* â”€â”€ EXACT UI THEME â”€â”€ */
 :root {
   --bg: #030712; --panel: rgba(17, 24, 39, 0.6); --panel-hover: rgba(31, 41, 55, 0.8);
   --border: rgba(255, 255, 255, 0.08); --border-focus: #10b981;
@@ -229,6 +229,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 </style>
 <script defer src="col-router.js"></script>
 
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr.html" />
 </head>
 <body class="dark-mode">
 <nav class="top-nav">
@@ -236,7 +237,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
             <span>Class Of Learners</span>
         </a>
-        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">â˜°</button>
         <div class="nav-links">
             <a href="index.html" class="nav-link" style="color: var(--google-blue);">Home Hub</a>
             <a href="about.html" class="nav-link">About Us</a>
@@ -244,14 +245,14 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
             
             <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
-                <button class="dropdown-btn">Projects <span>▼</span></button>
+                <button class="dropdown-btn">Projects <span>â–¼</span></button>
                 <div class="dropdown-content">
                     <div class="dropdown-content-inner">
-                        <a href="ati.html">Typing Instructor <span>⌨️</span></a>
-                        <a href="solar.html">Solar Engine <span>🪐</span></a>
-                        <a href="gesture.html">Gesture Control <span>🖐️</span></a>
-                        <a href="rpg.html">RPG Game <span>⚔️</span></a>
-                        <a href="qr.html">QR Generator <span>⬛</span></a>
+                        <a href="ati.html">Typing Instructor <span>âŒ¨ï¸</span></a>
+                        <a href="solar.html">Solar Engine <span>ðŸª</span></a>
+                        <a href="gesture.html">Gesture Control <span>ðŸ–ï¸</span></a>
+                        <a href="rpg.html">RPG Game <span>âš”ï¸</span></a>
+                        <a href="qr.html">QR Generator <span>â¬›</span></a>
                     </div>
                 </div>
             </div>
@@ -272,21 +273,21 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <div class="qr-app" role="main">
 <aside class="app-sb">
   <div class="sb-top">
-    <div class="sb-top-title">⬛ QR STUDIO</div>
+    <div class="sb-top-title">â¬› QR STUDIO</div>
     <div class="sb-top-sub">By Class Of Learners</div>
   </div>
   
   <div class="sb-lbl">Create</div>
-  <a href="qr-editor.html" class="sb-btn"><span class="sb-icon">⊕</span>New QR</a>
-  <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon">🎯</span>Bulk QR generation</a>
+  <a href="qr-editor.html" class="sb-btn"><span class="sb-icon">âŠ•</span>New QR</a>
+  <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon">ðŸŽ¯</span>Bulk QR generation</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
-  <a href="#" class="sb-btn act" id="sbtn-qrs" onclick="switchView('qrs'); return false;"><span class="sb-icon">🔲</span>My QR codes</a>
-  <a href="#" class="sb-btn" id="sbtn-stats" onclick="switchView('stats'); return false;"><span class="sb-icon">📊</span>Stats</a>
-  <a href="#" class="sb-btn" id="sbtn-templates" onclick="switchView('templates'); return false;"><span class="sb-icon">📄</span>Templates</a>
+  <a href="#" class="sb-btn act" id="sbtn-qrs" onclick="switchView('qrs'); return false;"><span class="sb-icon">ðŸ”²</span>My QR codes</a>
+  <a href="#" class="sb-btn" id="sbtn-stats" onclick="switchView('stats'); return false;"><span class="sb-icon">ðŸ“Š</span>Stats</a>
+  <a href="#" class="sb-btn" id="sbtn-templates" onclick="switchView('templates'); return false;"><span class="sb-icon">ðŸ“„</span>Templates</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
-  <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
+  <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">âš™ï¸</span>Account</button>
   
   <div class="sb-foot">
     <button class="sign-btn" id="sbSignBtn" onclick="openLogin()">
@@ -314,15 +315,15 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             Cloud Backup: <span id="driveStatus">Not Synced</span>
           </div>
           <div style="display:flex;gap:10px">
-            <button class="dbf" onclick="syncDrive()">⬆ Upload to Drive</button>
-            <button class="dbf" onclick="loadFromDrive()">⬇ Fetch from Drive</button>
+            <button class="dbf" onclick="syncDrive()">â¬† Upload to Drive</button>
+            <button class="dbf" onclick="loadFromDrive()">â¬‡ Fetch from Drive</button>
           </div>
         </div>
 
         <div class="db-stats">
           <div class="st-card"><div class="v" id="stTotal">0</div><div class="l">Total Generated</div></div>
           <div class="st-card"><div class="v" id="stTypes">0</div><div class="l">Formats Used</div></div>
-          <div class="st-card"><div class="v" id="stLast">—</div><div class="l">Last Saved</div></div>
+          <div class="st-card"><div class="v" id="stLast">â€”</div><div class="l">Last Saved</div></div>
         </div>
         
         <div class="db-filt">
@@ -346,7 +347,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
           <a href="terms.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Terms of Service</a>
           <a href="feedback.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Provide Feedback</a>
       </div>
-      <div style="color:var(--txt-m); font-size:0.85rem; font-weight:600;">© 2026 Class Of Learners. Developed By Neel, Ansh And Aarush. All Rights Reserved.</div>
+      <div style="color:var(--txt-m); font-size:0.85rem; font-weight:600;">Â© 2026 Class Of Learners. Developed By Neel, Ansh And Aarush. All Rights Reserved.</div>
   </footer>
 </div>
 </div>
@@ -392,7 +393,7 @@ function renderDB(){
   const uniqueTypes = [];
   saved.forEach(function(q){ if(uniqueTypes.indexOf(q.type)===-1) uniqueTypes.push(q.type); });
   document.getElementById('stTypes').textContent = uniqueTypes.length;
-  document.getElementById('stLast').textContent = saved.length>0 ? saved[0].date : '—';
+  document.getElementById('stLast').textContent = saved.length>0 ? saved[0].date : 'â€”';
   
   const dbs = document.getElementById('dbSub');
   if(curUser && dbs) dbs.textContent = `Dashboard synced. ${saved.length} assets ready.`;
@@ -400,16 +401,16 @@ function renderDB(){
   const g = document.getElementById('dbG'); if(!g) return;
   g.innerHTML = '';
   if(!filtered.length){
-    g.innerHTML=`<div class="db-emp"><div class="ei">🔳</div><h2>Workspace Empty</h2><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
+    g.innerHTML=`<div class="db-emp"><div class="ei">ðŸ”³</div><h2>Workspace Empty</h2><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
     return;
   }
   filtered.forEach(q=>{
     const c=document.createElement('div');c.className='dbc';
     const nameStr = (q.advSettings && q.advSettings.name) ? q.advSettings.name : q.content;
-    const shortC = nameStr.length>38 ? nameStr.substring(0,38)+'…' : nameStr;
-    c.innerHTML=`<div class="dbt">${q.thumb?`<img src="${q.thumb}" alt="QR" loading="lazy">`:'<div style="font-size:2rem;opacity:.25">🔳</div>'}</div>
-    <div class="dbb"><div class="dtyp">${q.typeIcon} ${q.typeName}</div><h3 title="${q.content}">${shortC}</h3><div class="ddt">📅 ${q.date}</div></div>
-    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})">✏️ Editor</button><button class="dba-btn" onclick="reDL(${q.id})">⬇ Export</button><button class="dba-btn del" onclick="delQR(${q.id})">🗑 Delete</button></div>`;
+    const shortC = nameStr.length>38 ? nameStr.substring(0,38)+'â€¦' : nameStr;
+    c.innerHTML=`<div class="dbt">${q.thumb?`<img src="${q.thumb}" alt="QR" loading="lazy">`:'<div style="font-size:2rem;opacity:.25">ðŸ”³</div>'}</div>
+    <div class="dbb"><div class="dtyp">${q.typeIcon} ${q.typeName}</div><h3 title="${q.content}">${shortC}</h3><div class="ddt">ðŸ“… ${q.date}</div></div>
+    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})">âœï¸ Editor</button><button class="dba-btn" onclick="reDL(${q.id})">â¬‡ Export</button><button class="dba-btn del" onclick="delQR(${q.id})">ðŸ—‘ Delete</button></div>`;
     g.appendChild(c);
   });
 }
@@ -463,7 +464,7 @@ async function renderStats() {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                 </div>
                 <div style="background:var(--panel); border:1px solid var(--border); padding:10px 15px; border-radius:8px; color:var(--txt-m); display:flex; align-items:center; gap:10px; font-size:0.9rem;">
-                    Time zone: Asia/Calcutta ✎
+                    Time zone: Asia/Calcutta âœŽ
                 </div>
             </div>
             <button class="dbf" style="display:flex; align-items:center; gap:8px;">
@@ -669,22 +670,22 @@ function renderTemplates() {
         
         <div class="db-grid" style="margin-top:20px;">
             <div class="dbc" onclick="window.location.href='qr-editor.html?template=business_card'" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf);"><div style="font-size: 4rem;">💼</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf);"><div style="font-size: 4rem;">ðŸ’¼</div></div>
                 <div class="dbb"><h3>Modern Business Card</h3><div class="ddt">Professional layout with gradient logo support</div></div>
             </div>
             
             <div class="dbc" onclick="window.location.href='qr-editor.html?template=wifi_neon'" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #10b981, #f59e0b);"><div style="font-size: 4rem;">📶</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #10b981, #f59e0b);"><div style="font-size: 4rem;">ðŸ“¶</div></div>
                 <div class="dbb"><h3>Neon Wi-Fi Access</h3><div class="ddt">Vibrant styling for quick guest access</div></div>
             </div>
             
             <div class="dbc" onclick="window.location.href='qr-editor.html?template=minimal_menu'" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"><div style="font-size: 4rem;">🍽️</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"><div style="font-size: 4rem;">ðŸ½ï¸</div></div>
                 <div class="dbb"><h3>Minimalist Menu</h3><div class="ddt">Clean and scannable design for restaurants</div></div>
             </div>
             
             <div class="dbc" onclick="window.location.href='qr-editor.html?template=social_hub'" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="font-size: 4rem;">🔗</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="font-size: 4rem;">ðŸ”—</div></div>
                 <div class="dbb"><h3>Social Media Hub</h3><div class="ddt">Optimized for Linktree or social profiles</div></div>
             </div>
         </div>
@@ -770,7 +771,7 @@ async function fetchGoogleProfile(token) {
             Storage.set('qrs_user', JSON.stringify(curUser));
             updatePUI();
             closeMo();
-            toast('✅ Authenticated: ' + savedName, 'green');
+            toast('âœ… Authenticated: ' + savedName, 'green');
         } else {
             toast('Authentication failed.', '');
         }
@@ -818,7 +819,7 @@ function closeMo(){ const mo=document.getElementById('loginMo'); if(mo) mo.class
 function updateUsername(){
     const mn=document.getElementById('miName'); if(!mn) return;
     const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
-    if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Username Updated','green'); }
+    if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('âœ… Username Updated','green'); }
 }
 function doLogout() {
     curUser = null; googleAccessToken = null; Storage.set('qrs_user', ''); updatePUI(); closeMo(); toast('Logged out successfully.', '');

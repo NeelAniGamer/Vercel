@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awwwards 3D Interactive Galaxy</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="awwwards.css">
+    
+    <!-- WebGL Support Check -->
+    <script>
+        function isWebGLAvailable() {
+            try {
+                var canvas = document.createElement( 'canvas' );
+                return !! ( window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) ) );
+            } catch ( e ) {
+                return false;
+            }
+        }
+    </script>
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/awwwards.html" />
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loader" class="loader">
+        <h2 class="hollow-text" style="font-size: 3rem;">INITIALIZING...</h2>
+    </div>
+
+    <!-- WebGL Fallback -->
+    <div id="webgl-fallback" class="fallback" style="display: none;">
+        <h2 class="hollow-text" style="font-size: 3rem;">WEBGL NOT SUPPORTED</h2>
+        <p>Please use a modern browser to view this 3D experience.</p>
+    </div>
+
+    <!-- 3D WebGL Canvas -->
+    <canvas id="webgl-canvas" class="canvas-container"></canvas>
+
+    <!-- Scrollable Content Layer -->
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+            
+            <section class="section hero">
+                <div class="container center-align pointer-events-none">
+                    <h1 class="hollow-text reveal-text">STARDUST</h1>
+                    <h2 class="reveal-text delay-1" style="color: white;">INTERACTIVE</h2>
+                    <p class="fade-in">Scroll down to fly through the galaxy.</p>
+                </div>
+            </section>
+
+            <section class="section spacer">
+                <!-- Empty section to allow scrolling through space -->
+            </section>
+
+            <section class="section features">
+                <div class="container right-align pointer-events-none">
+                    <div class="glass-card panel-1">
+                        <h3>Custom WebGL</h3>
+                        <p>15,000 mathematically plotted particles running natively in the browser via Three.js. No iframes, no limits.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section deep-space">
+                <div class="container left-align pointer-events-none">
+                    <div class="glass-card panel-2">
+                        <h3>Fluid Physics</h3>
+                        <p>Raycasting algorithms calculate cursor proximity in 3D space, repelling matter fluidly as you move the mouse.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section footer-cta">
+                <div class="container center-align">
+                    <h1 class="hollow-text reveal-text cta-text">READY?</h1>
+                    <a href="index.html" class="btn-glow fade-in cta-btn">Return to Hub</a>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Animation & WebGL Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Custom Logic -->
+    <script src="awwwards.js"></script>
+</body>
+</html>

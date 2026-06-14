@@ -13,10 +13,12 @@
             const status = config.pages[path] || '200';
             
             if (status === '503') {
-                document.documentElement.innerHTML = '<head><title>Maintenance</title></head><body style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px; margin:0;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#cbd5e1;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </body>';
+                document.documentElement.innerHTML = '<head><title>Maintenance</title><link rel="canonical" href="https://advancedlogiclabs.dpdns.org/ati.html" />
+</head><body style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px; margin:0;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#cbd5e1;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </body>';
                 window.stop();
             } else if (status === '404') {
-                document.documentElement.innerHTML = '<head><title>Not Found</title></head><body style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px; margin:0;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#cbd5e1;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></body>';
+                document.documentElement.innerHTML = '<head><title>Not Found</title><link rel="canonical" href="https://advancedlogiclabs.dpdns.org/ati.html" />
+</head><body style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px; margin:0;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#cbd5e1;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></body>';
                 window.stop();
             }
         }
@@ -52,7 +54,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.2); border-radius: 10px; border: 3px solid var(--bg-1); transition: 0.3s; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        /* ── GLOBAL NAVBAR ── */
+        /* â”€â”€ GLOBAL NAVBAR â”€â”€ */
         .top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s;}
         .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; text-decoration: none; color: var(--text-main); font-family: 'Inter', sans-serif;}
         .brand-logo { height: 40px; width: auto; object-fit: contain; filter: drop-shadow(0 0 8px var(--primary-glow));}
@@ -87,7 +89,7 @@
         .nav-user-profile:hover { border-color: var(--primary); }
         .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
 
-        /* ── HERO WITH CANVAS BACKGROUND ── */
+        /* â”€â”€ HERO WITH CANVAS BACKGROUND â”€â”€ */
         .game-hero { width: 100%; padding: 120px 20px 100px; text-align: center; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid var(--border-light); background: linear-gradient(180deg, var(--bg-2) 0%, rgba(56, 189, 248, 0.05) 100%); position: relative; overflow: hidden; z-index: 1;}
         
         /* The Animated Particle Background */
@@ -110,7 +112,7 @@
         .btn-demo { background: rgba(56, 189, 248, 0.05); color: var(--primary); border: 2px solid var(--primary); padding: 16px 32px; border-radius: 12px; font-weight: 800; font-size: 1.1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(5px);}
         .btn-demo:hover { background: var(--primary); color: #000; transform: translateY(-2px); box-shadow: 0 10px 30px var(--primary-glow); }
 
-       /* ── FEATURE CARDS ── */
+       /* â”€â”€ FEATURE CARDS â”€â”€ */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 90%; max-width: 1200px; margin: 150px auto 80px; z-index: 10; position: relative; }
         .feature-card { background: linear-gradient(110deg, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.7) 40%, rgba(56, 189, 248, 0.12) 50%, rgba(15, 23, 42, 0.7) 60%, rgba(15, 23, 42, 0.7) 100%); background-size: 250% 100%; background-position: 100% 0; border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 16px; padding: 40px 30px; position: relative; overflow: hidden; backdrop-filter: blur(10px); box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 15px 30px rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; text-align: center; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-position 0.6s ease-out, border-color 0.4s, box-shadow 0.4s; }
         .feature-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px); background-size: 15px 15px; z-index: 0; opacity: 0.5; transition: opacity 0.3s; }
@@ -140,7 +142,7 @@
         .feature-card:hover .tag-cpp { background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
         .feature-card:hover .tag-js { background: rgba(249, 115, 22, 0.15); border-color: #fb923c; box-shadow: 0 0 10px rgba(249, 115, 22, 0.2); }
 
-        /* ── CYBER SHOWCASE GALLERY ── */
+        /* â”€â”€ CYBER SHOWCASE GALLERY â”€â”€ */
         .gallery-title { text-align: center; font-size: 2.5rem; font-weight: 800; color: var(--text-main); margin: 60px 0 30px; letter-spacing: -1px; transition: 0.3s;}
         
         .cyber-showcase-container { width: 95%; max-width: 1000px; margin: 0 auto 80px; display: flex; flex-direction: column; gap: 20px; align-items: center; position: relative; }
@@ -162,7 +164,7 @@
         .thumb-card:hover { opacity: 1; border-color: rgba(56, 189, 248, 0.5); transform: translateY(-3px); }
         .thumb-card.active { opacity: 1; border-color: var(--primary); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3); transform: translateY(-8px); }
 
-        /* ── ANIMATION TRIGGERS ── */
+        /* â”€â”€ ANIMATION TRIGGERS â”€â”€ */
         .anim-target { opacity: 0; transform: translateY(30px); transition: 0.6s ease-out; }
         .animate-in { opacity: 1 !important; transform: translateY(0) !important; }
         .cursor-blink { animation: blink 1s step-end infinite; color: var(--primary);}
@@ -170,7 +172,7 @@
         .hero-reveal { opacity: 0; transform: translateY(15px); transition: 0.8s ease; }
         .hero-reveal.visible { opacity: 1; transform: translateY(0); }
 
-        /* ── FOOTER & MODAL... ── */
+        /* â”€â”€ FOOTER & MODAL... â”€â”€ */
         .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-light); background: var(--nav-bg); backdrop-filter: blur(10px); margin-top: auto; }
         .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
         .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: 0.2s; }
@@ -205,7 +207,7 @@
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.green { border-color: var(--primary, #38bdf8); color: var(--primary, #38bdf8); }
 
-        /* ── COMPLETE MOBILE RESPONSIVENESS FIXES ── */
+        /* â”€â”€ COMPLETE MOBILE RESPONSIVENESS FIXES â”€â”€ */
         @media (max-width: 768px) {
             /* 1. Floating Top Nav Bar Fix */
             .top-nav { 
@@ -272,6 +274,7 @@
         }
 
     </style>
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/ati.html" />
 </head>
 <body>
 <script>
@@ -289,7 +292,7 @@
             <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" loading="lazy" decoding="async">
             <span>Class Of Learners</span>
         </a>
-        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">â˜°</button>
         
         <div class="nav-links">
             <a href="index.html" class="nav-link">Home Hub</a>
@@ -298,14 +301,14 @@
             <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
             
             <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
-                <button class="dropdown-btn" style="color: var(--primary);">Projects <span>▼</span></button>
+                <button class="dropdown-btn" style="color: var(--primary);">Projects <span>â–¼</span></button>
                 <div class="dropdown-content">
                     <div class="dropdown-content-inner">
-                        <a href="ati.html" style="color: var(--primary);">Typing Instructor <span>⌨️</span></a>
-                        <a href="solar.html">Solar Engine <span>🪐</span></a>
-                        <a href="gesture.html">Gesture Control <span>🖐️</span></a>
-                        <a href="rpg.html">RPG Game <span>⚔️</span></a>
-                        <a href="qr.html">QR Generator <span>⬛</span></a>
+                        <a href="ati.html" style="color: var(--primary);">Typing Instructor <span>âŒ¨ï¸</span></a>
+                        <a href="solar.html">Solar Engine <span>ðŸª</span></a>
+                        <a href="gesture.html">Gesture Control <span>ðŸ–ï¸</span></a>
+                        <a href="rpg.html">RPG Game <span>âš”ï¸</span></a>
+                        <a href="qr.html">QR Generator <span>â¬›</span></a>
                     </div>
                 </div>
             </div>
@@ -331,7 +334,7 @@
             <p>Deploying high-fidelity syntax mastery module. Train your muscle memory for complex coding languages.</p>
             <div class="hero-cta">
                 <a href="download.html" class="btn-download">Initialize Download</a>
-                <a href="ati-demo.html" class="btn-demo">▶ Play Web Demo</a>
+                <a href="ati-demo.html" class="btn-demo">â–¶ Play Web Demo</a>
             </div>
         </div>
     </header>
@@ -358,7 +361,7 @@
         </div>
         <div class="feature-card anim-target" style="transition-delay: 0.3s;">
             <div class="feature-content">
-                <div class="icon-wrapper">[⌨]</div>
+                <div class="icon-wrapper">[âŒ¨]</div>
                 <h3>Mech Simulator</h3>
                 <p>Virtual mechanical keyboard interface with custom switch sounds and visual heatmaps.</p>
             </div>
@@ -555,7 +558,7 @@
         if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === payload.email && parsed.name) savedName = parsed.name; } catch(e){} }
         curUser = { name: savedName, email: payload.email, picture: payload.picture, google: true };
         Storage.set('qrs_user', JSON.stringify(curUser));
-        updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+        updatePUI(); closeMo(); toast('âœ… Authenticated: ' + savedName, 'green');
     }
 
     function gSignIn() {
@@ -589,7 +592,7 @@
                 if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === info.email && parsed.name) savedName = parsed.name; } catch(e){} }
                 curUser = { name: savedName, email: info.email, picture: info.picture, google: true };
                 Storage.set('qrs_user', JSON.stringify(curUser));
-                updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+                updatePUI(); closeMo(); toast('âœ… Authenticated: ' + savedName, 'green');
             } else { toast('Authentication failed.', ''); }
         } catch (e) { toast('Network error.', ''); }
     }
@@ -638,7 +641,7 @@
     function updateUsername(){
         const mn=document.getElementById('miName'); if(!mn) return;
         const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
-        if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Username Updated','green'); }
+        if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('âœ… Username Updated','green'); }
     }
 
     function doLogout() {

@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script defer src="col-auth.js"></script>
 <style>
-    /* ── ADMIN THEME VARIABLES ── */
+    /* â”€â”€ ADMIN THEME VARIABLES â”€â”€ */
     :root { 
         --bg-color: #0f172a; 
         --text-main: #f8fafc; 
@@ -32,7 +32,7 @@
     ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-    /* ── SECURE LOCK SCREEN ── */
+    /* â”€â”€ SECURE LOCK SCREEN â”€â”€ */
     .lock-screen {
         position: fixed; inset: 0; background: var(--bg-color); z-index: 9999;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -47,14 +47,14 @@
     .gbtn { width: 100%; padding: 14px; background: #4285f4; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; color: #ffffff; display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.2s; box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);}
     .gbtn:hover { background: #3367d6; transform: translateY(-2px); }
 
-    /* ── NAVBAR ── */
+    /* â”€â”€ NAVBAR â”€â”€ */
     .top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 1000;}
     .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.1rem; text-decoration: none; color: var(--text-main); }
     .brand-logo { height: 32px; width: auto; }
     .nav-dl-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); padding: 8px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; transition: 0.2s; border: 1px solid rgba(239, 68, 68, 0.3); cursor: pointer;}
     .nav-dl-btn:hover { background: var(--danger); color: #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);}
 
-    /* ── LAYOUT ── */
+    /* â”€â”€ LAYOUT â”€â”€ */
     .container { max-width: 1400px; margin: 40px auto 80px; padding: 0 20px; width: 100%; flex:1;}
     .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid var(--border-light); padding-bottom: 20px; flex-wrap: wrap; gap:20px;}
     .header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; color: var(--text-main);}
@@ -62,7 +62,7 @@
     
     .admin-grid { display: grid; grid-template-columns: 1fr 450px; gap: 30px; align-items: start;}
 
-    /* ── FEEDBACK UI ── */
+    /* â”€â”€ FEEDBACK UI â”€â”€ */
     .btn-clear { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.3); padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;}
     .btn-clear:hover { background: var(--success); color: #fff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16,185,129,0.3); }
 
@@ -87,7 +87,7 @@
     .empty { text-align: center; padding: 60px 20px; color: var(--text-muted); border: 2px dashed var(--border-light); border-radius: 16px; }
     .empty h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
     
-    /* ── ROUTING CONTROLS UI ── */
+    /* â”€â”€ ROUTING CONTROLS UI â”€â”€ */
     .controls-panel { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     .controls-panel h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 25px; color: var(--text-main); border-bottom: 1px solid var(--border-light); padding-bottom: 15px;}
     
@@ -117,12 +117,12 @@
     .ms-save { width: 100%; padding: 16px; background: var(--primary); border: none; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px;}
     .ms-save:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3); }
 
-    /* ── TOAST ── */
+    /* â”€â”€ TOAST â”€â”€ */
     .toast { position: fixed; bottom: 30px; right: 30px; background: var(--danger); color: #fff; padding: 15px 25px; border-radius: 12px; font-weight: 800; font-size: 0.95rem; transform: translateY(20px); opacity: 0; transition: 0.3s; z-index: 15000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.green { background: var(--success); border-color: var(--success); }
 
-    /* ── CONFIRM MODAL CLASSES ── */
+    /* â”€â”€ CONFIRM MODAL CLASSES â”€â”€ */
     .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
     .mo.open { opacity: 1; pointer-events: auto; }
     .md { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); color: var(--text-main); text-transform:none;}
@@ -132,7 +132,7 @@
     .msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid #ef4444; border-radius: 12px; font-size: 1rem; font-weight: 800; color: #ef4444; cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
     .msk-danger:hover { background: rgba(239, 68, 68, 0.1); }
 
-    /* ── TABS ── */
+    /* â”€â”€ TABS â”€â”€ */
     .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; overflow-x: auto; width: 100%; justify-content: center;}
     .tab-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); font-weight: 700; font-size: 0.95rem; padding: 12px 24px; border-radius: 8px; cursor: pointer; transition: 0.3s; white-space: nowrap; display:flex; align-items:center; gap:8px;}
     .tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
@@ -142,7 +142,7 @@
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ── MOBILE RESPONSIVENESS FIXES ── */
+    /* â”€â”€ MOBILE RESPONSIVENESS FIXES â”€â”€ */
     @media (max-width: 1000px) {
         .admin-grid { grid-template-columns: 1fr; }
     }
@@ -159,6 +159,7 @@
         .fb-bot { flex-direction: column; align-items: flex-start; gap: 10px; }
     }
 </style>
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/admin.html" />
 </head>
 <body>
 <script>
@@ -203,10 +204,10 @@
 
   <!-- TABS NAV -->
   <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('tab-logs', event)">📊 Feedback Logs</button>
-      <button class="tab-btn" onclick="switchTab('tab-routing', event)">🚦 Routing Config</button>
-      <button class="tab-btn" onclick="switchTab('tab-auth', event)">🔐 Auth Config</button>
-      <button class="tab-btn" onclick="switchTab('tab-editor', event)">💻 Source Code Editor</button>
+      <button class="tab-btn active" onclick="switchTab('tab-logs', event)">ðŸ“Š Feedback Logs</button>
+      <button class="tab-btn" onclick="switchTab('tab-routing', event)">ðŸš¦ Routing Config</button>
+      <button class="tab-btn" onclick="switchTab('tab-auth', event)">ðŸ” Auth Config</button>
+      <button class="tab-btn" onclick="switchTab('tab-editor', event)">ðŸ’» Source Code Editor</button>
   </div>
 
   <!-- TAB PANES -->
@@ -215,7 +216,7 @@
           <div class="fb-container-title">
               <div><span>User Submissions</span> <span id="fbCount" style="background:var(--bg-color); padding:4px 10px; border-radius:12px; font-size:0.8rem; border:1px solid var(--border-light);">0</span></div>
               <div style="display:flex; gap:10px;">
-                  <button class="btn-clear" onclick="renderFeedback()" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.3); padding: 8px 15px;">↻ Refresh</button>
+                  <button class="btn-clear" onclick="renderFeedback()" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.3); padding: 8px 15px;">â†» Refresh</button>
                   <button class="btn-clear" onclick="clearAll()" style="color:var(--danger); border-color:rgba(239,68,68,0.3); padding: 8px 15px;">Purge</button>
               </div>
           </div>
@@ -266,7 +267,7 @@
           <div style="display:flex; gap:15px; margin-bottom: 15px; flex-wrap:wrap;">
               <input type="password" id="gh-token" class="banner-inp" style="flex:1; margin-bottom:0;" placeholder="Enter GitHub Personal Access Token (PAT) with repo scope">
               <button class="btn-clear" onclick="saveGhToken()" style="background:rgba(56,189,248,0.1); color:var(--primary); border-color:rgba(56,189,248,0.3);">Save Token</button>
-              <button class="btn-clear" onclick="loadGhFiles()" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.3);">↻ Fetch Files</button>
+              <button class="btn-clear" onclick="loadGhFiles()" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:rgba(16,185,129,0.3);">â†» Fetch Files</button>
           </div>
 
           <div style="display:flex; gap:15px; margin-bottom: 15px; flex-wrap:wrap;">
@@ -276,9 +277,9 @@
           </div>
 
           <div id="builder-toolbar" style="display:none; gap:10px; margin-bottom:15px; flex-wrap:wrap; background:rgba(15,23,42,0.5); padding:10px; border-radius:8px; border:1px solid var(--border-light);">
-              <button class="btn-clear" onclick="setIframeSize('100%')" style="flex:1; border-color:var(--border-light); color:var(--text-main);">💻 Desktop</button>
-              <button class="btn-clear" onclick="setIframeSize('768px')" style="flex:1; border-color:var(--border-light); color:var(--text-main);">📱 Tablet</button>
-              <button class="btn-clear" onclick="setIframeSize('375px')" style="flex:1; border-color:var(--border-light); color:var(--text-main);">📱 Mobile</button>
+              <button class="btn-clear" onclick="setIframeSize('100%')" style="flex:1; border-color:var(--border-light); color:var(--text-main);">ðŸ’» Desktop</button>
+              <button class="btn-clear" onclick="setIframeSize('768px')" style="flex:1; border-color:var(--border-light); color:var(--text-main);">ðŸ“± Tablet</button>
+              <button class="btn-clear" onclick="setIframeSize('375px')" style="flex:1; border-color:var(--border-light); color:var(--text-main);">ðŸ“± Mobile</button>
               <button class="ms-save" id="gh-deploy-btn" onclick="deployGhFile()" style="margin-top:0; padding:10px 20px; width:auto;">Deploy Changes Directly to Vercel</button>
           </div>
 
@@ -292,7 +293,7 @@
 <div class="mo" id="confirmMo">
   <div class="md" style="max-width: 400px; text-align: center;">
     <div class="md-body" style="padding: 40px 30px;">
-      <div style="font-size: 3rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(239,68,68,0.3));">⚠️</div>
+      <div style="font-size: 3rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(239,68,68,0.3));">âš ï¸</div>
       <h2 id="confirmTitle" style="font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main); text-transform:none;">Confirm Action</h2>
       <p id="confirmMsg" style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; text-transform:none;">Are you sure?</p>
       <div style="display: flex; gap: 15px;">
@@ -351,7 +352,7 @@ function checkAdminAccess() {
             buildRoutingUI();
         } else {
             document.getElementById('lockBoxContent').innerHTML = `
-                <div style="font-size:3.5rem; margin-bottom:15px; filter:drop-shadow(0 0 15px var(--danger));">🚫</div>
+                <div style="font-size:3.5rem; margin-bottom:15px; filter:drop-shadow(0 0 15px var(--danger));">ðŸš«</div>
                 <h2 style="color:var(--danger)">Access Denied</h2>
                 <p>The account <b style="color:var(--text-main)">${window.colUser.email}</b> lacks administrative privileges.</p>
                 <button style="width: 100%; padding: 14px; background: transparent; border: 1px solid var(--danger); border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; color: var(--danger); transition: 0.3s; margin-top: 10px;" onclick="doLogoutAdmin()">Sign Out & Retry</button>
@@ -391,9 +392,9 @@ function renderFeedback() {
         grid.innerHTML = '';
         if(arr.length === 0) { grid.innerHTML = `<div class="empty"><h3>No Data Logs Found</h3></div>`; return; }
         arr.forEach(fb => {
-            let stars = ''; for(let i=0; i<fb.rating; i++) stars += '★';
+            let stars = ''; for(let i=0; i<fb.rating; i++) stars += 'â˜…';
             let dynamicContent = `<div class="fb-msg">"${fb.message}"</div>`;
-            if (fb.device) dynamicContent += `<div class="fb-device">💻 ${fb.device}</div>`;
+            if (fb.device) dynamicContent += `<div class="fb-device">ðŸ’» ${fb.device}</div>`;
             if (fb.steps) dynamicContent += `<div class="fb-steps"><strong>Steps to Reproduce:</strong><br>${fb.steps.replace(/\n/g, '<br>')}</div>`;
             const card = document.createElement('div');
             card.className = 'fb-card';
@@ -427,9 +428,9 @@ function clearAll() {
 }
 
 const PAGE_GROUPS = {
-    "Core Hub": [ {id: "index", label: "📄 Home (index.html)"}, {id: "about", label: "📄 About Us (about.html)"}, {id: "school", label: "📄 School (school.html)"}, {id: "sneh-asha", label: "📄 Sneh Asha (sneh-asha.html)"}, {id: "download", label: "📦 Downloads (download.html)"} ],
-    "Applications": [ {id: "ati", label: "⌨️ ATI Info (ati.html)"}, {id: "ati-demo", label: "⌨️ ATI Demo (ati-demo.html)"}, {id: "solar", label: "🪐 Solar Engine (solar.html)"}, {id: "gesture", label: "🖐️ Gesture (gesture.html)"}, {id: "rpg", label: "⚔️ RPG Game (rpg.html)"}, {id: "qr", label: "⬛ QR Dash (qr.html)"}, {id: "qr-editor", label: "⬛ QR Editor (qr-editor.html)"} ],
-    "Support": [ {id: "feedback", label: "💬 Feedback (feedback.html)"}, {id: "privacy", label: "🛡️ Privacy (privacy.html)"}, {id: "terms", label: "⚖️ Terms (terms.html)"} ]
+    "Core Hub": [ {id: "index", label: "ðŸ“„ Home (index.html)"}, {id: "about", label: "ðŸ“„ About Us (about.html)"}, {id: "school", label: "ðŸ“„ School (school.html)"}, {id: "sneh-asha", label: "ðŸ“„ Sneh Asha (sneh-asha.html)"}, {id: "download", label: "ðŸ“¦ Downloads (download.html)"} ],
+    "Applications": [ {id: "ati", label: "âŒ¨ï¸ ATI Info (ati.html)"}, {id: "ati-demo", label: "âŒ¨ï¸ ATI Demo (ati-demo.html)"}, {id: "solar", label: "ðŸª Solar Engine (solar.html)"}, {id: "gesture", label: "ðŸ–ï¸ Gesture (gesture.html)"}, {id: "rpg", label: "âš”ï¸ RPG Game (rpg.html)"}, {id: "qr", label: "â¬› QR Dash (qr.html)"}, {id: "qr-editor", label: "â¬› QR Editor (qr-editor.html)"} ],
+    "Support": [ {id: "feedback", label: "ðŸ’¬ Feedback (feedback.html)"}, {id: "privacy", label: "ðŸ›¡ï¸ Privacy (privacy.html)"}, {id: "terms", label: "âš–ï¸ Terms (terms.html)"} ]
 };
 
 function buildRoutingUI() {
@@ -448,13 +449,13 @@ function buildRoutingUI() {
             row.innerHTML = `
                 <span class="mono" style="flex:1">${p.label}</span>
                 <select id="ctrl-${p.id}" class="banner-inp" style="flex:1; margin-bottom:0; padding:10px; font-family:var(--font-mono); font-weight:700; font-size:0.85rem; cursor:pointer;">
-                    <option value="200" ${currentStatus==='200'?'selected':''}>🟢 200 - LIVE</option>
-                    <option value="301" ${currentStatus==='301'?'selected':''}>↪️ 301 - Redirect</option>
-                    <option value="401" ${currentStatus==='401'?'selected':''}>🔒 401 - Unauthorized</option>
-                    <option value="403" ${currentStatus==='403'?'selected':''}>⛔ 403 - Forbidden</option>
-                    <option value="404" ${currentStatus==='404'?'selected':''}>❓ 404 - Not Found</option>
-                    <option value="500" ${currentStatus==='500'?'selected':''}>💥 500 - Server Error</option>
-                    <option value="503" ${currentStatus==='503'?'selected':''}>🚧 503 - Maintenance</option>
+                    <option value="200" ${currentStatus==='200'?'selected':''}>ðŸŸ¢ 200 - LIVE</option>
+                    <option value="301" ${currentStatus==='301'?'selected':''}>â†ªï¸ 301 - Redirect</option>
+                    <option value="401" ${currentStatus==='401'?'selected':''}>ðŸ”’ 401 - Unauthorized</option>
+                    <option value="403" ${currentStatus==='403'?'selected':''}>â›” 403 - Forbidden</option>
+                    <option value="404" ${currentStatus==='404'?'selected':''}>â“ 404 - Not Found</option>
+                    <option value="500" ${currentStatus==='500'?'selected':''}>ðŸ’¥ 500 - Server Error</option>
+                    <option value="503" ${currentStatus==='503'?'selected':''}>ðŸš§ 503 - Maintenance</option>
                 </select>
             `;
             container.appendChild(row);
@@ -489,7 +490,7 @@ async function saveConfigToGitHub(config) {
         try { const data = await fetchGh("contents/config.json"); sha = data.sha; } catch(e) {} 
         const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
         await fetchGh("contents/config.json", { method: 'PUT', body: JSON.stringify({ message: "Admin update: routing config.json", content: base64Content, sha: sha || undefined }) });
-        toast('🚀 Global Configuration Deployed! Live in seconds.', 'green');
+        toast('ðŸš€ Global Configuration Deployed! Live in seconds.', 'green');
     } catch (e) { toast('Save failed: ' + e.message, ''); }
 }
 
@@ -744,7 +745,7 @@ async function deployGhFile() {
             });
             
             currentFileSha = result.content.sha;
-            toast('✅ Deployed Successfully! Vercel is building...', 'green');
+            toast('âœ… Deployed Successfully! Vercel is building...', 'green');
         } catch(e) {
             toast(e.message, '');
         }

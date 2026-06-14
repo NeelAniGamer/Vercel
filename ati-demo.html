@@ -28,7 +28,7 @@
     <title>ATI Web Demo | Class Of Learners</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* ── GLOBAL THEME VARIABLES (ATI CYBER THEME) ── */
+        /* â”€â”€ GLOBAL THEME VARIABLES (ATI CYBER THEME) â”€â”€ */
         :root, body { 
             --bg-1: #0a0f1a; 
             --bg-2: #020617; 
@@ -50,13 +50,13 @@
         body { background-color: var(--bg-2); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; background-image: radial-gradient(circle at top center, var(--bg-1) 0%, var(--bg-2) 100%); font-family: 'Inter', sans-serif; text-transform: capitalize;}
         code, pre, .tech-tag, kbd, .brand, [style*="monospace"], .term-dot { text-transform: none; }
         
-        /* ── CUSTOM SCROLLBAR ── */
+        /* â”€â”€ CUSTOM SCROLLBAR â”€â”€ */
         ::-webkit-scrollbar { width: 12px; }
         ::-webkit-scrollbar-track { background: var(--bg-1); border-left: 1px solid var(--border-light); }
         ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.2); border-radius: 10px; border: 3px solid var(--bg-1); transition: 0.3s; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        /* ── GLOBAL NAVBAR (RESTORED STANDARD STRUCTURE) ── */
+        /* â”€â”€ GLOBAL NAVBAR (RESTORED STANDARD STRUCTURE) â”€â”€ */
         .top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s;}
         .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; text-transform: none;}
         .brand-logo { height: 36px; width: auto; object-fit: contain; filter: drop-shadow(0 0 8px var(--primary-glow));}
@@ -68,7 +68,7 @@
         /* Hide Theme Switcher for ATI specifically */
         .theme-switch-wrapper { display: none; }
 
-        /* ── UTILITY BUTTONS ── */
+        /* â”€â”€ UTILITY BUTTONS â”€â”€ */
         .nav-dl-btn { background: var(--primary); color: #000; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 800; transition: 0.2s; box-shadow: 0 0 15px var(--primary-glow); font-size: 0.9rem;}
         .nav-dl-btn:hover { background: #fff; box-shadow: 0 0 25px var(--primary); }
         .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
@@ -82,7 +82,7 @@
         .nav-user-profile:hover { border-color: var(--primary); }
         .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
 
-        /* ── ATI MODULAR DASHBOARD UI ── */
+        /* â”€â”€ ATI MODULAR DASHBOARD UI â”€â”€ */
         .container { max-width: 1200px; margin: 40px auto 80px; padding: 0 20px; width: 100%; flex:1; display: flex; flex-direction: column; align-items: center;}
         
         .demo-header { text-align: center; margin-bottom: 40px; }
@@ -185,14 +185,14 @@
         .animate-in { animation: slideUpFade 0.6s ease-out forwards; }
         @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ── FOOTER ── */
+        /* â”€â”€ FOOTER â”€â”€ */
         .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-light); background: var(--nav-bg); backdrop-filter: blur(10px); margin-top: auto; }
         .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
         .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s; text-transform:none;}
         .footer-links a:hover { color: var(--primary); }
         .footer-copy { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform:none;}
 
-        /* ── UNIVERSAL AUTH MODAL ── */
+        /* â”€â”€ UNIVERSAL AUTH MODAL â”€â”€ */
         .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .mo.open { opacity: 1; pointer-events: auto; }
         .md { background: var(--card-bg, #1e293b); border: 1px solid var(--border-light, #334155); border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); color: var(--text-main, #f8fafc); text-transform:none;}
@@ -239,6 +239,7 @@
     </style>
 <script defer src="col-router.js"></script>
 <script defer src="col-auth.js"></script>
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/ati-demo.html" />
 </head>
 <body>
 <script>
@@ -256,11 +257,11 @@
             <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" loading="lazy" decoding="async">
             <span>Class Of Learners</span>
         </a>
-        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
+        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">â˜°</button>
         
         <div class="nav-links">
             <a href="index.html" class="nav-link">Home Hub</a>
-            <a href="ati.html" class="nav-link" style="color: var(--text-muted);">← Back To ATI</a>
+            <a href="ati.html" class="nav-link" style="color: var(--text-muted);">â† Back To ATI</a>
             
             <div class="theme-switch-wrapper" style="display:none;"></div>
 
@@ -289,7 +290,7 @@
             <div class="sidebar-col" style="display: flex; flex-direction: column; gap: 25px;">
                 
                 <div class="sidebar-panel anim-target">
-                    <div class="panel-header">⚙️ Configuration</div>
+                    <div class="panel-header">âš™ï¸ Configuration</div>
                     <div class="settings-group">
                         <div class="set-lbl">Content Mode:</div>
                         <select class="set-sel" id="modeSelect" onchange="initGame()">
@@ -309,7 +310,7 @@
                 </div>
 
                 <div class="sidebar-panel anim-target" style="flex: 1;">
-                    <div class="panel-header">📖 System Manual</div>
+                    <div class="panel-header">ðŸ“– System Manual</div>
                     <ul class="info-list">
                         <li><strong>Calculated WPM:</strong>
                             Calculated using the typographic standard where 1 "word" = 5 characters.
@@ -318,7 +319,7 @@
                         <li><strong>Accuracy:</strong>
                             <span class="info-formula">ACC = (Correct / Total) * 100</span>
                         </li>
-                        <li><strong>Code Mode:</strong> Requires exact syntax. Press 'Enter' at the (↵) symbol.</li>
+                        <li><strong>Code Mode:</strong> Requires exact syntax. Press 'Enter' at the (â†µ) symbol.</li>
                     </ul>
                 </div>
 
@@ -354,7 +355,7 @@
                     </div>
                 </div>
                 
-                <button class="btn-restart anim-target" onclick="initGame()">↻ Restart Evaluation Engine</button>
+                <button class="btn-restart anim-target" onclick="initGame()">â†» Restart Evaluation Engine</button>
 
             </div>
         </div>
@@ -377,7 +378,7 @@
     <div class="toast" id="toast"></div>
 
     <script>
-    // ── GAME ENGINE LOGIC ──
+    // â”€â”€ GAME ENGINE LOGIC â”€â”€
     const dbCode = [
         "function calculateWPM(chars, time) {\n  return Math.round((chars / 5) / (time / 60));\n}",
         "import numpy as np\nimport pandas as pd\ndf = pd.read_csv('data.csv')",
@@ -428,7 +429,7 @@
         overlay.classList.remove('show'); display.innerHTML = '';
         for(let i=0; i<currentText.length; i++) {
             const span = document.createElement('span');
-            if(currentText[i] === '\n') { span.textContent = '↵\n'; span.className = 'char newline'; } 
+            if(currentText[i] === '\n') { span.textContent = 'â†µ\n'; span.className = 'char newline'; } 
             else { span.textContent = currentText[i]; span.className = 'char'; }
             display.appendChild(span);
         }
@@ -494,7 +495,7 @@
             currentText = generateText(mode); charIndex = 0; input.value = ''; display.innerHTML = '';
             for(let i=0; i<currentText.length; i++) {
                 const span = document.createElement('span');
-                if(currentText[i] === '\n') { span.textContent = '↵\n'; span.className = 'char newline'; }
+                if(currentText[i] === '\n') { span.textContent = 'â†µ\n'; span.className = 'char newline'; }
                 else { span.textContent = currentText[i]; span.className = 'char'; }
                 display.appendChild(span);
             }
@@ -535,7 +536,7 @@
         if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === payload.email && parsed.name) savedName = parsed.name; } catch(e){} }
         curUser = { name: savedName, email: payload.email, picture: payload.picture, google: true };
         Storage.set('qrs_user', JSON.stringify(curUser));
-        updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+        updatePUI(); closeMo(); toast('âœ… Authenticated: ' + savedName, 'green');
     }
 
     function gSignIn() {
@@ -569,7 +570,7 @@
                 if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === info.email && parsed.name) savedName = parsed.name; } catch(e){} }
                 curUser = { name: savedName, email: info.email, picture: info.picture, google: true };
                 Storage.set('qrs_user', JSON.stringify(curUser));
-                updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+                updatePUI(); closeMo(); toast('âœ… Authenticated: ' + savedName, 'green');
             } else { toast('Authentication failed.', ''); }
         } catch (e) { toast('Network error.', ''); }
     }
@@ -618,7 +619,7 @@
     function updateUsername(){
         const mn=document.getElementById('miName'); if(!mn) return;
         const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
-        if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Username Updated','green'); }
+        if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('âœ… Username Updated','green'); }
     }
 
     function doLogout() {

@@ -35,13 +35,13 @@
         body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; transition: 0.3s; text-transform: capitalize; overflow-x: hidden;}
         code, pre, .tech-tag, kbd, .brand, [style*="monospace"], .term-dot { text-transform: none; }
         
-        /* ── CUSTOM SCROLLBAR (ADAPTIVE) ── */
+        /* â”€â”€ CUSTOM SCROLLBAR (ADAPTIVE) â”€â”€ */
         ::-webkit-scrollbar { width: 12px; }
         ::-webkit-scrollbar-track { background: var(--bg-color); border-left: 1px solid var(--border-light); }
         ::-webkit-scrollbar-thumb { background: rgba(107, 114, 128, 0.3); border-radius: 10px; border: 3px solid var(--bg-color); transition: 0.3s; }
         ::-webkit-scrollbar-thumb:hover { background: var(--google-blue); }
 
-        /* ── GLOBAL NAVBAR ── */
+        /* â”€â”€ GLOBAL NAVBAR â”€â”€ */
         .top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s;}
         .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; text-decoration: none; color: var(--text-main); transition: color 0.3s; text-transform: none;}
         .brand-logo { height: 40px; width: auto; object-fit: contain; }
@@ -50,7 +50,7 @@
         .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; }
         .nav-link:hover { color: var(--google-blue); }
 
-        /* ── PROJECTS DROPDOWN ── */
+        /* â”€â”€ PROJECTS DROPDOWN â”€â”€ */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-btn { color: var(--text-muted); background: none; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; transition: color 0.2s ease; padding: 0; }
         .dropdown-btn:hover, .dropdown.active .dropdown-btn { color: var(--google-blue); }
@@ -87,7 +87,7 @@
         .nav-dl-btn { background: var(--google-blue); color: white; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: 0.2s; }
         .mobile-dl { display: none; }
 
-        /* ── HERO & CONTENT ── */
+        /* â”€â”€ HERO & CONTENT â”€â”€ */
         .school-hero { width: 100%; background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%); color: white; padding: 100px 20px 120px; text-align: center; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
         .hero-badge { position: relative; z-index: 2; display: inline-block; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); font-weight: 800; font-size: 0.85rem; padding: 8px 20px; border-radius: 30px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .school-hero h1 { position: relative; z-index: 2; font-size: 4.5rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 15px; text-shadow: 0 4px 15px rgba(0,0,0,0.2); text-transform:none;}
@@ -105,14 +105,14 @@
         .pillar-box h3 { font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 12px; }
         .pillar-box p { font-size: 1rem; color: var(--text-muted); line-height: 1.6; text-transform:none;}
 
-        /* ── FOOTER ── */
+        /* â”€â”€ FOOTER â”€â”€ */
         .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-light); background: var(--nav-bg); backdrop-filter: blur(10px); z-index: 100; margin-top: auto; transition: 0.3s; }
         .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
         .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s; text-transform:none;}
         .footer-links a:hover { color: var(--google-blue); }
         .footer-copy { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform:none;}
 
-        /* ── UNIVERSAL AUTH MODAL CSS ── */
+        /* â”€â”€ UNIVERSAL AUTH MODAL CSS â”€â”€ */
         .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .mo.open { opacity: 1; pointer-events: auto; }
         .md { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); color: var(--text-main); text-transform:none;}
@@ -158,6 +158,7 @@
     </style>
 <script defer src="col-router.js"></script>
 <script defer src="col-auth.js"></script>
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/school.html" />
 </head>
 <body>
 <script>
@@ -175,7 +176,7 @@
         <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" loading="lazy" decoding="async">
         <span>Class Of Learners</span>
     </a>
-    <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
+    <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">â˜°</button>
     <div class="nav-links">
         <a href="index.html" class="nav-link">Home Hub</a>
         <a href="about.html" class="nav-link">About Us</a>
@@ -183,14 +184,14 @@
         <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
         
         <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
-            <button class="dropdown-btn">Projects <span>▼</span></button>
+            <button class="dropdown-btn">Projects <span>â–¼</span></button>
             <div class="dropdown-content">
                 <div class="dropdown-content-inner">
-                    <a href="ati.html">Typing Instructor <span>⌨️</span></a>
-                    <a href="solar.html">Solar Engine <span>🪐</span></a>
-                    <a href="gesture.html">Gesture Control <span>🖐️</span></a>
-                    <a href="rpg.html">RPG Game <span>⚔️</span></a>
-                    <a href="qr.html">QR Generator <span>⬛</span></a>
+                    <a href="ati.html">Typing Instructor <span>âŒ¨ï¸</span></a>
+                    <a href="solar.html">Solar Engine <span>ðŸª</span></a>
+                    <a href="gesture.html">Gesture Control <span>ðŸ–ï¸</span></a>
+                    <a href="rpg.html">RPG Game <span>âš”ï¸</span></a>
+                    <a href="qr.html">QR Generator <span>â¬›</span></a>
                 </div>
             </div>
         </div>
@@ -227,9 +228,9 @@
         <p>Our Academic Environment Has Fostered Our Drive For <strong>Technical Excellence</strong> And <strong>Collaborative Innovation</strong>. It Is Within These Halls That We Developed The Teamwork And Logic Skills Necessary To Conceptualize, Design, And Build Advanced Applications Like The Typing Instructor And Solar Engine.</p>
     </div>
     <div class="pillars-grid">
-        <div class="pillar-box"><div class="pillar-icon">🏛️</div><h3>Foundation</h3><p>Providing A Rigorous Academic Structure That Encourages Deep Critical Thinking And Problem-Solving Skills.</p></div>
-        <div class="pillar-box"><div class="pillar-icon">💡</div><h3>Innovation</h3><p>Supporting Extracurricular Tech Initiatives And Providing The Space For Students To Explore Modern Programming.</p></div>
-        <div class="pillar-box"><div class="pillar-icon">🤝</div><h3>Teamwork</h3><p>Cultivating An Environment Where Peer-To-Peer Collaboration Turns Individual Ideas Into Fully Realized Software.</p></div>
+        <div class="pillar-box"><div class="pillar-icon">ðŸ›ï¸</div><h3>Foundation</h3><p>Providing A Rigorous Academic Structure That Encourages Deep Critical Thinking And Problem-Solving Skills.</p></div>
+        <div class="pillar-box"><div class="pillar-icon">ðŸ’¡</div><h3>Innovation</h3><p>Supporting Extracurricular Tech Initiatives And Providing The Space For Students To Explore Modern Programming.</p></div>
+        <div class="pillar-box"><div class="pillar-icon">ðŸ¤</div><h3>Teamwork</h3><p>Cultivating An Environment Where Peer-To-Peer Collaboration Turns Individual Ideas Into Fully Realized Software.</p></div>
     </div>
 </main>
 
@@ -265,7 +266,7 @@ function handleOneTapResponse(response) {
     const payload = decodeJWT(response.credential); if (!payload) return;
     let savedName = payload.name; const existing = Storage.get('qrs_user');
     if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === payload.email && parsed.name) savedName = parsed.name; } catch(e){} }
-    curUser = { name: savedName, email: payload.email, picture: payload.picture, google: true }; Storage.set('qrs_user', JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+    curUser = { name: savedName, email: payload.email, picture: payload.picture, google: true }; Storage.set('qrs_user', JSON.stringify(curUser)); updatePUI(); closeMo(); toast('âœ… Authenticated: ' + savedName, 'green');
 }
 function gSignIn() {
     toast('Redirecting to Google...', ''); const redirectUri = window.location.href.split('#')[0].split('?')[0]; 
@@ -285,7 +286,7 @@ async function fetchGoogleProfile(token) {
         if (r.ok) {
             const info = await r.json(); let savedName = info.name; const existing = Storage.get('qrs_user');
             if(existing) { try { const parsed = JSON.parse(existing); if(parsed.email === info.email && parsed.name) savedName = parsed.name; } catch(e){} }
-            curUser = { name: savedName, email: info.email, picture: info.picture, google: true }; Storage.set('qrs_user', JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Authenticated: ' + savedName, 'green');
+            curUser = { name: savedName, email: info.email, picture: info.picture, google: true }; Storage.set('qrs_user', JSON.stringify(curUser)); updatePUI(); closeMo(); toast('âœ… Authenticated: ' + savedName, 'green');
         } else { toast('Authentication failed.', ''); }
     } catch (e) { toast('Network error.', ''); }
 }
@@ -319,7 +320,7 @@ function closeMo(){ const mo=document.getElementById('loginMo'); if(mo) mo.class
 function updateUsername(){
     const mn=document.getElementById('miName'); if(!mn) return;
     const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
-    if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Username Updated','green'); }
+    if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('âœ… Username Updated','green'); }
 }
 function doLogout() {
     curUser = null; googleAccessToken = null; Storage.set('qrs_user', '');
