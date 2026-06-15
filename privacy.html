@@ -13,12 +13,9 @@
   <style>
     :root{--void:#070A14;--void-fade:rgba(7,10,20,0.85);--signal:#5ED4F5;--signal-dim:rgba(94,212,245,0.15);--ink:#FFFFFF;--ink-muted:#8B99A4;--line:rgba(255,255,255,0.08);--lineb:rgba(255,255,255,0.15);--panel:rgba(255,255,255,0.03);--panel-hover:rgba(255,255,255,0.06);--ease:cubic-bezier(0.16, 1, 0.3, 1);--sans:'Inter',sans-serif;--serif:'Instrument Serif',serif;--mono:'Space Mono',monospace}
     *{box-sizing:border-box;margin:0;padding:0;cursor:none}
-    body{background:var(--void);color:var(--ink);font-family:var(--sans);overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
+    body{background:radial-gradient(circle at 50% 0%, #0c1529 0%, var(--void) 60%) no-repeat var(--void);color:var(--ink);font-family:var(--sans);overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
     ::selection{background:var(--signal);color:var(--void)}
     ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--lineb);border-radius:4px}::-webkit-scrollbar-thumb:hover{background:var(--signal)}
-    
-    #bgCanvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;opacity:0;transition:opacity 2s var(--ease)}
-    #bgCanvas.v{opacity:1}
     
     .top-nav{position:fixed;top:0;width:100%;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;z-index:1000;background:transparent;transition:background .4s,padding .4s,border-bottom .4s}
     .top-nav.s{background:var(--void-fade);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:15px 40px;border-bottom:1px solid var(--line)}
@@ -122,29 +119,27 @@
   <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/privacy" />
 </head>
 <body>
-  <!-- Background Canvas -->
-  <canvas id="bgCanvas"></canvas>
 
   <nav class="top-nav" id="topNav">
     <a href="index.html" class="nav-brand">
       <img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" loading="lazy">
       <span>Class Of Learners</span>
     </a>
-    <button class="mmb" id="mmb">â˜°</button>
+    <button class="mmb" id="mmb">☰</button>
     <div class="nav-links" id="navLinks">
       <a href="index.html" class="nav-link">Home</a>
       <a href="about.html" class="nav-link">About Us</a>
       <a href="school.html" class="nav-link">Our School</a>
       <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
       <div class="dropdown" id="projDropdown">
-        <button class="dropdown-btn">Projects <span>â–¼</span></button>
+        <button class="dropdown-btn">Projects <span>▼</span></button>
         <div class="dropdown-content">
           <div class="dropdown-content-inner">
-            <a href="ati.html">Typing Instructor <span>âŒ¨ï¸ </span></a>
-            <a href="solar.html">Solar Engine <span>ðŸª </span></a>
-            <a href="gesture.html">Gesture Control <span>ðŸ– ï¸ </span></a>
-            <a href="rpg.html">RPG Game <span>âš”ï¸ </span></a>
-            <a href="qr.html">QR Generator <span>â¬›</span></a>
+            <a href="ati.html">Typing Instructor <span>⌨️</span></a>
+            <a href="solar.html">Solar Engine <span>🪐</span></a>
+            <a href="gesture.html">Gesture Control <span>🖐️</span></a>
+            <a href="rpg.html">RPG Game <span>⚔️</span></a>
+            <a href="qr.html">QR Generator <span>⬛</span></a>
           </div>
         </div>
       </div>
@@ -227,38 +222,7 @@
   </div>
   <div class="toast" id="toastMsg"></div>
 
-  <!-- Three.js Background -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    (function(){
-      var canvas=document.getElementById('bgCanvas');
-      var scene=new THREE.Scene();
-      var camera=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,1,2000);
-      var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:false});
-      renderer.setSize(window.innerWidth,window.innerHeight);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-
-      // Particles
-      var PC=1500,pGeo=new THREE.BufferGeometry(),pP=new Float32Array(PC*3);
-      for(var i=0;i<PC;i++){pP[i*3]=(Math.random()-0.5)*500;pP[i*3+1]=(Math.random()-0.5)*300;pP[i*3+2]=(Math.random()-0.5)*500 - 50;}
-      pGeo.setAttribute('position',new THREE.BufferAttribute(pP,3));
-      scene.add(new THREE.Points(pGeo,new THREE.PointsMaterial({color:0x5ED4F5,size:1.2,transparent:true,opacity:0.3})));
-
-      var mx=0,my=0,cx=0,cy=0,scrollOff=0;
-      window.addEventListener('mousemove',function(e){mx=(e.clientX/window.innerWidth)*2-1;my=-(e.clientY/window.innerHeight)*2+1;});
-      window.addEventListener('scroll',function(){scrollOff=window.scrollY*.05;},{passive:true});
-
-      function tick(){
-        requestAnimationFrame(tick);
-        cx+=(mx*15-cx)*.03;cy+=(-my*10-cy)*.03;
-        camera.position.set(cx, cy - scrollOff, 0);
-        camera.lookAt(cx*0.2, -scrollOff*.2, 0);
-        renderer.render(scene,camera);
-      }
-      tick();
-      window.addEventListener('resize',function(){camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight);});
-      requestAnimationFrame(function(){canvas.classList.add('v');});
-    })();
-
     // Cursor
     (function(){
       var dot=document.getElementById('cDot'),ring=document.getElementById('cRing');if(!dot||!ring)return;
