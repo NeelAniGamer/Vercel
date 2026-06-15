@@ -125,6 +125,11 @@
       .doc-container{padding:0 20px}
       .summary-banner{padding:20px}
     }
+  .sf{border-top:1px solid var(--line);background:rgba(255,255,255,.012);backdrop-filter:blur(8px);padding:48px 52px 36px;transition:border-color .5s,background .5s}
+  .fi{max-width:1360px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px}
+  .fb{font-family:var(--mono);font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}.fb span{color:var(--signal)}
+  .fl{display:flex;gap:26px;flex-wrap:wrap}.fl a{color:var(--dim);font-size:.88rem;font-weight:500;transition:color .25s;text-decoration:none}.fl a:hover{color:var(--ink)}.fc{color:var(--dim);font-size:.82rem}
+  @media(max-width:768px){.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
   </style>
   <script defer src="col-router.js"></script>
   <script defer src="col-auth.js"></script>
@@ -226,7 +231,18 @@
   <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Terms</div><div class="lbar"></div></div>
   <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
 
-
+  <footer class="sf">
+    <div class="fi">
+      <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+      <div class="fl">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="download.html">Downloads</a>
+      </div>
+      <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+    </div>
+  </footer>
 
   <script>
     // Cursor

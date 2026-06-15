@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <style>
-    :root{--void:#070A14;--void-fade:rgba(7,10,20,0.85);--signal:#5ED4F5;--signal-dim:rgba(94,212,245,0.15);--ink:#FFFFFF;--ink-muted:#8B99A4;--line:rgba(255,255,255,0.08);--lineb:rgba(255,255,255,0.15);--panel:rgba(255,255,255,0.03);--panel-hover:rgba(255,255,255,0.06);--ease:cubic-bezier(0.16, 1, 0.3, 1);--sans:'Inter',sans-serif;--serif:'Instrument Serif',serif;--mono:'Space Mono',monospace}
+    :root{--void:#070A14;--void-fade:rgba(7,10,20,0.85);--signal:#5ED4F5;--signal-dim:rgba(94,212,245,0.15);--ink:#FFFFFF;--ink-muted:#8B99A4;--line:rgba(255,255,255,0.08);--lineb:rgba(255,255,255,0.15);--panel:rgba(255,255,255,0.03);--panel-hover:rgba(255,255,255,0.06);--ease:cubic-bezier(0.16, 1, 0.3, 1);--sans:'Inter',sans-serif;--serif:'Instrument Serif',serif;--mono:'Space Mono',monospace;--dim:#8B99A4}
     *{box-sizing:border-box;margin:0;padding:0;cursor:none}
     body{background:radial-gradient(circle at 50% 0%, #0c1529 0%, var(--void) 60%) no-repeat var(--void);color:var(--ink);font-family:var(--sans);overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
     ::selection{background:var(--signal);color:var(--void)}
@@ -113,6 +113,11 @@
       .doc-content{padding:40px 30px}
       .doc-container{padding:0 20px}
     }
+  .sf{border-top:1px solid var(--line);background:rgba(255,255,255,.012);backdrop-filter:blur(8px);padding:48px 52px 36px;transition:border-color .5s,background .5s}
+  .fi{max-width:1360px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px}
+  .fb{font-family:var(--mono);font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}.fb span{color:var(--signal)}
+  .fl{display:flex;gap:26px;flex-wrap:wrap}.fl a{color:var(--dim);font-size:.88rem;font-weight:500;transition:color .25s;text-decoration:none}.fl a:hover{color:var(--ink)}.fc{color:var(--dim);font-size:.82rem}
+  @media(max-width:768px){.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
   </style>
   <script defer src="col-router.js"></script>
   <script defer src="col-auth.js"></script>
@@ -196,7 +201,18 @@
   <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Privacy</div><div class="lbar"></div></div>
   <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
 
-
+  <footer class="sf">
+    <div class="fi">
+      <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+      <div class="fl">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="download.html">Downloads</a>
+      </div>
+      <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+    </div>
+  </footer>
 
   <script>
     // Cursor
