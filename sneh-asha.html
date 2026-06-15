@@ -230,17 +230,7 @@
     scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:s[0],size:s[1],transparent:true,opacity:s[3]})));
   });
 
-  // Nebula — warm social-impact hues
-  function makeNeb(cr,cg,cb,op){
-    var nc=document.createElement('canvas');nc.width=nc.height=128;
-    var c2=nc.getContext('2d'),grd=c2.createRadialGradient(64,64,0,64,64,64);
-    grd.addColorStop(0,'rgba('+cr+','+cg+','+cb+','+op+')');grd.addColorStop(.45,'rgba('+cr+','+cg+','+cb+','+(op*.25)+')');grd.addColorStop(1,'rgba(0,0,0,0)');
-    c2.fillStyle=grd;c2.fillRect(0,0,128,128);
-    return new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(nc),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
-  }
-  [[220,60,-200,280,180,120,60,.1],[-260,-50,180,240,120,80,200,.08],[120,160,-280,350,200,160,80,.07],[-160,-120,-240,300,80,50,180,.09]].forEach(function(n){
-    var sp=makeNeb(n[4],n[5],n[6],n[7]);sp.position.set(n[0],n[1],n[2]);sp.scale.setScalar(n[3]);scene.add(sp);
-  });
+
 
   // Grid
   var grid=new THREE.GridHelper(600,30,0x1a1408,0x0a0804);
