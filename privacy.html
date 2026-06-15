@@ -1,208 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="description" content="Class of Learners - Privacy. An educational tool and resource.">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Class of Learners - Privacy. An educational tool and resource.">
   <script>
-// --- GLOBAL ADMIN CONFIG CHECKER ---
-(function() {
-    try {
-        const configStr = localStorage.getItem('col_admin_config');
-        if (configStr) {
-            const config = JSON.parse(configStr);
-            const path = window.location.pathname.split('/').pop() || 'index.html';
-            const status = config.pages[path] || '200';
-            
-            if (status === '503') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#cbd5e1;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </div>');
-                window.stop();
-            } else if (status === '404') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#cbd5e1;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></div>');
-                window.stop();
-            }
-        }
-    } catch(e) {}
-})();
-</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy | Class Of Learners</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg-color: #f8f9fa; --card-bg: #ffffff; --primary: #10b981; --text-main: #0f172a; --text-muted: #64748b; --border-color: #e2e8f0; --nav-bg: rgba(255, 255, 255, 0.95); --google-blue: #2563eb; --border-light: #e5e7eb;}
-        body.dark { --bg-color: #06080d; --card-bg: #0a0d14; --primary: #10b981; --text-main: #f8fafc; --text-muted: #cbd5e1; --border-color: #161d2b; --nav-bg: rgba(6, 8, 13, 0.95); --google-blue: #34d399; --border-light: #334155;}
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; transition: 0.3s; text-transform: capitalize; }
-        code, pre, li, p { text-transform: none; }
+    (function(){try{var c=localStorage.getItem('col_admin_config');if(c){var p=window.location.pathname.split('/').pop()||'index.html',s=JSON.parse(c).pages[p]||'200';if(s==='503'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px;"><h1 style="font-size:5rem;margin:0;color:#5ED4F5;">503</h1><h2 style="margin:10px 0;">System Maintenance</h2><p style="color:#8b99a4;">Class Of Learners is currently undergoing upgrades. Please check back later.</p></div>');window.stop();}else if(s==='404'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px;"><h1 style="font-size:5rem;margin:0;color:#ef4444;">404</h1><h2 style="margin:10px 0;">Page Not Found</h2><p style="color:#8b99a4;">The requested directory has been removed or does not exist.</p><a href="index.html" style="margin-top:20px;color:#5ED4F5;text-decoration:none;font-weight:bold;">Return Home</a></div>');window.stop();}}}catch(e){}})();
+  </script>
+  <title>Privacy Policy | Class Of Learners</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root{--void:#070A14;--void-fade:rgba(7,10,20,0.85);--signal:#5ED4F5;--signal-dim:rgba(94,212,245,0.15);--ink:#FFFFFF;--ink-muted:#8B99A4;--line:rgba(255,255,255,0.08);--lineb:rgba(255,255,255,0.15);--panel:rgba(255,255,255,0.03);--panel-hover:rgba(255,255,255,0.06);--ease:cubic-bezier(0.16, 1, 0.3, 1);--sans:'Inter',sans-serif;--serif:'Instrument Serif',serif;--mono:'Space Mono',monospace}
+    *{box-sizing:border-box;margin:0;padding:0;cursor:none}
+    body{background:var(--void);color:var(--ink);font-family:var(--sans);overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
+    ::selection{background:var(--signal);color:var(--void)}
+    ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--lineb);border-radius:4px}::-webkit-scrollbar-thumb:hover{background:var(--signal)}
+    
+    #bgCanvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;opacity:0;transition:opacity 2s var(--ease)}
+    #bgCanvas.v{opacity:1}
+    
+    .top-nav{position:fixed;top:0;width:100%;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;z-index:1000;background:transparent;transition:background .4s,padding .4s,border-bottom .4s}
+    .top-nav.s{background:var(--void-fade);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:15px 40px;border-bottom:1px solid var(--line)}
+    .nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+    .brand-logo{height:36px;width:auto;object-fit:contain}
+    .nav-brand span{font-family:var(--sans);font-weight:700;font-size:1.1rem;letter-spacing:-.02em}
+    .nav-links{display:flex;align-items:center;gap:32px}
+    .nav-link{color:var(--ink-muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+    .nav-link:hover{color:var(--ink)}
+    
+    .dropdown{position:relative}
+    .dropdown-btn{color:var(--ink-muted);background:none;border:none;font-size:.9rem;font-weight:500;font-family:var(--sans);display:flex;align-items:center;gap:6px;transition:.2s}
+    .dropdown:hover .dropdown-btn,.dropdown.active .dropdown-btn{color:var(--ink)}
+    .dropdown-btn span{font-size:.6rem;transition:transform .3s}
+    .dropdown.active .dropdown-btn span{transform:rotate(180deg)}
+    .dropdown-content{position:absolute;top:calc(100% + 14px);left:50%;transform:translateX(-50%) translateY(6px);min-width:225px;z-index:1001;opacity:0;visibility:hidden;pointer-events:none;transition:all .3s var(--ease)}
+    .dropdown.active .dropdown-content{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+    .dropdown-content-inner{background:var(--void-fade);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--lineb);border-radius:16px;padding:8px;display:flex;flex-direction:column;box-shadow:0 24px 48px rgba(0,0,0,0.4)}
+    .dropdown-content a{color:var(--ink-muted);padding:12px 16px;text-decoration:none;font-size:.9rem;font-weight:500;border-radius:10px;transition:all .2s;display:flex;align-items:center;justify-content:space-between}
+    .dropdown-content a:hover{background:var(--panel);color:var(--ink);transform:translateX(4px)}
+    
+    .nav-login-btn{background:none;border:1px solid var(--lineb);color:var(--ink);padding:8px 18px;border-radius:24px;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:8px;transition:all .2s;font-family:var(--sans)}
+    .nav-login-btn:hover{background:var(--panel);border-color:var(--lineb);transform:translateY(-1px)}
+    .nav-user-profile{display:none;align-items:center;gap:12px;padding:6px 16px 6px 6px;border:1px solid var(--lineb);border-radius:30px;background:var(--panel);transition:all .2s}
+    .nav-user-profile:hover{background:var(--panel-hover);border-color:var(--lineb)}
+    .nav-user-avatar{width:28px;height:28px;border-radius:50%;background:var(--signal);color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+    .nav-dl-btn{background:var(--ink);color:var(--void);padding:8px 20px;border-radius:24px;text-decoration:none;font-weight:600;font-size:.85rem;transition:transform .2s,box-shadow .2s}
+    .nav-dl-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,255,255,0.15)}
+    .mmb{display:none;background:none;border:none;color:var(--ink);font-size:1.5rem}
+    
+    /* Document Container */
+    .doc-container{width:100%;max-width:860px;margin:140px auto 100px;padding:0 30px;position:relative;z-index:10}
+    .doc-header{margin-bottom:60px;text-align:center}
+    .doc-header p.eyebrow{font-family:var(--mono);font-size:.9rem;font-weight:700;letter-spacing:.4em;color:var(--signal);text-transform:uppercase;margin-bottom:20px}
+    .doc-header h1{font-family:var(--serif);font-size:4.5rem;font-weight:400;line-height:1;letter-spacing:-.02em;margin-bottom:20px}
+    
+    .doc-content{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:60px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .doc-section{margin-bottom:50px}
+    .doc-section:last-child{margin-bottom:0}
+    .doc-section h2{font-family:var(--serif);font-size:2.2rem;font-weight:400;color:var(--ink);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+    .doc-section h2::before{content:'';display:block;width:8px;height:8px;background:var(--signal);border-radius:50%}
+    .doc-section p,.doc-section ul{font-size:1.05rem;line-height:1.7;color:var(--ink-muted);margin-bottom:16px;font-weight:400}
+    .doc-section ul{margin-left:24px;list-style-type:none}
+    .doc-section ul li{position:relative;margin-bottom:12px}
+    .doc-section ul li::before{content:'\2014';position:absolute;left:-24px;color:var(--signal)}
+    .doc-section strong{color:var(--ink);font-weight:600}
+    .doc-section code{font-family:var(--mono);background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;font-size:.9rem;color:var(--signal)}
+    
+    /* Footer */
+    .foot{width:100%;padding:40px;border-top:1px solid var(--line);background:var(--void);display:flex;flex-direction:column;align-items:center;gap:20px;margin-top:auto;z-index:10;position:relative}
+    .foot-links{display:flex;gap:30px;flex-wrap:wrap;justify-content:center}
+    .foot-links a{color:var(--ink-muted);text-decoration:none;font-size:.9rem;font-weight:500;transition:color .2s}
+    .foot-links a:hover{color:var(--ink)}
+    .foot p{color:var(--ink-muted);font-size:.85rem}
+    
+    /* Loader & Cursor */
+    .loader{position:fixed;inset:0;background:var(--void);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s var(--ease);pointer-events:none}
+    .loader.gone{opacity:0}
+    .loader .lid{font-family:var(--sans);font-weight:600;font-size:.9rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+    .loader .lid span{color:var(--ink)}
+    .loader .lbar{width:140px;height:2px;background:var(--line);position:relative;overflow:hidden}
+    .loader .lbar::after{content:'';position:absolute;top:0;left:0;height:100%;width:40%;background:var(--signal);animation:ld 1.5s infinite var(--ease)}
+    @keyframes ld{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+    
+    .cd,.cr{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%);will-change:transform}
+    .cd{width:6px;height:6px;background:var(--signal)}
+    .cr{width:36px;height:36px;border:1px solid rgba(94,212,245,.5);opacity:.55;transition:width .22s var(--ease),height .22s var(--ease),border-color .22s,opacity .22s}
+    body.ch .cr{width:64px;height:64px;border-color:var(--signal);opacity:.9}
+    
+    /* Auth Modal */
+    .mo{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:10000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.3s}
+    .mo.open{opacity:1;pointer-events:auto}
+    .md{background:var(--void);border:1px solid var(--lineb);border-radius:24px;width:90%;max-width:400px;overflow:hidden;transform:translateY(20px) scale(0.98);transition:.4s var(--ease);box-shadow:0 40px 100px rgba(0,0,0,0.8)}
+    .mo.open .md{transform:translateY(0) scale(1)}
+    .md-hd{padding:30px;border-bottom:1px solid var(--line);text-align:center}
+    .md-hd h2{font-family:var(--serif);font-size:2.4rem;font-weight:400;margin:0;color:var(--ink);letter-spacing:-.02em}
+    .md-hd p{font-size:.9rem;color:var(--ink-muted);margin-top:8px}
+    .md-body{padding:30px;display:flex;flex-direction:column;gap:15px}
+    .mi{width:100%;padding:14px 16px;border:1px solid var(--lineb);border-radius:12px;font-size:.95rem;background:var(--panel);color:var(--ink);font-family:var(--sans);outline:none;transition:border-color .2s}
+    .mi:focus{border-color:var(--signal)}
+    .ms{width:100%;padding:14px;background:var(--ink);color:var(--void);border:none;border-radius:12px;font-weight:600;font-size:.95rem;font-family:var(--sans);transition:transform .2s;margin-top:10px}
+    .ms:hover{transform:translateY(-1px)}
+    .gbtn{width:100%;padding:14px;background:var(--panel);border:1px solid var(--lineb);color:var(--ink);border-radius:12px;font-weight:500;font-size:.95rem;display:flex;align-items:center;justify-content:center;gap:12px;transition:all .2s;font-family:var(--sans)}
+    .gbtn:hover{background:var(--panel-hover);border-color:var(--lineb)}
+    .toast{position:fixed;bottom:30px;right:30px;background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--lineb);color:var(--ink);padding:15px 24px;border-radius:12px;font-size:.95rem;font-weight:500;z-index:11000;transform:translateY(20px);opacity:0;transition:.3s var(--ease);pointer-events:none}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.green{border-color:var(--signal);color:var(--signal);background:var(--void)}
 
-        /* â”€â”€ CUSTOM SCROLLBAR (ADAPTIVE) â”€â”€ */
-        ::-webkit-scrollbar { width: 12px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); border-left: 1px solid var(--border-light); }
-        ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.2); border-radius: 10px; border: 3px solid var(--bg-color); transition: 0.3s; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
-        /* â”€â”€ GLOBAL NAVBAR â”€â”€ */
-        nav { width: 100%; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background: var(--nav-bg); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s; }
-        .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; text-transform: none; }
-        .brand-logo { height: 40px; width: auto; object-fit: contain; }
-        
-        .nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
-        .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; }
-        .nav-link:hover { color: var(--primary); }
-
-        /* â”€â”€ PROJECTS DROPDOWN â”€â”€ */
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-btn { color: var(--text-muted); background: none; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; transition: color 0.2s ease; padding: 0; }
-        .dropdown-btn:hover, .dropdown.active .dropdown-btn { color: var(--primary); }
-        .dropdown-btn span { font-size: 0.7rem; transition: transform 0.3s ease; }
-        .dropdown.active .dropdown-btn span { transform: rotate(180deg); }
-        .dropdown-content { display: flex; flex-direction: column; position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: transparent; min-width: 220px; z-index: 1001; padding-top: 15px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.5s; }
-        .dropdown-content-inner { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; padding: 10px 0; }
-        body.dark .dropdown-content-inner { box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-        .dropdown.active .dropdown-content { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); transition-delay: 0s; }
-        .dropdown.active:not(:hover) .dropdown-content { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px); transition-delay: 0.5s; }
-        .dropdown-content a { color: var(--text-muted); padding: 12px 20px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: space-between;}
-        .dropdown-content a:hover { background: rgba(16, 185, 129, 0.08); color: var(--primary); padding-left: 25px;}
-
-        .theme-switch-wrapper { display: flex; align-items: center; gap: 8px; margin-left: 10px; border-left: 1px solid var(--border-color); padding-left: 15px; }
-        .theme-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .theme-switch { position: relative; width: 44px; height: 24px; cursor: pointer; }
-        .theme-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; inset: 0; background-color: #cbd5e1; border-radius: 24px; transition: .4s; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: .4s; }
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
-        
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-main); }
-        .nav-pill { background: var(--google-blue); color: #fff; padding: 10px 22px; border-radius: 30px; text-decoration: none; font-weight: 800; font-size: 0.85rem; transition: 0.3s; }
-
-        /* â”€â”€ POLICY CONTENT â”€â”€ */
-        .policy-container { width: 90%; max-width: 900px; margin: 60px auto 80px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 50px 60px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); transition: 0.3s; }
-        body.dark .policy-container { box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
-        .policy-header { text-align: center; margin-bottom: 50px; padding-bottom: 30px; border-bottom: 1px solid var(--border-color); }
-        .policy-header h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; color: var(--text-main); margin-bottom: 10px; }
-        .policy-header p { color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.9rem; }
-        .policy-section { margin-bottom: 40px; }
-        .policy-section h2 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .policy-section h2::before { content: ''; display: block; width: 12px; height: 12px; background: var(--primary); border-radius: 3px; }
-        .policy-section p, .policy-section ul { font-size: 1.05rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 15px; }
-        .policy-section ul { margin-left: 25px; }
-
-        /* â”€â”€ FOOTER â”€â”€ */
-        .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-color); background: var(--card-bg); z-index: 100; margin-top: auto; transition: 0.3s; }
-        .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
-        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s; text-transform:none;}
-        .footer-links a:hover { color: var(--primary); }
-        .footer-copy { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform:none;}
-
-        @media (max-width: 860px) {
-            nav { padding: 15px 20px; }
-            .mobile-menu-btn { display: block; }
-            .nav-links { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: var(--nav-bg); padding: 20px; flex-direction: column; border-bottom: 1px solid var(--border-color); gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); z-index: 1000; }
-            .nav-links.open { display: flex; }
-            .theme-switch-wrapper { border-left: none; padding-left: 0; margin-top: 10px; justify-content: center;}
-            .policy-container { width: 95%; padding: 30px 20px; margin: 40px auto; }
-            .policy-header h1 { font-size: 2.2rem; }
-        }
-    </style>
-<script defer src="col-router.js"></script>
-<script defer src="col-auth.js"></script>
-<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/privacy" />
+    @media(max-width:860px){
+      .nav-links{position:fixed;top:0;left:0;width:100%;height:100vh;background:var(--void);flex-direction:column;justify-content:center;opacity:0;visibility:hidden;transition:.4s}
+      .nav-links.open{opacity:1;visibility:visible}
+      .mmb{display:block;z-index:1001}
+      .nav-dl-btn.desktop{display:none}
+      .doc-header h1{font-size:3rem}
+      .doc-content{padding:40px 30px}
+      .doc-container{padding:0 20px}
+    }
+  </style>
+  <script defer src="col-router.js"></script>
+  <script defer src="col-auth.js"></script>
+  <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/privacy" />
 </head>
 <body>
-<script>
-    (function(){
-        try {
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark');
-            }
-        } catch(e) {}
-    })();
-</script>
+  <!-- Background Canvas -->
+  <canvas id="bgCanvas"></canvas>
 
-    <nav>
-        <a href="index.html" class="nav-brand">
-            <img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" loading="lazy" decoding="async">
-            <span>Class Of Learners</span>
-        </a>
-        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('open')">â˜°</button>
-        <div class="nav-links">
-            <a href="index.html" class="nav-link">Home Hub</a>
-            <a href="about.html" class="nav-link">About Us</a>
-            <a href="school.html" class="nav-link">Our School</a>
-            <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
-            <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
-                <button class="dropdown-btn">Projects <span>â–¼</span></button>
-                <div class="dropdown-content">
-                    <div class="dropdown-content-inner">
-                        <a href="ati.html">Typing Instructor <span>âŒ¨ï¸</span></a>
-                        <a href="solar.html">Solar Engine <span>ðŸª</span></a>
-                        <a href="gesture.html">Gesture Control <span>ðŸ–ï¸</span></a>
-                        <a href="rpg.html">RPG Game <span>âš”ï¸</span></a>
-                        <a href="qr.html">QR Generator <span>â¬›</span></a>
-                    </div>
-                </div>
-            </div>
-            <label class="theme-switch-wrapper">
-                <span class="theme-label">Theme</span>
-                <label class="theme-switch">
-                    <input type="checkbox" id="themeChk" onchange="toggleTheme()" checked>
-                    <span class="slider"></span>
-                </label>
-            </label>
-            <a href="download.html" class="nav-pill">Downloads</a>
+  <nav class="top-nav" id="topNav">
+    <a href="index.html" class="nav-brand">
+      <img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" loading="lazy">
+      <span>Class Of Learners</span>
+    </a>
+    <button class="mmb" id="mmb">â˜°</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About Us</a>
+      <a href="school.html" class="nav-link">Our School</a>
+      <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+      <div class="dropdown" id="projDropdown">
+        <button class="dropdown-btn">Projects <span>â–¼</span></button>
+        <div class="dropdown-content">
+          <div class="dropdown-content-inner">
+            <a href="ati.html">Typing Instructor <span>âŒ¨ï¸ </span></a>
+            <a href="solar.html">Solar Engine <span>ðŸª </span></a>
+            <a href="gesture.html">Gesture Control <span>ðŸ– ï¸ </span></a>
+            <a href="rpg.html">RPG Game <span>âš”ï¸ </span></a>
+            <a href="qr.html">QR Generator <span>â¬›</span></a>
+          </div>
         </div>
-    </nav>
+      </div>
+      <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">Sign In</button>
+      <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+        <div class="nav-user-avatar" id="navUserAv">?</div>
+        <span id="navUserName" style="font-size:0.85rem;font-weight:600;color:var(--ink);">User</span>
+      </div>
+      <a href="download.html" class="nav-dl-btn desktop">Downloads</a>
+    </div>
+  </nav>
 
-    <div class="policy-container">
-        <div class="policy-header">
-            <h1>Privacy Policy</h1>
-            <p>Effective Date: April 2026</p>
-        </div>
-        <div class="policy-section">
-            <h2>1. Introduction</h2>
-            <p>We are committed to protecting your privacy across our applications, including ATI, Solar Engine, Gesture Controller, and QR Studio.</p>
-        </div>
-        <div class="policy-section">
-            <h2>2. Local Processing</h2>
-            <p>Most of our software is engineered to run entirely on your local machine without phoning home to external servers.</p>
-        </div>
-        <div class="policy-section">
-            <h2>3. Google API Services User Data Policy Compliance</h2>
-            <p>Our applications may allow you to authenticate using your Google Account. In doing so, we strictly comply with the Google API Services User Data Policy, including the Limited Use requirements. We disclose the following regarding your Google user data:</p>
-            <ul>
-                <li><strong>Data Accessed:</strong> If you choose to sign in with Google, we access your basic profile information (Name and Profile Picture) and your Email Address via the standard Google OAuth scopes (<code>userinfo.profile</code>, <code>userinfo.email</code>). We do NOT request or access any sensitive or restricted scopes like Google Drive files or Gmail.</li>
-                <li><strong>Data Usage:</strong> We use this accessed data solely for the purpose of authenticating your identity on our platform and displaying your name and profile picture in your account dashboard. Your email is used as a unique identifier to securely sync your saved items across your devices.</li>
-                <li><strong>Data Storage:</strong> Your Name, Email, and Profile Picture URL are securely transmitted and stored in our managed database (Supabase) to maintain your session and sync history. We do not store your Google password or raw OAuth tokens persistently on our backend.</li>
-                <li><strong>Data Sharing:</strong> We absolutely do <strong>NOT</strong> share, sell, transfer, or disclose your Google user data to any third parties, advertisers, or data brokers. Your data is used exclusively to provide the core functionality of the Class Of Learners applications.</li>
-            </ul>
-        </div>
-        <div class="policy-section">
-            <h2>4. Contact</h2>
-            <p>Developed and maintained by Neel, Ansh and Aarush as a student software initiative.</p>
-        </div>
+  <div class="doc-container">
+    <div class="doc-header">
+      <p class="eyebrow">Trust & Security</p>
+      <h1>Privacy Policy</h1>
     </div>
 
-    <footer class="site-footer">
-        <div class="footer-links">
-            <a href="privacy.html">Privacy Policy</a>
-            <a href="terms.html">Terms of Service</a>
-            <a href="feedback.html">Provide Feedback</a>
-        </div>
-        <div class="footer-copy">&copy; 2026 Class Of Learners. Developed By Neel, Ansh And Aarush. All Rights Reserved.</div>
-    </footer>
+    <div class="doc-content">
+      <div class="doc-section">
+        <h2>1. Introduction</h2>
+        <p>We are committed to protecting your privacy across our applications, including ATI, Solar Engine, Gesture Controller, and QR Studio.</p>
+      </div>
+      <div class="doc-section">
+        <h2>2. Local Processing</h2>
+        <p>Most of our software is engineered to run entirely on your local machine without phoning home to external servers. Your data stays with you.</p>
+      </div>
+      <div class="doc-section">
+        <h2>3. Google API Services</h2>
+        <p>Our applications may allow you to authenticate using your Google Account. In doing so, we strictly comply with the Google API Services User Data Policy, including the Limited Use requirements. We disclose the following regarding your Google user data:</p>
+        <ul>
+          <li><strong>Data Accessed:</strong> If you choose to sign in with Google, we access your basic profile information (Name and Profile Picture) and your Email Address via the standard Google OAuth scopes (<code>userinfo.profile</code>, <code>userinfo.email</code>). We do NOT request or access any sensitive or restricted scopes.</li>
+          <li><strong>Data Usage:</strong> We use this accessed data solely for the purpose of authenticating your identity on our platform and displaying your name and profile picture in your account dashboard. Your email is used as a unique identifier to securely sync your saved items across your devices.</li>
+          <li><strong>Data Storage:</strong> Your Name, Email, and Profile Picture URL are securely transmitted and stored in our managed database (Supabase) to maintain your session and sync history. We do not store your Google password or raw OAuth tokens persistently on our backend.</li>
+          <li><strong>Data Sharing:</strong> We absolutely do <strong>NOT</strong> share, sell, transfer, or disclose your Google user data to any third parties, advertisers, or data brokers. Your data is used exclusively to provide the core functionality of the Class Of Learners applications.</li>
+        </ul>
+      </div>
+      <div class="doc-section">
+        <h2>4. Contact</h2>
+        <p>Developed and maintained by Neel, Ansh and Aarush as a student software initiative.</p>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        const toggleSwitch = document.getElementById('themeChk');
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.remove('dark');
-            if (toggleSwitch) toggleSwitch.checked = false;
-        }
-        function toggleTheme() {
-            document.body.classList.toggle('dark');
-            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-        }
-        window.onclick = e => { if (!e.target.matches('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
-    </script>
+  <footer class="foot">
+    <div class="foot-links">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="feedback.html">Provide Feedback</a>
+    </div>
+    <p>&copy; 2026 Class Of Learners. Developed By Neel, Ansh And Aarush.</p>
+  </footer>
+
+  <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Privacy</div><div class="lbar"></div></div>
+  <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
+
+  <!-- AUTH MODAL -->
+  <div class="mo" id="authModal">
+    <div class="md">
+      <div class="md-hd">
+        <h2 id="authTitle">Welcome Back</h2>
+        <p id="authSub">Sign in to Class Of Learners</p>
+      </div>
+      <div class="md-body">
+        <button class="gbtn" id="googleSignInBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <div style="text-align:center;color:var(--ink-muted);font-size:0.85rem;margin:5px 0">OR</div>
+        <form id="authForm" onsubmit="event.preventDefault()">
+          <input type="email" class="mi" id="authEmail" placeholder="Email Address" required>
+          <input type="password" class="mi" id="authPass" placeholder="Password" required>
+          <button type="submit" class="ms" id="authSubmitBtn">Sign In</button>
+        </form>
+        <div style="text-align:center;margin-top:10px">
+          <button class="gbtn" style="background:none;border:none;color:var(--ink-muted);padding:5px" onclick="toggleAuthMode()" id="authToggleBtn">Need an account? Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toastMsg"></div>
+
+  <!-- Three.js Background -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    (function(){
+      var canvas=document.getElementById('bgCanvas');
+      var scene=new THREE.Scene();
+      var camera=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,1,2000);
+      var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:false});
+      renderer.setSize(window.innerWidth,window.innerHeight);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+
+      // Particles
+      var PC=1500,pGeo=new THREE.BufferGeometry(),pP=new Float32Array(PC*3);
+      for(var i=0;i<PC;i++){pP[i*3]=(Math.random()-0.5)*500;pP[i*3+1]=(Math.random()-0.5)*300;pP[i*3+2]=(Math.random()-0.5)*500 - 50;}
+      pGeo.setAttribute('position',new THREE.BufferAttribute(pP,3));
+      scene.add(new THREE.Points(pGeo,new THREE.PointsMaterial({color:0x5ED4F5,size:1.2,transparent:true,opacity:0.3})));
+
+      var mx=0,my=0,cx=0,cy=0,scrollOff=0;
+      window.addEventListener('mousemove',function(e){mx=(e.clientX/window.innerWidth)*2-1;my=-(e.clientY/window.innerHeight)*2+1;});
+      window.addEventListener('scroll',function(){scrollOff=window.scrollY*.05;},{passive:true});
+
+      function tick(){
+        requestAnimationFrame(tick);
+        cx+=(mx*15-cx)*.03;cy+=(-my*10-cy)*.03;
+        camera.position.set(cx, cy - scrollOff, 0);
+        camera.lookAt(cx*0.2, -scrollOff*.2, 0);
+        renderer.render(scene,camera);
+      }
+      tick();
+      window.addEventListener('resize',function(){camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight);});
+      requestAnimationFrame(function(){canvas.classList.add('v');});
+    })();
+
+    // Cursor
+    (function(){
+      var dot=document.getElementById('cDot'),ring=document.getElementById('cRing');if(!dot||!ring)return;
+      var rx=0,ry=0,dx=0,dy=0;
+      document.addEventListener('mousemove',function(e){dx=e.clientX;dy=e.clientY;dot.style.left=dx+'px';dot.style.top=dy+'px';});
+      function rf(){rx+=(dx-rx)*.13;ry+=(dy-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(rf);}rf();
+      document.querySelectorAll('a,button').forEach(function(el){el.addEventListener('mouseenter',function(){document.body.classList.add('ch');});el.addEventListener('mouseleave',function(){document.body.classList.remove('ch');});});
+    })();
+
+    window.addEventListener('load',function(){setTimeout(function(){var l=document.getElementById('loader');if(l)l.classList.add('gone');},800);});
+    var navEl=document.getElementById('topNav');window.addEventListener('scroll',function(){navEl.classList.toggle('s',scrollY>60);},{passive:true});
+    document.getElementById('mmb').addEventListener('click',function(){document.getElementById('navLinks').classList.toggle('open');});
+    var pd=document.getElementById('projDropdown');pd.addEventListener('click',function(e){if(window.innerWidth<=860){pd.classList.toggle('active');}});
+    pd.addEventListener('mouseenter',function(){if(window.innerWidth>860)pd.classList.add('active');});
+    pd.addEventListener('mouseleave',function(){if(window.innerWidth>860)pd.classList.remove('active');});
+  </script>
 </body>
 </html>
