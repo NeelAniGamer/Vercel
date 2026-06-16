@@ -51,7 +51,7 @@
   .mmb{display:none;background:none;border:none;cursor:pointer;padding:4px}.mmb svg{width:22px;height:22px;stroke:var(--ink)}
   .hero{position:relative;width:100%;min-height:100vh;display:flex;align-items:center;overflow:hidden}
   #orrery{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1.8s var(--ease)}#orrery.v{opacity:1}
-  .hvig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 55% 90% at 14% 50%,transparent 0%,var(--void) 84%);transition:background .5s;z-index:1}
+  .hvig{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to right,var(--void) 0%,rgba(7,10,20,.92) 20%,rgba(7,10,20,.52) 40%,rgba(7,10,20,.12) 60%,transparent 78%);transition:background .5s;z-index:1}
   .hvigb{position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to top,var(--void),transparent);pointer-events:none;z-index:1}
   .hc{position:relative;z-index:2;max-width:1360px;width:100%;margin:0 auto;padding:160px 52px 80px}
   .hey{font-family:var(--mono);font-size:.7rem;letter-spacing:.4em;color:var(--signal);text-transform:uppercase;margin-bottom:30px;display:inline-flex;align-items:center;gap:14px;opacity:0;transform:translateY(18px);animation:fu .8s var(--ease) .9s forwards}
@@ -203,6 +203,8 @@
   renderer.setSize(canvas.clientWidth,canvas.clientHeight,false);
   renderer.setClearColor(0,0);
   var scene=new THREE.Scene();
+  var floaters=[];
+  var AB=THREE.AdditiveBlending;
   var camera=new THREE.PerspectiveCamera(60,canvas.clientWidth/canvas.clientHeight,0.1,2000);
   camera.position.set(0,0,180);camera.lookAt(0,0,0);
   window.addEventListener('resize',function(){renderer.setSize(canvas.clientWidth,canvas.clientHeight,false);camera.aspect=canvas.clientWidth/canvas.clientHeight;camera.updateProjectionMatrix();});
@@ -230,7 +232,79 @@
   var grid=new THREE.GridHelper(700,38,0x0e2244,0x060e1a);
   if(Array.isArray(grid.material)){grid.material.forEach(function(m){m.transparent=true;m.opacity=.22;});}
   else{grid.material.transparent=true;grid.material.opacity=.22;}
+
   grid.position.y=-90;scene.add(grid);
+
+  // ---- RIGHT-SIDE CENTREPIECE + HALO RINGS ----
+  // Large wireframe geodesic sphere (right visual anchor)
+  var rSphGeo2=new THREE.IcosahedronGeometry(24,1);
+  var rSphMat2=new THREE.MeshBasicMaterial({color:0x5ED4F5,wireframe:true,transparent:true,opacity:.07,blending:THREE.AdditiveBlending,depthWrite:false});
+  var rSph2=new THREE.Mesh(rSphGeo2,rSphMat2);
+  rSph2.position.set(106,6,-50);scene.add(rSph2);
+  // Glow shells
+  [[1.15,.06],[1.6,.022],[2.4,.007]].forEach(function(gd2){
+    var gsh=new THREE.Mesh(new THREE.SphereGeometry(24*gd2[0],10,10),new THREE.MeshBasicMaterial({color:0x5ED4F5,transparent:true,opacity:gd2[1],side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false}));
+    gsh.position.set(106,6,-50);scene.add(gsh);
+  });
+
+  // 4 rotating orbit rings centred on rSph2
+  var tRings2=[];
+  [{r:36,tb:.4,c:0x5ED4F5,op:.18,rx:1.2,ry:.3,s:.0045},
+   {r:50,tb:.25,c:0xB89BFF,op:.11,rx:.5,ry:.9,s:.003},
+   {r:64,tb:.16,c:0x00F0CC,op:.07,rx:.7,ry:1.3,s:.002},
+   {r:78,tb:.1, c:0x34D399,op:.04,rx:.2,ry:.5,s:.0014}
+  ].forEach(function(rd2){
+    var rm2=new THREE.Mesh(new THREE.TorusGeometry(rd2.r,rd2.tb,7,80),new THREE.MeshBasicMaterial({color:rd2.c,transparent:true,opacity:rd2.op,blending:THREE.AdditiveBlending,depthWrite:false}));
+    rm2.position.set(106,6,-50);rm2.rotation.set(rd2.rx,rd2.ry,0);
+    scene.add(rm2);tRings2.push({m:rm2,s:rd2.s,a:rd2.rx>.7?'y':'x'});
+  });
+
+  // Radar pulse ring (expands from sphere centre every ~5s)
+  var sPulseMat=new THREE.MeshBasicMaterial({color:0x5ED4F5,transparent:true,opacity:0,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false});
+  var sPulseMesh=new THREE.Mesh(new THREE.RingGeometry(.5,2,52),sPulseMat);
+  sPulseMesh.position.set(106,6,-50);scene.add(sPulseMesh);
+
+  // Vertical energy pillars (right half — thin glowing cylinders)
+  [[76,0,-44,0x5ED4F5,.06],[90,-4,-38,0xB89BFF,.045],[104,3,-46,0x00F0CC,.055],[118,-2,-54,0x34D399,.04]].forEach(function(pd2){
+    var ep2=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,95,5),new THREE.MeshBasicMaterial({color:pd2[3],transparent:true,opacity:pd2[4],blending:THREE.AdditiveBlending,depthWrite:false}));
+    ep2.position.set(pd2[0],pd2[1],pd2[2]);scene.add(ep2);
+  });
+
+  // Falling binary data-stream sprites (right side)
+  for(var dsi2=0;dsi2<9;dsi2++){
+    var dsc2=document.createElement('canvas');dsc2.width=20;dsc2.height=190;
+    var dsctx2=dsc2.getContext('2d');
+    dsctx2.font='10px monospace';
+    for(var drow2=0;drow2<17;drow2++){
+      var dch=Math.random()>.5?'1':'0';
+      var da=Math.max(0,.72-drow2/17*.6);
+      dsctx2.fillStyle=dsi2%3===0?'rgba(0,240,204,'+da+')':dsi2%3===1?'rgba(94,212,245,'+da+')':'rgba(52,211,153,'+da+')';
+      dsctx2.fillText(dch,5,drow2*11+13);
+    }
+    var dstex2=new THREE.CanvasTexture(dsc2);
+    var dsmat2=new THREE.SpriteMaterial({map:dstex2,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.45});
+    var dssp2=new THREE.Sprite(dsmat2);
+    dssp2.scale.set(20/190*18,18,1);
+    dssp2.position.set(66+dsi2*9+Math.random()*5,30+Math.random()*60,-42+Math.random()*18);
+    scene.add(dssp2);
+    floaters.push({sp:dssp2,mat:dsmat2,bop:.4,bamp:.1,bspd:.6+Math.random(),bph:Math.random()*6,vx:0,vy:-.028});
+  }
+
+  // Extra right-side text floaters (code/stats biased to positive x)
+  var rFData2=[
+    ['import SFML','#5ED4F5',82,-32,-44],['planet.mass=5.97e24','#5ED4F5',96,42,-52],
+    ['for x in range(n):','#F2B84B',74,62,-36],['glm::vec3 gravity','#5ED4F5',112,18,-58],
+    ['clamp(hp, 0, maxHp)','#B89BFF',88,-52,-44],['STRENGTH: 18 / 20','#B89BFF',93,38,-50],
+    ['01110110 11001011','#00FF66',106,52,-56],['10001010 00110111','#00FF66',72,-42,-40],
+    ['DETECTION: ON','#00F0CC',116,-28,-52],['CALIBRATE: OK','#00F0CC',84,58,-44],
+    ['SIMULATE','#5ED4F5',99,-58,-48],['E=mc\u00B2','#5ED4F5',78,46,-38],
+    ['qr.make(fit=True)','#34D399',76,72,-36],['CRIT x2! +250XP','#F2B84B',90,-62,-42],
+    ['vec3(108,6,-50)','#5ED4F5',110,30,-55],['render(60fps)','#8891AA',70,25,-40],
+  ];
+  rFData2.forEach(function(fd2){
+    var rftex=mktx(fd2[0],'12px monospace',fd2[1],240,22);
+    addF(rftex,240/22*4.5,4.5,.36+Math.random()*.14,.26,.12,rnd2(.4,1.5),Math.random()*6,fd2[2],fd2[3],fd2[4],(Math.random()-.5)*.012,(Math.random()-.5)*.007);
+  });
 
   // --- 5 PROJECT NODES (unique 3D sculptures) ---
   var NODES=[
@@ -323,8 +397,6 @@
   scene.add(new THREE.PointLight(0xFF7030,.75,700));
   scene.add(new THREE.PointLight(0x00FFAA,.3,500));
   // ========= RICH BACKGROUND: CODE, BINARY, SWORDS, PLANETS, HANDS, QR, WORDS =========
-  var floaters=[];
-  var AB=THREE.AdditiveBlending;
 
   function mktx(txt,font,col,w,h){
     var c=document.createElement('canvas');c.width=w;c.height=h;
@@ -333,7 +405,7 @@
     return new THREE.CanvasTexture(c);
   }
   function addF(tex,sw,sh,op,bop,bamp,bspd,bph,px,py,pz,vx,vy){
-    var mat=new THREE.SpriteMaterial({map:tex,transparent:true,blending:AB,depthWrite:false,opacity:op});
+    var mat=new THREE.SpriteMaterial({map:tex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:op});
     var sp=new THREE.Sprite(mat);sp.scale.set(sw,sh,1);sp.position.set(px,py,pz);
     scene.add(sp);floaters.push({sp:sp,mat:mat,bop:bop,bamp:bamp,bspd:bspd,bph:bph,vx:vx,vy:vy});
   }
@@ -600,6 +672,14 @@
     if(gm)gm.opacity=.15+Math.sin(t*.65)*.07;
     // Camera: mouse parallax + scroll offset
     cx+=(mx*22-cx)*.028;cy+=(-my*12-cy)*.028;
+    // Rotate right-side centrepiece + rings
+    rSph2.rotation.x+=.002;rSph2.rotation.y+=.005;
+    tRings2.forEach(function(tr2){tr2.m.rotation[tr2.a]+=tr2.s;});
+    // Radar pulse (every 5.5s)
+    var swT=(t%5.5)/2;
+    if(swT<1){sPulseMesh.scale.setScalar(1+swT*55);sPulseMat.opacity=.22*(1-swT);}
+    else{sPulseMat.opacity=0;sPulseMesh.scale.setScalar(1);}
+    sPulseMesh.lookAt(camera.position);
     camera.position.x=cx;camera.position.y=cy-scrollOff;
     camera.lookAt(0,-scrollOff*.15,0);
     renderer.render(scene,camera);
