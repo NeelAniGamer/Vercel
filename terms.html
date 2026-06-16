@@ -211,52 +211,6 @@
 
   
 
-  <script>
-    // Cursor
-    (function(){
-      var dot=document.getElementById('cDot'),ring=document.getElementById('cRing');if(!dot||!ring)return;
-      var rx=0,ry=0,dx=0,dy=0;
-      document.addEventListener('mousemove',function(e){dx=e.clientX;dy=e.clientY;dot.style.left=dx+'px';dot.style.top=dy+'px';});
-      function rf(){rx+=(dx-rx)*.13;ry+=(dy-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(rf);}rf();
-      document.querySelectorAll('a,button').forEach(function(el){el.addEventListener('mouseenter',function(){document.body.classList.add('ch');});el.addEventListener('mouseleave',function(){document.body.classList.remove('ch');});});
-    })();
-
-    window.addEventListener('load',function(){setTimeout(function(){var l=document.getElementById('loader');if(l)l.classList.add('gone');},800);});
-    var navEl=document.getElementById('topNav');window.addEventListener('scroll',function(){navEl.classList.toggle('s',scrollY>60);},{passive:true});
-    document.getElementById('mmb').addEventListener('click',function(){document.getElementById('navLinks').classList.toggle('open');});
-    var pd=document.getElementById('projDropdown');pd.addEventListener('click',function(e){if(window.innerWidth<=860){pd.classList.toggle('active');}});
-    pd.addEventListener('mouseenter',function(){if(window.innerWidth>860)pd.classList.add('active');});
-    pd.addEventListener('mouseleave',function(){if(window.innerWidth>860)pd.classList.remove('active');});
-
-    // Terms scroll logic
-    const state = {intro: false, usage: false, data: false, final: false};
-    function updateState(id) {
-        state[id] = true;
-        document.getElementById('chk'+id.charAt(0).toUpperCase()+id.slice(1)).querySelector('.check-icon').classList.add('done');
-        if (state.intro && state.usage && state.data && state.final) {
-            document.getElementById('acceptBtn').classList.add('ready');
-            document.getElementById('readHint').innerHTML = '<span style="color:var(--success)">✓ All sections read. You may now accept.</span>';
-        }
-    }
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.id.replace('sec', '').toLowerCase();
-                if (!state[id]) updateState(id);
-            }
-        });
-    }, { threshold: 0.5 });
-    
-    document.querySelectorAll('.doc-section').forEach(sec => observer.observe(sec));
-
-    function acceptTerms() {
-        if (!document.getElementById('acceptBtn').classList.contains('ready')) return;
-        localStorage.setItem('termsAccepted', 'true');
-        const tm = document.getElementById('toastMsg');
-        tm.textContent = 'Terms Accepted Successfully!';
-        tm.className = 'toast show green';
-        setTimeout(() => { tm.classList.remove('show'); window.location.href='index.html'; }, 1500);
-    }
-  </script>
+  
 </body>
 </html>
