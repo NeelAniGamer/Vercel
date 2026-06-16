@@ -139,19 +139,29 @@
   @media(max-width:768px){.top-nav{padding:16px 20px}.top-nav.s{padding:12px 20px}.mmb{display:flex}.desktop-dl{display:none}.mobile-dl{display:block}.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:14px 0;z-index:999}.nav-links .nav-link{padding:11px 22px}.nav-links .tw{padding:11px 22px;border-left:none;border-top:1px solid var(--line);margin-top:6px}.nav-links.open{display:flex}.dropdown-content{left:16px;transform:none}.dropdown.active .dropdown-content{transform:none}.hc{padding:120px 22px 60px}.hst{display:none}.sci{left:22px}.ps{padding:80px 22px 100px}.sh{flex-direction:column;align-items:flex-start}.pgrid{grid-template-columns:1fr}.pc.feat,.pc:not(.feat){grid-column:1}.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
   @media(max-width:480px){.hero h1{font-size:2.6rem}.hcta{flex-direction:column}.btn-p,.btn-g{justify-content:center}}
   </style>
-  <script defer src="col-router.js"></script>
-  <link rel="stylesheet" href="col-ui.css">
-  <script defer src="col-ui.js"></script>
-  <script defer src="col-auth.js"></script>
+  <script defer src="col-router.js"></script><script defer src="col-auth.js"></script>
 </head>
 <body>
 <script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
 <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Studio Hub</div><div class="lbar"></div></div>
 <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
 
+<!-- Hover tooltip for 3D nodes -->
 <div id="ntip"><div id="ntip-inner"><div id="ntip-dot"></div><span id="ntip-name"></span></div></div>
 
-
+<nav class="top-nav" id="topNav">
+  <a href="index.html" class="nav-brand"><img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async"><span class="brand-name">Class Of Learners</span></a>
+  <button class="mmb" id="mmb" aria-label="Toggle menu"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html" class="nav-link act">Home</a><a href="about.html" class="nav-link">About</a><a href="school.html" class="nav-link">School</a><a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+    <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')"><button class="dropdown-btn">Projects <span class="darr">&#9660;</span></button><div class="dropdown-content"><div class="dropdown-content-inner"><a href="ati.html">Typing Instructor <span>&#9109;&#65039;</span></a><a href="solar.html">Solar Engine <span>&#127680;</span></a><a href="gesture.html">Gesture Control <span>&#128400;&#65039;</span></a><a href="rpg.html">RPG Game <span>&#9876;&#65039;</span></a><a href="qr.html">QR Generator <span>&#11035;</span></a></div></div></div>
+    <div class="tw"><span class="tl" id="tLabel">Light</span><label class="tsb" for="tsck"><input type="checkbox" id="tsck" aria-label="Toggle light mode" onchange="toggleTheme(this)"><div class="tst"><div class="tsth">&#9728;&#65039;</div></div></label></div>
+    <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>Sign In</button>
+    <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()"><div class="nav-user-avatar" id="navUserAv">?</div><span class="nun" id="navUserName">User</span></div>
+    <a href="download.html" class="nav-dl-btn mobile-dl">Downloads</a>
+  </div>
+  <a href="download.html" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+</nav>
 
 <section class="hero">
   <canvas id="orrery"></canvas>
@@ -179,8 +189,8 @@
 
 <footer class="sf"><div class="fi"><div class="fb"><span>CoL</span> &middot; Class Of Learners</div><div class="fl"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div></div></footer>
 
-
-
+<div class="mo" id="loginMo" onclick="if(event.target===this)closeMo()"><div class="md"><div class="mhd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="mbd"><button class="gbtn" id="gSignInBtn" onclick="gSignIn()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Continue with Google</button><div id="loggedInPanel" style="display:none"><label class="ml2">Username</label><input class="mi" id="miName" type="text" placeholder="Your display name"><label class="ml2">Email</label><input class="mi" id="miEmail" type="email" placeholder="Email address" readonly><button class="ms" onclick="updateUsername()">Save Changes</button><button class="mskd" onclick="doLogout()">Sign Out</button></div><button class="msk" onclick="closeMo()">Maybe Later</button></div></div></div>
+<div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -315,6 +325,7 @@
   // ========= RICH BACKGROUND: CODE, BINARY, SWORDS, PLANETS, HANDS, QR, WORDS =========
   var floaters=[];
   var AB=THREE.AdditiveBlending;
+
   function mktx(txt,font,col,w,h){
     var c=document.createElement('canvas');c.width=w;c.height=h;
     var cx3=c.getContext('2d');cx3.clearRect(0,0,w,h);
@@ -328,6 +339,7 @@
   }
   function rnd2(a,b){return a+Math.random()*(b-a);}
   function rpos2(){var a=Math.random()*Math.PI*2,s=rnd2(.006,.02);return[rnd2(-90,120),rnd2(-115,115),rnd2(-170,-30),Math.cos(a)*s,Math.sin(a)*s*.45];}
+
   // 1. CODE LINES (project-specific snippets)
   var codeLines=[
     ['def check_wpm(keys, t):','#F2B84B'],['accuracy = hits / total','#F2B84B'],
@@ -345,12 +357,14 @@
     var p=rpos2();var tex=mktx(cl[0],'13px monospace',cl[1],280,24);
     addF(tex,280/24*5,5,.38+Math.random()*.18,.3,.14,rnd2(.4,1.6),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   });
+
   // 2. BINARY STRINGS
   for(var bii=0;bii<14;bii++){
     var b1='',b2='';for(var bj=0;bj<8;bj++){b1+=Math.random()>.5?'1':'0';}for(var bj=0;bj<8;bj++){b2+=Math.random()>.5?'1':'0';}
     var p=rpos2();var tex=mktx(b1+' '+b2,'11px monospace','#00FF66',210,19);
     addF(tex,210/19*3.8,3.8,.25+Math.random()*.12,.18,.1,rnd2(.7,2),Math.random()*6,p[0],p[1],p[2],p[3]*1.3,p[4]*.5);
   }
+
   // 3. FLOATING KEYWORDS
   var kws2=[['PHYSICS','#5ED4F5'],['GESTURE','#00F0CC'],['BINARY','#34D399'],['ARCADE','#B89BFF'],
     ['VISION','#00F0CC'],['ORBIT','#5ED4F5'],['INPUT','#F2B84B'],['LEARN','#F2B84B'],
@@ -362,6 +376,7 @@
     var p=rpos2();var tex=mktx(kw[0],'bold 18px monospace',kw[1],150,26);
     addF(tex,150/26*5,5,.2+Math.random()*.12,.15,.1,rnd2(.3,1),Math.random()*6,p[0],p[1],p[2],p[3]*.6,p[4]*.6);
   });
+
   // 4. SWORD SYMBOLS (RPG)
   for(var sii=0;sii<8;sii++){
     var sc2=document.createElement('canvas');sc2.width=sc2.height=50;
@@ -377,6 +392,7 @@
     var stex2=new THREE.CanvasTexture(sc2);var p=rpos2();
     addF(stex2,6.5,6.5,.42+Math.random()*.15,.34,.16,rnd2(.3,.9),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   }
+
   // 5. PLANET + ORBIT SYMBOLS (Solar Engine)
   for(var pii=0;pii<7;pii++){
     var pc2=document.createElement('canvas');pc2.width=pc2.height=54;
@@ -393,6 +409,7 @@
     var ptex2=new THREE.CanvasTexture(pc2);var p=rpos2();
     addF(ptex2,7.5,7.5,.38+Math.random()*.15,.3,.13,rnd2(.3,.9),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   }
+
   // 6. KEYBOARD KEYS (ATI Typing Instructor)
   var keyChars2=['A','Z','{ }','def','fn()','</>','↵','⌘'];
   keyChars2.forEach(function(ch){
@@ -406,6 +423,7 @@
     var ktex2=new THREE.CanvasTexture(kc2);var p=rpos2();
     addF(ktex2,54/46*5.5,5.5,.38+Math.random()*.14,.3,.13,rnd2(.35,1),Math.random()*6,p[0],p[1],p[2],p[3]*.7,p[4]*.7);
   });
+
   // 7. HAND / GESTURE SYMBOLS
   for(var hii=0;hii<6;hii++){
     var hc2=document.createElement('canvas');hc2.width=hc2.height=52;
@@ -426,6 +444,7 @@
     var htex2=new THREE.CanvasTexture(hc2);var p=rpos2();
     addF(htex2,7.5,7.5,.4+Math.random()*.15,.32,.15,rnd2(.3,.85),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   }
+
   // 8. QR MINI GRIDS (QR Generator)
   for(var qii=0;qii<6;qii++){
     var qc3=document.createElement('canvas');qc3.width=qc3.height=54;
@@ -436,12 +455,14 @@
     var qtex3=new THREE.CanvasTexture(qc3);var p=rpos2();
     addF(qtex3,6.5,6.5,.35+Math.random()*.14,.28,.1,rnd2(.25,.7),Math.random()*6,p[0],p[1],p[2],p[3]*.7,p[4]*.7);
   }
+
   // 9. PHYSICS FORMULAS (Solar Engine)
   var formulas2=['E = mc\u00B2','F = G\u00B7m\u2081m\u2082/r\u00B2','v\u00B2 = GM/r','F = ma','p = mv','a = F/m','\u03B4E = \u00BDmv\u00B2','r = v\u00B2/g'];
   formulas2.forEach(function(f3){
     var p=rpos2();var tex=mktx(f3,'italic 14px serif','#5ED4F5',200,26);
     addF(tex,200/26*5,5,.28+Math.random()*.14,.22,.1,rnd2(.3,.9),Math.random()*6,p[0],p[1],p[2],p[3]*.6,p[4]*.6);
   });
+
   // 10. RPG GAME STATS
   var stats3=[['HP: 100/100','#B89BFF'],['ATK: 47','#B89BFF'],['DEF: 23','#B89BFF'],
     ['XP: +250','#F2B84B'],['LVL UP!','#F2B84B'],['CRIT x2!','#F2B84B'],
@@ -450,18 +471,22 @@
     var p=rpos2();var tex=mktx(st3[0],'bold 13px monospace',st3[1],155,24);
     addF(tex,155/24*4.5,4.5,.3+Math.random()*.14,.22,.13,rnd2(.4,1.4),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   });
+
   // 11. HEX / ADDRESS STRINGS (tech/hacker feel)
   var hexStrings=['0x00FF4A2B','0xDEADBEEF','0x07A1B4CC','0xFF0000FF','0xC0DE1234'];
   hexStrings.forEach(function(hs){
     var p=rpos2();var tex=mktx(hs,'11px monospace','#34D399',160,19);
     addF(tex,160/19*3.5,3.5,.22+Math.random()*.12,.16,.08,rnd2(.5,1.5),Math.random()*6,p[0],p[1],p[2],p[3]*1.2,p[4]*.5);
   });
+
   // 12. GESTURE LANDMARK COORDS (Gesture Control)
   var coords=['[0.42, 0.71, -0.03]','landmark[8]: 0.38','pinch: 0.062','palm.z = -0.14','wrist.x = 0.51'];
   coords.forEach(function(co){
     var p=rpos2();var tex=mktx(co,'11px monospace','#00F0CC',230,20);
     addF(tex,230/20*4,4,.28+Math.random()*.12,.22,.09,rnd2(.5,1.4),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   });
+
+
 
   // --- STATE ---
   var mx=0,my=0,cx=0,cy=0,scrollOff=0;
@@ -624,7 +649,7 @@ function openLogin(){var mo=document.getElementById('loginMo');if(mo)mo.classLis
 function closeMo(){var mo=document.getElementById('loginMo');if(mo)mo.classList.remove('open');}
 function updateUsername(){var mn=document.getElementById('miName');if(!mn)return;var n=mn.value.trim();if(!n){toast('Name empty.','');return;}if(curUser){curUser.name=n;Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('\u2705 Updated','green');}}
 function doLogout(){curUser=null;googleAccessToken=null;Storage.set('qrs_user','');updatePUI();closeMo();toast('Signed out.','');}
-(function(){})();
+(function(){initializeTheme();loadUser();checkURLForToken();})();
 </script>
 </body>
 </html>
