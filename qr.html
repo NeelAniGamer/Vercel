@@ -4,7 +4,7 @@
     <meta name="description" content="Class of Learners - Qr. An educational tool and resource.">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QR Dashboard | Class Of Learners</title>
+<title>QR Dashboard &middot; Class Of Learners</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -66,7 +66,7 @@ body::after {
         .nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center;}
         .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; }
         .nav-link:hover { color: var(--google-blue); }
-        .nav-dl-btn { background: var(--google-blue); color: white; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: 0.2s; }
+        .nav-dl-btn { background: var(--qr-primary); color: white; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: 0.2s; }
 
         .dropdown { position: relative; display: inline-block; }
         .dropdown-btn { color: var(--text-muted); background: none; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; transition: color 0.2s ease; padding: 0; }
@@ -81,7 +81,7 @@ body::after {
         .dropdown-content a { color: var(--text-muted); padding: 12px 20px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: space-between;}
         .dropdown-content a:hover { background: rgba(37, 99, 235, 0.08); color: var(--google-blue); padding-left: 25px;}
 
-        .theme-switch-wrapper { display: flex; align-items: center; gap: 8px; margin-left: 10px; border-left: 1px solid var(--border-light); padding-left: 15px; }
+        
         .theme-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
         .theme-switch { display: inline-block; position: relative; width: 44px; height: 24px; cursor: pointer; }
         .theme-switch input { opacity: 0; width: 0; height: 0; }
@@ -221,7 +221,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             .nav-links { display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--nav-bg); backdrop-filter: blur(15px); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
             body.dark-mode .nav-links { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
             .nav-links.active { display: flex; }
-            .theme-switch-wrapper { margin: 10px auto 0; width: 100%; justify-content: center; border-left: none; padding-left: 0; }
+            
   .db-hd { flex-direction: column; align-items: flex-start; gap: 15px; }
   .db-stats { grid-template-columns: 1fr; }
   .db-stats-ext { grid-template-columns: 1fr !important; }
@@ -238,12 +238,12 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <body class="dark-mode">
 <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
 <nav class="top-nav" id="topNav">
-  <a href="index.html" class="nav-brand"><img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async"><span class="brand-name">Class Of Learners</span></a>
+  <a href="home.html" class="nav-brand"><img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async"><span class="brand-name">Class Of Learners</span></a>
   <button class="mmb" id="mmb" aria-label="Toggle menu"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round"/></svg></button>
   <div class="nav-links" id="navLinks">
-    <a href="index.html" class="nav-link act">Home</a><a href="about.html" class="nav-link">About</a><a href="school.html" class="nav-link">School</a><a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+    <a href="home.html" class="nav-link act">Home</a><a href="about.html" class="nav-link">About</a><a href="school.html" class="nav-link">School</a><a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
     <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')"><button class="dropdown-btn">Projects <span class="darr">&#9660;</span></button><div class="dropdown-content"><div class="dropdown-content-inner"><a href="ati.html">Typing Instructor <span>&#9109;&#65039;</span></a><a href="solar.html">Solar Engine <span>&#127680;</span></a><a href="gesture.html">Gesture Control <span>&#128400;&#65039;</span></a><a href="rpg.html">RPG Game <span>&#9876;&#65039;</span></a><a href="qr.html">QR Generator <span>&#11035;</span></a></div></div></div>
-    <div class="tw"><span class="tl" id="tLabel">Light</span><label class="tsb" for="tsck"><input type="checkbox" id="tsck" aria-label="Toggle light mode" onchange="toggleTheme(this)"><div class="tst"><div class="tsth">&#9728;&#65039;</div></div></label></div>
+    </div>
     <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>Sign In</button>
     <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()"><div class="nav-user-avatar" id="navUserAv">?</div><span class="nun" id="navUserName">User</span></div>
     <a href="download.html" class="nav-dl-btn mobile-dl">Downloads</a>
@@ -254,21 +254,21 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <div class="qr-app" role="main">
 <aside class="app-sb">
   <div class="sb-top">
-    <div class="sb-top-title">�: QR STUDIO</div>
+    <div class="sb-top-title">⬛ QR STUDIO</div>
     <div class="sb-top-sub">By Class Of Learners</div>
   </div>
   
   <div class="sb-lbl">Create</div>
-  <a href="qr-editor.html" class="sb-btn"><span class="sb-icon">�`"</span>New QR</a>
-  <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon">�x}�</span>Bulk QR generation</a>
+  <a href="qr-editor.html" class="sb-btn"><span class="sb-icon">➕</span>New QR</a>
+  <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon">📦</span>Bulk QR generation</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
-  <a href="#" class="sb-btn act" id="sbtn-qrs" onclick="switchView('qrs'); return false;"><span class="sb-icon">�x�</span>My QR codes</a>
-  <a href="#" class="sb-btn" id="sbtn-stats" onclick="switchView('stats'); return false;"><span class="sb-icon">�x`</span>Stats</a>
-  <a href="#" class="sb-btn" id="sbtn-templates" onclick="switchView('templates'); return false;"><span class="sb-icon">�x</span>Templates</a>
+  <a href="#" class="sb-btn act" id="sbtn-qrs" onclick="switchView('qrs'); return false;"><span class="sb-icon">📊</span>My QR codes</a>
+  <a href="#" class="sb-btn" id="sbtn-stats" onclick="switchView('stats'); return false;"><span class="sb-icon">📈</span>Stats</a>
+  <a href="#" class="sb-btn" id="sbtn-templates" onclick="switchView('templates'); return false;"><span class="sb-icon">📋</span>Templates</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
-  <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">�a"️</span>Account</button>
+  <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">👤</span>Account</button>
   
   <div class="sb-foot">
     <button class="sign-btn" id="sbSignBtn" onclick="openLogin()">
@@ -304,7 +304,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <div class="db-stats">
           <div class="st-card"><div class="v" id="stTotal">0</div><div class="l">Total Generated</div></div>
           <div class="st-card"><div class="v" id="stTypes">0</div><div class="l">Formats Used</div></div>
-          <div class="st-card"><div class="v" id="stLast">�</div><div class="l">Last Saved</div></div>
+          <div class="st-card"><div class="v" id="stLast">💾 Last Saved</div>
         </div>
         
         <div class="db-filt">
@@ -322,7 +322,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
   </div>
   
-  <footer class="sf"><div class="fi"><div class="fb"><span>CoL</span> &middot; Class Of Learners</div><div class="fl"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div></div></footer>
+  <footer class="site-footer"><div class="footer-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="footer-copy">&copy; 2026 Neel, Ansh &amp; Aarush.</div></footer>
 </div>
 </div>
 
@@ -375,16 +375,16 @@ function renderDB(){
   const g = document.getElementById('dbG'); if(!g) return;
   g.innerHTML = '';
   if(!filtered.length){
-    g.innerHTML=`<div class="db-emp"><div class="ei">�x�</div><h2>Workspace Empty</h2><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
+    g.innerHTML=`<div class="db-emp"><div class="ei">📊</div><h2>Workspace Empty</h2><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
     return;
   }
   filtered.forEach(q=>{
     const c=document.createElement('div');c.className='dbc';
     const nameStr = (q.advSettings && q.advSettings.name) ? q.advSettings.name : q.content;
     const shortC = nameStr.length>38 ? nameStr.substring(0,38)+'⬦' : nameStr;
-    c.innerHTML=`<div class="dbt">${q.thumb?`<img src="${q.thumb}" alt="QR" loading="lazy">`:'<div style="font-size:2rem;opacity:.25">�x�</div>'}</div>
-    <div class="dbb"><div class="dtyp">${q.typeIcon} ${q.typeName}</div><h3 title="${q.content}">${shortC}</h3><div class="ddt">�x& ${q.date}</div></div>
-    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})">�S�️ Editor</button><button class="dba-btn" onclick="reDL(${q.id})">�! Export</button><button class="dba-btn del" onclick="delQR(${q.id})">�x Delete</button></div>`;
+    c.innerHTML=`<div class="dbt">${q.thumb?`<img src="${q.thumb}" alt="QR" loading="lazy">`:'<div style="font-size:2rem;opacity:.25">📊</div>'}</div>
+    <div class="dbb"><div class="dtyp">${q.typeIcon} ${q.typeName}</div><h3 title="${q.content}">${shortC}</h3><div class="ddt">📅 ${q.date}</div></div>
+    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})">✏️ Editor</button><button class="dba-btn" onclick="reDL(${q.id})">📥 Export</button><button class="dba-btn del" onclick="delQR(${q.id})">🗑️ Delete</button></div>`;
     g.appendChild(c);
   });
 }
@@ -492,7 +492,7 @@ async function renderStats() {
     let sb = window.supabaseClient;
     if (!sb) {
         try {
-            const res = await fetch('config.json');
+            const res = await fetch('config.json', { signal: AbortSignal.timeout(5000) });
             const config = await res.json();
             if (config.auth && config.auth.url) {
                 if (typeof window.supabase === 'undefined') {
@@ -582,7 +582,7 @@ async function renderStats() {
     const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
     const textColor = isDark ? '#cbd5e1' : '#64748b';
 
-    window.myStatsChart = new Chart(ctx, {
+    if(typeof Chart !== 'undefined') window.myStatsChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
@@ -644,22 +644,22 @@ function renderTemplates() {
         
         <div class="db-grid" style="margin-top:20px;">
             <div class="dbc" onclick="window.location.href='qr-editor.html?template=business_card'" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf);"><div style="font-size: 4rem;">�x�</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf);"><div style="font-size: 4rem;">💼</div></div>
                 <div class="dbb"><h3>Modern Business Card</h3><div class="ddt">Professional layout with gradient logo support</div></div>
             </div>
             
             <div class="dbc" onclick="window.location.href='qr-editor.html?template=wifi_neon'" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #10b981, #f59e0b);"><div style="font-size: 4rem;">�x�</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #10b981, #f59e0b);"><div style="font-size: 4rem;">📶</div></div>
                 <div class="dbb"><h3>Neon Wi-Fi Access</h3><div class="ddt">Vibrant styling for quick guest access</div></div>
             </div>
             
             <div class="dbc" onclick="window.location.href='qr-editor.html?template=minimal_menu'" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"><div style="font-size: 4rem;">�x��️</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"><div style="font-size: 4rem;">🍽️</div></div>
                 <div class="dbb"><h3>Minimalist Menu</h3><div class="ddt">Clean and scannable design for restaurants</div></div>
             </div>
             
             <div class="dbc" onclick="window.location.href='qr-editor.html?template=social_hub'" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="font-size: 4rem;">�x</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="font-size: 4rem;">🔗</div></div>
                 <div class="dbb"><h3>Social Media Hub</h3><div class="ddt">Optimized for Linktree or social profiles</div></div>
             </div>
         </div>
@@ -745,7 +745,7 @@ async function fetchGoogleProfile(token) {
             Storage.set('qrs_user', JSON.stringify(curUser));
             updatePUI();
             closeMo();
-            toast('�S& Authenticated: ' + savedName, 'green');
+            toast('✅ Authenticated: ' + savedName, 'green');
         } else {
             toast('Authentication failed.', '');
         }
@@ -793,7 +793,7 @@ function closeMo(){ const mo=document.getElementById('loginMo'); if(mo) mo.class
 function updateUsername(){
     const mn=document.getElementById('miName'); if(!mn) return;
     const n=mn.value.trim(); if(!n){toast('Username cannot be empty.','');return;}
-    if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('�S& Username Updated','green'); }
+    if(curUser) { curUser.name = n; Storage.set('qrs_user',JSON.stringify(curUser)); updatePUI(); closeMo(); toast('✅ Username Updated','green'); }
 }
 function doLogout() {
     curUser = null; googleAccessToken = null; Storage.set('qrs_user', ''); updatePUI(); closeMo(); toast('Logged out successfully.', '');
@@ -823,10 +823,7 @@ window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.clos
   renderDB();
 })();
 
-function toggleTheme(element){
-    if(element && element.checked){ document.body.classList.remove('light'); Storage.set('theme', 'dark'); }
-    else{ document.body.classList.add('light'); Storage.set('theme', 'light'); }
-}
+
 </script>
 </body>
 </html>
