@@ -1,39 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="description" content="ATI — Advanced Typing Instructor. Master typing speed and accuracy with code snippets, literature, and random words. Free online typing test.">
-  <script>
-// --- GLOBAL ADMIN CONFIG CHECKER ---
-(function() {
-    try {
-        const configStr = localStorage.getItem('col_admin_config');
-        if (configStr) {
-            const config = JSON.parse(configStr);
-            const path = window.location.pathname.split('/').pop() || 'index.html';
-            const status = config.pages[path] || '200';
-            
-            if (status === '503') {
-                document.documentElement.innerHTML = `<head><title>Maintenance</title><link rel="canonical" href="https://advancedlogiclabs.dpdns.org/ati" />
-<link rel="stylesheet" href="col-ui.css">
-  <script defer src="col-ui.js"><\/script>
-  <script defer src="col-auth.js"><\/script>
-</head><body style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px; margin:0;">
-<div class="cd" id="cDot"></div><div class="cr" id="cRing"></div> <h1 style="font-size:5rem; margin:0; color:#38bdf8;">503</h1> <h2 style="margin:10px 0;">System Maintenance</h2> <p style="color:#cbd5e1;">Class Of Learners is currently undergoing upgrades. Please check back later.</p> </body>`;
-                window.stop();
-            } else if (status === '404') {
-                document.documentElement.innerHTML = `<head><title>Not Found</title><link rel="canonical" href="https://advancedlogiclabs.dpdns.org/ati" />
-</head><body style="display:flex; height:100vh; width:100vw; background:#0f172a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px; margin:0;"> <h1 style="font-size:5rem; margin:0; color:#ef4444;">404</h1> <h2 style="margin:10px 0;">Page Not Found</h2> <p style="color:#cbd5e1;">The requested directory has been removed or does not exist.</p> <a href="index.html" style="margin-top:20px; color:#38bdf8; text-decoration:none; font-weight:bold;">Return Home</a></body>`;
-                window.stop();
-            }
-        }
-    } catch(e) {}
-})();
-</script>
-    <meta charset="UTF-8">
+    <meta name="description" content="Class of Learners - Ati. An educational tool and resource.">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATI &middot; Advanced Typing Instructor</title>
+    <title>ATI | Advanced Typing Instructor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         /* Force Deep Dark/Cyber Theme for ATI */
         :root, body { 
@@ -58,7 +30,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.2); border-radius: 10px; border: 3px solid var(--bg-1); transition: 0.3s; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        /* ���� GLOBAL NAVBAR ���� */
+        /* â”€â”€ GLOBAL NAVBAR â”€â”€ */
         .top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s;}
         .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; text-decoration: none; color: var(--text-main); font-family: 'Inter', sans-serif;}
         .brand-logo { height: 40px; width: auto; object-fit: contain; filter: drop-shadow(0 0 8px var(--primary-glow));}
@@ -78,7 +50,7 @@
         .dropdown-content a { color: var(--text-muted); padding: 12px 20px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: space-between;}
         .dropdown-content a:hover { background: rgba(56, 189, 248, 0.08); color: var(--primary); padding-left: 25px;}
 
-        
+        .theme-switch-wrapper { display: none; }
 
         .nav-dl-btn { background: var(--primary); color: #000; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 800; transition: 0.2s; box-shadow: 0 0 15px var(--primary-glow); font-size: 0.9rem;}
         .nav-dl-btn:hover { background: #fff; box-shadow: 0 0 25px var(--primary); }
@@ -93,7 +65,7 @@
         .nav-user-profile:hover { border-color: var(--primary); }
         .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
 
-        /* ���� HERO WITH CANVAS BACKGROUND ���� */
+        /* â”€â”€ HERO WITH CANVAS BACKGROUND â”€â”€ */
         .game-hero { width: 100%; padding: 120px 20px 100px; text-align: center; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid var(--border-light); background: linear-gradient(180deg, var(--bg-2) 0%, rgba(56, 189, 248, 0.05) 100%); position: relative; overflow: hidden; z-index: 1;}
         
         /* The Animated Particle Background */
@@ -116,7 +88,7 @@
         .btn-demo { background: rgba(56, 189, 248, 0.05); color: var(--primary); border: 2px solid var(--primary); padding: 16px 32px; border-radius: 12px; font-weight: 800; font-size: 1.1rem; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(5px);}
         .btn-demo:hover { background: var(--primary); color: #000; transform: translateY(-2px); box-shadow: 0 10px 30px var(--primary-glow); }
 
-       /* ���� FEATURE CARDS ���� */
+       /* â”€â”€ FEATURE CARDS â”€â”€ */
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 90%; max-width: 1200px; margin: 150px auto 80px; z-index: 10; position: relative; }
         .feature-card { background: linear-gradient(110deg, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.7) 40%, rgba(56, 189, 248, 0.12) 50%, rgba(15, 23, 42, 0.7) 60%, rgba(15, 23, 42, 0.7) 100%); background-size: 250% 100%; background-position: 100% 0; border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 16px; padding: 40px 30px; position: relative; overflow: hidden; backdrop-filter: blur(10px); box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 15px 30px rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; text-align: center; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-position 0.6s ease-out, border-color 0.4s, box-shadow 0.4s; }
         .feature-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px); background-size: 15px 15px; z-index: 0; opacity: 0.5; transition: opacity 0.3s; }
@@ -146,7 +118,7 @@
         .feature-card:hover .tag-cpp { background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
         .feature-card:hover .tag-js { background: rgba(249, 115, 22, 0.15); border-color: #fb923c; box-shadow: 0 0 10px rgba(249, 115, 22, 0.2); }
 
-        /* ���� CYBER SHOWCASE GALLERY ���� */
+        /* â”€â”€ CYBER SHOWCASE GALLERY â”€â”€ */
         .gallery-title { text-align: center; font-size: 2.5rem; font-weight: 800; color: var(--text-main); margin: 60px 0 30px; letter-spacing: -1px; transition: 0.3s;}
         
         .cyber-showcase-container { width: 95%; max-width: 1000px; margin: 0 auto 80px; display: flex; flex-direction: column; gap: 20px; align-items: center; position: relative; }
@@ -168,7 +140,7 @@
         .thumb-card:hover { opacity: 1; border-color: rgba(56, 189, 248, 0.5); transform: translateY(-3px); }
         .thumb-card.active { opacity: 1; border-color: var(--primary); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3); transform: translateY(-8px); }
 
-        /* ���� ANIMATION TRIGGERS ���� */
+        /* â”€â”€ ANIMATION TRIGGERS â”€â”€ */
         .anim-target { opacity: 0; transform: translateY(30px); transition: 0.6s ease-out; }
         .animate-in { opacity: 1 !important; transform: translateY(0) !important; }
         .cursor-blink { animation: blink 1s step-end infinite; color: var(--primary);}
@@ -176,8 +148,12 @@
         .hero-reveal { opacity: 0; transform: translateY(15px); transition: 0.8s ease; }
         .hero-reveal.visible { opacity: 1; transform: translateY(0); }
 
-        /* ���� FOOTER & MODAL... ���� */
-
+        /* â”€â”€ FOOTER & MODAL... â”€â”€ */
+        .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-light); background: var(--nav-bg); backdrop-filter: blur(10px); margin-top: auto; }
+        .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
+        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: 0.2s; }
+        .footer-links a:hover { color: var(--primary); }
+        .footer-copy { color: var(--text-muted); font-size: 0.85rem; font-weight: 600;}
 
         .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .mo.open { opacity: 1; pointer-events: auto; }
@@ -207,7 +183,7 @@
         .toast.show { transform: translateY(0); opacity: 1; }
         .toast.green { border-color: var(--primary, #38bdf8); color: var(--primary, #38bdf8); }
 
-        /* ���� COMPLETE MOBILE RESPONSIVENESS FIXES ���� */
+        /* â”€â”€ COMPLETE MOBILE RESPONSIVENESS FIXES â”€â”€ */
         @media (max-width: 768px) {
             /* 1. Floating Top Nav Bar Fix */
             .top-nav { 
@@ -274,7 +250,11 @@
         }
 
     </style>
-<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/ati" />
+<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/ati.html" />
+
+  <link rel="stylesheet" href="col-ui.css">
+  <script defer src="col-ui.js"></script>
+  <script defer src="col-auth.js"></script>
 </head>
 <body>
 <script>
@@ -287,19 +267,7 @@
     })();
 </script>
 
-    <nav class="top-nav" id="topNav">
-  <a href="home.html" class="nav-brand"><img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async"><span class="brand-name">Class Of Learners</span></a>
-  <button class="mmb" id="mmb" aria-label="Toggle menu"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-  <div class="nav-links" id="navLinks">
-    <a href="home.html" class="nav-link act">Home</a><a href="about.html" class="nav-link">About</a><a href="school.html" class="nav-link">School</a><a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
-    <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')"><button class="dropdown-btn">Projects <span class="darr">&#9660;</span></button><div class="dropdown-content"><div class="dropdown-content-inner"><a href="ati.html">Typing Instructor <span>&#9109;&#65039;</span></a><a href="solar.html">Solar Engine <span>&#127680;</span></a><a href="gesture.html">Gesture Control <span>&#128400;&#65039;</span></a><a href="rpg.html">RPG Game <span>&#9876;&#65039;</span></a><a href="qr.html">QR Generator <span>&#11035;</span></a></div></div></div>
-    </div>
-    <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>Sign In</button>
-    <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()"><div class="nav-user-avatar" id="navUserAv">?</div><span class="nun" id="navUserName">User</span></div>
-    <a href="download.html" class="nav-dl-btn mobile-dl">Downloads</a>
-  </div>
-  <a href="download.html" class="nav-dl-btn desktop-dl">Downloads Hub</a>
-</nav>
+    
 
     <header class="game-hero">
         <canvas id="cyberCanvas"></canvas> 
@@ -309,7 +277,7 @@
             <p>Deploying high-fidelity syntax mastery module. Train your muscle memory for complex coding languages.</p>
             <div class="hero-cta">
                 <a href="download.html" class="btn-download">Initialize Download</a>
-                <a href="ati-demo.html" class="btn-demo">🎮 Play Web Demo</a>
+                <a href="ati-demo.html" class="btn-demo">â–¶ Play Web Demo</a>
             </div>
         </div>
     </header>
@@ -336,7 +304,7 @@
         </div>
         <div class="feature-card anim-target" style="transition-delay: 0.3s;">
             <div class="feature-content">
-                <div class="icon-wrapper">[⌨️]</div>
+                <div class="icon-wrapper">[âŒ¨]</div>
                 <h3>Mech Simulator</h3>
                 <p>Virtual mechanical keyboard interface with custom switch sounds and visual heatmaps.</p>
             </div>
@@ -354,19 +322,31 @@
             <div class="scanline"></div>
         </div>
         <div class="thumbnail-track">
-            <div class="thumb-card active" onclick="updateShowcase(this, 'ati.webp')">
+            <div class="thumb-card active" onclick="updateShowcase(this, 'ati.png')">
                 <img src="ati.webp" alt="Thumb 1" width="800" height="438" loading="lazy" decoding="async">
             </div>
-            <div class="thumb-card" onclick="updateShowcase(this, 'ati 2.webp')">
+            <div class="thumb-card" onclick="updateShowcase(this, 'ati 2.png')">
                 <img src="ati 2.webp" alt="Thumb 2" width="2437" height="993" loading="lazy">
             </div>
-            <div class="thumb-card" onclick="updateShowcase(this, 'ati 3.webp')">
+            <div class="thumb-card" onclick="updateShowcase(this, 'ati 3.png')">
                 <img src="ati 3.webp" alt="Thumb 3" width="3839" height="2096" loading="lazy">
             </div>
         </div>
     </div>
 
-    <footer class="sf"><div class="fi"><div class="fb"><span>CoL</span> &middot; Class Of Learners</div><div class="fl"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div></div></footer>    <div class="toast" id="toast"></div>
+    <footer class="site-footer">
+        <div class="footer-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="feedback.html">Provide Feedback</a>
+        </div>
+        <div class="footer-copy">
+            &copy; 2026 Class Of Learners. Developed By Neel And Ansh. All Rights Reserved.
+        </div>
+    </footer>
+
+    
+    
 
     <script>
     // --- CANVAS PARTICLE BACKGROUND LOGIC ---
@@ -471,30 +451,25 @@
         }, 200); 
     }
 
+    if(document.querySelector('.dropdown-btn')) {
+        window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
+    }
+
     window.addEventListener('load', () => { 
+         
+         
+         
+        
+        // Initialize new Canvas and Tilt animations
         resizeCanvas();
         initParticles();
         animateParticles();
         initTiltEffect();
+
         setTimeout(typeWriter, 400); 
         setTimeout(triggerAnimations, 100);
-        loadUser();
-        checkURLForToken();
+        const lm=document.getElementById('loginMo'); if(lm) lm.addEventListener('click',function(e){if(e.target===this)closeMo();}); 
     });
-
-var Storage={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
-var GOOGLE_CLIENT_ID='500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
-var curUser=null,googleAccessToken=null;
-function toast(msg,cls){var t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.className='toast '+(cls||'');t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
-function gSignIn(){toast('Redirecting...','');var ru=window.location.href.split('#')[0].split('?')[0],sc=encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');window.location.href='https://accounts.google.com/o/oauth2/v2/auth?client_id='+GOOGLE_CLIENT_ID+'&redirect_uri='+encodeURIComponent(ru)+'&response_type=token&scope='+sc;}
-function checkURLForToken(){var hash=window.location.hash.substring(1);if(hash.includes('access_token=')){var params=new URLSearchParams(hash),token=params.get('access_token');if(token){googleAccessToken=token;window.history.replaceState(null,null,window.location.pathname);fetchGoogleProfile(token);}}}
-async function fetchGoogleProfile(token){try{var r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+token}});if(r.ok){var info=await r.json(),savedName=info.name;var ex=Storage.get('qrs_user');if(ex){try{var pp=JSON.parse(ex);if(pp.email===info.email&&pp.name)savedName=pp.name;}catch(e){}}curUser={name:savedName,email:info.email,picture:info.picture,google:true};Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('Authenticated: '+savedName,'green');}else{toast('Auth failed.','');}}catch(e){toast('Network error.','');}}
-function loadUser(){var u=Storage.get('qrs_user');if(u){try{curUser=JSON.parse(u);updatePUI();}catch(e){}}}
-function updatePUI(){var nlb=document.getElementById('navLoginBtn'),nup=document.getElementById('navUserProfile');if(!curUser){if(nlb)nlb.style.display='flex';if(nup)nup.style.display='none';return;}if(nlb)nlb.style.display='none';if(nup)nup.style.display='flex';var nun=document.getElementById('navUserName');if(nun)nun.textContent=curUser.name.split(' ')[0];var navAv=document.getElementById('navUserAv');if(curUser.picture){if(navAv)navAv.innerHTML='<img src="'+curUser.picture+'" alt="'+curUser.name+'" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">';}else{if(navAv){navAv.innerHTML='';navAv.textContent=curUser.name.charAt(0).toUpperCase();}}}
-function openLogin(){if(typeof injectLoginModal==='function')injectLoginModal();var mo=document.getElementById('loginMo');if(mo)mo.classList.add('open');var mt=document.getElementById('moAuthTitle'),mSub=document.getElementById('moAuthSub'),mn=document.getElementById('miName'),me=document.getElementById('miEmail'),lop=document.getElementById('loggedOutPanel'),lip=document.getElementById('loggedInPanel');if(curUser){if(mt)mt.textContent='Google Account';if(mSub)mSub.textContent='Manage your synced profile.';if(lop)lop.style.display='none';if(lip)lip.style.display='block';if(mn)mn.value=curUser.name;if(me)me.value=curUser.email||'';}else{if(mt)mt.textContent='Authenticate';if(mSub)mSub.textContent='Unlock dashboard storage and cloud sync.';if(lop)lop.style.display='block';if(lip)lip.style.display='none';}}
-function closeMo(){var mo=document.getElementById('loginMo');if(mo)mo.classList.remove('open');}
-function updateUsername(){var mn=document.getElementById('miName');if(!mn)return;var n=mn.value.trim();if(!n){toast('Name empty.','');return;}if(curUser){curUser.name=n;Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('Updated','green');}}
-function doLogout(){curUser=null;googleAccessToken=null;Storage.set('qrs_user','');updatePUI();closeMo();toast('Signed out.','');}
     </script>
 </body>
 </html>
