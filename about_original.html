@@ -171,17 +171,25 @@
   @media(max-width:480px){.about-hero h1{font-size:2.6rem}}
   </style>
   <script defer src="col-router.js"></script><script defer src="col-auth.js"></script>
-
-  <link rel="stylesheet" href="col-ui.css">
-  <script defer src="col-ui.js"><\/script>
-  <script defer src="col-auth.js"><\/script>
 </head>
 <body>
 <script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
 <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; About</div><div class="lbar"></div></div>
 <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
 
-
+<nav class="top-nav" id="topNav">
+  <a href="home.html" class="nav-brand"><img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async"><span class="brand-name">Class Of Learners</span></a>
+  <button class="mmb" id="mmb" aria-label="Toggle menu"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <div class="nav-links" id="navLinks">
+    <a href="home.html" class="nav-link">Home</a><a href="about.html" class="nav-link act">About</a><a href="school.html" class="nav-link">School</a><a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+    <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')"><button class="dropdown-btn">Projects <span class="darr">&#9660;</span></button><div class="dropdown-content"><div class="dropdown-content-inner"><a href="ati.html">Typing Instructor <span>&#9109;&#65039;</span></a><a href="solar.html">Solar Engine <span>&#127760;</span></a><a href="gesture.html">Gesture Control <span>&#128400;&#65039;</span></a><a href="rpg.html">RPG Game <span>&#9876;&#65039;</span></a><a href="qr.html">QR Generator <span>&#11035;</span></a></div></div></div>
+    <div class="tw"><span class="tl" id="tLabel">Light</span><label class="tsb" for="tsck"><input type="checkbox" id="tsck" aria-label="Toggle light mode" onchange="toggleTheme(this)"><div class="tst"><div class="tsth">&#9728;&#65039;</div></div></label></div>
+    <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>Sign In</button>
+    <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()"><div class="nav-user-avatar" id="navUserAv">?</div><span class="nun" id="navUserName">User</span></div>
+    <a href="download.html" class="nav-dl-btn mobile-dl">Downloads</a>
+  </div>
+  <a href="download.html" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+</nav>
 
 <!-- ==================== HERO ==================== -->
 <section class="about-hero">
@@ -287,11 +295,11 @@
 </section>
 
 <!-- ==================== FOOTER ==================== -->
-
+<footer class="sf"><div class="fi"><div class="fb"><span>CoL</span> &middot; Class Of Learners</div><div class="fl"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div></div></footer>
 
 <!-- ==================== AUTH MODAL ==================== -->
 <div class="mo" id="loginMo" onclick="if(event.target===this)closeMo()"><div class="md"><div class="mhd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="mbd"><button class="gbtn" id="gSignInBtn" onclick="gSignIn()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Continue with Google</button><div id="loggedInPanel" style="display:none"><label class="ml2">Username</label><input class="mi" id="miName" type="text" placeholder="Your display name"><label class="ml2">Email</label><input class="mi" id="miEmail" type="email" placeholder="Email address" readonly><button class="ms" onclick="updateUsername()">Save Changes</button><button class="mskd" onclick="doLogout()">Sign Out</button></div><button class="msk" onclick="closeMo()">Maybe Later</button></div></div></div>
-
+<div class="toast" id="toast"></div>
 
 <!-- ==================== 3D CONSTELLATION BACKGROUND ==================== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -441,8 +449,8 @@
 })();
 
 window.addEventListener('load',function(){setTimeout(function(){var l=document.getElementById('loader');if(l)l.classList.add('gone');},1300);});
-
-});
+var navEl=document.getElementById('topNav');window.addEventListener('scroll',function(){navEl.classList.toggle('s',scrollY>60);},{passive:true});
+document.getElementById('mmb').addEventListener('click',function(){document.getElementById('navLinks').classList.toggle('open');});
 window.addEventListener('click',function(e){if(!e.target.closest('.dropdown'))document.querySelectorAll('.dropdown').forEach(function(d){d.classList.remove('active');});});
 
 // Scroll reveals
@@ -451,6 +459,25 @@ window.addEventListener('click',function(e){if(!e.target.closest('.dropdown'))do
 // 3D tilt on team cards
 document.querySelectorAll('.tm').forEach(function(card){card.addEventListener('mousemove',function(e){if(innerWidth<768)return;var r=card.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;card.style.transform='translateY(-10px) perspective(900px) rotateX('+(-y*5)+'deg) rotateY('+(x*5)+'deg)';});card.addEventListener('mouseleave',function(){card.style.transform='';});});
 
+// Theme
+var Storage={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
+function initializeTheme(){var tsck=document.getElementById('tsck'),tl=document.getElementById('tLabel');if(Storage.get('theme')==='light'){document.body.classList.add('lm');if(tsck)tsck.checked=true;if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');if(tsck)tsck.checked=false;if(tl)tl.textContent='Light';}}
+function toggleTheme(el){var tl=document.getElementById('tLabel');if(el.checked){document.body.classList.add('lm');Storage.set('theme','light');if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');Storage.set('theme','dark');if(tl)tl.textContent='Light';}}
+
+// Auth
+var GOOGLE_CLIENT_ID='500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+var curUser=null,googleAccessToken=null;
+function toast(msg,cls){var t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.className='toast '+(cls||'');t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+function gSignIn(){toast('Redirecting\u2026','');var ru=window.location.href.split('#')[0].split('?')[0],sc=encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');window.location.href='https://accounts.google.com/o/oauth2/v2/auth?client_id='+GOOGLE_CLIENT_ID+'&redirect_uri='+encodeURIComponent(ru)+'&response_type=token&scope='+sc;}
+function checkURLForToken(){var hash=window.location.hash.substring(1);if(hash.includes('access_token=')){var params=new URLSearchParams(hash),token=params.get('access_token');if(token){googleAccessToken=token;window.history.replaceState(null,null,window.location.pathname);fetchGoogleProfile(token);}}}
+async function fetchGoogleProfile(token){try{var r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+token}});if(r.ok){var info=await r.json(),savedName=info.name;var ex=Storage.get('qrs_user');if(ex){try{var pp=JSON.parse(ex);if(pp.email===info.email&&pp.name)savedName=pp.name;}catch(e){}}curUser={name:savedName,email:info.email,picture:info.picture,google:true};Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('\u2705 '+savedName,'green');}else{toast('Auth failed.','');}}catch(e){toast('Network error.','');}}
+function loadUser(){var u=Storage.get('qrs_user');if(u){try{curUser=JSON.parse(u);updatePUI();}catch(e){}}}
+function updatePUI(){var nlb=document.getElementById('navLoginBtn'),nup=document.getElementById('navUserProfile');if(!curUser){if(nlb)nlb.style.display='flex';if(nup)nup.style.display='none';return;}if(nlb)nlb.style.display='none';if(nup)nup.style.display='flex';var nun=document.getElementById('navUserName');if(nun)nun.textContent=curUser.name.split(' ')[0];var navAv=document.getElementById('navUserAv');if(curUser.picture){if(navAv)navAv.innerHTML='<img src="'+curUser.picture+'" alt="'+curUser.name+'" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">';}else{if(navAv){navAv.innerHTML='';navAv.textContent=curUser.name.charAt(0).toUpperCase();}}}
+function openLogin(){var mo=document.getElementById('loginMo');if(mo)mo.classList.add('open');var mt=document.getElementById('moAuthTitle'),mSub=document.getElementById('moAuthSub'),mn=document.getElementById('miName'),me=document.getElementById('miEmail'),gBtn=document.getElementById('gSignInBtn'),lip=document.getElementById('loggedInPanel');if(curUser){if(mt)mt.textContent='Google Account';if(mSub)mSub.textContent='Manage your synced profile.';if(gBtn)gBtn.style.display='none';if(lip)lip.style.display='block';if(mn)mn.value=curUser.name;if(me)me.value=curUser.email||'';}else{if(mt)mt.textContent='Authenticate';if(mSub)mSub.textContent='Unlock dashboard storage and cloud sync.';if(gBtn)gBtn.style.display='flex';if(lip)lip.style.display='none';}}
+function closeMo(){var mo=document.getElementById('loginMo');if(mo)mo.classList.remove('open');}
+function updateUsername(){var mn=document.getElementById('miName');if(!mn)return;var n=mn.value.trim();if(!n){toast('Name empty.','');return;}if(curUser){curUser.name=n;Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('\u2705 Updated','green');}}
+function doLogout(){curUser=null;googleAccessToken=null;Storage.set('qrs_user','');updatePUI();closeMo();toast('Signed out.','');}
+(function(){initializeTheme();loadUser();checkURLForToken();})();
 </script>
 </body>
 </html>
