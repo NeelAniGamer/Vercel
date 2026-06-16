@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="description" content="Class of Learners - Rpg. An educational tool and resource.">
+    <meta name="description" content="RPG Game — Classic role-playing game adventure. Explore dungeons, battle monsters, and level up in our browser-based RPG.">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPG Game &middot; Coming Soon &middot; Class Of Learners</title>
@@ -173,11 +173,7 @@
         }
 
         /* ���� FOOTER ���� */
-        .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-light); background: var(--nav-bg); backdrop-filter: blur(10px); z-index: 100; margin-top: auto; transition: 0.3s; }
-        .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
-        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: color 0.2s; text-transform:none;}
-        .footer-links a:hover { color: var(--primary); }
-        .footer-copy { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform:none;}
+
 
         /* ���� UNIVERSAL AUTH MODAL CSS (RPG THEME) ���� */
         .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s ease; }
@@ -341,7 +337,7 @@
         <button class="notify-badge" id="checkBackBtn" onclick="handleNotify()" style="cursor:pointer; border:none; outline:none; font-family:inherit; font-size:1rem; font-weight:600; background:rgba(255,255,255,0.05); color:var(--text); transition:0.2s;">🔔 Notify Me On Launch</button>
     </section>
 
-    <footer class="site-footer"><div class="footer-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="footer-copy">&copy; 2026 Neel, Ansh &amp; Aarush.</div></footer>
+    <footer class="sf"><div class="fi"><div class="fb"><span>CoL</span> &middot; Class Of Learners</div><div class="fl"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div></div></footer>
     
     <div class="toast" id="toast"></div>
 
@@ -461,7 +457,7 @@
           else { if(navAv) navAv.textContent=curUser.name.charAt(0).toUpperCase(); } 
         }
 
-        function openLogin(){ 
+        function openLogin(){ if(typeof injectLoginModal==='function')injectLoginModal(); 
             const mo = document.getElementById('loginMo'); if(!mo) return; mo.classList.add('open'); 
             const mt = document.getElementById('moAuthTitle'), mSub = document.getElementById('moAuthSub');
             const loggedOutPanel = document.getElementById('loggedOutPanel'), loggedInPanel = document.getElementById('loggedInPanel');

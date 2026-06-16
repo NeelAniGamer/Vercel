@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="description" content="Class of Learners - Ati. An educational tool and resource.">
+    <meta name="description" content="ATI — Advanced Typing Instructor. Master typing speed and accuracy with code snippets, literature, and random words. Free online typing test.">
   <script>
 // --- GLOBAL ADMIN CONFIG CHECKER ---
 (function() {
@@ -177,11 +177,7 @@
         .hero-reveal.visible { opacity: 1; transform: translateY(0); }
 
         /* ���� FOOTER & MODAL... ���� */
-        .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-light); background: var(--nav-bg); backdrop-filter: blur(10px); margin-top: auto; }
-        .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
-        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: 0.2s; }
-        .footer-links a:hover { color: var(--primary); }
-        .footer-copy { color: var(--text-muted); font-size: 0.85rem; font-weight: 600;}
+
 
         .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .mo.open { opacity: 1; pointer-events: auto; }
@@ -370,38 +366,7 @@
         </div>
     </div>
 
-    <footer class="site-footer">
-        <div class="footer-links">
-            <a href="privacy.html">Privacy</a>
-            <a href="terms.html">Terms</a>
-            <a href="feedback.html">Feedback</a>
-            <a href="download.html">Downloads</a>
-        </div>
-        <div class="footer-copy">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
-    </footer>
-
-    <div class="mo" id="loginMo">
-      <div class="md">
-        <div class="md-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div>
-        <div class="md-body">
-          <div id="loggedOutPanel">
-              <button class="gbtn" id="gSignInBtn" onclick="gSignIn()">
-                <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google
-              </button>
-          </div>
-          <div id="loggedInPanel" style="display: none;">
-              <label class="ml">Google Email</label>
-              <input class="mi" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;">
-              <label class="ml">Display Username</label>
-              <input class="mi" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;">
-              <button class="ms" onclick="updateUsername()">Save Username</button>
-              <button class="msk-danger" onclick="doLogout()">Disconnect Account</button>
-          </div>
-          <button class="msk" onclick="closeMo()">Close / Cancel</button>
-        </div>
-      </div>
-    </div>
-    <div class="toast" id="toast"></div>
+    <footer class="sf"><div class="fi"><div class="fb"><span>CoL</span> &middot; Class Of Learners</div><div class="fl"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div></div></footer>    <div class="toast" id="toast"></div>
 
     <script>
     // --- CANVAS PARTICLE BACKGROUND LOGIC ---
@@ -526,7 +491,7 @@ function checkURLForToken(){var hash=window.location.hash.substring(1);if(hash.i
 async function fetchGoogleProfile(token){try{var r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+token}});if(r.ok){var info=await r.json(),savedName=info.name;var ex=Storage.get('qrs_user');if(ex){try{var pp=JSON.parse(ex);if(pp.email===info.email&&pp.name)savedName=pp.name;}catch(e){}}curUser={name:savedName,email:info.email,picture:info.picture,google:true};Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('Authenticated: '+savedName,'green');}else{toast('Auth failed.','');}}catch(e){toast('Network error.','');}}
 function loadUser(){var u=Storage.get('qrs_user');if(u){try{curUser=JSON.parse(u);updatePUI();}catch(e){}}}
 function updatePUI(){var nlb=document.getElementById('navLoginBtn'),nup=document.getElementById('navUserProfile');if(!curUser){if(nlb)nlb.style.display='flex';if(nup)nup.style.display='none';return;}if(nlb)nlb.style.display='none';if(nup)nup.style.display='flex';var nun=document.getElementById('navUserName');if(nun)nun.textContent=curUser.name.split(' ')[0];var navAv=document.getElementById('navUserAv');if(curUser.picture){if(navAv)navAv.innerHTML='<img src="'+curUser.picture+'" alt="'+curUser.name+'" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">';}else{if(navAv){navAv.innerHTML='';navAv.textContent=curUser.name.charAt(0).toUpperCase();}}}
-function openLogin(){var mo=document.getElementById('loginMo');if(mo)mo.classList.add('open');var mt=document.getElementById('moAuthTitle'),mSub=document.getElementById('moAuthSub'),mn=document.getElementById('miName'),me=document.getElementById('miEmail'),lop=document.getElementById('loggedOutPanel'),lip=document.getElementById('loggedInPanel');if(curUser){if(mt)mt.textContent='Google Account';if(mSub)mSub.textContent='Manage your synced profile.';if(lop)lop.style.display='none';if(lip)lip.style.display='block';if(mn)mn.value=curUser.name;if(me)me.value=curUser.email||'';}else{if(mt)mt.textContent='Authenticate';if(mSub)mSub.textContent='Unlock dashboard storage and cloud sync.';if(lop)lop.style.display='block';if(lip)lip.style.display='none';}}
+function openLogin(){if(typeof injectLoginModal==='function')injectLoginModal();var mo=document.getElementById('loginMo');if(mo)mo.classList.add('open');var mt=document.getElementById('moAuthTitle'),mSub=document.getElementById('moAuthSub'),mn=document.getElementById('miName'),me=document.getElementById('miEmail'),lop=document.getElementById('loggedOutPanel'),lip=document.getElementById('loggedInPanel');if(curUser){if(mt)mt.textContent='Google Account';if(mSub)mSub.textContent='Manage your synced profile.';if(lop)lop.style.display='none';if(lip)lip.style.display='block';if(mn)mn.value=curUser.name;if(me)me.value=curUser.email||'';}else{if(mt)mt.textContent='Authenticate';if(mSub)mSub.textContent='Unlock dashboard storage and cloud sync.';if(lop)lop.style.display='block';if(lip)lip.style.display='none';}}
 function closeMo(){var mo=document.getElementById('loginMo');if(mo)mo.classList.remove('open');}
 function updateUsername(){var mn=document.getElementById('miName');if(!mn)return;var n=mn.value.trim();if(!n){toast('Name empty.','');return;}if(curUser){curUser.name=n;Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('Updated','green');}}
 function doLogout(){curUser=null;googleAccessToken=null;Storage.set('qrs_user','');updatePUI();closeMo();toast('Signed out.','');}

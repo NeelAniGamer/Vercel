@@ -1,5 +1,53 @@
 // Class Of Learners Global Authentication System (Supabase)
 
+// --- Shared Login Modal Injection ---
+// Injects the standard loginMo modal if the page doesn't already have one inline.
+function injectLoginModal() {
+    if (document.getElementById('loginMo')) return;
+    const mo = document.createElement('div');
+    mo.className = 'mo';
+    mo.id = 'loginMo';
+    mo.innerHTML = '<div class="md"><div class="md-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="md-body"><div id="loggedOutPanel"><button class="gbtn" id="gSignInBtn" onclick="gSignIn()"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google</button></div><div id="loggedInPanel" style="display: none;"><label class="ml">Google Email</label><input class="mi" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;"><label class="ml">Display Username</label><input class="mi" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;"><button class="ms" onclick="updateUsername()">Save Username</button><button class="msk-danger" onclick="doLogout()">Disconnect Account</button></div><button class="msk" onclick="closeMo()">Close / Cancel</button></div></div>';
+    document.body.appendChild(mo);
+    mo.addEventListener('click', function(e) { if (e.target === this) closeMo(); });
+}
+
+// Compatibility bridge: expose openLogin/closeMo globally so page onclick handlers work
+// even before the page's own inline scripts define them.
+if (!window.openLogin) {
+    window.openLogin = function() {
+        injectLoginModal();
+        var mo = document.getElementById('loginMo');
+        if (!mo) return;
+        mo.classList.add('open');
+        var mt = document.getElementById('moAuthTitle');
+        var mSub = document.getElementById('moAuthSub');
+        var loggedOutPanel = document.getElementById('loggedOutPanel');
+        var loggedInPanel = document.getElementById('loggedInPanel');
+        var mn = document.getElementById('miName');
+        var me = document.getElementById('miEmail');
+        if (window.colUser) {
+            if (mt) mt.textContent = 'Google Account';
+            if (mSub) mSub.textContent = 'Manage your profile and username.';
+            if (loggedOutPanel) loggedOutPanel.style.display = 'none';
+            if (loggedInPanel) loggedInPanel.style.display = 'block';
+            if (mn) mn.value = window.colUser.name;
+            if (me) me.value = window.colUser.email || '';
+        } else {
+            if (mt) mt.textContent = 'Authenticate';
+            if (mSub) mSub.textContent = 'Unlock dashboard storage and cloud sync.';
+            if (loggedOutPanel) loggedOutPanel.style.display = 'block';
+            if (loggedInPanel) loggedInPanel.style.display = 'none';
+        }
+    };
+}
+if (!window.closeMo) {
+    window.closeMo = function() {
+        var mo = document.getElementById('loginMo');
+        if (mo) mo.classList.remove('open');
+    };
+}
+
 (async function() {
     // 1. Fetch Global Configuration to get Supabase Keys
     let authConfig = null;

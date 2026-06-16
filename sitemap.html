@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sitemap for Class of Learners — navigate all pages including projects, tools, and resources.">
+  <title>Sitemap | Class Of Learners</title>
+  <link rel="icon" type="image/webp" href="icon.webp">
+  <meta name="robots" content="noindex">
+  <script>(function(){try{var c=localStorage.getItem('col_admin_config');if(c){var cfg=JSON.parse(c),p=window.location.pathname.split('/').pop()||'index.html',s=cfg.pages[p]||'200';if(s==='503'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>');window.stop();}if(s==='404'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="home.html" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>');window.stop();}}}catch(e){}})()</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+  :root{--void:#070A14;--void2:#0C1224;--panel:#111827;--line:rgba(255,255,255,.08);--lineb:rgba(255,255,255,.16);--ink:#E8E3D8;--dim:#8891AA;--signal:#F2B84B;--ion:#5ED4F5;--teal:#00F0CC;--plasma:#B89BFF;--em:#34D399;--nav:rgba(7,10,20,.68);--serif:'Instrument Serif',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--mono:'Space Mono',monospace;--ease:cubic-bezier(.16,1,.3,1);--spring:cubic-bezier(.34,1.56,.64,1);--r:18px}
+  body.lm{--void:#F0EDE4;--void2:#E6E2D8;--panel:#FFF;--line:rgba(0,0,0,.09);--lineb:rgba(0,0,0,.18);--ink:#15181F;--dim:#5C6175;--signal:#B8720A;--ion:#0E72A0;--teal:#0A8C7A;--plasma:#6F4FE0;--em:#1B9D66;--nav:rgba(240,237,228,.75)}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+  body{background:var(--void);color:var(--ink);font-family:var(--sans);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .5s var(--ease),color .5s var(--ease)}
+  a{color:inherit;text-decoration:none}img{display:block;max-width:100%}button{font-family:var(--sans)}
+  ::selection{background:var(--signal);color:#0a0800}
+  ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--lineb);border-radius:10px;border:3px solid var(--void)}::-webkit-scrollbar-thumb:hover{background:var(--signal)}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+  /* Loader */
+  .loader{position:fixed;inset:0;z-index:10000;background:var(--void);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;transition:opacity .7s var(--ease),visibility .7s}.loader.gone{opacity:0;visibility:hidden}
+  .lid{font-family:var(--mono);font-size:.72rem;letter-spacing:.42em;color:var(--dim);text-transform:uppercase}.lid span{color:var(--signal)}
+  .lbar{width:180px;height:1px;background:var(--lineb);position:relative;overflow:hidden}.lbar::after{content:'';position:absolute;inset:0;background:var(--signal);transform-origin:left;transform:scaleX(0);animation:lf 1.1s var(--ease) .2s forwards}
+  @keyframes lf{to{transform:scaleX(1)}}
+
+  /* Nav */
+  .top-nav{position:fixed;top:0;left:0;width:100%;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:22px 52px;background:var(--nav);backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--line);flex-wrap:wrap;gap:14px;transition:background .5s var(--ease),border-color .5s,padding .4s var(--ease)}
+  .top-nav.s{padding:14px 52px;border-bottom-color:var(--lineb)}
+  .nav-brand{display:flex;align-items:center;gap:13px}.brand-logo{height:33px;width:auto;border-radius:8px}.brand-name{font-family:var(--mono);font-size:.78rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink)}
+  .nav-links{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
+  .nav-link{color:var(--dim);font-weight:500;font-size:.9rem;transition:color .25s;position:relative}
+  .nav-link::after{content:'';position:absolute;left:0;bottom:-7px;width:0;height:1px;background:var(--signal);transition:width .3s var(--ease)}
+  .nav-link:hover{color:var(--ink)}.nav-link:hover::after,.nav-link.act::after{width:100%}.nav-link.act{color:var(--ink)}
+  .nav-dl-btn{background:var(--signal);color:#0A0500;padding:10px 24px;border-radius:30px;font-weight:700;font-size:.84rem;transition:transform .3s var(--ease),box-shadow .3s}.nav-dl-btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px -10px var(--signal)}
+  .desktop-dl{}.mobile-dl{display:none}
+  .dropdown{position:relative}.dropdown-btn{color:var(--dim);background:none;border:none;font-size:.9rem;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:var(--sans);transition:color .25s;padding:0}
+  .dropdown.active .dropdown-btn,.dropdown-btn:hover{color:var(--ink)}.darr{font-size:.68rem;display:inline-block;transition:transform .3s var(--ease)}.dropdown.active .darr{transform:rotate(180deg)}
+  .dropdown-content{position:absolute;top:calc(100% + 14px);left:50%;transform:translateX(-50%) translateY(6px);min-width:225px;z-index:1001;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s var(--ease),transform .28s var(--ease),visibility 0s linear .32s}
+  .dropdown.active .dropdown-content{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(-50%) translateY(0);transition-delay:0s}
+  .dropdown-content-inner{background:var(--panel);border:1px solid var(--lineb);border-radius:14px;box-shadow:0 30px 60px rgba(0,0,0,.55);padding:8px;display:flex;flex-direction:column;gap:2px}
+  .dropdown-content a{color:var(--dim);padding:11px 14px;font-size:.88rem;font-weight:500;border-radius:8px;display:flex;align-items:center;justify-content:space-between;transition:.2s}.dropdown-content a:hover{background:rgba(255,255,255,.07);color:var(--ink);padding-left:18px}
+  .tw{display:flex;align-items:center;gap:10px;padding-left:18px;border-left:1px solid var(--lineb)}.tl{font-size:.7rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.07em;min-width:32px}
+  .tsb{position:relative;width:46px;height:24px;cursor:pointer;display:inline-block;flex-shrink:0}.tsb input{opacity:0;width:0;height:0;position:absolute}
+  .tst{position:absolute;inset:0;border-radius:30px;background:var(--void2);border:1px solid var(--lineb);transition:.4s}.tsth{position:absolute;width:16px;height:16px;border-radius:50%;top:3px;left:3px;background:var(--signal);transition:transform .4s var(--spring);font-size:.6rem;display:flex;align-items:center;justify-content:center}
+  input:checked + .tst .tsth{transform:translateX(22px)}
+  .nav-login-btn{background:transparent;color:var(--em);border:1px solid var(--em);padding:8px 20px;border-radius:30px;font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:8px;transition:.25s;font-family:var(--sans)}.nav-login-btn:hover{background:var(--em);color:#06140e;box-shadow:0 0 24px -6px var(--em)}
+  .nav-user-profile{display:none;align-items:center;gap:10px;padding:4px 14px 4px 4px;border:1px solid var(--line);border-radius:30px;cursor:pointer;transition:.25s}.nav-user-profile:hover{border-color:var(--em)}
+  .nav-user-avatar{width:28px;height:28px;border-radius:50%;background:var(--em);color:#06140e;display:flex;justify-content:center;align-items:center;font-weight:800;font-size:.8rem;overflow:hidden}.nun{font-size:.82rem;font-weight:700}
+  .mmb{display:none;background:none;border:none;cursor:pointer;padding:4px}.mmb svg{width:22px;height:22px;stroke:var(--ink)}
+
+  /* Page Content */
+  .page-hero{padding:160px 52px 60px;max-width:1360px;margin:0 auto}
+  .sey{font-family:var(--mono);font-size:.7rem;letter-spacing:.36em;color:var(--signal);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px}.sey::before{content:'';width:20px;height:1px;background:var(--signal)}
+  .page-hero h1{font-family:var(--serif);font-size:clamp(2.8rem,7.2vw,5rem);font-weight:400;line-height:1.07;margin-bottom:16px}
+  .page-hero h1 em{font-style:italic;color:var(--signal)}
+  .page-subtitle{font-size:1.1rem;color:var(--dim);max-width:52ch;line-height:1.78}
+
+  /* Sitemap Grid */
+  .sitemap-section{max-width:1360px;margin:0 auto;padding:40px 52px 80px}
+  .sitemap-group{margin-bottom:52px}
+  .sitemap-group-title{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .sitemap-group-title::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--signal)}
+  .sitemap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .sitemap-card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:var(--r);padding:24px;transition:border-color .3s var(--ease),box-shadow .3s var(--ease),transform .3s var(--ease);text-decoration:none;display:block;position:relative}
+  .sitemap-card:hover{border-color:var(--lineb);transform:translateY(-4px);box-shadow:0 16px 40px -12px rgba(0,0,0,.4)}
+  .sitemap-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s}.sitemap-card:hover::before{opacity:1}
+  .sitemap-card.cion{border-color:rgba(94,212,245,.15)}.sitemap-card.cion:hover{border-color:rgba(94,212,245,.4);box-shadow:0 16px 40px -12px rgba(94,212,245,.15)}.sitemap-card.cion::before{background:var(--ion)}
+  .sitemap-card.csig{border-color:rgba(242,184,75,.15)}.sitemap-card.csig:hover{border-color:rgba(242,184,75,.4);box-shadow:0 16px 40px -12px rgba(242,184,75,.15)}.sitemap-card.csig::before{background:var(--signal)}
+  .sitemap-card.ctea{border-color:rgba(0,240,204,.15)}.sitemap-card.ctea:hover{border-color:rgba(0,240,204,.4);box-shadow:0 16px 40px -12px rgba(0,240,204,.15)}.sitemap-card.ctea::before{background:var(--teal)}
+  .sitemap-card.cemp{border-color:rgba(52,211,153,.15)}.sitemap-card.cemp:hover{border-color:rgba(52,211,153,.4);box-shadow:0 16px 40px -12px rgba(52,211,153,.15)}.sitemap-card.cemp::before{background:var(--em)}
+  .sitemap-card.cpla{border-color:rgba(184,155,255,.15)}.sitemap-card.cpla:hover{border-color:rgba(184,155,255,.4);box-shadow:0 16px 40px -12px rgba(184,155,255,.15)}.sitemap-card.cpla::before{background:var(--plasma)}
+  .sc-icon{font-size:1.8rem;margin-bottom:14px;filter:drop-shadow(0 0 12px currentColor)}
+  .sc-name{font-family:var(--serif);font-size:1.25rem;font-weight:400;margin-bottom:6px}
+  .sc-desc{font-size:.88rem;color:var(--dim);line-height:1.65}
+  .sc-badge{font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border-radius:6px;margin-top:12px;display:inline-block}
+  .badge-proj{background:rgba(242,184,75,.12);color:var(--signal);border:1px solid rgba(242,184,75,.25)}
+  .badge-info{background:rgba(94,212,245,.12);color:var(--ion);border:1px solid rgba(94,212,245,.25)}
+  .badge-tool{background:rgba(52,211,153,.12);color:var(--em);border:1px solid rgba(52,211,153,.25)}
+  .badge-legal{background:rgba(136,145,170,.12);color:var(--dim);border:1px solid rgba(136,145,170,.25)}
+
+  /* Footer */
+  .sf{border-top:1px solid var(--line);background:rgba(255,255,255,.012);backdrop-filter:blur(8px);padding:48px 52px 36px;transition:border-color .5s,background .5s}
+  .fi{max-width:1360px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px}
+  .fb{font-family:var(--mono);font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}.fb span{color:var(--signal)}
+  .fl{display:flex;gap:26px;flex-wrap:wrap}.fl a{color:var(--dim);font-size:.88rem;font-weight:500;transition:color .25s}.fl a:hover{color:var(--ink)}.fc{color:var(--dim);font-size:.82rem}
+
+  /* Auth Modal */
+  .mo{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.82);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}.mo.open{opacity:1;pointer-events:auto}
+  .md{background:var(--panel);border:1px solid var(--lineb);border-radius:24px;width:90%;max-width:440px;overflow:hidden;transform:translateY(26px) scale(.96);transition:transform .4s var(--ease);box-shadow:0 40px 100px rgba(0,0,0,.75);color:var(--ink)}.mo.open .md{transform:translateY(0) scale(1)}
+  .mhd{padding:30px;border-bottom:1px solid var(--line);text-align:center}.mhd h2{font-family:var(--serif);font-size:1.75rem;font-weight:400}.mhd p{font-size:.9rem;color:var(--dim);margin-top:6px}.mbd{padding:30px}
+  .ml2{font-size:.7rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px}
+  .mi{width:100%;padding:13px;border:1px solid var(--lineb);border-radius:12px;font-size:.93rem;outline:none;margin-bottom:18px;color:var(--ink);background:rgba(255,255,255,.05);font-family:var(--sans);transition:border-color .3s}.mi:focus{border-color:var(--em);box-shadow:0 0 0 3px rgba(52,211,153,.15)}
+  .gbtn{width:100%;padding:13px;background:#fff;border:1px solid #dadce0;border-radius:8px;font-weight:500;font-size:.88rem;cursor:pointer;color:#3c4043;display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:18px;transition:.2s;font-family:var(--sans)}
+  body.lm .gbtn{background:#4285f4;border:none;color:#fff}
+  .ms{width:100%;padding:13px;background:var(--em);border:none;border-radius:12px;font-weight:800;font-size:.93rem;cursor:pointer;color:#06140e;transition:.3s;font-family:var(--sans)}.ms:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(52,211,153,.3)}
+  .msk{width:100%;padding:13px;background:none;border:none;font-size:.88rem;font-weight:600;color:var(--dim);cursor:pointer;margin-top:8px;transition:.25s;font-family:var(--sans)}.msk:hover{color:var(--ink)}
+  .mskd{width:100%;padding:13px;background:transparent;border:1px solid #ef4444;border-radius:12px;font-size:.93rem;font-weight:700;color:#ef4444;cursor:pointer;margin-top:10px;transition:.25s;font-family:var(--sans)}.mskd:hover{background:rgba(239,68,68,.1)}
+  .toast{position:fixed;bottom:32px;right:32px;background:var(--panel);border:1px solid var(--lineb);color:var(--ink);padding:13px 22px;border-radius:12px;font-size:.88rem;font-weight:700;z-index:3000;transform:translateY(14px);opacity:0;transition:.35s var(--ease);pointer-events:none}.toast.show{transform:translateY(0);opacity:1;pointer-events:auto}.toast.green{border-color:var(--em);color:var(--em)}
+
+  /* Responsive */
+  @media(max-width:768px){.top-nav{padding:16px 20px}.top-nav.s{padding:12px 20px}.mmb{display:flex}.desktop-dl{display:none}.mobile-dl{display:block}.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:14px 0;z-index:999}.nav-links .nav-link{padding:11px 22px}.nav-links .tw{padding:11px 22px;border-left:none;border-top:1px solid var(--line);margin-top:6px}.nav-links.open{display:flex}.dropdown-content{left:16px;transform:none}.dropdown.active .dropdown-content{transform:none}.page-hero{padding:120px 22px 40px}.sitemap-section{padding:20px 22px 60px}.sitemap-grid{grid-template-columns:1fr}.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
+  </style>
+  <script defer src="col-router.js"></script><script defer src="col-auth.js"></script>
+</head>
+<body>
+<script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
+<div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Sitemap</div><div class="lbar"></div></div>
+
+<nav class="top-nav" id="topNav">
+  <a href="home.html" class="nav-brand"><img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async"><span class="brand-name">Class Of Learners</span></a>
+  <button class="mmb" id="mmb" aria-label="Toggle menu"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <div class="nav-links" id="navLinks">
+    <a href="home.html" class="nav-link">Home</a><a href="about.html" class="nav-link">About</a><a href="school.html" class="nav-link">School</a><a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+    <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')"><button class="dropdown-btn">Projects <span class="darr">&#9660;</span></button><div class="dropdown-content"><div class="dropdown-content-inner"><a href="ati.html">Typing Instructor <span>&#9109;&#65039;</span></a><a href="solar.html">Solar Engine <span>&#127680;</span></a><a href="gesture.html">Gesture Control <span>&#128400;&#65039;</span></a><a href="rpg.html">RPG Game <span>&#9876;&#65039;</span></a><a href="qr.html">QR Generator <span>&#11035;</span></a></div></div></div>
+    <div class="tw"><span class="tl" id="tLabel">Light</span><label class="tsb" for="tsck"><input type="checkbox" id="tsck" aria-label="Toggle light mode" onchange="toggleTheme(this)"><div class="tst"><div class="tsth">&#9728;&#65039;</div></div></label></div>
+    <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>Sign In</button>
+    <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()"><div class="nav-user-avatar" id="navUserAv">?</div><span class="nun" id="navUserName">User</span></div>
+    <a href="download.html" class="nav-dl-btn mobile-dl">Downloads</a>
+  </div>
+  <a href="download.html" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section class="page-hero">
+  <div class="sey">Site Map</div>
+  <h1>Navigate Our <em>Studio</em>.</h1>
+  <p class="page-subtitle">A complete directory of all pages on the Class of Learners website. Find projects, tools, and resources quickly.</p>
+</section>
+
+<!-- ==================== SITEMAP ==================== -->
+<section class="sitemap-section">
+  <!-- Main Pages -->
+  <div class="sitemap-group">
+    <div class="sitemap-group-title">Main Pages</div>
+    <div class="sitemap-grid">
+      <a href="home.html" class="sitemap-card csig">
+        <div class="sc-icon">&#127968;</div>
+        <h3 class="sc-name">Home</h3>
+        <p class="sc-desc">Studio hub — explore our projects and meet the team behind Class of Learners.</p>
+        <span class="sc-badge badge-proj">Home</span>
+      </a>
+      <a href="about.html" class="sitemap-card cion">
+        <div class="sc-icon">&#128100;</div>
+        <h3 class="sc-name">About Us</h3>
+        <p class="sc-desc">The team, the story, and the mission behind the studio. Meet Neel, Ansh, and Aarush.</p>
+        <span class="sc-badge badge-info">Team</span>
+      </a>
+      <a href="school.html" class="sitemap-card cpla">
+        <div class="sc-icon">&#127891;</div>
+        <h3 class="sc-name">School</h3>
+        <p class="sc-desc">CBSE Bhavani Shankar School — the foundation of our technical excellence.</p>
+        <span class="sc-badge badge-info">Education</span>
+      </a>
+      <a href="sneh-asha.html" class="sitemap-card cemp">
+        <div class="sc-icon">&#128153;</div>
+        <h3 class="sc-name">Sneh Asha</h3>
+        <p class="sc-desc">Social impact initiative using technology to empower students in need.</p>
+        <span class="sc-badge badge-info">Initiative</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Projects -->
+  <div class="sitemap-group">
+    <div class="sitemap-group-title">Projects</div>
+    <div class="sitemap-grid">
+      <a href="ati.html" class="sitemap-card csig">
+        <div class="sc-icon">&#9000;&#65039;</div>
+        <h3 class="sc-name">ATI — Advanced Typing Instructor</h3>
+        <p class="sc-desc">Master Python, C++, and JavaScript syntax with adaptive heatmaps and a virtual mechanical keyboard.</p>
+        <span class="sc-badge badge-proj">Project</span>
+      </a>
+      <a href="solar.html" class="sitemap-card cion">
+        <div class="sc-icon">&#127760;</div>
+        <h3 class="sc-name">Solar Engine</h3>
+        <p class="sc-desc">Deep-space telemetry and accurate orbital mechanics simulated in a standalone 3D engine.</p>
+        <span class="sc-badge badge-proj">Project</span>
+      </a>
+      <a href="gesture.html" class="sitemap-card ctea">
+        <div class="sc-icon">&#128400;&#65039;</div>
+        <h3 class="sc-name">Gesture Controller</h3>
+        <p class="sc-desc">Machine-vision hand tracking — control your PC with real-time webcam gestures.</p>
+        <span class="sc-badge badge-proj">Project</span>
+      </a>
+      <a href="rpg.html" class="sitemap-card cpla">
+        <div class="sc-icon">&#9876;&#65039;</div>
+        <h3 class="sc-name">RPG Game</h3>
+        <p class="sc-desc">Epic role-playing adventure with battles, levels, and deep story — coming soon.</p>
+        <span class="sc-badge badge-proj">Coming Soon</span>
+      </a>
+      <a href="qr.html" class="sitemap-card cemp">
+        <div class="sc-icon">&#11035;</div>
+        <h3 class="sc-name">QR Code Generator</h3>
+        <p class="sc-desc">Generate custom, scannable QR codes instantly for URLs, text, and contact info.</p>
+        <span class="sc-badge badge-proj">Project</span>
+      </a>
+      <a href="qr-editor.html" class="sitemap-card cemp">
+        <div class="sc-icon">&#127912;</div>
+        <h3 class="sc-name">QR Editor</h3>
+        <p class="sc-desc">Customize QR codes with colors, logos, and patterns to match your brand.</p>
+        <span class="sc-badge badge-tool">Tool</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Tools & Demos -->
+  <div class="sitemap-group">
+    <div class="sitemap-group-title">Tools & Demos</div>
+    <div class="sitemap-grid">
+      <a href="ati-demo.html" class="sitemap-card csig">
+        <div class="sc-icon">&#127918;</div>
+        <h3 class="sc-name">ATI Web Demo</h3>
+        <p class="sc-desc">Test your typing speed and accuracy with code snippets, literature, and random words.</p>
+        <span class="sc-badge badge-tool">Demo</span>
+      </a>
+      <a href="engine.html" class="sitemap-card cion">
+        <div class="sc-icon">&#128640;</div>
+        <h3 class="sc-name">Solar System Engine</h3>
+        <p class="sc-desc">3D interactive solar system visualization with realistic orbits and planet data.</p>
+        <span class="sc-badge badge-tool">Engine</span>
+      </a>
+      <a href="q.html" class="sitemap-card cpla">
+        <div class="sc-icon">&#10067;</div>
+        <h3 class="sc-name">Quiz Tool</h3>
+        <p class="sc-desc">Interactive quiz and trivia tool — test your knowledge on various topics.</p>
+        <span class="sc-badge badge-tool">Tool</span>
+      </a>
+      <a href="download.html" class="sitemap-card cemp">
+        <div class="sc-icon">&#128229;</div>
+        <h3 class="sc-name">Downloads</h3>
+        <p class="sc-desc">Get Class of Learners apps including ATI, Solar Engine, and Gesture Controller.</p>
+        <span class="sc-badge badge-tool">Downloads</span>
+      </a>
+      <a href="feedback.html" class="sitemap-card ctea">
+        <div class="sc-icon">&#128172;</div>
+        <h3 class="sc-name">Feedback</h3>
+        <p class="sc-desc">Share feedback — report bugs, suggest features, or send general comments.</p>
+        <span class="sc-badge badge-info">Contact</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Legal & Support -->
+  <div class="sitemap-group">
+    <div class="sitemap-group-title">Legal & Support</div>
+    <div class="sitemap-grid">
+      <a href="privacy.html" class="sitemap-card cion">
+        <div class="sc-icon">&#128274;</div>
+        <h3 class="sc-name">Privacy Policy</h3>
+        <p class="sc-desc">How we handle your data across ATI, Solar Engine, Gesture Controller, and QR Studio.</p>
+        <span class="sc-badge badge-legal">Legal</span>
+      </a>
+      <a href="terms.html" class="sitemap-card cion">
+        <div class="sc-icon">&#128220;</div>
+        <h3 class="sc-name">Terms of Service</h3>
+        <p class="sc-desc">Rules and guidelines for using Class of Learners projects and tools.</p>
+        <span class="sc-badge badge-legal">Legal</span>
+      </a>
+      <a href="admin.html" class="sitemap-card cpla">
+        <div class="sc-icon">&#128736;</div>
+        <h3 class="sc-name">Admin Dashboard</h3>
+        <p class="sc-desc">Internal dashboard for managing projects, analytics, and team operations.</p>
+        <span class="sc-badge badge-legal">Internal</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="sf"><div class="fi"><div class="fb"><span>CoL</span> &middot; Class Of Learners</div><div class="fl"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div></div></footer>
+
+<!-- Auth Modal -->
+<div class="mo" id="loginMo" onclick="if(event.target===this)closeMo()"><div class="md"><div class="mhd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="mbd"><button class="gbtn" id="gSignInBtn" onclick="gSignIn()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Continue with Google</button><div id="loggedInPanel" style="display:none"><label class="ml2">Username</label><input class="mi" id="miName" type="text" placeholder="Your display name"><label class="ml2">Email</label><input class="mi" id="miEmail" type="email" placeholder="Email address" readonly><button class="ms" onclick="updateUsername()">Save Changes</button><button class="mskd" onclick="doLogout()">Sign Out</button></div><button class="msk" onclick="closeMo()">Maybe Later</button></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// Loader
+(function(){function dl(){var l=document.getElementById('loader');if(l&&!l.classList.contains('gone'))l.classList.add('gone');}if(document.readyState==='complete'){setTimeout(dl,300)}else{document.addEventListener('DOMContentLoaded',function(){setTimeout(dl,800)});window.addEventListener('load',function(){setTimeout(dl,300)});}setTimeout(dl,4000);})();
+
+// Nav scroll
+var navEl=document.getElementById('topNav');window.addEventListener('scroll',function(){navEl.classList.toggle('s',scrollY>60);},{passive:true});
+document.getElementById('mmb').addEventListener('click',function(){document.getElementById('navLinks').classList.toggle('open');});
+window.addEventListener('click',function(e){if(!e.target.closest('.dropdown'))document.querySelectorAll('.dropdown').forEach(function(d){d.classList.remove('active');});});
+
+// Theme
+var Storage={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
+function initializeTheme(){var tsck=document.getElementById('tsck'),tl=document.getElementById('tLabel');if(Storage.get('theme')==='light'){document.body.classList.add('lm');if(tsck)tsck.checked=true;if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');if(tsck)tsck.checked=false;if(tl)tl.textContent='Light';}}
+function toggleTheme(el){var tl=document.getElementById('tLabel');if(el.checked){document.body.classList.add('lm');Storage.set('theme','light');if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');Storage.set('theme','dark');if(tl)tl.textContent='Light';}}
+
+// Auth
+var GOOGLE_CLIENT_ID='500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+var curUser=null,googleAccessToken=null;
+function toast(msg,cls){var t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.className='toast '+(cls||'');t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+function gSignIn(){toast('Redirecting\u2026','');var ru=window.location.href.split('#')[0].split('?')[0],sc=encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');window.location.href='https://accounts.google.com/o/oauth2/v2/auth?client_id='+GOOGLE_CLIENT_ID+'&redirect_uri='+encodeURIComponent(ru)+'&response_type=token&scope='+sc;}
+function checkURLForToken(){var hash=window.location.hash.substring(1);if(hash.includes('access_token=')){var params=new URLSearchParams(hash),token=params.get('access_token');if(token){googleAccessToken=token;window.history.replaceState(null,null,window.location.pathname);fetchGoogleProfile(token);}}}
+async function fetchGoogleProfile(token){try{var r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+token}});if(r.ok){var info=await r.json(),savedName=info.name;var ex=Storage.get('qrs_user');if(ex){try{var pp=JSON.parse(ex);if(pp.email===info.email&&pp.name)savedName=pp.name;}catch(e){}}curUser={name:savedName,email:info.email,picture:info.picture,google:true};Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('\u2705 '+savedName,'green');}else{toast('Auth failed.','');}}catch(e){toast('Network error.','');}}
+function loadUser(){var u=Storage.get('qrs_user');if(u){try{curUser=JSON.parse(u);updatePUI();}catch(e){}}}
+function updatePUI(){var nlb=document.getElementById('navLoginBtn'),nup=document.getElementById('navUserProfile');if(!curUser){if(nlb)nlb.style.display='flex';if(nup)nup.style.display='none';return;}if(nlb)nlb.style.display='none';if(nup)nup.style.display='flex';var nun=document.getElementById('navUserName');if(nun)nun.textContent=curUser.name.split(' ')[0];var navAv=document.getElementById('navUserAv');if(curUser.picture){if(navAv)navAv.innerHTML='<img src="'+curUser.picture+'" alt="'+curUser.name+'" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">';}else{if(navAv){navAv.innerHTML='';navAv.textContent=curUser.name.charAt(0).toUpperCase();}}}
+function openLogin(){var mo=document.getElementById('loginMo');if(mo)mo.classList.add('open');var mt=document.getElementById('moAuthTitle'),mSub=document.getElementById('moAuthSub'),mn=document.getElementById('miName'),me=document.getElementById('miEmail'),gBtn=document.getElementById('gSignInBtn'),lip=document.getElementById('loggedInPanel');if(curUser){if(mt)mt.textContent='Google Account';if(mSub)mSub.textContent='Manage your synced profile.';if(gBtn)gBtn.style.display='none';if(lip)lip.style.display='block';if(mn)mn.value=curUser.name;if(me)me.value=curUser.email||'';}else{if(mt)mt.textContent='Authenticate';if(mSub)mSub.textContent='Unlock dashboard storage and cloud sync.';if(gBtn)gBtn.style.display='flex';if(lip)lip.style.display='none';}}
+function closeMo(){var mo=document.getElementById('loginMo');if(mo)mo.classList.remove('open');}
+function updateUsername(){var mn=document.getElementById('miName');if(!mn)return;var n=mn.value.trim();if(!n){toast('Name empty.','');return;}if(curUser){curUser.name=n;Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('\u2705 Updated','green');}}
+function doLogout(){curUser=null;googleAccessToken=null;Storage.set('qrs_user','');updatePUI();closeMo();toast('Signed out.','');}
+(function(){initializeTheme();loadUser();checkURLForToken();})();
+</script>
+</body>
+</html>

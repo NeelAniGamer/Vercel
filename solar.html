@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="description" content="Class of Learners - Solar. An educational tool and resource.">
+    <meta name="description" content="Solar Engine — Interactive solar system visualization. Explore planets, orbits, and space with our 3D simulation tool.">
   <script>
 // --- GLOBAL ADMIN CONFIG CHECKER ---
 (function() {
@@ -213,11 +213,7 @@
         .hero-reveal.visible { opacity: 1; transform: translateY(0); }
 
         /* ���� FOOTER ���� */
-        .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border-light); background: var(--nav-bg); backdrop-filter: blur(10px); margin-top: auto; }
-        .footer-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; flex-wrap: wrap; }
-        .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: 0.2s; text-transform:none;}
-        .footer-links a:hover { color: var(--primary); }
-        .footer-copy { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform:none;}
+
 
         /* ���� UNIVERSAL AUTHENTICATION MODAL CSS (SOLAR THEME) ���� */
         .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s ease; }
@@ -421,7 +417,7 @@
         <iframe data-src="engine.html" class="engine-frame" id="engine-frame" title="Solar System Engine"></iframe>
     </div>
 
-    <footer class="site-footer"><div class="footer-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="footer-copy">&copy; 2026 Neel, Ansh &amp; Aarush.</div></footer>
+    <footer class="sf"><div class="fi"><div class="fb"><span>CoL</span> &middot; Class Of Learners</div><div class="fl"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div></div></footer>
 
     
     <div class="toast" id="toast"></div>
@@ -527,16 +523,16 @@
     function loadUser(){ const u=Storage.get('qrs_user'); if(u){ try{ curUser=JSON.parse(u); updatePUI(); }catch(e){} } }
 
     function updatePUI(){ 
-      const nlb=document.getElementById('navLoginBtn'), nlbM=document.getElementById('navLoginBtnMobile'), nup=document.getElementById('navUserProfile'); 
-      if(!curUser){ if(nlb) nlb.style.display='flex'; if(nlbM) nlbM.style.display='flex'; if(nup) nup.style.display='none'; return; } 
-      if(nlb) nlb.style.display='none'; if(nlbM) nlbM.style.display='none'; if(nup) nup.style.display='flex'; 
+      const nlb=document.getElementById('navLoginBtn'), nup=document.getElementById('navUserProfile'); 
+      if(!curUser){ if(nlb) nlb.style.display='flex'; if(nup) nup.style.display='none'; return; } 
+      if(nlb) nlb.style.display='none'; if(nup) nup.style.display='flex'; 
       const nun=document.getElementById('navUserName'); if(nun) nun.textContent=curUser.name.split(' ')[0]; 
       const navAv=document.getElementById('navUserAv'); 
       if(curUser.picture){ if(navAv) navAv.innerHTML=`<img src="${curUser.picture}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">`; } 
       else { if(navAv) navAv.textContent=curUser.name.charAt(0).toUpperCase(); } 
     }
 
-    function openLogin(){ 
+    function openLogin(){ if(typeof injectLoginModal==='function')injectLoginModal(); 
         const mo = document.getElementById('loginMo'); if(!mo) return; mo.classList.add('open'); 
         const mt = document.getElementById('moAuthTitle'), mSub = document.getElementById('moAuthSub');
         const loggedOutPanel = document.getElementById('loggedOutPanel'), loggedInPanel = document.getElementById('loggedInPanel');

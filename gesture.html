@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="description" content="Class of Learners - Gesture. An educational tool and resource.">
+    <meta name="description" content="Gesture Controller — Control your computer with hand gestures using webcam. Real-time gesture recognition for navigation and interaction.">
   <script>
 // --- GLOBAL ADMIN CONFIG CHECKER ---
 (function() {
@@ -207,10 +207,7 @@
         #output_canvas { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
 
         /* ���� FOOTER ���� */
-        .site-footer { width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--bg); color: var(--muted); font-size: 0.85rem; font-weight: 600; margin-top: auto; }
-        .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 10px; }
-        .footer-links a { color: var(--muted); text-decoration: none; }
-        .footer-links a:hover { color: var(--accent); }
+
 
         /* ���� UPGRADED AUTHENTICATION MODAL BOX (GESTURE) ���� */
         .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s ease; }
@@ -382,9 +379,8 @@
         </div>
     </div>
 
-    <footer class="site-footer"><div class="footer-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="footer-copy">&copy; 2026 Neel, Ansh &amp; Aarush.</div></footer>
+    <footer class="sf"><div class="fi"><div class="fb"><span>CoL</span> &middot; Class Of Learners</div><div class="fl"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div></div></footer>
 
-    
     <div class="toast" id="toast"></div>
 
     <script defer src="global-gesture.js"></script>
@@ -469,7 +465,7 @@
           else { if(navAv){ navAv.innerHTML=''; navAv.textContent=curUser.name.charAt(0).toUpperCase(); } } 
         }
 
-        function openLogin(){ 
+        function openLogin(){ if(typeof injectLoginModal==='function')injectLoginModal(); 
             const mo = document.getElementById('loginMo'); if(!mo) return; mo.classList.add('open'); 
             const mt = document.getElementById('moAuthTitle'), mSub = document.getElementById('moAuthSub');
             const loggedOutPanel = document.getElementById('loggedOutPanel'), loggedInPanel = document.getElementById('loggedInPanel');
