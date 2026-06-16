@@ -624,7 +624,7 @@ function openLogin(){var mo=document.getElementById('loginMo');if(mo)mo.classLis
 function closeMo(){var mo=document.getElementById('loginMo');if(mo)mo.classList.remove('open');}
 function updateUsername(){var mn=document.getElementById('miName');if(!mn)return;var n=mn.value.trim();if(!n){toast('Name empty.','');return;}if(curUser){curUser.name=n;Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('\u2705 Updated','green');}}
 function doLogout(){curUser=null;googleAccessToken=null;Storage.set('qrs_user','');updatePUI();closeMo();toast('Signed out.','');}
-(function(){initializeTheme();})();
+(function(){})();
 </script>
 </body>
 </html>

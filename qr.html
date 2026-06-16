@@ -842,7 +842,7 @@ window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.clos
   if(theme === 'light'){ document.body.classList.add('light'); if(chk) chk.checked=false; } 
   else { document.body.classList.remove('light'); if(chk) chk.checked=true; }
   
-  const lm=document.getElementById('loginMo'); if(lm) lm.addEventListener('click',function(e){if(e.target===this)closeMo();});
+  
   
   checkURLForToken();
   loadUser();

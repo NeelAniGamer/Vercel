@@ -634,15 +634,13 @@ function toggleTheme(element) {
 }
 
 window.addEventListener('load', function() { 
-    initializeTheme(); 
-    
     // Auto-detect the system and fill the input box
     const devInput = document.getElementById('fbDevice');
     if (devInput) devInput.value = detectSystem();
 
     loadUser(); handleCategoryChange(); checkURLForToken(); setTimeout(initGoogle, 400); 
     renderUserFeedback();
-    const lm=document.getElementById('loginMo'); if(lm) lm.addEventListener('click',function(e){if(e.target===this)closeMo();}); 
+     
     const cm=document.getElementById('confirmMo'); if(cm) cm.addEventListener('click',function(e){if(e.target===this)closeConfirm();}); 
 });
 </script>
