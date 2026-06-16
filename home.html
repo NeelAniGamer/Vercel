@@ -140,14 +140,13 @@
   @media(max-width:480px){.hero h1{font-size:2.6rem}.hcta{flex-direction:column}.btn-p,.btn-g{justify-content:center}}
   </style>
   <script defer src="col-router.js"></script><script defer src="col-auth.js"></script>
-
-<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/" />
 </head>
 <body>
 <script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
 <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Studio Hub</div><div class="lbar"></div></div>
 <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
 
+<!-- Hover tooltip for 3D nodes -->
 <div id="ntip"><div id="ntip-inner"><div id="ntip-dot"></div><span id="ntip-name"></span></div></div>
 
 <nav class="top-nav" id="topNav">
@@ -326,6 +325,7 @@
   // ========= RICH BACKGROUND: CODE, BINARY, SWORDS, PLANETS, HANDS, QR, WORDS =========
   var floaters=[];
   var AB=THREE.AdditiveBlending;
+
   function mktx(txt,font,col,w,h){
     var c=document.createElement('canvas');c.width=w;c.height=h;
     var cx3=c.getContext('2d');cx3.clearRect(0,0,w,h);
@@ -339,6 +339,7 @@
   }
   function rnd2(a,b){return a+Math.random()*(b-a);}
   function rpos2(){var a=Math.random()*Math.PI*2,s=rnd2(.006,.02);return[rnd2(-90,120),rnd2(-115,115),rnd2(-170,-30),Math.cos(a)*s,Math.sin(a)*s*.45];}
+
   // 1. CODE LINES (project-specific snippets)
   var codeLines=[
     ['def check_wpm(keys, t):','#F2B84B'],['accuracy = hits / total','#F2B84B'],
@@ -356,12 +357,14 @@
     var p=rpos2();var tex=mktx(cl[0],'13px monospace',cl[1],280,24);
     addF(tex,280/24*5,5,.38+Math.random()*.18,.3,.14,rnd2(.4,1.6),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   });
+
   // 2. BINARY STRINGS
   for(var bii=0;bii<14;bii++){
     var b1='',b2='';for(var bj=0;bj<8;bj++){b1+=Math.random()>.5?'1':'0';}for(var bj=0;bj<8;bj++){b2+=Math.random()>.5?'1':'0';}
     var p=rpos2();var tex=mktx(b1+' '+b2,'11px monospace','#00FF66',210,19);
     addF(tex,210/19*3.8,3.8,.25+Math.random()*.12,.18,.1,rnd2(.7,2),Math.random()*6,p[0],p[1],p[2],p[3]*1.3,p[4]*.5);
   }
+
   // 3. FLOATING KEYWORDS
   var kws2=[['PHYSICS','#5ED4F5'],['GESTURE','#00F0CC'],['BINARY','#34D399'],['ARCADE','#B89BFF'],
     ['VISION','#00F0CC'],['ORBIT','#5ED4F5'],['INPUT','#F2B84B'],['LEARN','#F2B84B'],
@@ -373,6 +376,7 @@
     var p=rpos2();var tex=mktx(kw[0],'bold 18px monospace',kw[1],150,26);
     addF(tex,150/26*5,5,.2+Math.random()*.12,.15,.1,rnd2(.3,1),Math.random()*6,p[0],p[1],p[2],p[3]*.6,p[4]*.6);
   });
+
   // 4. SWORD SYMBOLS (RPG)
   for(var sii=0;sii<8;sii++){
     var sc2=document.createElement('canvas');sc2.width=sc2.height=50;
@@ -388,6 +392,7 @@
     var stex2=new THREE.CanvasTexture(sc2);var p=rpos2();
     addF(stex2,6.5,6.5,.42+Math.random()*.15,.34,.16,rnd2(.3,.9),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   }
+
   // 5. PLANET + ORBIT SYMBOLS (Solar Engine)
   for(var pii=0;pii<7;pii++){
     var pc2=document.createElement('canvas');pc2.width=pc2.height=54;
@@ -404,6 +409,7 @@
     var ptex2=new THREE.CanvasTexture(pc2);var p=rpos2();
     addF(ptex2,7.5,7.5,.38+Math.random()*.15,.3,.13,rnd2(.3,.9),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   }
+
   // 6. KEYBOARD KEYS (ATI Typing Instructor)
   var keyChars2=['A','Z','{ }','def','fn()','</>','↵','⌘'];
   keyChars2.forEach(function(ch){
@@ -417,6 +423,7 @@
     var ktex2=new THREE.CanvasTexture(kc2);var p=rpos2();
     addF(ktex2,54/46*5.5,5.5,.38+Math.random()*.14,.3,.13,rnd2(.35,1),Math.random()*6,p[0],p[1],p[2],p[3]*.7,p[4]*.7);
   });
+
   // 7. HAND / GESTURE SYMBOLS
   for(var hii=0;hii<6;hii++){
     var hc2=document.createElement('canvas');hc2.width=hc2.height=52;
@@ -437,6 +444,7 @@
     var htex2=new THREE.CanvasTexture(hc2);var p=rpos2();
     addF(htex2,7.5,7.5,.4+Math.random()*.15,.32,.15,rnd2(.3,.85),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   }
+
   // 8. QR MINI GRIDS (QR Generator)
   for(var qii=0;qii<6;qii++){
     var qc3=document.createElement('canvas');qc3.width=qc3.height=54;
@@ -447,12 +455,14 @@
     var qtex3=new THREE.CanvasTexture(qc3);var p=rpos2();
     addF(qtex3,6.5,6.5,.35+Math.random()*.14,.28,.1,rnd2(.25,.7),Math.random()*6,p[0],p[1],p[2],p[3]*.7,p[4]*.7);
   }
+
   // 9. PHYSICS FORMULAS (Solar Engine)
   var formulas2=['E = mc\u00B2','F = G\u00B7m\u2081m\u2082/r\u00B2','v\u00B2 = GM/r','F = ma','p = mv','a = F/m','\u03B4E = \u00BDmv\u00B2','r = v\u00B2/g'];
   formulas2.forEach(function(f3){
     var p=rpos2();var tex=mktx(f3,'italic 14px serif','#5ED4F5',200,26);
     addF(tex,200/26*5,5,.28+Math.random()*.14,.22,.1,rnd2(.3,.9),Math.random()*6,p[0],p[1],p[2],p[3]*.6,p[4]*.6);
   });
+
   // 10. RPG GAME STATS
   var stats3=[['HP: 100/100','#B89BFF'],['ATK: 47','#B89BFF'],['DEF: 23','#B89BFF'],
     ['XP: +250','#F2B84B'],['LVL UP!','#F2B84B'],['CRIT x2!','#F2B84B'],
@@ -461,18 +471,22 @@
     var p=rpos2();var tex=mktx(st3[0],'bold 13px monospace',st3[1],155,24);
     addF(tex,155/24*4.5,4.5,.3+Math.random()*.14,.22,.13,rnd2(.4,1.4),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   });
+
   // 11. HEX / ADDRESS STRINGS (tech/hacker feel)
   var hexStrings=['0x00FF4A2B','0xDEADBEEF','0x07A1B4CC','0xFF0000FF','0xC0DE1234'];
   hexStrings.forEach(function(hs){
     var p=rpos2();var tex=mktx(hs,'11px monospace','#34D399',160,19);
     addF(tex,160/19*3.5,3.5,.22+Math.random()*.12,.16,.08,rnd2(.5,1.5),Math.random()*6,p[0],p[1],p[2],p[3]*1.2,p[4]*.5);
   });
+
   // 12. GESTURE LANDMARK COORDS (Gesture Control)
   var coords=['[0.42, 0.71, -0.03]','landmark[8]: 0.38','pinch: 0.062','palm.z = -0.14','wrist.x = 0.51'];
   coords.forEach(function(co){
     var p=rpos2();var tex=mktx(co,'11px monospace','#00F0CC',230,20);
     addF(tex,230/20*4,4,.28+Math.random()*.12,.22,.09,rnd2(.5,1.4),Math.random()*6,p[0],p[1],p[2],p[3],p[4]);
   });
+
+
 
   // --- STATE ---
   var mx=0,my=0,cx=0,cy=0,scrollOff=0;
