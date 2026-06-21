@@ -57,9 +57,9 @@
   .hvig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 65% 90% at 50% 50%,transparent 0%,var(--void) 90%);transition:background .5s;z-index:1}
   .hvigb{position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to top,var(--void),transparent);pointer-events:none;z-index:1}
   .shc{position:relative;z-index:2;max-width:1360px;width:100%;margin:0 auto;padding:160px 52px 80px;text-align:center}
-  .hey{font-family:var(--mono);font-size:.7rem;letter-spacing:.4em;color:var(--signal);text-transform:uppercase;margin-bottom:30px;display:inline-flex;align-items:center;gap:14px;opacity:0;transform:translateY(18px);animation:fu .8s var(--ease) .7s forwards}
+  .hey{font-family:var(--mono);font-size:.9rem;font-weight:700;letter-spacing:.4em;color:var(--signal);text-transform:uppercase;margin-bottom:30px;display:inline-flex;align-items:center;gap:14px;opacity:0;transform:translateY(18px);animation:fu .8s var(--ease) .7s forwards}
   .hey::before,.hey::after{content:'';width:24px;height:1px;background:var(--signal);flex-shrink:0}
-  .hero-badge{display:inline-block;background:var(--ion);color:#0A0500;font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:7px 18px;border-radius:20px;margin-bottom:26px;opacity:0;transform:translateY(14px);animation:fu .7s var(--ease) .9s forwards}
+  .hero-badge{display:inline-block;background:var(--ion);color:#0A0500;font-family:var(--mono);font-size:.9rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:10px 24px;border-radius:30px;margin-bottom:26px;opacity:0;transform:translateY(14px);animation:fu .7s var(--ease) .9s forwards}
   .school-hero h1{font-family:var(--serif);font-size:clamp(3.2rem,8vw,7rem);font-weight:400;line-height:1.05;letter-spacing:-.01em;opacity:0;transform:translateY(28px);animation:fu .95s var(--ease) 1.05s forwards;margin:0 auto;max-width:20ch}
   .school-hero h1 em{font-style:italic;color:var(--ion)}
   .hlede{font-size:clamp(1.05rem,1.5vw,1.25rem);line-height:1.7;color:var(--dim);max-width:55ch;margin:28px auto 0;opacity:0;transform:translateY(18px);animation:fu .8s var(--ease) 1.25s forwards}
@@ -113,68 +113,32 @@
   @media(max-width:768px){.top-nav{padding:16px 20px}.top-nav.s{padding:12px 20px}.mmb{display:flex}.desktop-dl{display:none}.mobile-dl{display:block}.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:14px 0;z-index:999}.nav-links .nav-link{padding:11px 22px}.nav-links .tw{padding:11px 22px;border-left:none;border-top:1px solid var(--line);margin-top:6px}.nav-links.open{display:flex}.dropdown-content{left:16px;transform:none}.dropdown.active .dropdown-content{transform:none}.shc{padding:120px 22px 60px}.section{padding:60px 22px}.pillars-grid{grid-template-columns:1fr}.main-school-card{padding:40px 24px}.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
   @media(max-width:480px){.school-hero h1{font-size:2.8rem}}
   </style>
-  
-
-  
-  
-  
-
-<script defer src="col-router.js"></script>
-<link rel="stylesheet" href="col-ui.css">
-<script defer src="col-ui.js"></script>
-<script defer src="col-auth.js"></script>
+  <script defer src="col-router.js"></script>
+  <link rel="stylesheet" href="col-ui.css">
+  <script defer src="col-ui.js"></script>
+  <script defer src="col-auth.js"></script>
 </head>
 <body>
 
-<nav class="top-nav">
-    <a href="index.html" class="nav-brand">
-        <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
-        <span class="brand-name">Class Of Learners</span>
-    </a>
-    <button class="mmb" id="mmb">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-    </button>
-    <div class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link">Home Hub</a>
-        <a href="about.html" class="nav-link">About Us</a>
-        <a href="school.html" class="nav-link">Our School</a>
-        <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
-        <div class="dropdown" onclick="this.classList.toggle('active')">
-            <button class="dropdown-btn">Projects <span class="darr">▼</span></button>
-            <div class="dropdown-content">
-                <div class="dropdown-content-inner">
-                    <a href="ati.html">Typing Instructor <span>⌨️</span></a>
-                    <a href="solar.html">Solar Engine <span>🌍</span></a>
-                    <a href="gesture.html">Gesture Control <span>🖐️</span></a>
-                    <a href="rpg.html">RPG Game <span>⚔️</span></a>
-                    <a href="qr.html">QR Generator <span>⬛</span></a>
-                </div>
-            </div>
-        </div>
-        <div class="tw">
-            <span class="tl" id="tLabel">Light</span>
-            <label class="tsb">
-                <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)">
-                <div class="tst"><div class="tsth"></div></div>
-            </label>
-        </div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="window.openGlobalLogin()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Sign In
-        </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="window.openGlobalLogin()">
-            <div class="nav-user-avatar" id="navUserAv">?</div>
-            <span class="nun" id="navUserName">User</span>
-        </div>
-        <a href="download.html" class="nav-dl-btn mobile-dl">Download Hub</a>
-    </div>
-    <a href="download.html" class="nav-dl-btn desktop-dl">Download Hub</a>
-</nav>
+
 
 <script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
 <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Our School</div><div class="lbar"></div></div>
 <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
 
-
+<nav class="top-nav" id="topNav">
+  <a href="home.html" class="nav-brand"><img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async"><span class="brand-name">Class Of Learners</span></a>
+  <button class="mmb" id="mmb" aria-label="Toggle menu"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+  <div class="nav-links" id="navLinks">
+    <a href="home.html" class="nav-link">Home</a><a href="about.html" class="nav-link">About</a><a href="school.html" class="nav-link act">School</a><a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+    <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')"><button class="dropdown-btn">Projects <span class="darr">&#9660;</span></button><div class="dropdown-content"><div class="dropdown-content-inner"><a href="ati.html">Typing Instructor <span>&#9109;&#65039;</span></a><a href="solar.html">Solar Engine <span>&#127760;</span></a><a href="gesture.html">Gesture Control <span>&#128400;&#65039;</span></a><a href="rpg.html">RPG Game <span>&#9876;&#65039;</span></a><a href="qr.html">QR Generator <span>&#11035;</span></a></div></div></div>
+    <div class="tw"><span class="tl" id="tLabel">Light</span><label class="tsb" for="tsck"><input type="checkbox" id="tsck" aria-label="Toggle light mode" onchange="toggleTheme(this)"><div class="tst"><div class="tsth">&#9728;&#65039;</div></div></label></div>
+    <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>Sign In</button>
+    <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()"><div class="nav-user-avatar" id="navUserAv">?</div><span class="nun" id="navUserName">User</span></div>
+    <a href="download.html" class="nav-dl-btn mobile-dl">Downloads</a>
+  </div>
+  <a href="download.html" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+</nav>
 
 <!-- HERO -->
 <section class="school-hero">
@@ -218,11 +182,11 @@
 </section>
 
 <!-- FOOTER -->
-
+<footer class="sf"><div class="fi"><div class="fb"><span>CoL</span> &middot; Class Of Learners</div><div class="fl"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="feedback.html">Feedback</a><a href="download.html">Downloads</a></div><div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div></div></footer>
 
 <!-- AUTH MODAL -->
-
-
+<div class="mo" id="loginMo" onclick="if(event.target===this)closeMo()"><div class="md"><div class="mhd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="mbd"><button class="gbtn" id="gSignInBtn" onclick="gSignIn()"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Continue with Google</button><div id="loggedInPanel" style="display:none"><label class="ml2">Username</label><input class="mi" id="miName" type="text" placeholder="Your display name"><label class="ml2">Email</label><input class="mi" id="miEmail" type="email" placeholder="Email address" readonly><button class="ms" onclick="updateUsername()">Save Changes</button><button class="mskd" onclick="doLogout()">Sign Out</button></div><button class="msk" onclick="closeMo()">Maybe Later</button></div></div></div>
+<div class="toast" id="toast"></div>
 
 <!-- 3D ARCHITECTURAL / GRID BACKGROUND -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -254,14 +218,20 @@
   gridGeo.setFromPoints(pts);
   scene.add(new THREE.LineSegments(gridGeo, lineMat));
 
-  // Floating structured geometry (wireframe cubes) representing foundation and architecture
+  // Floating structured geometry (wireframes) representing foundation and architecture
   var cubes = [];
-  var cubeGeo = new THREE.BoxGeometry(10, 10, 10);
-  var edgeGeo = new THREE.EdgesGeometry(cubeGeo);
+  var geos = [
+    new THREE.BoxGeometry(10, 10, 10),
+    new THREE.TetrahedronGeometry(8),
+    new THREE.OctahedronGeometry(8),
+    new THREE.IcosahedronGeometry(7)
+  ];
+  var edgesGeo = geos.map(function(g){ return new THREE.EdgesGeometry(g); });
   
   var colors = [0x5ED4F5, 0x00F0CC, 0xB89BFF, 0x5ED4F5];
   for(var i=0; i<40; i++){
     var col = colors[i%colors.length];
+    var edgeGeo = edgesGeo[Math.floor(Math.random()*edgesGeo.length)];
     var mat = new THREE.LineBasicMaterial({color:col, transparent:true, opacity:0.35});
     var mesh = new THREE.LineSegments(edgeGeo, mat);
     var scale = 0.5 + Math.random()*2;
@@ -272,19 +242,7 @@
     cubes.push({mesh:mesh, rspeedX:(Math.random()-0.5)*0.01, rspeedY:(Math.random()-0.5)*0.01, oy:mesh.position.y, off:Math.random()*Math.PI*2});
   }
 
-  // Nebula clouds for depth
-  function makeNeb(colStr, op){
-    var nc=document.createElement('canvas');nc.width=nc.height=128;
-    var c2=nc.getContext('2d'),grd=c2.createRadialGradient(64,64,0,64,64,64);
-    grd.addColorStop(0,colStr.replace(')',','+op+')').replace('rgb','rgba'));
-    grd.addColorStop(.4,colStr.replace(')',','+(op*.3)+')').replace('rgb','rgba'));
-    grd.addColorStop(1,'rgba(0,0,0,0)');
-    c2.fillStyle=grd;c2.fillRect(0,0,128,128);
-    return new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(nc),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
-  }
-  var n1 = makeNeb('rgb(94,212,245)', 0.12); n1.position.set(-150, 0, -100); n1.scale.set(300,300,300); scene.add(n1);
-  var n2 = makeNeb('rgb(184,155,255)', 0.1); n2.position.set(180, 40, -150); n2.scale.set(400,400,400); scene.add(n2);
-  var n3 = makeNeb('rgb(0,240,204)', 0.08); n3.position.set(0, -50, -80); n3.scale.set(250,250,250); scene.add(n3);
+
 
   // Particles
   var PC=1500,pGeo=new THREE.BufferGeometry();
@@ -331,13 +289,32 @@
 })();
 
 window.addEventListener('load',function(){setTimeout(function(){var l=document.getElementById('loader');if(l)l.classList.add('gone');},1300);});
-
-
+var navEl=document.getElementById('topNav');window.addEventListener('scroll',function(){navEl.classList.toggle('s',scrollY>60);},{passive:true});
+document.getElementById('mmb').addEventListener('click',function(){document.getElementById('navLinks').classList.toggle('open');});
 window.addEventListener('click',function(e){if(!e.target.closest('.dropdown'))document.querySelectorAll('.dropdown').forEach(function(d){d.classList.remove('active');});});
 
 // Scroll reveals
 (function(){var els=document.querySelectorAll('.rv');var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('vis');io.unobserve(entry.target);}});},{threshold:.08});els.forEach(function(el){io.observe(el);});})();
 
+// Theme
+var Storage={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
+function initializeTheme(){var tsck=document.getElementById('tsck'),tl=document.getElementById('tLabel');if(Storage.get('theme')==='light'){document.body.classList.add('lm');if(tsck)tsck.checked=true;if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');if(tsck)tsck.checked=false;if(tl)tl.textContent='Light';}}
+function toggleTheme(el){var tl=document.getElementById('tLabel');if(el.checked){document.body.classList.add('lm');Storage.set('theme','light');if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');Storage.set('theme','dark');if(tl)tl.textContent='Light';}}
+
+// Auth
+var GOOGLE_CLIENT_ID='500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+var curUser=null,googleAccessToken=null;
+function toast(msg,cls){var t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.className='toast '+(cls||'');t.classList.add('show');setTimeout(function(){t.classList.remove('show');},3000);}
+function gSignIn(){toast('Redirecting\u2026','');var ru=window.location.href.split('#')[0].split('?')[0],sc=encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');window.location.href='https://accounts.google.com/o/oauth2/v2/auth?client_id='+GOOGLE_CLIENT_ID+'&redirect_uri='+encodeURIComponent(ru)+'&response_type=token&scope='+sc;}
+function checkURLForToken(){var hash=window.location.hash.substring(1);if(hash.includes('access_token=')){var params=new URLSearchParams(hash),token=params.get('access_token');if(token){googleAccessToken=token;window.history.replaceState(null,null,window.location.pathname);fetchGoogleProfile(token);}}}
+async function fetchGoogleProfile(token){try{var r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+token}});if(r.ok){var info=await r.json(),savedName=info.name;var ex=Storage.get('qrs_user');if(ex){try{var pp=JSON.parse(ex);if(pp.email===info.email&&pp.name)savedName=pp.name;}catch(e){}}curUser={name:savedName,email:info.email,picture:info.picture,google:true};Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('\u2705 '+savedName,'green');}else{toast('Auth failed.','');}}catch(e){toast('Network error.','');}}
+function loadUser(){var u=Storage.get('qrs_user');if(u){try{curUser=JSON.parse(u);updatePUI();}catch(e){}}}
+function updatePUI(){var nlb=document.getElementById('navLoginBtn'),nup=document.getElementById('navUserProfile');if(!curUser){if(nlb)nlb.style.display='flex';if(nup)nup.style.display='none';return;}if(nlb)nlb.style.display='none';if(nup)nup.style.display='flex';var nun=document.getElementById('navUserName');if(nun)nun.textContent=curUser.name.split(' ')[0];var navAv=document.getElementById('navUserAv');if(curUser.picture){if(navAv)navAv.innerHTML='<img src="'+curUser.picture+'" alt="'+curUser.name+'" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">';}else{if(navAv){navAv.innerHTML='';navAv.textContent=curUser.name.charAt(0).toUpperCase();}}}
+function openLogin(){var mo=document.getElementById('loginMo');if(mo)mo.classList.add('open');var mt=document.getElementById('moAuthTitle'),mSub=document.getElementById('moAuthSub'),mn=document.getElementById('miName'),me=document.getElementById('miEmail'),gBtn=document.getElementById('gSignInBtn'),lip=document.getElementById('loggedInPanel');if(curUser){if(mt)mt.textContent='Google Account';if(mSub)mSub.textContent='Manage your synced profile.';if(gBtn)gBtn.style.display='none';if(lip)lip.style.display='block';if(mn)mn.value=curUser.name;if(me)me.value=curUser.email||'';}else{if(mt)mt.textContent='Authenticate';if(mSub)mSub.textContent='Unlock dashboard storage and cloud sync.';if(gBtn)gBtn.style.display='flex';if(lip)lip.style.display='none';}}
+function closeMo(){var mo=document.getElementById('loginMo');if(mo)mo.classList.remove('open');}
+function updateUsername(){var mn=document.getElementById('miName');if(!mn)return;var n=mn.value.trim();if(!n){toast('Name empty.','');return;}if(curUser){curUser.name=n;Storage.set('qrs_user',JSON.stringify(curUser));updatePUI();closeMo();toast('\u2705 Updated','green');}}
+function doLogout(){curUser=null;googleAccessToken=null;Storage.set('qrs_user','');updatePUI();closeMo();toast('Signed out.','');}
+(function(){initializeTheme();loadUser();checkURLForToken();})();
 </script>
 
 <footer class="sf">
