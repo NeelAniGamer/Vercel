@@ -63,6 +63,7 @@ if (!window.closeMo) {
             }
         }
     } catch (e) {
+        console.warn('[col-auth] Could not load config.json — authentication disabled.');
     }
 
     // 2. Load Supabase SDK if keys exist
@@ -238,9 +239,14 @@ if (!window.closeMo) {
     
     window.colDoGoogle = async () => {
         if(!supabaseClient) return;
+        // Restrict redirect to known production origin to prevent open redirect
+        var allowedOrigin = 'https://advancedlogiclabs.dpdns.org';
+        var redirectUrl = window.location.origin === allowedOrigin
+            ? window.location.href
+            : allowedOrigin;
         await supabaseClient.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: window.location.href }
+            options: { redirectTo: redirectUrl }
         });
     };
 
