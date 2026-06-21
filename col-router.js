@@ -1,5 +1,7 @@
 // Class Of Learners Global Router & Banner System
 (async function() {
+    if (window._colRouterRunning) return;
+    window._colRouterRunning = true;
     try {
         // Fetch global config from GitHub/Vercel
         const res = await fetch('config.json?t=' + new Date().getTime());

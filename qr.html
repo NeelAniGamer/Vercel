@@ -227,14 +227,20 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   .db-stats-ext { grid-template-columns: 1fr !important; }
 }
 </style>
-<script defer src="col-router.js"></script>
+
 
 <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr.html" />
+
+<script defer src="col-router.js"></script>
+<link rel="stylesheet" href="col-ui.css">
+<script defer src="col-ui.js"></script>
+<script defer src="col-auth.js"></script>
+<meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU"/>
 </head>
 <body class="dark-mode">
 <nav class="top-nav">
         <a href="index.html" class="nav-brand">
-            <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
+            <img loading="lazy" src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
             <span>Class Of Learners</span>
         </a>
         <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
@@ -854,5 +860,19 @@ function toggleTheme(element){
     else{ document.body.classList.add('light'); Storage.set('theme', 'light'); }
 }
 </script>
+
+<footer class="sf">
+    <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+            <a href="privacy.html">Privacy</a>
+            <a href="terms.html">Terms</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="download.html">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+    </div>
+</footer>
+
 </body>
 </html>

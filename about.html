@@ -170,13 +170,63 @@
   @media(max-width:768px){.top-nav{padding:16px 20px}.top-nav.s{padding:12px 20px}.mmb{display:flex}.desktop-dl{display:none}.mobile-dl{display:block}.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:14px 0;z-index:999}.nav-links .nav-link{padding:11px 22px}.nav-links .tw{padding:11px 22px;border-left:none;border-top:1px solid var(--line);margin-top:6px}.nav-links.open{display:flex}.dropdown-content{left:16px;transform:none}.dropdown.active .dropdown-content{transform:none}.ahc{padding:120px 22px 60px}.sci{left:22px}.section{padding:80px 22px 60px}.team-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr}.stat{border-right:none;border-bottom:1px solid var(--line)}.stat:last-child{border-bottom:none}.mentor-card{flex-direction:column;text-align:center;gap:28px}.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
   @media(max-width:480px){.about-hero h1{font-size:2.6rem}}
   </style>
-  <script defer src="col-router.js"></script><script defer src="col-auth.js"></script>
+  
 
-  <link rel="stylesheet" href="col-ui.css">
-  <script defer src="col-ui.js"></script>
-  <script defer src="col-auth.js"></script>
+  
+  
+  
+
+<script defer src="col-router.js"></script>
+<link rel="stylesheet" href="col-ui.css">
+<script defer src="col-ui.js"></script>
+<script defer src="col-auth.js"></script>
 </head>
 <body>
+
+<nav class="top-nav">
+    <a href="index.html" class="nav-brand">
+        <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
+        <span class="brand-name">Class Of Learners</span>
+    </a>
+    <button class="mmb" id="mmb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home Hub</a>
+        <a href="about.html" class="nav-link">About Us</a>
+        <a href="school.html" class="nav-link">Our School</a>
+        <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+        <div class="dropdown" onclick="this.classList.toggle('active')">
+            <button class="dropdown-btn">Projects <span class="darr">▼</span></button>
+            <div class="dropdown-content">
+                <div class="dropdown-content-inner">
+                    <a href="ati.html">Typing Instructor <span>⌨️</span></a>
+                    <a href="solar.html">Solar Engine <span>🌍</span></a>
+                    <a href="gesture.html">Gesture Control <span>🖐️</span></a>
+                    <a href="rpg.html">RPG Game <span>⚔️</span></a>
+                    <a href="qr.html">QR Generator <span>⬛</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="tw">
+            <span class="tl" id="tLabel">Light</span>
+            <label class="tsb">
+                <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)">
+                <div class="tst"><div class="tsth"></div></div>
+            </label>
+        </div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="window.openGlobalLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="window.openGlobalLogin()">
+            <div class="nav-user-avatar" id="navUserAv">?</div>
+            <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download.html" class="nav-dl-btn mobile-dl">Download Hub</a>
+    </div>
+    <a href="download.html" class="nav-dl-btn desktop-dl">Download Hub</a>
+</nav>
+
 <script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
 <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; About</div><div class="lbar"></div></div>
 <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
@@ -190,7 +240,7 @@
   <div class="ahc">
     <div class="hey">Our Story &middot; Est.&nbsp;2024</div>
     <h1>The Minds Behind The <em>Code</em>.</h1>
-    <p class="hlede">Three students from Mumbai with a shared obsession for programming logic, deep-space physics, and interactive design &mdash; building tools the world can learn from.</p>
+    <p class="hlede">Three passionate students from Mumbai with a shared obsession for programming logic, deep-space physics, and interactive design &mdash; building tools the world can learn from. We believe that technology should be accessible, and education should be an engaging journey fueled by curiosity and innovation.</p>
   </div>
   <div class="sci"><span>Scroll</span><div class="scl"></div></div>
 </section>
@@ -287,9 +337,39 @@
 </section>
 
 <!-- ==================== FOOTER ==================== -->
-
+<footer class="sf">
+  <div class="fi">
+    <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+    <div class="fl">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="download.html">Downloads</a>
+    </div>
+    <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+  </div>
+</footer>
 
 <!-- ==================== AUTH MODAL ==================== -->
+<div class="mo" id="loginMo">
+  <div class="md">
+    <div class="mhd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div>
+    <div class="mbd">
+      <button class="gbtn" id="gSignInBtn" onclick="gSignIn()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Sign in with Google
+      </button>
+      <div id="loggedInPanel" style="display:none;">
+        <label class="ml2">Name</label><input class="mi" id="miName" type="text" placeholder="Your display name">
+        <label class="ml2">Email</label><input class="mi" id="miEmail" type="email" placeholder="Email" readonly>
+        <button class="ms" onclick="updateUsername()">Save Profile</button>
+        <button class="msk" onclick="closeMo()">Close</button>
+        <button class="mskd" onclick="doLogout()">Sign Out</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
 
 
 

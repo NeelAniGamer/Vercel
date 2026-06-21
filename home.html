@@ -139,12 +139,62 @@
   @media(max-width:768px){.top-nav{padding:16px 20px}.top-nav.s{padding:12px 20px}.mmb{display:flex}.desktop-dl{display:none}.mobile-dl{display:block}.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:14px 0;z-index:999}.nav-links .nav-link{padding:11px 22px}.nav-links .tw{padding:11px 22px;border-left:none;border-top:1px solid var(--line);margin-top:6px}.nav-links.open{display:flex}.dropdown-content{left:16px;transform:none}.dropdown.active .dropdown-content{transform:none}.hc{padding:120px 22px 60px}.hst{display:none}.sci{left:22px}.ps{padding:80px 22px 100px}.sh{flex-direction:column;align-items:flex-start}.pgrid{grid-template-columns:1fr}.pc.feat,.pc:not(.feat){grid-column:1}.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
   @media(max-width:480px){.hero h1{font-size:2.6rem}.hcta{flex-direction:column}.btn-p,.btn-g{justify-content:center}}
   </style>
-  <script defer src="col-router.js"></script>
-  <link rel="stylesheet" href="col-ui.css">
-  <script defer src="col-ui.js"></script>
-  <script defer src="col-auth.js"></script>
+  
+  
+  
+  
+
+<script defer src="col-router.js"></script>
+<link rel="stylesheet" href="col-ui.css">
+<script defer src="col-ui.js"></script>
+<script defer src="col-auth.js"></script>
 </head>
 <body>
+
+<nav class="top-nav">
+    <a href="index.html" class="nav-brand">
+        <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
+        <span class="brand-name">Class Of Learners</span>
+    </a>
+    <button class="mmb" id="mmb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home Hub</a>
+        <a href="about.html" class="nav-link">About Us</a>
+        <a href="school.html" class="nav-link">Our School</a>
+        <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+        <div class="dropdown" onclick="this.classList.toggle('active')">
+            <button class="dropdown-btn">Projects <span class="darr">▼</span></button>
+            <div class="dropdown-content">
+                <div class="dropdown-content-inner">
+                    <a href="ati.html">Typing Instructor <span>⌨️</span></a>
+                    <a href="solar.html">Solar Engine <span>🌍</span></a>
+                    <a href="gesture.html">Gesture Control <span>🖐️</span></a>
+                    <a href="rpg.html">RPG Game <span>⚔️</span></a>
+                    <a href="qr.html">QR Generator <span>⬛</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="tw">
+            <span class="tl" id="tLabel">Light</span>
+            <label class="tsb">
+                <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)">
+                <div class="tst"><div class="tsth"></div></div>
+            </label>
+        </div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="window.openGlobalLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="window.openGlobalLogin()">
+            <div class="nav-user-avatar" id="navUserAv">?</div>
+            <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download.html" class="nav-dl-btn mobile-dl">Download Hub</a>
+    </div>
+    <a href="download.html" class="nav-dl-btn desktop-dl">Download Hub</a>
+</nav>
+
 <script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
 <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Studio Hub</div><div class="lbar"></div></div>
 <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
@@ -159,7 +209,7 @@
   <div class="hc">
     <div class="hey">Mumbai &middot; India &middot; Est.&nbsp;2024</div>
     <h1>Engineering The <em>Future</em> Of Interactive Learning.</h1>
-    <p class="hlede">A working portfolio of programming logic, machine vision, and deep-space physics engines &mdash; built by three students, designed for the world.</p>
+    <p class="hlede">A working portfolio of programming logic, machine vision, and deep-space physics engines &mdash; built by three students from Mumbai, designed for the world. We build tools that make complex computer science concepts accessible, engaging, and performant.</p>
     <div class="hcta"><a href="#projects" class="btn-p">View Projects <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></a><a href="about.html" class="btn-g">Our Story &#8594;</a></div>
   </div>
   <div class="sci"><span>Scroll</span><div class="scl"></div></div>
@@ -167,13 +217,13 @@
 </section>
 
 <section class="ps" id="projects">
-  <div class="sh"><div><div class="sey">Studio Projects 01&ndash;05</div><h2 class="st">Five Tools.<br>One Studio.</h2></div><p class="ssb">Each project is a standalone engine &mdash; a focused exploration of a specific domain of computer science and interactive design.</p></div>
+  <div class="sh"><div><div class="sey">Portfolio</div><h2 class="st">Five Tools.<br>One Studio.</h2></div><p class="ssb">Each project is a standalone engine &mdash; a focused exploration of a specific domain of computer science and interactive design, engineered from scratch to push the boundaries of what web applications can do.</p></div>
   <div class="pgrid">
-    <a href="solar.html" class="pc ci feat" data-delay="0"><div class="badge bflag">Co-Flagship</div><div class="pv"><img src="solar.webp" alt="Solar System Engine" width="900" height="500" loading="eager" decoding="async"></div><div class="pb"><div class="pn">01 &mdash; Physics Engine</div><h3 class="pname">Solar System Engine V3.3</h3><p class="pdesc">Deep-space telemetry and accurate orbital mechanics simulated in a standalone 64-bit application. Explore every planet, moon, and asteroid belt in real time.</p></div><div class="pf"><div class="ptags"><span class="tag">Physics</span><span class="tag">3D Engine</span><span class="tag">C++</span></div><div class="plink">Open Engine <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
-    <a href="ati.html" class="pc cs feat" data-delay="80"><div class="badge bflag">Co-Flagship</div><div class="pv"><img src="ati.webp" alt="Advanced Typing Instructor" width="900" height="500" loading="eager" decoding="async"></div><div class="pb"><div class="pn">02 &mdash; Learning Platform</div><h3 class="pname">Advanced Typing Instructor</h3><p class="pdesc">Master Python, C++, and JavaScript syntax with adaptive heatmaps, a virtual mechanical keyboard, and a full progression system for programmers.</p></div><div class="pf"><div class="ptags"><span class="tag">Education</span><span class="tag">UX</span><span class="tag">Python</span></div><div class="plink">Launch <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
-    <a href="gesture.html" class="pc ct" data-delay="160"><div class="badge bp">Prototype</div><div class="pv" style="background:#060D10"><div class="vg"><div class="gg"></div><div class="gsc"></div><div class="gh">&#128400;&#65039;</div></div></div><div class="pb"><div class="pn">03</div><h3 class="pname">Gesture Controller</h3><p class="pdesc">Machine-vision hand tracking. Control your PC, draw, and manage windows using real-time webcam gestures.</p></div><div class="pf"><div class="ptags"><span class="tag">CV</span><span class="tag">Python</span></div><div class="plink">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
-    <a href="qr.html" class="pc ce" data-delay="240"><div class="pv" style="background:#040E08"><div class="vq"><div class="qgl"></div><div class="qb"></div><div class="qm2" id="qrm"></div></div></div><div class="pb"><div class="pn">04</div><h3 class="pname">QR Code Generator</h3><p class="pdesc">Generate custom, scannable QR codes instantly. Type any URL or text and download in seconds.</p></div><div class="pf"><div class="ptags"><span class="tag">Tool</span><span class="tag">JavaScript</span></div><div class="plink">Generate <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
-    <a href="rpg.html" class="pc cp" data-delay="320"><div class="badge bs">Coming Soon</div><div class="pv" style="background:#080514"><div class="vr"><div class="rc"></div><div class="rg"></div><div class="ri">&#9876;&#65039;</div><div class="ro"><div class="rob"></div><div class="rob"></div><div class="rob"></div><div class="rob"></div><div class="rob"></div></div></div></div><div class="pb"><div class="pn">05</div><h3 class="pname">RPG Game</h3><p class="pdesc">An epic role-playing adventure with battles, levels, and deep story. Currently in active development by the studio.</p></div><div class="pf"><div class="ptags"><span class="tag">Game Dev</span><span class="tag">Canvas</span></div><div class="plink">Preview <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
+    <a href="solar.html" class="pc ci feat" data-delay="0"><div class="badge bflag">Co-Flagship</div><div class="pv"><img src="solar.webp" alt="Solar System Engine" width="900" height="500" loading="eager" decoding="async"></div><div class="pb"><div class="pn">01 &mdash; Physics Engine</div><h3 class="pname">Solar System Engine V3.3</h3><p class="pdesc">Deep-space telemetry and accurate orbital mechanics simulated in a standalone 64-bit application. Explore every planet, moon, and asteroid belt in real time with high-fidelity WebGL graphics and interactive data panels.</p></div><div class="pf"><div class="ptags"><span class="tag">Physics</span><span class="tag">3D Engine</span><span class="tag">C++</span></div><div class="plink">Open Engine <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
+    <a href="ati.html" class="pc cs feat" data-delay="80"><div class="badge bflag">Co-Flagship</div><div class="pv"><img src="ati.webp" alt="Advanced Typing Instructor" width="900" height="500" loading="eager" decoding="async"></div><div class="pb"><div class="pn">02 &mdash; Learning Platform</div><h3 class="pname">Advanced Typing Instructor</h3><p class="pdesc">Master Python, C++, and JavaScript syntax with adaptive heatmaps, a virtual mechanical keyboard, and a full progression system designed specifically for programmers to improve their coding speed and accuracy.</p></div><div class="pf"><div class="ptags"><span class="tag">Education</span><span class="tag">UX</span><span class="tag">Python</span></div><div class="plink">Launch <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
+    <a href="gesture.html" class="pc ct" data-delay="160"><div class="badge bp">Prototype</div><div class="pv" style="background:#060D10"><div class="vg"><div class="gg"></div><div class="gsc"></div><div class="gh">&#128400;&#65039;</div></div></div><div class="pb"><div class="pn">03</div><h3 class="pname">Gesture Controller</h3><p class="pdesc">Machine-vision hand tracking without the need for specialized hardware. Control your PC, draw, and manage windows using real-time webcam gestures powered by optimized neural networks running entirely in your browser.</p></div><div class="pf"><div class="ptags"><span class="tag">CV</span><span class="tag">Python</span></div><div class="plink">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
+    <a href="qr.html" class="pc ce" data-delay="240"><div class="pv" style="background:#040E08"><div class="vq"><div class="qgl"></div><div class="qb"></div><div class="qm2" id="qrm"></div></div></div><div class="pb"><div class="pn">04</div><h3 class="pname">QR Code Generator</h3><p class="pdesc">Generate custom, fully scannable QR codes instantly. Type any URL or text, customize colors, add your brand logo, and download in seconds with a responsive, modern interface.</p></div><div class="pf"><div class="ptags"><span class="tag">Tool</span><span class="tag">JavaScript</span></div><div class="plink">Generate <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
+    <a href="rpg.html" class="pc cp" data-delay="320"><div class="badge bs">Coming Soon</div><div class="pv" style="background:#080514"><div class="vr"><div class="rc"></div><div class="rg"></div><div class="ri">&#9876;&#65039;</div><div class="ro"><div class="rob"></div><div class="rob"></div><div class="rob"></div><div class="rob"></div><div class="rob"></div></div></div></div><div class="pb"><div class="pn">05</div><h3 class="pname">RPG Game</h3><p class="pdesc">An epic role-playing adventure featuring dynamic battles, leveling systems, and a deep story. Currently in active development by the studio, blending classic mechanics with modern interactive design.</p></div><div class="pf"><div class="ptags"><span class="tag">Game Dev</span><span class="tag">Canvas</span></div><div class="plink">Preview <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
   </div>
 </section>
 

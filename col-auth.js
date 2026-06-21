@@ -49,6 +49,9 @@ if (!window.closeMo) {
 }
 
 (async function() {
+    if (window._colAuthRunning) return;
+    window._colAuthRunning = true;
+
     // 1. Fetch Global Configuration to get Supabase Keys
     let authConfig = null;
     try {
@@ -65,10 +68,15 @@ if (!window.closeMo) {
     // 2. Load Supabase SDK if keys exist
     if (authConfig) {
         if (typeof supabase === 'undefined') {
-            const script = document.createElement('script');
-            script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-            script.onload = () => initSupabase(authConfig.url, authConfig.key);
-            document.head.appendChild(script);
+            if (!document.querySelector('script[src*="@supabase"]')) {
+                const script = document.createElement('script');
+                script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+                script.onload = () => initSupabase(authConfig.url, authConfig.key);
+                document.head.appendChild(script);
+            } else {
+                // Script is loading, wait for it
+                document.querySelector('script[src*="@supabase"]').addEventListener('load', () => initSupabase(authConfig.url, authConfig.key));
+            }
         } else {
             initSupabase(authConfig.url, authConfig.key);
         }

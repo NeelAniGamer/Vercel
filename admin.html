@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Command Center | Class Of Learners</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script defer src="col-auth.js"></script>
+
 <style>
     /* ���� ADMIN THEME VARIABLES ���� */
     :root { 
@@ -160,6 +160,12 @@
     }
 </style>
 <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/admin" />
+
+<script defer src="col-router.js"></script>
+<link rel="stylesheet" href="col-ui.css">
+<script defer src="col-ui.js"></script>
+<script defer src="col-auth.js"></script>
+<meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU"/>
 </head>
 <body>
 <script>
@@ -682,15 +688,71 @@ async function loadGhFileContent() {
     try {
         toast('Loading visual builder...', 'green');
         toolbar.style.display = "flex";
-        iframe.srcdoc = "<html><body><h2>Loading preview...</h2></body></html>";
+        iframe.srcdoc = "<html><body><h2>Loading preview...</h2>
+<footer class="sf">
+    <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+            <a href="privacy.html">Privacy</a>
+            <a href="terms.html">Terms</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="download.html">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+    </div>
+</footer>
+
+</body></html>";
         
         const data = await fetchGh(`contents/${path}`);
         currentFileSha = data.sha;
         let content = decodeURIComponent(escape(atob(data.content)));
         
         // Inject builder script before closing body tag
-        if (content.includes('</body>')) {
-            content = content.replace('</body>', VISUAL_BUILDER_SCRIPT + '</body>');
+        if (content.includes('
+<footer class="sf">
+    <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+            <a href="privacy.html">Privacy</a>
+            <a href="terms.html">Terms</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="download.html">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+    </div>
+</footer>
+
+</body>')) {
+            content = content.replace('
+<footer class="sf">
+    <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+            <a href="privacy.html">Privacy</a>
+            <a href="terms.html">Terms</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="download.html">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+    </div>
+</footer>
+
+</body>', VISUAL_BUILDER_SCRIPT + '
+<footer class="sf">
+    <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+            <a href="privacy.html">Privacy</a>
+            <a href="terms.html">Terms</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="download.html">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+    </div>
+</footer>
+
+</body>');
         } else {
             content += VISUAL_BUILDER_SCRIPT;
         }
@@ -761,5 +823,19 @@ function switchTab(tabId, event) {
     event.currentTarget.classList.add('active');
 }
 </script>
+
+<footer class="sf">
+    <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+            <a href="privacy.html">Privacy</a>
+            <a href="terms.html">Terms</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="download.html">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+    </div>
+</footer>
+
 </body>
 </html>

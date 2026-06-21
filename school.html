@@ -113,13 +113,63 @@
   @media(max-width:768px){.top-nav{padding:16px 20px}.top-nav.s{padding:12px 20px}.mmb{display:flex}.desktop-dl{display:none}.mobile-dl{display:block}.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:14px 0;z-index:999}.nav-links .nav-link{padding:11px 22px}.nav-links .tw{padding:11px 22px;border-left:none;border-top:1px solid var(--line);margin-top:6px}.nav-links.open{display:flex}.dropdown-content{left:16px;transform:none}.dropdown.active .dropdown-content{transform:none}.shc{padding:120px 22px 60px}.section{padding:60px 22px}.pillars-grid{grid-template-columns:1fr}.main-school-card{padding:40px 24px}.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
   @media(max-width:480px){.school-hero h1{font-size:2.8rem}}
   </style>
-  <script defer src="col-router.js"></script><script defer src="col-auth.js"></script>
+  
 
-  <link rel="stylesheet" href="col-ui.css">
-  <script defer src="col-ui.js"></script>
-  <script defer src="col-auth.js"></script>
+  
+  
+  
+
+<script defer src="col-router.js"></script>
+<link rel="stylesheet" href="col-ui.css">
+<script defer src="col-ui.js"></script>
+<script defer src="col-auth.js"></script>
 </head>
 <body>
+
+<nav class="top-nav">
+    <a href="index.html" class="nav-brand">
+        <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
+        <span class="brand-name">Class Of Learners</span>
+    </a>
+    <button class="mmb" id="mmb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home Hub</a>
+        <a href="about.html" class="nav-link">About Us</a>
+        <a href="school.html" class="nav-link">Our School</a>
+        <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+        <div class="dropdown" onclick="this.classList.toggle('active')">
+            <button class="dropdown-btn">Projects <span class="darr">▼</span></button>
+            <div class="dropdown-content">
+                <div class="dropdown-content-inner">
+                    <a href="ati.html">Typing Instructor <span>⌨️</span></a>
+                    <a href="solar.html">Solar Engine <span>🌍</span></a>
+                    <a href="gesture.html">Gesture Control <span>🖐️</span></a>
+                    <a href="rpg.html">RPG Game <span>⚔️</span></a>
+                    <a href="qr.html">QR Generator <span>⬛</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="tw">
+            <span class="tl" id="tLabel">Light</span>
+            <label class="tsb">
+                <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)">
+                <div class="tst"><div class="tsth"></div></div>
+            </label>
+        </div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="window.openGlobalLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="window.openGlobalLogin()">
+            <div class="nav-user-avatar" id="navUserAv">?</div>
+            <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download.html" class="nav-dl-btn mobile-dl">Download Hub</a>
+    </div>
+    <a href="download.html" class="nav-dl-btn desktop-dl">Download Hub</a>
+</nav>
+
 <script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
 <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Our School</div><div class="lbar"></div></div>
 <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
@@ -142,7 +192,7 @@
 <!-- MAIN CARD -->
 <section class="section rv">
   <div class="main-school-card">
-    <p>Our academic environment has fostered our drive for <strong>technical excellence</strong> and <strong>collaborative innovation</strong>. It is within these halls that we developed the teamwork and logic skills necessary to conceptualize, design, and build advanced applications like the Typing Instructor and Solar Engine.</p>
+    <p>Our academic environment has fostered our drive for <strong>technical excellence</strong> and <strong>collaborative innovation</strong>. It is within these halls that we developed the teamwork and logic skills necessary to conceptualize, design, and build advanced applications like the Typing Instructor and Solar Engine. The structured yet dynamic curriculum encouraged us to look beyond the textbooks and actively solve real-world problems through code and creativity.</p>
   </div>
 </section>
 
@@ -289,5 +339,19 @@ window.addEventListener('click',function(e){if(!e.target.closest('.dropdown'))do
 (function(){var els=document.querySelectorAll('.rv');var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('vis');io.unobserve(entry.target);}});},{threshold:.08});els.forEach(function(el){io.observe(el);});})();
 
 </script>
+
+<footer class="sf">
+    <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+            <a href="privacy.html">Privacy</a>
+            <a href="terms.html">Terms</a>
+            <a href="feedback.html">Feedback</a>
+            <a href="download.html">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+    </div>
+</footer>
+
 </body>
 </html>

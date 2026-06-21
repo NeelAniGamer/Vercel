@@ -102,14 +102,20 @@
   /* Responsive */
   @media(max-width:768px){.top-nav{padding:16px 20px}.top-nav.s{padding:12px 20px}.mmb{display:flex}.desktop-dl{display:none}.mobile-dl{display:block}.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:14px 0;z-index:999}.nav-links .nav-link{padding:11px 22px}.nav-links .tw{padding:11px 22px;border-left:none;border-top:1px solid var(--line);margin-top:6px}.nav-links.open{display:flex}.dropdown-content{left:16px;transform:none}.dropdown.active .dropdown-content{transform:none}.page-hero{padding:120px 22px 40px}.sitemap-section{padding:20px 22px 60px}.sitemap-grid{grid-template-columns:1fr}.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
   </style>
-  <script defer src="col-router.js"></script><script defer src="col-auth.js"></script>
+  
+
+<script defer src="col-router.js"></script>
+<link rel="stylesheet" href="col-ui.css">
+<script defer src="col-ui.js"></script>
+<script defer src="col-auth.js"></script>
+<meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU"/>
 </head>
 <body>
 <script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
 <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Sitemap</div><div class="lbar"></div></div>
 
 <nav class="top-nav" id="topNav">
-  <a href="home.html" class="nav-brand"><img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async"><span class="brand-name">Class Of Learners</span></a>
+  <a href="home.html" class="nav-brand"><img loading="lazy" src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async"><span class="brand-name">Class Of Learners</span></a>
   <button class="mmb" id="mmb" aria-label="Toggle menu"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round"/></svg></button>
   <div class="nav-links" id="navLinks">
     <a href="home.html" class="nav-link">Home</a><a href="about.html" class="nav-link">About</a><a href="school.html" class="nav-link">School</a><a href="sneh-asha.html" class="nav-link">Sneh Asha</a>

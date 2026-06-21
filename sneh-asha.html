@@ -129,12 +129,62 @@
   @media(max-width:768px){.top-nav{padding:16px 20px}.top-nav.s{padding:12px 20px}.mmb{display:flex}.desktop-dl{display:none}.mobile-dl{display:block}.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:14px 0;z-index:999}.nav-links .nav-link{padding:11px 22px}.nav-links .tw{padding:11px 22px;border-left:none;border-top:1px solid var(--line);margin-top:6px}.nav-links.open{display:flex}.dropdown-content{left:16px;transform:none}.dropdown.active .dropdown-content{transform:none}.shc{padding:120px 22px 60px}.sci{left:22px}.section{padding:80px 22px 60px}.init-grid{grid-template-columns:1fr}.ack-card{flex-direction:column;text-align:center;gap:28px}.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
   @media(max-width:480px){.sneh-hero h1{font-size:2.6rem}}
   </style>
-  <script defer src="col-router.js"></script>
-  <link rel="stylesheet" href="col-ui.css">
-  <script defer src="col-ui.js"></script>
-  <script defer src="col-auth.js"></script>
+  
+  
+  
+  
+
+<script defer src="col-router.js"></script>
+<link rel="stylesheet" href="col-ui.css">
+<script defer src="col-ui.js"></script>
+<script defer src="col-auth.js"></script>
 </head>
 <body>
+
+<nav class="top-nav">
+    <a href="index.html" class="nav-brand">
+        <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
+        <span class="brand-name">Class Of Learners</span>
+    </a>
+    <button class="mmb" id="mmb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home Hub</a>
+        <a href="about.html" class="nav-link">About Us</a>
+        <a href="school.html" class="nav-link">Our School</a>
+        <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+        <div class="dropdown" onclick="this.classList.toggle('active')">
+            <button class="dropdown-btn">Projects <span class="darr">▼</span></button>
+            <div class="dropdown-content">
+                <div class="dropdown-content-inner">
+                    <a href="ati.html">Typing Instructor <span>⌨️</span></a>
+                    <a href="solar.html">Solar Engine <span>🌍</span></a>
+                    <a href="gesture.html">Gesture Control <span>🖐️</span></a>
+                    <a href="rpg.html">RPG Game <span>⚔️</span></a>
+                    <a href="qr.html">QR Generator <span>⬛</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="tw">
+            <span class="tl" id="tLabel">Light</span>
+            <label class="tsb">
+                <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)">
+                <div class="tst"><div class="tsth"></div></div>
+            </label>
+        </div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="window.openGlobalLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="window.openGlobalLogin()">
+            <div class="nav-user-avatar" id="navUserAv">?</div>
+            <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download.html" class="nav-dl-btn mobile-dl">Download Hub</a>
+    </div>
+    <a href="download.html" class="nav-dl-btn desktop-dl">Download Hub</a>
+</nav>
+
 <script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
 <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; Sneh Asha</div><div class="lbar"></div></div>
 <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
@@ -147,7 +197,7 @@
   <div class="hvig"></div><div class="hvigb"></div>
   <div class="shc">
     <div class="hey">Social Impact &middot; Est.&nbsp;2024</div>
-    <img src="sneh-logo.webp" alt="Sneh Asha" class="sneh-logo" width="2000" height="1016">
+    <img loading="lazy" src="sneh-logo.webp" alt="Sneh Asha" class="sneh-logo" width="2000" height="1016">
     <div class="hero-badge">Social Impact Initiative</div>
     <h1>Sneh <em>Asha</em>.</h1>
     <p class="hlede">Using technology and interactive learning to empower students and bridge the digital divide &mdash; one tool at a time.</p>
