@@ -25,7 +25,13 @@
         .feedback-grid { display: grid; grid-template-columns: 1fr 400px; gap: 40px; }
         @media(max-width: 900px) { .feedback-grid { grid-template-columns: 1fr; } }
 
-        .fb-card { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .fb-card { background: rgba(255,255,255,0.015); backdrop-filter: blur(12px); border: 1px solid var(--line); border-radius: 24px; padding: 44px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); transition: 0.5s var(--ease); position: relative; overflow: hidden; }
+        .fb-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--lineb), transparent); opacity: 0; transition: 0.5s var(--ease); }
+        .fb-card:hover { border-color: var(--lineb); transform: translateY(-4px); box-shadow: 0 25px 50px rgba(0,0,0,0.3); background: rgba(255,255,255,0.03); }
+        .fb-card:hover::before { opacity: 1; }
+
+        /* Reveal animation */
+        .rv{opacity:0;transform:translateY(36px);transition:opacity .8s var(--ease),transform .8s var(--ease)}.rv.vis{opacity:1;transform:translateY(0)}
         
         .field { margin-bottom: 25px; }
         .lbl { display: block; font-size: 0.85rem; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-family: var(--mono); }
@@ -45,8 +51,8 @@
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(52,211,153,0.3); background: #fff; }
 
         .history-list { display: flex; flex-direction: column; gap: 15px; max-height: 600px; overflow-y: auto; padding-right: 5px; }
-        .history-item { background: rgba(0,0,0,0.2); border: 1px solid var(--line); border-radius: 16px; padding: 20px; transition: 0.3s; }
-        .history-item:hover { border-color: var(--lineb); transform: translateY(-2px); }
+        .history-item { background: rgba(255,255,255,0.02); border: 1px solid var(--line); border-radius: 16px; padding: 24px; transition: 0.4s var(--ease); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .history-item:hover { border-color: var(--lineb); transform: translateY(-3px); background: rgba(255,255,255,0.04); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .hi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .hi-type { color: var(--ion); font-size: 0.8rem; font-weight: 800; font-family: var(--mono); text-transform: uppercase; letter-spacing: 1px; }
         .hi-stars { color: #fbbf24; font-size: 1.2rem; letter-spacing: 2px; }
@@ -74,13 +80,67 @@
 </head>
 <body>
 
+<nav class="top-nav">
+    <a href="index.html" class="nav-brand">
+        <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
+        <span class="brand-name">Class Of Learners</span>
+    </a>
+    <button class="mmb" id="mmb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home Hub</a>
+        <a href="about.html" class="nav-link">About Us</a>
+        <a href="school.html" class="nav-link">Our School</a>
+        <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
+        <div class="dropdown" onclick="this.classList.toggle('active')">
+            <button class="dropdown-btn">Projects <span class="darr">▼</span></button>
+            <div class="dropdown-content">
+                <div class="dropdown-content-inner">
+                    <a href="ati.html">Typing Instructor <span>⌨️</span></a>
+                    <a href="solar.html">Solar Engine <span>🌍</span></a>
+                    <a href="gesture.html">Gesture Control <span>🖐️</span></a>
+                    <a href="rpg.html">RPG Game <span>⚔️</span></a>
+                    <a href="qr.html">QR Generator <span>⬛</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="tw">
+            <span class="tl" id="tLabel">Light</span>
+            <label class="tsb">
+                <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)">
+                <div class="tst"><div class="tsth"></div></div>
+            </label>
+        </div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="window.openGlobalLogin()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="window.openGlobalLogin()">
+            <div class="nav-user-avatar" id="navUserAv">?</div>
+            <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download.html" class="nav-dl-btn mobile-dl">Download Hub</a>
+    </div>
+    <a href="download.html" class="nav-dl-btn desktop-dl">Download Hub</a>
+</nav>
+
+<script>
+    (function(){
+        try {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        } catch(e) {}
+    })();
+</script>
+
     <div class="page-wrap">
         <div class="hero-badge">💬 User Feedback & Reporting</div>
         <h1 class="pg-title">We Value Your <i>Feedback</i></h1>
         <p class="pg-desc">Help us improve our software and applications by sharing your thoughts, reporting bugs, or suggesting new features. Your input directly shapes our development roadmap.</p>
 
         <div class="feedback-grid">
-            <form class="fb-card" id="fbForm" onsubmit="submitFeedback(event)">
+            <form class="fb-card rv" id="fbForm" onsubmit="submitFeedback(event)">
                 <div class="field">
                     <span class="lbl">Rate Your Experience</span>
                     <div class="stars">
@@ -129,7 +189,7 @@
                 <button type="submit" class="btn-submit">Submit Secure Feedback</button>
             </form>
 
-            <div class="fb-card" id="historyCard" style="display: none; height: fit-content;">
+            <div class="fb-card rv" id="historyCard" style="display: none; height: fit-content;">
                 <h3 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; color: var(--ink); border-bottom: 1px solid var(--line); padding-bottom: 15px; font-family: var(--serif);">Your Previous Feedback</h3>
                 <div class="history-list" id="userFeedbackList"></div>
             </div>
@@ -150,6 +210,8 @@
     </div>
 
     <script>
+        (function(){var els=document.querySelectorAll('.rv');var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('vis');io.unobserve(entry.target);}});},{threshold:.08});els.forEach(function(el){io.observe(el);});})();
+
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxN5tS8uTeW6KoX_sVOxjV_x7X2W67k9d9Ubb_iQvMPzZNXrP-93MtjFlhE3gtbDn8/exec";
         
         let confirmActionCallback = null;

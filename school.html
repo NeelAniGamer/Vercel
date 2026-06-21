@@ -114,8 +114,8 @@
   .toast{position:fixed;bottom:32px;right:32px;background:var(--panel);border:1px solid var(--lineb);color:var(--ink);padding:13px 22px;border-radius:12px;font-size:.88rem;font-weight:700;z-index:3000;transform:translateY(14px);opacity:0;transition:.35s var(--ease);pointer-events:none}.toast.show{transform:translateY(0);opacity:1;pointer-events:auto}.toast.green{border-color:var(--em);color:var(--em)}
 
   @media(max-width:1024px){.pillars-grid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:768px){.top-nav{padding:16px 20px}.top-nav.s{padding:12px 20px}.mmb{display:flex}.desktop-dl{display:none}.mobile-dl{display:block}.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:14px 0;z-index:999}.nav-links .nav-link{padding:11px 22px}.nav-links .tw{padding:11px 22px;border-left:none;border-top:1px solid var(--line);margin-top:6px}.nav-links.open{display:flex}.dropdown-content{left:16px;transform:none}.dropdown.active .dropdown-content{transform:none}.shc{padding:120px 22px 60px}.section{padding:60px 22px}.pillars-grid{grid-template-columns:1fr}.main-school-card{padding:40px 24px}.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}}
-  @media(max-width:480px){.school-hero h1{font-size:2.8rem}}
+  @media(max-width:768px){.top-nav{padding:16px 20px}.top-nav.s{padding:12px 20px}.mmb{display:flex}.desktop-dl{display:none}.mobile-dl{display:block}.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:14px 0;z-index:999}.nav-links .nav-link{padding:11px 22px}.nav-links .tw{padding:11px 22px;border-left:none;border-top:1px solid var(--line);margin-top:6px}.nav-links.open{display:flex}.dropdown-content{left:16px;transform:none}.dropdown.active .dropdown-content{transform:none}.shc{padding:120px 22px 60px}.section{padding:60px 22px}.pillars-grid{grid-template-columns:1fr}.main-school-card{padding:40px 24px}.sf{padding:40px 22px 28px}.fi{flex-direction:column;gap:16px}.section div[style*="grid-template-columns:repeat(4"]{grid-template-columns:repeat(2,1fr)!important}.section div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}}
+  @media(max-width:480px){.school-hero h1{font-size:2.8rem}.section div[style*="grid-template-columns:repeat(2"]{grid-template-columns:1fr!important}}
   </style>
   <script defer src="col-router.js"></script>
   <link rel="stylesheet" href="col-ui.css">
@@ -164,8 +164,84 @@
   </div>
 </section>
 
+<!-- SCHOOL OVERVIEW -->
+<section class="section rv" style="padding-top:30px;">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1360px;margin:0 auto;">
+    <div style="background:rgba(242,184,75,.06);border:1px solid rgba(242,184,75,.2);border-radius:16px;padding:28px;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:8px;">📚</div>
+      <div style="font-family:var(--serif);font-size:1.5rem;color:var(--signal);margin-bottom:4px;">CBSE</div>
+      <div style="color:var(--dim);font-size:.85rem;">Affiliation</div>
+    </div>
+    <div style="background:rgba(94,212,245,.06);border:1px solid rgba(94,212,245,.2);border-radius:16px;padding:28px;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:8px;">📍</div>
+      <div style="font-family:var(--serif);font-size:1.5rem;color:var(--ion);margin-bottom:4px;">Mumbai</div>
+      <div style="color:var(--dim);font-size:.85rem;">Maharashtra, India</div>
+    </div>
+    <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:16px;padding:28px;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:8px;">🏫</div>
+      <div style="font-family:var(--serif);font-size:1.5rem;color:var(--em);margin-bottom:4px;">K-12</div>
+      <div style="color:var(--dim);font-size:.85rem;">Education Range</div>
+    </div>
+    <div style="background:rgba(184,155,255,.06);border:1px solid rgba(184,155,255,.2);border-radius:16px;padding:28px;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:8px;">💻</div>
+      <div style="font-family:var(--serif);font-size:1.5rem;color:var(--plasma);margin-bottom:4px;">CS Focus</div>
+      <div style="color:var(--dim);font-size:.85rem;">Technology Program</div>
+    </div>
+  </div>
+</section>
+
+<!-- ACADEMIC EXCELLENCE -->
+<section class="section rv" style="padding-top:20px;">
+  <div style="max-width:1360px;margin:0 auto;">
+    <div class="hey" style="margin-bottom:6px;">Academics</div>
+    <h2 style="font-family:var(--serif);font-size:2.4rem;font-weight:400;margin-bottom:32px;color:var(--ink);">Academic <em style="color:var(--ion);">Excellence</em></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
+      <div style="background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:20px;padding:36px;">
+        <h3 style="font-family:var(--serif);font-size:1.4rem;font-weight:400;color:var(--ink);margin-bottom:14px;">CBSE Curriculum</h3>
+        <p style="color:var(--dim);line-height:1.8;font-size:.95rem;">Our school follows the Central Board of Secondary Education (CBSE) curriculum, providing a nationally recognized framework that emphasizes conceptual clarity, analytical thinking, and practical applications. Subjects range from the core sciences and mathematics to languages, social studies, and elective specializations.</p>
+      </div>
+      <div style="background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:20px;padding:36px;">
+        <h3 style="font-family:var(--serif);font-size:1.4rem;font-weight:400;color:var(--ink);margin-bottom:14px;">Computer Science Program</h3>
+        <p style="color:var(--dim);line-height:1.8;font-size:.95rem;">The school's dedicated computer science program goes beyond textbook theory. Students learn Python, HTML/CSS, JavaScript, and database fundamentals through hands-on projects. It was this program that planted the seeds for Class Of Learners — encouraging us to build real tools rather than just study about them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FACILITIES -->
+<section class="section rv" style="padding-top:20px;">
+  <div style="max-width:1360px;margin:0 auto;">
+    <div class="hey" style="margin-bottom:6px;">Campus</div>
+    <h2 style="font-family:var(--serif);font-size:2.4rem;font-weight:400;margin-bottom:32px;color:var(--ink);">School <em style="color:var(--teal);">Facilities</em></h2>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;">
+      <div class="rv" style="background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:32px 24px;text-align:center;transition:transform .4s var(--ease),border-color .4s;">
+        <div style="font-size:2.4rem;margin-bottom:16px;">🖥️</div>
+        <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:8px;">Computer Lab</h3>
+        <p style="color:var(--dim);font-size:.88rem;line-height:1.6;">Modern machines with internet access for hands-on programming sessions and project development.</p>
+      </div>
+      <div class="rv" style="background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:32px 24px;text-align:center;transition:transform .4s var(--ease),border-color .4s;">
+        <div style="font-size:2.4rem;margin-bottom:16px;">📖</div>
+        <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:8px;">Library</h3>
+        <p style="color:var(--dim);font-size:.88rem;line-height:1.6;">A well-stocked library with reference books, periodicals, and digital learning resources for research.</p>
+      </div>
+      <div class="rv" style="background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:32px 24px;text-align:center;transition:transform .4s var(--ease),border-color .4s;">
+        <div style="font-size:2.4rem;margin-bottom:16px;">⚽</div>
+        <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:8px;">Sports Ground</h3>
+        <p style="color:var(--dim);font-size:.88rem;line-height:1.6;">Outdoor sports grounds for cricket, football, and athletics, promoting physical fitness alongside academics.</p>
+      </div>
+      <div class="rv" style="background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:16px;padding:32px 24px;text-align:center;transition:transform .4s var(--ease),border-color .4s;">
+        <div style="font-size:2.4rem;margin-bottom:16px;">🔬</div>
+        <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:400;margin-bottom:8px;">Science Lab</h3>
+        <p style="color:var(--dim);font-size:.88rem;line-height:1.6;">Fully equipped physics, chemistry, and biology laboratories for practical experimentation and discovery.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- PILLARS -->
 <section class="section pillars-section rv">
+  <div class="hey" style="margin-bottom:6px;max-width:1360px;margin-left:auto;margin-right:auto;">Values</div>
+  <h2 style="font-family:var(--serif);font-size:2.4rem;font-weight:400;margin-bottom:32px;color:var(--ink);max-width:1360px;margin-left:auto;margin-right:auto;">Core <em style="color:var(--signal);">Pillars</em></h2>
   <div class="pillars-grid">
     <div class="pillar-box rv">
       <div class="pillar-icon">&#127979;</div>
@@ -182,6 +258,16 @@
       <h3 class="pillar-title">Teamwork</h3>
       <p class="pillar-desc">Cultivating an environment where peer-to-peer collaboration turns individual ideas into fully realized software.</p>
     </div>
+  </div>
+</section>
+
+<!-- WHY THIS SCHOOL MATTERS -->
+<section class="section rv" style="padding-top:20px;">
+  <div style="max-width:900px;margin:0 auto;text-align:center;">
+    <div class="hey" style="margin-bottom:6px;">Impact</div>
+    <h2 style="font-family:var(--serif);font-size:2.4rem;font-weight:400;margin-bottom:24px;color:var(--ink);">Why This School <em style="color:var(--em);">Matters</em> to CoL</h2>
+    <p style="color:var(--dim);font-size:1.05rem;line-height:1.9;margin-bottom:20px;">Class Of Learners was born inside these walls. The school's emphasis on computer science and hands-on learning gave us the confidence to attempt building real-world applications. Our teachers, particularly our mentor Sanjana Kasbe, encouraged us to push beyond the syllabus &mdash; to write actual software, debug real problems, and collaborate like a professional development team.</p>
+    <p style="color:var(--dim);font-size:1.05rem;line-height:1.9;">Every project in the CoL portfolio &mdash; from the 64-bit Solar Engine to the Advanced Typing Instructor &mdash; traces its roots back to the curiosity and discipline we developed here. The school didn't just teach us subjects; it taught us how to learn, how to build, and how to ship.</p>
   </div>
 </section>
 

@@ -368,6 +368,11 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 #sp3 .vb svg, #sp3 .vb canvas { max-width: 100%; max-height: 100%; object-fit: contain; }
 #sp3 .vb span { display: none; } /* Hide text inside tiles to match screenshots */
 
+/* Quick Style Chips */
+.qs-chip { padding: 8px 16px; border: 1px solid var(--q-border); border-radius: 20px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.25s ease; font-family: 'Inter', sans-serif; letter-spacing: 0.02em; }
+.qs-chip:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.25); filter: brightness(1.1); }
+.qs-chip:active { transform: scale(0.96); }
+
 /* Correction Levels */
 #sp3 .corr-g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
 #sp3 .corr-b { padding: 15px; background: var(--q-panel); border: 1px solid var(--q-border); border-radius: 8px; box-shadow: none; display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -645,6 +650,29 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
       </div>
 
       <div style="flex:1; display:flex; flex-direction:column;">
+
+        <div class="ds open" id="dsQS">
+          <div class="dsh" onclick="toggleDS('dsQS')">
+            <div class="dsh-l"><div class="dsi">⚡</div><div><div class="dst">Quick Styles</div><div class="dss">Apply pre-designed style presets with one click.</div></div></div>
+            <span class="dschev">▼</span>
+          </div>
+          <div class="dsb open" id="dsQSb">
+              <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                  <button class="qs-chip" onclick="applyQS('modern')" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;">Modern</button>
+                  <button class="qs-chip" onclick="applyQS('classy')" style="background:#1e293b;color:#f8fafc;">Classy</button>
+                  <button class="qs-chip" onclick="applyQS('liquid')" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;">Liquid</button>
+                  <button class="qs-chip" onclick="applyQS('heavy')" style="background:#000;color:#fff;">Heavy</button>
+                  <button class="qs-chip" onclick="applyQS('minimal')" style="background:#f1f5f9;color:#64748b;">Minimal</button>
+                  <button class="qs-chip" onclick="applyQS('neon')" style="background:#0a0a0a;color:#00ff88;border:1px solid #00ff88;">Neon</button>
+                  <button class="qs-chip" onclick="applyQS('ocean')" style="background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;">Ocean</button>
+                  <button class="qs-chip" onclick="applyQS('sunset')" style="background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;">Sunset</button>
+                  <button class="qs-chip" onclick="applyQS('forest')" style="background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;">Forest</button>
+                  <button class="qs-chip" onclick="applyQS('mono')" style="background:#fafafa;color:#18181b;">Mono</button>
+                  <button class="qs-chip" onclick="applyQS('royal')" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;">Royal</button>
+                  <button class="qs-chip" onclick="applyQS('retro')" style="background:linear-gradient(135deg,#d97706,#b45309);color:#fff;">Retro</button>
+              </div>
+          </div>
+        </div>
 
         <div class="ds open" id="dsF">
           <div class="dsh" onclick="toggleDS('dsF')">
@@ -1123,6 +1151,41 @@ function applyQS(style) {
         opts.cornersSquareOptions = {type: 'dot', color: '#475569'};
         opts.cornersDotOptions = {type: 'dot', color: '#64748b'};
         opts.backgroundOptions = {color: '#ffffff'};
+    } else if(style === 'neon') {
+        opts.dotsOptions = {type: 'rounded', color: '#00ff88'};
+        opts.cornersSquareOptions = {type: 'extra-rounded', color: '#00ff88'};
+        opts.cornersDotOptions = {type: 'dot', color: '#00ff88'};
+        opts.backgroundOptions = {color: '#0a0a0a'};
+    } else if(style === 'ocean') {
+        opts.dotsOptions = {type: 'dots', color: '#0ea5e9'};
+        opts.cornersSquareOptions = {type: 'dot', color: '#0284c7'};
+        opts.cornersDotOptions = {type: 'dot', color: '#0ea5e9'};
+        opts.backgroundOptions = {color: '#f0f9ff'};
+    } else if(style === 'sunset') {
+        opts.dotsOptions = {type: 'classy', color: '#f97316'};
+        opts.cornersSquareOptions = {type: 'extra-rounded', color: '#ea580c'};
+        opts.cornersDotOptions = {type: 'dot', color: '#f97316'};
+        opts.backgroundOptions = {color: '#fff7ed'};
+    } else if(style === 'forest') {
+        opts.dotsOptions = {type: 'extra-rounded', color: '#16a34a'};
+        opts.cornersSquareOptions = {type: 'extra-rounded', color: '#15803d'};
+        opts.cornersDotOptions = {type: 'dot', color: '#16a34a'};
+        opts.backgroundOptions = {color: '#f0fdf4'};
+    } else if(style === 'mono') {
+        opts.dotsOptions = {type: 'square', color: '#18181b'};
+        opts.cornersSquareOptions = {type: 'square', color: '#18181b'};
+        opts.cornersDotOptions = {type: 'square', color: '#18181b'};
+        opts.backgroundOptions = {color: '#fafafa'};
+    } else if(style === 'royal') {
+        opts.dotsOptions = {type: 'classy-rounded', color: '#7c3aed'};
+        opts.cornersSquareOptions = {type: 'extra-rounded', color: '#6d28d9'};
+        opts.cornersDotOptions = {type: 'dot', color: '#7c3aed'};
+        opts.backgroundOptions = {color: '#faf5ff'};
+    } else if(style === 'retro') {
+        opts.dotsOptions = {type: 'rounded', color: '#d97706'};
+        opts.cornersSquareOptions = {type: 'extra-rounded', color: '#b45309'};
+        opts.cornersDotOptions = {type: 'square', color: '#d97706'};
+        opts.backgroundOptions = {color: '#fefce8'};
     }
     if(qrInst) {
         qrInst.update({
@@ -1252,7 +1315,7 @@ function setDot(s){
   opts.dotsOptions=Object.assign({}, opts.dotsOptions, {type:s}); if(qrInst) qrInst.update({dotsOptions:opts.dotsOptions});
 }
 
-const CSQ=[{id:'square',l:'Block'},{id:'extra-rounded',l:'Soft'},{id:'dot',l:'Ring'}];
+const CSQ=[{id:'square',l:'Block'},{id:'extra-rounded',l:'Soft'},{id:'dot',l:'Ring'},{id:'classy',l:'Classy'},{id:'classy-rounded',l:'Smooth'}];
 const CDT=[{id:'square',l:'Cube'},{id:'dot',l:'Dot'}];
 function buildCornerGrids(){ buildCG('csqG',CSQ,'csq'); buildCG('cdG',CDT,'cd'); }
 function buildCG(gid,styles,pfx){
@@ -1271,6 +1334,14 @@ function drawCrnPrev(cv,style){
   } else if(style==='extra-rounded'){
     ctx.beginPath();rrp(ctx,p,p,s,s,s*0.3);ctx.fill(); ctx.fillStyle=document.body.classList.contains('light')?'#fff':'#0a0d14';
     ctx.beginPath();rrp(ctx,p+s*0.14,p+s*0.14,s*0.72,s*0.72,s*0.22);ctx.fill(); ctx.fillStyle='#10b981';ctx.beginPath();rrp(ctx,p+s*0.32,p+s*0.32,s*0.36,s*0.36,s*0.1);ctx.fill();
+  } else if(style==='classy'){
+    ctx.beginPath();ctx.moveTo(p+s*0.25,p);ctx.lineTo(p+s,p);ctx.lineTo(p+s,p+s);ctx.lineTo(p,p+s);ctx.lineTo(p,p+s*0.25);ctx.closePath();ctx.fill();
+    ctx.fillStyle=document.body.classList.contains('light')?'#fff':'#0a0d14';
+    ctx.beginPath();ctx.moveTo(p+s*0.35,p+s*0.14);ctx.lineTo(p+s*0.86,p+s*0.14);ctx.lineTo(p+s*0.86,p+s*0.86);ctx.lineTo(p+s*0.14,p+s*0.86);ctx.lineTo(p+s*0.14,p+s*0.35);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#10b981';ctx.fillRect(p+s*0.32,p+s*0.32,s*0.36,s*0.36);
+  } else if(style==='classy-rounded'){
+    ctx.beginPath();rrp(ctx,p,p,s,s,s*0.15);ctx.fill(); ctx.fillStyle=document.body.classList.contains('light')?'#fff':'#0a0d14';
+    ctx.beginPath();rrp(ctx,p+s*0.14,p+s*0.14,s*0.72,s*0.72,s*0.12);ctx.fill(); ctx.fillStyle='#10b981';ctx.beginPath();rrp(ctx,p+s*0.32,p+s*0.32,s*0.36,s*0.36,s*0.06);ctx.fill();
   } else {
     ctx.fillRect(p,p,s,s); ctx.fillStyle=document.body.classList.contains('light')?'#fff':'#0a0d14';
     ctx.fillRect(p+s*0.14,p+s*0.14,s*0.72,s*0.72); ctx.fillStyle='#10b981';ctx.fillRect(p+s*0.32,p+s*0.32,s*0.36,s*0.36);

@@ -22,13 +22,19 @@
         .pg-title i { color: var(--dim); }
         .pg-desc { font-size: 1.15rem; color: var(--dim); line-height: 1.6; max-width: 700px; margin-bottom: 50px; }
         
-        .progress-pill { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 40px; padding: 10px 20px; margin-bottom: 40px; width: fit-content; font-size: 0.82rem; font-weight: 700; color: var(--dim); transition: 0.3s; position: sticky; top: 90px; z-index: 10; backdrop-filter: blur(10px); }
-        .pill-bar { width: 140px; height: 6px; background: var(--line); border-radius: 6px; overflow: hidden; }
-        .pill-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--ion), var(--em)); border-radius: 6px; transition: width 0.3s; }
+        .progress-pill { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--line); border-radius: 40px; padding: 12px 24px; margin-bottom: 50px; width: fit-content; font-size: 0.85rem; font-weight: 700; color: var(--dim); transition: 0.4s var(--ease); position: sticky; top: 100px; z-index: 10; backdrop-filter: blur(14px) saturate(1.5); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .pill-bar { width: 160px; height: 6px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; }
+        .pill-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--ion), var(--em)); border-radius: 6px; transition: width 0.4s var(--ease); }
         .pill-pct { color: var(--ion); font-weight: 800; min-width: 40px; text-align: right; font-family: var(--mono); }
 
-        .agreement-card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 40px; margin-bottom: 30px; transition: 0.4s var(--ease); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .agreement-card:hover { border-color: var(--lineb); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .agreement-card { background: rgba(255,255,255,0.015); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: 24px; padding: 44px; margin-bottom: 30px; transition: 0.5s var(--ease); box-shadow: 0 10px 40px rgba(0,0,0,0.15); position: relative; overflow: hidden; }
+        .agreement-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--lineb), transparent); opacity: 0; transition: 0.5s var(--ease); }
+        .agreement-card:hover { border-color: var(--lineb); transform: translateY(-6px); box-shadow: 0 25px 50px rgba(0,0,0,0.3); background: rgba(255,255,255,0.03); }
+        .agreement-card:hover::before { opacity: 1; }
+        
+        /* Reveal animation */
+        .rv{opacity:0;transform:translateY(36px);transition:opacity .8s var(--ease),transform .8s var(--ease)}.rv.vis{opacity:1;transform:translateY(0)}
+
         
         .card-header { display: flex; align-items: center; gap: 18px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
         .card-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0; background: rgba(255,255,255,0.03); border: 1px solid var(--line); }
@@ -134,7 +140,7 @@
             <span class="pill-pct" id="pillPct">0%</span>
         </div>
 
-        <div class="agreement-card card-ati">
+        <div class="agreement-card card-ati rv">
             <div class="card-header">
                 <div class="card-icon">⌨</div>
                 <div>
@@ -156,7 +162,7 @@
             </div>
         </div>
 
-        <div class="agreement-card card-solar">
+        <div class="agreement-card card-solar rv">
             <div class="card-header">
                 <div class="card-icon">🪐</div>
                 <div>
@@ -178,7 +184,7 @@
             </div>
         </div>
 
-        <div class="agreement-card card-gesture">
+        <div class="agreement-card card-gesture rv">
             <div class="card-header">
                 <div class="card-icon">🖐️</div>
                 <div>
@@ -196,7 +202,7 @@
             </div>
         </div>
 
-        <div class="agreement-card card-qr">
+        <div class="agreement-card card-qr rv">
             <div class="card-header">
                 <div class="card-icon">⬛</div>
                 <div>
@@ -214,7 +220,7 @@
             </div>
         </div>
 
-        <div class="agreement-card card-rpg">
+        <div class="agreement-card card-rpg rv">
             <div class="card-header">
                 <div class="card-icon">⚔️</div>
                 <div>
@@ -232,7 +238,7 @@
             </div>
         </div>
 
-        <div class="summary-banner">
+        <div class="summary-banner rv">
             <div class="summary-check" id="sc-1"><div class="check-icon">✓</div> Advanced Typing Instructor</div>
             <div class="summary-check" id="sc-2"><div class="check-icon">✓</div> Solar System Engine V3.3</div>
             <div class="summary-check" id="sc-3"><div class="check-icon">✓</div> Hand Gesture Controller</div>
@@ -240,13 +246,15 @@
             <div class="summary-check" id="sc-5"><div class="check-icon">✓</div> Epic RPG Adventure</div>
         </div>
 
-        <div class="accept-section">
+        <div class="accept-section rv">
             <div class="read-hint" id="readHint">Scroll to review all agreements</div>
             <button class="accept-btn" id="acceptBtn" onclick="acceptAndGo()">Accept Terms & Continue</button>
         </div>
     </div>
 
     <script>
+        (function(){var els=document.querySelectorAll('.rv');var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('vis');io.unobserve(entry.target);}});},{threshold:.08});els.forEach(function(el){io.observe(el);});})();
+
         const fillEl = document.getElementById('pillFill');
         const pillPct = document.getElementById('pillPct');
         const acceptBtn = document.getElementById('acceptBtn');

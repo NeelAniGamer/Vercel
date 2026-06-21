@@ -22,8 +22,13 @@
         .pg-title i { color: var(--dim); }
         .pg-desc { font-size: 1.15rem; color: var(--dim); line-height: 1.6; max-width: 700px; margin-bottom: 50px; }
         
-        .agreement-card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 40px; margin-bottom: 30px; transition: 0.4s var(--ease); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .agreement-card:hover { border-color: var(--lineb); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .agreement-card { background: rgba(255,255,255,0.015); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: 24px; padding: 44px; margin-bottom: 30px; transition: 0.5s var(--ease); box-shadow: 0 10px 40px rgba(0,0,0,0.15); position: relative; overflow: hidden; }
+        .agreement-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--lineb), transparent); opacity: 0; transition: 0.5s var(--ease); }
+        .agreement-card:hover { border-color: var(--lineb); transform: translateY(-6px); box-shadow: 0 25px 50px rgba(0,0,0,0.3); background: rgba(255,255,255,0.03); }
+        .agreement-card:hover::before { opacity: 1; }
+
+        /* Reveal animation */
+        .rv{opacity:0;transform:translateY(36px);transition:opacity .8s var(--ease),transform .8s var(--ease)}.rv.vis{opacity:1;transform:translateY(0)}
         
         .agreement-section { margin-bottom: 24px; }
         .agreement-section:last-child { margin-bottom: 0; }
@@ -103,7 +108,7 @@
         <h1 class="pg-title">Privacy <i>Policy</i></h1>
         <p class="pg-desc">Effective Date: April 2026. We are committed to protecting your privacy across our applications, including ATI, Solar Engine, Gesture Controller, and QR Studio. Read on to learn how we handle your data responsibly.</p>
 
-        <div class="agreement-card">
+        <div class="agreement-card rv">
             <div class="agreement-section">
                 <div class="sec-title"><div class="sec-num">1</div>Local Processing</div>
                 <p>We prioritize your privacy by keeping data on your device whenever possible. Most of our software is engineered to run entirely on your local machine without phoning home to external servers. Your projects, calculations, and gestures are processed locally within your browser or desktop application.</p>
@@ -121,12 +126,22 @@
             </div>
             
             <div class="agreement-section">
-                <div class="sec-title"><div class="sec-num">3</div>Analytics and Cookies</div>
+                <div class="sec-title"><div class="sec-num">3</div>Data Retention & Deletion</div>
+                <p>We believe in data minimization. Your feedback and session data are stored securely on Supabase but are not kept indefinitely. If you wish to delete your account or any data associated with it, you can request full deletion via our feedback form, and we will purge your records from our database.</p>
+            </div>
+
+            <div class="agreement-section">
+                <div class="sec-title"><div class="sec-num">4</div>Analytics and Cookies</div>
                 <p>Class of Learners uses minimal cookies solely to maintain your theme preferences and login sessions. We do not use third-party tracking pixels, invasive analytics, or advertisement networks across our site.</p>
             </div>
 
             <div class="agreement-section">
-                <div class="sec-title"><div class="sec-num">4</div>Contact Us</div>
+                <div class="sec-title"><div class="sec-num">5</div>Third-Party Services</div>
+                <p>While our core applications run locally, we utilize select third-party services like Vercel (for hosting) and Supabase (for authentication/database). These services comply with strict data protection regulations. We do not integrate ad-networks or sell data to third parties.</p>
+            </div>
+
+            <div class="agreement-section">
+                <div class="sec-title"><div class="sec-num">6</div>Contact Us</div>
                 <p>Developed and maintained by Neel, Ansh and Aarush as a student software initiative. If you have any concerns regarding your privacy or wish to request data deletion, please reach out to us directly through the <a href="feedback.html" style="color: var(--ion); text-decoration: underline;">feedback portal</a>.</p>
             </div>
         </div>
@@ -145,5 +160,9 @@
             <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
         </div>
     </footer>
+
+    <script>
+        (function(){var els=document.querySelectorAll('.rv');var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('vis');io.unobserve(entry.target);}});},{threshold:.08});els.forEach(function(el){io.observe(el);});})();
+    </script>
 </body>
 </html>
