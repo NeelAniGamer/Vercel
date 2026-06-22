@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mumbai Traffic - 2.5D Simulator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- Post-processing -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <!-- Load asset files -->
+    <script src="vehicles.js"></script>
+    <script src="lambo.js"></script>
+    <style>
+        :root {
+            --bg: #070A14;
+            --accent: #F2B84B;
+            --green: #34D399;
+            --card: rgba(17, 24, 39, 0.75);
+            --border: rgba(255,255,255,0.15);
+            --text: #E8E3D8;
+        }
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: var(--bg); 
+            font-family: 'Inter', sans-serif; 
+            touch-action: none;
+        }
+        #canvas { width: 100vw; height: 100vh; display: block; }
+        
+        #ui { position: absolute; inset: 0; pointer-events: none; padding: 20px; z-index: 10; }
+        .hud-box { 
+            background: var(--card); 
+            border-radius: 16px; 
+            padding: 20px; 
+            color: var(--text); 
+            border: 1px solid var(--border); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        #speedometer { 
+            position: absolute; 
+            bottom: 30px; 
+            right: 30px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            text-align: center; 
+            width: 140px; 
+            letter-spacing: 0.05em;
+        }
+        #speed-val { 
+            font-size: 56px; 
+            display: block; 
+            margin: -5px 0 5px 0; 
+            color: var(--green); 
+            font-family: 'Space Mono', monospace;
+            line-height: 1;
+        }
+        
+        #controls-hint { 
+            position: absolute; 
+            top: 30px; 
+            left: 30px; 
+            font-size: 15px; 
+            line-height: 1.8; 
+        }
+        .key { 
+            background: rgba(255,255,255,0.1); 
+            color: var(--accent); 
+            padding: 4px 8px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            margin: 0 4px;
+            border: 1px solid rgba(242, 184, 75, 0.3);
+            font-family: 'Space Mono', monospace;
+        }
+        
+        #loading { 
+            position: absolute; 
+            inset: 0; 
+            background: var(--bg); 
+            color: var(--text); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 100; 
+            transition: opacity 0.3s;
+        }
+        .spinner { 
+            width: 48px; 
+            height: 48px; 
+            border: 4px solid var(--border); 
+            border-top-color: var(--green); 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin-bottom: 24px; 
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        #back-btn { 
+            position: absolute; 
+            bottom: 30px; 
+            left: 30px; 
+            pointer-events: auto; 
+            padding: 12px 24px; 
+            background: rgba(255,255,255,0.1); 
+            color: var(--text); 
+            text-decoration: none; 
+            border-radius: 30px; 
+            font-weight: 600; 
+            border: 1px solid var(--border);
+            transition: all 0.2s ease; 
+            backdrop-filter: blur(4px);
+        }
+        #back-btn:hover { 
+            background: rgba(255,255,255,0.2); 
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <h2 style="font-family: 'Lora', serif; font-size: 2rem; margin: 0 0 10px 0;">Loading 2.5D Simulator</h2>
+        <div id="ml-pct" style="color: var(--green); font-family: 'Space Mono', monospace; font-size: 1.2rem;">0%</div>
+    </div>
+    
+    <canvas id="canvas"></canvas>
+    
+    <div id="ui">
+        <div id="controls-hint" class="hud-box">
+            <div><span class="key">W</span> / <span class="key">↑</span> Drive Forward</div>
+            <div><span class="key">S</span> / <span class="key">↓</span> Brake / Reverse</div>
+            <div><span class="key">A</span> <span class="key">D</span> Steer</div>
+            <div style="margin-top:16px; color:var(--accent); font-size:13px; font-weight:600;">Massive Procedural City Engine</div>
+        </div>
+        <div id="speedometer" class="hud-box">
+            <span id="speed-val">0</span>
+            KMPH
+        </div>
+        <a href="Mumbai Traffic.html" id="back-btn">← Main Menu</a>
+    </div>
+
+    <script>
+        window.PRELOADED_MODELS = {};
+        
+        function preloadModels(callback) {
+            if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') { callback(); return; }
+            const loader = new THREE.GLTFLoader();
+            const keys = Object.keys(window.MODELS || {});
+            if (keys.length === 0) { callback(); return; }
+            let loaded = 0;
+            
+            keys.forEach(k => {
+                loader.load(window.MODELS[k], (gltf) => {
+                    window.PRELOADED_MODELS[k] = gltf.scene;
+                    loaded++;
+                    document.getElementById('ml-pct').textContent = Math.round((loaded / keys.length) * 100) + '%';
+                    if (loaded === keys.length) setTimeout(callback, 300);
+                }, undefined, (err) => {
+                    console.error("Error loading", k, err);
+                    loaded++;
+                    if (loaded === keys.length) setTimeout(callback, 300);
+                });
+            });
+        }
+
+        class Simulator25D {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.renderer = new THREE.WebGLRenderer({ 
+                    canvas: this.canvas, 
+                    antialias: true, 
+                    powerPreference: "high-performance" 
+                });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x0a0f1a); // Darker sky for bloom
+                this.scene.fog = new THREE.FogExp2(0x0a0f1a, 0.005); // Denser fog
+
+                // Top-down view PerspectiveCamera
+                this.camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1500);
+                
+                this.setupLighting();
+                
+                this.keys = {};
+                this.speed = 0;
+                this.maxSpeed = 1.6;
+                this.accel = 0.015;
+                this.friction = 0.985;
+                this.brakePower = 0.03;
+                this.turnSpeed = 0.045;
+                this.carRotation = 0; 
+                this.carPosition = new THREE.Vector3(0, 0, 0);
+
+                this.setupCar();
+                this.setupProceduralCity();
+                this.setupPostProcessing();
+                this.bindEvents();
+                
+                this.clock = new THREE.Clock();
+                this.animate = this.animate.bind(this);
+                requestAnimationFrame(this.animate);
+            }
+
+            setupPostProcessing() {
+                const renderScene = new THREE.RenderPass(this.scene, this.camera);
+                const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+                bloomPass.threshold = 0.2;
+                bloomPass.strength = 1.2;
+                bloomPass.radius = 0.5;
+
+                this.composer = new THREE.EffectComposer(this.renderer);
+                this.composer.addPass(renderScene);
+                this.composer.addPass(bloomPass);
+            }
+
+            setupLighting() {
+                const amb = new THREE.AmbientLight(0xffffff, 0.6);
+                this.scene.add(amb);
+                
+                // Main sun light
+                const dir = new THREE.DirectionalLight(0xffedd5, 1.2);
+                dir.position.set(100, 200, 50);
+                dir.castShadow = true;
+                dir.shadow.camera.left = -150;
+                dir.shadow.camera.right = 150;
+                dir.shadow.camera.top = 150;
+                dir.shadow.camera.bottom = -150;
+                dir.shadow.mapSize.width = 2048;
+                dir.shadow.mapSize.height = 2048;
+                dir.shadow.bias = -0.0005;
+                this.scene.add(dir);
+            }
+
+            setupCar() {
+                this.carGroup = new THREE.Group();
+                this.scene.add(this.carGroup);
+                
+                if (window.PRELOADED_MODELS['lambo']) {
+                    const lambo = window.PRELOADED_MODELS['lambo'].clone();
+                    lambo.scale.set(1.5, 1.5, 1.5);
+                    lambo.traverse(c => { 
+                        if(c.isMesh) { 
+                            c.castShadow = true; 
+                            c.receiveShadow = true; 
+                        } 
+                    });
+                    this.carMesh = lambo;
+                    this.carGroup.add(lambo);
+                } else {
+                    // Fallback
+                    const geo = new THREE.BoxGeometry(2, 1, 4);
+                    const mat = new THREE.MeshStandardMaterial({color: 0xc94f4f});
+                    this.carMesh = new THREE.Mesh(geo, mat);
+                    this.carMesh.position.y = 0.5;
+                    this.carMesh.castShadow = true;
+                    this.carGroup.add(this.carMesh);
+                }
+            }
+
+            setupProceduralCity() {
+                // Massive floor plane with glowing grid
+                const floorGeo = new THREE.PlaneGeometry(10000, 10000);
+                
+                // Create a basic grid texture procedurally via canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = 512;
+                canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#050810';
+                ctx.fillRect(0, 0, 512, 512);
+                ctx.strokeStyle = '#0f1a30'; // subtle grid lines
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(0, 256); ctx.lineTo(512, 256);
+                ctx.moveTo(256, 0); ctx.lineTo(256, 512);
+                ctx.stroke();
+                
+                const gridTex = new THREE.CanvasTexture(canvas);
+                gridTex.wrapS = THREE.RepeatWrapping;
+                gridTex.wrapT = THREE.RepeatWrapping;
+                gridTex.repeat.set(200, 200);
+
+                const floorMat = new THREE.MeshStandardMaterial({
+                    map: gridTex,
+                    color: 0xffffff, 
+                    roughness: 0.8, 
+                    metalness: 0.2
+                });
+                const floor = new THREE.Mesh(floorGeo, floorMat);
+                floor.rotation.x = -Math.PI/2;
+                floor.receiveShadow = true;
+                this.scene.add(floor);
+
+                // Procedural City using InstancedMesh for extreme optimization
+                const buildingCount = 15000;
+                const bGeo = new THREE.BoxGeometry(1, 1, 1);
+                
+                // Shift geometry so origin is at bottom
+                bGeo.translate(0, 0.5, 0); 
+                
+                const bMat = new THREE.MeshStandardMaterial({
+                    color: 0xffffff, 
+                    roughness: 0.7,
+                    metalness: 0.3
+                });
+                
+                this.buildings = new THREE.InstancedMesh(bGeo, bMat, buildingCount);
+                this.buildings.castShadow = true;
+                this.buildings.receiveShadow = true;
+
+                const dummy = new THREE.Object3D();
+                const color = new THREE.Color();
+                let idx = 0;
+                
+                // Generate a grid-based massive city mapping
+                const citySize = 4000; // 8000x8000 area
+                const blockSize = 60;
+                const roadWidth = 20;
+                
+                for(let x = -citySize; x < citySize; x += blockSize) {
+                    for(let z = -citySize; z < citySize; z += blockSize) {
+                        // Create a road network (leave empty space)
+                        if (Math.abs(x) % 240 < roadWidth * 1.5 || Math.abs(z) % 240 < roadWidth * 1.5) {
+                            continue;
+                        }
+                        
+                        // Main street clearing for starting position (0,0)
+                        if (Math.abs(x) < 40 && Math.abs(z) < 200) continue;
+                        
+                        if (idx >= buildingCount) break;
+                        
+                        // Randomize building size
+                        const height = 15 + Math.random() * 50 + (Math.random() > 0.9 ? 80 : 0);
+                        const width = 20 + Math.random() * 15;
+                        const depth = 20 + Math.random() * 15;
+                        
+                        // Positioning with slight offset inside the block
+                        dummy.position.set(
+                            x + (Math.random() * 10 - 5), 
+                            0, 
+                            z + (Math.random() * 10 - 5)
+                        );
+                        dummy.scale.set(width, height, depth);
+                        dummy.updateMatrix();
+                        
+                        // Cyberpunk/Night city glowing color palette mixture
+                        let emissiveColor = new THREE.Color(0x000000);
+                        let emissiveIntensity = 0;
+                        if (Math.random() > 0.7) {
+                            color.setHSL(Math.random() * 0.1 + 0.55, 0.8, 0.4); // Blues/Teals
+                            if (Math.random() > 0.5) { emissiveColor.copy(color); emissiveIntensity = 1.0; } // Glow
+                        } else if (Math.random() > 0.85) {
+                            color.setHSL(0.05, 0.9, 0.5); // Orange/Red accents
+                            emissiveColor.copy(color); emissiveIntensity = 1.5; // Strong glow
+                        } else {
+                            color.setHSL(0, 0, Math.random() * 0.15 + 0.05); // Darks
+                            if (Math.random() > 0.9) { emissiveColor.setHSL(0.8, 0.8, 0.5); emissiveIntensity = 0.8; } // Occasional neon purple
+                        }
+                        
+                        this.buildings.setColorAt(idx, color);
+                        // Store emissive data (Since InstancedMesh doesn't support instance emissive natively in older Three.js,
+                        // we can simulate it with a brighter color, or in a real scenario use an instanced custom shader.
+                        // For r128 standard material, we just set the color brighter to trigger bloom.)
+                        if (emissiveIntensity > 0) {
+                            color.multiplyScalar(1 + emissiveIntensity);
+                            this.buildings.setColorAt(idx, color);
+                        }
+                        this.buildings.setMatrixAt(idx, dummy.matrix);
+                        idx++;
+                    }
+                    if (idx >= buildingCount) break;
+                }
+                
+                this.buildings.count = idx; // Trim unused instances
+                this.buildings.instanceMatrix.needsUpdate = true;
+                if(this.buildings.instanceColor) this.buildings.instanceColor.needsUpdate = true;
+                
+                this.scene.add(this.buildings);
+            }
+
+            bindEvents() {
+                window.addEventListener('keydown', e => this.keys[e.key.toLowerCase()] = true);
+                window.addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
+                window.addEventListener('resize', () => {
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    if(this.composer) this.composer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+
+            animate() {
+                requestAnimationFrame(this.animate);
+
+                // Physics logic
+                if (this.keys['w'] || this.keys['arrowup']) {
+                    this.speed += this.accel;
+                } else if (this.keys['s'] || this.keys['arrowdown']) {
+                    this.speed -= this.brakePower;
+                } else {
+                    this.speed *= this.friction;
+                }
+
+                // Speed limits
+                if (this.speed > this.maxSpeed) this.speed = this.maxSpeed;
+                if (this.speed < -this.maxSpeed/2) this.speed = -this.maxSpeed/2;
+                if (Math.abs(this.speed) < 0.001) this.speed = 0;
+
+                // Steering logic (car needs to be moving to steer)
+                if (Math.abs(this.speed) > 0.05) {
+                    // Reverse steering direction when going backwards
+                    const steerDir = this.speed > 0 ? 1 : -1;
+                    // Speed multiplier makes turning slightly harder at top speed
+                    const turnMult = Math.max(0.4, 1.2 - Math.abs(this.speed/this.maxSpeed));
+                    
+                    if (this.keys['a'] || this.keys['arrowleft']) this.carRotation += this.turnSpeed * steerDir * turnMult;
+                    if (this.keys['d'] || this.keys['arrowright']) this.carRotation -= this.turnSpeed * steerDir * turnMult;
+                }
+
+                // Update car world position
+                this.carPosition.x -= Math.sin(this.carRotation) * this.speed;
+                this.carPosition.z -= Math.cos(this.carRotation) * this.speed;
+                
+                this.carGroup.position.copy(this.carPosition);
+                this.carGroup.rotation.y = this.carRotation;
+
+                // Update UI
+                const displaySpeed = Math.abs(Math.round(this.speed * 110));
+                document.getElementById('speed-val').textContent = displaySpeed;
+
+                // True Top-Down Camera Logic
+                // Camera is positioned directly above the car looking straight down.
+                // To keep the car pointing 'up' on the screen, we rotate the camera.
+                const heightAbove = 100 + (Math.abs(this.speed) * 20); // Dynamic height zoom out
+                
+                this.camera.position.set(this.carPosition.x, heightAbove, this.carPosition.z);
+                
+                // Look straight down
+                this.camera.lookAt(this.carPosition.x, 0, this.carPosition.z);
+                
+                // Rotate camera so 'up' aligns with car's forward direction
+                // Car's forward vector: (-sin(rotation), 0, -cos(rotation))
+                this.camera.up.set(
+                    -Math.sin(this.carRotation),
+                    0,
+                    -Math.cos(this.carRotation)
+                );
+
+                if (this.composer) {
+                    this.composer.render();
+                } else {
+                    this.renderer.render(this.scene, this.camera);
+                }
+            }
+        }
+
+        window.onload = () => {
+            preloadModels(() => {
+                document.getElementById('loading').style.opacity = '0';
+                setTimeout(() => document.getElementById('loading').style.display = 'none', 300);
+                new Simulator25D();
+            });
+        };
+    </script>
+</body>
+</html>
