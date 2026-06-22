@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script type="module" src="/speed-insights.js" defer></script>
     <meta name="description" content="Admin Command Center — Class of Learners internal dashboard for managing projects, analytics, and team operations.">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -760,7 +761,9 @@ async function loadGhFileContent() {
         // Fix relative paths for srcdoc
         const baseUrl = `<base href="https://${GH_OWNER}.github.io/${GH_REPO}/">`;
         if (content.includes('<head>')) {
+  <script type="module" src="/speed-insights.js" defer></script>
             content = content.replace('<head>', '<head>' + baseUrl);
+  <script type="module" src="/speed-insights.js" defer></script>
         }
 
         iframe.srcdoc = content;
