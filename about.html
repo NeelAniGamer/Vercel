@@ -478,13 +478,9 @@
   requestAnimationFrame(function(){canvas.classList.add('v');});
 })();
 
-// ============= CURSOR =============
+// ============= CURSOR HOVER EFFECTS =============
 (function(){
-  var dot=document.getElementById('cDot'),ring=document.getElementById('cRing');if(!dot||!ring)return;
-  var rx=0,ry=0,dx=0,dy=0;
-  document.addEventListener('mousemove',function(e){dx=e.clientX;dy=e.clientY;dot.style.left=dx+'px';dot.style.top=dy+'px';});
-  function rf(){rx+=(dx-rx)*.13;ry+=(dy-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(rf);}rf();
-  document.querySelectorAll('a,button,.tm,.mission-card').forEach(function(el){el.addEventListener('mouseenter',function(){document.body.classList.add('ch');});el.addEventListener('mouseleave',function(){document.body.classList.remove('ch');});});
+  document.querySelectorAll('.tm,.mission-card').forEach(function(el){el.addEventListener('mouseenter',function(){document.body.classList.add('ch');});el.addEventListener('mouseleave',function(){document.body.classList.remove('ch');});});
 })();
 
 window.addEventListener('load',function(){setTimeout(function(){var l=document.getElementById('loader');if(l)l.classList.add('gone');},1300);});

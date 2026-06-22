@@ -79,6 +79,8 @@
     </style>
 </head>
 <body>
+<div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
+<canvas id="bgCanvas" style="position:fixed;inset:0;z-index:-1;pointer-events:none;"></canvas>
 
 <nav class="top-nav">
     <a href="index.html" class="nav-brand">
@@ -402,5 +404,57 @@
     </div>
 </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        (function(){
+            var canvas = document.getElementById('bgCanvas');
+            if(!canvas || typeof THREE === 'undefined') return;
+            var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance'});
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 1000);
+            camera.position.z = 400;
+
+            var pCount = 800;
+            var geo = new THREE.BufferGeometry();
+            var pos = new Float32Array(pCount * 3);
+            for(let i=0; i<pCount*3; i++) {
+                pos[i] = (Math.random() - 0.5) * 1000;
+            }
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            var mat = new THREE.PointsMaterial({color: 0x5ED4F5, size: 1.5, transparent: true, opacity: 0.4});
+            var pts = new THREE.Points(geo, mat);
+            scene.add(pts);
+
+            window.addEventListener('resize', function(){
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            var mx=0, my=0;
+            document.addEventListener('mousemove', function(e){
+                mx = (e.clientX / window.innerWidth) * 2 - 1;
+                my = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                pts.rotation.y += 0.0005;
+                pts.rotation.x += 0.0002;
+                camera.position.x += (mx * 20 - camera.position.x) * 0.05;
+                camera.position.y += (my * 20 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+                renderer.render(scene, camera);
+            }
+            animate();
+            
+            document.querySelectorAll('.fb-card').forEach(function(el){
+                el.addEventListener('mouseenter', function(){ document.body.classList.add('ch'); });
+                el.addEventListener('mouseleave', function(){ document.body.classList.remove('ch'); });
+            });
+        })();
+    </script>
 </body>
 </html>
