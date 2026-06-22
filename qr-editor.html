@@ -1063,11 +1063,16 @@ function getContent(){
 // â”€â”€ QR ENGINE â”€â”€
 function getQRDataString() {
     const isStatic = ['text','vcard','wifi','whatsapp','email','sms'].indexOf(selType) !== -1;
-    if (isStatic) return getContent();
-    const urlParams = new URLSearchParams(window.location.search);
-    const editId = urlParams.get('id');
-    const id = editId ? parseInt(editId) : window.activeQrId;
-    return window.location.origin + '/q.html?id=' + id;
+    let d = '';
+    if (isStatic) {
+        d = getContent();
+    } else {
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('id');
+        const id = editId ? parseInt(editId) : window.activeQrId;
+        d = window.location.origin + '/q.html?id=' + id;
+    }
+    try { return unescape(encodeURIComponent(d)); } catch(e) { return d; }
 }
 
 function initQR(){
@@ -1137,7 +1142,10 @@ function applyQS(style) {
 function updateInfo(){
   const c=getContent();
   const piSz = document.getElementById('piSz');
-  if(piSz) piSz.textContent = c.length + ' bytes';
+  if(piSz) {
+      try { piSz.textContent = unescape(encodeURIComponent(c)).length + ' bytes'; }
+      catch(e) { piSz.textContent = c.length + ' bytes'; }
+  }
   const cm={L:'L – 7%',M:'M – 15%',Q:'Q – 25%',H:'H – 30%'};
   const errLvl = (opts.qrOptions && opts.qrOptions.errorCorrectionLevel) ? opts.qrOptions.errorCorrectionLevel : 'H';
   const piCr = document.getElementById('piCr');
@@ -1447,7 +1455,7 @@ function goStep(n){
     const to=DYN.concat(STA).filter(x=>x.id===selType)[0]; const h=document.getElementById('s2h'); if(h&&to) h.textContent='Content: '+to.name;
   }
   if(n===3){
-    const c=getContent(); if(c&&c.trim()) opts.data=c; // Real-time preview content
+    const c=getQRDataString(); if(c&&c.trim()) opts.data=c; // Real-time preview content
     if(!qrInst) initQR(); else {qrInst.update({data:opts.data}); updateInfo();}
   }
 }
@@ -1725,7 +1733,9 @@ async function runBulkGeneration() {
                 }
             }
 
-            qrInst.update({ data: url });
+            let safeUrl = url;
+            try { safeUrl = unescape(encodeURIComponent(url)); } catch(e) {}
+            qrInst.update({ data: safeUrl });
             const blob = await qrInst.getRawData('png');
             zip.file(filename, blob);
             
