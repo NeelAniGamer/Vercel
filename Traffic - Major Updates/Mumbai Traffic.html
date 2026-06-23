@@ -2472,6 +2472,8 @@
         }
       },
       _buildSylList() {
+        if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 };
+        if (!S.comp) S.comp = {};
         const wrap = document.getElementById('syl-list');
         if (!wrap) return;
         wrap.innerHTML = '';

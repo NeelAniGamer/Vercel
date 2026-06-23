@@ -2474,6 +2474,8 @@
       _rain() { const r = document.getElementById('rl'); if (r && !r._b) { r._b = 1; for (let i = 0; i < 30; i++) { const d = document.createElement('div'); d.className = 'rd'; d.style.left = Math.random() * 100 + '%'; d.style.height = (50 + Math.random() * 50) + 'px'; d.style.animationDuration = ('.6' + Math.random() * .5) + 's'; r.appendChild(d); } } },
       showLevels() { this.show('screen-levels'); this._bldLvs(); },
       _bldLvs() {
+        if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 };
+        if (!S.comp) S.comp = {};
         const body = document.getElementById('lvbody'); body.innerHTML = '';
         const done = Object.keys(S.comp).length; document.getElementById('pchip').textContent = done + '/15 ✅';
         const secs = [{ t: '🔰 Beginner Modules', ids: [1, 2, 3, 4] }, { t: '🔰 Intermediate Corridors', ids: [5, 6, 7, 8, 9] }, { t: '🔰 Advanced Systems', ids: [10, 11, 12, 13] }, { t: '🎓 Expert Gauntlets', ids: [14, 15] }];
@@ -2481,7 +2483,9 @@
           const sh = document.createElement('div'); sh.className = 'sec-hdr'; sh.textContent = sec.t; body.appendChild(sh);
           const tr = document.createElement('div'); tr.className = 'lv-track';
           sec.ids.forEach(id => {
-            const lv = LVS.find(l => l.id === id), idx = LVS.indexOf(lv);
+            const lv = LVS.find(l => l.id === id);
+            if (!lv) return;
+            const idx = LVS.indexOf(lv);
             const un = idx === 0 || S.comp[LVS[idx - 1].id]; const cm = !!S.comp[lv.id]; const ip = !cm && idx > 0 && S.comp[LVS[idx - 1].id];
             const c = document.createElement('div'); c.className = 'lcard' + (cm ? ' done' : '') + (un ? '' : ' lk');
             c.innerHTML = `<div class="lbar" style="background:${lv.gr}"></div>
