@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+  window.ui = new Proxy({}, {
+    get: function() {
+      return function() { console.log('Loading...'); };
+    }
+  });
+</script>
+</head>
+<body>
+<button onclick="ui.showLevels()" id="btn">Click Me</button>
+<script>
+  const ui = {
+    showLevels: function() { console.log('Const UI'); }
+  };
+</script>
+</body>
+</html>

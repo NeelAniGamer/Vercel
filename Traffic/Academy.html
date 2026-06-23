@@ -1801,6 +1801,23 @@
 </head>
 
 <body>
+  <script>
+    // Fallback UI controller for progressive loading
+    // Since the file is 18MB, users might click buttons before the bottom script executes.
+    window.ui = new Proxy({}, {
+      get: function() {
+        return function() {
+          const m = document.createElement('div');
+          m.style.position = 'fixed'; m.style.bottom = '20px'; m.style.left = '50%'; m.style.transform = 'translateX(-50%)';
+          m.style.background = '#333'; m.style.color = '#fff'; m.style.padding = '12px 24px'; m.style.borderRadius = '30px';
+          m.style.zIndex = '999999'; m.style.fontFamily = 'sans-serif'; m.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+          m.innerText = 'Academy Engine is downloading... Please wait a moment.';
+          document.body.appendChild(m);
+          setTimeout(() => { if(m.parentNode) m.parentNode.removeChild(m); }, 3000);
+        };
+      }
+    });
+  </script>
 
   <div id="mobile-controls"
     style="position:fixed; bottom:0; left:0; right:0; padding:16px 24px 28px; justify-content:space-between; z-index:9999; pointer-events:none; background:linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 100%);">
@@ -2467,7 +2484,7 @@
             
             if (isDifferent) {
                 // If local has no actual progress but cloud does, auto-restore
-                if (S.total === 0 && Object.keys(S.comp).length === 0 && cloudS.total > 0) {
+                if (S.total === 0 && Object.keys(S.comp || {}).length === 0 && cloudS.total > 0) {
                     S = cloudS;
                     try { localStorage.setItem('mth4', JSON.stringify(S)); } catch (e) { }
                     toast('☁️ Cloud Data Auto-Restored!', '#5ED4F5');
@@ -2501,28 +2518,29 @@
         mo.id = 'conflictMo';
         mo.style.display = 'flex';
         mo.innerHTML = `
-        <div class="md" style="background:#111827; color:#E8E3D8; padding:20px; border-radius:12px; max-width:400px; margin:auto; margin-top:100px; z-index: 10001; position: relative;">
-            <div class="md-hd" style="border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 15px; padding-bottom: 15px;">
-                <h2 style="font-family:'Instrument Serif', serif; font-size:2rem; margin-bottom:5px;">☁️ Cloud Sync Conflict</h2>
-                <p style="color:#8891AA; font-size:0.9rem;">Your local progress differs from the cloud. Which data would you like to keep?</p>
+            <div class="md" style="background:#111827; color:#E8E3D8; padding:20px; border-radius:12px; max-width:400px; margin:auto; margin-top:100px; z-index: 10001; position: relative;">
+                <div class="md-hd" style="border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 15px; padding-bottom: 15px;">
+                    <h2 style="font-family:'Instrument Serif', serif; font-size:2rem; margin-bottom:5px;">Cloud Sync Conflict</h2>
+                    <p style="color:#8891AA; font-size:0.9rem;">Your local progress differs from the cloud. Which data would you like to keep?</p>
+                </div>
+                <div class="md-body" style="display:flex; flex-direction:column; gap:10px;">
+                    <button class="btn" onclick="resolveConflict('cloud')" style="background:#5ED4F5; color:#000; padding:12px; font-weight:bold; border-radius:6px; border:none; cursor:pointer;">Download Cloud Data</button>
+                    <button class="btn" onclick="resolveConflict('local')" style="background:#F2B84B; color:#000; padding:12px; font-weight:bold; border-radius:6px; border:none; cursor:pointer;">Keep Local Data (Overwrite Cloud)</button>
+                </div>
             </div>
-            <div class="md-body" style="display:flex; flex-direction:column; gap:10px;">
-                <button class="btn" onclick="resolveConflict('cloud')" style="background:#5ED4F5; color:#000; padding:12px; font-weight:bold; border-radius:6px; border:none; cursor:pointer;">⬇️ Download Cloud Data</button>
-                <button class="btn" onclick="resolveConflict('local')" style="background:#F2B84B; color:#000; padding:12px; font-weight:bold; border-radius:6px; border:none; cursor:pointer;">⬆️ Keep Local Data (Overwrite Cloud)</button>
-            </div>
-        </div>`;
+        `;
         if (!document.getElementById('col-ui-minimal')) {
             const style = document.createElement('style');
             style.id = 'col-ui-minimal';
             style.innerHTML = `
-            .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: none; }
-            .md { background: #111827; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-            .md-hd { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-            .md-hd h2 { font-family: 'Instrument Serif', serif; font-size: 2rem; color: #E8E3D8; margin-bottom: 5px; }
-            .md-hd p { color: #8891AA; font-size: 0.9rem; }
-            .md-body { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-            .btn { transition: opacity 0.2s; }
-            .btn:hover { opacity: 0.9; }
+                .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: none; }
+                .md { background: #111827; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+                .md-hd { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+                .md-hd h2 { font-family: 'Instrument Serif', serif; font-size: 2rem; color: #E8E3D8; margin-bottom: 5px; }
+                .md-hd p { color: #8891AA; font-size: 0.9rem; }
+                .md-body { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+                .btn { transition: opacity 0.2s; }
+                .btn:hover { opacity: 0.9; }
             `;
             document.head.appendChild(style);
         }
@@ -4948,6 +4966,9 @@ switch (type) {
       return _oldFetch.apply(this, arguments);
     };
   </script>
+  <script defer src="../col-router.js"></script>
+  <link rel="stylesheet" href="../col-ui.css">
+  <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
 </body>
 

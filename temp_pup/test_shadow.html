@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+  window.ui = { showLevels: function() { console.log('Window UI'); } };
+</script>
+</head>
+<body>
+<button onclick="ui.showLevels()" id="btn">Click Me</button>
+<script>
+  const ui = {
+    showLevels: function() { console.log('Const UI'); }
+  };
+</script>
+</body>
+</html>
