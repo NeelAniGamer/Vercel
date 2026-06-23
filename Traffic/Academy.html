@@ -2076,7 +2076,10 @@
   <!-- SCREENS -->
 
   <div id="ss" class="screen active">
-    <button onclick="ui.showProfile()" style="position:absolute; top:20px; right:20px; z-index:100; background:#fff; border:1px solid var(--border); border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">👤 Profile</button>
+    <div id="top-bar-container" style="position:absolute; top:20px; right:20px; z-index:100; display:flex; gap:10px;">
+      <button id="cloud-login-btn" onclick="window.colAuthModal && window.colAuthModal.show()" style="background:#34D399; color:#fff; border:1px solid #34D399; border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">☁️ Cloud Sync</button>
+      <button onclick="ui.showProfile()" style="background:#fff; border:1px solid var(--border); border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">👤 Profile</button>
+    </div>
     <div id="rl"></div>
     <div class="sc">
       <div class="brand-header"
@@ -2110,7 +2113,7 @@
         <div class="pls" style="justify-content:center;margin-top:40px;">
           <button class="btn btn-p" onclick="ui.showLevels()" style="font-size:1.1rem;padding:12px 32px;">Enter
             Academy</button>
-          <a href="simulator_2_5d.html" class="btn btn-p" style="background:#34D399; font-size:1.1rem;padding:12px 32px;text-decoration:none;border:none;">🎮 Play 2.5D Mode</a>
+          <button class="btn btn-p" onclick="openLogin()" style="background:#5ED4F5; color:#000; font-weight:700; font-size:1.1rem;padding:12px 32px;border:none;">☁️ Cloud Login</button>
           <button class="btn btn-g" onclick="ui.hardReset()" style="font-size:1.1rem;padding:12px 32px;">Reset
             Progress</button>
           
@@ -2424,7 +2427,115 @@
     try { const s = localStorage.getItem('mth4'); if (s) S = Object.assign(S, JSON.parse(s)); } catch (e) { }
     if (!S.comp) S.comp = {};
     if (!S.badges) S.badges = [];
-    const save = () => { try { localStorage.setItem('mth4', JSON.stringify(S)); } catch (e) { } };
+    const save = () => { 
+      try { localStorage.setItem('mth4', JSON.stringify(S)); } catch (e) { } 
+      if (window.supabaseClient && window.colUser) {
+        window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch(err => console.error("Cloud save failed", err));
+      }
+    };
+
+    // ☁️ CLOUD CONFLICT RESOLUTION ☁️
+    window.addEventListener('col-auth-changed', (e) => {
+        const user = e.detail || window.colUser;
+        
+        // Update UI button if it exists
+        const cloudLoginBtn = document.getElementById('cloud-login-btn');
+        if (cloudLoginBtn) {
+            if (user) {
+                cloudLoginBtn.innerHTML = '☁️ ' + ((user.user_metadata && user.user_metadata.full_name) ? user.user_metadata.full_name.split(' ')[0] : 'Saved');
+                cloudLoginBtn.style.background = '#4CAF50';
+                cloudLoginBtn.style.borderColor = '#4CAF50';
+            } else {
+                cloudLoginBtn.innerHTML = '☁️ Cloud Login';
+                cloudLoginBtn.style.background = '#5ED4F5';
+                cloudLoginBtn.style.borderColor = '#5ED4F5';
+            }
+        }
+
+        if (user && user.user_metadata && user.user_metadata.progress) {
+            const cloudS = user.user_metadata.progress;
+            // Provide a minimal structure to S if undefined
+            if (!S) S = { comp: {}, badges: [], total: 0, wallet: 50000 };
+            if (JSON.stringify(cloudS) !== JSON.stringify(S)) {
+                // If local has no actual progress but cloud does, auto-restore
+                if (S.total === 0 && Object.keys(S.comp).length === 0 && cloudS.total > 0) {
+                    S = cloudS;
+                    try { localStorage.setItem('mth4', JSON.stringify(S)); } catch (e) { }
+                    toast('☁️ Cloud Data Auto-Restored!', '#5ED4F5');
+                    if (ui.showStart) ui.showStart();
+                } else if (cloudS.total !== S.total) { // Only show conflict if scores differ
+                    injectConflictModal(cloudS);
+                    document.getElementById('conflictMo').style.display = 'flex';
+                }
+            }
+        } else if (user) {
+            // Logged in but no cloud progress, upload local progress if any
+            if (S && S.total > 0) {
+                window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch(()=>{});
+                toast('⬆️ Local Data Synced to Cloud!', '#F2B84B');
+            }
+        }
+    });
+
+    function injectConflictModal(cloudS) {
+        if (document.getElementById('conflictMo')) return;
+        const mo = document.createElement('div');
+        mo.className = 'mo';
+        mo.id = 'conflictMo';
+        mo.style.display = 'flex';
+        mo.innerHTML = `
+        <div class="md" style="background:#111827; color:#E8E3D8; padding:20px; border-radius:12px; max-width:400px; margin:auto; margin-top:100px; z-index: 10001; position: relative;">
+            <div class="md-hd" style="border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 15px; padding-bottom: 15px;">
+                <h2 style="font-family:'Instrument Serif', serif; font-size:2rem; margin-bottom:5px;">☁️ Cloud Sync Conflict</h2>
+                <p style="color:#8891AA; font-size:0.9rem;">Your local progress differs from the cloud. Which data would you like to keep?</p>
+            </div>
+            <div class="md-body" style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn" onclick="resolveConflict('cloud', '${encodeURIComponent(JSON.stringify(cloudS))}')" style="background:#5ED4F5; color:#000; padding:12px; font-weight:bold; border-radius:6px; border:none; cursor:pointer;">⬇️ Download Cloud Data</button>
+                <button class="btn" onclick="resolveConflict('local')" style="background:#F2B84B; color:#000; padding:12px; font-weight:bold; border-radius:6px; border:none; cursor:pointer;">⬆️ Keep Local Data (Overwrite Cloud)</button>
+            </div>
+        </div>`;
+        if (!document.getElementById('col-ui-minimal')) {
+            const style = document.createElement('style');
+            style.id = 'col-ui-minimal';
+            style.innerHTML = \`
+            .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: none; }
+            .md { background: #111827; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+            .md-hd { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+            .md-hd h2 { font-family: 'Instrument Serif', serif; font-size: 2rem; color: #E8E3D8; margin-bottom: 5px; }
+            .md-hd p { color: #8891AA; font-size: 0.9rem; }
+            .md-body { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+            .ml { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: #8891AA; margin-bottom: 5px; }
+            .mi { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #E8E3D8; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
+            .mi:focus { outline: none; border-color: #5ED4F5; }
+            .gbtn { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: background 0.2s; }
+            .gbtn:hover { background: #f0f0f0; }
+            .ms { width: 100%; padding: 12px; background: #5ED4F5; color: #000; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+            .ms:hover { background: #4bc3e4; }
+            .msk { width: 100%; padding: 12px; background: transparent; color: #8891AA; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+            .msk:hover { background: rgba(255,255,255,0.05); color: #E8E3D8; }
+            .msk-danger { width: 100%; padding: 12px; background: transparent; color: #ff4444; border: 1px solid rgba(255,68,68,0.2); border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+            .msk-danger:hover { background: rgba(255,68,68,0.1); border-color: rgba(255,68,68,0.4); }
+            \`;
+            document.head.appendChild(style);
+        }
+        document.body.appendChild(mo);
+    }
+
+    window.resolveConflict = function(choice, encodedCloudS) {
+        document.getElementById('conflictMo').style.display = 'none';
+        if (choice === 'cloud') {
+            const cloudS = JSON.parse(decodeURIComponent(encodedCloudS));
+            S = cloudS;
+            try { localStorage.setItem('mth4', JSON.stringify(S)); } catch (e) { }
+            if (ui.showStart) ui.showStart(); // Refresh UI
+            toast('☁️ Cloud Data Restored!', '#5ED4F5');
+        } else {
+            // local wins
+            save();
+            toast('⬆️ Local Data Synced to Cloud!', '#F2B84B');
+        }
+    };
+
 
     // 🚦 UTILS 🚦
     let _tt = null;
@@ -2446,8 +2557,20 @@
       _sylLv: null,
       cq: [],
       cbusy: false,
+      qst: null,
+      _ccb: null,
       adminUnlock() { LVS.forEach(l => { if (!S.comp[l.id]) S.comp[l.id] = { score: 500, time: Date.now() } }); BADGES.forEach(b => { if (!S.badges.includes(b.id)) S.badges.push(b.id) }); S.total += 7500; save(); toast('🔓 Developer Unlock Triggered!', '#00c851'); this.showLevels(); },
-      hardReset() { if (confirm('Reset all progress?')) { S.comp = {}; S.badges = []; S.total = 0; save(); toast('⚠️ Progress Reset!', '#ff3b30'); this.showStart(); } },
+      async hardReset() { 
+        if (confirm('Reset all progress?')) { 
+          S = { comp: {}, badges: [], total: 0, wallet: 50000, name: 'Traffic Hero' }; 
+          try { localStorage.removeItem('mth4'); } catch (e) { } 
+          if (window.supabaseClient && window.colUser) {
+            try { await window.supabaseClient.auth.updateUser({ data: { progress: null } }); } catch(e) {}
+          }
+          toast('⚠️ Progress Reset!', '#ff3b30'); 
+          if (this.showStart) this.showStart(); else { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById('ss').classList.add('active'); }
+        } 
+      },
       init() {
         this.show('ss');
         this._buildSylList();
@@ -2636,10 +2759,7 @@
             alert('PDF library not loaded. Please ensure you have internet access.');
         }
     },
-    cur: null, qst: null, cq: [], cbusy: false, _ccb: null,
-      adminUnlock() { LVS.forEach(l => { if (!S.comp[l.id]) S.comp[l.id] = { score: 500, time: Date.now() } }); BADGES.forEach(b => { if (!S.badges.includes(b.id)) S.badges.push(b.id) }); S.total += 7500; save(); toast('🔓 Developer Unlock Triggered!', '#00c851'); this.showLevels(); },
-      hardReset() { if (confirm('Reset all progress?')) { S.comp = {}; S.badges = []; S.total = 0; S.wallet = 50000; save(); toast('⚠️ Progress Reset!', '#ff3b30'); this.showStart(); } },
-      show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); if (id) document.getElementById(id).classList.add('active'); },
+
       showStart() { this.show('ss'); this._rain(); if (!S.name || S.name === 'Traffic Hero') { setTimeout(() => this.showNamePrompt(), 1000); } },
       showNameDlg() { document.getElementById('name-dlg').classList.add('on'); setTimeout(() => { const i = document.getElementById('name-input'); if (i) i.focus(); }, 200); },
       _rain() { const r = document.getElementById('rl'); if (r && !r._b) { r._b = 1; for (let i = 0; i < 30; i++) { const d = document.createElement('div'); d.className = 'rd'; d.style.left = Math.random() * 100 + '%'; d.style.height = (50 + Math.random() * 50) + 'px'; d.style.animationDuration = ('.6' + Math.random() * .5) + 's'; r.appendChild(d); } } },
@@ -4806,6 +4926,18 @@ switch (type) {
       }
     }
   </script>
+
+  <!-- Cloud Auth & Sync Logic -->
+  <script>
+    const _oldFetch = window.fetch;
+    window.fetch = function() {
+      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
+        arguments[0] = '../' + arguments[0];
+      }
+      return _oldFetch.apply(this, arguments);
+    };
+  </script>
+  <script defer src="../col-auth.js"></script>
 </body>
 
 </html>
