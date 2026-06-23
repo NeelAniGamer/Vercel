@@ -2452,6 +2452,8 @@
       _sylLv: null,
       cq: [],
       cbusy: false,
+      adminUnlock() { LVS.forEach(l => { if (!S.comp[l.id]) S.comp[l.id] = { score: 500, time: Date.now() } }); BADGES.forEach(b => { if (!S.badges.includes(b.id)) S.badges.push(b.id) }); S.total += 7500; save(); toast('🔓 Developer Unlock Triggered!', '#00c851'); this.showLevels(); },
+      hardReset() { if (confirm('Reset all progress?')) { S.comp = {}; S.badges = []; S.total = 0; save(); toast('⚠️ Progress Reset!', '#ff3b30'); this.showStart(); } },
       init() {
         this.show('ss');
         this._buildSylList();
@@ -3999,6 +4001,75 @@
         ctx.beginPath(); ctx.arc(cx, cy, cx - 2, 0, Math.PI * 2); ctx.stroke();
       }
     }
+
+    async function downloadSourceCode(e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById("dl-btn");
+      if(!btn || typeof JSZip === "undefined") { alert("Zip library loading, please wait."); return; }
+      
+      const origText = btn.innerHTML;
+      btn.innerHTML = "&#9203; Zipping... (Make sure to run via local server for this to work!)";
+      btn.style.pointerEvents = "none";
+      
+      try {
+        const zip = new JSZip();
+        const files = [
+          "Mumbai Traffic.html",
+          "vehicles.js",
+          "lambo.js",
+          "image_fd3505.png",
+          "image_fd3503.png",
+          "auto.js",
+          "bus.js"
+        ];
+        
+        let fetched = 0;
+        
+        for (let f of files) {
+          let fetchUrl = f;
+          if (f === "Mumbai Traffic.html") fetchUrl = window.location.href.split("?")[0].split("#")[0];
+          
+          try {
+            const res = await fetch(fetchUrl);
+            if (res.ok) {
+              const blob = await res.blob();
+              let fName = f;
+              if (f === "Mumbai Traffic.html") fName = fetchUrl.split("/").pop() || "Mumbai Traffic.html";
+              zip.file(fName, blob);
+              fetched++;
+            } else {
+              console.warn("Could not fetch " + f);
+            }
+          } catch(err) {
+            console.warn("Fetch failed for " + f + " (Likely CORS issue on file:/// origin)", err);
+          }
+        }
+        
+        if (fetched === 0) {
+          alert("Failed to read local files! This usually happens if you opened the HTML file directly (file:///). Please host this folder using a local web server (e.g. VS Code Live Server) to enable dynamic zipping.");
+          btn.innerHTML = origText;
+          btn.style.pointerEvents = "auto";
+          return;
+        }
+
+        const content = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(content);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Traffic_Source_Code.zip";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        
+        btn.innerHTML = "&#9989; Downloaded!";
+        setTimeout(() => { btn.innerHTML = origText; btn.style.pointerEvents = "auto"; }, 3000);
+      } catch(e) {
+        console.error(e);
+        btn.innerHTML = "&#10060; Error!";
+        setTimeout(() => { btn.innerHTML = origText; btn.style.pointerEvents = "auto"; }, 3000);
+      }
+    };
 
     let game = null;
     window.addEventListener('DOMContentLoaded', () => {
