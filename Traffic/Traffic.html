@@ -3089,8 +3089,11 @@ switch (type) {
         window.addEventListener('resize', () => this._rsz());
       }
       _initR() {
-        const cv = document.getElementById('3c'); this.renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !mob(), powerPreference: "high-performance" });
-        this.renderer.setSize(innerWidth, innerHeight); this.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.25));
+        const cv = document.getElementById('3c'); this.renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, powerPreference: "high-performance" });
+        this.renderer.setSize(innerWidth, innerHeight); this.renderer.setPixelRatio(devicePixelRatio);
+        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, .1, 150);
       }
       _rsz() { if (!this.renderer) return; this.renderer.setSize(innerWidth, innerHeight); if (this.camera) { this.camera.aspect = innerWidth / innerHeight; this.camera.updateProjectionMatrix(); } }
