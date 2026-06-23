@@ -1965,6 +1965,17 @@
     <div id="ti"></div>
   </div>
 
+  <div id="name-prompt-dlg" style="position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div class="nd-c" style="background:#fff; padding:30px; border-radius:16px; max-width:400px; width:90%; box-shadow:0 24px 60px rgba(0,0,0,0.2); text-align:center;">
+      <h3 style="font-size:1.6rem; margin-bottom:8px;">Welcome to the Academy!</h3>
+      <p style="color:var(--muted2); margin-top:0px; font-size:0.95rem; margin-bottom:20px;">Please enter your name to begin.</p>
+      <div style="text-align:left; margin-bottom:24px;">
+          <input type="text" id="prompt-name" class="nd-i" placeholder="e.g. Rahul Sharma" maxlength="30" style="width:100%; box-sizing:border-box; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:1rem;" />
+      </div>
+      <button class="btn btn-p" onclick="ui.saveNamePrompt()" style="width:100%; font-size:1rem; padding:12px;">Start Driving</button>
+    </div>
+  </div>
+
   <div id="profile-dlg" style="position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
     <div class="nd-c" style="background:#fff; padding:30px; border-radius:16px; max-width:400px; width:90%; box-shadow:0 24px 60px rgba(0,0,0,0.2); text-align:center;">
       <h3 style="font-size:1.6rem; margin-bottom:8px;">Driver Profile</h3>
@@ -2493,6 +2504,23 @@
         this.show('screen-levels');
         this._buildSylList();
       },
+      showNamePrompt() {
+        const dlg = document.getElementById('name-prompt-dlg');
+        if (dlg) {
+            document.getElementById('prompt-name').value = (S.name && S.name !== 'Traffic Hero') ? S.name : '';
+            dlg.style.display = 'flex';
+        }
+      },
+      saveNamePrompt() {
+        const n = document.getElementById('prompt-name').value.trim();
+        if(n.length > 0 && n.length < 3) { toast('Please enter a valid name', 'darkred'); return; }
+        S.name = n || 'Traffic Hero';
+        save();
+        document.getElementById('name-prompt-dlg').style.display = 'none';
+        toast('Welcome, ' + S.name + '!', '#3b8c66');
+        const cnameEl = document.getElementById('cname');
+        if(cnameEl) { cnameEl.innerText = S.name.toUpperCase(); }
+      },
       showProfile() {
         const dlg = document.getElementById('profile-dlg');
         if(!dlg) return;
@@ -2608,7 +2636,7 @@
       adminUnlock() { LVS.forEach(l => { if (!S.comp[l.id]) S.comp[l.id] = { score: 500, time: Date.now() } }); BADGES.forEach(b => { if (!S.badges.includes(b.id)) S.badges.push(b.id) }); S.total += 7500; save(); toast('🔓 Developer Unlock Triggered!', '#00c851'); this.showLevels(); },
       hardReset() { if (confirm('Reset all progress?')) { S.comp = {}; S.badges = []; S.total = 0; S.wallet = 50000; save(); toast('⚠️ Progress Reset!', '#ff3b30'); this.showStart(); } },
       show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); if (id) document.getElementById(id).classList.add('active'); },
-      showStart() { this.show('ss'); this._rain(); if (!S.name || S.name === 'Traffic Hero') { setTimeout(() => this.showProfile(), 1000); } },
+      showStart() { this.show('ss'); this._rain(); if (!S.name || S.name === 'Traffic Hero') { setTimeout(() => this.showNamePrompt(), 1000); } },
       showNameDlg() { document.getElementById('name-dlg').classList.add('on'); setTimeout(() => { const i = document.getElementById('name-input'); if (i) i.focus(); }, 200); },
       _rain() { const r = document.getElementById('rl'); if (r && !r._b) { r._b = 1; for (let i = 0; i < 30; i++) { const d = document.createElement('div'); d.className = 'rd'; d.style.left = Math.random() * 100 + '%'; d.style.height = (50 + Math.random() * 50) + 'px'; d.style.animationDuration = ('.6' + Math.random() * .5) + 's'; r.appendChild(d); } } },
       showLevels() { this.show('screen-levels'); this._bldLvs(); },
@@ -4424,11 +4452,9 @@ switch (type) {
       try {
         const zip = new JSZip();
         const files = [
-          "Mumbai Traffic.html",
+          "Academy.html",
           "vehicles.js",
           "lambo.js",
-          "image_fd3505.png",
-          "image_fd3503.png",
           "auto.js",
           "bus.js"
         ];
@@ -4437,14 +4463,14 @@ switch (type) {
         
         for (let f of files) {
           let fetchUrl = f;
-          if (f === "Mumbai Traffic.html") fetchUrl = window.location.href.split("?")[0].split("#")[0];
+          if (f === "Academy.html") fetchUrl = window.location.href.split("?")[0].split("#")[0];
           
           try {
             const res = await fetch(fetchUrl);
             if (res.ok) {
               const blob = await res.blob();
               let fName = f;
-              if (f === "Mumbai Traffic.html") fName = fetchUrl.split("/").pop() || "Mumbai Traffic.html";
+              if (f === "Academy.html") fName = fetchUrl.split("/").pop() || "Academy.html";
               zip.file(fName, blob);
               fetched++;
             } else {
@@ -4721,11 +4747,9 @@ switch (type) {
       try {
         const zip = new JSZip();
         const files = [
-          "Mumbai Traffic.html",
+          "Academy.html",
           "vehicles.js",
           "lambo.js",
-          "image_fd3505.png",
-          "image_fd3503.png",
           "auto.js",
           "bus.js"
         ];
@@ -4734,14 +4758,14 @@ switch (type) {
         
         for (let f of files) {
           let fetchUrl = f;
-          if (f === "Mumbai Traffic.html") fetchUrl = window.location.href.split("?")[0].split("#")[0];
+          if (f === "Academy.html") fetchUrl = window.location.href.split("?")[0].split("#")[0];
           
           try {
             const res = await fetch(fetchUrl);
             if (res.ok) {
               const blob = await res.blob();
               let fName = f;
-              if (f === "Mumbai Traffic.html") fName = fetchUrl.split("/").pop() || "Mumbai Traffic.html";
+              if (f === "Academy.html") fName = fetchUrl.split("/").pop() || "Academy.html";
               zip.file(fName, blob);
               fetched++;
             } else {
