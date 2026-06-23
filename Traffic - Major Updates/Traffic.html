@@ -2407,6 +2407,8 @@
     // 🚦 STATE MANAGEMENT 🚦
     let S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 };
     try { const s = localStorage.getItem('mth4'); if (s) S = Object.assign(S, JSON.parse(s)); } catch (e) { }
+    if (!S.comp) S.comp = {};
+    if (!S.badges) S.badges = [];
     const save = () => { try { localStorage.setItem('mth4', JSON.stringify(S)); } catch (e) { } };
 
     // 🚦 UTILS 🚦
@@ -2425,7 +2427,6 @@
 
     // 🚦 UI INTERACTION LOGIC LAYER 🚦
     const ui = {
-<<<<<<< Updated upstream
       cur: null,
       _sylLv: null,
       cq: [],
@@ -2493,9 +2494,6 @@
         this._buildSylList();
       },
       showProfile() {
-=======
-    showProfile() {
->>>>>>> Stashed changes
         const dlg = document.getElementById('profile-dlg');
         if(!dlg) return;
         document.getElementById('prof-name').value = S.name || '';
@@ -4411,7 +4409,6 @@ switch (type) {
       }
     }
 
-<<<<<<< Updated upstream
     async function downloadSourceCode(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById("dl-btn");
@@ -4487,18 +4484,14 @@ switch (type) {
       game = new Game();
       if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
         document.body.classList.add('is-touch');
-=======
-    let game = null;  // Detect touch screens
-    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-      document.body.classList.add('is-touch');
-    }
+      }
+    });
 
     // Developer Mode: Ctrl+Shift+D to unlock everything
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'D') {
         e.preventDefault();
         ui.adminUnlock();
->>>>>>> Stashed changes
       }
     });
 
