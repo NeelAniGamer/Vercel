@@ -2,7 +2,7 @@ const BADGES = [
       { id: 'safe_walker', name: 'Safe Walker Badge', icon: '🚶', desc: 'Crossed all roads safely as a pedestrian' },
       { id: 'law_abider', name: 'Law Abider Badge', icon: '🏛️', desc: 'Passed all checkpoint inspections cleanly' },
       { id: 'speed_king', name: 'Speed King Badge', icon: '🏎️', desc: 'Completed Sea Link with zero speed violations' },
-      { id: 'traffic_hero', name: 'Traffic Hero Badge', icon: '🌟', desc: 'Completed all 15 levels of the Academy' },
+      { id: 'traffic_hero', name: 'Traffic Hero Badge', icon: '🌟', desc: 'Completed all 20 levels of the Academy' },
       { id: 'smart_citizen', name: 'Mumbai Smart Citizen', icon: '🏙️', desc: 'Earned the Traffic Hero badge 🔄 A true road hero' },
       { id: 'signal_master', name: 'Signal Master', icon: '🚦', desc: 'Completed 5+ levels without a single red-light violation' }
     ];

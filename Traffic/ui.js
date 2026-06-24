@@ -175,7 +175,7 @@ let _tt = null;
             statsBody.innerHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <div style="color:#666;font-size:0.9rem;font-weight:600;">COMPLETED LEVELS</div>
-                    <div style="font-weight:700;color:var(--accent);">${Object.keys(S.comp).length}/15</div>
+                    <div style="font-weight:700;color:var(--accent);">${Object.keys(S.comp).length}/20</div>
                 </div>
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <div style="color:#666;font-size:0.9rem;font-weight:600;">TOTAL WALLET</div>
@@ -226,8 +226,8 @@ let _tt = null;
       showLevels() { this.show('screen-levels'); this._bldLvs(); },
       _bldLvs() {
         const body = document.getElementById('lvbody'); body.innerHTML = '';
-        const done = Object.keys(S.comp).length; document.getElementById('pchip').textContent = done + '/15 ✅';
-        const secs = [{ t: '🔰 Beginner Modules', ids: [1, 2, 3, 4] }, { t: '🔰 Intermediate Corridors', ids: [5, 6, 7, 8, 9] }, { t: '🔰 Advanced Systems', ids: [10, 11, 12, 13] }, { t: '🎓 Expert Gauntlets', ids: [14, 15] }];
+        const done = Object.keys(S.comp).length; document.getElementById('pchip').textContent = done + '/20 ✅';
+        const secs = [{ t: '🔰 Beginner Modules', ids: [1, 2, 3, 4] }, { t: '🔰 Intermediate Corridors', ids: [5, 6, 7, 8, 9] }, { t: '🔰 Advanced Systems', ids: [10, 11, 12, 13] }, { t: '🎓 Expert Gauntlets', ids: [14, 15] }, { t: '🚀 Autonomous & Smart Systems', ids: [16, 17, 18, 19, 20] }];
         secs.forEach(sec => {
           const sh = document.createElement('div'); sh.className = 'sec-hdr'; sh.textContent = sec.t; body.appendChild(sh);
           const tr = document.createElement('div'); tr.className = 'lv-track';
@@ -368,7 +368,7 @@ let _tt = null;
         document.getElementById('rico').textContent = score > 200 ? '🌟' : '⭐';
         document.getElementById('rtit').textContent = 'Level Complete!';
         document.getElementById('rsub').textContent = lv.name + ' 🔄 Well done!';
-        document.getElementById('rcard').innerHTML = `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 15</span></div>
+        document.getElementById('rcard').innerHTML = `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 20</span></div>
 ${stats.reward ? `<div class="rr"><span class="rl" style="color:#00c851">Level Reward</span><span class="rv" style="color:#00c851">+₹${stats.reward.toLocaleString('en-IN')}</span></div>` : ''}
 ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines Deducted</span><span class="rv" style="color:#ff3b30">-₹${stats.fineAmt.toLocaleString('en-IN')}</span></div>` : ''}
 <div class="rr" style="margin-top:10px; border-top:1px solid #333; padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:#f1c40f">₹${S.wallet.toLocaleString('en-IN')}</span></div>`;

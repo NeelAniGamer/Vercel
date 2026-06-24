@@ -1,9 +1,9 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 1,
-  "icon": "🚦",
+  "icon": "\ud83d\udea6",
   "name": "Traffic Signals",
-  "v": "🚗 Car",
+  "v": "\ud83d\ude97 Car",
   "col": "#e74c3c",
   "gr": "linear-gradient(135deg,#c0392b,#e74c3c)",
   "tg": "Master Junction Management",
@@ -11,14 +11,16 @@ window.LVS.push({
   "hps": [
     "Red configuration: Absolute stop priority.",
     "Yellow indicator: Safely decelerate.",
-    "Green signal: Safely cross intersection bounds."
+    "Green signal: Safely cross intersection bounds.",
+    "System Signals: Universal logic protocols of traffic lights and signs.",
+    "Intersection Logic: Algorithms for navigating 4-way stops and roundabouts."
   ],
   "law": {
     "sec": "Section 119, Motor Vehicles Act 1988",
-    "fine": "₹500",
+    "fine": "\u20b9500",
     "off": "Jumping automated signals"
   },
-  "theory": "Automated signal synchronization patterns direct city flow constraints efficiently.",
+  "theory": "Automated signal synchronization patterns direct city flow constraints efficiently. [SYSTEM SIGNALS]: Universal logic protocols of traffic lights and signs. [INTERSECTION LOGIC]: Algorithms for navigating 4-way stops and roundabouts.",
   "pract": "Navigate the Andheri Junction grid. Obey all traffic signals at 8 intersections. Red means stop, green means go.",
   "quiz": [
     {
@@ -33,9 +35,9 @@ window.LVS.push({
     {
       "q": "What is the fine for running a red light?",
       "o": [
-        "₹100",
-        "₹500",
-        "₹2,000"
+        "\u20b9100",
+        "\u20b9500",
+        "\u20b92,000"
       ],
       "a": 1
     },
