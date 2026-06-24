@@ -297,20 +297,4 @@ let game = null;
         btn.innerHTML = "&#10060; Error!";
         setTimeout(() => { btn.innerHTML = origText; btn.style.pointerEvents = "auto"; }, 3000);
       }
-    }
-  </script>
-
-  <!-- Cloud Auth & Sync Logic -->
-  <script>
-    const _oldFetch = window.fetch;
-    window.fetch = function() {
-      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
-        arguments[0] = '../' + arguments[0];
-      }
-      return _oldFetch.apply(this, arguments);
-    };
-  </script>
-  <script defer src="../col-router.js"></script>
-  <link rel="stylesheet" href="../col-ui.css">
-  <script defer src="../col-ui.js"></script>
-  <script defer src="../col-auth.js">
+    }

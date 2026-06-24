@@ -5,6 +5,7 @@ class Game {
         this._camTarget = new THREE.Vector3();
         this.playing = false; this.pause = false; this.lightningTimer = 0; this.thunderSfx = null; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0;
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.routeIdx = 0; this.retries = 0;
+        this.dom = {}; // Cached DOM elements
         this._initR(); this._initIn(); this._initG(); this._loop();
         window.addEventListener('resize', () => this._rsz());
       }
@@ -18,6 +19,10 @@ class Game {
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, .1, 150);
+        
+        // Cache DOM elements to prevent query overhead per frame
+        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc'];
+        ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
       _rsz() { if (!this.renderer) return; this.renderer.setSize(innerWidth, innerHeight); if (this.camera) { this.camera.aspect = innerWidth / innerHeight; this.camera.updateProjectionMatrix(); } }
       _initIn() {
@@ -201,8 +206,8 @@ class Game {
         if (mob()) document.getElementById('tc').classList.add('on');
         document.getElementById('hlv').textContent = lv.id; document.getElementById('hobj').textContent = lv.tg; this._uh(); sfx.play('ok');
       }
-      stopPlay() { this.playing = false;['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); document.getElementById('mmc').classList.remove('on'); document.getElementById('da').style.display = 'none'; const si = document.getElementById('sig-ind'); if (si) si.style.display = 'none'; const ow = document.getElementById('ow'); if (ow) ow.classList.remove('on'); }
-      _uh() { const p = Math.max(0, this.hp); const f = document.getElementById('hfill'); if (f) f.style.width = p + '%'; if (p <= 0) this._go("Structural Failure"); }
+      stopPlay() { this.playing = false;['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); }
+      _uh() { const p = Math.max(0, this.hp); const f = this.dom['hfill']; if (f) f.style.width = p + '%'; if (p <= 0) this._go("Structural Failure"); }
       _go(reason) {
         this.stopPlay();
         toast('💥 ' + (reason || 'Structural Failure!'), '#ff3b30');
@@ -466,12 +471,8 @@ class Game {
             const awning = new THREE.Mesh(new THREE.BoxGeometry(6, 0.4, 2.5), awMat);
             awning.position.set(0, 3, 3.5); awning.rotation.x = -0.2; g.add(awning);
           } else {
-            for (let wy = 3; wy < bh - 1; wy += 2.5) {
-              for (let wx = -1.5; wx <= 1.5; wx += 1.5) {
-                const w = new THREE.Mesh(new THREE.PlaneGeometry(1, 1.5), winMat);
-                w.position.set(wx, wy, 3.51); g.add(w);
-              }
-            }
+            // Optimization: Rely on the building texture (gTex.building) 
+            // instead of spawning thousands of individual PlaneGeometry meshes for windows.
           }
 
           g.position.set(bx, 0, bz); g.rotation.y = rot;
@@ -969,37 +970,9 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(); this._uobs(); this._umode(dt); this._ucam(); this._uhud(); this._ummap();
         
-        if (!this.mmCam) {
-            this.mmCam = new THREE.OrthographicCamera(-500, 500, 500, -500, 1, 2000);
-            this.mmCam.position.set(0, 800, 0);
-            this.mmCam.lookAt(0, 0, 0);
-            this.mmCam.rotation.order = 'YXZ'; // Important for top down rotation
-        }
-        
-        // Full screen main camera
-        this.renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
-        this.renderer.setScissorTest(false);
+        // Removed redundant WebGL minimap rendering pass.
+        // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
         this.renderer.render(this.scene, this.camera);
-        
-        // Minimap
-        const mS = Math.min(window.innerWidth, window.innerHeight) * 0.25;
-        this.renderer.setViewport(window.innerWidth - mS - 20, 20, mS, mS);
-        this.renderer.setScissor(window.innerWidth - mS - 20, 20, mS, mS);
-        this.renderer.setScissorTest(true);
-        
-        if (this.player && this.player.position) {
-            this.mmCam.position.set(this.player.position.x, 800, this.player.position.z);
-            this.mmCam.rotation.z = this.player.rotation.y; 
-        }
-        
-        // Disable shadows during minimap pass to massively save performance
-        const oldShadowMapEnabled = this.renderer.shadowMap.enabled;
-        this.renderer.shadowMap.enabled = false;
-        
-        this.renderer.render(this.scene, this.mmCam);
-        
-        this.renderer.shadowMap.enabled = oldShadowMapEnabled;
-        this.renderer.setScissorTest(false);
 
       }
       _input(dt) {
@@ -1054,7 +1027,7 @@ class Game {
           if (r.type === 'v' && Math.abs(this.player.position.x - r.x) < 7.5) validRoadBound = true;
           if (r.type === 'h' && Math.abs(this.player.position.z - r.z) < 7.5) validRoadBound = true;
         });
-        const owEl = document.getElementById('ow');
+        const owEl = this.dom['ow'];
         if (this.isPedestrian && owEl) owEl.textContent = "⚠️ JAYWALKING - Walk on the sidewalk/zebra crossing!";
         else if (owEl) owEl.textContent = "⚠️ OFF ROAD - Return to road!";
         if (this.levelCfg && this.levelCfg.hasPuddles && Math.random() < 0.3) { this.player.rotation.y += this.turn * (this.speed > 0 ? 1 : -1) * (Math.random() * 0.5 - 0.25); }
@@ -1092,19 +1065,19 @@ class Game {
           if (dist < nearestDist) { nearestDist = dist; nearestSig = sg; }
         });
         // Update signal proximity indicator
-        const si = document.getElementById('sig-ind');
+        const si = this.dom['sig-ind'];
         if (si) {
           if (nearestSig && nearestDist < 60 && this.playing) {
             si.style.display = 'flex';
             const st = nearestSig.userData.st;
             const col = st === 'red' ? '#ff3b30' : st === 'yellow' ? '#ffd54a' : '#00c851';
-            const lamp = document.getElementById('sind-lamp');
-            const stEl = document.getElementById('sind-state');
-            const distEl = document.getElementById('sind-dist');
+            const lamp = this.dom['sind-lamp'];
+            const stEl = this.dom['sind-state'];
+            const distEl = this.dom['sind-dist'];
             if (lamp) { lamp.style.background = col; lamp.style.boxShadow = '0 0 14px ' + col; }
             if (stEl) { stEl.textContent = st.toUpperCase(); stEl.style.color = col; }
             if (distEl) distEl.textContent = Math.round(nearestDist) + 'm';
-            const timerEl = document.getElementById('sind-timer');
+            const timerEl = this.dom['sind-timer'];
             if (timerEl && nearestSig) {
               const nd = nearestSig.userData; const rem2 = nd.t % 9.5;
               let remaining = 0;
@@ -1126,57 +1099,63 @@ class Game {
             let obstacleDist = 999;
             let myLane = n.userData.txX;
 
-            // 1. Check Red Lights
-            this.sigs.forEach(sg => {
-              if (sg.userData.st === 'red') {
-                const dz = sg.position.z - n.position.z;
-                if (dz > 0 && dz < 25 && Math.abs(n.position.x - sg.position.x) < 4) { approachingObstacle = true; obstacleDist = Math.min(obstacleDist, dz); }
-              }
-            });
+            const distToPlayer = this.player ? this.player.position.distanceTo(n.position) : 0;
+            n.visible = distToPlayer < 250; // Rendering Frustum Cull
 
-            // 2. Check Other Cars in Same Lane (Collision Avoidance)
-            if (n.userData.moveAxis !== 'h') {
-              this.npcs.forEach(other => {
-                if (other !== n && other.userData.moveAxis !== 'h') {
-                  const dz = other.position.z - n.position.z;
-                  const dx = Math.abs(other.position.x - n.position.x);
+            // Only compute expensive O(N^2) collision avoidance if within 150 units of player
+            if (distToPlayer < 150) {
+              // 1. Check Red Lights
+              this.sigs.forEach(sg => {
+                if (sg.userData.st === 'red') {
+                  const dz = sg.position.z - n.position.z;
+                  if (dz > 0 && dz < 25 && Math.abs(n.position.x - sg.position.x) < 4) { approachingObstacle = true; obstacleDist = Math.min(obstacleDist, dz); }
+                }
+              });
+
+              // 2. Check Other Cars in Same Lane (Collision Avoidance)
+              if (n.userData.moveAxis !== 'h') {
+                this.npcs.forEach(other => {
+                  if (other !== n && other.userData.moveAxis !== 'h') {
+                    const dz = other.position.z - n.position.z;
+                    const dx = Math.abs(other.position.x - n.position.x);
+                    if (dz > 0 && dz < 20 && dx < 2.5) {
+                      approachingObstacle = true;
+                      obstacleDist = Math.min(obstacleDist, dz);
+                    }
+                  }
+                });
+
+                // 3. Check Player
+                if (this.player && this.player.position) {
+                  const dz = this.player.position.z - n.position.z;
+                  const dx = Math.abs(this.player.position.x - n.position.x);
                   if (dz > 0 && dz < 20 && dx < 2.5) {
                     approachingObstacle = true;
                     obstacleDist = Math.min(obstacleDist, dz);
                   }
                 }
-              });
 
-              // 3. Check Player
-              if (this.player && this.player.position) {
-                const dz = this.player.position.z - n.position.z;
-                const dx = Math.abs(this.player.position.x - n.position.x);
-                if (dz > 0 && dz < 20 && dx < 2.5) {
-                  approachingObstacle = true;
-                  obstacleDist = Math.min(obstacleDist, dz);
-                }
-              }
+                // 4. Aggressive Lane Switching
+                if (approachingObstacle && n.userData.laneT <= 0 && obstacleDist > 3) {
+                  const lanes = [-4.8, -2.4, 0, 2.4, 4.8];
+                  let safeLanes = lanes.filter(l => Math.abs(l - myLane) <= 3.0 && l !== myLane);
 
-              // 4. Aggressive Lane Switching
-              if (approachingObstacle && n.userData.laneT <= 0 && obstacleDist > 3) {
-                const lanes = [-4.8, -2.4, 0, 2.4, 4.8];
-                let safeLanes = lanes.filter(l => Math.abs(l - myLane) <= 3.0 && l !== myLane);
-
-                safeLanes = safeLanes.filter(l => {
-                  let blocked = false;
-                  this.npcs.forEach(other => {
-                    if (other !== n && Math.abs(other.position.x - l) < 2.5 && Math.abs(other.position.z - n.position.z) < 22 && other.position.z - n.position.z > -10) blocked = true;
+                  safeLanes = safeLanes.filter(l => {
+                    let blocked = false;
+                    this.npcs.forEach(other => {
+                      if (other !== n && Math.abs(other.position.x - l) < 2.5 && Math.abs(other.position.z - n.position.z) < 22 && other.position.z - n.position.z > -10) blocked = true;
+                    });
+                    if (this.player && Math.abs(this.player.position.x - l) < 2.5 && Math.abs(this.player.position.z - n.position.z) < 22 && this.player.position.z - n.position.z > -10) blocked = true;
+                    return !blocked;
                   });
-                  if (this.player && Math.abs(this.player.position.x - l) < 2.5 && Math.abs(this.player.position.z - n.position.z) < 22 && this.player.position.z - n.position.z > -10) blocked = true;
-                  return !blocked;
-                });
 
-                if (safeLanes.length > 0) {
-                  n.userData.txX = safeLanes[Math.floor(Math.random() * safeLanes.length)];
-                  n.userData.laneT = Math.random() * 3 + 2;
-                  approachingObstacle = false;
-                } else {
-                  n.userData.laneT = Math.random() * 1 + 0.5;
+                  if (safeLanes.length > 0) {
+                    n.userData.txX = safeLanes[Math.floor(Math.random() * safeLanes.length)];
+                    n.userData.laneT = Math.random() * 3 + 2;
+                    approachingObstacle = false;
+                  } else {
+                    n.userData.laneT = Math.random() * 1 + 0.5;
+                  }
                 }
               }
             }
@@ -1242,12 +1221,12 @@ class Game {
           if (cp.userData.hit) { hits++; return; }
           if (this.player.position.distanceTo(cp.position) < 3.2) { cp.userData.hit = true; cp.visible = false; this.score += 100; hits++; toast('✅ Node Verified!', '#00c851'); sfx.play('ok'); }
         });
-        document.getElementById('hcp').textContent = hits + '/' + this.cps.length;
+        if (this.dom['hcp']) this.dom['hcp'].textContent = hits + '/' + this.cps.length;
 
         // Realtime GPS Arrow Target Tracking
-        const nextNode = this.cps.find(c => !c.userData.hit); const da = document.getElementById('da');
+        const nextNode = this.cps.find(c => !c.userData.hit); const da = this.dom['da'];
         if (nextNode && this.playing) {
-          da.style.display = 'block';
+          if (da) da.style.display = 'block';
           const dx = nextNode.position.x - this.player.position.x, dz = nextNode.position.z - this.player.position.z;
           const dist = Math.round(Math.hypot(dx, dz));
           // FIX: use atan2(dx,dz) not atan2(dx,-dz) for correct forward direction
@@ -1255,10 +1234,10 @@ class Game {
           while (rel < -Math.PI) rel += Math.PI * 2; while (rel > Math.PI) rel -= Math.PI * 2;
           const deg = rel * 180 / Math.PI;
           // Rotate the arrow emoji using CSS transform
-          const arrowEl = document.getElementById('da-arrow');
+          const arrowEl = this.dom['da-arrow'];
           if (arrowEl) arrowEl.style.transform = 'rotate(' + Math.round(deg) + 'deg)';
-          document.getElementById('dal').textContent = dist + 'm · ' + (Math.abs(deg) < 20 ? 'STRAIGHT' : deg > 0 ? 'RIGHT' : 'LEFT');
-        } else da.style.display = 'none';
+          if (this.dom['dal']) this.dom['dal'].textContent = dist + 'm · ' + (Math.abs(deg) < 20 ? 'STRAIGHT' : deg > 0 ? 'RIGHT' : 'LEFT');
+        } else if (da) da.style.display = 'none';
 
         if (hits >= this.cps.length && this.cps.length > 0) this.completeLevel();
       }
@@ -1280,14 +1259,14 @@ class Game {
       }
       _uhud() {
         const k = Math.round(Math.abs(this.speed) * 100);
-        const gspdEl = document.getElementById('gspd');
+        const gspdEl = this.dom['gspd'];
         if (gspdEl) {
           gspdEl.textContent = k;
           // Colour by speed zone
           const spCol = k > 70 ? '#ff3b30' : k > 45 ? '#ff9500' : k > 20 ? '#ffd54a' : '#00c851';
           gspdEl.style.fill = spCol;
         }
-        const arc = document.getElementById('garc');
+        const arc = this.dom['garc'];
         if (arc) {
           const sw = Math.min(k / 90, 1) * 240; const sa = -220 * Math.PI / 180; const ea = sa + sw * Math.PI / 180;
           arc.setAttribute('d', `M${44 + 32 * Math.cos(sa)},${44 + 32 * Math.sin(sa)} A32,32,0,${sw > 180 ? 1 : 0},1,${44 + 32 * Math.cos(ea)},${44 + 32 * Math.sin(ea)}`);
@@ -1295,13 +1274,16 @@ class Game {
           arc.setAttribute('stroke', arcCol);
         }
         const tl = this.timeLimit || 120; const rem = Math.max(0, Math.ceil(tl - this.timer));
-        document.getElementById('htmr').textContent = Math.floor(rem / 60) + ':' + ((rem % 60) < 10 ? '0' : '') + (rem % 60);
+        const htmr = this.dom['htmr'];
+        if (htmr) {
+            htmr.textContent = Math.floor(rem / 60) + ':' + ((rem % 60) < 10 ? '0' : '') + (rem % 60);
+            if (rem <= 15) { htmr.style.color = '#ff3b30'; } else { htmr.style.color = ''; }
+        }
         if (rem <= 0 && this.playing) { this._go("Structural Failure"); toast('⏰ Time Up!', '#ff3b30'); return; }
-        if (rem <= 15) { document.getElementById('htmr').style.color = '#ff3b30'; } else { document.getElementById('htmr').style.color = ''; }
-        const hfin = document.getElementById('hfin'); if (hfin && this.fine > 0) hfin.textContent = '₹' + this.fine;
+        const hfin = this.dom['hfin']; if (hfin && this.fine > 0) hfin.textContent = '₹' + this.fine;
       }
       _ummap() {
-        const mc = document.getElementById('mmc'); if (!mc || !this.playing) return; mc.classList.add('on');
+        const mc = this.dom['mmc']; if (!mc || !this.playing) return; mc.classList.add('on');
         const ctx = mc.getContext('2d'); const W = 112, H = 112, cx = W / 2, cy = H / 2;
 
         ctx.fillStyle = '#090f16'; ctx.fillRect(0, 0, W, H);
