@@ -56,12 +56,6 @@ body.lm .nav-login-btn:hover { background: var(--primary, #38bdf8); color: #fff;
   .dropdown-content { position: static; transform: none; min-width: 100%; opacity: 1; visibility: visible; display: none; margin-top: 15px; background: transparent; box-shadow: none; border: none; align-items: center; }
   .dropdown.active .dropdown-content { display: flex; }
   .dropdown-content a { font-size: 1.2rem; justify-content: center; padding: 10px; }
-  /* Mobile Bottom Nav */
-  .mobile-bottom-nav { display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); border: 1px solid var(--border-light, rgba(255,255,255,0.1)); border-radius: 40px; padding: 12px 20px; z-index: 999; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-  .mbn-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-muted, #cbd5e1); text-decoration: none; font-size: 0.7rem; font-weight: 600; transition: 0.2s; }
-  .mbn-item.act, .mbn-item:hover { color: var(--primary, #38bdf8); transform: translateY(-3px); }
-  .mbn-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  body { padding-bottom: 80px; }
 }
 
 /* FOOTER */
