@@ -375,12 +375,13 @@
             el.addEventListener('mouseleave', function(){ document.body.classList.remove('ch'); });
         });
         
-        // Cursor dot & ring
+        // Hardware-Accelerated Cursor Logic
         var dot=document.getElementById('cDot'),ring=document.getElementById('cRing');
         if(dot&&ring){
-            var rx=0,ry=0,dx=0,dy=0;
-            document.addEventListener('mousemove',function(e){dx=e.clientX;dy=e.clientY;dot.style.left=dx+'px';dot.style.top=dy+'px';});
-            function rf(){rx+=(dx-rx)*.15;ry+=(dy-ry)*.15;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(rf);}rf();
+            dot.style.left='0';dot.style.top='0';ring.style.left='0';ring.style.top='0';
+            var rx=window.innerWidth/2,ry=window.innerHeight/2,dx=rx,dy=ry;
+            document.addEventListener('mousemove',function(e){dx=e.clientX;dy=e.clientY;dot.style.transform='translate3d('+dx+'px, '+dy+'px, 0) translate(-50%, -50%)';});
+            function rf(){rx+=(dx-rx)*.15;ry+=(dy-ry)*.15;ring.style.transform='translate3d('+rx+'px, '+ry+'px, 0) translate(-50%, -50%)';requestAnimationFrame(rf);}rf();
         }
     })();
 </script>
