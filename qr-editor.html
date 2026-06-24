@@ -472,10 +472,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
                 <div class="tst"><div class="tsth"></div></div>
             </label>
         </div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="window.openGlobalLogin()">
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Sign In
         </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="window.openGlobalLogin()">
+        <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
             <div class="nav-user-avatar" id="navUserAv">?</div>
             <span class="nun" id="navUserName">User</span>
         </div>
@@ -484,6 +484,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
     <a href="download.html" class="nav-dl-btn desktop-dl">Download Hub</a>
 </nav>
 
+<div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
 
 <div class="qr-app" role="main">
 <aside class="app-sb">
@@ -505,11 +506,11 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   <button class="sb-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else window.location.href='qr.html?login=true';"><span class="sb-icon">⚙️</span>Account</button>
   
   <div class="sb-foot">
-    <button class="sign-btn" id="sbSignBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
+    <button class="sign-btn" id="sbSignBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>
       Sign In To Save
     </button>
-    <div class="pcard" id="pCard" style="display:none" onclick="if(window.openGlobalLogin) window.openGlobalLogin()">
+    <div class="pcard" id="pCard" style="display:none" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
       <div class="pav" id="pAv">?</div>
       <div class="pinfo"><div class="pname" id="pName">User</div><div class="pemail" id="pEmail">tap to edit</div></div>
     </div>

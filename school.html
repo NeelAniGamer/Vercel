@@ -305,28 +305,38 @@
   gridGeo.setFromPoints(pts);
   scene.add(new THREE.LineSegments(gridGeo, lineMat));
 
-  // Floating structured geometry (wireframes) representing foundation and architecture
+  // Floating structured geometry representing foundation and architecture
   var cubes = [];
   var geos = [
     new THREE.BoxGeometry(10, 10, 10),
     new THREE.TetrahedronGeometry(8),
     new THREE.OctahedronGeometry(8),
-    new THREE.IcosahedronGeometry(7)
+    new THREE.IcosahedronGeometry(7),
+    new THREE.SphereGeometry(6, 12, 12),
+    new THREE.TorusGeometry(6, 2.5, 12, 24),
+    new THREE.CylinderGeometry(5, 5, 12, 12),
+    new THREE.DodecahedronGeometry(7)
   ];
-  var edgesGeo = geos.map(function(g){ return new THREE.EdgesGeometry(g); });
   
   var colors = [0x5ED4F5, 0x00F0CC, 0xB89BFF, 0x5ED4F5];
-  for(var i=0; i<40; i++){
+  for(var i=0; i<50; i++){
     var col = colors[i%colors.length];
-    var edgeGeo = edgesGeo[Math.floor(Math.random()*edgesGeo.length)];
-    var mat = new THREE.LineBasicMaterial({color:col, transparent:true, opacity:0.35});
-    var mesh = new THREE.LineSegments(edgeGeo, mat);
-    var scale = 0.5 + Math.random()*2;
+    var geo = geos[Math.floor(Math.random()*geos.length)];
+    // Solid base to occlude wireframes behind it, making it look substantial (not just lines)
+    var mat = new THREE.MeshBasicMaterial({color: 0x070A14, transparent:true, opacity:0.9});
+    var mesh = new THREE.Mesh(geo, mat);
+    
+    // Wireframe overlay for the glowing edge effect
+    var wireMat = new THREE.MeshBasicMaterial({color: col, wireframe: true, transparent:true, opacity:0.5});
+    var wire = new THREE.Mesh(geo, wireMat);
+    mesh.add(wire);
+
+    var scale = 0.5 + Math.random()*2.5;
     mesh.scale.set(scale, scale, scale);
     mesh.position.set((Math.random()-0.5)*300, (Math.random()-0.5)*150, (Math.random()-0.5)*300 - 50);
     mesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
     scene.add(mesh);
-    cubes.push({mesh:mesh, rspeedX:(Math.random()-0.5)*0.01, rspeedY:(Math.random()-0.5)*0.01, oy:mesh.position.y, off:Math.random()*Math.PI*2});
+    cubes.push({mesh:mesh, rspeedX:(Math.random()-0.5)*0.015, rspeedY:(Math.random()-0.5)*0.015, oy:mesh.position.y, off:Math.random()*Math.PI*2});
   }
 
 

@@ -195,10 +195,10 @@
                 <div class="tst"><div class="tsth"></div></div>
             </label>
         </div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="window.openGlobalLogin()">
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Sign In
         </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="window.openGlobalLogin()">
+        <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
             <div class="nav-user-avatar" id="navUserAv">?</div>
             <span class="nun" id="navUserName">User</span>
         </div>
@@ -314,16 +314,12 @@
 </div>
 
 <script>
-// ── ANIMATIONS & CURSOR ──
+// ── ANIMATIONS & CURSOR HOVERS ──
 (function(){
   var animEls=document.querySelectorAll('.anim');
   var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.15,rootMargin:'0px 0px -40px 0px'});
   animEls.forEach(function(el){io.observe(el);});
 
-  var dot=document.getElementById('cDot'),ring=document.getElementById('cRing');
-  if(!dot||!ring)return;var mx=0,my=0,rx=0,ry=0;
-  document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.transform='translate('+mx+'px,'+my+'px) translate(-50%,-50%)';});
-  (function draw(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.transform='translate('+rx+'px,'+ry+'px) translate(-50%,-50%)';requestAnimationFrame(draw);})();
   document.querySelectorAll('a,button,select,.ctrl-select,.typing-area').forEach(function(el){
     el.addEventListener('mouseenter',function(){document.body.classList.add('ch');});
     el.addEventListener('mouseleave',function(){document.body.classList.remove('ch');});

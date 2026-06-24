@@ -2130,11 +2130,8 @@
         <div class="pls" style="justify-content:center;margin-top:40px;">
           <button class="btn btn-p" onclick="ui.showLevels()" style="font-size:1.1rem;padding:12px 32px;">Enter
             Academy</button>
-          <button class="btn btn-p cloud-login-btn" onclick="window.colAuthModal && window.colAuthModal.show()" style="background:#5ED4F5; color:#000; font-weight:700; font-size:1.1rem;padding:12px 32px;border:none;">☁️ Cloud Login</button>
           <button class="btn btn-g" onclick="ui.hardReset()" style="font-size:1.1rem;padding:12px 32px;">Reset
             Progress</button>
-          
-          <a href="#" id="dl-btn" onclick="downloadSourceCode(event)" class="btn btn-g" style="font-size:1.1rem;padding:12px 32px;text-decoration:none;">&#128190; Download Source Code</a>
           <button class="btn btn-s" style="background:var(--red); font-size:1.1rem; padding:12px 32px; color:#fff;" onclick="const p = prompt('Developer Password:'); if(['Neel','Ansh','Sanjana'].includes(p)) { ui.adminUnlock(); } else if(p) { toast('❌ Access Denied', '#ff3b30'); }">🔓 Dev Unlock</button>
         </div>
       </div>
@@ -2148,7 +2145,6 @@
           <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg> Back</button>
       <div style="display:flex;gap:12px;align-items:center;">
-        <button class="btn btn-g cloud-login-btn" onclick="window.colAuthModal && window.colAuthModal.show()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; background:#5ED4F5; color:#000; border:none; font-weight:700;">☁️ Cloud Login</button>
         <button class="btn btn-g" onclick="ui.showProfile()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">👤 Profile</button>
         <div id="pchip" class="btn btn-g"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">0/15
@@ -2166,7 +2162,6 @@
         </svg> Home</button>
       <div style="font-weight:700;font-size:0.95rem;color:var(--text);" id="blt">Level 1</div>
       <div style="display:flex;gap:12px;align-items:center;">
-        <button class="btn btn-g cloud-login-btn" onclick="window.colAuthModal && window.colAuthModal.show()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; background:#5ED4F5; color:#000; border:none; font-weight:700;">☁️ Cloud Login</button>
         <button class="btn btn-g" onclick="ui.showProfile()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px;">👤 Profile</button>
         <div class="btn"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px;"
@@ -2458,19 +2453,6 @@
         const customUser = (e.detail && e.detail.user) ? e.detail.user : window.colUser;
         const user = customUser ? customUser.session.user : null;
         
-        // Update UI button if it exists
-        const cloudLoginBtns = document.querySelectorAll('.cloud-login-btn');
-        cloudLoginBtns.forEach(btn => {
-            if (customUser) {
-                btn.innerHTML = '☁️ ' + (customUser.name ? customUser.name.split(' ')[0] : 'Saved');
-                btn.style.background = '#4CAF50';
-                btn.style.borderColor = '#4CAF50';
-            } else {
-                btn.innerHTML = '☁️ Cloud Login';
-                btn.style.background = '#5ED4F5';
-                btn.style.borderColor = '#5ED4F5';
-            }
-        });
 
         if (user && user.user_metadata && user.user_metadata.progress) {
             const cloudS = user.user_metadata.progress;

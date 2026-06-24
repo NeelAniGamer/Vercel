@@ -248,6 +248,7 @@
 <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU"/>
 </head>
 <body>
+<div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
 
 <nav class="top-nav">
     <a href="index.html" class="nav-brand">
@@ -281,10 +282,10 @@
                 <div class="tst"><div class="tsth"></div></div>
             </label>
         </div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="window.openGlobalLogin()">
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Sign In
         </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="window.openGlobalLogin()">
+        <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
             <div class="nav-user-avatar" id="navUserAv">?</div>
             <span class="nun" id="navUserName">User</span>
         </div>

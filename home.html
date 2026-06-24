@@ -378,29 +378,57 @@
     var wMat=new THREE.MeshBasicMaterial({color:c,wireframe:true,transparent:true,opacity:.11});
 
     if(d.type==='torusKnot'){
-      var geo=new THREE.TorusKnotGeometry(3.6,1.05,80,16);
-      group.add(new THREE.Mesh(geo,sMat),new THREE.Mesh(geo,wMat));
+      var geo1=new THREE.BoxGeometry(8,4,8), geo2=new THREE.BoxGeometry(6.5,1.5,6.5);
+      var m1=new THREE.Mesh(geo1,sMat), m2=new THREE.Mesh(geo2,sMat);
+      m2.position.y=2.5;
+      var kc=document.createElement('canvas');kc.width=128;kc.height=128;
+      var kctx=kc.getContext('2d');kctx.fillStyle='#111827';kctx.fillRect(0,0,128,128);
+      kctx.fillStyle='#F2B84B';kctx.font='bold 72px monospace';kctx.textAlign='center';kctx.textBaseline='middle';kctx.fillText('A',64,64);
+      var kTex=new THREE.CanvasTexture(kc);
+      var topM=new THREE.Mesh(new THREE.PlaneGeometry(6,6),new THREE.MeshBasicMaterial({map:kTex,transparent:true,opacity:0.9,blending:THREE.AdditiveBlending}));
+      topM.rotation.x=-Math.PI/2;topM.position.y=3.3;
+      group.add(m1,m2,topM,new THREE.Mesh(geo1,wMat));
+      group.userData.animObj=m2;
     } else if(d.type==='solar'){
       var sph=new THREE.Mesh(new THREE.SphereGeometry(4.5,28,28),sMat);
       var rM1=new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.55,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false});
       var rM2=new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.24,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false});
-      var r1=new THREE.Mesh(new THREE.TorusGeometry(7,.22,6,60),rM1);r1.rotation.x=Math.PI/2+.35;
-      var r2=new THREE.Mesh(new THREE.TorusGeometry(9.5,.12,4,60),rM2);r2.rotation.x=Math.PI/2+.18;
-      group.add(sph,r1,r2);
+      var rM3=new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.15,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false});
+      var g1=new THREE.Group(), g2=new THREE.Group(), g3=new THREE.Group();
+      g1.add(new THREE.Mesh(new THREE.TorusGeometry(7,.12,6,60),rM1)); var p1=new THREE.Mesh(new THREE.SphereGeometry(1,12,12),new THREE.MeshBasicMaterial({color:0xffffff})); p1.position.x=7; g1.add(p1); g1.rotation.x=1.2;
+      g2.add(new THREE.Mesh(new THREE.TorusGeometry(9.5,.08,4,60),rM2)); var p2=new THREE.Mesh(new THREE.SphereGeometry(0.6,12,12),new THREE.MeshBasicMaterial({color:0xaaaaaa})); p2.position.x=9.5; g2.add(p2); g2.rotation.x=-0.8;
+      g3.add(new THREE.Mesh(new THREE.TorusGeometry(12,.05,4,60),rM3)); var p3=new THREE.Mesh(new THREE.SphereGeometry(1.4,12,12),new THREE.MeshBasicMaterial({color:c})); p3.position.x=12; g3.add(p3); g3.rotation.x=0.4;
+      group.add(sph,g1,g2,g3);
+      group.userData.animObj={g1:g1,g2:g2,g3:g3};
     } else if(d.type==='octahedron'){
-      var geo=new THREE.OctahedronGeometry(5.5,0);
-      group.add(new THREE.Mesh(geo,sMat),new THREE.Mesh(geo,wMat));
+      var palm=new THREE.Mesh(new THREE.SphereGeometry(2.5,16,16),sMat);
+      var finMat=new THREE.LineBasicMaterial({color:c,transparent:true,opacity:0.8}), nodeMat=new THREE.MeshBasicMaterial({color:0xffffff});
+      var fingers=[]; var fA=[-0.7,-0.2,0.25,0.7,1.2], fL=[4.5, 7.5, 8.5, 7, 5];
+      for(var i=0;i<5;i++){
+        var fg=new THREE.Group();
+        var fGeo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector3(0,fL[i]*.5,0),new THREE.Vector3(0,fL[i],0)]);
+        var jnt=new THREE.Mesh(new THREE.SphereGeometry(0.6,8,8),nodeMat); jnt.position.y=fL[i]*.5;
+        var tip=new THREE.Mesh(new THREE.SphereGeometry(0.5,8,8),nodeMat); tip.position.y=fL[i];
+        fg.add(new THREE.Line(fGeo,finMat),jnt,tip);
+        fg.rotation.z=fA[i]; fg.position.y=1.5; if(i===0) fg.position.set(-2,0.5,0);
+        group.add(fg); fingers.push(fg);
+      }
+      group.add(palm); group.userData.animObj=fingers;
     } else if(d.type==='qr'){
-      // QR-like texture on a flat panel
       var qc=document.createElement('canvas');qc.width=qc.height=64;
       var qctx=qc.getContext('2d');qctx.fillStyle='#010a04';qctx.fillRect(0,0,64,64);
       var qpat=[1,1,1,1,1,1,1,0,1,0,0,0,0,1,0,1,0,1,1,0,1,0,0,1,0,1,0,1,0,1,0,1,1,0,1,0,0,0,0,1,0,1,0,0,1,0,1,0,1,1,0,1,1,1,1,1,1,1,0,0,1,0,0,1];
       qpat.forEach(function(v,qi){if(v){qctx.fillStyle='#34D399';qctx.fillRect((qi%8)*8,Math.floor(qi/8)*8,7,7);}});
       var qtex=new THREE.CanvasTexture(qc);
       group.add(new THREE.Mesh(new THREE.BoxGeometry(10,10,.8),new THREE.MeshStandardMaterial({map:qtex,emissiveMap:qtex,emissive:c,emissiveIntensity:.35,metalness:.1,roughness:.7})));
+      var laser=new THREE.Mesh(new THREE.PlaneGeometry(10.5,0.4),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0.9,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
+      laser.position.z=0.6; group.add(laser); group.userData.animObj=laser;
     } else if(d.type==='icosahedron'){
-      var geo=new THREE.IcosahedronGeometry(5.5,0);
-      group.add(new THREE.Mesh(geo,sMat),new THREE.Mesh(geo,wMat));
+      var geo=new THREE.OctahedronGeometry(4.5,0); geo.scale(1,1.8,1);
+      var crys=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:0.5,roughness:0.1,metalness:0.8,transparent:true,opacity:0.85}));
+      var wire=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:0xffffff,wireframe:true,transparent:true,opacity:0.3})); wire.scale.setScalar(1.03);
+      var core=new THREE.Mesh(new THREE.OctahedronGeometry(2.5,0),new THREE.MeshBasicMaterial({color:0xffffff})); core.scale.setScalar(1);
+      group.add(crys,wire,core); group.userData.animObj={core:core};
     }
 
     // Glow halos (3 layers, BackSide additive)
@@ -689,6 +717,24 @@
         var cs=g.scale.x;g.scale.setScalar(cs+(d.ts-cs)*.1);
       }
       if(d.lMat)d.lMat.opacity=.045+Math.sin(t*1.4+ni)*.04;
+      
+      // Custom Project node animations
+      if(d.type==='torusKnot' && g.userData.animObj) {
+         var press = Math.max(0, Math.sin(t*3 + ni) * 0.8);
+         g.userData.animObj.position.y = 2.5 - press;
+      } else if(d.type==='solar' && g.userData.animObj) {
+         g.userData.animObj.g1.rotation.y = t * 0.8;
+         g.userData.animObj.g2.rotation.y = t * 0.5;
+         g.userData.animObj.g3.rotation.y = t * 0.3;
+      } else if(d.type==='octahedron' && g.userData.animObj) {
+         g.userData.animObj.forEach(function(fg, fi){
+            fg.children[1].position.y = (4.5 + Math.sin(t*2 + fi)*0.8); // pulse joint
+         });
+      } else if(d.type==='qr' && g.userData.animObj) {
+         g.userData.animObj.position.y = Math.sin(t*2) * 4.5;
+      } else if(d.type==='icosahedron' && g.userData.animObj) {
+         g.userData.animObj.core.scale.setScalar(1 + Math.sin(t*4)*0.1);
+      }
     });
     // Particle simulation (mouse repulsion + spring return)
     var MR=42,MF=1.6,SP=.04,DMP=.87;

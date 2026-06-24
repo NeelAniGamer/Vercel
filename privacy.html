@@ -159,10 +159,10 @@
                 <div class="tst"><div class="tsth">☀️</div></div>
             </label>
         </div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="window.openGlobalLogin?window.openGlobalLogin():openLogin()">
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z"/></svg>Sign In
         </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="window.openGlobalLogin?window.openGlobalLogin():openLogin()">
+        <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
             <div class="nav-user-avatar" id="navUserAv">?</div>
             <span class="nun" id="navUserName">User</span>
         </div>
@@ -316,10 +316,21 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
+        var raycaster = new THREE.Raycaster();
+        var mouse3D = new THREE.Vector3();
+        var clickRipple = { active: false, time: 0, pos: new THREE.Vector3() };
+
         var mx=0, my=0;
         document.addEventListener('mousemove', function(e){
             mx = (e.clientX / window.innerWidth) * 2 - 1;
             my = -(e.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(new THREE.Vector2(mx, my), camera);
+            raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,0,1), 0), mouse3D);
+        });
+        document.addEventListener('mousedown', function(e){
+            clickRipple.active = true;
+            clickRipple.time = clock.getElapsedTime();
+            clickRipple.pos.copy(mouse3D);
         });
 
         var clock = new THREE.Clock();
@@ -334,11 +345,38 @@
 
             var positions = pts.geometry.attributes.position.array;
             var linePositions = [];
+            var mouseLines = [];
             
             for(let i=0, j=0; i<pCount*3; i+=3, j++) {
                 positions[i] += vels[j].x;
                 positions[i+1] += vels[j].y;
                 positions[i+2] += vels[j].z;
+
+                var dxM = positions[i] - mouse3D.x;
+                var dyM = positions[i+1] - mouse3D.y;
+                var dzM = positions[i+2] - mouse3D.z;
+                var distM = Math.sqrt(dxM*dxM + dyM*dyM + dzM*dzM);
+                
+                if (distM < 80) {
+                    mouseLines.push(positions[i], positions[i+1], positions[i+2]);
+                    mouseLines.push(mouse3D.x, mouse3D.y, mouse3D.z);
+                    vels[j].x += (dxM/distM)*0.25;
+                    vels[j].y += (dyM/distM)*0.25;
+                }
+
+                if (clickRipple.active) {
+                    var elapsed = t - clickRipple.time;
+                    var rRad = elapsed * 300;
+                    var rDist = Math.sqrt(Math.pow(positions[i]-clickRipple.pos.x,2)+Math.pow(positions[i+1]-clickRipple.pos.y,2)+Math.pow(positions[i+2]-clickRipple.pos.z,2));
+                    if (Math.abs(rDist - rRad) < 30) {
+                        vels[j].x += ((positions[i]-clickRipple.pos.x)/rDist)*2;
+                        vels[j].y += ((positions[i+1]-clickRipple.pos.y)/rDist)*2;
+                        vels[j].z += ((positions[i+2]-clickRipple.pos.z)/rDist)*2;
+                    }
+                    if (elapsed > 1.5) clickRipple.active = false;
+                }
+                
+                vels[j].x *= 0.99; vels[j].y *= 0.99; vels[j].z *= 0.99;
 
                 if (positions[i] > 300 || positions[i] < -300) vels[j].x *= -1;
                 if (positions[i+1] > 300 || positions[i+1] < -300) vels[j].y *= -1;
@@ -359,6 +397,14 @@
             }
             pts.geometry.attributes.position.needsUpdate = true;
             lines.geometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+            
+            if(!window.mLineGeo) {
+                window.mLineGeo = new THREE.BufferGeometry();
+                var mLineMat = new THREE.LineBasicMaterial({color:0x5ED4F5, transparent:true, opacity:0.7, blending:THREE.AdditiveBlending});
+                window.mLineMesh = new THREE.LineSegments(window.mLineGeo, mLineMat);
+                scene.add(window.mLineMesh);
+            }
+            window.mLineGeo.setAttribute('position', new THREE.Float32BufferAttribute(mouseLines, 3));
 
             camera.position.x += (mx * 40 - camera.position.x) * 0.05;
             camera.position.y += (my * 30 + 20 - camera.position.y) * 0.05;
@@ -379,9 +425,6 @@
         var dot=document.getElementById('cDot'),ring=document.getElementById('cRing');
         if(dot&&ring){
             dot.style.left='0';dot.style.top='0';ring.style.left='0';ring.style.top='0';
-            var rx=window.innerWidth/2,ry=window.innerHeight/2,dx=rx,dy=ry;
-            document.addEventListener('mousemove',function(e){dx=e.clientX;dy=e.clientY;dot.style.transform='translate3d('+dx+'px, '+dy+'px, 0) translate(-50%, -50%)';});
-            function rf(){rx+=(dx-rx)*.15;ry+=(dy-ry)*.15;ring.style.transform='translate3d('+rx+'px, '+ry+'px, 0) translate(-50%, -50%)';requestAnimationFrame(rf);}rf();
         }
     })();
 </script>

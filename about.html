@@ -73,6 +73,12 @@
   .scl{width:1px;height:50px;background:var(--lineb);position:relative;overflow:hidden}.scl::after{content:'';position:absolute;top:-100%;left:0;width:100%;height:100%;background:linear-gradient(transparent,var(--signal));animation:sf 2.2s ease-in-out 2.3s infinite}
   @keyframes sf{0%{top:-100%}60%{top:100%}100%{top:100%}}
   @keyframes fi{to{opacity:1}}
+  @keyframes fi{to{opacity:1}}
+
+  #ntip{position:fixed;pointer-events:none;z-index:999;opacity:0;transition:opacity .3s,transform .2s;transform:translate(-50%,-150%);}
+  #ntip-inner{background:rgba(7,10,20,.85);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);padding:8px 16px;border-radius:30px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);font-family:var(--mono);font-size:.75rem;color:var(--ink);text-transform:uppercase;letter-spacing:.1em;}
+  #ntip-inner::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-width:5px 5px 0;border-style:solid;border-color:rgba(255,255,255,.1) transparent transparent transparent;display:block;width:0;}
+  #ntip-dot{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 10px var(--signal);}
 
   /* ==================== SHARED SECTION STYLES ==================== */
   .section{max-width:1360px;margin:0 auto;padding:130px 52px 80px}
@@ -182,6 +188,7 @@
 <script>(function(){try{if(localStorage.getItem('theme')==='light')document.body.classList.add('lm');}catch(e){}})()</script>
 <div class="loader" id="loader"><div class="lid"><span>CoL</span> &middot; About</div><div class="lbar"></div></div>
 <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
+<div id="ntip"><div id="ntip-inner"><div id="ntip-dot"></div><span id="ntip-name"></span></div></div>
 
 <nav class="top-nav" id="topNav">
   <a href="home.html" class="nav-brand"><img src="class.webp" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async"><span class="brand-name">Class Of Learners</span></a>
@@ -382,12 +389,12 @@
 
   // Constellation nodes — 6 floating connected points
   var nodeData=[
-    {pos:[-60,30,-40],color:0xF2B84B,size:3.5},
-    {pos:[50,50,-50],color:0x5ED4F5,size:4},
-    {pos:[80,-10,-30],color:0x00F0CC,size:3},
-    {pos:[-40,-40,-60],color:0x34D399,size:3.5},
-    {pos:[10,-55,-45],color:0xB89BFF,size:4.5},
-    {pos:[-80,5,-70],color:0xF2B84B,size:3}
+    {pos:[-60,30,-40],color:0xF2B84B,size:3.5,info:"Typing Instructor"},
+    {pos:[50,50,-50],color:0x5ED4F5,size:4,info:"Solar Engine"},
+    {pos:[80,-10,-30],color:0x00F0CC,size:3,info:"Gesture Control"},
+    {pos:[-40,-40,-60],color:0x34D399,size:3.5,info:"QR Generator"},
+    {pos:[10,-55,-45],color:0xB89BFF,size:4.5,info:"RPG Game"},
+    {pos:[-80,5,-70],color:0xF2B84B,size:3,info:"CoL Studio"}
   ];
   // Create circular glow texture
   function makeGlowTex(color){
@@ -410,16 +417,20 @@
     var gTex=makeGlowTex(nd.color);
     var gMat=new THREE.SpriteMaterial({map:gTex,transparent:true,opacity:.4,blending:THREE.AdditiveBlending,depthWrite:false});
     var glow=new THREE.Sprite(gMat);glow.scale.setScalar(nd.size*8);mesh.add(glow);
+    mesh.userData = { ox:nd.pos[0], oy:nd.pos[1], oz:nd.pos[2], vx:0, vy:0, vz:0, info:nd.info, color:nd.color };
     scene.add(mesh);nodeMeshes.push(mesh);
   });
 
   // Lines between nodes (constellation edges)
   var edges=[[0,1],[1,2],[2,4],[4,3],[3,5],[5,0],[0,4],[1,3]];
+  var edgeLines=[];
   edges.forEach(function(e){
     var pts=[nodeMeshes[e[0]].position,nodeMeshes[e[1]].position];
     var geo=new THREE.BufferGeometry().setFromPoints(pts);
     var mat=new THREE.LineBasicMaterial({color:0x5ED4F5,transparent:true,opacity:.12});
-    scene.add(new THREE.Line(geo,mat));
+    var line = new THREE.Line(geo,mat);
+    scene.add(line);
+    edgeLines.push({line:line, n1:nodeMeshes[e[0]], n2:nodeMeshes[e[1]]});
   });
 
   // Floating particles
@@ -440,18 +451,35 @@
     raycaster.setFromCamera(new THREE.Vector2(mx,my),camera);
     var plane=new THREE.Plane(new THREE.Vector3(0,0,1),50);
     raycaster.ray.intersectPlane(plane,m3);
+    var ntipEl = document.getElementById('ntip');
+    if(ntipEl){ ntipEl.style.left=e.clientX+'px'; ntipEl.style.top=e.clientY+'px'; }
   });
   window.addEventListener('scroll',function(){scrollOff=window.scrollY*.042;},{passive:true});
 
   var clock=new THREE.Clock();
+  var ntip=document.getElementById('ntip'), ntipName=document.getElementById('ntip-name'), ntipDot=document.getElementById('ntip-dot');
+  var hoveredNode = null;
   function tick(){
     requestAnimationFrame(tick);
     var t=clock.getElapsedTime();
-    // Float constellation nodes
+    
+    // Interactive Constellation Physics
+    var MRN=45, MFN=2.2, SPN=.04, DMPN=.85;
     nodeMeshes.forEach(function(m,i){
-      var nd=nodeData[i];
-      m.position.y=nd.pos[1]+Math.sin(t*.5+i*1.2)*6;
-      m.position.x=nd.pos[0]+Math.cos(t*.3+i*.8)*3;
+      var ud=m.userData;
+      var tx=ud.ox+Math.cos(t*.3+i*.8)*3, ty=ud.oy+Math.sin(t*.5+i*1.2)*6;
+      var dx=m.position.x-m3.x, dy=m.position.y-m3.y, dz=m.position.z-m3.z, dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
+      if(dist<MRN && dist>0.1){var f=(MRN-dist)/MRN*MFN; ud.vx+=(dx/dist)*f; ud.vy+=(dy/dist)*f; ud.vz+=(dz/dist)*f;}
+      ud.vx+=(tx-m.position.x)*SPN; ud.vy+=(ty-m.position.y)*SPN; ud.vz+=(ud.oz-m.position.z)*SPN;
+      ud.vx*=DMPN; ud.vy*=DMPN; ud.vz*=DMPN;
+      m.position.x+=ud.vx; m.position.y+=ud.vy; m.position.z+=ud.vz;
+    });
+    edgeLines.forEach(function(el){
+      var p=[el.n1.position, el.n2.position]; el.line.geometry.setFromPoints(p);
+      var cx=(el.n1.position.x+el.n2.position.x)/2, cy=(el.n1.position.y+el.n2.position.y)/2;
+      var md=Math.sqrt(Math.pow(cx-m3.x,2)+Math.pow(cy-m3.y,2));
+      if(md<35){el.line.material.opacity=0.6; el.line.material.color.setHex(0xF2B84B);}
+      else{el.line.material.opacity=0.12; el.line.material.color.setHex(0x5ED4F5);}
     });
     // Particle mouse repulsion
     var MR=38,MF=1.4,SP=.035,DMP=.88;
@@ -468,6 +496,29 @@
     // Grid pulse
     var gm=Array.isArray(grid.material)?grid.material[0]:grid.material;
     if(gm)gm.opacity=.15+Math.sin(t*.65)*.05;
+
+    // Hover tooltip intersections
+    var intersects=raycaster.intersectObjects(nodeMeshes);
+    if(intersects.length>0){
+      var obj=intersects[0].object;
+      if(hoveredNode!==obj){
+        hoveredNode=obj;
+        document.body.classList.add('ch');
+        if(ntip){
+          ntip.style.opacity=1;
+          if(ntipName) ntipName.textContent=obj.userData.info;
+          var colStr='#'+obj.userData.color.toString(16).padStart(6,'0');
+          if(ntipDot) { ntipDot.style.background=colStr; ntipDot.style.boxShadow='0 0 10px '+colStr; }
+        }
+      }
+    }else{
+      if(hoveredNode){
+        hoveredNode=null;
+        document.body.classList.remove('ch');
+        if(ntip) ntip.style.opacity=0;
+      }
+    }
+
     // Camera parallax
     cx+=(mx*18-cx)*.025;cy+=(-my*10-cy)*.025;
     camera.position.x=cx;camera.position.y=cy-scrollOff;
