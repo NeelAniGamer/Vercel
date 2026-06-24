@@ -232,12 +232,120 @@
   </div>
 </section>
 
+<style id="edu-styles">
+  /* Career (Briefcase & Network) */
+  .c-bg { width:100%; height:100%; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#040710; }
+  .c-glow { position:absolute; width:150px; height:150px; background:radial-gradient(circle, rgba(129,140,248,0.4) 0%, transparent 70%); z-index:1; animation: c-pulse 3s ease-in-out infinite alternate; }
+  @keyframes c-pulse { 0% { transform: scale(1); opacity:0.6; } 100% { transform: scale(1.3); opacity:1; } }
+  .c-grid { position:absolute; inset:0; background:radial-gradient(circle at 50% 50%, rgba(129,140,248,0.15) 0%, transparent 60%), linear-gradient(0deg, rgba(129,140,248,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(129,140,248,0.05) 1px, transparent 1px); background-size: 100% 100%, 20px 20px, 20px 20px; z-index:2; perspective: 400px; transform: rotateX(60deg) scale(2); transform-origin: bottom; opacity: 0.8; animation: c-grid-move 10s linear infinite; }
+  @keyframes c-grid-move { 0% { background-position: 0 0, 0 0, 0 0; } 100% { background-position: 0 0, 0 20px, 20px 0; } }
+  .c-icon-wrap { z-index:3; position:relative; display:flex; align-items:center; justify-content:center; width:64px; height:64px; border: 1px solid rgba(129,140,248,0.5); border-radius: 16px; background: rgba(5,10,20,0.8); box-shadow: 0 0 20px rgba(129,140,248,0.3); transform: rotate(45deg); overflow: hidden; transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease); }
+  .pc:hover .c-icon-wrap { transform: rotate(45deg) scale(1.15); box-shadow: 0 0 30px rgba(129,140,248,0.7); }
+  .c-svg { width: 36px; height: 36px; filter: drop-shadow(0 0 8px rgba(129,140,248,0.9)); transform: rotate(-45deg); color: #818cf8; }
+
+  /* Database Logic (Server Stack & Data Streams) */
+  .db-bg { width:100%; height:100%; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; background: #020a08; }
+  .db-stack { display:flex; flex-direction:column; gap:8px; z-index:3; perspective: 500px; transform: rotateX(20deg); transition: transform 0.4s var(--ease); }
+  .pc:hover .db-stack { transform: rotateX(20deg) scale(1.1) translateY(-10px); }
+  .db-server { width: 80px; height: 24px; background: rgba(5,15,15,0.8); border: 1px solid rgba(0,255,204,0.4); border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,255,204,0.1); display:flex; align-items:center; padding: 0 10px; position:relative; overflow:hidden; }
+  .db-server::before { content:''; position:absolute; left:0; top:0; height:100%; width: 20%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); animation: sweep 3s linear infinite; }
+  .dbs-1::before { animation-delay: 0s; } .dbs-2::before { animation-delay: 0.5s; } .dbs-3::before { animation-delay: 1s; }
+  @keyframes sweep { 0% { left: -50%; } 100% { left: 150%; } }
+  .db-led { width: 6px; height: 6px; border-radius: 50%; background: #00ffcc; box-shadow: 0 0 8px #00ffcc; animation: blink 1.5s steps(2, start) infinite; margin-right: 8px; flex-shrink: 0; }
+  .dbs-2 .db-led { animation-duration: 2.1s; background: #38bdf8; box-shadow: 0 0 8px #38bdf8; }
+  .dbs-3 .db-led { animation-duration: 0.8s; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+  .db-line { flex: 1; height: 2px; background: rgba(0,255,204,0.2); position:relative; overflow:hidden; }
+  .db-line::after { content:''; position:absolute; top:0; left:0; height:100%; width:30%; background: #00ffcc; animation: db-data 2s infinite; }
+  .dbs-1 .db-line::after { animation-duration: 1.2s; } .dbs-2 .db-line::after { animation-duration: 2.5s; background: #38bdf8; } .dbs-3 .db-line::after { animation-duration: 1.7s; }
+  @keyframes db-data { 0% { left: -30%; opacity:1; } 100% { left: 100%; opacity:0; } }
+  .db-scan { position:absolute; top:0; left:0; right:0; height:2px; background: #00ffcc; box-shadow: 0 0 30px 6px rgba(0,255,204,0.4); z-index:4; animation: scan 3s ease-in-out infinite alternate; opacity:0.6; }
+  @keyframes scan { 0% { top: 10%; } 100% { top: 90%; } }
+  .db-glow { position:absolute; width:120px; height:120px; background: radial-gradient(circle, rgba(0,255,204,0.3) 0%, transparent 70%); z-index:1; filter: blur(20px); animation: pulse-glow 4s infinite alternate; }
+  @keyframes pulse-glow { 0% { opacity: 0.5; transform:scale(0.8); } 100% { opacity: 1; transform:scale(1.2); } }
+
+  /* Traffic (Road & Signal) */
+  .tr-bg { width:100%; height:100%; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; background: #080502; perspective: 600px; }
+  .tr-glow { position:absolute; width: 160px; height: 160px; background: radial-gradient(circle, rgba(255,204,0,0.2) 0%, transparent 70%); z-index:1; animation: pulse-glow 3s infinite alternate; }
+  .tr-streaks { position:absolute; inset:0; z-index:2; transform: rotateX(60deg); transform-origin: center; display:flex; justify-content:center; gap: 40px; }
+  .trs { width:2px; height: 150%; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.8), transparent); position:absolute; top:-25%; opacity:0; }
+  .s1 { left: 20%; background: linear-gradient(180deg, transparent, #ffcc00, transparent); animation: streak 2s infinite 0.1s; }
+  .s2 { left: 40%; background: linear-gradient(180deg, transparent, #ff3366, transparent); animation: streak 1.5s infinite 0.7s; }
+  .s3 { left: 60%; background: linear-gradient(180deg, transparent, #ffcc00, transparent); animation: streak-up 2.2s infinite 0.3s; }
+  .s4 { left: 80%; background: linear-gradient(180deg, transparent, #00ffcc, transparent); animation: streak-up 1.8s infinite 0.9s; }
+  @keyframes streak { 0% { transform: translateY(-100%); opacity:0; } 50% { opacity:1; } 100% { transform: translateY(100%); opacity:0; } }
+  @keyframes streak-up { 0% { transform: translateY(100%); opacity:0; } 50% { opacity:1; } 100% { transform: translateY(-100%); opacity:0; } }
+  .tr-light-box { z-index:3; display:flex; flex-direction:column; gap:8px; padding: 12px; background: rgba(10,10,10,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease); }
+  .pc:hover .tr-light-box { transform: scale(1.1) translateY(-10px); box-shadow: 0 15px 40px rgba(255,204,0,0.3); }
+  .trl { width: 18px; height: 18px; border-radius: 50%; background: #222; border: 2px solid #111; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); position:relative; }
+  .trl::before { content:''; position:absolute; inset:-6px; border-radius:50%; opacity:0; transition: opacity 0.3s; z-index:-1; }
+  .red-l { animation: tl-red 6s infinite; } .red-l::before { background: radial-gradient(circle, rgba(255,51,102,0.6) 0%, transparent 70%); animation: tl-red-glow 6s infinite; }
+  .yellow-l { animation: tl-yellow 6s infinite; } .yellow-l::before { background: radial-gradient(circle, rgba(255,204,0,0.6) 0%, transparent 70%); animation: tl-yellow-glow 6s infinite; }
+  .green-l { animation: tl-green 6s infinite; } .green-l::before { background: radial-gradient(circle, rgba(0,255,204,0.6) 0%, transparent 70%); animation: tl-green-glow 6s infinite; }
+  @keyframes tl-red { 0%, 33% { background: #ff3366; box-shadow: 0 0 15px #ff3366, inset 0 0 5px #fff; } 34%, 100% { background: #222; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); } }
+  @keyframes tl-yellow { 0%, 33% { background: #222; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); } 34%, 50% { background: #ffcc00; box-shadow: 0 0 15px #ffcc00, inset 0 0 5px #fff; } 51%, 100% { background: #222; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); } }
+  @keyframes tl-green { 0%, 50% { background: #222; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); } 51%, 100% { background: #00ffcc; box-shadow: 0 0 15px #00ffcc, inset 0 0 5px #fff; } }
+  @keyframes tl-red-glow { 0%, 33% { opacity: 1; } 34%, 100% { opacity: 0; } }
+  @keyframes tl-yellow-glow { 0%, 33% { opacity: 0; } 34%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+  @keyframes tl-green-glow { 0%, 50% { opacity: 0; } 51%, 100% { opacity: 1; } }
+</style>
+
 <section class="ps" id="educational" style="padding-top: 40px;">
   <div class="sh"><div><div class="sey">Educational</div><h2 class="st">Advanced Topics.<br>Deep Dives.</h2></div><p class="ssb">Explore deeper technical topics including career roadmaps, database logic, and traffic simulation mechanics.</p></div>
   <div class="pgrid">
-    <a href="Career.html" class="pc ci" data-delay="0"><div class="pv" style="background:#050810"><div class="vg"><div class="gg" style="background:repeating-linear-gradient(0deg,transparent,transparent 18px,#818cf8 18px,#818cf8 19px),repeating-linear-gradient(90deg,transparent,transparent 18px,#818cf8 18px,#818cf8 19px); opacity:0.15;"></div><div class="gh" style="filter: drop-shadow(0 0 22px rgba(129, 140, 248, 0.8)); color: #818cf8;"><svg viewBox="0 0 24 24" width="72" height="72" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></div></div></div><div class="pb"><div class="pn">01 &mdash; Guide</div><h3 class="pname">The Career</h3><p class="pdesc">Discover your ideal career path with immersive exploration across professional domains.</p></div><div class="pf"><div class="ptags"><span class="tag">Educational</span><span class="tag">Career</span></div><div class="plink">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
-    <a href="Database_Logic.html" class="pc cs" data-delay="80"><div class="pv" style="background:#040E08"><div class="vg"><div class="gg" style="background:repeating-linear-gradient(0deg,transparent,transparent 24px,#00ffcc 24px,#00ffcc 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,#00ffcc 24px,#00ffcc 25px); opacity:0.12;"></div><div class="gh" style="filter: drop-shadow(0 0 22px rgba(0, 255, 204, 0.8)); color: #00ffcc;"><svg viewBox="0 0 24 24" width="72" height="72" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div></div></div><div class="pb"><div class="pn">02 &mdash; Concepts</div><h3 class="pname">Database Logic</h3><p class="pdesc">Explore database design, query optimization, and complex data relationships.</p></div><div class="pf"><div class="ptags"><span class="tag">Educational</span><span class="tag">Database</span></div><div class="plink">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
-    <a href="Traffic/Academy.html" class="pc ct" data-delay="160"><div class="pv" style="background:#0a0802"><div class="vg"><div class="gg" style="background:repeating-linear-gradient(45deg,transparent,transparent 10px,#ffcc00 10px,#ffcc00 11px); opacity:0.1;"></div><div class="gh" style="filter: drop-shadow(0 0 22px rgba(255, 204, 0, 0.8)); color: #ffcc00;"><svg viewBox="0 0 24 24" width="72" height="72" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="5" ry="5"></rect><circle cx="12" cy="7" r="2.5"></circle><circle cx="12" cy="12" r="2.5"></circle><circle cx="12" cy="17" r="2.5"></circle></svg></div></div></div><div class="pb"><div class="pn">03 &mdash; Simulation</div><h3 class="pname">Traffic</h3><p class="pdesc">Learn about traffic simulation, vehicle kinematics, and autonomous driving algorithms.</p></div><div class="pf"><div class="ptags"><span class="tag">Educational</span><span class="tag">Traffic</span></div><div class="plink">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div></a>
+    <a href="Career.html" class="pc ci" data-delay="0">
+      <div class="pv" style="background:#040710">
+        <div class="c-bg">
+          <div class="c-glow"></div>
+          <div class="c-grid"></div>
+          <div class="c-icon-wrap">
+            <svg class="c-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="pb"><div class="pn">01 &mdash; Guide</div><h3 class="pname">The Career</h3><p class="pdesc">Discover your ideal career path with immersive exploration across professional domains.</p></div>
+      <div class="pf"><div class="ptags"><span class="tag">Educational</span><span class="tag">Career</span></div><div class="plink">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
+    </a>
+    
+    <a href="Database_Logic.html" class="pc cs" data-delay="80">
+      <div class="pv" style="background:#020a08">
+        <div class="db-bg">
+          <div class="db-glow"></div>
+          <div class="db-scan"></div>
+          <div class="db-stack">
+            <div class="db-server dbs-1"><div class="db-led"></div><div class="db-line"></div></div>
+            <div class="db-server dbs-2"><div class="db-led"></div><div class="db-line"></div></div>
+            <div class="db-server dbs-3"><div class="db-led"></div><div class="db-line"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="pb"><div class="pn">02 &mdash; Concepts</div><h3 class="pname">Database Logic</h3><p class="pdesc">Explore database design, query optimization, and complex data relationships.</p></div>
+      <div class="pf"><div class="ptags"><span class="tag">Educational</span><span class="tag">Database</span></div><div class="plink">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
+    </a>
+    
+    <a href="Traffic/Academy.html" class="pc ct" data-delay="160">
+      <div class="pv" style="background:#080502">
+        <div class="tr-bg">
+          <div class="tr-glow"></div>
+          <div class="tr-streaks">
+            <div class="trs s1"></div>
+            <div class="trs s2"></div>
+            <div class="trs s3"></div>
+            <div class="trs s4"></div>
+          </div>
+          <div class="tr-light-box">
+            <div class="trl red-l"></div>
+            <div class="trl yellow-l"></div>
+            <div class="trl green-l"></div>
+          </div>
+        </div>
+      </div>
+      <div class="pb"><div class="pn">03 &mdash; Simulation</div><h3 class="pname">Traffic</h3><p class="pdesc">Learn about traffic simulation, vehicle kinematics, and autonomous driving algorithms.</p></div>
+      <div class="pf"><div class="ptags"><span class="tag">Educational</span><span class="tag">Traffic</span></div><div class="plink">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
+    </a>
   </div>
 </section>
 
