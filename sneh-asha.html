@@ -250,8 +250,9 @@
 
 
 <!-- 3D WARM PARTICLE BACKGROUND -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
 (function(){
   var canvas=document.getElementById('snehBg');
   if(!canvas||typeof THREE==='undefined')return;
@@ -311,8 +312,15 @@
   window.addEventListener('scroll',function(){scrollOff=window.scrollY*.042;},{passive:true});
 
   var clock=new THREE.Clock();
+  var isVisible = true;
+  var heroSec = document.querySelector('.sneh-hero');
+  if(heroSec) {
+      new IntersectionObserver(function(es){ isVisible = es[0].isIntersecting; }).observe(heroSec);
+  }
+
   function tick(){
     requestAnimationFrame(tick);
+    if (!isVisible) return;
     var t=clock.getElapsedTime();
     var MR=36,MF=1.2,SP=.03,DMP=.89;
     for(var pi2=0;pi2<PC;pi2++){
@@ -328,13 +336,17 @@
     var gm=Array.isArray(grid.material)?grid.material[0]:grid.material;
     if(gm)gm.opacity=.12+Math.sin(t*.6)*.04;
     cx+=(mx*18-cx)*.025;cy+=(-my*10-cy)*.025;
-    camera.position.x=cx;camera.position.y=cy-scrollOff;
+    
+    // Add organic wave motion to represent growth/social impact
+    camera.position.x=cx + Math.sin(t*0.5)*10;
+    camera.position.y=cy-scrollOff + Math.cos(t*0.3)*10;
     camera.lookAt(0,-scrollOff*.15,0);
     renderer.render(scene,camera);
   }
   tick();
   requestAnimationFrame(function(){canvas.classList.add('v');});
 })();
+});
 
 // Cursor hover effects
 (function(){
