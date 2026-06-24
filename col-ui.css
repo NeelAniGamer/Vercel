@@ -43,6 +43,7 @@ body.lm .nav-login-btn:hover { background: var(--primary, #38bdf8); color: #fff;
 
 .mmb { display: none; background: none; border: none; cursor: pointer; width: 40px; height: 40px; border-radius: 8px; color: var(--text-main, #f8fafc); }
 .mmb svg { width: 24px; height: 24px; stroke: currentColor; }
+.mobile-bottom-nav { display: none; }
 @media(max-width: 900px) {
   .desktop-dl { display: none; }
   .mobile-dl { display: block; width: 100%; text-align: center; margin-top: 10px; }
@@ -64,7 +65,6 @@ body.lm .nav-login-btn:hover { background: var(--primary, #38bdf8); color: #fff;
 }
 
 /* FOOTER */
-.mobile-bottom-nav { display: none; }
 .sf{border-top:1px solid var(--border-light,rgba(255,255,255,.08));background:rgba(255,255,255,.012);backdrop-filter:blur(8px);padding:48px 52px 36px; width: 100%; z-index: 10;}
 .fi{max-width:1360px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px}
 .fb{font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-muted,#8891AA)}.fb span{color:var(--primary,#F2B84B)}
