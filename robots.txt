@@ -1,7 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /engine
-Disallow: /q
 
 Sitemap: https://advancedlogiclabs.dpdns.org/sitemap.xml
