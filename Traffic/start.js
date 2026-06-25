@@ -29,7 +29,7 @@ let game = null;
 
       const loader = new THREE.GLTFLoader();
       const basePath = 'Models/kenney_car-kit/Models/GLB format/';
-      const filesToLoad = [
+        // Core
         { key: 'car', file: basePath + 'sedan.glb' },
         { key: 'taxi', file: basePath + 'taxi.glb' },
         { key: 'police', file: basePath + 'police.glb' },
@@ -39,17 +39,26 @@ let game = null;
         { key: 'bike', file: basePath + 'race.glb' },
         { key: 'human', file: 'Models/human.glb' },
         
-        // Buildings
-        { key: 'bldgA', file: 'Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-a.glb' },
-        { key: 'bldgB', file: 'Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-b.glb' },
-        { key: 'bldgC', file: 'Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-c.glb' },
-        { key: 'bldgD', file: 'Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-d.glb' },
-        
         // Roads
         { key: 'road_straight', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-straight.glb' },
         { key: 'road_intersect', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-intersection.glb' },
         { key: 'road_cross', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossroad.glb' }
       ];
+
+      // Add Suburban Buildings (a to u)
+      'abcdefghijklmnopqrstu'.split('').forEach(l => {
+          filesToLoad.push({ key: 'suburban_' + l, file: `Models/kenney_city-kit-suburban_20/Models/GLB format/building-type-${l}.glb` });
+      });
+
+      // Add Industrial Buildings (a to t)
+      'abcdefghijklmnopqrst'.split('').forEach(l => {
+          filesToLoad.push({ key: 'industrial_' + l, file: `Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-${l}.glb` });
+      });
+      
+      // Add more cars randomly
+      ['hatchback-sports', 'suv', 'suv-luxury', 'race-future', 'sedan-sports'].forEach(c => {
+          filesToLoad.push({ key: 'car_' + c, file: `Models/kenney_car-kit/Models/GLB format/${c}.glb` });
+      });
 
       let loaded = 0;
 

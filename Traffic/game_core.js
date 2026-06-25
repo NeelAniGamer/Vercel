@@ -462,10 +462,14 @@ class Game {
         ];
         const winMat = new THREE.MeshBasicMaterial({ color: 0x1a252c });
 
-        const bldgKeys = ['bldgA', 'bldgB', 'bldgC', 'bldgD'];
         const drawBldg = (bx, bz, type, rot) => {
           let g;
-          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['bldgA'] && type !== 'school') {
+          let bldgKeys = [];
+          if (window.PRELOADED_MODELS) {
+              bldgKeys = Object.keys(window.PRELOADED_MODELS).filter(k => k.startsWith('suburban_') || k.startsWith('industrial_'));
+          }
+
+          if (bldgKeys.length > 0 && type !== 'school') {
              const key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
              g = window.PRELOADED_MODELS[key].clone();
              const s = 1.0; // scale based on tile size

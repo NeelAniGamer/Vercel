@@ -493,11 +493,20 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       let s = 1.0;
       let rotY = 0;
 
-      if (window.PRELOADED_MODELS && window.PRELOADED_MODELS[type]) {
-        baseModel = window.PRELOADED_MODELS[type].clone();
-        if (type === 'bus' || type === 'truck') s = 1.4;
-        else if (type === 'auto' || type === 'bike') s = 1.0;
-        else s = 1.2;
+      if (window.PRELOADED_MODELS) {
+        let modelKey = type;
+        if (type === 'car') {
+            const carKeys = Object.keys(window.PRELOADED_MODELS).filter(k => k.startsWith('car'));
+            if (carKeys.length > 0) {
+                modelKey = carKeys[Math.floor(Math.random() * carKeys.length)];
+            }
+        }
+        
+        if (window.PRELOADED_MODELS[modelKey]) {
+            baseModel = window.PRELOADED_MODELS[modelKey].clone();
+            if (type === 'bus' || type === 'truck') s = 1.4;
+            else if (type === 'auto' || type === 'bike') s = 1.0;
+            else s = 1.2;
 
         baseModel.traverse((child) => {
             if (child.isMesh && child.material) {
