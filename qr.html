@@ -101,7 +101,11 @@ body::after {
         .nav-user-profile:hover { border-color: #10b981; }
         .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #10b981; color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
 
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
+        .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; width: 44px; height: 44px; align-items: center; justify-content: center; flex-direction: column; gap: 6px; position: relative; z-index: 1002; }
+        .m-line { width: 26px; height: 2px; background: var(--text-main); border-radius: 2px; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s; transform-origin: center; display: block; pointer-events: none; }
+        .mobile-menu-btn.active .m-line:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .mobile-menu-btn.active .m-line:nth-child(2) { opacity: 0; }
+        .mobile-menu-btn.active .m-line:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
         .mobile-dl { display: none; }
 
 /* SIDEBAR */
@@ -215,7 +219,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             .mobile-dl { display: block; text-align: center; width: 100%; margin-top: 5px; }
             .top-nav { width: 95%; margin: 15px auto 0; border-radius: 20px; top: 15px; padding: 10px 15px; flex-direction: row; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-light); }
             body.dark-mode .top-nav { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-            .mobile-menu-btn { display: block; }
+            .mobile-menu-btn { display: flex; }
             .nav-brand { gap: 8px; font-size: 1.05rem; }
             .brand-logo { height: 32px; }
             .nav-links { display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--nav-bg); backdrop-filter: blur(15px); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
@@ -243,13 +247,17 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <img loading="lazy" src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
             <span>Class Of Learners</span>
         </a>
-        <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('active')">☰</button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleQrMenu()">
+            <span class="m-line"></span>
+            <span class="m-line"></span>
+            <span class="m-line"></span>
+        </button>
         <div class="nav-links">
             <a href="index.html" class="nav-link" style="color: var(--google-blue);">Home Hub</a>
             <a href="about.html" class="nav-link">About Us</a>
             <a href="school.html" class="nav-link">Our School</a>
             <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
-            
+            <a href="download.html" class="nav-dl-btn mobile-dl">Downloads</a>
             <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
                 <button class="dropdown-btn">Projects <span>â–¼</span></button>
                 <div class="dropdown-content">
@@ -859,6 +867,47 @@ function toggleTheme(element){
     if(element && element.checked){ document.body.classList.remove('light'); Storage.set('theme', 'dark'); }
     else{ document.body.classList.add('light'); Storage.set('theme', 'light'); }
 }
+
+function toggleQrMenu() {
+    var btn = document.getElementById('mobileMenuBtn');
+    var nav = document.querySelector('.nav-links');
+    if(btn) btn.classList.toggle('active');
+    if(nav) nav.classList.toggle('active');
+}
+
+// In-App Update Button (Version Aware)
+try {
+    var isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent);
+    if (isWebView) {
+        fetch('version.json?t=' + Date.now())
+        .then(r => r.json())
+        .then(data => {
+            var currentV = localStorage.getItem('col_apk_version') || '0';
+            if (parseInt(data.versionCode) > parseInt(currentV)) {
+                var nl = document.querySelector('.nav-links');
+                if (nl && !document.getElementById('apkUpdateBtn')) {
+                    var updBtn = document.createElement('a');
+                    updBtn.id = 'apkUpdateBtn';
+                    updBtn.href = data.apkUrl || '/COL.apk';
+                    updBtn.className = 'nav-dl-btn mobile-dl';
+                    updBtn.innerHTML = 'Update App';
+                    updBtn.style.display = 'block';
+                    updBtn.style.marginTop = '10px';
+                    updBtn.style.backgroundColor = 'var(--pri, #10b981)';
+                    updBtn.style.color = '#000';
+                    updBtn.style.textAlign = 'center';
+                    updBtn.setAttribute('download', '');
+                    updBtn.onclick = function() {
+                        localStorage.setItem('col_apk_version', data.versionCode);
+                        setTimeout(() => { this.style.display = 'none'; }, 1000);
+                        alert('Downloading update... Please open your notifications or file manager to install the new version.');
+                    };
+                    nl.appendChild(updBtn);
+                }
+            }
+        }).catch(e => console.warn('Could not fetch version for update check.'));
+    }
+} catch(e) {}
 </script>
 
 <footer class="sf">

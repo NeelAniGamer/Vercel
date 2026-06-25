@@ -16,6 +16,8 @@ class Game {
         this.renderer.setSize(innerWidth, innerHeight); 
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
         this.renderer.outputEncoding = THREE.sRGBEncoding;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1.2;
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, .1, 150);
@@ -369,6 +371,7 @@ class Game {
 
       // 🚦 INDIAN STREET ENVIRONMENT ARCHITECTURE 🚦
       _buildScene(mode) {
+        if (typeof initGTex === 'function') initGTex();
         while (this.scene && this.scene.children.length) this.scene.remove(this.scene.children[0]);
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = [];
 
@@ -381,8 +384,8 @@ class Game {
         const sk = cfg.sky;
         this.scene.background = new THREE.Color(sk);
         this.scene.fog = new THREE.Fog(sk, 50, 150);
-        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.amb || 0.8));
-        const sun = new THREE.DirectionalLight(0xfff4dd, cfg.isNight ? 0.3 : 0.9);
+        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.amb || 0.4));
+        const sun = new THREE.DirectionalLight(0xfff4dd, cfg.isNight ? 0.4 : 1.2);
         sun.position.set(20, 40, 10); this.scene.add(sun);
         if (cfg.isNight) {
           const moon = new THREE.DirectionalLight(0x6688cc, 0.4); moon.position.set(-10, 30, -20); this.scene.add(moon);
@@ -1250,12 +1253,16 @@ class Game {
         if (this.mode === 'silentzone' && this.ms) this.ms.inSz = this.player.position.z > -60 && this.player.position.z < 20;
       }
       _ucam() {
-        const offsetX = 30;
-        const offsetY = 40;
-        const offsetZ = 30;
-        this._camTarget.set(this.player.position.x + offsetX, offsetY, this.player.position.z + offsetZ);
+        const camDist = 20;
+        const camHeight = 8;
+        const rotY = this.player.rotation.y;
+        this._camTarget.set(
+            this.player.position.x - Math.sin(rotY) * camDist, 
+            camHeight, 
+            this.player.position.z - Math.cos(rotY) * camDist
+        );
         this.camera.position.lerp(this._camTarget, .15); 
-        this.camera.lookAt(this.player.position.x, 0, this.player.position.z);
+        this.camera.lookAt(this.player.position.x + Math.sin(rotY) * 10, 0, this.player.position.z + Math.cos(rotY) * 10);
       }
       _uhud() {
         const k = Math.round(Math.abs(this.speed) * 100);

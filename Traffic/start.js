@@ -26,14 +26,18 @@ let game = null;
     function preloadModels(callback) {
       if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') { callback(); return; }
       
-      // LAZY LOADING: Start the game immediately!
-      callback();
 
       const loader = new THREE.GLTFLoader();
+      const basePath = 'Models/kenney_car-kit/Models/GLB format/';
       const filesToLoad = [
-        { key: 'lambo', file: 'lambo.js' },
-        { key: 'bus', file: 'bus.js' },
-        { key: 'auto', file: 'auto.js' }
+        { key: 'car', file: basePath + 'sedan.glb' },
+        { key: 'taxi', file: basePath + 'taxi.glb' },
+        { key: 'police', file: basePath + 'police.glb' },
+        { key: 'bus', file: basePath + 'delivery.glb' },
+        { key: 'truck', file: basePath + 'truck.glb' },
+        { key: 'auto', file: basePath + 'van.glb' },
+        { key: 'bike', file: basePath + 'race.glb' },
+        { key: 'human', file: 'Models/human.glb' }
       ];
 
       let loaded = 0;
@@ -51,51 +55,38 @@ let game = null;
       ld.innerHTML = '📥 Streaming Assets... <span id="ml-pct">0%</span>';
       document.body.appendChild(ld);
 
-      // Sequential loading to prevent main thread freezing (stuttering) while playing
+      // Sequential loading to prevent main thread freezing
       const loadNext = (index) => {
         if (index >= filesToLoad.length) {
             ld.innerHTML = '✅ Graphics Upgraded';
             setTimeout(() => ld.style.opacity = '0', 3000);
             setTimeout(() => ld.remove(), 4000);
+            callback();
             return;
         }
         
         const asset = filesToLoad[index];
-        // 1. Fetch the JS file containing the base64 string
-        const script = document.createElement('script');
-        script.src = asset.file;
-        script.onload = () => {
-          // 2. Parse the base64 string into a 3D model
-          if (window.MODELS && window.MODELS[asset.key]) {
-            loader.load(window.MODELS[asset.key], (gltf) => {
-              window.PRELOADED_MODELS[asset.key] = gltf.scene;
-              
-              // Free memory since we have the 3D model now!
-              delete window.MODELS[asset.key];
-
-              loaded++;
-              const pctEl = document.getElementById('ml-pct');
-              if (pctEl) pctEl.textContent = Math.round((loaded / filesToLoad.length) * 100) + '%';
-              
-              // Yield to main thread
-              setTimeout(() => loadNext(index + 1), 100);
-            }, undefined, (err) => {
-              console.error("Error loading asset chunk:", asset.key, err);
-              loaded++;
-              setTimeout(() => loadNext(index + 1), 100);
+        loader.load(asset.file, (gltf) => {
+            // Apply materials and cast shadows on the loaded model
+            gltf.scene.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
             });
-          } else {
-            console.error("Model data not found for:", asset.key);
+            window.PRELOADED_MODELS[asset.key] = gltf.scene;
+            
+            loaded++;
+            const pctEl = document.getElementById('ml-pct');
+            if (pctEl) pctEl.textContent = Math.round((loaded / filesToLoad.length) * 100) + '%';
+            
+            // Yield to main thread
+            setTimeout(() => loadNext(index + 1), 100);
+        }, undefined, (err) => {
+            console.error("Error loading asset:", asset.file, err);
             loaded++;
             setTimeout(() => loadNext(index + 1), 100);
-          }
-        };
-        script.onerror = () => {
-          console.error("Error loading script:", asset.file);
-          loaded++;
-          setTimeout(() => loadNext(index + 1), 100);
-        };
-        document.body.appendChild(script);
+        });
       };
       
       // Wait 1.5s after game starts before initiating background downloads

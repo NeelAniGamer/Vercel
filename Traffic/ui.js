@@ -473,38 +473,62 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       return tex;
     };
 
-    const gTex = {
-      asphalt: _genTex('asphalt'),
-      pave: _genTex('pave'),
-      building: _genTex('building'),
-      police: _genTex('police'), hospital: _genTex('hospital'), bank: _genTex('bank'),
-      temple: _genTex('temple'), shop: _genTex('shop'), car: _genTex('car')
+    let gTex = null;
+    const initGTex = () => {
+      if (gTex) return;
+      gTex = {
+        asphalt: _genTex('asphalt'),
+        pave: _genTex('pave'),
+        building: _genTex('building'),
+        police: _genTex('police'), hospital: _genTex('hospital'), bank: _genTex('bank'),
+        temple: _genTex('temple'), shop: _genTex('shop'), car: _genTex('car')
+      };
     };
 
 
 
     const _buildVehicle = (type, col) => {
-      if (typeof window.IndianVehicles !== 'undefined') { const v = window.IndianVehicles.buildVehicle(type, col); if (v) return v; }
 
       let baseModel = null;
       let s = 1.0;
       let rotY = 0;
 
-      if (type === 'bus' && window.PRELOADED_MODELS['bus']) {
-        baseModel = window.PRELOADED_MODELS['bus'].clone();
-        s = 0.5; // Bus scaling
-      } else if ((type === 'auto' || type === 'bike' || type === 'twowheeler') && window.PRELOADED_MODELS['auto']) {
+      if (window.PRELOADED_MODELS && window.PRELOADED_MODELS[type]) {
+        baseModel = window.PRELOADED_MODELS[type].clone();
+        if (type === 'bus' || type === 'truck') s = 1.4;
+        else if (type === 'auto' || type === 'bike') s = 1.0;
+        else s = 1.2;
+
+        baseModel.traverse((child) => {
+            if (child.isMesh && child.material) {
+                // Kenney models usually use materials like "paint", "body", "color"
+                if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
+                    child.material = child.material.clone();
+                    child.material.color.setHex(col);
+                }
+            }
+        });
+      } else if (type === 'bike' && window.PRELOADED_MODELS['auto']) {
         baseModel = window.PRELOADED_MODELS['auto'].clone();
-        s = 0.3; // Auto scaling
+        s = 1.0;
       }
 
       if (baseModel) {
         const g = new THREE.Group();
         baseModel.scale.set(s, s, s);
         baseModel.rotation.y = rotY;
-        // Adjust height slightly so wheels touch ground
         baseModel.position.y = 0;
+        
+        // Add an invisible hitbox for collisions
+        const hw = (type === 'bus' || type === 'truck') ? 2.5 : 1.6;
+        const hl = (type === 'bus' || type === 'truck') ? 8.0 : 4.0;
+        const hbGeo = new THREE.BoxGeometry(hw, 2, hl);
+        const hbMat = new THREE.MeshBasicMaterial({ visible: false });
+        const hb = new THREE.Mesh(hbGeo, hbMat);
+        hb.position.y = 1;
+        
         g.add(baseModel);
+        g.add(hb);
         g.type = type;
         return g;
       }
@@ -657,6 +681,27 @@ switch (type) {
 
     const _buildHuman = (isPlayer = false) => {
       const g = new THREE.Group();
+
+      if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['human']) {
+        const hModel = window.PRELOADED_MODELS['human'].clone();
+        hModel.scale.set(1.5, 1.5, 1.5);
+        hModel.position.y = 0;
+        
+        // Add invisible hitbox for collisions
+        const hbGeo = new THREE.BoxGeometry(0.8, 2.0, 0.8);
+        const hbMat = new THREE.MeshBasicMaterial({ visible: false });
+        const hb = new THREE.Mesh(hbGeo, hbMat);
+        hb.position.y = 1.0;
+        
+        g.add(hModel);
+        g.add(hb);
+
+        // We still need mock lLeg and rLeg for the animation in game_core.js _upeds
+        const dummyGeo = new THREE.Group();
+        g.userData = { lLeg: dummyGeo, rLeg: dummyGeo, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 };
+        return g;
+      }
+
       const skins = [0xe0ac69, 0x8d5524, 0xc68642, 0xf1c27d, 0xffdbac];
       const sColor = isPlayer ? 0xc68642 : skins[Math.floor(Math.random() * skins.length)];
       const shColor = isPlayer ? 0xe74c3c : Math.random() * 0xffffff;

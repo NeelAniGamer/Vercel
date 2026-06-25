@@ -20,12 +20,50 @@
         });
     }
 
-    // 2. Mobile Menu
+    // 2. Mobile Menu & In-App Updater
     var mmb = document.getElementById('mmb'), nl = document.getElementById('navLinks');
-    if (mmb && nl) {
-        mmb.addEventListener('click', function() {
-            nl.classList.toggle('active');
-        });
+    if (mmb) {
+        mmb.innerHTML = '<span class="m-line"></span><span class="m-line"></span><span class="m-line"></span>';
+        if (nl) {
+            mmb.addEventListener('click', function() {
+                nl.classList.toggle('active');
+                mmb.classList.toggle('active');
+            });
+            
+            // In-App Update Button (Version Aware)
+            try {
+                var isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent);
+                if (isWebView) {
+                    fetch('version.json?t=' + Date.now())
+                    .then(r => r.json())
+                    .then(data => {
+                        var currentV = localStorage.getItem('col_apk_version') || '0';
+                        if (parseInt(data.versionCode) > parseInt(currentV)) {
+                            var nl = document.querySelector('.nav-links');
+                            if (nl && !document.getElementById('apkUpdateBtn')) {
+                                var updBtn = document.createElement('a');
+                                updBtn.id = 'apkUpdateBtn';
+                                updBtn.href = data.apkUrl || '/COL.apk';
+                                updBtn.className = 'nav-dl-btn mobile-dl';
+                                updBtn.innerHTML = 'Update App';
+                                updBtn.style.display = 'block';
+                                updBtn.style.marginTop = '10px';
+                                updBtn.style.backgroundColor = 'var(--signal, #F2B84B)';
+                                updBtn.style.color = '#000';
+                                updBtn.style.textAlign = 'center';
+                                updBtn.setAttribute('download', '');
+                                updBtn.onclick = function() {
+                                    localStorage.setItem('col_apk_version', data.versionCode);
+                                    setTimeout(() => { this.style.display = 'none'; }, 1000);
+                                    alert('Downloading update... Please open your notifications or file manager to install the new version.');
+                                };
+                                nl.appendChild(updBtn);
+                            }
+                        }
+                    }).catch(e => console.warn('Could not fetch version for update check.'));
+                }
+            } catch(e) {}
+        }
     }
 
     // 3. Setup initial theme based on Storage if Storage exists (from col-auth.js or inline)
