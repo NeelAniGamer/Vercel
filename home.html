@@ -361,72 +361,8 @@
 <div class="toast" id="toast"></div>
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="col-3d.js"></script>
 <script>
-// ============= STUDIO UNIVERSE — Multi-Project 3D Background =============
-(function(){
-        var canvas = document.getElementById('bgCanvas') || document.getElementById('orrery') || document.getElementById('cosmos');
-        if(!canvas || typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') return;
-        var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance'});
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-        camera.position.z = 10;
-
-        var ambient = new THREE.AmbientLight(0xffffff, 0.4);
-        scene.add(ambient);
-        
-        var modelGroup = new THREE.Group();
-        scene.add(modelGroup);
-
-        var loader = new THREE.GLTFLoader();
-        loader.load('panels.glb', function(gltf) {
-            var model = gltf.scene;
-            
-            model.traverse(function(child) {
-                if (child.isMesh) {
-                    child.material = new THREE.MeshBasicMaterial({ color: 0x070A14, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
-                    var wire = new THREE.LineSegments(
-                        new THREE.EdgesGeometry(child.geometry),
-                        new THREE.LineBasicMaterial({color: 0x5ED4F5, transparent: true, opacity: 0.6})
-                    );
-                    child.add(wire);
-                }
-            });
-            
-            var box = new THREE.Box3().setFromObject(model);
-            var center = box.getCenter(new THREE.Vector3());
-            var size = box.getSize(new THREE.Vector3());
-            var maxDim = Math.max(size.x, size.y, size.z);
-            var scale = 8 / maxDim;
-            model.scale.set(scale, scale, scale);
-            model.position.sub(center.multiplyScalar(scale));
-            
-            modelGroup.add(model);
-            if(canvas) { canvas.classList.add('v'); canvas.style.opacity = 1; canvas.style.transition = 'opacity 1.5s ease'; }
-        });
-
-        var mx = 0, my = 0;
-        document.addEventListener('mousemove', function(e) {
-            mx = (e.clientX / window.innerWidth) * 2 - 1;
-            my = -(e.clientY / window.innerHeight) * 2 + 1;
-        });
-
-        function animate() {
-            requestAnimationFrame(animate);
-            modelGroup.rotation.y += (mx * 0.5 - modelGroup.rotation.y) * 0.05;
-            modelGroup.rotation.x += (-my * 0.5 - modelGroup.rotation.x) * 0.05;
-            modelGroup.rotation.z += 0.002;
-            renderer.render(scene, camera);
-        }
-        animate();
-        
-        window.addEventListener('resize', function() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    })();
 
 // ============= CURSOR HOVER EFFECTS =============
 (function(){

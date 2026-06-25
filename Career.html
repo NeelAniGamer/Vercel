@@ -630,6 +630,7 @@
 
     <!-- Three.js -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="col-3d.js"></script>
 
     <script>
     // ============================== DATA ==============================
@@ -1096,70 +1097,7 @@
 
     // ============================== THREE.JS COSMOS ==============================
     
-        (function(){
-            const canvas = document.getElementById('cosmos');
-            if(!canvas || typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') return;
-            const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance'});
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-            camera.position.z = 10;
-
-            const ambient = new THREE.AmbientLight(0xffffff, 0.4);
-            scene.add(ambient);
-            
-            const modelGroup = new THREE.Group();
-            scene.add(modelGroup);
-
-            const loader = new THREE.GLTFLoader();
-            loader.load('cosmos.glb', function(gltf) {
-                const model = gltf.scene;
-                
-                model.traverse(function(child) {
-                    if (child.isMesh) {
-                        child.material = new THREE.MeshBasicMaterial({ color: 0x070A14, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
-                        const wire = new THREE.LineSegments(
-                            new THREE.EdgesGeometry(child.geometry),
-                            new THREE.LineBasicMaterial({color: 0x5ED4F5, transparent: true, opacity: 0.6})
-                        );
-                        child.add(wire);
-                    }
-                });
-                
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 8 / maxDim;
-                model.scale.set(scale, scale, scale);
-                model.position.sub(center.multiplyScalar(scale));
-                
-                modelGroup.add(model);
-                if(canvas) { canvas.classList.add('v'); canvas.style.opacity = 1; canvas.style.transition = 'opacity 1.5s ease'; }
-            });
-
-            let mx = 0, my = 0;
-            document.addEventListener('mousemove', function(e) {
-                mx = (e.clientX / window.innerWidth) * 2 - 1;
-                my = -(e.clientY / window.innerHeight) * 2 + 1;
-            });
-
-            function animate() {
-                requestAnimationFrame(animate);
-                modelGroup.rotation.y += (mx * 0.5 - modelGroup.rotation.y) * 0.05;
-                modelGroup.rotation.x += (-my * 0.5 - modelGroup.rotation.x) * 0.05;
-                modelGroup.rotation.z += 0.002;
-                renderer.render(scene, camera);
-            }
-            animate();
-            
-            window.addEventListener('resize', function() {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        })();
+        
         
     </script>
 </body>

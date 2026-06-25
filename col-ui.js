@@ -30,6 +30,27 @@
                 mmb.classList.toggle('active');
             });
             
+            // Close mobile menu when a standard link is clicked
+            nl.querySelectorAll('.nav-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    nl.classList.remove('active');
+                    mmb.classList.remove('active');
+                });
+            });
+
+            // Mobile dropdown toggle
+            var dropdowns = nl.querySelectorAll('.dropdown');
+            dropdowns.forEach(function(dd) {
+                var btn = dd.querySelector('.dropdown-btn');
+                if (btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dd.classList.toggle('active');
+                    });
+                }
+            });
+            
             // In-App Update Button (Version Aware)
             try {
                 var isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent);
@@ -72,10 +93,14 @@
         var savedTheme = localStorage.getItem('theme');
         var tl = document.getElementById('tLabel');
         var tsck = document.getElementById('tsck');
+        var tsth = document.querySelector('.tsth');
         if (savedTheme === 'light') {
             document.body.classList.add('lm');
             if(tl) tl.textContent = 'Dark';
             if(tsck) tsck.checked = true;
+            if(tsth) tsth.textContent = '🌙';
+        } else {
+            if(tsth) tsth.textContent = '☀️';
         }
     } catch(e) {}
 })();
@@ -83,14 +108,17 @@
 // Theme Toggle Function (Global)
 window.toggleTheme = function(el) {
     var tl = document.getElementById('tLabel');
+    var tsth = document.querySelector('.tsth');
     if (el.checked) {
         document.body.classList.add('lm');
         try { localStorage.setItem('theme', 'light'); } catch(e) {}
         if (tl) tl.textContent = 'Dark';
+        if (tsth) tsth.textContent = '🌙';
     } else {
         document.body.classList.remove('lm');
         try { localStorage.setItem('theme', 'dark'); } catch(e) {}
         if (tl) tl.textContent = 'Light';
+        if (tsth) tsth.textContent = '☀️';
     }
 };
 

@@ -7,7 +7,7 @@ function injectLoginModal() {
     const mo = document.createElement('div');
     mo.className = 'col-auth-mo';
     mo.id = 'loginMo';
-    mo.innerHTML = '<div class="col-auth-md"><div class="col-auth-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="col-auth-body"><div id="loggedOutPanel"><button class="col-auth-gbtn" id="gSignInBtn" onclick="typeof gSignIn !== \'undefined\' ? gSignIn() : (window.colDoGoogle ? window.colDoGoogle() : alert(\'Login unavailable\'))"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google</button></div><div id="loggedInPanel" style="display: none;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Google Email</label><input class="col-auth-inp" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Display Username</label><input class="col-auth-inp" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;"><button class="col-auth-btn" style="margin-bottom: 10px;" onclick="updateUsername()">Save Username</button><button class="col-auth-danger" onclick="doLogout()">Disconnect Account</button></div><button class="col-auth-btn" style="margin-top: 10px; background: transparent; color: var(--dim, #8891AA); border: 1px solid var(--line, rgba(255,255,255,.08));" onclick="closeMo()">Close / Cancel</button></div></div>';
+    mo.innerHTML = '<div class="col-auth-md"><div class="col-auth-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="col-auth-body"><div id="loggedOutPanel" style="display:flex; justify-content:center; align-items:center; width:100%; margin-bottom:15px;"><div id="gSignInBtnContainer" style="width:100%; display:flex; justify-content:center;"></div></div><div id="loggedInPanel" style="display: none;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Google Email</label><input class="col-auth-inp" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Display Username</label><input class="col-auth-inp" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;"><button class="col-auth-btn" style="margin-bottom: 10px;" onclick="updateUsername()">Save Username</button><button class="col-auth-danger" onclick="doLogout()">Disconnect Account</button></div><button class="col-auth-btn" style="margin-top: 10px; background: transparent; color: var(--dim, #8891AA); border: 1px solid var(--line, rgba(255,255,255,.08));" onclick="closeMo()">Close / Cancel</button></div></div>';
     document.body.appendChild(mo);
     mo.addEventListener('click', function(e) { if (e.target === this) closeMo(); });
 }
@@ -36,8 +36,21 @@ if (!window.openLogin) {
         } else {
             if (mt) mt.textContent = 'Authenticate';
             if (mSub) mSub.textContent = 'Unlock dashboard storage and cloud sync.';
-            if (loggedOutPanel) loggedOutPanel.style.display = 'block';
+            if (loggedOutPanel) loggedOutPanel.style.display = 'flex';
             if (loggedInPanel) loggedInPanel.style.display = 'none';
+            
+            // Render Google Button
+            var container = document.getElementById('gSignInBtnContainer');
+            if (container) {
+                container.innerHTML = '';
+                if (window.AndroidBridge) {
+                    container.innerHTML = '<button class="col-auth-gbtn" onclick="colDoGoogle()" style="width: 100%; max-width: 280px; border-radius: 4px; padding: 10px; background: #131314; border: 1px solid #8e918f; color: #e3e3e3; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--sans, \'Inter\'); font-size: 14px; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google</button>';
+                } else if (typeof google !== 'undefined' && google.accounts) {
+                    google.accounts.id.renderButton(container, { theme: "filled_black", size: "large", type: "standard", shape: "rectangular", width: 280 });
+                } else {
+                    container.innerHTML = '<button class="col-auth-gbtn" onclick="colDoGoogle()">Sign in with Google</button>';
+                }
+            }
         }
     };
 }
@@ -118,6 +131,13 @@ if (!window.closeMo) {
             callback: window.handleGoogleOneTap
         });
         google.accounts.id.prompt();
+        
+        // Re-render button if modal is open
+        var container = document.getElementById('gSignInBtnContainer');
+        if (container && !window.AndroidBridge) {
+            container.innerHTML = '';
+            google.accounts.id.renderButton(container, { theme: "filled_black", size: "large", type: "standard", shape: "rectangular", width: 280 });
+        }
     }
 
     let supabaseClient = null;
@@ -279,6 +299,11 @@ if (!window.closeMo) {
     window._renderAuthTab = (tab) => renderAuthPanel(tab);
     
     window.colDoGoogle = async () => {
+        if (window.AndroidBridge) {
+            window.AndroidBridge.signInWithGoogle();
+            return;
+        }
+        
         if(!supabaseClient) return;
         // Restrict redirect to known production origin to prevent open redirect
         var allowedOrigin = 'https://advancedlogiclabs.dpdns.org';

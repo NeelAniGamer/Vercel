@@ -1,6 +1,6 @@
 {
-  "versionCode": 3,
-  "versionName": "1.1",
+  "versionCode": 4,
+  "versionName": "1.3",
   "apkUrl": "https://advancedlogiclabs.dpdns.org/COL.apk",
-  "releaseNotes": "UI fixes, in-app updater, and Google Login support."
+  "releaseNotes": "Google One-Tap Sign-In UI Update"
 }
