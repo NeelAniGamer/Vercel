@@ -11,7 +11,7 @@
     
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     
-    <script>(function(){try{var c=localStorage.getItem('col_admin_config');if(c){var cfg=JSON.parse(c),p=window.location.pathname.split('/').pop()||'index.html',s=cfg.pages[p]||'200';if(s==='503'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>');window.stop();}if(s==='404'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="home.html" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>');window.stop();}}}catch(e){}})()</script>
+    <script>\n/* --- OLD 3D SCENE (KEPT FOR FALLBACK) ---\n(function(){try{var c=localStorage.getItem('col_admin_config');if(c){var cfg=JSON.parse(c),p=window.location.pathname.split('/').pop()||'index.html',s=cfg.pages[p]||'200';if(s==='503'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>');window.stop();}if(s==='404'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="home.html" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>');window.stop();}}}catch(e){}})()</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -58,7 +58,7 @@
     .nav-user-avatar{width:28px;height:28px;border-radius:50%;background:var(--em);color:#06140e;display:flex;justify-content:center;align-items:center;font-weight:800;font-size:.8rem;overflow:hidden}.nun{font-size:.82rem;font-weight:700}
     .mmb{display:none;background:none;border:none;cursor:pointer;padding:4px}.mmb svg{width:22px;height:22px;stroke:var(--ink)}
 
-    /* Hero */
+    / * Hero * /
     .col-hero{position:relative;width:100%;min-height:75vh;display:flex;align-items:center;overflow:hidden}
     #bgCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1.8s var(--ease)}#bgCanvas.v{opacity:1}
     .hvig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 65% 90% at 50% 50%,transparent 0%,var(--void) 90%);transition:background .5s;z-index:1}
@@ -73,7 +73,7 @@
     .page-wrap{max-width:1100px;margin:0 auto;padding:0 52px;position:relative;z-index:2;padding-bottom:100px}
     .rv{opacity:0;transform:translateY(36px);transition:opacity .8s var(--ease),transform .8s var(--ease)}.rv.vis{opacity:1;transform:translateY(0)}
     
-    /* Feedback Layout */
+    / * Feedback Layout * /
     .fb-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}
     @media(max-width:800px){.fb-grid{grid-template-columns:1fr}}
     .fb-card{background:rgba(255,255,255,.015);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:24px;padding:36px;box-shadow:0 30px 60px rgba(0,0,0,.3);transition:.5s;border-top:3px solid var(--teal)}
@@ -90,17 +90,17 @@
     .ft-pill input:checked + span{border-color:var(--teal);color:var(--teal);background:rgba(0,240,204,.08)}
     .ft-pill:hover span{border-color:var(--teal);color:var(--ink)}
 
-    /* Enhanced Animated Urgency Slider */
+    / * Enhanced Animated Urgency Slider * /
     .urg-slider {
         position: relative;
         margin-top: 10px;
-        --active-color: var(--teal); /* Default starting color */
+        --active-color: var(--teal); / * Default starting color * /
     }
     .urg-slider input {
         width: 100%;
         -webkit-appearance: none;
         appearance: none;
-        height: 8px; /* Slightly thicker for the animation */
+        height: 8px; / * Slightly thicker for the animation * /
         background: linear-gradient(to right, var(--active-color) 0%, var(--lineb) 0%);
         border-radius: 4px;
         outline: none;
@@ -159,13 +159,13 @@
     
     .emr{color:#ef4444!important}
     
-    /* Footer */
+    / * Footer * /
     .sf{border-top:1px solid var(--line);background:rgba(255,255,255,.012);backdrop-filter:blur(8px);padding:48px 52px 36px;transition:border-color .5s,background .5s;position:relative;z-index:2}
     .fi{max-width:1360px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px}
     .fb{font-family:var(--mono);font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}.fb span{color:var(--signal)}
     .fl{display:flex;gap:26px;flex-wrap:wrap}.fl a{color:var(--dim);font-size:.88rem;font-weight:500;transition:color .25s}.fl a:hover{color:var(--ink)}.fc{color:var(--dim);font-size:.82rem}
 
-    /* Auth Modal */
+    / * Auth Modal * /
     .mo{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.82);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}.mo.open{opacity:1;pointer-events:auto}
     .md{background:var(--panel);border:1px solid var(--lineb);border-radius:24px;width:90%;max-width:440px;overflow:hidden;transform:translateY(26px) scale(.96);transition:transform .4s var(--ease);box-shadow:0 40px 100px rgba(0,0,0,.75);color:var(--ink)}.mo.open .md{transform:translateY(0) scale(1)}
     .mhd{padding:30px;border-bottom:1px solid var(--line);text-align:center}.mhd h2{font-family:var(--serif);font-size:1.75rem;font-weight:400}.mhd p{font-size:.9rem;color:var(--dim);margin-top:6px}.mbd{padding:30px}
@@ -280,7 +280,7 @@
                 
                 <div class="fbr">
                     <label class="file-up">
-                        <input type="file" id="fbFile" accept="image/*" onchange="upFN(this)">
+                        <input type="file" id="fbFile" accept="image/ *" onchange="upFN(this)">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                         <span id="fName">Attach Screenshot (Optional)</span>
                     </label>
@@ -673,6 +673,74 @@
         }
         rf();
     }
-</script>
+\n*/\n
+    // --- NEW THREE.JS 3D ENVELOPE THEME ---
+    (function(){
+        var canvas = document.getElementById('bgCanvas') || document.getElementById('orrery') || document.getElementById('cosmos');
+        if(!canvas || typeof THREE === \'undefined\') return;
+        var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: \'high-performance\'});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 1000);
+        camera.position.z = 100;
+
+        var ambient = new THREE.AmbientLight(0xffffff, 0.3);
+        scene.add(ambient);
+        var light = new THREE.PointLight(0xF2B84B, 1, 200);
+        light.position.set(20, 30, 40);
+        scene.add(light);
+        var light2 = new THREE.PointLight(0x5ED4F5, 1, 200);
+        light2.position.set(-20, -30, 40);
+        scene.add(light2);
+
+        var group = new THREE.Group();
+        scene.add(group);
+
+        var envGeo = new THREE.BoxGeometry(40, 25, 2);
+        var envMat = new THREE.MeshPhysicalMaterial({ color: 0x111827, metalness: 0.8, roughness: 0.2, transparent: true, opacity: 0.9 });
+        var env = new THREE.Mesh(envGeo, envMat);
+        group.add(env);
+
+        var wireMat = new THREE.LineBasicMaterial({ color: 0xF2B84B, transparent: true, opacity: 0.5 });
+        group.add(new THREE.LineSegments(new THREE.EdgesGeometry(envGeo), wireMat));
+
+        var flapGeo = new THREE.ConeGeometry(20.5, 15, 4);
+        var flap = new THREE.Mesh(flapGeo, envMat);
+        flap.rotation.y = Math.PI / 4;
+        flap.rotation.x = Math.PI / 2;
+        flap.position.z = 1.1;
+        flap.position.y = 5;
+        group.add(flap);
+        group.add(new THREE.LineSegments(new THREE.EdgesGeometry(flapGeo), wireMat));
+
+        var pGeo = new THREE.BufferGeometry();
+        var pPos = new Float32Array(90);
+        for(var i=0; i<90; i++) pPos[i] = (Math.random()-0.5)*150;
+        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+        var pMat = new THREE.PointsMaterial({color: 0x5ED4F5, size: 2, blending: THREE.AdditiveBlending});
+        var points = new THREE.Points(pGeo, pMat);
+        scene.add(points);
+
+        var mx = 0, my = 0;
+        document.addEventListener('mousemove', function(e) {
+            mx = (e.clientX / window.innerWidth) * 2 - 1;
+            my = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        var clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            var t = clock.getElapsedTime();
+            group.rotation.y = Math.sin(t * 0.4) * 0.2 + mx * 0.4;
+            group.rotation.x = Math.cos(t * 0.3) * 0.1 - my * 0.4;
+            group.position.y = Math.sin(t * 1.5) * 3;
+            points.rotation.y = t * 0.05;
+            renderer.render(scene, camera);
+        }
+        animate();
+        requestAnimationFrame(function(){canvas.classList.add(\'v\');});
+    })();
+    </script>
 </body>
 </html>
