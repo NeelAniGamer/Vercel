@@ -313,9 +313,40 @@ document.getElementById('mmb').addEventListener('click',function(){document.getE
 window.addEventListener('click',function(e){if(!e.target.closest('.dropdown'))document.querySelectorAll('.dropdown').forEach(function(d){d.classList.remove('active');});});
 
 // Theme
-var Storage={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
-function initializeTheme(){var tsck=document.getElementById('tsck'),tl=document.getElementById('tLabel');if(Storage.get('theme')==='light'){document.body.classList.add('lm');if(tsck)tsck.checked=true;if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');if(tsck)tsck.checked=false;if(tl)tl.textContent='Light';}}
-function toggleTheme(el){var tl=document.getElementById('tLabel');if(el.checked){document.body.classList.add('lm');Storage.set('theme','light');if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');Storage.set('theme','dark');if(tl)tl.textContent='Light';}}
+var Storage = {
+  get: function(k) { try { return localStorage.getItem(k); } catch(e) { return null; } },
+  set: function(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
+};
+
+function initializeTheme() {
+  var tsck = document.getElementById('tsck');
+  var tl = document.getElementById('tLabel');
+  
+  if (Storage.get('theme') === 'light') {
+    document.body.classList.add('lm');
+    if (tsck) tsck.checked = true;
+    if (tl) tl.textContent = 'Light Mode';
+  } else {
+    // Explicitly enforce Dark Mode on first visit or if missing
+    document.body.classList.remove('lm');
+    if (tsck) tsck.checked = false;
+    if (tl) tl.textContent = 'Dark Mode';
+    Storage.set('theme', 'dark'); 
+  }
+}
+
+function toggleTheme(el) {
+  var tl = document.getElementById('tLabel');
+  if (el.checked) {
+    document.body.classList.add('lm');
+    Storage.set('theme', 'light');
+    if (tl) tl.textContent = 'Light Mode';
+  } else {
+    document.body.classList.remove('lm');
+    Storage.set('theme', 'dark');
+    if (tl) tl.textContent = 'Dark Mode';
+  }
+}else{document.body.classList.remove('lm');Storage.set('theme','dark');if(tl)tl.textContent='Light';}}
 
 (function(){initializeTheme();})();
 </script>

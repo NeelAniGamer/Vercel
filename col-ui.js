@@ -93,33 +93,32 @@
         var savedTheme = localStorage.getItem('theme');
         var tl = document.getElementById('tLabel');
         var tsck = document.getElementById('tsck');
-        var tsth = document.querySelector('.tsth');
+        
         if (savedTheme === 'light') {
             document.body.classList.add('lm');
-            if(tl) tl.textContent = 'Dark';
             if(tsck) tsck.checked = true;
-            if(tsth) tsth.textContent = '🌙';
+            if(tl) tl.textContent = 'Light Mode';
         } else {
-            if(tsth) tsth.textContent = '☀️';
+            // Explicitly enforce Dark Mode
+            document.body.classList.remove('lm');
+            if(tsck) tsck.checked = false;
+            if(tl) tl.textContent = 'Dark Mode';
+            localStorage.setItem('theme', 'dark'); 
         }
     } catch(e) {}
 })();
 
-// Theme Toggle Function (Global)
 window.toggleTheme = function(el) {
-    var tl = document.getElementById('tLabel');
-    var tsth = document.querySelector('.tsth');
-    if (el.checked) {
-        document.body.classList.add('lm');
-        try { localStorage.setItem('theme', 'light'); } catch(e) {}
-        if (tl) tl.textContent = 'Dark';
-        if (tsth) tsth.textContent = '🌙';
-    } else {
-        document.body.classList.remove('lm');
-        try { localStorage.setItem('theme', 'dark'); } catch(e) {}
-        if (tl) tl.textContent = 'Light';
-        if (tsth) tsth.textContent = '☀️';
-    }
+  var tl = document.getElementById('tLabel');
+  if (el.checked) {
+    document.body.classList.add('lm');
+    try { localStorage.setItem('theme', 'light'); } catch(e) {}
+    if (tl) tl.textContent = 'Light Mode';
+  } else {
+    document.body.classList.remove('lm');
+    try { localStorage.setItem('theme', 'dark'); } catch(e) {}
+    if (tl) tl.textContent = 'Dark Mode';
+  }
 };
 
 // Register Service Worker for PWA

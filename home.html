@@ -382,9 +382,40 @@ document.querySelectorAll('.pc').forEach(function(card){card.addEventListener('m
 (function(){var m=document.getElementById('qrm');if(!m)return;var f=document.createDocumentFragment();for(var i=0;i<81;i++){var c=document.createElement('div');c.className='qc'+(Math.random()>.48?' on':'');f.appendChild(c);}m.appendChild(f);setInterval(function(){var cs=m.children;if(!cs.length)return;cs[Math.floor(Math.random()*cs.length)].classList.toggle('on');cs[Math.floor(Math.random()*cs.length)].classList.toggle('on');},650);})();
 
 // Theme
-var Storage={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
-function initializeTheme(){var tsck=document.getElementById('tsck'),tl=document.getElementById('tLabel');if(Storage.get('theme')==='light'){document.body.classList.add('lm');if(tsck)tsck.checked=true;if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');if(tsck)tsck.checked=false;if(tl)tl.textContent='Light';}}
-function toggleTheme(el){var tl=document.getElementById('tLabel');if(el.checked){document.body.classList.add('lm');Storage.set('theme','light');if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');Storage.set('theme','dark');if(tl)tl.textContent='Light';}}
+var Storage = {
+  get: function(k) { try { return localStorage.getItem(k); } catch(e) { return null; } },
+  set: function(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
+};
+
+function initializeTheme() {
+  var tsck = document.getElementById('tsck');
+  var tl = document.getElementById('tLabel');
+  
+  if (Storage.get('theme') === 'light') {
+    document.body.classList.add('lm');
+    if (tsck) tsck.checked = true;
+    if (tl) tl.textContent = 'Light Mode';
+  } else {
+    // Explicitly enforce Dark Mode on first visit or if missing
+    document.body.classList.remove('lm');
+    if (tsck) tsck.checked = false;
+    if (tl) tl.textContent = 'Dark Mode';
+    Storage.set('theme', 'dark'); 
+  }
+}
+
+function toggleTheme(el) {
+  var tl = document.getElementById('tLabel');
+  if (el.checked) {
+    document.body.classList.add('lm');
+    Storage.set('theme', 'light');
+    if (tl) tl.textContent = 'Light Mode';
+  } else {
+    document.body.classList.remove('lm');
+    Storage.set('theme', 'dark');
+    if (tl) tl.textContent = 'Dark Mode';
+  }
+}else{document.body.classList.remove('lm');Storage.set('theme','dark');if(tl)tl.textContent='Light';}}
 
 (function(){initializeTheme();  var isrv=document.querySelectorAll('.rv');
   var rvIo=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('vis');rvIo.unobserve(entry.target);}});},{threshold:.08});
