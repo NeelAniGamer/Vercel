@@ -31,13 +31,13 @@ input, textarea, select {
 
 .tw { display: flex; align-items: center; gap: 10px; margin-left: 10px; }
 .tl { font-size: 0.85rem; font-weight: 600; color: var(--text-muted, #cbd5e1); width: 40px; text-align: right; }
-.tsb { position: relative; width: 50px; height: 26px; background: var(--border-light, #1e293b); border-radius: 30px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
-.tsb input { opacity: 0; width: 0; height: 0; }
-.tst { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: var(--card-bg, #0f172a); border-radius: 50%; transition: 0.3s; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); overflow: hidden; }
-.tsth { font-size: 0.75rem; user-select: none; }
-input:checked + .tst { transform: translateX(24px); background: var(--primary, #38bdf8); }
-body.lm .tsb { background: rgba(0,0,0,0.1); border-color: rgba(0,0,0,0.1); }
-body.lm input:checked + .tst { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.tsb { position: relative; width: 46px; height: 24px; cursor: pointer; display: inline-block; flex-shrink: 0; }
+.tsb input { opacity: 0; width: 0; height: 0; position: absolute; }
+.tst { position: absolute; inset: 0; border-radius: 30px; background: var(--void2, #0C1224); border: 1px solid var(--lineb, rgba(255,255,255,.16)); transition: .4s; }
+.tsth { position: absolute; width: 16px; height: 16px; border-radius: 50%; top: 3px; left: 3px; background: var(--signal, #F2B84B); transition: transform .4s cubic-bezier(0.16, 1, 0.3, 1); font-size: .6rem; display: flex; align-items: center; justify-content: center; color: var(--void, #000); }
+input:checked + .tst .tsth { transform: translateX(22px); }
+body.lm .tst { background: rgba(0,0,0,0.1); border-color: rgba(0,0,0,0.1); }
+body.lm .tsth { color: #fff; }
 
 .nav-dl-btn { background: var(--primary, #38bdf8); color: #000; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 800; transition: 0.2s; box-shadow: 0 0 15px var(--primary-glow, rgba(56, 189, 248, 0.4)); font-size: 0.9rem;}
 .nav-dl-btn:hover { background: #fff; box-shadow: 0 0 25px var(--primary, #38bdf8); }

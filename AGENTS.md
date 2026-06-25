@@ -39,8 +39,8 @@ These files are critical and should not be modified without explicit user approv
 
 | Category | Files |
 |----------|-------|
-| **Pages** | `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `download.html`, `sneh-asha.html` |
-| **Apps** | `solar.html`, `ati.html`, `ati-demo.html`, `gesture.html`, `rpg.html` |
+| **Pages** | `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `download.html`, `sneh-asha.html`, `Career.html`, `Database_Logic.html` |
+| **Apps** | `solar.html`, `ati.html`, `ati-demo.html`, `gesture.html`, `rpg.html`, `Traffic/Academy.html` |
 | **QR System** | `qr.html`, `qr-editor.html` |
 | **Shared UI** | `col-ui.js`, `col-ui.css` |
 | **Assets** | Any `.webp`, `.png`, `.glb` files |
