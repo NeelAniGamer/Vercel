@@ -472,15 +472,15 @@ class Game {
           if (bldgKeys.length > 0 && type !== 'school') {
              const key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
              g = window.PRELOADED_MODELS[key].clone();
-             const s = 4.0; // scale based on tile size
+             const s = 8.0; // scale based on tile size
              g.scale.set(s, s, s);
              g.traverse(c => { if(c.isMesh) { c.castShadow = false; c.receiveShadow = true; c.frustumCulled = true; }});
           } else {
              g = new THREE.Group();
              const mat = bMats[Math.floor(Math.random() * bMats.length)];
-             const bh = 8 + Math.random() * 8;
-             const bw = 5 + Math.random() * 5;
-             const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 7), mat);
+             const bh = 16 + Math.random() * 16;
+             const bw = 10 + Math.random() * 10;
+             const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 14), mat);
              bMesh.position.y = bh / 2;
              g.add(bMesh);
           }

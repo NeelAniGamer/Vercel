@@ -128,9 +128,19 @@ if (!window.closeMo) {
         if (window.colUser) return;
         google.accounts.id.initialize({
             client_id: "500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com",
-            callback: window.handleGoogleOneTap
+            callback: window.handleGoogleOneTap,
+            use_fedcm_for_prompt: true,
+            itp_support: true
         });
-        google.accounts.id.prompt();
+        google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed()) {
+                console.log("One tap not displayed: ", notification.getNotDisplayedReason());
+            } else if (notification.isSkippedMoment()) {
+                console.log("One tap skipped: ", notification.getSkippedReason());
+            } else if (notification.isDismissedMoment()) {
+                console.log("One tap dismissed: ", notification.getDismissedReason());
+            }
+        });
         
         // Re-render button if modal is open
         var container = document.getElementById('gSignInBtnContainer');
@@ -189,31 +199,32 @@ if (!window.closeMo) {
         const style = document.createElement('style');
         style.id = 'col-auth-styles';
         style.innerHTML = `
-            .col-auth-mo { position: fixed; inset: 0; background: rgba(7, 10, 20, 0.85); backdrop-filter: blur(10px); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+            .col-auth-mo { position: fixed; inset: 0; background: rgba(4, 7, 14, 0.75); backdrop-filter: blur(16px); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s cubic-bezier(.16,1,.3,1); }
             .col-auth-mo.open { opacity: 1; pointer-events: auto; }
-            .col-auth-md { background: var(--panel, #111827); border: 1px solid var(--line, rgba(255,255,255,.08)); border-radius: 24px; width: 90%; max-width: 400px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s cubic-bezier(.16,1,.3,1); box-shadow: 0 40px 100px rgba(0,0,0,0.8); color: var(--ink, #E8E3D8); font-family: var(--sans, 'Inter'), sans-serif;}
+            .col-auth-md { background: linear-gradient(150deg, rgba(17, 24, 39, 0.95), rgba(7, 10, 20, 0.98)); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 28px; width: 90%; max-width: 420px; overflow: hidden; transform: translateY(40px) scale(0.95); transition: 0.5s cubic-bezier(.16,1,.3,1); box-shadow: 0 40px 100px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.08); color: var(--ink, #E8E3D8); font-family: var(--sans, 'Inter'), sans-serif;}
             .col-auth-mo.open .col-auth-md { transform: translateY(0) scale(1); }
-            .col-auth-hd { padding: 30px; border-bottom: 1px solid var(--line, rgba(255,255,255,.08)); background: var(--void2, #0C1224); text-align: center; position: relative;}
-            .col-auth-close { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: var(--dim, #8891AA); font-size: 1.5rem; cursor: pointer; transition: 0.2s;}
-            .col-auth-close:hover { color: var(--ink, #E8E3D8); }
-            .col-auth-hd h2 { font-size: 2.2rem; font-weight: 400; font-family: var(--serif, 'Instrument Serif'); font-style: italic; margin:0; color: var(--signal, #F2B84B); letter-spacing: 1px;}
-            .col-auth-hd p { font-size: 0.9rem; color: var(--dim, #8891AA); margin-top: 5px; }
+            .col-auth-hd { padding: 40px 30px 25px; border-bottom: 1px solid rgba(255,255,255,0.06); background: transparent; text-align: center; position: relative;}
+            .col-auth-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--dim, #8891AA); font-size: 1.2rem; cursor: pointer; transition: 0.3s; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;}
+            .col-auth-close:hover { color: var(--ink, #E8E3D8); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: scale(1.05); }
+            .col-auth-hd h2 { font-size: 2.6rem; font-weight: 400; font-family: var(--serif, 'Instrument Serif'); font-style: italic; margin:0; color: var(--signal, #F2B84B); letter-spacing: 0.5px;}
+            .col-auth-hd p { font-size: 0.95rem; color: var(--dim, #8891AA); margin-top: 8px; }
             .col-auth-body { padding: 30px; }
-            .col-auth-inp { width: 100%; padding: 12px 15px; border: 1px solid var(--lineb, rgba(255,255,255,.16)); border-radius: 12px; font-size: 0.95rem; outline: none; margin-bottom: 15px; transition: 0.3s; color: var(--ink, #E8E3D8); background: var(--void, #070A14); font-family: var(--sans, 'Inter'), sans-serif;}
-            .col-auth-inp:focus { border-color: var(--signal, #F2B84B); box-shadow: 0 0 0 3px rgba(242,184,75,0.2); }
-            .col-auth-btn { width: 100%; padding: 12px; background: var(--signal, #F2B84B); border: none; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; color: var(--void, #070A14); transition: 0.3s cubic-bezier(.16,1,.3,1); font-family: var(--sans, 'Inter'), sans-serif;}
-            .col-auth-btn:hover { background: #fff; box-shadow: 0 10px 20px rgba(242,184,75,0.3); transform: translateY(-2px);}
-            .col-auth-danger { width: 100%; padding: 12px; background: transparent; border: 1px solid #ef4444; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; color: #ef4444; transition: 0.3s; font-family: var(--sans, 'Inter'), sans-serif;}
-            .col-auth-danger:hover { background: rgba(239, 68, 68, 0.1); }
-            .col-auth-gbtn { width: 100%; padding: 12px; background: #ffffff; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; transition: 0.3s cubic-bezier(.16,1,.3,1); font-family: var(--sans, 'Inter'), sans-serif;}
-            .col-auth-gbtn:hover { background: #f1f5f9; transform: translateY(-2px); }
-            .col-auth-div { display: flex; align-items: center; text-align: center; color: var(--dim, #8891AA); font-size: 0.8rem; margin-bottom: 20px; font-weight: 600; font-family: var(--mono, 'Space Mono'), monospace; letter-spacing: 1px;}
-            .col-auth-div::before, .col-auth-div::after { content: ''; flex: 1; border-bottom: 1px solid var(--line, rgba(255,255,255,.08)); }
-            .col-auth-div:not(:empty)::before { margin-right: .5em; }
-            .col-auth-div:not(:empty)::after { margin-left: .5em; }
-            .col-auth-tab-group { display: flex; gap: 10px; margin-bottom: 20px;}
-            .col-auth-tab { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: var(--dim, #8891AA); cursor: pointer; transition: 0.2s;}
-            .col-auth-tab.active { background: rgba(242,184,75,0.1); color: var(--signal, #F2B84B); }
+            .col-auth-inp { width: 100%; padding: 14px 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; font-size: 1rem; outline: none; margin-bottom: 16px; transition: 0.3s; color: var(--ink, #E8E3D8); background: rgba(255, 255, 255, 0.03); font-family: var(--sans, 'Inter'), sans-serif;}
+            .col-auth-inp:focus { border-color: var(--signal, #F2B84B); box-shadow: 0 0 0 4px rgba(242,184,75,0.15), inset 0 0 0 1px rgba(242,184,75,0.2); background: rgba(255, 255, 255, 0.05); }
+            .col-auth-btn { width: 100%; padding: 14px; background: var(--signal, #F2B84B); border: none; border-radius: 14px; font-weight: 700; font-size: 1rem; letter-spacing: 0.5px; cursor: pointer; color: var(--void, #070A14); transition: 0.3s cubic-bezier(.16,1,.3,1); font-family: var(--sans, 'Inter'), sans-serif;}
+            .col-auth-btn:hover { background: #fff; box-shadow: 0 12px 24px rgba(242,184,75,0.4); transform: translateY(-2px);}
+            .col-auth-danger { width: 100%; padding: 14px; background: transparent; border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; color: #ef4444; transition: 0.3s; font-family: var(--sans, 'Inter'), sans-serif;}
+            .col-auth-danger:hover { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; }
+            .col-auth-gbtn { width: 100%; padding: 14px; background: #ffffff; border: none; border-radius: 14px; font-weight: 600; font-size: 1rem; cursor: pointer; color: #0f1419; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 24px; transition: 0.3s cubic-bezier(.16,1,.3,1); box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-family: var(--sans, 'Inter'), sans-serif;}
+            .col-auth-gbtn:hover { background: #f1f5f9; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
+            .col-auth-div { display: flex; align-items: center; text-align: center; color: var(--dim, #8891AA); font-size: 0.8rem; margin-bottom: 24px; font-weight: 600; font-family: var(--mono, 'Space Mono'), monospace; letter-spacing: 2px;}
+            .col-auth-div::before, .col-auth-div::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.06); }
+            .col-auth-div:not(:empty)::before { margin-right: 1em; }
+            .col-auth-div:not(:empty)::after { margin-left: 1em; }
+            .col-auth-tab-group { display: flex; gap: 6px; margin-bottom: 24px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 6px;}
+            .col-auth-tab { flex: 1; text-align: center; padding: 10px; border-radius: 12px; font-size: 0.9rem; font-weight: 600; color: var(--dim, #8891AA); cursor: pointer; transition: 0.3s;}
+            .col-auth-tab:hover:not(.active) { color: var(--ink, #E8E3D8); background: rgba(255,255,255,0.05); }
+            .col-auth-tab.active { background: rgba(242,184,75,0.15); color: var(--signal, #F2B84B); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
             
             /* Override existing nav profile logic for global injection */
             .nav-login-btn { display: flex; align-items: center; gap: 8px; background: rgba(242,184,75,0.1); color: var(--signal, #F2B84B); border: 1px solid var(--signal, #F2B84B); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; text-decoration:none; }
