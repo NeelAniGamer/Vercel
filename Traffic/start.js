@@ -29,6 +29,7 @@ let game = null;
 
       const loader = new THREE.GLTFLoader();
       const basePath = 'Models/kenney_car-kit/Models/GLB format/';
+      const filesToLoad = [
         // Core
         { key: 'car', file: basePath + 'sedan.glb' },
         { key: 'taxi', file: basePath + 'taxi.glb' },
