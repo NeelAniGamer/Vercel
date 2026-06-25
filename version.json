@@ -1,0 +1,6 @@
+{
+  "versionCode": 3,
+  "versionName": "1.1",
+  "apkUrl": "https://advancedlogiclabs.dpdns.org/COL.apk",
+  "releaseNotes": "UI fixes, in-app updater, and Google Login support."
+}
