@@ -8,9 +8,7 @@
     <title>Privacy Policy | Class Of Learners</title>
     <link rel="icon" type="image/webp" href="icon.webp">
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/privacy" />
-    <script>
-/* --- OLD 3D SCENE (KEPT FOR FALLBACK) ---
-(function(){try{var c=localStorage.getItem('col_admin_config');if(c){var cfg=JSON.parse(c),p=window.location.pathname.split('/').pop()||'index.html',s=cfg.pages[p]||'200';if(s==='503'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>');window.stop();}if(s==='404'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="home.html" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>');window.stop();}}}catch(e){}})()</script>
+    <script>(function(){try{var c=localStorage.getItem('col_admin_config');if(c){var cfg=JSON.parse(c),p=window.location.pathname.split('/').pop()||'index.html',s=cfg.pages[p]||'200';if(s==='503'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>');window.stop();}if(s==='404'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="home.html" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>');window.stop();}}}catch(e){}})()</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -57,7 +55,7 @@
     .nav-user-avatar{width:28px;height:28px;border-radius:50%;background:var(--em);color:#06140e;display:flex;justify-content:center;align-items:center;font-weight:800;font-size:.8rem;overflow:hidden}.nun{font-size:.82rem;font-weight:700}
     .mmb{display:none;background:none;border:none;cursor:pointer;padding:4px}.mmb svg{width:22px;height:22px;stroke:var(--ink)}
 
-    / * Hero * /
+    /* Hero */
     .col-hero{position:relative;width:100%;min-height:90vh;display:flex;align-items:center;overflow:hidden}
     #bgCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity 1.8s var(--ease)}#bgCanvas.v{opacity:1}
     .hvig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 65% 90% at 50% 50%,transparent 0%,var(--void) 90%);transition:background .5s;z-index:1}
@@ -87,13 +85,13 @@
     .agreement-section strong{color:var(--ink)}
     .agreement-section code{font-family:var(--mono);font-size:.85rem;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.05);color:var(--ion)}
     
-    / * Footer * /
+    /* Footer */
     .sf{border-top:1px solid var(--line);background:rgba(255,255,255,.012);backdrop-filter:blur(8px);padding:48px 52px 36px;transition:border-color .5s,background .5s;position:relative;z-index:2}
     .fi{max-width:1360px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px}
     .fb{font-family:var(--mono);font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dim)}.fb span{color:var(--signal)}
     .fl{display:flex;gap:26px;flex-wrap:wrap}.fl a{color:var(--dim);font-size:.88rem;font-weight:500;transition:color .25s}.fl a:hover{color:var(--ink)}.fc{color:var(--dim);font-size:.82rem}
 
-    / * Auth Modal * /
+    /* Auth Modal */
     .mo{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.82);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}.mo.open{opacity:1;pointer-events:auto}
     .md{background:var(--panel);border:1px solid var(--lineb);border-radius:24px;width:90%;max-width:440px;overflow:hidden;transform:translateY(26px) scale(.96);transition:transform .4s var(--ease);box-shadow:0 40px 100px rgba(0,0,0,.75);color:var(--ink)}.mo.open .md{transform:translateY(0) scale(1)}
     .mhd{padding:30px;border-bottom:1px solid var(--line);text-align:center}.mhd h2{font-family:var(--serif);font-size:1.75rem;font-weight:400}.mhd p{font-size:.9rem;color:var(--dim);margin-top:6px}.mbd{padding:30px}
@@ -241,7 +239,6 @@
 <div class="toast" id="toast"></div>
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
     window.addEventListener('load',function(){setTimeout(function(){var l=document.getElementById('loader');if(l)l.classList.add('gone');},1300);});
     var navEl=document.getElementById('topNav');window.addEventListener('scroll',function(){navEl.classList.toggle('s',scrollY>60);},{passive:true});
@@ -313,87 +310,13 @@
             renderer.render(scene, camera);
         }
         animate();
-        requestAnimationFrame(function(){canvas.classList.add('v');});
-    })();
-
-*/
-
-    // --- NEW THREE.JS 3D SHIELD THEME ---
-    (function(){
-        var canvas = document.getElementById('bgCanvas') || document.getElementById('orrery') || document.getElementById('cosmos');
-        if(!canvas || typeof THREE === 'undefined') return;
-        var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance'});
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 1000);
-        camera.position.z = 100;
-
-        var ambient = new THREE.AmbientLight(0xffffff, 0.2);
-        scene.add(ambient);
-        var dirLight = new THREE.DirectionalLight(0x34D399, 1);
-        dirLight.position.set(20, 20, 50);
-        scene.add(dirLight);
-        var dirLight2 = new THREE.DirectionalLight(0x5ED4F5, 0.8);
-        dirLight2.position.set(-20, -20, 50);
-        scene.add(dirLight2);
-
-        var shieldShape = new THREE.Shape();
-        shieldShape.moveTo(0, 20);
-        shieldShape.quadraticCurveTo(20, 20, 25, 0);
-        shieldShape.quadraticCurveTo(25, -20, 0, -35);
-        shieldShape.quadraticCurveTo(-25, -20, -25, 0);
-        shieldShape.quadraticCurveTo(-20, 20, 0, 20);
-
-        var extrudeSettings = { depth: 4, bevelEnabled: true, bevelSegments: 3, steps: 2, bevelSize: 1, bevelThickness: 1 };
-        var geometry = new THREE.ExtrudeGeometry(shieldShape, extrudeSettings);
-        geometry.center();
-
-        var material = new THREE.MeshPhysicalMaterial({
-            color: 0x070A14,
-            emissive: 0x002211,
-            metalness: 0.9,
-            roughness: 0.1,
-            transparent: true,
-            opacity: 0.85,
-            wireframe: false
+        
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        var shield = new THREE.Mesh(geometry, material);
-        scene.add(shield);
-
-        var wireMaterial = new THREE.LineBasicMaterial({ color: 0x34D399, transparent: true, opacity: 0.4 });
-        var wireframe = new THREE.LineSegments(new THREE.EdgesGeometry(geometry), wireMaterial);
-        shield.add(wireframe);
-
-        var lockGroup = new THREE.Group();
-        var circle = new THREE.Mesh(new THREE.TorusGeometry(3, 1, 16, 32), new THREE.MeshBasicMaterial({color: 0x5ED4F5}));
-        circle.position.y = 4;
-        lockGroup.add(circle);
-        var body = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 3), new THREE.MeshBasicMaterial({color: 0x5ED4F5}));
-        body.position.y = -2;
-        lockGroup.add(body);
-        shield.add(lockGroup);
-
-        var mx = 0, my = 0;
-        document.addEventListener('mousemove', function(e) {
-            mx = (e.clientX / window.innerWidth) * 2 - 1;
-            my = -(e.clientY / window.innerHeight) * 2 + 1;
-        });
-
-        var clock = new THREE.Clock();
-        function animate() {
-            requestAnimationFrame(animate);
-            var t = clock.getElapsedTime();
-            shield.rotation.y = Math.sin(t * 0.5) * 0.3 + mx * 0.5;
-            shield.rotation.x = Math.cos(t * 0.3) * 0.1 - my * 0.5;
-            shield.position.y = Math.sin(t) * 2;
-            lockGroup.rotation.y = Math.sin(t * 2) * 0.2;
-            renderer.render(scene, camera);
-        }
-        animate();
-        requestAnimationFrame(function(){canvas.classList.add('v');});
     })();
-    </script>
+</script>
 </body>
 </html>

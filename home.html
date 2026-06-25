@@ -14,9 +14,7 @@
   <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/" />
   <title>Class Of Learners | Studio Hub</title>
   <link rel="icon" type="image/webp" href="icon.webp">
-  <script>
-/* --- OLD 3D SCENE (KEPT FOR FALLBACK) ---
-(function(){try{var c=localStorage.getItem('col_admin_config');if(c){var cfg=JSON.parse(c),p=window.location.pathname.split('/').pop()||'index.html',s=cfg.pages[p]||'200';if(s==='503'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>');window.stop();}if(s==='404'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="index.html" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>');window.stop();}}}catch(e){}})()</script>
+  <script>(function(){try{var c=localStorage.getItem('col_admin_config');if(c){var cfg=JSON.parse(c),p=window.location.pathname.split('/').pop()||'index.html',s=cfg.pages[p]||'200';if(s==='503'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>');window.stop();}if(s==='404'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="index.html" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>');window.stop();}}}catch(e){}})()</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -78,13 +76,13 @@
   @keyframes sf{0%{top:-100%}60%{top:100%}100%{top:100%}}
   .hst{position:absolute;right:52px;bottom:46px;z-index:2;font-family:var(--mono);font-size:.7rem;color:var(--dim);text-align:right;line-height:2;letter-spacing:.05em;text-transform:uppercase;opacity:0;animation:fi 1s var(--ease) 2.1s forwards}.hst b{color:var(--ion);font-weight:400}
   @keyframes fi{to{opacity:1}}
-  / * Node Tooltip * /
+  /* Node Tooltip */
   #ntip{position:fixed;pointer-events:none;z-index:500;display:none;transition:opacity .15s}
   #ntip-inner{display:flex;align-items:center;gap:9px;background:rgba(5,8,18,.92);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:9px 15px;backdrop-filter:blur(12px)}
   #ntip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .2s}
   #ntip-name{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:#E8E3D8;white-space:nowrap}
   
-  / * Reveal animation * /
+  /* Reveal animation */
   .rv{opacity:0;transform:translateY(36px);transition:opacity .8s var(--ease),transform .8s var(--ease)}.rv.vis{opacity:1;transform:translateY(0)}
   .vp-section{max-width:1360px;margin:0 auto;padding:60px 52px 20px;}
   .vp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
@@ -235,7 +233,7 @@
 </section>
 
 <style id="edu-styles">
-  / * Career (Briefcase & Network) * /
+  /* Career (Briefcase & Network) */
   .c-bg { width:100%; height:100%; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#040710; }
   .c-glow { position:absolute; width:150px; height:150px; background:radial-gradient(circle, rgba(129,140,248,0.4) 0%, transparent 70%); z-index:1; animation: c-pulse 3s ease-in-out infinite alternate; }
   @keyframes c-pulse { 0% { transform: scale(1); opacity:0.6; } 100% { transform: scale(1.3); opacity:1; } }
@@ -245,7 +243,7 @@
   .pc:hover .c-icon-wrap { transform: rotate(45deg) scale(1.15); box-shadow: 0 0 30px rgba(129,140,248,0.7); }
   .c-svg { width: 36px; height: 36px; filter: drop-shadow(0 0 8px rgba(129,140,248,0.9)); transform: rotate(-45deg); color: #818cf8; }
 
-  / * Database Logic (Server Stack & Data Streams) * /
+  /* Database Logic (Server Stack & Data Streams) */
   .db-bg { width:100%; height:100%; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; background: #020a08; }
   .db-stack { display:flex; flex-direction:column; gap:8px; z-index:3; perspective: 500px; transform: rotateX(20deg); transition: transform 0.4s var(--ease); }
   .pc:hover .db-stack { transform: rotateX(20deg) scale(1.1) translateY(-10px); }
@@ -266,7 +264,7 @@
   .db-glow { position:absolute; width:120px; height:120px; background: radial-gradient(circle, rgba(0,255,204,0.3) 0%, transparent 70%); z-index:1; filter: blur(20px); animation: pulse-glow 4s infinite alternate; }
   @keyframes pulse-glow { 0% { opacity: 0.5; transform:scale(0.8); } 100% { opacity: 1; transform:scale(1.2); } }
 
-  / * Traffic (Road & Signal) * /
+  /* Traffic (Road & Signal) */
   .tr-bg { width:100%; height:100%; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; background: #080502; perspective: 600px; }
   .tr-glow { position:absolute; width: 160px; height: 160px; background: radial-gradient(circle, rgba(255,204,0,0.2) 0%, transparent 70%); z-index:1; animation: pulse-glow 3s infinite alternate; }
   .tr-streaks { position:absolute; inset:0; z-index:2; transform: rotateX(60deg); transform-origin: center; display:flex; justify-content:center; gap: 40px; }
@@ -356,7 +354,6 @@
 <div class="toast" id="toast"></div>
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 // ============= STUDIO UNIVERSE — Multi-Project 3D Background =============
 (function(){
@@ -415,7 +412,12 @@
             renderer.render(scene, camera);
         }
         animate();
-        requestAnimationFrame(function(){canvas.classList.add('v');});
+        
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     })();
 
 // ============= CURSOR HOVER EFFECTS =============
@@ -446,90 +448,7 @@ function toggleTheme(el){var tl=document.getElementById('tLabel');if(el.checked)
   var rvIo=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('vis');rvIo.unobserve(entry.target);}});},{threshold:.08});
   isrv.forEach(function(el){rvIo.observe(el);});
 })();
-
-*/
-
-    // --- NEW THREE.JS 3D WEB PANELS THEME ---
-    (function(){
-        var canvas = document.getElementById('bgCanvas') || document.getElementById('orrery') || document.getElementById('cosmos');
-        if(!canvas || typeof THREE === 'undefined') return;
-        var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance'});
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-        camera.position.z = 120;
-
-        var ambient = new THREE.AmbientLight(0xffffff, 0.4);
-        scene.add(ambient);
-        
-        var panelGroup = new THREE.Group();
-        scene.add(panelGroup);
-
-        var colors = [0x5ED4F5, 0x34D399, 0xF2B84B, 0xB89BFF];
-        var panels = [];
-
-        for(let i=0; i<6; i++) {
-            var w = 30 + Math.random()*20;
-            var h = 20 + Math.random()*20;
-            var geo = new THREE.PlaneGeometry(w, h, 4, 4);
-            var mat = new THREE.MeshBasicMaterial({ color: 0x070A14, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
-            var mesh = new THREE.Mesh(geo, mat);
-            
-            var wire = new THREE.LineSegments(
-                new THREE.EdgesGeometry(geo),
-                new THREE.LineBasicMaterial({color: colors[i%colors.length], transparent: true, opacity: 0.6})
-            );
-            mesh.add(wire);
-
-            mesh.position.set((Math.random()-0.5)*150, (Math.random()-0.5)*100, (Math.random()-0.5)*80);
-            mesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
-            
-            mesh.userData = {
-                rx: (Math.random()-0.5)*0.01,
-                ry: (Math.random()-0.5)*0.01,
-                rz: (Math.random()-0.5)*0.01
-            };
-            panels.push(mesh);
-            panelGroup.add(mesh);
-        }
-
-        var lineGeo = new THREE.BufferGeometry();
-        var linePos = new Float32Array(panels.length * 3 * 2);
-        var lineMat = new THREE.LineBasicMaterial({color: 0x34D399, transparent: true, opacity: 0.2});
-        var connections = new THREE.LineSegments(lineGeo, lineMat);
-        scene.add(connections);
-
-        var mx = 0, my = 0;
-        document.addEventListener('mousemove', function(e) {
-            mx = (e.clientX / window.innerWidth) * 2 - 1;
-            my = -(e.clientY / window.innerHeight) * 2 + 1;
-        });
-
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            panelGroup.rotation.y += (mx * 0.5 - panelGroup.rotation.y) * 0.05;
-            panelGroup.rotation.x += (-my * 0.5 - panelGroup.rotation.x) * 0.05;
-
-            var posArray = [];
-            for(let i=0; i<panels.length; i++) {
-                panels[i].rotation.x += panels[i].userData.rx;
-                panels[i].rotation.y += panels[i].userData.ry;
-                panels[i].rotation.z += panels[i].userData.rz;
-                
-                posArray.push(panels[i].position.x, panels[i].position.y, panels[i].position.z);
-                let next = (i+1)%panels.length;
-                posArray.push(panels[next].position.x, panels[next].position.y, panels[next].position.z);
-            }
-            connections.geometry.setAttribute('position', new THREE.Float32BufferAttribute(posArray, 3));
-
-            renderer.render(scene, camera);
-        }
-        animate();
-        requestAnimationFrame(function(){canvas.classList.add('v');});
-    })();
-    </script>
+</script>
 
 </body>
 </html>
