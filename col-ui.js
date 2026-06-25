@@ -66,3 +66,44 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+
+// 4. Mobile App Download Popup
+try {
+    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    var isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent);
+    var hasPrompted = sessionStorage.getItem('col_app_prompted');
+    
+    if (isMobile && !isWebView && !hasPrompted) {
+        sessionStorage.setItem('col_app_prompted', 'true');
+        
+        var popup = document.createElement('div');
+        popup.style.position = 'fixed';
+        popup.style.bottom = '20px';
+        popup.style.left = '20px';
+        popup.style.right = '20px';
+        popup.style.backgroundColor = 'var(--panel, #111827)';
+        popup.style.color = 'var(--ink, #E8E3D8)';
+        popup.style.padding = '15px 20px';
+        popup.style.borderRadius = '12px';
+        popup.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
+        popup.style.zIndex = '9999';
+        popup.style.display = 'flex';
+        popup.style.flexDirection = 'column';
+        popup.style.gap = '10px';
+        popup.style.border = '1px solid var(--line, rgba(255,255,255,0.08))';
+        popup.style.fontFamily = 'var(--sans, sans-serif)';
+        
+        popup.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+            '<div style="font-weight:bold; font-size:1.1rem; color:var(--signal, #F2B84B);">Get the App</div>' +
+            '<button id="closeAppPopup" style="background:none; border:none; color:var(--dim, #8891AA); font-size:1.4rem; cursor:pointer; padding:0; line-height:1;">&times;</button>' +
+            '</div>' +
+            '<div style="font-size:0.9rem; color:var(--dim, #8891AA); line-height:1.4;">Experience Class Of Learners natively on your mobile device for better performance.</div>' +
+            '<a href="/COL.apk" download style="display:block; text-align:center; background:var(--signal, #F2B84B); color:#070A14; text-decoration:none; padding:12px; border-radius:8px; font-weight:bold; font-size:0.95rem; margin-top:5px; transition: opacity 0.2s;">Download Android APK</a>';
+        
+        document.body.appendChild(popup);
+        
+        document.getElementById('closeAppPopup').addEventListener('click', function() {
+            popup.remove();
+        });
+    }
+} catch(e) {}

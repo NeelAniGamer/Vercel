@@ -24,7 +24,13 @@
       --green: #3b8c66;
       --red: #c94f4f;
       --yellow: #d97757;
+      --signal: #d97757;
       --r: 12px;
+    }
+
+    .mobile-dl { display: none !important; }
+    @media(max-width: 768px) {
+      .mobile-dl { display: inline-flex !important; }
     }
 
     * {
@@ -2134,6 +2140,7 @@
           <button class="btn btn-g" onclick="ui.hardReset()" style="font-size:1.1rem;padding:12px 32px;">Reset
             Progress</button>
           <button class="btn btn-s" style="background:var(--red); font-size:1.1rem; padding:12px 32px; color:#fff;" onclick="const p = prompt('Developer Password:'); if(['Neel','Ansh','Sanjana'].includes(p)) { ui.adminUnlock(); } else if(p) { toast('❌ Access Denied', '#ff3b30'); }">🔓 Dev Unlock</button>
+          <button class="btn btn-g mobile-dl" style="border-color:var(--signal); color:var(--signal); font-size:1.1rem; padding:12px 32px;" onclick="window.location.href='../COL.apk'">📱 Download Android App</button>
         </div>
       </div>
     </div>
