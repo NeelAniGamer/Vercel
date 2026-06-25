@@ -7,7 +7,7 @@ function injectLoginModal() {
     const mo = document.createElement('div');
     mo.className = 'col-auth-mo';
     mo.id = 'loginMo';
-    mo.innerHTML = '<div class="col-auth-md"><div class="col-auth-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="col-auth-body"><div id="loggedOutPanel"><button class="col-auth-gbtn" id="gSignInBtn" onclick="typeof gSignIn !== \'undefined\' ? gSignIn() : (window.colDoGoogle ? window.colDoGoogle() : alert(\'Login unavailable\'))"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google</button></div><div id="loggedInPanel" style="display: none;"><label style="display:block; margin-bottom:5px; color:#94a3b8; font-size:0.85rem; text-align:left;">Google Email</label><input class="col-auth-inp" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;"><label style="display:block; margin-bottom:5px; color:#94a3b8; font-size:0.85rem; text-align:left;">Display Username</label><input class="col-auth-inp" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;"><button class="col-auth-btn" style="margin-bottom: 10px;" onclick="updateUsername()">Save Username</button><button class="col-auth-danger" onclick="doLogout()">Disconnect Account</button></div><button class="col-auth-btn" style="margin-top: 10px; background: transparent; color: #94a3b8; border: 1px solid #161d2b;" onclick="closeMo()">Close / Cancel</button></div></div>';
+    mo.innerHTML = '<div class="col-auth-md"><div class="col-auth-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="col-auth-body"><div id="loggedOutPanel"><button class="col-auth-gbtn" id="gSignInBtn" onclick="typeof gSignIn !== \'undefined\' ? gSignIn() : (window.colDoGoogle ? window.colDoGoogle() : alert(\'Login unavailable\'))"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google</button></div><div id="loggedInPanel" style="display: none;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Google Email</label><input class="col-auth-inp" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Display Username</label><input class="col-auth-inp" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;"><button class="col-auth-btn" style="margin-bottom: 10px;" onclick="updateUsername()">Save Username</button><button class="col-auth-danger" onclick="doLogout()">Disconnect Account</button></div><button class="col-auth-btn" style="margin-top: 10px; background: transparent; color: var(--dim, #8891AA); border: 1px solid var(--line, rgba(255,255,255,.08));" onclick="closeMo()">Close / Cancel</button></div></div>';
     document.body.appendChild(mo);
     mo.addEventListener('click', function(e) { if (e.target === this) closeMo(); });
 }
@@ -86,6 +86,40 @@ if (!window.closeMo) {
         dispatchAuthEvent();
     }
 
+    window.handleGoogleOneTap = async (response) => {
+        if (!window.supabaseClient) return;
+        try {
+            const { data, error } = await window.supabaseClient.auth.signInWithIdToken({
+                provider: 'google',
+                token: response.credential,
+            });
+            if (error) throw error;
+        } catch (error) {
+            console.error("One Tap Sign-in error:", error.message);
+        }
+    };
+
+    function initOneTap() {
+        if (window.colUser) return;
+        if (typeof google === 'undefined' || !google.accounts) {
+            const script = document.createElement('script');
+            script.src = "https://accounts.google.com/gsi/client";
+            script.onload = () => setupOneTap();
+            document.head.appendChild(script);
+        } else {
+            setupOneTap();
+        }
+    }
+
+    function setupOneTap() {
+        if (window.colUser) return;
+        google.accounts.id.initialize({
+            client_id: "500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com",
+            callback: window.handleGoogleOneTap
+        });
+        google.accounts.id.prompt();
+    }
+
     let supabaseClient = null;
 
     function initSupabase(url, key) {
@@ -108,6 +142,13 @@ if (!window.closeMo) {
             }
             dispatchAuthEvent();
             updateAuthUI();
+
+            if (!session && !window._oneTapAttempted && (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT')) {
+                window._oneTapAttempted = true;
+                if (event === 'INITIAL_SESSION') {
+                    initOneTap();
+                }
+            }
         });
 
         injectAuthStyles();
@@ -128,38 +169,38 @@ if (!window.closeMo) {
         const style = document.createElement('style');
         style.id = 'col-auth-styles';
         style.innerHTML = `
-            .col-auth-mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+            .col-auth-mo { position: fixed; inset: 0; background: rgba(7, 10, 20, 0.85); backdrop-filter: blur(10px); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
             .col-auth-mo.open { opacity: 1; pointer-events: auto; }
-            .col-auth-md { background: #0f1523; border: 1px solid #161d2b; border-radius: 24px; width: 90%; max-width: 400px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); color: #f8fafc; font-family: 'Inter', sans-serif;}
+            .col-auth-md { background: var(--panel, #111827); border: 1px solid var(--line, rgba(255,255,255,.08)); border-radius: 24px; width: 90%; max-width: 400px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s cubic-bezier(.16,1,.3,1); box-shadow: 0 40px 100px rgba(0,0,0,0.8); color: var(--ink, #E8E3D8); font-family: var(--sans, 'Inter'), sans-serif;}
             .col-auth-mo.open .col-auth-md { transform: translateY(0) scale(1); }
-            .col-auth-hd { padding: 30px; border-bottom: 1px solid #161d2b; background: #0a0d14; text-align: center; position: relative;}
-            .col-auth-close { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; transition: 0.2s;}
-            .col-auth-close:hover { color: #f8fafc; }
-            .col-auth-hd h2 { font-size: 1.5rem; font-weight: 800; margin:0; color: #10b981; letter-spacing: -0.5px;}
-            .col-auth-hd p { font-size: 0.9rem; color: #94a3b8; margin-top: 5px; }
+            .col-auth-hd { padding: 30px; border-bottom: 1px solid var(--line, rgba(255,255,255,.08)); background: var(--void2, #0C1224); text-align: center; position: relative;}
+            .col-auth-close { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: var(--dim, #8891AA); font-size: 1.5rem; cursor: pointer; transition: 0.2s;}
+            .col-auth-close:hover { color: var(--ink, #E8E3D8); }
+            .col-auth-hd h2 { font-size: 2.2rem; font-weight: 400; font-family: var(--serif, 'Instrument Serif'); font-style: italic; margin:0; color: var(--signal, #F2B84B); letter-spacing: 1px;}
+            .col-auth-hd p { font-size: 0.9rem; color: var(--dim, #8891AA); margin-top: 5px; }
             .col-auth-body { padding: 30px; }
-            .col-auth-inp { width: 100%; padding: 12px 15px; border: 1px solid #161d2b; border-radius: 12px; font-size: 0.95rem; outline: none; margin-bottom: 15px; transition: 0.3s; color: #f8fafc; background: #0a0d14; font-family: 'Inter', sans-serif;}
-            .col-auth-inp:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
-            .col-auth-btn { width: 100%; padding: 12px; background: #10b981; border: none; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; color: #000; transition: 0.3s; font-family: 'Inter', sans-serif;}
-            .col-auth-btn:hover { background: #fff; box-shadow: 0 10px 20px rgba(16,185,129,0.4); transform: translateY(-2px);}
-            .col-auth-danger { width: 100%; padding: 12px; background: transparent; border: 1px solid #ef4444; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; color: #ef4444; transition: 0.3s; font-family: 'Inter', sans-serif;}
+            .col-auth-inp { width: 100%; padding: 12px 15px; border: 1px solid var(--lineb, rgba(255,255,255,.16)); border-radius: 12px; font-size: 0.95rem; outline: none; margin-bottom: 15px; transition: 0.3s; color: var(--ink, #E8E3D8); background: var(--void, #070A14); font-family: var(--sans, 'Inter'), sans-serif;}
+            .col-auth-inp:focus { border-color: var(--signal, #F2B84B); box-shadow: 0 0 0 3px rgba(242,184,75,0.2); }
+            .col-auth-btn { width: 100%; padding: 12px; background: var(--signal, #F2B84B); border: none; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; color: var(--void, #070A14); transition: 0.3s cubic-bezier(.16,1,.3,1); font-family: var(--sans, 'Inter'), sans-serif;}
+            .col-auth-btn:hover { background: #fff; box-shadow: 0 10px 20px rgba(242,184,75,0.3); transform: translateY(-2px);}
+            .col-auth-danger { width: 100%; padding: 12px; background: transparent; border: 1px solid #ef4444; border-radius: 12px; font-weight: 800; font-size: 0.95rem; cursor: pointer; color: #ef4444; transition: 0.3s; font-family: var(--sans, 'Inter'), sans-serif;}
             .col-auth-danger:hover { background: rgba(239, 68, 68, 0.1); }
-            .col-auth-gbtn { width: 100%; padding: 12px; background: #ffffff; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; transition: 0.3s; font-family: 'Inter', sans-serif;}
+            .col-auth-gbtn { width: 100%; padding: 12px; background: #ffffff; border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; color: #000; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; transition: 0.3s cubic-bezier(.16,1,.3,1); font-family: var(--sans, 'Inter'), sans-serif;}
             .col-auth-gbtn:hover { background: #f1f5f9; transform: translateY(-2px); }
-            .col-auth-div { display: flex; align-items: center; text-align: center; color: #64748b; font-size: 0.8rem; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
-            .col-auth-div::before, .col-auth-div::after { content: ''; flex: 1; border-bottom: 1px solid #161d2b; }
+            .col-auth-div { display: flex; align-items: center; text-align: center; color: var(--dim, #8891AA); font-size: 0.8rem; margin-bottom: 20px; font-weight: 600; font-family: var(--mono, 'Space Mono'), monospace; letter-spacing: 1px;}
+            .col-auth-div::before, .col-auth-div::after { content: ''; flex: 1; border-bottom: 1px solid var(--line, rgba(255,255,255,.08)); }
             .col-auth-div:not(:empty)::before { margin-right: .5em; }
             .col-auth-div:not(:empty)::after { margin-left: .5em; }
             .col-auth-tab-group { display: flex; gap: 10px; margin-bottom: 20px;}
-            .col-auth-tab { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: #64748b; cursor: pointer; transition: 0.2s;}
-            .col-auth-tab.active { background: rgba(16,185,129,0.1); color: #10b981; }
+            .col-auth-tab { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; color: var(--dim, #8891AA); cursor: pointer; transition: 0.2s;}
+            .col-auth-tab.active { background: rgba(242,184,75,0.1); color: var(--signal, #F2B84B); }
             
             /* Override existing nav profile logic for global injection */
-            .nav-login-btn { display: flex; align-items: center; gap: 8px; background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid #10b981; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; text-decoration:none; }
-            .nav-login-btn:hover { background: #10b981; color: #000; box-shadow: 0 0 20px rgba(16,185,129,0.4); }
-            .nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: transparent; border: 1px solid #161d2b; border-radius: 30px; cursor: pointer; transition: 0.3s; }
-            .nav-user-profile:hover { border-color: #10b981; }
-            .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #10b981; color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
+            .nav-login-btn { display: flex; align-items: center; gap: 8px; background: rgba(242,184,75,0.1); color: var(--signal, #F2B84B); border: 1px solid var(--signal, #F2B84B); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; text-decoration:none; }
+            .nav-login-btn:hover { background: var(--signal, #F2B84B); color: var(--void, #070A14); box-shadow: 0 0 20px rgba(242,184,75,0.4); }
+            .nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: transparent; border: 1px solid var(--lineb, rgba(255,255,255,.16)); border-radius: 30px; cursor: pointer; transition: 0.3s; }
+            .nav-user-profile:hover { border-color: var(--signal, #F2B84B); }
+            .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--signal, #F2B84B); color: var(--void, #070A14); display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
         `;
         document.head.appendChild(style);
     }
@@ -198,11 +239,11 @@ if (!window.closeMo) {
         if (window.colUser) {
             body.innerHTML = `
                 <div style="text-align:center; margin-bottom: 25px;">
-                    <div style="width: 80px; height: 80px; border-radius: 50%; background: #10b981; margin: 0 auto 15px; display: flex; justify-content: center; align-items: center; font-size: 2rem; overflow: hidden; border: 2px solid #10b981;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--signal, #F2B84B); margin: 0 auto 15px; display: flex; justify-content: center; align-items: center; font-size: 2rem; overflow: hidden; border: 2px solid var(--signal, #F2B84B); color: var(--void, #070A14); font-weight: 800;">
                         ${window.colUser.picture ? `<img src="${window.colUser.picture}" style="width:100%; height:100%; object-fit:cover;">` : (window.colUser.name || '?').charAt(0).toUpperCase()}
                     </div>
-                    <h3 style="margin-bottom: 5px; font-size: 1.2rem;">${window.colUser.name}</h3>
-                    <p style="color: #64748b; font-size: 0.9rem;">${window.colUser.email}</p>
+                    <h3 style="margin-bottom: 5px; font-size: 1.2rem; color: var(--ink, #E8E3D8);">${window.colUser.name}</h3>
+                    <p style="color: var(--dim, #8891AA); font-size: 0.9rem;">${window.colUser.email}</p>
                 </div>
                 <button class="col-auth-danger" onclick="colDoLogout()">Disconnect Account</button>
             `;
