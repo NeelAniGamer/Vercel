@@ -382,7 +382,7 @@
             scene.add(modelGroup);
 
             var loader = new THREE.GLTFLoader();
-            loader.load('D', function(gltf) {
+            loader.load('grid.glb', function(gltf) {
                 var model = gltf.scene;
                 
                 model.traverse(function(child) {

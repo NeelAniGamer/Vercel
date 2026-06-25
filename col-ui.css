@@ -85,3 +85,5 @@ body.ch .cr{width:64px;height:64px;border-color:var(--primary,#F2B84B);opacity:.
 
 /* CUSTOM SCROLLBAR */
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:var(--void, #070A14)}::-webkit-scrollbar-thumb{background:var(--lineb, rgba(255,255,255,.16));border-radius:10px;border:3px solid var(--void, #070A14)}::-webkit-scrollbar-thumb:hover{background:var(--signal, #F2B84B)}
+
+@media (max-width: 900px) { .top-nav, .top-nav.s { padding: 14px 20px !important; flex-wrap: nowrap; } .nav-links { gap: 14px; } }
