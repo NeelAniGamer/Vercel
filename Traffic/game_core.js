@@ -32,6 +32,23 @@ class Game {
         window.addEventListener('keydown', e => { this.keys[e.key.toLowerCase()] = true; const gm = { p: 'P', r: 'R', n: 'N', d: 'D', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5' }; if (gm[e.key.toLowerCase()]) this.setGear(gm[e.key.toLowerCase()]); if (e.key === ' ') this._horn(); if (e.key.toLowerCase() === 'b') this._brake(); });
         window.addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
 
+        // Pointer Lock & Mouse Look
+        if (this.renderer && this.renderer.domElement) {
+          this.renderer.domElement.addEventListener('click', () => {
+            if (this.playing && !this.pause) this.renderer.domElement.requestPointerLock();
+          });
+        }
+        document.addEventListener('pointerlockchange', () => {
+          this.isPointerLocked = document.pointerLockElement === this.renderer.domElement;
+        });
+        document.addEventListener('mousemove', (e) => {
+          if (this.isPointerLocked && this.isPedestrian) {
+            this.player.rotation.y -= e.movementX * 0.003;
+            this.camPitch = (this.camPitch || 0) - e.movementY * 0.003;
+            this.camPitch = Math.max(-1.5, Math.min(1.5, this.camPitch));
+          }
+        });
+
         // Mobile Controls Bindings
         const bindTouch = (id, key) => {
           const el = document.getElementById(id);
@@ -315,54 +332,64 @@ class Game {
       _pmesh(mode, vehType) {
         this.isPedestrian = false;
         const vt = vehType || 'car';
-        if (vt === 'pedestrian') {
-          this.isPedestrian = true;
-          this.player = _buildHuman(true);
-          let pStartX = -40 + 7, pStartZ = -80, pRot = 0;
-          if (this.mapCfg && this.mapCfg.route && this.mapCfg.route.length >= 2) {
-            const p1 = this.mapCfg.route[0];
-            const p2 = this.mapCfg.route[1];
-            const dx = p2.x - p1.x;
-            const dz = p2.z - p1.z;
-            const dist = Math.sqrt(dx * dx + dz * dz);
+        
+        let pStartX = -40 + 7, pStartZ = -80, pRot = 0;
+        let vStartX = 5, vStartZ = 0, vRotY = 0;
+
+        if (this.mapCfg && this.mapCfg.route && this.mapCfg.route.length >= 2) {
+          const p1 = this.mapCfg.route[0];
+          const p2 = this.mapCfg.route[1];
+          const dx = p2.x - p1.x;
+          const dz = p2.z - p1.z;
+          const dist = Math.sqrt(dx * dx + dz * dz);
+          if (dist > 0) {
             const nx = dx / dist;
             const nz = dz / dist;
+            vStartX = p1.x - nz * 5;
+            vStartZ = p1.z + nx * 5;
+            vRotY = Math.atan2(nx, nz);
+
             // Sidewalk offset is roughly perpendicular to direction
-            // Perpendicular vector: (-nz, nx)
             pStartX = p1.x + nx * 5 - nz * 7;
             pStartZ = p1.z + nz * 5 + nx * 7;
             pRot = Math.atan2(nx, nz);
           }
+        }
+
+        if (vt === 'pedestrian' && !this.mapCfg.startOutside) {
+          this.isPedestrian = true;
+          this.player = _buildHuman(true);
           this.player.position.set(pStartX, 0, pStartZ);
           this.player.rotation.y = pRot;
           this.scene.add(this.player);
           this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
         } else {
+          // Build the vehicle
           if (vt === 'car' && window.lamboModel) {
-            this.player = window.lamboModel.clone();
+            this.playerVehicle = window.lamboModel.clone();
           } else {
-            this.player = _buildVehicle(vt, 0xffffff);
+            this.playerVehicle = _buildVehicle(vt, 0xffffff);
           }
+          this.playerVehicle.position.set(vStartX, 0, vStartZ);
+          this.playerVehicle.rotation.y = vRotY;
+          this.scene.add(this.playerVehicle);
 
-                    let startX = 5, startZ = 0, rY = 0;
-          if (this.mapCfg && this.mapCfg.route && this.mapCfg.route.length >= 2) {
-            const p1 = this.mapCfg.route[0];
-            const p2 = this.mapCfg.route[1];
-            const dx = p2.x - p1.x;
-            const dz = p2.z - p1.z;
-            const dist = Math.sqrt(dx * dx + dz * dz);
-            if (dist > 0) {
-              const nx = dx / dist;
-              const nz = dz / dist;
-              startX = p1.x - nz * 5;
-              startZ = p1.z + nx * 5;
-              rY = Math.atan2(nx, nz);
-            }
+          if (this.mapCfg.startOutside) {
+            this.isPedestrian = true;
+            this.playerCharacter = _buildHuman(true);
+            this.playerCharacter.position.set(pStartX, 0, pStartZ);
+            this.playerCharacter.rotation.y = pRot;
+            this.scene.add(this.playerCharacter);
+            
+            this.player = this.playerCharacter; // Start as pedestrian
+            this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
+            setTimeout(() => {
+                toast('🎮 Click to aim! WASD to walk, F to enter/exit your car!', '#3498db', 8000);
+            }, 500);
+          } else {
+            this.player = this.playerVehicle; // Start in vehicle
+            this.maxSpd = mode === 'highway' ? 0.85 : 0.60; this.accel = 0.022; this.turn = 0.042; this.fric = mode === 'rain' ? 0.90 : 0.94;
           }
-          this.player.position.set(startX, 0, startZ);
-          this.player.rotation.y = rY;
-          this.scene.add(this.player);
-          this.maxSpd = mode === 'highway' ? 0.85 : 0.60; this.accel = 0.022; this.turn = 0.042; this.fric = mode === 'rain' ? 0.90 : 0.94;
         }
       }
 
@@ -584,27 +611,7 @@ class Game {
 
         // Player vehicle
 
-        // Spawn NPC Pedestrians
-        cfg.roads.forEach(r => {
-          const isV = r.type === 'v';
-          const cx = isV ? r.x : (r.x1 + r.x2) / 2;
-          const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
-          const pedCount = cfg.isPedestrian ? 4 : 1;
-          for (let i = 0; i < pedCount; i++) {
-            const ped = _buildHuman();
-            const side = Math.random() > 0.5 ? 1 : -1;
-            const lDist = RW / 2 + 1.25;
-            const px = isV ? cx + side * lDist : cx + (Math.random() * 60 - 30);
-            const pz = isV ? cz + (Math.random() * 60 - 30) : cz + side * lDist;
-            ped.position.set(px, 0, pz);
-            ped.userData.startZ = isV ? pz : px;
-            ped.userData.isSidewalk = true;
-            ped.userData.isV = isV;
-            if (!isV) ped.rotation.y = Math.PI / 2;
-            this.scene.add(ped);
-            this.peds.push(ped);
-          }
-        });
+        // Dynamic pedestrians handled in _upeds
         this._pmesh(mode, cfg.veh);
         // Build garage at start and end
         if (cfg.hasGarage && cfg.route && cfg.route.length >= 2) {
@@ -994,21 +1001,72 @@ class Game {
 
       }
       _input(dt) {
+        if (this.keys['f'] && !this._fPressed) {
+          this._fPressed = true;
+          if (this.mapCfg && this.mapCfg.startOutside && this.playerVehicle && this.playerCharacter) {
+            if (this.isPedestrian) {
+              const dist = this.player.position.distanceTo(this.playerVehicle.position);
+              if (dist < 6.0) {
+                this.isPedestrian = false;
+                this.scene.remove(this.playerCharacter);
+                this.player = this.playerVehicle;
+                this.maxSpd = this.mode === 'highway' ? 0.85 : 0.60;
+                this.accel = 0.022; this.turn = 0.042; this.fric = this.mode === 'rain' ? 0.90 : 0.94;
+                toast('🚗 Entered Vehicle!', '#00c851');
+              } else {
+                toast('Too far from vehicle.', '#ff9500');
+              }
+            } else {
+              this.isPedestrian = true;
+              this.playerCharacter.position.copy(this.playerVehicle.position);
+              this.playerCharacter.position.x += 2;
+              this.scene.add(this.playerCharacter);
+              this.player = this.playerCharacter;
+              this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
+              this.setGear('N');
+              toast('🚶 Exited Vehicle!', '#00c851');
+            }
+          }
+        }
+        if (!this.keys['f']) this._fPressed = false;
+
         const up = this.keys['arrowup'] || this.keys['w'], dn = this.keys['arrowdown'] || this.keys['s'], lt = this.keys['arrowleft'] || this.keys['a'], rt = this.keys['arrowright'] || this.keys['d'];
         // Per-gear acceleration multipliers 🔄 each gear feels clearly different
         const gAccel = { '1': .45, '2': .72, '3': 1.05, '4': 1.55, '5': 2.20, 'D': 1.10, 'R': .55, 'N': 0, 'P': 0 };
         const mult = gAccel[this.gear] ?? 0;
         const isRev = this.gear === 'R';
         const cap = this.gcap;
+        let overrideMove = false;
+        
         if (this.isPedestrian) {
           const shift = this.keys['shift'] ? 2.2 : 1.0;
           let dx = 0, dz = 0;
-          if (up) { dx -= 1; dz -= 1; } if (dn) { dx += 1; dz += 1; } if (lt) { dx -= 1; dz += 1; } if (rt) { dx += 1; dz -= 1; }
-          if (dx !== 0 || dz !== 0) {
-            this.player.rotation.y = Math.atan2(dx, dz);
-            this.speed = this.maxSpd * shift;
+          
+          if (this.isPointerLocked) {
+            if (up) dz = 1; if (dn) dz = -1;
+            if (lt) dx = 1; if (rt) dx = -1;
+            if (dx !== 0 || dz !== 0) {
+              const yaw = this.player.rotation.y;
+              const moveX = Math.sin(yaw) * dz + Math.sin(yaw + Math.PI/2) * dx;
+              const moveZ = Math.cos(yaw) * dz + Math.cos(yaw + Math.PI/2) * dx;
+              const len = Math.hypot(moveX, moveZ);
+              
+              this.vx += ((moveX / len) * this.maxSpd * shift - this.vx) * 0.6;
+              this.vz += ((moveZ / len) * this.maxSpd * shift - this.vz) * 0.6;
+              this.speed = Math.hypot(this.vx, this.vz);
+            } else {
+              this.vx *= 0.6; this.vz *= 0.6;
+              this.speed = 0;
+            }
+            overrideMove = true;
           } else {
-            this.speed = 0;
+            if (up) { dx -= 1; dz -= 1; } if (dn) { dx += 1; dz += 1; } if (lt) { dx -= 1; dz += 1; } if (rt) { dx += 1; dz -= 1; }
+            if (dx !== 0 || dz !== 0) {
+              this.player.rotation.y = Math.atan2(dx, dz);
+              this.speed = this.maxSpd * shift;
+            } else {
+              this.speed = 0;
+            }
           }
         } else {
           if (up && this.gear !== 'P' && this.gear !== 'N') {
@@ -1020,23 +1078,27 @@ class Game {
           }
           // Clamp to gear cap
           if (isRev) { this.speed = Math.max(this.speed, -cap); } else { this.speed = Math.min(this.speed, cap); }
+          this.speed *= this.fric;
         }
-        this.speed *= this.fric;
-        // Speed-proportional steering 🔄 less turn at high speed for stability
-        if (Math.abs(this.speed) > .01) {
-          const sf = Math.max(0.45, 1 - Math.abs(this.speed) * 0.35);
-          const effTurn = this.turn * sf;
-          let tAmt = 0;
-          if (lt) tAmt = 1;
-          else if (rt) tAmt = -1;
-          else if (window.analogSteering) tAmt = -window.analogSteering;
-          if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * Math.sign(this.speed);
+
+        if (!overrideMove) {
+          // Speed-proportional steering 🔄 less turn at high speed for stability
+          if (Math.abs(this.speed) > .01 && !this.isPedestrian) {
+            const sf = Math.max(0.45, 1 - Math.abs(this.speed) * 0.35);
+            const effTurn = this.turn * sf;
+            let tAmt = 0;
+            if (lt) tAmt = 1;
+            else if (rt) tAmt = -1;
+            else if (window.analogSteering) tAmt = -window.analogSteering;
+            if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * Math.sign(this.speed);
+          }
+          const targetVx = Math.sin(this.player.rotation.y) * this.speed;
+          const targetVz = Math.cos(this.player.rotation.y) * this.speed;
+          const grip = this.mode === 'rain' ? 0.04 : 0.6;
+          this.vx += (targetVx - this.vx) * grip;
+          this.vz += (targetVz - this.vz) * grip;
         }
-        const targetVx = Math.sin(this.player.rotation.y) * this.speed;
-        const targetVz = Math.cos(this.player.rotation.y) * this.speed;
-        const grip = this.mode === 'rain' ? 0.04 : 0.6;
-        this.vx += (targetVx - this.vx) * grip;
-        this.vz += (targetVz - this.vz) * grip;
+        
         this.player.position.x += this.vx; this.player.position.z += this.vz;
         if (this.isPedestrian && Math.abs(this.speed) > 0.02) { const shift = this.keys['shift'] ? 18 : 10; this.player.position.y = Math.abs(Math.sin(this.timer * shift)) * (this.keys['shift'] ? 0.12 : 0.06); }
 
@@ -1204,20 +1266,98 @@ class Game {
         });
       }
       _upeds(dt) {
-        if (!this.peds) return;
+        if (!this.peds) this.peds = [];
+        
+        // Despawn far pedestrians
+        for (let i = this.peds.length - 1; i >= 0; i--) {
+          const p = this.peds[i];
+          if (p.position.distanceTo(this.player.position) > 100) {
+            this.scene.remove(p);
+            this.peds.splice(i, 1);
+          }
+        }
+
+        // Spawn new pedestrians dynamically
+        const maxPeds = (this.mapCfg && this.mapCfg.isPedestrian) ? 15 : 6;
+        if (this.peds.length < maxPeds && Math.random() < 0.05 && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
+          const r = this.mapCfg.roads[Math.floor(Math.random() * this.mapCfg.roads.length)];
+          const isV = r.type === 'v';
+          const rx = isV ? r.x : Math.min(r.x1, r.x2) + Math.random() * Math.abs(r.x2 - r.x1);
+          const rz = isV ? Math.min(r.z1, r.z2) + Math.random() * Math.abs(r.z2 - r.z1) : r.z;
+          
+          const distToPlayer = Math.hypot(rx - this.player.position.x, rz - this.player.position.z);
+          // Spawn just outside the view radius
+          if (distToPlayer > 40 && distToPlayer < 90) {
+            const ped = _buildHuman();
+            const side = Math.random() > 0.5 ? 1 : -1;
+            const lDist = 18 / 2 + 1.25; // Sidewalk distance
+            const bDist = lDist + 6.0;   // Building distance
+            
+            const exiting = Math.random() > 0.5; // Randomly start exiting a building
+            const px = isV ? rx + side * (exiting ? bDist : lDist) : rx;
+            const pz = isV ? rz : rz + side * (exiting ? bDist : lDist);
+            
+            ped.position.set(px, 0, pz);
+            ped.userData = {
+              t: Math.random() * 10,
+              spd: 0.05 + Math.random() * 0.05,
+              isV: isV,
+              dir: Math.random() > 0.5 ? 1 : -1,
+              startZ: isV ? pz : px,
+              roadC: isV ? rx : rz,
+              lLeg: ped.children.find(c => c.name === 'lLeg') || new THREE.Group(),
+              rLeg: ped.children.find(c => c.name === 'rLeg') || new THREE.Group(),
+              state: exiting ? 'exiting' : 'sidewalk',
+              side: side,
+              targetDist: lDist
+            };
+            
+            if (exiting) {
+              if (isV) ped.rotation.y = side > 0 ? -Math.PI/2 : Math.PI/2;
+              else ped.rotation.y = side > 0 ? Math.PI : 0;
+            } else {
+              ped.rotation.y = isV ? (ped.userData.dir > 0 ? 0 : Math.PI) : (ped.userData.dir > 0 ? Math.PI/2 : -Math.PI/2);
+            }
+
+            this.scene.add(ped);
+            this.peds.push(ped);
+          }
+        }
+
         this.peds.forEach(p => {
           p.userData.t += dt * p.userData.spd;
-          if (p.userData.isV) {
-            p.position.z += p.userData.dir * dt * p.userData.spd;
-            if (Math.abs(p.position.z - p.userData.startZ) > 30) { p.userData.dir *= -1; p.rotation.y += Math.PI; }
+          
+          if (p.userData.state === 'exiting') {
+            if (p.userData.isV) {
+              p.position.x += -p.userData.side * dt * p.userData.spd;
+              if (Math.abs(p.position.x - p.userData.roadC) <= p.userData.targetDist) {
+                p.position.x = p.userData.roadC + p.userData.side * p.userData.targetDist;
+                p.userData.state = 'sidewalk';
+                p.rotation.y = p.userData.dir > 0 ? 0 : Math.PI;
+                p.userData.startZ = p.position.z;
+              }
+            } else {
+              p.position.z += -p.userData.side * dt * p.userData.spd;
+              if (Math.abs(p.position.z - p.userData.roadC) <= p.userData.targetDist) {
+                p.position.z = p.userData.roadC + p.userData.side * p.userData.targetDist;
+                p.userData.state = 'sidewalk';
+                p.rotation.y = p.userData.dir > 0 ? Math.PI/2 : -Math.PI/2;
+                p.userData.startZ = p.position.x;
+              }
+            }
           } else {
-            p.position.x += p.userData.dir * dt * p.userData.spd;
-            if (Math.abs(p.position.x - p.userData.startZ) > 30) { p.userData.dir *= -1; p.rotation.y += Math.PI; }
+            if (p.userData.isV) {
+              p.position.z += p.userData.dir * dt * p.userData.spd;
+              if (Math.abs(p.position.z - p.userData.startZ) > 30) { p.userData.dir *= -1; p.rotation.y += Math.PI; }
+            } else {
+              p.position.x += p.userData.dir * dt * p.userData.spd;
+              if (Math.abs(p.position.x - p.userData.startZ) > 30) { p.userData.dir *= -1; p.rotation.y += Math.PI; }
+            }
           }
-          p.userData.lLeg.rotation.x = Math.sin(p.userData.t * 8) * 0.5;
-          p.userData.rLeg.rotation.x = Math.sin(p.userData.t * 8 + Math.PI) * 0.5;
+          
+          if (p.userData.lLeg) p.userData.lLeg.rotation.x = Math.sin(p.userData.t * 8) * 0.5;
+          if (p.userData.rLeg) p.userData.rLeg.rotation.x = Math.sin(p.userData.t * 8 + Math.PI) * 0.5;
 
-          // Crash detection
           if (!this.isPedestrian && this.player.position.distanceTo(p.position) < 2.5) {
             this.speed = 0; this.hp = 0;
             toast('💀 HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
@@ -1268,16 +1408,42 @@ class Game {
         if (this.mode === 'silentzone' && this.ms) this.ms.inSz = this.player.position.z > -60 && this.player.position.z < 20;
       }
       _ucam() {
-        const camDist = 12;
-        const camHeight = 4.5;
-        const rotY = this.player.rotation.y;
-        this._camTarget.set(
-            this.player.position.x - Math.sin(rotY) * camDist, 
-            camHeight, 
-            this.player.position.z - Math.cos(rotY) * camDist
-        );
-        this.camera.position.lerp(this._camTarget, .15); 
-        this.camera.lookAt(this.player.position.x + Math.sin(rotY) * 15, 1.5, this.player.position.z + Math.cos(rotY) * 15);
+        if (this.isPointerLocked) {
+          // First Person Mode
+          const headHeight = this.isPedestrian ? 1.6 : 1.2;
+          // For vehicles, offset slightly forward so we don't clip into the driver seat mesh
+          const forwardOffset = this.isPedestrian ? 0 : 0.5;
+          const rotY = this.player.rotation.y;
+          
+          this.camera.position.set(
+            this.player.position.x + Math.sin(rotY) * forwardOffset, 
+            this.player.position.y + headHeight, 
+            this.player.position.z + Math.cos(rotY) * forwardOffset
+          );
+          
+          const pitch = this.camPitch || 0;
+          const lx = Math.sin(rotY) * Math.cos(pitch);
+          const ly = Math.sin(pitch);
+          const lz = Math.cos(rotY) * Math.cos(pitch);
+          
+          this.camera.lookAt(
+            this.camera.position.x + lx,
+            this.camera.position.y + ly,
+            this.camera.position.z + lz
+          );
+        } else {
+          // Third Person Chase Cam
+          const camDist = 12;
+          const camHeight = 4.5;
+          const rotY = this.player.rotation.y;
+          this._camTarget.set(
+              this.player.position.x - Math.sin(rotY) * camDist, 
+              camHeight, 
+              this.player.position.z - Math.cos(rotY) * camDist
+          );
+          this.camera.position.lerp(this._camTarget, .15); 
+          this.camera.lookAt(this.player.position.x + Math.sin(rotY) * 15, 1.5, this.player.position.z + Math.cos(rotY) * 15);
+        }
       }
       _uhud() {
         const k = Math.round(Math.abs(this.speed) * 100);

@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 1,
   "icon": "\ud83d\udea6",
-  "name": "Traffic Signals",
+  "name": "Pedestrian Courtesy",
   "v": "\ud83d\ude97 Car",
   "col": "#e74c3c",
   "gr": "linear-gradient(135deg,#c0392b,#e74c3c)",
   "tg": "Master Junction Management",
-  "ds": "Navigate intersection signal arrays correctly. Absolute stop lines apply.",
+  "ds": "Yield to pedestrians even when there are no designated crossings. Civic sense dictates safety first.",
   "hps": [
     "Red configuration: Absolute stop priority.",
     "Yellow indicator: Safely decelerate.",
@@ -20,8 +20,8 @@ window.LVS.push({
     "fine": "\u20b9500",
     "off": "Jumping automated signals"
   },
-  "theory": "Automated signal synchronization patterns direct city flow constraints efficiently. [SYSTEM SIGNALS]: Universal logic protocols of traffic lights and signs. [INTERSECTION LOGIC]: Algorithms for navigating 4-way stops and roundabouts.",
-  "pract": "Navigate the Andheri Junction grid. Obey all traffic signals at 8 intersections. Red means stop, green means go.",
+  "theory": "Giving way to pedestrians builds a safer community.",
+  "pract": "Drive carefully and stop whenever you see pedestrians crossing the road.",
   "quiz": [
     {
       "q": "What does an active yellow signal mean?",
@@ -51,5 +51,6 @@ window.LVS.push({
       "a": 0
     }
   ],
-  "mode": "signals"
+  "mode": "civic",
+  "startOutside": true
 });

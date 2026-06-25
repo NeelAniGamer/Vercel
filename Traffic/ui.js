@@ -698,9 +698,13 @@ switch (type) {
     const _buildHuman = (isPlayer = false) => {
       const g = new THREE.Group();
 
-      if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['human']) {
-        const hModel = window.PRELOADED_MODELS['human'].clone();
-        hModel.scale.set(1.5, 1.5, 1.5);
+      const chars = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c'];
+      const charKey = chars[Math.floor(Math.random() * chars.length)];
+      
+      if (window.PRELOADED_MODELS && window.PRELOADED_MODELS[charKey]) {
+        const hModel = window.PRELOADED_MODELS[charKey].clone();
+        const s = isPlayer ? 1.5 : 1.2;
+        hModel.scale.set(s, s, s);
         hModel.position.y = 0;
         
         // Add invisible hitbox for collisions
@@ -718,6 +722,7 @@ switch (type) {
         return g;
       }
 
+      // Fallback
       const skins = [0xe0ac69, 0x8d5524, 0xc68642, 0xf1c27d, 0xffdbac];
       const sColor = isPlayer ? 0xc68642 : skins[Math.floor(Math.random() * skins.length)];
       const shColor = isPlayer ? 0xe74c3c : Math.random() * 0xffffff;

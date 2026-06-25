@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 4,
   "icon": "\ud83d\udcba",
-  "name": "Seat Belt Challenge",
+  "name": "Puddle Etiquette",
   "v": "\ud83d\ude97 Car",
   "col": "#2980b9",
   "gr": "linear-gradient(135deg,#1f618d,#2980b9)",
   "tg": "Cabin Restraint Systems",
-  "ds": "Complete cabin validation routines prior to shifting transmission nodes.",
+  "ds": "Slow down when driving through puddles to avoid splashing pedestrians.",
   "hps": [
     "Seat belts are required for all seating positions.",
     "Buckle logic must engage before vehicle goes into drive.",
@@ -20,8 +20,8 @@ window.LVS.push({
     "fine": "\u20b91,000",
     "off": "Driving without wearing a seat belt"
   },
-  "theory": "Restraint systems prevent structural collision trajectory deviations during deceleration events. [SEATBELT PHYSICS]: Inertia and the prevention of secondary impacts. [AIRBAG DEPLOYMENT]: Explosive deceleration cushioning via accelerometers. [VEHICLE MASS]: How vehicle weight impacts survivability in collisions.",
-  "pract": "Execute pre-drive loop verification sequence: Mirror alignment -> Restraint engagement -> Shift to Drive.",
+  "theory": "Splashing dirty water on pedestrians is highly discourteous.",
+  "pract": "Drive through the rainy street without splashing anyone.",
   "quiz": [
     {
       "q": "When must seat belts be locked?",
@@ -33,5 +33,6 @@ window.LVS.push({
       "a": 1
     }
   ],
-  "mode": "seatbelt"
+  "mode": "civic",
+  "startOutside": true
 });

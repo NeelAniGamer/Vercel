@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 5,
   "icon": "\ud83d\ude8c",
-  "name": "School Bus Safety",
+  "name": "Pedestrian Courtesy",
   "v": "\ud83d\ude8c BEST Bus",
   "col": "#d4ac0d",
   "gr": "linear-gradient(135deg,#b7950b,#d4ac0d)",
   "tg": "School Zone Containment",
-  "ds": "Operate multi-passenger transit units inside restricted school facility boundaries.",
+  "ds": "Yield to pedestrians even when there are no designated crossings. Civic sense dictates safety first.",
   "hps": [
     "School perimeter maximum threshold is strictly set at 30 km/h.",
     "Deploy caution light arrays while embarking passengers.",
@@ -19,8 +19,8 @@ window.LVS.push({
     "fine": "\u20b92,000",
     "off": "Exceeding speed limit near schools"
   },
-  "theory": "School speed zones protect variable pedestrian trajectories from collision energy transfers. [BLIND SPOTS]: Geometric zones of invisibility around large vehicles. [SCHOOL ZONES]: High-density pedestrian protocol and dynamic speed limits.",
-  "pract": "Drive the BEST bus through Parel school zone streets. Stay under 30 km/h near the school.",
+  "theory": "Giving way to pedestrians builds a safer community.",
+  "pract": "Drive carefully and stop whenever you see pedestrians crossing the road.",
   "quiz": [
     {
       "q": "What is the speed limit in school zones?",
@@ -32,5 +32,6 @@ window.LVS.push({
       "a": 1
     }
   ],
-  "mode": "bus"
+  "mode": "civic",
+  "startOutside": true
 });

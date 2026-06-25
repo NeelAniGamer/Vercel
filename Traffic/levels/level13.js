@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 13,
   "icon": "\ud83c\udf77",
-  "name": "Sober Inspection",
+  "name": "Puddle Etiquette",
   "v": "\ud83d\ude97 Car",
   "col": "#7d3c98",
   "gr": "linear-gradient(135deg,#5b2c6f,#7d3c98)",
   "tg": "Chemical Testing Compliance",
-  "ds": "Interface with automated law details at roadside evaluation checkpoints.",
+  "ds": "Slow down when driving through puddles to avoid splashing pedestrians.",
   "hps": [
     "Legal threshold limit for blood-alcohol content is capped at 0.03%.",
     "PUC verification emissions data must undergo updates every 180 days.",
@@ -19,8 +19,8 @@ window.LVS.push({
     "fine": "\u20b910,000",
     "off": "Driving under influence of alcohol or drugs"
   },
-  "theory": "Chemical tracking shows neural processing speed dropping by 30%, which extends stopping distance rules. [CENTRIFUGAL FORCE]: Physics of maintaining traction through sharp curves. [BICYCLE NETWORKS]: Interfacing safely with dedicated bike lanes and sharrows.",
-  "pract": "Submit configuration documents cleanly at unexpected inspection block checkpoints.",
+  "theory": "Splashing dirty water on pedestrians is highly discourteous.",
+  "pract": "Drive through the rainy street without splashing anyone.",
   "quiz": [
     {
       "q": "What is the legal blood alcohol limit in India?",
@@ -32,5 +32,6 @@ window.LVS.push({
       "a": 1
     }
   ],
-  "mode": "checkpoint"
+  "mode": "civic",
+  "startOutside": true
 });

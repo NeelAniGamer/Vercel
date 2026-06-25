@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 6,
   "icon": "\ud83d\ude86",
-  "name": "Railway Crossing",
+  "name": "Respectful Parking",
   "v": "\ud83d\ude97 Car",
   "col": "#8e44ad",
   "gr": "linear-gradient(135deg,#6c3483,#8e44ad)",
   "tg": "Grade Separation Intersections",
-  "ds": "Halt safely at rail infrastructure interfaces. Wait for heavy rail units to clear.",
+  "ds": "Park your vehicle such that it does not obstruct sidewalks or driveways.",
   "hps": [
     "Halt completely behind gate limits when warning lights activate.",
     "Switch transmission to neutral while idling.",
@@ -19,8 +19,8 @@ window.LVS.push({
     "fine": "\u20b91,000",
     "off": "Bypassing active railway crossing safety barriers"
   },
-  "theory": "Heavy rail rolling stock components require extended deceleration paths; you must stop completely. [RAILWAY CROSSINGS]: Extreme mass momentum vectors and crossing logic. [KINETIC TRANSFER]: Energy transfer calculations during pedestrian impact.",
-  "pract": "Approach active track corridors, shift transmission to neutral, and wait for transit clearance.",
+  "theory": "Proper parking ensures pedestrians and other vehicles are not inconvenienced.",
+  "pract": "Find a parking spot that does not block any pathways.",
   "quiz": [
     {
       "q": "What action is mandated when crossing gates begin alignment down?",
@@ -32,5 +32,6 @@ window.LVS.push({
       "a": 1
     }
   ],
-  "mode": "railway"
+  "mode": "civic",
+  "startOutside": true
 });

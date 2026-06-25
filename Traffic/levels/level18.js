@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 18,
   "icon": "\ud83c\udfd9\ufe0f",
-  "name": "Modern Urban Planning",
+  "name": "Puddle Etiquette",
   "v": "\ud83d\udeb6 Pedestrian",
   "col": "#1abc9c",
   "gr": "linear-gradient(135deg,#16a085,#1abc9c)",
   "tg": "Micro-mobility & Calming",
-  "ds": "Navigate complex multi-lane roads utilizing traffic calming infrastructure and pedestrian islands.",
+  "ds": "Slow down when driving through puddles to avoid splashing pedestrians.",
   "hps": [
     "Traffic Calming: Physical infrastructure naturally slows vehicle throughput.",
     "Pedestrian Islands: Wait safely in the middle of multi-lane roads.",
@@ -18,8 +18,8 @@ window.LVS.push({
     "fine": "\u20b91000",
     "off": "Misuse of pedestrian islands or micro-mobility lanes"
   },
-  "theory": "Designing cities for humans instead of vehicle throughput leads to zero-fatality urban landscapes.",
-  "pract": "Cross the 6-lane boulevard safely using the staggered pedestrian islands.",
+  "theory": "Splashing dirty water on pedestrians is highly discourteous.",
+  "pract": "Drive through the rainy street without splashing anyone.",
   "quiz": [
     {
       "q": "What is the primary purpose of traffic calming?",
@@ -31,5 +31,6 @@ window.LVS.push({
       "a": 1
     }
   ],
-  "mode": "pedestrian"
+  "mode": "civic",
+  "startOutside": true
 });

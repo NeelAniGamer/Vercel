@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 2,
   "icon": "\ud83d\udeb6",
-  "name": "Zebra Crossings",
+  "name": "Respectful Parking",
   "v": "\ud83d\udeb6 Pedestrian",
   "col": "#27ae60",
   "gr": "linear-gradient(135deg,#1e8449,#27ae60)",
   "tg": "Pedestrian Right-of-Way",
-  "ds": "Manage street crossings. Yield cleanly to active crosswalk users.",
+  "ds": "Park your vehicle such that it does not obstruct sidewalks or driveways.",
   "hps": [
     "Zebra lanes give absolute pedestrian right of way.",
     "Always yield when pedestrians step off the curb bounds.",
@@ -18,8 +18,8 @@ window.LVS.push({
     "fine": "\u20b9100",
     "off": "Failure to yield at crosswalk markings"
   },
-  "theory": "Pedestrian safety grids reduce vehicle conflict metrics inside highly dense urban zones. [ENTITY PRIORITY]: Navigating crosswalks and defining pedestrian priorities.",
-  "pract": "Walk safely across Dadar Junction. Use zebra crossings and wait for green signals before crossing busy roads.",
+  "theory": "Proper parking ensures pedestrians and other vehicles are not inconvenienced.",
+  "pract": "Find a parking spot that does not block any pathways.",
   "quiz": [
     {
       "q": "Who holds the right of way at zebra crossings?",
@@ -31,5 +31,6 @@ window.LVS.push({
       "a": 1
     }
   ],
-  "mode": "pedestrian"
+  "mode": "civic",
+  "startOutside": true
 });

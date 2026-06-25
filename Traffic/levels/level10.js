@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 10,
   "icon": "\ud83d\udefa",
-  "name": "Lane Discipline",
+  "name": "Respectful Parking",
   "v": "\ud83d\udefa Auto Rickshaw",
   "col": "#d68910",
   "gr": "linear-gradient(135deg,#9a6b0a,#d68910)",
   "tg": "Spatial Lane Allocation",
-  "ds": "Maintain localized structural positioning inside designated highway markers.",
+  "ds": "Park your vehicle such that it does not obstruct sidewalks or driveways.",
   "hps": [
     "Slower commercial transport units must stay positioned inside the leftmost lane limits.",
     "Overtake only using rightward lane parameters.",
@@ -19,8 +19,8 @@ window.LVS.push({
     "fine": "1,000",
     "off": "Improper lane utilization / erratic lane weaving patterns"
   },
-  "theory": "Predictable trajectory mapping reduces lateral collision vectors across heavy high-speed networks. [ROAD MARKINGS]: The syntax of painted lines, arrows, and hash marks. [TAILGATING MATH]: Calculating safe following distances via time offsets.",
-  "pract": "Guide your auto rickshaw along the Eastern Express Highway. Stay in the left lane.",
+  "theory": "Proper parking ensures pedestrians and other vehicles are not inconvenienced.",
+  "pract": "Find a parking spot that does not block any pathways.",
   "quiz": [
     {
       "q": "Which lane is legally designated for slower transport units?",
@@ -32,5 +32,6 @@ window.LVS.push({
       "a": 1
     }
   ],
-  "mode": "lane"
+  "mode": "civic",
+  "startOutside": true
 });

@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 17,
   "icon": "\ud83d\udce1",
-  "name": "Smart Infrastructure",
+  "name": "Ambulance Priority",
   "v": "\ud83d\ude97 Car",
   "col": "#3498db",
   "gr": "linear-gradient(135deg,#2980b9,#3498db)",
   "tg": "IoT Traffic Networking",
-  "ds": "Navigate using real-time dynamic routing and V2X telemetry.",
+  "ds": "Always make way for emergency vehicles immediately.",
   "hps": [
     "IoT Traffic Nets: Follow dynamic routing suggestions to avoid phantom traffic jams.",
     "V2X Communication: Your vehicle receives signal timing data directly from infrastructure.",
@@ -18,8 +18,8 @@ window.LVS.push({
     "fine": "\u20b91500",
     "off": "Ignoring mandatory dynamic routing protocols"
   },
-  "theory": "Real-time traffic management using distributed sensors prevents cascading failure cascades.",
-  "pract": "Follow the dynamically generated GPS route avoiding the congested gridlock zones.",
+  "theory": "Every second counts for an ambulance. Giving way saves lives.",
+  "pract": "Make way for the ambulance approaching from behind.",
   "quiz": [
     {
       "q": "What does V2X stand for?",
@@ -31,5 +31,6 @@ window.LVS.push({
       "a": 0
     }
   ],
-  "mode": "driving"
+  "mode": "civic",
+  "startOutside": true
 });

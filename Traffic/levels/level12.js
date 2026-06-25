@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 12,
   "icon": "\ud83d\udea6",
-  "name": "Overloading Risks",
+  "name": "Ambulance Priority",
   "v": "\ud83c\udfcd\ufe0f Two-Wheeler",
   "col": "#c0392b",
   "gr": "linear-gradient(135deg,#922b21,#c0392b)",
   "tg": "Payload Threshold Boundaries",
-  "ds": "Enforce passenger limit constraints onto two-wheeler asset links strictly.",
+  "ds": "Always make way for emergency vehicles immediately.",
   "hps": [
     "Payload constraints allow maximum 2 occupants per unit.",
     "Excess loading severely limits target braking and deceleration performance metrics.",
@@ -19,8 +19,8 @@ window.LVS.push({
     "fine": "\u20b91,000",
     "off": "Triple riding or exceeding payload index on two-wheelers"
   },
-  "theory": "Excess mass distributions alter the center of gravity coordinates, causing rolling stability failures. [BRAKING PHYSICS]: Relationship between velocity, reaction time, and momentum. [SPEED LIMITS]: The mathematical justification for urban velocity caps.",
-  "pract": "Filter and deny illegal passenger addition requests on your two-wheeler array.",
+  "theory": "Every second counts for an ambulance. Giving way saves lives.",
+  "pract": "Make way for the ambulance approaching from behind.",
   "quiz": [
     {
       "q": "How does payload overloading modify braking performance dimensions?",
@@ -32,5 +32,6 @@ window.LVS.push({
       "a": 1
     }
   ],
-  "mode": "overload"
+  "mode": "civic",
+  "startOutside": true
 });

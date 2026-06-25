@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 7,
   "icon": "\ud83d\udce2",
-  "name": "Device Distractions",
+  "name": "No Honking Zone",
   "v": "\ud83d\ude97 Car",
   "col": "#c0392b",
   "gr": "linear-gradient(135deg,#922b21,#c0392b)",
   "tg": "Attentional Focus Controls",
-  "ds": "Suppress phone notifications while vehicle velocity tracking is live.",
+  "ds": "Avoid unnecessary honking, especially near residential areas, schools, and hospitals.",
   "hps": [
     "Handheld operations are fully illegal during target navigation.",
     "Pull off-road to safe parking zones before answering communications data.",
@@ -19,8 +19,8 @@ window.LVS.push({
     "fine": "\u20b91,000",
     "off": "Operating motor vehicle while using handheld communication arrays"
   },
-  "theory": "Attentional load shifting to mobile devices degrades real-time visual tracking reaction matrices. [DISTRACTED DRIVING]: The catastrophic effect of task-switching on reaction time. [REACTION LATENCY]: Cognitive processing delays in emergency braking.",
-  "pract": "Drive along Marine Drive seafront. Ignore phone distractions and keep your eyes on the road.",
+  "theory": "Noise pollution causes stress. Civic sense means keeping the environment quiet.",
+  "pract": "Complete the route without using your horn.",
   "quiz": [
     {
       "q": "When is it legal to use your phone while driving?",
@@ -32,5 +32,6 @@ window.LVS.push({
       "a": 1
     }
   ],
-  "mode": "phone"
+  "mode": "civic",
+  "startOutside": true
 });

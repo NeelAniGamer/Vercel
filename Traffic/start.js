@@ -40,9 +40,17 @@ let game = null;
         { key: 'bike', file: basePath + 'race.glb' },
         
         // Roads
-        { key: 'road_straight', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-straight.glb' },
+        { key: 'road_straight', file: 'Models/road__avenue__street/scene.gltf' },
         { key: 'road_intersect', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-intersection.glb' },
-        { key: 'road_cross', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossroad.glb' }
+        { key: 'road_cross', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossroad.glb' },
+
+        // Characters
+        { key: 'char_f_a', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-a.glb' },
+        { key: 'char_f_b', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-b.glb' },
+        { key: 'char_f_c', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-c.glb' },
+        { key: 'char_m_a', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-a.glb' },
+        { key: 'char_m_b', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-b.glb' },
+        { key: 'char_m_c', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-c.glb' }
       ];
 
       // Add Suburban Buildings (a to u)

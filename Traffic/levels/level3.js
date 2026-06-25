@@ -2,12 +2,12 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 3,
   "icon": "\u26d1\ufe0f",
-  "name": "Helmet Security",
+  "name": "Ambulance Priority",
   "v": "\ud83c\udfcd\ufe0f Two-Wheeler",
   "col": "#f39c12",
   "gr": "linear-gradient(135deg,#d68910,#f39c12)",
   "tg": "Protective Safety Gear",
-  "ds": "Secure BIS certified protective gear before igniting two-wheeler engine loops.",
+  "ds": "Always make way for emergency vehicles immediately.",
   "hps": [
     "ISI-marked certified safety helmet is mandatory for all occupants.",
     "Chin straps must be anchored tight.",
@@ -19,8 +19,8 @@ window.LVS.push({
     "fine": "\u20b91,000",
     "off": "Operating two-wheeler without protective headgear"
   },
-  "theory": "Fastened safety headgear mitigates impact severity metrics significantly. [VISION SYSTEMS]: Understanding human FOV and visual processing speeds. [GLARE & OPTICS]: Sun glare, reflections, and retinal saturation.",
-  "pract": "Ride your two-wheeler through the narrow Bandra backroads. Collect your helmet before riding.",
+  "theory": "Every second counts for an ambulance. Giving way saves lives.",
+  "pract": "Make way for the ambulance approaching from behind.",
   "quiz": [
     {
       "q": "What is the helmet rule for bike riders?",
@@ -32,5 +32,6 @@ window.LVS.push({
       "a": 1
     }
   ],
-  "mode": "helmet"
+  "mode": "civic",
+  "startOutside": true
 });
