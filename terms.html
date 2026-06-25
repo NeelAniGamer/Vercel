@@ -293,6 +293,7 @@
             model.position.sub(center.multiplyScalar(scale));
             
             modelGroup.add(model);
+            if(canvas) { canvas.classList.add('v'); canvas.style.opacity = 1; canvas.style.transition = 'opacity 1.5s ease'; }
         });
 
         var mx = 0, my = 0;
