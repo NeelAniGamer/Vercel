@@ -626,8 +626,7 @@
     </div>
 
     <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
     // ============================== DATA ==============================
@@ -1093,143 +1092,72 @@
     function scrollToExplore(e) { e.preventDefault(); document.getElementById('explore').scrollIntoView({ behavior: 'smooth' }); }
 
     // ============================== THREE.JS COSMOS ==============================
-    const canvas = document.getElementById('cosmos');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    
+        (function(){
+            const canvas = document.getElementById('cosmos');
+            if(!canvas || typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') return;
+            const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance'});
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+            camera.position.z = 10;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 50;
+            const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambient);
+            
+            const modelGroup = new THREE.Group();
+            scene.add(modelGroup);
 
-    // Starfield
-    const starGeo = new THREE.BufferGeometry();
-    const starCount = 2000;
-    const starPos = new Float32Array(starCount * 3);
-    const starSizes = new Float32Array(starCount);
-    for (let i = 0; i < starCount; i++) {
-        starPos[i * 3] = (Math.random() - 0.5) * 200;
-        starPos[i * 3 + 1] = (Math.random() - 0.5) * 200;
-        starPos[i * 3 + 2] = (Math.random() - 0.5) * 200;
-        starSizes[i] = Math.random() * 2 + 0.5;
-    }
-    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-    starGeo.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+            const loader = new THREE.GLTFLoader();
+            loader.load('cosmos.glb', function(gltf) {
+                const model = gltf.scene;
+                
+                model.traverse(function(child) {
+                    if (child.isMesh) {
+                        child.material = new THREE.MeshBasicMaterial({ color: 0x070A14, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+                        const wire = new THREE.LineSegments(
+                            new THREE.EdgesGeometry(child.geometry),
+                            new THREE.LineBasicMaterial({color: 0x5ED4F5, transparent: true, opacity: 0.6})
+                        );
+                        child.add(wire);
+                    }
+                });
+                
+                const box = new THREE.Box3().setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = 8 / maxDim;
+                model.scale.set(scale, scale, scale);
+                model.position.sub(center.multiplyScalar(scale));
+                
+                modelGroup.add(model);
+                if(canvas) { canvas.classList.add('v'); canvas.style.opacity = 1; canvas.style.transition = 'opacity 1.5s ease'; }
+            });
 
-    const starMat = new THREE.PointsMaterial({
-        color: 0x8888ff, size: 0.8, transparent: true, opacity: 0.6,
-        sizeAttenuation: true, blending: THREE.AdditiveBlending
-    });
-    const stars = new THREE.Points(starGeo, starMat);
-    scene.add(stars);
+            let mx = 0, my = 0;
+            document.addEventListener('mousemove', function(e) {
+                mx = (e.clientX / window.innerWidth) * 2 - 1;
+                my = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
 
-    // Geometric wireframes
-    const geoGroup = new THREE.Group();
-    scene.add(geoGroup);
-
-    const wireMat = new THREE.MeshBasicMaterial({
-        color: 0x6366f1, wireframe: true, transparent: true, opacity: 0.08
-    });
-    const wireMat2 = new THREE.MeshBasicMaterial({
-        color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.06
-    });
-
-    const geometries = [
-        new THREE.IcosahedronGeometry(1, 0),
-        new THREE.OctahedronGeometry(1, 0),
-        new THREE.TetrahedronGeometry(1, 0),
-        new THREE.DodecahedronGeometry(1, 0)
-    ];
-
-    for (let i = 0; i < 30; i++) {
-        const geo = geometries[Math.floor(Math.random() * geometries.length)];
-        const mesh = new THREE.Mesh(
-            geo.clone(),
-            (Math.random() > 0.5 ? wireMat : wireMat2).clone()
-        );
-        const scale = Math.random() * 3 + 0.8;
-        mesh.scale.set(scale, scale, scale);
-        mesh.position.set(
-            (Math.random() - 0.5) * 100,
-            (Math.random() - 0.5) * 100,
-            (Math.random() - 0.5) * 60 - 20
-        );
-        mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
-        mesh.userData = {
-            rotX: (Math.random() - 0.5) * 0.004,
-            rotY: (Math.random() - 0.5) * 0.005,
-            floatSpeed: Math.random() * 0.5 + 0.2,
-            floatOffset: Math.random() * Math.PI * 2
-        };
-        geoGroup.add(mesh);
-    }
-
-    // Connecting lines
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x6366f1, transparent: true, opacity: 0.04 });
-    for (let i = 0; i < 15; i++) {
-        const lineGeo = new THREE.BufferGeometry();
-        const points = [];
-        const start = new THREE.Vector3(
-            (Math.random() - 0.5) * 80,
-            (Math.random() - 0.5) * 80,
-            (Math.random() - 0.5) * 40 - 20
-        );
-        const end = new THREE.Vector3(
-            start.x + (Math.random() - 0.5) * 40,
-            start.y + (Math.random() - 0.5) * 40,
-            start.z + (Math.random() - 0.5) * 20
-        );
-        points.push(start, end);
-        lineGeo.setFromPoints(points);
-        const line = new THREE.Line(lineGeo, lineMat);
-        geoGroup.add(line);
-    }
-
-    let mouseXScene = 0, mouseYScene = 0;
-    document.addEventListener('mousemove', (e) => {
-        mouseXScene = (e.clientX - window.innerWidth / 2) * 0.001;
-        mouseYScene = (e.clientY - window.innerHeight / 2) * 0.001;
-    });
-
-    const clock = new THREE.Clock();
-
-    function animate() {
-        requestAnimationFrame(animate);
-        const t = clock.getElapsedTime();
-
-        // Parallax
-        geoGroup.rotation.y += (mouseXScene - geoGroup.rotation.y) * 0.02;
-        geoGroup.rotation.x += (mouseYScene - geoGroup.rotation.x) * 0.02;
-
-        // Animate individual shapes
-        geoGroup.children.forEach(child => {
-            if (child.userData.rotX !== undefined) {
-                child.rotation.x += child.userData.rotX;
-                child.rotation.y += child.userData.rotY;
-                child.position.y += Math.sin(t * child.userData.floatSpeed + child.userData.floatOffset) * 0.005;
+            function animate() {
+                requestAnimationFrame(animate);
+                modelGroup.rotation.y += (mx * 0.5 - modelGroup.rotation.y) * 0.05;
+                modelGroup.rotation.x += (-my * 0.5 - modelGroup.rotation.x) * 0.05;
+                modelGroup.rotation.z += 0.002;
+                renderer.render(scene, camera);
             }
-        });
-
-        // Rotate starfield slowly
-        stars.rotation.y += 0.0001;
-        stars.rotation.x += 0.00005;
-
-        renderer.render(scene, camera);
-    }
-    animate();
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // ============================== LOADING SCREEN ==============================
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            var _l = document.getElementById('loader'); if(_l) _l.classList.add('hidden');
-        }, 800);
-    });
+            animate();
+            
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        })();
+        
     </script>
 </body>
 </html>
