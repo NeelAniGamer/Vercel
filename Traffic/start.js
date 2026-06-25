@@ -38,7 +38,6 @@ let game = null;
         { key: 'truck', file: basePath + 'truck.glb' },
         { key: 'auto', file: basePath + 'van.glb' },
         { key: 'bike', file: basePath + 'race.glb' },
-        { key: 'human', file: 'Models/human.glb' },
         
         // Roads
         { key: 'road_straight', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-straight.glb' },
