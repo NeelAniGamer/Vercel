@@ -11,7 +11,9 @@
   <title>Our School | Class Of Learners</title>
   <link rel="icon" type="image/webp" href="icon.webp">
   <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/school" />
-  <script>\n/* --- OLD 3D SCENE (KEPT FOR FALLBACK) ---\n(function(){try{var c=localStorage.getItem('col_admin_config');if(c){var cfg=JSON.parse(c),p=window.location.pathname.split('/').pop()||'index.html',s=cfg.pages[p]||'200';if(s==='503'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>');window.stop();}if(s==='404'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="home.html" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>');window.stop();}}}catch(e){}})()</script>
+  <script>
+/* --- OLD 3D SCENE (KEPT FOR FALLBACK) ---
+(function(){try{var c=localStorage.getItem('col_admin_config');if(c){var cfg=JSON.parse(c),p=window.location.pathname.split('/').pop()||'index.html',s=cfg.pages[p]||'200';if(s==='503'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>');window.stop();}if(s==='404'){document.write('<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="home.html" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>');window.stop();}}}catch(e){}})()</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -394,12 +396,14 @@ function initializeTheme(){var tsck=document.getElementById('tsck'),tl=document.
 function toggleTheme(el){var tl=document.getElementById('tLabel');if(el.checked){document.body.classList.add('lm');Storage.set('theme','light');if(tl)tl.textContent='Dark';}else{document.body.classList.remove('lm');Storage.set('theme','dark');if(tl)tl.textContent='Light';}}
 
 (function(){initializeTheme();})();
-\n*/\n
+
+*/
+
     // --- NEW THREE.JS 3D BOOK THEME ---
     (function(){
         var canvas = document.getElementById('bgCanvas') || document.getElementById('orrery') || document.getElementById('cosmos');
-        if(!canvas || typeof THREE === \'undefined\') return;
-        var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: \'high-performance\'});
+        if(!canvas || typeof THREE === 'undefined') return;
+        var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance'});
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         var scene = new THREE.Scene();
@@ -461,7 +465,7 @@ function toggleTheme(el){var tl=document.getElementById('tLabel');if(el.checked)
             renderer.render(scene, camera);
         }
         animate();
-        requestAnimationFrame(function(){canvas.classList.add(\'v\');});
+        requestAnimationFrame(function(){canvas.classList.add('v');});
     })();
     </script>
 
