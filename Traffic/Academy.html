@@ -2092,7 +2092,7 @@
 
   <div id="ss" class="screen active">
     <div id="top-bar-container" style="position:absolute; top:20px; right:20px; z-index:100; display:flex; gap:10px;">
-      <button class="cloud-login-btn" onclick="window.colAuthModal && window.colAuthModal.show()" style="background:#34D399; color:#fff; border:1px solid #34D399; border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">☁️ Cloud Sync</button>
+      <button class="cloud-login-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else if(window.openLogin) window.openLogin();" style="background:#34D399; color:#fff; border:1px solid #34D399; border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">☁️ Cloud Sync</button>
       <button onclick="ui.showProfile()" style="background:#fff; border:1px solid var(--border); border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">👤 Profile</button>
     </div>
     <div id="rl"></div>

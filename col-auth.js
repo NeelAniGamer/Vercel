@@ -310,7 +310,10 @@ if (!window.closeMo) {
             navBtns.forEach(btn => btn.style.display = 'none');
             navProfiles.forEach(prof => {
                 prof.style.display = 'flex';
-                prof.onclick = window.openGlobalLogin; // ensure it opens the modal
+                prof.onclick = function() {
+                    if (window.openGlobalLogin) window.openGlobalLogin();
+                    else if (window.openLogin) window.openLogin();
+                };
                 
                 // Try to find the inner text elements
                 const nameEls = prof.querySelectorAll('span, .pname');
@@ -332,7 +335,10 @@ if (!window.closeMo) {
         } else {
             navBtns.forEach(btn => {
                 btn.style.display = 'flex';
-                btn.onclick = window.openGlobalLogin;
+                btn.onclick = function() {
+                    if (window.openGlobalLogin) window.openGlobalLogin();
+                    else if (window.openLogin) window.openLogin();
+                };
             });
             navProfiles.forEach(prof => prof.style.display = 'none');
         }
