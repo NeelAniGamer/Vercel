@@ -21,13 +21,13 @@
   --r: 18px;
 }
 body.lm {
-  --void: #ffffff !important;
-  --ink: #000000 !important;
-  --nav: rgba(255, 255, 255, 0.9) !important;
-  --line: #e0e0e0 !important;
-  --lineb: #cccccc !important;
-  --dim: #555555 !important;
-  --panel: #f8f9fa !important;
+  --void: #F3F2EB !important;
+  --ink: #111827 !important;
+  --nav: rgba(243, 242, 235, 0.85) !important;
+  --line: rgba(0, 0, 0, 0.08) !important;
+  --lineb: rgba(0, 0, 0, 0.15) !important;
+  --dim: #64748B !important;
+  --panel: #FFFFFF !important;
   background: var(--void);
   color: var(--ink);
 }
@@ -112,33 +112,39 @@ body.lm .tst {
 
 /* Fix the muddy gradient covering the text in light mode */
 body.lm .hvig {
-  background: linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0.95) 20%, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0.05) 60%, transparent 80%) !important;
+  background: linear-gradient(to right, var(--void) 0%, rgba(243,242,235,0.95) 20%, rgba(243,242,235,0.6) 40%, rgba(243,242,235,0.05) 60%, transparent 80%) !important;
 }
 body.lm .hvigb {
-  background: linear-gradient(to top, #ffffff, transparent) !important;
+  background: linear-gradient(to top, var(--void), transparent) !important;
 }
 
 /* Adapt project cards to hardcore light mode */
 body.lm .pc, body.lm .vp-card {
   background: #ffffff !important;
-  border-color: #e0e0e0 !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
 }
 body.lm .pc:hover, body.lm .vp-card:hover {
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
-  border-color: #bbbbbb !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
 }
 body.lm .sf {
-  background: #f8f9fa !important;
-  border-top: 1px solid #e0e0e0 !important;
+  background: #F3F2EB !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 
 /* REDESIGNED SIGN-IN UI (DARK THEME) */
 .md {
+  --ink: #E8E3D8 !important;
+  --dim: #8891AA !important;
+  --line: rgba(255, 255, 255, 0.08) !important;
+  --lineb: rgba(255, 255, 255, 0.16) !important;
+  --panel: #0B101A !important;
   background: #0B101A !important; 
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 20px !important;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8) !important;
+  color: var(--ink) !important;
 }
 .mhd {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
@@ -160,14 +166,6 @@ body.lm .sf {
 .mi:focus {
   border-color: var(--signal) !important;
   box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.15) !important;
-}
-body.lm .mi {
-  background: #ffffff !important;
-  border: 1px solid #cccccc !important;
-  color: #000000 !important;
-}
-body.lm .mi:focus {
-  border-color: var(--signal) !important;
 }
 .ms {
   background: var(--signal) !important;
