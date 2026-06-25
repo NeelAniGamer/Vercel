@@ -508,16 +508,19 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
             else if (type === 'auto' || type === 'bike') s = 1.0;
             else s = 1.2;
 
-        baseModel.traverse((child) => {
-            if (child.isMesh && child.material) {
-                // Kenney models usually use materials like "paint", "body", "color"
-                if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
-                    child.material = child.material.clone();
-                    child.material.color.setHex(col);
+            baseModel.traverse((child) => {
+                if (child.isMesh && child.material) {
+                    // Kenney models usually use materials like "paint", "body", "color"
+                    if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
+                        child.material = child.material.clone();
+                        child.material.color.setHex(col);
+                    }
                 }
-            }
-        });
-      } else if (type === 'bike' && window.PRELOADED_MODELS['auto']) {
+            });
+        }
+      }
+      
+      if (!baseModel && type === 'bike' && window.PRELOADED_MODELS && window.PRELOADED_MODELS['auto']) {
         baseModel = window.PRELOADED_MODELS['auto'].clone();
         s = 1.0;
       }
