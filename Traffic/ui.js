@@ -374,6 +374,10 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
 <div class="rr" style="margin-top:10px; border-top:1px solid #333; padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:#f1c40f">₹${S.wallet.toLocaleString('en-IN')}</span></div>`;
         document.getElementById('ro').classList.add('on'); sfx.play('win');
       },
+      issueChallan(off, sec, amt, loc, cb) {
+        this.cq.push({ off, sec, amt, loc, cb });
+        if (!this.cbusy) this._nc();
+      },
       _nc() {
         if (!this.cq.length) { this.cbusy = false; return; } this.cbusy = true; const c = this.cq.shift();
         const vf = document.getElementById('vflash'); if (vf) { vf.classList.remove('flash'); void vf.offsetWidth; vf.classList.add('flash'); } document.getElementById('cnum').textContent = 'MTP/2026/' + (Math.floor(Math.random() * 90000) + 10000); document.getElementById('coff').textContent = c.off; document.getElementById('claw').textContent = c.sec; document.getElementById('camt').textContent = c.amt; const locEl = document.getElementById('cloc'); if (locEl) locEl.textContent = c.loc || '📍 Mumbai'; document.getElementById('cov').classList.add('on'); this._ccb = c.cb || null; if (game.playing) game.pause = true; sfx.play('challan');
