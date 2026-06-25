@@ -361,195 +361,73 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script>
         /* =========================================================
            Three.js Background (High-Tech Traffic Network / LiDAR View)
            ========================================================= */
         const canvas = document.getElementById('webgl-canvas');
-        const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x030305, 0.005);
+        if(canvas && typeof THREE !== 'undefined' && typeof THREE.GLTFLoader !== 'undefined') {
+            var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance'});
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+            camera.position.z = 10;
 
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-        // Position camera like a traffic surveillance drone or autonomous vehicle sensor
-        camera.position.set(0, 30, 80);
-        camera.lookAt(0, 0, -50);
+            var ambient = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambient);
+            
+            var modelGroup = new THREE.Group();
+            scene.add(modelGroup);
 
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-        scene.add(ambientLight);
-        
-        const roadLight = new THREE.PointLight(0x00ffcc, 1, 200);
-        roadLight.position.set(0, 20, 0);
-        scene.add(roadLight);
-
-        const environmentGroup = new THREE.Group();
-        scene.add(environmentGroup);
-
-        // --- The Road (Endless Grid) ---
-        const gridGeo = new THREE.PlaneGeometry(400, 400, 40, 40);
-        const gridMat = new THREE.MeshBasicMaterial({
-            color: 0x00ffff,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.15
-        });
-        const grid = new THREE.Mesh(gridGeo, gridMat);
-        grid.rotation.x = -Math.PI / 2;
-        environmentGroup.add(grid);
-
-        // Lane markings (Glowing lines)
-        const laneGeo = new THREE.PlaneGeometry(2, 400);
-        const laneMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.4 });
-        
-        const lane1 = new THREE.Mesh(laneGeo, laneMat);
-        lane1.rotation.x = -Math.PI / 2;
-        lane1.position.set(-15, 0.1, 0);
-        environmentGroup.add(lane1);
-
-        const lane2 = new THREE.Mesh(laneGeo, laneMat);
-        lane2.rotation.x = -Math.PI / 2;
-        lane2.position.set(15, 0.1, 0);
-        environmentGroup.add(lane2);
-
-        // --- Low-Poly Autonomous Vehicles ---
-        const carCount = 30;
-        const carsData = [];
-        const carGroup = new THREE.Group();
-        scene.add(carGroup);
-
-        // Procedural car shape
-        const carGeo = new THREE.BoxGeometry(4, 2, 8);
-        const carMat = new THREE.MeshStandardMaterial({
-            color: 0x0a0c10,
-            roughness: 0.2,
-            metalness: 0.8,
-            emissive: 0x0088ff,
-            emissiveIntensity: 0.2
-        });
-        
-        const instancedCars = new THREE.InstancedMesh(carGeo, carMat, carCount);
-        carGroup.add(instancedCars);
-
-        const dummy = new THREE.Object3D();
-
-        for (let i = 0; i < carCount; i++) {
-            // Assign cars to lanes (approximate)
-            const lane = Math.floor(Math.random() * 4) - 1.5; // -1.5, -0.5, 0.5, 1.5
-            const x = lane * 15;
-            const z = -Math.random() * 400; // Start ahead of the camera
-            const speed = 0.5 + Math.random() * 0.8; // Different speeds
-            const isOncoming = lane < 0; // Left lanes go opposite direction
-
-            carsData.push({
-                x: x,
-                z: z,
-                speed: isOncoming ? speed : -speed,
-                isOncoming: isOncoming,
-                laneOffset: (Math.random() - 0.5) * 2 // slight drift within lane
+            var loader = new THREE.GLTFLoader();
+            loader.load('D', function(gltf) {
+                var model = gltf.scene;
+                
+                model.traverse(function(child) {
+                    if (child.isMesh) {
+                        child.material = new THREE.MeshBasicMaterial({ color: 0x070A14, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+                        var wire = new THREE.LineSegments(
+                            new THREE.EdgesGeometry(child.geometry),
+                            new THREE.LineBasicMaterial({color: 0x5ED4F5, transparent: true, opacity: 0.6})
+                        );
+                        child.add(wire);
+                    }
+                });
+                
+                var box = new THREE.Box3().setFromObject(model);
+                var center = box.getCenter(new THREE.Vector3());
+                var size = box.getSize(new THREE.Vector3());
+                var maxDim = Math.max(size.x, size.y, size.z);
+                var scale = 8 / maxDim;
+                model.scale.set(scale, scale, scale);
+                model.position.sub(center.multiplyScalar(scale));
+                
+                modelGroup.add(model);
             });
 
-            dummy.position.set(x, 1, z);
-            dummy.updateMatrix();
-            instancedCars.setMatrixAt(i, dummy.matrix);
-        }
-        instancedCars.instanceMatrix.needsUpdate = true;
+            var mx = 0, my = 0;
+            document.addEventListener('mousemove', function(e) {
+                mx = (e.clientX / window.innerWidth) * 2 - 1;
+                my = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
 
-        // --- LiDAR / Sensor Particles ---
-        // Simulating data streams sweeping the road
-        const particleCount = 400;
-        const particleGeo = new THREE.BufferGeometry();
-        const particlePos = new Float32Array(particleCount * 3);
-        
-        for(let i=0; i<particleCount; i++) {
-            particlePos[i*3] = (Math.random() - 0.5) * 100;
-            particlePos[i*3+1] = Math.random() * 20;
-            particlePos[i*3+2] = (Math.random() - 0.5) * 200 - 100;
-        }
-        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
-        const particleMat = new THREE.PointsMaterial({
-            color: 0xb026ff,
-            size: 0.5,
-            transparent: true,
-            opacity: 0.8,
-            blending: THREE.AdditiveBlending
-        });
-        const lidarParticles = new THREE.Points(particleGeo, particleMat);
-        scene.add(lidarParticles);
-
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - window.innerWidth / 2) * 0.05;
-            mouseY = (e.clientY - window.innerHeight / 2) * 0.05;
-        });
-
-        const clock = new THREE.Clock();
-        let gridOffset = 0;
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const delta = clock.getDelta();
-            const time = clock.getElapsedTime();
-
-            // Subtle camera movement
-            camera.position.x += (mouseX - camera.position.x) * 0.05;
-            camera.position.y += (30 - mouseY - camera.position.y) * 0.05;
-            camera.lookAt(0, 0, -50);
-
-            // Animate grid to look like we are moving forward
-            gridOffset += 0.5;
-            if(gridOffset > 10) gridOffset = 0;
-            // The grid material uses basic wireframe, moving the geometry slightly gives a scroll effect
-            // For a simpler approach, we just move the grid's Z position and snap it back
-            grid.position.z = gridOffset;
-            lane1.position.z = gridOffset;
-            lane2.position.z = gridOffset;
-
-            // Animate Cars
-            for (let i = 0; i < carCount; i++) {
-                let data = carsData[i];
-                data.z += data.speed;
-
-                // Reset cars if they go too far out of bounds
-                if (data.speed < 0 && data.z < -300) {
-                    data.z = 100; // loop back behind camera
-                } else if (data.speed > 0 && data.z > 100) {
-                    data.z = -300; // loop far ahead
-                }
-
-                // Add slight hover/bump effect
-                const bump = Math.sin(time * 10 + i) * 0.1;
-
-                dummy.position.set(data.x + data.laneOffset, 1 + bump, data.z);
-                dummy.updateMatrix();
-                instancedCars.setMatrixAt(i, dummy.matrix);
+            function animate() {
+                requestAnimationFrame(animate);
+                modelGroup.rotation.y += (mx * 0.5 - modelGroup.rotation.y) * 0.05;
+                modelGroup.rotation.x += (-my * 0.5 - modelGroup.rotation.x) * 0.05;
+                modelGroup.rotation.z += 0.002;
+                renderer.render(scene, camera);
             }
-            instancedCars.instanceMatrix.needsUpdate = true;
-
-            // Animate LiDAR particles (sweeping backward to simulate forward motion)
-            const positions = lidarParticles.geometry.attributes.position.array;
-            for(let i=0; i<particleCount; i++) {
-                positions[i*3+2] += 2; // move towards camera
-                if(positions[i*3+2] > 50) {
-                    positions[i*3+2] = -250; // reset far back
-                    positions[i*3] = (Math.random() - 0.5) * 100; // random X
-                    positions[i*3+1] = Math.random() * 20; // random Y
-                }
-            }
-            lidarParticles.geometry.attributes.position.needsUpdate = true;
-
-            renderer.render(scene, camera);
+            animate();
+            
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
         }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
 
         /* =========================================================
            Dynamic Content Generation (50 Modules)
@@ -725,8 +603,8 @@
             document.body.style.overflow = 'auto';
         };
 
-        closeBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+        if(closeBtn) closeBtn.addEventListener('click', closeModal);
+        if(modal) modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
         
         // Smooth scroll

@@ -278,104 +278,66 @@
 
 <!-- 3D ARCHITECTURAL / GRID BACKGROUND -->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 (function(){
-  var canvas=document.getElementById('schoolBg');
-  if(!canvas||typeof THREE==='undefined')return;
-  var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-  renderer.setSize(canvas.clientWidth,canvas.clientHeight,false);
-  renderer.setClearColor(0,0);
-  var scene=new THREE.Scene();
-  var camera=new THREE.PerspectiveCamera(55,canvas.clientWidth/canvas.clientHeight,0.1,2000);
-  camera.position.set(0,20,160);camera.lookAt(0,0,0);
-  window.addEventListener('resize',function(){renderer.setSize(canvas.clientWidth,canvas.clientHeight,false);camera.aspect=canvas.clientWidth/canvas.clientHeight;camera.updateProjectionMatrix();});
+        var canvas = document.getElementById('bgCanvas') || document.getElementById('orrery') || document.getElementById('cosmos');
+        if(!canvas || typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') return;
+        var renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance'});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+        camera.position.z = 10;
 
-  // Structural Grid Lines
-  var lineMat = new THREE.LineBasicMaterial({color:0x5ED4F5, transparent:true, opacity:0.15});
-  var gridSize = 600, step = 30;
-  var gridGeo = new THREE.BufferGeometry();
-  var pts = [];
-  for(var i=-gridSize; i<=gridSize; i+=step){
-    pts.push(new THREE.Vector3(-gridSize, -60, i)); pts.push(new THREE.Vector3(gridSize, -60, i));
-    pts.push(new THREE.Vector3(i, -60, -gridSize)); pts.push(new THREE.Vector3(i, -60, gridSize));
-    // Ceiling
-    pts.push(new THREE.Vector3(-gridSize, 120, i)); pts.push(new THREE.Vector3(gridSize, 120, i));
-    pts.push(new THREE.Vector3(i, 120, -gridSize)); pts.push(new THREE.Vector3(i, 120, gridSize));
-  }
-  gridGeo.setFromPoints(pts);
-  scene.add(new THREE.LineSegments(gridGeo, lineMat));
+        var ambient = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambient);
+        
+        var modelGroup = new THREE.Group();
+        scene.add(modelGroup);
 
-  // Floating structured geometry representing foundation and architecture
-  var cubes = [];
-  var geos = [
-    new THREE.BoxGeometry(10, 10, 10),
-    new THREE.TetrahedronGeometry(8),
-    new THREE.OctahedronGeometry(8),
-    new THREE.IcosahedronGeometry(7),
-    new THREE.SphereGeometry(6, 12, 12),
-    new THREE.TorusGeometry(6, 2.5, 12, 24),
-    new THREE.CylinderGeometry(5, 5, 12, 12),
-    new THREE.DodecahedronGeometry(7)
-  ];
-  
-  var colors = [0x5ED4F5, 0x00F0CC, 0xB89BFF, 0x5ED4F5];
-  for(var i=0; i<50; i++){
-    var col = colors[i%colors.length];
-    var geo = geos[Math.floor(Math.random()*geos.length)];
-    // Solid base to occlude wireframes behind it, making it look substantial (not just lines)
-    var mat = new THREE.MeshBasicMaterial({color: 0x070A14, transparent:true, opacity:0.9});
-    var mesh = new THREE.Mesh(geo, mat);
-    
-    // Wireframe overlay for the glowing edge effect
-    var wireMat = new THREE.MeshBasicMaterial({color: col, wireframe: true, transparent:true, opacity:0.5});
-    var wire = new THREE.Mesh(geo, wireMat);
-    mesh.add(wire);
+        var loader = new THREE.GLTFLoader();
+        loader.load('book.glb', function(gltf) {
+            var model = gltf.scene;
+            
+            model.traverse(function(child) {
+                if (child.isMesh) {
+                    child.material = new THREE.MeshBasicMaterial({ color: 0x070A14, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+                    var wire = new THREE.LineSegments(
+                        new THREE.EdgesGeometry(child.geometry),
+                        new THREE.LineBasicMaterial({color: 0x5ED4F5, transparent: true, opacity: 0.6})
+                    );
+                    child.add(wire);
+                }
+            });
+            
+            var box = new THREE.Box3().setFromObject(model);
+            var center = box.getCenter(new THREE.Vector3());
+            var size = box.getSize(new THREE.Vector3());
+            var maxDim = Math.max(size.x, size.y, size.z);
+            var scale = 8 / maxDim;
+            model.scale.set(scale, scale, scale);
+            model.position.sub(center.multiplyScalar(scale));
+            
+            modelGroup.add(model);
+        });
 
-    var scale = 0.5 + Math.random()*2.5;
-    mesh.scale.set(scale, scale, scale);
-    mesh.position.set((Math.random()-0.5)*300, (Math.random()-0.5)*150, (Math.random()-0.5)*300 - 50);
-    mesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
-    scene.add(mesh);
-    cubes.push({mesh:mesh, rspeedX:(Math.random()-0.5)*0.015, rspeedY:(Math.random()-0.5)*0.015, oy:mesh.position.y, off:Math.random()*Math.PI*2});
-  }
+        var mx = 0, my = 0;
+        document.addEventListener('mousemove', function(e) {
+            mx = (e.clientX / window.innerWidth) * 2 - 1;
+            my = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
 
-
-
-  // Particles
-  var PC=1500,pGeo=new THREE.BufferGeometry();
-  var pP=new Float32Array(PC*3);
-  for(var pi=0;pi<PC;pi++){
-    var i3=pi*3;
-    pP[i3]=(Math.random()-0.5)*500; pP[i3+1]=(Math.random()-0.5)*300; pP[i3+2]=(Math.random()-0.5)*500 - 50;
-  }
-  pGeo.setAttribute('position',new THREE.BufferAttribute(pP,3));
-  scene.add(new THREE.Points(pGeo,new THREE.PointsMaterial({color:0xffffff,size:1.2,transparent:true,opacity:0.4})));
-
-  var mx=0,my=0,cx=0,cy=0,scrollOff=0;
-  canvas.addEventListener('mousemove',function(e){var r=canvas.getBoundingClientRect();mx=(e.clientX-r.left)/r.width*2-1;my=-((e.clientY-r.top)/r.height*2-1);});
-  window.addEventListener('scroll',function(){scrollOff=window.scrollY*.05;},{passive:true});
-
-  var clock=new THREE.Clock();
-  function tick(){
-    requestAnimationFrame(tick);
-    var t=clock.getElapsedTime();
-    
-    // Animate cubes
-    cubes.forEach(function(c){
-      c.mesh.rotation.x += c.rspeedX;
-      c.mesh.rotation.y += c.rspeedY;
-      c.mesh.position.y = c.oy + Math.sin(t*0.5 + c.off)*15;
-    });
-
-    cx+=(mx*25-cx)*.03;cy+=(-my*15-cy)*.03;
-    camera.position.x=cx;camera.position.y=20+cy-scrollOff;
-    camera.lookAt(cx*0.2, 20-scrollOff*.2, 0);
-    renderer.render(scene,camera);
-  }
-  tick();
-  requestAnimationFrame(function(){canvas.classList.add('v');});
-})();
+        function animate() {
+            requestAnimationFrame(animate);
+            modelGroup.rotation.y += (mx * 0.5 - modelGroup.rotation.y) * 0.05;
+            modelGroup.rotation.x += (-my * 0.5 - modelGroup.rotation.x) * 0.05;
+            modelGroup.rotation.z += 0.002;
+            renderer.render(scene, camera);
+        }
+        animate();
+        requestAnimationFrame(function(){canvas.classList.add('v');});
+    })();
 
 // ============= CURSOR HOVER EFFECTS =============
 (function(){
