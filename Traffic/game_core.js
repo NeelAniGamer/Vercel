@@ -17,7 +17,8 @@ class Game {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.2;
+        this.renderer.toneMappingExposure = 1.35;
+        cv.style.filter = "contrast(1.1) saturate(1.15)";
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, .1, 150);
@@ -405,32 +406,50 @@ class Game {
         const ground = new THREE.Mesh(new THREE.PlaneGeometry(cfg.is50km ? 100000 : 2000, cfg.is50km ? 100000 : 2000), cfg.isBridge ? mats.water : (cfg.is50km ? new THREE.MeshLambertMaterial({ color: 0x444444 }) : mats.grass));
         ground.rotation.x = -Math.PI / 2; this.scene.add(ground);
 
-        // Build roads
+        // Build roads using GLB tiles
         cfg.roads.forEach(r => {
           const isV = r.type === 'v';
           const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
           const cx = isV ? r.x : (r.x1 + r.x2) / 2;
           const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
-          const road = new THREE.Mesh(isV ? new THREE.PlaneGeometry(RW, len) : new THREE.PlaneGeometry(len, RW), mats.road);
-          road.rotation.x = -Math.PI / 2; road.position.set(cx, .02, cz); this.scene.add(road); this.world.push(road);
-          // Yellow mid-line
-          const midLine = new THREE.Mesh(isV ? new THREE.PlaneGeometry(0.15, len) : new THREE.PlaneGeometry(len, 0.15), mats.yellowLine);
-          midLine.rotation.x = -Math.PI / 2; midLine.position.set(cx, .025, cz); this.scene.add(midLine);
-          // Sidewalks
-          [-1, 1].forEach(s => {
-            const swW = cfg.isPedestrian ? 5 : 2.5; const p = new THREE.Mesh(isV ? new THREE.BoxGeometry(swW, .15, len) : new THREE.BoxGeometry(len, .15, swW), mats.pave);
-            p.position.set(isV ? cx + s * (RW / 2 + swW / 2) : cx, .07, isV ? cz : cz + s * (RW / 2 + swW / 2)); this.scene.add(p); this.world.push(p);
-          });
-          // Dashed white lane markers
-          const dashCount = Math.floor(len / 8);
-          for (let d = 0; d < dashCount; d++) {
-            const dPos = d * 8 - len / 2 + 4;
-            [-RW / 4, RW / 4].forEach(offset => {
-              const dash = new THREE.Mesh(new THREE.PlaneGeometry(isV ? 0.1 : 3, isV ? 3 : 0.1), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-              dash.rotation.x = -Math.PI / 2;
-              dash.position.set(isV ? cx + offset : cx + dPos, .024, isV ? cz + dPos : cz + offset);
-              this.scene.add(dash);
-            });
+
+          // Logical invisible road bed
+          const roadHb = new THREE.Mesh(isV ? new THREE.PlaneGeometry(RW, len) : new THREE.PlaneGeometry(len, RW), new THREE.MeshBasicMaterial({color: 0x21232b}));
+          roadHb.rotation.x = -Math.PI / 2; roadHb.position.set(cx, .02, cz); this.scene.add(roadHb); this.world.push(roadHb);
+
+          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['road_straight']) {
+              const startP = isV ? Math.min(r.z1, r.z2) : Math.min(r.x1, r.x2);
+              const endP = isV ? Math.max(r.z1, r.z2) : Math.max(r.x1, r.x2);
+              const tileLen = 10;
+              const tileScale = RW / 10; 
+              
+              for (let p = startP; p <= endP; p += (tileLen * tileScale)) {
+                  let nearInt = false;
+                  (cfg.ints || []).forEach(([ix, iz]) => {
+                      if (isV && Math.abs(p - iz) < 5) nearInt = true;
+                      if (!isV && Math.abs(p - ix) < 5) nearInt = true;
+                  });
+                  if (nearInt) continue;
+
+                  const tile = window.PRELOADED_MODELS['road_straight'].clone();
+                  tile.scale.set(tileScale, tileScale, tileScale);
+                  tile.position.set(isV ? cx : p, 0, isV ? p : cz);
+                  if (!isV) tile.rotation.y = Math.PI / 2;
+                  
+                  tile.traverse(c => { 
+                      if(c.isMesh) { c.castShadow = false; c.receiveShadow = true; c.frustumCulled = true; }
+                  });
+                  this.scene.add(tile);
+              }
+          } else {
+             // Yellow mid-line fallback
+             const midLine = new THREE.Mesh(isV ? new THREE.PlaneGeometry(0.15, len) : new THREE.PlaneGeometry(len, 0.15), mats.yellowLine);
+             midLine.rotation.x = -Math.PI / 2; midLine.position.set(cx, .025, cz); this.scene.add(midLine);
+             // Sidewalks
+             [-1, 1].forEach(s => {
+               const swW = cfg.isPedestrian ? 5 : 2.5; const pb = new THREE.Mesh(isV ? new THREE.BoxGeometry(swW, .15, len) : new THREE.BoxGeometry(len, .15, swW), mats.pave);
+               pb.position.set(isV ? cx + s * (RW / 2 + swW / 2) : cx, .07, isV ? cz : cz + s * (RW / 2 + swW / 2)); this.scene.add(pb); this.world.push(pb);
+             });
           }
         });
 
@@ -443,39 +462,23 @@ class Game {
         ];
         const winMat = new THREE.MeshBasicMaterial({ color: 0x1a252c });
 
+        const bldgKeys = ['bldgA', 'bldgB', 'bldgC', 'bldgD'];
         const drawBldg = (bx, bz, type, rot) => {
-          const g = new THREE.Group();
-          const mat = type === 'police' ? new THREE.MeshLambertMaterial({ color: 0xffffff, map: gTex.police }) :
-            type === 'hospital' ? new THREE.MeshLambertMaterial({ color: 0xffffff, map: gTex.hospital }) :
-              type === 'bank' ? new THREE.MeshLambertMaterial({ color: 0xffffff, map: gTex.bank }) :
-                type === 'temple' ? new THREE.MeshLambertMaterial({ color: 0xffffff, map: gTex.temple }) :
-                  type === 'shop' ? new THREE.MeshLambertMaterial({ color: 0xffffff, map: gTex.shop }) :
-                    bMats[Math.floor(Math.random() * bMats.length)];
-
-          const bh = type === 'temple' ? 4 : type === 'skyscraper' ? 20 + Math.random() * 20 : type === 'chawl' ? 12 + Math.random() * 6 : 8 + Math.random() * 8;
-          const bw = type === 'chawl' ? 4 + Math.random() * 2 : 5 + Math.random() * 5;
-          const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 7), mat);
-          bMesh.position.y = bh / 2;
-          g.add(bMesh);
-
-          if (type === 'police') {
-            const light = new THREE.Mesh(new THREE.BoxGeometry(2, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
-            light.position.set(0, bh + 0.25, 3.1); g.add(light);
-          } else if (type === 'hospital') {
-            const crossG = new THREE.Group();
-            crossG.add(new THREE.Mesh(new THREE.BoxGeometry(2, 0.6, 0.2), new THREE.MeshBasicMaterial({ color: 0xff0000 })));
-            crossG.add(new THREE.Mesh(new THREE.BoxGeometry(0.6, 2, 0.2), new THREE.MeshBasicMaterial({ color: 0xff0000 })));
-            crossG.position.set(0, bh - 2.5, 3.6); g.add(crossG);
-          } else if (type === 'temple') {
-            const dome = new THREE.Mesh(new THREE.ConeGeometry(3.5, 5, 8), new THREE.MeshLambertMaterial({ color: 0xf39c12 }));
-            dome.position.y = bh + 2.5; g.add(dome);
-          } else if (type === 'shop') {
-            const awMat = new THREE.MeshLambertMaterial({ color: Math.random() > 0.5 ? 0xe74c3c : 0x2980b9 });
-            const awning = new THREE.Mesh(new THREE.BoxGeometry(6, 0.4, 2.5), awMat);
-            awning.position.set(0, 3, 3.5); awning.rotation.x = -0.2; g.add(awning);
+          let g;
+          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['bldgA'] && type !== 'school') {
+             const key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
+             g = window.PRELOADED_MODELS[key].clone();
+             const s = 1.0; // scale based on tile size
+             g.scale.set(s, s, s);
+             g.traverse(c => { if(c.isMesh) { c.castShadow = false; c.receiveShadow = true; c.frustumCulled = true; }});
           } else {
-            // Optimization: Rely on the building texture (gTex.building) 
-            // instead of spawning thousands of individual PlaneGeometry meshes for windows.
+             g = new THREE.Group();
+             const mat = bMats[Math.floor(Math.random() * bMats.length)];
+             const bh = 8 + Math.random() * 8;
+             const bw = 5 + Math.random() * 5;
+             const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 7), mat);
+             bMesh.position.y = bh / 2;
+             g.add(bMesh);
           }
 
           g.position.set(bx, 0, bz); g.rotation.y = rot;
@@ -1253,8 +1256,8 @@ class Game {
         if (this.mode === 'silentzone' && this.ms) this.ms.inSz = this.player.position.z > -60 && this.player.position.z < 20;
       }
       _ucam() {
-        const camDist = 20;
-        const camHeight = 8;
+        const camDist = 12;
+        const camHeight = 4.5;
         const rotY = this.player.rotation.y;
         this._camTarget.set(
             this.player.position.x - Math.sin(rotY) * camDist, 
@@ -1262,7 +1265,7 @@ class Game {
             this.player.position.z - Math.cos(rotY) * camDist
         );
         this.camera.position.lerp(this._camTarget, .15); 
-        this.camera.lookAt(this.player.position.x + Math.sin(rotY) * 10, 0, this.player.position.z + Math.cos(rotY) * 10);
+        this.camera.lookAt(this.player.position.x + Math.sin(rotY) * 15, 1.5, this.player.position.z + Math.cos(rotY) * 15);
       }
       _uhud() {
         const k = Math.round(Math.abs(this.speed) * 100);

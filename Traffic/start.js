@@ -37,7 +37,18 @@ let game = null;
         { key: 'truck', file: basePath + 'truck.glb' },
         { key: 'auto', file: basePath + 'van.glb' },
         { key: 'bike', file: basePath + 'race.glb' },
-        { key: 'human', file: 'Models/human.glb' }
+        { key: 'human', file: 'Models/human.glb' },
+        
+        // Buildings
+        { key: 'bldgA', file: 'Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-a.glb' },
+        { key: 'bldgB', file: 'Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-b.glb' },
+        { key: 'bldgC', file: 'Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-c.glb' },
+        { key: 'bldgD', file: 'Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-d.glb' },
+        
+        // Roads
+        { key: 'road_straight', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-straight.glb' },
+        { key: 'road_intersect', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-intersection.glb' },
+        { key: 'road_cross', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossroad.glb' }
       ];
 
       let loaded = 0;
