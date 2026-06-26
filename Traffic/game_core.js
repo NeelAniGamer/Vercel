@@ -969,7 +969,7 @@ class Game {
             
             // Pedestrians waiting
             for (let i = 0; i < 3; i++) {
-                const ped = this._makePed();
+                const ped = _buildHuman();
                 ped.position.set(7 + i, 0, 30 + Math.random()*2);
                 ped.userData.vx = 0; ped.userData.vz = 0;
             }
@@ -1032,10 +1032,16 @@ class Game {
         if (cfg.themeType === 'pedestrian_courtesy') {
             // Spawn extra pedestrians crossing
             for (let i = 0; i < 8; i++) {
-                const ped = this._makePed();
+                const ped = _buildHuman();
                 ped.position.set((Math.random() - 0.5) * 20, 0, (Math.random() - 0.5) * 20);
-                ped.userData.vx = (Math.random() > 0.5 ? 1 : -1) * 0.05;
-                ped.userData.vz = 0;
+                const vx = (Math.random() > 0.5 ? 1 : -1) * 0.05;
+                ped.userData = {
+                    t: Math.random() * 10, spd: Math.abs(vx),
+                    isV: true, dir: Math.sign(vx), startZ: ped.position.z, roadC: ped.position.x,
+                    state: 'crossing', side: 1, targetDist: 20
+                };
+                this.scene.add(ped);
+                this.peds.push(ped);
             }
         } else if (cfg.themeType === 'respectful_parking') {
             // Spawn haphazard parked cars
@@ -1064,8 +1070,16 @@ class Game {
                 p.position.set((Math.random() > 0.5 ? 1 : -1) * 3, 0.05, -10 - i * 20);
                 this.scene.add(p);
                 this.puddles = this.puddles || []; this.puddles.push(p);
-                const ped = this._makePed();
+                
+                const ped = _buildHuman();
                 ped.position.set(p.position.x + (p.position.x > 0 ? 3 : -3), 0, p.position.z);
+                ped.userData = {
+                    t: Math.random() * 10, spd: 0,
+                    isV: true, dir: 1, startZ: ped.position.z, roadC: ped.position.x,
+                    state: 'idle', side: 1, targetDist: 0
+                };
+                this.scene.add(ped);
+                this.peds.push(ped);
             }
         } else if (cfg.themeType === 'no_honking') {
             cfg.isSilenceZone = true;
