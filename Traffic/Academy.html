@@ -1781,7 +1781,7 @@
     }
 
     /* === COMPLETE MOBILE DRIVING UI REDESIGN === */
-    @media (max-width: 900px) {
+    @media (max-width: 1400px), (max-height: 800px), (pointer: coarse) {
       /* Ensure canvas fills screen without distortion */
       #gc {
         position: fixed;
@@ -1868,7 +1868,7 @@
       }
     }
 
-    @media (min-width: 901px) {
+    @media (min-width: 1401px) and (min-height: 801px) and (pointer: fine) {
       #mobile-controls {
         display: none !important;
       }
