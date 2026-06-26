@@ -1554,14 +1554,14 @@ class Game {
       _uanimals() {
           if (!this.animals) return;
           this.animals.forEach(a => {
-              a.position.x += a.userData.vx;
-              a.position.z += a.userData.vz;
-              if (a.position.x > 30) a.userData.vx = -Math.abs(a.userData.vx);
-              if (a.position.x < -30) a.userData.vx = Math.abs(a.userData.vx);
-              if (a.position.z > 30) a.userData.vz = -Math.abs(a.userData.vz);
-              if (a.position.z < -30) a.userData.vz = Math.abs(a.userData.vz);
-              if (a.userData.vx > 0) a.rotation.y = Math.PI / 2;
-              else if (a.userData.vx < 0) a.rotation.y = -Math.PI / 2;
+              a.mesh.position.x += a.vx;
+              a.mesh.position.z += a.vz;
+              if (a.mesh.position.x > 30) a.vx = -Math.abs(a.vx);
+              if (a.mesh.position.x < -30) a.vx = Math.abs(a.vx);
+              if (a.mesh.position.z > 30) a.vz = -Math.abs(a.vz);
+              if (a.mesh.position.z < -30) a.vz = Math.abs(a.vz);
+              if (a.vx > 0) a.mesh.rotation.y = Math.PI / 2;
+              else if (a.vx < 0) a.mesh.rotation.y = -Math.PI / 2;
           });
       }
       _utransit() {
