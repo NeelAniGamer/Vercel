@@ -1,42 +1,26 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 2,
-  "icon": "🚗",
-  "name": "Wait in Traffic (No Honking)",
-  "v": "🚗 Car",
-  "col": "#e74c3c",
-  "ds": "You are stuck in heavy traffic. Others are honking impatiently. Keep your cool, don't honk, and wait patiently.",
+  "icon": "🛣️",
+  "name": "Highways & Fast Lanes",
+  "modes": [
+    "pedestrian",
+    "bike",
+    "car"
+  ],
+  "col": "#3498db",
+  "ds": "Master high-speed driving. Maintain lane discipline, use indicators for lane changes, and respect speed limits.",
   "hps": [
-    "Honking does not clear traffic.",
-    "Noise pollution affects everyone.",
-    "Wait for the signal to turn green."
+    "The rightmost lane is only for overtaking.",
+    "Always use indicators before changing lanes.",
+    "Maintain a safe braking distance from the vehicle ahead."
   ],
   "law": {
-    "sec": "Section 190(2), MV Act",
-    "fine": "₹1000",
-    "off": "Unnecessary Honking"
+    "sec": "MV Act Section 112 & 184",
+    "fine": "₹1000 - ₹2000",
+    "off": "Speeding/Dangerous Driving"
   },
-  "theory": "Patience in traffic reduces stress and noise pollution. Avoid honking unless it is an emergency to alert someone.",
-  "pract": "Drive through the heavy traffic without using your horn even once.",
-  "mode": "civic",
-  "quiz": [
-    {
-      "q": "When is honking allowed?",
-      "o": [
-        "To clear traffic",
-        "To alert someone of danger",
-        "To greet a friend"
-      ],
-      "a": 1
-    },
-    {
-      "q": "Does honking make traffic move faster?",
-      "o": [
-        "Yes",
-        "No",
-        "Maybe"
-      ],
-      "a": 1
-    }
-  ]
+  "theory": "<h2>Mastering The Highway</h2>\n      <p>Highways and expressways require a different set of skills compared to city driving. Higher speeds mean less reaction time, making discipline critical.</p>\n\n      <h3>🛣️ Lane Discipline</h3>\n      <ul>\n        <li><b>Left Lane:</b> For slow-moving traffic and heavy vehicles.</li>\n        <li><b>Middle Lane(s):</b> For cruising at the speed limit.</li>\n        <li><b>Right Lane:</b> The fast lane, strictly for overtaking. Return to the middle lane after overtaking.</li>\n      </ul>\n\n      <h3>📏 Following Distance (The 3-Second Rule)</h3>\n      <p>Always maintain at least a 3-second gap between your vehicle and the one in front of you. In wet or slippery conditions, increase this to 5 seconds.</p>\n\n      <h3>🏎️ Speed Limits & Overtaking</h3>\n      <ul>\n        <li>Never exceed the posted speed limit, even in the fast lane.</li>\n        <li>Always overtake from the right side.</li>\n        <li>Use your turn indicators at least 50 meters before changing lanes.</li>\n      </ul>",
+  "pract": "Drive on the highway while staying within the speed limit. Practice safe lane changes using your indicators.",
+  "mode": "practical"
 });

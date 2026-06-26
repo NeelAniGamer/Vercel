@@ -65,12 +65,12 @@ let _tt = null;
               <div class="syl-sub">${lv.ds}</div>
             </div>
           `;
-          div.onclick = () => this._selSyl(lv);
+          div.onclick = () => this._selSylLevel(lv);
           wrap.appendChild(div);
         });
-        if (LVS.length > 0) this._selSyl(LVS[0]);
+        if (LVS.length > 0) this._selSylLevel(LVS[0]);
       },
-      _selSyl(lv) {
+      _selSylLevel(lv) {
         this._sylLv = lv;
         document.querySelectorAll('.syl-item').forEach((el, idx) => {
           el.classList.toggle('syl-active', LVS[idx].id === lv.id);
@@ -265,6 +265,7 @@ let _tt = null;
       },
       _selSyl(id) {
         const lv = this._sylLv, items = this._sylItems;
+        ui.curMode = ui.curMode || (lv.modes ? lv.modes[0] : 'car');
         document.querySelectorAll('.syl-item').forEach(el => el.classList.remove('syl-active'));
         const el = document.getElementById('syl-' + id); if (el) el.classList.add('syl-active');
         if (!this._sylViewed.has(id)) {
@@ -325,7 +326,13 @@ let _tt = null;
         </div>
       </div>
       <div style="text-align:center;margin-top:24px">
-        <button class="btn btn-p" onclick="game.startLevel()" style="font-size:clamp(1.1rem, 2.5vw, 1.5rem);padding:clamp(14px, 3vw, 20px) clamp(40px, 6vw, 60px)">${ui.cur && ui.cur.mode === 'pedestrian' ? '🚶 Start Walking' : '🚦 Start Driving'}</button>
+        <div style="margin-bottom:16px;">
+          <label style="color:rgba(255,255,255,0.8);font-size:0.9rem;margin-right:10px;text-transform:uppercase;letter-spacing:0.05em;">Select Mode:</label>
+          <select id="mode-selector" onchange="ui.curMode = this.value; document.getElementById('start-btn').innerHTML = (this.value === 'pedestrian' ? '🚶 Start Walking' : (this.value === 'bike' ? '🏍️ Start Riding' : '🚗 Start Driving'));" style="padding:10px;border-radius:8px;background:rgba(0,0,0,0.5);color:#fff;border:1px solid rgba(255,255,255,0.2);font-size:1rem;outline:none;cursor:pointer;">
+            ${(lv.modes || ['car']).map(m => `<option value="${m}" ${ui.curMode === m ? 'selected' : ''}>${m.charAt(0).toUpperCase() + m.slice(1)}</option>`).join('')}
+          </select>
+        </div>
+        <button id="start-btn" class="btn btn-p" onclick="ui.cur.vehMode = ui.curMode; game.startLevel()" style="font-size:clamp(1.1rem, 2.5vw, 1.5rem);padding:clamp(14px, 3vw, 20px) clamp(40px, 6vw, 60px)">${(ui.curMode || (lv.modes ? lv.modes[0] : 'car')) === 'pedestrian' ? '🚶 Start Walking' : ((ui.curMode || (lv.modes ? lv.modes[0] : 'car')) === 'bike' ? '🏍️ Start Riding' : '🚗 Start Driving')}</button>
       </div>`;
         }
         c.appendChild(card);
