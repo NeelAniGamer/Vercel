@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="description" content="Class of Learners - Qr Editor. An educational tool and resource.">
@@ -413,13 +413,13 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         const configStr = localStorage.getItem('col_admin_config');
         if (configStr) {
             const config = JSON.parse(configStr);
-            const path = window.location.pathname.split('/').pop() || 'index.html';
+            const path = window.location.pathname.split('/').pop() || 'home.html';
             const status = config.pages[path];
             if (status === '503') {
                 document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#f59e0b; font-family:monospace;">503</h1> <h2 style="margin:10px 0; font-size:2rem;">System Under Maintenance</h2> <p style="color:#cbd5e1; font-size:1.1rem; max-width:500px;">Class Of Learners is currently undergoing scheduled upgrades. Please check back shortly.</p> </div>');
                 window.stop();
             } else if (status === '404') {
-                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#ef4444; font-family:monospace;">404</h1> <h2 style="margin:10px 0; font-size:2rem;">Page Not Found</h2> <p style="color:#cbd5e1; font-size:1.1rem; max-width:500px;">The requested directory has been removed by the administrator or does not exist.</p> <a href="index.html" style="margin-top:30px; color:#38bdf8; text-decoration:none; font-weight:bold; border:1px solid #38bdf8; padding:10px 20px; border-radius:8px;">Return to Home Hub</a></div>');
+                document.write('<div style="display:flex; height:100vh; width:100vw; background:#0a0f1a; color:#fff; flex-direction:column; justify-content:center; align-items:center; font-family:sans-serif; text-align:center; padding:20px;"> <h1 style="font-size:6rem; margin:0; color:#ef4444; font-family:monospace;">404</h1> <h2 style="margin:10px 0; font-size:2rem;">Page Not Found</h2> <p style="color:#cbd5e1; font-size:1.1rem; max-width:500px;">The requested directory has been removed by the administrator or does not exist.</p> <a href="home.html" style="margin-top:30px; color:#38bdf8; text-decoration:none; font-weight:bold; border:1px solid #38bdf8; padding:10px 20px; border-radius:8px;">Return to Home Hub</a></div>');
                 window.stop();
             }
         }
@@ -447,7 +447,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <body class="dark-mode">
 
 <nav class="top-nav">
-    <a href="index.html" class="nav-brand">
+    <a href="home.html" class="nav-brand">
         <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
         <span class="brand-name">Class Of Learners</span>
     </a>
@@ -455,7 +455,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
     </button>
     <div class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link">Home</a>
+        <a href="home.html" class="nav-link">Home</a>
         <a href="about.html" class="nav-link">About</a>
         <a href="school.html" class="nav-link">School</a>
         <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>

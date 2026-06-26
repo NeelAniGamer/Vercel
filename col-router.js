@@ -1,4 +1,4 @@
-// Class Of Learners Global Router & Banner System
+﻿// Class Of Learners Global Router & Banner System
 (async function() {
     if (window._colRouterRunning) return;
     window._colRouterRunning = true;
@@ -10,7 +10,7 @@
         
         // Determine current page basename
         let page = window.location.pathname.split('/').pop();
-        if(!page) page = 'index.html'; // Default
+        if(!page) page = 'home.html'; // Default
 
         // 1. Check Routing Overrides
         if (config.pages && config.pages[page]) {
@@ -55,11 +55,11 @@
         let info = msgs[code] || { title: 'SYSTEM HALTED', desc: 'An unknown anomaly has occurred.' };
 
         document.body.innerHTML = `
-            <div style="font-size: 4rem; margin-bottom: 20px; text-shadow: 0 0 15px rgba(239, 68, 68, 0.5);">⚠️</div>
+            <div style="font-size: 4rem; margin-bottom: 20px; text-shadow: 0 0 15px rgba(239, 68, 68, 0.5);">âš ï¸</div>
             <h1>${code}</h1>
             <div class="glow" style="font-size: 1.5rem; margin-bottom: 20px;">${info.title}</div>
             <p>${info.desc}</p>
-            <a href="index.html" class="btn">Return to Base</a>
+            <a href="home.html" class="btn">Return to Base</a>
         `;
     }
 
@@ -74,7 +74,7 @@
     function injectBanner(text) {
         const b = document.createElement('div');
         b.style.cssText = "background: linear-gradient(90deg, #38bdf8, #818cf8); color: #fff; text-align: center; padding: 12px 20px; font-weight: bold; font-family: 'Inter', sans-serif; font-size: 14px; position: relative; z-index: 999999; box-shadow: 0 4px 15px rgba(0,0,0,0.2); line-height: 1.5;";
-        b.innerHTML = `<span style="display:inline-block; margin-right: 25px;">🚀 ${text}</span> <span style="position:absolute; right:15px; top: 50%; transform: translateY(-50%); cursor:pointer; opacity:0.8; font-size: 20px; font-family: sans-serif;" onclick="this.parentElement.style.display='none'">&times;</span>`;
+        b.innerHTML = `<span style="display:inline-block; margin-right: 25px;">ðŸš€ ${text}</span> <span style="position:absolute; right:15px; top: 50%; transform: translateY(-50%); cursor:pointer; opacity:0.8; font-size: 20px; font-family: sans-serif;" onclick="this.parentElement.style.display='none'">&times;</span>`;
         document.body.insertBefore(b, document.body.firstChild);
     }
 })();

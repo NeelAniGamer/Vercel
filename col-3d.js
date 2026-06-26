@@ -1,4 +1,4 @@
-// col-3d.js — Shared Procedural Three.js Backgrounds for Class Of Learners
+﻿// col-3d.js — Shared Procedural Three.js Backgrounds for Class Of Learners
 // Desktop only. No external models. Each page gets a unique scene.
 
 (function() {
@@ -30,10 +30,10 @@
         if (!canvas) return;
 
         // Determine which page we're on
-        var path = window.location.pathname.split('/').pop() || 'index.html';
+        var path = window.location.pathname.split('/').pop() || 'home.html';
         path = path.replace('.html', '').toLowerCase();
         // Map index to home
-        if (path === '' || path === 'index' || path === 'index.html') path = 'home';
+        if (path === '' || path === 'index' || path === 'home.html') path = 'home';
 
         // Setup renderer
         var renderer = new THREE.WebGLRenderer({
