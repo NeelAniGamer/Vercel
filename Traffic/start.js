@@ -122,6 +122,13 @@ let game = null;
                 if (child.isMesh) {
                     child.castShadow = true;
                     child.receiveShadow = true;
+                    child.frustumCulled = false;
+                    
+                    if (child.material && child.material.map) {
+                        child.material.map.magFilter = THREE.NearestFilter;
+                        child.material.map.minFilter = THREE.NearestFilter;
+                        child.material.map.needsUpdate = true;
+                    }
                 }
             });
             window.PRELOADED_MODELS[asset.key] = gltf.scene;
@@ -147,22 +154,6 @@ let game = null;
     window.confetti = {
       canvas: null, ctx: null, particles: [], running: false,
       init() {
-        const ogMesh = THREE.Mesh;
-        THREE.Mesh = function(geometry, material) {
-            ogMesh.call(this, geometry, material);
-            this.frustumCulled = true;
-        };
-        THREE.Mesh.prototype = Object.create(ogMesh.prototype);
-        THREE.Mesh.prototype.constructor = THREE.Mesh;
-        
-        const ogGroup = THREE.Group;
-        THREE.Group = function() {
-            ogGroup.call(this);
-            this.frustumCulled = true;
-        };
-        THREE.Group.prototype = Object.create(ogGroup.prototype);
-        THREE.Group.prototype.constructor = THREE.Group;
-
         if (this.canvas) return;
         this.canvas = document.createElement('canvas');
         this.canvas.style.cssText = 'position:fixed;inset:0;z-index:9998;pointer-events:none;';

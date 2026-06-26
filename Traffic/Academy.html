@@ -19,7 +19,7 @@
     // Silence GLTFLoader spam for KHR_texture_transform
     const _oldWarn = console.warn;
     console.warn = function(...args) {
-      if (args[0] && typeof args[0] === 'string' && args[0].includes('Custom UV sets in "KHR_texture_transform"')) return;
+      if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported'))) return;
       _oldWarn.apply(console, args);
     };
   </script>
@@ -28,7 +28,8 @@
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link
@@ -1978,7 +1979,7 @@
       document.body.appendChild(errDiv);
     });
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="vehicles.js"></script>
 </head>
 
