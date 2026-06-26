@@ -1780,7 +1780,95 @@
       /* Removed min-width and max-width to allow transform scaling without text overflow */
     }
 
-    @media (min-width: 768px) {
+    /* === COMPLETE MOBILE DRIVING UI REDESIGN === */
+    @media (max-width: 900px) {
+      /* Ensure canvas fills screen without distortion */
+      #gc {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+        background: #000; /* Prevent bright flashes or letterboxing issues */
+      }
+      
+      /* HUD Scaling and Repositioning */
+      #hud {
+        top: 8px; left: 8px; right: auto; padding: 0; gap: 6px;
+      }
+      .hp {
+        padding: 4px 8px; font-size: 0.75rem; border-radius: 6px;
+      }
+      #hudbar {
+        top: 8px; left: 50%; transform: translateX(-50%); right: auto;
+        gap: 8px; padding: 0;
+      }
+      .hb {
+        padding: 4px 10px; font-size: 0.75rem; border-radius: 6px;
+      }
+      #hwrap {
+        top: 8px; left: auto; right: 8px; flex-direction: row; align-items: center; gap: 8px; 
+        padding: 4px 8px; border-radius: 6px;
+      }
+      #hwrap .hl { margin: 0; font-size: 0.6rem; }
+      #hwallet { font-size: 0.85rem; }
+      .ht { width: 60px; height: 6px; }
+      
+      /* Touch Controls (Center Bottom) */
+      #tc {
+        bottom: 12px; left: 50%; transform: translateX(-50%);
+        padding: 0; gap: 12px; justify-content: center;
+      }
+      .db {
+        width: 44px; height: 44px; font-size: 1.1rem; border-radius: 12px;
+      }
+
+      /* Gear Selector (Vertical on Left) */
+      #gp.on {
+        display: flex;
+      }
+      #gp {
+        bottom: 50%; left: 12px; transform: translateY(50%);
+        flex-direction: column; padding: 6px; gap: 6px;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(8px); border-radius: 16px;
+      }
+      .gb {
+        width: 38px; height: 38px; font-size: 0.85rem; border-radius: 10px;
+      }
+      #gread {
+        bottom: auto; top: 50px; left: 12px; transform: none;
+        font-size: 0.75rem; padding: 4px 8px; background: rgba(255, 255, 255, 0.8);
+      }
+      
+      /* Mobile Controls Wrapper */
+      #mobile-controls {
+        bottom: 12px; padding: 0 20px;
+        background: none; /* remove gradient to keep view clear */
+      }
+      
+      /* Steering Wheel (Bottom Left) */
+      #steer-wheel-container {
+        width: 110px; height: 110px; border-width: 3px;
+        background: rgba(0,0,0,0.25);
+        margin-left: 50px; /* Offset to not overlap gears */
+      }
+      
+      /* Pedals (Bottom Right) */
+      .mc-col {
+        gap: 12px;
+      }
+      .mc-btn {
+        width: 65px; height: 65px; font-size: 20px; border-width: 2px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      }
+      
+      #da {
+        top: 60px; padding: 8px 16px; font-size: 1rem;
+      }
+    }
+
+    @media (min-width: 901px) {
       #mobile-controls {
         display: none !important;
       }

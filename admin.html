@@ -167,6 +167,7 @@
 <script defer src="col-auth.js"></script>
 <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU"/>
   <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
@@ -692,7 +693,7 @@ async function loadGhFileContent() {
     try {
         toast('Loading visual builder...', 'green');
         toolbar.style.display = "flex";
-        iframe.srcdoc = "<html><body><h2>Loading preview...</h2>
+        iframe.srcdoc = `<html><body><h2>Loading preview...</h2>
 <footer class="sf">
     <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
@@ -706,7 +707,7 @@ async function loadGhFileContent() {
     </div>
 </footer>
 
-</body></html>";
+</body></html>`;
         
         const data = await fetchGh(`contents/${path}`);
         currentFileSha = data.sha;

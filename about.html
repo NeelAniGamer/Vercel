@@ -405,7 +405,7 @@ function toggleTheme(el) {
     Storage.set('theme', 'dark');
     if (tl) tl.textContent = 'Dark Mode';
   }
-}else{document.body.classList.remove('lm');Storage.set('theme','dark');if(tl)tl.textContent='Light';}}
+}
 
 (function(){initializeTheme();})();
 </script>

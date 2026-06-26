@@ -63,7 +63,7 @@
   .shc{position:relative;z-index:2;max-width:1360px;width:100%;margin:0 auto;padding:160px 52px 80px;text-align:center}
   .hey{font-family:var(--mono);font-size:.9rem;font-weight:700;letter-spacing:.4em;color:var(--signal);text-transform:uppercase;margin-bottom:30px;display:inline-flex;align-items:center;gap:14px;opacity:0;transform:translateY(18px);animation:fu .8s var(--ease) .7s forwards}
   .hey::before,.hey::after{content:'';width:24px;height:1px;background:var(--signal);flex-shrink:0}
-  .hero-badge{display:inline-block;background:var(--ion);color:#0A0500;font-family:var(--mono);font-size:.9rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:10px 24px;border-radius:30px;margin-bottom:26px;opacity:0;transform:translateY(14px);animation:fu .7s var(--ease) .9s forwards}
+  .hero-badge{display:inline-block;background:transparent;border:1px solid var(--ion);color:var(--ion);font-family:var(--mono);font-size:.9rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:10px 24px;border-radius:30px;margin-bottom:26px;opacity:0;transform:translateY(14px);animation:fu .7s var(--ease) .9s forwards}
   .school-hero h1{font-family:var(--serif);font-size:clamp(3.2rem,8vw,7rem);font-weight:400;line-height:1.05;letter-spacing:-.01em;opacity:0;transform:translateY(28px);animation:fu .95s var(--ease) 1.05s forwards;margin:0 auto;max-width:20ch}
   .school-hero h1 em{font-style:italic;color:var(--ion)}
   .hlede{font-size:clamp(1.05rem,1.5vw,1.25rem);line-height:1.7;color:var(--dim);max-width:55ch;margin:28px auto 0;opacity:0;transform:translateY(18px);animation:fu .8s var(--ease) 1.25s forwards}
@@ -330,7 +330,7 @@ function toggleTheme(el) {
     Storage.set('theme', 'dark');
     if (tl) tl.textContent = 'Dark Mode';
   }
-}else{document.body.classList.remove('lm');Storage.set('theme','dark');if(tl)tl.textContent='Light';}}
+}
 
 (function(){initializeTheme();})();
 </script>
