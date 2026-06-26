@@ -84,8 +84,6 @@ let game = null;
       });
 
       let loaded = 0;
-
-      let loaded = 0;
       const ld = document.getElementById('loading-screen');
       const pctEl = document.getElementById('loading-pct');
       const barEl = document.getElementById('loading-bar');
