@@ -693,6 +693,7 @@ class Game {
                         const finalMatrix = new THREE.Matrix4().multiplyMatrices(dummy.matrix, mesh.matrixWorld);
                         instancedMesh.setMatrixAt(i, finalMatrix);
                     });
+                    instancedMesh.instanceMatrix.needsUpdate = true;
                     
                     this.scene.add(instancedMesh);
                 });

@@ -506,11 +506,9 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
 
       if (window.PRELOADED_MODELS) {
         let modelKey = type;
-        if (type === 'car') {
-            const carKeys = Object.keys(window.PRELOADED_MODELS).filter(k => k.startsWith('car'));
-            if (carKeys.length > 0) {
-                modelKey = carKeys[Math.floor(Math.random() * carKeys.length)];
-            }
+        const keysForType = Object.keys(window.PRELOADED_MODELS).filter(k => k === type || k.startsWith(type + '_'));
+        if (keysForType.length > 0) {
+            modelKey = keysForType[Math.floor(Math.random() * keysForType.length)];
         }
         
         if (window.PRELOADED_MODELS[modelKey]) {
