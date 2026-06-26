@@ -756,6 +756,9 @@ class Game {
           for (let i = 0; i < 15; i++) {
             const p = new THREE.Mesh(new THREE.CylinderGeometry(1.4 + Math.random(), 1.5 + Math.random(), .08, 12), new THREE.MeshPhongMaterial({ color: 0x0c101a, transparent: true, opacity: 0.6 }));
             p.position.set((Math.random() - .5) * 120, 0.016, (Math.random() - .5) * 160); this.scene.add(p); this.spc.push(p); p.userData = { isPH: true };
+          }
+        }
+        
         // Puddles for level 5 (Rain & Slippery Roads)
         this.puddles = [];
         if (cfg.id === 5) {
