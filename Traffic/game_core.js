@@ -552,7 +552,7 @@ class Game {
           if (bldgKeys.length > 0 && type !== 'school') {
              const key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
              if (!instancedBldgData[key]) instancedBldgData[key] = [];
-             instancedBldgData[key].push({ x: bx, z: bz, r: rot, s: 18.0 });
+             instancedBldgData[key].push({ x: bx, z: bz, r: rot, s: 3.5 });
           } else {
              const g = new THREE.Group();
              const mat = bMats[Math.floor(Math.random() * bMats.length)];
