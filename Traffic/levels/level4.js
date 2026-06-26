@@ -1,38 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 4,
-  "icon": "\ud83d\udcba",
-  "name": "Puddle Etiquette",
-  "v": "\ud83d\ude97 Car",
-  "col": "#2980b9",
-  "gr": "linear-gradient(135deg,#1f618d,#2980b9)",
-  "tg": "Cabin Restraint Systems",
-  "ds": "Slow down when driving through puddles to avoid splashing pedestrians.",
+  "icon": "🚲",
+  "name": "Cyclist Rules",
+  "v": "🚲 Cycle",
+  "col": "#9b59b6",
+  "ds": "You are riding a cycle. Some cyclists break signals because they think rules don't apply to them. Follow all traffic rules.",
   "hps": [
-    "Seat belts are required for all seating positions.",
-    "Buckle logic must engage before vehicle goes into drive.",
-    "Seatbelt Physics: Inertia and the prevention of secondary impacts.",
-    "Airbag Deployment: Explosive deceleration cushioning via accelerometers.",
-    "Vehicle Mass: How vehicle weight impacts survivability in collisions."
+    "Stop at red lights.",
+    "Stay on the left side of the road.",
+    "Use hand signals before turning."
   ],
   "law": {
-    "sec": "Section 194B, Motor Vehicles Act 1988",
-    "fine": "\u20b91,000",
-    "off": "Driving without wearing a seat belt"
+    "sec": "General Road Rules",
+    "fine": "N/A",
+    "off": "Reckless Cycling"
   },
-  "theory": "Splashing dirty water on pedestrians is highly discourteous.",
-  "pract": "Drive through the rainy street without splashing anyone.",
+  "theory": "Cyclists are vulnerable road users but must still obey traffic signals to ensure overall road safety.",
+  "pract": "Ride safely and stop at every red light.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "When must seat belts be locked?",
+      "q": "Do cyclists need to stop at red signals?",
       "o": [
-        "After getting on the highway",
-        "Before you start driving",
-        "Only when encountering police details"
+        "Yes",
+        "No",
+        "Only if cars are coming"
+      ],
+      "a": 0
+    },
+    {
+      "q": "Which side of the road should a cyclist ride on in India?",
+      "o": [
+        "Right",
+        "Left",
+        "Middle"
       ],
       "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

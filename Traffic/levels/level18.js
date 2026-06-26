@@ -1,36 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 18,
-  "icon": "\ud83c\udfd9\ufe0f",
-  "name": "Puddle Etiquette",
-  "v": "\ud83d\udeb6 Pedestrian",
-  "col": "#1abc9c",
-  "gr": "linear-gradient(135deg,#16a085,#1abc9c)",
-  "tg": "Micro-mobility & Calming",
-  "ds": "Slow down when driving through puddles to avoid splashing pedestrians.",
+  "icon": "🏛️",
+  "name": "Monument Visit & Parking",
+  "v": "🚗 Car",
+  "col": "#d35400",
+  "ds": "You are visiting a famous monument. Do not park on the road and block traffic. Find the designated parking spot.",
   "hps": [
-    "Traffic Calming: Physical infrastructure naturally slows vehicle throughput.",
-    "Pedestrian Islands: Wait safely in the middle of multi-lane roads.",
-    "Congestion Pricing: Economic models reduce peak-hour traffic density in this zone."
+    "Illegal parking causes major traffic bottlenecks.",
+    "Always use designated parking lots.",
+    "Do not block gates or pedestrian paths."
   ],
   "law": {
-    "sec": "Urban Planning Guidelines",
-    "fine": "\u20b91000",
-    "off": "Misuse of pedestrian islands or micro-mobility lanes"
+    "sec": "Section 122, MV Act",
+    "fine": "₹500",
+    "off": "Dangerous or Obstructive Parking"
   },
-  "theory": "Splashing dirty water on pedestrians is highly discourteous.",
-  "pract": "Drive through the rainy street without splashing anyone.",
+  "theory": "Parking on the road near tourist spots creates severe congestion. Good civic sense means walking a bit further from a legal parking spot.",
+  "pract": "Drive past the crowded entrance and park your car in the designated parking area.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "What is the primary purpose of traffic calming?",
+      "q": "Where should you park when visiting a crowded monument?",
       "o": [
-        "To increase speed limits",
-        "To naturally reduce vehicle speeds",
-        "To add more traffic lights"
+        "Right at the entrance gate",
+        "On the footpath",
+        "In the designated parking area"
       ],
-      "a": 1
+      "a": 2
+    },
+    {
+      "q": "Why is roadside parking bad?",
+      "o": [
+        "It blocks the flow of traffic",
+        "Its too cheap",
+        "It damages the road"
+      ],
+      "a": 0
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

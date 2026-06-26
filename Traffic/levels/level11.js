@@ -1,37 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 11,
-  "icon": "\ud83e\udd2b",
-  "name": "No Honking Zone",
-  "v": "\ud83d\ude97 Car",
-  "col": "#148f77",
-  "gr": "linear-gradient(135deg,#0e6655,#148f77)",
-  "tg": "Acoustic Noise Containment",
-  "ds": "Avoid unnecessary honking, especially near residential areas, schools, and hospitals.",
+  "icon": "📱",
+  "name": "No Mobile Phones",
+  "v": "🚗 Car",
+  "col": "#2980b9",
+  "ds": "Your phone rings while driving. Do not answer it! Pull over safely if it is urgent.",
   "hps": [
-    "Audible horn arrays are restricted within 100 meters of hospital gates.",
-    "Utilize light flashing indicators for nighttime visibility cues.",
-    "Night Operations: Visibility degradation and illumination requirements at night.",
-    "Traffic Calming: Physical infrastructure designed to naturally reduce speed."
+    "Using a phone while driving reduces reaction time by 50%.",
+    "Even hands-free calls are distracting.",
+    "Pull over to take an urgent call."
   ],
   "law": {
-    "sec": "Section 190(2), Motor Vehicles Act 1988",
-    "fine": "\u20b92,000",
-    "off": "Honking in a no-honk zone"
+    "sec": "Section 184, MV Act",
+    "fine": "₹1000 - ₹5000",
+    "off": "Using Phone while Driving"
   },
-  "theory": "Noise pollution causes stress. Civic sense means keeping the environment quiet.",
-  "pract": "Complete the route without using your horn.",
+  "theory": "Distracted driving is one of the leading causes of fatal accidents. Texting takes your eyes off the road for an average of 5 seconds.",
+  "pract": "Ignore the ringing phone and continue driving safely to your destination.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "What spatial radius defines silent parameters around institutional facilities?",
+      "q": "What should you do if your phone rings while driving?",
       "o": [
-        "20 meters",
-        "100 meters",
-        "500 meters"
+        "Answer quickly",
+        "Pull over safely to answer",
+        "Text instead"
+      ],
+      "a": 1
+    },
+    {
+      "q": "How does phone use affect reaction time?",
+      "o": [
+        "Improves it",
+        "Delays it",
+        "No effect"
       ],
       "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

@@ -1,37 +1,43 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 7,
-  "icon": "\ud83d\udce2",
-  "name": "No Honking Zone",
-  "v": "\ud83d\ude97 Car",
-  "col": "#c0392b",
-  "gr": "linear-gradient(135deg,#922b21,#c0392b)",
-  "tg": "Attentional Focus Controls",
-  "ds": "Avoid unnecessary honking, especially near residential areas, schools, and hospitals.",
+  "icon": "🚌",
+  "name": "Bus Stop Etiquette",
+  "v": "🚶 Walking",
+  "col": "#1abc9c",
+  "ds": "You are waiting for the bus. Do not rush or push when boarding. Let people exit first before you try to enter.",
   "hps": [
-    "Handheld operations are fully illegal during target navigation.",
-    "Pull off-road to safe parking zones before answering communications data.",
-    "Distracted Driving: The catastrophic effect of task-switching on reaction time.",
-    "Reaction Latency: Cognitive processing delays in emergency braking."
+    "Queue up patiently.",
+    "Let passengers exit before boarding.",
+    "Offer seats to the elderly or pregnant."
   ],
   "law": {
-    "sec": "Section 184, Motor Vehicles Act 1988",
-    "fine": "\u20b91,000",
-    "off": "Operating motor vehicle while using handheld communication arrays"
+    "sec": "Public Transport Etiquette",
+    "fine": "N/A",
+    "off": "Disruptive Behavior"
   },
-  "theory": "Noise pollution causes stress. Civic sense means keeping the environment quiet.",
-  "pract": "Complete the route without using your horn.",
+  "theory": "Public transport efficiency relies on the civic sense of its users. Pushing causes delays and accidents.",
+  "pract": "Wait for the bus, let passengers exit, and then board calmly.",
+  "mode": "civic",
+  "startOutside": true,
   "quiz": [
     {
-      "q": "When is it legal to use your phone while driving?",
+      "q": "When a bus arrives, what is the first step?",
       "o": [
-        "While stopped at a red light",
-        "Only when fully parked off the road",
-        "When driving in low gear"
+        "Push inside quickly",
+        "Let passengers step down first",
+        "Block the door"
+      ],
+      "a": 1
+    },
+    {
+      "q": "Who should you offer your seat to on a bus?",
+      "o": [
+        "Young adults",
+        "Elderly or pregnant individuals",
+        "Your friends"
       ],
       "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

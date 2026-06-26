@@ -1,37 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 6,
-  "icon": "\ud83d\ude86",
-  "name": "Respectful Parking",
-  "v": "\ud83d\ude97 Car",
-  "col": "#8e44ad",
-  "gr": "linear-gradient(135deg,#6c3483,#8e44ad)",
-  "tg": "Grade Separation Intersections",
-  "ds": "Park your vehicle such that it does not obstruct sidewalks or driveways.",
+  "icon": "🐄",
+  "name": "Animal Crossing",
+  "v": "🚗 Car",
+  "col": "#e67e22",
+  "ds": "Stray dogs and cows are on the road. Do not honk aggressively or drive recklessly. Yield and wait for them to pass safely.",
   "hps": [
-    "Halt completely behind gate limits when warning lights activate.",
-    "Switch transmission to neutral while idling.",
-    "Railway Crossings: Extreme mass momentum vectors and crossing logic.",
-    "Kinetic Transfer: Energy transfer calculations during pedestrian impact."
+    "Animals get scared by loud horns.",
+    "Always yield to animals crossing the road.",
+    "Drive slowly in areas with strays."
   ],
   "law": {
-    "sec": "Section 131, Motor Vehicles Act 1988",
-    "fine": "\u20b91,000",
-    "off": "Bypassing active railway crossing safety barriers"
+    "sec": "Prevention of Cruelty to Animals Act",
+    "fine": "Varies",
+    "off": "Harming an animal"
   },
-  "theory": "Proper parking ensures pedestrians and other vehicles are not inconvenienced.",
-  "pract": "Find a parking spot that does not block any pathways.",
+  "theory": "In India, stray animals on roads are common. Civic sense dictates treating them with compassion and patience.",
+  "pract": "Stop your vehicle if an animal blocks the path, and do not honk.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "What action is mandated when crossing gates begin alignment down?",
+      "q": "What should you do if a cow is sleeping on the road?",
       "o": [
-        "Speed up to beat the gate",
-        "Stop fully behind the line",
-        "Zigzag through the barriers"
+        "Honk loudly",
+        "Drive around it slowly",
+        "Hit it"
+      ],
+      "a": 1
+    },
+    {
+      "q": "Are animals affected by loud vehicle horns?",
+      "o": [
+        "No",
+        "Yes, it causes panic",
+        "Only dogs"
       ],
       "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

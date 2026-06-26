@@ -6,11 +6,10 @@ let game = null;
       if (document.getElementById('cert-logo-2')) {
           document.getElementById('cert-logo-2').src = typeof CERT_LOGO_2 !== 'undefined' ? CERT_LOGO_2 : '';
       }
-      ui.init();
-      game = new Game();
       if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
         document.body.classList.add('is-touch');
       }
+      // Do NOT call ui.init() or create Game() here yet. Wait for assets to load.
     });
 
     // Developer Mode: Ctrl+Shift+D to unlock everything
@@ -50,7 +49,23 @@ let game = null;
         { key: 'char_f_c', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-c.glb' },
         { key: 'char_m_a', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-a.glb' },
         { key: 'char_m_b', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-b.glb' },
-        { key: 'char_m_c', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-c.glb' }
+        { key: 'char_m_c', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-c.glb' },
+        
+        // Animals
+        { key: 'animal_dog', file: 'Models/kenney_cube-pets_1.0/Models/GLB format/animal-dog.glb' },
+        { key: 'animal_cow', file: 'Models/kenney_cube-pets_1.0/Models/GLB format/animal-cow.glb' },
+        { key: 'animal_cat', file: 'Models/kenney_cube-pets_1.0/Models/GLB format/animal-cat.glb' },
+        
+        // Watercraft
+        { key: 'ship_cargo', file: 'Models/kenney_watercraft-pack/Models/GLB format/ship-cargo-a.glb' },
+        { key: 'boat_speed', file: 'Models/kenney_watercraft-pack/Models/GLB format/boat-speed-a.glb' },
+        
+        // Emergency
+        { key: 'ambulance', file: 'Models/kenney_car-kit/Models/GLB format/ambulance.glb' },
+        
+        // Transit
+        { key: 'train', file: 'Models/kenney_train-kit/Models/GLB format/train-locomotive-a.glb' },
+        { key: 'metro', file: 'Models/kenney_train-kit/Models/GLB format/train-electric-subway-a.glb' }
       ];
 
       // Add Suburban Buildings (a to u)
@@ -70,25 +85,43 @@ let game = null;
 
       let loaded = 0;
 
-      // Unobtrusive background loading UI
+      // Full-screen Loading UI
       const ld = document.createElement('div');
-      ld.id = 'model-loader';
-      ld.style.position = 'fixed'; ld.style.bottom = '20px'; ld.style.right = '20px';
-      ld.style.background = 'rgba(17, 24, 39, 0.85)'; ld.style.color = '#34D399'; 
-      ld.style.padding = '12px 20px'; ld.style.borderRadius = '8px';
-      ld.style.border = '1px solid rgba(52, 211, 153, 0.4)';
-      ld.style.zIndex = '999999'; ld.style.fontFamily = 'monospace'; ld.style.fontSize = '0.9rem';
-      ld.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)';
-      ld.style.transition = 'opacity 1s ease';
-      ld.innerHTML = '📥 Streaming Assets... <span id="ml-pct">0%</span>';
+      ld.id = 'model-loader-fullscreen';
+      ld.style.position = 'fixed'; 
+      ld.style.inset = '0';
+      ld.style.background = '#070A14'; 
+      ld.style.color = '#34D399'; 
+      ld.style.display = 'flex';
+      ld.style.flexDirection = 'column';
+      ld.style.justifyContent = 'center';
+      ld.style.alignItems = 'center';
+      ld.style.zIndex = '9999999'; 
+      ld.style.fontFamily = '"Space Mono", monospace'; 
+      ld.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+      
+      ld.innerHTML = `
+        <div style="font-size: 2rem; margin-bottom: 20px; color: #F2B84B; font-family: 'Instrument Serif', serif; font-style: italic;">Traffic Academy</div>
+        <div style="font-size: 1.2rem; margin-bottom: 10px;">Loading 3D Open World...</div>
+        <div style="width: 300px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; margin-bottom: 15px;">
+            <div id="ml-bar" style="width: 0%; height: 100%; background: #34D399; transition: width 0.1s linear;"></div>
+        </div>
+        <div id="ml-pct" style="font-size: 1.5rem; font-weight: bold;">0%</div>
+      `;
       document.body.appendChild(ld);
 
       // Sequential loading to prevent main thread freezing
       const loadNext = (index) => {
         if (index >= filesToLoad.length) {
-            ld.innerHTML = '✅ Graphics Upgraded';
-            setTimeout(() => ld.style.opacity = '0', 3000);
-            setTimeout(() => ld.remove(), 4000);
+            ld.innerHTML = `
+                <div style="font-size: 2.5rem; margin-bottom: 20px; color: #34D399; font-family: 'Instrument Serif', serif; font-style: italic;">World Ready!</div>
+                <div style="font-size: 1rem; color: #8891AA;">Entering Traffic Academy...</div>
+            `;
+            setTimeout(() => {
+                ld.style.opacity = '0';
+                ld.style.transform = 'scale(1.05)';
+                setTimeout(() => ld.remove(), 800);
+            }, 800);
             callback();
             return;
         }
@@ -105,20 +138,23 @@ let game = null;
             window.PRELOADED_MODELS[asset.key] = gltf.scene;
             
             loaded++;
+            const pct = Math.round((loaded / filesToLoad.length) * 100);
             const pctEl = document.getElementById('ml-pct');
-            if (pctEl) pctEl.textContent = Math.round((loaded / filesToLoad.length) * 100) + '%';
+            const barEl = document.getElementById('ml-bar');
+            if (pctEl) pctEl.textContent = pct + '%';
+            if (barEl) barEl.style.width = pct + '%';
             
             // Yield to main thread
-            setTimeout(() => loadNext(index + 1), 100);
+            setTimeout(() => loadNext(index + 1), 20); // Faster background loading 20ms instead of 100ms
         }, undefined, (err) => {
             console.error("Error loading asset:", asset.file, err);
             loaded++;
-            setTimeout(() => loadNext(index + 1), 100);
+            setTimeout(() => loadNext(index + 1), 20);
         });
       };
       
-      // Wait 1.5s after game starts before initiating background downloads
-      setTimeout(() => loadNext(0), 1500);
+      // Start immediately
+      setTimeout(() => loadNext(0), 100);
     }
     // Confetti particle system
     window.confetti = {
@@ -246,9 +282,12 @@ let game = null;
 
     window.ui = ui; window.sfx = sfx;
     preloadModels(() => {
+      ui.init();
       game = new Game();
       window.game = game;
-      ui.showStart();
+      // ui.init already calls show('ss'), but we can be explicit:
+      // ui.showStart() might not exist, but let's just use ui.show('ss') to be safe
+      if (ui.showStart) ui.showStart();
     });
   
     async function downloadSourceCode(e) {

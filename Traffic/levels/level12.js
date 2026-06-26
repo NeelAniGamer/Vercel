@@ -1,37 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 12,
-  "icon": "\ud83d\udea6",
-  "name": "Ambulance Priority",
-  "v": "\ud83c\udfcd\ufe0f Two-Wheeler",
+  "icon": "🛤️",
+  "name": "Railway Crossing",
+  "v": "🏍️ Bike",
   "col": "#c0392b",
-  "gr": "linear-gradient(135deg,#922b21,#c0392b)",
-  "tg": "Payload Threshold Boundaries",
-  "ds": "Always make way for emergency vehicles immediately.",
+  "ds": "You approach a manned railway crossing and the gates are closing. DO NOT try to duck under the gates!",
   "hps": [
-    "Payload constraints allow maximum 2 occupants per unit.",
-    "Excess loading severely limits target braking and deceleration performance metrics.",
-    "Braking Physics: Relationship between velocity, reaction time, and momentum.",
-    "Speed Limits: The mathematical justification for urban velocity caps."
+    "Never cross a closed railway gate.",
+    "Trains cannot stop quickly.",
+    "Wait patiently till the gates open completely."
   ],
   "law": {
-    "sec": "Section 128, Motor Vehicles Act 1988",
-    "fine": "\u20b91,000",
-    "off": "Triple riding or exceeding payload index on two-wheelers"
+    "sec": "Section 146, Railways Act",
+    "fine": "Imprisonment/Fine",
+    "off": "Trespassing Level Crossing"
   },
-  "theory": "Every second counts for an ambulance. Giving way saves lives.",
-  "pract": "Make way for the ambulance approaching from behind.",
+  "theory": "Ducking under railway gates is highly illegal and fatal. A train takes nearly a kilometer to come to a halt.",
+  "pract": "Stop your bike behind the barrier and wait until the train passes and gates open.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "How does payload overloading modify braking performance dimensions?",
+      "q": "Can you slide under the railway crossing gate if no train is visible?",
       "o": [
-        "Makes stopping easier",
-        "Makes it much harder to stop",
-        "Has no effect"
+        "Yes",
+        "No, never",
+        "Only if on a bike"
       ],
       "a": 1
+    },
+    {
+      "q": "Why is it hard for a train to stop for you?",
+      "o": [
+        "High momentum takes a long stopping distance",
+        "Driver cant see you",
+        "Train brakes are weak"
+      ],
+      "a": 0
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

@@ -5,6 +5,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>Mumbai Traffic Hero Academy</title>
+  
+  <!-- Cloud Auth & Sync Logic -->
+  <script>
+    const _oldFetch = window.fetch;
+    window.fetch = function() {
+      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
+        arguments[0] = '../' + arguments[0];
+      }
+      return _oldFetch.apply(this, arguments);
+    };
+  </script>
+  <script defer src="../col-router.js"></script>
+  <link rel="stylesheet" href="../col-ui.css">
+  <script defer src="../col-ui.js"></script>
+  <script defer src="../col-auth.js"></script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -38,6 +54,13 @@
       margin: 0;
       padding: 0;
       font-family: 'Inter', sans-serif;
+    }
+
+    #3c {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
     }
 
     body {
@@ -2421,21 +2444,6 @@
   <script src="ui.js"></script>
   <script src="game_core.js"></script>
   <script src="start.js"></script>
-
-  <!-- Cloud Auth & Sync Logic -->
-  <script>
-    const _oldFetch = window.fetch;
-    window.fetch = function() {
-      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
-        arguments[0] = '../' + arguments[0];
-      }
-      return _oldFetch.apply(this, arguments);
-    };
-  </script>
-  <script defer src="../col-router.js"></script>
-  <link rel="stylesheet" href="../col-ui.css">
-  <script defer src="../col-ui.js"></script>
-  <script defer src="../col-auth.js"></script>
 
 </body>
 

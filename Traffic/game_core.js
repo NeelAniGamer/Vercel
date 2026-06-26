@@ -205,7 +205,17 @@ class Game {
         document.getElementById('gread').textContent = 'GEAR: ' + g;
         document.querySelectorAll('.gb').forEach(b => b.classList.toggle('ag', b.dataset.g === g));
       }
-      _horn() { if (this.mode === 'silentzone' && this.ms.inSz) { this.vio++; this.score -= 50; this.fine += 2000; ui.issueChallan('Horn in silent zone', 'Sec 190(2) MV Act', '₹2,000', 'Hospital Perimeter Zone'); } else { toast('📢 Beep Beep!', '#ffd54a'); sfx.play('horn'); } }
+      _horn() { 
+          if (this.mode === 'silentzone' || (this.mapCfg && [2, 6, 17].includes(this.mapCfg.id))) { 
+              this.vio++; 
+              this.score -= 50; 
+              this.fine += 2000; 
+              ui.issueChallan('Honking in No-Honking Zone', 'Sec 190(2) MV Act', '₹2,000', 'Silence Zone Violation'); 
+          } else { 
+              toast('📢 Beep Beep!', '#ffd54a'); 
+              sfx.play('horn'); 
+          } 
+      }
       _brake() { this.speed *= .35; sfx.play('brake'); toast('🛑 Hard Deceleration Active', '#fff'); }
       startLevel() { const cd = document.getElementById('cdown'); cd.classList.add('on'); setTimeout(() => { cd.classList.remove('on'); this._actualStart(ui.cur); }, 1500); }
       _actualStart(lv) {
@@ -322,9 +332,13 @@ class Game {
                 ints.push([i, j]);
              }
           }
-          return { name: '50km Open World', sky: 0x6fb8e0, fog: 2000, ground: 0x444444, amb: 0.9, veh: 'car', npcTypes: ['car', 'bike', 'bus', 'truck'], roads: rds, ints: ints, bldg: [], route: [], timeLimit: 999999, is50km: true };
+          let cfg = { name: '50km Open World', sky: 0x6fb8e0, fog: 2000, ground: 0x444444, amb: 0.9, veh: 'car', npcTypes: ['car', 'bike', 'bus', 'truck'], roads: rds, ints: ints, bldg: [], route: [], timeLimit: 999999, is50km: true };
+          cfg.startOutside = true;
+          return cfg;
         }
-        return M[lvId] || M[1];
+        let cfg = M[lvId] || M[1];
+        cfg.startOutside = true;
+        return cfg;
 
       }
 
@@ -440,44 +454,21 @@ class Game {
           const cx = isV ? r.x : (r.x1 + r.x2) / 2;
           const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
 
-          // Logical invisible road bed
-          const roadHb = new THREE.Mesh(isV ? new THREE.PlaneGeometry(RW, len) : new THREE.PlaneGeometry(len, RW), new THREE.MeshBasicMaterial({color: 0x21232b}));
+          // Logical road bed with texture
+          const tLoader = new THREE.TextureLoader();
+          const roadTex = tLoader.load('Models/road__avenue__street/textures/Polygon_1_baseColor.png');
+          roadTex.wrapS = THREE.RepeatWrapping; roadTex.wrapT = THREE.RepeatWrapping;
+          const roadMat = new THREE.MeshLambertMaterial({ map: roadTex, color: 0xaaaaaa });
+
+          const roadHb = new THREE.Mesh(isV ? new THREE.PlaneGeometry(RW, len) : new THREE.PlaneGeometry(len, RW), roadMat);
+          roadTex.repeat.set(isV ? 1 : len / 10, isV ? len / 10 : 1);
           roadHb.rotation.x = -Math.PI / 2; roadHb.position.set(cx, .02, cz); this.scene.add(roadHb); this.world.push(roadHb);
 
-          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['road_straight']) {
-              const startP = isV ? Math.min(r.z1, r.z2) : Math.min(r.x1, r.x2);
-              const endP = isV ? Math.max(r.z1, r.z2) : Math.max(r.x1, r.x2);
-              const tileLen = 10;
-              const tileScale = RW / 10; 
-              
-              for (let p = startP; p <= endP; p += (tileLen * tileScale)) {
-                  let nearInt = false;
-                  (cfg.ints || []).forEach(([ix, iz]) => {
-                      if (isV && Math.abs(p - iz) < 5) nearInt = true;
-                      if (!isV && Math.abs(p - ix) < 5) nearInt = true;
-                  });
-                  if (nearInt) continue;
-
-                  const tile = window.PRELOADED_MODELS['road_straight'].clone();
-                  tile.scale.set(tileScale, tileScale, tileScale);
-                  tile.position.set(isV ? cx : p, 0, isV ? p : cz);
-                  if (!isV) tile.rotation.y = Math.PI / 2;
-                  
-                  tile.traverse(c => { 
-                      if(c.isMesh) { c.castShadow = false; c.receiveShadow = true; c.frustumCulled = true; }
-                  });
-                  this.scene.add(tile);
-              }
-          } else {
-             // Yellow mid-line fallback
-             const midLine = new THREE.Mesh(isV ? new THREE.PlaneGeometry(0.15, len) : new THREE.PlaneGeometry(len, 0.15), mats.yellowLine);
-             midLine.rotation.x = -Math.PI / 2; midLine.position.set(cx, .025, cz); this.scene.add(midLine);
              // Sidewalks
              [-1, 1].forEach(s => {
                const swW = cfg.isPedestrian ? 5 : 2.5; const pb = new THREE.Mesh(isV ? new THREE.BoxGeometry(swW, .15, len) : new THREE.BoxGeometry(len, .15, swW), mats.pave);
                pb.position.set(isV ? cx + s * (RW / 2 + swW / 2) : cx, .07, isV ? cz : cz + s * (RW / 2 + swW / 2)); this.scene.add(pb); this.world.push(pb);
-             });
-          }
+              });
         });
 
         // Advanced Procedural Cityscape
@@ -646,26 +637,79 @@ class Game {
         // Intersections with signals and zebra crossings
         (cfg.ints || []).forEach(([ix, iz]) => {
           this._sig(ix + 4.2, iz);
+
+          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['road_cross']) {
+             const intTile = window.PRELOADED_MODELS['road_cross'].clone();
+             const tileScale = RW / 10;
+             intTile.scale.set(tileScale, tileScale, tileScale);
+             intTile.position.set(ix, 0.03, iz);
+             intTile.traverse(c => { if(c.isMesh) { c.receiveShadow = true; }});
+             this.scene.add(intTile);
+          }
+
           if (this.isPedestrian) {
             const drawZb = (px, pz, rot) => {
               for (let w = -5; w <= 5; w += 1.4) {
                 const zb = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 4), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-                zb.rotation.x = -Math.PI / 2; zb.position.set(ix + w, .035, iz + RW / 2 + 1); this.scene.add(zb);
+                zb.rotation.x = -Math.PI / 2; zb.position.set(ix + w, .04, iz + RW / 2 + 1); this.scene.add(zb);
               }
-              [-1, 1].forEach(ys => { const yb = new THREE.Mesh(new THREE.PlaneGeometry(12, .3), new THREE.MeshBasicMaterial({ color: 0xffcc00 })); yb.rotation.x = -Math.PI / 2; yb.position.set(ix, .036, iz + RW / 2 + 1 + ys * 2.2); this.scene.add(yb); })
+              [-1, 1].forEach(ys => { const yb = new THREE.Mesh(new THREE.PlaneGeometry(12, .3), new THREE.MeshBasicMaterial({ color: 0xffcc00 })); yb.rotation.x = -Math.PI / 2; yb.position.set(ix, .041, iz + RW / 2 + 1 + ys * 2.2); this.scene.add(yb); })
             };
             drawZb(ix, iz + 6.5, 0); drawZb(ix, iz - 6.5, 0);
             drawZb(ix + 6.5, iz, Math.PI / 2); drawZb(ix - 6.5, iz, Math.PI / 2);
           } else {
             for (let w = -4; w <= 4; w += 1.6) {
               const zb = new THREE.Mesh(new THREE.PlaneGeometry(1, 3), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-              zb.rotation.x = -Math.PI / 2; zb.position.set(ix + w, .028, iz + RW / 2 + 1); this.scene.add(zb);
+              zb.rotation.x = -Math.PI / 2; zb.position.set(ix + w, .04, iz + RW / 2 + 1); this.scene.add(zb);
             }
           }
         });
 
         // NPC Traffic - diverse vehicle types
         const npcTypes = cfg.npcTypes || (cfg.isPedestrian ? ['car', 'car', 'auto', 'bike', 'taxi', 'bus', 'car', 'auto', 'bike', 'car', 'taxi', 'bus'] : ['car', 'car', 'auto', 'bike']);
+        
+        // Spawn Animals
+        this.animals = [];
+        if (window.PRELOADED_MODELS) {
+            const animalKeys = ['animal_dog', 'animal_cow', 'animal_cat'].filter(k => window.PRELOADED_MODELS[k]);
+            if (animalKeys.length > 0) {
+                const numAnimals = Math.floor(Math.random() * 4) + 2; // 2 to 5 animals per level
+                for (let i = 0; i < numAnimals; i++) {
+                    const type = animalKeys[Math.floor(Math.random() * animalKeys.length)];
+                    const anim = window.PRELOADED_MODELS[type].clone();
+                    anim.scale.set(4, 4, 4); // Kenney animals are small
+                    anim.traverse(c => { if(c.isMesh) { c.castShadow = true; c.receiveShadow = true; }});
+                    
+                    const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
+                    const isV = seg.type === 'v';
+                    const minP = isV ? Math.min(seg.z1, seg.z2) : Math.min(seg.x1, seg.x2);
+                    const maxP = isV ? Math.max(seg.z1, seg.z2) : Math.max(seg.x1, seg.x2);
+                    const p = minP + Math.random() * (maxP - minP);
+                    const offset = (Math.random() - 0.5) * 6; // random side of the road
+                    
+                    anim.position.set(isV ? seg.x + offset : p, 0.3, isV ? p : seg.z + offset);
+                    anim.rotation.y = Math.random() * Math.PI * 2;
+                    this.scene.add(anim);
+                    this.animals.push({ mesh: anim, vx: (Math.random()-0.5)*0.01, vz: (Math.random()-0.5)*0.01 });
+                    this.obstacles.push(anim);
+                }
+            }
+        }
+        
+        // Spawn Boats if Bridge/Water
+        if (cfg.isBridge && window.PRELOADED_MODELS) {
+            const boatKeys = ['ship_cargo', 'boat_speed'].filter(k => window.PRELOADED_MODELS[k]);
+            if (boatKeys.length > 0) {
+                for (let i = 0; i < 4; i++) {
+                    const type = boatKeys[Math.floor(Math.random() * boatKeys.length)];
+                    const boat = window.PRELOADED_MODELS[type].clone();
+                    boat.scale.set(10, 10, 10);
+                    boat.position.set((Math.random() - 0.5) * 500, -2, (Math.random() - 0.5) * 500);
+                    boat.rotation.y = Math.random() * Math.PI * 2;
+                    this.scene.add(boat);
+                }
+            }
+        }
         const designColors = [0xff4444, 0x1e90ff, 0x3a3a3a, 0xffd54a, 0xffffff, 0x888888, 0x27ae60, 0xf39c12];
         const allRoads = cfg.roads;
         npcTypes.forEach((nType, i) => {
@@ -712,15 +756,127 @@ class Game {
           for (let i = 0; i < 15; i++) {
             const p = new THREE.Mesh(new THREE.CylinderGeometry(1.4 + Math.random(), 1.5 + Math.random(), .08, 12), new THREE.MeshPhongMaterial({ color: 0x0c101a, transparent: true, opacity: 0.6 }));
             p.position.set((Math.random() - .5) * 120, 0.016, (Math.random() - .5) * 160); this.scene.add(p); this.spc.push(p); p.userData = { isPH: true };
-          }
+        // Puddles for level 5 (Rain & Slippery Roads)
+        this.puddles = [];
+        if (cfg.id === 5) {
+            for (let i = 0; i < 10; i++) {
+                const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+                const isV = seg.type === 'v';
+                const p = new THREE.Mesh(
+                    new THREE.CylinderGeometry(2, 2, 0.05, 16), 
+                    new THREE.MeshBasicMaterial({ color: 0x3498db, transparent: true, opacity: 0.6 })
+                );
+                const minP = isV ? Math.min(seg.z1, seg.z2) : Math.min(seg.x1, seg.x2);
+                const maxP = isV ? Math.max(seg.z1, seg.z2) : Math.max(seg.x1, seg.x2);
+                const pos = minP + Math.random() * (maxP - minP);
+                const offset = (Math.random() - 0.5) * 6;
+                p.position.set(isV ? seg.x + offset : pos, 0.03, isV ? pos : seg.z + offset);
+                this.scene.add(p);
+                this.puddles.push(p);
+            }
         }
-        if (cfg.hasEmergency) {
-          this.ms.amb = this._makeNPC('car', 0xffffff); this.ms.amb.position.set(0, 0, -230);
+        
+        if (cfg.hasEmergency || cfg.id === 8) {
+          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['ambulance']) {
+              this.ms.amb = window.PRELOADED_MODELS['ambulance'].clone();
+              this.ms.amb.scale.set(1.5, 1.5, 1.5);
+              this.ms.amb.traverse(c => { if(c.isMesh) { c.castShadow = true; c.receiveShadow = true; }});
+          } else {
+              this.ms.amb = this._makeNPC('car', 0xffffff);
+          }
+          this.ms.amb.position.set(0, 0.5, -230);
           this.ms.amb.userData = { spd: 1.2, isAmb: true, npcType: 'ambulance', moveAxis: 'v' };
           const flash = new THREE.PointLight(0xff0000, 2, 8); flash.position.y = 1.5; this.ms.amb.add(flash);
           const flash2 = new THREE.PointLight(0x0000ff, 2, 8); flash2.position.set(.5, 1.5, 0); this.ms.amb.add(flash2);
           this.npcs.push(this.ms.amb); this.scene.add(this.ms.amb);
         }
+        
+        // Train / Metro Logic
+        this.trains = [];
+        if (cfg.id === 12 && window.PRELOADED_MODELS && window.PRELOADED_MODELS['train']) {
+            // Railway crossing level
+            const train = window.PRELOADED_MODELS['train'].clone();
+            train.scale.set(6, 6, 6);
+            train.position.set(100, 0, 50); // crosses Z at 50
+            train.rotation.y = -Math.PI / 2;
+            this.scene.add(train);
+            this.trains.push({ mesh: train, vx: -0.8 });
+            
+            // Add a barrier
+            const barrier = new THREE.Mesh(new THREE.BoxGeometry(10, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+            barrier.position.set(0, 1, 40);
+            this.scene.add(barrier);
+            this.obstacles.push(barrier);
+        }
+        if (cfg.id === 9 && window.PRELOADED_MODELS && window.PRELOADED_MODELS['metro']) {
+            // Metro station level
+            const metro = window.PRELOADED_MODELS['metro'].clone();
+            metro.scale.set(6, 6, 6);
+            metro.position.set(100, 15, 0); // elevated
+            metro.rotation.y = -Math.PI / 2;
+            this.scene.add(metro);
+            this.trains.push({ mesh: metro, vx: -0.6 });
+        }
+        
+        // Bus Stop Logic
+        if (cfg.id === 7) {
+            const busStop = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 2), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+            busStop.position.set(6, 1.5, 30);
+            this.scene.add(busStop);
+            this.obstacles.push(busStop);
+            
+            const bus = this._makeNPC('bus', 0xffffff);
+            bus.position.set(4, 0, 30);
+            bus.userData = { spd: 0, npcType: 'bus', moveAxis: 'v', isStopped: true };
+            this.npcs.push(bus);
+            this.scene.add(bus);
+            
+            // Pedestrians waiting
+            for (let i = 0; i < 3; i++) {
+                const ped = this._makePed();
+                ped.position.set(7 + i, 0, 30 + Math.random()*2);
+                ped.userData.vx = 0; ped.userData.vz = 0;
+            }
+        }
+        
+        // Custom Monuments and Sneh Asha
+        if (cfg.id === 1) {
+            // Sneh Asha Building
+            const saGeo = new THREE.BoxGeometry(10, 40, 10);
+            const saMat = new THREE.MeshPhongMaterial({ color: 0xe0e0e0 });
+            const saBldg = new THREE.Mesh(saGeo, saMat);
+            saBldg.position.set(-30, 20, 0);
+            this.scene.add(saBldg);
+            this.obstacles.push(saBldg);
+            
+            new THREE.TextureLoader().load('sneh-logo.webp', tex => {
+                const logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
+                logoMesh.position.set(-24.9, 30, 0);
+                logoMesh.rotation.y = Math.PI / 2;
+                this.scene.add(logoMesh);
+            });
+            
+            // India Gate (Simple representation)
+            const igGroup = new THREE.Group();
+            const pillarMat = new THREE.MeshPhongMaterial({ color: 0xd2b48c });
+            const p1 = new THREE.Mesh(new THREE.BoxGeometry(4, 15, 6), pillarMat); p1.position.set(-8, 7.5, 0); igGroup.add(p1);
+            const p2 = new THREE.Mesh(new THREE.BoxGeometry(4, 15, 6), pillarMat); p2.position.set(8, 7.5, 0); igGroup.add(p2);
+            const top = new THREE.Mesh(new THREE.BoxGeometry(22, 4, 8), pillarMat); top.position.set(0, 17, 0); igGroup.add(top);
+            igGroup.position.set(0, 0, -80);
+            this.scene.add(igGroup);
+            this.obstacles.push(p1); this.obstacles.push(p2);
+        }
+        
+        // Gully / Narrow Road Elements
+        if (cfg.id === 10) {
+            for (let i=0; i<15; i++) {
+                const cart = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 3), new THREE.MeshLambertMaterial({ color: 0x8b4513 }));
+                cart.position.set((Math.random() > 0.5 ? 1 : -1) * (2 + Math.random()*2), 0.75, (Math.random() - 0.5) * 150);
+                this.scene.add(cart);
+                this.obstacles.push(cart);
+            }
+        }
+        
         // ── MOUNTAIN BACKDROP ──
         if (cfg.hasMountain) {
           const mM = new THREE.MeshPhongMaterial({ color: 0x4a6040 });
@@ -993,7 +1149,7 @@ class Game {
       _loop() {
         requestAnimationFrame(() => this._loop()); if (!this.playing || this.pause) { if (this.renderer && this.scene && this.camera) this.renderer.render(this.scene, this.camera); return; }
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(); this._uobs(); this._umode(dt); this._ucam(); this._uhud(); this._ummap();
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._uanimals(); this._ucps(); this._uobs(); this._umode(dt); this._ucam(); this._uhud(); this._ummap(); this._utransit();
         
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
@@ -1370,8 +1526,47 @@ class Game {
         this.obstacles.forEach(o => {
           const dx = px - o.position.x, dz = pz - o.position.z;
           if (dx * dx + dz * dz > 400) return;
-          if (this.player.position.distanceTo(o.position) < 1.6) { this.hp -= 10; if (this.hp <= 0) this._go('Collided with Barricade'); else this._uh(); this.speed *= -.2; toast('🚧 Collided with Barricade bounds!', '#ff9500'); }
+          if (this.player.position.distanceTo(o.position) < 1.6) { 
+              this.hp -= 10; 
+              if (this.hp <= 0) this._go(o.userData && o.userData.isAnimal ? 'Animal Collision' : 'Collided with Barricade'); 
+              else this._uh(); 
+              this.speed *= -.2; 
+              toast(o.userData && o.userData.isAnimal ? '🐕 Hit an animal! (-10)' : '🚧 Collided with Barricade bounds!', '#ff9500'); 
+          }
         });
+        
+        if (this.puddles) {
+            this.puddles.forEach(p => {
+                if (this.player.position.distanceTo(p.position) < 2.5 && Math.abs(this.speed) > 0.15 && !p.userData.splashed) {
+                    p.userData.splashed = true;
+                    this.score -= 50;
+                    this.fine += 500;
+                    ui.issueChallan('Splashed water on pedestrians', 'Sec 184 MV Act', '₹500', 'Reckless Driving');
+                    toast('💦 Splashed Water! Too Fast!', '#ff3b30');
+                    sfx.play('error');
+                }
+            });
+        }
+      }
+      _uanimals() {
+          if (!this.animals) return;
+          this.animals.forEach(a => {
+              a.position.x += a.userData.vx;
+              a.position.z += a.userData.vz;
+              if (a.position.x > 30) a.userData.vx = -Math.abs(a.userData.vx);
+              if (a.position.x < -30) a.userData.vx = Math.abs(a.userData.vx);
+              if (a.position.z > 30) a.userData.vz = -Math.abs(a.userData.vz);
+              if (a.position.z < -30) a.userData.vz = Math.abs(a.userData.vz);
+              if (a.userData.vx > 0) a.rotation.y = Math.PI / 2;
+              else if (a.userData.vx < 0) a.rotation.y = -Math.PI / 2;
+          });
+      }
+      _utransit() {
+          if (!this.trains) return;
+          this.trains.forEach(t => {
+              t.mesh.position.x += t.vx;
+              if (t.mesh.position.x < -100) t.mesh.position.x = 100;
+          });
       }
       _ucps() {
         let hits = 0;

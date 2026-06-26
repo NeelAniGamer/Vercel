@@ -1,37 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 5,
-  "icon": "\ud83d\ude8c",
-  "name": "Pedestrian Courtesy",
-  "v": "\ud83d\ude8c BEST Bus",
-  "col": "#d4ac0d",
-  "gr": "linear-gradient(135deg,#b7950b,#d4ac0d)",
-  "tg": "School Zone Containment",
-  "ds": "Yield to pedestrians even when there are no designated crossings. Civic sense dictates safety first.",
+  "icon": "🌧️",
+  "name": "Rain & Slippery Roads",
+  "v": "🚗 Car",
+  "col": "#34495e",
+  "ds": "It's raining heavily. The roads are slippery, and pedestrians are nearby. Drive slowly to avoid splashing water on them.",
   "hps": [
-    "School perimeter maximum threshold is strictly set at 30 km/h.",
-    "Deploy caution light arrays while embarking passengers.",
-    "Blind Spots: Geometric zones of invisibility around large vehicles.",
-    "School Zones: High-density pedestrian protocol and dynamic speed limits."
+    "Reduce speed in the rain.",
+    "Maintain a larger safe distance.",
+    "Watch out for puddles near pedestrians."
   ],
   "law": {
-    "sec": "Section 112, Motor Vehicles Act 1988",
-    "fine": "\u20b92,000",
-    "off": "Exceeding speed limit near schools"
+    "sec": "Section 184, MV Act",
+    "fine": "₹1000",
+    "off": "Dangerous Driving"
   },
-  "theory": "Giving way to pedestrians builds a safer community.",
-  "pract": "Drive carefully and stop whenever you see pedestrians crossing the road.",
+  "theory": "Wet roads reduce traction (hydroplaning). Splashing water on pedestrians is a serious lack of civic sense.",
+  "pract": "Drive at a low speed, especially near pedestrians, to prevent splashing.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "What is the speed limit in school zones?",
+      "q": "What happens to braking distance on a wet road?",
       "o": [
-        "50 km/h",
-        "30 km/h",
-        "No special restriction"
+        "It decreases",
+        "It increases",
+        "Stays the same"
+      ],
+      "a": 1
+    },
+    {
+      "q": "What should you do if you see a puddle near a pedestrian?",
+      "o": [
+        "Speed up",
+        "Slow down or avoid it",
+        "Honk at them"
       ],
       "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

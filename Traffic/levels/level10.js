@@ -1,37 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 10,
-  "icon": "\ud83d\udefa",
-  "name": "Respectful Parking",
-  "v": "\ud83d\udefa Auto Rickshaw",
-  "col": "#d68910",
-  "gr": "linear-gradient(135deg,#9a6b0a,#d68910)",
-  "tg": "Spatial Lane Allocation",
-  "ds": "Park your vehicle such that it does not obstruct sidewalks or driveways.",
+  "icon": "🛺",
+  "name": "Gully Driving (Narrow Roads)",
+  "v": "🛺 Auto",
+  "col": "#d35400",
+  "ds": "You are driving an auto-rickshaw through a narrow gully. There are kids playing and tight turns. Drive with extreme caution.",
   "hps": [
-    "Slower commercial transport units must stay positioned inside the leftmost lane limits.",
-    "Overtake only using rightward lane parameters.",
-    "Road Markings: The syntax of painted lines, arrows, and hash marks.",
-    "Tailgating Math: Calculating safe following distances via time offsets."
+    "Speed limit is very low in residential alleys.",
+    "Watch out for kids and pets darting out.",
+    "Honk mildly only at blind turns."
   ],
   "law": {
-    "sec": "Section 112, Motor Vehicles Act 1988",
-    "fine": "1,000",
-    "off": "Improper lane utilization / erratic lane weaving patterns"
+    "sec": "Section 112, MV Act",
+    "fine": "₹1000",
+    "off": "Speeding"
   },
-  "theory": "Proper parking ensures pedestrians and other vehicles are not inconvenienced.",
-  "pract": "Find a parking spot that does not block any pathways.",
+  "theory": "Narrow residential roads (gullies) have zero margin for error. Kids and pets can unexpectedly jump into the street.",
+  "pract": "Navigate the narrow gully without hitting any obstacle or speeding.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "Which lane is legally designated for slower transport units?",
+      "q": "What is the biggest risk in a narrow residential gully?",
       "o": [
-        "The rightmost fast track",
-        "The leftmost slow track lane",
-        "Any arbitrary line marker"
+        "Traffic jams",
+        "Kids darting into the road",
+        "Highway speeds"
+      ],
+      "a": 1
+    },
+    {
+      "q": "Should you use high beam headlights in a gully?",
+      "o": [
+        "Yes",
+        "No",
+        "Always"
       ],
       "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

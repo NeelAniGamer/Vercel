@@ -1,37 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 3,
-  "icon": "\u26d1\ufe0f",
-  "name": "Ambulance Priority",
-  "v": "\ud83c\udfcd\ufe0f Two-Wheeler",
-  "col": "#f39c12",
-  "gr": "linear-gradient(135deg,#d68910,#f39c12)",
-  "tg": "Protective Safety Gear",
-  "ds": "Always make way for emergency vehicles immediately.",
+  "icon": "🏍️",
+  "name": "Bike Footpath Temptation",
+  "v": "🏍️ Bike",
+  "col": "#3498db",
+  "ds": "Traffic is completely jammed. You see other bikers jumping onto the footpath to bypass it. Will you follow the rules?",
   "hps": [
-    "ISI-marked certified safety helmet is mandatory for all occupants.",
-    "Chin straps must be anchored tight.",
-    "Vision Systems: Understanding human FOV and visual processing speeds.",
-    "Glare & Optics: Sun glare, reflections, and retinal saturation."
+    "Footpaths are strictly for pedestrians.",
+    "Riding on a footpath is illegal and dangerous.",
+    "Stay in your lane."
   ],
   "law": {
-    "sec": "Section 194D, Motor Vehicles Act 1988",
-    "fine": "\u20b91,000",
-    "off": "Operating two-wheeler without protective headgear"
+    "sec": "Section 177, MV Act",
+    "fine": "₹500",
+    "off": "Driving on Footpath"
   },
-  "theory": "Every second counts for an ambulance. Giving way saves lives.",
-  "pract": "Make way for the ambulance approaching from behind.",
+  "theory": "Two-wheelers often cause accidents by invading pedestrian spaces. Good civic sense means staying on the road.",
+  "pract": "Stay on the road and do not drive onto the footpath to bypass the jam.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "What is the helmet rule for bike riders?",
+      "q": "Can you ride on the footpath if the road is jammed?",
       "o": [
-        "Helmets are not needed for the passenger",
-        "Both rider and passenger must wear helmets",
-        "Only the driver needs a helmet"
+        "Yes",
+        "No",
+        "Only slowly"
       ],
       "a": 1
+    },
+    {
+      "q": "Who has the right of way on a footpath?",
+      "o": [
+        "Bikes",
+        "Cars",
+        "Pedestrians"
+      ],
+      "a": 2
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

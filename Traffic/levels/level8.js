@@ -1,36 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 8,
-  "icon": "\ud83d\ude91",
+  "icon": "🚑",
   "name": "Ambulance Priority",
-  "v": "\ud83d\ude97 Car",
+  "v": "🚗 Car",
   "col": "#c0392b",
-  "gr": "linear-gradient(135deg,#922b21,#e74c3c)",
-  "tg": "Emergency Lane Yields",
-  "ds": "Always make way for emergency vehicles immediately.",
+  "ds": "You hear a siren. An ambulance is behind you. You must pull over to the left and give way immediately.",
   "hps": [
-    "Yield left immediately upon receiving audible siren alerts.",
-    "Do not follow emergency transit within close spacing vectors.",
-    "Acoustic Warnings: The role of sirens, horns, and auditory environmental awareness."
+    "Emergency vehicles always have right of way.",
+    "Move to the left edge of the road.",
+    "Never tailgate an ambulance."
   ],
   "law": {
-    "sec": "Section 194E, Motor Vehicles Act 1988",
-    "fine": "\u20b910,000",
-    "off": "Blocking an ambulance or fire truck"
+    "sec": "Section 194E, MV Act",
+    "fine": "₹10,000",
+    "off": "Blocking Ambulance"
   },
-  "theory": "Every second counts for an ambulance. Giving way saves lives.",
-  "pract": "Make way for the ambulance approaching from behind.",
+  "theory": "A delayed ambulance can cost a life. Blocking emergency vehicles is a severe offense in India.",
+  "pract": "Pull your car to the left as soon as you hear the siren to let the ambulance pass.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "What is the regulatory penalty for blocking ambulances and fire trucks?",
+      "q": "What is the fine for blocking an ambulance?",
       "o": [
-        "\u20b9500",
-        "\u20b92,000",
-        "An official e-challan of \u20b910,000"
+        "₹1000",
+        "₹5000",
+        "₹10,000"
       ],
       "a": 2
+    },
+    {
+      "q": "Where should you move when an ambulance is behind you?",
+      "o": [
+        "To the left",
+        "To the right",
+        "Stop in the middle"
+      ],
+      "a": 0
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

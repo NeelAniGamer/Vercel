@@ -1,36 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 2,
-  "icon": "\ud83d\udeb6",
-  "name": "Respectful Parking",
-  "v": "\ud83d\udeb6 Pedestrian",
-  "col": "#27ae60",
-  "gr": "linear-gradient(135deg,#1e8449,#27ae60)",
-  "tg": "Pedestrian Right-of-Way",
-  "ds": "Park your vehicle such that it does not obstruct sidewalks or driveways.",
+  "icon": "🚗",
+  "name": "Wait in Traffic (No Honking)",
+  "v": "🚗 Car",
+  "col": "#e74c3c",
+  "ds": "You are stuck in heavy traffic. Others are honking impatiently. Keep your cool, don't honk, and wait patiently.",
   "hps": [
-    "Zebra lanes give absolute pedestrian right of way.",
-    "Always yield when pedestrians step off the curb bounds.",
-    "Entity Priority: Navigating crosswalks and defining pedestrian priorities."
+    "Honking does not clear traffic.",
+    "Noise pollution affects everyone.",
+    "Wait for the signal to turn green."
   ],
   "law": {
-    "sec": "Section 140, Motor Vehicles Act 1988",
-    "fine": "\u20b9100",
-    "off": "Failure to yield at crosswalk markings"
+    "sec": "Section 190(2), MV Act",
+    "fine": "₹1000",
+    "off": "Unnecessary Honking"
   },
-  "theory": "Proper parking ensures pedestrians and other vehicles are not inconvenienced.",
-  "pract": "Find a parking spot that does not block any pathways.",
+  "theory": "Patience in traffic reduces stress and noise pollution. Avoid honking unless it is an emergency to alert someone.",
+  "pract": "Drive through the heavy traffic without using your horn even once.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "Who holds the right of way at zebra crossings?",
+      "q": "When is honking allowed?",
       "o": [
-        "Trucks and buses",
-        "Pedestrians",
-        "Two-wheelers"
+        "To clear traffic",
+        "To alert someone of danger",
+        "To greet a friend"
+      ],
+      "a": 1
+    },
+    {
+      "q": "Does honking make traffic move faster?",
+      "o": [
+        "Yes",
+        "No",
+        "Maybe"
       ],
       "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

@@ -1,36 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 20,
-  "icon": "\ud83e\udd16",
-  "name": "No Honking Zone",
-  "v": "\ud83d\ude97 Car",
-  "col": "#34495e",
-  "gr": "linear-gradient(135deg,#2c3e50,#34495e)",
-  "tg": "Level 5 Mastery",
-  "ds": "Avoid unnecessary honking, especially near residential areas, schools, and hospitals.",
+  "icon": "🌟",
+  "name": "The Perfect Citizen",
+  "v": "🚗 Car",
+  "col": "#27ae60",
+  "ds": "The ultimate civic sense test! Drive to the Sneh Asha building while following EVERY rule: no speeding, yield to pedestrians, no honking, and perfect parking.",
   "hps": [
-    "Level 5 Autonomy: Vehicles operate entirely without human intervention.",
-    "Platooning: Aerodynamic convoying using wireless coupling saves energy.",
-    "Cybersecurity: Ensures malicious hacks cannot disrupt the vehicle network."
+    "Maintain all lane disciplines.",
+    "Obey every signal.",
+    "Apply all the knowledge from the previous 19 levels."
   ],
   "law": {
-    "sec": "Level 5 Autonomy Framework",
-    "fine": "\u20b910000",
-    "off": "Cybersecurity breach or unauthorized manual override"
+    "sec": "Motor Vehicles Act",
+    "fine": "N/A",
+    "off": "N/A"
   },
-  "theory": "Noise pollution causes stress. Civic sense means keeping the environment quiet.",
-  "pract": "Complete the route without using your horn.",
+  "theory": "A perfect citizen understands that traffic rules are not restrictions, but protocols for mutual safety and efficiency in society.",
+  "pract": "Complete the route flawlessly with 0 penalties.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "What defines Level 5 Autonomy?",
+      "q": "What is the ultimate goal of traffic rules?",
       "o": [
-        "Driver assistance",
-        "Partial automation",
-        "Fully driverless operation in all conditions"
+        "To collect fines",
+        "To ensure mutual safety and efficiency for everyone",
+        "To slow people down"
       ],
-      "a": 2
+      "a": 1
+    },
+    {
+      "q": "True or False: Civic sense only applies when police are watching.",
+      "o": [
+        "True",
+        "False",
+        "Sometimes"
+      ],
+      "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

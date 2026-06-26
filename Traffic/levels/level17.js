@@ -1,36 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 17,
-  "icon": "\ud83d\udce1",
-  "name": "Ambulance Priority",
-  "v": "\ud83d\ude97 Car",
-  "col": "#3498db",
-  "gr": "linear-gradient(135deg,#2980b9,#3498db)",
-  "tg": "IoT Traffic Networking",
-  "ds": "Always make way for emergency vehicles immediately.",
+  "icon": "🚸",
+  "name": "School Zone",
+  "v": "🏍️ Bike",
+  "col": "#f1c40f",
+  "ds": "You are entering a school zone. The speed limit is 25 km/h. Be alert for children crossing unexpectedly.",
   "hps": [
-    "IoT Traffic Nets: Follow dynamic routing suggestions to avoid phantom traffic jams.",
-    "V2X Communication: Your vehicle receives signal timing data directly from infrastructure.",
-    "Green Transit: Smooth acceleration reduces overall network emission outputs."
+    "Speed limits in school zones are strictly enforced.",
+    "Children may not look before crossing.",
+    "No honking near schools."
   ],
   "law": {
-    "sec": "City Smart Transit Ordinance",
-    "fine": "\u20b91500",
-    "off": "Ignoring mandatory dynamic routing protocols"
+    "sec": "Section 112, MV Act",
+    "fine": "₹1000 - ₹2000",
+    "off": "Speeding in School Zone"
   },
-  "theory": "Every second counts for an ambulance. Giving way saves lives.",
-  "pract": "Make way for the ambulance approaching from behind.",
+  "theory": "School zones are high-risk areas because children lack traffic sense. Drivers must compensate with extra vigilance.",
+  "pract": "Maintain a speed under 25 km/h through the entire school zone.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "What does V2X stand for?",
+      "q": "What is a typical speed limit in a school zone in India?",
       "o": [
-        "Vehicle-to-everything",
-        "Virtual-2-X",
-        "Velocity-2-Accelerate"
+        "25 km/h",
+        "40 km/h",
+        "60 km/h"
       ],
       "a": 0
+    },
+    {
+      "q": "Why is honking prohibited near schools?",
+      "o": [
+        "It scares birds",
+        "It disrupts classes and creates noise pollution",
+        "It drains the battery"
+      ],
+      "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

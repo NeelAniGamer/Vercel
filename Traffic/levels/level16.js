@@ -1,36 +1,42 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 16,
-  "icon": "\u2696\ufe0f",
-  "name": "No Honking Zone",
-  "v": "\ud83d\ude97 Car",
-  "col": "#9b59b6",
-  "gr": "linear-gradient(135deg,#8e44ad,#9b59b6)",
-  "tg": "Master Advanced Physics",
-  "ds": "Avoid unnecessary honking, especially near residential areas, schools, and hospitals.",
+  "icon": "🚧",
+  "name": "Speed Breakers & Potholes",
+  "v": "🚗 Car",
+  "col": "#e67e22",
+  "ds": "The road has speed breakers and potholes. Do not swerve dangerously to avoid them; slow down instead.",
   "hps": [
-    "Centrifugal Force: Maintain lower speeds through sharp curves to hold traction.",
-    "Vehicle Mass: Heavier vehicles require drastically longer stopping distances.",
-    "Impact Dissipation: Use modern chassis crumple zones effectively by avoiding direct kinetic transfer."
+    "Speed breakers are there for safety in busy zones.",
+    "Sudden swerving causes accidents with adjacent vehicles.",
+    "Slow down early."
   ],
   "law": {
-    "sec": "Section 184, MV Act 1988",
-    "fine": "\u20b92000",
-    "off": "Dangerous driving ignoring physics parameters"
+    "sec": "General Road Rules",
+    "fine": "N/A",
+    "off": "Dangerous Lane Changing"
   },
-  "theory": "Noise pollution causes stress. Civic sense means keeping the environment quiet.",
-  "pract": "Complete the route without using your horn.",
+  "theory": "Indian roads frequently have uneven surfaces. Defensive driving means slowing down rather than making erratic evasive maneuvers.",
+  "pract": "Navigate over the speed bumps at a slow, safe speed.",
+  "mode": "civic",
   "quiz": [
     {
-      "q": "What force acts outward on a vehicle during a sharp turn?",
+      "q": "What is the safest way to handle a pothole?",
       "o": [
-        "Centripetal Force",
-        "Centrifugal Force",
-        "Gravitational Force"
+        "Swerve suddenly to another lane",
+        "Brake hard at the last second",
+        "Slow down gradually and drive over it carefully if you cant change lanes safely"
+      ],
+      "a": 2
+    },
+    {
+      "q": "Why are speed breakers placed?",
+      "o": [
+        "To annoy drivers",
+        "To force vehicles to slow down in high-risk zones",
+        "To test shocks"
       ],
       "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

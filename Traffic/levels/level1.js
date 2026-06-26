@@ -1,56 +1,43 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 1,
-  "icon": "\ud83d\udea6",
+  "icon": "🚶‍♂️",
   "name": "Pedestrian Courtesy",
-  "v": "\ud83d\ude97 Car",
-  "col": "#e74c3c",
-  "gr": "linear-gradient(135deg,#c0392b,#e74c3c)",
-  "tg": "Master Junction Management",
-  "ds": "Yield to pedestrians even when there are no designated crossings. Civic sense dictates safety first.",
+  "v": "🚶 Walking",
+  "col": "#2ecc71",
+  "ds": "Walk on the footpath, but beware of bikes trying to use it! Stay safe and yield to proper traffic.",
   "hps": [
-    "Red configuration: Absolute stop priority.",
-    "Yellow indicator: Safely decelerate.",
-    "Green signal: Safely cross intersection bounds.",
-    "System Signals: Universal logic protocols of traffic lights and signs.",
-    "Intersection Logic: Algorithms for navigating 4-way stops and roundabouts."
+    "Use zebra crossings.",
+    "Never walk on the road if a footpath exists.",
+    "Stay alert for rule-breaking bikers on footpaths."
   ],
   "law": {
-    "sec": "Section 119, Motor Vehicles Act 1988",
-    "fine": "\u20b9500",
-    "off": "Jumping automated signals"
+    "sec": "Rules of the Road",
+    "fine": "₹100",
+    "off": "Jaywalking"
   },
-  "theory": "Giving way to pedestrians builds a safer community.",
-  "pract": "Drive carefully and stop whenever you see pedestrians crossing the road.",
+  "theory": "Pedestrians have the right of way on footpaths and zebra crossings. Be a responsible citizen.",
+  "pract": "Walk safely to your destination without stepping onto the main road unnecessarily.",
+  "mode": "civic",
+  "startOutside": true,
   "quiz": [
     {
-      "q": "What does an active yellow signal mean?",
+      "q": "Where should pedestrians walk?",
       "o": [
-        "Speed up before it turns red",
-        "Slow down and get ready to stop",
-        "Honk the horn"
+        "Main road",
+        "Footpath",
+        "Bicycle lane"
       ],
       "a": 1
     },
     {
-      "q": "What is the fine for running a red light?",
+      "q": "What to do if a bike is on the footpath?",
       "o": [
-        "\u20b9100",
-        "\u20b9500",
-        "\u20b92,000"
+        "Fight them",
+        "Move aside and report",
+        "Run"
       ],
       "a": 1
-    },
-    {
-      "q": "Which law covers traffic signal rules?",
-      "o": [
-        "Section 119, MV Act",
-        "Section 177, MV Act",
-        "Municipal Act"
-      ],
-      "a": 0
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });

@@ -1,38 +1,43 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 9,
-  "icon": "\ud83c\udf27\ufe0f",
-  "name": "Puddle Etiquette",
-  "v": "\ud83d\ude97 Car",
-  "col": "#2471a3",
-  "gr": "linear-gradient(135deg,#1a5276,#2471a3)",
-  "tg": "Adverse Friction Adaptations",
-  "ds": "Slow down when driving through puddles to avoid splashing pedestrians.",
+  "icon": "🚇",
+  "name": "Metro Station Decorum",
+  "v": "🚶 Walking",
+  "col": "#8e44ad",
+  "ds": "Navigate the busy metro station. Stand on the left of the escalator, don't cross the yellow line, and don't spit.",
   "hps": [
-    "Reduce base speed metrics by 50% on moisture-heavy roads.",
-    "Avoid deep water pooling indices to mitigate hydroplaning risks.",
-    "Weather Protocols: Traction loss algorithms during rain and snow.",
-    "Hydroplaning: Loss of traction parameters when water exceeds tire clearance.",
-    "Tire Mechanics: Friction coefficients and the rubber-to-road contact patch."
+    "Keep the station clean.",
+    "Stand behind the yellow line on platforms.",
+    "Don't block the escalator."
   ],
   "law": {
-    "sec": "Section 184, Motor Vehicles Act 1988",
-    "fine": "\u20b91,500",
-    "off": "Reckless operation under extreme atmospheric visibility constraints"
+    "sec": "Metro Railways Act",
+    "fine": "₹200 - ₹500",
+    "off": "Spitting / Nuisance"
   },
-  "theory": "Splashing dirty water on pedestrians is highly discourteous.",
-  "pract": "Drive through the rainy street without splashing anyone.",
+  "theory": "Metro systems require high passenger cooperation to run smoothly. Spitting or littering ruins public property.",
+  "pract": "Walk through the metro station while obeying all safety guidelines.",
+  "mode": "civic",
+  "startOutside": true,
   "quiz": [
     {
-      "q": "What hazard occurs when tire component matrices lose contact with asphalt due to water pooling?",
+      "q": "Where should you stand while waiting for the train?",
       "o": [
-        "Tailgating",
-        "Hydroplaning",
-        "Vapor locking"
+        "Right at the edge",
+        "Behind the yellow line",
+        "On the tracks"
+      ],
+      "a": 1
+    },
+    {
+      "q": "Can you eat or spit inside metro premises?",
+      "o": [
+        "Yes",
+        "No",
+        "Only water"
       ],
       "a": 1
     }
-  ],
-  "mode": "civic",
-  "startOutside": true
+  ]
 });
