@@ -490,9 +490,10 @@ class Game {
           if (bldgKeys.length > 0 && type !== 'school') {
              const key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
              g = window.PRELOADED_MODELS[key].clone();
-             const s = 8.0; // scale based on tile size
+             const s = 18.0; // scale based on tile size (increased significantly for visibility)
              g.scale.set(s, s, s);
-             g.traverse(c => { if(c.isMesh) { c.castShadow = false; c.receiveShadow = true; c.frustumCulled = true; }});
+             g.position.y = 0; // Ensure they are on the ground
+             g.traverse(c => { if(c.isMesh) { c.castShadow = true; c.receiveShadow = true; c.frustumCulled = true; }});
           } else {
              g = new THREE.Group();
              const mat = bMats[Math.floor(Math.random() * bMats.length)];
