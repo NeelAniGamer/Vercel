@@ -1,4 +1,5 @@
 let game = null;
+
     window.addEventListener('DOMContentLoaded', () => {
       if (document.getElementById('cert-logo-1')) {
           document.getElementById('cert-logo-1').src = typeof CERT_LOGO_1 !== 'undefined' ? CERT_LOGO_1 : '';
