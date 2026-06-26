@@ -195,12 +195,12 @@
 </div>
 
 <nav class="top-nav">
-    <a href="home.html" class="nav-brand">
+    <a href="home" class="nav-brand">
         <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" style="margin-right: 10px;" width="56" height="56" loading="lazy" decoding="async">
         <span class="mono">C:\COL\ADMIN></span>
     </a>
     <div class="nav-links">
-        <a href="home.html" class="nav-brand" style="font-size: 0.9rem; color: var(--text-muted);">Exit Terminal</a>
+        <a href="home" class="nav-brand" style="font-size: 0.9rem; color: var(--text-muted);">Exit Terminal</a>
         <button class="nav-dl-btn" onclick="doLogoutAdmin()">Sign Out</button>
     </div>
 </nav>
@@ -455,7 +455,7 @@ function buildRoutingUI() {
     for (const [groupName, pages] of Object.entries(PAGE_GROUPS)) {
         const label = document.createElement('div'); label.className = 'route-group-label'; label.innerText = groupName; container.appendChild(label);
         pages.forEach(p => {
-            const currentStatus = conf.pages[p.id + '.html'] || '200';
+            const currentStatus = conf.pages[p.id] || '200';
             const row = document.createElement('div'); row.className = 'control-row';
             row.innerHTML = `
                 <span class="mono" style="flex:1">${p.label}</span>
@@ -483,7 +483,7 @@ function saveSiteConfig() {
     for (const pages of Object.values(PAGE_GROUPS)) {
         pages.forEach(p => {
             const selected = document.getElementById(`ctrl-${p.id}`);
-            if (selected) config.pages[`${p.id}.html`] = selected.value;
+            if (selected) config.pages[p.id] = selected.value;
         });
     }
     config.banner.active = document.getElementById('ctrl-banner-active').checked;
@@ -698,10 +698,10 @@ async function loadGhFileContent() {
     <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
-            <a href="privacy.html">Privacy</a>
-            <a href="terms.html">Terms</a>
-            <a href="feedback.html">Feedback</a>
-            <a href="download.html">Downloads</a>
+            <a href="privacy">Privacy</a>
+            <a href="terms">Terms</a>
+            <a href="feedback">Feedback</a>
+            <a href="download">Downloads</a>
         </div>
         <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
     </div>
@@ -719,10 +719,10 @@ async function loadGhFileContent() {
     <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
-            <a href="privacy.html">Privacy</a>
-            <a href="terms.html">Terms</a>
-            <a href="feedback.html">Feedback</a>
-            <a href="download.html">Downloads</a>
+            <a href="privacy">Privacy</a>
+            <a href="terms">Terms</a>
+            <a href="feedback">Feedback</a>
+            <a href="download">Downloads</a>
         </div>
         <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
     </div>
@@ -734,10 +734,10 @@ async function loadGhFileContent() {
     <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
-            <a href="privacy.html">Privacy</a>
-            <a href="terms.html">Terms</a>
-            <a href="feedback.html">Feedback</a>
-            <a href="download.html">Downloads</a>
+            <a href="privacy">Privacy</a>
+            <a href="terms">Terms</a>
+            <a href="feedback">Feedback</a>
+            <a href="download">Downloads</a>
         </div>
         <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
     </div>
@@ -748,10 +748,10 @@ async function loadGhFileContent() {
     <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
-            <a href="privacy.html">Privacy</a>
-            <a href="terms.html">Terms</a>
-            <a href="feedback.html">Feedback</a>
-            <a href="download.html">Downloads</a>
+            <a href="privacy">Privacy</a>
+            <a href="terms">Terms</a>
+            <a href="feedback">Feedback</a>
+            <a href="download">Downloads</a>
         </div>
         <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
     </div>
@@ -833,10 +833,10 @@ function switchTab(tabId, event) {
     <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
-            <a href="privacy.html">Privacy</a>
-            <a href="terms.html">Terms</a>
-            <a href="feedback.html">Feedback</a>
-            <a href="download.html">Downloads</a>
+            <a href="privacy">Privacy</a>
+            <a href="terms">Terms</a>
+            <a href="feedback">Feedback</a>
+            <a href="download">Downloads</a>
         </div>
         <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
     </div>

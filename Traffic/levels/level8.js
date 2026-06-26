@@ -1,8 +1,8 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
-  "id": 3,
+  "id": 8,
   "icon": "🚑",
-  "name": "Ambulance Priority",
+  "name": "Ambulance Priority (Level 8)",
   "modes": [
     "car"
   ],

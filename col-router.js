@@ -10,7 +10,7 @@
         
         // Determine current page basename
         let page = window.location.pathname.split('/').pop();
-        if(!page) page = 'home.html'; // Default
+        if(!page) page = 'home'; // Default
 
         // 1. Check Routing Overrides
         if (config.pages && config.pages[page]) {
@@ -59,7 +59,7 @@
             <h1>${code}</h1>
             <div class="glow" style="font-size: 1.5rem; margin-bottom: 20px;">${info.title}</div>
             <p>${info.desc}</p>
-            <a href="home.html" class="btn">Return to Base</a>
+            <a href="home" class="btn">Return to Base</a>
         `;
     }
 

@@ -1,8 +1,8 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
-  "id": 4,
+  "id": 18,
   "icon": "🌧️",
-  "name": "Puddle Etiquette",
+  "name": "Puddle Etiquette (Level 18)",
   "modes": [
     "pedestrian",
     "car"

@@ -1,212 +1,156 @@
 const fs = require('fs');
 const path = require('path');
 
-const levels = [
+const themes = [
   {
-    id: 1,
+    ids: [1, 5, 14, 19],
     icon: '🚥',
-    name: 'City Traffic & Junctions',
-    modes: ['pedestrian', 'bike', 'car'],
+    name: 'Pedestrian Courtesy',
+    modes: ['pedestrian', 'car'],
     col: '#e74c3c',
-    ds: 'Navigate busy city intersections. Stop at red lights, do not honk unnecessarily, and avoid the temptation of driving on footpaths.',
+    ds: 'You are stuck at a red light. NPC cars honk aggressively. Yield to pedestrians crossing safely. Do not follow the weaving bikes.',
     hps: [
       'Stop behind the solid white line at signals.',
-      'Honking in silence zones or unnecessarily carries a fine.',
-      'Footpaths are strictly for pedestrians. Taking a shortcut is illegal.'
+      'Yield to pedestrians crossing.',
+      'Do not follow traffic violators onto footpaths.'
     ],
-    law: { sec: 'MV Act Section 119 & 190(2)', fine: '₹500 - ₹2000', off: 'Signal/Honking/Footpath Violations' },
-    theory: `<h2>Rule The Road: Urban Driving</h2>
-      <p>Driving in a busy city requires patience and strict adherence to rules. Urban environments are full of unpredictable elements, from pedestrians crossing suddenly to vehicles stopping without warning.</p>
-      
-      <h3>🚦 Traffic Signals & Stop Lines</h3>
+    law: { sec: 'MV Act Section 119', fine: '₹500 - ₹2000', off: 'Signal/Footpath Violations' },
+    theory: `<h2>Pedestrian Courtesy & Peer Pressure</h2>
+      <p>In this scenario, impatient NPC drivers will try to pressure you into running a red light or taking illegal shortcuts like weaving onto the footpath.</p>
+      <h3>🚥 The Test</h3>
       <ul>
-        <li><b>Red Light:</b> Complete stop <i>before</i> the stop line.</li>
-        <li><b>Yellow Light:</b> Slow down and prepare to stop. Do not speed up to 'beat the light'.</li>
-        <li><b>Green Light:</b> Proceed with caution, ensuring the intersection is clear.</li>
-      </ul>
-
-      <h3>🔕 Honking Rules</h3>
-      <p>Honking should only be used to warn others of danger. Unnecessary honking causes noise pollution and stress.</p>
-      <ul>
-        <li>Do not honk in Silence Zones (near hospitals, schools, courts).</li>
-        <li>Avoid continuous or aggressive honking in traffic jams.</li>
-      </ul>
-
-      <h3>🚶 Temptation & Shortcuts</h3>
-      <p>In heavy traffic, there is often a temptation to take shortcuts like driving on the footpath or shoulder.</p>
-      <ul>
-        <li><b>Driving on Footpaths:</b> This is extremely dangerous and strictly illegal. Footpaths are for pedestrians only.</li>
-        <li><b>Wrong Side Driving:</b> Never drive against the flow of traffic to save time.</li>
+        <li>You must wait patiently at the red light.</li>
+        <li>Let all pedestrians cross safely.</li>
+        <li>If you yield to the peer pressure and run the light, or if you drive on the footpath, you will receive a Challan.</li>
       </ul>`,
-    pract: 'Complete the route through the city. Obey all red lights, do not honk unnecessarily, and stay on the road.',
-    mode: 'practical'
+    pract: 'Wait at the red light despite the honking, and let the pedestrians cross safely.',
+    mode: 'practical',
+    themeType: 'pedestrian_courtesy'
   },
   {
-    id: 2,
-    icon: '🛣️',
-    name: 'Highways & Fast Lanes',
-    modes: ['pedestrian', 'bike', 'car'],
-    col: '#3498db',
-    ds: 'Master high-speed driving. Maintain lane discipline, use indicators for lane changes, and respect speed limits.',
-    hps: [
-      'The rightmost lane is only for overtaking.',
-      'Always use indicators before changing lanes.',
-      'Maintain a safe braking distance from the vehicle ahead.'
-    ],
-    law: { sec: 'MV Act Section 112 & 184', fine: '₹1000 - ₹2000', off: 'Speeding/Dangerous Driving' },
-    theory: `<h2>Mastering The Highway</h2>
-      <p>Highways and expressways require a different set of skills compared to city driving. Higher speeds mean less reaction time, making discipline critical.</p>
-
-      <h3>🛣️ Lane Discipline</h3>
-      <ul>
-        <li><b>Left Lane:</b> For slow-moving traffic and heavy vehicles.</li>
-        <li><b>Middle Lane(s):</b> For cruising at the speed limit.</li>
-        <li><b>Right Lane:</b> The fast lane, strictly for overtaking. Return to the middle lane after overtaking.</li>
-      </ul>
-
-      <h3>📏 Following Distance (The 3-Second Rule)</h3>
-      <p>Always maintain at least a 3-second gap between your vehicle and the one in front of you. In wet or slippery conditions, increase this to 5 seconds.</p>
-
-      <h3>🏎️ Speed Limits & Overtaking</h3>
-      <ul>
-        <li>Never exceed the posted speed limit, even in the fast lane.</li>
-        <li>Always overtake from the right side.</li>
-        <li>Use your turn indicators at least 50 meters before changing lanes.</li>
-      </ul>`,
-    pract: 'Drive on the highway while staying within the speed limit. Practice safe lane changes using your indicators.',
-    mode: 'practical'
-  },
-  {
-    id: 3,
-    icon: '🌧️',
-    name: 'Weather & Night Conditions',
-    modes: ['pedestrian', 'bike', 'car'],
-    col: '#9b59b6',
-    ds: 'Handle challenging visibility and road conditions. Turn on headlights, reduce speed, and avoid skidding.',
-    hps: [
-      'Turn on headlights at night or in heavy rain.',
-      'Reduce speed by at least 30% on wet roads.',
-      'Avoid sudden braking to prevent skidding.'
-    ],
-    law: { sec: 'MV Act Section 105', fine: '₹500', off: 'Driving without Lights' },
-    theory: `<h2>Driving in Difficult Conditions</h2>
-      <p>Rain, fog, and nighttime driving drastically reduce visibility and road grip. Adjusting your driving style is essential for safety.</p>
-
-      <h3>🌧️ Wet Weather & Hydroplaning</h3>
-      <ul>
-        <li><b>Reduced Grip:</b> Tires lose traction on wet roads. Reduce your speed and avoid sharp turns.</li>
-        <li><b>Hydroplaning:</b> If you drive too fast through standing water, your tires can lose contact with the road. If this happens, ease off the accelerator and steer straight. Do not brake hard.</li>
-      </ul>
-
-      <h3>🌙 Night Driving & Headlights</h3>
-      <ul>
-        <li>Always use headlights between sunset and sunrise, or during heavy rain.</li>
-        <li><b>High Beam vs Low Beam:</b> Use low beams in city limits and when following or approaching another vehicle. High beams blind other drivers.</li>
-        <li>Keep your windshield clean to reduce glare from oncoming lights.</li>
-      </ul>`,
-    pract: 'Complete the night-time rainy route. Keep headlights on and drive slowly to avoid skidding.',
-    mode: 'practical'
-  },
-  {
-    id: 4,
+    ids: [2, 6, 10, 15],
     icon: '🅿️',
-    name: 'Parking & Reversing',
-    modes: ['pedestrian', 'bike', 'car'],
-    col: '#f1c40f',
-    ds: 'Learn the rules of parking. Avoid No Parking zones, do not block intersections, and reverse safely.',
+    name: 'Respectful Parking',
+    modes: ['pedestrian', 'car'],
+    col: '#3498db',
+    ds: 'The street is crowded. Avoid double-parking like the NPCs. Find a legal spot and walk to your destination.',
     hps: [
-      'Never park near an intersection or bus stop.',
-      'Check all mirrors and blind spots before reversing.',
-      'Do not park on zebra crossings or footpaths.'
+      'Do not double park on the road.',
+      'Do not park on the footpath.',
+      'Walk the remaining distance if legal parking is far.'
     ],
     law: { sec: 'MV Act Section 122', fine: '₹500 - ₹1000', off: 'Illegal Parking' },
-    theory: `<h2>Parking Etiquette & Safety</h2>
-      <p>Improper parking causes traffic congestion and endangers pedestrians. Knowing where and how to park is as important as knowing how to drive.</p>
-
-      <h3>🚫 No Parking Zones</h3>
-      <p>Never park your vehicle in the following locations:</p>
+    theory: `<h2>Respectful Parking</h2>
+      <p>Your objective is a shop, but the street is crowded with illegally parked NPC vehicles.</p>
+      <h3>🅿️ The Test</h3>
       <ul>
-        <li>On a zebra crossing or footpath.</li>
-        <li>Within 15 meters of an intersection or traffic signal.</li>
-        <li>In front of a hospital, school, or fire station entrance.</li>
-        <li>Alongside another parked car (Double Parking).</li>
-      </ul>
-
-      <h3>🔙 Reversing Safely</h3>
-      <ul>
-        <li>Always check your rearview mirrors and physically look behind you to check blind spots.</li>
-        <li>Reverse slowly and be prepared to stop instantly.</li>
-        <li>If visibility is poor, ask someone to guide you.</li>
+        <li>Do not dump your car on the footpath or double park.</li>
+        <li>Find a designated parking zone, press F to exit, and walk.</li>
       </ul>`,
-    pract: 'Navigate through the tight streets and successfully park your vehicle in the designated spot without hitting obstacles.',
-    mode: 'practical'
+    pract: 'Park in a designated spot and walk to the objective.',
+    mode: 'practical',
+    themeType: 'respectful_parking'
   },
   {
-    id: 5,
+    ids: [3, 8, 12, 17],
     icon: '🚑',
-    name: 'Emergency & Right of Way',
-    modes: ['pedestrian', 'bike', 'car'],
+    name: 'Ambulance Priority',
+    modes: ['car'],
     col: '#e67e22',
-    ds: 'Understand who has the right of way. Give way to ambulances, fire engines, and pedestrians.',
+    ds: 'An ambulance with sirens blaring approaches from behind. Pull over safely to let it pass.',
     hps: [
       'Pull over to the left to let emergency vehicles pass.',
-      'Pedestrians always have the right of way at uncontrolled crossings.',
-      'Do not tailgate emergency vehicles.'
+      'Do not tailgate the ambulance.',
+      'Do not block the ambulance.'
     ],
     law: { sec: 'MV Act Section 194E', fine: '₹10000', off: 'Blocking Emergency Vehicle' },
-    theory: `<h2>Right of Way & Emergency Protocols</h2>
-      <p>Right of way rules dictate who gets to go first in situations where paths cross. This prevents confusion and collisions.</p>
-
-      <h3>🚑 Emergency Vehicles</h3>
-      <p>Ambulances, fire engines, and police vehicles with flashing lights and sirens have the absolute right of way.</p>
+    theory: `<h2>Ambulance Priority</h2>
+      <p>An ambulance is trying to navigate through heavy traffic. Some selfish NPCs will block it.</p>
+      <h3>🚑 The Test</h3>
       <ul>
-        <li><b>What to do:</b> Immediately pull over to the left side of the road and stop until the vehicle passes.</li>
-        <li><b>Penalty:</b> Blocking an emergency vehicle carries a massive fine (up to ₹10,000) and can cost lives.</li>
-      </ul>
-
-      <h3>🚶 Pedestrian Priority</h3>
-      <ul>
-        <li>Pedestrians have the right of way at all zebra crossings.</li>
-        <li>In shared spaces or uncontrolled intersections, always yield to pedestrians and cyclists.</li>
+        <li>Safely pull over to the shoulder to let the ambulance pass.</li>
+        <li>Do not hit pedestrians while pulling over.</li>
+        <li>Do not try to tailgate the ambulance to skip traffic.</li>
       </ul>`,
-    pract: 'Drive through the scenario. Yield to pedestrians and make way for any emergency vehicles that appear.',
-    mode: 'practical'
+    pract: 'Pull over and let the ambulance pass safely.',
+    mode: 'practical',
+    themeType: 'ambulance_priority'
   },
   {
-    id: 6,
-    icon: '🛑',
-    name: 'Advanced Hazard Perception',
-    modes: ['pedestrian', 'bike', 'car'],
-    col: '#c0392b',
-    ds: 'React to sudden hazards on the road. Avoid obstacles, stray animals, and unpredictable drivers.',
+    ids: [4, 9, 13, 18],
+    icon: '🌧️',
+    name: 'Puddle Etiquette',
+    modes: ['pedestrian', 'car'],
+    col: '#9b59b6',
+    ds: 'Large puddles have formed near the footpath. Slow down so you do not splash the pedestrians.',
     hps: [
-      'Scan the road ahead constantly.',
-      'Expect the unexpected from other road users.',
-      'Maintain control during sudden evasive maneuvers.'
+      'Reduce speed significantly when passing puddles.',
+      'Do not splash pedestrians.',
+      'Maintain control on slippery roads.'
     ],
-    law: { sec: 'MV Act Section 279', fine: '₹1000 - ₹2000', off: 'Rash Driving' },
-    theory: `<h2>Hazard Perception & Defensive Driving</h2>
-      <p>Defensive driving means anticipating dangerous situations before they happen, despite the mistakes of others.</p>
-
-      <h3>👀 Scanning & Anticipation</h3>
+    law: { sec: 'Civic Sense', fine: 'Civic Penalty', off: 'Splashing Pedestrians' },
+    theory: `<h2>Puddle Etiquette</h2>
+      <p>It is raining and large puddles have formed next to the footpaths where pedestrians are walking.</p>
+      <h3>🌧️ The Test</h3>
       <ul>
-        <li>Don't just look at the car immediately in front of you. Scan 10-15 seconds ahead down the road.</li>
-        <li>Watch out for parked cars with occupants—someone might open a door into your path.</li>
-      </ul>
-
-      <h3>🐕 Unpredictable Hazards</h3>
-      <ul>
-        <li>Stray animals or pedestrians may cross suddenly from blind spots.</li>
-        <li>Other drivers may change lanes without indicating or brake abruptly.</li>
-        <li><b>Action:</b> Always maintain a safe speed that allows you to stop or steer away from a hazard without losing control.</li>
+        <li>You must slow down your vehicle significantly when passing these puddles.</li>
+        <li>If you speed through and splash a pedestrian, you fail the civic sense test.</li>
       </ul>`,
-    pract: 'Navigate a challenging route filled with sudden obstacles. Avoid collisions and maintain control.',
-    mode: 'practical'
+    pract: 'Drive through the rain. Slow down near puddles to avoid splashing pedestrians.',
+    mode: 'practical',
+    themeType: 'puddle_etiquette'
+  },
+  {
+    ids: [7, 11, 16, 20],
+    icon: '🔕',
+    name: 'No Honking Zone',
+    modes: ['car', 'auto'],
+    col: '#f1c40f',
+    ds: 'You are driving past a Hospital or School. Traffic is blocked. Do not honk!',
+    hps: [
+      'Do not honk in Silence Zones.',
+      'Navigate around obstacles safely.',
+      'Maintain patience in traffic jams.'
+    ],
+    law: { sec: 'MV Act Section 190(2)', fine: '₹1000', off: 'Honking in Silence Zone' },
+    theory: `<h2>No Honking Zone</h2>
+      <p>You are in a silent zone near a hospital. The traffic is blocked and other NPCs are honking aggressively.</p>
+      <h3>🔕 The Test</h3>
+      <ul>
+        <li>Navigate around the obstacle without using your horn.</li>
+        <li>If you give in to frustration and honk, you fail.</li>
+      </ul>`,
+    pract: 'Pass the hospital zone without honking once.',
+    mode: 'practical',
+    themeType: 'no_honking'
   }
 ];
+
+const levels = [];
+themes.forEach(theme => {
+  theme.ids.forEach(id => {
+    levels.push({
+      id: id,
+      icon: theme.icon,
+      name: theme.name + (id > 5 ? ` (Level ${id})` : ''),
+      modes: theme.modes,
+      col: theme.col,
+      ds: theme.ds,
+      hps: theme.hps,
+      law: theme.law,
+      theory: theme.theory,
+      pract: theme.pract,
+      mode: theme.mode,
+      themeType: theme.themeType,
+      startOutside: true
+    });
+  });
+});
+
+levels.sort((a, b) => a.id - b.id);
 
 levels.forEach(lv => {
   const content = 'window.LVS = window.LVS || [];\nwindow.LVS.push(' + JSON.stringify(lv, null, 2) + ');';
   fs.writeFileSync(path.join(__dirname, 'levels', `level${lv.id}.js`), content);
 });
-console.log('Successfully generated rich level files.');
+console.log('Successfully generated 20 rich level files.');

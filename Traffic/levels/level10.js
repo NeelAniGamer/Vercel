@@ -1,8 +1,8 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
-  "id": 2,
+  "id": 10,
   "icon": "🅿️",
-  "name": "Respectful Parking",
+  "name": "Respectful Parking (Level 10)",
   "modes": [
     "pedestrian",
     "car"

@@ -30,10 +30,10 @@
         if (!canvas) return;
 
         // Determine which page we're on
-        var path = window.location.pathname.split('/').pop() || 'home.html';
+        var path = window.location.pathname.split('/').pop() || 'home';
         path = path.replace('.html', '').toLowerCase();
         // Map index to home
-        if (path === '' || path === 'index' || path === 'home.html') path = 'home';
+        if (path === '' || path === 'index' || path === 'home') path = 'home';
 
         // Setup renderer
         var renderer = new THREE.WebGLRenderer({

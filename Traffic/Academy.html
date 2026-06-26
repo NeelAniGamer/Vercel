@@ -68,6 +68,51 @@
       color: var(--text);
     }
 
+    /* New Dedicated Loading Screen */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: #070A14;
+      z-index: 9999999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #34D399;
+      font-family: 'Space Mono', monospace;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    #loading-screen h1 {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: #F2B84B;
+      margin-bottom: 20px;
+    }
+    #loading-bar-container {
+      width: clamp(250px, 50vw, 400px);
+      height: 12px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+    #loading-bar {
+      width: 0%;
+      height: 100%;
+      background: #34D399;
+      transition: width 0.1s linear;
+    }
+    #loading-pct {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    #loading-status {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #8891AA;
+    }
+
     .screen {
       position: fixed;
       inset: 0;
@@ -1931,23 +1976,7 @@
 </head>
 
 <body>
-  <script>
-    // Fallback UI controller for progressive loading
-    // Since the file is 18MB, users might click buttons before the bottom script executes.
-    window.ui = new Proxy({}, {
-      get: function() {
-        return function() {
-          const m = document.createElement('div');
-          m.style.position = 'fixed'; m.style.bottom = '20px'; m.style.left = '50%'; m.style.transform = 'translateX(-50%)';
-          m.style.background = '#333'; m.style.color = '#fff'; m.style.padding = '12px 24px'; m.style.borderRadius = '30px';
-          m.style.zIndex = '999999'; m.style.fontFamily = 'sans-serif'; m.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-          m.innerText = 'Academy Engine is downloading... Please wait a moment.';
-          document.body.appendChild(m);
-          setTimeout(() => { if(m.parentNode) m.parentNode.removeChild(m); }, 3000);
-        };
-      }
-    });
-  </script>
+  <!-- Script entry points -->
 
   <div id="mobile-controls"
     style="position:fixed; bottom:0; left:0; right:0; padding:16px 24px 28px; justify-content:space-between; z-index:9999; pointer-events:none; background:linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 100%);">
@@ -1969,6 +1998,16 @@
     </div>
   </div>
 
+  <!-- Dedicated Pre-Loader Screen -->
+  <div id="loading-screen">
+    <h1>Traffic Academy</h1>
+    <div style="font-size: 1.2rem; margin-bottom: 10px;">Loading 3D Open World...</div>
+    <div id="loading-bar-container">
+      <div id="loading-bar"></div>
+    </div>
+    <div id="loading-pct">0%</div>
+    <div id="loading-status">Initializing assets...</div>
+  </div>
 
   <div id="gc"><canvas id="3c"></canvas></div>
   <div id="hud">
@@ -1980,6 +2019,10 @@
     <div class="hb">⏱<span id="htmr">0:00</span></div>
     <div class="hb">₹<span id="hfin">0</span></div>
     <div class="hb">🎯<span id="hcp">0/0</span></div>
+  </div>
+  <div id="civic-controls" style="position:fixed;bottom:20px;right:20px;z-index:100;display:flex;flex-direction:column;gap:10px;">
+    <button id="btn-seatbelt" style="background:#333;color:#fff;border:2px solid #555;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer;transition:0.2s;" onclick="game.toggleSeatbelt(this)">💺 Seatbelt / Helmet OFF</button>
+    <button id="btn-mobile" style="background:#333;color:#fff;border:2px solid #555;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer;transition:0.2s;" onclick="game.toggleMobile(this)">📱 Use Mobile Phone</button>
   </div>
   <div id="sig-ind"
     style="position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:25;display:none;align-items:center;gap:12px;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);padding:10px 20px;border-radius:30px;border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,0.1);font-weight:700;font-size:0.95rem;">
@@ -2426,6 +2469,20 @@
   <script src="levels/level4.js"></script>
   <script src="levels/level5.js"></script>
   <script src="levels/level6.js"></script>
+  <script src="levels/level7.js"></script>
+  <script src="levels/level8.js"></script>
+  <script src="levels/level9.js"></script>
+  <script src="levels/level10.js"></script>
+  <script src="levels/level11.js"></script>
+  <script src="levels/level12.js"></script>
+  <script src="levels/level13.js"></script>
+  <script src="levels/level14.js"></script>
+  <script src="levels/level15.js"></script>
+  <script src="levels/level16.js"></script>
+  <script src="levels/level17.js"></script>
+  <script src="levels/level18.js"></script>
+  <script src="levels/level19.js"></script>
+  <script src="levels/level20.js"></script>
 
   <script src="course.js"></script>
   <script src="ui.js"></script>

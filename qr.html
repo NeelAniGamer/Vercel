@@ -243,7 +243,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 </head>
 <body class="dark-mode">
 <nav class="top-nav">
-        <a href="home.html" class="nav-brand">
+        <a href="home" class="nav-brand">
             <img loading="lazy" src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
             <span>Class Of Learners</span>
         </a>
@@ -253,20 +253,20 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <span class="m-line"></span>
         </button>
         <div class="nav-links">
-            <a href="home.html" class="nav-link" style="color: var(--google-blue);">Home</a>
-            <a href="about.html" class="nav-link">About</a>
-            <a href="school.html" class="nav-link">School</a>
-            <a href="sneh-asha.html" class="nav-link">Sneh Asha</a>
-            <a href="download.html" class="nav-dl-btn mobile-dl">Downloads</a>
+            <a href="home" class="nav-link" style="color: var(--google-blue);">Home</a>
+            <a href="about" class="nav-link">About</a>
+            <a href="school" class="nav-link">School</a>
+            <a href="sneh-asha" class="nav-link">Sneh Asha</a>
+            <a href="download" class="nav-dl-btn mobile-dl">Downloads</a>
             <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
                 <button class="dropdown-btn act">Projects <span>â–¼</span></button>
                 <div class="dropdown-content">
                     <div class="dropdown-content-inner">
-                        <a href="ati.html">Typing Instructor <span>&#9109;&#65039;</span></a>
-                        <a href="solar.html">Solar Engine <span>&#127760;</span></a>
-                        <a href="gesture.html">Gesture Control <span>&#128400;&#65039;</span></a>
-                        <a href="rpg.html">RPG Game <span>&#9876;&#65039;</span></a>
-                        <a href="qr.html">QR Generator <span>&#11035;</span></a>
+                        <a href="ati">Typing Instructor <span>&#9109;&#65039;</span></a>
+                        <a href="solar">Solar Engine <span>&#127760;</span></a>
+                        <a href="gesture">Gesture Control <span>&#128400;&#65039;</span></a>
+                        <a href="rpg">RPG Game <span>&#9876;&#65039;</span></a>
+                        <a href="qr">QR Generator <span>&#11035;</span></a>
                     </div>
                 </div>
             </div>
@@ -279,9 +279,9 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
                 <span id="navUserName" style="font-size:0.85rem; font-weight:800; color:var(--text-main);">User</span>
             </div>
             
-            <a href="download.html" class="nav-dl-btn mobile-dl">Downloads Hub</a>
+            <a href="download" class="nav-dl-btn mobile-dl">Downloads Hub</a>
         </div>
-        <a href="download.html" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
     </nav>
 
 <div class="qr-app" role="main">
@@ -292,7 +292,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   </div>
   
   <div class="sb-lbl">Create</div>
-  <a href="qr-editor.html" class="sb-btn"><span class="sb-icon">⊕</span>New QR</a>
+  <a href="qr-editor" class="sb-btn"><span class="sb-icon">⊕</span>New QR</a>
   <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon">🎯</span>Bulk QR generation</a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
@@ -320,7 +320,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
       <div id="view-qrs" class="db-view">
         <div class="db-hd">
           <div><h1>My Saved Codes</h1><p id="dbSub">Manage your generated assets.</p></div>
-          <a href="qr-editor.html" class="btn-nx" style="height:fit-content; margin:0;">+ Create New</a>
+          <a href="qr-editor" class="btn-nx" style="height:fit-content; margin:0;">+ Create New</a>
         </div>
         
         <div class="db-sync-bar" id="dbSyncBar" style="display:none">
@@ -357,9 +357,9 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   
   <footer class="site-footer" style="width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--nav); margin-top: auto;">
       <div style="display:flex; justify-content:center; gap:25px; margin-bottom:15px; flex-wrap: wrap;">
-          <a href="privacy.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Privacy Policy</a>
-          <a href="terms.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Terms of Service</a>
-          <a href="feedback.html" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Provide Feedback</a>
+          <a href="privacy" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Privacy Policy</a>
+          <a href="terms" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Terms of Service</a>
+          <a href="feedback" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Provide Feedback</a>
       </div>
       <div style="color:var(--txt-m); font-size:0.85rem; font-weight:600;">© 2026 Class Of Learners. Developed By Neel, Ansh And Aarush. All Rights Reserved.</div>
   </footer>
@@ -415,7 +415,7 @@ function renderDB(){
   const g = document.getElementById('dbG'); if(!g) return;
   g.innerHTML = '';
   if(!filtered.length){
-    g.innerHTML=`<div class="db-emp"><div class="ei">🔒</div><h2>Workspace Empty</h2><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor.html'">Initialize New QR</button></div>`;
+    g.innerHTML=`<div class="db-emp"><div class="ei">🔒</div><h2>Workspace Empty</h2><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor'">Initialize New QR</button></div>`;
     return;
   }
   filtered.forEach(q=>{
@@ -914,10 +914,10 @@ try {
     <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
-            <a href="privacy.html">Privacy</a>
-            <a href="terms.html">Terms</a>
-            <a href="feedback.html">Feedback</a>
-            <a href="download.html">Downloads</a>
+            <a href="privacy">Privacy</a>
+            <a href="terms">Terms</a>
+            <a href="feedback">Feedback</a>
+            <a href="download">Downloads</a>
         </div>
         <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
     </div>

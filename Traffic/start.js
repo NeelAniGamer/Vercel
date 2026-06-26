@@ -85,48 +85,33 @@ let game = null;
 
       let loaded = 0;
 
-      // Full-screen Loading UI
-      const ld = document.createElement('div');
-      ld.id = 'model-loader-fullscreen';
-      ld.style.position = 'fixed'; 
-      ld.style.inset = '0';
-      ld.style.background = '#070A14'; 
-      ld.style.color = '#34D399'; 
-      ld.style.display = 'flex';
-      ld.style.flexDirection = 'column';
-      ld.style.justifyContent = 'center';
-      ld.style.alignItems = 'center';
-      ld.style.zIndex = '9999999'; 
-      ld.style.fontFamily = '"Space Mono", monospace'; 
-      ld.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-      
-      ld.innerHTML = `
-        <div style="font-size: 2rem; margin-bottom: 20px; color: #F2B84B; font-family: 'Instrument Serif', serif; font-style: italic;">Traffic Academy</div>
-        <div style="font-size: 1.2rem; margin-bottom: 10px;">Loading 3D Open World...</div>
-        <div style="width: 300px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; margin-bottom: 15px;">
-            <div id="ml-bar" style="width: 0%; height: 100%; background: #34D399; transition: width 0.1s linear;"></div>
-        </div>
-        <div id="ml-pct" style="font-size: 1.5rem; font-weight: bold;">0%</div>
-      `;
-      document.body.appendChild(ld);
+      let loaded = 0;
+      const ld = document.getElementById('loading-screen');
+      const pctEl = document.getElementById('loading-pct');
+      const barEl = document.getElementById('loading-bar');
+      const statusEl = document.getElementById('loading-status');
 
       // Sequential loading to prevent main thread freezing
       const loadNext = (index) => {
         if (index >= filesToLoad.length) {
-            ld.innerHTML = `
-                <div style="font-size: 2.5rem; margin-bottom: 20px; color: #34D399; font-family: 'Instrument Serif', serif; font-style: italic;">World Ready!</div>
-                <div style="font-size: 1rem; color: #8891AA;">Entering Traffic Academy...</div>
-            `;
-            setTimeout(() => {
-                ld.style.opacity = '0';
-                ld.style.transform = 'scale(1.05)';
-                setTimeout(() => ld.remove(), 800);
-            }, 800);
+            if (ld) {
+                ld.innerHTML = `
+                    <h1 style="color: #34D399;">World Ready!</h1>
+                    <div style="font-size: 1rem; color: #8891AA;">Entering Traffic Academy...</div>
+                `;
+                setTimeout(() => {
+                    ld.style.opacity = '0';
+                    ld.style.transform = 'scale(1.05)';
+                    setTimeout(() => ld.remove(), 800);
+                }, 800);
+            }
             callback();
             return;
         }
         
         const asset = filesToLoad[index];
+        if (statusEl) statusEl.textContent = `Loading: ${asset.key}...`;
+        
         loader.load(asset.file, (gltf) => {
             // Apply materials and cast shadows on the loaded model
             gltf.scene.traverse((child) => {
@@ -139,8 +124,6 @@ let game = null;
             
             loaded++;
             const pct = Math.round((loaded / filesToLoad.length) * 100);
-            const pctEl = document.getElementById('ml-pct');
-            const barEl = document.getElementById('ml-bar');
             if (pctEl) pctEl.textContent = pct + '%';
             if (barEl) barEl.style.width = pct + '%';
             
@@ -302,7 +285,7 @@ let game = null;
       try {
         const zip = new JSZip();
         const files = [
-          "Academy.html",
+          "Academy",
           "vehicles.js",
           "lambo.js",
           "auto.js",
@@ -313,14 +296,14 @@ let game = null;
         
         for (let f of files) {
           let fetchUrl = f;
-          if (f === "Academy.html") fetchUrl = window.location.href.split("?")[0].split("#")[0];
+          if (f === "Academy") fetchUrl = window.location.href.split("?")[0].split("#")[0];
           
           try {
             const res = await fetch(fetchUrl);
             if (res.ok) {
               const blob = await res.blob();
               let fName = f;
-              if (f === "Academy.html") fName = fetchUrl.split("/").pop() || "Academy.html";
+              if (f === "Academy") fName = fetchUrl.split("/").pop() || "Academy";
               zip.file(fName, blob);
               fetched++;
             } else {

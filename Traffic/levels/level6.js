@@ -1,26 +1,27 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 6,
-  "icon": "🛑",
-  "name": "Advanced Hazard Perception",
+  "icon": "🅿️",
+  "name": "Respectful Parking (Level 6)",
   "modes": [
     "pedestrian",
-    "bike",
     "car"
   ],
-  "col": "#c0392b",
-  "ds": "React to sudden hazards on the road. Avoid obstacles, stray animals, and unpredictable drivers.",
+  "col": "#3498db",
+  "ds": "The street is crowded. Avoid double-parking like the NPCs. Find a legal spot and walk to your destination.",
   "hps": [
-    "Scan the road ahead constantly.",
-    "Expect the unexpected from other road users.",
-    "Maintain control during sudden evasive maneuvers."
+    "Do not double park on the road.",
+    "Do not park on the footpath.",
+    "Walk the remaining distance if legal parking is far."
   ],
   "law": {
-    "sec": "MV Act Section 279",
-    "fine": "₹1000 - ₹2000",
-    "off": "Rash Driving"
+    "sec": "MV Act Section 122",
+    "fine": "₹500 - ₹1000",
+    "off": "Illegal Parking"
   },
-  "theory": "<h2>Hazard Perception & Defensive Driving</h2>\n      <p>Defensive driving means anticipating dangerous situations before they happen, despite the mistakes of others.</p>\n\n      <h3>👀 Scanning & Anticipation</h3>\n      <ul>\n        <li>Don't just look at the car immediately in front of you. Scan 10-15 seconds ahead down the road.</li>\n        <li>Watch out for parked cars with occupants—someone might open a door into your path.</li>\n      </ul>\n\n      <h3>🐕 Unpredictable Hazards</h3>\n      <ul>\n        <li>Stray animals or pedestrians may cross suddenly from blind spots.</li>\n        <li>Other drivers may change lanes without indicating or brake abruptly.</li>\n        <li><b>Action:</b> Always maintain a safe speed that allows you to stop or steer away from a hazard without losing control.</li>\n      </ul>",
-  "pract": "Navigate a challenging route filled with sudden obstacles. Avoid collisions and maintain control.",
-  "mode": "practical"
+  "theory": "<h2>Respectful Parking</h2>\n      <p>Your objective is a shop, but the street is crowded with illegally parked NPC vehicles.</p>\n      <h3>🅿️ The Test</h3>\n      <ul>\n        <li>Do not dump your car on the footpath or double park.</li>\n        <li>Find a designated parking zone, press F to exit, and walk.</li>\n      </ul>",
+  "pract": "Park in a designated spot and walk to the objective.",
+  "mode": "practical",
+  "themeType": "respectful_parking",
+  "startOutside": true
 });
