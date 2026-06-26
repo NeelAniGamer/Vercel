@@ -575,7 +575,7 @@ class Game {
           const start = isV ? Math.min(r.z1, r.z2) + 15 : Math.min(r.x1, r.x2) + 15;
           const end = isV ? Math.max(r.z1, r.z2) - 15 : Math.max(r.x1, r.x2) - 15;
 
-          for (let pos = start; pos < end; pos += 9) {
+          for (let pos = start; pos < end; pos += 35) {
             let nearInt = false;
             (cfg.ints || []).forEach(([ix, iz]) => {
               if (isV && Math.abs(pos - iz) < 20) nearInt = true;
@@ -588,13 +588,12 @@ class Game {
               [1, 2, 3, 4].forEach(depth => {
                 if (depth > 1 && Math.random() > 0.4) return; // Background buildings spawn randomly
 
-                const bDist = RW / 2 + 2.5 + 4.5 + (depth - 1) * 11; 
+                const bDist = RW / 2 + 20 + (depth - 1) * 35; 
                 // Add some slight randomness to positions
                 const bx = isV ? cx + side * bDist : pos + (Math.random() * 2 - 1);
                 const bz = isV ? pos + (Math.random() * 2 - 1) : cz + side * bDist;
                 
                 let rot = isV ? (side > 0 ? -Math.PI / 2 : Math.PI / 2) : (side > 0 ? Math.PI : 0);
-                if (depth > 1) rot += (Math.random() * 0.4 - 0.2); // Random rotation for bg buildings
 
                 const rnd = Math.random();
                 let type = 'normal';
