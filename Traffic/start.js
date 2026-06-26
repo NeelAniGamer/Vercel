@@ -27,7 +27,7 @@ let game = null;
       
 
       const loader = new THREE.GLTFLoader();
-      const basePath = 'Models/kenney_car-kit/Models/GLB format/';
+      const basePath = 'Models/kenney_car-kit/Models/GLB%20format/';
       const filesToLoad = [
         // Core
         { key: 'car', file: basePath + 'sedan.glb' },
@@ -40,47 +40,47 @@ let game = null;
         
         // Roads
         { key: 'road_straight', file: 'Models/road__avenue__street/scene.gltf' },
-        { key: 'road_intersect', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-intersection.glb' },
-        { key: 'road_cross', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossroad.glb' },
+        { key: 'road_intersect', file: 'Models/kenney_city-kit-roads/Models/GLB%20format/road-intersection.glb' },
+        { key: 'road_cross', file: 'Models/kenney_city-kit-roads/Models/GLB%20format/road-crossroad.glb' },
 
         // Characters
-        { key: 'char_f_a', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-a.glb' },
-        { key: 'char_f_b', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-b.glb' },
-        { key: 'char_f_c', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-c.glb' },
-        { key: 'char_m_a', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-a.glb' },
-        { key: 'char_m_b', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-b.glb' },
-        { key: 'char_m_c', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-c.glb' },
+        { key: 'char_f_a', file: 'Models/kenney_mini-characters/Models/GLB%20format/character-female-a.glb' },
+        { key: 'char_f_b', file: 'Models/kenney_mini-characters/Models/GLB%20format/character-female-b.glb' },
+        { key: 'char_f_c', file: 'Models/kenney_mini-characters/Models/GLB%20format/character-female-c.glb' },
+        { key: 'char_m_a', file: 'Models/kenney_mini-characters/Models/GLB%20format/character-male-a.glb' },
+        { key: 'char_m_b', file: 'Models/kenney_mini-characters/Models/GLB%20format/character-male-b.glb' },
+        { key: 'char_m_c', file: 'Models/kenney_mini-characters/Models/GLB%20format/character-male-c.glb' },
         
         // Animals
-        { key: 'animal_dog', file: 'Models/kenney_cube-pets_1.0/Models/GLB format/animal-dog.glb' },
-        { key: 'animal_cow', file: 'Models/kenney_cube-pets_1.0/Models/GLB format/animal-cow.glb' },
-        { key: 'animal_cat', file: 'Models/kenney_cube-pets_1.0/Models/GLB format/animal-cat.glb' },
+        { key: 'animal_dog', file: 'Models/kenney_cube-pets_1.0/Models/GLB%20format/animal-dog.glb' },
+        { key: 'animal_cow', file: 'Models/kenney_cube-pets_1.0/Models/GLB%20format/animal-cow.glb' },
+        { key: 'animal_cat', file: 'Models/kenney_cube-pets_1.0/Models/GLB%20format/animal-cat.glb' },
         
         // Watercraft
-        { key: 'ship_cargo', file: 'Models/kenney_watercraft-pack/Models/GLB format/ship-cargo-a.glb' },
-        { key: 'boat_speed', file: 'Models/kenney_watercraft-pack/Models/GLB format/boat-speed-a.glb' },
+        { key: 'ship_cargo', file: 'Models/kenney_watercraft-pack/Models/GLB%20format/ship-cargo-a.glb' },
+        { key: 'boat_speed', file: 'Models/kenney_watercraft-pack/Models/GLB%20format/boat-speed-a.glb' },
         
         // Emergency
-        { key: 'ambulance', file: 'Models/kenney_car-kit/Models/GLB format/ambulance.glb' },
+        { key: 'ambulance', file: 'Models/kenney_car-kit/Models/GLB%20format/ambulance.glb' },
         
         // Transit
-        { key: 'train', file: 'Models/kenney_train-kit/Models/GLB format/train-locomotive-a.glb' },
-        { key: 'metro', file: 'Models/kenney_train-kit/Models/GLB format/train-electric-subway-a.glb' }
+        { key: 'train', file: 'Models/kenney_train-kit/Models/GLB%20format/train-locomotive-a.glb' },
+        { key: 'metro', file: 'Models/kenney_train-kit/Models/GLB%20format/train-electric-subway-a.glb' }
       ];
 
       // Add Suburban Buildings (a to u)
       'abcdefghijklmnopqrstu'.split('').forEach(l => {
-          filesToLoad.push({ key: 'suburban_' + l, file: `Models/kenney_city-kit-suburban_20/Models/GLB format/building-type-${l}.glb` });
+          filesToLoad.push({ key: 'suburban_' + l, file: `Models/kenney_city-kit-suburban_20/Models/GLB%20format/building-type-${l}.glb` });
       });
 
       // Add Industrial Buildings (a to t)
       'abcdefghijklmnopqrst'.split('').forEach(l => {
-          filesToLoad.push({ key: 'industrial_' + l, file: `Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-${l}.glb` });
+          filesToLoad.push({ key: 'industrial_' + l, file: `Models/kenney_city-kit-industrial_1.0/Models/GLB%20format/building-${l}.glb` });
       });
       
       // Add more cars randomly
       ['hatchback-sports', 'suv', 'suv-luxury', 'race-future', 'sedan-sports'].forEach(c => {
-          filesToLoad.push({ key: 'car_' + c, file: `Models/kenney_car-kit/Models/GLB format/${c}.glb` });
+          filesToLoad.push({ key: 'car_' + c, file: `Models/kenney_car-kit/Models/GLB%20format/${c}.glb` });
       });
 
       let loaded = 0;
@@ -355,4 +355,4 @@ let game = null;
         btn.innerHTML = "&#10060; Error!";
         setTimeout(() => { btn.innerHTML = origText; btn.style.pointerEvents = "auto"; }, 3000);
       }
-    }
+    }

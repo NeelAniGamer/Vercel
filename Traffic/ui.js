@@ -226,8 +226,8 @@ let _tt = null;
       showLevels() { this.show('screen-levels'); this._bldLvs(); },
       _bldLvs() {
         const body = document.getElementById('lvbody'); body.innerHTML = '';
-        const done = Object.keys(S.comp).length; document.getElementById('pchip').textContent = done + '/20 ✅';
-        const secs = [{ t: '🔰 Beginner Modules', ids: [1, 2, 3, 4] }, { t: '🔰 Intermediate Corridors', ids: [5, 6, 7, 8, 9] }, { t: '🔰 Advanced Systems', ids: [10, 11, 12, 13] }, { t: '🎓 Expert Gauntlets', ids: [14, 15] }, { t: '🚀 Autonomous & Smart Systems', ids: [16, 17, 18, 19, 20] }];
+        const done = Object.keys(S.comp).length; document.getElementById('pchip').textContent = done + '/6 ✅';
+        const secs = [{ t: '🔰 Fundamentals & Mixed Rules', ids: [1, 2] }, { t: '🔰 Highways & Speed', ids: [3] }, { t: '🎓 Special Systems', ids: [4, 5, 6] }];
         secs.forEach(sec => {
           const sh = document.createElement('div'); sh.className = 'sec-hdr'; sh.textContent = sec.t; body.appendChild(sh);
           const tr = document.createElement('div'); tr.className = 'lv-track';
