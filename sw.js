@@ -1,7 +1,7 @@
 const CACHE_NAME = 'col-cache-v1';
 const urlsToCache = [
   '/',
-  '/home.html',
+  '/index.html',
   '/col-ui.css',
   '/col-ui.js',
   '/col-router.js',
