@@ -32,10 +32,15 @@ let _tt = null;
         } 
       },
       init() {
-        this.show('ss');
+        const urlParams = new URLSearchParams(window.location.search);
+        const screenParam = urlParams.get('screen');
+        if(screenParam === 'levels') {
+            this.showLevels();
+        } else {
+            this.show('ss');
+        }
         this._buildSylList();
         
-
         const cnameEl = document.getElementById('cname');
         if (cnameEl) { cnameEl.innerText = S.name || 'TRAFFIC HERO'; }
         const hwalletEl = document.getElementById('hwallet');
@@ -88,6 +93,10 @@ let _tt = null;
         this.cur = lv;
       },
       showLevels() {
+        if(window.location.pathname.includes('Driving.html')) {
+            window.location.href = 'Academy.html?screen=levels';
+            return;
+        }
         this.show('screen-levels');
         this._buildSylList();
       },
@@ -220,10 +229,20 @@ let _tt = null;
         }
     },
 
-      showStart() { this.show('ss'); this._rain(); if (!S.name || S.name === 'Traffic Hero') { setTimeout(() => this.showNamePrompt(), 1000); } },
+      showStart() { 
+          if(window.location.pathname.includes('Driving.html')) {
+              window.location.href = 'Academy.html';
+              return;
+          }
+          this.show('ss'); 
+          this._rain(); 
+          if (!S.name || S.name === 'Traffic Hero') { 
+              setTimeout(() => this.showNamePrompt(), 1000); 
+          } 
+      },
       showNameDlg() { document.getElementById('name-dlg').classList.add('on'); setTimeout(() => { const i = document.getElementById('name-input'); if (i) i.focus(); }, 200); },
       _rain() { const r = document.getElementById('rl'); if (r && !r._b) { r._b = 1; for (let i = 0; i < 30; i++) { const d = document.createElement('div'); d.className = 'rd'; d.style.left = Math.random() * 100 + '%'; d.style.height = (50 + Math.random() * 50) + 'px'; d.style.animationDuration = ('.6' + Math.random() * .5) + 's'; r.appendChild(d); } } },
-      showLevels() { this.show('screen-levels'); this._bldLvs(); },
+      showLevels_old() { this.show('screen-levels'); this._bldLvs(); },
       _bldLvs() {
         const body = document.getElementById('lvbody'); body.innerHTML = '';
         const done = Object.keys(S.comp).length; document.getElementById('pchip').textContent = done + '/6 ✅';

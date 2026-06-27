@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Mumbai Traffic Hero Academy</title>
+  <title>Mumbai Traffic Hero Academy - Hub</title>
   
   <!-- Cloud Auth & Sync Logic -->
   <script>
@@ -28,7 +28,7 @@
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -37,19 +37,19 @@
     rel="stylesheet" />
   <style>
     :root {
-      --bg: #faf9f6;
-      --card: #ffffff;
-      --text: #2c2b25;
-      --border: #e0dfd7;
-      --hover: #f0eee6;
-      --muted: #7c7968;
+      --bg: #070A14;
+      --card: rgba(17, 24, 39, 0.7);
+      --text: #E8E3D8;
+      --border: rgba(255, 255, 255, 0.1);
+      --hover: rgba(255, 255, 255, 0.15);
+      --muted: #8891AA;
       --muted2: #525046;
-      --accent: #d97757;
-      --green: #3b8c66;
-      --red: #c94f4f;
-      --yellow: #d97757;
-      --signal: #d97757;
-      --r: 12px;
+      --accent: #F2B84B;
+      --green: #34D399;
+      --red: #ef4444;
+      --yellow: #F2B84B;
+      --signal: #5ED4F5;
+      --r: 16px;
     }
 
     .mobile-dl { display: none !important; }
@@ -1202,6 +1202,21 @@
       display: flex;
     }
 
+    .hud-panel {
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
     .hp {
       background: var(--card);
       border: 1px solid var(--border);
@@ -1265,6 +1280,33 @@
 
     #hwrap.on {
       display: flex;
+    }
+
+    .modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 32px;
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 100;
+      width: 90%;
+      max-width: 420px;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .modal.on {
+      display: flex;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
     }
 
     .hl {
@@ -1405,7 +1447,7 @@
       display: block;
     }
 
-    #da {
+    #da { color: #111827 !important;
       position: fixed;
       top: 150px;
       left: 50%;
@@ -1939,7 +1981,7 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       }
       
-      #da {
+      #da { color: #111827 !important;
         top: 60px; padding: 8px 16px; font-size: 1rem;
       }
     }
@@ -1963,7 +2005,7 @@
       errDiv.style.padding = '10px';
       errDiv.style.fontFamily = 'monospace';
       errDiv.innerText = "JS Error: " + e.message + " at " + e.filename + ":" + e.lineno;
-      document.body.appendChild(errDiv);
+      if(document.body) document.body.appendChild(errDiv);
     });
     window.addEventListener('unhandledrejection', function (e) {
       const errDiv = document.createElement('div');
@@ -1976,14 +2018,23 @@
       errDiv.style.padding = '10px';
       errDiv.style.fontFamily = 'monospace';
       errDiv.innerText = "Promise Rejection: " + e.reason;
-      document.body.appendChild(errDiv);
+      if(document.body) document.body.appendChild(errDiv);
     });
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="vehicles.js"></script>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 </head>
 
-<body>
+<body class="lm">
   <!-- Script entry points -->
 
   <div id="mobile-controls"
@@ -2007,276 +2058,21 @@
   </div>
 
   <!-- Dedicated Pre-Loader Screen -->
-  <div id="loading-screen">
-    <h1>Traffic Academy</h1>
-    <div style="font-size: 1.2rem; margin-bottom: 10px;">Loading 3D Open World...</div>
-    <div id="loading-bar-container">
-      <div id="loading-bar"></div>
-    </div>
-    <div id="loading-pct">0%</div>
-    <div id="loading-status">Initializing assets...</div>
-  </div>
-
-  <div id="gc"><canvas id="3c"></canvas></div>
-  <div id="hud">
-    <div class="hp">Lv<span class="hv" id="hlv">1</span></div>
-    <div class="hp" id="hobj" style="font-size:0.85rem;font-weight:600;text-align:center;"></div>
-    <div class="hp">Score<span class="hv" id="hsc">0</span></div>
-  </div>
-  <div id="hudbar">
-    <div class="hb">⏱<span id="htmr">0:00</span></div>
-    <div class="hb">₹<span id="hfin">0</span></div>
-    <div class="hb">🎯<span id="hcp">0/0</span></div>
-  </div>
-  <div id="civic-controls" style="position:fixed;bottom:20px;right:20px;z-index:100;display:flex;flex-direction:column;gap:10px;">
-    <button id="btn-seatbelt" style="background:#333;color:#fff;border:2px solid #555;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer;transition:0.2s;" onclick="game.toggleSeatbelt(this)">💺 Seatbelt / Helmet OFF</button>
-    <button id="btn-mobile" style="background:#333;color:#fff;border:2px solid #555;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer;transition:0.2s;" onclick="game.toggleMobile(this)">📱 Use Mobile Phone</button>
-  </div>
-  <div id="sig-ind"
-    style="position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:25;display:none;align-items:center;gap:12px;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);padding:10px 20px;border-radius:30px;border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,0.1);font-weight:700;font-size:0.95rem;">
-    <div id="sind-lamp"
-      style="width:20px;height:20px;border-radius:50%;background:#ff3b30;box-shadow:0 0 14px #ff3b30;transition:all 0.3s;">
-    </div>
-    <div id="sind-state" style="color:#ff3b30;min-width:55px;text-align:center;transition:color 0.3s;">RED</div>
-    <div style="width:1px;height:20px;background:var(--border);"></div>
-    <div id="sind-timer" style="color:var(--text);font-size:1.1rem;min-width:30px;text-align:center;">0s</div>
-    <div style="width:1px;height:20px;background:var(--border);"></div>
-    <div id="sind-dist" style="color:var(--muted);font-size:0.85rem;">--m</div>
-  </div>
-  <div id="hwrap">
-    <div class="hl" style="font-size:0.7rem;color:var(--muted);letter-spacing:0.06em;">💰 WALLET</div>
-    <div id="hwallet" style="font-size:1.05rem;font-weight:900;color:#ffd54a;font-family:'Bebas Neue',sans-serif;letter-spacing:0.04em;">₹50,000</div>
-    <div class="hl" style="font-size:0.7rem;color:var(--muted);letter-spacing:0.06em;margin-top:4px;">🚗 HEALTH</div>
-    <div class="ht"><div class="hf" id="hfill"></div></div>
-  </div>
-  <div id="ow">⚠️ OFF ROAD - Return to road!</div>
-
-  <div id="da">
-    <div class="dai" id="da-arrow-container"
-      style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-      <div id="da-arrow" style="transition:transform 0.1s ease-out;display:inline-block;"><svg width="24" height="24"
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path d="M12 19V5M5 12l7-7 7 7" />
-        </svg></div>
-    </div>
-    <div class="dal" id="dal">GO STRAIGHT</div>
-  </div>
-
-  <div id="gp">
-    <button class="gb ag" data-g="P">P</button>
-    <button class="gb" data-g="R">R</button>
-    <button class="gb" data-g="N">N</button>
-    <button class="gb" data-g="D">D</button>
-    <button class="gb" data-g="1">1</button>
-    <button class="gb" data-g="2">2</button>
-    <button class="gb" data-g="3">3</button>
-    <button class="gb" data-g="4">4</button>
-    <button class="gb" data-g="5">5</button>
-  </div>
-  <div id="gread">GEAR: P</div>
-
-  <div id="tc">
-    <div style="display:flex;gap:16px;">
-      <div class="db" id="tl"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg></div>
-      <div class="db" id="tr"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg></div>
-    </div>
-    <div style="display:flex;gap:16px;">
-      <div class="db" id="abb">🛑</div>
-      <div class="db" id="tu">⬆️</div>
-      <div class="db" id="abh">📢</div>
-    </div>
-  </div>
-
-  <div id="crash-screen"
-    style="position:fixed; inset:0; background:radial-gradient(ellipse at center, rgba(0,0,0,0.15) 40%, rgba(180,0,0,0.35) 100%); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-    <div class="cvc"
-      style="padding:0; background:#fff; overflow:hidden; border-radius:16px; max-width:450px; width:90%; box-shadow:0 24px 60px rgba(255,0,0,0.2);">
-      <div style="background:#b02a37; color:white; padding:24px 20px; display:flex; align-items:center; gap:16px;">
-        <div
-          style="background:#fff; color:#b02a37; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.6rem;">
-          ⚠️</div>
-        <div style="text-align:left;">
-          <div style="font-size:1.2rem; font-weight:700;">Critical Accident Report</div>
-          <div style="font-size:0.85rem; color:rgba(255,255,255,0.8); margin-top:2px;">Simulation Terminated</div>
-        </div>
-      </div>
-      <div style="padding:24px; text-align:left;">
-        <div
-          style="display:flex; justify-content:space-between; margin-bottom:16px; border-bottom:1px dashed #ccc; padding-bottom:12px;">
-          <span style="color:#6c757d; font-weight:500;">Incident Type</span>
-          <span style="font-weight:700; color:#b02a37; max-width:60%; text-align:right;" id="crash-reason">Collided with
-            Vehicle</span>
-        </div>
-        <div
-          style="background:#fff3cd; border-left:4px solid #ffc107; padding:12px 16px; border-radius:4px; margin-bottom:20px;">
-          <div style="font-size:0.8rem; font-weight:700; color:#856404; margin-bottom:6px;">REAL LIFE CONSEQUENCES</div>
-          <div id="crash-info" style="font-size:0.95rem; color:#856404; line-height:1.4;">Dangerous driving can lead to
-            severe structural damage and potential injury.</div>
-        </div>
-      </div>
-      <div
-        style="background:#f8f9fa; padding:20px; border-top:1px solid #e9ecef; display:flex; flex-direction:column; gap:12px;">
-        <button class="btn btn-p"
-          style="background:#b02a37; font-size:1.1rem; padding:12px; border-radius:30px; width:100%; border:none;"
-          onclick="game.retryLevel()">Try Again</button>
-        <button class="btn btn-g"
-          style="font-size:1rem; padding:12px; border-radius:30px; width:100%; background:transparent; border:2px solid #ccc; color:#555;"
-          onclick="document.getElementById('crash-screen').style.display='none'; ui.showLevels(); setTimeout(()=>ui._selSyl('theory'),100);">Course
-          Overview</button>
-      </div>
-    </div>
-  </div>
-  <div id="mgo">
-    <div class="mgc" id="mgc">
-      <div class="mgt" id="mgt">Action</div>
-      <div class="mgd" id="mgd">Perform action.</div>
-      <div id="mgct"></div>
-      <div class="mgb" id="mgbt"></div>
-    </div>
-  </div>
-
-  <!-- GAME HUD RESTORATION -->
-  <div id="cdown"
-    style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:5rem;font-weight:800;color:#fff;text-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:90;display:none;animation:cdownPulse 0.5s ease;">
-    READY</div>
-  <div id="spgauge"
-    style="position:fixed;right:32px;bottom:32px;background:var(--card);border:1px solid var(--border);border-radius:50%;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,0.1);z-index:25;display:none;">
-    <svg viewBox="0 0 88 88" width="100" height="100">
-      <path d="M44,76 A32,32 0 1,1 76,44" fill="none" stroke="var(--border)" stroke-width="6" stroke-linecap="round" />
-      <path id="garc" fill="none" stroke="var(--yellow)" stroke-width="6" stroke-linecap="round" />
-      <text id="gspd" x="44" y="52" text-anchor="middle" font-size="28" font-weight="700" fill="var(--text)">0</text>
-      <text x="44" y="68" text-anchor="middle" font-size="10" font-weight="600" fill="var(--muted)">KM/H</text>
-    </svg>
-  </div>
-  <canvas id="mmc" width="160" height="160"
-    style="position:fixed;top:32px;right:32px;border-radius:50%;border:4px solid var(--card);box-shadow:0 12px 30px rgba(0,0,0,0.2);z-index:25;display:none;"></canvas>
-
-  <div id="challan-stack"></div>
-  <div id="toast">
-    <div id="ti"></div>
-  </div>
-
-  <div id="name-prompt-dlg" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; color:#ffffff;">
-    <style>@keyframes promptFloatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }</style>
-    <div style="position:absolute; inset:0; background:radial-gradient(circle at top right, rgba(255,213,74,0.15), transparent 50%), radial-gradient(circle at bottom left, rgba(255,213,74,0.1), transparent 50%); pointer-events:none;"></div>
-    <div style="position:relative; z-index:2; text-align:center; max-width:500px; width:90%; animation: promptFloatY 6s ease-in-out infinite;">
-      <div style="font-family:'Lora', serif; font-size:4.5rem; margin-bottom:10px; text-shadow:0 10px 30px rgba(0,0,0,0.5)">Traffic <i style="color:#FFD54A; font-style:normal;">Hero</i></div>
-      <p style="color:#ccc; font-size:1.1rem; margin-bottom:40px;">Welcome to the Academy. Enter your name to begin your journey.</p>
-      
-      <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:40px; border-radius:24px; box-shadow:0 24px 60px rgba(0,0,0,0.5); backdrop-filter:blur(20px);">
-        <input type="text" id="prompt-name" placeholder="Enter Driver Name" maxlength="30" style="width:100%; box-sizing:border-box; padding:18px 24px; border-radius:12px; border:2px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.3); color:#fff; font-size:1.2rem; margin-bottom:24px; outline:none; text-align:center; font-family:'Inter', sans-serif; transition: all 0.3s;" onfocus="this.style.borderColor='#FFD54A'; this.style.boxShadow='0 0 20px rgba(255,213,74,0.2)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.boxShadow='none'" onkeydown="if(event.key==='Enter') ui.saveNamePrompt()" />
-        
-        <button class="btn btn-p" onclick="ui.saveNamePrompt()" style="width:100%; font-size:1.2rem; padding:16px; border-radius:12px; background:#FFD54A; color:#000; border:none; cursor:pointer; box-shadow:0 10px 30px rgba(255,213,74,0.3); letter-spacing:1px; text-transform:uppercase; font-weight:700;">Start Engine</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="profile-dlg" style="position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-    <div class="nd-c" style="background:#fff; padding:30px; border-radius:16px; max-width:400px; width:90%; box-shadow:0 24px 60px rgba(0,0,0,0.2); text-align:center;">
-      <h3 style="font-size:1.6rem; margin-bottom:8px;">Driver Profile</h3>
-      <p style="color:var(--muted2); margin-top:0px; font-size:0.95rem; margin-bottom:20px;">Manage your academy details</p>
-      
-      <div style="text-align:left; margin-bottom:12px;">
-          <label style="font-weight:600; font-size:0.9rem; color:#555;">Full Name</label>
-          <input type="text" id="prof-name" class="nd-i" placeholder="e.g. Rahul Sharma" maxlength="30" style="margin-top:6px; width:100%; box-sizing:border-box;" />
-      </div>
-
-      
-
-      <div style="text-align:left; margin-bottom:24px;">
-          <label style="font-weight:600; font-size:0.9rem; color:#555;">Preferred Vehicle</label>
-          <select id="prof-veh" class="nd-i" style="margin-top:6px; width:100%; box-sizing:border-box; cursor:pointer; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:1rem;">
-              <option value="Car">Car</option>
-              <option value="Auto">Auto Rickshaw</option>
-              <option value="Bike">Motorcycle</option>
-              <option value="SUV">SUV</option>
-              <option value="Bus">Bus</option>
-              <option value="Truck">Truck</option>
-          </select>
-      </div>
-      
-      <button class="btn" onclick="document.getElementById('profile-dlg').style.display='none'; ui.showBadges()" style="width:100%; font-size:1rem; padding:12px; margin-bottom:16px; background:#4a90e2; color:#fff; font-weight:700;">🎖️ View Badges</button>
-      <button class="btn" onclick="document.getElementById('profile-dlg').style.display='none'; ui.showCert()" style="width:100%; font-size:1rem; padding:12px; margin-bottom:16px; background:#ffc107; color:#1f3b5e; font-weight:700;">🎓 View Certificate</button>
-
-      <div style="display:flex; gap:12px;">
-          <button class="btn btn-g" onclick="document.getElementById('profile-dlg').style.display='none'" style="width:50%; font-size:1rem; padding:12px;">Cancel</button>
-          <button class="btn btn-p" onclick="ui.saveProfile()" style="width:50%; font-size:1rem; padding:12px;">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="vflash"></div>
-  <div id="cov">
-    <div class="cvc" id="cvc-main"
-      style="padding:0; background:#fff; overflow:hidden; border-radius:16px; max-width:400px; width:90%; box-shadow:0 24px 60px rgba(0,0,0,0.3);">
-      <div style="background:#1f3b5e; color:white; padding:24px 20px; display:flex; align-items:center; gap:16px;">
-        <div
-          style="background:#ffc107; color:#1f3b5e; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.4rem;">
-          xa</div>
-        <div style="text-align:left;">
-          <div style="font-size:1.2rem; font-weight:700;">Mumbai Traffic Police</div>
-          <div style="font-size:0.85rem; color:rgba(255,255,255,0.7); margin-top:2px;">Electronic Challan Notice</div>
-        </div>
-      </div>
-      <div style="padding:24px; text-align:left;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-          <span style="color:#6c757d; font-weight:500;">Challan No.</span>
-          <span style="font-weight:700;" id="cnum"></span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-          <span style="color:#6c757d; font-weight:500;">Offense</span>
-          <span style="font-weight:700; color:#dc3545; text-align:right; max-width:60%;" id="coff"></span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-          <span style="color:#6c757d; font-weight:500;">Law Section</span>
-          <span style="font-weight:700; text-align:right; max-width:60%;" id="claw"></span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:24px;">
-          <span style="color:#6c757d; font-weight:500;">Location</span>
-          <span style="font-weight:700;" id="cloc">📍 Andheri West</span>
-        </div>
-
-        <div style="border-top:2px dashed #e9ecef; margin-bottom:24px;"></div>
-
-        <div
-          style="background:#fff3cd; border:2px solid #ffc107; border-radius:12px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-          <span style="color:#856404; font-weight:600;">Fine Amount</span>
-          <span
-            style="color:#dc3545; font-size:2.2rem; font-weight:700; font-family:'Bebas Neue',sans-serif; line-height:1;"
-            id="camt"></span>
-        </div>
-      </div>
-      <div
-        style="background:#f8f9fa; padding:20px; border-top:1px solid #e9ecef; display:flex; flex-direction:column; align-items:center;">
-        <button class="btn btn-p"
-          style="background:#b02a37; width:100%; font-size:1.2rem; padding:14px; border-radius:30px; margin-bottom:16px;"
-          onclick="ui.dismissChallan()">Pay & Continue &rarr;</button>
-
-        <div
-          style="font-size:0.7rem; color:#888; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px; font-weight:600;">
-          Sponsored By</div>
-        <div style="display:flex; justify-content:center; gap:16px; align-items:center;">
-          <img loading="lazy" id="cert-logo-1" src="mumbai-police-logo.webp" style="height:24px; opacity:0.7; ">
-          <div style="width:1px; height:16px; background:#ccc;"></div>
-          <img loading="lazy" id="cert-logo-2" src="sneh-logo.webp" style="height:24px; opacity:0.7; ">
-        </div>
-      </div>
-    </div>
-  </div>
+  
 
   <!-- SCREENS -->
 
   <div id="ss" class="screen active">
     <div id="top-bar-container" style="position:absolute; top:20px; right:20px; z-index:100; display:flex; gap:10px;">
-      <button class="cloud-login-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else if(window.openLogin) window.openLogin();" style="background:#34D399; color:#fff; border:1px solid #34D399; border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">☁️ Cloud Sync</button>
-      <button onclick="ui.showProfile()" style="background:#fff; border:1px solid var(--border); border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">👤 Profile</button>
+      <button onclick="document.body.classList.toggle('lm'); try { localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark'); } catch(e){}" style="background:#fff; border:1px solid var(--border); border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">🌓 Theme</button>
+      
+<button class="nav-login-btn" onclick="window.gameDifficulty = window.gameDifficulty === 'Hard' ? 'Easy' : 'Hard'; this.innerHTML = window.gameDifficulty === 'Hard' ? '🔴 Hard Mode' : '🟢 Easy Mode';" style="background:#fff; border:1px solid var(--border); border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; font-size:0.95rem; box-shadow:0 4px 12px rgba(0,0,0,0.1);" id="btn-diff">🟢 Easy Mode</button>
+<button class="nav-login-btn" onclick="window.gameWeather = window.gameWeather === 'Rain' ? 'Clear' : 'Rain'; this.innerHTML = window.gameWeather === 'Rain' ? '🌧️ Rain' : '☀️ Clear';" style="background:#fff; border:1px solid var(--border); border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; font-size:0.95rem; box-shadow:0 4px 12px rgba(0,0,0,0.1);" id="btn-weather">☀️ Clear</button>
+<button class="nav-login-btn cloud-login-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else if(window.openLogin) window.openLogin();" style="background:#34D399; color:var(--ink); border:1px solid #34D399; border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">☁️ Cloud Sync</button>
+      <div class="nav-user-profile" id="navUserProfile" data-preserve-click="true" onclick="ui.showProfile()" style="display:none; align-items:center; gap:8px; background:#fff; border:1px solid var(--border); border-radius:30px; padding:5px 15px 5px 5px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        <div class="nav-user-avatar" style="width:28px; height:28px; border-radius:50%; background:var(--signal); color:var(--ink); display:flex; justify-content:center; align-items:center; font-weight:bold; overflow:hidden;">?</div>
+        <span class="nun" style="font-weight:600; font-size:0.95rem; color:#111827;">User</span>
+      </div>
     </div>
     <div id="rl"></div>
     <div class="sc">
@@ -2313,7 +2109,7 @@
             Academy</button>
           <button class="btn btn-g" onclick="ui.hardReset()" style="font-size:1.1rem;padding:12px 32px;">Reset
             Progress</button>
-          <button class="btn btn-s" style="background:var(--red); font-size:1.1rem; padding:12px 32px; color:#fff;" onclick="const p = prompt('Developer Password:'); if(['Neel','Ansh','Sanjana'].includes(p)) { ui.adminUnlock(); } else if(p) { toast('❌ Access Denied', '#ff3b30'); }">🔓 Dev Unlock</button>
+          <button class="btn btn-s" style="background:var(--red); font-size:1.1rem; padding:12px 32px; color:var(--ink);" onclick="const p = prompt('Developer Password:'); if(['Neel','Ansh','Sanjana'].includes(p)) { ui.adminUnlock(); } else if(p) { toast('❌ Access Denied', '#ff3b30'); }">🔓 Dev Unlock</button>
           <button class="btn btn-g mobile-dl" style="border-color:var(--signal); color:var(--signal); font-size:1.1rem; padding:12px 32px;" onclick="window.location.href='../COL.apk'">📱 Download Android App</button>
         </div>
       </div>
@@ -2494,8 +2290,8 @@
 
   <script src="course.js"></script>
   <script src="ui.js"></script>
-  <script src="game_core.js"></script>
-  <script src="start.js"></script>
+  
+  
 
 </body>
 

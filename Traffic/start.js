@@ -40,7 +40,7 @@ let game = null;
         { key: 'bike', file: basePath + 'race.glb' },
         
         // Roads
-        { key: 'road_straight', file: 'Models/road__avenue__street/scene.gltf' },
+        { key: 'road_straight', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-straight.glb' },
         { key: 'road_intersect', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-intersection.glb' },
         { key: 'road_cross', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossroad.glb' },
 
@@ -120,10 +120,12 @@ let game = null;
             // Apply materials and cast shadows on the loaded model
             gltf.scene.traverse((child) => {
                 if (child.isMesh) {
-                    child.castShadow = true;
+                    // Roads shouldn't cast shadows, it severely impacts performance
+                    child.castShadow = !asset.key.includes('road');
                     child.receiveShadow = true;
-                    child.frustumCulled = false;
+                    // Removed child.frustumCulled = false to allow culling of unseen objects
                     
+
                     if (child.material) {
                         if (child.material.map) {
                             child.material.map.magFilter = THREE.NearestFilter;
@@ -271,9 +273,25 @@ let game = null;
       ui.init();
       game = new Game();
       window.game = game;
-      // ui.init already calls show('ss'), but we can be explicit:
-      // ui.showStart() might not exist, but let's just use ui.show('ss') to be safe
-      if (ui.showStart) ui.showStart();
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const lvId = urlParams.get('lv');
+      const mode = urlParams.get('mode');
+      
+      if (window.location.pathname.includes('Driving.html') && lvId) {
+          const levelObj = window.LVS.find(l => l.id == lvId);
+          if (levelObj) {
+              ui.cur = levelObj;
+              ui.curMode = mode || 'car';
+              ui.cur.vehMode = ui.curMode;
+              document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+              setTimeout(() => { game.startLevel(); }, 300);
+          } else {
+              if (ui.showStart) ui.showStart();
+          }
+      } else {
+          if (ui.showStart) ui.showStart();
+      }
     });
   
     async function downloadSourceCode(e) {

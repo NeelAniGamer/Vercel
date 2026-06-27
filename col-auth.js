@@ -389,10 +389,12 @@ if (!window.closeMo) {
             navBtns.forEach(btn => btn.style.display = 'none');
             navProfiles.forEach(prof => {
                 prof.style.display = 'flex';
-                prof.onclick = function() {
-                    if (window.openGlobalLogin) window.openGlobalLogin();
-                    else if (window.openLogin) window.openLogin();
-                };
+                if (prof.dataset.preserveClick !== 'true') {
+                    prof.onclick = function() {
+                        if (window.openGlobalLogin) window.openGlobalLogin();
+                        else if (window.openLogin) window.openLogin();
+                    };
+                }
                 
                 // Try to find the inner text elements
                 const nameEls = prof.querySelectorAll('span, .pname');

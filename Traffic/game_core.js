@@ -1,7 +1,7 @@
 class Game {
       constructor() {
         this.renderer = null; this.scene = null; this.camera = null; this.player = null;
-        this.clock = new THREE.Clock(); this.keys = {}; this.speed = 0; this.maxSpd = .9; this.accel = .022; this.fric = .93; this.turn = .032; this.gear = 'N'; this.gcap = 0;
+        this.clock = new THREE.Clock(); this.keys = {}; this.speed = 0; this.maxSpd = 1.1; this.accel = .045; this.fric = .95; this.turn = .065; this.gear = 'N'; this.gcap = 0;
         this._camTarget = new THREE.Vector3();
         this.playing = false; this.pause = false; this.lightningTimer = 0; this.thunderSfx = null; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0;
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.routeIdx = 0; this.retries = 0;
@@ -459,7 +459,7 @@ class Game {
             }, 500);
           } else {
             this.player = this.playerVehicle; // Start in vehicle
-            this.maxSpd = mode === 'highway' ? 0.85 : 0.60; this.accel = 0.022; this.turn = 0.042; this.fric = mode === 'rain' ? 0.90 : 0.94;
+            this.maxSpd = mode === 'highway' ? 1.4 : 1.1; this.accel = 0.045; this.turn = 0.065; this.fric = mode === 'rain' ? 0.92 : 0.95;
           }
         }
       }
@@ -1499,8 +1499,8 @@ class Game {
                 this.isPedestrian = false;
                 this.scene.remove(this.playerCharacter);
                 this.player = this.playerVehicle;
-                this.maxSpd = this.mode === 'highway' ? 0.85 : 0.60;
-                this.accel = 0.022; this.turn = 0.042; this.fric = this.mode === 'rain' ? 0.90 : 0.94;
+                this.maxSpd = this.mode === 'highway' ? 1.4 : 1.1;
+                this.accel = 0.045; this.turn = 0.065; this.fric = this.mode === 'rain' ? 0.92 : 0.95;
                 toast('🚗 Entered Vehicle!', '#00c851');
               } else {
                 toast('Too far from vehicle.', '#ff9500');
@@ -1742,7 +1742,7 @@ class Game {
                   if (other !== n && other.userData.moveAxis !== 'h' && other.userData.dir === n.userData.dir) {
                     const dz = other.position.z - n.position.z;
                     const dx = Math.abs(other.position.x - n.position.x);
-                    if (dz * n.userData.dir > 0 && Math.abs(dz) < 25 && dx < 2.5) {
+                    if (dz * n.userData.dir > 0 && Math.abs(dz) < 25 && dx < 1.5) {
                       fsm.approachingObstacle = true;
                       fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
                       fsm.obstacleSpeed = other.userData.spd;
@@ -1754,7 +1754,7 @@ class Game {
                 if (this.player && this.player.position && !this.isPedestrian) {
                   const dz = this.player.position.z - n.position.z;
                   const dx = Math.abs(this.player.position.x - n.position.x);
-                  if (dz * n.userData.dir > 0 && Math.abs(dz) < 25 && dx < 2.5) {
+                  if (dz * n.userData.dir > 0 && Math.abs(dz) < 25 && dx < 1.5) {
                     fsm.approachingObstacle = true;
                     fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
                     fsm.obstacleSpeed = this.speed || 0;
@@ -1775,7 +1775,7 @@ class Game {
 
                 // State Transitions
                 if (!yieldingToAmbulance) {
-                  if (fsm.approachingObstacle && fsm.obstacleDist < 10) {
+                  if (fsm.approachingObstacle && fsm.obstacleDist < 6.5) {
                     n.userData.state = 'STOPPED';
                   } else if (fsm.approachingObstacle && fsm.obstacleDist < 25 && !fsm.redLight) {
                     n.userData.state = 'FOLLOW';
@@ -2128,7 +2128,7 @@ class Game {
               camHeight, 
               this.player.position.z - Math.cos(rotY) * camDist
           );
-          this.camera.position.lerp(this._camTarget, .15); 
+          this.camera.position.lerp(this._camTarget, .25); 
           this.camera.lookAt(this.player.position.x + Math.sin(rotY) * 15, 1.5, this.player.position.z + Math.cos(rotY) * 15);
         }
       }
