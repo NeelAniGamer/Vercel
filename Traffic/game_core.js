@@ -488,11 +488,28 @@ class Game {
         } else {
             this.scene.fog = new THREE.Fog(sk, fogDist * 0.3, fogDist);
         }
-        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.amb || 0.4));
-        const sun = new THREE.DirectionalLight(0xfff4dd, cfg.isNight ? 0.4 : 1.5);
-        sun.position.set(20, 40, 10); this.scene.add(sun);
+        // Enhanced true color lighting with better contrast and shadows
+        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.05 : 0.25));
+        
+        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.3 : 2.5);
+        sun.position.set(30, 60, 20); 
+        sun.castShadow = true;
+        sun.shadow.camera.near = 0.5;
+        sun.shadow.camera.far = 200;
+        sun.shadow.camera.left = -60;
+        sun.shadow.camera.right = 60;
+        sun.shadow.camera.top = 60;
+        sun.shadow.camera.bottom = -60;
+        sun.shadow.bias = -0.0005;
+        sun.shadow.mapSize.width = 2048;
+        sun.shadow.mapSize.height = 2048;
+        this.scene.add(sun);
+        
         if (cfg.isNight) {
-          const moon = new THREE.DirectionalLight(0x6688cc, 0.4); moon.position.set(-10, 30, -20); this.scene.add(moon);
+          const moon = new THREE.DirectionalLight(0x88aacc, 0.5); 
+          moon.position.set(-20, 40, -30); 
+          moon.castShadow = true;
+          this.scene.add(moon);
         }
 
         const RW = cfg.isPedestrian ? 10 : 12;
@@ -865,11 +882,15 @@ class Game {
         }
         const designColors = [0xff4444, 0x1e90ff, 0x3a3a3a, 0xffd54a, 0xffffff, 0x888888, 0x27ae60, 0xf39c12];
         const allRoads = cfg.roads;
-        npcTypes.forEach((nType, i) => {
+        let multipliedNpcs = [];
+        for (let m = 0; m < 6; m++) {
+          multipliedNpcs.push(...npcTypes);
+        }
+        multipliedNpcs.forEach((nType, i) => {
           const nv = this._makeNPC(nType, designColors[i % designColors.length]);
           const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
           // ── BIDIRECTIONAL: 35% of NPCs go opposing direction ──
-          const isOpp = i < Math.floor(npcTypes.length * 0.35);
+          const isOpp = i < Math.floor(multipliedNpcs.length * 0.35);
           const laneOffset = isOpp ? -2.5 : 2.5; // opposing use left lane
           if (seg.type === 'v') {
             nv.position.set(seg.x + laneOffset, 0, seg.z1 + Math.random() * Math.abs(seg.z2 - seg.z1));
@@ -895,6 +916,24 @@ class Game {
           };
           this.npcs.push(nv); this.scene.add(nv);
         });
+
+        // ── STATIC PARKED CARS ──
+        for (let i = 0; i < allRoads.length * 3; i++) {
+          const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+          const pType = ['car', 'taxi', 'truck'][Math.floor(Math.random() * 3)];
+          const pc = this._makeNPC(pType, designColors[Math.floor(Math.random() * designColors.length)]);
+          const isLeft = Math.random() > 0.5;
+          const parkOffset = isLeft ? -4.5 : 4.5;
+          if (seg.type === 'v') {
+            pc.position.set(seg.x + parkOffset, 0, seg.z1 + Math.random() * Math.abs(seg.z2 - seg.z1));
+            pc.rotation.y = isLeft ? Math.PI : 0;
+          } else {
+            pc.position.set(seg.x1 + Math.random() * Math.abs(seg.x2 - seg.x1), 0, seg.z + parkOffset);
+            pc.rotation.y = isLeft ? -Math.PI / 2 : Math.PI / 2;
+          }
+          this.scene.add(pc);
+          if (this.obstacles) this.obstacles.push(pc);
+        }
 
         // Special features per level
         if (cfg.hasRain) {
@@ -1456,7 +1495,7 @@ class Game {
           if (this.mapCfg && this.mapCfg.startOutside && this.playerVehicle && this.playerCharacter) {
             if (this.isPedestrian) {
               const dist = this.player.position.distanceTo(this.playerVehicle.position);
-              if (dist < 6.0) {
+              if (dist < 18.0) {
                 this.isPedestrian = false;
                 this.scene.remove(this.playerCharacter);
                 this.player = this.playerVehicle;
@@ -1469,7 +1508,7 @@ class Game {
             } else {
               this.isPedestrian = true;
               this.playerCharacter.position.copy(this.playerVehicle.position);
-              this.playerCharacter.position.x += 2;
+              this.playerCharacter.position.x += 6;
               this.scene.add(this.playerCharacter);
               this.player = this.playerCharacter;
               this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;

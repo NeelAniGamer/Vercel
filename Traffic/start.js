@@ -124,13 +124,21 @@ let game = null;
                     child.receiveShadow = true;
                     child.frustumCulled = false;
                     
-                    if (child.material && child.material.map) {
-                        child.material.map.magFilter = THREE.NearestFilter;
-                        child.material.map.minFilter = THREE.NearestFilter;
-                        child.material.map.needsUpdate = true;
+                    if (child.material) {
+                        if (child.material.map) {
+                            child.material.map.magFilter = THREE.NearestFilter;
+                            child.material.map.minFilter = THREE.NearestFilter;
+                            child.material.map.needsUpdate = true;
+                        }
+                        // Enhance lighting contrast response
+                        child.material.roughness = 0.8;
+                        child.material.metalness = 0.1;
                     }
                 }
             });
+            
+            // Scale up the models by 14x as per user feedback
+            gltf.scene.scale.set(14, 14, 14);
             window.PRELOADED_MODELS[asset.key] = gltf.scene;
             
             loaded++;
