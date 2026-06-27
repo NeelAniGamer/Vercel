@@ -335,7 +335,7 @@ class Game {
         _mco.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(8px);animation:fadeIn 0.3s ease;';
         _mco.innerHTML = '<div style="text-align:center;animation:cdownPulse 0.5s ease;"><div style="font-size:4rem;margin-bottom:16px;">🏆</div><h1 style="color:#ffd54a;font-size:2.5rem;font-family:Bebas Neue,sans-serif;letter-spacing:0.05em;margin-bottom:8px;text-shadow:0 4px 20px rgba(255,213,74,0.4);">MISSION COMPLETE!</h1><div style="color:white;font-size:1.5rem;font-weight:700;margin-bottom:12px;">Score: ' + game.fs + '</div><div style="color:rgba(255,255,255,0.6);font-size:0.95rem;">Proceeding to quiz...</div></div>';
         document.body.appendChild(_mco);
-        setTimeout(() => { _mco.remove(); ui.showQuiz(); }, 3000);
+        setTimeout(() => { _mco.remove(); ui.showQuiz(ui.curMode || 'car'); }, 3000);
       }
 
       // 🚦 MAP CONFIGURATIONS FOR ALL MUMBAI LEVELS 🚦
@@ -886,7 +886,12 @@ class Game {
             npcType: nType,
             moveAxis: seg.type,
             isOpp,
-            dir: isOpp ? -1 : 1    // direction multiplier
+            baseCoord: seg.type === 'v' ? seg.x : seg.z,
+            dir: isOpp ? -1 : 1,    // direction multiplier
+            minPos: seg.type === 'v' ? Math.min(seg.z1, seg.z2) : Math.min(seg.x1, seg.x2),
+            maxPos: seg.type === 'v' ? Math.max(seg.z1, seg.z2) : Math.max(seg.x1, seg.x2),
+            txX: seg.type === 'v' ? seg.x + laneOffset : undefined,
+            state: 'CRUISE'
           };
           this.npcs.push(nv); this.scene.add(nv);
         });
@@ -1787,8 +1792,8 @@ class Game {
             // Movement Execution
             if (n.userData.moveAxis === 'h') {
               n.position.x += n.userData.spd * 35 * dt * n.userData.dir; 
-              if (n.position.x > 250) n.position.x = -250;
-              if (n.position.x < -250) n.position.x = 250;
+              if (n.position.x > n.userData.maxPos && n.userData.dir === 1) n.position.x = n.userData.minPos;
+              if (n.position.x < n.userData.minPos && n.userData.dir === -1) n.position.x = n.userData.maxPos;
             } else {
               n.position.x += (n.userData.txX - n.position.x) * 0.08;
               let yawT = Math.atan2(n.userData.txX - n.position.x, 8) * 0.5;
@@ -1802,11 +1807,11 @@ class Game {
               
               n.position.z += n.userData.spd * 35 * dt * n.userData.dir;
 
-              if (n.position.z > 200 && n.userData.dir === 1) { 
-                n.position.z = -500; n.position.x = 2.4; n.userData.spd = n.userData.baseSpd; n.userData.txX = n.position.x; n.userData.state = 'CRUISE';
+              if (n.position.z > n.userData.maxPos && n.userData.dir === 1) { 
+                n.position.z = n.userData.minPos; n.position.x = n.userData.baseCoord + 2.5; n.userData.spd = n.userData.baseSpd; n.userData.txX = n.position.x; n.userData.state = 'CRUISE';
               }
-              if (n.position.z < -500 && n.userData.dir === -1) { 
-                n.position.z = 200; n.position.x = -2.4; n.userData.spd = n.userData.baseSpd; n.userData.txX = n.position.x; n.userData.state = 'CRUISE';
+              if (n.position.z < n.userData.minPos && n.userData.dir === -1) { 
+                n.position.z = n.userData.maxPos; n.position.x = n.userData.baseCoord - 2.5; n.userData.spd = n.userData.baseSpd; n.userData.txX = n.position.x; n.userData.state = 'CRUISE';
               }
             }
           }

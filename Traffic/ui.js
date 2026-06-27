@@ -233,7 +233,8 @@ let _tt = null;
           const tr = document.createElement('div'); tr.className = 'lv-track';
           sec.ids.forEach(id => {
             const lv = LVS.find(l => l.id === id), idx = LVS.indexOf(lv);
-            const un = idx === 0 || S.comp[LVS[idx - 1].id]; const cm = !!S.comp[lv.id]; const ip = !cm && idx > 0 && S.comp[LVS[idx - 1].id];
+            const isDone = (lvlId) => S.comp[lvlId]?.finalQuiz || (S.comp[lvlId] && S.comp[lvlId].score !== undefined && Object.keys(S.comp[lvlId]).length > 1);
+            const un = idx === 0 || isDone(LVS[idx - 1].id); const cm = !!isDone(lv.id); const ip = !cm && un;
             const c = document.createElement('div'); c.className = 'lcard' + (cm ? ' done' : '') + (un ? '' : ' lk');
             c.innerHTML = `<div class="lbar" style="background:${lv.gr}"></div>
         <div class="lct"><div class="lico" style="background:${lv.gr}">${un ? lv.icon : '🔒'}</div><div class="lst ${cm ? 'sdk' : ip ? 'sip' : 'sns'}">${cm ? '✅ Done' : ip ? '▶️ Start' : '🔒 Locked'}</div></div>
@@ -324,15 +325,35 @@ let _tt = null;
             <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem, 3.5vw, 2.5rem);color:#fff;line-height:1">${lv.law.fine}</div>
           </div>
         </div>
-      </div>
-      <div style="text-align:center;margin-top:24px">
+      </div>`;
+      const compData = S.comp[lv.id] || {};
+      const modesComp = compData.modes || {};
+      const allModesDone = lv.modes.every(m => modesComp[m]);
+      const finalDone = compData.finalQuiz;
+      
+      let btnsHTML = lv.modes.map(m => {
+        const isComp = modesComp[m];
+        const bg = isComp ? '#27ae60' : '#e74c3c';
+        const icon = m === 'pedestrian' ? '🚶' : (m === 'bike' ? '🏍️' : '🚗');
+        const lbl = m.charAt(0).toUpperCase() + m.slice(1);
+        return `<button class="btn btn-p" onclick="ui.curMode='${m}'; ui.cur.vehMode = ui.curMode; game.startLevel()" style="background:${bg}; margin:5px; font-size:clamp(1rem, 2vw, 1.2rem);">${icon} Start ${lbl}</button>`;
+      }).join('');
+
+      let finalBtnBg = finalDone ? '#27ae60' : (allModesDone ? '#f39c12' : '#7f8c8d');
+      let finalBtnState = allModesDone ? `onclick="ui.showQuiz('final')"` : 'disabled';
+      let finalBtnTxt = finalDone ? '🎓 Mastered' : '🎓 Final Mastery Quiz';
+      let finalBtn = `<button class="btn btn-p" ${finalBtnState} style="background:${finalBtnBg}; margin:5px; font-size:clamp(1rem, 2vw, 1.2rem);">${finalBtnTxt}</button>`;
+
+      card.innerHTML += `<div style="text-align:center;margin-top:24px">
         <div style="margin-bottom:16px;">
-          <label style="color:rgba(255,255,255,0.8);font-size:0.9rem;margin-right:10px;text-transform:uppercase;letter-spacing:0.05em;">Select Mode:</label>
-          <select id="mode-selector" onchange="ui.curMode = this.value; document.getElementById('start-btn').innerHTML = (this.value === 'pedestrian' ? '🚶 Start Walking' : (this.value === 'bike' ? '🏍️ Start Riding' : '🚗 Start Driving'));" style="padding:10px;border-radius:8px;background:rgba(0,0,0,0.5);color:#fff;border:1px solid rgba(255,255,255,0.2);font-size:1rem;outline:none;cursor:pointer;">
-            ${(lv.modes || ['car']).map(m => `<option value="${m}" ${ui.curMode === m ? 'selected' : ''}>${m.charAt(0).toUpperCase() + m.slice(1)}</option>`).join('')}
-          </select>
+          <div style="color:rgba(255,255,255,0.8);font-size:0.9rem;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;">Driving Tests (Complete all to unlock final quiz):</div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">
+            ${btnsHTML}
+          </div>
         </div>
-        <button id="start-btn" class="btn btn-p" onclick="ui.cur.vehMode = ui.curMode; game.startLevel()" style="font-size:clamp(1.1rem, 2.5vw, 1.5rem);padding:clamp(14px, 3vw, 20px) clamp(40px, 6vw, 60px)">${(ui.curMode || (lv.modes ? lv.modes[0] : 'car')) === 'pedestrian' ? '🚶 Start Walking' : ((ui.curMode || (lv.modes ? lv.modes[0] : 'car')) === 'bike' ? '🏍️ Start Riding' : '🚗 Start Driving')}</button>
+        <div style="border-top:1px solid rgba(255,255,255,0.2); margin:20px 0; padding-top:20px;">
+          ${finalBtn}
+        </div>
       </div>`;
         }
         c.appendChild(card);
@@ -346,7 +367,14 @@ let _tt = null;
        <div style="font-size:clamp(0.8rem, 1.5vw, 1.1rem);color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em">${lv.v} · Fine: ${lv.law.fine}</div>
      </div></div>`;
       },
-      showQuiz() { this.qst = { qs: this.cur.quiz, cur: 0, pass: 0 }; this._rq(); this.show('screen-quiz'); },
+      showQuiz(mode) {
+        mode = mode || ui.curMode || 'car';
+        const qs = (this.cur.quiz && this.cur.quiz[mode]) ? this.cur.quiz[mode] : (this.cur.quiz.car || []);
+        this.qst = { qs: qs, cur: 0, pass: 0, mode: mode };
+        if (qs.length === 0) { this._fq(); return; }
+        this._rq(); 
+        this.show('screen-quiz'); 
+      },
       _rq() {
         const s = this.qst, q = s.qs[s.cur];
         document.getElementById('qd').innerHTML = s.qs.map((_, i) => `<div class="qdt ${i < s.cur ? 'dn' : i === s.cur ? 'cu' : ''}"></div>`).join('');
@@ -363,10 +391,29 @@ let _tt = null;
         const nb = document.getElementById('qnxt'); nb.style.display = 'inline-block'; nb.textContent = s.cur < s.qs.length - 1 ? 'Next  ' : 'See Results  ';
       },
       nextQ() { const s = this.qst; s.cur++; if (s.cur < s.qs.length) this._rq(); else this._fq(); },
-      _fq() { const s = this.qst; if (s.pass < s.qs.length) { toast(`❌ ${s.pass}/${s.qs.length} correct 🔄 retry!`, '#ff3b30'); setTimeout(() => this.showQuiz(), 900); return; } this.showResults(game.fs, game.fst); },
+      _fq() {
+        const s = this.qst; 
+        if (s.pass < s.qs.length) { 
+          toast(`❌ ${s.pass}/${s.qs.length} correct 🔄 retry!`, '#ff3b30'); 
+          setTimeout(() => this.showQuiz(s.mode), 900); 
+          return; 
+        } 
+        if (s.mode === 'final') {
+          this.showResults(game.fs || 100, game.fst || { vio: 0 }); 
+        } else {
+          const lv = this.cur;
+          if (!S.comp[lv.id]) S.comp[lv.id] = {};
+          if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {};
+          S.comp[lv.id].modes[s.mode] = true;
+          save();
+          toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851');
+          this.show('screen-briefing');
+          this._selSyl('practical');
+        }
+      },
       showResults(score, stats) {
         const lv = this.cur, prev = S.comp[lv.id]?.score || 0;
-        S.comp[lv.id] = { score: Math.max(score, prev), time: Date.now() }; S.total += score; save();
+        S.comp[lv.id] = { ...S.comp[lv.id], score: Math.max(score, prev), time: Date.now(), finalQuiz: true }; S.total += score; save();
         let be = null;
         if (lv.badge && !S.badges.includes(lv.badge.id)) { S.badges.push(lv.badge.id); be = lv.badge; }
         if (!S.badges.includes('signal_master') && Object.keys(S.comp).length >= 5 && !stats.vio) S.badges.push('signal_master');
@@ -513,9 +560,9 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
         
         if (window.PRELOADED_MODELS[modelKey]) {
             baseModel = window.PRELOADED_MODELS[modelKey].clone();
-            if (type === 'bus' || type === 'truck') s = 1.4;
-            else if (type === 'auto' || type === 'bike') s = 1.0;
-            else s = 1.2;
+            if (type === 'bus' || type === 'truck') s = 1.4 * 14.5;
+            else if (type === 'auto' || type === 'bike') s = 1.0 * 14.5;
+            else s = 1.2 * 14.5;
 
             baseModel.traverse((child) => {
                 if (child.isMesh && child.material) {
