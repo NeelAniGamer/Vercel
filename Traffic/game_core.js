@@ -516,22 +516,35 @@ class Game {
           const cx = isV ? r.x : (r.x1 + r.x2) / 2;
           const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
 
-          // Logical road bed with texture mapped correctly
-          const tLoader = new THREE.TextureLoader();
-          const roadTex = tLoader.load('Models/road__avenue__street/textures/Polygon_1_baseColor.png');
-          roadTex.wrapS = THREE.RepeatWrapping; roadTex.wrapT = THREE.RepeatWrapping;
-          roadTex.encoding = THREE.sRGBEncoding;
-
-          const roadMat = new THREE.MeshLambertMaterial({ map: roadTex, color: 0xaaaaaa });
-          
-          const roadHb = new THREE.Mesh(new THREE.PlaneGeometry(len, RW), roadMat);
-          roadTex.repeat.set(len / 10, 1);
-          roadHb.rotation.order = 'YXZ';
-          roadHb.rotation.set(-Math.PI / 2, isV ? Math.PI / 2 : 0, 0);
+          // Logical road bed (invisible, used for raycasting/interactions)
+          const roadHb = new THREE.Mesh(new THREE.PlaneGeometry(RW, len), new THREE.MeshBasicMaterial({ visible: false }));
+          roadHb.rotation.set(-Math.PI / 2, 0, isV ? 0 : -Math.PI / 2);
           roadHb.position.set(cx, .01, cz);
-          
           this.scene.add(roadHb);
           this.world.push(roadHb);
+
+          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['road_straight']) {
+              // The GLTF model is 1000x1500 units. We scale it to match RW (12).
+              const tileScale = RW / 1000;
+              const tileSize = 1500 * tileScale; // 18 units long
+              const numTiles = Math.max(1, Math.floor(len / tileSize));
+              const startX = isV ? cx : Math.min(r.x1, r.x2) + tileSize / 2 + (len - numTiles * tileSize) / 2;
+              const startZ = isV ? Math.min(r.z1, r.z2) + tileSize / 2 + (len - numTiles * tileSize) / 2 : cz;
+
+              for (let i = 0; i < numTiles; i++) {
+                  const tile = window.PRELOADED_MODELS['road_straight'].clone();
+                  tile.scale.set(tileScale, tileScale, tileScale);
+                  if (isV) {
+                      // Model natively points along Z
+                      tile.position.set(cx, 0.02, startZ + i * tileSize);
+                  } else {
+                      // Rotate 90 degrees around Y so length spans X
+                      tile.rotation.y = Math.PI / 2;
+                      tile.position.set(startX + i * tileSize, 0.02, cz);
+                  }
+                  this.scene.add(tile);
+              }
+          }
 
              // Sidewalks
              [-1, 1].forEach(s => {
