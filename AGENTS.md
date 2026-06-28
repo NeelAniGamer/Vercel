@@ -13,7 +13,7 @@
 - **Frontend**: Static HTML pages with inline CSS/JS (no build system, no framework)
 - **Hosting**: Vercel (static site)
 - **Auth**: Supabase (Google OAuth + email/password)
-- **3D Graphics**: Three.js (r128, loaded from CDN)
+- **3D Graphics**: Three.js (r128, loaded from CDN) via `col-3d.js`
 - **QR Editor**: qr-code-styling library (v1.6.0-rc.1)
 - **Fonts**: Google Fonts (Instrument Serif, Inter, Space Mono)
 - **Domain**: `advancedlogiclabs.dpdns.org`
@@ -31,7 +31,6 @@ These files are critical and should not be modified without explicit user approv
 | `supabase.js` | Minified Supabase SDK (v2.108.1). Do NOT edit — replace only via CDN update if needed |
 | `col-router.js` | Global router that checks page status codes and renders error screens. Changes affect ALL pages |
 | Google OAuth Client ID | Hardcoded in multiple HTML files (`500448449044-...`). Changing this breaks Google sign-in across the entire site |
-| Google Authenticator (`col-auth.js` / Supabase auth integration) | **DO NOT TOUCH UNTIL EXPLICITLY TOLD.** Any AI modifications to the global authentication system without human approval could cause site-wide lockouts or security vulnerabilities. |
 
 ---
 
@@ -39,28 +38,29 @@ These files are critical and should not be modified without explicit user approv
 
 | Category | Files |
 |----------|-------|
-| **Pages** | `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `download.html`, `sneh-asha.html`, `Career.html`, `Database_Logic.html` |
-| **Apps** | `solar.html`, `ati.html`, `ati-demo.html`, `gesture.html`, `rpg.html`, `Traffic/Academy.html` |
+| **Pages** | `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `download.html`, `sneh-asha.html`, `admin.html` |
+| **Apps** | `solar.html`, `ati.html`, `ati-demo.html`, `gesture.html`, `rpg.html`, `engine.html`, `Traffic/Academy.html`, `Traffic/Driving.html`, `Traffic/TrafficDashboard.html`, `Traffic/TrafficSetup.html` |
 | **QR System** | `qr.html`, `qr-editor.html` |
-| **Shared UI** | `col-ui.js`, `col-ui.css` |
+| **Shared UI** | `col-ui.js`, `col-ui.css`, `col-3d.js`, `col-admin.js` |
 | **Assets** | Any `.webp`, `.png`, `.glb` files |
 | **Config** | `vercel.json`, `robots.txt`, `sitemap.xml` |
+| **Traffic/** | All files under `Traffic/` except its own `config.json` (has Supabase creds) |
 
 ---
 
 ## Architecture Rules
 
-### 1. Shared Components (col-ui / col-auth / col-router)
-Every HTML page loads these three shared scripts:
+### 1. Shared Components (col-router / col-ui / col-auth / col-3d)
+Every HTML page loads these shared scripts in `<head>`:
 ```html
 <script defer src="col-router.js"></script>
 <link rel="stylesheet" href="col-ui.css">
 <script defer src="col-ui.js"></script>
 <script defer src="col-auth.js"></script>
 ```
-- **DO NOT** include `col-auth.js` more than once per page (this caused the "replace child item" bug)
-- **DO NOT** include `col-router.js` more than once per page
+- **DO NOT** include any shared script more than once per page
 - Always include them in this order: `col-router.js` → `col-ui.css` → `col-ui.js` → `col-auth.js`
+- `col-3d.js` is loaded separately by pages that need Three.js procedural backgrounds (home, about, school). It is desktop-only and skips on mobile/touch devices.
 
 ### 2. Inline Scripts Pattern
 Each page has its own inline `<script>` block at the bottom of `<body>` for page-specific logic. The pattern is:
@@ -69,19 +69,24 @@ Each page has its own inline `<script>` block at the bottom of `<body>` for page
 3. HTML content in `<body>`
 4. Page-specific inline `<script>` at end of `<body>`
 
-### 3. Auth System
+### 3. Dual Config Override System
+Two layers control page status (200/503/404/500):
+1. **`config.json`** — fetched at runtime by `col-router.js` with cache-busting timestamp. Maps page slugs to status codes. This is the global source of truth.
+2. **Inline admin overrides** — HTML pages have inline `<script>` blocks that read `localStorage.col_admin_config` and can override page status locally for the admin.
+
+### 4. Auth System
 - **col-auth.js** provides the global auth modal (`colAuthModal`) and handles Google OAuth via Supabase
 - Pages like `qr.html` and `qr-editor.html` have their **own** legacy auth system (`loginMo` modal, `openLogin()`, `gSignIn()`)
 - Do NOT merge these systems without understanding both
 - The QR pages use Google OAuth directly (access token in URL hash), while col-auth.js uses Supabase auth
 
-### 4. Theme System
+### 5. Theme System
 - Dark mode is default. Light mode uses `body.lm` class
 - Theme state is stored in `localStorage` under key `'theme'`
 - Both `col-ui.js` and inline scripts handle theme initialization
 - QR pages use a separate system with `body.light` class and `body.dark-mode` class
 
-### 5. Navigation
+### 6. Navigation
 All public-facing pages should include:
 - **Top nav bar** with brand logo, nav links, dropdown for projects, theme toggle, and login button
 - **Footer** with CoL branding, privacy/terms/feedback links, and copyright
@@ -146,7 +151,7 @@ Before deleting any file:
 
 ## Known Issues & Gotchas
 
-1. **Duplicate script loading**: Several pages historically loaded `col-auth.js` twice, causing "replace child item" errors. Always verify each page loads each shared script exactly once.
+1. **`qr-editor.html` loads `col-router.js` twice** (line 16 and line 438). The `window._colRouterRunning` guard prevents double-execution, but loading it twice is wasteful. Should be fixed.
 
 2. **Two auth systems**: The site has TWO separate auth implementations — `col-auth.js` (Supabase-based, used by most pages) and inline Google OAuth (used by QR pages). Don't confuse them.
 
@@ -156,7 +161,13 @@ Before deleting any file:
 
 5. **config.json is fetched at runtime**: Both `col-router.js` and `col-auth.js` fetch `config.json` with a cache-busting timestamp. The Supabase keys are in this file — protect it.
 
-6. **3D backgrounds are heavy**: Each page with Three.js (home, about, school) renders full WebGL scenes. These are GPU-intensive and should use `powerPreference: 'high-performance'` and limit pixel ratio to 2.
+6. **Traffic/ uses relative paths**: Traffic subdirectory pages reference shared scripts with `../` prefix (e.g., `../col-router.js`, `../col-ui.js`). The `Academy.html` page also patches `fetch()` to redirect `config.json` requests to `../config.json`.
+
+7. **3D backgrounds are heavy**: Each page with Three.js (home, about, school) renders full WebGL scenes via `col-3d.js`. These are GPU-intensive and skip on mobile/touch devices.
+
+8. **PWA support**: `manifest.json` enables "Add to Home Screen" on Android. Service worker is in `sw.js`.
+
+9. **In-app APK updater**: `col-ui.js` checks `version.json` on load (currently v6 / 1.5). The `version.json` `updateEndpoint` should match the Vercel deployment URL for APK auto-updates.
 
 ---
 
@@ -172,18 +183,5 @@ Before deleting any file:
 
 ---
 
-*Last updated: June 19, 2026*
+*Last updated: June 28, 2026*
 *Project maintained by: Class Of Learners Studio*
-
----
-
-## Complete Project Description
-
-**Class Of Learners (CoL)** is a full-scale, interactive educational platform and application suite built from scratch by Neel Badri, Ansh Patil, and Aarush Vangari from Mumbai, India. The project features custom-built engines and interactive modules designed to make computer science and physics concepts accessible, engaging, and technologically advanced. It bypasses conventional frameworks, relying heavily on native HTML, CSS, JavaScript, WebGL (Three.js), and Python to deliver high-performance tools such as:
-1. **Solar System Engine**: A 64-bit level interactive physics engine allowing users to explore real-time orbital mechanics.
-2. **Advanced Typing Instructor (ATI)**: A sophisticated learning environment for mastering syntax in Python, C++, and JS with dynamic heatmaps.
-3. **Gesture Control**: An integration of machine vision for hands-free computer interaction.
-4. **QR Editor**: A customizable generator bridging digital routing with physical scannables.
-5. **RPG Engine**: A foundational role-playing environment demonstrating canvas game logic.
-
-The entire ecosystem is globally authenticated via Supabase, beautifully stylized with modern UI/UX principles, and strictly maintained to ensure rapid performance and seamless cross-device compatibility.
