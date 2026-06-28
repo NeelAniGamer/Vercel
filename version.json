@@ -1,6 +1,6 @@
 {
-  "versionCode": 6,
-  "versionName": "1.5",
+  "versionCode": 7,
+  "versionName": "1.6",
   "apkUrl": "https://advancedlogiclabs.dpdns.org/COL.apk",
-  "releaseNotes": "Fixes feedback page UI and mobile hamburger menu layout issues."
+  "releaseNotes": "Redesigned mobile navigation with bottom bar hamburger, icon+label nav links, APK certificate verification with tiered access."
 }

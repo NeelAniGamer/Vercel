@@ -22,5 +22,6 @@
   "auth": {
     "url": "https://hvukxajztizsuhfubjws.supabase.co",
     "key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2dWt4YWp6dGl6c3VoZnViandzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Mzc1MTAsImV4cCI6MjA5NjQxMzUxMH0.KqQRkmhuB_rFlzQ2N3NhSQrftmVZgGE3NUuVHYh3aYE"
-  }
+  },
+  "apkCertFingerprint": "2A:BA:B1:D1:B9:1E:75:E0:69:98:8A:B5:13:16:C2:9A:4A:EC:FC:A1"
 }

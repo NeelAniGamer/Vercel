@@ -380,6 +380,47 @@ if (!window.closeMo) {
         document.getElementById('colAuthModal').classList.remove('open');
     };
 
+    // --- APK Certificate Verification ---
+    window.colApkVerified = false;
+    window.colApkFingerprint = null;
+
+    async function verifyApkCertificate() {
+        if (!window.AndroidBridge) {
+            window.colApkVerified = false;
+            window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }));
+            return;
+        }
+        try {
+            const fp = window.AndroidBridge.getCertificateFingerprint();
+            if (!fp) {
+                window.colApkVerified = false;
+                window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }));
+                return;
+            }
+            window.colApkFingerprint = fp;
+            // Fetch expected fingerprint from config
+            let expected = null;
+            try {
+                const res = await fetch('config.json?t=' + Date.now());
+                if (res.ok) {
+                    const cfg = await res.json();
+                    expected = cfg.apkCertFingerprint || null;
+                }
+            } catch (e) {}
+            if (expected && fp.toUpperCase() === expected.toUpperCase()) {
+                window.colApkVerified = true;
+            } else {
+                window.colApkVerified = false;
+            }
+            window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: window.colApkVerified, fingerprint: fp } }));
+        } catch (e) {
+            console.warn('[col-auth] APK verification failed:', e);
+            window.colApkVerified = false;
+            window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }));
+        }
+    }
+    verifyApkCertificate();
+
     function updateAuthUI() {
         // Find existing UI elements in any page
         const navBtns = document.querySelectorAll('.nav-login-btn, #navLoginBtn, #sbSignBtn');

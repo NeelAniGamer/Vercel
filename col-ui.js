@@ -132,7 +132,23 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// 4. Mobile App Download Popup
+// 4. APK Verification Badge (shown in-app after cert check)
+window.addEventListener('col-apk-verified', function(e) {
+    try {
+        var existing = document.getElementById('colApkBadge');
+        if (existing) existing.remove();
+        if (!e.detail || !e.detail.verified) return;
+        var badge = document.createElement('div');
+        badge.id = 'colApkBadge';
+        badge.textContent = '✓ Verified APK';
+        badge.style.cssText = 'position:fixed;bottom:64px;left:50%;transform:translateX(-50%);background:var(--em,#34D399);color:#070A14;font-family:var(--sans,sans-serif);font-size:0.75rem;font-weight:600;padding:4px 12px;border-radius:20px;z-index:998;pointer-events:none;opacity:0;transition:opacity 0.3s;';
+        document.body.appendChild(badge);
+        requestAnimationFrame(function() { badge.style.opacity = '1'; });
+        setTimeout(function() { badge.style.opacity = '0'; setTimeout(function() { badge.remove(); }, 400); }, 3000);
+    } catch(e) {}
+});
+
+// 5. Mobile App Download Popup
 try {
     var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     var isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent);
