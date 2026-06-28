@@ -113,7 +113,7 @@ let _tt = null;
                   <div class="syl-info">
                     <div class="syl-lbl">Level ${lv.id}: ${lv.name}</div>
                     <div class="syl-sub">${lv.ds}</div>
-                    <div class="syl-badge" style="font-size:0.75rem;font-family:'Space Mono',monospace;color:${badgeColor};margin-top:4px;letter-spacing:0.05em">${badgeText}</div>
+                    <div class="syl-badge">${badgeText}</div>
                   </div>
                 `;
                 div.onclick = () => { ui.showBriefing(lv.id); };
@@ -374,13 +374,13 @@ let _tt = null;
           card.innerHTML = `<div class="bc-ttl">📊 Analytical Model</div><div class="dw">${this._diag(lv.id)}</div><div style="font-size:clamp(0.95rem, 2.2vw, 1.3rem);line-height:1.6;color:var(--muted2);margin-bottom:12px">${lv.theory}</div>
      <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`;
         } else if (id === 'practical') {
-          const btnsHTML = (lv.modes || ['car']).map(m => `<button class="btn" style="width:100%; text-transform:capitalize;" onclick="ui.showQuiz('${m}')">Take ${m} Quiz</button>`).join('');
-          const finalBtn = `<button class="btn" style="background:var(--accent); color:#000; font-weight:bold; padding:12px 32px;" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`;
+          const btnsHTML = (lv.modes || ['car']).map(m => `<button class="btn" style="width:100%; text-transform:capitalize; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); color:var(--text, #111827); font-weight:600;" onclick="ui.showQuiz('${m}')">Take ${m} Quiz</button>`).join('');
+          const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 32px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3);" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`;
           card.innerHTML = `<div class="bc-ttl">🎯 Practical Execution</div>
       <div style="display:flex; flex-direction:column; gap:32px; margin-bottom: 24px;">
         
-        <!-- Top: Video Guide -->
-        <div style="position:relative; width:100%; border-radius:24px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); background:#070A14;">
+        <!-- Top: Visual Tutorial -->
+        <div style="position:relative; width:100%; border-radius:20px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.06); background:linear-gradient(135deg, rgba(243,242,235,0.95) 0%, rgba(255,255,255,0.85) 100%); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);">
           ${this._simAnim(lv)}
         </div>
         
@@ -388,44 +388,44 @@ let _tt = null;
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
           
           <!-- Controls -->
-          <div style="background:rgba(30,41,59,0.5); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.08); padding:24px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.15);">
-            <div style="color:white; font-size:1.1rem; font-weight:700; margin-bottom:20px; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:10px;">🕹️ How to Play</div>
+          <div style="background:rgba(255,255,255,0.6); backdrop-filter:blur(16px); border:1px solid rgba(0,0,0,0.06); padding:24px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.04);">
+            <div style="color:var(--text, #111827); font-size:1.1rem; font-weight:700; margin-bottom:20px; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:10px;">🕹️ How to Play</div>
             <div style="display:flex; flex-direction:column; gap:20px;">
                <div style="display:flex; align-items:center; gap:16px;">
                   <div style="display:flex; gap:6px;">
-                    <div style="width:36px; height:36px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.2);">W</div>
-                    <div style="width:36px; height:36px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.2);">A</div>
-                    <div style="width:36px; height:36px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.2);">S</div>
-                    <div style="width:36px; height:36px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.2);">D</div>
+                    <div style="width:36px; height:36px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:var(--text, #111827);">W</div>
+                    <div style="width:36px; height:36px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:var(--text, #111827);">A</div>
+                    <div style="width:36px; height:36px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:var(--text, #111827);">S</div>
+                    <div style="width:36px; height:36px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:var(--text, #111827);">D</div>
                   </div>
-                  <div style="font-size:1rem; color:rgba(255,255,255,0.8); font-weight:500;">Steer & Accelerate</div>
+                  <div style="font-size:1rem; color:var(--muted2, #6B7280); font-weight:500;">Steer & Accelerate</div>
                </div>
                <div style="display:flex; align-items:center; gap:16px;">
-                  <div style="width:auto; padding:0 20px; height:36px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.2);">SPACE</div>
-                  <div style="font-size:1rem; color:rgba(255,255,255,0.8); font-weight:500;">Handbrake</div>
+                  <div style="width:auto; padding:0 20px; height:36px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:var(--text, #111827);">SPACE</div>
+                  <div style="font-size:1rem; color:var(--muted2, #6B7280); font-weight:500;">Handbrake</div>
                </div>
             </div>
           </div>
           
           <!-- Objective -->
-          <div class="pract-banner" style="background:${lv.gr || 'linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95))'}; padding:28px; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.15); display:flex; flex-direction:column;">
-            <div class="pract-icon-big" style="font-size:4rem;line-height:1;margin-bottom:16px;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.3));">${lv.icon}</div>
-            <div class="pv1" style="font-size:2rem;letter-spacing:0.02em;font-family:'Instrument Serif',serif;font-style:italic;font-weight:700; color:var(--signal);margin-bottom:8px;">${lv.name}</div>
-            <div style="font-size:1.15rem;color:rgba(255,255,255,0.95);line-height:1.6;border-top:1px solid rgba(255,255,255,0.1);padding-top:16px;">${lv.pract}</div>
-            <div style="font-size:0.95rem;color:var(--yellow);margin-top:auto;line-height:1.5;background:rgba(0,0,0,0.3);padding:12px;border-radius:12px; border-left:4px solid var(--yellow); margin-top: 24px;">📝 Note: A PERFECT drive (no violations/damage) is required to not get penalized on retry.</div>
+          <div class="pract-banner" style="background:linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(243,242,235,0.8) 100%); padding:28px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.06); display:flex; flex-direction:column; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);">
+            <div class="pract-icon-big" style="font-size:4rem;line-height:1;margin-bottom:16px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.08));">${lv.icon}</div>
+            <div class="pv1" style="font-size:2rem;letter-spacing:0.02em;font-family:'Instrument Serif',serif;font-style:italic;font-weight:700; color:var(--accent, #D97706);margin-bottom:8px;">${lv.name}</div>
+            <div style="font-size:1.15rem;color:var(--text, #111827);line-height:1.6;border-top:1px solid rgba(0,0,0,0.06);padding-top:16px;">${lv.pract}</div>
+            <div style="font-size:0.95rem;color:var(--accent, #D97706);margin-top:auto;line-height:1.5;background:rgba(217,119,6,0.06);padding:12px;border-radius:12px; border-left:4px solid var(--accent, #D97706); margin-top: 24px;">📝 Note: A PERFECT drive (no violations/damage) is required to not get penalized on retry.</div>
           </div>
         </div>
         
         <!-- Penalty & Actions -->
         <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:stretch;">
-          <div style="flex:1; min-width:300px; background:var(--card); padding:20px 24px; border-radius:20px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; box-shadow:0 10px 30px rgba(0,0,0,0.15);">
+          <div style="flex:1; min-width:300px; background:rgba(255,255,255,0.6); backdrop-filter:blur(12px); padding:20px 24px; border-radius:20px; border:1px solid rgba(0,0,0,0.06); display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 20px rgba(0,0,0,0.04);">
             <div>
-              <div style="font-size:0.8rem; color:var(--muted); text-transform:uppercase; font-weight:800; letter-spacing:0.05em; margin-bottom:8px;">Penalty Risk</div>
-              <div style="font-size:1.1rem; color:var(--text); font-weight:700;">${lv.law.off}</div>
+              <div style="font-size:0.8rem; color:var(--muted, #9CA3AF); text-transform:uppercase; font-weight:800; letter-spacing:0.05em; margin-bottom:8px;">Penalty Risk</div>
+              <div style="font-size:1.1rem; color:var(--text, #111827); font-weight:700;">${lv.law.off}</div>
             </div>
-            <div style="text-align:right; border-left:1px solid var(--border); padding-left:24px;">
-              <div style="font-size:0.8rem; color:var(--muted); text-transform:uppercase; font-weight:800; letter-spacing:0.05em; margin-bottom:8px;">Fine</div>
-              <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--red); line-height:1;">${lv.law.fine}</div>
+            <div style="text-align:right; border-left:1px solid rgba(0,0,0,0.06); padding-left:24px;">
+              <div style="font-size:0.8rem; color:var(--muted, #9CA3AF); text-transform:uppercase; font-weight:800; letter-spacing:0.05em; margin-bottom:8px;">Fine</div>
+              <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--red, #EF4444); line-height:1;">${lv.law.fine}</div>
             </div>
           </div>
           <div style="flex:1; min-width:300px; display:flex; flex-direction:column; justify-content:center; gap:12px;">
@@ -436,7 +436,7 @@ let _tt = null;
       </div>
       
       <!-- Launch -->
-      <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:20px;">
+      <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(0,0,0,0.06); padding-top:20px;">
         <button class="btn btn-s" onclick="ui._selSyl('theory')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button>
         ${finalBtn}
       </div>`;
@@ -453,25 +453,31 @@ let _tt = null;
      </div></div>`;
       },
       _simAnim(lv) {
-        let h = `<div style="position:relative; width:100%; height:240px; background:#111; display:flex; justify-content:center; align-items:center; box-shadow: inset 0 0 40px rgba(0,0,0,0.9);">
-                   <!-- road lines -->
-                   <div style="position:absolute; top:50%; left:0; right:0; height:4px; border-top:6px dashed rgba(255,255,255,0.4); transform:translateY(-50%);"></div>
-                   <div style="position:absolute; top:12px; left:12px; color:#fff; font-size:0.75rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(0,0,0,0.7); padding:6px 12px; border-radius:6px; letter-spacing:1px; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.1);">🎥 SCENARIO DEMO</div>`;
+        let h = `<div class="sim-anim-wrap" style="position:relative; width:100%; height:clamp(200px, 32vw, 280px); background:linear-gradient(180deg, rgba(243,242,235,0.95) 0%, rgba(243,242,235,1) 40%, rgba(100,116,139,0.18) 50%, rgba(243,242,235,1) 60%, rgba(243,242,235,0.95) 100%); display:flex; justify-content:center; align-items:center; border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);">
+                   <!-- road surface -->
+                   <div style="position:absolute; top:50%; left:0; right:0; height:64px; transform:translateY(-50%); background:linear-gradient(180deg, rgba(100,116,139,0.05) 0%, rgba(100,116,139,0.14) 30%, rgba(100,116,139,0.14) 70%, rgba(100,116,139,0.05) 100%); border-top:1px solid rgba(0,0,0,0.08); border-bottom:1px solid rgba(0,0,0,0.08);"></div>
+                   <!-- center dashes -->
+                   <div style="position:absolute; top:50%; left:0; right:0; height:2px; transform:translateY(-50%); background:repeating-linear-gradient(90deg, rgba(217,119,6,0.3) 0, rgba(217,119,6,0.3) 20px, transparent 20px, transparent 36px);"></div>
+                   <!-- edge lines -->
+                   <div style="position:absolute; top:calc(50% - 32px); left:0; right:0; height:1px; background:rgba(255,255,255,0.4);"></div>
+                   <div style="position:absolute; top:calc(50% + 32px); left:0; right:0; height:1px; background:rgba(255,255,255,0.4);"></div>
+                   <!-- badge -->
+                   <div style="position:absolute; top:12px; left:12px; color:var(--muted2, #6B7280); font-size:0.7rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(255,255,255,0.75); padding:6px 14px; border-radius:8px; letter-spacing:1.2px; backdrop-filter:blur(8px); border:1px solid rgba(0,0,0,0.06); font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>`;
         let style = '';
         if (lv.themeType === 'pedestrian_courtesy') {
           h += `
-             <div style="position:absolute; left:60%; top:0; bottom:0; width:40px; background:repeating-linear-gradient(0deg, #fff 0, #fff 10px, transparent 10px, transparent 20px);"></div>
-             <div style="position:absolute; left:65%; top:-20px; font-size:2rem; animation: walkDown 4s infinite linear;">🚶</div>
-             <div style="position:absolute; left:10%; top:55%; font-size:2.5rem; transform:scaleX(-1); animation: driveStopGo 4s infinite linear;">🚗</div>
-             <div style="position:absolute; left:10%; top:15%; font-size:2rem; transform:scaleX(-1); animation: weaveBike 4s infinite linear;">🛵</div>
+             <div style="position:absolute; left:60%; top:0; bottom:0; width:36px; background:repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0, rgba(0,0,0,0.15) 8px, transparent 8px, transparent 16px); opacity:0.6;"></div>
+             <div style="position:absolute; left:65%; top:-20px; font-size:2rem; animation: walkDown 4s infinite linear; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.12));">🚶</div>
+             <div style="position:absolute; left:10%; top:55%; font-size:2.2rem; animation: driveStopGo 4s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚗</div>
+             <div style="position:absolute; left:10%; top:15%; font-size:1.8rem; animation: weaveBike 4s infinite linear; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.12));">🛵</div>
           `;
           style = `@keyframes walkDown { 0% { top:-20px; } 100% { top: 120%; } }
                    @keyframes driveStopGo { 0% { left:-50px; } 20% { left: 40%; } 80% { left: 40%; } 100% { left: 120%; } }
                    @keyframes weaveBike { 0% { left:-50px; top: 15%; } 40% { left: 45%; top: 75%; } 60% { left: 75%; top: 75%; } 100% { left: 120%; top: 15%; } }`;
-        } else if (lv.themeType === 'overtake' || lv.themeType === 'speed' || lv.id === 5) { // some overtake/speed rules
+        } else if (lv.themeType === 'overtake' || lv.themeType === 'speed' || lv.id === 5) {
           h += `
-             <div style="position:absolute; left:40%; top:15%; font-size:2.5rem; transform:scaleX(-1); animation: driveSlow 4s infinite;">🚙</div>
-             <div style="position:absolute; left:10%; top:15%; font-size:2.5rem; transform:scaleX(-1); animation: driveOvertake 4s infinite;">🚗</div>
+             <div style="position:absolute; left:40%; top:15%; font-size:2.2rem; animation: driveSlow 4s infinite; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚙</div>
+             <div style="position:absolute; left:10%; top:15%; font-size:2.2rem; animation: driveOvertake 4s infinite; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚗</div>
              <div style="position:absolute; left:50%; top:50%; font-size:1.5rem; opacity:0; animation: indicatorShow 4s infinite;">◀️</div>
           `;
           style = `@keyframes driveSlow { 0% { left: 10%; } 100% { left: 80%; } }
@@ -479,18 +485,17 @@ let _tt = null;
                    @keyframes indicatorShow { 0%, 15%, 45%, 100% { opacity:0; } 25%, 35% { opacity:1; } }`;
         } else if (lv.themeType === 'respectful_parking' || lv.themeType === 'lane_discipline' || lv.id === 2) {
           h += `
-             <div style="position:absolute; left:20%; top:15%; font-size:2.5rem; transform:scaleX(-1); animation: driveLaneA 4s infinite linear;">🚗</div>
-             <div style="position:absolute; left:40%; top:55%; font-size:2.5rem; transform:scaleX(-1); animation: driveLaneB 4s infinite linear;">🚙</div>
-             <div style="position:absolute; top:20px; left:40%; color:#34d399; font-weight:bold; font-size:0.8rem; animation: textFade 4s infinite;">✓ STAY IN LANE</div>
+             <div style="position:absolute; left:20%; top:15%; font-size:2.2rem; animation: driveLaneA 4s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚗</div>
+             <div style="position:absolute; left:40%; top:55%; font-size:2.2rem; animation: driveLaneB 4s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚙</div>
+             <div style="position:absolute; top:20px; left:40%; color:var(--accent, #D97706); font-weight:700; font-size:0.8rem; animation: textFade 4s infinite; background:rgba(255,255,255,0.75); padding:5px 12px; border-radius:8px; backdrop-filter:blur(8px); font-family:'Space Mono',monospace;">✓ STAY IN LANE</div>
           `;
           style = `@keyframes driveLaneA { 0% { left:-50px; } 100% { left: 120%; } }
                    @keyframes driveLaneB { 0% { left: 0%; } 100% { left: 150%; } }
                    @keyframes textFade { 0%, 10%, 90%, 100% { opacity:0; } 20%, 80% { opacity:1; } }`;
         } else {
-          // Generic driving demo
           h += `
-             <div style="position:absolute; left:10%; top:15%; font-size:2.5rem; transform:scaleX(-1); animation: driveGenA 3s infinite linear;">🚗</div>
-             <div style="position:absolute; left:60%; top:55%; font-size:2.5rem; transform:scaleX(-1); animation: driveGenB 4s infinite linear;">🚙</div>
+             <div style="position:absolute; left:10%; top:15%; font-size:2.2rem; animation: driveGenA 3s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚗</div>
+             <div style="position:absolute; left:60%; top:55%; font-size:2.2rem; animation: driveGenB 4s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚙</div>
           `;
           style = `@keyframes driveGenA { 0% { left:-20%; } 100% { left: 120%; } }
                    @keyframes driveGenB { 0% { left:-20%; } 100% { left: 120%; } }`;

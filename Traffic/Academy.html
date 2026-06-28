@@ -98,9 +98,65 @@
       border-color: rgba(0, 200, 81, 0.3);
     }
 
+    body.lm .syl-item.syl-done .syl-ck {
+      background: #00c851;
+      border-color: #00c851;
+      box-shadow: 0 0 16px rgba(0, 200, 81, 0.3);
+    }
+
     body.lm .syl-item.syl-started {
       background: rgba(94, 212, 245, 0.06);
       border-color: rgba(94, 212, 245, 0.25);
+    }
+
+    body.lm .syl-badge {
+      background: rgba(0, 0, 0, 0.04);
+      border-color: rgba(0, 0, 0, 0.1);
+      color: #6b7280;
+    }
+
+    body.lm .syl-item.syl-done .syl-badge {
+      background: rgba(0, 200, 81, 0.08);
+      border-color: rgba(0, 200, 81, 0.25);
+      color: #059669;
+    }
+
+    body.lm .syl-item.syl-started .syl-badge {
+      background: rgba(94, 212, 245, 0.08);
+      border-color: rgba(94, 212, 245, 0.25);
+      color: #0284c7;
+    }
+
+    body.lm .syl-item:not(.syl-done):not(.syl-started) .syl-badge {
+      background: rgba(0, 0, 0, 0.03);
+      border-color: rgba(0, 0, 0, 0.08);
+      color: #9ca3af;
+    }
+
+    /* Execution tab visual tutorial - light mode */
+    body.lm .sim-anim-wrap {
+      background: linear-gradient(180deg, rgba(243,242,235,0.95) 0%, rgba(243,242,235,1) 40%, rgba(100,116,139,0.12) 50%, rgba(243,242,235,1) 60%, rgba(243,242,235,0.95) 100%) !important;
+      border-color: rgba(0,0,0,0.06) !important;
+    }
+
+    /* Execution tab objective banner - light mode */
+    body.lm .pract-banner {
+      background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(243,242,235,0.8) 100%) !important;
+      border-color: rgba(0,0,0,0.06) !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04) !important;
+    }
+
+    body.lm .pract-icon-big {
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08)) !important;
+    }
+
+    /* Loading screen overrides for light mode */
+    body.lm #loading-screen {
+      background: #F3F2EB !important;
+    }
+
+    body.lm #loading-bar {
+      background: linear-gradient(90deg, #D97706, #0369A1) !important;
     }
 
     /* Theme Toggle Slider */
@@ -702,10 +758,10 @@
       position: absolute;
       top: 28px;
       right: 28px;
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      border: 2px solid rgba(184, 155, 255, 0.4);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2.5px solid rgba(184, 155, 255, 0.4);
       background: rgba(184, 155, 255, 0.1);
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
@@ -730,18 +786,19 @@
     .syl-item.syl-done .syl-ck {
       background: #00f0cc;
       border-color: #00f0cc;
-      box-shadow: 0 0 20px rgba(0, 240, 204, 0.4);
+      box-shadow: 0 0 20px rgba(0, 240, 204, 0.5);
+      animation: pulse-ck 2s ease-in-out infinite;
     }
 
     .syl-item.syl-done .syl-ck::after {
       content: '';
       position: absolute;
-      top: 6px;
-      left: 10px;
-      width: 5px;
-      height: 11px;
+      top: 5px;
+      left: 9px;
+      width: 6px;
+      height: 13px;
       border: solid #ffffff;
-      border-width: 0 2.5px 2.5px 0;
+      border-width: 0 3px 3px 0;
       transform: rotate(45deg);
     }
 
@@ -757,7 +814,7 @@
     .syl-item.syl-started .syl-ck {
       background: rgba(94, 212, 245, 0.2);
       border-color: #5ed4f5;
-      box-shadow: 0 0 12px rgba(94, 212, 245, 0.3);
+      box-shadow: 0 0 14px rgba(94, 212, 245, 0.4);
     }
 
     .syl-item.syl-started .syl-ck::after {
@@ -767,7 +824,50 @@
       height: 8px;
       border-radius: 50%;
       background: #5ed4f5;
-      box-shadow: 0 0 6px rgba(94, 212, 245, 0.6);
+      box-shadow: 0 0 8px rgba(94, 212, 245, 0.7);
+    }
+
+    @keyframes pulse-ck {
+      0%, 100% { box-shadow: 0 0 20px rgba(0, 240, 204, 0.5); }
+      50% { box-shadow: 0 0 30px rgba(0, 240, 204, 0.8), 0 0 40px rgba(0, 240, 204, 0.3); }
+    }
+
+    /* --- Badge Pill --- */
+    .syl-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-family: 'Space Mono', monospace;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 4px;
+      width: fit-content;
+      background: rgba(184, 155, 255, 0.1);
+      border: 1px solid rgba(184, 155, 255, 0.2);
+      color: rgba(184, 155, 255, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    .syl-item.syl-done .syl-badge {
+      background: rgba(0, 240, 204, 0.12);
+      border-color: rgba(0, 240, 204, 0.3);
+      color: #00f0cc;
+    }
+
+    .syl-item.syl-started .syl-badge {
+      background: rgba(94, 212, 245, 0.12);
+      border-color: rgba(94, 212, 245, 0.3);
+      color: #5ed4f5;
+    }
+
+    .syl-item:not(.syl-done):not(.syl-started) .syl-badge {
+      background: rgba(184, 155, 255, 0.08);
+      border-color: rgba(184, 155, 255, 0.15);
+      color: rgba(184, 155, 255, 0.5);
     }
 
     .syl-info {
@@ -2228,6 +2328,17 @@
 </head>
 
 <body class="lm">
+  <div id="loading-screen" style="position:fixed;inset:0;z-index:9999999;background:#0C1224;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.4s ease, visibility 0.4s ease;">
+    <div style="font-size:clamp(3rem,6vw,5rem);margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(52,211,153,0.4));">🚦</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);color:#E8E3D8;letter-spacing:0.15em;margin-bottom:24px;">TRAFFIC ACADEMY</div>
+    <div id="loading-bar-container" style="width:min(320px,70vw);height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin-bottom:12px;">
+      <div id="loading-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#34D399,#0369A1);border-radius:3px;transition:width 0.15s ease;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;width:min(320px,70vw);">
+      <div id="loading-status" style="font-family:'Space Mono',monospace;font-size:0.75rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">Initializing modules...</div>
+      <div id="loading-pct" style="font-family:'Space Mono',monospace;font-size:0.75rem;color:#34D399;font-weight:700;">0%</div>
+    </div>
+  </div>
   <!-- Script entry points -->
 
   <div id="mobile-controls"
@@ -2544,7 +2655,39 @@
   </script>
   <script src="ui.js"></script>
   <script>
-    // ui.init() is now called by start.js after preloading models
+    // Academy.html doesn't load start.js, so we init directly
+    (function() {
+      const ld = document.getElementById('loading-screen');
+      const bar = document.getElementById('loading-bar');
+      const pct = document.getElementById('loading-pct');
+      const status = document.getElementById('loading-status');
+      let progress = 0;
+
+      function tick(msg, val) {
+        progress = val;
+        if (bar) bar.style.width = val + '%';
+        if (pct) pct.textContent = val + '%';
+        if (status) status.textContent = msg;
+      }
+
+      // Simulate quick module load
+      tick('Loading UI modules...', 30);
+      setTimeout(() => tick('Building syllabus...', 60), 150);
+      setTimeout(() => tick('Preparing interface...', 85), 300);
+      setTimeout(() => {
+        tick('Ready', 100);
+        // Init the UI
+        if (typeof ui !== 'undefined' && ui.init) ui.init();
+        // Dismiss loading screen
+        setTimeout(() => {
+          if (ld) {
+            ld.style.opacity = '0';
+            ld.style.visibility = 'hidden';
+            setTimeout(() => { if (ld && ld.parentNode) ld.parentNode.removeChild(ld); }, 500);
+          }
+        }, 200);
+      }, 400);
+    })();
   </script>
 </body>
 </html>
