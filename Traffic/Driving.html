@@ -1250,6 +1250,49 @@
       display: flex;
     }
 
+    /* In-Game Objective Overlay */
+    #objective-overlay {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      left: auto;
+      transform: translateX(150%);
+      z-index: 22;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 16px 24px;
+      color: white;
+      max-width: 90vw;
+      width: 400px;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+    }
+    
+    #objective-overlay.on {
+      transform: translateX(0);
+    }
+    
+    #objective-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--yellow);
+      font-weight: 800;
+    }
+    
+    #objective-desc {
+      font-size: 1rem;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
     .hb {
       background: var(--card);
       border: 1px solid var(--border);
@@ -2076,8 +2119,13 @@
   </div>
   <div id="hudbar">
     <div class="hb">⏱<span id="htmr">0:00</span></div>
-    <div class="hb">₹<span id="hfin">0</span></div>
-    <div class="hb">🎯<span id="hcp">0/0</span></div>
+    <div class="hb">💸<span id="hfin">0</span></div>
+    <div class="hb">✅<span id="hcp">0/0</span></div>
+  </div>
+  
+  <div id="objective-overlay">
+    <div id="objective-title">Current Objective</div>
+    <div id="objective-desc">Loading...</div>
   </div>
   <div id="civic-controls" style="position:fixed;bottom:20px;right:20px;z-index:100;display:flex;flex-direction:column;gap:10px;">
     <button id="btn-seatbelt" style="background:#333;color:var(--ink);border:2px solid #555;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer;transition:0.2s;" onclick="game.toggleSeatbelt(this)">💺 Seatbelt / Helmet OFF</button>

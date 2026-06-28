@@ -344,70 +344,89 @@ let _tt = null;
      </div>`;
         } else if (id.startsWith('rule')) {
           const idx = parseInt(id.replace('rule', '')); const hp = lv.hps[idx];
-          card.innerHTML = `<div class="bc-ttl">⚖️ Regulatory Requirement</div><div class="bc-rule-pill">Clause ${idx + 1}</div><div class="bc-rule-txt">${hp}</div>
-     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('${idx > 0 ? 'rule' + (idx - 1) : 'intro'}')">${'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>'} Previous</button>${idx < lv.hps.length - 1 ? `<button onclick="ui._selSyl('rule${idx + 1}')">Next Clause &rarr;</button>` : `<button onclick="ui._selSyl('law')">Legal Framework &rarr;</button>`}</div>`;
+          let hpTitle = hp, hpDesc = '';
+          if (hp.includes(':')) {
+            const parts = hp.split(':');
+            hpTitle = parts[0];
+            hpDesc = parts.slice(1).join(':').trim();
+          }
+          card.innerHTML = `<div class="bc-ttl">⚖️ Regulatory Requirement</div>
+          <div class="bc-rule-pill" style="display:inline-block; margin-top:8px; margin-bottom:16px; padding:4px 12px; background:rgba(242,184,75,0.15); color:var(--signal); border-radius:12px; font-weight:700; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase;">Clause ${idx + 1}</div>
+          <div class="bc-rule-txt" style="font-family:'Lora', serif; font-size:2.2rem; color:var(--ink); line-height:1.2;">${hpTitle}</div>
+          ${hpDesc ? `<div style="margin-top:16px; font-family:'Inter', sans-serif; font-size:1.1rem; color:var(--dim); line-height:1.6;">${hpDesc}</div>` : ''}
+          <div class="bc-next-btn" style="display:flex;justify-content:space-between; margin-top:32px; padding-top:20px; border-top:1px solid var(--line);"><button class="btn btn-s" style="background:transparent; border:1px solid var(--line); color:var(--ink);" onclick="ui._selSyl('${idx > 0 ? 'rule' + (idx - 1) : 'intro'}')">${'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>'} Previous</button>${idx < lv.hps.length - 1 ? `<button class="btn" style="background:var(--ink); color:var(--void);" onclick="ui._selSyl('rule${idx + 1}')">Next Clause &rarr;</button>` : `<button class="btn" style="background:var(--signal); color:#000;" onclick="ui._selSyl('law')">Legal Framework &rarr;</button>`}</div>`;
         } else if (id === 'law') {
           card.innerHTML = `<div class="bc-ttl">🏛️ Statutory Provisions</div><div class="lb"><div class="ls">${lv.law.sec}</div><div class="lt">${lv.law.off}</div></div><div class="fr"><div class="fl">Fine Amount</div><div class="fa">${lv.law.fine}</div></div>
      <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('rule'+(lv.hps.length-1))"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('theory')">Concepts &rarr;</button></div>`;
         } else if (id === 'theory') {
           card.innerHTML = `<div class="bc-ttl">📊 Analytical Model</div><div class="dw">${this._diag(lv.id)}</div><div style="font-size:clamp(0.95rem, 2.2vw, 1.3rem);line-height:1.6;color:var(--muted2);margin-bottom:12px">${lv.theory}</div>
-     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Start Simulation &rarr;</button></div>`;
+     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`;
         } else if (id === 'practical') {
+          const btnsHTML = (lv.modes || ['car']).map(m => `<button class="btn" style="width:100%; text-transform:capitalize;" onclick="ui.showQuiz('${m}')">Take ${m} Quiz</button>`).join('');
+          const finalBtn = `<button class="btn" style="background:var(--accent); color:#000; font-weight:bold; padding:12px 32px;" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`;
           card.innerHTML = `<div class="bc-ttl">🎯 Practical Execution</div>
-      <div style="margin-bottom:24px;">
-        ${this._simAnim(lv)}
-      </div>
-      <div class="pract-banner" style="background:${lv.gr || 'linear-gradient(135deg, #1e293b, #0f172a)'};height:auto;flex-direction:row;justify-content:space-between;padding:clamp(16px, 3vw, 24px);text-align:left;flex-wrap:wrap;border-radius:16px;overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-        <div style="display:flex;align-items:flex-start;gap:clamp(16px, 4vw, 32px);flex:1;min-width:280px">
-          <div class="pract-icon-big" style="font-size:4rem;line-height:1;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.2));">${lv.icon}</div>
-          <div class="pract-veh-tag" style="background:transparent;padding:0;border-radius:0;flex:1">
-            <div class="pv1" style="font-size:clamp(1.4rem, 2.5vw, 2rem);letter-spacing:0.05em;font-family:'Lora',serif;font-weight:700; color:white;">${lv.name}</div>
-            <div class="pv2" style="font-size:clamp(0.9rem, 2vw, 1.2rem);color:rgba(255,255,255,.8)">${lv.v}</div>
-            <div style="font-size:clamp(0.9rem, 1.4vw, 1.15rem);color:rgba(255,255,255,0.95);margin-top:10px;line-height:1.5;border-top:1px solid rgba(255,255,255,0.3);padding-top:10px">${lv.pract}</div>
-            <div style="font-size:clamp(0.8rem, 1.3vw, 0.95rem);color:var(--yellow);margin-top:12px;line-height:1.4;background:rgba(0,0,0,0.3);padding:10px;border-radius:8px; border-left:4px solid var(--yellow);">⚠️ Note: A PERFECT drive (no violations/damage) is required to not get penalized on retry.</div>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex; flex-wrap:wrap; gap:20px; margin-top:20px;">
-        <div style="flex:1; min-width:300px; background:var(--card); border:1px solid var(--border); padding:20px; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
-          <div style="color:var(--text); font-size:1.05rem; font-weight:700; margin-bottom:16px; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px;">🎮 How to Play</div>
-          <div style="display:flex; flex-direction:column; gap:16px;">
-             <div style="display:flex; align-items:center; gap:16px;">
-                <div style="display:flex; gap:6px;">
-                  <div style="width:34px; height:34px; background:var(--bg); border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.85rem; color:var(--text); box-shadow:0 2px 5px rgba(0,0,0,0.05);">W</div>
-                  <div style="width:34px; height:34px; background:var(--bg); border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.85rem; color:var(--text); box-shadow:0 2px 5px rgba(0,0,0,0.05);">A</div>
-                  <div style="width:34px; height:34px; background:var(--bg); border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.85rem; color:var(--text); box-shadow:0 2px 5px rgba(0,0,0,0.05);">S</div>
-                  <div style="width:34px; height:34px; background:var(--bg); border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.85rem; color:var(--text); box-shadow:0 2px 5px rgba(0,0,0,0.05);">D</div>
-                </div>
-                <div style="font-size:0.95rem; color:var(--muted2); font-weight:500;">Steer & Accelerate</div>
-             </div>
-             <div style="display:flex; align-items:center; gap:16px;">
-                <div style="width:auto; padding:0 16px; height:34px; background:var(--bg); border:1px solid var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.85rem; color:var(--text); box-shadow:0 2px 5px rgba(0,0,0,0.05);">SPACE</div>
-                <div style="font-size:0.95rem; color:var(--muted2); font-weight:500;">Handbrake</div>
-             </div>
-          </div>
+      <div style="display:flex; flex-direction:column; gap:32px; margin-bottom: 24px;">
+        
+        <!-- Top: Video Guide -->
+        <div style="position:relative; width:100%; border-radius:24px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); background:#070A14;">
+          ${this._simAnim(lv)}
         </div>
         
-        <div style="flex:1; min-width:300px; display:flex; flex-direction:column; gap:16px;">
-          <div style="background:var(--card); padding:16px 20px; border-radius:16px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
-            <div>
-              <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; font-weight:800; letter-spacing:0.05em; margin-bottom:4px;">Penalty Risk</div>
-              <div style="font-size:1rem; color:var(--text); font-weight:600;">${lv.law.off}</div>
-            </div>
-            <div style="text-align:right; border-left:1px solid var(--border); padding-left:16px;">
-              <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; font-weight:800; letter-spacing:0.05em; margin-bottom:4px;">Fine</div>
-              <div style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:var(--red); line-height:1;">${lv.law.fine}</div>
+        <!-- Bottom: Controls & Objective (2 columns) -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+          
+          <!-- Controls -->
+          <div style="background:rgba(30,41,59,0.5); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.08); padding:24px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.15);">
+            <div style="color:white; font-size:1.1rem; font-weight:700; margin-bottom:20px; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:10px;">🕹️ How to Play</div>
+            <div style="display:flex; flex-direction:column; gap:20px;">
+               <div style="display:flex; align-items:center; gap:16px;">
+                  <div style="display:flex; gap:6px;">
+                    <div style="width:36px; height:36px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.2);">W</div>
+                    <div style="width:36px; height:36px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.2);">A</div>
+                    <div style="width:36px; height:36px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.2);">S</div>
+                    <div style="width:36px; height:36px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.2);">D</div>
+                  </div>
+                  <div style="font-size:1rem; color:rgba(255,255,255,0.8); font-weight:500;">Steer & Accelerate</div>
+               </div>
+               <div style="display:flex; align-items:center; gap:16px;">
+                  <div style="width:auto; padding:0 20px; height:36px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:white; box-shadow:0 4px 10px rgba(0,0,0,0.2);">SPACE</div>
+                  <div style="font-size:1rem; color:rgba(255,255,255,0.8); font-weight:500;">Handbrake</div>
+               </div>
             </div>
           </div>
           
-          <div style="display:flex; flex-wrap:wrap; gap:10px;">
+          <!-- Objective -->
+          <div class="pract-banner" style="background:${lv.gr || 'linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95))'}; padding:28px; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.15); display:flex; flex-direction:column;">
+            <div class="pract-icon-big" style="font-size:4rem;line-height:1;margin-bottom:16px;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.3));">${lv.icon}</div>
+            <div class="pv1" style="font-size:2rem;letter-spacing:0.02em;font-family:'Instrument Serif',serif;font-style:italic;font-weight:700; color:var(--signal);margin-bottom:8px;">${lv.name}</div>
+            <div style="font-size:1.15rem;color:rgba(255,255,255,0.95);line-height:1.6;border-top:1px solid rgba(255,255,255,0.1);padding-top:16px;">${lv.pract}</div>
+            <div style="font-size:0.95rem;color:var(--yellow);margin-top:auto;line-height:1.5;background:rgba(0,0,0,0.3);padding:12px;border-radius:12px; border-left:4px solid var(--yellow); margin-top: 24px;">📝 Note: A PERFECT drive (no violations/damage) is required to not get penalized on retry.</div>
+          </div>
+        </div>
+        
+        <!-- Penalty & Actions -->
+        <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:stretch;">
+          <div style="flex:1; min-width:300px; background:var(--card); padding:20px 24px; border-radius:20px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; box-shadow:0 10px 30px rgba(0,0,0,0.15);">
+            <div>
+              <div style="font-size:0.8rem; color:var(--muted); text-transform:uppercase; font-weight:800; letter-spacing:0.05em; margin-bottom:8px;">Penalty Risk</div>
+              <div style="font-size:1.1rem; color:var(--text); font-weight:700;">${lv.law.off}</div>
+            </div>
+            <div style="text-align:right; border-left:1px solid var(--border); padding-left:24px;">
+              <div style="font-size:0.8rem; color:var(--muted); text-transform:uppercase; font-weight:800; letter-spacing:0.05em; margin-bottom:8px;">Fine</div>
+              <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--red); line-height:1;">${lv.law.fine}</div>
+            </div>
+          </div>
+          <div style="flex:1; min-width:300px; display:flex; flex-direction:column; justify-content:center; gap:12px;">
             ${btnsHTML}
           </div>
-          ${finalBtn}
         </div>
+        
       </div>
-      <div class="bc-next-btn" style="display:flex;gap:12px;justify-content:flex-start;width:100%;margin-top:20px;border-top:1px solid var(--border);padding-top:20px;">
-        <button class="btn btn-s" onclick="ui._selSyl('theory')"><span style="display:flex;align-items:center;gap:6px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> Previous</span></button>
+      
+      <!-- Launch -->
+      <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:20px;">
+        <button class="btn btn-s" onclick="ui._selSyl('theory')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button>
+        ${finalBtn}
       </div>`;
         }
         c.appendChild(card);
@@ -422,19 +441,21 @@ let _tt = null;
      </div></div>`;
       },
       _simAnim(lv) {
-        let h = `<div style="position:relative; width:100%; height:160px; background:#111; border-radius:12px; overflow:hidden; margin-bottom: 20px; border:2px solid rgba(255,255,255,0.1); display:flex; justify-content:center; align-items:center; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);">
+        let h = `<div style="position:relative; width:100%; height:240px; background:#111; display:flex; justify-content:center; align-items:center; box-shadow: inset 0 0 40px rgba(0,0,0,0.9);">
                    <!-- road lines -->
-                   <div style="position:absolute; top:50%; left:0; right:0; height:4px; border-top:4px dashed rgba(255,255,255,0.3); transform:translateY(-50%);"></div>
-                   <div style="position:absolute; top:10px; left:10px; color:#fff; font-size:0.75rem; font-weight:800; opacity:0.8; z-index:10; background:rgba(0,0,0,0.6); padding:4px 8px; border-radius:4px; letter-spacing:1px;">🎥 SCENARIO DEMO</div>`;
+                   <div style="position:absolute; top:50%; left:0; right:0; height:4px; border-top:6px dashed rgba(255,255,255,0.4); transform:translateY(-50%);"></div>
+                   <div style="position:absolute; top:12px; left:12px; color:#fff; font-size:0.75rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(0,0,0,0.7); padding:6px 12px; border-radius:6px; letter-spacing:1px; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.1);">🎥 SCENARIO DEMO</div>`;
         let style = '';
         if (lv.themeType === 'pedestrian_courtesy') {
           h += `
              <div style="position:absolute; left:60%; top:0; bottom:0; width:40px; background:repeating-linear-gradient(0deg, #fff 0, #fff 10px, transparent 10px, transparent 20px);"></div>
-             <div style="position:absolute; left:65%; top:10px; font-size:2rem; animation: walkDown 4s infinite;">🚶</div>
-             <div style="position:absolute; left:10%; top:55%; font-size:2.5rem; transform:scaleX(-1); animation: driveStopGo 4s infinite;">🚗</div>
+             <div style="position:absolute; left:65%; top:-20px; font-size:2rem; animation: walkDown 4s infinite linear;">🚶</div>
+             <div style="position:absolute; left:10%; top:55%; font-size:2.5rem; transform:scaleX(-1); animation: driveStopGo 4s infinite linear;">🚗</div>
+             <div style="position:absolute; left:10%; top:15%; font-size:2rem; transform:scaleX(-1); animation: weaveBike 4s infinite linear;">🛵</div>
           `;
-          style = `@keyframes walkDown { 0% { top:-20px; } 25% { top: 35%; } 55% { top: 35%; } 100% { top: 120%; } }
-                   @keyframes driveStopGo { 0% { left:-50px; } 25% { left: 40%; } 55% { left: 40%; } 100% { left: 120%; } }`;
+          style = `@keyframes walkDown { 0% { top:-20px; } 100% { top: 120%; } }
+                   @keyframes driveStopGo { 0% { left:-50px; } 20% { left: 40%; } 80% { left: 40%; } 100% { left: 120%; } }
+                   @keyframes weaveBike { 0% { left:-50px; top: 15%; } 40% { left: 45%; top: 75%; } 60% { left: 75%; top: 75%; } 100% { left: 120%; top: 15%; } }`;
         } else if (lv.themeType === 'overtake' || lv.themeType === 'speed' || lv.id === 5) { // some overtake/speed rules
           h += `
              <div style="position:absolute; left:40%; top:15%; font-size:2.5rem; transform:scaleX(-1); animation: driveSlow 4s infinite;">🚙</div>
@@ -469,12 +490,7 @@ let _tt = null;
       dispatchStart(mode) {
          mode = mode || this.curMode || 'car';
          const lv = this.cur;
-         const passed = S.comp[lv.id] && S.comp[lv.id].modes && S.comp[lv.id].modes[mode];
-         if (!passed) {
-             this.showQuiz(mode);
-         } else {
-             window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`;
-         }
+         window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`;
       },
       showQuiz(mode) {
         mode = mode || ui.curMode || 'car';
@@ -522,7 +538,7 @@ let _tt = null;
           return; 
         } 
         if (s.mode === 'final') {
-          this.showResults(game.fs || 100, game.fst || { vio: 0 }); 
+          this.showResults(game?.fs || 100, game?.fst || { vio: 0 }); 
         } else {
           const lv = this.cur;
           if (!S.comp[lv.id]) S.comp[lv.id] = {};
@@ -530,7 +546,11 @@ let _tt = null;
           S.comp[lv.id].modes[s.mode] = true;
           save();
           toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851');
-          window.location.href = `Driving.html?lv=${lv.id}&mode=${s.mode}`;
+          if (window.location.pathname.toLowerCase().includes('driving.html')) {
+              window.location.href = 'Academy.html';
+          } else {
+              window.location.href = `Driving.html?lv=${lv.id}&mode=${s.mode}`;
+          }
         }
       },
       showResults(score, stats) {
@@ -609,18 +629,23 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     // 🚦 PROCEDURAL ENGINE AND SCENARIO ARRAYS 🚦
     // Texture Generator
     const _genTex = (type) => {
-      const c = document.createElement('canvas'); c.width = 256; c.height = 256; const ctx = c.getContext('2d');
       if (type === 'asphalt') {
-        ctx.fillStyle = '#21232b'; ctx.fillRect(0, 0, 256, 256);
-        for (let i = 0; i < 5000; i++) { ctx.fillStyle = Math.random() > .5 ? '#2a2c36' : '#1a1c22'; ctx.fillRect(Math.random() * 256, Math.random() * 256, 2, 2); }
-      } else if (type === 'pave') {
+        const tex = new THREE.TextureLoader().load('textures/road.png');
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(4, 4);
+        return tex;
+      }
+      if (type === 'building') {
+        const tex = new THREE.TextureLoader().load('textures/building.png');
+        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(2, 2);
+        return tex;
+      }
+      const c = document.createElement('canvas'); c.width = 256; c.height = 256; const ctx = c.getContext('2d');
+      if (type === 'pave') {
         ctx.fillStyle = '#666666'; ctx.fillRect(0, 0, 256, 256);
         ctx.strokeStyle = '#555555'; ctx.lineWidth = 2;
         for (let y = 0; y < 256; y += 32) { for (let x = 0; x < 256; x += 32) { ctx.strokeRect(x, y, 32, 32); } }
-      } else if (type === 'building') {
-        ctx.fillStyle = '#d3d3d3'; ctx.fillRect(0, 0, 256, 256);
-        ctx.fillStyle = '#95a5a6'; for (let y = 0; y < 256; y += 64) { ctx.fillRect(0, y + 32, 256, 4); }
-        for (let x = 0; x < 256; x += 64) { ctx.fillRect(x, 0, 4, 256); }
       } else if (type === 'police') {
         ctx.fillStyle = '#2980b9'; ctx.fillRect(0, 0, 256, 256);
         ctx.fillStyle = '#34495e'; for (let y = 0; y < 256; y += 32) { ctx.fillRect(0, y, 256, 2); }
@@ -682,9 +707,9 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
         
         if (window.PRELOADED_MODELS[modelKey]) {
             baseModel = window.PRELOADED_MODELS[modelKey].clone();
-            if (type === 'bus' || type === 'truck') s = 1.4 * 14.5;
-            else if (type === 'auto' || type === 'bike') s = 1.0 * 14.5;
-            else s = 1.2 * 14.5;
+            if (type === 'bus' || type === 'truck') s = 6.0;
+            else if (type === 'auto' || type === 'bike') s = 3.5;
+            else s = 4.5;
 
             baseModel.traverse((child) => {
                 if (child.isMesh && child.material) {

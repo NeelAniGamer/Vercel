@@ -265,6 +265,7 @@ body.lm .nav-login-btn:hover { background: var(--page-theme-light); color: #fff;
     z-index: 1001; 
     overflow-y: auto;
     overflow-x: hidden;
+    flex-wrap: nowrap;
   }
   .nav-links.active { opacity: 1; visibility: visible; transform: translateX(0); }
   

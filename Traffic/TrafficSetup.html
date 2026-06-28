@@ -241,8 +241,9 @@
                 Continue with Google
             </button>
             
-            <button type="button" class="btn-submit btn-outline" onclick="showLocalSetup()" style="margin-top: 25px; border:none; text-decoration:underline;">Skip Cloud & Play Locally</button>
-            <button type="button" class="btn-submit btn-outline" onclick="window.location.href='Academy.html'" style="margin-top: 5px; border:none;">Back to Academy</button>
+            <button type="button" class="btn-submit btn-outline" onclick="window.location.href='Academy.html'" style="margin-top: 25px;">Skip Cloud & Play Locally</button>
+            <button type="button" class="btn-submit btn-outline" onclick="window.location.href='Academy.html'" style="margin-top: 15px;">Back to Academy</button>
+            <button type="button" class="btn-submit btn-outline" id="auth-dashboard-btn" style="display:none; margin-top: 15px; border-color: var(--em); color: var(--em);" onclick="window.location.href='TrafficDashboard.html'">Go to Dashboard &rarr;</button>
         </div>
 
         <!-- Setup Form Area -->
@@ -269,6 +270,7 @@
 
                 <button type="submit" class="btn-submit">Complete Setup &rarr;</button>
                 <button type="button" class="btn-submit btn-outline" onclick="window.location.href='Academy.html'" style="margin-top: 15px;">Back to Academy</button>
+                <button type="button" class="btn-submit btn-outline" id="setup-dashboard-btn" style="display:none; margin-top: 15px; border-color: var(--em); color: var(--em);" onclick="window.location.href='TrafficDashboard.html'">Go to Dashboard &rarr;</button>
             </form>
         </div>
     </div>
@@ -288,55 +290,112 @@
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             
-            renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            const isLowEnd = /iPhone|iPad|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+            renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isLowEnd });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setPixelRatio(isLowEnd ? 1 : Math.min(window.devicePixelRatio, 2));
 
             const isLight = document.body.classList.contains('lm');
             
             // Create particles
+            const count = isLowEnd ? 800 : 3000;
             const geometry = new THREE.BufferGeometry();
-            const count = 1500;
             const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
             
-            for(let i = 0; i < count * 3; i++) {
-                positions[i] = (Math.random() - 0.5) * 10;
+            const color1 = new THREE.Color(isLight ? 0x0E72A0 : 0xF2B84B); // Theme primary
+            const color2 = new THREE.Color(isLight ? 0x34D399 : 0x00F0CC); // Accent teal/green
+            
+            for(let i = 0; i < count; i++) {
+                // Generate points in a wide galaxy/disc shape
+                const radius = 2 + Math.random() * 15;
+                const theta = Math.random() * 2 * Math.PI;
+                const y = (Math.random() - 0.5) * 4 * (1 - radius/18);
+                
+                positions[i * 3] = radius * Math.cos(theta);
+                positions[i * 3 + 1] = y;
+                positions[i * 3 + 2] = radius * Math.sin(theta);
+                
+                const mix = Math.random();
+                const mixedColor = color1.clone().lerp(color2, mix);
+                colors[i * 3] = mixedColor.r;
+                colors[i * 3 + 1] = mixedColor.g;
+                colors[i * 3 + 2] = mixedColor.b;
             }
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             
-            // Theme colors
-            const color = isLight ? 0x0E72A0 : 0xF2B84B; 
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            // Soft circular particle texture
+            const canvas = document.createElement('canvas');
+            canvas.width = 32; canvas.height = 32;
+            const context = canvas.getContext('2d');
+            const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, 32, 32);
+            const texture = new THREE.CanvasTexture(canvas);
             
             const material = new THREE.PointsMaterial({
-                size: 0.02,
-                color: color,
+                size: 0.15,
+                vertexColors: true,
+                map: texture,
                 transparent: true,
-                opacity: 0.6,
-                blending: THREE.AdditiveBlending
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
             });
             
             particles = new THREE.Points(geometry, material);
+            // Tilt the galaxy a bit
+            particles.rotation.x = 0.3;
             scene.add(particles);
             
-            camera.position.z = 3;
+            // Add a subtle grid floor
+            const grid = new THREE.GridHelper(40, 40, isLight ? 0x0E72A0 : 0xF2B84B, isLight ? 0x0E72A0 : 0xF2B84B);
+            grid.position.y = -3;
+            grid.material.opacity = 0.08;
+            grid.material.transparent = true;
+            grid.material.blending = THREE.AdditiveBlending;
+            scene.add(grid);
+            
+            camera.position.z = 8;
+            camera.position.y = 1;
 
             // Mouse interaction
             let mouseX = 0;
             let mouseY = 0;
             document.addEventListener('mousemove', (event) => {
                 mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 - 1;
             });
             
+            let time = 0;
             const animate = () => {
                 requestAnimationFrame(animate);
+                time += 0.005;
                 
-                particles.rotation.y += 0.001;
-                particles.rotation.x += 0.0005;
+                particles.rotation.y = time * 0.5;
                 
-                // Subtle camera movement
-                camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
-                camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
+                // Subtle breathing effect on particles
+                if (!isLowEnd) {
+                    const positions = particles.geometry.attributes.position.array;
+                    for(let i = 0; i < count; i++) {
+                        const i3 = i * 3;
+                        positions[i3 + 1] += Math.sin(time * 2 + positions[i3]) * 0.002;
+                    }
+                    particles.geometry.attributes.position.needsUpdate = true;
+                }
+                
+                // Moving grid effect
+                grid.position.z = (time * 5) % 1;
+                
+                // Dynamic camera movement based on mouse
+                camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 1 - camera.position.y + 1) * 0.05;
                 camera.lookAt(scene.position);
                 
                 renderer.render(scene, camera);
@@ -467,6 +526,13 @@
         if (S.name) document.getElementById('prof-name').value = S.name;
         if (S.vehicle) document.getElementById('prof-veh').value = S.vehicle;
 
+        if (localStorage.getItem('trafficSetupComplete') === 'true' || S.name) {
+            const authDashBtn = document.getElementById('auth-dashboard-btn');
+            const setupDashBtn = document.getElementById('setup-dashboard-btn');
+            if(authDashBtn) authDashBtn.style.display = 'inline-flex';
+            if(setupDashBtn) setupDashBtn.style.display = 'inline-flex';
+        }
+
         document.getElementById('setupForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -490,7 +556,7 @@
             localStorage.setItem('th-save', JSON.stringify(L));
             localStorage.setItem('trafficSetupComplete', 'true');
             
-            window.location.href = 'TrafficDashboard.html';
+            window.location.href = 'Academy.html';
         });
     </script>
 </body>

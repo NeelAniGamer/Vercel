@@ -641,143 +641,155 @@
 
     .category-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-      margin-bottom: 40px;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 60px;
     }
 
     .category-header {
       font-family: 'Instrument Serif', serif;
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       color: var(--yellow);
-      margin-top: 32px;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-top: 40px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(255,255,255,0.05);
       text-transform: capitalize;
+      letter-spacing: 0.02em;
+      text-shadow: 0 4px 20px rgba(255,213,74,0.1);
+    }
+    
+    body.lm .category-header {
+      border-bottom-color: rgba(0,0,0,0.1);
+      text-shadow: none;
+      color: #b48e00;
     }
 
+    /* --- Ultimate Syllabus Card Base --- */
     .syl-item {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      background: linear-gradient(145deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.6) 100%);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      overflow: hidden;
-      cursor: pointer;
-      padding: 24px;
+      position: relative;
+      background: var(--card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.5);
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      height: 100%;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.05);
+      z-index: 1;
     }
 
-    .syl-item:before {
+    /* --- Animated Glowing Gradient Border --- */
+    .syl-item::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      border-radius: 20px;
-      padding: 1.5px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+      border-radius: 24px;
+      padding: 2px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
-      pointer-events: none;
-      opacity: 0.5;
+      z-index: -1;
       transition: opacity 0.4s ease, background 0.4s ease;
+      pointer-events: none;
     }
 
+    /* --- Hover State --- */
     .syl-item:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
-      background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      background: var(--hover);
     }
 
-    .syl-item:hover:before {
-      opacity: 1;
-      background: linear-gradient(135deg, var(--signal) 0%, var(--teal) 100%);
+    .syl-item:hover::before {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--green) 100%);
+      opacity: 0.5;
     }
 
-    .syl-item.syl-active {
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--text);
+    /* --- Typography --- */
+    .syl-lbl {
+      font-family: 'Lora', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+      padding-right: 48px;
     }
     
-    .syl-item.syl-active:before {
-      opacity: 1;
-      background: linear-gradient(135deg, var(--text) 0%, var(--muted) 100%);
+    body.lm .syl-lbl {
+      color: var(--ink);
     }
 
+    .syl-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: var(--muted2);
+      line-height: 1.6;
+    }
+    
+    body.lm .syl-sub {
+      color: #475569;
+    }
+
+    /* --- The Ultimate Checkbox --- */
     .syl-ck {
       position: absolute;
-      top: 24px;
-      right: 24px;
-      width: 26px;
-      height: 26px;
+      top: 28px;
+      right: 28px;
+      width: 28px;
+      height: 28px;
       border-radius: 8px;
-      border: 2px solid rgba(255,255,255,0.15);
-      transition: all 0.3s ease;
+      border: 2px solid rgba(184, 155, 255, 0.4);
+      background: rgba(184, 155, 255, 0.1);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0,0,0,0.2);
     }
 
+    .syl-item:hover .syl-ck {
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: scale(1.1);
+    }
+
+    /* --- Completed (Done) State --- */
     .syl-item.syl-done {
-      background: linear-gradient(145deg, rgba(0, 200, 81, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);
+      background: rgba(0, 240, 204, 0.08);
     }
 
-    .syl-item.syl-done:before {
-      background: linear-gradient(135deg, rgba(0, 200, 81, 0.4) 0%, rgba(255,255,255,0) 100%);
+    .syl-item.syl-done::before {
+      background: linear-gradient(135deg, rgba(0, 240, 204, 0.6) 0%, rgba(255,255,255,0) 100%);
     }
 
-    .syl-done .syl-ck {
-      background: linear-gradient(135deg, #00c851, #007E33);
-      border-color: #00c851;
-      box-shadow: 0 2px 8px rgba(0, 200, 81, 0.3);
+    .syl-item.syl-done .syl-ck {
+      background: #00f0cc;
+      border-color: #00f0cc;
+      box-shadow: 0 0 20px rgba(0, 240, 204, 0.4);
     }
 
-    .syl-done .syl-ck::after {
+    .syl-item.syl-done .syl-ck::after {
       content: '';
       position: absolute;
-      top: 4px;
-      left: 7px;
-      width: 6px;
+      top: 6px;
+      left: 10px;
+      width: 5px;
       height: 11px;
-      border: solid #fff;
+      border: solid #ffffff;
       border-width: 0 2.5px 2.5px 0;
       transform: rotate(45deg);
-    }
-
-    .syl-active .syl-ck {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 3px rgba(255, 213, 74, 0.15);
     }
 
     .syl-info {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .syl-lbl {
-      font-family: 'Instrument Serif', serif;
-      font-size: 1.6rem;
-      color: var(--text);
-      line-height: 1.1;
-      padding-right: 30px;
-      transition: color 0.3s;
-    }
-
-    .syl-sub {
-      font-size: 0.95rem;
-      color: var(--muted2);
-      line-height: 1.5;
-      display: none;
-      transition: color 0.3s;
+      gap: 12px;
+      margin-top: 12px;
     }
 
     .syl-active .syl-sub {
@@ -2231,6 +2243,16 @@
 </head>
 
 <body class="lm">
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <h1>Traffic Academy</h1>
+    <div id="loading-bar-container">
+      <div id="loading-bar"></div>
+    </div>
+    <div id="loading-pct">0%</div>
+    <div id="loading-status">Initializing Engine...</div>
+  </div>
+
   <!-- Script entry points -->
 
   <div id="mobile-controls"
@@ -2520,11 +2542,34 @@
   <script src="levels/level20.js"></script>
 
   <script src="course.js"></script>
+  <script>
+    window.LVS.forEach((levelData, index) => {
+      // 1. Calculate The True Sequential Number Based On Array Order
+      const correctNumber = index + 1;
+      
+      // 2. Force All Internal IDs To Match The Correct Number
+      levelData.id = correctNumber;
+      levelData.num = correctNumber;
+      levelData.level = correctNumber;
+      
+      // 3. Scan And Rewrite The Main Name (E.g., "Lesson 18" -> "Lesson 2")
+      if (typeof levelData.name === 'string') {
+        levelData.name = levelData.name.replace(/Lesson\s+\d+/i, `Lesson ${correctNumber}`);
+      }
+      
+      // 4. Scan Deeply Into The Syllabus To Fix The Text Displayed In The UI Cards
+      if (Array.isArray(levelData.syllabus)) {
+        levelData.syllabus.forEach((lesson) => {
+           if (typeof lesson.title === 'string') {
+              lesson.title = lesson.title.replace(/Lesson\s+\d+/i, `Lesson ${correctNumber}`);
+           }
+        });
+      }
+    });
+  </script>
   <script src="ui.js"></script>
   <script>
-    if (window.ui) {
-      window.ui.init();
-    }
+    // ui.init() is now called by start.js after preloading models
   </script>
 </body>
 </html>

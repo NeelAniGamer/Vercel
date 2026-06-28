@@ -1,27 +1,26 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 17,
-  "icon": "🚂",
-  "name": "Railway Crossing Patience",
+  "icon": "🚑",
+  "name": "Lesson 17 - Ambulance Priority",
   "modes": [
-    "pedestrian",
     "car"
   ],
-  "col": "#d35400",
-  "ds": "Wait patiently at the railway crossing. Do not honk or try to cross under the barriers.",
+  "col": "#e67e22",
+  "ds": "An ambulance with sirens blaring approaches from behind. Pull over safely to let it pass.",
   "hps": [
-    "Stop before the barrier.",
-    "Turn off your engine if waiting long.",
-    "No honking!"
+    "Pull over to the left to let emergency vehicles pass.",
+    "Do not tailgate the ambulance.",
+    "Do not block the ambulance."
   ],
   "law": {
-    "sec": "MV Act Section 131",
-    "fine": "₹1000 - ₹2000",
-    "off": "Railway Crossing Violation"
+    "sec": "MV Act Section 194E",
+    "fine": "₹10000",
+    "off": "Blocking Emergency Vehicle"
   },
-  "theory": "<h2>Railway Crossings</h2>\n<p>Attempting to bypass a closed railway gate is fatal. Wait patiently.</p>\n<h3>🚂 The Test</h3>\n<ul>\n<li>Wait silently at the crossing.</li>\n<li>No honking.</li>\n</ul>",
-  "pract": "Wait for the train to pass without honking.",
+  "theory": "<h2>Ambulance Priority</h2>\n      <p>An ambulance is trying to navigate through heavy traffic. Some selfish NPCs will block it.</p>\n      <h3>🚑 The Test</h3>\n      <ul>\n        <li>Safely pull over to the shoulder to let the ambulance pass.</li>\n        <li>Do not hit pedestrians while pulling over.</li>\n        <li>Do not try to tailgate the ambulance to skip traffic.</li>\n      </ul>",
+  "pract": "Pull over and let the ambulance pass safely.",
   "mode": "practical",
-  "themeType": "no_honking",
-  "startOutside": false
+  "themeType": "ambulance_priority",
+  "startOutside": true
 });

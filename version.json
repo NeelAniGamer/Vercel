@@ -1,6 +1,6 @@
 {
-  "versionCode": 5,
-  "versionName": "1.4",
+  "versionCode": 6,
+  "versionName": "1.5",
   "apkUrl": "https://advancedlogiclabs.dpdns.org/COL.apk",
-  "releaseNotes": "Fixes Distorted Academy Rendering"
+  "releaseNotes": "Fixes feedback page UI and mobile hamburger menu layout issues."
 }

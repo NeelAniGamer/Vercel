@@ -132,7 +132,7 @@ themes.forEach(theme => {
     levels.push({
       id: id,
       icon: theme.icon,
-      name: theme.name + (id > 5 ? ` (Level ${id})` : ''),
+      name: 'Lesson ' + id + ' - ' + theme.name,
       modes: theme.modes,
       col: theme.col,
       ds: theme.ds,

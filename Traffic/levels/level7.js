@@ -1,27 +1,27 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 7,
-  "icon": "🏥",
-  "name": "Hospital Silence Zone",
+  "icon": "🔕",
+  "name": "Lesson 7 - No Honking Zone",
   "modes": [
-    "pedestrian",
-    "car"
+    "car",
+    "auto"
   ],
-  "col": "#34495e",
-  "ds": "You are driving near a major hospital. Strictly no honking.",
+  "col": "#f1c40f",
+  "ds": "You are driving past a Hospital or School. Traffic is blocked. Do not honk!",
   "hps": [
-    "Do not use your horn at all.",
-    "Drive smoothly to avoid sudden noises.",
-    "Yield to hospital traffic."
+    "Do not honk in Silence Zones.",
+    "Navigate around obstacles safely.",
+    "Maintain patience in traffic jams."
   ],
   "law": {
-    "sec": "MV Act Section 194F",
-    "fine": "₹1000 - ₹2000",
+    "sec": "MV Act Section 190(2)",
+    "fine": "₹1000",
     "off": "Honking in Silence Zone"
   },
-  "theory": "<h2>Hospital Silence Zone</h2>\n<p>Noise pollution severely affects patients recovering in hospitals.</p>\n<h3>🏥 The Test</h3>\n<ul>\n<li>Complete the section without pressing the horn.</li>\n<li>Navigate past obstacles peacefully.</li>\n</ul>",
-  "pract": "Pass the hospital without honking.",
+  "theory": "<h2>No Honking Zone</h2>\n      <p>You are in a silent zone near a hospital. The traffic is blocked and other NPCs are honking aggressively.</p>\n      <h3>🔕 The Test</h3>\n      <ul>\n        <li>Navigate around the obstacle without using your horn.</li>\n        <li>If you give in to frustration and honk, you fail.</li>\n      </ul>",
+  "pract": "Pass the hospital zone without honking once.",
   "mode": "practical",
   "themeType": "no_honking",
-  "startOutside": false
+  "startOutside": true
 });

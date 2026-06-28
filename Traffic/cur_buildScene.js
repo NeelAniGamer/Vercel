@@ -158,6 +158,7 @@ _buildScene(mode) {
                 const bz = isV ? pos + (Math.random() * 2 - 1) : cz + side * bDist;
                 
                 let rot = isV ? (side > 0 ? -Math.PI / 2 : Math.PI / 2) : (side > 0 ? Math.PI : 0);
+                rot += Math.PI;
 
                 const rnd = Math.random();
                 let type = 'normal';

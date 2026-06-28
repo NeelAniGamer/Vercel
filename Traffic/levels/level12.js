@@ -1,27 +1,26 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 12,
-  "icon": "⚠️",
-  "name": "Speed Breaker Awareness",
+  "icon": "🚑",
+  "name": "Lesson 12 - Ambulance Priority",
   "modes": [
-    "pedestrian",
     "car"
   ],
-  "col": "#c0392b",
-  "ds": "Approaching an unmarked speed breaker. Slow down to avoid damage and respect pedestrians.",
+  "col": "#e67e22",
+  "ds": "An ambulance with sirens blaring approaches from behind. Pull over safely to let it pass.",
   "hps": [
-    "Look for signs of speed breakers.",
-    "Brake before the bump, not on it.",
-    "Watch for pedestrians crossing near the bump."
+    "Pull over to the left to let emergency vehicles pass.",
+    "Do not tailgate the ambulance.",
+    "Do not block the ambulance."
   ],
   "law": {
-    "sec": "MV Act Section 184",
-    "fine": "₹1000 - ₹5000",
-    "off": "Dangerous Driving"
+    "sec": "MV Act Section 194E",
+    "fine": "₹10000",
+    "off": "Blocking Emergency Vehicle"
   },
-  "theory": "<h2>Speed Breakers</h2>\n<p>Speed bumps are there to enforce slow speeds in high-risk areas.</p>\n<h3>⚠️ The Test</h3>\n<ul>\n<li>Slow down to a safe speed before the breaker.</li>\n</ul>",
-  "pract": "Navigate the speed breaker slowly and safely.",
+  "theory": "<h2>Ambulance Priority</h2>\n      <p>An ambulance is trying to navigate through heavy traffic. Some selfish NPCs will block it.</p>\n      <h3>🚑 The Test</h3>\n      <ul>\n        <li>Safely pull over to the shoulder to let the ambulance pass.</li>\n        <li>Do not hit pedestrians while pulling over.</li>\n        <li>Do not try to tailgate the ambulance to skip traffic.</li>\n      </ul>",
+  "pract": "Pull over and let the ambulance pass safely.",
   "mode": "practical",
-  "themeType": "puddle_etiquette",
-  "startOutside": false
+  "themeType": "ambulance_priority",
+  "startOutside": true
 });

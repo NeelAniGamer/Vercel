@@ -1,27 +1,26 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 8,
-  "icon": "🚶",
-  "name": "Crosswalk Respect",
+  "icon": "🚑",
+  "name": "Lesson 8 - Ambulance Priority",
   "modes": [
-    "pedestrian",
     "car"
   ],
-  "col": "#e74c3c",
-  "ds": "Approach the zebra crossing in Byculla carefully and stop for waiting pedestrians.",
+  "col": "#e67e22",
+  "ds": "An ambulance with sirens blaring approaches from behind. Pull over safely to let it pass.",
   "hps": [
-    "Slow down near zebra crossings.",
-    "Stop completely if someone is crossing.",
-    "Never overtake near a crosswalk."
+    "Pull over to the left to let emergency vehicles pass.",
+    "Do not tailgate the ambulance.",
+    "Do not block the ambulance."
   ],
   "law": {
-    "sec": "MV Act Section 119",
-    "fine": "₹500 - ₹2000",
-    "off": "Failure to Yield at Crosswalk"
+    "sec": "MV Act Section 194E",
+    "fine": "₹10000",
+    "off": "Blocking Emergency Vehicle"
   },
-  "theory": "<h2>Zebra Crossing Rules</h2>\n<p>Pedestrians have the absolute right of way at zebra crossings.</p>\n<h3>🚶 The Test</h3>\n<ul>\n<li>Stop before the white line.</li>\n<li>Let pedestrians finish crossing before you proceed.</li>\n</ul>",
-  "pract": "Stop for the pedestrians at the zebra crossing.",
+  "theory": "<h2>Ambulance Priority</h2>\n      <p>An ambulance is trying to navigate through heavy traffic. Some selfish NPCs will block it.</p>\n      <h3>🚑 The Test</h3>\n      <ul>\n        <li>Safely pull over to the shoulder to let the ambulance pass.</li>\n        <li>Do not hit pedestrians while pulling over.</li>\n        <li>Do not try to tailgate the ambulance to skip traffic.</li>\n      </ul>",
+  "pract": "Pull over and let the ambulance pass safely.",
   "mode": "practical",
-  "themeType": "pedestrian_courtesy",
-  "startOutside": false
+  "themeType": "ambulance_priority",
+  "startOutside": true
 });

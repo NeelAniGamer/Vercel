@@ -40,13 +40,22 @@ class Game {
       }
       _rsz() { if (!this.renderer) return; this.renderer.setSize(innerWidth, innerHeight); if (this.camera) { this.camera.aspect = innerWidth / innerHeight; this.camera.updateProjectionMatrix(); } }
       _initIn() {
-        window.addEventListener('keydown', e => { this.keys[e.key.toLowerCase()] = true; const gm = { p: 'P', r: 'R', n: 'N', d: 'D', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5' }; if (gm[e.key.toLowerCase()]) this.setGear(gm[e.key.toLowerCase()]); if (e.key === ' ') this._horn(); if (e.key.toLowerCase() === 'b') this._brake(); });
+        window.addEventListener('keydown', e => {
+            this.keys[e.key.toLowerCase()] = true;
+            const gm = { p: 'P', r: 'R', n: 'N', d: 'D', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5' };
+            if (gm[e.key.toLowerCase()]) this.setGear(gm[e.key.toLowerCase()]);
+            if (e.key === ' ') this._horn();
+            if (e.key.toLowerCase() === 'b') this._brake();
+            if (e.key.toLowerCase() === 'h') this.toggleHighBeam();
+            if (e.key.toLowerCase() === 'q') this.toggleTurnSignal(-1);
+            if (e.key.toLowerCase() === 'e') this.toggleTurnSignal(1);
+        });
         window.addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
 
         // Pointer Lock & Mouse Look
         if (this.renderer && this.renderer.domElement) {
           this.renderer.domElement.addEventListener('click', () => {
-            if (this.playing && !this.pause) this.renderer.domElement.requestPointerLock();
+            if (this.playing && !this.pause) document.body.requestPointerLock();
           });
         }
         document.addEventListener('pointerlockchange', () => {
@@ -235,6 +244,10 @@ class Game {
         this.challanFired = new Set();
         this.seatbeltOn = false;
         this.mobileOn = false;
+        this.bucklingUp = false;
+        this.highBeamOn = false;
+        this.turnSignal = 0;
+        this.turnTimer = 0;
         // Reset challan tracking for this run
         if (game.challanLog) game.challanLog = [];
         const cStack = document.getElementById('challan-stack');
@@ -244,7 +257,12 @@ class Game {
         this.setGear('N');
         this._buildScene(lv.mode); this.playing = true; this.pause = false; ui.show(null); this.timeLimit = this.mapCfg ? this.mapCfg.timeLimit || 120 : 120;
         const cfg = this.mapCfg || {};
-        ['gc', 'hud', 'hudbar', 'hwrap', 'mobile-controls'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
+        ['gc', 'hud', 'hudbar', 'hwrap', 'mobile-controls', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
+        
+        // Show objective
+        const objDesc = document.getElementById('objective-desc');
+        if(objDesc && lv.pract) { objDesc.innerHTML = lv.pract; }
+        
         if (!cfg.isPedestrian) { 
             ['spgauge', 'gp', 'civic-controls'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'flex'; });
         } else {
@@ -260,7 +278,7 @@ class Game {
         if (mob()) document.getElementById('tc').classList.add('on');
         document.getElementById('hlv').textContent = lv.id; document.getElementById('hobj').textContent = lv.tg; this._uh(); sfx.play('ok');
       }
-      stopPlay() { this.playing = false;['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); }
+      stopPlay() { this.playing = false;['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); }
       toggleSeatbelt(btn) {
           this.seatbeltOn = !this.seatbeltOn;
           const isBike = (this.vehMode === 'bike' || this.vehMode === 'cycle');
@@ -272,6 +290,22 @@ class Game {
               btn.style.background = '#333';
               btn.textContent = isBike ? '🪖 Helmet OFF' : '💺 Seatbelt OFF';
               toast(isBike ? 'Helmet Removed!' : 'Seatbelt Unfastened!', '#ff3b30');
+          }
+      }
+      toggleHighBeam() {
+          if (!this.mapCfg || !this.mapCfg.isNight) return;
+          this.highBeamOn = !this.highBeamOn;
+          if (this.hL) this.hL.distance = this.highBeamOn ? 300 : 150;
+          if (this.hR) this.hR.distance = this.highBeamOn ? 300 : 150;
+          toast(this.highBeamOn ? 'High Beam ON' : 'Low Beam ON', '#3498db');
+      }
+      toggleTurnSignal(dir) {
+          if (this.turnSignal === dir) {
+              this.turnSignal = 0; // turn off if same
+              toast('Turn Signal OFF', '#95a5a6');
+          } else {
+              this.turnSignal = dir;
+              toast(dir === -1 ? 'Left Signal ON' : 'Right Signal ON', '#f39c12');
           }
       }
       toggleMobile(btn) {
@@ -442,17 +476,19 @@ class Game {
           this.playerVehicle.rotation.y = vRotY;
           
           if (this.mapCfg && this.mapCfg.isNight) {
-            const hL = new THREE.SpotLight(0xffffee, 2.5, 150, Math.PI / 5, 0.5, 1);
-            hL.position.set(1.5, 1.5, 3);
-            hL.target.position.set(1.5, -0.5, 25);
-            const hR = new THREE.SpotLight(0xffffee, 2.5, 150, Math.PI / 5, 0.5, 1);
-            hR.position.set(-1.5, 1.5, 3);
-            hR.target.position.set(-1.5, -0.5, 25);
-            this.playerVehicle.add(hL);
-            this.playerVehicle.add(hL.target);
-            this.playerVehicle.add(hR);
-            this.playerVehicle.add(hR.target);
+            this.hL = new THREE.SpotLight(0xffffee, 2.5, 150, Math.PI / 5, 0.5, 1);
+            this.hL.position.set(1.5, 1.5, 3);
+            this.hL.target.position.set(1.5, -0.5, 25);
+            this.hR = new THREE.SpotLight(0xffffee, 2.5, 150, Math.PI / 5, 0.5, 1);
+            this.hR.position.set(-1.5, 1.5, 3);
+            this.hR.target.position.set(-1.5, -0.5, 25);
+            this.playerVehicle.add(this.hL);
+            this.playerVehicle.add(this.hL.target);
+            this.playerVehicle.add(this.hR);
+            this.playerVehicle.add(this.hR.target);
           }
+
+          this.scene.add(this.playerVehicle);
 
           this.scene.add(this.playerVehicle);
 
@@ -466,7 +502,7 @@ class Game {
           this.player = this.playerCharacter; // Start as pedestrian
           this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
           setTimeout(() => {
-              toast('🎮 Click to aim! WASD to walk, F to enter/exit your vehicle!', '#3498db', 8000);
+              toast('🚶 Click to aim! WASD to walk, F to enter/exit your vehicle!', '#3498db', 8000);
           }, 500);
         }
       }
@@ -498,7 +534,7 @@ class Game {
         // Enhanced true color lighting with better contrast and shadows
         this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.05 : 0.25));
         
-        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.3 : 1.2);
+        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.3 : 0.8);
         sun.position.set(30, 60, 20); 
         sun.castShadow = true;
         sun.shadow.camera.near = 0.5;
@@ -629,7 +665,7 @@ class Game {
           if (bldgKeys.length > 0 && type !== 'school') {
              const key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
              if (!instancedBldgData[key]) instancedBldgData[key] = [];
-             instancedBldgData[key].push({ x: bx, z: bz, r: rot, s: 3.5 });
+             instancedBldgData[key].push({ x: bx, z: bz, r: rot, s: 7.0 });
           } else {
              const g = new THREE.Group();
              const mat = bMats[Math.floor(Math.random() * bMats.length)];
@@ -671,6 +707,7 @@ class Game {
                 const bz = isV ? pos + (Math.random() * 2 - 1) : cz + side * bDist;
                 
                 let rot = isV ? (side > 0 ? -Math.PI / 2 : Math.PI / 2) : (side > 0 ? Math.PI : 0);
+                rot += Math.PI;
 
                 const rnd = Math.random();
                 let type = 'normal';
@@ -1418,7 +1455,7 @@ class Game {
 
       _makeTower(x, z, w = 10, d = 10) {
         if (!window.PRELOADED_MODELS) return;
-        const bTypes = ['suburban_A', 'suburban_B', 'suburban_C', 'suburban_D', 'suburban_E', 'suburban_F', 'industrial_A', 'industrial_B', 'industrial_C', 'industrial_D', 'industrial_E', 'industrial_F'];
+        const bTypes = ['suburban_a', 'suburban_b', 'suburban_c', 'suburban_d', 'suburban_e', 'suburban_f', 'industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_e', 'industrial_f'];
         const type = bTypes[Math.floor(Math.random() * bTypes.length)];
         const template = window.PRELOADED_MODELS[type];
         if (!template) return;
@@ -1427,7 +1464,7 @@ class Game {
         
         // Scale the model to fit roughly in the block. Kenney buildings are usually 1x1 unit.
         // Assuming block width w=10, depth d=10, scale up:
-        const s = (w / 1.5) * (0.8 + Math.random() * 0.4);
+        const s = (w / 1.5) * (0.8 + Math.random() * 0.4) * 2.0;
         b.scale.set(s, s + Math.random()*s, s);
         b.rotation.y = Math.floor(Math.random() * 4) * (Math.PI / 2);
         
@@ -1531,20 +1568,26 @@ class Game {
             }
         }
 
-        if (this.keys['f'] && !this._fPressed) {
+        if (this.keys['f'] && !this._fPressed && !this.bucklingUp) {
           this._fPressed = true;
-          if (this.mapCfg && this.mapCfg.startOutside && this.playerVehicle && this.playerCharacter) {
+          if (this.playerVehicle && this.playerCharacter) {
             if (this.isPedestrian) {
               const dist = this.player.position.distanceTo(this.playerVehicle.position);
               if (dist < 18.0) {
-                this.isPedestrian = false;
-                this.scene.remove(this.playerCharacter);
-                this.player = this.playerVehicle;
-                this.maxSpd = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
-                this.accel = 0.045; 
-                this.turn = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.04 : 0.065; 
-                this.fric = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.97 : 0.94; // Rain reduces grip
-                toast('🚗 Entered Vehicle!', '#00c851');
+                this.bucklingUp = true;
+                toast('Buckling up...', '#f39c12');
+                setTimeout(() => {
+                    this.bucklingUp = false;
+                    if (!this.playing) return;
+                    this.isPedestrian = false;
+                    this.scene.remove(this.playerCharacter);
+                    this.player = this.playerVehicle;
+                    this.maxSpd = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
+                    this.accel = 0.045; 
+                    this.turn = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.04 : 0.065; 
+                    this.fric = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.97 : 0.94; // Rain reduces grip
+                    toast('🚗 Entered Vehicle!', '#00c851');
+                }, 1500);
               } else {
                 toast('Too far from vehicle.', '#ff9500');
               }
@@ -1562,7 +1605,7 @@ class Game {
         }
         if (!this.keys['f']) this._fPressed = false;
 
-        const up = this.keys['arrowup'] || this.keys['w'], dn = this.keys['arrowdown'] || this.keys['s'], lt = this.keys['arrowleft'] || this.keys['a'], rt = this.keys['arrowright'] || this.keys['d'];
+        const up = !this.bucklingUp && (this.keys['arrowup'] || this.keys['w']), dn = !this.bucklingUp && (this.keys['arrowdown'] || this.keys['s']), lt = !this.bucklingUp && (this.keys['arrowleft'] || this.keys['a']), rt = !this.bucklingUp && (this.keys['arrowright'] || this.keys['d']);
         // Per-gear acceleration multipliers 🔄 each gear feels clearly different
         const gAccel = { '1': .45, '2': .72, '3': 1.05, '4': 1.55, '5': 2.20, 'D': 1.10, 'R': .55, 'N': 0, 'P': 0 };
         const mult = gAccel[this.gear] ?? 0;
@@ -1662,6 +1705,39 @@ class Game {
           } else { 
             if (owEl) owEl.classList.remove('on'); 
             
+            // Turn signal blink effect
+            if (this.turnSignal !== 0) {
+                this.turnTimer += dt;
+                if (this.turnTimer > 0.4) {
+                    this.turnTimer = 0;
+                    if (window.sfx && window.sfx.play) window.sfx.play('ok');
+                }
+            }
+            
+            // Check Wrong-side driving
+            if (currentRoad && !this.isPedestrian && Math.abs(this.speed) > 0.15) {
+                let wrongWay = false;
+                let nearInt = false;
+                (this.mapCfg.ints || []).forEach(([ix, iz]) => {
+                    if (Math.abs(this.player.position.x - ix) < 25 && Math.abs(this.player.position.z - iz) < 25) nearInt = true;
+                });
+                if (!nearInt) {
+                    if (currentRoad.type === 'v') {
+                        if (Math.sign(this.player.position.x - currentRoad.x) !== Math.sign(this.vz) && Math.abs(this.vz) > 0.05) wrongWay = true;
+                    } else {
+                        if (Math.sign(this.player.position.z - currentRoad.z) === Math.sign(this.vx) && Math.abs(this.vx) > 0.05) wrongWay = true;
+                    }
+                }
+                if (wrongWay) {
+                    if (!this.player.userData.wwCooldown) this.player.userData.wwCooldown = 0;
+                    this.player.userData.wwCooldown -= dt;
+                    if (this.player.userData.wwCooldown <= 0 && window.ui && window.ui.issueChallan) {
+                        window.ui.issueChallan('Wrong Side Driving', 'Sec 119 MV Act', '₹1,500', 'Lane Discipline');
+                        this.player.userData.wwCooldown = 4;
+                    }
+                }
+            }
+
             // Check Overspeeding
             if (this.mapCfg && this.mapCfg.speedLimit && !this.isPedestrian) {
               const currentSpeedKmH = Math.round(Math.abs(this.speed) * 100);

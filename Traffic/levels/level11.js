@@ -1,27 +1,27 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 11,
-  "icon": "⬅️",
-  "name": "Indicator Discipline",
+  "icon": "🔕",
+  "name": "Lesson 11 - No Honking Zone",
   "modes": [
-    "pedestrian",
-    "car"
+    "car",
+    "auto"
   ],
-  "col": "#f39c12",
-  "ds": "You need to make a turn. Use your indicators properly and check for cyclists.",
+  "col": "#f1c40f",
+  "ds": "You are driving past a Hospital or School. Traffic is blocked. Do not honk!",
   "hps": [
-    "Use turn indicators 100 meters before turning.",
-    "Check mirrors for cyclists.",
-    "Do not turn suddenly."
+    "Do not honk in Silence Zones.",
+    "Navigate around obstacles safely.",
+    "Maintain patience in traffic jams."
   ],
   "law": {
-    "sec": "MV Act Section 121",
-    "fine": "₹500 - ₹1500",
-    "off": "Failure to Signal"
+    "sec": "MV Act Section 190(2)",
+    "fine": "₹1000",
+    "off": "Honking in Silence Zone"
   },
-  "theory": "<h2>Proper Signaling</h2>\n<p>Indicators are the only way to communicate your intent to other drivers.</p>\n<h3>⬅️ The Test</h3>\n<ul>\n<li>Signal your turn in advance.</li>\n<li>Complete the turn safely.</li>\n</ul>",
-  "pract": "Signal your intent and make a safe turn.",
+  "theory": "<h2>No Honking Zone</h2>\n      <p>You are in a silent zone near a hospital. The traffic is blocked and other NPCs are honking aggressively.</p>\n      <h3>🔕 The Test</h3>\n      <ul>\n        <li>Navigate around the obstacle without using your horn.</li>\n        <li>If you give in to frustration and honk, you fail.</li>\n      </ul>",
+  "pract": "Pass the hospital zone without honking once.",
   "mode": "practical",
-  "themeType": "respectful_parking",
-  "startOutside": false
+  "themeType": "no_honking",
+  "startOutside": true
 });

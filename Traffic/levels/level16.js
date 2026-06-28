@@ -1,27 +1,27 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 16,
-  "icon": "🚲",
-  "name": "Cycle Lane Respect",
+  "icon": "🔕",
+  "name": "Lesson 16 - No Honking Zone",
   "modes": [
-    "pedestrian",
-    "car"
+    "car",
+    "auto"
   ],
-  "col": "#27ae60",
-  "ds": "Do not encroach on the dedicated cycle lanes.",
+  "col": "#f1c40f",
+  "ds": "You are driving past a Hospital or School. Traffic is blocked. Do not honk!",
   "hps": [
-    "Keep your car strictly within the car lanes.",
-    "Check your left mirror frequently.",
-    "Do not park in the cycle lane."
+    "Do not honk in Silence Zones.",
+    "Navigate around obstacles safely.",
+    "Maintain patience in traffic jams."
   ],
   "law": {
-    "sec": "MV Act Section 122",
-    "fine": "₹500 - ₹1000",
-    "off": "Lane Violation"
+    "sec": "MV Act Section 190(2)",
+    "fine": "₹1000",
+    "off": "Honking in Silence Zone"
   },
-  "theory": "<h2>Cycle Lanes</h2>\n<p>Cycle lanes are strictly for bicycles. Driving or parking in them endangers cyclists.</p>\n<h3>🚲 The Test</h3>\n<ul>\n<li>Do not cross into the cycle lane.</li>\n</ul>",
-  "pract": "Stay out of the cycle lane.",
+  "theory": "<h2>No Honking Zone</h2>\n      <p>You are in a silent zone near a hospital. The traffic is blocked and other NPCs are honking aggressively.</p>\n      <h3>🔕 The Test</h3>\n      <ul>\n        <li>Navigate around the obstacle without using your horn.</li>\n        <li>If you give in to frustration and honk, you fail.</li>\n      </ul>",
+  "pract": "Pass the hospital zone without honking once.",
   "mode": "practical",
-  "themeType": "respectful_parking",
-  "startOutside": false
+  "themeType": "no_honking",
+  "startOutside": true
 });

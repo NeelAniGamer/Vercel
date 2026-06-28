@@ -1,27 +1,27 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 19,
-  "icon": "🗑️",
-  "name": "Littering Discipline",
+  "icon": "🚥",
+  "name": "Lesson 19 - Pedestrian Courtesy",
   "modes": [
     "pedestrian",
     "car"
   ],
-  "col": "#1abc9c",
-  "ds": "Drive carefully and maintain civic sense. Slow down for puddles and pedestrians.",
+  "col": "#e74c3c",
+  "ds": "You are stuck at a red light. NPC cars honk aggressively. Yield to pedestrians crossing safely. Do not follow the weaving bikes.",
   "hps": [
-    "Do not throw trash out of the window.",
-    "Slow down near pedestrians.",
-    "Maintain overall civic sense."
+    "Stop behind the solid white line at signals.",
+    "Yield to pedestrians crossing.",
+    "Do not follow traffic violators onto footpaths."
   ],
   "law": {
-    "sec": "Local Municipal Laws",
-    "fine": "₹500 - ₹5000",
-    "off": "Littering"
+    "sec": "MV Act Section 119",
+    "fine": "₹500 - ₹2000",
+    "off": "Signal/Footpath Violations"
   },
-  "theory": "<h2>Civic Sense</h2>\n<p>Keeping the city clean is every citizen's duty. Never litter from your vehicle.</p>\n<h3>🗑️ The Test</h3>\n<ul>\n<li>Drive safely through the puddles.</li>\n</ul>",
-  "pract": "Drive safely and respectfully.",
+  "theory": "<h2>Pedestrian Courtesy & Peer Pressure</h2>\n      <p>In this scenario, impatient NPC drivers will try to pressure you into running a red light or taking illegal shortcuts like weaving onto the footpath.</p>\n      <h3>🚥 The Test</h3>\n      <ul>\n        <li>You must wait patiently at the red light.</li>\n        <li>Let all pedestrians cross safely.</li>\n        <li>If you yield to the peer pressure and run the light, or if you drive on the footpath, you will receive a Challan.</li>\n      </ul>",
+  "pract": "Wait at the red light despite the honking, and let the pedestrians cross safely.",
   "mode": "practical",
-  "themeType": "puddle_etiquette",
-  "startOutside": false
+  "themeType": "pedestrian_courtesy",
+  "startOutside": true
 });
