@@ -1,26 +1,23 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 14,
-  "icon": "🚥",
-  "name": "Lesson 14 - Pedestrian Courtesy",
-  "modes": [
-    "pedestrian",
-    "car"
-  ],
+  "icon": "🌙",
+  "name": "Lesson 14 - Night Crossing",
+  "modes": ["pedestrian", "car"],
   "col": "#e74c3c",
-  "ds": "You are stuck at a red light. NPC cars honk aggressively. Yield to pedestrians crossing safely. Do not follow the weaving bikes.",
+  "ds": "It is late at night. Visibility is poor. An elderly person with a walking stick is slowly crossing at an unmarked crossing point. NPCs are speeding past — do not follow them.",
   "hps": [
-    "Stop behind the solid white line at signals.",
-    "Yield to pedestrians crossing.",
-    "Do not follow traffic violators onto footpaths."
+    "Use your headlights properly — dip them for oncoming traffic.",
+    "At unmarked crossings, pedestrians still have the right of way.",
+    "Reduce speed at night — reaction times are halved in low visibility."
   ],
   "law": {
-    "sec": "MV Act Section 119",
-    "fine": "₹500 - ₹2000",
-    "off": "Signal/Footpath Violations"
+    "sec": "MV Act Section 128",
+    "fine": "₹1000 - ₹3000",
+    "off": "Failing to Yield at Night"
   },
-  "theory": "<h2>Pedestrian Courtesy & Peer Pressure</h2>\n      <p>In this scenario, impatient NPC drivers will try to pressure you into running a red light or taking illegal shortcuts like weaving onto the footpath.</p>\n      <h3>🚥 The Test</h3>\n      <ul>\n        <li>You must wait patiently at the red light.</li>\n        <li>Let all pedestrians cross safely.</li>\n        <li>If you yield to the peer pressure and run the light, or if you drive on the footpath, you will receive a Challan.</li>\n      </ul>",
-  "pract": "Wait at the red light despite the honking, and let the pedestrians cross safely.",
+  "theory": "<h2>Night Crossing</h2><p>Night driving in India is treacherous. Poorly lit roads, speeding vehicles, and pedestrians in dark clothing create a deadly combination.</p><h3>🌙 The Challenge</h3><ul><li>An elderly person is crossing slowly — they may not see or hear your car.</li><li>NPCs are speeding through — one might clip the pedestrian.</li><li>Your headlights illuminate the road but shadows hide hazards.</li></ul><h3>⚖️ The Law</h3><p>Under MV Act Section 128, drivers must exercise extreme caution at night and yield to pedestrians at any crossing point, marked or unmarked.</p>",
+  "pract": "Slow down, use headlights responsibly, and wait for the elderly person to cross completely.",
   "mode": "practical",
   "themeType": "pedestrian_courtesy",
   "startOutside": true

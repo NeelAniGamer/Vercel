@@ -2,25 +2,22 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 1,
   "icon": "🚥",
-  "name": "Lesson 1 - Pedestrian Courtesy",
-  "modes": [
-    "pedestrian",
-    "car"
-  ],
+  "name": "Lesson 1 - Red Light Patience",
+  "modes": ["pedestrian", "car"],
   "col": "#e74c3c",
-  "ds": "You are stuck at a red light. NPC cars honk aggressively. Yield to pedestrians crossing safely. Do not follow the weaving bikes.",
+  "ds": "You are stuck at a busy junction. NPC cars honk aggressively behind you. A family of four is crossing the road — wait for them to reach the other side before you move.",
   "hps": [
-    "Stop behind the solid white line at signals.",
-    "Yield to pedestrians crossing.",
-    "Do not follow traffic violators onto footpaths."
+    "Stop behind the solid white stop line at signals.",
+    "Wait for all pedestrians to fully cross before accelerating.",
+    "Ignore impatient honking from NPCs — they will not get a challan, you will."
   ],
   "law": {
     "sec": "MV Act Section 119",
     "fine": "₹500 - ₹2000",
-    "off": "Signal/Footpath Violations"
+    "off": "Jumping a Red Signal"
   },
-  "theory": "<h2>Pedestrian Courtesy & Peer Pressure</h2>\n      <p>In this scenario, impatient NPC drivers will try to pressure you into running a red light or taking illegal shortcuts like weaving onto the footpath.</p>\n      <h3>🚥 The Test</h3>\n      <ul>\n        <li>You must wait patiently at the red light.</li>\n        <li>Let all pedestrians cross safely.</li>\n        <li>If you yield to the peer pressure and run the light, or if you drive on the footpath, you will receive a Challan.</li>\n      </ul>",
-  "pract": "Wait at the red light despite the honking, and let the pedestrians cross safely.",
+  "theory": "<h2>Red Light Patience</h2><p>At a busy Mumbai junction, red lights test your patience. NPC drivers will tailgate, honk, and try to pressure you into jumping the signal.</p><h3>🚦 The Challenge</h3><ul><li>A family is crossing at the zebra crossing.</li><li>Three NPCs behind you are honking non-stop.</li><li>One NPC might try to undertake you and jump the light.</li></ul><h3>⚖️ The Law</h3><p>Under MV Act Section 119, jumping a red signal carries a fine of ₹500–₹2000 and possible license suspension for repeat offenders.</p>",
+  "pract": "Wait at the red light. Let all pedestrians cross. Do not move until the light turns green.",
   "mode": "practical",
   "themeType": "pedestrian_courtesy",
   "startOutside": true

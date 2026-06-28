@@ -13,23 +13,23 @@ class Game {
         const cv = document.getElementById('3c'); 
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         this.renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !isMobile, powerPreference: "high-performance" });
-        this.renderer.setSize(innerWidth, innerHeight); 
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+        this.renderer.setSize(innerWidth, innerHeight, false);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0));
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 0.85; // Reduced from 1.2 for better contrast
+        this.renderer.toneMappingExposure = 1.2;
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, .1, 150);
+        this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, .1, 350);
         
         try {
           if (THREE.EffectComposer) {
             this.composer = new THREE.EffectComposer(this.renderer);
             this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
-            const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 1.2, 0.4, 0.85);
-            bloomPass.threshold = 0.3;
-            bloomPass.strength = isMobile ? 0.6 : 1.2;
-            bloomPass.radius = 0.5;
+            const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0, 0, 1);
+            bloomPass.threshold = 1;
+            bloomPass.strength = 0;
+            bloomPass.radius = 0;
             this.composer.addPass(bloomPass);
           }
         } catch(e) { console.warn("Post processing err:", e); }
@@ -38,7 +38,7 @@ class Game {
         const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
-      _rsz() { if (!this.renderer) return; this.renderer.setSize(innerWidth, innerHeight); if (this.camera) { this.camera.aspect = innerWidth / innerHeight; this.camera.updateProjectionMatrix(); } }
+      _rsz() { if (!this.renderer) return; this.renderer.setSize(innerWidth, innerHeight, false); if (this.composer) { this.composer.setSize(innerWidth, innerHeight); } if (this.camera) { this.camera.aspect = innerWidth / innerHeight; this.camera.updateProjectionMatrix(); } }
       _initIn() {
         window.addEventListener('keydown', e => {
             this.keys[e.key.toLowerCase()] = true;
@@ -53,13 +53,18 @@ class Game {
         window.addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
 
         // Pointer Lock & Mouse Look
+        this._lastPointerUnlock = 0;
         if (this.renderer && this.renderer.domElement) {
           this.renderer.domElement.addEventListener('click', () => {
-            if (this.playing && !this.pause) document.body.requestPointerLock();
+            if (this.playing && !this.pause && Date.now() - this._lastPointerUnlock > 500) {
+              try { document.body.requestPointerLock(); } catch(e) {}
+            }
           });
         }
         document.addEventListener('pointerlockchange', () => {
-          this.isPointerLocked = document.pointerLockElement === this.renderer.domElement;
+          const locked = document.pointerLockElement === this.renderer.domElement;
+          if (!locked && this.isPointerLocked) this._lastPointerUnlock = Date.now();
+          this.isPointerLocked = locked;
         });
         document.addEventListener('mousemove', (e) => {
           if (this.isPointerLocked && this.isPedestrian) {
@@ -490,8 +495,6 @@ class Game {
 
           this.scene.add(this.playerVehicle);
 
-          this.scene.add(this.playerVehicle);
-
           // Always start outside the vehicle as a human first
           this.isPedestrian = true;
           this.playerCharacter = _buildHuman(true);
@@ -525,16 +528,16 @@ class Game {
 
         const sk = cfg.sky;
         this.scene.background = new THREE.Color(sk);
-        const fogDist = cfg.fog || 150;
+        const fogDist = cfg.fog || 200;
         if (cfg.mode === 'rain' || cfg.hasRain) {
             this.scene.fog = new THREE.Fog(sk, fogDist * 0.1, fogDist * 0.6);
         } else {
-            this.scene.fog = new THREE.Fog(sk, fogDist * 0.3, fogDist);
+            this.scene.fog = new THREE.Fog(sk, fogDist * 0.35, fogDist * 1.2);
         }
         // Enhanced true color lighting with better contrast and shadows
-        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.05 : 0.25));
+        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.1 : 0.5));
         
-        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.3 : 0.8);
+        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.4 : 1.1);
         sun.position.set(30, 60, 20); 
         sun.castShadow = true;
         sun.shadow.camera.near = 0.5;
@@ -560,11 +563,11 @@ class Game {
         this.driveRoute = cfg.route;
         const mats = {
           grass: new THREE.MeshPhongMaterial({ color: cfg.ground || 0x33691e }),
-          road: new THREE.MeshPhongMaterial({ color: 0x21232b, map: _genTex('asphalt') }),
-          pave: new THREE.MeshPhongMaterial({ color: 0x757575, map: _genTex('pave') }),
+          road: new THREE.MeshPhongMaterial({ color: 0x3d3f45, map: _genTex('asphalt') }),
+          pave: new THREE.MeshPhongMaterial({ color: 0x8a8a8a, map: _genTex('pave') }),
           yellowLine: new THREE.MeshBasicMaterial({ color: 0xffcc00 }),
           water: new THREE.MeshPhongMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 }),
-          urban: new THREE.MeshLambertMaterial({ color: 0x3a3a3a })
+          urban: new THREE.MeshLambertMaterial({ color: 0x4a4a4f })
         };
 
         const ground = new THREE.Mesh(new THREE.PlaneGeometry(cfg.is50km ? 100000 : 2000, cfg.is50km ? 100000 : 2000), cfg.isBridge ? mats.water : (cfg.is50km ? new THREE.MeshLambertMaterial({ color: 0x444444 }) : mats.urban));
@@ -597,11 +600,11 @@ class Game {
                   tile.scale.set(tileScale, tileScale, tileScale);
                   if (isV) {
                       // Model natively points along Z
-                      tile.position.set(cx, 0.02, startZ + i * tileSize);
+                      tile.position.set(cx, 0.08, startZ + i * tileSize);
                   } else {
                       // Rotate 90 degrees around Y so length spans X
                       tile.rotation.y = Math.PI / 2;
-                      tile.position.set(startX + i * tileSize, 0.02, cz);
+                      tile.position.set(startX + i * tileSize, 0.08, cz);
                   }
                   this.scene.add(tile);
               }
@@ -648,12 +651,12 @@ class Game {
 
         // Advanced Procedural Cityscape
         const bMats = [
-          new THREE.MeshLambertMaterial({ color: 0xcccccc, map: gTex.building }),
-          new THREE.MeshLambertMaterial({ color: 0xe0e0e0, map: gTex.building }),
-          new THREE.MeshLambertMaterial({ color: 0xbdbdbd, map: gTex.building }),
-          new THREE.MeshLambertMaterial({ color: 0xd6d6d6, map: gTex.building })
+          new THREE.MeshLambertMaterial({ color: 0xd9cfc4, map: gTex.building }),
+          new THREE.MeshLambertMaterial({ color: 0xc4b8a8, map: gTex.building }),
+          new THREE.MeshLambertMaterial({ color: 0xb0a898, map: gTex.building }),
+          new THREE.MeshLambertMaterial({ color: 0xd4c8b8, map: gTex.building })
         ];
-        const winMat = new THREE.MeshBasicMaterial({ color: 0x1a252c });
+        const winMat = new THREE.MeshBasicMaterial({ color: 0x304050 });
         const instancedBldgData = {};
 
         const drawBldg = (bx, bz, type, rot) => {
@@ -665,7 +668,7 @@ class Game {
           if (bldgKeys.length > 0 && type !== 'school') {
              const key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
              if (!instancedBldgData[key]) instancedBldgData[key] = [];
-             instancedBldgData[key].push({ x: bx, z: bz, r: rot, s: 7.0 });
+              instancedBldgData[key].push({ x: bx, z: bz, r: rot, s: 7.0 });
           } else {
              const g = new THREE.Group();
              const mat = bMats[Math.floor(Math.random() * bMats.length)];
@@ -707,7 +710,6 @@ class Game {
                 const bz = isV ? pos + (Math.random() * 2 - 1) : cz + side * bDist;
                 
                 let rot = isV ? (side > 0 ? -Math.PI / 2 : Math.PI / 2) : (side > 0 ? Math.PI : 0);
-                rot += Math.PI;
 
                 const rnd = Math.random();
                 let type = 'normal';
@@ -793,7 +795,7 @@ class Game {
                     const instancedMesh = new THREE.InstancedMesh(mesh.geometry, mesh.material, instances.length);
                     instancedMesh.castShadow = true;
                     instancedMesh.receiveShadow = true;
-                    instancedMesh.frustumCulled = true;
+                    instancedMesh.frustumCulled = false;
                     
                     const dummy = new THREE.Object3D();
                     
@@ -915,34 +917,6 @@ class Game {
 
         // NPC Traffic - diverse vehicle types
         const npcTypes = cfg.npcTypes || (cfg.isPedestrian ? ['car', 'car', 'auto', 'bike', 'taxi', 'bus', 'car', 'auto', 'bike', 'car', 'taxi', 'bus'] : ['car', 'car', 'auto', 'bike']);
-        
-        // Spawn Animals
-        this.animals = [];
-        if (window.PRELOADED_MODELS) {
-            const animalKeys = ['animal_dog', 'animal_cow', 'animal_cat'].filter(k => window.PRELOADED_MODELS[k]);
-            if (animalKeys.length > 0) {
-                const numAnimals = Math.floor(Math.random() * 4) + 2; // 2 to 5 animals per level
-                for (let i = 0; i < numAnimals; i++) {
-                    const type = animalKeys[Math.floor(Math.random() * animalKeys.length)];
-                    const anim = window.PRELOADED_MODELS[type].clone();
-                    anim.scale.set(4, 4, 4); // Kenney animals are small
-                    anim.traverse(c => { if(c.isMesh) { c.castShadow = true; c.receiveShadow = true; }});
-                    
-                    const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
-                    const isV = seg.type === 'v';
-                    const minP = isV ? Math.min(seg.z1, seg.z2) : Math.min(seg.x1, seg.x2);
-                    const maxP = isV ? Math.max(seg.z1, seg.z2) : Math.max(seg.x1, seg.x2);
-                    const p = minP + Math.random() * (maxP - minP);
-                    const offset = (Math.random() - 0.5) * 6; // random side of the road
-                    
-                    anim.position.set(isV ? seg.x + offset : p, 0.3, isV ? p : seg.z + offset);
-                    anim.rotation.y = Math.random() * Math.PI * 2;
-                    this.scene.add(anim);
-                    this.animals.push({ mesh: anim, vx: (Math.random()-0.5)*0.01, vz: (Math.random()-0.5)*0.01 });
-                    this.obstacles.push(anim);
-                }
-            }
-        }
         
         // Spawn Boats if Bridge/Water
         if (cfg.isBridge && window.PRELOADED_MODELS) {

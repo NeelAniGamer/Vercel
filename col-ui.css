@@ -247,97 +247,178 @@ body.lm .nav-login-btn:hover { background: var(--page-theme-light); color: #fff;
 @media(max-width: 900px) {
   .top-nav { padding: 15px 20px; }
   .desktop-dl { display: none; }
-  
-  /* Hamburger button */
-  .mmb { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 6px; z-index: 1002; position: relative; padding: 8px; width: 44px; height: 44px; margin-right: -8px; }
-  .m-line { width: 26px; height: 2px; background: var(--ink, #E8E3D8); border-radius: 2px; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s; transform-origin: center; display: block; pointer-events: none; }
+
+  /* ── Close button (X) — top-right of panel ── */
+  .mobile-close {
+    display: none;
+    position: fixed;
+    top: 18px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1003;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink);
+  }
+  .nav-links.active ~ .mobile-close,
+  .mobile-close.show { display: flex; }
+  .mobile-close svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2.5; }
+
+  /* ── Hamburger (bottom bar) ── */
+  .mmb {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    z-index: 999;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 56px;
+    background: var(--void);
+    border-top: 1px solid var(--line);
+    padding: 6px 0 4px;
+    margin: 0;
+    border-radius: 0;
+  }
+  .m-line {
+    width: 22px;
+    height: 2px;
+    background: var(--ink, #E8E3D8);
+    border-radius: 2px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+    transform-origin: center;
+    display: block;
+    pointer-events: none;
+  }
   .mmb.active .m-line:nth-child(1) { transform: translateY(8px) rotate(45deg); }
   .mmb.active .m-line:nth-child(2) { opacity: 0; }
   .mmb.active .m-line:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-  
-  /* Full-screen slide-in panel */
-  .nav-links { 
-    position: fixed; top: 0; right: 0; width: 100vw; height: 100vh; height: 100dvh; 
-    background: var(--void); 
-    flex-direction: column; justify-content: flex-start; align-items: stretch; 
-    padding: 90px 28px 40px; gap: 0; 
-    opacity: 0; visibility: hidden; 
+
+  /* ── Full-screen slide-in panel ── */
+  .nav-links {
+    position: fixed; top: 0; right: 0; width: 100vw; height: 100vh; height: 100dvh;
+    background: var(--void);
+    flex-direction: column; justify-content: flex-start; align-items: stretch;
+    padding: calc(env(safe-area-inset-top, 0px) + 70px) 28px calc(56px + env(safe-area-inset-bottom, 0px) + 16px);
+    gap: 0;
+    opacity: 0; visibility: hidden;
     transform: translateX(100%);
-    transition: transform 0.5s var(--spring), opacity 0.4s, visibility 0.4s; 
-    z-index: 1001; 
+    transition: transform 0.5s var(--spring), opacity 0.4s, visibility 0.4s;
+    z-index: 1001;
     overflow-y: auto;
     overflow-x: hidden;
     flex-wrap: nowrap;
   }
   .nav-links.active { opacity: 1; visibility: visible; transform: translateX(0); }
-  
-  /* Staggered entrance for all children */
-  .nav-links > * { 
-    opacity: 0; transform: translateX(30px); transition: all 0.4s ease; 
-  }
-  .nav-links.active > * { opacity: 1; transform: translateX(0); }
-  
-  .nav-links.active > :nth-child(1) { transition-delay: 0.08s; }
-  .nav-links.active > :nth-child(2) { transition-delay: 0.12s; }
-  .nav-links.active > :nth-child(3) { transition-delay: 0.16s; }
-  .nav-links.active > :nth-child(4) { transition-delay: 0.2s; }
-  .nav-links.active > :nth-child(5) { transition-delay: 0.24s; }
-  .nav-links.active > :nth-child(6) { transition-delay: 0.28s; }
-  .nav-links.active > :nth-child(7) { transition-delay: 0.32s; }
-  .nav-links.active > :nth-child(8) { transition-delay: 0.36s; }
-  
-  /* ---- SECTION 1: Navigation links ---- */
-  .nav-links .nav-link, .nav-links .dropdown { 
-    font-size: 2rem; font-family: var(--serif); font-style: italic;
-    width: 100%; padding: 18px 0;
-    color: var(--ink); margin: 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .nav-link::after { display: none; } 
-  .nav-link:hover { color: var(--signal); }
-  
-  /* Projects dropdown */
-  .dropdown-btn { font-size: 2rem; font-family: var(--serif); font-style: italic; justify-content: space-between; width: 100%; color: var(--ink); }
-  .dropdown.active .dropdown-btn { color: var(--signal); }
-  .dropdown-btn span { font-style: normal; font-size: 1rem; }
-  
-  .dropdown-content { 
-    position: static !important; transform: none !important; min-width: 100%; 
-    opacity: 1; visibility: visible; display: none; 
-    margin-top: 0; background: transparent; box-shadow: none; border: none; 
-    pointer-events: auto; padding-top: 16px; padding-bottom: 4px;
-  }
-  .dropdown.active .dropdown-content { display: flex !important; flex-direction: column; gap: 10px; }
-  .dropdown-content-inner { border: none !important; background: transparent !important; box-shadow: none !important; align-items: flex-start; width: 100%; padding: 0 !important; gap: 10px; }
-  
-  .dropdown-content a { 
-    font-family: var(--sans); font-size: 1rem; font-style: normal;
-    justify-content: space-between; padding: 14px 18px; color: var(--ink); 
-    width: 100%; text-align: left; background: var(--panel); border-radius: 14px;
-    border: 1px solid var(--line); font-weight: 600;
-  }
-  .dropdown-content a:hover { background: var(--panel) !important; color: var(--signal); padding-left: 18px; border-color: var(--lineb); }
 
-  /* ---- SECTION 2: Settings group (theme + auth + downloads) ---- */
-  /* Visual separator from nav links */
+  /* Staggered entrance */
+  .nav-links > * { opacity: 0; transform: translateX(30px); transition: all 0.4s ease; }
+  .nav-links.active > * { opacity: 1; transform: translateX(0); }
+  .nav-links.active > :nth-child(1) { transition-delay: 0.06s; }
+  .nav-links.active > :nth-child(2) { transition-delay: 0.10s; }
+  .nav-links.active > :nth-child(3) { transition-delay: 0.14s; }
+  .nav-links.active > :nth-child(4) { transition-delay: 0.18s; }
+  .nav-links.active > :nth-child(5) { transition-delay: 0.22s; }
+  .nav-links.active > :nth-child(6) { transition-delay: 0.26s; }
+  .nav-links.active > :nth-child(7) { transition-delay: 0.30s; }
+  .nav-links.active > :nth-child(8) { transition-delay: 0.34s; }
+
+  /* ── Nav links (icon + label row) ── */
+  .nav-links .nav-link, .nav-links .dropdown {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 1.1rem;
+    font-family: var(--sans);
+    font-style: normal;
+    width: 100%;
+    padding: 16px 14px;
+    color: var(--ink);
+    margin: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    font-weight: 500;
+  }
+  .nav-link svg, .dropdown-btn svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    stroke: var(--dim);
+    transition: stroke 0.25s;
+  }
+  .nav-link:hover svg, .dropdown.active .dropdown-btn svg { stroke: var(--signal); }
+  .nav-link::after { display: none; }
+  .nav-link:hover { color: var(--signal); }
+
+  /* ── Projects dropdown ── */
+  .dropdown-btn {
+    font-size: 1.1rem;
+    font-family: var(--sans);
+    font-style: normal;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    color: var(--ink);
+    padding: 16px 14px;
+  }
+  .dropdown.active .dropdown-btn { color: var(--signal); }
+  .dropdown-btn span { font-style: normal; font-size: 0.75rem; margin-left: auto; }
+
+  .dropdown-content {
+    position: static !important; transform: none !important; min-width: 100%;
+    opacity: 1; visibility: visible; display: none;
+    margin-top: 0; background: transparent; box-shadow: none; border: none;
+    pointer-events: auto; padding-top: 4px; padding-bottom: 4px;
+  }
+  .dropdown.active .dropdown-content { display: flex !important; flex-direction: column; gap: 6px; }
+  .dropdown-content-inner { border: none !important; background: transparent !important; box-shadow: none !important; align-items: flex-start; width: 100%; padding: 0 !important; gap: 6px; }
+
+  .dropdown-content a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--sans); font-size: 0.95rem; font-style: normal;
+    padding: 14px 14px; color: var(--dim);
+    width: 100%; text-align: left; background: transparent; border-radius: 12px;
+    border: none; font-weight: 500;
+  }
+  .dropdown-content a svg {
+    width: 20px; height: 20px; flex-shrink: 0; stroke: var(--dim);
+    transition: stroke 0.25s;
+  }
+  .dropdown-content a:hover { background: var(--panel) !important; color: var(--signal); border-color: var(--lineb); }
+  .dropdown-content a:hover svg { stroke: var(--signal); }
+
+  /* ── Settings group (theme + auth) ── */
   .tw {
-    margin-top: 28px;
+    margin-top: 20px;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     background: var(--panel);
-    padding: 16px 18px;
+    padding: 14px 18px;
     border-radius: 14px;
     border: 1px solid var(--line);
   }
   .tl { font-size: 1rem; color: var(--ink); text-transform: none; letter-spacing: 0; font-family: var(--sans); font-weight: 600; }
-  
-  /* Sign In — primary CTA */
+
+  /* ── Sign In — primary CTA ── */
   .nav-login-btn {
     margin-top: 12px;
     width: 100%;
     justify-content: center;
+    gap: 10px;
     padding: 16px;
     font-size: 1.05rem;
     border-radius: 14px;
@@ -347,7 +428,7 @@ body.lm .nav-login-btn:hover { background: var(--page-theme-light); color: #fff;
     font-weight: 800;
     box-shadow: 0 8px 20px rgba(242, 184, 75, 0.25);
   }
-  .nav-login-btn svg { display: none; }
+  .nav-login-btn svg { display: inline-block; width: 20px; height: 20px; stroke: currentColor; }
   body.lm .nav-login-btn { background: var(--signal); color: #000; border: none; }
 
   /* User profile (shown when logged in) */
@@ -363,10 +444,11 @@ body.lm .nav-login-btn:hover { background: var(--page-theme-light); color: #fff;
   .nav-user-avatar { width: 38px; height: 38px; font-size: 1rem; background: var(--signal); color: #0A0500; }
   .nun { font-size: 1rem; color: var(--ink); font-weight: 700; }
 
-  /* Downloads — secondary action */
+  /* ── Downloads — secondary action ── */
   .mobile-dl {
     display: flex;
     width: 100%;
+    gap: 10px;
     text-align: center;
     margin-top: 12px;
     justify-content: center;
@@ -379,6 +461,7 @@ body.lm .nav-login-btn:hover { background: var(--page-theme-light); color: #fff;
     box-shadow: none;
     font-weight: 700;
   }
+  .mobile-dl svg { width: 20px; height: 20px; stroke: currentColor; }
   .mobile-dl:hover { background: var(--panel); box-shadow: none; transform: none; border-color: var(--lineb); }
 }
 

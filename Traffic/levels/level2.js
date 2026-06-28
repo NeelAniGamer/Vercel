@@ -2,25 +2,22 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 2,
   "icon": "🅿️",
-  "name": "Lesson 2 - Respectful Parking",
-  "modes": [
-    "pedestrian",
-    "car"
-  ],
+  "name": "Lesson 2 - Street Parking",
+  "modes": ["pedestrian", "car"],
   "col": "#3498db",
-  "ds": "The street is crowded. Avoid double-parking like the NPCs. Find a legal spot and walk to your destination.",
+  "ds": "The street is packed. NPCs are double-parking illegally. You need to reach a shop — find a legal parking spot even if it means walking a block.",
   "hps": [
-    "Do not double park on the road.",
-    "Do not park on the footpath.",
-    "Walk the remaining distance if legal parking is far."
+    "Double parking blocks traffic and invites a challan.",
+    "Footpath parking is illegal — your wheels must be on the road.",
+    "Press F to exit your vehicle and walk to the objective."
   ],
   "law": {
     "sec": "MV Act Section 122",
     "fine": "₹500 - ₹1000",
     "off": "Illegal Parking"
   },
-  "theory": "<h2>Respectful Parking</h2>\n      <p>Your objective is a shop, but the street is crowded with illegally parked NPC vehicles.</p>\n      <h3>🅿️ The Test</h3>\n      <ul>\n        <li>Do not dump your car on the footpath or double park.</li>\n        <li>Find a designated parking zone, press F to exit, and walk.</li>\n      </ul>",
-  "pract": "Park in a designated spot and walk to the objective.",
+  "theory": "<h2>Street Parking</h2><p>In busy Mumbai streets, finding legal parking is a challenge. NPCs routinely double-park and block footpaths.</p><h3>🅿️ The Challenge</h3><ul><li>NPCs are double-parking ahead — do not copy them.</li><li>A legal spot exists 50 meters ahead on the left.</li><li>Park there and walk to the shop objective.</li></ul><h3>⚖️ The Law</h3><p>Under MV Act Section 122, parking in a no-parking zone or on the footpath carries a fine of ₹500–₹1000.</p>",
+  "pract": "Find a legal parking spot, park, exit your vehicle, and walk to the objective.",
   "mode": "practical",
   "themeType": "respectful_parking",
   "startOutside": true

@@ -102,13 +102,18 @@ let _tt = null;
 
             cat.levels.forEach((lv) => {
                 const done = S.comp[lv.id];
+                const started = S.started && S.started[lv.id];
+                const statusClass = done ? ' syl-done' : (started ? ' syl-started' : '');
                 const div = document.createElement('div');
-                div.className = 'syl-item' + (done ? ' syl-done' : '');
+                div.className = 'syl-item' + statusClass;
+                const badgeText = done ? '✓ Completed' : (started ? '● Started' : '○ Not Started');
+                const badgeColor = done ? '#00f0cc' : (started ? '#5ed4f5' : 'rgba(184,155,255,0.5)');
                 div.innerHTML = `
                   <div class="syl-ck"></div>
                   <div class="syl-info">
                     <div class="syl-lbl">Level ${lv.id}: ${lv.name}</div>
                     <div class="syl-sub">${lv.ds}</div>
+                    <div class="syl-badge" style="font-size:0.75rem;font-family:'Space Mono',monospace;color:${badgeColor};margin-top:4px;letter-spacing:0.05em">${badgeText}</div>
                   </div>
                 `;
                 div.onclick = () => { ui.showBriefing(lv.id); };
@@ -205,10 +210,15 @@ let _tt = null;
         
         const statsBody = document.getElementById('stats-body');
         if (statsBody) {
+            const startedCount = S.started ? Object.keys(S.started).length : 0;
             statsBody.innerHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <div style="color:#666;font-size:0.9rem;font-weight:600;">COMPLETED LEVELS</div>
                     <div style="font-weight:700;color:var(--accent);">${Object.keys(S.comp).length}/20</div>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <div style="color:#666;font-size:0.9rem;font-weight:600;">STARTED LEVELS</div>
+                    <div style="font-weight:700;color:#5ed4f5;">${startedCount}/20</div>
                 </div>
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <div style="color:#666;font-size:0.9rem;font-weight:600;">TOTAL WALLET</div>
@@ -298,6 +308,8 @@ let _tt = null;
       },
       showBriefing(lid) {
         const lv = LVS.find(l => l.id === lid); this.cur = lv;
+        if (!S.started) S.started = {};
+        if (!S.started[lv.id]) { S.started[lv.id] = Date.now(); save(); }
         document.getElementById('blt').textContent = 'Level ' + lv.id; document.getElementById('bvh').textContent = lv.v;
         const items = [
           { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
@@ -707,9 +719,9 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
         
         if (window.PRELOADED_MODELS[modelKey]) {
             baseModel = window.PRELOADED_MODELS[modelKey].clone();
-            if (type === 'bus' || type === 'truck') s = 6.0;
-            else if (type === 'auto' || type === 'bike') s = 3.5;
-            else s = 4.5;
+            if (type === 'bus' || type === 'truck') s = 4.0;
+            else if (type === 'auto' || type === 'bike') s = 2.5;
+            else s = 3.2;
 
             baseModel.traverse((child) => {
                 if (child.isMesh && child.material) {
@@ -735,8 +747,8 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
         baseModel.position.y = 0;
         
         // Add an invisible hitbox for collisions
-        const hw = (type === 'bus' || type === 'truck') ? 2.5 : 1.6;
-        const hl = (type === 'bus' || type === 'truck') ? 8.0 : 4.0;
+        const hw = (type === 'bus' || type === 'truck') ? 1.8 : 1.2;
+        const hl = (type === 'bus' || type === 'truck') ? 5.5 : 2.8;
         const hbGeo = new THREE.BoxGeometry(hw, 2, hl);
         const hbMat = new THREE.MeshBasicMaterial({ visible: false });
         const hb = new THREE.Mesh(hbGeo, hbMat);

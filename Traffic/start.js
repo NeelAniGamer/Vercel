@@ -57,11 +57,6 @@ let game = null;
         { key: 'char_m_b', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-b.glb' },
         { key: 'char_m_c', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-c.glb' },
         
-        // Animals
-        { key: 'animal_dog', file: 'Models/kenney_cube-pets_1.0/Models/GLB format/animal-dog.glb' },
-        { key: 'animal_cow', file: 'Models/kenney_cube-pets_1.0/Models/GLB format/animal-cow.glb' },
-        { key: 'animal_cat', file: 'Models/kenney_cube-pets_1.0/Models/GLB format/animal-cat.glb' },
-        
         // Watercraft
         { key: 'ship_cargo', file: 'Models/kenney_watercraft-pack/Models/GLB format/ship-cargo-a.glb' },
         { key: 'boat_speed', file: 'Models/kenney_watercraft-pack/Models/GLB format/boat-speed-a.glb' },
@@ -97,6 +92,36 @@ let game = null;
       // Add more trucks randomly
       ['firetruck', 'garbage-truck', 'truck-flat'].forEach(t => {
           filesToLoad.push({ key: 'truck_' + t, file: `Models/kenney_car-kit/Models/GLB format/${t}.glb` });
+      });
+
+      // Add Modular Buildings (sample houses and towers)
+      const mbBase = 'Models/kenney_modular-buildings/Models/GLB format/';
+      ['sample-house-a', 'sample-house-b', 'sample-house-c'].forEach(h => {
+          filesToLoad.push({ key: 'mbuilding_' + h, file: mbBase + 'building-' + h + '.glb' });
+      });
+      ['sample-tower-a', 'sample-tower-b', 'sample-tower-c', 'sample-tower-d'].forEach(t => {
+          filesToLoad.push({ key: 'mbuilding_' + t, file: mbBase + 'building-' + t + '.glb' });
+      });
+
+      // Add Building Kit (barricades, walls, columns for road-side use)
+      const bkBase = 'Models/kenney_building-kit/Models/GLB format/';
+      ['wall', 'wall-doorway-square', 'column', 'column-wide'].forEach(w => {
+          filesToLoad.push({ key: 'bkit_' + w, file: bkBase + w + '.glb' });
+      });
+      ['barricade-doorway-a', 'barricade-doorway-b'].forEach(b => {
+          filesToLoad.push({ key: 'bkit_' + b, file: bkBase + b + '.glb' });
+      });
+
+      // Add more Watercraft
+      const wcBase = 'Models/kenney_watercraft-pack/Models/GLB format/';
+      ['boat-speed-b', 'boat-speed-c', 'boat-fishing-small', 'boat-tug-a', 'ship-cargo-b', 'ship-small'].forEach(w => {
+          filesToLoad.push({ key: 'wc_' + w, file: wcBase + w + '.glb' });
+      });
+
+      // Add more Trains
+      const tkBase = 'Models/kenney_train-kit/Models/GLB format/';
+      ['train-diesel-a', 'train-electric-bullet-a', 'train-tram-modern', 'train-carriage-box'].forEach(t => {
+          filesToLoad.push({ key: 'tk_' + t, file: tkBase + t + '.glb' });
       });
 
       let loaded = 0;
@@ -149,8 +174,8 @@ let game = null;
                 }
             });
             
-            // Scale up the models by 8.5x (reduced from 14x per user feedback)
-            gltf.scene.scale.set(8.5, 8.5, 8.5);
+            // Scale up models to game-world proportions
+            gltf.scene.scale.set(4.5, 4.5, 4.5);
             window.PRELOADED_MODELS[asset.key] = gltf.scene;
             
             loaded++;

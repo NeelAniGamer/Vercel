@@ -1,26 +1,23 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 5,
-  "icon": "🚥",
-  "name": "Lesson 5 - Pedestrian Courtesy",
-  "modes": [
-    "pedestrian",
-    "car"
-  ],
+  "icon": "🏫",
+  "name": "Lesson 5 - School Zone Crossing",
+  "modes": ["pedestrian", "car"],
   "col": "#e74c3c",
-  "ds": "You are stuck at a red light. NPC cars honk aggressively. Yield to pedestrians crossing safely. Do not follow the weaving bikes.",
+  "ds": "You are approaching a school zone during dismissal time. Children in uniforms are crossing randomly between parked cars. Slow down and give them priority.",
   "hps": [
-    "Stop behind the solid white line at signals.",
-    "Yield to pedestrians crossing.",
-    "Do not follow traffic violators onto footpaths."
+    "School zones have a 20 km/h speed limit — reduce speed well before entering.",
+    "Children may dart out from between parked cars without looking.",
+    "Activate your hazard lights to warn NPCs behind you."
   ],
   "law": {
-    "sec": "MV Act Section 119",
-    "fine": "₹500 - ₹2000",
-    "off": "Signal/Footpath Violations"
+    "sec": "MV Act Section 196",
+    "fine": "₹1000 - ₹5000",
+    "off": "Speeding in School Zone"
   },
-  "theory": "<h2>Pedestrian Courtesy & Peer Pressure</h2>\n      <p>In this scenario, impatient NPC drivers will try to pressure you into running a red light or taking illegal shortcuts like weaving onto the footpath.</p>\n      <h3>🚥 The Test</h3>\n      <ul>\n        <li>You must wait patiently at the red light.</li>\n        <li>Let all pedestrians cross safely.</li>\n        <li>If you yield to the peer pressure and run the light, or if you drive on the footpath, you will receive a Challan.</li>\n      </ul>",
-  "pract": "Wait at the red light despite the honking, and let the pedestrians cross safely.",
+  "theory": "<h2>School Zone Crossing</h2><p>School zones are among the most dangerous areas during dismissal hours. Children are unpredictable — they may chase a ball, follow a friend, or simply forget to look both ways.</p><h3>🏫 The Challenge</h3><ul><li>Multiple children crossing between parked vehicles.</li><li>A school guard is directing traffic — follow their signals.</li><li>NPCs behind you may try to overtake impatiently.</li></ul><h3>⚖️ The Law</h3><p>Speeding in a school zone under MV Act Section 196 carries a fine of ₹1000–₹5000 and 3 penalty points on your license.</p>",
+  "pract": "Drive slowly through the school zone. Stop if children are crossing. Do not honk near the school.",
   "mode": "practical",
   "themeType": "pedestrian_courtesy",
   "startOutside": true

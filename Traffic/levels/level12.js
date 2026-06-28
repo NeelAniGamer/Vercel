@@ -2,24 +2,22 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 12,
   "icon": "🚑",
-  "name": "Lesson 12 - Ambulance Priority",
-  "modes": [
-    "car"
-  ],
+  "name": "Lesson 12 - Highway Ambulance",
+  "modes": ["car"],
   "col": "#e67e22",
-  "ds": "An ambulance with sirens blaring approaches from behind. Pull over safely to let it pass.",
+  "ds": "You are on a multi-lane highway. An ambulance approaches at high speed from behind. Move to the leftmost lane and maintain speed — do not stop suddenly.",
   "hps": [
-    "Pull over to the left to let emergency vehicles pass.",
-    "Do not tailgate the ambulance.",
-    "Do not block the ambulance."
+    "On highways, do not stop suddenly — move to the left lane and maintain speed.",
+    "Use your indicator before changing lanes.",
+    "Stay in the left lane until the ambulance has fully passed."
   ],
   "law": {
-    "sec": "MV Act Section 194E",
+    "sec": "MV Act Section 194E & Highway Rules",
     "fine": "₹10000",
-    "off": "Blocking Emergency Vehicle"
+    "off": "Blocking Emergency Vehicle on Highway"
   },
-  "theory": "<h2>Ambulance Priority</h2>\n      <p>An ambulance is trying to navigate through heavy traffic. Some selfish NPCs will block it.</p>\n      <h3>🚑 The Test</h3>\n      <ul>\n        <li>Safely pull over to the shoulder to let the ambulance pass.</li>\n        <li>Do not hit pedestrians while pulling over.</li>\n        <li>Do not try to tailgate the ambulance to skip traffic.</li>\n      </ul>",
-  "pract": "Pull over and let the ambulance pass safely.",
+  "theory": "<h2>Highway Ambulance</h2><p>Highway speeds make emergency vehicle interaction more dangerous. A sudden stop can cause a rear-end collision.</p><h3>🚑 The Challenge</h3><ul><li>Traffic is flowing at 80 km/h — an ambulance is approaching fast.</li><li>NPCs are staying in their lanes — you must be the one to move.</li><li>Sudden braking on a highway is more dangerous than on city streets.</li></ul><h3>⚖️ The Law</h3><p>On highways, MV Act Section 194E combined with highway rules requires you to move left and maintain speed — not stop abruptly.</p>",
+  "pract": "Indicate left, merge to the left lane, maintain your speed, and let the ambulance pass.",
   "mode": "practical",
   "themeType": "ambulance_priority",
   "startOutside": true
