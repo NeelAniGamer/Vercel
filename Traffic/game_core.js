@@ -17,11 +17,22 @@ class Game {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.0;
-        cv.style.filter = "none";
+        this.renderer.toneMappingExposure = 0.85; // Reduced from 1.2 for better contrast
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, .1, 150);
+        
+        try {
+          if (THREE.EffectComposer) {
+            this.composer = new THREE.EffectComposer(this.renderer);
+            this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
+            const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 1.2, 0.4, 0.85);
+            bloomPass.threshold = 0.3;
+            bloomPass.strength = isMobile ? 0.6 : 1.2;
+            bloomPass.radius = 0.5;
+            this.composer.addPass(bloomPass);
+          }
+        } catch(e) { console.warn("Post processing err:", e); }
         
         // Cache DOM elements to prevent query overhead per frame
         const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc'];
@@ -445,22 +456,18 @@ class Game {
 
           this.scene.add(this.playerVehicle);
 
-          if (this.mapCfg.startOutside) {
-            this.isPedestrian = true;
-            this.playerCharacter = _buildHuman(true);
-            this.playerCharacter.position.set(pStartX, 0, pStartZ);
-            this.playerCharacter.rotation.y = pRot;
-            this.scene.add(this.playerCharacter);
-            
-            this.player = this.playerCharacter; // Start as pedestrian
-            this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
-            setTimeout(() => {
-                toast('🎮 Click to aim! WASD to walk, F to enter/exit your car!', '#3498db', 8000);
-            }, 500);
-          } else {
-            this.player = this.playerVehicle; // Start in vehicle
-            this.maxSpd = mode === 'highway' ? 1.4 : 1.1; this.accel = 0.045; this.turn = 0.065; this.fric = mode === 'rain' ? 0.92 : 0.95;
-          }
+          // Always start outside the vehicle as a human first
+          this.isPedestrian = true;
+          this.playerCharacter = _buildHuman(true);
+          this.playerCharacter.position.set(pStartX, 0, pStartZ);
+          this.playerCharacter.rotation.y = pRot;
+          this.scene.add(this.playerCharacter);
+          
+          this.player = this.playerCharacter; // Start as pedestrian
+          this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
+          setTimeout(() => {
+              toast('🎮 Click to aim! WASD to walk, F to enter/exit your vehicle!', '#3498db', 8000);
+          }, 500);
         }
       }
 
@@ -491,7 +498,7 @@ class Game {
         // Enhanced true color lighting with better contrast and shadows
         this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.05 : 0.25));
         
-        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.3 : 2.5);
+        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.3 : 1.2);
         sun.position.set(30, 60, 20); 
         sun.castShadow = true;
         sun.shadow.camera.near = 0.5;
@@ -520,10 +527,11 @@ class Game {
           road: new THREE.MeshPhongMaterial({ color: 0x21232b, map: _genTex('asphalt') }),
           pave: new THREE.MeshPhongMaterial({ color: 0x757575, map: _genTex('pave') }),
           yellowLine: new THREE.MeshBasicMaterial({ color: 0xffcc00 }),
-          water: new THREE.MeshPhongMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 })
+          water: new THREE.MeshPhongMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 }),
+          urban: new THREE.MeshLambertMaterial({ color: 0x3a3a3a })
         };
 
-        const ground = new THREE.Mesh(new THREE.PlaneGeometry(cfg.is50km ? 100000 : 2000, cfg.is50km ? 100000 : 2000), cfg.isBridge ? mats.water : (cfg.is50km ? new THREE.MeshLambertMaterial({ color: 0x444444 }) : mats.grass));
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(cfg.is50km ? 100000 : 2000, cfg.is50km ? 100000 : 2000), cfg.isBridge ? mats.water : (cfg.is50km ? new THREE.MeshLambertMaterial({ color: 0x444444 }) : mats.urban));
         ground.rotation.x = -Math.PI / 2; this.scene.add(ground);
 
         // Build roads using GLB tiles
@@ -569,6 +577,38 @@ class Game {
                pb.position.set(isV ? cx + s * (RW / 2 + swW / 2) : cx, .07, isV ? cz : cz + s * (RW / 2 + swW / 2)); this.scene.add(pb); this.world.push(pb);
               });
         });
+
+        // Procedural Gateway of India (for Mumbai theme)
+        if (cfg.name && (cfg.name.includes("Marine Drive") || cfg.name.includes("Colaba") || cfg.name.includes("Gateway") || cfg.name.includes("Exam") || Math.random() < 0.2)) {
+            const gof = new THREE.Group();
+            const matBase = new THREE.MeshLambertMaterial({color: 0xd4c4a8});
+            const matWall = new THREE.MeshLambertMaterial({color: 0xc4b498});
+            const matTop = new THREE.MeshLambertMaterial({color: 0xb4a488});
+            
+            const base = new THREE.Mesh(new THREE.BoxGeometry(40, 4, 25), matBase);
+            base.position.y = 2; gof.add(base);
+            
+            const archBaseL = new THREE.Mesh(new THREE.BoxGeometry(8, 25, 20), matWall);
+            archBaseL.position.set(-10, 16.5, 0); gof.add(archBaseL);
+            const archBaseR = new THREE.Mesh(new THREE.BoxGeometry(8, 25, 20), matWall);
+            archBaseR.position.set(10, 16.5, 0); gof.add(archBaseR);
+            const archTop = new THREE.Mesh(new THREE.BoxGeometry(28, 8, 20), matTop);
+            archTop.position.set(0, 33, 0); gof.add(archTop);
+            
+            const dome = new THREE.Mesh(new THREE.SphereGeometry(12, 16, 16, 0, Math.PI*2, 0, Math.PI/2), matTop);
+            dome.position.set(0, 37, 0); gof.add(dome);
+            
+            for(let sx of [-16, 16]) {
+                const minBase = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 36, 8), matWall);
+                minBase.position.set(sx, 22, 0); gof.add(minBase);
+                const minDome = new THREE.Mesh(new THREE.SphereGeometry(3, 8, 8, 0, Math.PI*2, 0, Math.PI/2), matTop);
+                minDome.position.set(sx, 40, 0); gof.add(minDome);
+            }
+            
+            gof.position.set(-50, 0, -60); // Place it in the background
+            gof.rotation.y = Math.PI / 4;
+            this.scene.add(gof);
+        }
 
         // Advanced Procedural Cityscape
         const bMats = [
@@ -780,8 +820,9 @@ class Game {
         (cfg.ints || []).forEach(([ix, iz]) => {
           this._sig(ix + 4.2, iz);
 
-          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['road_cross']) {
-             const intTile = window.PRELOADED_MODELS['road_cross'].clone();
+          if (window.PRELOADED_MODELS && (window.PRELOADED_MODELS['road_cross_path'] || window.PRELOADED_MODELS['road_cross'])) {
+             const intModel = window.PRELOADED_MODELS['road_cross_path'] || window.PRELOADED_MODELS['road_cross'];
+             const intTile = intModel.clone();
              const tileScale = RW / 10;
              intTile.scale.set(tileScale, tileScale, tileScale);
              intTile.position.set(ix, 0.03, iz);
@@ -901,8 +942,8 @@ class Game {
           }
           const spdMult = nType === 'truck' ? 0.6 : nType === 'bus' ? 0.7 : nType === 'cycle' ? 0.4 : nType === 'bike' ? 0.9 : nType === 'auto' ? 0.75 : 0.8;
           nv.userData = {
-            spd: (0.2 + Math.random() * 0.15) * spdMult,
-            baseSpd: (0.2 + Math.random() * 0.15) * spdMult,
+            spd: (0.3 + Math.random() * 0.22) * spdMult,
+            baseSpd: (0.3 + Math.random() * 0.22) * spdMult,
             isAmb: false,
             npcType: nType,
             moveAxis: seg.type,
@@ -1473,7 +1514,7 @@ class Game {
         
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
-        this.renderer.render(this.scene, this.camera);
+        if (this.composer) this.composer.render(); else this.renderer.render(this.scene, this.camera);
 
       }
       _input(dt) {
@@ -1499,8 +1540,10 @@ class Game {
                 this.isPedestrian = false;
                 this.scene.remove(this.playerCharacter);
                 this.player = this.playerVehicle;
-                this.maxSpd = this.mode === 'highway' ? 1.4 : 1.1;
-                this.accel = 0.045; this.turn = 0.065; this.fric = this.mode === 'rain' ? 0.92 : 0.95;
+                this.maxSpd = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
+                this.accel = 0.045; 
+                this.turn = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.04 : 0.065; 
+                this.fric = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.97 : 0.94; // Rain reduces grip
                 toast('🚗 Entered Vehicle!', '#00c851');
               } else {
                 toast('Too far from vehicle.', '#ff9500');
@@ -1806,14 +1849,14 @@ class Game {
                 // Apply State Behavior
                 switch(n.userData.state) {
                   case 'CRUISE':
-                    n.userData.spd += (n.userData.baseSpd - n.userData.spd) * 0.05;
+                    n.userData.spd += (n.userData.baseSpd - n.userData.spd) * 0.12;
                     break;
                   case 'FOLLOW':
                     let tgtSpd = Math.max(0, fsm.obstacleSpeed - 0.1);
                     n.userData.spd += (tgtSpd - n.userData.spd) * 0.1;
                     break;
                   case 'STOPPED':
-                    n.userData.spd += (0 - n.userData.spd) * 0.15;
+                    n.userData.spd += (0 - n.userData.spd) * 0.08;
                     break;
                   case 'OVERTAKE':
                     n.userData.spd += (n.userData.baseSpd * 1.2 - n.userData.spd) * 0.05;
@@ -1825,7 +1868,7 @@ class Game {
               }
             } else {
                // Far away, just cruise
-               n.userData.spd += (n.userData.baseSpd - n.userData.spd) * 0.05;
+               n.userData.spd += (n.userData.baseSpd - n.userData.spd) * 0.12;
             }
 
             // Movement Execution
@@ -1903,8 +1946,8 @@ class Game {
         }
 
         // Spawn new pedestrians dynamically
-        const maxPeds = (this.mapCfg && this.mapCfg.isPedestrian) ? 15 : 6;
-        if (this.peds.length < maxPeds && Math.random() < 0.05 && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
+        const maxPeds = (this.mapCfg && this.mapCfg.isPedestrian) ? 25 : 12;
+        if (this.peds.length < maxPeds && Math.random() < 0.15 && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
           const r = this.mapCfg.roads[Math.floor(Math.random() * this.mapCfg.roads.length)];
           const isV = r.type === 'v';
           const rx = isV ? r.x : Math.min(r.x1, r.x2) + Math.random() * Math.abs(r.x2 - r.x1);
@@ -1912,7 +1955,7 @@ class Game {
           
           const distToPlayer = Math.hypot(rx - this.player.position.x, rz - this.player.position.z);
           // Spawn just outside the view radius
-          if (distToPlayer > 40 && distToPlayer < 90) {
+          if (distToPlayer > 30 && distToPlayer < 120) {
             const ped = _buildHuman();
             const side = Math.random() > 0.5 ? 1 : -1;
             const lDist = 18 / 2 + 1.25; // Sidewalk distance
@@ -2134,6 +2177,25 @@ class Game {
       }
       _uhud() {
         const k = Math.round(Math.abs(this.speed) * 100);
+        
+        if (!this.warnEl) {
+            this.warnEl = document.createElement('div');
+            this.warnEl.style.cssText = 'position:fixed; top:20%; left:50%; transform:translateX(-50%); font-family:"Bebas Neue",sans-serif; font-size:3rem; color:#ff3b30; text-shadow:0 4px 12px rgba(0,0,0,0.5); z-index:9999; display:none; pointer-events:none; text-align:center; transition:opacity 0.2s;';
+            document.body.appendChild(this.warnEl);
+        }
+        let warnMsg = '';
+        if (k > 80) warnMsg = '⚠️ OVERSPEEDING';
+        else if (k > 50 && Math.abs(this.player.rotation.y - (this.lastRotY || this.player.rotation.y)) > 0.06) warnMsg = '⚠️ SHARP CORNER';
+        this.lastRotY = this.player.rotation.y;
+
+        if (warnMsg) {
+            this.warnEl.textContent = warnMsg;
+            this.warnEl.style.display = 'block';
+            if (!this.warnEl.classList.contains('flash')) { this.warnEl.classList.add('flash'); }
+        } else {
+            this.warnEl.style.display = 'none';
+            this.warnEl.classList.remove('flash');
+        }
         const gspdEl = this.dom['gspd'];
         if (gspdEl) {
           gspdEl.textContent = k;

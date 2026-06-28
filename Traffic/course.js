@@ -24,6 +24,32 @@ const BADGES = [
         const customUser = (e.detail && e.detail.user) ? e.detail.user : window.colUser;
         const user = customUser ? customUser.session.user : null;
         
+        // UPDATE NAV BAR PROFILE UI
+        if (user) {
+            const navBtn = document.getElementById('nav-sign-in-btn');
+            const navProf = document.getElementById('navUserProfile');
+            if (navBtn && navProf) {
+                navBtn.style.display = 'none';
+                navProf.style.display = 'flex';
+                
+                const meta = user.user_metadata || {};
+                const name = meta.full_name || 'Driver';
+                const fName = name.split(' ')[0];
+                document.getElementById('navUserName').innerText = fName;
+                
+                const pfp = document.getElementById('navUserPfp');
+                const ini = document.getElementById('navUserInitials');
+                if (meta.avatar_url && pfp && ini) {
+                    pfp.src = meta.avatar_url;
+                    pfp.style.display = 'block';
+                    ini.style.display = 'none';
+                } else if (ini) {
+                    ini.innerText = fName.charAt(0).toUpperCase();
+                    ini.style.display = 'flex';
+                    if (pfp) pfp.style.display = 'none';
+                }
+            }
+        }
 
         if (user && user.user_metadata && user.user_metadata.progress) {
             const cloudS = user.user_metadata.progress;
@@ -65,20 +91,60 @@ const BADGES = [
 
     function injectConflictModal(cloudS) {
         window.__pendingCloudS = cloudS;
-        if (document.getElementById('conflictMo')) return;
+        if (document.getElementById('conflictMo')) document.getElementById('conflictMo').remove();
+        
+        // Calculate stats
+        const getStats = (state) => {
+            const lvls = Object.keys(state.comp || {}).length;
+            const wlt = state.wallet || 0;
+            const bdg = (state.badges || []).length;
+            
+            // Find latest timestamp
+            let latest = 0;
+            if (state.comp) {
+                for (let k in state.comp) {
+                    if (state.comp[k].time > latest) latest = state.comp[k].time;
+                }
+            }
+            const dateStr = latest > 0 ? new Date(latest).toLocaleString() : 'Unknown';
+            return { lvls, wlt, bdg, dateStr };
+        };
+        
+        const cSt = getStats(cloudS);
+        const lSt = getStats(S);
+
         const mo = document.createElement('div');
         mo.className = 'mo';
         mo.id = 'conflictMo';
         mo.style.display = 'flex';
         mo.innerHTML = `
-            <div class="md" style="background:#111827; color:#E8E3D8; padding:20px; border-radius:12px; max-width:400px; margin:auto; margin-top:100px; z-index: 10001; position: relative;">
-                <div class="md-hd" style="border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 15px; padding-bottom: 15px;">
-                    <h2 style="font-family:'Instrument Serif', serif; font-size:2rem; margin-bottom:5px;">Cloud Sync Conflict</h2>
-                    <p style="color:#8891AA; font-size:0.9rem;">Your local progress differs from the cloud. Which data would you like to keep?</p>
+            <div class="md" style="background:var(--card, #111827); color:var(--text, #E8E3D8); padding:30px; border-radius:16px; max-width:600px; width:90%; margin:auto; z-index: 10001; position: relative;">
+                <div class="md-hd" style="border-bottom: 1px solid var(--border, rgba(255,255,255,0.08)); margin-bottom: 20px; padding-bottom: 15px; text-align:center;">
+                    <h2 style="font-family:'Instrument Serif', serif; font-size:2.5rem; margin-bottom:10px;">Sync Conflict</h2>
+                    <p style="color:var(--muted, #8891AA); font-size:1rem;">We found existing cloud data that differs from your local device. Which save do you want to keep?</p>
                 </div>
-                <div class="md-body" style="display:flex; flex-direction:column; gap:10px;">
-                    <button class="btn" onclick="resolveConflict('cloud')" style="background:#5ED4F5; color:#000; padding:12px; font-weight:bold; border-radius:6px; border:none; cursor:pointer;">Download Cloud Data</button>
-                    <button class="btn" onclick="resolveConflict('local')" style="background:#F2B84B; color:#000; padding:12px; font-weight:bold; border-radius:6px; border:none; cursor:pointer;">Keep Local Data (Overwrite Cloud)</button>
+                <div class="md-body" style="display:flex; gap:20px; flex-wrap:wrap;">
+                    
+                    <!-- Cloud Save Card -->
+                    <div style="flex:1; min-width:220px; background:rgba(94, 212, 245, 0.05); border:1px solid rgba(94, 212, 245, 0.3); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:8px;">
+                        <div style="font-size:1.2rem; font-weight:700; color:#5ED4F5; margin-bottom:10px; display:flex; align-items:center; gap:8px;">☁️ Cloud Save</div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Levels Completed: <b style="color:var(--text);">${cSt.lvls}</b></div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Wallet: <b style="color:#F2B84B;">₹${cSt.wlt.toLocaleString()}</b></div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Badges: <b style="color:var(--text);">${cSt.bdg}</b></div>
+                        <div style="font-size:0.8rem; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">Last Played:<br/>${cSt.dateStr}</div>
+                        <button class="btn" onclick="resolveConflict('cloud')" style="margin-top:auto; background:#5ED4F5; color:#000; padding:12px; font-weight:bold; border-radius:8px; border:none; cursor:pointer; width:100%;">Download This</button>
+                    </div>
+
+                    <!-- Local Save Card -->
+                    <div style="flex:1; min-width:220px; background:rgba(242, 184, 75, 0.05); border:1px solid rgba(242, 184, 75, 0.3); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:8px;">
+                        <div style="font-size:1.2rem; font-weight:700; color:#F2B84B; margin-bottom:10px; display:flex; align-items:center; gap:8px;">📱 Local Save</div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Levels Completed: <b style="color:var(--text);">${lSt.lvls}</b></div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Wallet: <b style="color:#F2B84B;">₹${lSt.wlt.toLocaleString()}</b></div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Badges: <b style="color:var(--text);">${lSt.bdg}</b></div>
+                        <div style="font-size:0.8rem; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">Last Played:<br/>${lSt.dateStr}</div>
+                        <button class="btn" onclick="resolveConflict('local')" style="margin-top:auto; background:#F2B84B; color:#000; padding:12px; font-weight:bold; border-radius:8px; border:none; cursor:pointer; width:100%;">Keep This (Overwrite Cloud)</button>
+                    </div>
+
                 </div>
             </div>
         `;
@@ -87,18 +153,15 @@ const BADGES = [
             style.id = 'col-ui-minimal';
             style.innerHTML = `
                 .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: none; }
-                .md { background: #111827; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-                .md-hd { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-                .md-hd h2 { font-family: 'Instrument Serif', serif; font-size: 2rem; color: #E8E3D8; margin-bottom: 5px; }
-                .md-hd p { color: #8891AA; font-size: 0.9rem; }
-                .md-body { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-                .btn { transition: opacity 0.2s; }
-                .btn:hover { opacity: 0.9; }
+                .md { box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+                .btn { transition: transform 0.2s, opacity 0.2s; }
+                .btn:hover { opacity: 0.9; transform: translateY(-2px); }
             `;
             document.head.appendChild(style);
         }
         document.body.appendChild(mo);
     }
+
 
     window.resolveConflict = function(choice) {
         document.getElementById('conflictMo').style.display = 'none';

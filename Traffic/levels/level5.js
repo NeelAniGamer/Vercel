@@ -1,27 +1,27 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 5,
-  "icon": "🚥",
-  "name": "Pedestrian Courtesy",
+  "icon": "🚸",
+  "name": "School Zone Safety",
   "modes": [
     "pedestrian",
     "car"
   ],
-  "col": "#e74c3c",
-  "ds": "You are stuck at a red light. NPC cars honk aggressively. Yield to pedestrians crossing safely. Do not follow the weaving bikes.",
+  "col": "#9b59b6",
+  "ds": "You are passing a school in Parel. Maintain silence and drive below 30 km/h.",
   "hps": [
-    "Stop behind the solid white line at signals.",
-    "Yield to pedestrians crossing.",
-    "Do not follow traffic violators onto footpaths."
+    "Do not honk in the silence zone.",
+    "Keep your speed strictly below 30 km/h.",
+    "Watch out for children crossing."
   ],
   "law": {
-    "sec": "MV Act Section 119",
-    "fine": "₹500 - ₹2000",
-    "off": "Signal/Footpath Violations"
+    "sec": "MV Act Section 112/119",
+    "fine": "₹1000 - ₹2000",
+    "off": "Speeding / Honking in Silence Zone"
   },
-  "theory": "<h2>Pedestrian Courtesy & Peer Pressure</h2>\n      <p>In this scenario, impatient NPC drivers will try to pressure you into running a red light or taking illegal shortcuts like weaving onto the footpath.</p>\n      <h3>🚥 The Test</h3>\n      <ul>\n        <li>You must wait patiently at the red light.</li>\n        <li>Let all pedestrians cross safely.</li>\n        <li>If you yield to the peer pressure and run the light, or if you drive on the footpath, you will receive a Challan.</li>\n      </ul>",
-  "pract": "Wait at the red light despite the honking, and let the pedestrians cross safely.",
+  "theory": "<h2>School Zone Rules</h2>\n<p>Schools require a safe and quiet environment. Speeding here is strictly prohibited.</p>\n<h3>🚸 The Test</h3>\n<ul>\n<li>Do not use the horn.</li>\n<li>Keep your speed under the limit.</li>\n</ul>",
+  "pract": "Navigate the school zone quietly and slowly.",
   "mode": "practical",
-  "themeType": "pedestrian_courtesy",
-  "startOutside": true
+  "themeType": "no_honking",
+  "startOutside": false
 });

@@ -2,26 +2,26 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 4,
   "icon": "🌧️",
-  "name": "Puddle Etiquette",
+  "name": "Monsoon Manners",
   "modes": [
     "pedestrian",
     "car"
   ],
-  "col": "#9b59b6",
-  "ds": "Large puddles have formed near the footpath. Slow down so you do not splash the pedestrians.",
+  "col": "#1abc9c",
+  "ds": "It's monsoon season in Juhu. Slow down near puddles so you don't splash pedestrians.",
   "hps": [
-    "Reduce speed significantly when passing puddles.",
-    "Do not splash pedestrians.",
-    "Maintain control on slippery roads."
+    "Reduce speed near water accumulation.",
+    "Watch out for pedestrians on the sidewalk.",
+    "Use wipers if visibility is low."
   ],
   "law": {
-    "sec": "Civic Sense",
-    "fine": "Civic Penalty",
-    "off": "Splashing Pedestrians"
+    "sec": "MV Act Section 184",
+    "fine": "₹1000 - ₹5000",
+    "off": "Dangerous Driving"
   },
-  "theory": "<h2>Puddle Etiquette</h2>\n      <p>It is raining and large puddles have formed next to the footpaths where pedestrians are walking.</p>\n      <h3>🌧️ The Test</h3>\n      <ul>\n        <li>You must slow down your vehicle significantly when passing these puddles.</li>\n        <li>If you speed through and splash a pedestrian, you fail the civic sense test.</li>\n      </ul>",
-  "pract": "Drive through the rain. Slow down near puddles to avoid splashing pedestrians.",
+  "theory": "<h2>Monsoon Driving Etiquette</h2>\n<p>Splashing water on pedestrians is disrespectful and dangerous.</p>\n<h3>🌧️ The Test</h3>\n<ul>\n<li>Slow down significantly when approaching puddles.</li>\n<li>Ensure pedestrians are safe from splashing.</li>\n</ul>",
+  "pract": "Drive through the waterlogged area slowly to avoid splashing pedestrians.",
   "mode": "practical",
   "themeType": "puddle_etiquette",
-  "startOutside": true
+  "startOutside": false
 });

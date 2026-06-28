@@ -43,6 +43,11 @@ let game = null;
         { key: 'road_straight', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-straight.glb' },
         { key: 'road_intersect', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-intersection.glb' },
         { key: 'road_cross', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossroad.glb' },
+        { key: 'road_cross_path', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossroad-path.glb' },
+        { key: 'road_intersect_path', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-intersection-path.glb' },
+        { key: 'road_bend', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-bend-sidewalk.glb' },
+        { key: 'road_crossing', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossing.glb' },
+        { key: 'road_roundabout', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-roundabout.glb' },
 
         // Characters
         { key: 'char_f_a', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-a.glb' },
@@ -66,7 +71,12 @@ let game = null;
         
         // Transit
         { key: 'train', file: 'Models/kenney_train-kit/Models/GLB format/train-locomotive-a.glb' },
-        { key: 'metro', file: 'Models/kenney_train-kit/Models/GLB format/train-electric-subway-a.glb' }
+        { key: 'metro', file: 'Models/kenney_train-kit/Models/GLB format/train-electric-subway-a.glb' },
+
+        // Construction / Barriers
+        { key: 'barrier', file: 'Models/kenney_city-kit-roads/Models/GLB format/construction-barrier.glb' },
+        { key: 'cone', file: 'Models/kenney_city-kit-roads/Models/GLB format/construction-cone.glb' },
+        { key: 'sign_highway', file: 'Models/kenney_city-kit-roads/Models/GLB format/sign-highway.glb' }
       ];
 
       // Add Suburban Buildings (a to u)
@@ -139,8 +149,8 @@ let game = null;
                 }
             });
             
-            // Scale up the models by 14x as per user feedback
-            gltf.scene.scale.set(14, 14, 14);
+            // Scale up the models by 8.5x (reduced from 14x per user feedback)
+            gltf.scene.scale.set(8.5, 8.5, 8.5);
             window.PRELOADED_MODELS[asset.key] = gltf.scene;
             
             loaded++;
@@ -278,16 +288,20 @@ let game = null;
       const lvId = urlParams.get('lv');
       const mode = urlParams.get('mode');
       
-      if (window.location.pathname.includes('Driving.html') && lvId) {
-          const levelObj = window.LVS.find(l => l.id == lvId);
-          if (levelObj) {
-              ui.cur = levelObj;
-              ui.curMode = mode || 'car';
-              ui.cur.vehMode = ui.curMode;
-              document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-              setTimeout(() => { game.startLevel(); }, 300);
+      if (window.location.pathname.includes('Driving.html')) {
+          if (lvId) {
+              const levelObj = window.LVS.find(l => l.id == lvId);
+              if (levelObj) {
+                  ui.cur = levelObj;
+                  ui.curMode = mode || 'car';
+                  ui.cur.vehMode = ui.curMode;
+                  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                  setTimeout(() => { game.startLevel(); }, 300);
+              } else {
+                  window.location.href = 'Academy.html?screen=levels';
+              }
           } else {
-              if (ui.showStart) ui.showStart();
+              window.location.href = 'Academy.html?screen=levels';
           }
       } else {
           if (ui.showStart) ui.showStart();

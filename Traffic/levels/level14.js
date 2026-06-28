@@ -1,27 +1,27 @@
 window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 14,
-  "icon": "🚥",
-  "name": "Pedestrian Courtesy (Level 14)",
+  "icon": "🏝️",
+  "name": "Pedestrian Island Safety",
   "modes": [
     "pedestrian",
     "car"
   ],
-  "col": "#e74c3c",
-  "ds": "You are stuck at a red light. NPC cars honk aggressively. Yield to pedestrians crossing safely. Do not follow the weaving bikes.",
+  "col": "#16a085",
+  "ds": "Give way to pedestrians waiting at the pedestrian island.",
   "hps": [
-    "Stop behind the solid white line at signals.",
-    "Yield to pedestrians crossing.",
-    "Do not follow traffic violators onto footpaths."
+    "Slow down near traffic islands.",
+    "Yield to pedestrians trying to finish crossing.",
+    "Do not overtake near islands."
   ],
   "law": {
     "sec": "MV Act Section 119",
     "fine": "₹500 - ₹2000",
-    "off": "Signal/Footpath Violations"
+    "off": "Failure to Yield"
   },
-  "theory": "<h2>Pedestrian Courtesy & Peer Pressure</h2>\n      <p>In this scenario, impatient NPC drivers will try to pressure you into running a red light or taking illegal shortcuts like weaving onto the footpath.</p>\n      <h3>🚥 The Test</h3>\n      <ul>\n        <li>You must wait patiently at the red light.</li>\n        <li>Let all pedestrians cross safely.</li>\n        <li>If you yield to the peer pressure and run the light, or if you drive on the footpath, you will receive a Challan.</li>\n      </ul>",
-  "pract": "Wait at the red light despite the honking, and let the pedestrians cross safely.",
+  "theory": "<h2>Pedestrian Islands</h2>\n<p>Islands offer a safe halfway point for pedestrians. Respect their space.</p>\n<h3>🏝️ The Test</h3>\n<ul>\n<li>Let pedestrians cross from the island.</li>\n</ul>",
+  "pract": "Yield to pedestrians at the traffic island.",
   "mode": "practical",
   "themeType": "pedestrian_courtesy",
-  "startOutside": true
+  "startOutside": false
 });

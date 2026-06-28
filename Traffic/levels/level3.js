@@ -2,25 +2,26 @@ window.LVS = window.LVS || [];
 window.LVS.push({
   "id": 3,
   "icon": "🚑",
-  "name": "Ambulance Priority",
+  "name": "Emergency Response",
   "modes": [
+    "pedestrian",
     "car"
   ],
   "col": "#e67e22",
-  "ds": "An ambulance with sirens blaring approaches from behind. Pull over safely to let it pass.",
+  "ds": "An ambulance is approaching from behind with sirens blaring. Make way immediately.",
   "hps": [
-    "Pull over to the left to let emergency vehicles pass.",
-    "Do not tailgate the ambulance.",
+    "Check your mirrors.",
+    "Move to the left side of the road.",
     "Do not block the ambulance."
   ],
   "law": {
     "sec": "MV Act Section 194E",
-    "fine": "₹10000",
+    "fine": "₹10,000",
     "off": "Blocking Emergency Vehicle"
   },
-  "theory": "<h2>Ambulance Priority</h2>\n      <p>An ambulance is trying to navigate through heavy traffic. Some selfish NPCs will block it.</p>\n      <h3>🚑 The Test</h3>\n      <ul>\n        <li>Safely pull over to the shoulder to let the ambulance pass.</li>\n        <li>Do not hit pedestrians while pulling over.</li>\n        <li>Do not try to tailgate the ambulance to skip traffic.</li>\n      </ul>",
-  "pract": "Pull over and let the ambulance pass safely.",
+  "theory": "<h2>Emergency Vehicles Priority</h2>\n<p>Every second counts for an ambulance. Blocking one is a severe offense.</p>\n<h3>🚑 The Test</h3>\n<ul>\n<li>Pull over to the left to let the ambulance pass.</li>\n<li>Do not speed up to outrun it.</li>\n</ul>",
+  "pract": "Pull over safely and let the ambulance pass.",
   "mode": "practical",
   "themeType": "ambulance_priority",
-  "startOutside": true
+  "startOutside": false
 });

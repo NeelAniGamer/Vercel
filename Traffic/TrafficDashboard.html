@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Academy - Dashboard</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Shared Auth/UI logic -->
+    <script defer src="../col-router.js"></script>
+    <link rel="stylesheet" href="../col-ui.css">
+    <script defer src="../col-ui.js"></script>
+    <script defer src="../col-auth.js"></script>
+    
+    <style>
+        :root {
+            --bg: #F3F2EB;
+            --card: rgba(255, 255, 255, 0.45);
+            --text: #111827;
+            --border: rgba(255, 255, 255, 0.4);
+            --hover: rgba(255, 255, 255, 0.6);
+            --muted: #64748B;
+            --muted2: #94A3B8;
+            --accent: #D97706;
+            --green: #34D399;
+            --red: #ef4444;
+            --r: 16px;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 15% 50%, rgba(217, 119, 6, 0.1), transparent 25%),
+                              radial-gradient(circle at 85% 30%, rgba(52, 211, 153, 0.1), transparent 25%);
+        }
+
+        .dashboard-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-family: 'Lora', serif;
+            font-size: 2.2rem;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .glass-panel {
+            background: var(--card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.8);
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn {
+            background: var(--text);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--text);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        /* Certificate Styles */
+        .crt {
+            background: #fbfbf9;
+            background-image: radial-gradient(#e0dfd7 1px, transparent 0);
+            background-size: 20px 20px;
+            color: #2c2b25;
+            padding: 60px;
+            border-radius: 4px;
+            border: 12px solid #2c2b25;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), inset 0 0 0 4px #e0dfd7;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            aspect-ratio: 1.414 / 1;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .crt::before {
+            content: '';
+            position: absolute;
+            top: 24px; left: 24px; right: 24px; bottom: 24px;
+            border: 2px solid #e0dfd7;
+            pointer-events: none;
+        }
+
+        .crtn {
+            font-family: 'Instrument Serif', serif;
+            font-size: 4rem;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--yellow);
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .crt-body {
+            font-size: 1.2rem;
+            color: #525046;
+            max-width: 80%;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .crt-course {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #2c2b25;
+            margin: 30px 0;
+            padding: 10px 20px;
+            background: #e0dfd7;
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .crt { padding: 30px; font-size: 0.8rem; }
+            .crtn { font-size: 2.5rem; }
+            .crt-course { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="header">
+            <div>
+                <h1>Driver Dashboard</h1>
+                <div style="color: var(--muted); margin-top: 5px;">Manage your profile and certificates</div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" onclick="window.location.href='Academy.html'">&larr; Back to Academy</button>
+                <button class="btn btn-outline" style="color: var(--red); border-color: var(--red);" onclick="logoutAndClear()">Sign Out</button>
+            </div>
+        </div>
+
+        <div class="glass-panel">
+            <h2 style="margin-top: 0; margin-bottom: 20px;">Your Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="s-name">-</div>
+                    <div class="stat-label">Driver Name</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="s-veh">-</div>
+                    <div class="stat-label">Vehicle</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="s-score">0</div>
+                    <div class="stat-label">Total Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="s-prog">0/15</div>
+                    <div class="stat-label">Modules Completed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Certificates & Achievements</h2>
+                <button class="btn" onclick="dlCert()">&#128190; Download PDF</button>
+            </div>
+            
+            <div id="cert-wrapper">
+                <div class="crt" id="cert">
+                    <div style="margin-bottom:30px;display:flex;align-items:center;justify-content:space-between;width:100%;">
+                        <div style="display:flex;gap:16px;align-items:center;">
+                            <div style="text-align:right; margin-right:4px;">
+                                <div style="font-size:0.8rem; color:#7c7968; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;">Partnered With</div>
+                            </div>
+                            <img loading="lazy" src="mumbai-police-logo.webp" style="height:75px;object-fit:contain;" alt="Mumbai Police" onerror="this.style.display='none'" />
+                            <img loading="lazy" src="sneh-logo.webp" style="height:75px;object-fit:contain;" alt="Sneh Asha" onerror="this.style.display='none'" />
+                        </div>
+                    </div>
+
+                    <div style="font-weight:600;letter-spacing:0.1em;color:#7c7968;text-transform:uppercase;font-size:1.2rem;margin-top:20px;">
+                        Certificate of Completion
+                    </div>
+                    <div class="crtn">Traffic Hero Certification</div>
+
+                    <div class="crt-body" style="margin-top:32px;">This document certifies that</div>
+                    <div class="crt-course" id="cert-name">DRIVER</div>
+                    <div class="crt-body" style="margin-bottom:60px;">has successfully completed the comprehensive traffic regulations and virtual operations training program, demonstrating mastery across 15 real-world compliance scenarios.</div>
+
+                    <div style="display:flex;justify-content:space-between;align-items:flex-end;width:100%;margin-top:auto;padding-top:40px;border-top:1px solid #e0dfd7;text-align:left;">
+                        <div class="crt-meta" style="color: #2c2b25;">
+                            <div style="margin-bottom:8px;"><span style="font-weight:600;width:100px;display:inline-block;">Date:</span><span id="cert-date">-</span></div>
+                            <div style="margin-bottom:8px;"><span style="font-weight:600;width:100px;display:inline-block;">Score:</span><span id="cert-score">0</span></div>
+                            <div><span style="font-weight:600;width:100px;display:inline-block;">Ref ID:</span><span id="cert-ref">TH-XXX</span></div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-family:'Lora',serif;font-size:1.6rem;font-weight:600;color:#2c2b25;border-bottom:1px solid #e0dfd7;padding-bottom:8px;margin-bottom:8px;width:200px;">Authorized</div>
+                            <div style="font-size:0.95rem;color:#7c7968;">Joint Commissioner of Police (Traffic)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="no-cert-msg" style="display: none; padding: 40px; text-align: center; background: rgba(255,255,255,0.6); border-radius: 16px; margin-top: 20px;">
+                <h3 style="margin-top:0; color: var(--muted);">Certificate Locked</h3>
+                <p>Complete all 15 modules to unlock your Traffic Hero Certification.</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        let S = {};
+        try {
+            const raw = localStorage.getItem('th-save');
+            if (raw) S = JSON.parse(raw);
+        } catch(e) {}
+
+        let tUser = {};
+        try {
+            const raw = localStorage.getItem('traffic_local_user');
+            if (raw) tUser = JSON.parse(raw);
+        } catch(e) {}
+
+        // Populate Stats
+        document.getElementById('s-name').innerText = tUser.name || S.name || 'Driver';
+        document.getElementById('s-veh').innerText = tUser.vehicle || S.vehicle || 'Car';
+        document.getElementById('s-score').innerText = (S.score || 0).toLocaleString();
+        
+        let completed = 0;
+        if (S.lvl) {
+            completed = Object.keys(S.lvl).filter(k => S.lvl[k] > 0).length;
+        }
+        document.getElementById('s-prog').innerText = `${completed}/15`;
+
+        // Populate Certificate
+        document.getElementById('cert-name').innerText = (S.name || 'DRIVER').toUpperCase();
+        document.getElementById('cert-score').innerText = S.score || 0;
+        
+        const d = new Date();
+        document.getElementById('cert-date').innerText = d.toLocaleDateString();
+        document.getElementById('cert-ref').innerText = 'TH-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+        if (completed < 15) {
+            document.getElementById('cert-wrapper').style.filter = 'grayscale(1) blur(4px)';
+            document.getElementById('cert-wrapper').style.opacity = '0.5';
+            document.getElementById('cert-wrapper').style.pointerEvents = 'none';
+            document.getElementById('no-cert-msg').style.display = 'block';
+        }
+
+        function dlCert() {
+            if (completed < 15) {
+                alert("You must complete all 15 modules to download your certificate.");
+                return;
+            }
+            if(typeof html2pdf !== 'undefined') {
+                const el = document.getElementById('cert-wrapper');
+                html2pdf().set({
+                    margin: 0,
+                    filename: 'Traffic_Hero_Certificate.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+                }).from(el).save();
+            } else {
+                alert('PDF library not loaded.');
+            }
+        }
+
+        function logoutAndClear() {
+            localStorage.removeItem('trafficSetupComplete');
+            localStorage.removeItem('traffic_local_user');
+            if (window.doLogout) window.doLogout();
+            window.location.href = 'Academy.html';
+        }
+    </script>
+</body>
+</html>
