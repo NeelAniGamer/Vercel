@@ -112,14 +112,20 @@ let _tt = null;
                 div.className = 'syl-item' + statusClass;
                 const badgeText = done ? '✓ Completed' : (started ? '● Started' : '○ Not Started');
                 const badgeColor = done ? '#00f0cc' : (started ? '#5ed4f5' : 'rgba(184,155,255,0.5)');
+                const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '');
                 div.innerHTML = `
                   <div class="syl-ck"></div>
+                  <div class="syl-top">
+                    <span class="syl-icon">${lv.icon}</span>
+                    <span class="syl-num">Level ${lv.id}</span>
+                  </div>
                   <div class="syl-info">
-                    <div class="syl-lbl">Level ${idx + 1}: ${lv.name}</div>
+                    <div class="syl-lbl">${cleanName}</div>
                     <div class="syl-sub">${lv.ds}</div>
-                    <div class="syl-badge">${badgeText}</div>
+                    <div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div>
                   </div>
                 `;
+                div.style.animationDelay = `${(idx) * 0.08}s`;
                 div.onclick = () => { ui.showBriefing(lv.id); };
                 grid.appendChild(div);
             });

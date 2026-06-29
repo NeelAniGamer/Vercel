@@ -870,11 +870,38 @@
       color: rgba(184, 155, 255, 0.5);
     }
 
+    /* --- Top Row: Icon + Level Number --- */
+    .syl-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .syl-icon {
+      font-size: 2rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .syl-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(184, 155, 255, 0.12);
+      border: 1px solid rgba(184, 155, 255, 0.2);
+      color: rgba(184, 155, 255, 0.7);
+    }
+
     .syl-info {
       display: flex;
       flex-direction: column;
       gap: 12px;
-      margin-top: 12px;
+      margin-top: 4px;
     }
 
     .syl-active .syl-sub {
@@ -1971,40 +1998,19 @@
       }
     }
 
-    /* Syllabus item animations */
+    /* Syllabus item staggered entrance */
     .syl-item {
-      animation: sylSlide 0.3s ease-out backwards;
-    }
-
-    .syl-item:nth-child(1) {
-      animation-delay: 0.05s;
-    }
-
-    .syl-item:nth-child(2) {
-      animation-delay: 0.1s;
-    }
-
-    .syl-item:nth-child(3) {
-      animation-delay: 0.15s;
-    }
-
-    .syl-item:nth-child(4) {
-      animation-delay: 0.2s;
-    }
-
-    .syl-item:nth-child(5) {
-      animation-delay: 0.25s;
+      animation: sylSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     }
 
     @keyframes sylSlide {
       0% {
         opacity: 0;
-        transform: translateX(-12px);
+        transform: translateY(24px) scale(0.96);
       }
-
       100% {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0) scale(1);
       }
     }
 
