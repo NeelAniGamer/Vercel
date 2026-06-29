@@ -466,14 +466,16 @@ let _tt = null;
         let style = '';
         if (lv.themeType === 'pedestrian_courtesy') {
           h += `
-             <div style="position:absolute; left:60%; top:0; bottom:0; width:36px; background:repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0, rgba(0,0,0,0.15) 8px, transparent 8px, transparent 16px); opacity:0.6;"></div>
-             <div style="position:absolute; left:65%; top:-20px; font-size:2rem; animation: walkDown 4s infinite linear; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.12));">🚶</div>
+             <div style="position:absolute; top:calc(50% - 44px); left:0; right:0; height:8px; background:rgba(0,0,0,0.03); border-bottom:1px solid rgba(0,0,0,0.04);"></div>
+             <div style="position:absolute; top:calc(50% + 36px); left:0; right:0; height:8px; background:rgba(0,0,0,0.03); border-top:1px solid rgba(0,0,0,0.04);"></div>
+             <div style="position:absolute; left:60%; top:calc(50% - 32px); height:64px; width:36px; background:repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0, rgba(0,0,0,0.15) 8px, transparent 8px, transparent 16px); opacity:0.6;"></div>
+             <div style="position:absolute; left:63%; top:-20px; font-size:2rem; animation: walkDown 4s infinite linear; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.12));">🚶</div>
              <div style="position:absolute; left:10%; top:55%; font-size:2.2rem; animation: driveStopGo 4s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚗</div>
-             <div style="position:absolute; left:10%; top:15%; font-size:1.8rem; animation: weaveBike 4s infinite linear; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.12));">🛵</div>
+             <div style="position:absolute; left:10%; top:38%; font-size:1.8rem; animation: driveScooter 4s infinite linear; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.12));">🛵</div>
           `;
           style = `@keyframes walkDown { 0% { top:-20px; } 100% { top: 120%; } }
-                   @keyframes driveStopGo { 0% { left:-50px; } 20% { left: 40%; } 80% { left: 40%; } 100% { left: 120%; } }
-                   @keyframes weaveBike { 0% { left:-50px; top: 15%; } 40% { left: 45%; top: 75%; } 60% { left: 75%; top: 75%; } 100% { left: 120%; top: 15%; } }`;
+                   @keyframes driveStopGo { 0% { left:-50px; } 15% { left: 35%; } 75% { left: 35%; } 100% { left: 120%; } }
+                   @keyframes driveScooter { 0% { left:-50px; } 100% { left: 120%; } }`;
         } else if (lv.themeType === 'overtake' || lv.themeType === 'speed' || lv.id === 5) {
           h += `
              <div style="position:absolute; left:40%; top:15%; font-size:2.2rem; animation: driveSlow 4s infinite; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚙</div>
