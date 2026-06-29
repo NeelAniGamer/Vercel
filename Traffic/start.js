@@ -310,8 +310,8 @@ let game = null;
       window.game = game;
       
       const urlParams = new URLSearchParams(window.location.search);
-      const lvId = urlParams.get('lv');
-      const mode = urlParams.get('mode');
+      let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv');
+      let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode');
       
       if (window.location.pathname.toLowerCase().includes('driving')) {
           if (lvId) {

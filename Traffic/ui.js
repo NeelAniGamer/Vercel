@@ -512,6 +512,8 @@ let _tt = null;
       dispatchStart(mode) {
          mode = mode || this.curMode || 'car';
          const lv = this.cur;
+         localStorage.setItem('traffic_lv', lv.id);
+         localStorage.setItem('traffic_mode', mode);
          window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`;
       },
       showQuiz(mode) {
