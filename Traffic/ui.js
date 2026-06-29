@@ -473,9 +473,9 @@ let _tt = null;
              <div style="position:absolute; left:10%; top:55%; font-size:2.2rem; animation: driveStopGo 4s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚗</div>
              <div style="position:absolute; left:10%; top:38%; font-size:1.8rem; animation: driveScooter 4s infinite linear; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.12));">🛵</div>
           `;
-          style = `@keyframes walkDown { 0% { top:-20px; } 100% { top: 120%; } }
-                   @keyframes driveStopGo { 0% { left:-50px; } 15% { left: 35%; } 75% { left: 35%; } 100% { left: 120%; } }
-                   @keyframes driveScooter { 0% { left:-50px; } 100% { left: 120%; } }`;
+          style = `@keyframes walkDown { 0% { top:-20px; } 15% { top:36%; } 40% { top:36%; } 65% { top:120%; } 100% { top:120%; } }
+                   @keyframes driveStopGo { 0% { left:-50px; } 20% { left:30%; } 60% { left:30%; } 80% { left:120%; } 100% { left:120%; } }
+                   @keyframes driveScooter { 0% { left:-50px; } 100% { left:120%; } }`;
         } else if (lv.themeType === 'overtake' || lv.themeType === 'speed' || lv.id === 5) {
           h += `
              <div style="position:absolute; left:40%; top:15%; font-size:2.2rem; animation: driveSlow 4s infinite; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚙</div>
