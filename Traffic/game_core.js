@@ -1839,13 +1839,13 @@ class Game {
               // 2. Check Vehicles Ahead
               if (n.userData.moveAxis !== 'h') {
                 this.npcs.forEach(other => {
-                  if (other !== n && other.userData.moveAxis !== 'h' && other.userData.dir === n.userData.dir) {
+                  if (other !== n && other.userData.moveAxis !== 'h') {
                     const dz = other.position.z - n.position.z;
                     const dx = Math.abs(other.position.x - n.position.x);
-                    if (dz * n.userData.dir > 0 && Math.abs(dz) < 25 && dx < 1.5) {
+                    if (dz * n.userData.dir > 0 && Math.abs(dz) < 25 && dx < 2.5) {
                       fsm.approachingObstacle = true;
                       fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
-                      fsm.obstacleSpeed = other.userData.spd;
+                      fsm.obstacleSpeed = (other.userData.dir === n.userData.dir) ? other.userData.spd : 0;
                     }
                   }
                 });
@@ -1854,10 +1854,11 @@ class Game {
                 if (this.player && this.player.position && !this.isPedestrian) {
                   const dz = this.player.position.z - n.position.z;
                   const dx = Math.abs(this.player.position.x - n.position.x);
-                  if (dz * n.userData.dir > 0 && Math.abs(dz) < 25 && dx < 1.5) {
+                  if (dz * n.userData.dir > 0 && Math.abs(dz) < 30 && dx < 2.5) {
                     fsm.approachingObstacle = true;
                     fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
-                    fsm.obstacleSpeed = this.speed || 0;
+                    const pDir = Math.cos(this.player.rotation.y) < 0 ? 1 : -1;
+                    fsm.obstacleSpeed = (pDir === n.userData.dir) ? (this.speed || 0) : 0;
                   }
                 }
 
@@ -1875,9 +1876,9 @@ class Game {
 
                 // State Transitions
                 if (!yieldingToAmbulance) {
-                  if (fsm.approachingObstacle && fsm.obstacleDist < 6.5) {
+                  if (fsm.approachingObstacle && fsm.obstacleDist < 11.0) {
                     n.userData.state = 'STOPPED';
-                  } else if (fsm.approachingObstacle && fsm.obstacleDist < 25 && !fsm.redLight) {
+                  } else if (fsm.approachingObstacle && fsm.obstacleDist < 30 && !fsm.redLight) {
                     n.userData.state = 'FOLLOW';
                     // Overtake Logic
                     if (n.userData.laneT <= 0) {
@@ -1889,6 +1890,9 @@ class Game {
                         this.npcs.forEach(other => {
                           if (other !== n && Math.abs(other.position.x - l) < 2.5 && Math.abs(other.position.z - n.position.z) < 22 && (other.position.z - n.position.z)*n.userData.dir > -10) blocked = true;
                         });
+                        if (this.player && this.player.position && !this.isPedestrian) {
+                          if (Math.abs(this.player.position.x - l) < 2.5 && Math.abs(this.player.position.z - n.position.z) < 25 && (this.player.position.z - n.position.z)*n.userData.dir > -10) blocked = true;
+                        }
                         return !blocked;
                       });
 
@@ -1909,11 +1913,11 @@ class Game {
                     n.userData.spd += (n.userData.baseSpd - n.userData.spd) * 0.12;
                     break;
                   case 'FOLLOW':
-                    let tgtSpd = Math.max(0, fsm.obstacleSpeed - 0.1);
-                    n.userData.spd += (tgtSpd - n.userData.spd) * 0.1;
+                    let tgtSpd = Math.max(0, fsm.obstacleSpeed - 0.2);
+                    n.userData.spd += (tgtSpd - n.userData.spd) * 0.15;
                     break;
                   case 'STOPPED':
-                    n.userData.spd += (0 - n.userData.spd) * 0.08;
+                    n.userData.spd += (0 - n.userData.spd) * 0.2;
                     break;
                   case 'OVERTAKE':
                     n.userData.spd += (n.userData.baseSpd * 1.2 - n.userData.spd) * 0.05;
