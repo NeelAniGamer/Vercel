@@ -16,7 +16,7 @@ window.LVS.push({
     "fine": "₹1000 - ₹3000",
     "off": "Parking Near Hospital"
   },
-  "theory": "<h2>Hospital Zone Parking</h2><p>Dekho, hospital ke paas parking karna bahut galat hai. Socho — kisi ka relative emergency mein aa raha hai aur tumhari gaadi raasta rok rahi hai? Bahut bura hoga!</p><p>Hospital ke gate ke 100 meter andar parking bilkul mana hai. Wahan ambulance ko ghumna padta hai — agar tumhari gaadi khadi hai toh wo nahi ja paayegi.</p><h3>🏥 Kya karna hai?</h3><ul><li>Hospital ke paas ek 'No Parking' board dikhega — uski izzat karo!</li><li>Legal parking 100 meter aage mil jaayegi — wahan lagao.</li><li>Ambulance ko raasta do — yeh kisi ki jaan bacha rahi hai!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Hospital ke 100 meter andar parking MV Act Section 122 ke under illegal hai — ₹1000 se ₹3000 tak ka fine!</p>",
+  "theory": "<h2>Hospital Zone Parking</h2><p>Hospital ke paas parking karna bahut galat hai. Socho — kisi ka relative emergency mein aa raha hai aur tumhari gaadi raasta rok rahi hai? Bahut bura hoga!</p><p>Hospital ke gate ke 100 meter andar parking bilkul mana hai. Wahan ambulance ko ghumna padta hai — agar tumhari gaadi khadi hai toh wo nahi ja paayegi.</p><h3>🏥 Kya karna hai?</h3><ul><li>Hospital ke paas ek 'No Parking' board dikhega — uski izzat karo!</li><li>Legal parking 100 meter aage mil jaayegi — wahan lagao.</li><li>Ambulance ko raasta do — yeh kisi ki jaan bacha rahi hai!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Hospital ke 100 meter andar parking MV Act Section 122 ke under illegal hai — ₹1000 se ₹3000 tak ka fine!</p>",
   "pract": "Drive past the hospital. Park in a legal spot at least 100 meters away. Walk back.",
   "mode": "practical",
   "themeType": "respectful_parking",

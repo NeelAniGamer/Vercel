@@ -16,7 +16,7 @@ window.LVS.push({
     "fine": "₹500 - ₹1000",
     "off": "Parking in No Parking Zone"
   },
-  "theory": "<h2>Street Parking</h2><p>Yaar, Mumbai ki busy streets pe parking dhoondna mushkil hai — sab jagah gaadiyan khadi hain! Lekin ek legal parking spot 50 meter aage left side pe hai. Wahan lagao aur walk karke destination pe jao!</p><p>Footpath ya no-parking zone mein parking karna MV Act Section 122 ke under illegal hai — ₹500 se ₹1000 tak ka fine. NPC gaadiyan galat jagah khadi hain — unki mat suno!</p><p>Socho — agar tum galat jagah lagao toh challan tumhe milega, unhe nahi!</p>",
+  "theory": "<h2>Street Parking</h2><p>Mumbai ki busy streets pe parking dhoondna mushkil hai — sab jagah gaadiyan khadi hain! Lekin ek legal parking spot 50 meter aage left side pe hai. Wahan lagao aur walk karke destination pe jao!</p><p>Footpath ya no-parking zone mein parking karna MV Act Section 122 ke under illegal hai — ₹500 se ₹1000 tak ka fine. NPC gaadiyan galat jagah khadi hain — unki mat suno!</p><p>Socho — agar tum galat jagah lagao toh challan tumhe milega, unhe nahi!</p>",
   "pract": "Find the legal parking spot 50 meters ahead. Park there and walk to the shop objective.",
   "mode": "practical",
   "themeType": "street_parking",

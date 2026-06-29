@@ -16,7 +16,7 @@ window.LVS.push({
     "fine": "₹1000 - ₹5000",
     "off": "Honking in Silence Zone"
   },
-  "theory": "<h2>Hospital Zone Silence</h2><p>Yaar, hospital ke paas honk karna mana hai — yeh 'Silence Zone' hai! Socho, koi patient recovery kar raha hai aur tumhari horn ki awaaz se uski neend udd jaayegi.</p><p>Aage wali gaadi suddenly brake maar rahi hai — tumhara mann karega horn dabao! Lekin nahi bhai, nahi karna. Slow jao, distance banao, bas!</p><h3>🤫 Kya karna hai?</h3><ul><li>Hospital ke paas gaadi achanak brake maar rahi hai — darr mat, slow ho jao!</li><li>Horn mat dabao chahe kitna bhi mann kare.</li><li>Safe distance banao — ekdum peeche raho.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Silence Zone mein honk karna MV Act Section 118 aur Noise Pollution Rules ke under hai — ₹1000 se ₹5000 tak ka fine!</p>",
+  "theory": "<h2>Hospital Zone Silence</h2><p>Hospital ke paas honk karna mana hai — yeh 'Silence Zone' hai! Socho, koi patient recovery kar raha hai aur tumhari horn ki awaaz se uski neend udd jaayegi.</p><p>Aage wali gaadi suddenly brake maar rahi hai — tumhara mann karega horn dabao! Lekin nahi, nahi karna. Slow jao, distance banao, bas!</p><h3>🤫 Kya karna hai?</h3><ul><li>Hospital ke paas gaadi achanak brake maar rahi hai — darr mat, slow ho jao!</li><li>Horn mat dabao chahe kitna bhi mann kare.</li><li>Safe distance banao — ekdum peeche raho.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Silence Zone mein honk karna MV Act Section 118 aur Noise Pollution Rules ke under hai — ₹1000 se ₹5000 tak ka fine!</p>",
   "pract": "Do not honk. Slow down, maintain distance, and drive silently past the hospital.",
   "mode": "practical",
   "themeType": "no_honking",
