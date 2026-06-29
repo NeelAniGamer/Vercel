@@ -64,6 +64,7 @@ let _tt = null;
         if (hwalletEl) { hwalletEl.textContent = '₹' + (S.wallet || 50000).toLocaleString('en-IN'); }
       },
       show(id) {
+        if (id && id !== null && document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         if (id) {
           const el = document.getElementById(id);

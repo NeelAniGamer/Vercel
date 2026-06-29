@@ -8,19 +8,28 @@ class Game {
         this.dom = {}; // Cached DOM elements
         this._initR(); this._initIn(); this._initG(); this._loop();
         window.addEventListener('resize', () => this._rsz());
+        document.addEventListener('fullscreenchange', () => this._rsz());
       }
       _initR() {
         const cv = document.getElementById('3c'); 
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         this.renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !isMobile, powerPreference: "high-performance" });
-        this.renderer.setSize(innerWidth, innerHeight, false);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0));
+        const maxW = 1920, maxH = 1080;
+        let w = innerWidth, h = innerHeight;
+        let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
+        if (w * dpr > maxW) dpr = maxW / w;
+        if (h * dpr > maxH) dpr = maxH / h;
+        this._dpr = dpr;
+        this.renderer.setSize(w * dpr, h * dpr, false);
+        this.renderer.domElement.style.width = w + 'px';
+        this.renderer.domElement.style.height = h + 'px';
+        this.renderer.setPixelRatio(1);
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 1.2;
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, .1, 350);
+        this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
         
         try {
           if (THREE.EffectComposer) {
@@ -38,7 +47,7 @@ class Game {
         const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
-      _rsz() { if (!this.renderer) return; this.renderer.setSize(innerWidth, innerHeight, false); if (this.composer) { this.composer.setSize(innerWidth, innerHeight); } if (this.camera) { this.camera.aspect = innerWidth / innerHeight; this.camera.updateProjectionMatrix(); } }
+      _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
       _initIn() {
         window.addEventListener('keydown', e => {
             this.keys[e.key.toLowerCase()] = true;
@@ -249,7 +258,7 @@ class Game {
           } 
       }
       _brake() { this.speed *= .35; sfx.play('brake'); toast('🛑 Hard Deceleration Active', '#fff'); }
-      startLevel() { const cd = document.getElementById('cdown'); cd.classList.add('on'); setTimeout(() => { cd.classList.remove('on'); this._actualStart(ui.cur); }, 1500); }
+      startLevel() { const cd = document.getElementById('cdown'); cd.classList.add('on'); const gc = document.getElementById('gc'); if (gc && !document.fullscreenElement && gc.requestFullscreen) { gc.requestFullscreen().catch(() => {}); } setTimeout(() => { cd.classList.remove('on'); this._actualStart(ui.cur); }, 1500); }
       _actualStart(lv) {
         this.mode = lv.mode; this.vehMode = lv.vehMode; this.lvId = lv.id; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0; this.speed = 0; this.routeIdx = 0; this.retries = 0; this.vx = 0; this.vz = 0;
         this.ms = { inSz: false, passed: false, amb: null };
