@@ -389,14 +389,14 @@ body.lm .nav-login-btn:hover { background: var(--page-theme-light); color: #fff;
   .dropdown-content a {
     display: flex;
     align-items: center;
-    gap: 14px;
-    font-family: var(--sans); font-size: 0.95rem; font-style: normal;
-    padding: 14px 14px; color: var(--dim);
+    gap: 10px;
+    font-family: var(--sans); font-size: 0.82rem; font-style: normal;
+    padding: 8px 12px; color: var(--dim);
     width: 100%; text-align: left; background: transparent; border-radius: 12px;
     border: none; font-weight: 500;
   }
   .dropdown-content a svg {
-    width: 20px; height: 20px; flex-shrink: 0; stroke: var(--dim);
+    width: 16px; height: 16px; flex-shrink: 0; stroke: var(--dim);
     transition: stroke 0.25s;
   }
   .dropdown-content a:hover { background: var(--panel) !important; color: var(--signal); border-color: var(--lineb); }
