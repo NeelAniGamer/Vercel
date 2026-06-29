@@ -57,7 +57,10 @@ class Game {
         if (this.renderer && this.renderer.domElement) {
           this.renderer.domElement.addEventListener('click', () => {
             if (this.playing && !this.pause && Date.now() - this._lastPointerUnlock > 500) {
-              try { document.body.requestPointerLock(); } catch(e) {}
+              try { 
+                const p = document.body.requestPointerLock();
+                if (p && p.catch) p.catch(() => {});
+              } catch(e) {}
             }
           });
         }
