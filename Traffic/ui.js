@@ -1,120 +1,182 @@
-let _tt = null;
-    function toast(msg, col = '#ffd54a') { const t = document.getElementById('toast'), ti = document.getElementById('ti'); ti.textContent = msg; ti.style.background = col; t.classList.add('on'); clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('on'), 2500); }
-    const mob = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+let _tt = null
+function toast(msg, col = '#ffd54a') {
+  const t = document.getElementById('toast'),
+    ti = document.getElementById('ti')
+  ti.textContent = msg
+  ti.style.background = col
+  t.classList.add('on')
+  clearTimeout(_tt)
+  _tt = setTimeout(() => t.classList.remove('on'), 2500)
+}
+const mob = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
-    // 🚦 SOUND FX 🚦
-    const sfx = {
-      _c: null, init() { if (this._c) return; try { this._c = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { } },
-      play(t) {
-        if (!this._c) return; const p = { horn: { f: 440, ty: 'square', d: .18, v: .12 }, brake: { f: 160, ty: 'sawtooth', d: .15, v: .08 }, challan: { f: 880, ty: 'triangle', d: .32, v: .11 }, ok: { f: 660, ty: 'sine', d: .22, v: .09 }, error: { f: 110, ty: 'square', d: .28, v: .1 } }; const pp = p[t] || p.horn;
-        try { const o = this._c.createOscillator(), g = this._c.createGain(); o.connect(g); g.connect(this._c.destination); o.type = pp.ty; o.frequency.setValueAtTime(pp.f, this._c.currentTime); g.gain.setValueAtTime(pp.v, this._c.currentTime); g.gain.exponentialRampToValueAtTime(.001, this._c.currentTime + pp.d); o.start(); o.stop(this._c.currentTime + pp.d); } catch (e) { }
+// 🚦 SOUND FX 🚦
+const sfx = {
+  _c: null,
+  init() {
+    if (this._c) return
+    try {
+      this._c = new (window.AudioContext || window.webkitAudioContext)()
+    } catch (e) {}
+  },
+  play(t) {
+    if (!this._c) return
+    const p = {
+      horn: { f: 440, ty: 'square', d: 0.18, v: 0.12 },
+      brake: { f: 160, ty: 'sawtooth', d: 0.15, v: 0.08 },
+      challan: { f: 880, ty: 'triangle', d: 0.32, v: 0.11 },
+      ok: { f: 660, ty: 'sine', d: 0.22, v: 0.09 },
+      error: { f: 110, ty: 'square', d: 0.28, v: 0.1 }
+    }
+    const pp = p[t] || p.horn
+    try {
+      const o = this._c.createOscillator(),
+        g = this._c.createGain()
+      o.connect(g)
+      g.connect(this._c.destination)
+      o.type = pp.ty
+      o.frequency.setValueAtTime(pp.f, this._c.currentTime)
+      g.gain.setValueAtTime(pp.v, this._c.currentTime)
+      g.gain.exponentialRampToValueAtTime(0.001, this._c.currentTime + pp.d)
+      o.start()
+      o.stop(this._c.currentTime + pp.d)
+    } catch (e) {}
+  }
+}
+
+// 🚦 UI INTERACTION LOGIC LAYER 🚦
+const ui = {
+  cur: null,
+  _sylLv: null,
+  cq: [],
+  cbusy: false,
+  qst: null,
+  _ccb: null,
+  adminUnlock() {
+    LVS.forEach((l) => {
+      if (!S.comp[l.id]) S.comp[l.id] = { score: 500, time: Date.now() }
+    })
+    BADGES.forEach((b) => {
+      if (!S.badges.includes(b.id)) S.badges.push(b.id)
+    })
+    S.total += 7500
+    save()
+    toast('🔓 Developer Unlock Triggered!', '#00c851')
+    this.showLevels()
+  },
+  async hardReset() {
+    if (confirm('Reset all progress?')) {
+      S = { comp: {}, badges: [], total: 0, name: null, wallet: 50000 }
+      try {
+        localStorage.removeItem('mth4')
+      } catch (e) {}
+      if (window.supabaseClient && window.colUser) {
+        try {
+          await window.supabaseClient.auth.updateUser({ data: { progress: null } })
+        } catch (e) {}
       }
-    };
+      toast('⚠️ Progress Reset!', '#ff3b30')
+      if (window.location.pathname.toLowerCase().includes('driving')) {
+        window.location.href = 'Academy.html'
+        return
+      }
+      if (this.showStart) this.showStart()
+      else {
+        document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+        document.getElementById('ss').classList.add('active')
+      }
+    }
+  },
+  init() {
+    try {
+      if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
+    } catch (e) {}
+    const urlParams = new URLSearchParams(window.location.search)
+    const screenParam = urlParams.get('screen')
+    const lvParam = urlParams.get('lv')
+    if (screenParam === 'levels') {
+      this.showLevels()
+    } else if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
+      document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+    } else {
+      this.show('ss')
+    }
 
-    // 🚦 UI INTERACTION LOGIC LAYER 🚦
-    const ui = {
-      cur: null,
-      _sylLv: null,
-      cq: [],
-      cbusy: false,
-      qst: null,
-      _ccb: null,
-      adminUnlock() { LVS.forEach(l => { if (!S.comp[l.id]) S.comp[l.id] = { score: 500, time: Date.now() } }); BADGES.forEach(b => { if (!S.badges.includes(b.id)) S.badges.push(b.id) }); S.total += 7500; save(); toast('🔓 Developer Unlock Triggered!', '#00c851'); this.showLevels(); },
-      async hardReset() { 
-        if (confirm('Reset all progress?')) { 
-          S = { comp: {}, badges: [], total: 0, name: null, wallet: 50000 }; 
-          try { localStorage.removeItem('mth4'); } catch (e) { } 
-          if (window.supabaseClient && window.colUser) {
-            try { await window.supabaseClient.auth.updateUser({ data: { progress: null } }); } catch(e) {}
-          }
-          toast('⚠️ Progress Reset!', '#ff3b30'); 
-          if (window.location.pathname.toLowerCase().includes('driving')) {
-            window.location.href = 'Academy.html';
-            return;
-          }
-          if (this.showStart) this.showStart(); else { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById('ss').classList.add('active'); }
-        } 
-      },
-      init() {
-        try { if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm'); } catch(e) {}
-        const urlParams = new URLSearchParams(window.location.search);
-        const screenParam = urlParams.get('screen');
-        const lvParam = urlParams.get('lv');
-        if(screenParam === 'levels') {
-            this.showLevels();
-        } else if(window.location.pathname.toLowerCase().includes('driving') && lvParam) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        } else {
-            this.show('ss');
+    window.addEventListener('col-auth-changed', (e) => {
+      if (e.detail && e.detail.user) {
+        if (localStorage.getItem('trafficSetupComplete') !== 'true') {
+          window.location.href = 'TrafficSetup.html'
         }
-        
-        window.addEventListener('col-auth-changed', (e) => {
-            if (e.detail && e.detail.user) {
-                if (localStorage.getItem('trafficSetupComplete') !== 'true') {
-                    window.location.href = 'TrafficSetup.html';
-                }
-            }
-        });
+      }
+    })
 
-        this._buildSylList();
-        
-        const cnameEl = document.getElementById('cname');
-        if (cnameEl) { cnameEl.innerText = S.name || 'TRAFFIC HERO'; }
-        const hwalletEl = document.getElementById('hwallet');
-        if (hwalletEl) { hwalletEl.textContent = '₹' + (S.wallet || 50000).toLocaleString('en-IN'); }
-      },
-      show(id) {
-        if (id && id !== null && document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }
-        if (id !== 'screen-briefing') { this._disposeBriefingScene(); }
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        if (id) {
-          const el = document.getElementById(id);
-          if (el) el.classList.add('active');
-        }
-      },
-      _buildSylList() {
-        if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 };
-        if (!S.comp) S.comp = {};
-        const wrap = document.getElementById('lvbody');
-        if (!wrap) return;
-        wrap.innerHTML = '';
+    this._buildSylList()
 
-        const cats = {
-            pedestrian_courtesy: { title: "🚶 Pedestrian Courtesy", levels: [] },
-            respectful_parking: { title: "🅿️ Respectful Parking", levels: [] },
-            ambulance_priority: { title: "🚑 Emergency Priority", levels: [] },
-            puddle_etiquette: { title: "🌧️ Monsoon Etiquette", levels: [] },
-            no_honking: { title: "🔇 Silence Zones", levels: [] },
-            general: { title: "🚧 General Rules", levels: [] }
-        };
+    const cnameEl = document.getElementById('cname')
+    if (cnameEl) {
+      cnameEl.innerText = S.name || 'TRAFFIC HERO'
+    }
+    const hwalletEl = document.getElementById('hwallet')
+    if (hwalletEl) {
+      hwalletEl.textContent = '₹' + (S.wallet || 50000).toLocaleString('en-IN')
+    }
+  },
+  show(id) {
+    if (id && id !== null && document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {})
+    }
+    if (id !== 'screen-briefing') {
+      this._disposeBriefingScene()
+    }
+    document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+    if (id) {
+      const el = document.getElementById(id)
+      if (el) el.classList.add('active')
+    }
+  },
+  _buildSylList() {
+    if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
+    if (!S.comp) S.comp = {}
+    const wrap = document.getElementById('lvbody')
+    if (!wrap) return
+    wrap.innerHTML = ''
 
-        LVS.forEach((lv) => {
-            const cat = cats[lv.themeType] || cats.general;
-            cat.levels.push(lv);
-        });
+    const cats = {
+      pedestrian_courtesy: { title: '🚶 Pedestrian Courtesy', levels: [] },
+      respectful_parking: { title: '🅿️ Respectful Parking', levels: [] },
+      ambulance_priority: { title: '🚑 Emergency Priority', levels: [] },
+      puddle_etiquette: { title: '🌧️ Monsoon Etiquette', levels: [] },
+      no_honking: { title: '🔇 Silence Zones', levels: [] },
+      general: { title: '🚧 General Rules', levels: [] }
+    }
 
-        Object.values(cats).forEach(cat => {
-            if (cat.levels.length === 0) return;
-            
-            const hdr = document.createElement('div');
-            hdr.className = 'category-header';
-            hdr.textContent = cat.title;
-            wrap.appendChild(hdr);
+    LVS.forEach((lv) => {
+      const cat = cats[lv.themeType] || cats.general
+      cat.levels.push(lv)
+    })
 
-            const grid = document.createElement('div');
-            grid.className = 'category-grid';
-            wrap.appendChild(grid);
+    Object.values(cats).forEach((cat) => {
+      if (cat.levels.length === 0) return
 
-            cat.levels.forEach((lv, idx) => {
-                const done = S.comp[lv.id];
-                const started = S.started && S.started[lv.id];
-                const statusClass = done ? ' syl-done' : (started ? ' syl-started' : '');
-                const div = document.createElement('div');
-                div.className = 'syl-item' + statusClass;
-                const badgeText = done ? '✓ Completed' : (started ? '● Started' : '○ Not Started');
-                const badgeColor = done ? '#00f0cc' : (started ? '#5ed4f5' : 'rgba(184,155,255,0.5)');
-                const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '');
-                div.innerHTML = `
+      const hdr = document.createElement('div')
+      hdr.className = 'category-header'
+      hdr.textContent = cat.title
+      wrap.appendChild(hdr)
+
+      const grid = document.createElement('div')
+      grid.className = 'category-grid'
+      wrap.appendChild(grid)
+
+      cat.levels.forEach((lv, idx) => {
+        const done = S.comp[lv.id]
+        const started = S.started && S.started[lv.id]
+        const statusClass = done ? ' syl-done' : started ? ' syl-started' : ''
+        const div = document.createElement('div')
+        div.className = 'syl-item' + statusClass
+        const badgeText = done ? '✓ Completed' : started ? '● Started' : '○ Not Started'
+        const badgeColor = done ? '#00f0cc' : started ? '#5ed4f5' : 'rgba(184,155,255,0.5)'
+        const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')
+        div.innerHTML = `
                   <div class="syl-ck"></div>
                   <div class="syl-top">
                     <span class="syl-icon">${lv.icon}</span>
@@ -125,104 +187,133 @@ let _tt = null;
                     <div class="syl-sub">${lv.ds}</div>
                     <div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div>
                   </div>
-                `;
-                div.style.animationDelay = `${(idx) * 0.08}s`;
-                div.onclick = () => { ui.showBriefing(lv.id); };
-                grid.appendChild(div);
-            });
-        });
-      },
-      showLevels() {
-        if(window.location.pathname.toLowerCase().includes('driving')) {
-            window.location.href = 'Academy.html?screen=levels';
-            return;
+                `
+        div.style.animationDelay = `${idx * 0.08}s`
+        div.onclick = () => {
+          ui.showBriefing(lv.id)
         }
-        this.show('screen-levels');
-        this._buildSylList();
-      },
-      showNamePrompt() {
-        const dlg = document.getElementById('name-prompt-dlg');
-        if (dlg) {
-            document.getElementById('prompt-name').value = (S.name && S.name !== 'Traffic Hero') ? S.name : '';
-            dlg.style.display = 'flex';
+        grid.appendChild(div)
+      })
+    })
+  },
+  showLevels() {
+    if (window.location.pathname.toLowerCase().includes('driving')) {
+      window.location.href = 'Academy.html?screen=levels'
+      return
+    }
+    this.show('screen-levels')
+    this._buildSylList()
+  },
+  showNamePrompt() {
+    const dlg = document.getElementById('name-prompt-dlg')
+    if (dlg) {
+      document.getElementById('prompt-name').value = S.name && S.name !== 'Traffic Hero' ? S.name : ''
+      dlg.style.display = 'flex'
+    }
+  },
+  saveNamePrompt() {
+    const n = document.getElementById('prompt-name').value.trim()
+    if (n.length > 0 && n.length < 3) {
+      toast('Please enter a valid name', 'darkred')
+      return
+    }
+    S.name = n || 'Traffic Hero'
+    save()
+    document.getElementById('name-prompt-dlg').style.display = 'none'
+    toast('Welcome, ' + S.name + '!', '#3b8c66')
+    const cnameEl = document.getElementById('cname')
+    if (cnameEl) {
+      cnameEl.innerText = S.name.toUpperCase()
+    }
+  },
+  showProfile() {
+    if (!window.colUser) {
+      if (window.openGlobalLogin) window.openGlobalLogin()
+      else if (window.openLogin) window.openLogin()
+      return
+    }
+    window.location.href = 'TrafficDashboard.html'
+  },
+  saveProfile() {
+    const n = document.getElementById('prof-name').value.trim()
+    const v = document.getElementById('prof-veh').value
+    if (n.length > 0 && n.length < 3) {
+      toast('Please enter a valid name', 'darkred')
+      return
+    }
+    S.name = n
+    S.vehicle = v
+    save()
+    document.getElementById('profile-dlg').style.display = 'none'
+    toast('Profile Saved!', '#3b8c66')
+
+    const cnameEl = document.getElementById('cname')
+    if (cnameEl) {
+      cnameEl.innerText = S.name || 'DRIVER'
+    }
+  },
+  showCert(badgeId = null) {
+    this.show('screen-certificate')
+
+    const cname = document.getElementById('cname')
+    if (cname) cname.innerText = (S.name || 'DRIVER').toUpperCase()
+
+    const certNum = document.getElementById('cert-num')
+    if (certNum) {
+      if (!S.certId) {
+        S.certId = 'CERT-' + Math.floor(Math.random() * 1000000)
+        save()
+      }
+    }
+
+    const cTitle = document.getElementById('cert-title')
+    const cIcon = document.getElementById('cert-icon')
+    const cStat = document.getElementById('cstat')
+    const cScoreLbl = document.getElementById('cscore')
+
+    if (badgeId && typeof BADGES !== 'undefined') {
+      const b = BADGES.find((x) => x.id === badgeId)
+      if (b) {
+        if (cTitle) cTitle.innerText = b.name
+        if (cIcon) {
+          cIcon.innerText = b.icon
+          cIcon.style.display = 'block'
         }
-      },
-      saveNamePrompt() {
-        const n = document.getElementById('prompt-name').value.trim();
-        if(n.length > 0 && n.length < 3) { toast('Please enter a valid name', 'darkred'); return; }
-        S.name = n || 'Traffic Hero';
-        save();
-        document.getElementById('name-prompt-dlg').style.display = 'none';
-        toast('Welcome, ' + S.name + '!', '#3b8c66');
-        const cnameEl = document.getElementById('cname');
-        if(cnameEl) { cnameEl.innerText = S.name.toUpperCase(); }
-      },
-      showProfile() {
-        if (!window.colUser) {
-           if(window.openGlobalLogin) window.openGlobalLogin(); else if(window.openLogin) window.openLogin();
-           return;
-        }
-        window.location.href = 'TrafficDashboard.html';
-      },
-    saveProfile() {
-        const n = document.getElementById('prof-name').value.trim();
-        const v = document.getElementById('prof-veh').value;
-        if(n.length > 0 && n.length < 3) { toast('Please enter a valid name', 'darkred'); return; }
-        S.name = n;
-        S.vehicle = v;
-        save();
-        document.getElementById('profile-dlg').style.display = 'none';
-        toast('Profile Saved!', '#3b8c66');
-        
-        const cnameEl = document.getElementById('cname');
-        if(cnameEl) { cnameEl.innerText = S.name || 'DRIVER'; }
-    },
-    showCert(badgeId = null) {
-        this.show('screen-certificate');
-        
-        const cname = document.getElementById('cname');
-        if (cname) cname.innerText = (S.name || 'DRIVER').toUpperCase();
-        
-        const certNum = document.getElementById('cert-num');
-        if (certNum) {
-            if (!S.certId) { S.certId = 'CERT-' + Math.floor(Math.random()*1000000); save(); }
-        }
-        
-        const cTitle = document.getElementById('cert-title');
-        const cIcon = document.getElementById('cert-icon');
-        const cStat = document.getElementById('cstat');
-        const cScoreLbl = document.getElementById('cscore');
-        
-        if (badgeId && typeof BADGES !== 'undefined') {
-            const b = BADGES.find(x => x.id === badgeId);
-            if (b) {
-                if(cTitle) cTitle.innerText = b.name;
-                if(cIcon) { cIcon.innerText = b.icon; cIcon.style.display = 'block'; }
-                if(cStat) cStat.innerText = `ACHIEVEMENT UNLOCKED: ${b.desc}`;
-                if(certNum) certNum.innerText = `BDG-${badgeId.toUpperCase().replace(/[^A-Z]/g,'').substring(0,5)}-${Math.floor(Math.random()*10000)}`;
-                if(cScoreLbl) cScoreLbl.innerText = "Mastered";
-                return;
-            }
-        }
-        
-        // Default behavior
-        if(cTitle) cTitle.innerText = "Traffic Hero Certification";
-        if(cIcon) cIcon.style.display = 'none';
-        
-        let totalScore = 0, count = 0;
-        if (S.scores) { for (let k in S.scores) { totalScore += S.scores[k]; count++; } }
-        let avgScore = count > 0 ? (totalScore / count) : 0;
-        if(cStat) cStat.innerText = `COMPLETED WITH ${Math.round(avgScore)}% PROFICIENCY`;
-        if(cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`;
-        if(certNum) certNum.innerText = S.certId;
-    },
-    showBadges() {
-        this.show('screen-badges');
-        
-        const statsBody = document.getElementById('stats-body');
-        if (statsBody) {
-            const startedCount = S.started ? Object.keys(S.started).length : 0;
-            statsBody.innerHTML = `
+        if (cStat) cStat.innerText = `ACHIEVEMENT UNLOCKED: ${b.desc}`
+        if (certNum)
+          certNum.innerText = `BDG-${badgeId
+            .toUpperCase()
+            .replace(/[^A-Z]/g, '')
+            .substring(0, 5)}-${Math.floor(Math.random() * 10000)}`
+        if (cScoreLbl) cScoreLbl.innerText = 'Mastered'
+        return
+      }
+    }
+
+    // Default behavior
+    if (cTitle) cTitle.innerText = 'Traffic Hero Certification'
+    if (cIcon) cIcon.style.display = 'none'
+
+    let totalScore = 0,
+      count = 0
+    if (S.scores) {
+      for (let k in S.scores) {
+        totalScore += S.scores[k]
+        count++
+      }
+    }
+    let avgScore = count > 0 ? totalScore / count : 0
+    if (cStat) cStat.innerText = `COMPLETED WITH ${Math.round(avgScore)}% PROFICIENCY`
+    if (cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`
+    if (certNum) certNum.innerText = S.certId
+  },
+  showBadges() {
+    this.show('screen-badges')
+
+    const statsBody = document.getElementById('stats-body')
+    if (statsBody) {
+      const startedCount = S.started ? Object.keys(S.started).length : 0
+      statsBody.innerHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <div style="color:#666;font-size:0.9rem;font-weight:600;">COMPLETED LEVELS</div>
                     <div style="font-weight:700;color:var(--accent);">${Object.keys(S.comp).length}/20</div>
@@ -239,68 +330,107 @@ let _tt = null;
                     <div style="color:#666;font-size:0.9rem;font-weight:600;">TOTAL BADGES</div>
                     <div style="font-weight:700;color:#9b59b6;">${S.badges ? S.badges.length : 0}</div>
                 </div>
-            `;
-        }
-        
-        const bgrid = document.getElementById('bgrid');
-        if (bgrid && typeof BADGES !== 'undefined') {
-            let bHtml = '';
-            BADGES.forEach(b => {
-                const has = S.badges && S.badges.includes(b.id);
-                bHtml += `
+            `
+    }
+
+    const bgrid = document.getElementById('bgrid')
+    if (bgrid && typeof BADGES !== 'undefined') {
+      let bHtml = ''
+      BADGES.forEach((b) => {
+        const has = S.badges && S.badges.includes(b.id)
+        bHtml += `
                     <div style="background:#fff;padding:20px;border-radius:12px;border:2px solid ${has ? '#ffd54a' : '#eee'};text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.05);filter:${has ? 'none' : 'grayscale(1)'};opacity:${has ? '1' : '0.5'};${has ? 'cursor:pointer;' : ''}" ${has ? `onclick="ui.showCert('${b.id}')"` : ''}>
                         <div style="font-size:3rem;margin-bottom:10px;">${b.icon}</div>
                         <div style="font-weight:700;margin-bottom:6px;color:#2c3e50;">${b.name}</div>
                         <div style="font-size:0.85rem;color:#666;">${b.desc}</div>
                         ${has ? `<div style="margin-top:12px; font-size:0.75rem; color:#ffd54a; font-weight:bold; text-transform:uppercase;">Click to view Certificate</div>` : ''}
                     </div>
-                `;
-            });
-            bgrid.innerHTML = bHtml;
-        }
-    },
-    dlCert() {
-        if(typeof html2pdf !== 'undefined') {
-            const el = document.getElementById('cert-wrapper');
-            html2pdf().set({
-                margin: 0,
-                filename: 'Traffic_Hero_Certificate.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-            }).from(el).save();
-        } else {
-            alert('PDF library not loaded. Please ensure you have internet access.');
-        }
-    },
+                `
+      })
+      bgrid.innerHTML = bHtml
+    }
+  },
+  dlCert() {
+    if (typeof html2pdf !== 'undefined') {
+      const el = document.getElementById('cert-wrapper')
+      html2pdf()
+        .set({
+          margin: 0,
+          filename: 'Traffic_Hero_Certificate.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        })
+        .from(el)
+        .save()
+    } else {
+      alert('PDF library not loaded. Please ensure you have internet access.')
+    }
+  },
 
-      showStart() { 
-          if(window.location.pathname.toLowerCase().includes('driving')) {
-              window.location.href = 'Academy.html';
-              return;
-          }
-          this.show('ss'); 
-          this._rain(); 
-          if (!S.name || S.name === 'Traffic Hero') { 
-              setTimeout(() => this.showNamePrompt(), 1000); 
-          } 
-      },
-      showNameDlg() { document.getElementById('name-dlg').classList.add('on'); setTimeout(() => { const i = document.getElementById('name-input'); if (i) i.focus(); }, 200); },
-      _rain() { const r = document.getElementById('rl'); if (r && !r._b) { r._b = 1; for (let i = 0; i < 30; i++) { const d = document.createElement('div'); d.className = 'rd'; d.style.left = Math.random() * 100 + '%'; d.style.height = (50 + Math.random() * 50) + 'px'; d.style.animationDuration = ('.6' + Math.random() * .5) + 's'; r.appendChild(d); } } },
-      showLevels_old() { this.show('screen-levels'); this._bldLvs(); },
-      _bldLvs() {
-        const body = document.getElementById('lvbody'); body.innerHTML = '';
-        const done = Object.keys(S.comp).length; document.getElementById('pchip').textContent = done + '/6 ✅';
-        const secs = [{ t: '🔰 Fundamentals & Mixed Rules', ids: [1, 2] }, { t: '🔰 Highways & Speed', ids: [3] }, { t: '🎓 Special Systems', ids: [4, 5, 6] }];
-        secs.forEach(sec => {
-          const sh = document.createElement('div'); sh.className = 'sec-hdr'; sh.textContent = sec.t; body.appendChild(sh);
-          const tr = document.createElement('div'); tr.className = 'lv-track';
-          sec.ids.forEach(id => {
-            const lv = LVS.find(l => l.id === id), idx = LVS.indexOf(lv);
-            const isDone = (lvlId) => S.comp[lvlId]?.finalQuiz || (S.comp[lvlId] && S.comp[lvlId].score !== undefined && Object.keys(S.comp[lvlId]).length > 1);
-            const un = idx === 0 || isDone(LVS[idx - 1].id); const cm = !!isDone(lv.id); const ip = !cm && un;
-            const c = document.createElement('div'); c.className = 'lcard' + (cm ? ' done' : '') + (un ? '' : ' lk');
-            c.innerHTML = `
+  showStart() {
+    if (window.location.pathname.toLowerCase().includes('driving')) {
+      window.location.href = 'Academy.html'
+      return
+    }
+    this.show('ss')
+    this._rain()
+    if (!S.name || S.name === 'Traffic Hero') {
+      setTimeout(() => this.showNamePrompt(), 1000)
+    }
+  },
+  showNameDlg() {
+    document.getElementById('name-dlg').classList.add('on')
+    setTimeout(() => {
+      const i = document.getElementById('name-input')
+      if (i) i.focus()
+    }, 200)
+  },
+  _rain() {
+    const r = document.getElementById('rl')
+    if (r && !r._b) {
+      r._b = 1
+      for (let i = 0; i < 30; i++) {
+        const d = document.createElement('div')
+        d.className = 'rd'
+        d.style.left = Math.random() * 100 + '%'
+        d.style.height = 50 + Math.random() * 50 + 'px'
+        d.style.animationDuration = '.6' + Math.random() * 0.5 + 's'
+        r.appendChild(d)
+      }
+    }
+  },
+  showLevels_old() {
+    this.show('screen-levels')
+    this._bldLvs()
+  },
+  _bldLvs() {
+    const body = document.getElementById('lvbody')
+    body.innerHTML = ''
+    const done = Object.keys(S.comp).length
+    document.getElementById('pchip').textContent = done + '/6 ✅'
+    const secs = [
+      { t: '🔰 Fundamentals & Mixed Rules', ids: [1, 2] },
+      { t: '🔰 Highways & Speed', ids: [3] },
+      { t: '🎓 Special Systems', ids: [4, 5, 6] }
+    ]
+    secs.forEach((sec) => {
+      const sh = document.createElement('div')
+      sh.className = 'sec-hdr'
+      sh.textContent = sec.t
+      body.appendChild(sh)
+      const tr = document.createElement('div')
+      tr.className = 'lv-track'
+      sec.ids.forEach((id) => {
+        const lv = LVS.find((l) => l.id === id),
+          idx = LVS.indexOf(lv)
+        const isDone = (lvlId) => S.comp[lvlId]?.finalQuiz || (S.comp[lvlId] && S.comp[lvlId].score !== undefined && Object.keys(S.comp[lvlId]).length > 1)
+        const un = idx === 0 || isDone(LVS[idx - 1].id)
+        const cm = !!isDone(lv.id)
+        const ip = !cm && un
+        const c = document.createElement('div')
+        c.className = 'lcard' + (cm ? ' done' : '') + (un ? '' : ' lk')
+        c.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div style="font-family:'Lora', serif; font-size:1.3rem; font-weight:600; color:#111827; margin-bottom:10px; line-height:1.2;">
                         ${lv.icon || ''} Level ${lv.id}: ${lv.name}
@@ -311,95 +441,123 @@ let _tt = null;
                 </div>
                 <div style="font-size:0.9rem; color:#64748B; line-height:1.5;">${lv.ds || ''}</div>
                 <div style="margin-top:12px; font-size:0.8rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em;">${un ? (cm ? '✔ Completed' : '▶ Start Module') : '🔒 Locked'}</div>
-            `;
-            if (un) { c.onclick = () => this.showBriefing(lv.id); }
-            tr.appendChild(c);
-          }); body.appendChild(tr);
-        });
-      },
-      showBriefing(lid) {
-        const lv = LVS.find(l => l.id === lid); this.cur = lv;
-        if (!S.started) S.started = {};
-        if (!S.started[lv.id]) { S.started[lv.id] = Date.now(); save(); }
-        document.getElementById('blt').textContent = 'Level ' + lv.id; document.getElementById('bvh').textContent = lv.v;
-        const items = [
-          { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
-          ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
-          { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' },
-          { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' },
-          { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' }
-        ];
-        this._sylItems = items; this._sylViewed = new Set(); this._sylLv = lv;
-        const list = document.getElementById('br-syllabus'); list.innerHTML = '';
-        items.forEach(it => {
-          const el = document.createElement('div'); el.className = 'syl-item'; el.id = 'syl-' + it.id;
-          el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`;
-          el.onclick = () => this._selSyl(it.id); list.appendChild(el);
-        });
-        this._selSyl('intro'); this.show('screen-briefing');
-      },
-      _selSyl(id) {
-        const lv = this._sylLv, items = this._sylItems;
-        if (!lv) return;
-        this._disposeBriefingScene();
-        ui.curMode = ui.curMode || (lv.modes ? lv.modes[0] : 'car');
-        document.querySelectorAll('.syl-item').forEach(el => el.classList.remove('syl-active'));
-        const el = document.getElementById('syl-' + id); if (el) el.classList.add('syl-active');
-        if (!this._sylViewed.has(id)) {
-          this._sylViewed.add(id);
-          const sylEl = document.getElementById('syl-' + id); if (sylEl) sylEl.classList.add('syl-done');
-          const pct = Math.round(this._sylViewed.size / items.length * 100);
-          document.getElementById('br-prog-fill').style.width = pct + '%'; document.getElementById('br-prog-label').textContent = pct + '%';
+            `
+        if (un) {
+          c.onclick = () => this.showBriefing(lv.id)
         }
-        const rContainer = document.querySelector('.br-r');
-        if (rContainer) {
-          if (id === 'practical') { rContainer.style.marginTop = '45px'; }
-          else { rContainer.style.marginTop = '118px'; }
-        }
-        const c = document.getElementById('br-content'); c.innerHTML = '';
-        const card = document.createElement('div'); card.className = 'bc-card';
-        if (id === 'intro') {
-          card.innerHTML = `<div class="bc-ttl">📖 Module Overview</div>
+        tr.appendChild(c)
+      })
+      body.appendChild(tr)
+    })
+  },
+  showBriefing(lid) {
+    const lv = LVS.find((l) => l.id === lid)
+    this.cur = lv
+    if (!S.started) S.started = {}
+    if (!S.started[lv.id]) {
+      S.started[lv.id] = Date.now()
+      save()
+    }
+    document.getElementById('blt').textContent = 'Level ' + lv.id
+    document.getElementById('bvh').textContent = lv.v
+    const items = [
+      { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
+      ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
+      { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' },
+      { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' },
+      { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' }
+    ]
+    this._sylItems = items
+    this._sylViewed = new Set()
+    this._sylLv = lv
+    const list = document.getElementById('br-syllabus')
+    list.innerHTML = ''
+    items.forEach((it) => {
+      const el = document.createElement('div')
+      el.className = 'syl-item'
+      el.id = 'syl-' + it.id
+      el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
+      el.onclick = () => this._selSyl(it.id)
+      list.appendChild(el)
+    })
+    this._selSyl('intro')
+    this.show('screen-briefing')
+  },
+  _selSyl(id) {
+    const lv = this._sylLv,
+      items = this._sylItems
+    if (!lv) return
+    this._disposeBriefingScene()
+    ui.curMode = ui.curMode || (lv.modes ? lv.modes[0] : 'car')
+    document.querySelectorAll('.syl-item').forEach((el) => el.classList.remove('syl-active'))
+    const el = document.getElementById('syl-' + id)
+    if (el) el.classList.add('syl-active')
+    if (!this._sylViewed.has(id)) {
+      this._sylViewed.add(id)
+      const sylEl = document.getElementById('syl-' + id)
+      if (sylEl) sylEl.classList.add('syl-done')
+      const pct = Math.round((this._sylViewed.size / items.length) * 100)
+      document.getElementById('br-prog-fill').style.width = pct + '%'
+      document.getElementById('br-prog-label').textContent = pct + '%'
+    }
+    const rContainer = document.querySelector('.br-r')
+    if (rContainer) {
+      if (id === 'practical') {
+        rContainer.style.marginTop = '45px'
+      } else {
+        rContainer.style.marginTop = '118px'
+      }
+    }
+    const c = document.getElementById('br-content')
+    c.innerHTML = ''
+    const card = document.createElement('div')
+    card.className = 'bc-card'
+    if (id === 'intro') {
+      card.innerHTML = `<div class="bc-ttl">📖 Module Overview</div>
      <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem, 4vw, 2.5rem);color:var(--yellow);margin-bottom:8px">${lv.name}</div>
      <div style="font-size:clamp(0.95rem, 2vw, 1.35rem);color:var(--muted2);line-height:1.5;margin-bottom:16px">${lv.ds}</div>
      <div class="stat-row">
        <div class="stat-box"><div class="stat-val">${lv.hps.length}</div><div class="stat-lbl">Mandates</div></div>
        <div class="stat-box"><div class="stat-val">${lv.law.fine}</div><div class="stat-lbl">Penalty</div></div>
-     </div>`;
-        } else if (id.startsWith('rule')) {
-          const idx = parseInt(id.replace('rule', '')); const hp = lv.hps[idx];
-          let hpTitle = hp, hpDesc = '';
-          if (hp.includes(':')) {
-            const parts = hp.split(':');
-            hpTitle = parts[0];
-            hpDesc = parts.slice(1).join(':').trim();
-          }
-          card.innerHTML = `<div class="bc-ttl" style="text-align:center;">⚖️ Regulatory Requirement</div>
+     </div>`
+    } else if (id.startsWith('rule')) {
+      const idx = parseInt(id.replace('rule', ''))
+      const hp = lv.hps[idx]
+      let hpTitle = hp,
+        hpDesc = ''
+      if (hp.includes(':')) {
+        const parts = hp.split(':')
+        hpTitle = parts[0]
+        hpDesc = parts.slice(1).join(':').trim()
+      }
+      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">⚖️ Regulatory Requirement</div>
           <div class="bc-rule-pill" style="display:block; text-align:center; margin:12px auto 20px; padding:6px 16px; background:rgba(242,184,75,0.15); color:var(--signal); border-radius:12px; font-weight:800; font-size:0.9rem; letter-spacing:1.5px; text-transform:uppercase;">Clause ${idx + 1}</div>
           <div class="bc-rule-txt" style="text-align:center; font-family:'Lora', serif; font-size:clamp(1.6rem, 4vw, 2.4rem); color:var(--ink); line-height:1.3; font-weight:700; max-width:600px; margin:0 auto;">${hpTitle}</div>
           ${hpDesc ? `<div style="margin-top:20px; text-align:center; font-family:'Inter', sans-serif; font-size:clamp(1rem, 2vw, 1.2rem); color:var(--dim); line-height:1.7; max-width:540px; margin:20px auto 0;">${hpDesc}</div>` : ''}
-          <div class="bc-next-btn" style="display:flex;justify-content:space-between; margin-top:32px; padding-top:20px; border-top:1px solid var(--line);"><button class="btn btn-s" style="background:transparent; border:1px solid var(--line); color:var(--ink);" onclick="ui._selSyl('${idx > 0 ? 'rule' + (idx - 1) : 'intro'}')">${'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>'} Previous</button>${idx < lv.hps.length - 1 ? `<button class="btn" style="background:var(--ink); color:var(--void);" onclick="ui._selSyl('rule${idx + 1}')">Next Clause &rarr;</button>` : `<button class="btn" style="background:var(--signal); color:#000;" onclick="ui._selSyl('law')">Legal Framework &rarr;</button>`}</div>`;
-        } else if (id === 'law') {
-          const lawEn = lv.law;
-          const lawHi = { sec: lv.law.secHi || lv.law.sec, fine: lv.law.fineHi || lv.law.fine, off: lv.law.offHi || lv.law.off };
-          this._lawLang = this._lawLang || 'en';
-          const d = this._lawLang === 'hi' ? lawHi : lawEn;
-          const langLabel = this._lawLang === 'hi' ? 'English' : 'हिन्दी';
-          card.innerHTML = `<div class="bc-ttl" style="text-align:center;">🏛️ Statutory Provisions / कानूनी प्रावधान</div>
+          <div class="bc-next-btn" style="display:flex;justify-content:space-between; margin-top:32px; padding-top:20px; border-top:1px solid var(--line);"><button class="btn btn-s" style="background:transparent; border:1px solid var(--line); color:var(--ink);" onclick="ui._selSyl('${idx > 0 ? 'rule' + (idx - 1) : 'intro'}')">${'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>'} Previous</button>${idx < lv.hps.length - 1 ? `<button class="btn" style="background:var(--ink); color:var(--void);" onclick="ui._selSyl('rule${idx + 1}')">Next Clause &rarr;</button>` : `<button class="btn" style="background:var(--signal); color:#000;" onclick="ui._selSyl('law')">Legal Framework &rarr;</button>`}</div>`
+    } else if (id === 'law') {
+      const lawEn = lv.law
+      const lawHi = { sec: lv.law.secHi || lv.law.sec, fine: lv.law.fineHi || lv.law.fine, off: lv.law.offHi || lv.law.off }
+      this._lawLang = this._lawLang || 'en'
+      const d = this._lawLang === 'hi' ? lawHi : lawEn
+      const langLabel = this._lawLang === 'hi' ? 'English' : 'हिन्दी'
+      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">🏛️ Statutory Provisions / कानूनी प्रावधान</div>
           <div style="text-align:center; margin:12px auto;"><button class="btn btn-s" style="background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.1); color:var(--ink); font-size:0.85rem; padding:6px 16px; border-radius:8px;" onclick="ui._lawLang=ui._lawLang==='hi'?'en':'hi'; ui._selSyl('law')">${langLabel}</button></div>
           <div class="lb" style="text-align:center; margin:16px auto; max-width:500px;"><div class="ls" style="font-size:1.3rem; font-weight:800;">${d.sec}</div><div class="lt" style="font-size:1.1rem; margin-top:8px;">${d.off}</div></div>
           <div class="fr" style="text-align:center; max-width:400px; margin:20px auto;"><div class="fl" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Fine / जुर्माना</div><div class="fa" style="font-size:2.4rem; font-weight:800;">${d.fine}</div></div>
-     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('rule'+(lv.hps.length-1))"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('theory')">Concepts &rarr;</button></div>`;
-        } else if (id === 'theory') {
-          card.innerHTML = `<div class="bc-ttl" style="text-align:center;">📊 Analytical Model</div><div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${lv.theory}</div>
-     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`;
-        } else if (id === 'practical') {
-          const btnsHTML = (lv.modes || ['car']).map(m => {
-            const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚛', bus: '🚌', pedestrian: '🚶' };
-            return `<button class="btn" style="flex:1; min-width:0; text-transform:capitalize; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); color:var(--text, #111827); font-weight:700; padding:12px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:6px;" onclick="ui.showQuiz('${m}')"><span style="font-size:1.5rem;">${icons[m] || '🚗'}</span><span style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px;">${m}</span></button>`;
-          }).join('');
-          const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 32px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3);" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`;
-          card.innerHTML = `<div class="bc-ttl">🎯 Practical Execution</div>
+     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('rule'+(lv.hps.length-1))"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('theory')">Concepts &rarr;</button></div>`
+    } else if (id === 'theory') {
+      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">📊 Analytical Model</div><div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${lv.theory}</div>
+     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`
+    } else if (id === 'practical') {
+      const btnsHTML = (lv.modes || ['car'])
+        .map((m) => {
+          const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚛', bus: '🚌', pedestrian: '🚶' }
+          return `<button class="btn" style="flex:1; min-width:0; text-transform:capitalize; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); color:var(--text, #111827); font-weight:700; padding:12px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:6px;" onclick="ui.showQuiz('${m}')"><span style="font-size:1.5rem;">${icons[m] || '🚗'}</span><span style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px;">${m}</span></button>`
+        })
+        .join('')
+      const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 32px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3);" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`
+      card.innerHTML = `<div class="bc-ttl">🎯 Practical Execution</div>
       <div style="display:flex; flex-direction:column; gap:32px; margin-bottom: 24px;">
         
         <!-- Top: Visual Tutorial -->
@@ -463,678 +621,963 @@ let _tt = null;
       <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(0,0,0,0.06); padding-top:20px;">
         <button class="btn btn-s" onclick="ui._selSyl('theory')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button>
         ${finalBtn}
-      </div>`;
-        }
-        c.appendChild(card);
-        if (id === 'practical' && typeof THREE !== 'undefined') {
-          requestAnimationFrame(() => this._initBriefingScene(lv));
-        }
-      },
-      _diag(id) {
-        const lv = LVS.find(l => l.id === id); if (!lv) return '';
-        return `<div style="background:${lv.gr};border-radius:14px;padding:clamp(16px, 2.5vw, 24px) clamp(16px, 3vw, 30px);margin-bottom:16px;display:flex;align-items:center;gap:clamp(12px, 3vw, 24px)">
+      </div>`
+    }
+    c.appendChild(card)
+    if (id === 'practical' && typeof THREE !== 'undefined') {
+      requestAnimationFrame(() => this._initBriefingScene(lv))
+    }
+  },
+  _diag(id) {
+    const lv = LVS.find((l) => l.id === id)
+    if (!lv) return ''
+    return `<div style="background:${lv.gr};border-radius:14px;padding:clamp(16px, 2.5vw, 24px) clamp(16px, 3vw, 30px);margin-bottom:16px;display:flex;align-items:center;gap:clamp(12px, 3vw, 24px)">
      <div style="font-size:clamp(2.5rem, 5vw, 4.5rem)">${lv.icon}</div>
      <div>
        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem, 2.5vw, 2rem);color:#fff;letter-spacing:.05em">${lv.name}</div>
        <div style="font-size:clamp(0.8rem, 1.5vw, 1.1rem);color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em">${lv.v} · Fine: ${lv.law.fine}</div>
-     </div></div>`;
-      },
-      _simAnim(lv) {
-        return `<div id="briefing-canvas-wrap" style="position:relative; width:100%; height:clamp(200px, 32vw, 280px); border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); background:#1a1f2e;">
+     </div></div>`
+  },
+  _simAnim(lv) {
+    return `<div id="briefing-canvas-wrap" style="position:relative; width:100%; height:clamp(200px, 32vw, 280px); border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); background:#1a1f2e;">
           <div style="position:absolute; top:12px; left:12px; color:var(--muted2, #6B7280); font-size:0.7rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(255,255,255,0.75); padding:6px 14px; border-radius:8px; letter-spacing:1.2px; backdrop-filter:blur(8px); border:1px solid rgba(0,0,0,0.06); font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>
-        </div>`;
-      },
-      _disposeBriefingScene() {
-        if (this._bScene) {
-          if (this._bAnimId) { cancelAnimationFrame(this._bAnimId); this._bAnimId = null; }
-          if (this._bRenderer) { this._bRenderer.dispose(); this._bRenderer = null; }
-          if (this._bScene) { this._bScene.traverse(c => { if (c.geometry) c.geometry.dispose(); if (c.material) { if (Array.isArray(c.material)) c.material.forEach(m => m.dispose()); else c.material.dispose(); } }); this._bScene = null; }
-          this._bCamera = null;
-        }
-      },
-      _initBriefingScene(lv) {
-        if (typeof THREE === 'undefined') return;
-        const wrap = document.getElementById('briefing-canvas-wrap');
-        if (!wrap) return;
-        this._disposeBriefingScene();
-        const W = wrap.clientWidth || 600, H = wrap.clientHeight || 280;
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(38, W / H, 0.1, 200);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(W, H); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setClearColor(0x1a1f2e, 1);
-        const oldCanvas = wrap.querySelector('canvas');
-        if (oldCanvas) oldCanvas.remove();
-        wrap.appendChild(renderer.domElement);
-        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-        const dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(5, 10, 7); scene.add(dl);
-        const theme = lv.themeType || 'default';
-        const t = new THREE.Group(); scene.add(t);
-        const isPed = (lv.modes || []).includes('pedestrian');
-        const isNight = lv.themeType === 'night' || lv.themeType === 'night_blind_spot' || lv.themeType === 'speed_night';
-        if (isNight) { scene.fog = new THREE.Fog(0x0a0a12, 40, 100); renderer.setClearColor(0x0a0a12, 1); }
-        const groundG = new THREE.PlaneGeometry(80, 80);
-        const groundM = new THREE.MeshLambertMaterial({ color: isNight ? 0x222233 : 0x888888 });
-        const ground = new THREE.Mesh(groundG, groundM); ground.rotation.x = -Math.PI / 2; ground.position.y = -0.1; t.add(ground);
-        const roadG = new THREE.PlaneGeometry(80, 10);
-        const roadM = new THREE.MeshLambertMaterial({ color: 0x3d3f45 });
-        const road = new THREE.Mesh(roadG, roadM); road.rotation.x = -Math.PI / 2; road.position.y = 0.01; t.add(road);
-        const dashG = new THREE.PlaneGeometry(2, 0.15);
-        const dashM = new THREE.MeshBasicMaterial({ color: 0xD97706, transparent: true, opacity: 0.5 });
-        for (let dx = -36; dx < 36; dx += 5) { const d = new THREE.Mesh(dashG, dashM); d.rotation.x = -Math.PI / 2; d.position.set(dx, 0.02, 0); t.add(d); }
-        const edgeG = new THREE.PlaneGeometry(80, 0.08);
-        const edgeM = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 });
-        [-5, 5].forEach(z => { const e = new THREE.Mesh(edgeG, edgeM); e.rotation.x = -Math.PI / 2; e.position.set(0, 0.02, z); t.add(e); });
-        const swG = new THREE.PlaneGeometry(80, 4);
-        const swM = new THREE.MeshLambertMaterial({ color: 0xb5543a });
-        [-7, 7].forEach(z => { const sw = new THREE.Mesh(swG, swM); sw.rotation.x = -Math.PI / 2; sw.position.set(0, 0.005, z); t.add(sw); });
-        const carG = new THREE.BoxGeometry(1.4, 0.8, 2.8);
-        const carM = new THREE.MeshLambertMaterial({ color: isNight ? 0x4488cc : 0x3388ee });
-        const car = new THREE.Mesh(carG, carM); car.position.set(0, 0.5, 0); t.add(car);
-        const cabinG = new THREE.BoxGeometry(1.2, 0.5, 1.4);
-        const cabinM = new THREE.MeshLambertMaterial({ color: 0x222222 });
-        const cabin = new THREE.Mesh(cabinG, cabinM); cabin.position.set(0, 0.5, -0.3); car.add(cabin);
-        if (isNight) {
-          const hlpG = new THREE.SphereGeometry(0.08, 6, 6);
-          const hlpM = new THREE.MeshBasicMaterial({ color: 0xffffaa });
-          [[-0.5, 0.4, 1.45], [0.5, 0.4, 1.45]].forEach(p => { const hl = new THREE.Mesh(hlpG, hlpM); hl.position.set(...p); car.add(hl); });
-          const spotG = new THREE.ConeGeometry(1.2, 6, 8, 1, true);
-          const spotM = new THREE.MeshBasicMaterial({ color: 0xffffcc, transparent: true, opacity: 0.08, side: THREE.DoubleSide });
-          const spot = new THREE.Mesh(spotG, spotM); spot.rotation.x = Math.PI / 2; spot.position.set(0, 0.4, 5); car.add(spot);
-        }
-        const tlG = new THREE.BoxGeometry(0.5, 2, 0.5);
-        const tlM = new THREE.MeshLambertMaterial({ color: 0x444444 });
-        const pole = new THREE.Mesh(tlG, tlM); pole.position.set(12, 1, 6); t.add(pole);
-        const signalColors = [
-          { color: 0xff0000, y: 0.7 },
-          { color: 0xffaa00, y: 0 },
-          { color: 0x00cc00, y: -0.7 }
-        ];
-        const signalMeshes = signalColors.map(sc => {
-          const sg = new THREE.SphereGeometry(0.18, 8, 8);
-          const sm = new THREE.MeshBasicMaterial({ color: sc.color, transparent: true, opacity: 0.25 });
-          const s = new THREE.Mesh(sg, sm); s.position.set(0, sc.y, 0); pole.add(s); return s;
-        });
-        let trafficPhase = 0;
-        const carColors = [0x22aa55, 0xcc4444, 0xddaa22, 0x8844cc];
-        const npcs = [];
-        for (let i = 0; i < 3; i++) {
-          const nc = carColors[i % carColors.length];
-          const ncG = new THREE.BoxGeometry(1.3, 0.7, 2.6);
-          const ncM = new THREE.MeshLambertMaterial({ color: nc });
-          const npc = new THREE.Mesh(ncG, ncM);
-          npc.position.set(-10 - i * 8, 0.45, (i % 2 === 0) ? -2 : 2);
-          npc.userData = { speed: 2.5 + Math.random() * 1.5, startX: npc.position.x };
-          t.add(npc); npcs.push(npc);
-        }
-        if (theme === 'pedestrian_courtesy' || isPed) {
-          const pBodyG = new THREE.CylinderGeometry(0.2, 0.2, 0.7, 6);
-          const pBodyM = new THREE.MeshLambertMaterial({ color: 0xffcc88 });
-          const ped = new THREE.Mesh(pBodyG, pBodyM); ped.position.set(8, 0.55, 7); t.add(ped);
-          const headG = new THREE.SphereGeometry(0.18, 8, 8);
-          const headM = new THREE.MeshLambertMaterial({ color: 0xffcc88 });
-          const head = new THREE.Mesh(headG, headM); head.position.y = 0.55; ped.add(head);
-          ped.userData.isPed = true;
-        }
-        if (theme.includes('school') || theme.includes('children')) {
-          for (let i = 0; i < 3; i++) {
-            const chBody = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.5, 6), new THREE.MeshLambertMaterial({ color: [0xff6666, 0x66ccff, 0xffcc00][i] }));
-            chBody.position.set(6 + i * 2, 0.45, 6.5);
-            const chHead = new THREE.Mesh(new THREE.SphereGeometry(0.13, 6, 6), new THREE.MeshLambertMaterial({ color: 0xffcc88 }));
-            chHead.position.y = 0.4; chBody.add(chHead); t.add(chBody);
+        </div>`
+  },
+  _disposeBriefingScene() {
+    if (this._bScene) {
+      if (this._bAnimId) {
+        cancelAnimationFrame(this._bAnimId)
+        this._bAnimId = null
+      }
+      if (this._bRenderer) {
+        this._bRenderer.dispose()
+        this._bRenderer = null
+      }
+      if (this._bScene) {
+        this._bScene.traverse((c) => {
+          if (c.geometry) c.geometry.dispose()
+          if (c.material) {
+            if (Array.isArray(c.material)) c.material.forEach((m) => m.dispose())
+            else c.material.dispose()
           }
+        })
+        this._bScene = null
+      }
+      this._bCamera = null
+    }
+  },
+  _initBriefingScene(lv) {
+    if (typeof THREE === 'undefined') return
+    const wrap = document.getElementById('briefing-canvas-wrap')
+    if (!wrap) return
+    this._disposeBriefingScene()
+    const W = wrap.clientWidth || 600,
+      H = wrap.clientHeight || 280
+    const scene = new THREE.Scene()
+    const cam = new THREE.PerspectiveCamera(38, W / H, 0.1, 200)
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    renderer.setSize(W, H)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setClearColor(0x1a1f2e, 1)
+    const oldCanvas = wrap.querySelector('canvas')
+    if (oldCanvas) oldCanvas.remove()
+    wrap.appendChild(renderer.domElement)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6))
+    const dl = new THREE.DirectionalLight(0xffffff, 0.8)
+    dl.position.set(5, 10, 7)
+    scene.add(dl)
+    const theme = lv.themeType || 'default'
+    const t = new THREE.Group()
+    scene.add(t)
+    const isPed = (lv.modes || []).includes('pedestrian')
+    const isNight = lv.themeType === 'night' || lv.themeType === 'night_blind_spot' || lv.themeType === 'speed_night'
+    if (isNight) {
+      scene.fog = new THREE.Fog(0x0a0a12, 40, 100)
+      renderer.setClearColor(0x0a0a12, 1)
+    }
+    const groundG = new THREE.PlaneGeometry(80, 80)
+    const groundM = new THREE.MeshLambertMaterial({ color: isNight ? 0x222233 : 0x888888 })
+    const ground = new THREE.Mesh(groundG, groundM)
+    ground.rotation.x = -Math.PI / 2
+    ground.position.y = -0.1
+    t.add(ground)
+    const roadG = new THREE.PlaneGeometry(80, 10)
+    const roadM = new THREE.MeshLambertMaterial({ color: 0x3d3f45 })
+    const road = new THREE.Mesh(roadG, roadM)
+    road.rotation.x = -Math.PI / 2
+    road.position.y = 0.01
+    t.add(road)
+    const dashG = new THREE.PlaneGeometry(2, 0.15)
+    const dashM = new THREE.MeshBasicMaterial({ color: 0xd97706, transparent: true, opacity: 0.5 })
+    for (let dx = -36; dx < 36; dx += 5) {
+      const d = new THREE.Mesh(dashG, dashM)
+      d.rotation.x = -Math.PI / 2
+      d.position.set(dx, 0.02, 0)
+      t.add(d)
+    }
+    const edgeG = new THREE.PlaneGeometry(80, 0.08)
+    const edgeM = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 })
+    ;[-5, 5].forEach((z) => {
+      const e = new THREE.Mesh(edgeG, edgeM)
+      e.rotation.x = -Math.PI / 2
+      e.position.set(0, 0.02, z)
+      t.add(e)
+    })
+    const swG = new THREE.PlaneGeometry(80, 4)
+    const swM = new THREE.MeshLambertMaterial({ color: 0xb5543a })
+    ;[-7, 7].forEach((z) => {
+      const sw = new THREE.Mesh(swG, swM)
+      sw.rotation.x = -Math.PI / 2
+      sw.position.set(0, 0.005, z)
+      t.add(sw)
+    })
+    const carG = new THREE.BoxGeometry(1.4, 0.8, 2.8)
+    const carM = new THREE.MeshLambertMaterial({ color: isNight ? 0x4488cc : 0x3388ee })
+    const car = new THREE.Mesh(carG, carM)
+    car.position.set(0, 0.5, 0)
+    t.add(car)
+    const cabinG = new THREE.BoxGeometry(1.2, 0.5, 1.4)
+    const cabinM = new THREE.MeshLambertMaterial({ color: 0x222222 })
+    const cabin = new THREE.Mesh(cabinG, cabinM)
+    cabin.position.set(0, 0.5, -0.3)
+    car.add(cabin)
+    if (isNight) {
+      const hlpG = new THREE.SphereGeometry(0.08, 6, 6)
+      const hlpM = new THREE.MeshBasicMaterial({ color: 0xffffaa })
+      ;[
+        [-0.5, 0.4, 1.45],
+        [0.5, 0.4, 1.45]
+      ].forEach((p) => {
+        const hl = new THREE.Mesh(hlpG, hlpM)
+        hl.position.set(...p)
+        car.add(hl)
+      })
+      const spotG = new THREE.ConeGeometry(1.2, 6, 8, 1, true)
+      const spotM = new THREE.MeshBasicMaterial({ color: 0xffffcc, transparent: true, opacity: 0.08, side: THREE.DoubleSide })
+      const spot = new THREE.Mesh(spotG, spotM)
+      spot.rotation.x = Math.PI / 2
+      spot.position.set(0, 0.4, 5)
+      car.add(spot)
+    }
+    const tlG = new THREE.BoxGeometry(0.5, 2, 0.5)
+    const tlM = new THREE.MeshLambertMaterial({ color: 0x444444 })
+    const pole = new THREE.Mesh(tlG, tlM)
+    pole.position.set(12, 1, 6)
+    t.add(pole)
+    const signalColors = [
+      { color: 0xff0000, y: 0.7 },
+      { color: 0xffaa00, y: 0 },
+      { color: 0x00cc00, y: -0.7 }
+    ]
+    const signalMeshes = signalColors.map((sc) => {
+      const sg = new THREE.SphereGeometry(0.18, 8, 8)
+      const sm = new THREE.MeshBasicMaterial({ color: sc.color, transparent: true, opacity: 0.25 })
+      const s = new THREE.Mesh(sg, sm)
+      s.position.set(0, sc.y, 0)
+      pole.add(s)
+      return s
+    })
+    let trafficPhase = 0
+    const carColors = [0x22aa55, 0xcc4444, 0xddaa22, 0x8844cc]
+    const npcs = []
+    for (let i = 0; i < 3; i++) {
+      const nc = carColors[i % carColors.length]
+      const ncG = new THREE.BoxGeometry(1.3, 0.7, 2.6)
+      const ncM = new THREE.MeshLambertMaterial({ color: nc })
+      const npc = new THREE.Mesh(ncG, ncM)
+      npc.position.set(-10 - i * 8, 0.45, i % 2 === 0 ? -2 : 2)
+      npc.userData = { speed: 2.5 + Math.random() * 1.5, startX: npc.position.x }
+      t.add(npc)
+      npcs.push(npc)
+    }
+    if (theme === 'pedestrian_courtesy' || isPed) {
+      const pBodyG = new THREE.CylinderGeometry(0.2, 0.2, 0.7, 6)
+      const pBodyM = new THREE.MeshLambertMaterial({ color: 0xffcc88 })
+      const ped = new THREE.Mesh(pBodyG, pBodyM)
+      ped.position.set(8, 0.55, 7)
+      t.add(ped)
+      const headG = new THREE.SphereGeometry(0.18, 8, 8)
+      const headM = new THREE.MeshLambertMaterial({ color: 0xffcc88 })
+      const head = new THREE.Mesh(headG, headM)
+      head.position.y = 0.55
+      ped.add(head)
+      ped.userData.isPed = true
+    }
+    if (theme.includes('school') || theme.includes('children')) {
+      for (let i = 0; i < 3; i++) {
+        const chBody = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.5, 6), new THREE.MeshLambertMaterial({ color: [0xff6666, 0x66ccff, 0xffcc00][i] }))
+        chBody.position.set(6 + i * 2, 0.45, 6.5)
+        const chHead = new THREE.Mesh(new THREE.SphereGeometry(0.13, 6, 6), new THREE.MeshLambertMaterial({ color: 0xffcc88 }))
+        chHead.position.y = 0.4
+        chBody.add(chHead)
+        t.add(chBody)
+      }
+    }
+    if (theme.includes('market')) {
+      const stallG = new THREE.BoxGeometry(2, 1.2, 1.5)
+      const stallM = new THREE.MeshLambertMaterial({ color: 0xcc6633 })
+      const stall = new THREE.Mesh(stallG, stallM)
+      stall.position.set(-10, 0.6, 7)
+      t.add(stall)
+      const awningG = new THREE.PlaneGeometry(2.4, 1.6)
+      const awningM = new THREE.MeshLambertMaterial({ color: 0xdd4444, side: THREE.DoubleSide })
+      const awning = new THREE.Mesh(awningG, awningM)
+      awning.rotation.x = -0.3
+      awning.position.set(0, 0.7, 1)
+      stall.add(awning)
+    }
+    if (theme.includes('temple') || theme.includes('festival')) {
+      const tmG = new THREE.BoxGeometry(3, 2, 2)
+      const tmM = new THREE.MeshLambertMaterial({ color: 0xcc8844 })
+      const temple = new THREE.Mesh(tmG, tmM)
+      temple.position.set(-10, 1, -7)
+      t.add(temple)
+      const domeG = new THREE.SphereGeometry(0.8, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2)
+      const domeM = new THREE.MeshLambertMaterial({ color: 0xddaa44 })
+      const dome = new THREE.Mesh(domeG, domeM)
+      dome.position.y = 1
+      temple.add(dome)
+    }
+    cam.position.set(8, 14, 22)
+    cam.lookAt(0, 0, 0)
+    const start = performance.now()
+    const animate = () => {
+      const animId = requestAnimationFrame(animate)
+      this._bAnimId = animId
+      const elapsed = (performance.now() - start) / 1000
+      car.position.x = Math.sin(elapsed * 1.8) * 16
+      car.position.z = Math.sin(elapsed * 1.8) * 0.3
+      car.rotation.y = Math.sin(elapsed * 1.8) * 0.06
+      trafficPhase = (elapsed % 6) / 6
+      signalMeshes.forEach((s, i) => {
+        const activePhase = i
+        s.material.opacity = Math.floor(trafficPhase * 3) === activePhase ? 1.0 : 0.2
+      })
+      npcs.forEach((npc) => {
+        npc.position.x += npc.userData.speed * 0.016
+        if (npc.position.x > 30) npc.position.x = -30
+      })
+      t.children.forEach((c) => {
+        if (c.userData && c.userData.isPed) {
+          c.position.z = 7 + Math.sin(elapsed * 0.8) * 1.5
         }
-        if (theme.includes('market')) {
-          const stallG = new THREE.BoxGeometry(2, 1.2, 1.5);
-          const stallM = new THREE.MeshLambertMaterial({ color: 0xcc6633 });
-          const stall = new THREE.Mesh(stallG, stallM); stall.position.set(-10, 0.6, 7); t.add(stall);
-          const awningG = new THREE.PlaneGeometry(2.4, 1.6);
-          const awningM = new THREE.MeshLambertMaterial({ color: 0xdd4444, side: THREE.DoubleSide });
-          const awning = new THREE.Mesh(awningG, awningM); awning.rotation.x = -0.3; awning.position.set(0, 0.7, 1); stall.add(awning);
-        }
-        if (theme.includes('temple') || theme.includes('festival')) {
-          const tmG = new THREE.BoxGeometry(3, 2, 2);
-          const tmM = new THREE.MeshLambertMaterial({ color: 0xcc8844 });
-          const temple = new THREE.Mesh(tmG, tmM); temple.position.set(-10, 1, -7); t.add(temple);
-          const domeG = new THREE.SphereGeometry(0.8, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2);
-          const domeM = new THREE.MeshLambertMaterial({ color: 0xddaa44 });
-          const dome = new THREE.Mesh(domeG, domeM); dome.position.y = 1; temple.add(dome);
-        }
-        cam.position.set(8, 14, 22); cam.lookAt(0, 0, 0);
-        const start = performance.now();
-        const animate = () => {
-          const animId = requestAnimationFrame(animate);
-          this._bAnimId = animId;
-          const elapsed = (performance.now() - start) / 1000;
-          car.position.x = Math.sin(elapsed * 1.8) * 16;
-          car.position.z = Math.sin(elapsed * 1.8) * 0.3;
-          car.rotation.y = Math.sin(elapsed * 1.8) * 0.06;
-          trafficPhase = (elapsed % 6) / 6;
-          signalMeshes.forEach((s, i) => {
-            const activePhase = i;
-            s.material.opacity = Math.floor(trafficPhase * 3) === activePhase ? 1.0 : 0.2;
-          });
-          npcs.forEach(npc => {
-            npc.position.x += npc.userData.speed * 0.016;
-            if (npc.position.x > 30) npc.position.x = -30;
-          });
-          t.children.forEach(c => {
-            if (c.userData && c.userData.isPed) {
-              c.position.z = 7 + Math.sin(elapsed * 0.8) * 1.5;
-            }
-          });
-          cam.position.x = 8 + Math.sin(elapsed * 0.15) * 3;
-          cam.lookAt(0, 0, 0);
-          renderer.render(scene, cam);
-        };
-        animate();
-        this._bScene = scene; this._bCamera = cam; this._bRenderer = renderer;
-      },
-      dispatchStart(mode) {
-         mode = mode || this.curMode || 'car';
-         const lv = this.cur;
-         localStorage.setItem('traffic_lv', lv.id);
-         localStorage.setItem('traffic_mode', mode);
-         window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`;
-      },
-      showQuiz(mode) {
-        mode = mode || ui.curMode || 'car';
-        let qs = (this.cur.quiz && this.cur.quiz[mode]) ? this.cur.quiz[mode] : (this.cur.quiz ? this.cur.quiz.car : null);
-        if (!qs) {
-            qs = [
-                { q: `What is the primary rule for this scenario: ${this.cur.name}?`, o: [this.cur.law.sec, "Speed up", "Ignore signals", "Honk loudly"], a: 0 },
-                { q: `What is the penalty for ${this.cur.law.off}?`, o: [this.cur.law.fine, "₹100", "No fine", "Warning"], a: 0 },
-                { q: `If you fail to follow ${this.cur.themeType.replace('_', ' ')} rules, what happens?`, o: ["Accidents and fines", "Nothing", "You get a reward", "Traffic speeds up"], a: 0 }
-            ];
-            qs.forEach(q => {
-               const c = q.o[q.a];
-               const rIdx = Math.floor(Math.random() * 4);
-               q.o[q.a] = q.o[rIdx];
-               q.o[rIdx] = c;
-               q.a = rIdx;
-            });
-        }
-        this.qst = { qs: qs, cur: 0, pass: 0, mode: mode };
-        if (qs.length === 0) { this._fq(); return; }
-        this._rq(); 
-        this.show('screen-quiz'); 
-      },
-      _rq() {
-        const s = this.qst, q = s.qs[s.cur];
-        document.getElementById('qd').innerHTML = s.qs.map((_, i) => `<div class="qdt ${i < s.cur ? 'dn' : i === s.cur ? 'cu' : ''}"></div>`).join('');
-        document.getElementById('qa').innerHTML = `<div class="qcard"><div class="qq"><span>Q${s.cur + 1}</span>${q.q}</div><div class="qopts">${q.o.map((o, i) => `<button class="qo" onclick="ui._aq(${i})">${o}</button>`).join('')}</div><div class="qfb" id="qfb"></div></div>`;
-        document.getElementById('qnxt').style.display = 'none';
-      },
-      _aq(idx) {
-        const s = this.qst, q = s.qs[s.cur]; document.querySelectorAll('.qo').forEach(o => o.disabled = true);
-        document.querySelectorAll('.qo')[idx].classList.add(idx === q.a ? 'ok' : 'no');
-        if (idx !== q.a) document.querySelectorAll('.qo')[q.a].classList.add('rv');
-        const fb = document.getElementById('qfb');
-        if (idx === q.a) { fb.textContent = '✅ Correct!'; fb.className = 'qfb ok'; s.pass++; sfx.play('ok'); }
-        else { fb.textContent = `❌ Incorrect. Correct: "${q.o[q.a]}"`; fb.className = 'qfb no'; sfx.play('error'); }
-        const nb = document.getElementById('qnxt'); nb.style.display = 'inline-block'; nb.textContent = s.cur < s.qs.length - 1 ? 'Next  ' : 'See Results  ';
-      },
-      nextQ() { const s = this.qst; s.cur++; if (s.cur < s.qs.length) this._rq(); else this._fq(); },
-      _fq() {
-        const s = this.qst; 
-        if (s.pass < s.qs.length) { 
-          toast(`❌ ${s.pass}/${s.qs.length} correct 🔄 retry!`, '#ff3b30'); 
-          setTimeout(() => this.showQuiz(s.mode), 900); 
-          return; 
-        } 
-        if (s.mode === 'final') {
-          this.showResults(game?.fs || 100, game?.fst || { vio: 0 }); 
-        } else {
-          const lv = this.cur;
-          if (!S.comp[lv.id]) S.comp[lv.id] = {};
-          if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {};
-          S.comp[lv.id].modes[s.mode] = true;
-          save();
-          toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851');
-          if (window.location.pathname.toLowerCase().includes('driving')) {
-              window.location.href = 'Academy.html';
-          } else {
-              window.location.href = `Driving.html?lv=${lv.id}&mode=${s.mode}`;
-          }
-        }
-      },
-      showResults(score, stats) {
-        const lv = this.cur, prev = S.comp[lv.id]?.score || 0;
-        S.comp[lv.id] = { ...S.comp[lv.id], score: Math.max(score, prev), time: Date.now(), finalQuiz: true }; S.total += score; save();
-        let be = null;
-        if (lv.badge && !S.badges.includes(lv.badge.id)) { S.badges.push(lv.badge.id); be = lv.badge; }
-        if (!S.badges.includes('signal_master') && Object.keys(S.comp).length >= 5 && !stats.vio) S.badges.push('signal_master');
-        if (S.badges.includes('traffic_hero') && !S.badges.includes('smart_citizen')) S.badges.push('smart_citizen');
-        save();
-        document.getElementById('rico').textContent = score > 200 ? '🌟' : '⭐';
-        document.getElementById('rtit').textContent = 'Level Complete!';
-        document.getElementById('rsub').textContent = lv.name + ' 🔄 Well done!';
-        document.getElementById('rcard').innerHTML = `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 20</span></div>
+      })
+      cam.position.x = 8 + Math.sin(elapsed * 0.15) * 3
+      cam.lookAt(0, 0, 0)
+      renderer.render(scene, cam)
+    }
+    animate()
+    this._bScene = scene
+    this._bCamera = cam
+    this._bRenderer = renderer
+  },
+  dispatchStart(mode) {
+    mode = mode || this.curMode || 'car'
+    const lv = this.cur
+    localStorage.setItem('traffic_lv', lv.id)
+    localStorage.setItem('traffic_mode', mode)
+    window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`
+  },
+  showQuiz(mode) {
+    mode = mode || ui.curMode || 'car'
+    let qs = this.cur.quiz && this.cur.quiz[mode] ? this.cur.quiz[mode] : this.cur.quiz ? this.cur.quiz.car : null
+    if (!qs) {
+      qs = [
+        { q: `What is the primary rule for this scenario: ${this.cur.name}?`, o: [this.cur.law.sec, 'Speed up', 'Ignore signals', 'Honk loudly'], a: 0 },
+        { q: `What is the penalty for ${this.cur.law.off}?`, o: [this.cur.law.fine, '₹100', 'No fine', 'Warning'], a: 0 },
+        { q: `If you fail to follow ${this.cur.themeType.replace('_', ' ')} rules, what happens?`, o: ['Accidents and fines', 'Nothing', 'You get a reward', 'Traffic speeds up'], a: 0 }
+      ]
+      qs.forEach((q) => {
+        const c = q.o[q.a]
+        const rIdx = Math.floor(Math.random() * 4)
+        q.o[q.a] = q.o[rIdx]
+        q.o[rIdx] = c
+        q.a = rIdx
+      })
+    }
+    this.qst = { qs: qs, cur: 0, pass: 0, mode: mode }
+    if (qs.length === 0) {
+      this._fq()
+      return
+    }
+    this._rq()
+    this.show('screen-quiz')
+  },
+  _rq() {
+    const s = this.qst,
+      q = s.qs[s.cur]
+    document.getElementById('qd').innerHTML = s.qs.map((_, i) => `<div class="qdt ${i < s.cur ? 'dn' : i === s.cur ? 'cu' : ''}"></div>`).join('')
+    document.getElementById('qa').innerHTML =
+      `<div class="qcard"><div class="qq"><span>Q${s.cur + 1}</span>${q.q}</div><div class="qopts">${q.o.map((o, i) => `<button class="qo" onclick="ui._aq(${i})">${o}</button>`).join('')}</div><div class="qfb" id="qfb"></div></div>`
+    document.getElementById('qnxt').style.display = 'none'
+  },
+  _aq(idx) {
+    const s = this.qst,
+      q = s.qs[s.cur]
+    document.querySelectorAll('.qo').forEach((o) => (o.disabled = true))
+    document.querySelectorAll('.qo')[idx].classList.add(idx === q.a ? 'ok' : 'no')
+    if (idx !== q.a) document.querySelectorAll('.qo')[q.a].classList.add('rv')
+    const fb = document.getElementById('qfb')
+    if (idx === q.a) {
+      fb.textContent = '✅ Correct!'
+      fb.className = 'qfb ok'
+      s.pass++
+      sfx.play('ok')
+    } else {
+      fb.textContent = `❌ Incorrect. Correct: "${q.o[q.a]}"`
+      fb.className = 'qfb no'
+      sfx.play('error')
+    }
+    const nb = document.getElementById('qnxt')
+    nb.style.display = 'inline-block'
+    nb.textContent = s.cur < s.qs.length - 1 ? 'Next  ' : 'See Results  '
+  },
+  nextQ() {
+    const s = this.qst
+    s.cur++
+    if (s.cur < s.qs.length) this._rq()
+    else this._fq()
+  },
+  _fq() {
+    const s = this.qst
+    if (s.pass < s.qs.length) {
+      toast(`❌ ${s.pass}/${s.qs.length} correct 🔄 retry!`, '#ff3b30')
+      setTimeout(() => this.showQuiz(s.mode), 900)
+      return
+    }
+    if (s.mode === 'final') {
+      this.showResults(game?.fs || 100, game?.fst || { vio: 0 })
+    } else {
+      const lv = this.cur
+      if (!S.comp[lv.id]) S.comp[lv.id] = {}
+      if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
+      S.comp[lv.id].modes[s.mode] = true
+      save()
+      toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851')
+      if (window.location.pathname.toLowerCase().includes('driving')) {
+        window.location.href = 'Academy.html'
+      } else {
+        window.location.href = `Driving.html?lv=${lv.id}&mode=${s.mode}`
+      }
+    }
+  },
+  showResults(score, stats) {
+    const lv = this.cur,
+      prev = S.comp[lv.id]?.score || 0
+    S.comp[lv.id] = { ...S.comp[lv.id], score: Math.max(score, prev), time: Date.now(), finalQuiz: true }
+    S.total += score
+    save()
+    let be = null
+    if (lv.badge && !S.badges.includes(lv.badge.id)) {
+      S.badges.push(lv.badge.id)
+      be = lv.badge
+    }
+    if (!S.badges.includes('signal_master') && Object.keys(S.comp).length >= 5 && !stats.vio) S.badges.push('signal_master')
+    if (S.badges.includes('traffic_hero') && !S.badges.includes('smart_citizen')) S.badges.push('smart_citizen')
+    save()
+    document.getElementById('rico').textContent = score > 200 ? '🌟' : '⭐'
+    document.getElementById('rtit').textContent = 'Level Complete!'
+    document.getElementById('rsub').textContent = lv.name + ' 🔄 Well done!'
+    document.getElementById('rcard').innerHTML =
+      `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 20</span></div>
 ${stats.reward ? `<div class="rr"><span class="rl" style="color:#00c851">Level Reward</span><span class="rv" style="color:#00c851">+₹${stats.reward.toLocaleString('en-IN')}</span></div>` : ''}
 ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines Deducted</span><span class="rv" style="color:#ff3b30">-₹${stats.fineAmt.toLocaleString('en-IN')}</span></div>` : ''}
-<div class="rr" style="margin-top:10px; border-top:1px solid #333; padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:#f1c40f">₹${S.wallet.toLocaleString('en-IN')}</span></div>`;
-        document.getElementById('ro').classList.add('on'); sfx.play('win');
-      },
-      issueChallan(off, sec, amt, loc, cb) {
-        this.cq.push({ off, sec, amt, loc, cb });
-        if (!this.cbusy) this._nc();
-      },
-      _nc() {
-        if (!this.cq.length) { this.cbusy = false; return; } this.cbusy = true; const c = this.cq.shift();
-        const vf = document.getElementById('vflash'); if (vf) { vf.classList.remove('flash'); void vf.offsetWidth; vf.classList.add('flash'); } document.getElementById('cnum').textContent = 'MTP/2026/' + (Math.floor(Math.random() * 90000) + 10000); document.getElementById('coff').textContent = c.off; document.getElementById('claw').textContent = c.sec; document.getElementById('camt').textContent = c.amt; const locEl = document.getElementById('cloc'); if (locEl) locEl.textContent = c.loc || '📍 Mumbai'; document.getElementById('cov').classList.add('on'); this._ccb = c.cb || null; if (game.playing) game.pause = true; sfx.play('challan');
-      },
-      dismissChallan() {
-        const cov = document.getElementById('cov');
-        const cvc = document.getElementById('cvc-main');
-
-        // Create clone for animation
-        const rect = cvc.getBoundingClientRect();
-        const clone = cvc.cloneNode(true);
-        clone.id = '';
-        clone.style.position = 'fixed';
-        clone.style.top = rect.top + 'px';
-        clone.style.left = rect.left + 'px';
-        clone.style.width = rect.width + 'px';
-        clone.style.height = rect.height + 'px';
-        clone.style.margin = '0';
-        clone.style.zIndex = '999999';
-        clone.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-        document.body.appendChild(clone);
-
-        // Hide original immediately
-        cov.classList.remove('on');
-
-        // Trigger animation
-        setTimeout(() => {
-          clone.style.transform = 'scale(0.2)';
-          clone.style.top = (window.innerHeight - 150) + 'px';
-          clone.style.left = (window.innerWidth - 150) + 'px';
-          clone.style.opacity = '0';
-        }, 20);
-
-        // Create corner card
-        setTimeout(() => {
-          const stack = document.getElementById('challan-stack');
-          stack.classList.add('on');
-          const offText = document.getElementById('coff').textContent;
-          const amtText = document.getElementById('camt').textContent;
-          ui._addChallanCard(offText, amtText);
-        }, 300);
-
-        // Cleanup and continue
-        setTimeout(() => {
-          clone.remove();
-          if (this._ccb) { this._ccb(); this._ccb = null; }
-          if (game.playing) game.pause = false;
-          setTimeout(() => this._nc(), 80);
-        }, 500);
-      }
-    };
-
-    // 🚦 PROCEDURAL ENGINE AND SCENARIO ARRAYS 🚦
-    // Texture Generator
-    const _genTex = (type) => {
-      if (type === 'asphalt') {
-        const tex = new THREE.TextureLoader().load('textures/road.png');
-        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(4, 4);
-        return tex;
-      }
-      if (type === 'building') {
-        const tex = new THREE.TextureLoader().load('textures/building.png');
-        tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(2, 2);
-        return tex;
-      }
-      const c = document.createElement('canvas'); c.width = 256; c.height = 256; const ctx = c.getContext('2d');
-      if (type === 'pave') {
-        ctx.fillStyle = '#666666'; ctx.fillRect(0, 0, 256, 256);
-        ctx.strokeStyle = '#555555'; ctx.lineWidth = 2;
-        for (let y = 0; y < 256; y += 32) { for (let x = 0; x < 256; x += 32) { ctx.strokeRect(x, y, 32, 32); } }
-      } else if (type === 'police') {
-        ctx.fillStyle = '#2980b9'; ctx.fillRect(0, 0, 256, 256);
-        ctx.fillStyle = '#34495e'; for (let y = 0; y < 256; y += 32) { ctx.fillRect(0, y, 256, 2); }
-        for (let x = 0; x < 256; x += 64) { for (let y = 0; y < 256; y += 32) { ctx.fillRect(x + (y % 64 === 0 ? 32 : 0), y, 2, 32); } }
-      } else if (type === 'hospital') {
-        ctx.fillStyle = '#ecf0f1'; ctx.fillRect(0, 0, 256, 256);
-        ctx.fillStyle = '#bdc3c7'; for (let y = 0; y < 256; y += 32) { for (let x = 0; x < 256; x += 32) { ctx.strokeRect(x, y, 32, 32); } }
-      } else if (type === 'bank') {
-        ctx.fillStyle = '#7f8c8d'; ctx.fillRect(0, 0, 256, 256);
-        const grd = ctx.createLinearGradient(0, 0, 0, 256); grd.addColorStop(0, '#95a5a6'); grd.addColorStop(1, '#7f8c8d');
-        ctx.fillStyle = grd; ctx.fillRect(0, 0, 256, 256);
-        ctx.fillStyle = '#2c3e50'; for (let x = 0; x < 256; x += 40) { ctx.fillRect(x, 0, 8, 256); }
-      } else if (type === 'temple') {
-        ctx.fillStyle = '#d35400'; ctx.fillRect(0, 0, 256, 256);
-        ctx.fillStyle = '#e67e22'; for (let y = 0; y < 256; y += 16) { ctx.fillRect(0, y, 256, 2); }
-        for (let x = 0; x < 256; x += 32) { for (let y = 0; y < 256; y += 16) { ctx.fillRect(x + (y % 32 === 0 ? 16 : 0), y, 2, 16); } }
-      } else if (type === 'shop') {
-        ctx.fillStyle = '#f1c40f'; ctx.fillRect(0, 0, 256, 256);
-        ctx.fillStyle = '#d35400'; for (let y = 0; y < 256; y += 128) { ctx.fillRect(0, y, 256, 16); }
-      } else if (type === 'car') {
-        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 256, 256);
-        ctx.fillStyle = '#000000'; ctx.fillRect(32, 32, 192, 64); // windshield
-        ctx.fillRect(32, 160, 192, 64); // rear window
-        ctx.fillStyle = '#c0392b'; ctx.fillRect(16, 220, 64, 36); ctx.fillRect(176, 220, 64, 36); // taillights
-        ctx.fillStyle = '#f1c40f'; ctx.fillRect(16, 0, 64, 32); ctx.fillRect(176, 0, 64, 32); // headlights
-      }
-      const tex = new THREE.CanvasTexture(c); tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
-      if (type === 'pave' || type === 'asphalt') tex.repeat.set(4, 4);
-      else if (type === 'building' || type === 'bank' || type === 'temple' || type === 'police' || type === 'hospital') tex.repeat.set(2, 2);
-      return tex;
-    };
-
-    let gTex = null;
-    const initGTex = () => {
-      if (gTex) return;
-      gTex = {
-        asphalt: _genTex('asphalt'),
-        pave: _genTex('pave'),
-        building: _genTex('building'),
-        police: _genTex('police'), hospital: _genTex('hospital'), bank: _genTex('bank'),
-        temple: _genTex('temple'), shop: _genTex('shop'), car: _genTex('car')
-      };
-    };
-
-
-
-    const _buildVehicle = (type, col) => {
-
-      let baseModel = null;
-      let s = 1.0;
-      let rotY = 0;
-
-      if (window.PRELOADED_MODELS) {
-        let modelKey = type;
-        const keysForType = Object.keys(window.PRELOADED_MODELS).filter(k => k === type || k.startsWith(type + '_'));
-        if (keysForType.length > 0) {
-            modelKey = keysForType[Math.floor(Math.random() * keysForType.length)];
-        }
-        
-        if (window.PRELOADED_MODELS[modelKey]) {
-            baseModel = window.PRELOADED_MODELS[modelKey].clone();
-            if (type === 'bus' || type === 'truck') s = 4.0;
-            else if (type === 'auto' || type === 'bike') s = 2.5;
-            else s = 3.2;
-
-            baseModel.traverse((child) => {
-                if (child.isMesh && child.material) {
-                    // Kenney models usually use materials like "paint", "body", "color"
-                    if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
-                        child.material = child.material.clone();
-                        child.material.color.setHex(col);
-                    }
-                }
-            });
-        }
-      }
-      
-      if (!baseModel && type === 'bike' && window.PRELOADED_MODELS && window.PRELOADED_MODELS['auto']) {
-        baseModel = window.PRELOADED_MODELS['auto'].clone();
-        s = 1.0;
-      }
-
-      if (baseModel) {
-        const g = new THREE.Group();
-        baseModel.scale.set(s, s, s);
-        baseModel.rotation.y = rotY;
-        baseModel.position.y = 0;
-        
-        // Add an invisible hitbox for collisions
-        const hw = (type === 'bus' || type === 'truck') ? 1.8 : 1.2;
-        const hl = (type === 'bus' || type === 'truck') ? 5.5 : 2.8;
-        const hbGeo = new THREE.BoxGeometry(hw, 2, hl);
-        const hbMat = new THREE.MeshBasicMaterial({ visible: false });
-        const hb = new THREE.Mesh(hbGeo, hbMat);
-        hb.position.y = 1;
-        
-        g.add(baseModel);
-        g.add(hb);
-        g.type = type;
-        return g;
-      }
-
-      const g = new THREE.Group();
-switch (type) {
-  case 'car':
-  case 'taxi': {
-    const isT = type === 'taxi';
-    const bodyM = new THREE.MeshPhongMaterial({ color: isT ? 0xffd54a : col });
-    const glassM = new THREE.MeshPhongMaterial({ color: 0x1a2e4a, transparent: true, opacity: 0.75 });
-    const wheelM = new THREE.MeshPhongMaterial({ color: 0x111111 });
-    const rimM = new THREE.MeshPhongMaterial({ color: 0xcccccc });
-    const hlM = new THREE.MeshBasicMaterial({ color: 0xffffcc });
-    const tlM = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-    // Chassis
-    const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 3.8), bodyM);
-    body.position.y = 0.42; g.add(body);
-    // Cabin
-    const cab = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.44, 1.9), bodyM);
-    cab.position.set(0, 0.84, 0.08); g.add(cab);
-    // Windshield
-    const ws = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.4), glassM);
-    ws.position.set(0, 0.84, 1.02); ws.rotation.x = Math.PI / 5; g.add(ws);
-    const rs = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.4), glassM);
-    rs.position.set(0, 0.84, -0.85); rs.rotation.x = -Math.PI / 5; g.add(rs);
-    // 4 Wheels
-    [[0.85, 0, 1.25], [-0.85, 0, 1.25], [0.85, 0, -1.25], [-0.85, 0, -1.25]].forEach(([x, , z]) => {
-      const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.2, 8), wheelM);
-      wh.rotation.z = Math.PI / 2; wh.position.set(x, 0.3, z); g.add(wh);
-      const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.22, 6), rimM);
-      rim.rotation.z = Math.PI / 2; rim.position.set(x, 0.3, z); g.add(rim);
-    });
-    // Headlights & taillights
-    [[0.55, 0.45, 1.92, hlM], [-0.55, 0.45, 1.92, hlM], [0.55, 0.45, -1.92, tlM], [-0.55, 0.45, -1.92, tlM]].forEach(([x, y, z, m]) => {
-      const l = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 4), m); l.position.set(x, y, z); g.add(l);
-    });
-    break;
-  }
-  case 'bus': {
-    const bM = new THREE.MeshPhongMaterial({ color: col || 0xe74c3c }); // BEST bus red
-    const gM = new THREE.MeshPhongMaterial({ color: 0x88bbdd, transparent: true, opacity: 0.6 });
-    const wM = new THREE.MeshPhongMaterial({ color: 0x111111 });
-    const bdy = new THREE.Mesh(new THREE.BoxGeometry(2.3, 2.2, 8.0), bM);
-    bdy.position.y = 1.18; g.add(bdy);
-    const roof = new THREE.Mesh(new THREE.BoxGeometry(2.15, 0.18, 7.6), bM);
-    roof.position.y = 2.37; g.add(roof);
-    for (let i = 0; i < 4; i++) {
-      const win = new THREE.Mesh(new THREE.PlaneGeometry(0.88, 0.78), gM);
-      win.position.set(1.16, 1.4, 2.2 - i * 1.8); win.rotation.y = Math.PI / 2; g.add(win);
+<div class="rr" style="margin-top:10px; border-top:1px solid #333; padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:#f1c40f">₹${S.wallet.toLocaleString('en-IN')}</span></div>`
+    document.getElementById('ro').classList.add('on')
+    sfx.play('win')
+  },
+  issueChallan(off, sec, amt, loc, cb) {
+    this.cq.push({ off, sec, amt, loc, cb })
+    if (!this.cbusy) this._nc()
+  },
+  _nc() {
+    if (!this.cq.length) {
+      this.cbusy = false
+      return
     }
-    const wsB = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 0.95), gM);
-    wsB.position.set(0, 1.5, 4.02); g.add(wsB);
-    [[-1.2, 0, 2.8], [1.2, 0, 2.8], [-1.2, 0, 0], [1.2, 0, 0], [-1.2, 0, -2.8], [1.2, 0, -2.8]].forEach(([x, , z]) => {
-      const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.24, 8), wM);
-      wh.rotation.z = Math.PI / 2; wh.position.set(x, 0.4, z); g.add(wh);
-    });
-    break;
-  }
-  case 'auto': {
-    const aM = new THREE.MeshPhongMaterial({ color: 0xffd54a });
-    const sM = new THREE.MeshPhongMaterial({ color: 0x111111 });
-    const wM = new THREE.MeshPhongMaterial({ color: 0x111111 });
-    const abody = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.95, 2.1), aM);
-    abody.position.y = 0.52; g.add(abody);
-    const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.12, 0.14, 2.1), sM);
-    stripe.position.y = 0.68; g.add(stripe);
-    const hood = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 1.4), aM);
-    hood.position.set(0, 0.85, -0.1); g.add(hood);
-    // 3 wheels: 2 rear + 1 front
-    [[-0.58, 0, 0.72], [0.58, 0, 0.72]].forEach(([x, , z]) => {
-      const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.16, 7), wM);
-      wh.rotation.z = Math.PI / 2; wh.position.set(x, 0.22, z); g.add(wh);
-    });
-    const fw = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.16, 7), wM);
-    fw.rotation.z = Math.PI / 2; fw.position.set(0, 0.22, -0.85); g.add(fw);
-    break;
-  }
-  case 'truck': {
-    const cM = new THREE.MeshPhongMaterial({ color: col || 0x1565c0 });
-    const contM = new THREE.MeshPhongMaterial({ color: 0xeeeeee });
-    const gM2 = new THREE.MeshPhongMaterial({ color: 0x88ccff, transparent: true, opacity: 0.6 });
-    const wM2 = new THREE.MeshPhongMaterial({ color: 0x111111 });
-    const cab = new THREE.Mesh(new THREE.BoxGeometry(2.1, 2.1, 2.6), cM);
-    cab.position.set(0, 1.05, 2.5); g.add(cab);
-    const spoi = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.55, 0.3), cM);
-    spoi.position.set(0, 2.38, 2.5); g.add(spoi);
-    const wsT = new THREE.Mesh(new THREE.PlaneGeometry(1.85, 0.95), gM2);
-    wsT.position.set(0, 1.28, 3.81); g.add(wsT);
-    const cont = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.3, 5.8), contM);
-    cont.position.set(0, 1.22, -1.5); g.add(cont);
-    [[-1.12, 0, 2.7], [1.12, 0, 2.7], [-1.12, 0, 0.8], [1.12, 0, 0.8], [-1.12, 0, -1], [1.12, 0, -1], [-1.12, 0, -3], [1.12, 0, -3]].forEach(([x, , z]) => {
-      const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.24, 8), wM2);
-      wh.rotation.z = Math.PI / 2; wh.position.set(x, 0.42, z); g.add(wh);
-    });
-    break;
-  }
-  case 'bike': {
-    const bkM = new THREE.MeshPhongMaterial({ color: col });
-    const wkM = new THREE.MeshPhongMaterial({ color: 0x111111 });
-    const frame = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.38, 1.9), bkM);
-    frame.position.y = 0.62; g.add(frame);
-    const tank = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.32, 0.75), bkM);
-    tank.position.set(0, 0.88, 0.3); g.add(tank);
-    const seat = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.12, 0.85), new THREE.MeshPhongMaterial({ color: 0x1a1a1a }));
-    seat.position.set(0, 0.88, -0.18); g.add(seat);
-    const hbar = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.08, 0.12), new THREE.MeshPhongMaterial({ color: 0xaaaaaa }));
-    hbar.position.set(0, 1.02, 0.88); g.add(hbar);
-    const wf = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.14, 8), wkM);
-    wf.rotation.z = Math.PI / 2; wf.position.set(0, 0.28, 0.88); g.add(wf);
-    const wr = wf.clone(); wr.position.z = -0.88; g.add(wr);
-    break;
-  }
-  case 'suv': {
-    const suvM = new THREE.MeshPhongMaterial({ color: col });
-    const gS = new THREE.MeshPhongMaterial({ color: 0x1a3a5a, transparent: true, opacity: 0.7 });
-    const wS = new THREE.MeshPhongMaterial({ color: 0x111111 });
-    const sbody = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.58, 4.3), suvM);
-    sbody.position.y = 0.44; g.add(sbody);
-    const scab = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.78, 2.6), suvM);
-    scab.position.set(0, 0.98, -0.05); g.add(scab);
-    const sws = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.7), gS);
-    sws.position.set(0, 0.98, 1.3); sws.rotation.x = Math.PI / 6; g.add(sws);
-    [[-0.95, 0, 1.45], [0.95, 0, 1.45], [-0.95, 0, -1.45], [0.95, 0, -1.45]].forEach(([x, , z]) => {
-      const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.22, 8), wS);
-      wh.rotation.z = Math.PI / 2; wh.position.set(x, 0.36, z); g.add(wh);
-    });
-    break;
-  }
-  case 'cycle': {
-    const cycM = new THREE.MeshPhongMaterial({ color: col });
-    const wCy = new THREE.MeshPhongMaterial({ color: 0x333333 });
-    const cyframe = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.25, 1.3), cycM);
-    cyframe.position.y = 0.5; g.add(cyframe);
-    const han = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.06, 0.1), new THREE.MeshPhongMaterial({ color: 0xaaaaaa }));
-    han.position.set(0, 0.85, 0.6); g.add(han);
-    [0.6, -0.6].forEach(z => {
-      const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.1, 8), wCy);
-      wh.rotation.z = Math.PI / 2; wh.position.set(0, 0.25, z); g.add(wh);
-    });
-    break;
-  }
-  default: {
-    // Fallback: simple colored box
-    g.add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 3.5), new THREE.MeshPhongMaterial({ color: col })));
+    this.cbusy = true
+    const c = this.cq.shift()
+    const vf = document.getElementById('vflash')
+    if (vf) {
+      vf.classList.remove('flash')
+      void vf.offsetWidth
+      vf.classList.add('flash')
+    }
+    document.getElementById('cnum').textContent = 'MTP/2026/' + (Math.floor(Math.random() * 90000) + 10000)
+    document.getElementById('coff').textContent = c.off
+    document.getElementById('claw').textContent = c.sec
+    document.getElementById('camt').textContent = c.amt
+    const locEl = document.getElementById('cloc')
+    if (locEl) locEl.textContent = c.loc || '📍 Mumbai'
+    document.getElementById('cov').classList.add('on')
+    this._ccb = c.cb || null
+    if (game.playing) game.pause = true
+    sfx.play('challan')
+  },
+  dismissChallan() {
+    const cov = document.getElementById('cov')
+    const cvc = document.getElementById('cvc-main')
+
+    // Create clone for animation
+    const rect = cvc.getBoundingClientRect()
+    const clone = cvc.cloneNode(true)
+    clone.id = ''
+    clone.style.position = 'fixed'
+    clone.style.top = rect.top + 'px'
+    clone.style.left = rect.left + 'px'
+    clone.style.width = rect.width + 'px'
+    clone.style.height = rect.height + 'px'
+    clone.style.margin = '0'
+    clone.style.zIndex = '999999'
+    clone.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+    document.body.appendChild(clone)
+
+    // Hide original immediately
+    cov.classList.remove('on')
+
+    // Trigger animation
+    setTimeout(() => {
+      clone.style.transform = 'scale(0.2)'
+      clone.style.top = window.innerHeight - 150 + 'px'
+      clone.style.left = window.innerWidth - 150 + 'px'
+      clone.style.opacity = '0'
+    }, 20)
+
+    // Create corner card
+    setTimeout(() => {
+      const stack = document.getElementById('challan-stack')
+      stack.classList.add('on')
+      const offText = document.getElementById('coff').textContent
+      const amtText = document.getElementById('camt').textContent
+      ui._addChallanCard(offText, amtText)
+    }, 300)
+
+    // Cleanup and continue
+    setTimeout(() => {
+      clone.remove()
+      if (this._ccb) {
+        this._ccb()
+        this._ccb = null
+      }
+      if (game.playing) game.pause = false
+      setTimeout(() => this._nc(), 80)
+    }, 500)
   }
 }
-      return g;
-    };
 
-    const _buildHuman = (isPlayer = false) => {
-      const g = new THREE.Group();
-
-      const chars = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c'];
-      const charKey = chars[Math.floor(Math.random() * chars.length)];
-      
-      if (window.PRELOADED_MODELS && window.PRELOADED_MODELS[charKey]) {
-        const hModel = window.PRELOADED_MODELS[charKey].clone();
-        const s = isPlayer ? 1.5 : 1.2;
-        hModel.scale.set(s, s, s);
-        hModel.position.y = 0;
-        
-        // Add invisible hitbox for collisions
-        const hbGeo = new THREE.BoxGeometry(0.8, 2.0, 0.8);
-        const hbMat = new THREE.MeshBasicMaterial({ visible: false });
-        const hb = new THREE.Mesh(hbGeo, hbMat);
-        hb.position.y = 1.0;
-        
-        g.add(hModel);
-        g.add(hb);
-
-        // We still need mock lLeg and rLeg for the animation in game_core.js _upeds
-        const dummyGeo = new THREE.Group();
-        g.userData = { lLeg: dummyGeo, rLeg: dummyGeo, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 };
-        return g;
-      }
-
-      // Fallback
-      const skins = [0xe0ac69, 0x8d5524, 0xc68642, 0xf1c27d, 0xffdbac];
-      const sColor = isPlayer ? 0xc68642 : skins[Math.floor(Math.random() * skins.length)];
-      const shColor = isPlayer ? 0xe74c3c : Math.random() * 0xffffff;
-      const pColor = isPlayer ? 0x2980b9 : [0x333333, 0x111111, 0x555555, 0x4a2311][Math.floor(Math.random() * 4)];
-
-      const scale = isPlayer ? 1.1 : 1.0;
-
-      const skin = new THREE.MeshLambertMaterial({ color: sColor });
-      const shirt = new THREE.MeshLambertMaterial({ color: shColor });
-      const pants = new THREE.MeshLambertMaterial({ color: pColor });
-
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.4 * scale, 0.4 * scale, 0.4 * scale), skin); head.position.y = 1.8 * scale; g.add(head);
-
-      const hair = new THREE.Mesh(new THREE.BoxGeometry(0.42 * scale, 0.1 * scale, 0.42 * scale), new THREE.MeshLambertMaterial({ color: 0x111111 }));
-      hair.position.y = 2.0 * scale; g.add(hair);
-
-      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.6 * scale, 0.7 * scale, 0.3 * scale), shirt); torso.position.y = 1.25 * scale; g.add(torso);
-
-      if (isPlayer) {
-        const bag = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.2), new THREE.MeshLambertMaterial({ color: 0xf39c12 }));
-        bag.position.set(0, 1.25 * scale, -0.2); g.add(bag);
-      }
-
-      const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.25 * scale, 0.9 * scale, 0.25 * scale), pants); lLeg.position.set(-0.15 * scale, 0.45 * scale, 0); g.add(lLeg);
-      const rLeg = new THREE.Mesh(new THREE.BoxGeometry(0.25 * scale, 0.9 * scale, 0.25 * scale), pants); rLeg.position.set(0.15 * scale, 0.45 * scale, 0); g.add(rLeg);
-
-      const shoeM = new THREE.MeshLambertMaterial({ color: 0x111111 });
-      const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26 * scale, 0.1 * scale, 0.3 * scale), shoeM); lShoe.position.set(-0.15 * scale, 0.05 * scale, 0.05); g.add(lShoe);
-      const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26 * scale, 0.1 * scale, 0.3 * scale), shoeM); rShoe.position.set(0.15 * scale, 0.05 * scale, 0.05); g.add(rShoe);
-
-      g.userData = { lLeg, rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 };
-      return g;
-    };
-
-    function updateTrafficAuthUI() {
-      const localData = localStorage.getItem('traffic_local_user');
-      const user = localData ? JSON.parse(localData) : null;
-      
-      const profileDiv = document.getElementById('trafficUserProfile');
-      
-      document.querySelectorAll('.dynamic-auth-btn').forEach(b => {
-          b.innerHTML = user ? '📊 Dashboard' : 'Sign In';
-          b.onclick = () => window.location.href = user ? 'TrafficDashboard.html' : 'TrafficSetup.html';
-      });
-      
-      const navBtn = document.getElementById('academy-sign-in-btn');
-      if (navBtn) navBtn.style.display = user ? 'none' : 'block';
-
-      if (user) {
-          if (profileDiv) {
-              profileDiv.style.display = 'flex';
-              profileDiv.onclick = () => window.location.href = 'TrafficDashboard.html';
-          }
-          
-          const nameNode = profileDiv ? profileDiv.querySelector('#trafficUserName') : null;
-          const initialsNode = profileDiv ? profileDiv.querySelector('#trafficUserInitials') : null;
-          
-          if (nameNode) nameNode.textContent = user.name || 'Driver';
-          if (initialsNode && user.name) {
-              initialsNode.textContent = user.name.charAt(0).toUpperCase();
-              initialsNode.style.display = 'flex';
-          }
-      } else {
-          if (profileDiv) profileDiv.style.display = 'none';
+// 🚦 PROCEDURAL ENGINE AND SCENARIO ARRAYS 🚦
+// Texture Generator
+const _genTex = (type) => {
+  if (type === 'asphalt') {
+    const tex = new THREE.TextureLoader().load('textures/road.png')
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+    tex.repeat.set(4, 4)
+    return tex
+  }
+  if (type === 'building') {
+    const tex = new THREE.TextureLoader().load('textures/building.png')
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+    tex.repeat.set(2, 2)
+    return tex
+  }
+  const c = document.createElement('canvas')
+  c.width = 256
+  c.height = 256
+  const ctx = c.getContext('2d')
+  if (type === 'pave') {
+    ctx.fillStyle = '#666666'
+    ctx.fillRect(0, 0, 256, 256)
+    ctx.strokeStyle = '#555555'
+    ctx.lineWidth = 2
+    for (let y = 0; y < 256; y += 32) {
+      for (let x = 0; x < 256; x += 32) {
+        ctx.strokeRect(x, y, 32, 32)
       }
     }
-    
-    // Run immediately
-    updateTrafficAuthUI();
-    // And on load
-    window.addEventListener('DOMContentLoaded', updateTrafficAuthUI);
+  } else if (type === 'police') {
+    ctx.fillStyle = '#2980b9'
+    ctx.fillRect(0, 0, 256, 256)
+    ctx.fillStyle = '#34495e'
+    for (let y = 0; y < 256; y += 32) {
+      ctx.fillRect(0, y, 256, 2)
+    }
+    for (let x = 0; x < 256; x += 64) {
+      for (let y = 0; y < 256; y += 32) {
+        ctx.fillRect(x + (y % 64 === 0 ? 32 : 0), y, 2, 32)
+      }
+    }
+  } else if (type === 'hospital') {
+    ctx.fillStyle = '#ecf0f1'
+    ctx.fillRect(0, 0, 256, 256)
+    ctx.fillStyle = '#bdc3c7'
+    for (let y = 0; y < 256; y += 32) {
+      for (let x = 0; x < 256; x += 32) {
+        ctx.strokeRect(x, y, 32, 32)
+      }
+    }
+  } else if (type === 'bank') {
+    ctx.fillStyle = '#7f8c8d'
+    ctx.fillRect(0, 0, 256, 256)
+    const grd = ctx.createLinearGradient(0, 0, 0, 256)
+    grd.addColorStop(0, '#95a5a6')
+    grd.addColorStop(1, '#7f8c8d')
+    ctx.fillStyle = grd
+    ctx.fillRect(0, 0, 256, 256)
+    ctx.fillStyle = '#2c3e50'
+    for (let x = 0; x < 256; x += 40) {
+      ctx.fillRect(x, 0, 8, 256)
+    }
+  } else if (type === 'temple') {
+    ctx.fillStyle = '#d35400'
+    ctx.fillRect(0, 0, 256, 256)
+    ctx.fillStyle = '#e67e22'
+    for (let y = 0; y < 256; y += 16) {
+      ctx.fillRect(0, y, 256, 2)
+    }
+    for (let x = 0; x < 256; x += 32) {
+      for (let y = 0; y < 256; y += 16) {
+        ctx.fillRect(x + (y % 32 === 0 ? 16 : 0), y, 2, 16)
+      }
+    }
+  } else if (type === 'shop') {
+    ctx.fillStyle = '#f1c40f'
+    ctx.fillRect(0, 0, 256, 256)
+    ctx.fillStyle = '#d35400'
+    for (let y = 0; y < 256; y += 128) {
+      ctx.fillRect(0, y, 256, 16)
+    }
+  } else if (type === 'car') {
+    ctx.fillStyle = '#ffffff'
+    ctx.fillRect(0, 0, 256, 256)
+    ctx.fillStyle = '#000000'
+    ctx.fillRect(32, 32, 192, 64) // windshield
+    ctx.fillRect(32, 160, 192, 64) // rear window
+    ctx.fillStyle = '#c0392b'
+    ctx.fillRect(16, 220, 64, 36)
+    ctx.fillRect(176, 220, 64, 36) // taillights
+    ctx.fillStyle = '#f1c40f'
+    ctx.fillRect(16, 0, 64, 32)
+    ctx.fillRect(176, 0, 64, 32) // headlights
+  }
+  const tex = new THREE.CanvasTexture(c)
+  tex.wrapS = THREE.RepeatWrapping
+  tex.wrapT = THREE.RepeatWrapping
+  if (type === 'pave' || type === 'asphalt') tex.repeat.set(4, 4)
+  else if (type === 'building' || type === 'bank' || type === 'temple' || type === 'police' || type === 'hospital') tex.repeat.set(2, 2)
+  return tex
+}
+
+let gTex = null
+const initGTex = () => {
+  if (gTex) return
+  gTex = {
+    asphalt: _genTex('asphalt'),
+    pave: _genTex('pave'),
+    building: _genTex('building'),
+    police: _genTex('police'),
+    hospital: _genTex('hospital'),
+    bank: _genTex('bank'),
+    temple: _genTex('temple'),
+    shop: _genTex('shop'),
+    car: _genTex('car')
+  }
+}
+
+const _buildVehicle = (type, col) => {
+  let baseModel = null
+  let s = 1.0
+  let rotY = 0
+
+  if (window.PRELOADED_MODELS) {
+    let modelKey = type
+    const keysForType = Object.keys(window.PRELOADED_MODELS).filter((k) => k === type || k.startsWith(type + '_'))
+    if (keysForType.length > 0) {
+      modelKey = keysForType[Math.floor(Math.random() * keysForType.length)]
+    }
+
+    if (window.PRELOADED_MODELS[modelKey]) {
+      baseModel = window.PRELOADED_MODELS[modelKey].clone()
+      if (type === 'bus' || type === 'truck') s = 4.0
+      else if (type === 'auto' || type === 'bike') s = 2.5
+      else s = 3.2
+
+      baseModel.traverse((child) => {
+        if (child.isMesh && child.material) {
+          // Kenney models usually use materials like "paint", "body", "color"
+          if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
+            child.material = child.material.clone()
+            child.material.color.setHex(col)
+          }
+        }
+      })
+    }
+  }
+
+  if (!baseModel && type === 'bike' && window.PRELOADED_MODELS && window.PRELOADED_MODELS['auto']) {
+    baseModel = window.PRELOADED_MODELS['auto'].clone()
+    s = 1.0
+  }
+
+  if (baseModel) {
+    const g = new THREE.Group()
+    baseModel.scale.set(s, s, s)
+    baseModel.rotation.y = rotY
+    baseModel.position.y = 0
+
+    // Add an invisible hitbox for collisions
+    const hw = type === 'bus' || type === 'truck' ? 1.8 : 1.2
+    const hl = type === 'bus' || type === 'truck' ? 5.5 : 2.8
+    const hbGeo = new THREE.BoxGeometry(hw, 2, hl)
+    const hbMat = new THREE.MeshBasicMaterial({ visible: false })
+    const hb = new THREE.Mesh(hbGeo, hbMat)
+    hb.position.y = 1
+
+    g.add(baseModel)
+    g.add(hb)
+    g.type = type
+    return g
+  }
+
+  const g = new THREE.Group()
+  switch (type) {
+    case 'car':
+    case 'taxi': {
+      const isT = type === 'taxi'
+      const bodyM = new THREE.MeshPhongMaterial({ color: isT ? 0xffd54a : col })
+      const glassM = new THREE.MeshPhongMaterial({ color: 0x1a2e4a, transparent: true, opacity: 0.75 })
+      const wheelM = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const rimM = new THREE.MeshPhongMaterial({ color: 0xcccccc })
+      const hlM = new THREE.MeshBasicMaterial({ color: 0xffffcc })
+      const tlM = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+      // Chassis
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 3.8), bodyM)
+      body.position.y = 0.42
+      g.add(body)
+      // Cabin
+      const cab = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.44, 1.9), bodyM)
+      cab.position.set(0, 0.84, 0.08)
+      g.add(cab)
+      // Windshield
+      const ws = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.4), glassM)
+      ws.position.set(0, 0.84, 1.02)
+      ws.rotation.x = Math.PI / 5
+      g.add(ws)
+      const rs = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.4), glassM)
+      rs.position.set(0, 0.84, -0.85)
+      rs.rotation.x = -Math.PI / 5
+      g.add(rs)
+      // 4 Wheels
+      ;[
+        [0.85, 0, 1.25],
+        [-0.85, 0, 1.25],
+        [0.85, 0, -1.25],
+        [-0.85, 0, -1.25]
+      ].forEach(([x, , z]) => {
+        const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.2, 8), wheelM)
+        wh.rotation.z = Math.PI / 2
+        wh.position.set(x, 0.3, z)
+        g.add(wh)
+        const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.22, 6), rimM)
+        rim.rotation.z = Math.PI / 2
+        rim.position.set(x, 0.3, z)
+        g.add(rim)
+      })
+      // Headlights & taillights
+      ;[
+        [0.55, 0.45, 1.92, hlM],
+        [-0.55, 0.45, 1.92, hlM],
+        [0.55, 0.45, -1.92, tlM],
+        [-0.55, 0.45, -1.92, tlM]
+      ].forEach(([x, y, z, m]) => {
+        const l = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 4), m)
+        l.position.set(x, y, z)
+        g.add(l)
+      })
+      break
+    }
+    case 'bus': {
+      const bM = new THREE.MeshPhongMaterial({ color: col || 0xe74c3c }) // BEST bus red
+      const gM = new THREE.MeshPhongMaterial({ color: 0x88bbdd, transparent: true, opacity: 0.6 })
+      const wM = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const bdy = new THREE.Mesh(new THREE.BoxGeometry(2.3, 2.2, 8.0), bM)
+      bdy.position.y = 1.18
+      g.add(bdy)
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(2.15, 0.18, 7.6), bM)
+      roof.position.y = 2.37
+      g.add(roof)
+      for (let i = 0; i < 4; i++) {
+        const win = new THREE.Mesh(new THREE.PlaneGeometry(0.88, 0.78), gM)
+        win.position.set(1.16, 1.4, 2.2 - i * 1.8)
+        win.rotation.y = Math.PI / 2
+        g.add(win)
+      }
+      const wsB = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 0.95), gM)
+      wsB.position.set(0, 1.5, 4.02)
+      g.add(wsB)
+      ;[
+        [-1.2, 0, 2.8],
+        [1.2, 0, 2.8],
+        [-1.2, 0, 0],
+        [1.2, 0, 0],
+        [-1.2, 0, -2.8],
+        [1.2, 0, -2.8]
+      ].forEach(([x, , z]) => {
+        const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.24, 8), wM)
+        wh.rotation.z = Math.PI / 2
+        wh.position.set(x, 0.4, z)
+        g.add(wh)
+      })
+      break
+    }
+    case 'auto': {
+      const aM = new THREE.MeshPhongMaterial({ color: 0xffd54a })
+      const sM = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const wM = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const abody = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.95, 2.1), aM)
+      abody.position.y = 0.52
+      g.add(abody)
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.12, 0.14, 2.1), sM)
+      stripe.position.y = 0.68
+      g.add(stripe)
+      const hood = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 1.4), aM)
+      hood.position.set(0, 0.85, -0.1)
+      g.add(hood)
+      // 3 wheels: 2 rear + 1 front
+      ;[
+        [-0.58, 0, 0.72],
+        [0.58, 0, 0.72]
+      ].forEach(([x, , z]) => {
+        const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.16, 7), wM)
+        wh.rotation.z = Math.PI / 2
+        wh.position.set(x, 0.22, z)
+        g.add(wh)
+      })
+      const fw = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.16, 7), wM)
+      fw.rotation.z = Math.PI / 2
+      fw.position.set(0, 0.22, -0.85)
+      g.add(fw)
+      break
+    }
+    case 'truck': {
+      const cM = new THREE.MeshPhongMaterial({ color: col || 0x1565c0 })
+      const contM = new THREE.MeshPhongMaterial({ color: 0xeeeeee })
+      const gM2 = new THREE.MeshPhongMaterial({ color: 0x88ccff, transparent: true, opacity: 0.6 })
+      const wM2 = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const cab = new THREE.Mesh(new THREE.BoxGeometry(2.1, 2.1, 2.6), cM)
+      cab.position.set(0, 1.05, 2.5)
+      g.add(cab)
+      const spoi = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.55, 0.3), cM)
+      spoi.position.set(0, 2.38, 2.5)
+      g.add(spoi)
+      const wsT = new THREE.Mesh(new THREE.PlaneGeometry(1.85, 0.95), gM2)
+      wsT.position.set(0, 1.28, 3.81)
+      g.add(wsT)
+      const cont = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.3, 5.8), contM)
+      cont.position.set(0, 1.22, -1.5)
+      g.add(cont)
+      ;[
+        [-1.12, 0, 2.7],
+        [1.12, 0, 2.7],
+        [-1.12, 0, 0.8],
+        [1.12, 0, 0.8],
+        [-1.12, 0, -1],
+        [1.12, 0, -1],
+        [-1.12, 0, -3],
+        [1.12, 0, -3]
+      ].forEach(([x, , z]) => {
+        const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.24, 8), wM2)
+        wh.rotation.z = Math.PI / 2
+        wh.position.set(x, 0.42, z)
+        g.add(wh)
+      })
+      break
+    }
+    case 'bike': {
+      const bkM = new THREE.MeshPhongMaterial({ color: col })
+      const wkM = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.38, 1.9), bkM)
+      frame.position.y = 0.62
+      g.add(frame)
+      const tank = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.32, 0.75), bkM)
+      tank.position.set(0, 0.88, 0.3)
+      g.add(tank)
+      const seat = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.12, 0.85), new THREE.MeshPhongMaterial({ color: 0x1a1a1a }))
+      seat.position.set(0, 0.88, -0.18)
+      g.add(seat)
+      const hbar = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.08, 0.12), new THREE.MeshPhongMaterial({ color: 0xaaaaaa }))
+      hbar.position.set(0, 1.02, 0.88)
+      g.add(hbar)
+      const wf = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.14, 8), wkM)
+      wf.rotation.z = Math.PI / 2
+      wf.position.set(0, 0.28, 0.88)
+      g.add(wf)
+      const wr = wf.clone()
+      wr.position.z = -0.88
+      g.add(wr)
+      break
+    }
+    case 'suv': {
+      const suvM = new THREE.MeshPhongMaterial({ color: col })
+      const gS = new THREE.MeshPhongMaterial({ color: 0x1a3a5a, transparent: true, opacity: 0.7 })
+      const wS = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const sbody = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.58, 4.3), suvM)
+      sbody.position.y = 0.44
+      g.add(sbody)
+      const scab = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.78, 2.6), suvM)
+      scab.position.set(0, 0.98, -0.05)
+      g.add(scab)
+      const sws = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.7), gS)
+      sws.position.set(0, 0.98, 1.3)
+      sws.rotation.x = Math.PI / 6
+      g.add(sws)
+      ;[
+        [-0.95, 0, 1.45],
+        [0.95, 0, 1.45],
+        [-0.95, 0, -1.45],
+        [0.95, 0, -1.45]
+      ].forEach(([x, , z]) => {
+        const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.22, 8), wS)
+        wh.rotation.z = Math.PI / 2
+        wh.position.set(x, 0.36, z)
+        g.add(wh)
+      })
+      break
+    }
+    case 'cycle': {
+      const cycM = new THREE.MeshPhongMaterial({ color: col })
+      const wCy = new THREE.MeshPhongMaterial({ color: 0x333333 })
+      const cyframe = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.25, 1.3), cycM)
+      cyframe.position.y = 0.5
+      g.add(cyframe)
+      const han = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.06, 0.1), new THREE.MeshPhongMaterial({ color: 0xaaaaaa }))
+      han.position.set(0, 0.85, 0.6)
+      g.add(han)
+      ;[0.6, -0.6].forEach((z) => {
+        const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.1, 8), wCy)
+        wh.rotation.z = Math.PI / 2
+        wh.position.set(0, 0.25, z)
+        g.add(wh)
+      })
+      break
+    }
+    default: {
+      // Fallback: simple colored box
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 3.5), new THREE.MeshPhongMaterial({ color: col })))
+    }
+  }
+  return g
+}
+
+const _buildHuman = (isPlayer = false) => {
+  const g = new THREE.Group()
+
+  const chars = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c']
+  const charKey = chars[Math.floor(Math.random() * chars.length)]
+
+  if (window.PRELOADED_MODELS && window.PRELOADED_MODELS[charKey]) {
+    const hModel = window.PRELOADED_MODELS[charKey].clone()
+    const s = isPlayer ? 1.5 : 1.2
+    hModel.scale.set(s, s, s)
+    hModel.position.y = 0
+
+    // Add invisible hitbox for collisions
+    const hbGeo = new THREE.BoxGeometry(0.8, 2.0, 0.8)
+    const hbMat = new THREE.MeshBasicMaterial({ visible: false })
+    const hb = new THREE.Mesh(hbGeo, hbMat)
+    hb.position.y = 1.0
+
+    g.add(hModel)
+    g.add(hb)
+
+    // We still need mock lLeg and rLeg for the animation in game_core.js _upeds
+    const dummyGeo = new THREE.Group()
+    g.userData = { lLeg: dummyGeo, rLeg: dummyGeo, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
+    return g
+  }
+
+  // Fallback
+  const skins = [0xe0ac69, 0x8d5524, 0xc68642, 0xf1c27d, 0xffdbac]
+  const sColor = isPlayer ? 0xc68642 : skins[Math.floor(Math.random() * skins.length)]
+  const shColor = isPlayer ? 0xe74c3c : Math.random() * 0xffffff
+  const pColor = isPlayer ? 0x2980b9 : [0x333333, 0x111111, 0x555555, 0x4a2311][Math.floor(Math.random() * 4)]
+
+  const scale = isPlayer ? 1.1 : 1.0
+
+  const skin = new THREE.MeshLambertMaterial({ color: sColor })
+  const shirt = new THREE.MeshLambertMaterial({ color: shColor })
+  const pants = new THREE.MeshLambertMaterial({ color: pColor })
+
+  const head = new THREE.Mesh(new THREE.BoxGeometry(0.4 * scale, 0.4 * scale, 0.4 * scale), skin)
+  head.position.y = 1.8 * scale
+  g.add(head)
+
+  const hair = new THREE.Mesh(new THREE.BoxGeometry(0.42 * scale, 0.1 * scale, 0.42 * scale), new THREE.MeshLambertMaterial({ color: 0x111111 }))
+  hair.position.y = 2.0 * scale
+  g.add(hair)
+
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.6 * scale, 0.7 * scale, 0.3 * scale), shirt)
+  torso.position.y = 1.25 * scale
+  g.add(torso)
+
+  if (isPlayer) {
+    const bag = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.2), new THREE.MeshLambertMaterial({ color: 0xf39c12 }))
+    bag.position.set(0, 1.25 * scale, -0.2)
+    g.add(bag)
+  }
+
+  const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.25 * scale, 0.9 * scale, 0.25 * scale), pants)
+  lLeg.position.set(-0.15 * scale, 0.45 * scale, 0)
+  g.add(lLeg)
+  const rLeg = new THREE.Mesh(new THREE.BoxGeometry(0.25 * scale, 0.9 * scale, 0.25 * scale), pants)
+  rLeg.position.set(0.15 * scale, 0.45 * scale, 0)
+  g.add(rLeg)
+
+  const shoeM = new THREE.MeshLambertMaterial({ color: 0x111111 })
+  const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26 * scale, 0.1 * scale, 0.3 * scale), shoeM)
+  lShoe.position.set(-0.15 * scale, 0.05 * scale, 0.05)
+  g.add(lShoe)
+  const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26 * scale, 0.1 * scale, 0.3 * scale), shoeM)
+  rShoe.position.set(0.15 * scale, 0.05 * scale, 0.05)
+  g.add(rShoe)
+
+  g.userData = { lLeg, rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
+  return g
+}
+
+function updateTrafficAuthUI() {
+  const localData = localStorage.getItem('traffic_local_user')
+  const user = localData ? JSON.parse(localData) : null
+
+  const profileDiv = document.getElementById('trafficUserProfile')
+
+  document.querySelectorAll('.dynamic-auth-btn').forEach((b) => {
+    b.innerHTML = user ? '📊 Dashboard' : 'Sign In'
+    b.onclick = () => (window.location.href = user ? 'TrafficDashboard.html' : 'TrafficSetup.html')
+  })
+
+  const navBtn = document.getElementById('academy-sign-in-btn')
+  if (navBtn) navBtn.style.display = user ? 'none' : 'block'
+
+  if (user) {
+    if (profileDiv) {
+      profileDiv.style.display = 'flex'
+      profileDiv.onclick = () => (window.location.href = 'TrafficDashboard.html')
+    }
+
+    const nameNode = profileDiv ? profileDiv.querySelector('#trafficUserName') : null
+    const initialsNode = profileDiv ? profileDiv.querySelector('#trafficUserInitials') : null
+
+    if (nameNode) nameNode.textContent = user.name || 'Driver'
+    if (initialsNode && user.name) {
+      initialsNode.textContent = user.name.charAt(0).toUpperCase()
+      initialsNode.style.display = 'flex'
+    }
+  } else {
+    if (profileDiv) profileDiv.style.display = 'none'
+  }
+}
+
+// Run immediately
+updateTrafficAuthUI()
+// And on load
+window.addEventListener('DOMContentLoaded', updateTrafficAuthUI)

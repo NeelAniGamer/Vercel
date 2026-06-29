@@ -1,2684 +1,3319 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Mumbai Traffic Hero Academy - Simulation</title>
-  
-  <!-- Cloud Auth & Sync Logic -->
-  <script>
-    const _oldFetch = window.fetch;
-    window.fetch = function() {
-      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
-        arguments[0] = '../' + arguments[0];
-      }
-      return _oldFetch.apply(this, arguments);
-    };
-    
-    // Silence GLTFLoader spam for KHR_texture_transform
-    const _oldWarn = console.warn;
-    console.warn = function(...args) {
-      if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported'))) return;
-      _oldWarn.apply(console, args);
-    };
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
-    rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #070A14;
-      --card: rgba(17, 24, 39, 0.7);
-      --text: #E8E3D8;
-      --border: rgba(255, 255, 255, 0.1);
-      --hover: rgba(255, 255, 255, 0.15);
-      --muted: #8891AA;
-      --muted2: #525046;
-      --accent: #F2B84B;
-      --green: #34D399;
-      --red: #ef4444;
-      --yellow: #F2B84B;
-      --signal: #5ED4F5;
-      --r: 16px;
-    }
-
-    .mobile-dl { display: none !important; }
-    @media(max-width: 768px) {
-      .mobile-dl { display: inline-flex !important; }
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-    }
-
-    #3c {
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    /* New Dedicated Loading Screen */
-    #loading-screen {
-      position: fixed;
-      inset: 0;
-      background: #070A14;
-      z-index: 9999999;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #34D399;
-      font-family: 'Space Mono', monospace;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    #loading-screen h1 {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-size: clamp(2rem, 5vw, 4rem);
-      color: #F2B84B;
-      margin-bottom: 20px;
-    }
-    #loading-bar-container {
-      width: clamp(250px, 50vw, 400px);
-      height: 12px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 15px;
-    }
-    #loading-bar {
-      width: 0%;
-      height: 100%;
-      background: #34D399;
-      transition: width 0.1s linear;
-    }
-    #loading-pct {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    #loading-status {
-      margin-top: 10px;
-      font-size: 0.9rem;
-      color: #8891AA;
-    }
-
-    .screen {
-      position: fixed;
-      inset: 0;
-      z-index: 50;
-      background: var(--bg);
-      overflow-y: auto;
-      display: none;
-      flex-direction: column;
-    }
-
-    .screen.active {
-      display: flex;
-    }
-
-    h1,
-    h2,
-    h3 {
-      font-family: 'Lora', serif;
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .btn {
-      background: var(--text);
-      color: #fff;
-      border: none;
-      padding: clamp(12px, 1.5vw, 16px) clamp(20px, 2.5vw, 32px);
-      border-radius: 30px;
-      font-weight: 600;
-      font-size: clamp(0.95rem, 1.2vw, 1.1rem);
-      cursor: pointer;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      justify-content: center;
-    }
-
-    .btn:hover {
-      background: var(--muted2);
-      transform: translateY(-1px);
-    }
-
-    .btn-g {
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    }
-
-    .btn-g:hover {
-      background: var(--hover);
-    }
-
-    .btn-danger {
-      background: var(--red);
-      color: #fff;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 30px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-danger:hover {
-      filter: brightness(0.9);
-      transform: translateY(-1px);
-    }
-
-    /* Start Screen */
-    .brand-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 40px;
-    }
-
-    .sc {
-      width: 100%;
-      min-height: 100vh;
-      margin: 0 auto;
-      padding: clamp(40px, 8vw, 120px) 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      justify-content: center;
-      position: relative;
-      z-index: 10;
-      box-sizing: border-box;
-    }
-
-    .st {
-      font-size: clamp(2.5rem, 6vw, 5.5rem);
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-      font-family: 'Lora', serif;
-      font-weight: 700;
-    }
-
-    .su {
-      font-size: clamp(1rem, 2vw, 1.4rem);
-      color: var(--muted2);
-      line-height: 1.6;
-      max-width: 800px;
-      margin: 0 auto 40px auto;
-      font-weight: 400;
-    }
-
-    .pls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 40px;
-    }
-
-    #rl {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .rd {
-      position: absolute;
-      top: -100px;
-      width: 2px;
-      background: rgba(44, 43, 37, 0.1);
-      animation: fall linear infinite;
-    }
-
-    @keyframes fall {
-      to {
-        transform: translateY(120vh);
-      }
-    }
-
-    /* Name Dialog */
-    #name-dlg {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: 90;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(4px);
-    }
-
-    #name-dlg.on {
-      display: flex;
-    }
-
-    .nd-c {
-      background: var(--card);
-      padding: 32px;
-      border-radius: 16px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-    }
-
-    .nd-i {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1.1rem;
-      margin: 16px 0 24px;
-      text-align: center;
-    }
-
-    /* Toast */
-    #toast {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-100px);
-      z-index: 100;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    #toast.on {
-      transform: translateX(-50%) translateY(0);
-    }
-
-    #ti {
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-weight: 600;
-      color: #2c2b25;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Levels Screen */
-    .tb {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 40px;
-      border-bottom: 1px solid var(--border);
-      background: var(--card);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .back-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--text);
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.95rem;
-      padding: 8px 20px;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-    .back-btn:hover {
-      background: var(--hover);
-      border-color: var(--muted);
-      transform: translateY(-1px);
-    }
-
-    .lw {
-      max-width: 100%;
-      margin: 0 auto;
-      padding: 40px 60px;
-      width: 100%;
-    }
-
-    .sec-hdr {
-      font-family: 'Lora', serif;
-      font-size: 1.8rem;
-      margin: 32px 0 16px;
-      color: var(--text);
-    }
-
-    .lv-track {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 24px;
-      margin-bottom: 40px;
-    }
-
-    .lcard {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .lcard:hover {
-      border-color: var(--muted);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-      transform: translateY(-2px);
-    }
-
-    .lcard.lk {
-      opacity: 0.6;
-      cursor: not-allowed;
-      background: var(--bg);
-      border-style: dashed;
-    }
-
-    .lcard.lk:hover {
-      transform: none;
-      box-shadow: none;
-      border-color: var(--border);
-    }
-
-    .lbar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-    }
-
-    .lct {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 16px;
-    }
-
-    .lico {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: #fff;
-    }
-
-    .lst {
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 20px;
-    }
-
-    .sdk {
-      background: rgba(59, 140, 102, 0.1);
-      color: var(--green);
-    }
-
-    .sip {
-      background: rgba(217, 119, 87, 0.1);
-      color: var(--accent);
-    }
-
-    .sns {
-      background: var(--hover);
-      color: var(--muted);
-    }
-
-    .lnum {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 4px;
-    }
-
-    .lnm {
-      font-size: 1.4rem;
-      font-family: 'Lora', serif;
-      font-weight: 600;
-      margin-bottom: 8px;
-      line-height: 1.2;
-    }
-
-    .ltg {
-      font-size: 0.95rem;
-      color: var(--muted2);
-      line-height: 1.5;
-      flex-grow: 1;
-    }
-
-    .lmt {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--hover);
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--muted);
-    }
-
-    /* Briefing Screen */
-    .br-w {
-      display: flex;
-      max-width: 100%;
-      margin: 40px auto;
-      gap: 40px;
-      width: 100%;
-      padding: 0 40px;
-    }
-
-    .br-l {
-      flex: 0 0 400px;
-    }
-
-    .br-r {
-      flex: 1;
-      position: sticky;
-      top: 120px;
-      margin-top: 0px;
-      align-self: flex-start;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    /* Tablet: shrink left sidebar */
-    @media (max-width: 1280px) {
-      .br-l { flex: 0 0 320px; }
-    }
-
-    .br-prog {
-      background: var(--hover);
-      height: 6px;
-      border-radius: 3px;
-      margin: 24px 0 8px;
-      overflow: hidden;
-    }
-
-    .br-prog-fill {
-      background: var(--text);
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s;
-    }
-
-    .syl-item {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 16px;
-      background: var(--card);
-      overflow: hidden;
-      cursor: pointer;
-      padding: 20px;
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-      transition: all 0.2s ease;
-    }
-
-    .syl-item:hover {
-      border-color: var(--muted);
-      transform: translateX(2px);
-    }
-
-    .syl-item.syl-active {
-      border-color: var(--text);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-    }
-
-    .syl-ck {
-      flex-shrink: 0;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 3px solid var(--border);
-      margin-top: 2px;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .syl-done .syl-ck {
-      background: linear-gradient(135deg, #00c851, #007E33);
-      border-color: #00c851;
-      box-shadow: 0 0 20px rgba(0, 200, 81, 0.5);
-      position: relative;
-      animation: pulse-ck 2s ease-in-out infinite;
-    }
-
-    .syl-done .syl-ck::after {
-      content: '';
-      position: absolute;
-      top: 5px;
-      left: 9px;
-      width: 6px;
-      height: 13px;
-      border: solid #fff;
-      border-width: 0 3px 3px 0;
-      transform: rotate(45deg);
-    }
-
-    .syl-active .syl-ck {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 3px rgba(255, 213, 74, 0.15);
-    }
-
-    @keyframes pulse-ck {
-      0%, 100% { box-shadow: 0 0 20px rgba(0, 200, 81, 0.5); }
-      50% { box-shadow: 0 0 30px rgba(0, 200, 81, 0.8), 0 0 40px rgba(0, 200, 81, 0.3); }
-    }
-
-    /* Badge Pill */
-    .syl-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      font-family: 'Space Mono', monospace;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-top: 4px;
-      width: fit-content;
-      background: rgba(184, 155, 255, 0.1);
-      border: 1px solid rgba(184, 155, 255, 0.2);
-      color: rgba(184, 155, 255, 0.7);
-      transition: all 0.3s ease;
-    }
-
-    .syl-done .syl-badge {
-      background: rgba(0, 200, 81, 0.12);
-      border-color: rgba(0, 200, 81, 0.3);
-      color: #00c851;
-    }
-
-    .syl-active .syl-badge {
-      background: rgba(242, 184, 75, 0.12);
-      border-color: rgba(242, 184, 75, 0.3);
-      color: var(--yellow);
-    }
-
-    .syl-info {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .syl-lbl {
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: var(--text);
-    }
-
-    .syl-sub {
-      font-size: 0.95rem;
-      color: var(--muted2);
-      line-height: 1.5;
-      display: none;
-    }
-
-    .syl-active .syl-sub {
-      display: block;
-    }
-
-    .bc-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 40px;
-      min-height: 400px;
-      max-width: 700px;
-      width: 100%;
-      margin: 0 auto;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
-    }
-
-    .bc-ttl {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 24px;
-    }
-
-    .bc-next-btn {
-      margin-top: 40px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-      text-align: right;
-    }
-
-    .bc-next-btn button {
-      background: var(--text);
-      color: #fff;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .stat-row {
-      display: flex;
-      gap: 16px;
-      margin-top: 24px;
-    }
-
-    .stat-box {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .stat-val {
-      font-size: 2rem;
-      font-family: 'Lora', serif;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .stat-lbl {
-      font-size: 0.85rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 4px;
-    }
-
-    .bc-rule-pill {
-      display: inline-block;
-      background: rgba(217, 119, 87, 0.1);
-      color: var(--accent);
-      font-weight: 600;
-      font-size: 0.85rem;
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-bottom: 16px;
-    }
-
-    .bc-rule-txt {
-      font-size: 1.4rem;
-      font-family: 'Lora', serif;
-      line-height: 1.5;
-      color: var(--text);
-    }
-
-    .lb {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--text);
-      padding: 24px;
-      border-radius: 0 16px 16px 0;
-      margin-bottom: 24px;
-    }
-
-    .ls {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .lt {
-      font-size: 1.1rem;
-      line-height: 1.5;
-      color: var(--text);
-    }
-
-    .fr {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 24px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-    }
-
-    .fl {
-      font-weight: 600;
-      color: var(--muted);
-    }
-
-    .fa {
-      font-size: 1.5rem;
-      font-family: 'Lora', serif;
-      font-weight: 600;
-      color: var(--red);
-    }
-
-    /* Quiz Screen */
-    .qw {
-      max-width: 100%;
-      margin: 60px auto;
-      width: 100%;
-      padding: 0 24px;
-    }
-
-    .qd-cnt {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin-bottom: 40px;
-    }
-
-    .qdt {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--border);
-    }
-
-    .qdt.dn {
-      background: var(--text);
-    }
-
-    .qdt.cu {
-      background: var(--accent);
-      box-shadow: 0 0 0 4px rgba(217, 119, 87, 0.2);
-    }
-
-    .qcard {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 40px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-    }
-
-    .qq {
-      font-size: 1.4rem;
-      font-family: 'Lora', serif;
-      line-height: 1.5;
-      margin-bottom: 32px;
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    .qq span {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--accent);
-      background: rgba(217, 119, 87, 0.1);
-      padding: 4px 10px;
-      border-radius: 8px;
-      margin-top: 4px;
-    }
-
-    .qopts {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .qo {
-      text-align: left;
-      padding: 16px 24px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      font-size: 1rem;
-      color: var(--text);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-weight: 500;
-    }
-
-    .qo:hover:not(:disabled) {
-      background: var(--hover);
-      border-color: var(--muted);
-    }
-
-    .qo.selected {
-      background: rgba(217, 119, 87, 0.12);
-      border-color: var(--accent);
-      color: var(--accent);
-      font-weight: 600;
-      box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.15);
-    }
-
-    #qconfirm {
-      display: none;
-      margin-top: 16px;
-      text-align: center;
-    }
-
-    #qconfirm.show {
-      display: block;
-      animation: screenFadeIn 0.25s ease-out;
-    }
-
-    .qo.ok {
-      background: rgba(59, 140, 102, 0.1);
-      border-color: var(--green);
-      color: var(--green);
-    }
-
-    .qo.no {
-      background: rgba(201, 79, 79, 0.1);
-      border-color: var(--red);
-      color: var(--red);
-    }
-
-    .qo.rv {
-      background: rgba(59, 140, 102, 0.1);
-      border-color: var(--green);
-      color: var(--green);
-      border-style: dashed;
-    }
-
-    .qfb {
-      margin-top: 24px;
-      font-weight: 600;
-      font-size: 1.1rem;
-      text-align: center;
-      min-height: 24px;
-    }
-
-    .qfb.ok {
-      color: var(--green);
-    }
-
-    .qfb.no {
-      color: var(--red);
-    }
-
-    .qbot {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 32px;
-    }
-
-    /* Results Screen */
-    .res-w {
-      max-width: 100%;
-      margin: 60px auto;
-      width: 100%;
-      text-align: center;
-      padding: 0 24px;
-    }
-
-    .rico {
-      font-size: 5rem;
-      margin-bottom: 24px;
-    }
-
-    .rtit {
-      font-family: 'Lora', serif;
-      font-size: 2.5rem;
-      margin-bottom: 8px;
-    }
-
-    .rsub {
-      font-size: 1.1rem;
-      color: var(--muted2);
-      margin-bottom: 40px;
-    }
-
-    .rcard {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      text-align: left;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
-    }
-
-    .rr {
-      display: flex;
-      justify-content: space-between;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--hover);
-      font-size: 1.05rem;
-    }
-
-    .rr:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .rl {
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    .rv {
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .bdx {
-      background: var(--card);
-      border: 1px solid var(--accent);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 32px;
-      display: none;
-      text-align: left;
-      background: rgba(217, 119, 87, 0.05);
-    }
-
-    .bdx.on {
-      display: block;
-    }
-
-    .bi {
-      font-size: 2.5rem;
-      margin-bottom: 12px;
-    }
-
-    .bn {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-
-    .bd {
-      font-size: 0.95rem;
-      color: var(--muted2);
-      line-height: 1.5;
-    }
-
-    .rbts {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-    }
-
-    /* Badges Screen */
-    .bgrid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 24px;
-      margin-top: 32px;
-    }
-
-    .bcard { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 40px 24px; text-align: center; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); } .bcard.lk { opacity: 0.5; filter: grayscale(1); background: #fdfdfd; border: 2px dashed #ddd; box-shadow: none; } .bcard:not(.lk):hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08); border-color: #ddd; }
-
-    .bgi {
-      font-size: 3.5rem;
-      margin-bottom: 16px;
-    }
-
-    .bgn {
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-
-    .bgd {
-      font-size: 0.9rem;
-      color: var(--muted2);
-      line-height: 1.5;
-    }
-
-    .stats-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 40px; } .stat-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03); } .stat-card span { color: var(--muted2); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; } .stat-card strong { font-size: 2rem; color: var(--text); }
-
-    /* Certificate */
-    #cert-wrapper {
-      display: flex;
-      justify-content: center;
-      margin: 40px 0;
-    }
-
-    .crt {
-      background: #fff;
-      padding: 60px;
-      color: #2c2b25;
-      position: relative;
-      font-family: 'Inter', sans-serif;
-      text-align: center;
-      width: 1056px;
-      min-height: 756px;
-      height: auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex-shrink: 0;
-      border: 10px solid #c8a45c;
-      outline: 4px solid #e8c96d;
-      outline-offset: -14px;
-      border-radius: 2px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
-      transform-origin: top center;
-      transform: scale(0.8);
-    }
-
-    .crt::after {
-      content: '';
-      position: absolute;
-      inset: 20px;
-      border: 2px solid rgba(0, 0, 0, 0);
-      /* disabled old border */
-      pointer-events: none;
-    }
-
-    .crtn {
-      font-family: 'Lora', serif;
-      font-size: 4.5rem;
-      color: #2c2b25;
-      font-weight: 400;
-      margin: 24px 0;
-      line-height: 1.1;
-      letter-spacing: -0.01em;
-    }
-
-    .crt-course {
-      font-family: 'Lora', serif;
-      font-weight: 500;
-      font-size: 3.5rem;
-      color: #d97757;
-      margin: 16px 0 60px;
-      letter-spacing: -0.01em;
-    }
-
-    .crt-body {
-      font-size: 1.4rem;
-      color: #525046;
-      font-weight: 400;
-      max-width: 100%;
-      line-height: 1.6;
-    }
-
-    .crt-meta {
-      font-size: 1.1rem;
-      color: #525046;
-      line-height: 1.6;
-    }
-
-    /* Challan & In-game overlays */
-    #cov {
-      position: fixed;
-      inset: 0;
-      background: rgba(201, 79, 79, 0.9);
-      z-index: 80;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(8px);
-    }
-
-    #cov.on {
-      display: flex;
-    }
-
-    .cvc {
-      background: var(--card);
-      padding: 40px;
-      border-radius: 16px;
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
-    }
-
-    .c-ttl {
-      font-size: 2rem;
-      font-family: 'Lora', serif;
-      font-weight: 700;
-      color: var(--red);
-      margin-bottom: 8px;
-    }
-
-    .c-sub {
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 32px;
-    }
-
-    .c-val {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 16px;
-    }
-
-    .c-amt {
-      font-size: 3rem;
-      font-family: 'Lora', serif;
-      font-weight: 700;
-      color: var(--red);
-      margin: 32px 0;
-    }
-
-    #vflash {
-      position: fixed;
-      inset: 0;
-      background: var(--red);
-      z-index: 79;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #vflash.flash {
-      animation: vfl 0.4s ease-out;
-    }
-
-    @keyframes vfl {
-      0% {
-        opacity: 0.8;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Mumbai Traffic Hero Academy - Simulation</title>
+
+    <!-- Cloud Auth & Sync Logic -->
+    <script>
+      const _oldFetch = window.fetch
+      window.fetch = function () {
+        if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
+          arguments[0] = '../' + arguments[0]
+        }
+        return _oldFetch.apply(this, arguments)
       }
 
-      100% {
-        opacity: 0;
+      // Silence GLTFLoader spam for KHR_texture_transform
+      const _oldWarn = console.warn
+      console.warn = function (...args) {
+        if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported')))
+          return
+        _oldWarn.apply(console, args)
       }
-    }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-    /* HUD overrides */
-    #gc {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 1;
-      display: none;
-      overflow: hidden;
-    }
-
-    #gc.on {
-      display: block;
-    }
-
-    #hud {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 20;
-      display: none;
-      padding: 16px 20px;
-      align-items: flex-start;
-      justify-content: space-between;
-      pointer-events: none;
-    }
-
-    #hud.on {
-      display: flex;
-    }
-
-    .hud-panel {
-      background: var(--card);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-    }
-
-    .hp {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 16px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      pointer-events: auto;
-    }
-
-    .hv {
-      font-weight: 700;
-      color: var(--accent);
-      margin-left: 4px;
-    }
-
-    #hudbar {
-      position: fixed;
-      top: 70px;
-      left: 20px;
-      right: 20px;
-      z-index: 21;
-      display: none;
-      justify-content: space-between;
-      gap: 12px;
-      pointer-events: none;
-    }
-
-    #hudbar.on {
-      display: flex;
-    }
-
-    /* In-Game Objective Overlay */
-    #objective-overlay {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      left: auto;
-      transform: translateX(150%);
-      z-index: 22;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 16px 24px;
-      color: white;
-      max-width: 90vw;
-      width: 400px;
-      text-align: center;
-      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      pointer-events: none;
-    }
-    
-    #objective-overlay.on {
-      transform: translateX(0);
-    }
-    
-    #objective-title {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--yellow);
-      font-weight: 800;
-    }
-    
-    #objective-desc {
-      font-size: 1rem;
-      line-height: 1.4;
-      font-weight: 500;
-    }
-
-    .hb {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 16px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      pointer-events: auto;
-    }
-
-    #hwrap {
-      position: fixed;
-      top: 120px;
-      left: 20px;
-      z-index: 22;
-      display: none;
-      flex-direction: column;
-      gap: 6px;
-      background: var(--card);
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-    }
-
-    #hwrap.on {
-      display: flex;
-    }
-
-    .modal {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.95);
-      background: var(--card);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      padding: 32px;
-      border-radius: var(--r);
-      border: 1px solid var(--border);
-      display: none;
-      flex-direction: column;
-      gap: 16px;
-      z-index: 100;
-      width: 90%;
-      max-width: 420px;
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
-    .modal.on {
-      display: flex;
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    .hl {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .ht {
-      width: 120px;
-      height: 8px;
-      background: var(--hover);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .hf {
-      height: 100%;
-      background: var(--green);
-      border-radius: 4px;
-      transition: width 0.3s ease;
-    }
-
-    #tc {
-      position: fixed;
-      bottom: 40px;
-      left: 0;
-      right: 0;
-      display: none;
-      z-index: 29;
-      pointer-events: none;
-      padding: 0 32px;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-
-    #tc.on {
-      display: flex;
-    }
-
-    .db {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: var(--card);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      pointer-events: auto;
-      user-select: none;
-      cursor: pointer;
-      transition: all 0.15s;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    }
-
-    .db:active {
-      background: var(--hover);
-      transform: scale(0.95);
-      border-color: var(--muted);
-    }
-
-    /* Gear selection overlay */
-    #gp {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 25;
-      display: none;
-      gap: 4px;
-      background: var(--card);
-      padding: 8px;
-      border-radius: 30px;
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    }
-
-    #gp.on {
-      display: flex;
-    }
-
-    .gb {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: none;
-      background: var(--bg);
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: var(--muted);
-      cursor: pointer;
-    }
-
-    .gb.ag {
-      background: var(--text);
-      color: #fff;
-    }
-
-    #gread {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.8);
-      padding: 4px 12px;
-      border-radius: 12px;
-      z-index: 24;
-      display: none;
-    }
-
-    #gc.on~#gread {
-      display: block;
-    }
-
-    #ow {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1.4rem;
-      font-weight: 600;
-      background: rgba(217, 119, 87, 0.9);
-      color: #fff;
-      padding: 16px 32px;
-      border-radius: 30px;
-      z-index: 30;
-      display: none;
-    }
-
-    #ow.on {
-      display: block;
-    }
-
-    #da { color: #111827 !important;
-      position: fixed;
-      top: 150px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: none;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 12px 24px;
-      border-radius: 30px;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      font-size: 1.2rem;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      z-index: 26;
-    }
-
-    #da.on {
-      display: flex;
-    }
-
-    /* Modals */
-    #mgo {
-      position: fixed;
-      inset: 0;
-      z-index: 60;
-      background: rgba(250, 249, 246, 0.8);
-      backdrop-filter: blur(4px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    #mgo.on {
-      display: flex;
-    }
-
-    .mgc {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 40px;
-      max-width: 440px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.1);
-    }
-
-    .mgt {
-      font-family: 'Lora', serif;
-      font-size: 1.8rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .mgd {
-      color: var(--muted2);
-      font-size: 1rem;
-      line-height: 1.5;
-      margin-bottom: 24px;
-    }
-
-    .mgb {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
-
-
-    /* MOBILE RESPONSIVE UI & ON-SCREEN CONTROLS */
-    #mobile-controls {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      left: 0;
-      right: 0;
-      padding: 0 20px;
-      justify-content: space-between;
-      z-index: 9999;
-      pointer-events: none;
-    }
-
-    @media (max-width: 900px) {
-      #mobile-controls.on {
-        display: flex;
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #070a14;
+        --card: rgba(17, 24, 39, 0.7);
+        --text: #e8e3d8;
+        --border: rgba(255, 255, 255, 0.1);
+        --hover: rgba(255, 255, 255, 0.15);
+        --muted: #8891aa;
+        --muted2: #525046;
+        --accent: #f2b84b;
+        --green: #34d399;
+        --red: #ef4444;
+        --yellow: #f2b84b;
+        --signal: #5ed4f5;
+        --r: 16px;
       }
-    }
-    @media (min-width: 901px) {
-      #mobile-controls.on {
+
+      .mobile-dl {
         display: none !important;
       }
-    }
-
-    .mc-col {
-      display: flex;
-      gap: 10px;
-      pointer-events: auto;
-    }
-
-    .mc-btn {
-      background: rgba(0, 0, 0, 0.4);
-      color: white;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      width: 70px;
-      height: 70px;
-      font-size: 24px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    .mc-btn:active {
-      background: rgba(255, 255, 255, 0.4);
-    }
-
-    @media (max-width: 768px) {
-      .lv-track, .bgrid, .stats-body {
-        grid-template-columns: 1fr;
+      @media (max-width: 768px) {
+        .mobile-dl {
+          display: inline-flex !important;
+        }
       }
 
-      .br-w {
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+      }
+
+      #3c {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      /* New Dedicated Loading Screen */
+      #loading-screen {
+        position: fixed;
+        inset: 0;
+        background: #070a14;
+        z-index: 9999999;
+        display: flex;
         flex-direction: column;
-        padding: 0 16px;
-        margin: 20px auto;
-        gap: 20px;
-      }
-
-      .br-l,
-      .br-r {
-        flex: none;
-        width: 100%;
-      }
-
-      .br-l {
-        max-width: 100%;
-      }
-
-      .br-r {
-        position: static;
+        justify-content: center;
         align-items: center;
+        color: #34d399;
+        font-family: 'Space Mono', monospace;
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease;
       }
-
-      .tb {
-        padding: 0 16px;
+      #loading-screen h1 {
+        font-family: 'Instrument Serif', serif;
+        font-style: italic;
+        font-size: clamp(2rem, 5vw, 4rem);
+        color: #f2b84b;
+        margin-bottom: 20px;
       }
-
-      .grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
+      #loading-bar-container {
+        width: clamp(250px, 50vw, 400px);
+        height: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        overflow: hidden;
+        margin-bottom: 15px;
       }
-
-      .card {
-        padding: 16px;
-        margin: 10px;
+      #loading-bar {
+        width: 0%;
+        height: 100%;
+        background: #34d399;
+        transition: width 0.1s linear;
       }
-
-      h1 {
-        font-size: 1.8rem;
+      #loading-pct {
+        font-size: 1.5rem;
+        font-weight: bold;
       }
-
-      h2 {
-        font-size: 1.4rem;
+      #loading-status {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #8891aa;
       }
 
       .screen {
-        padding: 10px;
-      }
-
-      /* Show mobile controls when HUD is active (handled by JS) */
-    }
-
-    /* Screen transitions */
-    .screen {
-      animation: none;
-    }
-
-    .screen.active {
-      animation: screenFadeIn 0.35s ease-out forwards;
-    }
-
-    @keyframes screenFadeIn {
-      0% {
-        opacity: 0;
-        transform: translateY(12px);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Card entrance animations */
-    .lcard {
-      animation: cardSlideUp 0.4s ease-out backwards;
-    }
-
-    .lcard:nth-child(1) {
-      animation-delay: 0.05s;
-    }
-
-    .lcard:nth-child(2) {
-      animation-delay: 0.1s;
-    }
-
-    .lcard:nth-child(3) {
-      animation-delay: 0.15s;
-    }
-
-    .lcard:nth-child(4) {
-      animation-delay: 0.2s;
-    }
-
-    .lcard:nth-child(5) {
-      animation-delay: 0.25s;
-    }
-
-    @keyframes cardSlideUp {
-      0% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Syllabus item animations */
-    .syl-item {
-      animation: sylSlide 0.3s ease-out backwards;
-    }
-
-    .syl-item:nth-child(1) {
-      animation-delay: 0.05s;
-    }
-
-    .syl-item:nth-child(2) {
-      animation-delay: 0.1s;
-    }
-
-    .syl-item:nth-child(3) {
-      animation-delay: 0.15s;
-    }
-
-    .syl-item:nth-child(4) {
-      animation-delay: 0.2s;
-    }
-
-    .syl-item:nth-child(5) {
-      animation-delay: 0.25s;
-    }
-
-    @keyframes sylSlide {
-      0% {
-        opacity: 0;
-        transform: translateX(-12px);
-      }
-
-      100% {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    /* Button hover pulse */
-    .btn:hover {
-      transform: translateY(-2px) scale(1.02);
-    }
-
-    .btn:active {
-      transform: translateY(0) scale(0.98);
-    }
-
-    /* Toast animation improvement */
-    #toast {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-
-    /* Challan card stack */
-    #challan-stack {
-      position: fixed;
-      bottom: 100px;
-      right: 12px;
-      z-index: 28;
-      pointer-events: none;
-      display: none;
-      width: 100px;
-    }
-
-    #challan-stack.on {
-      display: block;
-    }
-
-    .challan-card {
-      pointer-events: none;
-      transition: all 0.3s;
-      animation: cardSlideUp 0.3s ease-out;
-      position: relative;
-      margin-top: -55px;
-    }
-
-    .challan-card:first-child {
-      margin-top: 0;
-    }
-
-    .challan-card .cc-off {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--red);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .challan-card .cc-amt {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-  
-    /* --- Responsive UI Adjustments --- */
-    
-    /* Make the root containers fluid and center them */
-    .sc {
-      width: 100%;
-      min-height: 100vh;
-      margin: 0 auto;
-      padding: clamp(40px, 8vw, 120px) 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      justify-content: center;
-      position: relative;
-      z-index: 10;
-      box-sizing: border-box;
-    }
-    
-    .st {
-      font-size: clamp(2.5rem, 6vw, 5.5rem);
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-      font-family: 'Lora', serif;
-      font-weight: 700;
-    }
-    
-    .su {
-      font-size: clamp(1rem, 2vw, 1.4rem);
-      color: var(--muted2);
-      line-height: 1.6;
-      max-width: 800px;
-      margin: 0 auto 40px auto;
-      font-weight: 400;
-    }
-    
-    /* Level grid: ensure it doesn't overflow on tiny screens */
-    .lv-track {
-      grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-    }
-    
-    /* Briefing screen: stack on smaller screens */
-    @media (max-width: 900px) {
-      .br-w {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: var(--bg);
+        overflow-y: auto;
+        display: none;
         flex-direction: column;
-        padding: 0 20px;
-        margin: 20px auto;
-        gap: 20px;
       }
-      .br-l {
-        flex: 1 1 auto;
+
+      .screen.active {
+        display: flex;
       }
-      .br-r {
-        position: static;
-        margin-top: 20px;
+
+      h1,
+      h2,
+      h3 {
+        font-family: 'Lora', serif;
+        color: var(--text);
+        font-weight: 600;
       }
-      .bc-card {
-        padding: 20px;
-        min-height: auto;
+
+      .btn {
+        background: var(--text);
+        color: #fff;
+        border: none;
+        padding: clamp(12px, 1.5vw, 16px) clamp(20px, 2.5vw, 32px);
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
       }
-      .stat-row {
+
+      .btn:hover {
+        background: var(--muted2);
+        transform: translateY(-1px);
+      }
+
+      .btn-g {
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      }
+
+      .btn-g:hover {
+        background: var(--hover);
+      }
+
+      .btn-danger {
+        background: var(--red);
+        color: #fff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-danger:hover {
+        filter: brightness(0.9);
+        transform: translateY(-1px);
+      }
+
+      /* Start Screen */
+      .brand-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 40px;
+      }
+
+      .sc {
+        width: 100%;
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: clamp(40px, 8vw, 120px) 20px;
+        display: flex;
         flex-direction: column;
-        gap: 12px;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        position: relative;
+        z-index: 10;
+        box-sizing: border-box;
       }
-      .bc-rule-txt {
-        font-size: 1.2rem;
+
+      .st {
+        font-size: clamp(2.5rem, 6vw, 5.5rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        margin-bottom: 24px;
+        font-family: 'Lora', serif;
+        font-weight: 700;
       }
-    }
-    
-    /* Global screen padding for mobile */
-    @media (max-width: 600px) {
-      .tb {
-        padding: 16px 20px;
-        flex-direction: row;
+
+      .su {
+        font-size: clamp(1rem, 2vw, 1.4rem);
+        color: var(--muted2);
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto 40px auto;
+        font-weight: 400;
+      }
+
+      .pls {
+        display: flex;
         flex-wrap: wrap;
-        gap: 12px;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 40px;
       }
-      .lw {
-        padding: 20px;
+
+      #rl {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 1;
       }
-      .sec-hdr {
-        font-size: 1.4rem;
-        margin: 20px 0 12px;
+
+      .rd {
+        position: absolute;
+        top: -100px;
+        width: 2px;
+        background: rgba(44, 43, 37, 0.1);
+        animation: fall linear infinite;
       }
-      .qw {
-        padding: 0 16px;
-        margin: 20px auto;
+
+      @keyframes fall {
+        to {
+          transform: translateY(120vh);
+        }
       }
-      .qcard {
-        padding: 24px 16px;
+
+      /* Name Dialog */
+      #name-dlg {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 90;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
       }
-      .qq {
+
+      #name-dlg.on {
+        display: flex;
+      }
+
+      .nd-c {
+        background: var(--card);
+        padding: 32px;
+        border-radius: 16px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .nd-i {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
         font-size: 1.1rem;
-        flex-direction: column;
+        margin: 16px 0 24px;
+        text-align: center;
+      }
+
+      /* Toast */
+      #toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-100px);
+        z-index: 100;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      #toast.on {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      #ti {
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-weight: 600;
+        color: #2c2b25;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
         gap: 8px;
       }
-      .res-w {
-        padding: 0 16px;
-        margin: 20px auto;
-      }
-      
-      /* Certificate mobile scaling */
-      #cert-wrapper {
-        overflow-x: auto;
-        padding-bottom: 20px;
-      }
-      .crt {
-        transform-origin: top left;
-        transform: scale(min(1, calc((100vw - 40px) / 800))); 
-        /* 800 is approx width of cert, scales down to fit screen width */
-      }
-    }
-    
-    /* Certificate specific responsiveness */
-    #cert-wrapper {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      overflow-x: auto;
-      flex-shrink: 0;
-    }
-    
-    .crt {
-      /* Removed min-width and max-width to allow transform scaling without text overflow */
-    }
 
-    /* === COMPLETE MOBILE DRIVING UI REDESIGN === */
-    @media (max-width: 1400px), (max-height: 800px), (pointer: coarse) {
-      /* Ensure canvas fills screen without distortion */
+      /* Levels Screen */
+      .tb {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 40px;
+        border-bottom: 1px solid var(--border);
+        background: var(--card);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .back-btn {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--text);
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+        padding: 8px 20px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .back-btn:hover {
+        background: var(--hover);
+        border-color: var(--muted);
+        transform: translateY(-1px);
+      }
+
+      .lw {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 40px 60px;
+        width: 100%;
+      }
+
+      .sec-hdr {
+        font-family: 'Lora', serif;
+        font-size: 1.8rem;
+        margin: 32px 0 16px;
+        color: var(--text);
+      }
+
+      .lv-track {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+        margin-bottom: 40px;
+      }
+
+      .lcard {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .lcard:hover {
+        border-color: var(--muted);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        transform: translateY(-2px);
+      }
+
+      .lcard.lk {
+        opacity: 0.6;
+        cursor: not-allowed;
+        background: var(--bg);
+        border-style: dashed;
+      }
+
+      .lcard.lk:hover {
+        transform: none;
+        box-shadow: none;
+        border-color: var(--border);
+      }
+
+      .lbar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+      }
+
+      .lct {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+      }
+
+      .lico {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #fff;
+      }
+
+      .lst {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 20px;
+      }
+
+      .sdk {
+        background: rgba(59, 140, 102, 0.1);
+        color: var(--green);
+      }
+
+      .sip {
+        background: rgba(217, 119, 87, 0.1);
+        color: var(--accent);
+      }
+
+      .sns {
+        background: var(--hover);
+        color: var(--muted);
+      }
+
+      .lnum {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 4px;
+      }
+
+      .lnm {
+        font-size: 1.4rem;
+        font-family: 'Lora', serif;
+        font-weight: 600;
+        margin-bottom: 8px;
+        line-height: 1.2;
+      }
+
+      .ltg {
+        font-size: 0.95rem;
+        color: var(--muted2);
+        line-height: 1.5;
+        flex-grow: 1;
+      }
+
+      .lmt {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--hover);
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--muted);
+      }
+
+      /* Briefing Screen */
+      .br-w {
+        display: flex;
+        max-width: 100%;
+        margin: 40px auto;
+        gap: 40px;
+        width: 100%;
+        padding: 0 40px;
+      }
+
+      .br-l {
+        flex: 0 0 400px;
+      }
+
+      .br-r {
+        flex: 1;
+        position: sticky;
+        top: 120px;
+        margin-top: 0px;
+        align-self: flex-start;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* Tablet: shrink left sidebar */
+      @media (max-width: 1280px) {
+        .br-l {
+          flex: 0 0 320px;
+        }
+      }
+
+      .br-prog {
+        background: var(--hover);
+        height: 6px;
+        border-radius: 3px;
+        margin: 24px 0 8px;
+        overflow: hidden;
+      }
+
+      .br-prog-fill {
+        background: var(--text);
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s;
+      }
+
+      .syl-item {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 16px;
+        background: var(--card);
+        overflow: hidden;
+        cursor: pointer;
+        padding: 20px;
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        transition: all 0.2s ease;
+      }
+
+      .syl-item:hover {
+        border-color: var(--muted);
+        transform: translateX(2px);
+      }
+
+      .syl-item.syl-active {
+        border-color: var(--text);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      }
+
+      .syl-ck {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 3px solid var(--border);
+        margin-top: 2px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .syl-done .syl-ck {
+        background: linear-gradient(135deg, #00c851, #007e33);
+        border-color: #00c851;
+        box-shadow: 0 0 20px rgba(0, 200, 81, 0.5);
+        position: relative;
+        animation: pulse-ck 2s ease-in-out infinite;
+      }
+
+      .syl-done .syl-ck::after {
+        content: '';
+        position: absolute;
+        top: 5px;
+        left: 9px;
+        width: 6px;
+        height: 13px;
+        border: solid #fff;
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+      }
+
+      .syl-active .syl-ck {
+        border-color: var(--yellow);
+        box-shadow: 0 0 0 3px rgba(255, 213, 74, 0.15);
+      }
+
+      @keyframes pulse-ck {
+        0%,
+        100% {
+          box-shadow: 0 0 20px rgba(0, 200, 81, 0.5);
+        }
+        50% {
+          box-shadow:
+            0 0 30px rgba(0, 200, 81, 0.8),
+            0 0 40px rgba(0, 200, 81, 0.3);
+        }
+      }
+
+      /* Badge Pill */
+      .syl-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-family: 'Space Mono', monospace;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-top: 4px;
+        width: fit-content;
+        background: rgba(184, 155, 255, 0.1);
+        border: 1px solid rgba(184, 155, 255, 0.2);
+        color: rgba(184, 155, 255, 0.7);
+        transition: all 0.3s ease;
+      }
+
+      .syl-done .syl-badge {
+        background: rgba(0, 200, 81, 0.12);
+        border-color: rgba(0, 200, 81, 0.3);
+        color: #00c851;
+      }
+
+      .syl-active .syl-badge {
+        background: rgba(242, 184, 75, 0.12);
+        border-color: rgba(242, 184, 75, 0.3);
+        color: var(--yellow);
+      }
+
+      .syl-info {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .syl-lbl {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--text);
+      }
+
+      .syl-sub {
+        font-size: 0.95rem;
+        color: var(--muted2);
+        line-height: 1.5;
+        display: none;
+      }
+
+      .syl-active .syl-sub {
+        display: block;
+      }
+
+      .bc-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 40px;
+        min-height: 400px;
+        max-width: 700px;
+        width: 100%;
+        margin: 0 auto;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+      }
+
+      .bc-ttl {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 24px;
+      }
+
+      .bc-next-btn {
+        margin-top: 40px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        text-align: right;
+      }
+
+      .bc-next-btn button {
+        background: var(--text);
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .stat-row {
+        display: flex;
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .stat-box {
+        flex: 1;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .stat-val {
+        font-size: 2rem;
+        font-family: 'Lora', serif;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .stat-lbl {
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 4px;
+      }
+
+      .bc-rule-pill {
+        display: inline-block;
+        background: rgba(217, 119, 87, 0.1);
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 16px;
+      }
+
+      .bc-rule-txt {
+        font-size: 1.4rem;
+        font-family: 'Lora', serif;
+        line-height: 1.5;
+        color: var(--text);
+      }
+
+      .lb {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--text);
+        padding: 24px;
+        border-radius: 0 16px 16px 0;
+        margin-bottom: 24px;
+      }
+
+      .ls {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .lt {
+        font-size: 1.1rem;
+        line-height: 1.5;
+        color: var(--text);
+      }
+
+      .fr {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+      }
+
+      .fl {
+        font-weight: 600;
+        color: var(--muted);
+      }
+
+      .fa {
+        font-size: 1.5rem;
+        font-family: 'Lora', serif;
+        font-weight: 600;
+        color: var(--red);
+      }
+
+      /* Quiz Screen */
+      .qw {
+        max-width: 100%;
+        margin: 60px auto;
+        width: 100%;
+        padding: 0 24px;
+      }
+
+      .qd-cnt {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 40px;
+      }
+
+      .qdt {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--border);
+      }
+
+      .qdt.dn {
+        background: var(--text);
+      }
+
+      .qdt.cu {
+        background: var(--accent);
+        box-shadow: 0 0 0 4px rgba(217, 119, 87, 0.2);
+      }
+
+      .qcard {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+      }
+
+      .qq {
+        font-size: 1.4rem;
+        font-family: 'Lora', serif;
+        line-height: 1.5;
+        margin-bottom: 32px;
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .qq span {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--accent);
+        background: rgba(217, 119, 87, 0.1);
+        padding: 4px 10px;
+        border-radius: 8px;
+        margin-top: 4px;
+      }
+
+      .qopts {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .qo {
+        text-align: left;
+        padding: 16px 24px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        font-size: 1rem;
+        color: var(--text);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+      }
+
+      .qo:hover:not(:disabled) {
+        background: var(--hover);
+        border-color: var(--muted);
+      }
+
+      .qo.selected {
+        background: rgba(217, 119, 87, 0.12);
+        border-color: var(--accent);
+        color: var(--accent);
+        font-weight: 600;
+        box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.15);
+      }
+
+      #qconfirm {
+        display: none;
+        margin-top: 16px;
+        text-align: center;
+      }
+
+      #qconfirm.show {
+        display: block;
+        animation: screenFadeIn 0.25s ease-out;
+      }
+
+      .qo.ok {
+        background: rgba(59, 140, 102, 0.1);
+        border-color: var(--green);
+        color: var(--green);
+      }
+
+      .qo.no {
+        background: rgba(201, 79, 79, 0.1);
+        border-color: var(--red);
+        color: var(--red);
+      }
+
+      .qo.rv {
+        background: rgba(59, 140, 102, 0.1);
+        border-color: var(--green);
+        color: var(--green);
+        border-style: dashed;
+      }
+
+      .qfb {
+        margin-top: 24px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-align: center;
+        min-height: 24px;
+      }
+
+      .qfb.ok {
+        color: var(--green);
+      }
+
+      .qfb.no {
+        color: var(--red);
+      }
+
+      .qbot {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 32px;
+      }
+
+      /* Results Screen */
+      .res-w {
+        max-width: 100%;
+        margin: 60px auto;
+        width: 100%;
+        text-align: center;
+        padding: 0 24px;
+      }
+
+      .rico {
+        font-size: 5rem;
+        margin-bottom: 24px;
+      }
+
+      .rtit {
+        font-family: 'Lora', serif;
+        font-size: 2.5rem;
+        margin-bottom: 8px;
+      }
+
+      .rsub {
+        font-size: 1.1rem;
+        color: var(--muted2);
+        margin-bottom: 40px;
+      }
+
+      .rcard {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        text-align: left;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+      }
+
+      .rr {
+        display: flex;
+        justify-content: space-between;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--hover);
+        font-size: 1.05rem;
+      }
+
+      .rr:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .rl {
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .rv {
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .bdx {
+        background: var(--card);
+        border: 1px solid var(--accent);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 32px;
+        display: none;
+        text-align: left;
+        background: rgba(217, 119, 87, 0.05);
+      }
+
+      .bdx.on {
+        display: block;
+      }
+
+      .bi {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+      }
+
+      .bn {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+
+      .bd {
+        font-size: 0.95rem;
+        color: var(--muted2);
+        line-height: 1.5;
+      }
+
+      .rbts {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+      }
+
+      /* Badges Screen */
+      .bgrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 24px;
+        margin-top: 32px;
+      }
+
+      .bcard {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 40px 24px;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      }
+      .bcard.lk {
+        opacity: 0.5;
+        filter: grayscale(1);
+        background: #fdfdfd;
+        border: 2px dashed #ddd;
+        box-shadow: none;
+      }
+      .bcard:not(.lk):hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
+        border-color: #ddd;
+      }
+
+      .bgi {
+        font-size: 3.5rem;
+        margin-bottom: 16px;
+      }
+
+      .bgn {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+        color: var(--text);
+      }
+
+      .bgd {
+        font-size: 0.9rem;
+        color: var(--muted2);
+        line-height: 1.5;
+      }
+
+      .stats-body {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 40px;
+      }
+      .stat-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      }
+      .stat-card span {
+        color: var(--muted2);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+      }
+      .stat-card strong {
+        font-size: 2rem;
+        color: var(--text);
+      }
+
+      /* Certificate */
+      #cert-wrapper {
+        display: flex;
+        justify-content: center;
+        margin: 40px 0;
+      }
+
+      .crt {
+        background: #fff;
+        padding: 60px;
+        color: #2c2b25;
+        position: relative;
+        font-family: 'Inter', sans-serif;
+        text-align: center;
+        width: 1056px;
+        min-height: 756px;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-shrink: 0;
+        border: 10px solid #c8a45c;
+        outline: 4px solid #e8c96d;
+        outline-offset: -14px;
+        border-radius: 2px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
+        transform-origin: top center;
+        transform: scale(0.8);
+      }
+
+      .crt::after {
+        content: '';
+        position: absolute;
+        inset: 20px;
+        border: 2px solid rgba(0, 0, 0, 0);
+        /* disabled old border */
+        pointer-events: none;
+      }
+
+      .crtn {
+        font-family: 'Lora', serif;
+        font-size: 4.5rem;
+        color: #2c2b25;
+        font-weight: 400;
+        margin: 24px 0;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+      }
+
+      .crt-course {
+        font-family: 'Lora', serif;
+        font-weight: 500;
+        font-size: 3.5rem;
+        color: #d97757;
+        margin: 16px 0 60px;
+        letter-spacing: -0.01em;
+      }
+
+      .crt-body {
+        font-size: 1.4rem;
+        color: #525046;
+        font-weight: 400;
+        max-width: 100%;
+        line-height: 1.6;
+      }
+
+      .crt-meta {
+        font-size: 1.1rem;
+        color: #525046;
+        line-height: 1.6;
+      }
+
+      /* Challan & In-game overlays */
+      #cov {
+        position: fixed;
+        inset: 0;
+        background: rgba(201, 79, 79, 0.9);
+        z-index: 80;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(8px);
+      }
+
+      #cov.on {
+        display: flex;
+      }
+
+      .cvc {
+        background: var(--card);
+        padding: 40px;
+        border-radius: 16px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+      }
+
+      .c-ttl {
+        font-size: 2rem;
+        font-family: 'Lora', serif;
+        font-weight: 700;
+        color: var(--red);
+        margin-bottom: 8px;
+      }
+
+      .c-sub {
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 32px;
+      }
+
+      .c-val {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 16px;
+      }
+
+      .c-amt {
+        font-size: 3rem;
+        font-family: 'Lora', serif;
+        font-weight: 700;
+        color: var(--red);
+        margin: 32px 0;
+      }
+
+      #vflash {
+        position: fixed;
+        inset: 0;
+        background: var(--red);
+        z-index: 79;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #vflash.flash {
+        animation: vfl 0.4s ease-out;
+      }
+
+      @keyframes vfl {
+        0% {
+          opacity: 0.8;
+        }
+
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* HUD overrides */
       #gc {
         position: fixed;
         inset: 0;
         width: 100vw;
         height: 100vh;
         z-index: 1;
-        background: #000; /* Prevent bright flashes or letterboxing issues */
-      }
-      
-      /* HUD Scaling and Repositioning */
-      #hud {
-        top: 8px; left: 8px; right: auto; padding: 0; gap: 6px;
-      }
-      .hp {
-        padding: 4px 8px; font-size: 0.75rem; border-radius: 6px;
-      }
-      #hudbar {
-        top: 8px; left: 50%; transform: translateX(-50%); right: auto;
-        gap: 8px; padding: 0;
-      }
-      .hb {
-        padding: 4px 10px; font-size: 0.75rem; border-radius: 6px;
-      }
-      #hwrap {
-        top: 8px; left: 8px; right: auto; flex-direction: row; align-items: center; gap: 8px; 
-        padding: 4px 8px; border-radius: 6px; z-index: 25;
-      }
-      #objective-overlay {
-        top: 8px; right: 8px; left: auto; width: auto; max-width: 55vw; padding: 8px 14px; z-index: 25;
-      }
-      #task-tracker {
-        top: auto; bottom: 8px; left: 8px; right: auto; width: auto; max-width: 45vw; max-height: 30vh;
-        font-size: 0.75rem; padding: 10px 14px;
-      }
-      #sig-ind {
-        top: 8px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; padding: 6px 12px; gap: 8px;
-      }
-      #sind-state { min-width: 40px; font-size: 0.85rem; }
-      #sind-timer { font-size: 0.9rem; min-width: 24px; }
-      #hwrap .hl { margin: 0; font-size: 0.6rem; }
-      #hwallet { font-size: 0.85rem; }
-      .ht { width: 60px; height: 6px; }
-      
-      /* Touch Controls (Center Bottom) */
-      #tc {
-        bottom: 12px; left: 50%; transform: translateX(-50%);
-        padding: 0; gap: 12px; justify-content: center;
-      }
-      .db {
-        width: 44px; height: 44px; font-size: 1.1rem; border-radius: 12px;
+        display: none;
+        overflow: hidden;
       }
 
-      /* Gear Selector (Vertical on Left) */
+      #gc.on {
+        display: block;
+      }
+
+      #hud {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 20;
+        display: none;
+        padding: 16px 20px;
+        align-items: flex-start;
+        justify-content: space-between;
+        pointer-events: none;
+      }
+
+      #hud.on {
+        display: flex;
+      }
+
+      .hud-panel {
+        background: var(--card);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      }
+
+      .hp {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        pointer-events: auto;
+      }
+
+      .hv {
+        font-weight: 700;
+        color: var(--accent);
+        margin-left: 4px;
+      }
+
+      #hudbar {
+        position: fixed;
+        top: 70px;
+        left: 20px;
+        right: 20px;
+        z-index: 21;
+        display: none;
+        justify-content: space-between;
+        gap: 12px;
+        pointer-events: none;
+      }
+
+      #hudbar.on {
+        display: flex;
+      }
+
+      /* In-Game Objective Overlay */
+      #objective-overlay {
+        position: fixed;
+        top: 80px;
+        right: 24px;
+        left: auto;
+        transform: translateX(150%);
+        z-index: 22;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 16px 24px;
+        color: white;
+        max-width: 90vw;
+        width: 400px;
+        text-align: center;
+        transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        pointer-events: none;
+      }
+
+      #objective-overlay.on {
+        transform: translateX(0);
+      }
+
+      #objective-title {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--yellow);
+        font-weight: 800;
+      }
+
+      #objective-desc {
+        font-size: 1rem;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+
+      .hb {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        pointer-events: auto;
+      }
+
+      #hwrap {
+        position: fixed;
+        top: 120px;
+        left: 20px;
+        z-index: 22;
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        background: var(--card);
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+
+      #hwrap.on {
+        display: flex;
+      }
+
+      .modal {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        background: var(--card);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 32px;
+        border-radius: var(--r);
+        border: 1px solid var(--border);
+        display: none;
+        flex-direction: column;
+        gap: 16px;
+        z-index: 100;
+        width: 90%;
+        max-width: 420px;
+        opacity: 0;
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      }
+      .modal.on {
+        display: flex;
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .hl {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .ht {
+        width: 120px;
+        height: 8px;
+        background: var(--hover);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .hf {
+        height: 100%;
+        background: var(--green);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+      }
+
+      #tc {
+        position: fixed;
+        bottom: 40px;
+        left: 0;
+        right: 0;
+        display: none;
+        z-index: 29;
+        pointer-events: none;
+        padding: 0 32px;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+
+      #tc.on {
+        display: flex;
+      }
+
+      .db {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        pointer-events: auto;
+        user-select: none;
+        cursor: pointer;
+        transition: all 0.15s;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      }
+
+      .db:active {
+        background: var(--hover);
+        transform: scale(0.95);
+        border-color: var(--muted);
+      }
+
+      /* Gear selection overlay */
+      #gp {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 25;
+        display: none;
+        gap: 4px;
+        background: var(--card);
+        padding: 8px;
+        border-radius: 30px;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      }
+
       #gp.on {
         display: flex;
       }
-      #gp {
-        bottom: 50%; left: 12px; transform: translateY(50%);
-        flex-direction: column; padding: 6px; gap: 6px;
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(8px); border-radius: 16px;
-      }
+
       .gb {
-        width: 38px; height: 38px; font-size: 0.85rem; border-radius: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background: var(--bg);
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--muted);
+        cursor: pointer;
       }
+
+      .gb.ag {
+        background: var(--text);
+        color: #fff;
+      }
+
       #gread {
-        bottom: 70px; top: auto; left: 12px; transform: none;
-        font-size: 0.75rem; padding: 4px 8px; background: rgba(255, 255, 255, 0.8);
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.8);
+        padding: 4px 12px;
+        border-radius: 12px;
+        z-index: 24;
+        display: none;
       }
-      
-      /* Mobile Controls Wrapper */
-      #mobile-controls {
-        bottom: 12px; padding: 0 20px;
-        background: none; /* remove gradient to keep view clear */
+
+      #gc.on ~ #gread {
+        display: block;
       }
-      
-      /* Steering Wheel (Bottom Left) */
-      #steer-wheel-container {
-        width: 110px; height: 110px; border-width: 3px;
-        background: rgba(0,0,0,0.25);
-        margin-left: 50px; /* Offset to not overlap gears */
+
+      #ow {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.4rem;
+        font-weight: 600;
+        background: rgba(217, 119, 87, 0.9);
+        color: #fff;
+        padding: 16px 32px;
+        border-radius: 30px;
+        z-index: 30;
+        display: none;
       }
-      
-      /* Pedals (Bottom Right) */
-      .mc-col {
+
+      #ow.on {
+        display: block;
+      }
+
+      #da {
+        color: #111827 !important;
+        position: fixed;
+        top: 150px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: none;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 12px 24px;
+        border-radius: 30px;
+        align-items: center;
         gap: 12px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        z-index: 26;
       }
-      .mc-btn {
-        width: 65px; height: 65px; font-size: 20px; border-width: 2px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      }
-      
-      #da { color: #111827 !important;
-        top: 50px; left: 50%; transform: translateX(-50%); padding: 6px 14px; font-size: 0.9rem; border-radius: 10px;
-      }
-      #mmc { top: 50px; right: 8px; width: 100px; height: 100px; border-width: 3px; }
-      #spgauge { right: 12px; bottom: 100px; }
-      #spgauge svg { width: 70px; height: 70px; }
-      #civic-controls { bottom: 100px; right: 12px; gap: 6px; }
-      #civic-controls button { padding: 6px 10px; font-size: 0.75rem; border-radius: 14px; }
-    }
 
-    @media (min-width: 1401px) and (min-height: 801px) and (pointer: fine) {
+      #da.on {
+        display: flex;
+      }
+
+      /* Modals */
+      #mgo {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        background: rgba(250, 249, 246, 0.8);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      #mgo.on {
+        display: flex;
+      }
+
+      .mgc {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 40px;
+        max-width: 440px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.1);
+      }
+
+      .mgt {
+        font-family: 'Lora', serif;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+
+      .mgd {
+        color: var(--muted2);
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 24px;
+      }
+
+      .mgb {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+
+      /* MOBILE RESPONSIVE UI & ON-SCREEN CONTROLS */
       #mobile-controls {
-        display: none !important;
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        padding: 0 20px;
+        justify-content: space-between;
+        z-index: 9999;
+        pointer-events: none;
       }
-    }
-</style>
 
-  <script>
-    window.addEventListener('error', function (e) {
-      const errDiv = document.createElement('div');
-      errDiv.style.position = 'fixed';
-      errDiv.style.top = '10px';
-      errDiv.style.left = '10px';
-      errDiv.style.zIndex = '999999';
-      errDiv.style.background = 'red';
-      errDiv.style.color = 'white';
-      errDiv.style.padding = '10px';
-      errDiv.style.fontFamily = 'monospace';
-      errDiv.innerText = "JS Error: " + e.message + " at " + e.filename + ":" + e.lineno;
-      document.body.appendChild(errDiv);
-    });
-    window.addEventListener('unhandledrejection', function (e) {
-      const errDiv = document.createElement('div');
-      errDiv.style.position = 'fixed';
-      errDiv.style.top = '50px';
-      errDiv.style.left = '10px';
-      errDiv.style.zIndex = '999999';
-      errDiv.style.background = 'darkred';
-      errDiv.style.color = 'white';
-      errDiv.style.padding = '10px';
-      errDiv.style.fontFamily = 'monospace';
-      errDiv.innerText = "Promise Rejection: " + e.reason;
-      document.body.appendChild(errDiv);
-    });
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/SimplexNoise.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SSAOShader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"></script>
-  <script src="vehicles.js"></script>
-</head>
+      @media (max-width: 900px) {
+        #mobile-controls.on {
+          display: flex;
+        }
+      }
+      @media (min-width: 901px) {
+        #mobile-controls.on {
+          display: none !important;
+        }
+      }
 
-<body class="lm">
-  <!-- Script entry points -->
+      .mc-col {
+        display: flex;
+        gap: 10px;
+        pointer-events: auto;
+      }
 
-  <div id="mobile-controls"
-    style="position:fixed; bottom:0; left:0; right:0; padding:16px 24px 28px; justify-content:space-between; z-index:9999; pointer-events:none; background:linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 100%);">
-    <div class="mc-col" style="display:flex; pointer-events:auto; align-items:flex-end;">
-      <div id="steer-wheel-container"
-        style="position:relative; width:150px; height:150px; border-radius:50%; background:rgba(0,0,0,0.4); border:4px solid rgba(255,255,255,0.4); display:flex; justify-content:center; align-items:center; touch-action:none; backdrop-filter:blur(4px);">
-        <div id="steer-wheel"
-          style="width:100%; height:100%; position:absolute; border-radius:50%; background:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22none%22 stroke=%22white%22 stroke-width=%228%22/><line x1=%2250%22 y1=%225%22 x2=%2250%22 y2=%2295%22 stroke=%22white%22 stroke-width=%228%22/><line x1=%225%22 y1=%2250%22 x2=%2295%22 y2=%2250%22 stroke=%22white%22 stroke-width=%228%22/><circle cx=%2250%22 cy=%2250%22 r=%2215%22 fill=%22%23ffd54a%22/><circle cx=%2250%22 cy=%2215%22 r=%228%22 fill=%22white%22/></svg>') center/cover; transition:transform 0.05s linear;">
-        </div>
-      </div>
-    </div>
-    <div class="mc-col" style="display:flex; gap:10px; pointer-events:auto;">
-      <div class="mc-btn" id="mc-brake"
-        style="width:80px; height:80px; background:rgba(220,40,40,0.6); margin-top:0; color:white; border:2px solid rgba(255,255,255,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; box-shadow:0 4px 12px rgba(220,40,40,0.3);">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><rect x="7" y="6" width="10" height="14" rx="2" fill="rgba(255,255,255,0.15)"/><path d="M9 10h6"/></svg>
-      </div>
-      <div class="mc-btn" id="mc-gas"
-        style="background:rgba(40,180,40,0.6); color:white; border:2px solid rgba(255,255,255,0.4); border-radius:20px; width:80px; height:80px; backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; box-shadow:0 4px 12px rgba(40,180,40,0.3);">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><polygon points="12,4 6,14 18,14" fill="rgba(255,255,255,0.15)"/><path d="M12 7v5"/></svg>
-      </div>
-    </div>
-  </div>
+      .mc-btn {
+        background: rgba(0, 0, 0, 0.4);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        width: 70px;
+        height: 70px;
+        font-size: 24px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        -webkit-user-select: none;
+      }
 
-  <!-- Dedicated Pre-Loader Screen -->
-  <div id="loading-screen">
-    <h1>Traffic Academy</h1>
-    <div style="font-size: 1.2rem; margin-bottom: 10px;">Loading 3D Open World...</div>
-    <div id="loading-bar-container">
-      <div id="loading-bar"></div>
-    </div>
-    <div id="loading-pct">0%</div>
-    <div id="loading-status">Initializing assets...</div>
-  </div>
+      .mc-btn:active {
+        background: rgba(255, 255, 255, 0.4);
+      }
 
-  <div id="gc"><canvas id="3c"></canvas></div>
-  <div id="hud">
-    <div class="hp">Lv<span class="hv" id="hlv">1</span></div>
-    <div class="hp" id="hobj" style="font-size:0.85rem;font-weight:600;text-align:center;"></div>
-    <div class="hp">Score<span class="hv" id="hsc">0</span></div>
-  </div>
-  <div id="hudbar">
-    <div class="hb">⏱<span id="htmr">0:00</span></div>
-    <div class="hb">💸<span id="hfin">0</span></div>
-    <div class="hb">✅<span id="hcp">0/0</span></div>
-  </div>
-  
-  <div id="objective-overlay">
-    <div id="objective-title">Current Objective</div>
-    <div id="objective-desc">Loading...</div>
-  </div>
-  <div id="task-tracker"
-    style="position:fixed;top:24px;left:24px;z-index:22;background:rgba(15,23,42,0.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px 20px;color:white;width:280px;max-height:40vh;overflow-y:auto;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.3);font-size:0.85rem;">
-    <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--yellow);font-weight:800;margin-bottom:10px;">📋 Tasks</div>
-    <div id="task-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-  </div>
-  <div id="civic-controls" style="position:fixed;bottom:16px;right:20px;z-index:100;display:flex;flex-direction:row;gap:6px;">
-    <button id="btn-seatbelt" style="background:#333;color:var(--ink);border:2px solid #555;padding:8px 12px;border-radius:16px;font-weight:bold;cursor:pointer;transition:0.2s;font-size:0.8rem;" onclick="game.toggleSeatbelt(this)">💺 Seatbelt OFF</button>
-    <button id="btn-mobile" style="background:#333;color:var(--ink);border:2px solid #555;padding:8px 12px;border-radius:16px;font-weight:bold;cursor:pointer;transition:0.2s;font-size:0.8rem;" onclick="game.toggleMobile(this)">📱 Phone</button>
-  </div>
-  <div id="sig-ind"
-    style="position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:25;display:none;align-items:center;gap:12px;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);padding:10px 20px;border-radius:30px;border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,0.1);font-weight:700;font-size:0.95rem;">
-    <div id="sind-lamp"
-      style="width:20px;height:20px;border-radius:50%;background:#ff3b30;box-shadow:0 0 14px #ff3b30;transition:all 0.3s;">
-    </div>
-    <div id="sind-state" style="color:#ff3b30;min-width:55px;text-align:center;transition:color 0.3s;">RED</div>
-    <div style="width:1px;height:20px;background:var(--border);"></div>
-    <div id="sind-timer" style="color:var(--text);font-size:1.1rem;min-width:30px;text-align:center;">0s</div>
-    <div style="width:1px;height:20px;background:var(--border);"></div>
-    <div id="sind-dist" style="color:var(--muted);font-size:0.85rem;">--m</div>
-  </div>
-  <div id="hwrap">
-    <div class="hl" style="font-size:0.7rem;color:var(--muted);letter-spacing:0.06em;">💰 WALLET</div>
-    <div id="hwallet" style="font-size:1.05rem;font-weight:900;color:#ffd54a;font-family:'Bebas Neue',sans-serif;letter-spacing:0.04em;">₹50,000</div>
-    <div class="hl" style="font-size:0.7rem;color:var(--muted);letter-spacing:0.06em;margin-top:4px;">🚗 HEALTH</div>
-    <div class="ht"><div class="hf" id="hfill"></div></div>
-  </div>
-  <div id="ow">⚠️ OFF ROAD - Return to road!</div>
+      @media (max-width: 768px) {
+        .lv-track,
+        .bgrid,
+        .stats-body {
+          grid-template-columns: 1fr;
+        }
 
-  <div id="da">
-    <div class="dai" id="da-arrow-container"
-      style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-      <div id="da-arrow" style="transition:transform 0.1s ease-out;display:inline-block;"><svg width="24" height="24"
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path d="M12 19V5M5 12l7-7 7 7" />
-        </svg></div>
-    </div>
-    <div class="dal" id="dal">GO STRAIGHT</div>
-  </div>
+        .br-w {
+          flex-direction: column;
+          padding: 0 16px;
+          margin: 20px auto;
+          gap: 20px;
+        }
 
-  <div id="gp">
-    <button class="gb ag" data-g="P">P</button>
-    <button class="gb" data-g="R">R</button>
-    <button class="gb" data-g="N">N</button>
-    <button class="gb" data-g="D">D</button>
-  </div>
-  <div id="gread">GEAR: P</div>
+        .br-l,
+        .br-r {
+          flex: none;
+          width: 100%;
+        }
 
-  <div id="tc">
-    <div style="display:flex;gap:16px;">
-      <div class="db" id="tl"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg></div>
-      <div class="db" id="tr"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg></div>
-    </div>
-    <div style="display:flex;gap:16px;">
-      <div class="db" id="abb">🛑</div>
-      <div class="db" id="tu">⬆️</div>
-      <div class="db" id="abh">📢</div>
-    </div>
-  </div>
+        .br-l {
+          max-width: 100%;
+        }
 
-  <div id="crash-screen"
-    style="position:fixed; inset:0; background:radial-gradient(ellipse at center, rgba(0,0,0,0.15) 40%, rgba(180,0,0,0.35) 100%); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-    <div class="cvc"
-      style="padding:0; background:#fff; overflow:hidden; border-radius:16px; max-width:450px; width:90%; box-shadow:0 24px 60px rgba(255,0,0,0.2);">
-      <div style="background:#b02a37; color:white; padding:24px 20px; display:flex; align-items:center; gap:16px;">
+        .br-r {
+          position: static;
+          align-items: center;
+        }
+
+        .tb {
+          padding: 0 16px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .card {
+          padding: 16px;
+          margin: 10px;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+        }
+
+        h2 {
+          font-size: 1.4rem;
+        }
+
+        .screen {
+          padding: 10px;
+        }
+
+        /* Show mobile controls when HUD is active (handled by JS) */
+      }
+
+      /* Screen transitions */
+      .screen {
+        animation: none;
+      }
+
+      .screen.active {
+        animation: screenFadeIn 0.35s ease-out forwards;
+      }
+
+      @keyframes screenFadeIn {
+        0% {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Card entrance animations */
+      .lcard {
+        animation: cardSlideUp 0.4s ease-out backwards;
+      }
+
+      .lcard:nth-child(1) {
+        animation-delay: 0.05s;
+      }
+
+      .lcard:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+
+      .lcard:nth-child(3) {
+        animation-delay: 0.15s;
+      }
+
+      .lcard:nth-child(4) {
+        animation-delay: 0.2s;
+      }
+
+      .lcard:nth-child(5) {
+        animation-delay: 0.25s;
+      }
+
+      @keyframes cardSlideUp {
+        0% {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Syllabus item animations */
+      .syl-item {
+        animation: sylSlide 0.3s ease-out backwards;
+      }
+
+      .syl-item:nth-child(1) {
+        animation-delay: 0.05s;
+      }
+
+      .syl-item:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+
+      .syl-item:nth-child(3) {
+        animation-delay: 0.15s;
+      }
+
+      .syl-item:nth-child(4) {
+        animation-delay: 0.2s;
+      }
+
+      .syl-item:nth-child(5) {
+        animation-delay: 0.25s;
+      }
+
+      @keyframes sylSlide {
+        0% {
+          opacity: 0;
+          transform: translateX(-12px);
+        }
+
+        100% {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Button hover pulse */
+      .btn:hover {
+        transform: translateY(-2px) scale(1.02);
+      }
+
+      .btn:active {
+        transform: translateY(0) scale(0.98);
+      }
+
+      /* Toast animation improvement */
+      #toast {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Challan card stack */
+      #challan-stack {
+        position: fixed;
+        bottom: 100px;
+        right: 12px;
+        z-index: 28;
+        pointer-events: none;
+        display: none;
+        width: 100px;
+      }
+
+      #challan-stack.on {
+        display: block;
+      }
+
+      .challan-card {
+        pointer-events: none;
+        transition: all 0.3s;
+        animation: cardSlideUp 0.3s ease-out;
+        position: relative;
+        margin-top: -55px;
+      }
+
+      .challan-card:first-child {
+        margin-top: 0;
+      }
+
+      .challan-card .cc-off {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--red);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .challan-card .cc-amt {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      /* --- Responsive UI Adjustments --- */
+
+      /* Make the root containers fluid and center them */
+      .sc {
+        width: 100%;
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: clamp(40px, 8vw, 120px) 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        position: relative;
+        z-index: 10;
+        box-sizing: border-box;
+      }
+
+      .st {
+        font-size: clamp(2.5rem, 6vw, 5.5rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        margin-bottom: 24px;
+        font-family: 'Lora', serif;
+        font-weight: 700;
+      }
+
+      .su {
+        font-size: clamp(1rem, 2vw, 1.4rem);
+        color: var(--muted2);
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto 40px auto;
+        font-weight: 400;
+      }
+
+      /* Level grid: ensure it doesn't overflow on tiny screens */
+      .lv-track {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+      }
+
+      /* Briefing screen: stack on smaller screens */
+      @media (max-width: 900px) {
+        .br-w {
+          flex-direction: column;
+          padding: 0 20px;
+          margin: 20px auto;
+          gap: 20px;
+        }
+        .br-l {
+          flex: 1 1 auto;
+        }
+        .br-r {
+          position: static;
+          margin-top: 20px;
+        }
+        .bc-card {
+          padding: 20px;
+          min-height: auto;
+        }
+        .stat-row {
+          flex-direction: column;
+          gap: 12px;
+        }
+        .bc-rule-txt {
+          font-size: 1.2rem;
+        }
+      }
+
+      /* Global screen padding for mobile */
+      @media (max-width: 600px) {
+        .tb {
+          padding: 16px 20px;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .lw {
+          padding: 20px;
+        }
+        .sec-hdr {
+          font-size: 1.4rem;
+          margin: 20px 0 12px;
+        }
+        .qw {
+          padding: 0 16px;
+          margin: 20px auto;
+        }
+        .qcard {
+          padding: 24px 16px;
+        }
+        .qq {
+          font-size: 1.1rem;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .res-w {
+          padding: 0 16px;
+          margin: 20px auto;
+        }
+
+        /* Certificate mobile scaling */
+        #cert-wrapper {
+          overflow-x: auto;
+          padding-bottom: 20px;
+        }
+        .crt {
+          transform-origin: top left;
+          transform: scale(min(1, calc((100vw - 40px) / 800)));
+          /* 800 is approx width of cert, scales down to fit screen width */
+        }
+      }
+
+      /* Certificate specific responsiveness */
+      #cert-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        overflow-x: auto;
+        flex-shrink: 0;
+      }
+
+      .crt {
+        /* Removed min-width and max-width to allow transform scaling without text overflow */
+      }
+
+      /* === COMPLETE MOBILE DRIVING UI REDESIGN === */
+      @media (max-width: 1400px), (max-height: 800px), (pointer: coarse) {
+        /* Ensure canvas fills screen without distortion */
+        #gc {
+          position: fixed;
+          inset: 0;
+          width: 100vw;
+          height: 100vh;
+          z-index: 1;
+          background: #000; /* Prevent bright flashes or letterboxing issues */
+        }
+
+        /* HUD Scaling and Repositioning */
+        #hud {
+          top: 8px;
+          left: 8px;
+          right: auto;
+          padding: 0;
+          gap: 6px;
+        }
+        .hp {
+          padding: 4px 8px;
+          font-size: 0.75rem;
+          border-radius: 6px;
+        }
+        #hudbar {
+          top: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          right: auto;
+          gap: 8px;
+          padding: 0;
+        }
+        .hb {
+          padding: 4px 10px;
+          font-size: 0.75rem;
+          border-radius: 6px;
+        }
+        #hwrap {
+          top: 8px;
+          left: 8px;
+          right: auto;
+          flex-direction: row;
+          align-items: center;
+          gap: 8px;
+          padding: 4px 8px;
+          border-radius: 6px;
+          z-index: 25;
+          max-width: 45vw;
+          overflow-x: auto;
+        }
+        #objective-overlay {
+          top: 8px;
+          right: 8px;
+          left: auto;
+          width: auto;
+          max-width: 55vw;
+          padding: 8px 14px;
+          z-index: 25;
+          max-height: 30vh;
+          overflow-y: auto;
+        }
+        #task-tracker {
+          top: auto;
+          bottom: 8px;
+          left: 8px;
+          right: auto;
+          width: auto;
+          max-width: 45vw;
+          max-height: 30vh;
+          font-size: 0.75rem;
+          padding: 10px 14px;
+        }
+        #sig-ind {
+          top: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 0.8rem;
+          padding: 6px 12px;
+          gap: 8px;
+        }
+        #sind-state {
+          min-width: 40px;
+          font-size: 0.85rem;
+        }
+        #sind-timer {
+          font-size: 0.9rem;
+          min-width: 24px;
+        }
+        #hwrap .hl {
+          margin: 0;
+          font-size: 0.6rem;
+        }
+        #hwallet {
+          font-size: 0.85rem;
+        }
+        .ht {
+          width: 60px;
+          height: 6px;
+        }
+
+        /* Touch Controls (Center Bottom) */
+        #tc {
+          bottom: 12px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 0;
+          gap: 12px;
+          justify-content: center;
+        }
+        .db {
+          width: 44px;
+          height: 44px;
+          font-size: 1.1rem;
+          border-radius: 12px;
+        }
+
+        /* Gear Selector (Vertical on Left) */
+        #gp.on {
+          display: flex;
+        }
+        #gp {
+          bottom: 50%;
+          left: 12px;
+          transform: translateY(50%);
+          flex-direction: column;
+          padding: 6px;
+          gap: 6px;
+          background: rgba(255, 255, 255, 0.6);
+          backdrop-filter: blur(8px);
+          border-radius: 16px;
+        }
+        .gb {
+          width: 38px;
+          height: 38px;
+          font-size: 0.85rem;
+          border-radius: 10px;
+        }
+        #gread {
+          bottom: 70px;
+          top: auto;
+          left: 12px;
+          transform: none;
+          font-size: 0.75rem;
+          padding: 4px 8px;
+          background: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Mobile Controls Wrapper */
+        #mobile-controls {
+          bottom: 12px;
+          padding: 0 20px;
+          background: none; /* remove gradient to keep view clear */
+        }
+
+        /* Steering Wheel (Bottom Left) */
+        #steer-wheel-container {
+          width: 110px;
+          height: 110px;
+          border-width: 3px;
+          background: rgba(0, 0, 0, 0.25);
+          margin-left: 50px; /* Offset to not overlap gears */
+        }
+
+        /* Pedals (Bottom Right) */
+        .mc-col {
+          gap: 12px;
+        }
+        .mc-btn {
+          width: 65px;
+          height: 65px;
+          font-size: 20px;
+          border-width: 2px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #da {
+          color: #111827 !important;
+          top: 50px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 6px 14px;
+          font-size: 0.9rem;
+          border-radius: 10px;
+        }
+        #mmc {
+          top: 50px;
+          right: 8px;
+          width: 100px;
+          height: 100px;
+          border-width: 3px;
+          z-index: 18;
+        }
+        #spgauge {
+          right: 12px;
+          bottom: 100px;
+        }
+        #spgauge svg {
+          width: 70px;
+          height: 70px;
+        }
+        #boostgauge {
+          right: 12px;
+          bottom: 185px;
+        }
+        #boostgauge svg {
+          width: 56px;
+          height: 56px;
+        }
+        #civic-controls {
+          bottom: 100px;
+          right: 12px;
+          gap: 6px;
+        }
+        #civic-controls button {
+          padding: 6px 10px;
+          font-size: 0.75rem;
+          border-radius: 14px;
+        }
+      }
+
+      @media (min-width: 1401px) and (min-height: 801px) and (pointer: fine) {
+        #mobile-controls {
+          display: none !important;
+        }
+      }
+    </style>
+
+    <script>
+      window.addEventListener('error', function (e) {
+        const errDiv = document.createElement('div')
+        errDiv.style.position = 'fixed'
+        errDiv.style.top = '10px'
+        errDiv.style.left = '10px'
+        errDiv.style.zIndex = '999999'
+        errDiv.style.background = 'red'
+        errDiv.style.color = 'white'
+        errDiv.style.padding = '10px'
+        errDiv.style.fontFamily = 'monospace'
+        errDiv.innerText = 'JS Error: ' + e.message + ' at ' + e.filename + ':' + e.lineno
+        document.body.appendChild(errDiv)
+      })
+      window.addEventListener('unhandledrejection', function (e) {
+        const errDiv = document.createElement('div')
+        errDiv.style.position = 'fixed'
+        errDiv.style.top = '50px'
+        errDiv.style.left = '10px'
+        errDiv.style.zIndex = '999999'
+        errDiv.style.background = 'darkred'
+        errDiv.style.color = 'white'
+        errDiv.style.padding = '10px'
+        errDiv.style.fontFamily = 'monospace'
+        errDiv.innerText = 'Promise Rejection: ' + e.reason
+        document.body.appendChild(errDiv)
+      })
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/SimplexNoise.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SSAOShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"></script>
+    <script src="vehicles.js"></script>
+  </head>
+
+  <body class="lm">
+    <!-- Script entry points -->
+
+    <div
+      id="mobile-controls"
+      style="
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 16px 24px 28px;
+        justify-content: space-between;
+        z-index: 9999;
+        pointer-events: none;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.3) 0%, transparent 100%);
+      "
+    >
+      <div class="mc-col" style="display: flex; pointer-events: auto; align-items: flex-end">
         <div
-          style="background:#fff; color:#b02a37; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.6rem;">
-          ⚠️</div>
-        <div style="text-align:left;">
-          <div style="font-size:1.2rem; font-weight:700;">Critical Accident Report</div>
-          <div style="font-size:0.85rem; color:rgba(255,255,255,0.8); margin-top:2px;">Simulation Terminated</div>
+          id="steer-wheel-container"
+          style="
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 4px solid rgba(255, 255, 255, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+            backdrop-filter: blur(4px);
+          "
+        >
+          <div
+            id="steer-wheel"
+            style="
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              border-radius: 50%;
+              background: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22none%22 stroke=%22white%22 stroke-width=%228%22/><line x1=%2250%22 y1=%225%22 x2=%2250%22 y2=%2295%22 stroke=%22white%22 stroke-width=%228%22/><line x1=%225%22 y1=%2250%22 x2=%2295%22 y2=%2250%22 stroke=%22white%22 stroke-width=%228%22/><circle cx=%2250%22 cy=%2250%22 r=%2215%22 fill=%22%23ffd54a%22/><circle cx=%2250%22 cy=%2215%22 r=%228%22 fill=%22white%22/></svg>')
+                center/cover;
+              transition: transform 0.05s linear;
+            "
+          ></div>
         </div>
       </div>
-      <div style="padding:24px; text-align:left;">
+      <div class="mc-col" style="display: flex; gap: 10px; pointer-events: auto; align-items: flex-end">
         <div
-          style="display:flex; justify-content:space-between; margin-bottom:16px; border-bottom:1px dashed #ccc; padding-bottom:12px;">
-          <span style="color:#6c757d; font-weight:500;">Incident Type</span>
-          <span style="font-weight:700; color:#b02a37; max-width:60%; text-align:right;" id="crash-reason">Collided with
-            Vehicle</span>
+          class="mc-btn"
+          id="mc-boost"
+          style="
+            width: 72px;
+            height: 72px;
+            background: rgba(94, 212, 245, 0.5);
+            color: white;
+            border: 2px solid rgba(94, 212, 245, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            box-shadow: 0 4px 12px rgba(94, 212, 245, 0.3);
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
+          "
+        >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10" fill="rgba(255,255,255,0.15)" />
+          </svg>
         </div>
         <div
-          style="background:#fff3cd; border-left:4px solid #ffc107; padding:12px 16px; border-radius:4px; margin-bottom:20px;">
-          <div style="font-size:0.8rem; font-weight:700; color:#856404; margin-bottom:6px;">REAL LIFE CONSEQUENCES</div>
-          <div id="crash-info" style="font-size:0.95rem; color:#856404; line-height:1.4;">Dangerous driving can lead to
-            severe structural damage and potential injury.</div>
+          class="mc-btn"
+          id="mc-brake"
+          style="
+            width: 80px;
+            height: 80px;
+            background: rgba(220, 40, 40, 0.6);
+            margin-top: 0;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            box-shadow: 0 4px 12px rgba(220, 40, 40, 0.3);
+          "
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 20h16" />
+            <rect x="7" y="6" width="10" height="14" rx="2" fill="rgba(255,255,255,0.15)" />
+            <path d="M9 10h6" />
+          </svg>
+        </div>
+        <div
+          class="mc-btn"
+          id="mc-gas"
+          style="
+            background: rgba(40, 180, 40, 0.6);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            width: 80px;
+            height: 80px;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            box-shadow: 0 4px 12px rgba(40, 180, 40, 0.3);
+          "
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 20h16" />
+            <polygon points="12,4 6,14 18,14" fill="rgba(255,255,255,0.15)" />
+            <path d="M12 7v5" />
+          </svg>
         </div>
       </div>
+    </div>
+
+    <!-- Dedicated Pre-Loader Screen -->
+    <div id="loading-screen">
+      <h1>Traffic Academy</h1>
+      <div style="font-size: 1.2rem; margin-bottom: 10px">Loading 3D Open World...</div>
+      <div id="loading-bar-container">
+        <div id="loading-bar"></div>
+      </div>
+      <div id="loading-pct">0%</div>
+      <div id="loading-status">Initializing assets...</div>
+    </div>
+
+    <div id="gc"><canvas id="3c"></canvas></div>
+    <div id="hud">
+      <div class="hp">Lv<span class="hv" id="hlv">1</span></div>
+      <div class="hp" id="hobj" style="font-size: 0.85rem; font-weight: 600; text-align: center"></div>
+      <div class="hp">Score<span class="hv" id="hsc">0</span></div>
+    </div>
+    <div id="hudbar">
+      <div class="hb">⏱<span id="htmr">0:00</span></div>
+      <div class="hb">💸<span id="hfin">0</span></div>
+      <div class="hb">✅<span id="hcp">0/0</span></div>
+    </div>
+
+    <div id="objective-overlay">
+      <div id="objective-title">Current Objective</div>
+      <div id="objective-desc">Loading...</div>
+    </div>
+    <div
+      id="task-tracker"
+      style="
+        position: fixed;
+        top: 24px;
+        left: 24px;
+        z-index: 22;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 16px 20px;
+        color: white;
+        width: 280px;
+        max-height: 40vh;
+        overflow-y: auto;
+        display: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        font-size: 0.85rem;
+      "
+    >
+      <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--yellow); font-weight: 800; margin-bottom: 10px">📋 Tasks</div>
+      <div id="task-list" style="display: flex; flex-direction: column; gap: 8px"></div>
+    </div>
+    <div id="civic-controls" style="position: fixed; bottom: 16px; right: 20px; z-index: 100; display: flex; flex-direction: row; gap: 6px">
+      <button
+        id="btn-seatbelt"
+        style="background: #333; color: var(--ink); border: 2px solid #555; padding: 8px 12px; border-radius: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.8rem"
+        onclick="game.toggleSeatbelt(this)"
+      >
+        💺 Seatbelt OFF
+      </button>
+      <button
+        id="btn-mobile"
+        style="background: #333; color: var(--ink); border: 2px solid #555; padding: 8px 12px; border-radius: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.8rem"
+        onclick="game.toggleMobile(this)"
+      >
+        📱 Phone
+      </button>
+    </div>
+    <div
+      id="sig-ind"
+      style="
+        position: fixed;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 25;
+        display: none;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(12px);
+        padding: 10px 20px;
+        border-radius: 30px;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        font-weight: 700;
+        font-size: 0.95rem;
+      "
+    >
+      <div id="sind-lamp" style="width: 20px; height: 20px; border-radius: 50%; background: #ff3b30; box-shadow: 0 0 14px #ff3b30; transition: all 0.3s"></div>
+      <div id="sind-state" style="color: #ff3b30; min-width: 55px; text-align: center; transition: color 0.3s">RED</div>
+      <div style="width: 1px; height: 20px; background: var(--border)"></div>
+      <div id="sind-timer" style="color: var(--text); font-size: 1.1rem; min-width: 30px; text-align: center">0s</div>
+      <div style="width: 1px; height: 20px; background: var(--border)"></div>
+      <div id="sind-dist" style="color: var(--muted); font-size: 0.85rem">--m</div>
+    </div>
+    <div id="hwrap">
+      <div class="hl" style="font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em">💰 WALLET</div>
+      <div id="hwallet" style="font-size: 1.05rem; font-weight: 900; color: #ffd54a; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em">₹50,000</div>
+      <div class="hl" style="font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; margin-top: 4px">🚗 HEALTH</div>
+      <div class="ht"><div class="hf" id="hfill"></div></div>
+    </div>
+    <div id="ow">⚠️ OFF ROAD - Return to road!</div>
+
+    <div id="da">
+      <div class="dai" id="da-arrow-container" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+        <div id="da-arrow" style="transition: transform 0.1s ease-out; display: inline-block">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 19V5M5 12l7-7 7 7" />
+          </svg>
+        </div>
+      </div>
+      <div class="dal" id="dal">GO STRAIGHT</div>
+    </div>
+
+    <div id="gp">
+      <button class="gb ag" data-g="P">P</button>
+      <button class="gb" data-g="R">R</button>
+      <button class="gb" data-g="N">N</button>
+      <button class="gb" data-g="D">D</button>
+    </div>
+    <div id="gread">GEAR: P</div>
+
+    <div id="tc">
+      <div style="display: flex; gap: 16px">
+        <div class="db" id="tl">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </div>
+        <div class="db" id="tr">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px">
+        <div class="db" id="abb">🛑</div>
+        <div class="db" id="tu">⬆️</div>
+        <div class="db" id="abh">📢</div>
+      </div>
+    </div>
+
+    <div
+      id="crash-screen"
+      style="
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.15) 40%, rgba(180, 0, 0, 0.35) 100%);
+        z-index: 9999;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+      "
+    >
+      <div class="cvc" style="padding: 0; background: #fff; overflow: hidden; border-radius: 16px; max-width: 450px; width: 90%; box-shadow: 0 24px 60px rgba(255, 0, 0, 0.2)">
+        <div style="background: #b02a37; color: white; padding: 24px 20px; display: flex; align-items: center; gap: 16px">
+          <div
+            style="background: #fff; color: #b02a37; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.6rem"
+          >
+            ⚠️
+          </div>
+          <div style="text-align: left">
+            <div style="font-size: 1.2rem; font-weight: 700">Critical Accident Report</div>
+            <div style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.8); margin-top: 2px">Simulation Terminated</div>
+          </div>
+        </div>
+        <div style="padding: 24px; text-align: left">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px dashed #ccc; padding-bottom: 12px">
+            <span style="color: #6c757d; font-weight: 500">Incident Type</span>
+            <span style="font-weight: 700; color: #b02a37; max-width: 60%; text-align: right" id="crash-reason">Collided with Vehicle</span>
+          </div>
+          <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 16px; border-radius: 4px; margin-bottom: 20px">
+            <div style="font-size: 0.8rem; font-weight: 700; color: #856404; margin-bottom: 6px">REAL LIFE CONSEQUENCES</div>
+            <div id="crash-info" style="font-size: 0.95rem; color: #856404; line-height: 1.4">Dangerous driving can lead to severe structural damage and potential injury.</div>
+          </div>
+        </div>
+        <div style="background: #f8f9fa; padding: 20px; border-top: 1px solid #e9ecef; display: flex; flex-direction: column; gap: 12px">
+          <button class="btn btn-p" style="background: #b02a37; font-size: 1.1rem; padding: 12px; border-radius: 30px; width: 100%; border: none" onclick="game.retryLevel()">Try Again</button>
+          <button
+            class="btn btn-g"
+            style="font-size: 1rem; padding: 12px; border-radius: 30px; width: 100%; background: transparent; border: 2px solid #ccc; color: #555"
+            onclick="
+              document.getElementById('crash-screen').style.display = 'none'
+              ui.showLevels()
+              setTimeout(() => ui._selSyl('theory'), 100)
+            "
+          >
+            Course Overview
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mgo">
+      <div class="mgc" id="mgc">
+        <div class="mgt" id="mgt">Action</div>
+        <div class="mgd" id="mgd">Perform action.</div>
+        <div id="mgct"></div>
+        <div class="mgb" id="mgbt"></div>
+      </div>
+    </div>
+
+    <!-- GAME HUD RESTORATION -->
+    <div
+      id="cdown"
+      style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 5rem;
+        font-weight: 800;
+        color: var(--ink);
+        text-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        z-index: 90;
+        display: none;
+        animation: cdownPulse 0.5s ease;
+      "
+    >
+      READY
+    </div>
+    <div
+      id="spgauge"
+      style="
+        position: fixed;
+        right: 32px;
+        bottom: 32px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        padding: 8px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        z-index: 25;
+        display: none;
+      "
+    >
+      <svg viewBox="0 0 88 88" width="100" height="100">
+        <path d="M44,76 A32,32 0 1,1 76,44" fill="none" stroke="var(--border)" stroke-width="6" stroke-linecap="round" />
+        <path id="garc" fill="none" stroke="var(--yellow)" stroke-width="6" stroke-linecap="round" />
+        <text id="gspd" x="44" y="52" text-anchor="middle" font-size="28" font-weight="700" fill="var(--text)">0</text>
+        <text x="44" y="68" text-anchor="middle" font-size="10" font-weight="600" fill="var(--muted)">KM/H</text>
+      </svg>
+    </div>
+    <div
+      id="boostgauge"
+      style="
+        position: fixed;
+        right: 32px;
+        bottom: 145px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        padding: 6px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        z-index: 25;
+        display: none;
+        transition: box-shadow 0.3s;
+      "
+    >
+      <svg viewBox="0 0 64 64" width="72" height="72">
+        <circle cx="32" cy="32" r="24" fill="none" stroke="var(--border)" stroke-width="5" />
+        <circle id="boost-arc" cx="32" cy="32" r="24" fill="none" stroke="#5ed4f5" stroke-width="5"
+          stroke-dasharray="150.8" stroke-dashoffset="0"
+          stroke-linecap="round" transform="rotate(-90 32 32)" />
+        <text id="boost-pct" x="32" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#5ed4f5">100</text>
+        <text x="32" y="48" text-anchor="middle" font-size="7" font-weight="600" fill="var(--muted)">BOOST</text>
+      </svg>
+    </div>
+    <div id="boost-vignette" style="position:fixed;inset:0;pointer-events:none;z-index:19;display:none;border:4px solid transparent;border-radius:0;box-shadow:inset 0 0 80px rgba(0,240,204,0.35),inset 0 0 160px rgba(0,240,204,0.15);transition:opacity 0.3s;opacity:0;"></div>
+    <div id="boost-ready" style="position:fixed;right:32px;bottom:130px;z-index:26;font-size:0.7rem;font-family:var(--sans);color:#00f0cc;background:var(--card);border:1px solid #00f0cc;border-radius:12px;padding:4px 10px;display:none;opacity:0;transition:opacity 0.3s;box-shadow:0 0 10px rgba(0,240,204,0.3);">Boost Ready</div>
+    <canvas
+      id="mmc"
+      width="160"
+      height="160"
+      style="position: fixed; top: 32px; right: 32px; border-radius: 50%; border: 4px solid var(--card); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); z-index: 18; display: none"
+    ></canvas>
+
+    <div id="challan-stack"></div>
+    <div id="toast">
+      <div id="ti"></div>
+    </div>
+
+    <div
+      id="name-prompt-dlg"
+      style="
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(10px);
+        z-index: 9999;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+      "
+    >
+      <style>
+        @keyframes promptFloatY {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-15px);
+          }
+        }
+      </style>
       <div
-        style="background:#f8f9fa; padding:20px; border-top:1px solid #e9ecef; display:flex; flex-direction:column; gap:12px;">
-        <button class="btn btn-p"
-          style="background:#b02a37; font-size:1.1rem; padding:12px; border-radius:30px; width:100%; border:none;"
-          onclick="game.retryLevel()">Try Again</button>
-        <button class="btn btn-g"
-          style="font-size:1rem; padding:12px; border-radius:30px; width:100%; background:transparent; border:2px solid #ccc; color:#555;"
-          onclick="document.getElementById('crash-screen').style.display='none'; ui.showLevels(); setTimeout(()=>ui._selSyl('theory'),100);">Course
-          Overview</button>
+        style="
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at top right, rgba(255, 213, 74, 0.15), transparent 50%), radial-gradient(circle at bottom left, rgba(255, 213, 74, 0.1), transparent 50%);
+          pointer-events: none;
+        "
+      ></div>
+      <div style="position: relative; z-index: 2; text-align: center; max-width: 500px; width: 90%; animation: promptFloatY 6s ease-in-out infinite">
+        <div style="font-family: 'Lora', serif; font-size: 4.5rem; margin-bottom: 10px; text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5)">
+          Traffic <i style="color: #ffd54a; font-style: normal">Hero</i>
+        </div>
+        <p style="color: var(--dim); font-size: 1.1rem; margin-bottom: 40px">Welcome to the Academy. Enter your name to begin your journey.</p>
+
+        <div
+          style="
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+          "
+        >
+          <input
+            type="text"
+            id="prompt-name"
+            placeholder="Enter Driver Name"
+            maxlength="30"
+            style="
+              width: 100%;
+              box-sizing: border-box;
+              padding: 18px 24px;
+              border-radius: 12px;
+              border: 2px solid rgba(255, 255, 255, 0.1);
+              background: rgba(0, 0, 0, 0.3);
+              color: var(--ink);
+              font-size: 1.2rem;
+              margin-bottom: 24px;
+              outline: none;
+              text-align: center;
+              font-family: 'Inter', sans-serif;
+              transition: all 0.3s;
+            "
+            onfocus="
+              this.style.borderColor = '#FFD54A'
+              this.style.boxShadow = '0 0 20px rgba(255,213,74,0.2)'
+            "
+            onblur="
+              this.style.borderColor = 'rgba(255,255,255,0.1)'
+              this.style.boxShadow = 'none'
+            "
+            onkeydown="if (event.key === 'Enter') ui.saveNamePrompt()"
+          />
+
+          <button
+            class="btn btn-p"
+            onclick="ui.saveNamePrompt()"
+            style="
+              width: 100%;
+              font-size: 1.2rem;
+              padding: 16px;
+              border-radius: 12px;
+              background: #ffd54a;
+              color: #000;
+              border: none;
+              cursor: pointer;
+              box-shadow: 0 10px 30px rgba(255, 213, 74, 0.3);
+              letter-spacing: 1px;
+              text-transform: uppercase;
+              font-weight: 700;
+            "
+          >
+            Start Engine
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-  <div id="mgo">
-    <div class="mgc" id="mgc">
-      <div class="mgt" id="mgt">Action</div>
-      <div class="mgd" id="mgd">Perform action.</div>
-      <div id="mgct"></div>
-      <div class="mgb" id="mgbt"></div>
-    </div>
-  </div>
 
-  <!-- GAME HUD RESTORATION -->
-  <div id="cdown"
-    style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:5rem;font-weight:800;color:var(--ink);text-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:90;display:none;animation:cdownPulse 0.5s ease;">
-    READY</div>
-  <div id="spgauge"
-    style="position:fixed;right:32px;bottom:32px;background:var(--card);border:1px solid var(--border);border-radius:50%;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,0.1);z-index:25;display:none;">
-    <svg viewBox="0 0 88 88" width="100" height="100">
-      <path d="M44,76 A32,32 0 1,1 76,44" fill="none" stroke="var(--border)" stroke-width="6" stroke-linecap="round" />
-      <path id="garc" fill="none" stroke="var(--yellow)" stroke-width="6" stroke-linecap="round" />
-      <text id="gspd" x="44" y="52" text-anchor="middle" font-size="28" font-weight="700" fill="var(--text)">0</text>
-      <text x="44" y="68" text-anchor="middle" font-size="10" font-weight="600" fill="var(--muted)">KM/H</text>
-    </svg>
-  </div>
-  <canvas id="mmc" width="160" height="160"
-    style="position:fixed;top:32px;right:32px;border-radius:50%;border:4px solid var(--card);box-shadow:0 12px 30px rgba(0,0,0,0.2);z-index:25;display:none;"></canvas>
+    <div
+      id="profile-dlg"
+      style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px)"
+    >
+      <div class="nd-c" style="background: #fff; padding: 30px; border-radius: 16px; max-width: 400px; width: 90%; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2); text-align: center">
+        <h3 style="font-size: 1.6rem; margin-bottom: 8px">Driver Profile</h3>
+        <p style="color: var(--muted2); margin-top: 0px; font-size: 0.95rem; margin-bottom: 20px">Manage your academy details</p>
 
-  <div id="challan-stack"></div>
-  <div id="toast">
-    <div id="ti"></div>
-  </div>
+        <div style="text-align: left; margin-bottom: 12px">
+          <label style="font-weight: 600; font-size: 0.9rem; color: #555">Full Name</label>
+          <input type="text" id="prof-name" class="nd-i" placeholder="e.g. Rahul Sharma" maxlength="30" style="margin-top: 6px; width: 100%; box-sizing: border-box" />
+        </div>
 
-  <div id="name-prompt-dlg" style="position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; color:#ffffff;">
-    <style>@keyframes promptFloatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }</style>
-    <div style="position:absolute; inset:0; background:radial-gradient(circle at top right, rgba(255,213,74,0.15), transparent 50%), radial-gradient(circle at bottom left, rgba(255,213,74,0.1), transparent 50%); pointer-events:none;"></div>
-    <div style="position:relative; z-index:2; text-align:center; max-width:500px; width:90%; animation: promptFloatY 6s ease-in-out infinite;">
-      <div style="font-family:'Lora', serif; font-size:4.5rem; margin-bottom:10px; text-shadow:0 10px 30px rgba(0,0,0,0.5)">Traffic <i style="color:#FFD54A; font-style:normal;">Hero</i></div>
-      <p style="color:var(--dim); font-size:1.1rem; margin-bottom:40px;">Welcome to the Academy. Enter your name to begin your journey.</p>
-      
-      <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:40px; border-radius:24px; box-shadow:0 24px 60px rgba(0,0,0,0.5); backdrop-filter:blur(20px);">
-        <input type="text" id="prompt-name" placeholder="Enter Driver Name" maxlength="30" style="width:100%; box-sizing:border-box; padding:18px 24px; border-radius:12px; border:2px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.3); color:var(--ink); font-size:1.2rem; margin-bottom:24px; outline:none; text-align:center; font-family:'Inter', sans-serif; transition: all 0.3s;" onfocus="this.style.borderColor='#FFD54A'; this.style.boxShadow='0 0 20px rgba(255,213,74,0.2)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.boxShadow='none'" onkeydown="if(event.key==='Enter') ui.saveNamePrompt()" />
-        
-        <button class="btn btn-p" onclick="ui.saveNamePrompt()" style="width:100%; font-size:1.2rem; padding:16px; border-radius:12px; background:#FFD54A; color:#000; border:none; cursor:pointer; box-shadow:0 10px 30px rgba(255,213,74,0.3); letter-spacing:1px; text-transform:uppercase; font-weight:700;">Start Engine</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="profile-dlg" style="position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-    <div class="nd-c" style="background:#fff; padding:30px; border-radius:16px; max-width:400px; width:90%; box-shadow:0 24px 60px rgba(0,0,0,0.2); text-align:center;">
-      <h3 style="font-size:1.6rem; margin-bottom:8px;">Driver Profile</h3>
-      <p style="color:var(--muted2); margin-top:0px; font-size:0.95rem; margin-bottom:20px;">Manage your academy details</p>
-      
-      <div style="text-align:left; margin-bottom:12px;">
-          <label style="font-weight:600; font-size:0.9rem; color:#555;">Full Name</label>
-          <input type="text" id="prof-name" class="nd-i" placeholder="e.g. Rahul Sharma" maxlength="30" style="margin-top:6px; width:100%; box-sizing:border-box;" />
-      </div>
-
-      
-
-      <div style="text-align:left; margin-bottom:24px;">
-          <label style="font-weight:600; font-size:0.9rem; color:#555;">Preferred Vehicle</label>
-          <select id="prof-veh" class="nd-i" style="margin-top:6px; width:100%; box-sizing:border-box; cursor:pointer; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:1rem;">
-              <option value="Car">Car</option>
-              <option value="Auto">Auto Rickshaw</option>
-              <option value="Bike">Motorcycle</option>
-              <option value="SUV">SUV</option>
-              <option value="Bus">Bus</option>
-              <option value="Truck">Truck</option>
+        <div style="text-align: left; margin-bottom: 24px">
+          <label style="font-weight: 600; font-size: 0.9rem; color: #555">Preferred Vehicle</label>
+          <select id="prof-veh" class="nd-i" style="margin-top: 6px; width: 100%; box-sizing: border-box; cursor: pointer; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem">
+            <option value="Car">Car</option>
+            <option value="Auto">Auto Rickshaw</option>
+            <option value="Bike">Motorcycle</option>
+            <option value="SUV">SUV</option>
+            <option value="Bus">Bus</option>
+            <option value="Truck">Truck</option>
           </select>
-      </div>
-      
-      <button class="btn" onclick="document.getElementById('profile-dlg').style.display='none'; ui.showBadges()" style="width:100%; font-size:1rem; padding:12px; margin-bottom:16px; background:#4a90e2; color:var(--ink); font-weight:700;">🎖️ View Badges</button>
-      <button class="btn" onclick="document.getElementById('profile-dlg').style.display='none'; ui.showCert()" style="width:100%; font-size:1rem; padding:12px; margin-bottom:16px; background:#ffc107; color:#1f3b5e; font-weight:700;">🎓 View Certificate</button>
-
-      <div style="display:flex; gap:12px;">
-          <button class="btn btn-g" onclick="document.getElementById('profile-dlg').style.display='none'" style="width:50%; font-size:1rem; padding:12px;">Cancel</button>
-          <button class="btn btn-p" onclick="ui.saveProfile()" style="width:50%; font-size:1rem; padding:12px;">Save</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="vflash"></div>
-  <div id="cov">
-    <div class="cvc" id="cvc-main"
-      style="padding:0; background:#fff; overflow:hidden; border-radius:16px; max-width:400px; width:90%; box-shadow:0 24px 60px rgba(0,0,0,0.3);">
-      <div style="background:#1f3b5e; color:white; padding:24px 20px; display:flex; align-items:center; gap:16px;">
-        <div
-          style="background:#ffc107; color:#1f3b5e; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.4rem;">
-          xa</div>
-        <div style="text-align:left;">
-          <div style="font-size:1.2rem; font-weight:700;">Mumbai Traffic Police</div>
-          <div style="font-size:0.85rem; color:rgba(255,255,255,0.7); margin-top:2px;">Electronic Challan Notice</div>
-        </div>
-      </div>
-      <div style="padding:24px; text-align:left;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-          <span style="color:#6c757d; font-weight:500;">Challan No.</span>
-          <span style="font-weight:700;" id="cnum"></span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-          <span style="color:#6c757d; font-weight:500;">Offense</span>
-          <span style="font-weight:700; color:#dc3545; text-align:right; max-width:60%;" id="coff"></span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-          <span style="color:#6c757d; font-weight:500;">Law Section</span>
-          <span style="font-weight:700; text-align:right; max-width:60%;" id="claw"></span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:24px;">
-          <span style="color:#6c757d; font-weight:500;">Location</span>
-          <span style="font-weight:700;" id="cloc">📍 Andheri West</span>
         </div>
 
-        <div style="border-top:2px dashed #e9ecef; margin-bottom:24px;"></div>
+        <button
+          class="btn"
+          onclick="
+            document.getElementById('profile-dlg').style.display = 'none'
+            ui.showBadges()
+          "
+          style="width: 100%; font-size: 1rem; padding: 12px; margin-bottom: 16px; background: #4a90e2; color: var(--ink); font-weight: 700"
+        >
+          🎖️ View Badges
+        </button>
+        <button
+          class="btn"
+          onclick="
+            document.getElementById('profile-dlg').style.display = 'none'
+            ui.showCert()
+          "
+          style="width: 100%; font-size: 1rem; padding: 12px; margin-bottom: 16px; background: #ffc107; color: #1f3b5e; font-weight: 700"
+        >
+          🎓 View Certificate
+        </button>
 
-        <div
-          style="background:#fff3cd; border:2px solid #ffc107; border-radius:12px; padding:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-          <span style="color:#856404; font-weight:600;">Fine Amount</span>
-          <span
-            style="color:#dc3545; font-size:2.2rem; font-weight:700; font-family:'Bebas Neue',sans-serif; line-height:1;"
-            id="camt"></span>
-        </div>
-      </div>
-      <div
-        style="background:#f8f9fa; padding:20px; border-top:1px solid #e9ecef; display:flex; flex-direction:column; align-items:center;">
-        <button class="btn btn-p"
-          style="background:#b02a37; width:100%; font-size:1.2rem; padding:14px; border-radius:30px; margin-bottom:16px;"
-          onclick="ui.dismissChallan()">Pay & Continue &rarr;</button>
-
-        <div
-          style="font-size:0.7rem; color:#888; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px; font-weight:600;">
-          Sponsored By</div>
-        <div style="display:flex; justify-content:center; gap:16px; align-items:center;">
-          <img loading="lazy" id="cert-logo-1" src="mumbai-police-logo.webp" style="height:24px; opacity:0.7; ">
-          <div style="width:1px; height:16px; background:#ccc;"></div>
-          <img loading="lazy" id="cert-logo-2" src="sneh-logo.webp" style="height:24px; opacity:0.7; ">
+        <div style="display: flex; gap: 12px">
+          <button class="btn btn-g" onclick="document.getElementById('profile-dlg').style.display = 'none'" style="width: 50%; font-size: 1rem; padding: 12px">Cancel</button>
+          <button class="btn btn-p" onclick="ui.saveProfile()" style="width: 50%; font-size: 1rem; padding: 12px">Save</button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- SCREENS -->
-
-  <div id="ss" class="screen active">
-    <div id="top-bar-container" style="position:absolute; top:20px; right:20px; z-index:100; display:flex; gap:10px;">
-      <button onclick="document.body.classList.toggle('lm'); try { localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark'); } catch(e){}" style="background:#fff; border:1px solid var(--border); border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1); font-size:0.95rem;">🌓 Theme</button>
-      
-<button class="nav-login-btn" onclick="window.gameDifficulty = window.gameDifficulty === 'Hard' ? 'Easy' : 'Hard'; this.innerHTML = window.gameDifficulty === 'Hard' ? '🔴 Hard Mode' : '🟢 Easy Mode';" style="background:#fff; border:1px solid var(--border); border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; font-size:0.95rem; box-shadow:0 4px 12px rgba(0,0,0,0.1);" id="btn-diff">🟢 Easy Mode</button>
-<button class="nav-login-btn" onclick="window.gameWeather = window.gameWeather === 'Rain' ? 'Clear' : 'Rain'; this.innerHTML = window.gameWeather === 'Rain' ? '🌧️ Rain' : '☀️ Clear';" style="background:#fff; border:1px solid var(--border); border-radius:30px; padding:8px 16px; font-weight:600; cursor:pointer; font-size:0.95rem; box-shadow:0 4px 12px rgba(0,0,0,0.1);" id="btn-weather">☀️ Clear</button>
-
-      <div class="nav-user-profile" id="navUserProfile" data-preserve-click="true" onclick="ui.showProfile()" style="display:none; align-items:center; gap:8px; background:#fff; border:1px solid var(--border); border-radius:30px; padding:5px 15px 5px 5px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-        <div class="nav-user-avatar" style="width:28px; height:28px; border-radius:50%; background:var(--signal); color:var(--ink); display:flex; justify-content:center; align-items:center; font-weight:bold; overflow:hidden;">?</div>
-        <span class="nun" style="font-weight:600; font-size:0.95rem; color:#111827;">User</span>
-      </div>
-    </div>
-    <div id="rl"></div>
-    <div class="sc">
-      <div class="brand-header"
-        style="display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:40px; width:100%; align-self:center;">
-        <div style="display:flex; gap:32px; align-items:center; justify-content:center;">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <img loading="lazy" id="cert-logo-3" src="mumbai-police-logo.webp" style="height:60px; width:auto; object-fit:contain;" alt="Mumbai Police"
-              onerror="this.style.display='none'" />
-            <div style="font-weight:700;letter-spacing:0.05em;color:var(--muted);text-align:left;line-height:1.2;">
-              MUMBAI<br>TRAFFIC POLICE</div>
+    <div id="vflash"></div>
+    <div id="cov">
+      <div class="cvc" id="cvc-main" style="padding: 0; background: #fff; overflow: hidden; border-radius: 16px; max-width: 400px; width: 90%; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3)">
+        <div style="background: #1f3b5e; color: white; padding: 24px 20px; display: flex; align-items: center; gap: 16px">
+          <div
+            style="
+              background: #ffc107;
+              color: #1f3b5e;
+              width: 48px;
+              height: 48px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+              font-size: 1.4rem;
+            "
+          >
+            xa
           </div>
-          <div style="width:2px; height:50px; background:var(--border);"></div>
-          <div style="display:flex; align-items:center; gap:12px;">
-            <img loading="lazy" id="cert-logo-4" src="sneh-logo.webp" style="height:60px; width:auto; object-fit:contain;" alt="Sneh Asha"
-              onerror="this.style.display='none'" />
-            <div style="font-weight:700;letter-spacing:0.05em;color:var(--muted);text-align:left;line-height:1.2;">SNEH
-              ASHA</div>
+          <div style="text-align: left">
+            <div style="font-size: 1.2rem; font-weight: 700">Mumbai Traffic Police</div>
+            <div style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); margin-top: 2px">Electronic Challan Notice</div>
           </div>
         </div>
-        <div
-          style="font-size:0.85rem; font-weight:600; color:var(--muted2); letter-spacing:0.1em; text-transform:uppercase; margin-top:8px;">
-          Proudly Sponsored By</div>
-      </div>
-      <div style="text-align:center;">
-        <div style="font-size:6rem;margin-bottom:20px;text-shadow:0 12px 24px rgba(0,0,0,0.1);">🚦🏙️🚗</div>
-        <div class="st" style="text-align:center;">Mumbai Traffic Hero Academy</div>
-        <div class="su" style="max-width:700px;margin-left:auto;margin-right:auto;text-align:center;">Welcome to the
-          premier driving simulation! Complete 15 rigorous real-world scenarios designed by the Mumbai Traffic Police to
-          test your skills, patience, and compliance. Prove you have what it takes to be a true Traffic Hero and earn
-          your official certification.</div>
-        <div class="pls" style="justify-content:center;margin-top:40px;">
-          <button class="btn btn-p" onclick="ui.showLevels()" style="font-size:1.1rem;padding:12px 32px;">Enter
-            Academy</button>
-          <button class="btn btn-g" onclick="ui.hardReset()" style="font-size:1.1rem;padding:12px 32px;">Reset
-            Progress</button>
-          <button class="btn btn-s" style="background:var(--red); font-size:1.1rem; padding:12px 32px; color:var(--ink);" onclick="const p = prompt('Developer Password:'); if(['Neel','Ansh','Sanjana'].includes(p)) { ui.adminUnlock(); } else if(p) { toast('❌ Access Denied', '#ff3b30'); }">🔓 Dev Unlock</button>
-          <button class="btn btn-g mobile-dl" style="border-color:var(--signal); color:var(--signal); font-size:1.1rem; padding:12px 32px;" onclick="window.location.href='../COL.apk'">📱 Download Android App</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="screen-levels" class="screen">
-    <div class="tb">
-      <button class="back-btn" onclick="ui.showStart()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg> Back</button>
-      <div style="display:flex;gap:12px;align-items:center;">
-        <button class="btn btn-g" onclick="ui.showProfile()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">👤 Profile</button>
-        <div id="pchip" class="btn btn-g"
-          style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;">0/15
-          ✅</div>
-      </div>
-    </div>
-    <div class="lw" id="lvbody"></div>
-  </div>
-
-  <div id="screen-briefing" class="screen">
-    <div class="tb">
-      <button class="back-btn" onclick="ui.showLevels()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg> Home</button>
-      <div style="font-weight:700;font-size:0.95rem;color:var(--text);" id="blt">Level 1</div>
-      <div style="display:flex;gap:12px;align-items:center;">
-        <button class="btn btn-g" onclick="ui.showProfile()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px;">👤 Profile</button>
-        <div class="btn"
-          style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px;"
-          id="bvh"></div>
-      </div>
-    </div>
-    <div class="br-w">
-      <div class="br-l">
-        <h2 style="font-size:1.8rem;margin-bottom:8px;">Course Overview</h2>
-        <div class="br-prog">
-          <div class="br-prog-fill" id="br-prog-fill"></div>
-        </div>
-        <div style="font-size:0.85rem;color:var(--muted);text-align:right;margin-bottom:24px;" id="br-prog-label">0%
-        </div>
-        <div id="br-syllabus"></div>
-      </div>
-      <div class="br-r" id="br-content"></div>
-    </div>
-  </div>
-
-  <div id="screen-quiz" class="screen">
-    <div class="tb"><button class="back-btn" onclick="ui.showLevels()"><svg width="18" height="18" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg> Abort</button>
-      <button class="btn btn-g" onclick="ui.showProfile()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px;">👤 Profile</button></div>
-    <div class="qw">
-      <h2 style="text-align:center;font-size:2rem;margin-bottom:24px;">Compliance Check</h2>
-      <div class="qd-cnt" id="qd"></div>
-      <div id="qa"></div>
-      <div class="qbot"><button id="qnxt" class="btn btn-p" onclick="ui.nextQ()">Next →</button></div>
-    </div>
-  </div>
-
-  <div id="screen-results" class="screen">
-    <div class="res-w">
-      <div class="rico" id="rico"></div>
-      <div class="rtit" id="rtit"></div>
-      <div class="rsub" id="rsub"></div>
-      <div class="rcard" id="rcard"></div>
-      <div class="bdx" id="rbdg"></div>
-      <div class="rbts">
-        <button class="btn btn-g" onclick="ui.showProfile()">👤 Profile</button>
-        <button class="btn btn-g" onclick="ui.showLevels()">Modules</button>
-        <button class="btn btn-p" id="rnxt" onclick="ui.goNext()">Next Module →</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="screen-badges" class="screen">
-    <div class="tb"><button class="back-btn" onclick="ui.showLevels()"><svg width="18" height="18" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg> Back</button>
-      <h2 style="font-size:1.4rem;margin:0;">Driver Profile</h2>
-      <button class="btn btn-g" onclick="ui.showProfile()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px;">👤 Profile</button>
-    </div>
-    <div class="lw">
-      <div class="stats-body" id="stats-body"></div>
-      <h3 style="margin-top:40px;font-size:1.5rem;">Achievements</h3>
-      <div class="bgrid" id="bgrid"></div>
-    </div>
-  </div>
-
-  <div id="screen-certificate" class="screen">
-    <div class="tb">
-      <button class="back-btn" onclick="ui.showLevels()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7" />
-        </svg> Back</button>
-      <div style="color:var(--accent);font-weight:600;font-size:0.95rem;" id="cstat"></div>
-      <div style="display:flex;gap:12px;align-items:center;">
-        <button class="btn btn-g" onclick="ui.showProfile()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px;">👤 Profile</button>
-        <button class="btn btn-p" id="cdownload" onclick="ui.dlCert()" style="padding: 8px 20px; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 6px;">📥 Download PDF</button>
-      </div>
-    </div>
-    <div id="cert-wrapper">
-      <div class="crt" id="cert">
-        <div style="margin-bottom:30px;display:flex;align-items:center;justify-content:space-between;width:100%;">
-
-<div style="display:flex;gap:16px;align-items:center;">
-<div style="text-align:right; margin-right:4px;">
-<div style="font-size:0.8rem; color:#7c7968; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;">Partnered With</div>
-</div>
-<img loading="lazy" id="cert-logo-5" src="mumbai-police-logo.webp" style="height:75px;object-fit:contain;" alt="Logo 1" onerror="this.style.display='none'" />
-<img loading="lazy" id="cert-logo-6" src="sneh-logo.webp" style="height:75px;object-fit:contain;" alt="Logo 2" onerror="this.style.display='none'" />
-</div>
-</div>
-
-        <div
-          style="font-weight:600;letter-spacing:0.1em;color:#7c7968;text-transform:uppercase;font-size:1.2rem;margin-top:20px;">
-          Certificate of Completion</div>
-        <div class="crtn" id="cert-title">Traffic Hero Certification</div>
-        <div id="cert-icon" style="font-size:5rem; text-align:center; display:none; margin:20px 0;"></div>
-
-        <div class="crt-body" id="cert-doc-text" style="margin-top:32px;">This document certifies that</div>
-        <div class="crt-course" id="cname">DRIVER</div>
-        <div class="crt-body" style="margin-bottom:60px;">has successfully completed the comprehensive traffic
-          regulations and virtual operations training program, demonstrating mastery across 15 real-world compliance
-          scenarios.</div>
-
-        <div
-          style="display:flex;justify-content:space-between;align-items:flex-end;width:100%;margin-top:auto;padding-top:40px;border-top:1px solid #e0dfd7;text-align:left;">
-          <div class="crt-meta">
-            <div style="margin-bottom:8px;"><span
-                style="font-weight:600;color:#2c2b25;width:100px;display:inline-block;">Date:</span><span
-                id="cdate"></span></div>
-            <div style="margin-bottom:8px;"><span
-                style="font-weight:600;color:#2c2b25;width:100px;display:inline-block;">Score:</span><span
-                id="cscore"></span></div>
-            <div><span style="font-weight:600;color:#2c2b25;width:100px;display:inline-block;">Ref ID:</span><span
-                id="cert-num"></span></div>
+        <div style="padding: 24px; text-align: left">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 16px">
+            <span style="color: #6c757d; font-weight: 500">Challan No.</span>
+            <span style="font-weight: 700" id="cnum"></span>
           </div>
-          <div style="text-align:right;">
-            <div
-              style="font-family:'Lora',serif;font-size:1.6rem;font-weight:600;color:#2c2b25;border-bottom:1px solid #e0dfd7;padding-bottom:8px;margin-bottom:8px;width:200px;">
-              Authorized</div>
-            <div style="font-size:0.95rem;color:#7c7968;">Joint Commissioner of Police (Traffic)</div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 16px">
+            <span style="color: #6c757d; font-weight: 500">Offense</span>
+            <span style="font-weight: 700; color: #dc3545; text-align: right; max-width: 60%" id="coff"></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 16px">
+            <span style="color: #6c757d; font-weight: 500">Law Section</span>
+            <span style="font-weight: 700; text-align: right; max-width: 60%" id="claw"></span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 24px">
+            <span style="color: #6c757d; font-weight: 500">Location</span>
+            <span style="font-weight: 700" id="cloc">📍 Andheri West</span>
+          </div>
+
+          <div style="border-top: 2px dashed #e9ecef; margin-bottom: 24px"></div>
+
+          <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px">
+            <span style="color: #856404; font-weight: 600">Fine Amount</span>
+            <span style="color: #dc3545; font-size: 2.2rem; font-weight: 700; font-family: 'Bebas Neue', sans-serif; line-height: 1" id="camt"></span>
+          </div>
+        </div>
+        <div style="background: #f8f9fa; padding: 20px; border-top: 1px solid #e9ecef; display: flex; flex-direction: column; align-items: center">
+          <button class="btn btn-p" style="background: #b02a37; width: 100%; font-size: 1.2rem; padding: 14px; border-radius: 30px; margin-bottom: 16px" onclick="ui.dismissChallan()">
+            Pay & Continue &rarr;
+          </button>
+
+          <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; font-weight: 600">Sponsored By</div>
+          <div style="display: flex; justify-content: center; gap: 16px; align-items: center">
+            <img loading="lazy" id="cert-logo-1" src="mumbai-police-logo.webp" style="height: 24px; opacity: 0.7" />
+            <div style="width: 1px; height: 16px; background: #ccc"></div>
+            <img loading="lazy" id="cert-logo-2" src="sneh-logo.webp" style="height: 24px; opacity: 0.7" />
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  
-  <script src="cert_assets.js"></script>
-  <script>window.LVS = [];</script>
-  <script src="levels/level1.js"></script>
-  <script src="levels/level2.js"></script>
-  <script src="levels/level3.js"></script>
-  <script src="levels/level4.js"></script>
-  <script src="levels/level5.js"></script>
-  <script src="levels/level6.js"></script>
-  <script src="levels/level7.js"></script>
-  <script src="levels/level8.js"></script>
-  <script src="levels/level9.js"></script>
-  <script src="levels/level10.js"></script>
-  <script src="levels/level11.js"></script>
-  <script src="levels/level12.js"></script>
-  <script src="levels/level13.js"></script>
-  <script src="levels/level14.js"></script>
-  <script src="levels/level15.js"></script>
-  <script src="levels/level16.js"></script>
-  <script src="levels/level17.js"></script>
-  <script src="levels/level18.js"></script>
-  <script src="levels/level19.js"></script>
-  <script src="levels/level20.js"></script>
+    <!-- SCREENS -->
 
-  <script src="course.js"></script>
-  <script src="ui.js"></script>
-  <script src="game_core.js"></script>
-  <script src="start.js"></script>
+    <div id="ss" class="screen active">
+      <div id="top-bar-container" style="position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px">
+        <button
+          onclick="
+            document.body.classList.toggle('lm')
+            try {
+              localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark')
+            } catch (e) {}
+          "
+          style="
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-size: 0.95rem;
+          "
+        >
+          🌓 Theme
+        </button>
 
-</body>
+        <button
+          class="nav-login-btn"
+          onclick="
+            window.gameDifficulty = window.gameDifficulty === 'Hard' ? 'Easy' : 'Hard'
+            this.innerHTML = window.gameDifficulty === 'Hard' ? '🔴 Hard Mode' : '🟢 Easy Mode'
+          "
+          style="
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          "
+          id="btn-diff"
+        >
+          🟢 Easy Mode
+        </button>
+        <button
+          class="nav-login-btn"
+          onclick="
+            window.gameWeather = window.gameWeather === 'Rain' ? 'Clear' : 'Rain'
+            this.innerHTML = window.gameWeather === 'Rain' ? '🌧️ Rain' : '☀️ Clear'
+          "
+          style="
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          "
+          id="btn-weather"
+        >
+          ☀️ Clear
+        </button>
 
+        <div
+          class="nav-user-profile"
+          id="navUserProfile"
+          data-preserve-click="true"
+          onclick="ui.showProfile()"
+          style="
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 5px 15px 5px 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          "
+        >
+          <div
+            class="nav-user-avatar"
+            style="
+              width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              background: var(--signal);
+              color: var(--ink);
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              font-weight: bold;
+              overflow: hidden;
+            "
+          >
+            ?
+          </div>
+          <span class="nun" style="font-weight: 600; font-size: 0.95rem; color: #111827">User</span>
+        </div>
+      </div>
+      <div id="rl"></div>
+      <div class="sc">
+        <div class="brand-header" style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 40px; width: 100%; align-self: center">
+          <div style="display: flex; gap: 32px; align-items: center; justify-content: center">
+            <div style="display: flex; align-items: center; gap: 12px">
+              <img loading="lazy" id="cert-logo-3" src="mumbai-police-logo.webp" style="height: 60px; width: auto; object-fit: contain" alt="Mumbai Police" onerror="this.style.display = 'none'" />
+              <div style="font-weight: 700; letter-spacing: 0.05em; color: var(--muted); text-align: left; line-height: 1.2">MUMBAI<br />TRAFFIC POLICE</div>
+            </div>
+            <div style="width: 2px; height: 50px; background: var(--border)"></div>
+            <div style="display: flex; align-items: center; gap: 12px">
+              <img loading="lazy" id="cert-logo-4" src="sneh-logo.webp" style="height: 60px; width: auto; object-fit: contain" alt="Sneh Asha" onerror="this.style.display = 'none'" />
+              <div style="font-weight: 700; letter-spacing: 0.05em; color: var(--muted); text-align: left; line-height: 1.2">SNEH ASHA</div>
+            </div>
+          </div>
+          <div style="font-size: 0.85rem; font-weight: 600; color: var(--muted2); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 8px">Proudly Sponsored By</div>
+        </div>
+        <div style="text-align: center">
+          <div style="font-size: 6rem; margin-bottom: 20px; text-shadow: 0 12px 24px rgba(0, 0, 0, 0.1)">🚦🏙️🚗</div>
+          <div class="st" style="text-align: center">Mumbai Traffic Hero Academy</div>
+          <div class="su" style="max-width: 700px; margin-left: auto; margin-right: auto; text-align: center">
+            Welcome to the premier driving simulation! Complete 15 rigorous real-world scenarios designed by the Mumbai Traffic Police to test your skills, patience, and compliance. Prove you have
+            what it takes to be a true Traffic Hero and earn your official certification.
+          </div>
+          <div class="pls" style="justify-content: center; margin-top: 40px">
+            <button class="btn btn-p" onclick="ui.showLevels()" style="font-size: 1.1rem; padding: 12px 32px">Enter Academy</button>
+            <button class="btn btn-g" onclick="ui.hardReset()" style="font-size: 1.1rem; padding: 12px 32px">Reset Progress</button>
+            <button
+              class="btn btn-s"
+              style="background: var(--red); font-size: 1.1rem; padding: 12px 32px; color: var(--ink)"
+              onclick="
+                const p = prompt('Developer Password:')
+                if (['Neel', 'Ansh', 'Sanjana'].includes(p)) {
+                  ui.adminUnlock()
+                } else if (p) {
+                  toast('❌ Access Denied', '#ff3b30')
+                }
+              "
+            >
+              🔓 Dev Unlock
+            </button>
+            <button class="btn btn-g mobile-dl" style="border-color: var(--signal); color: var(--signal); font-size: 1.1rem; padding: 12px 32px" onclick="window.location.href = '../COL.apk'">
+              📱 Download Android App
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="screen-levels" class="screen">
+      <div class="tb">
+        <button class="back-btn" onclick="ui.showStart()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+        <div style="display: flex; gap: 12px; align-items: center">
+          <button
+            class="btn btn-g"
+            onclick="ui.showProfile()"
+            style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap"
+          >
+            👤 Profile
+          </button>
+          <div
+            id="pchip"
+            class="btn btn-g"
+            style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap"
+          >
+            0/15 ✅
+          </div>
+        </div>
+      </div>
+      <div class="lw" id="lvbody"></div>
+    </div>
+
+    <div id="screen-briefing" class="screen">
+      <div class="tb">
+        <button class="back-btn" onclick="ui.showLevels()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Home
+        </button>
+        <div style="font-weight: 700; font-size: 0.95rem; color: var(--text)" id="blt">Level 1</div>
+        <div style="display: flex; gap: 12px; align-items: center">
+          <button
+            class="btn btn-g"
+            onclick="ui.showProfile()"
+            style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
+          >
+            👤 Profile
+          </button>
+          <div class="btn" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px" id="bvh"></div>
+        </div>
+      </div>
+      <div class="br-w">
+        <div class="br-l">
+          <h2 style="font-size: 1.8rem; margin-bottom: 8px">Course Overview</h2>
+          <div class="br-prog">
+            <div class="br-prog-fill" id="br-prog-fill"></div>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--muted); text-align: right; margin-bottom: 24px" id="br-prog-label">0%</div>
+          <div id="br-syllabus"></div>
+        </div>
+        <div class="br-r" id="br-content"></div>
+      </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+      <div class="tb">
+        <button class="back-btn" onclick="ui.showLevels()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Abort
+        </button>
+        <button class="btn btn-g" onclick="ui.showProfile()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px">
+          👤 Profile
+        </button>
+      </div>
+      <div class="qw">
+        <h2 style="text-align: center; font-size: 2rem; margin-bottom: 24px">Compliance Check</h2>
+        <div class="qd-cnt" id="qd"></div>
+        <div id="qa"></div>
+        <div class="qbot"><button id="qnxt" class="btn btn-p" onclick="ui.nextQ()">Next →</button></div>
+      </div>
+    </div>
+
+    <div id="screen-results" class="screen">
+      <div class="res-w">
+        <div class="rico" id="rico"></div>
+        <div class="rtit" id="rtit"></div>
+        <div class="rsub" id="rsub"></div>
+        <div class="rcard" id="rcard"></div>
+        <div class="bdx" id="rbdg"></div>
+        <div class="rbts">
+          <button class="btn btn-g" onclick="ui.showProfile()">👤 Profile</button>
+          <button class="btn btn-g" onclick="ui.showLevels()">Modules</button>
+          <button class="btn btn-p" id="rnxt" onclick="ui.goNext()">Next Module →</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="screen-badges" class="screen">
+      <div class="tb">
+        <button class="back-btn" onclick="ui.showLevels()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+        <h2 style="font-size: 1.4rem; margin: 0">Driver Profile</h2>
+        <button class="btn btn-g" onclick="ui.showProfile()" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px">
+          👤 Profile
+        </button>
+      </div>
+      <div class="lw">
+        <div class="stats-body" id="stats-body"></div>
+        <h3 style="margin-top: 40px; font-size: 1.5rem">Achievements</h3>
+        <div class="bgrid" id="bgrid"></div>
+      </div>
+    </div>
+
+    <div id="screen-certificate" class="screen">
+      <div class="tb">
+        <button class="back-btn" onclick="ui.showLevels()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+        <div style="color: var(--accent); font-weight: 600; font-size: 0.95rem" id="cstat"></div>
+        <div style="display: flex; gap: 12px; align-items: center">
+          <button
+            class="btn btn-g"
+            onclick="ui.showProfile()"
+            style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
+          >
+            👤 Profile
+          </button>
+          <button class="btn btn-p" id="cdownload" onclick="ui.dlCert()" style="padding: 8px 20px; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 6px">
+            📥 Download PDF
+          </button>
+        </div>
+      </div>
+      <div id="cert-wrapper">
+        <div class="crt" id="cert">
+          <div style="margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; width: 100%">
+            <div style="display: flex; gap: 16px; align-items: center">
+              <div style="text-align: right; margin-right: 4px">
+                <div style="font-size: 0.8rem; color: #7c7968; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase">Partnered With</div>
+              </div>
+              <img loading="lazy" id="cert-logo-5" src="mumbai-police-logo.webp" style="height: 75px; object-fit: contain" alt="Logo 1" onerror="this.style.display = 'none'" />
+              <img loading="lazy" id="cert-logo-6" src="sneh-logo.webp" style="height: 75px; object-fit: contain" alt="Logo 2" onerror="this.style.display = 'none'" />
+            </div>
+          </div>
+
+          <div style="font-weight: 600; letter-spacing: 0.1em; color: #7c7968; text-transform: uppercase; font-size: 1.2rem; margin-top: 20px">Certificate of Completion</div>
+          <div class="crtn" id="cert-title">Traffic Hero Certification</div>
+          <div id="cert-icon" style="font-size: 5rem; text-align: center; display: none; margin: 20px 0"></div>
+
+          <div class="crt-body" id="cert-doc-text" style="margin-top: 32px">This document certifies that</div>
+          <div class="crt-course" id="cname">DRIVER</div>
+          <div class="crt-body" style="margin-bottom: 60px">
+            has successfully completed the comprehensive traffic regulations and virtual operations training program, demonstrating mastery across 15 real-world compliance scenarios.
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-top: auto; padding-top: 40px; border-top: 1px solid #e0dfd7; text-align: left">
+            <div class="crt-meta">
+              <div style="margin-bottom: 8px"><span style="font-weight: 600; color: #2c2b25; width: 100px; display: inline-block">Date:</span><span id="cdate"></span></div>
+              <div style="margin-bottom: 8px"><span style="font-weight: 600; color: #2c2b25; width: 100px; display: inline-block">Score:</span><span id="cscore"></span></div>
+              <div><span style="font-weight: 600; color: #2c2b25; width: 100px; display: inline-block">Ref ID:</span><span id="cert-num"></span></div>
+            </div>
+            <div style="text-align: right">
+              <div style="font-family: 'Lora', serif; font-size: 1.6rem; font-weight: 600; color: #2c2b25; border-bottom: 1px solid #e0dfd7; padding-bottom: 8px; margin-bottom: 8px; width: 200px">
+                Authorized
+              </div>
+              <div style="font-size: 0.95rem; color: #7c7968">Joint Commissioner of Police (Traffic)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="cert_assets.js"></script>
+    <script>
+      window.LVS = []
+    </script>
+    <script src="levels/level1.js"></script>
+    <script src="levels/level2.js"></script>
+    <script src="levels/level3.js"></script>
+    <script src="levels/level4.js"></script>
+    <script src="levels/level5.js"></script>
+    <script src="levels/level6.js"></script>
+    <script src="levels/level7.js"></script>
+    <script src="levels/level8.js"></script>
+    <script src="levels/level9.js"></script>
+    <script src="levels/level10.js"></script>
+    <script src="levels/level11.js"></script>
+    <script src="levels/level12.js"></script>
+    <script src="levels/level13.js"></script>
+    <script src="levels/level14.js"></script>
+    <script src="levels/level15.js"></script>
+    <script src="levels/level16.js"></script>
+    <script src="levels/level17.js"></script>
+    <script src="levels/level18.js"></script>
+    <script src="levels/level19.js"></script>
+    <script src="levels/level20.js"></script>
+
+    <script src="course.js"></script>
+    <script src="ui.js"></script>
+    <script src="game_core.js"></script>
+    <script src="start.js"></script>
+  </body>
 </html>
-
-
-
-
-

@@ -2,6 +2,7 @@ class Game {
       constructor() {
         this.renderer = null; this.scene = null; this.camera = null; this.player = null;
         this.clock = new THREE.Clock(); this.keys = {}; this.speed = 0; this.maxSpd = 1.1; this.accel = .045; this.fric = .95; this.turn = .065; this.gear = 'N'; this.gcap = 0;
+        this.boostFuel = 100; this.maxBoostFuel = 100; this.boosting = false;
         this._camTarget = new THREE.Vector3();
         this.playing = false; this.pause = false; this.lightningTimer = 0; this.thunderSfx = null; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0;
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.routeIdx = 0; this.retries = 0;
@@ -35,16 +36,16 @@ class Game {
           if (THREE.EffectComposer) {
             this.composer = new THREE.EffectComposer(this.renderer);
             this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
-            const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0, 0, 1);
-            bloomPass.threshold = 1;
-            bloomPass.strength = 0;
-            bloomPass.radius = 0;
+            const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.6, 0.6, 0.85);
+            bloomPass.threshold = 0.82;
+            bloomPass.strength = 0.35;
+            bloomPass.radius = 0.5;
             this.composer.addPass(bloomPass);
           }
         } catch(e) { console.warn("Post processing err:", e); }
         
         // Cache DOM elements to prevent query overhead per frame
-        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc'];
+        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
       _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
@@ -93,10 +94,10 @@ class Game {
             this.camPitch = Math.max(-1.0, Math.min(1.0, this.camPitch));
           }
         });
-        // Left-click drag for third-person camera orbit
+        // Left-click drag for third-person camera orbit (desktop only)
         if (this.renderer && this.renderer.domElement) {
           this.renderer.domElement.addEventListener('mousedown', (e) => {
-            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked) {
+            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse') && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
               this._isDraggingCamera = true;
             }
           });
@@ -239,6 +240,7 @@ class Game {
 
         bindTouch('mc-gas', 'arrowup');
         bindTouch('mc-brake', 'arrowdown');
+        bindTouch('mc-boost', 'shift');
 
         // Gyroscope steering for mobile (±30° gamma)
         window.gyroSteering = 0;
@@ -304,6 +306,7 @@ class Game {
         this.seatbeltOn = false;
         this.mobileOn = false;
         this.bucklingUp = false;
+        this.boostFuel = 100; this.boosting = false;
         this.highBeamOn = false;
         this.turnSignal = 0;
         this.turnTimer = 0;
@@ -357,7 +360,7 @@ class Game {
         // Initialize tasks for this level
         this._initTasks(lv);
       }
-      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); }
+      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; } const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; } if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); }
       toggleSeatbelt(btn) {
           this.seatbeltOn = !this.seatbeltOn;
           const isBike = (this.vehMode === 'bike' || this.vehMode === 'cycle');
@@ -775,9 +778,11 @@ class Game {
             this.scene.fog = new THREE.Fog(sk, fogDist * 0.35, fogDist * 1.2);
         }
         // Enhanced true color lighting with better contrast and shadows
-        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.1 : 0.3));
-        
-        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.4 : 0.75);
+        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.15 : 0.45));
+        const hemi = new THREE.HemisphereLight(0x87ceeb, 0x444444, cfg.isNight ? 0.1 : 0.3);
+        this.scene.add(hemi);
+
+        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.5 : 1.0);
         sun.position.set(30, 60, 20); 
         sun.castShadow = true;
         sun.shadow.camera.near = 0.5;
@@ -976,7 +981,7 @@ class Game {
               [1, 2, 3, 4].forEach(depth => {
                 if (depth > 1 && Math.random() > 0.4) return; // Background buildings spawn randomly
 
-                const bDist = RW / 2 + 2 + (depth - 1) * 35; 
+                const bDist = RW / 2 + 0.5 + (depth - 1) * 35; 
                 // Add some slight randomness to positions
                 const bx = isV ? cx + side * bDist : pos + (Math.random() * 2 - 1);
                 const bz = isV ? pos + (Math.random() * 2 - 1) : cz + side * bDist;
@@ -1035,10 +1040,10 @@ class Game {
                   stall.position.set(lx, 0, lz);
                   this.scene.add(stall); this.obstacles.push(stall);
                 } else {
-                  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 6), new THREE.MeshLambertMaterial({ color: 0x333333 }));
-                  pole.position.set(lx, 3, lz); this.scene.add(pole);
-                  const lamp = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.4), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-                  lamp.position.set(lx + (isV ? -side * 0.3 : 0), 6, lz + (!isV ? -side * 0.3 : 0));
+                  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.18, 7), new THREE.MeshLambertMaterial({ color: 0x444444 }));
+                  pole.position.set(lx, 3.5, lz); this.scene.add(pole);
+                  const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.35, 0.9), new THREE.MeshBasicMaterial({ color: 0xffffee }));
+                  lamp.position.set(lx + (isV ? -side * 0.4 : 0), 7, lz + (!isV ? -side * 0.4 : 0));
                   this.scene.add(lamp);
                 }
               }
@@ -1734,14 +1739,29 @@ class Game {
         ring.position.set(x, .8, z); this.scene.add(ring); this.cps.push(ring); return ring;
       }
       _sig(x, z) {
-        const g = new THREE.Group(); const p = new THREE.Mesh(new THREE.CylinderGeometry(.09, .11, 3.8, 8), new THREE.MeshPhongMaterial({ color: 0x555555 })); p.position.y = 1.9;
-        const bx = new THREE.Mesh(new THREE.BoxGeometry(.45, 1.1, .3), new THREE.MeshPhongMaterial({ color: 0x151515 })); bx.position.y = 3.6;
-        const mk = (y, n) => { const s = new THREE.Mesh(new THREE.SphereGeometry(.14), new THREE.MeshBasicMaterial({ color: 0x111111 })); s.position.set(0, y, .16); s.name = n; return s; };
-        const ps_pole = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, 1.5, 8), new THREE.MeshPhongMaterial({ color: 0x555555 })); ps_pole.position.set(0, 0.75, 2);
-        const ps_box = new THREE.Mesh(new THREE.BoxGeometry(.3, .6, .2), new THREE.MeshPhongMaterial({ color: 0x151515 })); ps_box.position.set(0, 1.5, 2);
-        const mks = (y, n) => { const s = new THREE.Mesh(new THREE.SphereGeometry(.08), new THREE.MeshBasicMaterial({ color: 0x111111 })); s.position.set(0, y, 2.11); s.name = n; return s; };
-        g.add(ps_pole, ps_box, mks(1.65, 'p_red'), mks(1.35, 'p_green'));
-        g.add(p, bx, mk(3.9, 'red'), mk(3.6, 'yellow'), mk(3.3, 'green')); g.position.set(x, 0, z); this.scene.add(g); this.sigs.push(g);
+        const g = new THREE.Group();
+        // Main pole - taller Indian-style
+        const p = new THREE.Mesh(new THREE.CylinderGeometry(.08, .12, 4.5, 8), new THREE.MeshPhongMaterial({ color: 0x666666 }));
+        p.position.y = 2.25;
+        // Vertical signal head (Indian 3-aspect)
+        const bx = new THREE.Mesh(new THREE.BoxGeometry(.55, 1.5, .35), new THREE.MeshPhongMaterial({ color: 0x1a1a1a }));
+        bx.position.y = 4.3;
+        // Visor hoods for each aspect
+        const mkHood = (y) => {
+          const hood = new THREE.Mesh(new THREE.CylinderGeometry(.18, .22, .15, 8, 1, true), new THREE.MeshPhongMaterial({ color: 0x222222, side: THREE.DoubleSide }));
+          hood.position.set(0, y, .22); hood.rotation.x = Math.PI / 2;
+          return hood;
+        };
+        const mk = (y, n) => { const s = new THREE.Mesh(new THREE.SphereGeometry(.16), new THREE.MeshBasicMaterial({ color: 0x111111 })); s.position.set(0, y, .18); s.name = n; return s; };
+        // Pedestrian signal pole
+        const ps_pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, 1.8, 8), new THREE.MeshPhongMaterial({ color: 0x666666 }));
+        ps_pole.position.set(0, 0.9, 2.2);
+        const ps_box = new THREE.Mesh(new THREE.BoxGeometry(.3, .6, .2), new THREE.MeshPhongMaterial({ color: 0x1a1a1a }));
+        ps_box.position.set(0, 1.8, 2.2);
+        const mks = (y, n) => { const s = new THREE.Mesh(new THREE.SphereGeometry(.09), new THREE.MeshBasicMaterial({ color: 0x111111 })); s.position.set(0, y, 2.31); s.name = n; return s; };
+        g.add(ps_pole, ps_box, mks(1.95, 'p_red'), mks(1.65, 'p_green'));
+        g.add(p, bx, mkHood(4.6), mkHood(4.3), mkHood(4.0), mk(4.6, 'red'), mk(4.3, 'yellow'), mk(4.0, 'green'));
+        g.position.set(x, 0, z); this.scene.add(g); this.sigs.push(g);
         g.userData = { st: 'red', t: Math.random() * 6, rd: 4, gd: 4, yd: 1.5 }; return g;
       }
       
@@ -1901,6 +1921,16 @@ class Game {
           // Clamp to gear cap
           if (isRev) { this.speed = Math.max(this.speed, -cap); } else { this.speed = Math.min(this.speed, cap); }
           this.speed *= this.fric;
+
+          // Sprint / Boost — Shift key
+          if (this.keys['shift'] && this.boostFuel > 0 && up && this.gear === 'D') {
+            this.boosting = true;
+            this.speed *= 1.35;
+            this.boostFuel = Math.max(0, this.boostFuel - 18 * dt);
+          } else {
+            this.boosting = false;
+            this.boostFuel = Math.min(this.maxBoostFuel, this.boostFuel + 9 * dt);
+          }
         }
 
         if (!overrideMove) {
@@ -2576,6 +2606,47 @@ class Game {
           arc.setAttribute('d', `M${44 + 32 * Math.cos(sa)},${44 + 32 * Math.sin(sa)} A32,32,0,${sw > 180 ? 1 : 0},1,${44 + 32 * Math.cos(ea)},${44 + 32 * Math.sin(ea)}`);
           const arcCol = k > 70 ? '#ff3b30' : k > 45 ? '#ff9500' : 'var(--yellow)';
           arc.setAttribute('stroke', arcCol);
+        }
+        // Boost fuel gauge
+        const bgEl = this.dom['boostgauge'];
+        if (bgEl) {
+          if (this.isPedestrian) { bgEl.style.display = 'none'; }
+          else {
+            bgEl.style.display = 'block';
+            const pct = Math.round(this.boostFuel);
+            const boostPctEl = this.dom['boost-pct'];
+            if (boostPctEl) { boostPctEl.textContent = pct; }
+            const boostArcEl = this.dom['boost-arc'];
+            if (boostArcEl) {
+              const circ = 150.8;
+              const offset = circ * (1 - this.boostFuel / this.maxBoostFuel);
+              boostArcEl.setAttribute('stroke-dashoffset', offset);
+              const col = this.boosting ? '#00f0cc' : '#5ed4f5';
+              boostArcEl.setAttribute('stroke', col);
+              if (boostPctEl) boostPctEl.style.fill = col;
+            }
+            bgEl.style.boxShadow = this.boosting
+              ? '0 0 20px rgba(0, 240, 204, 0.6), 0 0 40px rgba(0, 240, 204, 0.3)'
+              : '0 8px 20px rgba(0, 0, 0, 0.1)';
+          }
+          // Vignette overlay when boosting
+          const vig = this.dom['boost-vignette'];
+          if (vig) {
+            if (this.boosting && !this.isPedestrian) { vig.style.display = 'block'; vig.style.opacity = '1'; }
+            else { vig.style.opacity = '0'; setTimeout(() => { if (vig.style.opacity === '0') vig.style.display = 'none'; }, 300); }
+          }
+          // "Boost Ready" flash when fuel recharges to 100
+          const br = this.dom['boost-ready'];
+          if (br && !this.isPedestrian) {
+            if (this.boostFuel >= this.maxBoostFuel && this._wasDepleted) {
+              this._wasDepleted = false;
+              br.style.display = 'block'; br.style.opacity = '1';
+              setTimeout(() => { br.style.opacity = '0'; }, 1500);
+              setTimeout(() => { br.style.display = 'none'; }, 1800);
+            } else if (this.boostFuel < this.maxBoostFuel) {
+              this._wasDepleted = true;
+            }
+          }
         }
         const tl = this.timeLimit || 120; const rem = Math.max(0, Math.ceil(tl - this.timer));
         const htmr = this.dom['htmr'];

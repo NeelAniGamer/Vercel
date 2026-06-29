@@ -1,123 +1,128 @@
 const BADGES = [
-      { id: 'safe_walker', name: 'Safe Walker Badge', icon: '🚶', desc: 'Crossed all roads safely as a pedestrian' },
-      { id: 'law_abider', name: 'Law Abider Badge', icon: '🏛️', desc: 'Passed all checkpoint inspections cleanly' },
-      { id: 'speed_king', name: 'Speed King Badge', icon: '🏎️', desc: 'Completed Sea Link with zero speed violations' },
-      { id: 'traffic_hero', name: 'Traffic Hero Badge', icon: '🌟', desc: 'Completed all 20 levels of the Academy' },
-      { id: 'smart_citizen', name: 'Mumbai Smart Citizen', icon: '🏙️', desc: 'Earned the Traffic Hero badge 🔄 A true road hero' },
-      { id: 'signal_master', name: 'Signal Master', icon: '🚦', desc: 'Completed 5+ levels without a single red-light violation' }
-    ];
+  { id: 'safe_walker', name: 'Safe Walker Badge', icon: '🚶', desc: 'Crossed all roads safely as a pedestrian' },
+  { id: 'law_abider', name: 'Law Abider Badge', icon: '🏛️', desc: 'Passed all checkpoint inspections cleanly' },
+  { id: 'speed_king', name: 'Speed King Badge', icon: '🏎️', desc: 'Completed Sea Link with zero speed violations' },
+  { id: 'traffic_hero', name: 'Traffic Hero Badge', icon: '🌟', desc: 'Completed all 20 levels of the Academy' },
+  { id: 'smart_citizen', name: 'Mumbai Smart Citizen', icon: '🏙️', desc: 'Earned the Traffic Hero badge 🔄 A true road hero' },
+  { id: 'signal_master', name: 'Signal Master', icon: '🚦', desc: 'Completed 5+ levels without a single red-light violation' }
+]
 
-    // 🚦 STATE MANAGEMENT 🚦
-    let S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 };
-    try { const s = localStorage.getItem('mth4'); if (s) S = Object.assign(S, JSON.parse(s)); } catch (e) { }
-    if (!S.comp) S.comp = {};
-    if (!S.badges) S.badges = [];
-    const save = () => { 
-      try { localStorage.setItem('mth4', JSON.stringify(S)); } catch (e) { } 
-      if (window.supabaseClient && window.colUser) {
-        window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch(err => console.error("Cloud save failed", err));
+// 🚦 STATE MANAGEMENT 🚦
+let S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
+try {
+  const s = localStorage.getItem('mth4')
+  if (s) S = Object.assign(S, JSON.parse(s))
+} catch (e) {}
+if (!S.comp) S.comp = {}
+if (!S.badges) S.badges = []
+const save = () => {
+  try {
+    localStorage.setItem('mth4', JSON.stringify(S))
+  } catch (e) {}
+  if (window.supabaseClient && window.colUser) {
+    window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch((err) => console.error('Cloud save failed', err))
+  }
+}
+
+// ☁️ CLOUD CONFLICT RESOLUTION ☁️
+window.addEventListener('col-auth-changed', (e) => {
+  const customUser = e.detail && e.detail.user ? e.detail.user : window.colUser
+  const user = customUser ? customUser.session.user : null
+
+  // UPDATE NAV BAR PROFILE UI
+  if (user) {
+    const navBtn = document.getElementById('nav-sign-in-btn')
+    const navProf = document.getElementById('navUserProfile')
+    if (navBtn && navProf) {
+      navBtn.style.display = 'none'
+      navProf.style.display = 'flex'
+
+      const meta = user.user_metadata || {}
+      const name = meta.full_name || 'Driver'
+      const fName = name.split(' ')[0]
+      document.getElementById('navUserName').innerText = fName
+
+      const pfp = document.getElementById('navUserPfp')
+      const ini = document.getElementById('navUserInitials')
+      if (meta.avatar_url && pfp && ini) {
+        pfp.src = meta.avatar_url
+        pfp.style.display = 'block'
+        ini.style.display = 'none'
+      } else if (ini) {
+        ini.innerText = fName.charAt(0).toUpperCase()
+        ini.style.display = 'flex'
+        if (pfp) pfp.style.display = 'none'
       }
-    };
+    }
+  }
 
-    // ☁️ CLOUD CONFLICT RESOLUTION ☁️
-    window.addEventListener('col-auth-changed', (e) => {
-        const customUser = (e.detail && e.detail.user) ? e.detail.user : window.colUser;
-        const user = customUser ? customUser.session.user : null;
-        
-        // UPDATE NAV BAR PROFILE UI
-        if (user) {
-            const navBtn = document.getElementById('nav-sign-in-btn');
-            const navProf = document.getElementById('navUserProfile');
-            if (navBtn && navProf) {
-                navBtn.style.display = 'none';
-                navProf.style.display = 'flex';
-                
-                const meta = user.user_metadata || {};
-                const name = meta.full_name || 'Driver';
-                const fName = name.split(' ')[0];
-                document.getElementById('navUserName').innerText = fName;
-                
-                const pfp = document.getElementById('navUserPfp');
-                const ini = document.getElementById('navUserInitials');
-                if (meta.avatar_url && pfp && ini) {
-                    pfp.src = meta.avatar_url;
-                    pfp.style.display = 'block';
-                    ini.style.display = 'none';
-                } else if (ini) {
-                    ini.innerText = fName.charAt(0).toUpperCase();
-                    ini.style.display = 'flex';
-                    if (pfp) pfp.style.display = 'none';
-                }
-            }
-        }
+  if (user && user.user_metadata && user.user_metadata.progress) {
+    const cloudS = user.user_metadata.progress
+    // Provide a minimal structure to S if undefined
+    if (!S) S = { comp: {}, badges: [], total: 0, wallet: 50000 }
 
-        if (user && user.user_metadata && user.user_metadata.progress) {
-            const cloudS = user.user_metadata.progress;
-            // Provide a minimal structure to S if undefined
-            if (!S) S = { comp: {}, badges: [], total: 0, wallet: 50000 };
-            
-            // Determine if they actually differ in a meaningful way
-            const isDifferent = (cloudS.total !== S.total) || 
-                                (cloudS.badges && S.badges && cloudS.badges.length !== S.badges.length) ||
-                                (Object.keys(cloudS.comp || {}).length !== Object.keys(S.comp || {}).length);
-            
-            if (isDifferent) {
-                // If local has no actual progress but cloud does, auto-restore
-                if (S.total === 0 && Object.keys(S.comp || {}).length === 0 && cloudS.total > 0) {
-                    S = cloudS;
-                    try { localStorage.setItem('mth4', JSON.stringify(S)); } catch (e) { }
-                    toast('☁️ Cloud Data Auto-Restored!', '#5ED4F5');
-                    if (window.ui && window.ui.init) ui.init();
-                } 
-                // If cloud has no actual progress but local does, auto-upload
-                else if (cloudS.total === 0 && Object.keys(cloudS.comp || {}).length === 0 && S.total > 0) {
-                    window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch(()=>{});
-                    toast('⬆️ Local Data Synced to Cloud!', '#F2B84B');
-                }
-                else {
-                    // Show conflict resolution if states differ and both have some progress
-                    injectConflictModal(cloudS);
-                    document.getElementById('conflictMo').style.display = 'flex';
-                }
-            }
-        } else if (user) {
-            // Logged in but no cloud progress, upload local progress if any
-            if (S && S.total > 0) {
-                window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch(()=>{});
-                toast('⬆️ Local Data Synced to Cloud!', '#F2B84B');
-            }
-        }
-    });
+    // Determine if they actually differ in a meaningful way
+    const isDifferent =
+      cloudS.total !== S.total || (cloudS.badges && S.badges && cloudS.badges.length !== S.badges.length) || Object.keys(cloudS.comp || {}).length !== Object.keys(S.comp || {}).length
 
-    function injectConflictModal(cloudS) {
-        window.__pendingCloudS = cloudS;
-        if (document.getElementById('conflictMo')) document.getElementById('conflictMo').remove();
-        
-        // Calculate stats
-        const getStats = (state) => {
-            const lvls = Object.keys(state.comp || {}).length;
-            const wlt = state.wallet || 0;
-            const bdg = (state.badges || []).length;
-            
-            // Find latest timestamp
-            let latest = 0;
-            if (state.comp) {
-                for (let k in state.comp) {
-                    if (state.comp[k].time > latest) latest = state.comp[k].time;
-                }
-            }
-            const dateStr = latest > 0 ? new Date(latest).toLocaleString() : 'Unknown';
-            return { lvls, wlt, bdg, dateStr };
-        };
-        
-        const cSt = getStats(cloudS);
-        const lSt = getStats(S);
+    if (isDifferent) {
+      // If local has no actual progress but cloud does, auto-restore
+      if (S.total === 0 && Object.keys(S.comp || {}).length === 0 && cloudS.total > 0) {
+        S = cloudS
+        try {
+          localStorage.setItem('mth4', JSON.stringify(S))
+        } catch (e) {}
+        toast('☁️ Cloud Data Auto-Restored!', '#5ED4F5')
+        if (window.ui && window.ui.init) ui.init()
+      }
+      // If cloud has no actual progress but local does, auto-upload
+      else if (cloudS.total === 0 && Object.keys(cloudS.comp || {}).length === 0 && S.total > 0) {
+        window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch(() => {})
+        toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
+      } else {
+        // Show conflict resolution if states differ and both have some progress
+        injectConflictModal(cloudS)
+        document.getElementById('conflictMo').style.display = 'flex'
+      }
+    }
+  } else if (user) {
+    // Logged in but no cloud progress, upload local progress if any
+    if (S && S.total > 0) {
+      window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch(() => {})
+      toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
+    }
+  }
+})
 
-        const mo = document.createElement('div');
-        mo.className = 'mo';
-        mo.id = 'conflictMo';
-        mo.style.display = 'flex';
-        mo.innerHTML = `
+function injectConflictModal(cloudS) {
+  window.__pendingCloudS = cloudS
+  if (document.getElementById('conflictMo')) document.getElementById('conflictMo').remove()
+
+  // Calculate stats
+  const getStats = (state) => {
+    const lvls = Object.keys(state.comp || {}).length
+    const wlt = state.wallet || 0
+    const bdg = (state.badges || []).length
+
+    // Find latest timestamp
+    let latest = 0
+    if (state.comp) {
+      for (let k in state.comp) {
+        if (state.comp[k].time > latest) latest = state.comp[k].time
+      }
+    }
+    const dateStr = latest > 0 ? new Date(latest).toLocaleString() : 'Unknown'
+    return { lvls, wlt, bdg, dateStr }
+  }
+
+  const cSt = getStats(cloudS)
+  const lSt = getStats(S)
+
+  const mo = document.createElement('div')
+  mo.className = 'mo'
+  mo.id = 'conflictMo'
+  mo.style.display = 'flex'
+  mo.innerHTML = `
             <div class="md" style="background:var(--card, #111827); color:var(--text, #E8E3D8); padding:30px; border-radius:16px; max-width:600px; width:90%; margin:auto; z-index: 10001; position: relative;">
                 <div class="md-hd" style="border-bottom: 1px solid var(--border, rgba(255,255,255,0.08)); margin-bottom: 20px; padding-bottom: 15px; text-align:center;">
                     <h2 style="font-family:'Instrument Serif', serif; font-size:2.5rem; margin-bottom:10px;">Sync Conflict</h2>
@@ -147,39 +152,38 @@ const BADGES = [
 
                 </div>
             </div>
-        `;
-        if (!document.getElementById('col-ui-minimal')) {
-            const style = document.createElement('style');
-            style.id = 'col-ui-minimal';
-            style.innerHTML = `
+        `
+  if (!document.getElementById('col-ui-minimal')) {
+    const style = document.createElement('style')
+    style.id = 'col-ui-minimal'
+    style.innerHTML = `
                 .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: none; }
                 .md { box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
                 .btn { transition: transform 0.2s, opacity 0.2s; }
                 .btn:hover { opacity: 0.9; transform: translateY(-2px); }
-            `;
-            document.head.appendChild(style);
-        }
-        document.body.appendChild(mo);
+            `
+    document.head.appendChild(style)
+  }
+  document.body.appendChild(mo)
+}
+
+window.resolveConflict = function (choice) {
+  document.getElementById('conflictMo').style.display = 'none'
+  if (choice === 'cloud') {
+    const cloudS = window.__pendingCloudS
+    if (cloudS) {
+      S = cloudS
+      try {
+        localStorage.setItem('mth4', JSON.stringify(S))
+      } catch (e) {}
+      if (window.ui && window.ui.init) ui.init() // Refresh UI
+      toast('☁️ Cloud Data Restored!', '#5ED4F5')
     }
+  } else {
+    // local wins
+    save()
+    toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
+  }
+}
 
-
-    window.resolveConflict = function(choice) {
-        document.getElementById('conflictMo').style.display = 'none';
-        if (choice === 'cloud') {
-            const cloudS = window.__pendingCloudS;
-            if (cloudS) {
-                S = cloudS;
-                try { localStorage.setItem('mth4', JSON.stringify(S)); } catch (e) { }
-                if (window.ui && window.ui.init) ui.init(); // Refresh UI
-                toast('☁️ Cloud Data Restored!', '#5ED4F5');
-            }
-        } else {
-            // local wins
-            save();
-            toast('⬆️ Local Data Synced to Cloud!', '#F2B84B');
-
-        }
-    };
-
-
-    // 🚦 UTILS 🚦
+// 🚦 UTILS 🚦

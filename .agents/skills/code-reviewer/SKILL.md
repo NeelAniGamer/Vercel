@@ -22,19 +22,19 @@ Automated code review assistant that integrates static analysis, best practice a
 
 Analyzes a Pull Request or a local branch for common issues and structural constraints.
 
--   **Execution**: `python .agent/skills/code-reviewer/scripts/pr_analyzer.py [options] <path>`
--   **When to use**: At the beginning of a review to catch obvious errors.
+- **Execution**: `python .agent/skills/code-reviewer/scripts/pr_analyzer.py [options] <path>`
+- **When to use**: At the beginning of a review to catch obvious errors.
 
 ### 2. Code Quality Checker (Script)
 
 Performs deep static analysis to identify performance bottlenecks and anti-patterns.
 
--   **Execution**: `python .agent/skills/code-reviewer/scripts/code_quality_checker.py [options] <path>`
--   **When to use**: Before merging, to ensure codebase health.
+- **Execution**: `python .agent/skills/code-reviewer/scripts/code_quality_checker.py [options] <path>`
+- **When to use**: Before merging, to ensure codebase health.
 
 ### 3. Review Report Generator (Script)
 
 Generates a formatted report for stakeholders.
 
--   **Execution**: `python .agent/skills/code-reviewer/scripts/review_report_generator.py [options]`
--   **When to use**: To summarize findings for non-technical stakeholders or final approval.
+- **Execution**: `python .agent/skills/code-reviewer/scripts/review_report_generator.py [options]`
+- **When to use**: To summarize findings for non-technical stakeholders or final approval.

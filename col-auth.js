@@ -3,202 +3,206 @@
 // --- Shared Login Modal Injection ---
 // Injects the standard loginMo modal if the page doesn't already have one inline.
 function injectLoginModal() {
-    if (document.getElementById('loginMo')) return;
-    const mo = document.createElement('div');
-    mo.className = 'col-auth-mo';
-    mo.id = 'loginMo';
-    mo.innerHTML = '<div class="col-auth-md"><div class="col-auth-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="col-auth-body"><div id="loggedOutPanel" style="display:flex; justify-content:center; align-items:center; width:100%; margin-bottom:15px;"><div id="gSignInBtnContainer" style="width:100%; display:flex; justify-content:center;"></div></div><div id="loggedInPanel" style="display: none;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Google Email</label><input class="col-auth-inp" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Display Username</label><input class="col-auth-inp" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;"><button class="col-auth-btn" style="margin-bottom: 10px;" onclick="updateUsername()">Save Username</button><button class="col-auth-danger" onclick="doLogout()">Disconnect Account</button></div><button class="col-auth-btn" style="margin-top: 10px; background: transparent; color: var(--dim, #8891AA); border: 1px solid var(--line, rgba(255,255,255,.08));" onclick="closeMo()">Close / Cancel</button></div></div>';
-    document.body.appendChild(mo);
-    mo.addEventListener('click', function(e) { if (e.target === this) closeMo(); });
+  if (document.getElementById('loginMo')) return
+  const mo = document.createElement('div')
+  mo.className = 'col-auth-mo'
+  mo.id = 'loginMo'
+  mo.innerHTML =
+    '<div class="col-auth-md"><div class="col-auth-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="col-auth-body"><div id="loggedOutPanel" style="display:flex; justify-content:center; align-items:center; width:100%; margin-bottom:15px;"><div id="gSignInBtnContainer" style="width:100%; display:flex; justify-content:center;"></div></div><div id="loggedInPanel" style="display: none;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Google Email</label><input class="col-auth-inp" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Display Username</label><input class="col-auth-inp" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;"><button class="col-auth-btn" style="margin-bottom: 10px;" onclick="updateUsername()">Save Username</button><button class="col-auth-danger" onclick="doLogout()">Disconnect Account</button></div><button class="col-auth-btn" style="margin-top: 10px; background: transparent; color: var(--dim, #8891AA); border: 1px solid var(--line, rgba(255,255,255,.08));" onclick="closeMo()">Close / Cancel</button></div></div>'
+  document.body.appendChild(mo)
+  mo.addEventListener('click', function (e) {
+    if (e.target === this) closeMo()
+  })
 }
 
 // Compatibility bridge: expose openLogin/closeMo globally so page onclick handlers work
 // even before the page's own inline scripts define them.
 if (!window.openLogin) {
-    window.openLogin = function() {
-        injectLoginModal();
-        var mo = document.getElementById('loginMo');
-        if (!mo) return;
-        mo.classList.add('open');
-        var mt = document.getElementById('moAuthTitle');
-        var mSub = document.getElementById('moAuthSub');
-        var loggedOutPanel = document.getElementById('loggedOutPanel');
-        var loggedInPanel = document.getElementById('loggedInPanel');
-        var mn = document.getElementById('miName');
-        var me = document.getElementById('miEmail');
-        if (window.colUser) {
-            if (mt) mt.textContent = 'Google Account';
-            if (mSub) mSub.textContent = 'Manage your profile and username.';
-            if (loggedOutPanel) loggedOutPanel.style.display = 'none';
-            if (loggedInPanel) loggedInPanel.style.display = 'block';
-            if (mn) mn.value = window.colUser.name;
-            if (me) me.value = window.colUser.email || '';
+  window.openLogin = function () {
+    injectLoginModal()
+    var mo = document.getElementById('loginMo')
+    if (!mo) return
+    mo.classList.add('open')
+    var mt = document.getElementById('moAuthTitle')
+    var mSub = document.getElementById('moAuthSub')
+    var loggedOutPanel = document.getElementById('loggedOutPanel')
+    var loggedInPanel = document.getElementById('loggedInPanel')
+    var mn = document.getElementById('miName')
+    var me = document.getElementById('miEmail')
+    if (window.colUser) {
+      if (mt) mt.textContent = 'Google Account'
+      if (mSub) mSub.textContent = 'Manage your profile and username.'
+      if (loggedOutPanel) loggedOutPanel.style.display = 'none'
+      if (loggedInPanel) loggedInPanel.style.display = 'block'
+      if (mn) mn.value = window.colUser.name
+      if (me) me.value = window.colUser.email || ''
+    } else {
+      if (mt) mt.textContent = 'Authenticate'
+      if (mSub) mSub.textContent = 'Unlock dashboard storage and cloud sync.'
+      if (loggedOutPanel) loggedOutPanel.style.display = 'flex'
+      if (loggedInPanel) loggedInPanel.style.display = 'none'
+
+      // Render Google Button
+      var container = document.getElementById('gSignInBtnContainer')
+      if (container) {
+        container.innerHTML = ''
+        if (window.AndroidBridge) {
+          container.innerHTML =
+            '<button class="col-auth-gbtn" onclick="colDoGoogle()" style="width: 100%; max-width: 280px; border-radius: 4px; padding: 10px; background: var(--panel, #131314); border: 1px solid var(--line, #8e918f); color: var(--ink, #e3e3e3); display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--sans, \'Inter\'); font-size: 14px; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google</button>'
+        } else if (typeof google !== 'undefined' && google.accounts) {
+          google.accounts.id.renderButton(container, { theme: 'filled_black', size: 'large', type: 'standard', shape: 'rectangular', width: 280 })
         } else {
-            if (mt) mt.textContent = 'Authenticate';
-            if (mSub) mSub.textContent = 'Unlock dashboard storage and cloud sync.';
-            if (loggedOutPanel) loggedOutPanel.style.display = 'flex';
-            if (loggedInPanel) loggedInPanel.style.display = 'none';
-            
-            // Render Google Button
-            var container = document.getElementById('gSignInBtnContainer');
-            if (container) {
-                container.innerHTML = '';
-                if (window.AndroidBridge) {
-                    container.innerHTML = '<button class="col-auth-gbtn" onclick="colDoGoogle()" style="width: 100%; max-width: 280px; border-radius: 4px; padding: 10px; background: var(--panel, #131314); border: 1px solid var(--line, #8e918f); color: var(--ink, #e3e3e3); display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--sans, \'Inter\'); font-size: 14px; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Sign in with Google</button>';
-                } else if (typeof google !== 'undefined' && google.accounts) {
-                    google.accounts.id.renderButton(container, { theme: "filled_black", size: "large", type: "standard", shape: "rectangular", width: 280 });
-                } else {
-                    container.innerHTML = '<button class="col-auth-gbtn" onclick="colDoGoogle()">Sign in with Google</button>';
-                }
-            }
+          container.innerHTML = '<button class="col-auth-gbtn" onclick="colDoGoogle()">Sign in with Google</button>'
         }
-    };
+      }
+    }
+  }
 }
 if (!window.closeMo) {
-    window.closeMo = function() {
-        var mo = document.getElementById('loginMo');
-        if (mo) mo.classList.remove('open');
-    };
+  window.closeMo = function () {
+    var mo = document.getElementById('loginMo')
+    if (mo) mo.classList.remove('open')
+  }
 }
 
-(async function() {
-    if (window._colAuthRunning) return;
-    window._colAuthRunning = true;
+;(async function () {
+  if (window._colAuthRunning) return
+  window._colAuthRunning = true
 
-    // 1. Fetch Global Configuration to get Supabase Keys
-    let authConfig = null;
-    try {
-        const res = await fetch('config.json?t=' + new Date().getTime());
-        if (res.ok) {
-            const config = await res.json();
-            if (config.auth && config.auth.url && config.auth.key) {
-                authConfig = config.auth;
-            }
-        }
-    } catch (e) {
-        console.warn('[col-auth] Could not load config.json — authentication disabled.');
+  // 1. Fetch Global Configuration to get Supabase Keys
+  let authConfig = null
+  try {
+    const res = await fetch('config.json?t=' + new Date().getTime())
+    if (res.ok) {
+      const config = await res.json()
+      if (config.auth && config.auth.url && config.auth.key) {
+        authConfig = config.auth
+      }
     }
+  } catch (e) {
+    console.warn('[col-auth] Could not load config.json — authentication disabled.')
+  }
 
-    // 2. Load Supabase SDK if keys exist
-    if (authConfig) {
-        if (typeof supabase === 'undefined') {
-            if (!document.querySelector('script[src*="@supabase"]')) {
-                const script = document.createElement('script');
-                script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-                script.onload = () => initSupabase(authConfig.url, authConfig.key);
-                document.head.appendChild(script);
-            } else {
-                // Script is loading, wait for it
-                document.querySelector('script[src*="@supabase"]').addEventListener('load', () => initSupabase(authConfig.url, authConfig.key));
-            }
-        } else {
-            initSupabase(authConfig.url, authConfig.key);
-        }
+  // 2. Load Supabase SDK if keys exist
+  if (authConfig) {
+    if (typeof supabase === 'undefined') {
+      if (!document.querySelector('script[src*="@supabase"]')) {
+        const script = document.createElement('script')
+        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
+        script.onload = () => initSupabase(authConfig.url, authConfig.key)
+        document.head.appendChild(script)
+      } else {
+        // Script is loading, wait for it
+        document.querySelector('script[src*="@supabase"]').addEventListener('load', () => initSupabase(authConfig.url, authConfig.key))
+      }
     } else {
-        window.colUser = null;
-        dispatchAuthEvent();
+      initSupabase(authConfig.url, authConfig.key)
     }
+  } else {
+    window.colUser = null
+    dispatchAuthEvent()
+  }
 
-    window.handleGoogleOneTap = async (response) => {
-        if (!window.supabaseClient) return;
-        try {
-            const { data, error } = await window.supabaseClient.auth.signInWithIdToken({
-                provider: 'google',
-                token: response.credential,
-            });
-            if (error) throw error;
-        } catch (error) {
-            console.error("One Tap Sign-in error:", error.message);
+  window.handleGoogleOneTap = async (response) => {
+    if (!window.supabaseClient) return
+    try {
+      const { data, error } = await window.supabaseClient.auth.signInWithIdToken({
+        provider: 'google',
+        token: response.credential
+      })
+      if (error) throw error
+    } catch (error) {
+      console.error('One Tap Sign-in error:', error.message)
+    }
+  }
+
+  function initOneTap() {
+    if (window.colUser) return
+    if (typeof google === 'undefined' || !google.accounts) {
+      const script = document.createElement('script')
+      script.src = 'https://accounts.google.com/gsi/client'
+      script.onload = () => setupOneTap()
+      document.head.appendChild(script)
+    } else {
+      setupOneTap()
+    }
+  }
+
+  function setupOneTap() {
+    if (window.colUser) return
+    google.accounts.id.initialize({
+      client_id: '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com',
+      callback: window.handleGoogleOneTap,
+      use_fedcm_for_prompt: true,
+      itp_support: true
+    })
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed()) {
+        console.log('One tap not displayed: ', notification.getNotDisplayedReason())
+      } else if (notification.isSkippedMoment()) {
+        console.log('One tap skipped: ', notification.getSkippedReason())
+      } else if (notification.isDismissedMoment()) {
+        console.log('One tap dismissed: ', notification.getDismissedReason())
+      }
+    })
+
+    // Re-render button if modal is open
+    var container = document.getElementById('gSignInBtnContainer')
+    if (container && !window.AndroidBridge) {
+      container.innerHTML = ''
+      google.accounts.id.renderButton(container, { theme: 'filled_black', size: 'large', type: 'standard', shape: 'rectangular', width: 280 })
+    }
+  }
+
+  let supabaseClient = null
+
+  function initSupabase(url, key) {
+    supabaseClient = window.supabase.createClient(url, key)
+    window.supabaseClient = supabaseClient
+
+    // Listen for Auth changes
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (session && session.user) {
+        const meta = session.user.user_metadata || {}
+        window.colUser = {
+          id: session.user.id,
+          email: session.user.email,
+          name: meta.full_name || meta.name || session.user.email.split('@')[0],
+          picture: meta.avatar_url || meta.picture || null,
+          session: session
         }
-    };
+      } else {
+        window.colUser = null
+      }
+      dispatchAuthEvent()
+      updateAuthUI()
 
-    function initOneTap() {
-        if (window.colUser) return;
-        if (typeof google === 'undefined' || !google.accounts) {
-            const script = document.createElement('script');
-            script.src = "https://accounts.google.com/gsi/client";
-            script.onload = () => setupOneTap();
-            document.head.appendChild(script);
-        } else {
-            setupOneTap();
+      if (!session && !window._oneTapAttempted && (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT')) {
+        window._oneTapAttempted = true
+        if (event === 'INITIAL_SESSION') {
+          initOneTap()
         }
-    }
+      }
+    })
 
-    function setupOneTap() {
-        if (window.colUser) return;
-        google.accounts.id.initialize({
-            client_id: "500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com",
-            callback: window.handleGoogleOneTap,
-            use_fedcm_for_prompt: true,
-            itp_support: true
-        });
-        google.accounts.id.prompt((notification) => {
-            if (notification.isNotDisplayed()) {
-                console.log("One tap not displayed: ", notification.getNotDisplayedReason());
-            } else if (notification.isSkippedMoment()) {
-                console.log("One tap skipped: ", notification.getSkippedReason());
-            } else if (notification.isDismissedMoment()) {
-                console.log("One tap dismissed: ", notification.getDismissedReason());
-            }
-        });
-        
-        // Re-render button if modal is open
-        var container = document.getElementById('gSignInBtnContainer');
-        if (container && !window.AndroidBridge) {
-            container.innerHTML = '';
-            google.accounts.id.renderButton(container, { theme: "filled_black", size: "large", type: "standard", shape: "rectangular", width: 280 });
-        }
-    }
+    injectAuthStyles()
+    injectAuthUI()
 
-    let supabaseClient = null;
+    // If there's a custom handler provided by the page (like in qr.html to fetch drive data), fire it.
+    dispatchAuthEvent()
+  }
 
-    function initSupabase(url, key) {
-        supabaseClient = window.supabase.createClient(url, key);
-        window.supabaseClient = supabaseClient;
-        
-        // Listen for Auth changes
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (session && session.user) {
-                const meta = session.user.user_metadata || {};
-                window.colUser = {
-                    id: session.user.id,
-                    email: session.user.email,
-                    name: meta.full_name || meta.name || session.user.email.split('@')[0],
-                    picture: meta.avatar_url || meta.picture || null,
-                    session: session
-                };
-            } else {
-                window.colUser = null;
-            }
-            dispatchAuthEvent();
-            updateAuthUI();
+  function dispatchAuthEvent() {
+    const event = new CustomEvent('col-auth-changed', { detail: { user: window.colUser } })
+    window.dispatchEvent(event)
+  }
 
-            if (!session && !window._oneTapAttempted && (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT')) {
-                window._oneTapAttempted = true;
-                if (event === 'INITIAL_SESSION') {
-                    initOneTap();
-                }
-            }
-        });
-
-        injectAuthStyles();
-        injectAuthUI();
-        
-        // If there's a custom handler provided by the page (like in qr.html to fetch drive data), fire it.
-        dispatchAuthEvent();
-    }
-
-    function dispatchAuthEvent() {
-        const event = new CustomEvent('col-auth-changed', { detail: { user: window.colUser } });
-        window.dispatchEvent(event);
-    }
-
-    // --- UI INJECTION ---
-    function injectAuthStyles() {
-        if(document.getElementById('col-auth-styles')) return;
-        const style = document.createElement('style');
-        style.id = 'col-auth-styles';
-        style.innerHTML = `
+  // --- UI INJECTION ---
+  function injectAuthStyles() {
+    if (document.getElementById('col-auth-styles')) return
+    const style = document.createElement('style')
+    style.id = 'col-auth-styles'
+    style.innerHTML = `
             .col-auth-mo { position: fixed; inset: 0; background: rgba(4, 7, 14, 0.75); backdrop-filter: blur(16px); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s cubic-bezier(.16,1,.3,1); }
             .col-auth-mo.open { opacity: 1; pointer-events: auto; }
             .col-auth-md { background: var(--panel, #111827); border: 1px solid var(--lineb, rgba(255, 255, 255, 0.12)); border-radius: 28px; width: 90%; max-width: 420px; overflow: hidden; transform: translateY(40px) scale(0.95); transition: 0.5s cubic-bezier(.16,1,.3,1); box-shadow: 0 40px 100px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.08); color: var(--ink, #E8E3D8); font-family: var(--sans, 'Inter'), sans-serif;}
@@ -234,17 +238,17 @@ if (!window.closeMo) {
             .nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: transparent; border: 1px solid var(--lineb, rgba(255,255,255,.16)); border-radius: 30px; cursor: pointer; transition: 0.3s; }
             .nav-user-profile:hover { border-color: var(--page-theme, var(--signal, #F2B84B)); }
             .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--page-theme, var(--signal, #F2B84B)); color: var(--void, #070A14); display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
-        `;
-        document.head.appendChild(style);
-    }
+        `
+    document.head.appendChild(style)
+  }
 
-    function injectAuthUI() {
-        if(document.getElementById('colAuthModal')) return;
-        
-        const modal = document.createElement('div');
-        modal.className = 'col-auth-mo';
-        modal.id = 'colAuthModal';
-        modal.innerHTML = `
+  function injectAuthUI() {
+    if (document.getElementById('colAuthModal')) return
+
+    const modal = document.createElement('div')
+    modal.className = 'col-auth-mo'
+    modal.id = 'colAuthModal'
+    modal.innerHTML = `
             <div class="col-auth-md">
                 <div class="col-auth-hd">
                     <button class="col-auth-close" onclick="document.getElementById('colAuthModal').classList.remove('open')">&times;</button>
@@ -255,22 +259,22 @@ if (!window.closeMo) {
                     <!-- Dynamic Content -->
                 </div>
             </div>
-        `;
-        document.body.appendChild(modal);
-        
-        // Expose global open function
-        window.openGlobalLogin = function() {
-            renderAuthPanel();
-            document.getElementById('colAuthModal').classList.add('open');
-        };
+        `
+    document.body.appendChild(modal)
+
+    // Expose global open function
+    window.openGlobalLogin = function () {
+      renderAuthPanel()
+      document.getElementById('colAuthModal').classList.add('open')
     }
+  }
 
-    function renderAuthPanel(tab = 'login') {
-        const body = document.getElementById('colAuthBody');
-        if (!body) return;
+  function renderAuthPanel(tab = 'login') {
+    const body = document.getElementById('colAuthBody')
+    if (!body) return
 
-        if (window.colUser) {
-            body.innerHTML = `
+    if (window.colUser) {
+      body.innerHTML = `
                 <div style="text-align:center; margin-bottom: 25px;">
                     <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--signal, #F2B84B); margin: 0 auto 15px; display: flex; justify-content: center; align-items: center; font-size: 2rem; overflow: hidden; border: 2px solid var(--signal, #F2B84B); color: var(--void, #070A14); font-weight: 800;">
                         ${window.colUser.picture ? `<img src="${window.colUser.picture}" style="width:100%; height:100%; object-fit:cover;">` : (window.colUser.name || '?').charAt(0).toUpperCase()}
@@ -279,13 +283,13 @@ if (!window.closeMo) {
                     <p style="color: var(--dim, #8891AA); font-size: 0.9rem;">${window.colUser.email}</p>
                 </div>
                 <button class="col-auth-danger" onclick="colDoLogout()">Disconnect Account</button>
-            `;
-            return;
-        }
+            `
+      return
+    }
 
-        const isLogin = tab === 'login';
-        
-        body.innerHTML = `
+    const isLogin = tab === 'login'
+
+    body.innerHTML = `
             <button class="col-auth-gbtn" onclick="colDoGoogle()">
                 <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                 Continue with Google
@@ -305,167 +309,167 @@ if (!window.closeMo) {
                 <input type="password" id="colAuthPass" class="col-auth-inp" placeholder="Password" required minlength="6">
                 <button type="submit" class="col-auth-btn" id="colAuthSubmitBtn">${isLogin ? 'Sign In' : 'Create Account'}</button>
             </form>
-        `;
+        `
+  }
+
+  // Expose helpers for inline handlers
+  window._renderAuthTab = (tab) => renderAuthPanel(tab)
+
+  window.colDoGoogle = async () => {
+    if (window.AndroidBridge) {
+      window.AndroidBridge.signInWithGoogle()
+      return
     }
 
-    // Expose helpers for inline handlers
-    window._renderAuthTab = (tab) => renderAuthPanel(tab);
-    
-    window.colDoGoogle = async () => {
-        if (window.AndroidBridge) {
-            window.AndroidBridge.signInWithGoogle();
-            return;
-        }
-        
-        if(!supabaseClient) return;
-        // Restrict redirect to known production origin to prevent open redirect
-        var allowedOrigin = 'https://advancedlogiclabs.dpdns.org';
-        var redirectUrl = window.location.origin === allowedOrigin
-            ? window.location.href
-            : allowedOrigin;
-        await supabaseClient.auth.signInWithOAuth({
-            provider: 'google',
-            options: { redirectTo: redirectUrl }
-        });
-    };
+    if (!supabaseClient) return
+    // Restrict redirect to known production origin to prevent open redirect
+    var allowedOrigin = 'https://advancedlogiclabs.dpdns.org'
+    var redirectUrl = window.location.origin === allowedOrigin ? window.location.href : allowedOrigin
+    await supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: redirectUrl }
+    })
+  }
 
-    window._handleColAuthSubmit = async (e, mode) => {
-        e.preventDefault();
-        if(!supabaseClient) return;
-        
-        const email = document.getElementById('colAuthEmail').value;
-        const pass = document.getElementById('colAuthPass').value;
-        const btn = document.getElementById('colAuthSubmitBtn');
-        const errDiv = document.getElementById('colAuthError');
-        
-        btn.textContent = 'Processing...';
-        btn.disabled = true;
-        errDiv.style.display = 'none';
+  window._handleColAuthSubmit = async (e, mode) => {
+    e.preventDefault()
+    if (!supabaseClient) return
 
-        try {
-            let res;
-            if (mode === 'signup') {
-                const name = document.getElementById('colAuthName').value;
-                res = await supabaseClient.auth.signUp({
-                    email: email, password: pass,
-                    options: { data: { full_name: name } }
-                });
-            } else {
-                res = await supabaseClient.auth.signInWithPassword({
-                    email: email, password: pass
-                });
-            }
+    const email = document.getElementById('colAuthEmail').value
+    const pass = document.getElementById('colAuthPass').value
+    const btn = document.getElementById('colAuthSubmitBtn')
+    const errDiv = document.getElementById('colAuthError')
 
-            if (res.error) throw res.error;
-            
-            if (mode === 'signup' && res.data.user && !res.data.session) {
-                errDiv.textContent = 'Please check your email to confirm registration.';
-                errDiv.style.color = '#10b981';
-                errDiv.style.display = 'block';
-            } else {
-                document.getElementById('colAuthModal').classList.remove('open');
-            }
-        } catch (error) {
-            errDiv.textContent = error.message;
-            errDiv.style.color = '#ef4444';
-            errDiv.style.display = 'block';
-        }
-        btn.textContent = mode === 'login' ? 'Sign In' : 'Create Account';
-        btn.disabled = false;
-    };
+    btn.textContent = 'Processing...'
+    btn.disabled = true
+    errDiv.style.display = 'none'
 
-    window.colDoLogout = async () => {
-        if(!supabaseClient) return;
-        await supabaseClient.auth.signOut();
-        document.getElementById('colAuthModal').classList.remove('open');
-    };
+    try {
+      let res
+      if (mode === 'signup') {
+        const name = document.getElementById('colAuthName').value
+        res = await supabaseClient.auth.signUp({
+          email: email,
+          password: pass,
+          options: { data: { full_name: name } }
+        })
+      } else {
+        res = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: pass
+        })
+      }
 
-    // --- APK Certificate Verification ---
-    window.colApkVerified = false;
-    window.colApkFingerprint = null;
+      if (res.error) throw res.error
 
-    async function verifyApkCertificate() {
-        if (!window.AndroidBridge) {
-            window.colApkVerified = false;
-            window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }));
-            return;
-        }
-        try {
-            const fp = window.AndroidBridge.getCertificateFingerprint();
-            if (!fp) {
-                window.colApkVerified = false;
-                window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }));
-                return;
-            }
-            window.colApkFingerprint = fp;
-            // Fetch expected fingerprint from config
-            let expected = null;
-            try {
-                const res = await fetch('config.json?t=' + Date.now());
-                if (res.ok) {
-                    const cfg = await res.json();
-                    expected = cfg.apkCertFingerprint || null;
-                }
-            } catch (e) {}
-            if (expected && fp.toUpperCase() === expected.toUpperCase()) {
-                window.colApkVerified = true;
-            } else {
-                window.colApkVerified = false;
-            }
-            window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: window.colApkVerified, fingerprint: fp } }));
-        } catch (e) {
-            console.warn('[col-auth] APK verification failed:', e);
-            window.colApkVerified = false;
-            window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }));
-        }
+      if (mode === 'signup' && res.data.user && !res.data.session) {
+        errDiv.textContent = 'Please check your email to confirm registration.'
+        errDiv.style.color = '#10b981'
+        errDiv.style.display = 'block'
+      } else {
+        document.getElementById('colAuthModal').classList.remove('open')
+      }
+    } catch (error) {
+      errDiv.textContent = error.message
+      errDiv.style.color = '#ef4444'
+      errDiv.style.display = 'block'
     }
-    verifyApkCertificate();
+    btn.textContent = mode === 'login' ? 'Sign In' : 'Create Account'
+    btn.disabled = false
+  }
 
-    function updateAuthUI() {
-        // Find existing UI elements in any page
-        const navBtns = document.querySelectorAll('.nav-login-btn, #navLoginBtn, #sbSignBtn');
-        const navProfiles = document.querySelectorAll('.nav-user-profile, #navUserProfile, #pCard');
-        
-        if (window.colUser) {
-            navBtns.forEach(btn => btn.style.display = 'none');
-            navProfiles.forEach(prof => {
-                prof.style.display = 'flex';
-                if (prof.dataset.preserveClick !== 'true') {
-                    prof.onclick = function() {
-                        if (window.openGlobalLogin) window.openGlobalLogin();
-                        else if (window.openLogin) window.openLogin();
-                    };
-                }
-                
-                // Try to find the inner text elements
-                const nameEls = prof.querySelectorAll('span, .pname');
-                const avEls = prof.querySelectorAll('.nav-user-avatar, .pav');
-                const emailEls = prof.querySelectorAll('.pemail');
+  window.colDoLogout = async () => {
+    if (!supabaseClient) return
+    await supabaseClient.auth.signOut()
+    document.getElementById('colAuthModal').classList.remove('open')
+  }
 
-                nameEls.forEach(el => el.textContent = window.colUser.name.split(' ')[0]);
-                emailEls.forEach(el => el.textContent = window.colUser.email);
-                
-                avEls.forEach(av => {
-                    if (window.colUser.picture) {
-                        av.innerHTML = `<img src="${window.colUser.picture}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-                    } else {
-                        av.innerHTML = '';
-                        av.textContent = window.colUser.name.charAt(0).toUpperCase();
-                    }
-                });
-            });
-        } else {
-            navBtns.forEach(btn => {
-                btn.style.display = 'flex';
-                btn.onclick = function() {
-                    if (window.openGlobalLogin) window.openGlobalLogin();
-                    else if (window.openLogin) window.openLogin();
-                };
-            });
-            navProfiles.forEach(prof => prof.style.display = 'none');
-        }
+  // --- APK Certificate Verification ---
+  window.colApkVerified = false
+  window.colApkFingerprint = null
+
+  async function verifyApkCertificate() {
+    if (!window.AndroidBridge) {
+      window.colApkVerified = false
+      window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }))
+      return
     }
+    try {
+      const fp = window.AndroidBridge.getCertificateFingerprint()
+      if (!fp) {
+        window.colApkVerified = false
+        window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }))
+        return
+      }
+      window.colApkFingerprint = fp
+      // Fetch expected fingerprint from config
+      let expected = null
+      try {
+        const res = await fetch('config.json?t=' + Date.now())
+        if (res.ok) {
+          const cfg = await res.json()
+          expected = cfg.apkCertFingerprint || null
+        }
+      } catch (e) {}
+      if (expected && fp.toUpperCase() === expected.toUpperCase()) {
+        window.colApkVerified = true
+      } else {
+        window.colApkVerified = false
+      }
+      window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: window.colApkVerified, fingerprint: fp } }))
+    } catch (e) {
+      console.warn('[col-auth] APK verification failed:', e)
+      window.colApkVerified = false
+      window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }))
+    }
+  }
+  verifyApkCertificate()
 
-    // Auto-update UI on load if we have cached elements but Auth hasn't finished loading yet
-    document.addEventListener('DOMContentLoaded', updateAuthUI);
-})();
+  function updateAuthUI() {
+    // Find existing UI elements in any page
+    const navBtns = document.querySelectorAll('.nav-login-btn, #navLoginBtn, #sbSignBtn')
+    const navProfiles = document.querySelectorAll('.nav-user-profile, #navUserProfile, #pCard')
+
+    if (window.colUser) {
+      navBtns.forEach((btn) => (btn.style.display = 'none'))
+      navProfiles.forEach((prof) => {
+        prof.style.display = 'flex'
+        if (prof.dataset.preserveClick !== 'true') {
+          prof.onclick = function () {
+            if (window.openGlobalLogin) window.openGlobalLogin()
+            else if (window.openLogin) window.openLogin()
+          }
+        }
+
+        // Try to find the inner text elements
+        const nameEls = prof.querySelectorAll('span, .pname')
+        const avEls = prof.querySelectorAll('.nav-user-avatar, .pav')
+        const emailEls = prof.querySelectorAll('.pemail')
+
+        nameEls.forEach((el) => (el.textContent = window.colUser.name.split(' ')[0]))
+        emailEls.forEach((el) => (el.textContent = window.colUser.email))
+
+        avEls.forEach((av) => {
+          if (window.colUser.picture) {
+            av.innerHTML = `<img src="${window.colUser.picture}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+          } else {
+            av.innerHTML = ''
+            av.textContent = window.colUser.name.charAt(0).toUpperCase()
+          }
+        })
+      })
+    } else {
+      navBtns.forEach((btn) => {
+        btn.style.display = 'flex'
+        btn.onclick = function () {
+          if (window.openGlobalLogin) window.openGlobalLogin()
+          else if (window.openLogin) window.openLogin()
+        }
+      })
+      navProfiles.forEach((prof) => (prof.style.display = 'none'))
+    }
+  }
+
+  // Auto-update UI on load if we have cached elements but Auth hasn't finished loading yet
+  document.addEventListener('DOMContentLoaded', updateAuthUI)
+})()

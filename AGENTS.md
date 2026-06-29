@@ -16,13 +16,13 @@
 
 ## DO NOT TOUCH (Without Explicit Approval)
 
-| File | Why |
-|------|-----|
-| `config.json` | Supabase auth credentials + page status routing. Changes break auth site-wide |
-| `Traffic/config.json` | Separate Supabase creds for Traffic sub-app. Do NOT mix with root config |
-| `col-auth.js` | Global auth system (Google OAuth + email/password via Supabase) |
-| `col-router.js` | Global router — fetches config.json, renders 503/404 screens. Affects ALL pages |
-| `supabase.js` | Minified Supabase SDK v2.108.1. Replace only via CDN update |
+| File                   | Why                                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------------ |
+| `config.json`          | Supabase auth credentials + page status routing. Changes break auth site-wide                    |
+| `Traffic/config.json`  | Separate Supabase creds for Traffic sub-app. Do NOT mix with root config                         |
+| `col-auth.js`          | Global auth system (Google OAuth + email/password via Supabase)                                  |
+| `col-router.js`        | Global router — fetches config.json, renders 503/404 screens. Affects ALL pages                  |
+| `supabase.js`          | Minified Supabase SDK v2.108.1. Replace only via CDN update                                      |
 | Google OAuth Client ID | Hardcoded in multiple HTML files (`500448449044-...`). Changing breaks Google sign-in everywhere |
 
 ---
@@ -30,17 +30,20 @@
 ## Shared Script Loading Order
 
 Every standard page loads these in `<head>` (all `defer`):
+
 ```html
 <script defer src="col-router.js"></script>
-<link rel="stylesheet" href="col-ui.css">
+<link rel="stylesheet" href="col-ui.css" />
 <script defer src="col-ui.js"></script>
 <script defer src="col-auth.js"></script>
 ```
+
 - Order matters: `col-router.js` → `col-ui.css` → `col-ui.js` → `col-auth.js`
 - Never include any shared script more than once per page
 - `col-3d.js` is loaded separately (at end of `<body>`) by pages needing Three.js backgrounds: `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `Career.html`, `Database_Logic.html`. It skips on mobile/touch devices
 
 ### Pages that DON'T load shared scripts
+
 - `Career.html` — standalone page with its own CSS variables, only loads `col-3d.js`
 - `Database_Logic.html` — same pattern, only loads `col-3d.js`
 
@@ -65,6 +68,7 @@ Do NOT merge these systems without understanding both. Most pages' `openLogin()`
 ## Dual Config Override System
 
 Two layers control page status (200/503/404/500):
+
 1. **`config.json`** — fetched at runtime by `col-router.js` with cache-busting `?t=` timestamp. Global source of truth.
 2. **Inline admin overrides** — HTML pages have inline `<script>` blocks reading `localStorage.col_admin_config` to override status locally.
 
@@ -73,21 +77,9 @@ Two layers control page status (200/503/404/500):
 ## CSS Variables (CoL Design System)
 
 ```css
---void: #070A14        (background)
---void2: #0C1224       (secondary bg)
---panel: #111827       (card bg)
---line: rgba(255,255,255,.08)   (borders)
---lineb: rgba(255,255,255,.16)  (strong borders)
---ink: #E8E3D8         (primary text)
---dim: #8891AA         (muted text)
---signal: #F2B84B      (accent gold)
---ion: #5ED4F5         (accent blue)
---teal: #00F0CC        (accent teal)
---plasma: #B89BFF      (accent purple)
---em: #34D399          (accent green)
---serif: 'Instrument Serif'
---sans: 'Inter'
---mono: 'Space Mono'
+--void: #070a14 (background) --void2: #0c1224 (secondary bg) --panel: #111827 (card bg) --line: rgba(255, 255, 255, 0.08) (borders) --lineb: rgba(255, 255, 255, 0.16) (strong borders) --ink: #e8e3d8
+  (primary text) --dim: #8891aa (muted text) --signal: #f2b84b (accent gold) --ion: #5ed4f5 (accent blue) --teal: #00f0cc (accent teal) --plasma: #b89bff (accent purple) --em: #34d399 (accent green)
+  --serif: 'Instrument Serif' --sans: 'Inter' --mono: 'Space Mono';
 ```
 
 ---
@@ -105,15 +97,15 @@ Two layers control page status (200/503/404/500):
 
 ## Pages You CAN Touch Freely
 
-| Category | Files |
-|----------|-------|
-| **Pages** | `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `download.html`, `sneh-asha.html`, `admin.html`, `Career.html`, `Database_Logic.html`, `sitemap.html` |
-| **Apps** | `solar.html`, `ati.html`, `ati-demo.html`, `gesture.html`, `rpg.html`, `engine.html` |
-| **QR System** | `qr.html`, `qr-editor.html` |
-| **Shared UI** | `col-ui.js`, `col-ui.css`, `col-3d.js`, `col-admin.js`, `style.css` |
-| **Assets** | Any `.webp`, `.png`, `.glb` files |
-| **Config** | `vercel.json`, `robots.txt`, `sitemap.xml` |
-| **Traffic/** | All files under `Traffic/` except `Traffic/config.json` |
+| Category      | Files                                                                                                                                                                                          |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pages**     | `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `download.html`, `sneh-asha.html`, `admin.html`, `Career.html`, `Database_Logic.html`, `sitemap.html` |
+| **Apps**      | `solar.html`, `ati.html`, `ati-demo.html`, `gesture.html`, `rpg.html`, `engine.html`                                                                                                           |
+| **QR System** | `qr.html`, `qr-editor.html`                                                                                                                                                                    |
+| **Shared UI** | `col-ui.js`, `col-ui.css`, `col-3d.js`, `col-admin.js`, `style.css`                                                                                                                            |
+| **Assets**    | Any `.webp`, `.png`, `.glb` files                                                                                                                                                              |
+| **Config**    | `vercel.json`, `robots.txt`, `sitemap.xml`                                                                                                                                                     |
+| **Traffic/**  | All files under `Traffic/` except `Traffic/config.json`                                                                                                                                        |
 
 ---
 
@@ -130,19 +122,21 @@ Two layers control page status (200/503/404/500):
 ## File Cleanup Rules
 
 Before deleting any file:
+
 1. Search ALL HTML files for references: `grep -r "filename" *.html`
 2. Check `config.json`, `vercel.json`, and any JS file
-4. Historical archives (`Traffic_Archives_Index.md` describes old directories that may not exist on disk)
+3. Historical archives (`Traffic_Archives_Index.md` describes old directories that may not exist on disk)
 
 ---
 
 ## Page Structure Pattern
 
 Each HTML page follows this structure:
+
 1. `<head>`: shared scripts (deferred), page-specific inline `<style>`
 2. `<body>`: HTML content
 3. End of `<body>`: page-specific inline `<script>` block
 
 ---
 
-*Last updated: June 29, 2026*
+_Last updated: June 29, 2026_

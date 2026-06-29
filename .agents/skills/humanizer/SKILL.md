@@ -14,6 +14,7 @@ You are an expert editor specializing in detecting and removing AI-generated tex
 ## Overview
 
 AI-generated text has characteristic patterns that make it detectable. This skill enables you to:
+
 1. **Detect** - Identify AI writing patterns across content, language, style, and formatting
 2. **Rewrite** - Replace problematic patterns with natural alternatives
 3. **Inject Soul** - Add authentic voice, personality, and human imperfections
@@ -36,42 +37,42 @@ AI-generated text has characteristic patterns that make it detectable. This skil
 
 ### Content Indicators
 
-| Pattern | Words to Watch | Fix |
-|---------|---------------|-----|
-| **Inflated significance** | "pivotal moment", "testament to", "indelible mark", "reflects broader" | State facts without commentary |
-| **Promotional tone** | "boasts a", "vibrant", "nestled in", "groundbreaking" | Use neutral, specific language |
-| **Superficial -ing analysis** | "highlighting...", "ensuring...", "fostering..." | Delete or rewrite as separate sentence |
-| **Vague attribution** | "experts argue", "some critics say", "industry reports" | Cite specific sources or remove |
-| **Formulaic conclusions** | "Despite challenges...", "Future prospects..." | End with concrete facts |
+| Pattern                       | Words to Watch                                                         | Fix                                    |
+| ----------------------------- | ---------------------------------------------------------------------- | -------------------------------------- |
+| **Inflated significance**     | "pivotal moment", "testament to", "indelible mark", "reflects broader" | State facts without commentary         |
+| **Promotional tone**          | "boasts a", "vibrant", "nestled in", "groundbreaking"                  | Use neutral, specific language         |
+| **Superficial -ing analysis** | "highlighting...", "ensuring...", "fostering..."                       | Delete or rewrite as separate sentence |
+| **Vague attribution**         | "experts argue", "some critics say", "industry reports"                | Cite specific sources or remove        |
+| **Formulaic conclusions**     | "Despite challenges...", "Future prospects..."                         | End with concrete facts                |
 
 ### Language Indicators
 
-| Pattern | Examples | Fix |
-|---------|----------|-----|
-| **AI vocabulary** | delve, leverage, tapestry, landscape, foster, underscore | Use simple alternatives (dig into → look at) |
-| **Copula avoidance** | "serves as", "stands as", "marks" | Use simple "is" or "are" |
-| **Negative parallelism** | "not only... but also", "it's not just about... it's" | Make direct statement |
-| **Rule of three** | Three adjectives, three examples, three bullet points | Use two or four items |
-| **Elegant variation** | Synonyms to avoid repetition ("protagonist", "hero", "main character") | Repeat naturally or consolidate |
+| Pattern                  | Examples                                                               | Fix                                          |
+| ------------------------ | ---------------------------------------------------------------------- | -------------------------------------------- |
+| **AI vocabulary**        | delve, leverage, tapestry, landscape, foster, underscore               | Use simple alternatives (dig into → look at) |
+| **Copula avoidance**     | "serves as", "stands as", "marks"                                      | Use simple "is" or "are"                     |
+| **Negative parallelism** | "not only... but also", "it's not just about... it's"                  | Make direct statement                        |
+| **Rule of three**        | Three adjectives, three examples, three bullet points                  | Use two or four items                        |
+| **Elegant variation**    | Synonyms to avoid repetition ("protagonist", "hero", "main character") | Repeat naturally or consolidate              |
 
 ### Formatting Indicators
 
-| Pattern | Detection | Fix |
-|---------|-----------|-----|
-| **Curly quotes** | "text" instead of "text" | Replace with straight quotes |
-| **Excessive bold** | **Every** **keyword** **bolded** | Remove unnecessary emphasis |
-| **Title case headers** | "Global Context: Critical Demand" | Use sentence case |
-| **Markdown artifacts** | `## Header`, `**bold**` in non-markdown | Convert to proper format |
-| **Emoji in headers** | 🚀 **Launch Phase:** | Remove decorative emoji |
+| Pattern                | Detection                               | Fix                          |
+| ---------------------- | --------------------------------------- | ---------------------------- |
+| **Curly quotes**       | "text" instead of "text"                | Replace with straight quotes |
+| **Excessive bold**     | **Every** **keyword** **bolded**        | Remove unnecessary emphasis  |
+| **Title case headers** | "Global Context: Critical Demand"       | Use sentence case            |
+| **Markdown artifacts** | `## Header`, `**bold**` in non-markdown | Convert to proper format     |
+| **Emoji in headers**   | 🚀 **Launch Phase:**                    | Remove decorative emoji      |
 
 ### Technical Indicators
 
-| Pattern | Detection |
-|---------|-----------|
-| **UTM parameters** | `utm_source=openai` or `utm_source=chatgpt.com` in links |
-| **Code fragments** | `:contentReference[oaicite:0]` or `turn0search0` |
-| **Hallucinated citations** | Invalid DOIs, ISBN checksum errors, 404 URLs |
-| **Knowledge cutoffs** | "as of my last training update", "while specific details are limited" |
+| Pattern                    | Detection                                                             |
+| -------------------------- | --------------------------------------------------------------------- |
+| **UTM parameters**         | `utm_source=openai` or `utm_source=chatgpt.com` in links              |
+| **Code fragments**         | `:contentReference[oaicite:0]` or `turn0search0`                      |
+| **Hallucinated citations** | Invalid DOIs, ISBN checksum errors, 404 URLs                          |
+| **Knowledge cutoffs**      | "as of my last training update", "while specific details are limited" |
 
 ---
 
@@ -90,6 +91,7 @@ Explicitly forbid these words:
 **Connectors**: Moreover, Furthermore, In conclusion, It is important to note, Additionally, Consequently
 
 **Replacements**:
+
 - "delve into" → "look at" / "explore"
 - "leverage" → "use"
 - "facilitate" → "help" / "make easier"
@@ -99,6 +101,7 @@ Explicitly forbid these words:
 ### Technique 2: Style Cloning
 
 **Step 1: Extract style DNA**
+
 ```
 Analyze the writing style. Break down into:
 1. Sentence length variance (Burstiness)
@@ -109,6 +112,7 @@ Analyze the writing style. Break down into:
 ```
 
 **Step 2: Apply style**
+
 ```
 Using this Style Guide, write about [TOPIC].
 Mimic the same sentence variance, tone, vocabulary, and punctuation.
@@ -120,6 +124,7 @@ Do NOT revert to default style.
 AI text has uniform sentence lengths. Human writing alternates.
 
 **Rules**:
+
 - Mix short sentences (under 5 words) with longer complex ones
 - Use fragments occasionally. For effect.
 - Vary paragraph length (1-3 sentences)
@@ -134,12 +139,14 @@ AI text has uniform sentence lengths. Human writing alternates.
 Force a perspective. Ban fence-sitting.
 
 **Forbidden phrases**:
+
 - "There are pros and cons"
 - "It depends on..."
 - "On the other hand..."
 - "Some might argue..."
 
 **Use instead**:
+
 - "This proves..." (not "This might suggest...")
 - "This is..." (not "This could be...")
 - First-person ("I", "My") for subjectivity
@@ -149,6 +156,7 @@ Force a perspective. Ban fence-sitting.
 Would you say this sentence at a bar with friends?
 
 **Characteristics**:
+
 - Simple, spoken language
 - Okay to be grammatically loose
 - Use analogies from daily life
@@ -180,16 +188,17 @@ Would you say this sentence at a bar with friends?
 
 Rate the rewritten text on 5 dimensions (10 points each, total 50):
 
-| Dimension | Criteria | Score |
-|-----------|----------|-------|
-| **Directness** | States facts vs. announces them? | /10 |
-| **Rhythm** | Sentence length varies? | /10 |
-| **Trust** | Respects reader intelligence? | /10 |
-| **Authenticity** | Sounds like a real person? | /10 |
-| **Conciseness** | Nothing left to cut? | /10 |
-| **Total** | | **/50** |
+| Dimension        | Criteria                         | Score   |
+| ---------------- | -------------------------------- | ------- |
+| **Directness**   | States facts vs. announces them? | /10     |
+| **Rhythm**       | Sentence length varies?          | /10     |
+| **Trust**        | Respects reader intelligence?    | /10     |
+| **Authenticity** | Sounds like a real person?       | /10     |
+| **Conciseness**  | Nothing left to cut?             | /10     |
+| **Total**        |                                  | **/50** |
 
 **Standards**:
+
 - 45-50: Excellent, AI traces removed
 - 35-44: Good, room for improvement
 - Below 35: Needs revision
@@ -201,6 +210,7 @@ Rate the rewritten text on 5 dimensions (10 points each, total 50):
 Avoiding AI patterns is half the work. Sterile, voiceless writing is just as obvious.
 
 **Signs of soulless writing** (even if "clean"):
+
 - Every sentence same length and structure
 - No opinions, only neutral reporting
 - No acknowledgment of uncertainty or complex feelings
@@ -208,6 +218,7 @@ Avoiding AI patterns is half the work. Sterile, voiceless writing is just as obv
 - No humor, no edge, no personality
 
 **How to add voice**:
+
 - **Have opinions** - React to facts, don't just report them
 - **Vary rhythm** - Short punchy sentences. Then long ones that take time to unfold.
 - **Acknowledge complexity** - "This is impressive but also unsettling" beats "This is impressive"
@@ -227,6 +238,7 @@ Avoiding AI patterns is half the work. Sterile, voiceless writing is just as obv
 ## References
 
 For detailed patterns and examples, see:
+
 - [AI Patterns (Chinese)](references/ai-patterns-zh.md) - 24 AI writing patterns with examples
 - [Humanizing Techniques](references/humanizing-techniques.md) - 5 techniques with templates
 - [Wikipedia Indicators](references/wikipedia-indicators.md) - Technical detection signals
