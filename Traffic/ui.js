@@ -39,8 +39,11 @@ let _tt = null;
         try { if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm'); } catch(e) {}
         const urlParams = new URLSearchParams(window.location.search);
         const screenParam = urlParams.get('screen');
+        const lvParam = urlParams.get('lv');
         if(screenParam === 'levels') {
             this.showLevels();
+        } else if(window.location.pathname.toLowerCase().includes('driving') && lvParam) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         } else {
             this.show('ss');
         }
