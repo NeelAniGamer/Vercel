@@ -313,7 +313,7 @@ let game = null;
       const lvId = urlParams.get('lv');
       const mode = urlParams.get('mode');
       
-      if (window.location.pathname.includes('Driving.html')) {
+      if (window.location.pathname.toLowerCase().includes('driving')) {
           if (lvId) {
               const levelObj = window.LVS.find(l => l.id == lvId);
               if (levelObj) {

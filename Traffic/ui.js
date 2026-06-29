@@ -28,7 +28,7 @@ let _tt = null;
             try { await window.supabaseClient.auth.updateUser({ data: { progress: null } }); } catch(e) {}
           }
           toast('⚠️ Progress Reset!', '#ff3b30'); 
-          if (window.location.pathname.includes('Driving.html')) {
+          if (window.location.pathname.toLowerCase().includes('driving')) {
             window.location.href = 'Academy.html';
             return;
           }
@@ -122,7 +122,7 @@ let _tt = null;
         });
       },
       showLevels() {
-        if(window.location.pathname.includes('Driving.html')) {
+        if(window.location.pathname.toLowerCase().includes('driving')) {
             window.location.href = 'Academy.html?screen=levels';
             return;
         }
@@ -264,7 +264,7 @@ let _tt = null;
     },
 
       showStart() { 
-          if(window.location.pathname.includes('Driving.html')) {
+          if(window.location.pathname.toLowerCase().includes('driving')) {
               window.location.href = 'Academy.html';
               return;
           }
@@ -563,7 +563,7 @@ let _tt = null;
           S.comp[lv.id].modes[s.mode] = true;
           save();
           toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851');
-          if (window.location.pathname.toLowerCase().includes('driving.html')) {
+          if (window.location.pathname.toLowerCase().includes('driving')) {
               window.location.href = 'Academy.html';
           } else {
               window.location.href = `Driving.html?lv=${lv.id}&mode=${s.mode}`;
