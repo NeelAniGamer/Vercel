@@ -87,8 +87,23 @@ class Game {
             }
             this.camPitch = (this.camPitch || 0) - e.movementY * 0.003;
             this.camPitch = Math.max(-1.5, Math.min(1.5, this.camPitch));
+          } else if (this._isDraggingCamera) {
+            this.camYaw = (this.camYaw || 0) - e.movementX * 0.004;
+            this.camPitch = (this.camPitch || 0) - e.movementY * 0.004;
+            this.camPitch = Math.max(-1.0, Math.min(1.0, this.camPitch));
           }
         });
+        // Left-click drag for third-person camera orbit
+        if (this.renderer && this.renderer.domElement) {
+          this.renderer.domElement.addEventListener('mousedown', (e) => {
+            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked) {
+              this._isDraggingCamera = true;
+            }
+          });
+          window.addEventListener('mouseup', (e) => {
+            if (e.button === 0) this._isDraggingCamera = false;
+          });
+        }
 
         // Mobile Controls Bindings
         const bindTouch = (id, key) => {
@@ -515,7 +530,6 @@ class Game {
               else if (t.target === 'forward_space' && Math.abs(this.speed) > 0.01) complete = true;
               else if (t.target === 'away_gate' && Math.abs(this.speed) > 0.01) complete = true;
               else if (t.target === 'visitor_parking' && this._reachedParking) complete = true;
-              else if (t.target === 'past_dog' && Math.abs(this.speed) > 0.01) complete = true;
               else if (t.target === 'main_road' && this._reachedMainRoad) complete = true;
               else if (t.target === 'guard_signal' && this._reachedGuard) complete = true;
               else if (t.target === 'volunteer_signal' && this._reachedVolunteer) complete = true;
@@ -761,9 +775,9 @@ class Game {
             this.scene.fog = new THREE.Fog(sk, fogDist * 0.35, fogDist * 1.2);
         }
         // Enhanced true color lighting with better contrast and shadows
-        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.1 : 0.5));
+        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.1 : 0.3));
         
-        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.4 : 1.1);
+        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.4 : 0.75);
         sun.position.set(30, 60, 20); 
         sun.castShadow = true;
         sun.shadow.camera.near = 0.5;
@@ -875,7 +889,7 @@ class Game {
             this.scene.add(gof);
 
             // Green park ground around monument
-            const parkGround = new THREE.Mesh(new THREE.CircleGeometry(35, 32), new THREE.MeshLambertMaterial({ color: 0x2d7a2d }));
+            const parkGround = new THREE.Mesh(new THREE.CircleGeometry(35, 32), new THREE.MeshLambertMaterial({ color: 0x3a9a3a }));
             parkGround.rotation.x = -Math.PI / 2;
             parkGround.position.set(-50, 0.02, -60);
             this.scene.add(parkGround);
@@ -915,7 +929,7 @@ class Game {
         };
 
         // Green strips between sidewalk and buildings
-        const grassMat = new THREE.MeshLambertMaterial({ color: 0x2d7a2d });
+        const grassMat = new THREE.MeshLambertMaterial({ color: 0x3a9a3a });
         cfg.roads.forEach(r => {
           const isV = r.type === 'v';
           const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
@@ -923,12 +937,20 @@ class Game {
           const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
           [-1, 1].forEach(s => {
             const swW = cfg.isPedestrian ? 6 : 4;
-            const gw = 3; // green strip width
+            const gw = 5; // green strip width
             const gx = isV ? cx + s * (RW / 2 + swW + gw / 2) : cx;
             const gz = isV ? cz : cz + s * (RW / 2 + swW + gw / 2);
-            const grass = new THREE.Mesh(isV ? new THREE.BoxGeometry(gw, 0.12, len) : new THREE.BoxGeometry(len, 0.12, gw), grassMat);
-            grass.position.set(gx, 0.06, gz);
+            const grass = new THREE.Mesh(isV ? new THREE.BoxGeometry(gw, 0.3, len) : new THREE.BoxGeometry(len, 0.3, gw), grassMat);
+            grass.position.set(gx, 0.15, gz);
             this.scene.add(grass);
+            // Bushes along green strips
+            const bushCount = Math.floor(len / 20);
+            for (let bi = 0; bi < bushCount; bi++) {
+              const bush = new THREE.Mesh(new THREE.SphereGeometry(0.8 + Math.random() * 0.5, 6, 6), new THREE.MeshLambertMaterial({ color: 0x2d7a2d + Math.floor(Math.random() * 0x102010) }));
+              const bOff = (Math.random() - 0.5) * (len - 4);
+              bush.position.set(isV ? gx : gx + bOff, 0.4, isV ? gz + bOff : gz);
+              this.scene.add(bush);
+            }
           });
         });
 
@@ -954,7 +976,7 @@ class Game {
               [1, 2, 3, 4].forEach(depth => {
                 if (depth > 1 && Math.random() > 0.4) return; // Background buildings spawn randomly
 
-                const bDist = RW / 2 + 8 + (depth - 1) * 35; 
+                const bDist = RW / 2 + 2 + (depth - 1) * 35; 
                 // Add some slight randomness to positions
                 const bx = isV ? cx + side * bDist : pos + (Math.random() * 2 - 1);
                 const bz = isV ? pos + (Math.random() * 2 - 1) : cz + side * bDist;
@@ -2057,16 +2079,31 @@ class Game {
               // 1. Check Red Lights & Zebra Crossings
               this.sigs.forEach(sg => {
                 if (sg.userData.st === 'red') {
-                  const dz = sg.position.z - n.position.z;
-                  if (n.userData.dir === 1 && dz > 0 && dz < 30 && Math.abs(n.position.x - sg.position.x) < 5) {
-                    fsm.approachingObstacle = true;
-                    fsm.obstacleDist = Math.min(fsm.obstacleDist, dz);
-                    fsm.redLight = true;
-                  }
-                  if (n.userData.dir === -1 && dz < 0 && dz > -30 && Math.abs(n.position.x - sg.position.x) < 5) {
-                    fsm.approachingObstacle = true;
-                    fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
-                    fsm.redLight = true;
+                  if (n.userData.moveAxis === 'h') {
+                    // Horizontal NPCs: check X-axis offset
+                    const dx = sg.position.x - n.position.x;
+                    if (n.userData.dir === 1 && dx > 0 && dx < 30 && Math.abs(n.position.z - sg.position.z) < 5) {
+                      fsm.approachingObstacle = true;
+                      fsm.obstacleDist = Math.min(fsm.obstacleDist, dx);
+                      fsm.redLight = true;
+                    }
+                    if (n.userData.dir === -1 && dx < 0 && dx > -30 && Math.abs(n.position.z - sg.position.z) < 5) {
+                      fsm.approachingObstacle = true;
+                      fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dx));
+                      fsm.redLight = true;
+                    }
+                  } else {
+                    const dz = sg.position.z - n.position.z;
+                    if (n.userData.dir === 1 && dz > 0 && dz < 30 && Math.abs(n.position.x - sg.position.x) < 5) {
+                      fsm.approachingObstacle = true;
+                      fsm.obstacleDist = Math.min(fsm.obstacleDist, dz);
+                      fsm.redLight = true;
+                    }
+                    if (n.userData.dir === -1 && dz < 0 && dz > -30 && Math.abs(n.position.x - sg.position.x) < 5) {
+                      fsm.approachingObstacle = true;
+                      fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
+                      fsm.redLight = true;
+                    }
                   }
                 }
               });
@@ -2084,8 +2121,30 @@ class Game {
               }
 
               // 2. Check Vehicles Ahead
-              if (n.userData.moveAxis !== 'h') {
+              if (n.userData.moveAxis === 'h') {
+                // Horizontal NPCs: check along X-axis
                 this.npcs.forEach(other => {
+                  if (other !== n && other.userData.moveAxis === 'h') {
+                    const dx = other.position.x - n.position.x;
+                    const dz = Math.abs(other.position.z - n.position.z);
+                    if (dx * n.userData.dir > 0 && Math.abs(dx) < 25 && dz < 2.5) {
+                      fsm.approachingObstacle = true;
+                      fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dx));
+                      fsm.obstacleSpeed = (other.userData.dir === n.userData.dir) ? other.userData.spd : 0;
+                    }
+                  }
+                });
+                // Check player for horizontal NPCs
+                if (this.player && this.player.position && !this.isPedestrian) {
+                  const dx = this.player.position.x - n.position.x;
+                  const dz = Math.abs(this.player.position.z - n.position.z);
+                  if (dx * n.userData.dir > 0 && Math.abs(dx) < 30 && dz < 2.5) {
+                    fsm.approachingObstacle = true;
+                    fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dx));
+                  }
+                }
+              } else {
+              this.npcs.forEach(other => {
                   if (other !== n && other.userData.moveAxis !== 'h') {
                     const dz = other.position.z - n.position.z;
                     const dx = Math.abs(other.position.x - n.position.x);
@@ -2097,7 +2156,7 @@ class Game {
                   }
                 });
 
-                // 3. Check Player
+                // 3. Check Player (vertical)
                 if (this.player && this.player.position && !this.isPedestrian) {
                   const dz = this.player.position.z - n.position.z;
                   const dx = Math.abs(this.player.position.x - n.position.x);
@@ -2108,6 +2167,7 @@ class Game {
                     fsm.obstacleSpeed = (pDir === n.userData.dir) ? (this.speed || 0) : 0;
                   }
                 }
+              } // end else (vertical NPC checks)
 
                 // 4. Ambulance Priority Yielding
                 let yieldingToAmbulance = false;
@@ -2359,10 +2419,10 @@ class Game {
           if (this.player.position.distanceTo(o.position) < 1.6) {
               this._collidedThisFrame = true;
               this.hp -= this.seatbeltOn ? 8 : 10;
-              if (this.hp <= 0) this._go(o.userData && o.userData.isAnimal ? 'Animal Collision' : 'Collided with Barricade'); 
+              if (this.hp <= 0) this._go('Collided with Barricade'); 
               else this._uh(); 
               this.speed *= -.2; 
-              toast(o.userData && o.userData.isAnimal ? '🐕 Hit an animal! (-10)' : '🚧 Collided with Barricade bounds!', '#ff9500'); 
+              toast('🚧 Collided with Barricade bounds!', '#ff9500'); 
           }
         });
         

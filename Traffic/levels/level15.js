@@ -14,7 +14,10 @@ window.LVS.push({
   "law": {
     "sec": "MV Act Section 122 & Society Rules",
     "fine": "₹500 - ₹1000",
-    "off": "Blocking Residential Gate"
+    "off": "Blocking Residential Gate",
+    "secHi": "मोटर वाहन अधिनियम धारा 122 एवं सोसायटी नियम",
+    "fineHi": "₹500 - ₹1000",
+    "offHi": "आवासीय गेट को रोकना"
   },
   "theory": "<h2>Residential Parking</h2><p>Residential colony mein parking karna easy nahi hai. Tumne kisi ke gate ke saamne gaadi lagayi hai — woh resident gussa ho raha hai! Socho, unhe emergency mein gaadi nikalni ho toh kya hoga?</p><p>Kisi ka gate block karna matlab unka raasta rokna. Yeh bilkul galat hai! Visitor parking 30 meter aage hai — wahan lagao.</p><h3>🏘️ Kya karna hai?</h3><ul><li>Tumne gate ke saamne gaadi lagayi hai — resident gussa hai — turant hato!</li><li>Visitor parking 30 meter aage hai — wahan lagao.</li><li>NPC residents tumhari gaadi society office mein report kar sakte hain!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Residential gate block karna MV Act Section 122 aur society rules ke under illegal hai — ₹500 se ₹1000 tak ka fine!</p>",
   "pract": "Move your car immediately. Park in the visitor parking zone. Walk to the objective.",

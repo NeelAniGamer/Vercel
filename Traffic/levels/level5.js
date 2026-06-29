@@ -14,7 +14,10 @@ window.LVS.push({
   "law": {
     "sec": "MV Act Section 196",
     "fine": "₹1000 - ₹5000",
-    "off": "Speeding in School Zone"
+    "off": "Speeding in School Zone",
+    "secHi": "मोटर वाहन अधिनियम धारा 196",
+    "fineHi": "₹1000 - ₹5000",
+    "offHi": "स्कूल क्षेत्र में तेज़ गति"
   },
   "theory": "<h2>School Zone Crossing</h2><p>School ke paas bachche hain — bahut saare! Yeh sabse khatarnak jagah hai jab school ki chhuti hoti hai.</p><p>Bachche kabhi bhi sadak pe bhaag sakte hain — ball ke peeche, dost ke saath, ya bas bina dekhe bhi. Tumhein 20 km/h se zyada nahi chalna hai, bilkul slow!</p><h3>🏫 Kya karna hai?</h3><ul><li>Bachche parked gaadiyon ke beech se nikal rahe hain — ruk jao!</li><li>School guard traffic sambhal raha hai — uski baat maano.</li><li>Peeche waali gaadiyan overtake karna chahti hain — unki mat suno.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>School zone mein speed karna MV Act Section 196 ke under hai — ₹1000 se ₹5000 tak ka fine aur 3 number katenge license se!</p>",
   "pract": "Drive slowly through the school zone. Stop if children are crossing. Do not honk near the school.",

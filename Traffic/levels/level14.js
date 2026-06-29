@@ -14,7 +14,10 @@ window.LVS.push({
   "law": {
     "sec": "MV Act Section 128",
     "fine": "₹1000 - ₹3000",
-    "off": "Failing to Yield at Night"
+    "off": "Failing to Yield at Night",
+    "secHi": "मोटर वाहन अधिनियम धारा 128",
+    "fineHi": "₹1000 - ₹3000",
+    "offHi": "रात में रास्ता न देना"
   },
   "theory": "<h2>Night Crossing</h2><p>Raat ko India mein driving karna bahut mushkil hai. Roads andheri hain, gaadiyan tez chal rahi hain, aur log dark kapdon mein sadak cross kar rahe hain — yeh recipe hai disaster ki!</p><p>Ek buzurg stick leke slowly cross kar raha hai — unhe tumhari gaadi dikh bhi nahi sakti, sun bhi nahi sakti. NPC tez ja rahe hain — ek unhe touch kar sakta hai!</p><h3>🌙 Kya karna hai?</h3><ul><li>Buzurg slowly cross kar raha hai — ruk jao, poori tarah cross hone do!</li><li>NPC tez ja rahe hain — unki mat suno.</li><li>Headlights dikh rahe hain, lekin shadows mein khatna chhupa hai — dheere jao.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>MV Act Section 128 kehta hai — raat mein extreme caution zaroori hai. Pedestrian ko kisi bhi crossing pe (marked ya unmarked) rukna padega — ₹1000 se ₹3000 fine!</p>",
   "pract": "Slow down, use headlights responsibly, and wait for the elderly person to cross completely.",

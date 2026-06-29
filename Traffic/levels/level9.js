@@ -14,7 +14,10 @@ window.LVS.push({
   "law": {
     "sec": "Civic Sense Act & Municipal Bye-laws",
     "fine": "Civic Penalty",
-    "off": "Splashing Commuters at Bus Stop"
+    "off": "Splashing Commuters at Bus Stop",
+    "secHi": "नागरिक अनुशासन अधिनियम एवं नगर निगम उप-नियम",
+    "fineHi": "नागरिक जुर्माना",
+    "offHi": "बस स्टॉप पर यात्रियों पर पानी छींकना"
   },
   "theory": "<h2>Puddle at a Bus Stop</h2><p>Bus stop pe barish mein paani jam gaya hai! Log paani mein chal ke bus pakad rahe hain. Tumhari gaadi agar tez jaayegi toh sab bheeg jaayenge!</p><p>Paanch log paani mein khade hain bus stop pe. Ek bus abhi aayi hai — aur zyada log bhaag ke road cross kar rahe hain. Road dono taraf doobi hui hai — tumhe guzarna hai lekin bina kisi ko bheegaye!</p><h3>⛈️ Kya karna hai?</h3><ul><li>Paanch log paani mein hain — ruk jao, unhe clear hone do!</li><li>Bus aayi hai, aur log bhaag rahe hain — patience rakho.</li><li>Road flooded hai — slowly guzro, splash mat karo.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Bus stop ke logon ko bheegna civic offense hai — municipal bye-laws ke under fine lag sakta hai!</p>",
   "pract": "Wait for commuters to board the bus or clear the road. Pass slowly when the way is clear.",

@@ -14,7 +14,10 @@ window.LVS.push({
   "law": {
     "sec": "MV Act Section 194E & Highway Rules",
     "fine": "₹10000",
-    "off": "Blocking Emergency Vehicle on Highway"
+    "off": "Blocking Emergency Vehicle on Highway",
+    "secHi": "मोटर वाहन अधिनियम धारा 194E एवं हाईवे नियम",
+    "fineHi": "₹10000",
+    "offHi": "हाईवे पर आपातकालीन वाहन को रोकना"
   },
   "theory": "<h2>Highway Ambulance</h2><p>Highway pe sab fast chal raha hai — 80 km/h! Aur abhi peeche se ambulance aa rahi hai, sirens baj rahi hain. Emergency hai!</p><p>Highway pe sudden brake maarna bahut khatarnak hai — peeche waali gaadi tumse takra sakti hai. Lekin ambulance ko raasta bhi dena padega. Kya karenge?</p><h3>🚑 Kya karna hai?</h3><ul><li>80 km/h pe traffic chal raha hai — ambulance fast aa rahi hai.</li><li>NPC apni lane mein hain — tumhe move karna hoga!</li><li>Sudden braking highway pe city se zyada khatarnak hai — dheere dheere slow ho jao.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Highway pe emergency vehicle ko raasta MV Act Section 194E ke under zaroori hai — ₹10,000 fine aur 6 mahine license suspend!</p>",
   "pract": "Indicate left, merge to the left lane, maintain your speed, and let the ambulance pass.",
