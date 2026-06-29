@@ -16,9 +16,14 @@ window.LVS.push({
     "fine": "₹1000 - ₹5000",
     "off": "Speeding in School Zone"
   },
-  "theory": "<h2>School Zone Crossing</h2><p>School zones are among the most dangerous areas during dismissal hours. Children are unpredictable — they may chase a ball, follow a friend, or simply forget to look both ways.</p><h3>🏫 The Challenge</h3><ul><li>Multiple children crossing between parked vehicles.</li><li>A school guard is directing traffic — follow their signals.</li><li>NPCs behind you may try to overtake impatiently.</li></ul><h3>⚖️ The Law</h3><p>Speeding in a school zone under MV Act Section 196 carries a fine of ₹1000–₹5000 and 3 penalty points on your license.</p>",
+  "theory": "<h2>School Zone Crossing</h2><p>Yaar, school ke paas bachche hain — bahut saare! Yeh sabse khatarnak jagah hai jab school ki chhuti hoti hai.</p><p>Bachche kabhi bhi sadak pe bhaag sakte hain — ball ke peeche, dost ke saath, ya bas bina dekhe bhi. Tumhein 20 km/h se zyada nahi chalna hai, bilkul slow!</p><h3>🏫 Kya karna hai?</h3><ul><li>Bachche parked gaadiyon ke beech se nikal rahe hain — ruk jao!</li><li>School guard traffic sambhal raha hai — uski baat maano.</li><li>Peeche waali gaadiyaaN overtake karna chahti hain — unki mat suno.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>School zone mein speed karna MV Act Section 196 ke under hai — ₹1000 se ₹5000 tak ka fine aur 3 number katenge license se!</p>",
   "pract": "Drive slowly through the school zone. Stop if children are crossing. Do not honk near the school.",
   "mode": "practical",
   "themeType": "pedestrian_courtesy",
-  "startOutside": true
+  "startOutside": true,
+  "tasks": [
+    { "id": "slow_zone", "text": "Slow to 20 km/h in school zone", "type": "avoid", "target": "speed_zone", "done": false },
+    { "id": "watch_kids", "text": "Watch for crossing children", "type": "avoid", "target": "pedestrian", "done": false },
+    { "id": "follow_guard", "text": "Follow school guard signals", "type": "reach", "target": "guard_signal", "done": false }
+  ]
 });

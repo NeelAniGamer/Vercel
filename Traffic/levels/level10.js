@@ -16,9 +16,14 @@ window.LVS.push({
     "fine": "₹500 - ₹2000",
     "off": "Parking in Market Zone"
   },
-  "theory": "<h2>Market Area Parking</h2><p>Mumbai's markets are vibrant but chaotic. Vendors, shoppers, and vehicles compete for limited space.</p><h3>🛒 The Challenge</h3><ul><li>Narrow lane with vendors on both sides.</li><li>NPC auto-rickshaws parked in the middle of the road.</li><li>A paid parking zone exists at the market entrance.</li></ul><h3>⚖️ The Law</h3><p>Unauthorized parking in market zones violates municipal bye-laws and MV Act Section 122, with fines of ₹500–₹2000.</p>",
+  "theory": "<h2>Market Area Parking</h2><p>Dekho, market mein sab kuch ek saath hai — vendors, log, gaadiyaN, sab! Jagah bahut kam hai aur sab jagah jaana chahte hain.</p><p>Tight gali hai, dono taraf vendors hain. Auto-rickshaw waale beech mein khade hain. Lekin market ke entrance pe ek paid parking zone hai — wahan lagao!</p><h3>🛒 Kya karna hai?</h3><ul><li>Gali tight hai, vendors dono taraf hain — slowly jao.</li><li>Auto-rickshaw waale road pe khade hain — darr mat, space banao.</li><li>Market entrance pe parking zone hai — wahan ruko!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Market zone mein bina permission parking karna municipal bye-laws aur MV Act Section 122 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>",
   "pract": "Navigate through the market carefully. Park in the designated paid zone. Walk to your destination.",
   "mode": "practical",
   "themeType": "respectful_parking",
-  "startOutside": true
+  "startOutside": true,
+  "tasks": [
+    { "id": "navigate_market", "text": "Navigate through market", "type": "reach", "target": "market_zone", "done": false },
+    { "id": "find_zone", "text": "Find parking zone", "type": "reach", "target": "parking_zone", "done": false },
+    { "id": "park_spot", "text": "Park in designated spot", "type": "stop", "target": "parking_spot", "done": false }
+  ]
 });

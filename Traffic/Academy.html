@@ -638,6 +638,14 @@
       top: 120px;
       margin-top: 0px;
       align-self: flex-start;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Tablet: shrink left sidebar */
+    @media (max-width: 1280px) {
+      .br-l { flex: 0 0 320px; }
     }
 
     .br-prog {
@@ -1909,6 +1917,11 @@
 
       .br-l {
         max-width: 100%;
+      }
+
+      .br-r {
+        position: static;
+        align-items: center;
       }
 
       .tb {

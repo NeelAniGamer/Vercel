@@ -16,9 +16,14 @@ window.LVS.push({
     "fine": "₹1000 - ₹5000",
     "off": "Night Honking in Residential Area"
   },
-  "theory": "<h2>Residential Night</h2><p>Late-night honking in residential areas is both illegal and inconsiderate. Residents are sleeping, and animals on the road react unpredictably to horn sounds.</p><h3>🌙 The Challenge</h3><ul><li>Narrow lane — a dog is sleeping in the road.</li><li>NPCs behind you want to honk — do not follow their lead.</li><li>Slowly drive around the dog without waking it.</li></ul><h3>⚖️ The Law</h3><p>Night honking in residential areas violates Noise Pollution Rules and MV Act Section 118, with fines of ₹1000–₹5000.</p>",
+  "theory": "<h2>Residential Night</h2><p>Yaar, raat ko residential colony mein honk karna galat hai aur illegal bhi! Log so rahe hain, aur sadak pe kutte soye hain — horn ki awaaz se sab kharab ho jaayega.</p><p>Tight gali hai, ek kutta road ke beech mein so raha hai. Peeche waali gaadi honk karna chahti hai — tum mat karo! Dheere dheere kutte ke paas se guzar jao.</p><h3>🌙 Kya karna hai?</h3><ul><li>Kutta road pe so raha hai — horn mat bajao, nind se utha dega!</li><li>Peeche waali gaadi honk kar rahi hai — unki mat suno.</li><li>Dheere se kutte ke paas se guzar jao — woh so jaaye!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Raat ko residential area mein honk karna Noise Pollution Rules aur MV Act Section 118 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>",
   "pract": "Drive slowly around the sleeping dog. Do not honk. Reach the main road quietly.",
   "mode": "practical",
   "themeType": "no_honking",
-  "startOutside": true
+  "startOutside": true,
+  "tasks": [
+    { "id": "no_honk_night", "text": "Do not honk in residential night", "type": "avoid", "target": "honk", "done": false },
+    { "id": "avoid_dog", "text": "Drive around sleeping dog", "type": "reach", "target": "past_dog", "done": false },
+    { "id": "reach_main", "text": "Reach main road quietly", "type": "reach", "target": "main_road", "done": false }
+  ]
 });

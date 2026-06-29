@@ -16,9 +16,14 @@ window.LVS.push({
     "fine": "₹2000 - ₹5000",
     "off": "Honking Near Place of Worship"
   },
-  "theory": "<h2>Temple & Prayer Zone</h2><p>Places of worship during prayer hours are the strictest quiet zones. Honking is not just illegal — it is deeply disrespectful to the community.</p><h3>🧘 The Challenge</h3><ul><li>Evening aarti is underway — devotees are gathered.</li><li>A cow is sitting peacefully in the middle of the road.</li><li>NPCs behind you are honking — you must not join them.</li></ul><h3>⚖️ The Law</h3><p>Honking near places of worship during prayer hours violates MV Act Section 118 and Religious Place Rules, with fines of ₹2000–₹5000.</p>",
+  "theory": "<h2>Temple & Prayer Zone</h2><p>Yaar, aarti ho rahi hai aur temple ke saamne log jama ho gaye hain. Ek gaay seedha road ke beech mein baith gayi hai — peaceful hai, kuch nahi kar rahi. Aur peeche waali gaadiyaN honk kar rahi hain — bilkul galat!</p><p>Temple ke paas prayer ke waqt honk karna sirf illegal nahi hai — yeh bahut disrespectful hai. Log prayer kar rahe hain, unki awaaz todo mat!</p><h3>🧘 Kya karna hai?</h3><ul><li>Gaay road pe baithi hai — patience rakho, hil jaayegi!</li><li>Peeche waali gaadiyaN honk kar rahi hain — tum mat karo!</li><li>Temple ke paas se slowly aur silently guzar jao.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Temple ke paas honk karna MV Act Section 118 aur Religious Place Rules ke under illegal hai — ₹2000 se ₹5000 tak ka fine!</p>",
   "pract": "Wait for the cow to move. Drive past the temple slowly and silently. Do not honk under any circumstances.",
   "mode": "practical",
   "themeType": "no_honking",
-  "startOutside": true
+  "startOutside": true,
+  "tasks": [
+    { "id": "wait_cow", "text": "Wait for cow to move", "type": "stop", "target": "stationary", "done": false },
+    { "id": "no_honk_temple", "text": "Do not honk near temple", "type": "avoid", "target": "honk", "done": false },
+    { "id": "drive_slow", "text": "Drive past slowly and silently", "type": "reach", "target": "destination", "done": false }
+  ]
 });

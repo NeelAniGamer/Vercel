@@ -512,6 +512,14 @@
       top: 120px;
       margin-top: 0px;
       align-self: flex-start;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Tablet: shrink left sidebar */
+    @media (max-width: 1280px) {
+      .br-l { flex: 0 0 320px; }
     }
 
     .br-prog {
@@ -1670,6 +1678,11 @@
         max-width: 100%;
       }
 
+      .br-r {
+        position: static;
+        align-items: center;
+      }
+
       .tb {
         padding: 0 16px;
       }
@@ -2004,9 +2017,21 @@
         padding: 4px 10px; font-size: 0.75rem; border-radius: 6px;
       }
       #hwrap {
-        top: 8px; left: auto; right: 8px; flex-direction: row; align-items: center; gap: 8px; 
+        top: 8px; left: 8px; right: auto; flex-direction: row; align-items: center; gap: 8px; 
         padding: 4px 8px; border-radius: 6px;
       }
+      #objective-overlay {
+        top: 8px; right: 8px; left: auto; width: auto; max-width: 55vw; padding: 8px 14px;
+      }
+      #task-tracker {
+        top: auto; bottom: 8px; left: 8px; right: auto; width: auto; max-width: 45vw; max-height: 30vh;
+        font-size: 0.75rem; padding: 10px 14px;
+      }
+      #sig-ind {
+        top: 8px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; padding: 6px 12px; gap: 8px;
+      }
+      #sind-state { min-width: 40px; font-size: 0.85rem; }
+      #sind-timer { font-size: 0.9rem; min-width: 24px; }
       #hwrap .hl { margin: 0; font-size: 0.6rem; }
       #hwallet { font-size: 0.85rem; }
       .ht { width: 60px; height: 6px; }
@@ -2061,8 +2086,13 @@
       }
       
       #da { color: #111827 !important;
-        top: 60px; padding: 8px 16px; font-size: 1rem;
+        top: 50px; left: 50%; transform: translateX(-50%); padding: 6px 14px; font-size: 0.9rem; border-radius: 10px;
       }
+      #mmc { top: 50px; right: 8px; width: 100px; height: 100px; border-width: 3px; }
+      #spgauge { right: 12px; bottom: 100px; }
+      #spgauge svg { width: 70px; height: 70px; }
+      #civic-controls { bottom: 100px; right: 12px; gap: 6px; }
+      #civic-controls button { padding: 6px 10px; font-size: 0.75rem; border-radius: 14px; }
     }
 
     @media (min-width: 1401px) and (min-height: 801px) and (pointer: fine) {
@@ -2128,11 +2158,13 @@
     </div>
     <div class="mc-col" style="display:flex; gap:10px; pointer-events:auto;">
       <div class="mc-btn" id="mc-brake"
-        style="width:80px; height:80px; background:rgba(220,40,40,0.6); margin-top:0; color:white; border:2px solid rgba(255,255,255,0.3); border-radius:50%; font-size:24px; font-weight:bold; display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none;">
-        B</div>
+        style="width:80px; height:80px; background:rgba(220,40,40,0.6); margin-top:0; color:white; border:2px solid rgba(255,255,255,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; box-shadow:0 4px 12px rgba(220,40,40,0.3);">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><rect x="7" y="6" width="10" height="14" rx="2" fill="rgba(255,255,255,0.15)"/><path d="M9 10h6"/></svg>
+      </div>
       <div class="mc-btn" id="mc-gas"
-        style="background:rgba(40,180,40,0.6); color:white; border:2px solid rgba(255,255,255,0.4); border-radius:20px; width:80px; height:80px; backdrop-filter:blur(4px); font-size:24px; font-weight:bold; display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none;">
-        G</div>
+        style="background:rgba(40,180,40,0.6); color:white; border:2px solid rgba(255,255,255,0.4); border-radius:20px; width:80px; height:80px; backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; box-shadow:0 4px 12px rgba(40,180,40,0.3);">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><polygon points="12,4 6,14 18,14" fill="rgba(255,255,255,0.15)"/><path d="M12 7v5"/></svg>
+      </div>
     </div>
   </div>
 
@@ -2163,9 +2195,14 @@
     <div id="objective-title">Current Objective</div>
     <div id="objective-desc">Loading...</div>
   </div>
-  <div id="civic-controls" style="position:fixed;bottom:20px;right:20px;z-index:100;display:flex;flex-direction:column;gap:10px;">
-    <button id="btn-seatbelt" style="background:#333;color:var(--ink);border:2px solid #555;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer;transition:0.2s;" onclick="game.toggleSeatbelt(this)">💺 Seatbelt / Helmet OFF</button>
-    <button id="btn-mobile" style="background:#333;color:var(--ink);border:2px solid #555;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer;transition:0.2s;" onclick="game.toggleMobile(this)">📱 Use Mobile Phone</button>
+  <div id="task-tracker"
+    style="position:fixed;top:24px;left:24px;z-index:22;background:rgba(15,23,42,0.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px 20px;color:white;width:280px;max-height:40vh;overflow-y:auto;display:none;box-shadow:0 10px 30px rgba(0,0,0,0.3);font-size:0.85rem;">
+    <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--yellow);font-weight:800;margin-bottom:10px;">📋 Tasks</div>
+    <div id="task-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+  <div id="civic-controls" style="position:fixed;bottom:16px;right:20px;z-index:100;display:flex;flex-direction:row;gap:6px;">
+    <button id="btn-seatbelt" style="background:#333;color:var(--ink);border:2px solid #555;padding:8px 12px;border-radius:16px;font-weight:bold;cursor:pointer;transition:0.2s;font-size:0.8rem;" onclick="game.toggleSeatbelt(this)">💺 Seatbelt OFF</button>
+    <button id="btn-mobile" style="background:#333;color:var(--ink);border:2px solid #555;padding:8px 12px;border-radius:16px;font-weight:bold;cursor:pointer;transition:0.2s;font-size:0.8rem;" onclick="game.toggleMobile(this)">📱 Phone</button>
   </div>
   <div id="sig-ind"
     style="position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:25;display:none;align-items:center;gap:12px;background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);padding:10px 20px;border-radius:30px;border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,0.1);font-weight:700;font-size:0.95rem;">
@@ -2203,11 +2240,6 @@
     <button class="gb" data-g="R">R</button>
     <button class="gb" data-g="N">N</button>
     <button class="gb" data-g="D">D</button>
-    <button class="gb" data-g="1">1</button>
-    <button class="gb" data-g="2">2</button>
-    <button class="gb" data-g="3">3</button>
-    <button class="gb" data-g="4">4</button>
-    <button class="gb" data-g="5">5</button>
   </div>
   <div id="gread">GEAR: P</div>
 

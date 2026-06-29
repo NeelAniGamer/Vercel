@@ -16,9 +16,14 @@ window.LVS.push({
     "fine": "₹500 - ₹1000",
     "off": "Blocking Residential Gate"
   },
-  "theory": "<h2>Residential Parking</h2><p>Parking in residential areas requires respect for others' space. Blocking a gate means a resident cannot get their car out in an emergency.</p><h3>🏘️ The Challenge</h3><ul><li>You parked in front of a gate — a resident is confronting you.</li><li>Visitor parking is available 30 meters ahead.</li><li>NPC residents may report your car to the society office.</li></ul><h3>⚖️ The Law</h3><p>Blocking a residential gate violates MV Act Section 122 and housing society rules, with fines of ₹500–₹1000.</p>",
+  "theory": "<h2>Residential Parking</h2><p>Yaar, residential colony mein parking karna easy nahi hai. Tumne kisi ke gate ke saamne gaadi lagayi hai — woh resident gussa ho raha hai! Socho, unhe emergency mein gaadi nikalni ho toh kya hoga?</p><p>Kisi ka gate block karna matlab unka raasta rokna. Yeh bilkul galat hai! Visitor parking 30 meter aage hai — wahan lagao.</p><h3>🏘️ Kya karna hai?</h3><ul><li>Tumne gate ke saamne gaadi lagayi hai — resident gussa hai — turant hato!</li><li>Visitor parking 30 meter aage hai — wahan lagao.</li><li>NPC residents tumhari gaadi society office mein report kar sakte hain!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Residential gate block karna MV Act Section 122 aur society rules ke under illegal hai — ₹500 se ₹1000 tak ka fine!</p>",
   "pract": "Move your car immediately. Park in the visitor parking zone. Walk to the objective.",
   "mode": "practical",
   "themeType": "respectful_parking",
-  "startOutside": true
+  "startOutside": true,
+  "tasks": [
+    { "id": "move_gate", "text": "Move from resident's gate", "type": "reach", "target": "away_gate", "done": false },
+    { "id": "find_visitor", "text": "Find visitor parking spot", "type": "reach", "target": "visitor_parking", "done": false },
+    { "id": "walk_dest", "text": "Walk to destination", "type": "reach", "target": "destination", "done": false }
+  ]
 });

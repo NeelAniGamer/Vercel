@@ -65,6 +65,7 @@ let _tt = null;
       },
       show(id) {
         if (id && id !== null && document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }
+        if (id !== 'screen-briefing') { this._disposeBriefingScene(); }
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         if (id) {
           const el = document.getElementById(id);
@@ -340,6 +341,7 @@ let _tt = null;
       _selSyl(id) {
         const lv = this._sylLv, items = this._sylItems;
         if (!lv) return;
+        this._disposeBriefingScene();
         ui.curMode = ui.curMode || (lv.modes ? lv.modes[0] : 'car');
         document.querySelectorAll('.syl-item').forEach(el => el.classList.remove('syl-active'));
         const el = document.getElementById('syl-' + id); if (el) el.classList.add('syl-active');
@@ -372,19 +374,24 @@ let _tt = null;
             hpTitle = parts[0];
             hpDesc = parts.slice(1).join(':').trim();
           }
-          card.innerHTML = `<div class="bc-ttl">⚖️ Regulatory Requirement</div>
-          <div class="bc-rule-pill" style="display:inline-block; margin-top:8px; margin-bottom:16px; padding:4px 12px; background:rgba(242,184,75,0.15); color:var(--signal); border-radius:12px; font-weight:700; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase;">Clause ${idx + 1}</div>
-          <div class="bc-rule-txt" style="font-family:'Lora', serif; font-size:2.2rem; color:var(--ink); line-height:1.2;">${hpTitle}</div>
-          ${hpDesc ? `<div style="margin-top:16px; font-family:'Inter', sans-serif; font-size:1.1rem; color:var(--dim); line-height:1.6;">${hpDesc}</div>` : ''}
+          card.innerHTML = `<div class="bc-ttl" style="text-align:center;">⚖️ Regulatory Requirement</div>
+          <div class="bc-rule-pill" style="display:block; text-align:center; margin:12px auto 20px; padding:6px 16px; background:rgba(242,184,75,0.15); color:var(--signal); border-radius:12px; font-weight:800; font-size:0.9rem; letter-spacing:1.5px; text-transform:uppercase;">Clause ${idx + 1}</div>
+          <div class="bc-rule-txt" style="text-align:center; font-family:'Lora', serif; font-size:clamp(1.6rem, 4vw, 2.4rem); color:var(--ink); line-height:1.3; font-weight:700; max-width:600px; margin:0 auto;">${hpTitle}</div>
+          ${hpDesc ? `<div style="margin-top:20px; text-align:center; font-family:'Inter', sans-serif; font-size:clamp(1rem, 2vw, 1.2rem); color:var(--dim); line-height:1.7; max-width:540px; margin:20px auto 0;">${hpDesc}</div>` : ''}
           <div class="bc-next-btn" style="display:flex;justify-content:space-between; margin-top:32px; padding-top:20px; border-top:1px solid var(--line);"><button class="btn btn-s" style="background:transparent; border:1px solid var(--line); color:var(--ink);" onclick="ui._selSyl('${idx > 0 ? 'rule' + (idx - 1) : 'intro'}')">${'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>'} Previous</button>${idx < lv.hps.length - 1 ? `<button class="btn" style="background:var(--ink); color:var(--void);" onclick="ui._selSyl('rule${idx + 1}')">Next Clause &rarr;</button>` : `<button class="btn" style="background:var(--signal); color:#000;" onclick="ui._selSyl('law')">Legal Framework &rarr;</button>`}</div>`;
         } else if (id === 'law') {
-          card.innerHTML = `<div class="bc-ttl">🏛️ Statutory Provisions</div><div class="lb"><div class="ls">${lv.law.sec}</div><div class="lt">${lv.law.off}</div></div><div class="fr"><div class="fl">Fine Amount</div><div class="fa">${lv.law.fine}</div></div>
+          card.innerHTML = `<div class="bc-ttl" style="text-align:center;">🏛️ Statutory Provisions</div>
+          <div class="lb" style="text-align:center; margin:16px auto; max-width:500px;"><div class="ls" style="font-size:1.3rem; font-weight:800;">${lv.law.sec}</div><div class="lt" style="font-size:1.1rem; margin-top:8px;">${lv.law.off}</div></div>
+          <div class="fr" style="text-align:center; max-width:400px; margin:20px auto;"><div class="fl" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Fine Amount</div><div class="fa" style="font-size:2.4rem; font-weight:800;">${lv.law.fine}</div></div>
      <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('rule'+(lv.hps.length-1))"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('theory')">Concepts &rarr;</button></div>`;
         } else if (id === 'theory') {
-          card.innerHTML = `<div class="bc-ttl">📊 Analytical Model</div><div class="dw">${this._diag(lv.id)}</div><div style="font-size:clamp(0.95rem, 2.2vw, 1.3rem);line-height:1.6;color:var(--muted2);margin-bottom:12px">${lv.theory}</div>
+          card.innerHTML = `<div class="bc-ttl" style="text-align:center;">📊 Analytical Model</div><div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${lv.theory}</div>
      <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`;
         } else if (id === 'practical') {
-          const btnsHTML = (lv.modes || ['car']).map(m => `<button class="btn" style="width:100%; text-transform:capitalize; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); color:var(--text, #111827); font-weight:600;" onclick="ui.showQuiz('${m}')">Take ${m} Quiz</button>`).join('');
+          const btnsHTML = (lv.modes || ['car']).map(m => {
+            const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚛', bus: '🚌', pedestrian: '🚶' };
+            return `<button class="btn" style="flex:1; min-width:0; text-transform:capitalize; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); color:var(--text, #111827); font-weight:700; padding:12px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:6px;" onclick="ui.showQuiz('${m}')"><span style="font-size:1.5rem;">${icons[m] || '🚗'}</span><span style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px;">${m}</span></button>`;
+          }).join('');
           const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 32px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3);" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`;
           card.innerHTML = `<div class="bc-ttl">🎯 Practical Execution</div>
       <div style="display:flex; flex-direction:column; gap:32px; margin-bottom: 24px;">
@@ -439,7 +446,8 @@ let _tt = null;
             </div>
           </div>
           <div style="flex:1; min-width:300px; display:flex; flex-direction:column; justify-content:center; gap:12px;">
-            ${btnsHTML}
+            <div style="font-size:0.8rem; color:var(--muted, #9CA3AF); text-transform:uppercase; font-weight:800; letter-spacing:0.05em;">Select Vehicle Mode</div>
+            <div style="display:flex; gap:10px;">${btnsHTML}</div>
           </div>
         </div>
         
@@ -452,6 +460,9 @@ let _tt = null;
       </div>`;
         }
         c.appendChild(card);
+        if (id === 'practical' && typeof THREE !== 'undefined') {
+          requestAnimationFrame(() => this._initBriefingScene(lv));
+        }
       },
       _diag(id) {
         const lv = LVS.find(l => l.id === id); if (!lv) return '';
@@ -463,58 +474,155 @@ let _tt = null;
      </div></div>`;
       },
       _simAnim(lv) {
-        let h = `<div class="sim-anim-wrap" style="position:relative; width:100%; height:clamp(200px, 32vw, 280px); background:linear-gradient(180deg, rgba(243,242,235,0.95) 0%, rgba(243,242,235,1) 40%, rgba(100,116,139,0.18) 50%, rgba(243,242,235,1) 60%, rgba(243,242,235,0.95) 100%); display:flex; justify-content:center; align-items:center; border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);">
-                   <!-- road surface -->
-                   <div style="position:absolute; top:50%; left:0; right:0; height:64px; transform:translateY(-50%); background:linear-gradient(180deg, rgba(100,116,139,0.05) 0%, rgba(100,116,139,0.14) 30%, rgba(100,116,139,0.14) 70%, rgba(100,116,139,0.05) 100%); border-top:1px solid rgba(0,0,0,0.08); border-bottom:1px solid rgba(0,0,0,0.08);"></div>
-                   <!-- center dashes -->
-                   <div style="position:absolute; top:50%; left:0; right:0; height:2px; transform:translateY(-50%); background:repeating-linear-gradient(90deg, rgba(217,119,6,0.3) 0, rgba(217,119,6,0.3) 20px, transparent 20px, transparent 36px);"></div>
-                   <!-- edge lines -->
-                   <div style="position:absolute; top:calc(50% - 32px); left:0; right:0; height:1px; background:rgba(255,255,255,0.4);"></div>
-                   <div style="position:absolute; top:calc(50% + 32px); left:0; right:0; height:1px; background:rgba(255,255,255,0.4);"></div>
-                   <!-- badge -->
-                   <div style="position:absolute; top:12px; left:12px; color:var(--muted2, #6B7280); font-size:0.7rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(255,255,255,0.75); padding:6px 14px; border-radius:8px; letter-spacing:1.2px; backdrop-filter:blur(8px); border:1px solid rgba(0,0,0,0.06); font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>`;
-        let style = '';
-        if (lv.themeType === 'pedestrian_courtesy') {
-          h += `
-             <div style="position:absolute; top:calc(50% - 44px); left:0; right:0; height:8px; background:rgba(0,0,0,0.03); border-bottom:1px solid rgba(0,0,0,0.04);"></div>
-             <div style="position:absolute; top:calc(50% + 36px); left:0; right:0; height:8px; background:rgba(0,0,0,0.03); border-top:1px solid rgba(0,0,0,0.04);"></div>
-             <div style="position:absolute; left:60%; top:calc(50% - 32px); height:64px; width:36px; background:repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0, rgba(0,0,0,0.15) 8px, transparent 8px, transparent 16px); opacity:0.6;"></div>
-             <div style="position:absolute; left:63%; top:-20px; font-size:2rem; animation: walkDown 4s infinite linear; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.12));">🚶</div>
-             <div style="position:absolute; left:10%; top:55%; font-size:2.2rem; animation: driveStopGo 4s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚗</div>
-             <div style="position:absolute; left:10%; top:38%; font-size:1.8rem; animation: driveScooter 4s infinite linear; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.12));">🛵</div>
-          `;
-          style = `@keyframes walkDown { 0% { top:-20px; } 15% { top:36%; } 40% { top:36%; } 65% { top:120%; } 100% { top:120%; } }
-                   @keyframes driveStopGo { 0% { left:-50px; } 20% { left:30%; } 60% { left:30%; } 80% { left:120%; } 100% { left:120%; } }
-                   @keyframes driveScooter { 0% { left:-50px; } 100% { left:120%; } }`;
-        } else if (lv.themeType === 'overtake' || lv.themeType === 'speed' || lv.id === 5) {
-          h += `
-             <div style="position:absolute; left:40%; top:15%; font-size:2.2rem; animation: driveSlow 4s infinite; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚙</div>
-             <div style="position:absolute; left:10%; top:15%; font-size:2.2rem; animation: driveOvertake 4s infinite; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚗</div>
-             <div style="position:absolute; left:50%; top:50%; font-size:1.5rem; opacity:0; animation: indicatorShow 4s infinite;">◀️</div>
-          `;
-          style = `@keyframes driveSlow { 0% { left: 10%; } 100% { left: 80%; } }
-                   @keyframes driveOvertake { 0% { left: -10%; top: 15%; } 20% { left: 20%; top: 15%; } 40% { left: 35%; top: 60%; } 60% { left: 60%; top: 60%; } 80% { left: 75%; top: 15%; } 100% { left: 100%; top: 15%; } }
-                   @keyframes indicatorShow { 0%, 15%, 45%, 100% { opacity:0; } 25%, 35% { opacity:1; } }`;
-        } else if (lv.themeType === 'respectful_parking' || lv.themeType === 'lane_discipline' || lv.id === 2) {
-          h += `
-             <div style="position:absolute; left:20%; top:15%; font-size:2.2rem; animation: driveLaneA 4s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚗</div>
-             <div style="position:absolute; left:40%; top:55%; font-size:2.2rem; animation: driveLaneB 4s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚙</div>
-             <div style="position:absolute; top:20px; left:40%; color:var(--accent, #D97706); font-weight:700; font-size:0.8rem; animation: textFade 4s infinite; background:rgba(255,255,255,0.75); padding:5px 12px; border-radius:8px; backdrop-filter:blur(8px); font-family:'Space Mono',monospace;">✓ STAY IN LANE</div>
-          `;
-          style = `@keyframes driveLaneA { 0% { left:-50px; } 100% { left: 120%; } }
-                   @keyframes driveLaneB { 0% { left: 0%; } 100% { left: 150%; } }
-                   @keyframes textFade { 0%, 10%, 90%, 100% { opacity:0; } 20%, 80% { opacity:1; } }`;
-        } else {
-          h += `
-             <div style="position:absolute; left:10%; top:15%; font-size:2.2rem; animation: driveGenA 3s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚗</div>
-             <div style="position:absolute; left:60%; top:55%; font-size:2.2rem; animation: driveGenB 4s infinite linear; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.15));">🚙</div>
-          `;
-          style = `@keyframes driveGenA { 0% { left:-20%; } 100% { left: 120%; } }
-                   @keyframes driveGenB { 0% { left:-20%; } 100% { left: 120%; } }`;
+        return `<div id="briefing-canvas-wrap" style="position:relative; width:100%; height:clamp(200px, 32vw, 280px); border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); background:#1a1f2e;">
+          <div style="position:absolute; top:12px; left:12px; color:var(--muted2, #6B7280); font-size:0.7rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(255,255,255,0.75); padding:6px 14px; border-radius:8px; letter-spacing:1.2px; backdrop-filter:blur(8px); border:1px solid rgba(0,0,0,0.06); font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>
+        </div>`;
+      },
+      _disposeBriefingScene() {
+        if (this._bScene) {
+          if (this._bAnimId) { cancelAnimationFrame(this._bAnimId); this._bAnimId = null; }
+          if (this._bRenderer) { this._bRenderer.dispose(); this._bRenderer = null; }
+          if (this._bScene) { this._bScene.traverse(c => { if (c.geometry) c.geometry.dispose(); if (c.material) { if (Array.isArray(c.material)) c.material.forEach(m => m.dispose()); else c.material.dispose(); } }); this._bScene = null; }
+          this._bCamera = null;
         }
-        
-        h += `<style>${style}</style></div>`;
-        return h;
+      },
+      _initBriefingScene(lv) {
+        if (typeof THREE === 'undefined') return;
+        const wrap = document.getElementById('briefing-canvas-wrap');
+        if (!wrap) return;
+        this._disposeBriefingScene();
+        const W = wrap.clientWidth || 600, H = wrap.clientHeight || 280;
+        const scene = new THREE.Scene();
+        const cam = new THREE.PerspectiveCamera(38, W / H, 0.1, 200);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(W, H); renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setClearColor(0x1a1f2e, 1);
+        const oldCanvas = wrap.querySelector('canvas');
+        if (oldCanvas) oldCanvas.remove();
+        wrap.appendChild(renderer.domElement);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        const dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(5, 10, 7); scene.add(dl);
+        const theme = lv.themeType || 'default';
+        const t = new THREE.Group(); scene.add(t);
+        const isPed = (lv.modes || []).includes('pedestrian');
+        const isNight = lv.themeType === 'night' || lv.themeType === 'night_blind_spot' || lv.themeType === 'speed_night';
+        if (isNight) { scene.fog = new THREE.Fog(0x0a0a12, 40, 100); renderer.setClearColor(0x0a0a12, 1); }
+        const groundG = new THREE.PlaneGeometry(80, 80);
+        const groundM = new THREE.MeshLambertMaterial({ color: isNight ? 0x222233 : 0x888888 });
+        const ground = new THREE.Mesh(groundG, groundM); ground.rotation.x = -Math.PI / 2; ground.position.y = -0.1; t.add(ground);
+        const roadG = new THREE.PlaneGeometry(80, 10);
+        const roadM = new THREE.MeshLambertMaterial({ color: 0x3d3f45 });
+        const road = new THREE.Mesh(roadG, roadM); road.rotation.x = -Math.PI / 2; road.position.y = 0.01; t.add(road);
+        const dashG = new THREE.PlaneGeometry(2, 0.15);
+        const dashM = new THREE.MeshBasicMaterial({ color: 0xD97706, transparent: true, opacity: 0.5 });
+        for (let dx = -36; dx < 36; dx += 5) { const d = new THREE.Mesh(dashG, dashM); d.rotation.x = -Math.PI / 2; d.position.set(dx, 0.02, 0); t.add(d); }
+        const edgeG = new THREE.PlaneGeometry(80, 0.08);
+        const edgeM = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 });
+        [-5, 5].forEach(z => { const e = new THREE.Mesh(edgeG, edgeM); e.rotation.x = -Math.PI / 2; e.position.set(0, 0.02, z); t.add(e); });
+        const swG = new THREE.PlaneGeometry(80, 4);
+        const swM = new THREE.MeshLambertMaterial({ color: 0xb5543a });
+        [-7, 7].forEach(z => { const sw = new THREE.Mesh(swG, swM); sw.rotation.x = -Math.PI / 2; sw.position.set(0, 0.005, z); t.add(sw); });
+        const carG = new THREE.BoxGeometry(1.4, 0.8, 2.8);
+        const carM = new THREE.MeshLambertMaterial({ color: isNight ? 0x4488cc : 0x3388ee });
+        const car = new THREE.Mesh(carG, carM); car.position.set(0, 0.5, 0); t.add(car);
+        const cabinG = new THREE.BoxGeometry(1.2, 0.5, 1.4);
+        const cabinM = new THREE.MeshLambertMaterial({ color: 0x222222 });
+        const cabin = new THREE.Mesh(cabinG, cabinM); cabin.position.set(0, 0.5, -0.3); car.add(cabin);
+        if (isNight) {
+          const hlpG = new THREE.SphereGeometry(0.08, 6, 6);
+          const hlpM = new THREE.MeshBasicMaterial({ color: 0xffffaa });
+          [[-0.5, 0.4, 1.45], [0.5, 0.4, 1.45]].forEach(p => { const hl = new THREE.Mesh(hlpG, hlpM); hl.position.set(...p); car.add(hl); });
+          const spotG = new THREE.ConeGeometry(1.2, 6, 8, 1, true);
+          const spotM = new THREE.MeshBasicMaterial({ color: 0xffffcc, transparent: true, opacity: 0.08, side: THREE.DoubleSide });
+          const spot = new THREE.Mesh(spotG, spotM); spot.rotation.x = Math.PI / 2; spot.position.set(0, 0.4, 5); car.add(spot);
+        }
+        const tlG = new THREE.BoxGeometry(0.5, 2, 0.5);
+        const tlM = new THREE.MeshLambertMaterial({ color: 0x444444 });
+        const pole = new THREE.Mesh(tlG, tlM); pole.position.set(12, 1, 6); t.add(pole);
+        const signalColors = [
+          { color: 0xff0000, y: 0.7 },
+          { color: 0xffaa00, y: 0 },
+          { color: 0x00cc00, y: -0.7 }
+        ];
+        const signalMeshes = signalColors.map(sc => {
+          const sg = new THREE.SphereGeometry(0.18, 8, 8);
+          const sm = new THREE.MeshBasicMaterial({ color: sc.color, transparent: true, opacity: 0.25 });
+          const s = new THREE.Mesh(sg, sm); s.position.set(0, sc.y, 0); pole.add(s); return s;
+        });
+        let trafficPhase = 0;
+        const carColors = [0x22aa55, 0xcc4444, 0xddaa22, 0x8844cc];
+        const npcs = [];
+        for (let i = 0; i < 3; i++) {
+          const nc = carColors[i % carColors.length];
+          const ncG = new THREE.BoxGeometry(1.3, 0.7, 2.6);
+          const ncM = new THREE.MeshLambertMaterial({ color: nc });
+          const npc = new THREE.Mesh(ncG, ncM);
+          npc.position.set(-10 - i * 8, 0.45, (i % 2 === 0) ? -2 : 2);
+          npc.userData = { speed: 2.5 + Math.random() * 1.5, startX: npc.position.x };
+          t.add(npc); npcs.push(npc);
+        }
+        if (theme === 'pedestrian_courtesy' || isPed) {
+          const pBodyG = new THREE.CylinderGeometry(0.2, 0.2, 0.7, 6);
+          const pBodyM = new THREE.MeshLambertMaterial({ color: 0xffcc88 });
+          const ped = new THREE.Mesh(pBodyG, pBodyM); ped.position.set(8, 0.55, 7); t.add(ped);
+          const headG = new THREE.SphereGeometry(0.18, 8, 8);
+          const headM = new THREE.MeshLambertMaterial({ color: 0xffcc88 });
+          const head = new THREE.Mesh(headG, headM); head.position.y = 0.55; ped.add(head);
+          ped.userData.isPed = true;
+        }
+        if (theme.includes('school') || theme.includes('children')) {
+          for (let i = 0; i < 3; i++) {
+            const chBody = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.5, 6), new THREE.MeshLambertMaterial({ color: [0xff6666, 0x66ccff, 0xffcc00][i] }));
+            chBody.position.set(6 + i * 2, 0.45, 6.5);
+            const chHead = new THREE.Mesh(new THREE.SphereGeometry(0.13, 6, 6), new THREE.MeshLambertMaterial({ color: 0xffcc88 }));
+            chHead.position.y = 0.4; chBody.add(chHead); t.add(chBody);
+          }
+        }
+        if (theme.includes('market')) {
+          const stallG = new THREE.BoxGeometry(2, 1.2, 1.5);
+          const stallM = new THREE.MeshLambertMaterial({ color: 0xcc6633 });
+          const stall = new THREE.Mesh(stallG, stallM); stall.position.set(-10, 0.6, 7); t.add(stall);
+          const awningG = new THREE.PlaneGeometry(2.4, 1.6);
+          const awningM = new THREE.MeshLambertMaterial({ color: 0xdd4444, side: THREE.DoubleSide });
+          const awning = new THREE.Mesh(awningG, awningM); awning.rotation.x = -0.3; awning.position.set(0, 0.7, 1); stall.add(awning);
+        }
+        if (theme.includes('temple') || theme.includes('festival')) {
+          const tmG = new THREE.BoxGeometry(3, 2, 2);
+          const tmM = new THREE.MeshLambertMaterial({ color: 0xcc8844 });
+          const temple = new THREE.Mesh(tmG, tmM); temple.position.set(-10, 1, -7); t.add(temple);
+          const domeG = new THREE.SphereGeometry(0.8, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+          const domeM = new THREE.MeshLambertMaterial({ color: 0xddaa44 });
+          const dome = new THREE.Mesh(domeG, domeM); dome.position.y = 1; temple.add(dome);
+        }
+        cam.position.set(8, 14, 22); cam.lookAt(0, 0, 0);
+        const start = performance.now();
+        const animate = () => {
+          const animId = requestAnimationFrame(animate);
+          this._bAnimId = animId;
+          const elapsed = (performance.now() - start) / 1000;
+          car.position.x = Math.sin(elapsed * 1.8) * 16;
+          car.position.z = Math.sin(elapsed * 1.8) * 0.3;
+          car.rotation.y = Math.sin(elapsed * 1.8) * 0.06;
+          trafficPhase = (elapsed % 6) / 6;
+          signalMeshes.forEach((s, i) => {
+            const activePhase = i;
+            s.material.opacity = Math.floor(trafficPhase * 3) === activePhase ? 1.0 : 0.2;
+          });
+          npcs.forEach(npc => {
+            npc.position.x += npc.userData.speed * 0.016;
+            if (npc.position.x > 30) npc.position.x = -30;
+          });
+          t.children.forEach(c => {
+            if (c.userData && c.userData.isPed) {
+              c.position.z = 7 + Math.sin(elapsed * 0.8) * 1.5;
+            }
+          });
+          cam.position.x = 8 + Math.sin(elapsed * 0.15) * 3;
+          cam.lookAt(0, 0, 0);
+          renderer.render(scene, cam);
+        };
+        animate();
+        this._bScene = scene; this._bCamera = cam; this._bRenderer = renderer;
       },
       dispatchStart(mode) {
          mode = mode || this.curMode || 'car';

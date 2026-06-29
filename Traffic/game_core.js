@@ -225,6 +225,28 @@ class Game {
         bindTouch('mc-gas', 'arrowup');
         bindTouch('mc-brake', 'arrowdown');
 
+        // Gyroscope steering for mobile (±30° gamma)
+        window.gyroSteering = 0;
+        if (window.DeviceOrientationEvent) {
+          const startGyro = () => {
+            window.addEventListener('deviceorientation', (e) => {
+              if (e.gamma !== null && this.playing && !this.isPedestrian) {
+                const clamped = Math.max(-30, Math.min(30, e.gamma));
+                window.gyroSteering = clamped / 30;
+              }
+            }, true);
+          };
+          if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            this._requestGyroPermission = () => {
+              DeviceOrientationEvent.requestPermission().then(state => {
+                if (state === 'granted') startGyro();
+              }).catch(() => {});
+            };
+          } else {
+            startGyro();
+          }
+        }
+
 
         const sb = (id, k) => {
           const el = document.getElementById(id); if (!el) return;
@@ -236,7 +258,7 @@ class Game {
       }
       _initG() { document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); }); }
       setGear(g) {
-        const caps = { P: 0, R: .28, N: 0, D: .50, '1': .18, '2': .28, '3': .42, '4': .60, '5': .85 };
+        const caps = { P: 0, R: .28, N: 0, D: .85 };
         const newCap = caps[g] ?? 0;
         this.gear = g;
         // Clamp speed immediately on gear change
@@ -247,6 +269,7 @@ class Game {
         document.querySelectorAll('.gb').forEach(b => b.classList.toggle('ag', b.dataset.g === g));
       }
       _horn() { 
+          this._honkedThisFrame = true;
           if (this.mapCfg && this.mapCfg.isSilenceZone) { 
               this.vio++; 
               this.score -= 50; 
@@ -269,6 +292,22 @@ class Game {
         this.highBeamOn = false;
         this.turnSignal = 0;
         this.turnTimer = 0;
+        this._honkedThisFrame = false;
+        this._nearbyPedCount = 0;
+        this._collidedThisFrame = false;
+        this._ambulanceNear = false;
+        this._maintainedSpeed = true;
+        this._nearHospital = false;
+        this._movedAfterGreen = false;
+        this._reachedParking = false;
+        this._reachedMarket = false;
+        this._reachedLeftSide = false;
+        this._reachedLeftLane = false;
+        this._reachedMainRoad = false;
+        this._reachedGuard = false;
+        this._reachedVolunteer = false;
+        this._reachedGap = false;
+        this._prevSpeed = 0;
         // Reset challan tracking for this run
         if (game.challanLog) game.challanLog = [];
         const cStack = document.getElementById('challan-stack');
@@ -297,20 +336,31 @@ class Game {
         if (btnM) { btnM.style.background = '#333'; btnM.textContent = '📱 Use Mobile Phone'; }
         
         if (mob()) document.getElementById('tc').classList.add('on');
+        if (mob() && this._requestGyroPermission) this._requestGyroPermission();
         document.getElementById('hlv').textContent = lv.id; document.getElementById('hobj').textContent = lv.tg; this._uh(); sfx.play('ok');
+        
+        // Initialize tasks for this level
+        this._initTasks(lv);
       }
-      stopPlay() { this.playing = false;['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); }
+      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); }
       toggleSeatbelt(btn) {
           this.seatbeltOn = !this.seatbeltOn;
           const isBike = (this.vehMode === 'bike' || this.vehMode === 'cycle');
           if (this.seatbeltOn) {
               btn.style.background = '#27ae60';
               btn.textContent = isBike ? '🪖 Helmet ON' : '💺 Seatbelt ON';
-              toast(isBike ? 'Helmet Secured!' : 'Seatbelt Fastened!', '#27ae60');
+              toast(isBike ? 'Helmet Secured! +10% Speed' : 'Seatbelt Fastened! +10% Speed', '#27ae60');
+              if (!this.isPedestrian) {
+                  const base = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
+                  this.maxSpd = base * 1.1;
+              }
           } else {
               btn.style.background = '#333';
               btn.textContent = isBike ? '🪖 Helmet OFF' : '💺 Seatbelt OFF';
-              toast(isBike ? 'Helmet Removed!' : 'Seatbelt Unfastened!', '#ff3b30');
+              toast(isBike ? 'Helmet Removed!' : 'Seatbelt Unfastened! -10% Speed', '#ff3b30');
+              if (!this.isPedestrian) {
+                  this.maxSpd = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
+              }
           }
       }
       toggleHighBeam() {
@@ -331,16 +381,176 @@ class Game {
       }
       toggleMobile(btn) {
           this.mobileOn = !this.mobileOn;
+          const isParked = this.isPedestrian || Math.abs(this.speed) < 0.05;
           if (this.mobileOn) {
-              btn.style.background = '#e74c3c';
-              btn.textContent = '📵 Using Mobile...';
-              toast('Distracted Driving!', '#e74c3c');
+              if (isParked) {
+                  btn.style.background = '#2196F3';
+                  btn.textContent = '🗺️ GPS Maps';
+                  toast('🗺️ Using GPS — Parked safely!', '#2196F3');
+              } else {
+                  btn.style.background = '#e74c3c';
+                  btn.textContent = '📵 Using Mobile...';
+                  toast('⚠️ Distracted Driving! ₹500 fine', '#e74c3c');
+                  if (!this.challanFired.has('mobile_drive')) {
+                      this.challanFired.add('mobile_drive');
+                      ui.issueChallan('Using Mobile while Driving', 'Sec 184 MV Act', '₹5,000', 'Dangerous Driving');
+                      this.vio++; this.score -= 50; this.fine += 5000;
+                      this.hp -= 10; this._uh();
+                  }
+              }
           } else {
               btn.style.background = '#333';
               btn.textContent = '📱 Use Mobile Phone';
           }
       }
       _uh() { const p = Math.max(0, this.hp); const f = this.dom['hfill']; if (f) f.style.width = p + '%'; if (p <= 0) this._go("Structural Failure"); }
+      
+      _initTasks(lv) {
+        this.tasks = lv.tasks ? JSON.parse(JSON.stringify(lv.tasks)) : [];
+        this._renderTasks();
+      }
+      
+      _renderTasks() {
+        const list = document.getElementById('task-list');
+        const tracker = document.getElementById('task-tracker');
+        if (!list || !tracker) return;
+        if (this.tasks.length === 0) { tracker.style.display = 'none'; return; }
+        tracker.style.display = 'block';
+        list.innerHTML = this.tasks.map(t => {
+          const icon = t.done ? '✅' : '⬜';
+          const style = t.done ? 'text-decoration:line-through;opacity:0.5;' : '';
+          return `<div style="display:flex;align-items:center;gap:8px;${style}"><span>${icon}</span><span>${t.text}</span></div>`;
+        }).join('');
+      }
+      
+      _computeTaskFlags() {
+        const px = this.player ? this.player.position.x : 0;
+        const pz = this.player ? this.player.position.z : 0;
+        const spd = Math.abs(this.speed || 0);
+
+        // Positional flags (latched — once true, stay true)
+        if (px < -2) this._reachedLeftSide = true;
+        if (px < -1) this._reachedLeftLane = true;
+
+        // Parking: off main road and slow/stopped
+        const RW = 18;
+        const onRoad = Math.abs(px) < RW / 2;
+        const onSidewalk = Math.abs(px) > RW / 2 && Math.abs(px) < RW / 2 + 6;
+        if (!onRoad && !onSidewalk && spd < 0.1) this._reachedParking = true;
+
+        // Main road: on road surface and moving
+        if (onRoad && spd > 0.01) this._reachedMainRoad = true;
+
+        // Market zone: level theme is market OR deep in city (high checkpoint index)
+        if (this.themeType === 'market' || this.themeType === 'busy_market') this._reachedMarket = true;
+
+        // Hospital: level theme
+        this._nearHospital = (this.themeType === 'hospital' || this.themeType === 'hospital_zone');
+
+        // NPC proximity for guard/volunteer/gap
+        this._reachedGuard = false;
+        this._reachedVolunteer = false;
+        this._reachedGap = false;
+        if (this.npcs) {
+          for (const n of this.npcs) {
+            if (!n.position) continue;
+            const d = this.player ? this.player.position.distanceTo(n.position) : 999;
+            if (d < 6) {
+              if (n.userData && n.userData.npcType === 'guard') this._reachedGuard = true;
+              if (n.userData && n.userData.npcType === 'volunteer') this._reachedVolunteer = true;
+            }
+          }
+          // Gap: find two NPCs close together with space between
+          for (let i = 0; i < this.npcs.length; i++) {
+            for (let j = i + 1; j < this.npcs.length; j++) {
+              const a = this.npcs[i], b = this.npcs[j];
+              if (!a.position || !b.position) continue;
+              const dAB = a.position.distanceTo(b.position);
+              const dPA = this.player ? this.player.position.distanceTo(a.position) : 999;
+              const dPB = this.player ? this.player.position.distanceTo(b.position) : 999;
+              if (dAB > 4 && dAB < 12 && dPA < 8 && dPB < 8) {
+                this._reachedGap = true;
+                break;
+              }
+            }
+            if (this._reachedGap) break;
+          }
+        }
+
+        // Moved after green: was at red light, now moving
+        if (this.sigs) {
+          for (const sg of this.sigs) {
+            if (sg.userData && sg.userData.st === 'green' && spd > 0.05) {
+              this._movedAfterGreen = true;
+            }
+          }
+        }
+
+        // Maintained speed: no sudden deceleration this frame
+        this._maintainedSpeed = (this._prevSpeed !== undefined) ? (spd >= this._prevSpeed * 0.7 || spd > 0.3) : true;
+        this._prevSpeed = spd;
+      }
+
+      _checkTasks() {
+        if (!this.tasks || this.tasks.length === 0) return;
+        let changed = false;
+        for (const t of this.tasks) {
+          if (t.done) continue;
+          let complete = false;
+          switch (t.type) {
+            case 'stop':
+              if (t.target === 'stationary' && Math.abs(this.speed) < 0.05) complete = true;
+              else if (t.target === 'walking_speed' && Math.abs(this.speed) < 0.15) complete = true;
+              else if (t.target === 'parking_zone' && Math.abs(this.speed) < 0.05) complete = true;
+              else if (t.target === 'parking_spot' && Math.abs(this.speed) < 0.05) complete = true;
+              else if (t.target === 'red_light' && Math.abs(this.speed) < 0.05) complete = true;
+              break;
+            case 'reach':
+              if (t.target === 'destination' && this.cps && this.hits >= this.cps.length && this.cps.length > 0) complete = true;
+              else if (t.target === 'green_light' && this._movedAfterGreen) complete = true;
+              else if (t.target === 'parking_spot' && this._reachedParking) complete = true;
+              else if (t.target === 'market_zone' && this._reachedMarket) complete = true;
+              else if (t.target === 'left_side' && this._reachedLeftSide) complete = true;
+              else if (t.target === 'left_lane' && this._reachedLeftLane) complete = true;
+              else if (t.target === 'forward_space' && Math.abs(this.speed) > 0.01) complete = true;
+              else if (t.target === 'away_gate' && Math.abs(this.speed) > 0.01) complete = true;
+              else if (t.target === 'visitor_parking' && this._reachedParking) complete = true;
+              else if (t.target === 'past_dog' && Math.abs(this.speed) > 0.01) complete = true;
+              else if (t.target === 'main_road' && this._reachedMainRoad) complete = true;
+              else if (t.target === 'guard_signal' && this._reachedGuard) complete = true;
+              else if (t.target === 'volunteer_signal' && this._reachedVolunteer) complete = true;
+              else if (t.target === 'gap_spot' && this._reachedGap) complete = true;
+              break;
+            case 'avoid':
+              if (t.target === 'honk' && this._honkedThisFrame) { /* fail, not complete */ }
+              else if (t.target === 'speed_zone' && Math.abs(this.speed) > 0.22) { /* fail */ }
+              else if (t.target === 'speed_night' && Math.abs(this.speed) > 0.35) { /* fail */ }
+              else if (t.target === 'speed_puddle' && Math.abs(this.speed) > 0.25) { /* fail */ }
+              else if (t.target === 'speed_hospital' && Math.abs(this.speed) > 0.25) { /* fail */ }
+              else if (t.target === 'speed_festival' && Math.abs(this.speed) > 0.15) { /* fail */ }
+              else if (t.target === 'pedestrian' && this._nearbyPedCount === 0) complete = true;
+              else if (t.target === 'collision' && !this._collidedThisFrame) complete = true;
+              else if (t.target === 'ambulance' && !this._ambulanceNear) complete = true;
+              else if (t.target === 'stop_sudden' && this._maintainedSpeed) complete = true;
+              else if (t.target === 'hospital_zone' && !this._nearHospital) complete = true;
+              break;
+            case 'toggle':
+              if (t.target === 'seatbelt' && this.seatbeltOn) complete = true;
+              else if (t.target === 'hazards' && this.highBeamOn) complete = true;
+              else if (t.target === 'indicator' && this.turnSignal !== 0) complete = true;
+              else if (t.target === 'headlights' && this.highBeamOn) complete = true;
+              break;
+          }
+          if (complete) {
+            t.done = true;
+            changed = true;
+            toast('✅ ' + t.text, '#27ae60');
+            sfx.play('ok');
+          }
+        }
+        if (changed) this._renderTasks();
+      }
+      
       _go(reason) {
         this.stopPlay();
         toast('💥 ' + (reason || 'Structural Failure!'), '#ff3b30');
@@ -580,7 +790,7 @@ class Game {
         const mats = {
           grass: new THREE.MeshPhongMaterial({ color: cfg.ground || 0x33691e }),
           road: new THREE.MeshPhongMaterial({ color: 0x3d3f45, map: _genTex('asphalt') }),
-          pave: new THREE.MeshPhongMaterial({ color: 0x8a8a8a, map: _genTex('pave') }),
+          pave: new THREE.MeshPhongMaterial({ color: 0xb5543a, map: _genTex('pave') }),
           yellowLine: new THREE.MeshBasicMaterial({ color: 0xffcc00 }),
           water: new THREE.MeshPhongMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 }),
           urban: new THREE.MeshLambertMaterial({ color: 0x4a4a4f })
@@ -627,9 +837,9 @@ class Game {
           }
 
              // Sidewalks
-             [-1, 1].forEach(s => {
-               const swW = cfg.isPedestrian ? 5 : 2.5; const pb = new THREE.Mesh(isV ? new THREE.BoxGeometry(swW, .15, len) : new THREE.BoxGeometry(len, .15, swW), mats.pave);
-               pb.position.set(isV ? cx + s * (RW / 2 + swW / 2) : cx, .07, isV ? cz : cz + s * (RW / 2 + swW / 2)); this.scene.add(pb); this.world.push(pb);
+               [-1, 1].forEach(s => {
+                const swW = cfg.isPedestrian ? 6 : 4; const pb = new THREE.Mesh(isV ? new THREE.BoxGeometry(swW, .15, len) : new THREE.BoxGeometry(len, .15, swW), mats.pave);
+                pb.position.set(isV ? cx + s * (RW / 2 + swW / 2) : cx, .07, isV ? cz : cz + s * (RW / 2 + swW / 2)); this.scene.add(pb); this.world.push(pb);
               });
         });
 
@@ -663,6 +873,12 @@ class Game {
             gof.position.set(-50, 0, -60); // Place it in the background
             gof.rotation.y = Math.PI / 4;
             this.scene.add(gof);
+
+            // Green park ground around monument
+            const parkGround = new THREE.Mesh(new THREE.CircleGeometry(35, 32), new THREE.MeshLambertMaterial({ color: 0x2d7a2d }));
+            parkGround.rotation.x = -Math.PI / 2;
+            parkGround.position.set(-50, 0.02, -60);
+            this.scene.add(parkGround);
         }
 
         // Advanced Procedural Cityscape
@@ -684,7 +900,7 @@ class Game {
           if (bldgKeys.length > 0 && type !== 'school') {
              const key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
              if (!instancedBldgData[key]) instancedBldgData[key] = [];
-              instancedBldgData[key].push({ x: bx, z: bz, r: rot, s: 7.0 });
+              instancedBldgData[key].push({ x: bx, z: bz, r: rot, s: 10.5 });
           } else {
              const g = new THREE.Group();
              const mat = bMats[Math.floor(Math.random() * bMats.length)];
@@ -697,6 +913,24 @@ class Game {
              this.scene.add(g); this.obstacles.push(g);
           }
         };
+
+        // Green strips between sidewalk and buildings
+        const grassMat = new THREE.MeshLambertMaterial({ color: 0x2d7a2d });
+        cfg.roads.forEach(r => {
+          const isV = r.type === 'v';
+          const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
+          const cx = isV ? r.x : (r.x1 + r.x2) / 2;
+          const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
+          [-1, 1].forEach(s => {
+            const swW = cfg.isPedestrian ? 6 : 4;
+            const gw = 3; // green strip width
+            const gx = isV ? cx + s * (RW / 2 + swW + gw / 2) : cx;
+            const gz = isV ? cz : cz + s * (RW / 2 + swW + gw / 2);
+            const grass = new THREE.Mesh(isV ? new THREE.BoxGeometry(gw, 0.12, len) : new THREE.BoxGeometry(len, 0.12, gw), grassMat);
+            grass.position.set(gx, 0.06, gz);
+            this.scene.add(grass);
+          });
+        });
 
         cfg.roads.forEach(r => {
           const isV = r.type === 'v';
@@ -720,7 +954,7 @@ class Game {
               [1, 2, 3, 4].forEach(depth => {
                 if (depth > 1 && Math.random() > 0.4) return; // Background buildings spawn randomly
 
-                const bDist = RW / 2 + 20 + (depth - 1) * 35; 
+                const bDist = RW / 2 + 8 + (depth - 1) * 35; 
                 // Add some slight randomness to positions
                 const bx = isV ? cx + side * bDist : pos + (Math.random() * 2 - 1);
                 const bz = isV ? pos + (Math.random() * 2 - 1) : cz + side * bDist;
@@ -951,7 +1185,9 @@ class Game {
         const designColors = [0xff4444, 0x1e90ff, 0x3a3a3a, 0xffd54a, 0xffffff, 0x888888, 0x27ae60, 0xf39c12];
         const allRoads = cfg.roads;
         let multipliedNpcs = [];
-        for (let m = 0; m < 6; m++) {
+        const npcDensityMap = { light: 2, moderate: 4, heavy: 6 };
+        const npcMult = npcDensityMap[cfg.npcDensity] || 4;
+        for (let m = 0; m < npcMult; m++) {
           multipliedNpcs.push(...npcTypes);
         }
         multipliedNpcs.forEach((nType, i) => {
@@ -1537,7 +1773,9 @@ class Game {
       _loop() {
         requestAnimationFrame(() => this._loop()); if (!this.playing || this.pause) { if (this.renderer && this.scene && this.camera) this.renderer.render(this.scene, this.camera); return; }
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._uanimals(); this._ucps(); this._uobs(); this._umode(dt); this._ucam(); this._uhud(); this._ummap(); this._utransit();
+        this._honkedThisFrame = false;
+        this._collidedThisFrame = false;
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(); this._uobs(); this._umode(dt); this._ucam(); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks();
         
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
@@ -1550,11 +1788,6 @@ class Game {
                 this.challanFired.add('seatbelt');
                 ui.issueChallan((this.vehMode === 'bike' || this.vehMode === 'cycle') ? 'Riding without Helmet' : 'Driving without Seatbelt', 'Sec 194D MV Act', '₹1,000', 'Safety Violation');
                 this.vio++; this.score -= 20; this.fine += 1000;
-            }
-            if (this.mobileOn && !this.challanFired.has('mobile')) {
-                this.challanFired.add('mobile');
-                ui.issueChallan('Using Mobile while Driving', 'Sec 184 MV Act', '₹5,000', 'Dangerous Driving');
-                this.vio++; this.score -= 50; this.fine += 5000;
             }
         }
 
@@ -1570,19 +1803,23 @@ class Game {
                     this.bucklingUp = false;
                     if (!this.playing) return;
                     this.isPedestrian = false;
-                    this.scene.remove(this.playerCharacter);
+                    this.playerCharacter.position.set(0, 0.6, 0.2);
+                    this.playerCharacter.scale.set(0.55, 0.55, 0.55);
+                    this.playerVehicle.add(this.playerCharacter);
                     this.player = this.playerVehicle;
-                    this.maxSpd = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
-                    this.accel = 0.045; 
-                    this.turn = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.04 : 0.065; 
-                    this.fric = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.97 : 0.94; // Rain reduces grip
-                    toast('🚗 Entered Vehicle!', '#00c851');
+                    this.maxSpd = (this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1) * (this.seatbeltOn ? 1.1 : 1.0);
+                    this.accel = 0.045;
+                    this.turn = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.04 : 0.065;
+                    this.fric = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.97 : 0.94;
+                    toast(this.seatbeltOn ? '🚗 Entered +10% Speed Bonus!' : '🚗 Entered Vehicle!', this.seatbeltOn ? '#27ae60' : '#00c851');
                 }, 1500);
               } else {
                 toast('Too far from vehicle.', '#ff9500');
               }
             } else {
               this.isPedestrian = true;
+              this.playerVehicle.remove(this.playerCharacter);
+              this.playerCharacter.scale.set(1, 1, 1);
               this.playerCharacter.position.copy(this.playerVehicle.position);
               this.playerCharacter.position.x += 6;
               this.scene.add(this.playerCharacter);
@@ -1597,7 +1834,7 @@ class Game {
 
         const up = !this.bucklingUp && (this.keys['arrowup'] || this.keys['w']), dn = !this.bucklingUp && (this.keys['arrowdown'] || this.keys['s']), lt = !this.bucklingUp && (this.keys['arrowleft'] || this.keys['a']), rt = !this.bucklingUp && (this.keys['arrowright'] || this.keys['d']);
         // Per-gear acceleration multipliers 🔄 each gear feels clearly different
-        const gAccel = { '1': .45, '2': .72, '3': 1.05, '4': 1.55, '5': 2.20, 'D': 1.10, 'R': .55, 'N': 0, 'P': 0 };
+        const gAccel = { 'D': 1.30, 'R': .55, 'N': 0, 'P': 0 };
         const mult = gAccel[this.gear] ?? 0;
         const isRev = this.gear === 'R';
         const cap = this.gcap;
@@ -1653,6 +1890,7 @@ class Game {
             if (lt) tAmt = 1;
             else if (rt) tAmt = -1;
             else if (window.analogSteering) tAmt = -window.analogSteering;
+            else if (window.gyroSteering) tAmt = -window.gyroSteering;
             if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * Math.sign(this.speed);
           }
           const targetVx = Math.sin(this.player.rotation.y) * this.speed;
@@ -1677,13 +1915,13 @@ class Game {
         if (this.isPedestrian) {
           let nearZebra = false;
           (this.mapCfg.ints || []).forEach(([ix, iz]) => { if (Math.abs(this.player.position.x - ix) < 10 && Math.abs(this.player.position.z - iz) < 10) nearZebra = true; });
-          if (validRoadBound && !nearZebra) { if (owEl) owEl.classList.add('on'); this.speed *= .52; this.hp -= .45; this._uh(); } else { if (owEl) owEl.classList.remove('on'); }
+          if (validRoadBound && !nearZebra) { if (owEl) owEl.classList.add('on'); this.speed *= .52; this.hp -= this.seatbeltOn ? .36 : .45; this._uh(); } else { if (owEl) owEl.classList.remove('on'); }
         } else {
           if (!validRoadBound) { 
             if (owEl) owEl.classList.add('on'); 
-            this.speed *= .52; 
-            this.hp -= .45; 
-            
+            this.speed *= .52;
+            this.hp -= this.seatbeltOn ? .36 : .45;
+
             if (!this.player.userData.fpCooldown) this.player.userData.fpCooldown = 0;
             this.player.userData.fpCooldown -= dt;
             if (this.player.userData.fpCooldown <= 0 && window.ui && window.ui.issueChallan) {
@@ -1873,13 +2111,17 @@ class Game {
 
                 // 4. Ambulance Priority Yielding
                 let yieldingToAmbulance = false;
-                if (this.ms && this.ms.amb && this.ms.amb !== n && n.userData.dir === 1) {
-                  const ambDz = this.ms.amb.position.z - n.position.z;
-                  // If ambulance is approaching from behind within 60m
-                  if (ambDz < 0 && ambDz > -60) {
-                    yieldingToAmbulance = true;
-                    n.userData.state = 'YIELD_AMBULANCE';
-                    n.userData.txX = -4.8; // Move to leftmost lane
+                if (this.ms && this.ms.amb && this.ms.amb !== n) {
+                  const ambDist = this.player ? this.player.position.distanceTo(this.ms.amb.position) : 999;
+                  this._ambulanceNear = ambDist < 20;
+                  if (n.userData.dir === 1) {
+                    const ambDz = this.ms.amb.position.z - n.position.z;
+                    // If ambulance is approaching from behind within 60m
+                    if (ambDz < 0 && ambDz > -60) {
+                      yieldingToAmbulance = true;
+                      n.userData.state = 'YIELD_AMBULANCE';
+                      n.userData.txX = -4.8; // Move to leftmost lane
+                    }
                   }
                 }
 
@@ -1993,8 +2235,8 @@ class Game {
           }
           
           // Player Collision
-          if (this.player.position.distanceTo(n.position) < 2.2) { 
-            this.hp -= 12; 
+          if (this.player.position.distanceTo(n.position) < 2.2) {
+            this.hp -= this.seatbeltOn ? 9.6 : 12;
             if (this.hp <= 0) this._go('Collided with ' + (n.userData.npcType || 'Vehicle')); 
             else this._uh(); 
             this.speed *= -.22; 
@@ -2005,6 +2247,12 @@ class Game {
       }
       _upeds(dt) {
         if (!this.peds) this.peds = [];
+        
+        // Count nearby pedestrians for task tracking
+        this._nearbyPedCount = 0;
+        this.peds.forEach(p => {
+          if (this.player.position.distanceTo(p.position) < 8) this._nearbyPedCount++;
+        });
         
         // Despawn far pedestrians
         for (let i = this.peds.length - 1; i >= 0; i--) {
@@ -2108,8 +2356,9 @@ class Game {
         this.obstacles.forEach(o => {
           const dx = px - o.position.x, dz = pz - o.position.z;
           if (dx * dx + dz * dz > 400) return;
-          if (this.player.position.distanceTo(o.position) < 1.6) { 
-              this.hp -= 10; 
+          if (this.player.position.distanceTo(o.position) < 1.6) {
+              this._collidedThisFrame = true;
+              this.hp -= this.seatbeltOn ? 8 : 10;
               if (this.hp <= 0) this._go(o.userData && o.userData.isAnimal ? 'Animal Collision' : 'Collided with Barricade'); 
               else this._uh(); 
               this.speed *= -.2; 
@@ -2139,7 +2388,7 @@ class Game {
                     sb.userData.cd = 2.0;
                     if (Math.abs(this.speed) > 0.4) {
                         this.speed *= 0.6;
-                        this.hp -= 5;
+                        this.hp -= this.seatbeltOn ? 4 : 5;
                         this._uh();
                         this.playerVehicle.position.y = 0.6;
                         setTimeout(() => { if(this.playerVehicle) this.playerVehicle.position.y = 0; }, 150);
@@ -2152,19 +2401,6 @@ class Game {
                 }
             });
         }
-      }
-      _uanimals() {
-          if (!this.animals) return;
-          this.animals.forEach(a => {
-              a.mesh.position.x += a.vx;
-              a.mesh.position.z += a.vz;
-              if (a.mesh.position.x > 30) a.vx = -Math.abs(a.vx);
-              if (a.mesh.position.x < -30) a.vx = Math.abs(a.vx);
-              if (a.mesh.position.z > 30) a.vz = -Math.abs(a.vz);
-              if (a.mesh.position.z < -30) a.vz = Math.abs(a.vz);
-              if (a.vx > 0) a.mesh.rotation.y = Math.PI / 2;
-              else if (a.vx < 0) a.mesh.rotation.y = -Math.PI / 2;
-          });
       }
       _utransit() {
           if (!this.trains) return;

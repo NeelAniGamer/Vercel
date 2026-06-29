@@ -16,9 +16,14 @@ window.LVS.push({
     "fine": "Civic Penalty",
     "off": "Splashing Commuters at Bus Stop"
   },
-  "theory": "<h2>Puddle at a Bus Stop</h2><p>Bus stops during rain become splash zones. Commuters are forced to wade through water to board buses.</p><h3>⛈️ The Challenge</h3><ul><li>Five commuters are wading through water at the bus stop.</li><li>A bus has just arrived — more people are rushing across.</li><li>You need to pass but the road is flooded on both sides.</li></ul><h3>⚖️ The Law</h3><p>Splashing commuters at bus stops is a civic offense. Municipal authorities can impose penalties under local bye-laws.</p>",
+  "theory": "<h2>Puddle at a Bus Stop</h2><p>Yaar, bus stop pe barish mein paani jam gaya hai! Log paani mein chal ke bus pakad rahe hain. Tumhari gaadi agar tez jaayegi toh sab bheeg jaayenge!</p><p>Paanch log paani mein khade hain bus stop pe. Ek bus abhi aayi hai — aur zyada log bhaag ke road cross kar rahe hain. Road dono taraf doobi hui hai — tumhe guzarna hai lekin bina kisi ko bheegaye!</p><h3>⛈️ Kya karna hai?</h3><ul><li>Paanch log paani mein hain — ruk jao, unhe clear hone do!</li><li>Bus aayi hai, aur log bhaag rahe hain — patience rakho.</li><li>Road flooded hai — slowly guzro, splash mat karo.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Bus stop ke logon ko bheegna civic offense hai — municipal bye-laws ke under fine lag sakta hai!</p>",
   "pract": "Wait for commuters to board the bus or clear the road. Pass slowly when the way is clear.",
   "mode": "practical",
   "themeType": "puddle_etiquette",
-  "startOutside": true
+  "startOutside": true,
+  "tasks": [
+    { "id": "wait_clear", "text": "Wait for commuters to clear", "type": "stop", "target": "stationary", "done": false },
+    { "id": "slow_pass", "text": "Pass slowly when clear", "type": "avoid", "target": "speed_puddle", "done": false },
+    { "id": "no_splash", "text": "Do not splash commuters", "type": "avoid", "target": "pedestrian", "done": false }
+  ]
 });

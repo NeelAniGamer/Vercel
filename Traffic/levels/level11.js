@@ -16,9 +16,14 @@ window.LVS.push({
     "fine": "₹1000 - ₹5000",
     "off": "Honking Near Educational Institution"
   },
-  "theory": "<h2>Library Zone</h2><p>Educational institutions including libraries are quiet zones. The noise from a car horn carries far through open windows.</p><h3>📚 The Challenge</h3><ul><li>An NPC is parked poorly, blocking part of the road.</li><li>Students are visible through library windows — studying.</li><li>You must wait for the NPC to move without honking.</li></ul><h3>⚖️ The Law</h3><p>Honking near educational institutions violates MV Act Section 118 and Noise Pollution Rules, with fines of ₹1000–₹5000.</p>",
+  "theory": "<h2>Library Zone</h2><p>Yaar, library ke paas padhaai ho rahi hai — students khuli khidkiyon mein padh rahe hain. Tumhari horn ki awaaz seedha unke kaanon mein jaayegi!</p><p>Ek NPC gaadi galat tarike se khadi hai, road ka hissa block kar rahi hai. Students library ki khidkiyon mein dikh rahe hain — padh rahe hain. Tumhein bina honk ke wait karna hai jab tak woh hatt na jaaye!</p><h3>📚 Kya karna hai?</h3><ul><li>NPC gaadi galat jagah khadi hai — wait karo, horn mat bajao.</li><li>Students padh rahe hain — unki concentration mat todo.</li><li>NPC hatt jaaye toh quietly guzar jao.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Educational institution ke paas honk karna MV Act Section 118 aur Noise Pollution Rules ke under hai — ₹1000 se ₹5000 tak ka fine!</p>",
   "pract": "Wait patiently for the NPC to move. Do not honk near the library.",
   "mode": "practical",
   "themeType": "no_honking",
-  "startOutside": true
+  "startOutside": true,
+  "tasks": [
+    { "id": "no_honk", "text": "Do not honk near library", "type": "avoid", "target": "honk", "done": false },
+    { "id": "wait_npc", "text": "Wait for NPC to move", "type": "stop", "target": "stationary", "done": false },
+    { "id": "pass_quiet", "text": "Pass quietly", "type": "reach", "target": "destination", "done": false }
+  ]
 });

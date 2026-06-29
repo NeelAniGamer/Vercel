@@ -16,9 +16,14 @@ window.LVS.push({
     "fine": "₹10000",
     "off": "Blocking Emergency Vehicle on Highway"
   },
-  "theory": "<h2>Highway Ambulance</h2><p>Highway speeds make emergency vehicle interaction more dangerous. A sudden stop can cause a rear-end collision.</p><h3>🚑 The Challenge</h3><ul><li>Traffic is flowing at 80 km/h — an ambulance is approaching fast.</li><li>NPCs are staying in their lanes — you must be the one to move.</li><li>Sudden braking on a highway is more dangerous than on city streets.</li></ul><h3>⚖️ The Law</h3><p>On highways, MV Act Section 194E combined with highway rules requires you to move left and maintain speed — not stop abruptly.</p>",
+  "theory": "<h2>Highway Ambulance</h2><p>Yaar, highway pe sab fast chal raha hai — 80 km/h! Aur abhi peeche se ambulance aa rahi hai, sirens baj rahi hain. Emergency hai!</p><p>Highway pe sudden brake maarna bahut khatarnak hai — peeche waali gaadi tumse takra sakti hai. Lekin ambulance ko raasta bhi dena padega. Kya karenge?</p><h3>🚑 Kya karna hai?</h3><ul><li>80 km/h pe traffic chal raha hai — ambulance fast aa rahi hai.</li><li>NPC apni lane mein hain — tumhe move karna hoga!</li><li>Sudden braking highway pe city se zyada khatarnak hai — dheere dheere slow ho jao.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Highway pe emergency vehicle ko raasta MV Act Section 194E ke under zaroori hai — ₹10,000 fine aur 6 mahine license suspend!</p>",
   "pract": "Indicate left, merge to the left lane, maintain your speed, and let the ambulance pass.",
   "mode": "practical",
   "themeType": "ambulance_priority",
-  "startOutside": true
+  "startOutside": true,
+  "tasks": [
+    { "id": "indicate_left", "text": "Indicate left before merging", "type": "toggle", "target": "indicator", "done": false },
+    { "id": "merge_left", "text": "Merge to left lane", "type": "reach", "target": "left_lane", "done": false },
+    { "id": "maintain_speed", "text": "Maintain speed, do not stop", "type": "avoid", "target": "stop_sudden", "done": false }
+  ]
 });

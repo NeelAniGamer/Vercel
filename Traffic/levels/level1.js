@@ -16,9 +16,14 @@ window.LVS.push({
     "fine": "₹500 - ₹2000",
     "off": "Jumping a Red Signal"
   },
-  "theory": "<h2>Red Light Patience</h2><p>At a busy Mumbai junction, red lights test your patience. NPC drivers will tailgate, honk, and try to pressure you into jumping the signal.</p><h3>🚦 The Challenge</h3><ul><li>A family is crossing at the zebra crossing.</li><li>Three NPCs behind you are honking non-stop.</li><li>One NPC might try to undertake you and jump the light.</li></ul><h3>⚖️ The Law</h3><p>Under MV Act Section 119, jumping a red signal carries a fine of ₹500–₹2000 and possible license suspension for repeat offenders.</p>",
+  "theory": "<h2>Red Light Patience</h2><p>Dekho, zebra crossing pe ek family cross kar rahi hai — bachche, parents, sab! Peeche teen gaadiyaN hain, sab horn baja rahe hain. Ek gaadi overtake karke red light kaatne wali hai — tum mat karo!</p><p>Solid white line ke peechhe ruk jao jab tak light green na ho aur crossing bilkul clear na ho. Red signal kaatna MV Act Section 119 ke under ₹500 se ₹2000 tak ka fine hai aur license bhi kat sakta hai!</p><p>Yaad rakho — NPC gaadiyon ki awaaz sunkar ghabrao mat. Tumhe challan milega, unhe nahi!</p>",
   "pract": "Wait at the red light. Let all pedestrians cross. Do not move until the light turns green.",
   "mode": "practical",
   "themeType": "pedestrian_courtesy",
-  "startOutside": true
+  "startOutside": true,
+  "tasks": [
+    { "id": "wait_red", "text": "Wait at the red light", "type": "stop", "target": "red_light", "done": false },
+    { "id": "let_cross", "text": "Let all pedestrians cross", "type": "avoid", "target": "pedestrian", "done": false },
+    { "id": "move_green", "text": "Move only when light turns green", "type": "reach", "target": "green_light", "done": false }
+  ]
 });
