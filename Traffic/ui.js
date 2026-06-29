@@ -100,7 +100,7 @@ let _tt = null;
             grid.className = 'category-grid';
             wrap.appendChild(grid);
 
-            cat.levels.forEach((lv) => {
+            cat.levels.forEach((lv, idx) => {
                 const done = S.comp[lv.id];
                 const started = S.started && S.started[lv.id];
                 const statusClass = done ? ' syl-done' : (started ? ' syl-started' : '');
@@ -111,7 +111,7 @@ let _tt = null;
                 div.innerHTML = `
                   <div class="syl-ck"></div>
                   <div class="syl-info">
-                    <div class="syl-lbl">Level ${lv.id}: ${lv.name}</div>
+                    <div class="syl-lbl">Level ${idx + 1}: ${lv.name}</div>
                     <div class="syl-sub">${lv.ds}</div>
                     <div class="syl-badge">${badgeText}</div>
                   </div>
