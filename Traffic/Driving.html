@@ -66,8 +66,8 @@
 
     #3c {
       display: block;
-      width: 100%;
-      height: 100%;
+      width: 100vw !important;
+      height: 100vh !important;
     }
 
     body {
@@ -1176,8 +1176,11 @@
     #gc {
       position: fixed;
       inset: 0;
+      width: 100vw;
+      height: 100vh;
       z-index: 1;
       display: none;
+      overflow: hidden;
     }
 
     #gc.on {

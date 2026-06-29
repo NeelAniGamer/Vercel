@@ -70,8 +70,12 @@ class Game {
           this.isPointerLocked = locked;
         });
         document.addEventListener('mousemove', (e) => {
-          if (this.isPointerLocked && this.isPedestrian) {
-            this.player.rotation.y -= e.movementX * 0.003;
+          if (this.isPointerLocked) {
+            if (this.isPedestrian) {
+              this.player.rotation.y -= e.movementX * 0.003;
+            } else {
+              this.camYaw = (this.camYaw || 0) - e.movementX * 0.003;
+            }
             this.camPitch = (this.camPitch || 0) - e.movementY * 0.003;
             this.camPitch = Math.max(-1.5, Math.min(1.5, this.camPitch));
           }
@@ -2205,9 +2209,10 @@ class Game {
           );
           
           const pitch = this.camPitch || 0;
-          const lx = Math.sin(rotY) * Math.cos(pitch);
+          const yaw = rotY + (this.camYaw || 0);
+          const lx = Math.sin(yaw) * Math.cos(pitch);
           const ly = Math.sin(pitch);
-          const lz = Math.cos(rotY) * Math.cos(pitch);
+          const lz = Math.cos(yaw) * Math.cos(pitch);
           
           this.camera.lookAt(
             this.camera.position.x + lx,
