@@ -2085,6 +2085,15 @@ class Game {
         if (this.isPedestrian && Math.abs(this.speed) > 0.02) { const shift = this.keys['shift'] ? 18 : 10; this.player.position.y = Math.abs(Math.sin(this.timer * shift)) * (this.keys['shift'] ? 0.12 : 0.06); }
         else if (!this.isPedestrian && this.playerVehicle && !this._sbBounce) { this.playerVehicle.position.y = 0; }
 
+        // DEBUG: Check if vehicle has unwanted X/Z rotation
+        if (!this.isPedestrian && this.playerVehicle && (Math.abs(this.playerVehicle.rotation.x) > 0.01 || Math.abs(this.playerVehicle.rotation.z) > 0.01)) {
+          console.warn('[FLIP-DBG] Vehicle has X/Z rotation!', {
+            rx: this.playerVehicle.rotation.x.toFixed(4),
+            ry: this.playerVehicle.rotation.y.toFixed(4),
+            rz: this.playerVehicle.rotation.z.toFixed(4)
+          });
+        }
+
         // Hard world boundary clamp — prevents floating-point precision loss
         // Regular maps: roads extend to ~±1500, ground is 2000x2000 → clamp at ±1550
         // 50km maps: roads extend to ~±25000 → clamp at ±25500
@@ -2770,11 +2779,30 @@ class Game {
             1.5 + shakeY,
             this.player.position.z + Math.cos(rotY) * 15
           );
-          // Apply camera roll tilt via quaternion to avoid Euler angle gimbal issues
-          if (tiltRoll !== 0) {
-            const _rollQ = new THREE.Quaternion();
-            _rollQ.setFromAxisAngle(new THREE.Vector3(0, 0, 1), tiltRoll);
-            this.camera.quaternion.multiply(_rollQ);
+          // Camera tilt DISABLED for debugging — pure lookAt, no roll
+          // if (tiltRoll !== 0) {
+          //   const _rollQ = new THREE.Quaternion();
+          //   _rollQ.setFromAxisAngle(new THREE.Vector3(0, 0, 1), tiltRoll);
+          //   this.camera.quaternion.multiply(_rollQ);
+          // }
+
+          // DEBUG: Log camera state if rotation looks unusual
+          const _camEuler = new THREE.Euler().setFromQuaternion(this.camera.quaternion, 'YXZ');
+          if (Math.abs(_camEuler.x) > 0.15 || Math.abs(_camEuler.z) > 0.15) {
+            console.warn('[FLIP-DBG] Camera Euler (YXZ):', {
+              x: _camEuler.x.toFixed(3),
+              y: _camEuler.y.toFixed(3),
+              z: _camEuler.z.toFixed(3)
+            }, 'pos:', {
+              x: this.camera.position.x.toFixed(1),
+              y: this.camera.position.y.toFixed(1),
+              z: this.camera.position.z.toFixed(1)
+            }, 'playerRot:', this.player.rotation.y.toFixed(3),
+            'playerPos:', {
+              x: this.player.position.x.toFixed(1),
+              y: this.player.position.y.toFixed(1),
+              z: this.player.position.z.toFixed(1)
+            });
           }
 
           // ── Speed-based FOV ──
