@@ -389,7 +389,7 @@ async function downloadSourceCode(e) {
 
   try {
     const zip = new JSZip()
-    const files = ['Academy', 'vehicles.js', 'lambo.js', 'auto.js', 'bus.js']
+    const files = ['Academy', 'vehicles.js', 'auto.js', 'bus.js']
 
     let fetched = 0
 

@@ -1,11 +1,20 @@
+// ── Per-vehicle handling profiles ──
+const VEHICLE_STATS = {
+  bike:      { maxSpd: 1.35, accel: 0.058, fric: 0.935, turn: 0.082, grip: 0.48 },
+  car:       { maxSpd: 1.10, accel: 0.045, fric: 0.945, turn: 0.065, grip: 0.62 },
+  bus:       { maxSpd: 0.80, accel: 0.028, fric: 0.965, turn: 0.036, grip: 0.44 },
+  truck:     { maxSpd: 0.90, accel: 0.033, fric: 0.960, turn: 0.042, grip: 0.50 },
+  auto:      { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.072, grip: 0.40 },
+};
 class Game {
       constructor() {
         this.renderer = null; this.scene = null; this.camera = null; this.player = null;
         this.clock = new THREE.Clock(); this.keys = {}; this.speed = 0; this.maxSpd = 1.1; this.accel = .045; this.fric = .95; this.turn = .065; this.gear = 'N'; this.gcap = 0;
-        this.boostFuel = 100; this.maxBoostFuel = 100; this.boosting = false;
-        this._camTarget = new THREE.Vector3();
+        this.boostFuel = 100; this.maxBoostFuel = 100; this.boosting = false; this._wasDepleted = false;
+        this._camTarget = new THREE.Vector3(); this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
         this.playing = false; this.pause = false; this.lightningTimer = 0; this.thunderSfx = null; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0;
-        this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.routeIdx = 0; this.retries = 0;
+        this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.routeIdx = 0; this.retries = 0; this.hits = 0;
+        this.gyroOn = false; this.gyroBaseGamma = 0; this._gyroHandler = null;
         this.dom = {}; // Cached DOM elements
         this._initR(); this._initIn(); this._initG(); this._loop();
         window.addEventListener('resize', () => this._rsz());
@@ -29,7 +38,13 @@ class Game {
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 1.2;
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+          this.renderer.shadowMap.type = THREE.BasicShadowMap;
+          this.renderer.shadowMap.mapSize.width = 1024;
+          this.renderer.shadowMap.mapSize.height = 1024;
+        } else {
+          this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        }
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
         
         try {
@@ -45,7 +60,7 @@ class Game {
         } catch(e) { console.warn("Post processing err:", e); }
         
         // Cache DOM elements to prevent query overhead per frame
-        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready'];
+        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
       _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
@@ -59,6 +74,8 @@ class Game {
             if (e.key.toLowerCase() === 'h') this.toggleHighBeam();
             if (e.key.toLowerCase() === 'q') this.toggleTurnSignal(-1);
             if (e.key.toLowerCase() === 'e') this.toggleTurnSignal(1);
+            if (e.key.toLowerCase() === 'g') this._toggleGyro();
+            if (e.key.toLowerCase() === 'm') this.togglePhoneGps();
         });
         window.addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
 
@@ -242,27 +259,73 @@ class Game {
         bindTouch('mc-brake', 'arrowdown');
         bindTouch('mc-boost', 'shift');
 
-        // Gyroscope steering for mobile (±30° gamma)
-        window.gyroSteering = 0;
-        if (window.DeviceOrientationEvent) {
-          const startGyro = () => {
-            window.addEventListener('deviceorientation', (e) => {
-              if (e.gamma !== null && this.playing && !this.isPedestrian) {
-                const clamped = Math.max(-30, Math.min(30, e.gamma));
-                window.gyroSteering = clamped / 30;
-              }
-            }, true);
-          };
-          if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-            this._requestGyroPermission = () => {
-              DeviceOrientationEvent.requestPermission().then(state => {
-                if (state === 'granted') startGyro();
-              }).catch(() => {});
-            };
-          } else {
-            startGyro();
-          }
+        // Phone GPS toggle button
+        const gpsBtn = document.getElementById('phone-gps-btn');
+        if (gpsBtn) {
+          gpsBtn.addEventListener('touchstart', (e) => { e.preventDefault(); this.togglePhoneGps(); }, { passive: false });
+          gpsBtn.addEventListener('click', () => this.togglePhoneGps());
         }
+        const gpsClose = document.getElementById('phone-gps-close');
+        if (gpsClose) {
+          gpsClose.addEventListener('click', () => this.togglePhoneGps());
+          gpsClose.addEventListener('touchstart', (e) => { e.preventDefault(); this.togglePhoneGps(); }, { passive: false });
+        }
+
+        // Gyroscope steering — opt-in toggle (mobile)
+        window.gyroSteering = 0;
+        this._gyroSupported = !!window.DeviceOrientationEvent;
+        this._gyroNeedsPermission = this._gyroSupported && typeof DeviceOrientationEvent.requestPermission === 'function';
+        this._startGyro = () => {
+          if (this._gyroHandler) return;
+          this._gyroHandler = (e) => {
+            if (e.gamma !== null) this._lastGyroGamma = e.gamma;
+            if (e.gamma !== null && this.gyroOn && this.playing && !this.isPedestrian) {
+              const raw = Math.max(-30, Math.min(30, e.gamma));
+              window.gyroSteering = (raw - this.gyroBaseGamma) / 30;
+            } else {
+              window.gyroSteering = 0;
+            }
+          };
+          window.addEventListener('deviceorientation', this._gyroHandler, true);
+        };
+        this._stopGyro = () => {
+          if (this._gyroHandler) {
+            window.removeEventListener('deviceorientation', this._gyroHandler, true);
+            this._gyroHandler = null;
+          }
+          window.gyroSteering = 0;
+        };
+        this._toggleGyro = () => {
+          if (!this._gyroSupported) { toast('Gyro not supported on this device', '#ff3b30'); return; }
+          if (this.gyroOn) {
+            this.gyroOn = false;
+            this._stopGyro();
+            toast('Gyro OFF', '#95a5a6');
+            const btn = document.getElementById('mc-gyro');
+            if (btn) btn.classList.remove('gyro-active');
+          } else {
+            const doEnable = () => {
+              this.gyroOn = true;
+              this.gyroBaseGamma = 0;
+              this._startGyro();
+              toast('Gyro ON — tilt to steer', '#00c851');
+              const btn = document.getElementById('mc-gyro');
+              if (btn) btn.classList.add('gyro-active');
+              // Snapshot center after a short delay so device has settled
+              setTimeout(() => {
+                if (this.gyroOn && this._lastGyroGamma != null) this.gyroBaseGamma = this._lastGyroGamma;
+              }, 150);
+            };
+            if (this._gyroNeedsPermission) {
+              DeviceOrientationEvent.requestPermission().then(state => {
+                if (state === 'granted') doEnable();
+                else toast('Gyro permission denied', '#ff3b30');
+              }).catch(() => toast('Gyro permission error', '#ff3b30'));
+            } else {
+              doEnable();
+            }
+          }
+        };
 
 
         const sb = (id, k) => {
@@ -272,6 +335,13 @@ class Game {
           el.addEventListener('mousedown', dn); el.addEventListener('mouseup', up); el.addEventListener('mouseleave', up);
         };
         sb('tl', 'arrowleft'); sb('tr', 'arrowright'); sb('tu', 'arrowup'); sb('abb', 'b'); sb('abh', ' ');
+
+        // Gyro toggle button
+        const gyroBtn = document.getElementById('mc-gyro');
+        if (gyroBtn) {
+          gyroBtn.addEventListener('click', () => this._toggleGyro());
+          gyroBtn.addEventListener('touchstart', (e) => { e.preventDefault(); this._toggleGyro(); }, { passive: false });
+        }
       }
       _initG() { document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); }); }
       setGear(g) {
@@ -306,10 +376,12 @@ class Game {
         this.seatbeltOn = false;
         this.mobileOn = false;
         this.bucklingUp = false;
-        this.boostFuel = 100; this.boosting = false;
+        this.boostFuel = 100; this.boosting = false; this._wasDepleted = false;
+        this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
         this.highBeamOn = false;
         this.turnSignal = 0;
         this.turnTimer = 0;
+        this.phoneGpsOn = false;
         this._honkedThisFrame = false;
         this._nearbyPedCount = 0;
         this._collidedThisFrame = false;
@@ -336,6 +408,7 @@ class Game {
         this._buildScene(lv.mode); this.playing = true; this.pause = false; ui.show(null); this.timeLimit = this.mapCfg ? this.mapCfg.timeLimit || 120 : 120;
         const cfg = this.mapCfg || {};
         ['gc', 'hud', 'hudbar', 'hwrap', 'mobile-controls', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
+        if (this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'flex';
         
         // Show objective
         const objDesc = document.getElementById('objective-desc');
@@ -360,7 +433,7 @@ class Game {
         // Initialize tasks for this level
         this._initTasks(lv);
       }
-      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; } const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; } if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); }
+      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; }
       toggleSeatbelt(btn) {
           this.seatbeltOn = !this.seatbeltOn;
           const isBike = (this.vehMode === 'bike' || this.vehMode === 'cycle');
@@ -387,6 +460,22 @@ class Game {
           if (this.hL) this.hL.distance = this.highBeamOn ? 300 : 150;
           if (this.hR) this.hR.distance = this.highBeamOn ? 300 : 150;
           toast(this.highBeamOn ? 'High Beam ON' : 'Low Beam ON', '#3498db');
+      }
+      togglePhoneGps() {
+          this.phoneGpsOn = !this.phoneGpsOn;
+          const gps = this.dom['phone-gps'];
+          const btn = this.dom['phone-gps-btn'];
+          if (this.phoneGpsOn) {
+              if (gps) gps.classList.add('on');
+              if (btn) btn.style.background = 'rgba(94, 212, 245, 0.5)';
+              const isParked = this.isPedestrian || Math.abs(this.speed) < 0.05;
+              if (!isParked) {
+                  toast('⚠️ Keep eyes on the road!', '#e74c3c');
+              }
+          } else {
+              if (gps) gps.classList.remove('on');
+              if (btn) btn.style.background = 'rgba(94, 212, 245, 0.25)';
+          }
       }
       toggleTurnSignal(dir) {
           if (this.turnSignal === dir) {
@@ -715,11 +804,7 @@ class Game {
           this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
         } else {
           // Build the vehicle
-          if (vt === 'car' && window.lamboModel) {
-            this.playerVehicle = window.lamboModel.clone();
-          } else {
-            this.playerVehicle = _buildVehicle(vt, 0xffffff);
-          }
+          this.playerVehicle = _buildVehicle(vt, 0xffffff);
           this.playerVehicle.position.set(vStartX, 0, vStartZ);
           this.playerVehicle.rotation.y = vRotY;
           
@@ -772,10 +857,13 @@ class Game {
         const sk = cfg.sky;
         this.scene.background = new THREE.Color(sk);
         const fogDist = cfg.fog || 200;
+        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+        const fogNear = isMobile ? Math.min(fogDist * 0.35, 50) : fogDist * 0.35;
+        const fogFar = isMobile ? Math.min(fogDist * 1.2, 250) : fogDist * 1.2;
         if (cfg.mode === 'rain' || cfg.hasRain) {
-            this.scene.fog = new THREE.Fog(sk, fogDist * 0.1, fogDist * 0.6);
+            this.scene.fog = new THREE.Fog(sk, fogNear * 0.3, fogFar * 0.5);
         } else {
-            this.scene.fog = new THREE.Fog(sk, fogDist * 0.35, fogDist * 1.2);
+            this.scene.fog = new THREE.Fog(sk, fogNear, fogFar);
         }
         // Enhanced true color lighting with better contrast and shadows
         this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.15 : 0.45));
@@ -1096,6 +1184,17 @@ class Game {
                    this.obstacles.push(obs);
                 });
             });
+        }
+
+        // ── Mobile LOD: cull/simplify distant buildings ──
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+          this.scene.children.forEach(child => {
+            if (child.isMesh || child.isInstancedMesh) {
+              const d = child.position ? child.position.length() : 0;
+              if (d > 400) { this.scene.remove(child); }
+              else if (d > 200 && child.material) { child.material.fog = true; }
+            }
+          });
         }
 
         // Player vehicle
@@ -1817,7 +1916,7 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(); this._uobs(); this._umode(dt); this._ucam(); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks();
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(); this._ugps(); this._uobs(dt); this._umode(dt); this._ucam(); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks();
         
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
@@ -1849,10 +1948,15 @@ class Game {
                     this.playerCharacter.scale.set(0.55, 0.55, 0.55);
                     this.playerVehicle.add(this.playerCharacter);
                     this.player = this.playerVehicle;
-                    this.maxSpd = (this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1) * (this.seatbeltOn ? 1.1 : 1.0);
-                    this.accel = 0.045;
-                    this.turn = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.04 : 0.065;
-                    this.fric = (window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.97 : 0.94;
+                    const vt = this.vehMode || 'car';
+                    const rain = window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain);
+                    const hw = this.mapCfg && this.mapCfg.themeType === 'highway';
+                    const vs = VEHICLE_STATS[vt] || VEHICLE_STATS.car;
+                    this.maxSpd = (hw ? vs.maxSpd * 1.3 : vs.maxSpd) * (this.seatbeltOn ? 1.1 : 1.0);
+                    this.accel = vs.accel;
+                    this.turn = rain ? vs.turn * 0.65 : vs.turn;
+                    this.fric = rain ? vs.fric + 0.025 : vs.fric;
+                    this._grip = rain ? vs.grip * 0.3 : vs.grip;
                     toast(this.seatbeltOn ? '🚗 Entered +10% Speed Bonus!' : '🚗 Entered Vehicle!', this.seatbeltOn ? '#27ae60' : '#00c851');
                 }, 1500);
               } else {
@@ -1866,6 +1970,7 @@ class Game {
               this.playerCharacter.position.x += 6;
               this.scene.add(this.playerCharacter);
               this.player = this.playerCharacter;
+              this.player.visible = true;
               this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
               this.setGear('N');
               toast('🚶 Exited Vehicle!', '#00c851');
@@ -1911,22 +2016,31 @@ class Game {
             else this.speed = 0;
           }
         } else {
+          // ── Frame-rate independent acceleration ──
           if (up && this.gear !== 'P' && this.gear !== 'N') {
-            this.speed += this.accel * mult * (isRev ? -1 : 1);
+            this.speed += this.accel * mult * dt * 60 * (isRev ? -1 : 1);
           }
           if (dn) {
-            if (this.speed > 0) this.speed -= this.accel * 1.4;
-            else if (isRev && this.speed < -0.02) this.speed += this.accel * 1.4;
+            if (this.speed > 0) this.speed -= this.accel * 1.4 * dt * 60;
+            else if (isRev && this.speed < -0.02) this.speed += this.accel * 1.4 * dt * 60;
           }
           // Clamp to gear cap
           if (isRev) { this.speed = Math.max(this.speed, -cap); } else { this.speed = Math.min(this.speed, cap); }
-          this.speed *= this.fric;
+          // Frame-rate independent friction: pow(fric, dt*60) makes 0.945 feel identical at 30fps and 120fps
+          this.speed *= Math.pow(this.fric, dt * 60);
 
-          // Sprint / Boost — Shift key
-          if (this.keys['shift'] && this.boostFuel > 0 && up && this.gear === 'D') {
+          // Sprint / Boost — Shift key (frame-rate independent, requires seatbelt)
+          if (this.keys['shift'] && this.boostFuel > 0 && up && this.gear === 'D' && this.seatbeltOn) {
             this.boosting = true;
-            this.speed *= 1.35;
+            this.speed *= 1 + (0.35 * dt * 60);
             this.boostFuel = Math.max(0, this.boostFuel - 18 * dt);
+          } else if (this.keys['shift'] && !this.seatbeltOn && this.gear === 'D') {
+            if (!this._seatbeltWarnCd || Date.now() - this._seatbeltWarnCd > 3000) {
+              toast('⚠️ Buckle up to boost!', '#f2b84b');
+              this._seatbeltWarnCd = Date.now();
+            }
+            this.boosting = false;
+            this.boostFuel = Math.min(this.maxBoostFuel, this.boostFuel + 9 * dt);
           } else {
             this.boosting = false;
             this.boostFuel = Math.min(this.maxBoostFuel, this.boostFuel + 9 * dt);
@@ -1934,22 +2048,32 @@ class Game {
         }
 
         if (!overrideMove) {
-          // Speed-proportional steering 🔄 less turn at high speed for stability
+          let tAmt = 0;
+          // Speed-proportional steering with per-vehicle turn rate
           if (Math.abs(this.speed) > .01 && !this.isPedestrian) {
-            const sf = Math.max(0.45, 1 - Math.abs(this.speed) * 0.35);
+            const sf = Math.max(0.40, 1 - Math.abs(this.speed) * 0.40);
             const effTurn = this.turn * sf;
-            let tAmt = 0;
             if (lt) tAmt = 1;
             else if (rt) tAmt = -1;
             else if (window.analogSteering) tAmt = -window.analogSteering;
             else if (window.gyroSteering) tAmt = -window.gyroSteering;
-            if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * Math.sign(this.speed);
+            if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * Math.sign(this.speed) * dt * 60;
           }
+          // Camera tilt: smooth follow of lateral input, scaled by speed
+          const tiltTarget = -tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04);
+          this._camTilt += (tiltTarget - this._camTilt) * Math.min(1, dt * 8);
+
           const targetVx = Math.sin(this.player.rotation.y) * this.speed;
           const targetVz = Math.cos(this.player.rotation.y) * this.speed;
-          const grip = this.mode === 'rain' ? 0.04 : 0.6;
-          this.vx += (targetVx - this.vx) * grip;
-          this.vz += (targetVz - this.vz) * grip;
+          // ── Lateral grip model ──
+          // Per-vehicle base grip, reduced in rain, reduced at high speed for realistic drift feel
+          let grip = this._grip || 0.62;
+          if (this.mode === 'rain' || (this.mapCfg && this.mapCfg.hasRain)) grip *= 0.25;
+          grip *= Math.max(0.50, 1 - Math.abs(this.speed) * 0.22);
+          // Frame-rate independent grip lerp
+          const gripLerp = 1 - Math.pow(1 - grip, dt * 60);
+          this.vx += (targetVx - this.vx) * gripLerp;
+          this.vz += (targetVz - this.vz) * gripLerp;
         }
         
         this.player.position.x += this.vx; this.player.position.z += this.vz;
@@ -2092,11 +2216,16 @@ class Game {
               n.userData.baseSpd = n.userData.spd; 
               n.userData.state = 'CRUISE';
             }
+
+            const distToPlayer = this.player ? this.player.position.distanceToSquared(n.position) : 0;
+            if (distToPlayer > 62500) {
+              n.visible = false;
+              n.userData.spd = n.userData.baseSpd;
+              return;
+            }
+            n.visible = true;
             n.userData.laneT -= dt;
             let myLane = n.userData.txX;
-
-            const distToPlayer = this.player ? this.player.position.distanceTo(n.position) : 0;
-            n.visible = distToPlayer < 250;
 
             if (distToPlayer < 150) {
               let fsm = {
@@ -2267,7 +2396,6 @@ class Game {
                     n.userData.spd += (n.userData.baseSpd * 0.5 - n.userData.spd) * 0.05;
                     break;
                 }
-              }
             } else {
                // Far away, just cruise
                n.userData.spd += (n.userData.baseSpd - n.userData.spd) * 0.12;
@@ -2329,7 +2457,8 @@ class Game {
             this.hp -= this.seatbeltOn ? 9.6 : 12;
             if (this.hp <= 0) this._go('Collided with ' + (n.userData.npcType || 'Vehicle')); 
             else this._uh(); 
-            this.speed *= -.22; 
+            this.speed *= -.22;
+            this._camShakeAmt = Math.max(this._camShakeAmt, 0.40);
             if(window.sfx) window.sfx.play('error'); 
             toast('💥 Collision!', '#ff3b30'); 
           }
@@ -2337,6 +2466,15 @@ class Game {
       }
       _upeds(dt) {
         if (!this.peds) this.peds = [];
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+          this.peds.forEach(p => {
+            if (p.position.distanceToSquared(this.player.position) > 62500) {
+              p.visible = false;
+              return;
+            }
+            p.visible = true;
+          });
+        }
         
         // Count nearby pedestrians for task tracking
         this._nearbyPedCount = 0;
@@ -2441,7 +2579,7 @@ class Game {
           }
         });
       }
-      _uobs() {
+      _uobs(dt) {
         const px = this.player.position.x, pz = this.player.position.z;
         this.obstacles.forEach(o => {
           const dx = px - o.position.x, dz = pz - o.position.z;
@@ -2451,7 +2589,8 @@ class Game {
               this.hp -= this.seatbeltOn ? 8 : 10;
               if (this.hp <= 0) this._go('Collided with Barricade'); 
               else this._uh(); 
-              this.speed *= -.2; 
+              this.speed *= -.2;
+              this._camShakeAmt = Math.max(this._camShakeAmt, 0.35);
               toast('🚧 Collided with Barricade bounds!', '#ff9500'); 
           }
         });
@@ -2469,7 +2608,6 @@ class Game {
             });
         }
         if (this.speedBreakers) {
-            const dt = Math.min(this.clock.getDelta() || 0.016, 0.033);
             this.speedBreakers.forEach(sb => {
                 if (!sb.userData) sb.userData = { cd: 0 };
                 if (sb.userData.cd > 0) sb.userData.cd -= dt;
@@ -2480,6 +2618,7 @@ class Game {
                         this.speed *= 0.6;
                         this.hp -= this.seatbeltOn ? 4 : 5;
                         this._uh();
+                        this._camShakeAmt = Math.max(this._camShakeAmt, 0.15);
                         this.playerVehicle.position.y = 0.6;
                         setTimeout(() => { if(this.playerVehicle) this.playerVehicle.position.y = 0; }, 150);
                         toast('⚠️ High Speed on Breaker! Damage taken!', '#ff9500');
@@ -2505,6 +2644,7 @@ class Game {
           if (cp.userData.hit) { hits++; return; }
           if (this.player.position.distanceTo(cp.position) < 3.2) { cp.userData.hit = true; cp.visible = false; this.score += 100; hits++; toast('✅ Node Verified!', '#00c851'); sfx.play('ok'); }
         });
+        this.hits = hits;
         if (this.dom['hcp']) this.dom['hcp'].textContent = hits + '/' + this.cps.length;
 
         // Realtime GPS Arrow Target Tracking
@@ -2524,6 +2664,23 @@ class Game {
         } else if (da) da.style.display = 'none';
 
         if (hits >= this.cps.length && this.cps.length > 0) this.completeLevel();
+      }
+      _ugps() {
+        if (!this.phoneGpsOn) return;
+        const nextNode = this.cps.find(c => !c.userData.hit);
+        if (!nextNode || !this.playing) return;
+        const dx = nextNode.position.x - this.player.position.x, dz = nextNode.position.z - this.player.position.z;
+        const dist = Math.round(Math.hypot(dx, dz));
+        let rel = Math.atan2(dx, dz) - this.player.rotation.y;
+        while (rel < -Math.PI) rel += Math.PI * 2; while (rel > Math.PI) rel -= Math.PI * 2;
+        const deg = rel * 180 / Math.PI;
+        const arrow = this.dom['phone-gps-arrow'];
+        if (arrow) arrow.style.transform = 'rotate(' + Math.round(-deg) + 'deg)';
+        if (this.dom['phone-gps-dist']) this.dom['phone-gps-dist'].textContent = dist + 'm';
+        const dirText = Math.abs(deg) < 20 ? 'STRAIGHT' : deg > 0 ? 'TURN RIGHT' : 'TURN LEFT';
+        if (this.dom['phone-gps-dir']) this.dom['phone-gps-dir'].textContent = dirText;
+        const task = this.tasks && this.tasks.find(t => !t.done);
+        if (this.dom['phone-gps-obj']) this.dom['phone-gps-obj'].textContent = task ? task.label : 'Next checkpoint';
       }
       _umode(dt) {
         this.score += dt; document.getElementById('hsc').textContent = Math.round(this.score);
@@ -2559,17 +2716,47 @@ class Game {
             this.camera.position.z + lz
           );
         } else {
-          // Third Person Chase Cam
+          // ── Third Person Chase Cam — improved ──
           const camDist = this.isPedestrian ? 4 : 12;
           const camHeight = this.isPedestrian ? 2.5 : 4.5;
           const rotY = this.player.rotation.y;
+          // Speed-based look-ahead: camera leads in the direction of travel
+          const lookAhead = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) * 5, 3.5);
           this._camTarget.set(
-              this.player.position.x - Math.sin(rotY) * camDist, 
-              camHeight, 
-              this.player.position.z - Math.cos(rotY) * camDist
+              this.player.position.x - Math.sin(rotY) * camDist + Math.sin(rotY) * lookAhead,
+              camHeight,
+              this.player.position.z - Math.cos(rotY) * camDist + Math.cos(rotY) * lookAhead
           );
-          this.camera.position.lerp(this._camTarget, .25); 
-          this.camera.lookAt(this.player.position.x + Math.sin(rotY) * 15, 1.5, this.player.position.z + Math.cos(rotY) * 15);
+          // Frame-rate independent camera lerp
+          const camLerp = Math.min(1, dt * 6);
+          this.camera.position.lerp(this._camTarget, camLerp);
+
+          // Camera shake: decays exponentially
+          let shakeX = 0, shakeY = 0;
+          if (this._camShakeAmt > 0.001) {
+            shakeX = (Math.random() - 0.5) * this._camShakeAmt;
+            shakeY = (Math.random() - 0.5) * this._camShakeAmt;
+            this._camShakeAmt *= Math.pow(0.04, dt);
+          }
+
+          const tiltRoll = this._camTilt || 0;
+          this.camera.lookAt(
+            this.player.position.x + Math.sin(rotY) * 15 + shakeX,
+            1.5 + shakeY,
+            this.player.position.z + Math.cos(rotY) * 15
+          );
+          // Apply camera roll tilt (banking into turns)
+          this.camera.rotation.z = tiltRoll;
+
+          // ── Speed-based FOV ──
+          if (!this.isPedestrian && this.camera.fov !== undefined) {
+            const speedRatio = Math.min(Math.abs(this.speed) / (this.maxSpd || 1.1), 1);
+            this._camFovTarget = 60 + speedRatio * 15 + (this.boosting ? 5 : 0);
+            if (Math.abs(this.camera.fov - this._camFovTarget) > 0.15) {
+              this.camera.fov += (this._camFovTarget - this.camera.fov) * Math.min(1, dt * 4);
+              this.camera.updateProjectionMatrix();
+            }
+          }
         }
       }
       _uhud() {
@@ -2648,6 +2835,18 @@ class Game {
             }
           }
         }
+        // Speed lines overlay: radial vignette opacity scales with speed
+        const slEl = this.dom['speed-lines'];
+        if (slEl) {
+          if (!this.isPedestrian && Math.abs(this.speed) > 0.3) {
+            const sRatio = Math.min(Math.abs(this.speed) / (this.maxSpd || 1.1), 1);
+            const slOpacity = sRatio * 0.75 + (this.boosting ? 0.2 : 0);
+            slEl.style.display = 'block';
+            slEl.style.opacity = String(Math.min(slOpacity, 1));
+          } else {
+            slEl.style.opacity = '0';
+          }
+        }
         const tl = this.timeLimit || 120; const rem = Math.max(0, Math.ceil(tl - this.timer));
         const htmr = this.dom['htmr'];
         if (htmr) {
@@ -2712,7 +2911,6 @@ class Game {
         const files = [
           "Academy",
           "vehicles.js",
-          "lambo.js",
           "auto.js",
           "bus.js"
         ];

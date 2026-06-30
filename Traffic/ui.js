@@ -1489,9 +1489,17 @@ const _buildHuman = (isPlayer = false) => {
     g.add(hModel)
     g.add(hb)
 
-    // We still need mock lLeg and rLeg for the animation in game_core.js _upeds
-    const dummyGeo = new THREE.Group()
-    g.userData = { lLeg: dummyGeo, rLeg: dummyGeo, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
+    // Create visible mesh legs that overlay on the Kenney model for walk animation
+    const legColor = 0x333333
+    const legMat = new THREE.MeshLambertMaterial({ color: legColor })
+    const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.15 * s, 0.45 * s, 0.15 * s), legMat)
+    lLeg.position.set(-0.12 * s, 0.22 * s, 0)
+    g.add(lLeg)
+    const rLeg = new THREE.Mesh(new THREE.BoxGeometry(0.15 * s, 0.45 * s, 0.15 * s), legMat)
+    rLeg.position.set(0.12 * s, 0.22 * s, 0)
+    g.add(rLeg)
+
+    g.userData = { lLeg, rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
     return g
   }
 
