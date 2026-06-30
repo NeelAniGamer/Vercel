@@ -1948,6 +1948,7 @@ class Game {
                     this.playerCharacter.scale.set(0.55, 0.55, 0.55);
                     this.playerVehicle.add(this.playerCharacter);
                     this.player = this.playerVehicle;
+                    this._camSnapped = false;
                     const vt = this.vehMode || 'car';
                     const rain = window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain);
                     const hw = this.mapCfg && this.mapCfg.themeType === 'highway';
@@ -1970,6 +1971,7 @@ class Game {
               this.playerCharacter.position.x += 6;
               this.scene.add(this.playerCharacter);
               this.player = this.playerCharacter;
+              this._camSnapped = false;
               this.player.visible = true;
               this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
               this.setGear('N');
@@ -2058,6 +2060,9 @@ class Game {
             else if (window.analogSteering) tAmt = -window.analogSteering;
             else if (window.gyroSteering) tAmt = -window.gyroSteering;
             if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * Math.sign(this.speed) * dt * 60;
+            // Normalize yaw to [-PI, PI] to prevent extreme accumulation
+            while (this.player.rotation.y > Math.PI) this.player.rotation.y -= Math.PI * 2;
+            while (this.player.rotation.y < -Math.PI) this.player.rotation.y += Math.PI * 2;
           }
           // Camera tilt: smooth follow of lateral input, scaled by speed
           const tiltTarget = -tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04);
@@ -2078,6 +2083,7 @@ class Game {
         
         this.player.position.x += this.vx; this.player.position.z += this.vz;
         if (this.isPedestrian && Math.abs(this.speed) > 0.02) { const shift = this.keys['shift'] ? 18 : 10; this.player.position.y = Math.abs(Math.sin(this.timer * shift)) * (this.keys['shift'] ? 0.12 : 0.06); }
+        else if (!this.isPedestrian && this.playerVehicle && !this._sbBounce) { this.playerVehicle.position.y = 0; }
 
         // Hard world boundary clamp — prevents floating-point precision loss
         // Regular maps: roads extend to ~±1500, ground is 2000x2000 → clamp at ±1550
@@ -2095,6 +2101,11 @@ class Game {
         if (this.isPedestrian && owEl) owEl.textContent = "⚠️ JAYWALKING - Walk on the sidewalk/zebra crossing!";
         else if (owEl) owEl.textContent = "⚠️ OFF ROAD - Return to road!";
         if (this.levelCfg && this.levelCfg.hasPuddles && Math.random() < 0.3) { this.player.rotation.y += this.turn * (this.speed > 0 ? 1 : -1) * (Math.random() * 0.5 - 0.25); }
+        // Re-normalize after puddle jitter
+        if (!this.isPedestrian) {
+          while (this.player.rotation.y > Math.PI) this.player.rotation.y -= Math.PI * 2;
+          while (this.player.rotation.y < -Math.PI) this.player.rotation.y += Math.PI * 2;
+        }
         if (this.isPedestrian) {
           let nearZebra = false;
           (this.mapCfg.ints || []).forEach(([ix, iz]) => { if (Math.abs(this.player.position.x - ix) < 10 && Math.abs(this.player.position.z - iz) < 10) nearZebra = true; });
@@ -2627,12 +2638,14 @@ class Game {
                         this._uh();
                         this._camShakeAmt = Math.max(this._camShakeAmt, 0.15);
                         this.playerVehicle.position.y = 0.6;
-                        setTimeout(() => { if(this.playerVehicle) this.playerVehicle.position.y = 0; }, 150);
+                        this._sbBounce = true;
+                        setTimeout(() => { if(this.playerVehicle) { this.playerVehicle.position.y = 0; this._sbBounce = false; } }, 150);
                         toast('⚠️ High Speed on Breaker! Damage taken!', '#ff9500');
                         sfx.play('error');
                     } else {
                         this.playerVehicle.position.y = 0.2;
-                        setTimeout(() => { if(this.playerVehicle) this.playerVehicle.position.y = 0; }, 150);
+                        this._sbBounce = true;
+                        setTimeout(() => { if(this.playerVehicle) { this.playerVehicle.position.y = 0; this._sbBounce = false; } }, 150);
                     }
                 }
             });
@@ -2734,6 +2747,11 @@ class Game {
               camHeight,
               this.player.position.z - Math.cos(rotY) * camDist + Math.cos(rotY) * lookAhead
           );
+          // On first frame, snap camera to correct position (avoid lerp from origin)
+          if (!this._camSnapped) {
+            this._camSnapped = true;
+            this.camera.position.copy(this._camTarget);
+          }
           // Frame-rate independent camera lerp
           const camLerp = Math.min(1, dt * 6);
           this.camera.position.lerp(this._camTarget, camLerp);
@@ -2752,8 +2770,12 @@ class Game {
             1.5 + shakeY,
             this.player.position.z + Math.cos(rotY) * 15
           );
-          // Apply camera roll tilt (banking into turns)
-          this.camera.rotation.z = tiltRoll;
+          // Apply camera roll tilt via quaternion to avoid Euler angle gimbal issues
+          if (tiltRoll !== 0) {
+            const _rollQ = new THREE.Quaternion();
+            _rollQ.setFromAxisAngle(new THREE.Vector3(0, 0, 1), tiltRoll);
+            this.camera.quaternion.multiply(_rollQ);
+          }
 
           // ── Speed-based FOV ──
           if (!this.isPedestrian && this.camera.fov !== undefined) {
