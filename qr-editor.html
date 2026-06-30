@@ -83,8 +83,7 @@ body::after {
         .dropdown-btn span { font-size: 0.7rem; transition: transform 0.3s ease; }
         .dropdown.active .dropdown-btn span { transform: rotate(180deg); }
         .dropdown-content { display: flex; flex-direction: column; position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: transparent; min-width: 220px; z-index: 1001; padding-top: 15px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.5s; }
-        .dropdown-content-inner { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-light); box-shadow: 0 15px 35px rgba(0,0,0,0.4); overflow: hidden; display: flex; flex-direction: column; padding: 10px 0; }
-        body.dark-mode .dropdown-content-inner { box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .dropdown-content-inner { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-light); box-shadow: 0 15px 35px rgba(0,0,0,0.5); overflow: hidden; display: flex; flex-direction: column; padding: 10px 0; }
         .dropdown.active .dropdown-content { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); transition-delay: 0s; }
         .dropdown.active:not(:hover) .dropdown-content { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px); transition-delay: 0.5s; }
         .dropdown-content a { color: var(--text-muted); padding: 12px 20px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: space-between;}
@@ -102,10 +101,10 @@ body::after {
         .slider.round:before { border-radius: 50%; }
 
         /* Global Account UI */
-        .nav-login-btn { background: rgba(16,185,129,0.1); color: #047857; border: 1px solid #10b981; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-decoration:none; }
-        body.dark-mode .nav-login-btn { color: #34d399; border-color: #34d399; }
-        body.dark-mode .nav-login-btn:hover { background: #34d399; color: #000; box-shadow: 0 0 20px rgba(52,211,153,0.4); }
-        .nav-login-btn:hover { background: #10b981; color: #000; box-shadow: 0 0 20px rgba(16,185,129,0.4); }
+        .nav-login-btn { background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid #34d399; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-decoration:none; }
+        .nav-login-btn:hover { background: #34d399; color: #000; box-shadow: 0 0 20px rgba(52,211,153,0.4); }
+        body.light .nav-login-btn { color: #047857; border-color: #10b981; }
+        body.light .nav-login-btn:hover { background: #10b981; color: #000; box-shadow: 0 0 20px rgba(16,185,129,0.4); }
         .nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: transparent; border: 1px solid var(--border-light); border-radius: 30px; cursor: pointer; transition: 0.3s; }
         .nav-user-profile:hover { border-color: #10b981; }
         .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #10b981; color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
@@ -149,6 +148,8 @@ body::after {
 .st p { font-size: 0.95rem; font-weight: 800; color: var(--txt); margin-bottom: 2px; }
 .st span { font-size: 0.75rem; color: var(--txt-m); font-weight: 500; }
 .si.act .st p { color: var(--pri); }
+.breadcrumb { display: flex; gap: 8px; align-items: center; font-size: 0.82rem; color: var(--txt-m); font-weight: 500; padding: 10px 0 5px; }
+.breadcrumb span:first-child { color: var(--pri); font-weight: 700; }
 
 .sp { display: none; flex-direction: column; gap: 25px; flex: 1; animation: fadeIn 0.3s ease-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -158,7 +159,7 @@ body::after {
 
 .type-slbl { font-size: 0.85rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 1.5px; padding: 15px 0 10px; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
 .type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-.tc { padding: 25px 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; cursor: pointer; transition: 0.3s; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.tc { padding: 25px 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; cursor: pointer; transition: 0.3s; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); font: inherit; color: inherit; width: 100%; }
 .tc:hover { border-color: var(--pri); transform: translateY(-5px); box-shadow: 0 15px 30px var(--glow); background: var(--panel-hover); }
 .tc.sel { border-color: var(--pri); background: rgba(16,185,129,0.08); box-shadow: 0 0 0 2px var(--pri), inset 0 0 20px var(--glow); }
 .tc-icon { font-size: 2.5rem; margin-bottom: 15px; transition: 0.3s; }
@@ -170,6 +171,7 @@ body::after {
 .fl { font-size: 0.8rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
 .fi { width: 100%; padding: 15px 18px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; color: var(--txt); font-size: 1rem; outline: none; transition: 0.3s; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
 .fi:focus { border-color: var(--pri); box-shadow: 0 0 0 3px var(--glow), inset 0 2px 4px rgba(0,0,0,0.2); background: var(--panel-hover); }
+.fi:focus-visible { outline: 2px solid var(--pri); outline-offset: 2px; }
 .fi::placeholder { color: var(--txt-m); opacity: 0.5; }
 textarea.fi { min-height: 120px; resize: vertical; }
 select.fi { cursor: pointer; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%2310b981" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position: right 15px center; }
@@ -177,7 +179,8 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
 
 .ds { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); transition: 0.3s; }
 .ds:hover { border-color: rgba(16,185,129,0.5); }
-.dsh { padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; background: transparent; }
+.dsh { padding: 20px 25px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; background: none; border: none; width: 100%; text-align: left; font: inherit; color: inherit; border-radius: 0; }
+.dsh:focus-visible { outline: 2px solid var(--pri); outline-offset: -2px; }
 .dsh-l { display: flex; align-items: center; gap: 15px; }
 .dsi { font-size: 1.5rem; filter: drop-shadow(0 2px 5px var(--glow)); }
 .dst { font-size: 1.1rem; font-weight: 800; color: var(--txt); }
@@ -273,13 +276,13 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
   .site-nav { padding: 15px 20px; }
   .desktop-dl { display: none; }
             .mobile-dl { display: block; text-align: center; width: 100%; margin-top: 5px; }
-            .top-nav { width: 95%; margin: 15px auto 0; border-radius: 20px; top: 15px; padding: 10px 15px; flex-direction: row; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-light); }
-            body.dark-mode .top-nav { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+            .top-nav { width: 95%; margin: 15px auto 0; border-radius: 20px; top: 15px; padding: 10px 15px; flex-direction: row; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--border-light); }
+            body.light .top-nav { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
             .mobile-menu-btn { display: block; }
             .nav-brand { gap: 8px; font-size: 1.05rem; }
             .brand-logo { height: 32px; }
-            .nav-links { display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--nav-bg); backdrop-filter: blur(15px); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-            body.dark-mode .nav-links { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+            .nav-links { display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--nav-bg); backdrop-filter: blur(15px); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+            body.light .nav-links { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
             .nav-links.active { display: flex; }
             .theme-switch-wrapper { margin: 10px auto 0; width: 100%; justify-content: center; border-left: none; padding-left: 0; }
   .type-grid { grid-template-columns: 1fr 1fr; }
@@ -324,20 +327,30 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
 /* --- QRFY AESTHETIC OVERRIDES FOR STEP 3 --- */
 #sp3 {
+  --q-bg: #0c1224;
+  --q-panel: #111827;
+  --q-border: rgba(255,255,255,0.08);
+  --q-border-hover: rgba(255,255,255,0.16);
+  --q-text: #e8e3d8;
+  --q-text-m: #8891aa;
+  --q-blue: #3b82f6;
+  --q-blue-light: rgba(59,130,246,0.12);
+  --q-gray-light: #1a2332;
+  
+  background: var(--q-bg);
+  color: var(--q-text);
+  padding: 30px;
+  border-radius: 12px;
+}
+body.light #sp3 {
   --q-bg: #ffffff;
   --q-panel: #ffffff;
   --q-border: #e5e7eb;
   --q-border-hover: #d1d5db;
   --q-text: #111827;
   --q-text-m: #6b7280;
-  --q-blue: #3b82f6;
   --q-blue-light: #eff6ff;
   --q-gray-light: #f8f9fa;
-  
-  background: var(--q-bg);
-  color: var(--q-text);
-  padding: 30px;
-  border-radius: 12px;
 }
 #sp3 .sh { color: var(--q-text); font-size: 1.8rem; font-weight: 700; letter-spacing: 0; }
 #sp3 .ss { color: var(--q-text-m); font-size: 0.9rem; }
@@ -405,6 +418,19 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 #sp3 .logo-up p span { font-weight: 400; color: var(--q-text-m); }
 #sp3 .logo-up .up-icon { font-size: 1.2rem; }
 
+/* Focus-visible for keyboard navigation */
+*:focus-visible { outline: 2px solid var(--pri); outline-offset: 2px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--pri); outline-offset: 2px; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .mo, .modal-backdrop { transition: none !important; }
+}
+
+/* Screen reader only utility */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
 </style>
 
 <script>
@@ -443,14 +469,16 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
-<body class="dark-mode">
+<body>
+
+<a href="#mainContent" class="sr-only" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;" onfocus="this.style.cssText='position:fixed;left:0;top:0;width:auto;height:auto;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'">Skip to main content</a>
 
 <nav class="top-nav">
     <a href="home" class="nav-brand">
         <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async">
         <span class="brand-name">Class Of Learners</span>
     </a>
-    <button class="mmb" id="mmb">
+    <button class="mmb" id="mmb" aria-label="Navigation menu" aria-expanded="false" aria-controls="navLinks">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
     </button>
     <div class="nav-links" id="navLinks">
@@ -458,8 +486,8 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         <a href="about" class="nav-link">About</a>
         <a href="school" class="nav-link">School</a>
         <a href="sneh-asha" class="nav-link">Sneh Asha</a>
-        <div class="dropdown" onclick="this.classList.toggle('active')">
-            <button class="dropdown-btn act">Projects <span class="darr">▼</span></button>
+        <div class="dropdown">
+            <button class="dropdown-btn act" aria-expanded="false" aria-haspopup="true" onclick="this.parentElement.classList.toggle('active'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('active'))">Projects <span class="darr" aria-hidden="true">▼</span></button>
             <div class="dropdown-content">
                 <div class="dropdown-content-inner">
                     <a href="ati">Typing Instructor <span>⌨️</span></a>
@@ -522,7 +550,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   </div>
 </aside>
 
-<div class="workspace">
+<div class="workspace" id="mainContent">
 
   <div class="panel act" id="pNew">
     <div class="steps-bar">
@@ -542,13 +570,17 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
       </div>
     </div>
 
+    <nav class="breadcrumb" id="breadcrumb" aria-label="Editor progress">
+      <span>Step 1</span><span aria-hidden="true">—</span><span>QR Type</span>
+    </nav>
+
     <div class="sp act" id="sp1">
       <div><div class="sh">Select Type</div><p class="ss">Choose what action occurs when scanned.</p></div>
       <div style="flex:1; display:flex; flex-direction:column;">
         <p class="type-slbl">Dynamic Formats (Editable & Trackable)</p>
-        <div class="type-grid" id="dynG"></div>
+        <div class="type-grid" id="dynG" role="radiogroup" aria-label="Dynamic QR code types"></div>
         <p class="type-slbl" style="margin-top: 30px;">Static Formats (Offline & Encoded)</p>
-        <div class="type-grid" id="statG"></div>
+        <div class="type-grid" id="statG" role="radiogroup" aria-label="Static QR code types"></div>
       </div>
       <div class="sn-row"><div style="flex:1"></div><button class="btn-nx" onclick="nextFrom1()">Continue to Content →</button></div>
     </div>
@@ -576,6 +608,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
                           </label>
                       </div>
                       <div id="advNameWrap" style="display:block;">
+                          <label for="advQrName" class="sr-only">QR Code Name</label>
                           <input type="text" id="advQrName" class="fi" value="My QR Code" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2);">
                       </div>
                       
@@ -657,10 +690,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
       <div style="flex:1; display:flex; flex-direction:column;">
 
         <div class="ds open" id="dsQS">
-          <div class="dsh" onclick="toggleDS('dsQS')">
+          <button class="dsh" onclick="toggleDS('dsQS')" aria-expanded="true" aria-controls="dsQSb">
             <div class="dsh-l"><div class="dsi">⚡</div><div><div class="dst">Quick Styles</div><div class="dss">Apply pre-designed style presets with one click.</div></div></div>
-            <span class="dschev">▼</span>
-          </div>
+            <span class="dschev" aria-hidden="true">▼</span>
+          </button>
           <div class="dsb open" id="dsQSb">
               <div style="display:flex; flex-wrap:wrap; gap:10px;">
                   <button class="qs-chip" onclick="applyQS('modern')" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;">Modern</button>
@@ -680,10 +713,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         </div>
 
         <div class="ds open" id="dsF">
-          <div class="dsh" onclick="toggleDS('dsF')">
+          <button class="dsh" onclick="toggleDS('dsF')" aria-expanded="false" aria-controls="dsFb">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div><div><div class="dst">Frame</div><div class="dss">Define the QR code outline by choosing from preset frames.</div></div></div>
-            <span class="dschev">▼</span>
-          </div>
+            <span class="dschev" aria-hidden="true">▼</span>
+          </button>
           <div class="dsb open" id="dsFb">
               <div class="vg" id="frGrid"></div>
               
@@ -704,25 +737,25 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         </div>
 
         <div class="ds" id="dsD">
-          <div class="dsh" onclick="toggleDS('dsD')">
+          <button class="dsh" onclick="toggleDS('dsD')" aria-expanded="false" aria-controls="dsDb">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M7 7h10"></path><path d="M7 11h10"></path><path d="M7 15h10"></path></svg></div><div><div class="dst">QR code style</div><div class="dss">Customize the central area of the QR code by combining shapes and colors.</div></div></div>
-            <span class="dschev">▼</span>
-          </div>
+            <span class="dschev" aria-hidden="true">▼</span>
+          </button>
           <div class="dsb" id="dsDb"><div class="vg" id="dotG"></div></div>
         </div>
         
         <div class="ds" id="dsCl">
-          <div class="dsh" onclick="toggleDS('dsCl')">
+          <button class="dsh" onclick="toggleDS('dsCl')" aria-expanded="false" aria-controls="dsClb">
             <div class="dsh-l"><div class="dsi">🎨</div><div><div class="dst">Border and background</div><div class="dss">Modify colours and gradients.</div></div></div>
-            <span class="dschev">▼</span>
-          </div>
+            <span class="dschev" aria-hidden="true">▼</span>
+          </button>
           <div class="dsb" id="dsClb">
              <div class="qrfy-cb-box" style="background: transparent; border: none; padding: 0; margin-bottom: 15px;">
                  <label style="color: var(--q-text-m); font-weight: 400; font-size: 0.85rem; align-items: flex-start;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> <span>Remember! For the optimal reading of the QR code, you need to use high contrast colours. We recommend selecting a light and a dark colour for your QR code.</span></label>
              </div>
              
              <div class="qrfy-color-panel">
-                 <label class="sec-lbl" style="color: var(--q-text);">Border colour</label>
+                  <label class="sec-lbl" for="fgH" style="color: var(--q-text);">Border colour</label>
                  <label class="gtog" style="margin:0;"><input type="checkbox" id="fgG" onchange="tg('fg')"> Use gradients?</label>
                  <div class="qrfy-color-row">
                      <div class="qrfy-color-input">
@@ -741,7 +774,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
              </div>
 
              <div class="qrfy-color-panel">
-                 <label class="sec-lbl" style="color: var(--q-text);">Background colour</label>
+                  <label class="sec-lbl" for="bgH" style="color: var(--q-text);">Background colour</label>
                  <label class="gtog" style="margin:0;"><input type="checkbox" id="bgG" onchange="tg('bg')"> Use gradients?</label>
                  <div class="qrfy-color-row">
                      <div class="qrfy-color-input">
@@ -765,10 +798,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         </div>
 
         <div class="ds" id="dsC">
-          <div class="dsh" onclick="toggleDS('dsC')">
+          <button class="dsh" onclick="toggleDS('dsC')" aria-expanded="false" aria-controls="dsCb">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="10" height="10" rx="2" ry="2"></rect></svg></div><div><div class="dst">Corners</div><div class="dss">Modify the shape and color of the corners for a unique finish.</div></div></div>
-            <span class="dschev">▼</span>
-          </div>
+            <span class="dschev" aria-hidden="true">▼</span>
+          </button>
           <div class="dsb" id="dsCb">
             <p style="font-size:.85rem;font-weight:600;color:var(--q-text-m);margin-top:10px;">Border style</p>
             <div class="vg sm" id="csqG" style="margin-bottom: 25px;"></div>
@@ -789,10 +822,10 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         </div>
 
         <div class="ds" id="dsCr">
-          <div class="dsh" onclick="toggleDS('dsCr')">
+          <button class="dsh" onclick="toggleDS('dsCr')" aria-expanded="false" aria-controls="dsCrb">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div><div><div class="dst">Correction Level</div><div class="dss">Ensures a reliable reading by compensating for damage or distortion.</div></div></div>
-            <span class="dschev">▼</span>
-          </div>
+            <span class="dschev" aria-hidden="true">▼</span>
+          </button>
           <div class="dsb" id="dsCrb">
             <div class="qrfy-cb-box" style="background: var(--q-gray-light); border: none; padding: 15px; margin-bottom: 20px;">
                 <label style="color: var(--q-text-m); font-weight: 400; font-size: 0.85rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> Choosing a higher level improves readability, although it may increase the size of the QR code.</label>
@@ -802,14 +835,14 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
         </div>
 
         <div class="ds" id="dsL">
-          <div class="dsh" onclick="toggleDS('dsL')">
+          <button class="dsh" onclick="toggleDS('dsL')" aria-expanded="false" aria-controls="dsLb">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div><div><div class="dst">Add logo</div><div class="dss">Add a central logo by uploading your image or choosing one of our designs.</div></div></div>
-            <span class="dschev">▼</span>
-          </div>
+            <span class="dschev" aria-hidden="true">▼</span>
+          </button>
           <div class="dsb" id="dsLb">
             <label style="font-size:0.85rem; font-weight:600; color:var(--q-text-m); margin-bottom:10px; display:block;">Select a logo</label>
             <div class="logo-ps" id="logoPs"></div>
-            <div class="logo-up" onclick="document.getElementById('lFile').click()">
+            <div class="logo-up" onclick="document.getElementById('lFile').click()" role="button" tabindex="0" aria-label="Upload logo image" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('lFile').click();}">
               <div class="up-icon">⬆️</div>
               <p>Add your logo <span style="font-size:0.8rem; font-weight:400; color:var(--q-text-m);">(JPG, JPEG, or PNG / 2MB max)</span></p>
             </div>
@@ -824,7 +857,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
                <label class="trp" style="margin-top: 15px; display: block; color:var(--q-text);"><input type="checkbox" id="logoBgHide" checked onchange="setLogoOpt('hideBackgroundDots', this.checked)"> Hide QR Dots Behind Logo</label>
             </div>
 
-            <input type="file" id="lFile" accept="image/*" style="display:none" onchange="handleLogo(this)">
+            <input type="file" id="lFile" accept="image/*" style="display:none" onchange="handleLogo(this)" aria-label="Upload logo image">
             <button id="rmLogo" style="display:none;width:100%;padding:12px;margin-top:15px;background:var(--q-panel);border:1px solid #ef4444;border-radius:12px;color:#ef4444;font-weight:600;cursor:pointer" onclick="rmL()">✖ Remove Current Logo</button>
           </div>
         </div>
@@ -861,6 +894,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
   <div class="prev-act">
     <div class="dlr">
       <button class="dl-main" onclick="dlQR('png')">⬇️ Download PNG</button>
+      <label for="dlSz" class="sr-only">Download size</label>
       <select class="dl-sz" id="dlSz">
         <option value="400">400px</option>
         <option value="800" selected>800px</option>
@@ -926,11 +960,11 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 }
 </style>
 
-<div class="modal-backdrop" id="bulkModal">
+<div class="modal-backdrop" id="bulkModal" role="dialog" aria-modal="true" aria-labelledby="bulkModalTitle">
     <div class="modal-card">
         <div class="modal-header">
-            <div class="modal-icon">🎯</div>
-            <h2 class="modal-title">Bulk QR Generator</h2>
+            <div class="modal-icon" aria-hidden="true">🎯</div>
+            <h2 class="modal-title" id="bulkModalTitle">Bulk QR Generator</h2>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
             <p class="modal-desc" style="margin-bottom:0; max-width: 75%;">Paste URLs (one per line) or upload a CSV (format: <code>filename,URL</code>) to auto-name files.</p>
@@ -941,6 +975,7 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
             <input type="file" id="bulkFileInput" accept=".txt,.csv" style="display:none" onchange="handleBulkFileUpload(event)">
         </div>
         <textarea class="modal-textarea" id="bulkData" placeholder="promo-1,https://example.com/promo-1&#10;promo-2,https://example.com/promo-2&#10;https://example.com/unnamed-promo"></textarea>
+        <div id="bulkPreview" style="display:none; max-height:150px; overflow:auto; margin-bottom:14px; border:1px solid var(--border); border-radius:8px;"></div>
         <div class="modal-actions" style="justify-content: space-between; align-items: center;">
             <span id="bulkProgress" style="color: var(--prim); font-size: 0.9rem; font-weight: 600; opacity: 0; transition: opacity 0.3s;">Generating 0/0...</span>
             <div style="display:flex; gap:15px;">
@@ -1119,7 +1154,14 @@ function initQR(){
   updateInfo();
 }
 
+if(typeof toast==='undefined'){ window.toast=function(msg,color){ var t=document.createElement('div'); t.setAttribute('role','status'); t.setAttribute('aria-live','polite'); t.textContent=msg; t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:12px;font-size:0.9rem;font-weight:600;z-index:99999;opacity:0;transition:opacity 0.3s;pointer-events:none;'+(color==='green'?'background:#10b981;color:#fff':'background:#1e293b;color:#f8fafc'); document.body.appendChild(t); requestAnimationFrame(function(){t.style.opacity='1';}); setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove();},300);},2500); }; }
+
+var _luTimer = null;
 function lu(){
+  clearTimeout(_luTimer);
+  _luTimer = setTimeout(_luExec, 300);
+}
+function _luExec(){
   const dataString = getQRDataString();
   if(!dataString || !dataString.trim()) return;
   opts.data = dataString;
@@ -1205,6 +1247,18 @@ function applyQS(style) {
             backgroundOptions: opts.backgroundOptions
         });
     }
+    // Sync UI: color pickers
+    if(opts.dotsOptions && opts.dotsOptions.color) { var fgEl=document.getElementById('fgH'); if(fgEl) fgEl.value=opts.dotsOptions.color; }
+    if(opts.backgroundOptions && opts.backgroundOptions.color) { var bgEl=document.getElementById('bgH'); if(bgEl) bgEl.value=opts.backgroundOptions.color; }
+    // Sync UI: dot grid
+    var dotType=opts.dotsOptions?opts.dotsOptions.type:'square';
+    document.querySelectorAll('#dotG .vb').forEach(function(b){ if(b.dataset.dt===dotType) b.classList.add('sel'); else b.classList.remove('sel'); });
+    // Sync UI: corner square grid
+    var csqType=opts.cornersSquareOptions?opts.cornersSquareOptions.type:'square';
+    document.querySelectorAll('#csqG .vb').forEach(function(b){ if(b.dataset.csq===csqType) b.classList.add('sel'); else b.classList.remove('sel'); });
+    // Sync UI: corner dot grid
+    var cdType=opts.cornersDotOptions?opts.cornersDotOptions.type:'dot';
+    document.querySelectorAll('#cdG .vb').forEach(function(b){ if(b.dataset.cd===cdType) b.classList.add('sel'); else b.classList.remove('sel'); });
 }
 
 function updateInfo(){
@@ -1225,8 +1279,9 @@ function updateInfo(){
 function toggleDS(id){
   const b=document.getElementById(id+'b');
   const ds=document.getElementById(id);
-  if(b.classList.contains('open')){ b.classList.remove('open'); ds.classList.remove('open'); }
-  else { b.classList.add('open'); ds.classList.add('open'); }
+  const btn=ds?ds.previousElementSibling:null;
+  if(b.classList.contains('open')){ b.classList.remove('open'); ds.classList.remove('open'); if(btn)btn.setAttribute('aria-expanded','false'); }
+  else { b.classList.add('open'); ds.classList.add('open'); if(btn)btn.setAttribute('aria-expanded','true'); }
 }
 
 function setCrnCol(type, val) {
@@ -1458,6 +1513,8 @@ function buildPremiumPalettes(){
 
 function handleLogo(input){
   const f=input.files[0];if(!f)return;
+  if(!f.type.startsWith('image/')){toast('Only image files are allowed.','');input.value='';return;}
+  if(f.size>2*1024*1024){toast('Logo must be under 2MB.','');input.value='';return;}
   const r=new FileReader(); r.onload=function(e){ applyLogo(e.target.result); document.querySelectorAll('.logo-p').forEach(x=>x.classList.remove('sel')); }; r.readAsDataURL(f);
 }
 function applyLogo(src){ opts.image=src;if(qrInst)qrInst.update({image:src}); const rml = document.getElementById('rmLogo'); if(rml) rml.style.display='block'; }
@@ -1505,7 +1562,8 @@ const CORR=[
 function buildCorrGrid(){
   const g=document.getElementById('corrG');if(!g)return;g.innerHTML='';
   CORR.forEach(c=>{
-    const b=document.createElement('div');b.className='corr-b'+(c.id==='Q'?' sel':'');b.dataset.cr=c.id; b.onclick=function(){setCorr(c.id);};
+    const currentLvl = (opts.qrOptions && opts.qrOptions.errorCorrectionLevel) || 'H';
+    const b=document.createElement('div');b.className='corr-b'+(c.id===currentLvl?' sel':'');b.dataset.cr=c.id; b.onclick=function(){setCorr(c.id);};
     const cv=document.createElement('canvas');cv.width=40;cv.height=40; drawCorrPrev(cv,c.id); b.appendChild(cv);
     b.innerHTML+=`<div style="display:flex; justify-content:space-between; align-items:center; width:100%;"><div class="clv">${c.l}</div><div class="cpt">${c.p}</div></div>`; g.appendChild(b);
   });
@@ -1527,6 +1585,14 @@ function goStep(n){
     if(sEl) { if(i===n) sEl.classList.add('act'); else sEl.classList.remove('act'); if(i<n) sEl.classList.add('done'); else sEl.classList.remove('done'); }
   });
   currentStep=n;
+  // Update breadcrumb
+  var bc=document.getElementById('breadcrumb');
+  if(bc){
+    var stepNames=['QR Type','Content','Theme'];
+    var to=DYN.concat(STA).filter(function(x){return x.id===selType;})[0];
+    var typeName=to?to.name:'';
+    bc.innerHTML='<span>Step '+n+'</span><span aria-hidden="true">—</span><span>'+(n===2?typeName:stepNames[n-1])+'</span>';
+  }
   if(n===2){
     const to=DYN.concat(STA).filter(x=>x.id===selType)[0]; const h=document.getElementById('s2h'); if(h&&to) h.textContent='Content: '+to.name;
   }
@@ -1547,8 +1613,9 @@ function nextFrom2(){
 }
 function buildTypeGrids(){
   function mc(t){
-    const d=document.createElement('div');d.className='tc'+(t.id==='url'?' sel':'');d.dataset.t=t.id;
-    d.onclick=function(){ document.querySelectorAll('.tc').forEach(x=>x.classList.remove('sel')); d.classList.add('sel'); selType=t.id; };
+    const d=document.createElement('button');d.className='tc'+(t.id==='url'?' sel':'');d.dataset.t=t.id;
+    d.setAttribute('role','radio');d.setAttribute('aria-checked',t.id==='url'?'true':'false');
+    d.onclick=function(){ document.querySelectorAll('.tc').forEach(x=>{x.classList.remove('sel');x.setAttribute('aria-checked','false')}); d.classList.add('sel'); d.setAttribute('aria-checked','true'); selType=t.id; };
     d.innerHTML=`<div class="tc-icon">${t.icon}</div><div class="tc-info"><h4>${t.name}</h4><p>${t.desc}</p></div>`; return d;
   }
   const dg=document.getElementById('dynG'),sg=document.getElementById('statG');
@@ -1625,8 +1692,28 @@ function dlQR(ext){
   }, 1000); // Wait for QR code to fully render inside
 }
 
+function validateContent(){
+  const urlTypes=['url','pdf','images','video','social','maps','links','business','event','feedback','menu','vcard+'];
+  if(urlTypes.indexOf(selType)!==-1){
+    const u=(g('f0')||'').trim();
+    if(!u) return {ok:false,msg:'Please enter a URL.'};
+    if(!/^https?:\/\//i.test(u)&&!/^[a-z0-9\-]+\./i.test(u)) return {ok:false,msg:'Enter a valid URL (e.g. https://...)'};
+  }
+  if(selType==='text'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter some text.'}; }
+  if(selType==='vcard'){ if(!(g('vc0')||'').trim()) return {ok:false,msg:'Full name is required for vCard.'}; }
+  if(selType==='wifi'){ if(!(g('wf0')||'').trim()) return {ok:false,msg:'Please enter the WiFi network name (SSID).'}; }
+  if(selType==='whatsapp'){ if(!(g('wa0')||'').replace(/\D/g,'')) return {ok:false,msg:'Please enter a phone number.'}; }
+  if(selType==='email'){ if(!(g('em0')||'').trim()) return {ok:false,msg:'Please enter an email address.'}; }
+  if(selType==='sms'){ if(!(g('sm0')||'').trim()) return {ok:false,msg:'Please enter a phone number.'}; }
+  if(selType==='phone'){ if(!(g('ph0')||'').trim()) return {ok:false,msg:'Please enter a phone number.'}; }
+  return {ok:true};
+}
+
 function saveQR(silent = false){
   if(!qrInst){ if(!silent) toast('Render a QR code first.',''); return;}
+  // Validate required content
+  const val = validateContent();
+  if(!val.ok){ if(!silent) toast(val.msg, ''); return;}
   const tmp=document.createElement('div');
   tmp.style.cssText='position:fixed;left:-9999px;top:-9999px;width:200px;height:200px';
   document.body.appendChild(tmp);
@@ -1733,46 +1820,66 @@ function saveCustomPreset() {
     toast(`Preset '${name}' saved!`, 'green');
 }
 
-function loadCustomPreset(name) {
-    if(!name) return;
-    const presets = getCustomPresets();
-    if(presets[name]) {
-        // Apply design opts
-        const pOpts = presets[name];
-        opts.dotsOptions = pOpts.dotsOptions || opts.dotsOptions;
-        opts.cornersSquareOptions = pOpts.cornersSquareOptions || opts.cornersSquareOptions;
-        opts.cornersDotOptions = pOpts.cornersDotOptions || opts.cornersDotOptions;
-        opts.backgroundOptions = pOpts.backgroundOptions || opts.backgroundOptions;
-        opts.imageOptions = pOpts.imageOptions || opts.imageOptions;
-        if(pOpts.image !== undefined) opts.image = pOpts.image;
-        
-        // Re-render UI inputs to match
-        if(opts.dotsOptions.color) document.getElementById('cDot').value = opts.dotsOptions.color;
-        if(opts.backgroundOptions.color) document.getElementById('cBg').value = opts.backgroundOptions.color;
-        
-        applyQR();
-        toast(`Loaded design '${name}'`, 'green');
-    }
-}
 
+let _bulkPrevFocus=null;
 function openBulkModal() {
+    _bulkPrevFocus=document.activeElement;
     document.getElementById('bulkModal').classList.add('open');
+    const ta=document.getElementById('bulkData');
+    if(ta)ta.focus();
+    document.addEventListener('keydown',_bulkKeyTrap);
 }
 function closeBulkModal() {
     document.getElementById('bulkModal').classList.remove('open');
+    document.getElementById('bulkPreview').style.display = 'none';
+    document.getElementById('bulkPreview').innerHTML = '';
+    document.removeEventListener('keydown',_bulkKeyTrap);
+    if(_bulkPrevFocus)_bulkPrevFocus.focus();
+}
+function _bulkKeyTrap(e){
+  if(e.key==='Escape'){closeBulkModal();return;}
+  if(e.key!=='Tab')return;
+  const m=document.getElementById('bulkModal');
+  const fels=m.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])');
+  if(!fels.length)return;
+  const first=fels[0],last=fels[fels.length-1];
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
 }
 function handleBulkFileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = function(e) {
-        document.getElementById('bulkData').value = e.target.result;
-        toast(`Loaded ${file.name}`, 'green');
+        const raw = e.target.result;
+        document.getElementById('bulkData').value = raw;
+        // Show preview table for CSV
+        const preview = document.getElementById('bulkPreview');
+        const lines = raw.split('\n').map(function(l){ return l.trim(); }).filter(function(l){ return l; });
+        if (!lines.length) { preview.style.display = 'none'; return; }
+        let html = '<table style="width:100%; border-collapse:collapse; font-size:0.8rem; color:var(--txt);">';
+        html += '<tr style="background:var(--panel-hover)"><th style="padding:6px 10px; text-align:left; border-bottom:1px solid var(--border)">#</th><th style="padding:6px 10px; text-align:left; border-bottom:1px solid var(--border)">Filename</th><th style="padding:6px 10px; text-align:left; border-bottom:1px solid var(--border)">URL / Content</th></tr>';
+        lines.slice(0, 20).forEach(function(l, i) {
+            const comma = l.indexOf(',');
+            let fname = '-', url = l;
+            if (comma > 0) {
+                const pn = l.substring(0, comma).trim();
+                const pu = l.substring(comma + 1).trim();
+                if (pn && pu) { fname = pn; url = pu; }
+            }
+            html += '<tr><td style="padding:4px 10px; border-bottom:1px solid var(--border); color:var(--txt-m)">' + (i + 1) + '</td><td style="padding:4px 10px; border-bottom:1px solid var(--border); max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">' + fname + '</td><td style="padding:4px 10px; border-bottom:1px solid var(--border); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">' + url + '</td></tr>';
+        });
+        if (lines.length > 20) html += '<tr><td colspan="3" style="padding:6px 10px; color:var(--txt-m); text-align:center">... + ' + (lines.length - 20) + ' more rows</td></tr>';
+        html += '</table>';
+        preview.innerHTML = html;
+        preview.style.display = 'block';
+        toast('Loaded ' + file.name + ' (' + lines.length + ' rows)', 'green');
     };
     reader.readAsText(file);
     event.target.value = ''; // Reset
 }
 
+let _bulkCancelled = false;
 async function runBulkGeneration() {
     const dataStr = document.getElementById('bulkData').value.trim();
     if(!dataStr) { toast('Please enter at least one URL.', ''); return; }
@@ -1781,10 +1888,12 @@ async function runBulkGeneration() {
     if(lines.length === 0) { toast('No valid data found.', ''); return; }
     if(lines.length > 500) { toast('Maximum 500 items at a time.', ''); return; }
 
+    _bulkCancelled = false;
     const btn = document.getElementById('bulkGenBtn');
     const prog = document.getElementById('bulkProgress');
-    btn.innerHTML = '<svg style="width:16px;height:16px;margin-right:8px;vertical-align:text-bottom;animation:spin 1s linear infinite" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Generating...';
-    btn.disabled = true;
+    btn.innerHTML = '<svg style="width:16px;height:16px;margin-right:8px;vertical-align:text-bottom;animation:spin 1s linear infinite" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Cancel';
+    btn.disabled = false;
+    btn.onclick = function(){ _bulkCancelled = true; };
     prog.style.opacity = 1;
     prog.textContent = `Generating 0/${lines.length}...`;
 
@@ -1793,6 +1902,7 @@ async function runBulkGeneration() {
         let originalData = opts.data;
 
         for(let i=0; i<lines.length; i++) {
+            if(_bulkCancelled) { toast('Bulk generation cancelled.', ''); break; }
             let line = lines[i];
             let filename = `qr_code_${i+1}.png`;
             let url = line;
@@ -1822,15 +1932,17 @@ async function runBulkGeneration() {
 
         // Restore original data
         qrInst.update({ data: originalData });
-        prog.textContent = `Zipping files...`;
 
-        const content = await zip.generateAsync({type:"blob"});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(content);
-        a.download = "Bulk_QR_Codes.zip";
-        a.click();
-        
-        toast('Bulk Generation Complete!', 'green');
+        if(!_bulkCancelled) {
+            prog.textContent = `Zipping files...`;
+            const content = await zip.generateAsync({type:"blob"});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(content);
+            a.download = "Bulk_QR_Codes.zip";
+            a.click();
+            setTimeout(function(){ URL.revokeObjectURL(a.href); }, 5000);
+            toast('Bulk Generation Complete!', 'green');
+        }
         closeBulkModal();
         
     } catch(err) {
@@ -1839,6 +1951,7 @@ async function runBulkGeneration() {
     } finally {
         btn.innerHTML = `<svg style="width:16px;height:16px;margin-right:8px;vertical-align:text-bottom" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4-4m4 4V4"></path></svg> Generate & Download`;
         btn.disabled = false;
+        btn.onclick = runBulkGeneration;
         setTimeout(() => { prog.style.opacity = 0; }, 2000);
     }
 }
@@ -1886,7 +1999,16 @@ function loadEditData() {
     
     selType = q.type;
     Object.assign(opts, q.opts);
-    
+
+    // Restore color pickers
+    if (opts.dotsOptions && opts.dotsOptions.color) {
+        const el = document.getElementById('cDot');
+        if(el) el.value = opts.dotsOptions.color;
+    }
+    if (opts.backgroundOptions && opts.backgroundOptions.color) {
+        const el = document.getElementById('cBg');
+        if(el) el.value = opts.backgroundOptions.color;
+    }
     if (opts.cornersSquareOptions && opts.cornersSquareOptions.color) {
         const el = document.getElementById('csqC');
         if(el) el.value = opts.cornersSquareOptions.color;
@@ -1895,7 +2017,43 @@ function loadEditData() {
         const el = document.getElementById('cdC');
         if(el) el.value = opts.cornersDotOptions.color;
     }
-    
+
+    // Restore logo image
+    if (opts.image) {
+        const logoImg = document.getElementById('logoImg');
+        if(logoImg) logoImg.src = opts.image;
+        const logoArea = document.getElementById('logoArea');
+        if(logoArea) logoArea.style.display = opts.image ? 'flex' : 'none';
+    }
+
+    // Restore dots and corners type selections in grids
+    if (opts.dotsOptions && opts.dotsOptions.type) {
+        document.querySelectorAll('.dt-b').forEach(b => {
+            if(b.dataset.dt === opts.dotsOptions.type) b.classList.add('sel');
+            else b.classList.remove('sel');
+        });
+    }
+    if (opts.cornersSquareOptions && opts.cornersSquareOptions.type) {
+        document.querySelectorAll('.cs-b').forEach(b => {
+            if(b.dataset.cs === opts.cornersSquareOptions.type) b.classList.add('sel');
+            else b.classList.remove('sel');
+        });
+    }
+    if (opts.cornersDotOptions && opts.cornersDotOptions.type) {
+        document.querySelectorAll('.cd-b').forEach(b => {
+            if(b.dataset.cd === opts.cornersDotOptions.type) b.classList.add('sel');
+            else b.classList.remove('sel');
+        });
+    }
+
+    // Restore correction level
+    if (opts.qrOptions && opts.qrOptions.errorCorrectionLevel) {
+        document.querySelectorAll('.corr-b').forEach(b => {
+            if(b.dataset.cr === opts.qrOptions.errorCorrectionLevel) b.classList.add('sel');
+            else b.classList.remove('sel');
+        });
+    }
+
     document.querySelectorAll('.tc').forEach(x => {
         if(x.dataset.t === q.type) x.classList.add('sel'); else x.classList.remove('sel');
     });
@@ -1918,10 +2076,29 @@ function loadEditData() {
 <script>
 window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
 
+// Close mobile menu on outside click or Escape
+document.getElementById('mmb').onclick=function(){ var nl=document.getElementById('navLinks'); var exp=this.getAttribute('aria-expanded')==='true'; this.setAttribute('aria-expanded',String(!exp)); nl.classList.toggle('active'); };
+document.addEventListener('click', function(e){
+  var nl=document.getElementById('navLinks');
+  var mb=document.getElementById('mmb');
+  if(nl && mb && nl.classList.contains('active') && !nl.contains(e.target) && !mb.contains(e.target)){
+    nl.classList.remove('active'); mb.setAttribute('aria-expanded','false');
+  }
+});
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape'){
+    var nl=document.getElementById('navLinks');
+    var mb=document.getElementById('mmb');
+    if(nl && nl.classList.contains('active')){ nl.classList.remove('active'); mb.setAttribute('aria-expanded','false'); }
+    document.querySelectorAll('.dropdown').forEach(function(d){ d.classList.remove('active'); var btn=d.querySelector('.dropdown-btn'); if(btn) btn.setAttribute('aria-expanded','false'); });
+  }
+});
+
 (function(){
   const theme = Storage.get('theme');
-  if(theme === 'light'){ document.body.classList.add('light'); } 
-  else { document.body.classList.remove('light'); }
+  const tsck = document.getElementById('tsck');
+  if(theme === 'light'){ document.body.classList.add('light'); if(tsck) tsck.checked = false; } 
+  else { document.body.classList.remove('light'); if(tsck) tsck.checked = true; }
   
   buildTypeGrids(); 
   buildFrameGrid(); 
@@ -1936,6 +2113,17 @@ window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.clos
 
   if(typeof QRCodeStyling!=='undefined'){initQR();}
   loadEditData();
+  // Deep linking: ?step=N&type=TYPE&data=DATA
+  var urlP = new URLSearchParams(location.search);
+  var dStep = parseInt(urlP.get('step'));
+  var dType = urlP.get('type');
+  var dData = urlP.get('data');
+  if(dType) {
+    var match = DYN.concat(STA).filter(function(x){ return x.id===dType; })[0];
+    if(match) { selType=dType; document.querySelectorAll('.tc').forEach(function(x){ if(x.dataset.t===dType){x.classList.add('sel');x.setAttribute('aria-checked','true');} else {x.classList.remove('sel');x.setAttribute('aria-checked','false');} }); }
+  }
+  if(dData) { document.getElementById('inUrl').value = dData; }
+  if(dStep >= 1 && dStep <= 3) { goStep(dStep); }
 })();
 
 function toggleTheme(element){

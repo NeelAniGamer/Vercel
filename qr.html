@@ -8,8 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-    <script defer src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       /* ── EXACT UI THEME ── */
       :root {
@@ -239,7 +237,7 @@
         flex-direction: column;
         padding: 10px 0;
       }
-      body.dark-mode .dropdown-content-inner {
+      .dropdown-content-inner {
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
       }
       .dropdown.active .dropdown-content {
@@ -348,18 +346,22 @@
         gap: 8px;
         text-decoration: none;
       }
-      body.dark-mode .nav-login-btn {
+      .nav-login-btn {
         color: #34d399;
         border-color: #34d399;
       }
-      body.dark-mode .nav-login-btn:hover {
+      .nav-login-btn:hover {
         background: #34d399;
         color: #000;
         box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
       }
-      .nav-login-btn:hover {
+      body.light .nav-login-btn {
+        color: #10b981;
+        border-color: #10b981;
+      }
+      body.light .nav-login-btn:hover {
         background: #10b981;
-        color: #000;
+        color: #fff;
         box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
       }
       .nav-user-profile {
@@ -766,6 +768,8 @@
         display: flex;
         flex-direction: column;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        text-decoration: none;
+        color: inherit;
       }
       .dbc:hover {
         border-color: rgba(16, 185, 129, 0.5);
@@ -1191,11 +1195,11 @@
           padding: 10px 15px;
           flex-direction: row;
           justify-content: space-between;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
           border: 1px solid var(--border-light);
         }
-        body.dark-mode .top-nav {
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        body.light .top-nav {
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
         .mobile-menu-btn {
           display: flex;
@@ -1220,10 +1224,10 @@
           padding: 20px;
           flex-direction: column;
           gap: 15px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        body.dark-mode .nav-links {
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        body.light .nav-links {
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
         .nav-links.active {
           display: flex;
@@ -1247,6 +1251,19 @@
           grid-template-columns: 1fr !important;
         }
       }
+
+      /* Focus-visible for keyboard navigation */
+      *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+      /* Reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      }
+
+      /* Screen reader only utility */
+      .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
     </style>
 
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr" />
@@ -1257,16 +1274,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   </head>
-  <body class="dark-mode">
+  <body>
+    <a href="#qrMainContent" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--accent);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;" onfocus="this.style.cssText='position:fixed;left:0;top:0;width:auto;height:auto;z-index:9999;padding:8px 16px;background:var(--accent);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--accent);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'">Skip to main content</a>
+
     <nav class="top-nav">
       <a href="home" class="nav-brand">
         <img loading="lazy" src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span>Class Of Learners</span>
       </a>
-      <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleQrMenu()">
-        <span class="m-line"></span>
-        <span class="m-line"></span>
-        <span class="m-line"></span>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleQrMenu()" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span class="m-line" aria-hidden="true"></span>
+        <span class="m-line" aria-hidden="true"></span>
+        <span class="m-line" aria-hidden="true"></span>
       </button>
       <div class="nav-links">
         <a href="home" class="nav-link" style="color: var(--google-blue)">Home</a>
@@ -1274,8 +1293,8 @@
         <a href="school" class="nav-link">School</a>
         <a href="sneh-asha" class="nav-link">Sneh Asha</a>
         <a href="download" class="nav-dl-btn mobile-dl">Downloads</a>
-        <div class="dropdown" id="projectsDropdown" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn act">Projects <span>â–¼</span></button>
+        <div class="dropdown" id="projectsDropdown">
+          <button class="dropdown-btn act" onclick="this.parentElement.classList.toggle('active'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('active'))" aria-haspopup="true" aria-expanded="false">Projects <span>â–¼</span></button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
               <a href="ati">Typing Instructor <span>&#9109;&#65039;</span></a>
@@ -1303,7 +1322,7 @@
       <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
     </nav>
 
-    <div class="qr-app" role="main">
+    <div class="qr-app" role="main" id="qrMainContent">
       <aside class="app-sb">
         <div class="sb-top">
           <div class="sb-top-title">⬛ QR STUDIO</div>
@@ -1435,7 +1454,7 @@
       </div>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script>
       var Storage = {
@@ -1482,6 +1501,18 @@
         if (viewId === 'templates') renderTemplates()
       }
 
+      // Lazy-load external libraries on demand
+      var _libCache = {}
+      function loadLib(name, url) {
+        if (_libCache[name]) return _libCache[name]
+        _libCache[name] = new Promise(function(resolve, reject) {
+          var s = document.createElement('script')
+          s.src = url; s.onload = resolve; s.onerror = reject
+          document.head.appendChild(s)
+        })
+        return _libCache[name]
+      }
+
       function renderDB() {
         const filtered = dbFil === 'all' ? saved : saved.filter((q) => q.type === dbFil)
         document.getElementById('stTotal').textContent = saved.length
@@ -1503,6 +1534,7 @@
           g.innerHTML = `<div class="db-emp"><div class="ei">🔒</div><h2>Workspace Empty</h2><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor'">Initialize New QR</button></div>`
           return
         }
+        var frag = document.createDocumentFragment()
         filtered.forEach((q) => {
           const c = document.createElement('div')
           c.className = 'dbc'
@@ -1511,8 +1543,9 @@
           c.innerHTML = `<div class="dbt">${q.thumb ? `<img src="${q.thumb}" alt="QR" loading="lazy">` : '<div style="font-size:2rem;opacity:.25">🔒</div>'}</div>
     <div class="dbb"><div class="dtyp">${q.typeIcon} ${q.typeName}</div><h3 title="${q.content}">${shortC}</h3><div class="ddt">📄 ${q.date}</div></div>
     <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})">✏️ Editor</button><button class="dba-btn" onclick="reDL(${q.id})">⬇ Export</button><button class="dba-btn del" onclick="delQR(${q.id})">🗑 Delete</button></div>`
-          g.appendChild(c)
+          frag.appendChild(c)
         })
+        g.appendChild(frag)
       }
 
       function fDB(type, btn) {
@@ -1540,7 +1573,7 @@
       }
       async function renderStats() {
         const v = document.getElementById('view-stats')
-        if (v.innerHTML !== '') return
+        if (!v) return
 
         // Initial loading state
         v.innerHTML = `
@@ -1691,7 +1724,7 @@
     `
         document.getElementById('stats-cards-container').innerHTML = cardsHtml
 
-        // Render Chart.js
+        // Render Chart.js (lazy-loaded)
         const ctx = document.getElementById('statsChart').getContext('2d')
         const today = new Date()
         const labels = []
@@ -1714,40 +1747,42 @@
         }
 
         // Add grid color variable handling for light/dark mode
-        const isDark = document.body.classList.contains('dark-mode') || getComputedStyle(document.body).backgroundColor === 'rgb(3, 7, 18)'
+        const isDark = !document.body.classList.contains('light')
         const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'
         const textColor = isDark ? '#cbd5e1' : '#64748b'
 
-        window.myStatsChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: 'Totals',
-                data: dataPoints,
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(37,99,235,0.1)',
-                borderWidth: 2,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#3b82f6',
-                pointBorderWidth: 2,
-                pointRadius: 4,
-                fill: true,
-                tension: 0.1
+        loadLib('chart', 'https://cdn.jsdelivr.net/npm/chart.js').then(function(){
+          window.myStatsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: 'Totals',
+                  data: dataPoints,
+                  borderColor: '#3b82f6',
+                  backgroundColor: 'rgba(37,99,235,0.1)',
+                  borderWidth: 2,
+                  pointBackgroundColor: '#fff',
+                  pointBorderColor: '#3b82f6',
+                  pointBorderWidth: 2,
+                  pointRadius: 4,
+                  fill: true,
+                  tension: 0.1
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+              scales: {
+                y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor, stepSize: 1 } },
+                x: { grid: { display: false }, ticks: { color: textColor } }
               }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-            scales: {
-              y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor, stepSize: 1 } },
-              x: { grid: { display: false }, ticks: { color: textColor } }
             }
-          }
-        })
+          })
+        }).catch(function(){ toast('Chart library failed to load', 'err') })
 
         // Render accordions
         const accList = ['Scans by day', 'Scans by operating system', 'Scans by country', 'Scans by region/city', 'Scans by browser', 'Scans by user language', 'Scans by QR name']
@@ -1778,25 +1813,25 @@
         </div>
         
         <div class="db-grid" style="margin-top:20px;">
-            <div class="dbc" onclick="window.location.href='qr-editor.html?template=business_card'" style="cursor:pointer;">
+            <a href="qr-editor.html?template=business_card" class="dbc" style="cursor:pointer;">
                 <div class="dbt" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf);"><div style="font-size: 4rem;">💼</div></div>
                 <div class="dbb"><h3>Modern Business Card</h3><div class="ddt">Professional layout with gradient logo support</div></div>
-            </div>
+            </a>
             
-            <div class="dbc" onclick="window.location.href='qr-editor.html?template=wifi_neon'" style="cursor:pointer;">
+            <a href="qr-editor.html?template=wifi_neon" class="dbc" style="cursor:pointer;">
                 <div class="dbt" style="background: linear-gradient(135deg, #10b981, #f59e0b);"><div style="font-size: 4rem;">📄</div></div>
                 <div class="dbb"><h3>Neon Wi-Fi Access</h3><div class="ddt">Vibrant styling for quick guest access</div></div>
-            </div>
+            </a>
             
-            <div class="dbc" onclick="window.location.href='qr-editor.html?template=minimal_menu'" style="cursor:pointer;">
+            <a href="qr-editor.html?template=minimal_menu" class="dbc" style="cursor:pointer;">
                 <div class="dbt" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"><div style="font-size: 4rem;">🍽️</div></div>
                 <div class="dbb"><h3>Minimalist Menu</h3><div class="ddt">Clean and scannable design for restaurants</div></div>
-            </div>
+            </a>
             
-            <div class="dbc" onclick="window.location.href='qr-editor.html?template=social_hub'" style="cursor:pointer;">
+            <a href="qr-editor.html?template=social_hub" class="dbc" style="cursor:pointer;">
                 <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="font-size: 4rem;">🔒—</div></div>
                 <div class="dbb"><h3>Social Media Hub</h3><div class="ddt">Optimized for Linktree or social profiles</div></div>
-            </div>
+            </a>
         </div>
     `
       }
@@ -1813,12 +1848,10 @@
           }
         }
         if (!q) return
-        if (typeof QRCodeStyling === 'undefined') {
-          toast('Library loading...', '')
-          return
-        }
-        const dlOpts = Object.assign({}, q.opts, { width: 800, height: 800 })
-        new QRCodeStyling(dlOpts).download({ name: 'qr-' + q.type, extension: 'png' })
+        loadLib('qr', 'https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js').then(function(){
+          var dlOpts = Object.assign({}, q.opts, { width: 800, height: 800 })
+          new QRCodeStyling(dlOpts).download({ name: 'qr-' + q.type, extension: 'png' })
+        }).catch(function(){ toast('Failed to load QR library', 'err') })
       }
     </script>
 
@@ -1852,7 +1885,7 @@
         </div>
       </div>
     </div>
-    <div class="toast" id="toast"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script>
       function toast(msg, cls) {
@@ -2027,7 +2060,7 @@
       }
 
       window.onclick = (e) => {
-        if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach((d) => d.classList.remove('active'))
+        if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach((d) => { d.classList.remove('active'); var b=d.querySelector('.dropdown-btn'); if(b) b.setAttribute('aria-expanded','false'); })
       }
 
       ;(function () {
@@ -2059,9 +2092,27 @@
       function toggleQrMenu() {
         var btn = document.getElementById('mobileMenuBtn')
         var nav = document.querySelector('.nav-links')
-        if (btn) btn.classList.toggle('active')
+        if (btn) { btn.classList.toggle('active'); btn.setAttribute('aria-expanded', btn.classList.contains('active')); }
         if (nav) nav.classList.toggle('active')
       }
+
+      // Close mobile menu on outside click
+      document.addEventListener('click', function(e){
+        var nav=document.querySelector('.nav-links');
+        var btn=document.getElementById('mobileMenuBtn');
+        if(nav && btn && nav.classList.contains('active') && !nav.contains(e.target) && !btn.contains(e.target)){
+          nav.classList.remove('active'); btn.classList.remove('active'); btn.setAttribute('aria-expanded','false');
+        }
+      });
+      // Close mobile menu on Escape
+      document.addEventListener('keydown', function(e){
+        if(e.key==='Escape'){
+          var nav=document.querySelector('.nav-links');
+          var btn=document.getElementById('mobileMenuBtn');
+          if(nav && nav.classList.contains('active')){ nav.classList.remove('active'); btn.classList.remove('active'); btn.setAttribute('aria-expanded','false'); }
+          document.querySelectorAll('.dropdown').forEach(function(d){ d.classList.remove('active'); var b=d.querySelector('.dropdown-btn'); if(b) b.setAttribute('aria-expanded','false'); });
+        }
+      });
 
       // In-App Update Button (Version Aware)
       try {

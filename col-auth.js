@@ -248,11 +248,14 @@ if (!window.closeMo) {
     const modal = document.createElement('div')
     modal.className = 'col-auth-mo'
     modal.id = 'colAuthModal'
+    modal.setAttribute('role', 'dialog')
+    modal.setAttribute('aria-modal', 'true')
+    modal.setAttribute('aria-labelledby', 'colAuthTitle')
     modal.innerHTML = `
             <div class="col-auth-md">
                 <div class="col-auth-hd">
-                    <button class="col-auth-close" onclick="document.getElementById('colAuthModal').classList.remove('open')">&times;</button>
-                    <h2>Authenticate</h2>
+                    <button class="col-auth-close" onclick="document.getElementById('colAuthModal').classList.remove('open')" aria-label="Close login dialog">&times;</button>
+                    <h2 id="colAuthTitle">Authenticate</h2>
                     <p>Unlock dashboard storage and cloud sync.</p>
                 </div>
                 <div class="col-auth-body" id="colAuthBody">
@@ -265,8 +268,27 @@ if (!window.closeMo) {
     // Expose global open function
     window.openGlobalLogin = function () {
       renderAuthPanel()
-      document.getElementById('colAuthModal').classList.add('open')
+      var mo = document.getElementById('colAuthModal')
+      mo.classList.add('open')
+      // Focus first focusable element
+      setTimeout(function(){ var f = mo.querySelector('button, input, [tabindex]:not([tabindex="-1"])'); if(f) f.focus(); }, 100)
     }
+    // Escape key closes modal
+    document.addEventListener('keydown', function(e){
+      if(e.key==='Escape'){
+        var mo = document.getElementById('colAuthModal')
+        if(mo && mo.classList.contains('open')) mo.classList.remove('open')
+      }
+    })
+    // Focus trap
+    modal.addEventListener('keydown', function(e){
+      if(e.key!=='Tab') return
+      var focusable = modal.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')
+      if(!focusable.length) return
+      var first = focusable[0], last = focusable[focusable.length-1]
+      if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
+      else { if(document.activeElement===last){ e.preventDefault(); first.focus(); } }
+    })
   }
 
   function renderAuthPanel(tab = 'login') {

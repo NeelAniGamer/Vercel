@@ -1560,6 +1560,13 @@
         color: #fff;
       }
 
+      #task-tracker {
+        position: fixed;
+        top: 180px;
+        left: 20px;
+        z-index: 22;
+      }
+
       #gread {
         position: fixed;
         bottom: 80px;
@@ -2081,9 +2088,8 @@
           border-radius: 6px;
         }
         #hudbar {
-          top: 8px;
-          left: 50%;
-          transform: translateX(-50%);
+          top: 48px;
+          left: 8px;
           right: auto;
           gap: 6px;
           padding: 0;
@@ -2094,7 +2100,7 @@
           border-radius: 6px;
         }
         #hwrap {
-          top: 8px;
+          top: 80px;
           left: 8px;
           right: auto;
           flex-direction: row;
@@ -2107,25 +2113,24 @@
           overflow-x: auto;
         }
         #objective-overlay {
-          top: 8px;
+          top: 144px;
           right: 8px;
           left: auto;
           width: auto;
-          max-width: 90vw;
-          padding: 8px 14px;
+          max-width: 42vw;
+          padding: 6px 10px;
           z-index: 25;
           max-height: 30vh;
           overflow-y: auto;
-          font-size: 0.8rem;
+          font-size: 0.75rem;
         }
         #task-tracker {
-          top: 8px;
+          top: 120px;
           bottom: auto;
-          left: 50%;
-          transform: translateX(-50%);
+          left: 8px;
           right: auto;
-          width: 220px;
-          max-width: 90vw;
+          width: auto;
+          max-width: 45vw;
           max-height: 25vh;
           font-size: 0.75rem;
           padding: 12px;
@@ -2237,10 +2242,10 @@
           display: none !important;
         }
         #mmc {
-          top: 50px;
+          top: 8px;
           right: 8px;
-          width: 100px;
-          height: 100px;
+          width: 90px;
+          height: 90px;
           border-width: 3px;
           z-index: 18;
         }
@@ -2264,7 +2269,7 @@
           height: 56px;
         }
         #civic-controls {
-          top: 50px;
+          top: 104px;
           right: 8px;
           bottom: auto;
           left: auto;
