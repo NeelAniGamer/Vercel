@@ -7,11 +7,27 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet" />
 
-    <!-- Shared Auth/UI logic -->
-    <script defer src="../col-router.js"></script>
-    <link rel="stylesheet" href="../col-ui.css" />
-    <script defer src="../col-ui.js"></script>
-    <script defer src="../col-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (async function() {
+      try {
+        var res = await fetch('config.json?t=' + Date.now());
+        var cfg = await res.json();
+        var auth = (cfg.auth || cfg.supabase || {});
+        var url = auth.supabaseUrl || auth.url || '';
+        var key = auth.supabaseKey || auth.anonKey || auth.key || '';
+        if (url && key && window.supabase) {
+          window.supabaseClient = window.supabase.createClient(url, key);
+          var session = await window.supabaseClient.auth.getSession();
+          var user = session && session.data && session.data.session && session.data.session.user;
+          if (user) {
+            window.colUser = user;
+            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: user } }));
+          }
+        }
+      } catch(e) {}
+    })();
+  </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>

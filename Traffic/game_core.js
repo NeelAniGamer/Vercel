@@ -1916,7 +1916,7 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(); this._ugps(); this._uobs(dt); this._umode(dt); this._ucam(); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks();
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(); this._ugps(); this._uobs(dt); this._umode(dt); this._ucam(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks();
         
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
@@ -2690,7 +2690,7 @@ class Game {
         }
         if (this.mode === 'silentzone' && this.ms) this.ms.inSz = this.player.position.z > -60 && this.player.position.z < 20;
       }
-      _ucam() {
+      _ucam(dt) {
         if (this.isPointerLocked) {
           // First Person Mode
           const headHeight = this.isPedestrian ? 1.6 : 1.2;
