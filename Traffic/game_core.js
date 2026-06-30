@@ -2079,6 +2079,13 @@ class Game {
         this.player.position.x += this.vx; this.player.position.z += this.vz;
         if (this.isPedestrian && Math.abs(this.speed) > 0.02) { const shift = this.keys['shift'] ? 18 : 10; this.player.position.y = Math.abs(Math.sin(this.timer * shift)) * (this.keys['shift'] ? 0.12 : 0.06); }
 
+        // Hard world boundary clamp — prevents floating-point precision loss
+        // Regular maps: roads extend to ~±1500, ground is 2000x2000 → clamp at ±1550
+        // 50km maps: roads extend to ~±25000 → clamp at ±25500
+        const _wBound = this.mapCfg && this.mapCfg.is50km ? 25500 : 1550;
+        this.player.position.x = Math.max(-_wBound, Math.min(_wBound, this.player.position.x));
+        this.player.position.z = Math.max(-_wBound, Math.min(_wBound, this.player.position.z));
+
         let validRoadBound = false;
         this.roadSegments.forEach(r => {
           if (r.type === 'v' && Math.abs(this.player.position.x - r.x) < 7.5) validRoadBound = true;
