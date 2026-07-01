@@ -15,6 +15,9 @@ class Game {
         this.playing = false; this.pause = false; this.lightningTimer = 0; this.thunderSfx = null; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0;
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.routeIdx = 0; this.retries = 0; this.hits = 0;
         this.gyroOn = false; this.gyroBaseGamma = 0; this._gyroHandler = null;
+        this.camYaw = 0; this.camPitch = 0;
+        this._isDraggingMobileLook = false; this._mobileLookTouchId = null;
+        this._prevMobileLookX = 0; this._prevMobileLookY = 0;
         this.dom = {}; // Cached DOM elements
         this._initR(); this._initIn(); this._initG(); this._loop();
         window.addEventListener('resize', () => this._rsz());
@@ -362,8 +365,136 @@ class Game {
           gyroBtn.addEventListener('click', () => this._toggleGyro());
           gyroBtn.addEventListener('touchstart', (e) => { e.preventDefault(); this._toggleGyro(); }, { passive: false });
         }
+        this._initMobileCameraLook();
       }
       _initG() { document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); }); }
+
+      _initMobileCameraLook() {
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+        const isControl = (el) => {
+          if (!el) return false;
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-gyro','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile'];
+          for (const id of ctrlIds) {
+            const c = document.getElementById(id);
+            if (c && (el === c || c.contains(el))) return true;
+          }
+          if (el.closest && el.closest('#mobile-controls')) return true;
+          if (el.closest && el.closest('#hud')) return true;
+          if (el.closest && el.closest('#hudbar')) return true;
+          if (el.closest && el.closest('#civic-controls')) return true;
+          return false;
+        };
+        const lookThreshold = 10;
+        let lookCandidateX = 0, lookCandidateY = 0;
+        document.addEventListener('touchstart', (e) => {
+          if (!this.playing || this.pause) return;
+          const t = e.changedTouches[0];
+          if (isControl(t.target)) return;
+          lookCandidateX = t.clientX;
+          lookCandidateY = t.clientY;
+        }, { passive: true });
+        document.addEventListener('touchmove', (e) => {
+          if (!this.playing || this.pause) return;
+          if (this._isDraggingMobileLook) {
+            for (let i = 0; i < e.touches.length; i++) {
+              if (e.touches[i].identifier === this._mobileLookTouchId) {
+                const dx = e.touches[i].clientX - this._prevMobileLookX;
+                const dy = e.touches[i].clientY - this._prevMobileLookY;
+                this._prevMobileLookX = e.touches[i].clientX;
+                this._prevMobileLookY = e.touches[i].clientY;
+                this.camYaw -= dx * 0.005;
+                this.camPitch -= dy * 0.005;
+                this.camPitch = Math.max(-1.2, Math.min(1.2, this.camPitch));
+                e.preventDefault();
+                return;
+              }
+            }
+          } else {
+            for (let i = 0; i < e.touches.length; i++) {
+              if (Math.abs(e.touches[i].clientX - lookCandidateX) > lookThreshold || Math.abs(e.touches[i].clientY - lookCandidateY) > lookThreshold) {
+                if (!isControl(e.touches[i].target)) {
+                  this._isDraggingMobileLook = true;
+                  this._mobileLookTouchId = e.touches[i].identifier;
+                  this._prevMobileLookX = e.touches[i].clientX;
+                  this._prevMobileLookY = e.touches[i].clientY;
+                  e.preventDefault();
+                  return;
+                }
+              }
+            }
+          }
+        }, { passive: false });
+        document.addEventListener('touchend', (e) => {
+          if (!this._isDraggingMobileLook) return;
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === this._mobileLookTouchId) {
+              this._isDraggingMobileLook = false;
+              this._mobileLookTouchId = null;
+              return;
+            }
+          }
+        }, { passive: true });
+        document.addEventListener('touchcancel', () => {
+          this._isDraggingMobileLook = false;
+          this._mobileLookTouchId = null;
+        }, { passive: true });
+      }
+
+      _decayCameraLook(dt) {
+        if (this._isDraggingMobileLook) return;
+        if (this.isPointerLocked || this._isDraggingCamera) return;
+        const decayRate = 4;
+        const threshold = 0.005;
+        if (Math.abs(this.camYaw) > threshold || Math.abs(this.camPitch) > threshold) {
+          const factor = Math.max(0, 1 - decayRate * dt);
+          this.camYaw *= factor;
+          this.camPitch *= factor;
+          if (Math.abs(this.camYaw) < threshold) this.camYaw = 0;
+          if (Math.abs(this.camPitch) < threshold) this.camPitch = 0;
+        } else {
+          this.camYaw = 0;
+          this.camPitch = 0;
+        }
+      }
+
+      _buildRoadZones(rw) {
+        if (!this.mapCfg) return;
+        const roads = this.mapCfg.roads;
+        if (!roads) return;
+        const m = 2;
+        this._roadZones = roads.map(r => {
+          const isV = r.type === 'v';
+          const halfW = rw + m;
+          if (isV) {
+            return { x1: r.x - halfW, x2: r.x + halfW, z1: Math.min(r.z1, r.z2) - m, z2: Math.max(r.z1, r.z2) + m, isV: true };
+          } else {
+            const cz = r.z;
+            return { x1: Math.min(r.x1, r.x2) - m, x2: Math.max(r.x1, r.x2) + m, z1: cz - halfW, z2: cz + halfW, isV: false };
+          }
+        });
+      }
+
+      _isOnRoad(x, z) {
+        if (!this._roadZones) return false;
+        for (const rz of this._roadZones) {
+          if (x >= rz.x1 && x <= rz.x2 && z >= rz.z1 && z <= rz.z2) return true;
+        }
+        return false;
+      }
+
+      _isInBuildZone(x, z) {
+        if (!this._roadZones) return true;
+        const buildMargin = 40;
+        for (const rz of this._roadZones) {
+          const bx1 = rz.x1 - buildMargin;
+          const bx2 = rz.x2 + buildMargin;
+          const bz1 = rz.z1 - buildMargin;
+          const bz2 = rz.z2 + buildMargin;
+          if (x >= bx1 && x <= bx2 && z >= bz1 && z <= bz2) return true;
+        }
+        return false;
+      }
+
       setGear(g) {
         const caps = { P: 0, R: .28, N: 0, D: .85 };
         const newCap = caps[g] ?? 0;
@@ -914,6 +1045,7 @@ class Game {
         const RW = cfg.isPedestrian ? 10 : 12;
         this.roadSegments = cfg.roads;
         this.driveRoute = cfg.route;
+        this._buildRoadZones(RW);
         const mats = {
           grass: new THREE.MeshPhongMaterial({ color: cfg.ground || 0x33691e }),
           road: new THREE.MeshPhongMaterial({ color: 0x3d3f45, map: _genTex('asphalt') }),
@@ -1067,93 +1199,84 @@ class Game {
           });
         });
 
-        cfg.roads.forEach(r => {
-          const isV = r.type === 'v';
-          const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
-          const cx = isV ? r.x : (r.x1 + r.x2) / 2;
-          const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
-
-          const start = isV ? Math.min(r.z1, r.z2) + 15 : Math.min(r.x1, r.x2) + 15;
-          const end = isV ? Math.max(r.z1, r.z2) - 15 : Math.max(r.x1, r.x2) - 15;
-
-          for (let pos = start; pos < end; pos += 35) {
+        // Spawn buildings on a grid — only in build zones near roads
+        const bGrid = 30;
+        const bGridExtent = 600;
+        for (let gx = -bGridExtent; gx <= bGridExtent; gx += bGrid) {
+          for (let gz = -bGridExtent; gz <= bGridExtent; gz += bGrid) {
+            if (this._isOnRoad(gx, gz)) continue;
+            if (!this._isInBuildZone(gx, gz)) continue;
+            // skip if too close to any intersection
             let nearInt = false;
             (cfg.ints || []).forEach(([ix, iz]) => {
-              if (isV && Math.abs(pos - iz) < 20) nearInt = true;
-              if (!isV && Math.abs(pos - ix) < 20) nearInt = true;
+              if (Math.abs(gx - ix) < 20 && Math.abs(gz - iz) < 20) nearInt = true;
             });
             if (nearInt) continue;
+            const rot = [0, Math.PI / 2, Math.PI, -Math.PI / 2][Math.floor(Math.random() * 4)];
+            const rnd = Math.random();
+            let type = 'normal';
+            if (rnd > 0.98) type = 'police';
+            else if (rnd > 0.96) type = 'hospital';
+            else if (rnd > 0.94) type = 'bank';
+            else if (rnd > 0.92) type = 'temple';
+            else if (rnd > 0.70) type = 'shop';
+            else if (rnd > 0.55) type = 'chawl';
+            else if (rnd > 0.45) type = 'skyscraper';
+            drawBldg(gx, gz, type, rot);
+          }
+        }
 
+        // Props along sidewalk edges (benches, trees, bus stops, stalls, lamps)
+        cfg.roads.forEach(r => {
+          const isV = r.type === 'v';
+          const cx = isV ? r.x : (r.x1 + r.x2) / 2;
+          const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
+          const start = isV ? Math.min(r.z1, r.z2) + 15 : Math.min(r.x1, r.x2) + 15;
+          const end = isV ? Math.max(r.z1, r.z2) - 15 : Math.max(r.x1, r.x2) - 15;
+          for (let pos = start; pos < end; pos += 60) {
             [-1, 1].forEach(side => {
-              // Create multiple depths of buildings to make the city look dense
-              [1, 2, 3, 4].forEach(depth => {
-                if (depth > 1 && Math.random() > 0.4) return; // Background buildings spawn randomly
-
-                const bDist = RW / 2 + 0.5 + (depth - 1) * 35; 
-                // Add some slight randomness to positions
-                const bx = isV ? cx + side * bDist : pos + (Math.random() * 2 - 1);
-                const bz = isV ? pos + (Math.random() * 2 - 1) : cz + side * bDist;
-                
-                let rot = isV ? (side > 0 ? -Math.PI / 2 : Math.PI / 2) : (side > 0 ? Math.PI : 0);
-
-                const rnd = Math.random();
-                let type = 'normal';
-                if (rnd > 0.98) type = 'police';
-                else if (rnd > 0.96) type = 'hospital';
-                else if (rnd > 0.94) type = 'bank';
-                else if (rnd > 0.92) type = 'temple';
-                else if (rnd > 0.70) type = 'shop';
-                else if (rnd > 0.55) type = 'chawl';
-                else if (rnd > 0.45) type = 'skyscraper';
-
-                drawBldg(bx, bz, type, rot);
-              });
-
-              // Props along sidewalk edge
-              if (Math.random() > 0.5) {
-                const lDist = RW / 2 + 1;
-                const lx = isV ? cx + side * lDist : pos;
-                const lz = isV ? pos : cz + side * lDist;
-                const prnd = Math.random();
-
-                if (prnd > 0.85) {
-                  const bench = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.6, 0.6), new THREE.MeshLambertMaterial({ color: 0x4a3728 }));
-                  bench.position.set(lx, 0.3, lz);
-                  if (!isV) bench.rotation.y = Math.PI / 2;
-                  this.scene.add(bench); this.obstacles.push(bench);
-                } else if (prnd > 0.7) {
-                  const treeG = new THREE.Group();
-                  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 3), new THREE.MeshLambertMaterial({ color: 0x5c4033 }));
-                  trunk.position.y = 1.5; treeG.add(trunk);
-                  const leaves = new THREE.Mesh(new THREE.SphereGeometry(1.8, 7, 7), new THREE.MeshLambertMaterial({ color: 0x2ecc71 }));
-                  leaves.position.y = 3.5; treeG.add(leaves);
-                  treeG.position.set(lx, 0, lz); this.scene.add(treeG); this.obstacles.push(treeG);
-                } else if (prnd > 0.65) {
-                  const bStop = new THREE.Group();
-                  const r1 = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 2), new THREE.MeshLambertMaterial({ color: 0x2980b9 }));
-                  r1.position.y = 2.5; bStop.add(r1);
-                  const p1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), new THREE.MeshLambertMaterial({ color: 0xcccccc }));
-                  p1.position.set(-1.2, 1.25, -0.8); bStop.add(p1);
-                  const p2 = p1.clone(); p2.position.set(1.2, 1.25, -0.8); bStop.add(p2);
-                  bStop.position.set(lx, 0, lz); if (!isV) bStop.rotation.y = Math.PI / 2;
-                  this.scene.add(bStop); this.obstacles.push(bStop);
-                } else if (prnd > 0.5) {
-                  const stall = new THREE.Group();
-                  const table = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.8, 1), new THREE.MeshLambertMaterial({ color: 0x8B4513 }));
-                  table.position.y = 0.4; stall.add(table);
-                  const umb = new THREE.Mesh(new THREE.ConeGeometry(1.2, 0.5, 8), new THREE.MeshLambertMaterial({ color: Math.random() > 0.5 ? 0x3498db : 0xe74c3c }));
-                  umb.position.y = 2.2; stall.add(umb);
-                  const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.2), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-                  stick.position.y = 1.1; stall.add(stick);
-                  stall.position.set(lx, 0, lz);
-                  this.scene.add(stall); this.obstacles.push(stall);
-                } else {
-                  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.18, 7), new THREE.MeshLambertMaterial({ color: 0x444444 }));
-                  pole.position.set(lx, 3.5, lz); this.scene.add(pole);
-                  const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.35, 0.9), new THREE.MeshBasicMaterial({ color: 0xffffee }));
-                  lamp.position.set(lx + (isV ? -side * 0.4 : 0), 7, lz + (!isV ? -side * 0.4 : 0));
-                  this.scene.add(lamp);
-                }
+              if (Math.random() > 0.5) return;
+              const lDist = RW / 2 + 1;
+              const lx = isV ? cx + side * lDist : pos;
+              const lz = isV ? pos : cz + side * lDist;
+              const prnd = Math.random();
+              if (prnd > 0.85) {
+                const bench = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.6, 0.6), new THREE.MeshLambertMaterial({ color: 0x4a3728 }));
+                bench.position.set(lx, 0.3, lz);
+                if (!isV) bench.rotation.y = Math.PI / 2;
+                this.scene.add(bench); this.obstacles.push(bench);
+              } else if (prnd > 0.7) {
+                const treeG = new THREE.Group();
+                const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 3), new THREE.MeshLambertMaterial({ color: 0x5c4033 }));
+                trunk.position.y = 1.5; treeG.add(trunk);
+                const leaves = new THREE.Mesh(new THREE.SphereGeometry(1.8, 7, 7), new THREE.MeshLambertMaterial({ color: 0x2ecc71 }));
+                leaves.position.y = 3.5; treeG.add(leaves);
+                treeG.position.set(lx, 0, lz); this.scene.add(treeG); this.obstacles.push(treeG);
+              } else if (prnd > 0.65) {
+                const bStop = new THREE.Group();
+                const r1 = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 2), new THREE.MeshLambertMaterial({ color: 0x2980b9 }));
+                r1.position.y = 2.5; bStop.add(r1);
+                const p1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), new THREE.MeshLambertMaterial({ color: 0xcccccc }));
+                p1.position.set(-1.2, 1.25, -0.8); bStop.add(p1);
+                const p2 = p1.clone(); p2.position.set(1.2, 1.25, -0.8); bStop.add(p2);
+                bStop.position.set(lx, 0, lz); if (!isV) bStop.rotation.y = Math.PI / 2;
+                this.scene.add(bStop); this.obstacles.push(bStop);
+              } else if (prnd > 0.5) {
+                const stall = new THREE.Group();
+                const table = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.8, 1), new THREE.MeshLambertMaterial({ color: 0x8B4513 }));
+                table.position.y = 0.4; stall.add(table);
+                const umb = new THREE.Mesh(new THREE.ConeGeometry(1.2, 0.5, 8), new THREE.MeshLambertMaterial({ color: Math.random() > 0.5 ? 0x3498db : 0xe74c3c }));
+                umb.position.y = 2.2; stall.add(umb);
+                const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.2), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+                stick.position.y = 1.1; stall.add(stick);
+                stall.position.set(lx, 0, lz);
+                this.scene.add(stall); this.obstacles.push(stall);
+              } else {
+                const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.18, 7), new THREE.MeshLambertMaterial({ color: 0x444444 }));
+                pole.position.set(lx, 3.5, lz); this.scene.add(pole);
+                const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.35, 0.9), new THREE.MeshBasicMaterial({ color: 0xffffee }));
+                lamp.position.set(lx + (isV ? -side * 0.4 : 0), 7, lz + (!isV ? -side * 0.4 : 0));
+                this.scene.add(lamp);
               }
             });
           }
@@ -1936,7 +2059,7 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(); this._ugps(); this._uobs(dt); this._umode(dt); this._ucam(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks();
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(); this._ugps(); this._uobs(dt); this._umode(dt); this._decayCameraLook(dt); this._ucam(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks();
         
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
@@ -2780,12 +2903,13 @@ class Game {
           // ── Third Person Chase Cam — improved ──
           const camDist = this.isPedestrian ? 4 : 12;
           const camHeight = this.isPedestrian ? 2.5 : 4.5;
-          const rotY = this.player.rotation.y;
+          const rotY = this.player.rotation.y + (this.camYaw || 0);
           // Speed-based look-ahead: camera leads in the direction of travel
           const lookAhead = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) * 5, 3.5);
+          const pitchOffset = (this.camPitch || 0) * 2;
           this._camTarget.set(
               this.player.position.x - Math.sin(rotY) * camDist + Math.sin(rotY) * lookAhead,
-              camHeight,
+              camHeight - pitchOffset,
               this.player.position.z - Math.cos(rotY) * camDist + Math.cos(rotY) * lookAhead
           );
           // On first frame, snap camera to correct position (avoid lerp from origin)
@@ -2808,7 +2932,7 @@ class Game {
           const tiltRoll = this._camTilt || 0;
           this.camera.lookAt(
             this.player.position.x + Math.sin(rotY) * 15 + shakeX,
-            1.5 + shakeY,
+            1.5 - pitchOffset * 0.3 + shakeY,
             this.player.position.z + Math.cos(rotY) * 15
           );
           // Camera tilt DISABLED for debugging — pure lookAt, no roll

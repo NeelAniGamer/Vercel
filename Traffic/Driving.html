@@ -2648,7 +2648,10 @@
       <div id="loading-status">Initializing assets...</div>
     </div>
 
-    <div id="gc"><canvas id="3c"></canvas></div>
+    <div id="gc"><canvas id="3c" style="touch-action:none;"></canvas></div>
+    <div id="swipe-look-hint" style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:20px; font-size:0.85rem; pointer-events:none; z-index:999; display:none; font-family:Inter,sans-serif; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.5s;">
+      👆 Swipe empty area to look around
+    </div>
     <div id="hud">
       <div class="hp">Lv<span class="hv" id="hlv">1</span></div>
       <div class="hp" id="hobj" style="font-size: 0.85rem; font-weight: 600; text-align: center"></div>
@@ -3529,6 +3532,21 @@
         window.addEventListener('orientationchange', function(){ setTimeout(update, 150); });
         // Check periodically in case playing state changes
         setInterval(update, 500);
+      })();
+      // Show swipe-to-look hint on mobile for 3 seconds after game starts
+      (function(){
+        const hint = document.getElementById('swipe-look-hint');
+        if (!hint) return;
+        let shown = false;
+        setInterval(function(){
+          if (!game || !game.playing || shown) return;
+          if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            hint.style.display = 'block';
+            shown = true;
+            setTimeout(function(){ hint.style.opacity = '0'; }, 2000);
+            setTimeout(function(){ hint.style.display = 'none'; }, 2500);
+          }
+        }, 500);
       })();
     </script>
     <script src="course.js"></script>
