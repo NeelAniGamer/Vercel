@@ -1169,7 +1169,8 @@ class Game {
              bMesh.position.y = bh / 2;
              g.add(bMesh);
              g.position.set(bx, 0, bz); g.rotation.y = rot;
-             this.scene.add(g); this.obstacles.push(g);
+              g.userData = { isBuilding: true, halfW: bw / 2, halfD: 7 };
+              this.scene.add(g); this.obstacles.push(g);
           }
         };
 
@@ -1324,6 +1325,7 @@ class Game {
                 instances.forEach(inst => {
                    const obs = new THREE.Object3D();
                    obs.position.set(inst.x, 0, inst.z);
+                   obs.userData = { isBuilding: true, halfW: inst.s * 0.6, halfD: inst.s * 0.6 };
                    this.obstacles.push(obs);
                 });
             });
@@ -1508,10 +1510,13 @@ class Game {
           if (this.obstacles) this.obstacles.push(pc);
         }
 
+        // Puddles array — shared by rain levels AND level 5
+        this.puddles = [];
+
         // Special features per level
         if (cfg.hasRain) {
           this._create3DRain();
-          // Spawn random puddles on the roads
+          // Spawn random puddles on the roads (must be pushed to this.puddles for collision)
           const puddleGeo = new THREE.PlaneGeometry(10, 8);
           const puddleMat = new THREE.MeshBasicMaterial({ color: 0x4a6a8a, transparent: true, opacity: 0.6 });
           for (let i = 0; i < 30; i++) {
@@ -1522,6 +1527,7 @@ class Game {
             p.rotation.x = -Math.PI / 2;
             p.position.set(px, 0.05, pz);
             this.scene.add(p);
+            this.puddles.push(p);
           }
           for (let i = 0; i < 15; i++) {
             const p = new THREE.Mesh(new THREE.CylinderGeometry(1.4 + Math.random(), 1.5 + Math.random(), .08, 12), new THREE.MeshPhongMaterial({ color: 0x0c101a, transparent: true, opacity: 0.6 }));
@@ -1530,7 +1536,6 @@ class Game {
         }
         
         // Puddles for level 5 (Rain & Slippery Roads)
-        this.puddles = [];
         if (cfg.id === 5) {
             for (let i = 0; i < 10; i++) {
                 const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
@@ -1898,7 +1903,8 @@ class Game {
         if (cfg.hasSilentZone) {
           // Hospital building
           const hosp = new THREE.Mesh(new THREE.BoxGeometry(20, 12, 15), new THREE.MeshPhongMaterial({ color: 0xeeeeee }));
-          hosp.position.set(25, 6, -20); this.scene.add(hosp); this.obstacles.push(hosp);
+          hosp.position.set(25, 6, -20); hosp.userData = { isBuilding: true, halfW: 10, halfD: 7.5 };
+          this.scene.add(hosp); this.obstacles.push(hosp);
           const cross = new THREE.Mesh(new THREE.BoxGeometry(2, 2, .1), new THREE.MeshPhongMaterial({ color: 0xff0000 }));
           cross.position.set(25, 10, 7.6); this.scene.add(cross);
           // Silent zone markers
@@ -1913,8 +1919,8 @@ class Game {
         const bCount = cfg.isPedestrian ? 2 : 6;
         for (let i = 0; i < bCount; i++) {
           const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
-          const bx = seg.type === 'v' ? seg.x + (Math.random() > .5 ? 5 : -5) : seg.x1 + Math.random() * (seg.x2 - seg.x1);
-          const bz = seg.type === 'v' ? seg.z1 + Math.random() * (seg.z2 - seg.z1) : seg.z + (Math.random() > .5 ? 5 : -5);
+          const bx = seg.type === 'v' ? seg.x + (Math.random() > .5 ? 10 : -10) : seg.x1 + Math.random() * (seg.x2 - seg.x1);
+          const bz = seg.type === 'v' ? seg.z1 + Math.random() * (seg.z2 - seg.z1) : seg.z + (Math.random() > .5 ? 10 : -10);
           // Big red-white striped barricade
           const barG = new THREE.Group();
           const bp1 = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, 1.5, 8), new THREE.MeshPhongMaterial({ color: 0xff3300 }));
@@ -1925,14 +1931,19 @@ class Game {
           const rSt = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.25, 0.16), new THREE.MeshPhongMaterial({ color: 0xff0000 }));
           rSt.position.set(0, 1.3, 0); barG.add(rSt);
           const bBar2 = bBar.clone(); bBar2.position.set(0, 0.9, 0); barG.add(bBar2);
-          barG.position.set(bx, 0, bz); this.scene.add(barG); this.obstacles.push(barG);
+          barG.position.set(bx, 0, bz);
+          barG.userData = { halfW: 0.7, halfD: 0.15 };
+          this.scene.add(barG); this.obstacles.push(barG);
         }
-        // Remove any obstacle within 15 units of player start
+        // Remove barricades/parked vehicles within 15 units of player start (keep buildings)
         const pStart = cfg.route && cfg.route[0] ? cfg.route[0] : { x: 0, z: -200 };
         this.obstacles = this.obstacles.filter(ob => {
           const dx = ob.position.x - pStart.x;
           const dz = ob.position.z - (pStart.z - 20);
-          if (Math.sqrt(dx * dx + dz * dz) < 15) { this.scene.remove(ob); return false; }
+          if (Math.sqrt(dx * dx + dz * dz) < 15) {
+            // Only remove non-building obstacles (barricades, parked vehicles)
+            if (!ob.userData.isBuilding) { this.scene.remove(ob); return false; }
+          }
           return true;
         });
         // Parked vehicles
@@ -1943,7 +1954,8 @@ class Game {
             const pc = this._makeNPC(types[i % 3], Math.random() * 0xffffff);
             if (seg.type === 'v') pc.position.set(seg.x + (Math.random() > .5 ? 5.5 : -5.5), 0, seg.z1 + Math.random() * (seg.z2 - seg.z1));
             else pc.position.set(seg.x1 + Math.random() * (seg.x2 - seg.x1), 0, seg.z + (Math.random() > .5 ? 5.5 : -5.5));
-            pc.userData = { isParked: true }; this.scene.add(pc); this.obstacles.push(pc);
+            pc.userData = { isParked: true, halfW: 2.5, halfD: 1.5 };
+            this.scene.add(pc); this.obstacles.push(pc);
           }
         }
       }
@@ -2264,7 +2276,13 @@ class Game {
         const owEl = this.dom['ow'];
         if (this.isPedestrian && owEl) owEl.textContent = "⚠️ JAYWALKING - Walk on the sidewalk/zebra crossing!";
         else if (owEl) owEl.textContent = "⚠️ OFF ROAD - Return to road!";
-        if (this.levelCfg && this.levelCfg.hasPuddles && Math.random() < 0.3) { this.player.rotation.y += this.turn * (this.speed > 0 ? 1 : -1) * (Math.random() * 0.5 - 0.25); }
+        // Find the road segment the player is currently on (used for wrong-side detection)
+        let currentRoad = null;
+        for (const r of this.roadSegments) {
+          if (r.type === 'v' && Math.abs(this.player.position.x - r.x) < 7.5) { currentRoad = r; break; }
+          if (r.type === 'h' && Math.abs(this.player.position.z - r.z) < 7.5) { currentRoad = r; break; }
+        }
+        if (this.mapCfg && this.mapCfg.hasPuddles && Math.random() < 0.3) { this.player.rotation.y += this.turn * (this.speed > 0 ? 1 : -1) * (Math.random() * 0.5 - 0.25); }
         // Re-normalize after puddle jitter
         if (!this.isPedestrian) {
           while (this.player.rotation.y > Math.PI) this.player.rotation.y -= Math.PI * 2;
@@ -2763,17 +2781,28 @@ class Game {
       }
       _uobs(dt) {
         const px = this.player.position.x, pz = this.player.position.z;
+        const pR = 1.5; // player collision radius
         this.obstacles.forEach(o => {
           const dx = px - o.position.x, dz = pz - o.position.z;
           if (dx * dx + dz * dz > 400) return;
-          if (this.player.position.distanceTo(o.position) < 1.6) {
+          const ud = o.userData || {};
+          const hw = ud.halfW || 1.6, hd = ud.halfD || 1.6;
+          const overlapX = pR + hw - Math.abs(dx);
+          const overlapZ = pR + hd - Math.abs(dz);
+          if (overlapX > 0 && overlapZ > 0) {
               this._collidedThisFrame = true;
               this.hp -= this.seatbeltOn ? 8 : 10;
-              if (this.hp <= 0) this._go('Collided with Barricade'); 
-              else this._uh(); 
+              if (this.hp <= 0) this._go('Collided with Barricade');
+              else this._uh();
               this.speed *= -.2;
               this._camShakeAmt = Math.max(this._camShakeAmt, 0.35);
-              toast('🚧 Collided with Barricade bounds!', '#ff9500'); 
+              // Push player out along axis of least penetration
+              if (overlapX < overlapZ) {
+                this.player.position.x += (dx > 0 ? overlapX : -overlapX);
+              } else {
+                this.player.position.z += (dz > 0 ? overlapZ : -overlapZ);
+              }
+              toast('🚧 Collided with Barricade bounds!', '#ff9500');
           }
         });
         

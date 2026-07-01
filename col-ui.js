@@ -178,11 +178,11 @@ window.addEventListener('col-apk-verified', function (e) {
 
 // 5. Mobile App Download Popup
 try {
-  var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  var isAndroid = /Android/i.test(navigator.userAgent)
   var isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent)
   var hasPrompted = sessionStorage.getItem('col_app_prompted')
 
-  if (isMobile && !isWebView && !hasPrompted) {
+  if (isAndroid && !isWebView && !hasPrompted) {
     sessionStorage.setItem('col_app_prompted', 'true')
 
     var popup = document.createElement('div')

@@ -2436,6 +2436,577 @@
           right: 20px;
         }
       }
+
+      /* === KID MODE — Phase 2: Simplified UI for 4-5 year olds === */
+      .kid-hide { display: none !important; }
+
+      /* Big colorful kid buttons — min 60px touch target */
+      .kid-btn {
+        min-width: 64px;
+        min-height: 64px;
+        border-radius: 20px;
+        border: 3px solid rgba(255,255,255,0.5);
+        font-size: 2rem;
+        font-weight: 800;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 2px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        transition: transform 0.1s, box-shadow 0.1s;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        -webkit-tap-highlight-color: transparent;
+      }
+      .kid-btn:active {
+        transform: scale(0.92);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      }
+      .kid-btn-label {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-shadow: none;
+      }
+
+      /* Kid steering wheel — bigger, centered */
+      #kid-steer {
+        display: none;
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        border: 6px solid rgba(255,255,255,0.6);
+        background: radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0.2) 60%, transparent 100%);
+        z-index: 9998;
+        pointer-events: auto;
+        touch-action: none;
+      }
+      #kid-steer::after {
+        content: '🎯';
+        font-size: 3rem;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        opacity: 0.7;
+      }
+      #kid-steer.touching {
+        border-color: rgba(255,255,255,0.9);
+        background: radial-gradient(circle, rgba(59,130,246,0.7) 0%, rgba(59,130,246,0.35) 60%, transparent 100%);
+      }
+
+      /* Kid pedal buttons — right side */
+      #kid-pedals {
+        display: none;
+        position: fixed;
+        bottom: 30px;
+        right: 24px;
+        z-index: 9998;
+        pointer-events: auto;
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+      }
+      #kid-pedals .kid-btn.go-btn {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        color: white;
+        font-size: 2.2rem;
+      }
+      #kid-pedals .kid-btn.stop-btn {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        font-size: 2.2rem;
+      }
+      #kid-pedals .kid-btn.horn-btn {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        font-size: 2rem;
+      }
+
+      /* Kid indicator button — left side */
+      #kid-indicators {
+        display: none;
+        position: fixed;
+        bottom: 30px;
+        left: 24px;
+        z-index: 9998;
+        pointer-events: auto;
+        flex-direction: column;
+        gap: 12px;
+      }
+      #kid-indicators .kid-btn {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        font-size: 1.8rem;
+      }
+      .kid-left-btn { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; }
+      .kid-right-btn { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; }
+      .kid-headlight-btn { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; }
+
+      /* Kid locked control — hidden with lock */
+      .kid-locked {
+        opacity: 0.25 !important;
+        pointer-events: none !important;
+        filter: grayscale(0.8);
+        position: relative;
+      }
+      .kid-locked::after {
+        content: '🔒';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.4rem;
+        filter: none;
+      }
+      /* Kid unlock notification */
+      #kid-unlock-toast {
+        display: none;
+        position: fixed;
+        bottom: 280px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: white;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        padding: 12px 32px;
+        border-radius: 40px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 20px rgba(34,197,94,0.5);
+        animation: kidUnlockPop 0.4s ease-out;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      @keyframes kidUnlockPop {
+        0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+        60% { transform: translateX(-50%) scale(1.1); }
+        100% { transform: translateX(-50%) scale(1); opacity: 1; }
+      }
+
+      /* Kid health hearts — big, prominent */
+      #kid-hearts {
+        display: none;
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9998;
+        font-size: 2.5rem;
+        gap: 8px;
+        text-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        pointer-events: none;
+        background: rgba(0,0,0,0.3);
+        padding: 8px 20px;
+        border-radius: 40px;
+        backdrop-filter: blur(8px);
+      }
+
+      /* Kid level name display */
+      #kid-level-name {
+        display: none;
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9998;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: white;
+        text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        background: rgba(59,130,246,0.6);
+        padding: 6px 24px;
+        border-radius: 30px;
+        pointer-events: none;
+        backdrop-filter: blur(6px);
+        white-space: nowrap;
+      }
+
+      /* Kid task indicator — simple progress bar */
+      #kid-task-bar {
+        display: none;
+        position: fixed;
+        top: 130px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9998;
+        background: rgba(0,0,0,0.4);
+        padding: 8px 20px;
+        border-radius: 20px;
+        pointer-events: none;
+        backdrop-filter: blur(6px);
+        max-width: 80vw;
+      }
+      #kid-task-bar .task-text {
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 4px;
+      }
+      #kid-task-bar .task-track {
+        width: 200px;
+        height: 8px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      #kid-task-bar .task-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #22c55e, #4ade80);
+        border-radius: 4px;
+        transition: width 0.4s ease;
+      }
+
+      /* Kid countdown — big, centered, colorful */
+      #kid-countdown {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(0,0,0,0.6);
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+      }
+      #kid-countdown .count-num {
+        font-size: 10rem;
+        font-weight: 900;
+        color: white;
+        text-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        animation: kidCountPulse 0.8s ease-in-out;
+      }
+      @keyframes kidCountPulse {
+        0% { transform: scale(2); opacity: 0; }
+        50% { transform: scale(0.9); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      /* Kid GO! flash */
+      #kid-go-flash {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: rgba(0,0,0,0.5);
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+      }
+      #kid-go-flash .go-text {
+        font-size: 8rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #22c55e, #4ade80);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: none;
+        filter: drop-shadow(0 8px 24px rgba(34,197,94,0.5));
+        animation: kidGoPulse 0.6s ease-out forwards;
+      }
+      @keyframes kidGoPulse {
+        0% { transform: scale(0.5) rotate(-5deg); opacity: 0; }
+        60% { transform: scale(1.2) rotate(2deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 0; }
+      }
+
+      /* Kid tutorial overlay — big arrows + simple text */
+      #kid-tutorial {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        background: rgba(0,0,0,0.7);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 24px;
+        padding: 40px;
+        backdrop-filter: blur(6px);
+      }
+      #kid-tutorial .tut-emoji {
+        font-size: 6rem;
+        animation: kidBounce 1s ease-in-out infinite alternate;
+      }
+      @keyframes kidBounce {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-20px); }
+      }
+      #kid-tutorial .tut-text {
+        color: white;
+        font-size: 1.6rem;
+        font-weight: 800;
+        text-align: center;
+        max-width: 500px;
+        line-height: 1.4;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      }
+      #kid-tutorial .tut-arrow {
+        font-size: 3rem;
+        animation: kidArrowBounce 1.2s ease-in-out infinite alternate;
+      }
+      @keyframes kidArrowBounce {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(20px); }
+      }
+      #kid-tutorial .kid-btn.tut-ok {
+        min-width: 120px;
+        min-height: 60px;
+        font-size: 1.4rem;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+        margin-top: 16px;
+      }
+
+      /* Kid celebration — stars + confetti */
+      #kid-celebrate {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 100001;
+        background: rgba(0,0,0,0.5);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 16px;
+        backdrop-filter: blur(4px);
+      }
+      #kid-celebrate .cel-stars {
+        font-size: 5rem;
+        animation: kidStars 0.8s ease-out;
+      }
+      @keyframes kidStars {
+        0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+        60% { transform: scale(1.3) rotate(5deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+      }
+      #kid-celebrate .cel-text {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #fbbf24;
+        text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      }
+      #kid-celebrate .cel-sub {
+        font-size: 1.1rem;
+        color: white;
+        font-weight: 600;
+        text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      }
+      #kid-celebrate .kid-btn.cel-ok {
+        min-width: 140px;
+        min-height: 60px;
+        font-size: 1.4rem;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        margin-top: 20px;
+      }
+
+      /* Kid crash screen — friendly Oops! */
+      #kid-crash {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        background: rgba(0,0,0,0.6);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 16px;
+        padding: 40px;
+        backdrop-filter: blur(6px);
+      }
+      #kid-crash .crash-emoji {
+        font-size: 6rem;
+      }
+      #kid-crash .crash-text {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #fbbf24;
+        text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      }
+      #kid-crash .crash-sub {
+        font-size: 1.1rem;
+        color: white;
+        font-weight: 600;
+        text-align: center;
+        max-width: 400px;
+        line-height: 1.4;
+        text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      }
+      #kid-crash .kid-btn.crash-retry {
+        min-width: 160px;
+        min-height: 64px;
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+        margin-top: 12px;
+      }
+      #kid-crash .kid-btn.crash-home {
+        min-width: 120px;
+        min-height: 52px;
+        font-size: 1.1rem;
+        background: rgba(255,255,255,0.15);
+        color: white;
+        border: 2px solid rgba(255,255,255,0.3);
+      }
+
+      /* Kid off-road warning — simple shake */
+      #kid-offroad {
+        display: none;
+        position: fixed;
+        bottom: 240px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9998;
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: white;
+        background: rgba(239,68,68,0.8);
+        padding: 10px 28px;
+        border-radius: 30px;
+        pointer-events: none;
+        backdrop-filter: blur(6px);
+        animation: kidShake 0.3s ease-in-out;
+      }
+      @keyframes kidShake {
+        0%,100% { transform: translateX(-50%) rotate(0); }
+        25% { transform: translateX(-50%) rotate(-3deg); }
+        75% { transform: translateX(-50%) rotate(3deg); }
+      }
+
+      /* Kid start screen overrides */
+      .kid-mode #ss .sc {
+        gap: 12px;
+      }
+      .kid-mode #ss .st {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .kid-mode #ss .su {
+        font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+        max-width: 500px;
+      }
+      .kid-mode #ss .pls {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      .kid-mode #ss .pls .btn {
+        min-width: 220px;
+        min-height: 56px;
+        font-size: 1.3rem;
+        border-radius: 20px;
+      }
+      .kid-mode #ss #btn-diff,
+      .kid-mode #ss #btn-weather,
+      .kid-mode #ss .nav-user-profile {
+        display: none !important;
+      }
+
+      /* Kid level cards — bigger, more colorful */
+      .kid-mode .lcard {
+        min-height: 120px;
+        border-radius: 16px;
+        padding: 20px;
+      }
+      .kid-mode .lcard .ln {
+        font-size: 1.3rem;
+      }
+      .kid-mode .lcard .ls {
+        font-size: 0.85rem;
+      }
+      .kid-mode .lcard.locked {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .kid-mode .lcard.current {
+        border-color: #3b82f6;
+        box-shadow: 0 0 20px rgba(59,130,246,0.3);
+      }
+
+      /* === KID-MODE: Start screen simplification === */
+      .kid-mode #ss .pls .btn-g,
+      .kid-mode #ss .btn-g[onclick*="hardReset"],
+      .kid-mode #ss .btn-s[onclick*="prompt"],
+      .kid-mode #ss .btn-g.mobile-dl {
+        display: none !important;
+      }
+      .kid-mode #ss .pls .btn-p {
+        min-width: 280px;
+        min-height: 64px;
+        font-size: 1.8rem;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important;
+        color: #fff !important;
+        border: none !important;
+        box-shadow: 0 8px 32px rgba(59,130,246,0.4);
+        animation: kidPulse 2s ease-in-out infinite;
+        letter-spacing: 0.05em;
+      }
+      @keyframes kidPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      .kid-mode #ss .brand-header {
+        display: none !important;
+      }
+      .kid-mode #ss .su {
+        font-size: clamp(0.85rem, 1.6vw, 1rem);
+        max-width: 400px;
+        line-height: 1.5;
+      }
+      /* Level selection: hide profile + progress chip */
+      .kid-mode #screen-levels .tb .btn-g,
+      .kid-mode #screen-levels #pchip {
+        display: none !important;
+      }
+      .kid-mode #screen-levels .back-btn {
+        min-width: 48px;
+        min-height: 48px;
+        font-size: 1rem;
+      }
+      /* Briefing: hide profile */
+      .kid-mode #screen-briefing .tb .btn-g {
+        display: none !important;
+      }
+
+      /* Confetti particle */
+      .kid-confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        z-index: 100002;
+        pointer-events: none;
+        animation: confettiFall 1.5s ease-out forwards;
+      }
+      @keyframes confettiFall {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+      }
     </style>
 
     <script>
@@ -3553,5 +4124,513 @@
     <script src="ui.js"></script>
     <script src="game_core.js"></script>
     <script src="start.js"></script>
+
+    <!-- KID MODE HTML OVERLAYS -->
+    <div id="kid-steer"></div>
+    <div id="kid-pedals">
+      <div class="kid-btn go-btn" id="kid-go-btn">▶</div>
+      <div class="kid-btn stop-btn" id="kid-stop-btn">■</div>
+      <div class="kid-btn horn-btn" id="kid-horn-btn">📢</div>
+    </div>
+    <div id="kid-indicators">
+      <div class="kid-btn kid-left-btn" id="kid-left-btn">◀</div>
+      <div class="kid-btn kid-right-btn" id="kid-right-btn">▶</div>
+      <div class="kid-btn kid-headlight-btn" id="kid-headlight-btn">💡</div>
+    </div>
+    <div id="kid-hearts"></div>
+    <div id="kid-level-name"></div>
+    <div id="kid-task-bar">
+      <div class="task-text" id="kid-task-text">Driving...</div>
+      <div class="task-track"><div class="task-fill" id="kid-task-fill" style="width: 0%"></div></div>
+    </div>
+    <div id="kid-countdown"><div class="count-num" id="kid-count-num">3</div></div>
+    <div id="kid-go-flash"><div class="go-text">GO!</div></div>
+    <div id="kid-tutorial">
+      <div class="tut-emoji" id="kid-tut-emoji">🚗</div>
+      <div class="tut-text" id="kid-tut-text">Turn the wheel to drive!</div>
+      <div class="tut-arrow" id="kid-tut-arrow" style="display:none">👉</div>
+      <button class="kid-btn tut-ok" id="kid-tut-ok" onclick="window._kidDismissTutorial()">OK! 👍</button>
+    </div>
+    <div id="kid-celebrate">
+      <div class="cel-stars" id="kid-cel-stars">⭐⭐⭐</div>
+      <div class="cel-text" id="kid-cel-text">Amazing!</div>
+      <div class="cel-sub" id="kid-cel-sub">You did it!</div>
+      <button class="kid-btn cel-ok" id="kid-cel-ok" onclick="window._kidDismissCelebrate()">Next Level! 🚀</button>
+    </div>
+    <div id="kid-crash">
+      <div class="crash-emoji">😮</div>
+      <div class="crash-text">Oops!</div>
+      <div class="crash-sub" id="kid-crash-sub">Be careful next time!</div>
+      <button class="kid-btn crash-retry" onclick="window._kidRetry()">Try Again! 💪</button>
+      <button class="kid-btn crash-home" onclick="window._kidGoHome()">Home 🏠</button>
+    </div>
+    <div id="kid-offroad">⚠️ Stay on the road!</div>
+    <div id="kid-unlock-toast">🆕 New control unlocked!</div>
+
+    <script>
+    /* ===== KID MODE ENGINE — Phase 2 ===== */
+    window.KID_MODE = true; // toggle to enable/disable kid mode
+
+    (function() {
+      if (!window.KID_MODE) return;
+
+      const $ = id => document.getElementById(id);
+
+      // --- Activate kid mode class on body ---
+      document.body.classList.add('kid-mode');
+
+      // --- Hide complex controls ---
+      const hideSelectors = [
+        '#gp',           // gear selector
+        '#spgauge',      // speed gauge
+        '#boostgauge',   // boost gauge
+        '#boost-vignette',
+        '#speed-lines',
+        '#boost-ready',
+        '#civic-controls',
+        '#sig-ind',      // traffic light
+        '#da',           // direction arrow
+        '#phone-gps',
+        '#phone-gps-btn',
+        '#mmc',          // minimap canvas
+        '#mc-gyro',      // gyro button
+        '#challan-stack',
+        '#challenge-overlay',
+        '#cov',
+        '#profile-dlg',
+        '.nav-user-profile',
+        '#top-bar-container',
+        '.swipe-look-hint-wrap'
+      ];
+      hideSelectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => el.classList.add('kid-hide'));
+      });
+
+      // Kid start screen: rename "Enter Academy" to "PLAY!"
+      document.querySelectorAll('#ss .pls .btn-p').forEach(btn => {
+        btn.textContent = '🎮 PLAY!';
+      });
+
+      // Hide original mobile controls (steering wheel + pedals)
+      const mc = $('mobile-controls');
+      if (mc) mc.classList.add('kid-hide');
+      const tc = $('tc');
+      if (tc) tc.classList.add('kid-hide');
+
+      // Show kid controls
+      $('kid-hearts').style.display = 'flex';
+      $('kid-level-name').style.display = 'block';
+      $('kid-task-bar').style.display = 'block';
+
+      // --- Kid steering wheel touch (left/right tap zones) ---
+      const steer = $('kid-steer');
+      let steerActive = false;
+      let steerTouchId = null;
+      let steerCenterX = 0;
+
+      function showSteerAndPedals() {
+        if (!window.game || !window.game.playing) return;
+        steer.style.display = 'block';
+        $('kid-pedals').style.display = 'flex';
+        $('kid-indicators').style.display = 'flex';
+      }
+
+      steer.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        steerActive = true;
+        steerTouchId = e.changedTouches[0].identifier;
+        steerCenterX = steer.getBoundingClientRect().left + steer.offsetWidth / 2;
+        steer.classList.add('touching');
+        // Determine left or right side of wheel
+        const x = e.changedTouches[0].clientX;
+        if (x < steerCenterX) {
+          window.game.keys['a'] = true;
+        } else {
+          window.game.keys['d'] = true;
+        }
+      }, { passive: false });
+
+      steer.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        if (!steerActive) return;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          if (e.changedTouches[i].identifier === steerTouchId) {
+            const x = e.changedTouches[i].clientX;
+            // Release both first
+            window.game.keys['a'] = false;
+            window.game.keys['d'] = false;
+            // Set based on position relative to center
+            if (x < steerCenterX) {
+              window.game.keys['a'] = true;
+            } else {
+              window.game.keys['d'] = true;
+            }
+          }
+        }
+      }, { passive: false });
+
+      steer.addEventListener('touchend', function(e) {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          if (e.changedTouches[i].identifier === steerTouchId) {
+            steerActive = false;
+            steerTouchId = null;
+            steer.classList.remove('touching');
+            window.game.keys['a'] = false;
+            window.game.keys['d'] = false;
+          }
+        }
+      });
+      steer.addEventListener('touchcancel', function() {
+        steerActive = false;
+        steerTouchId = null;
+        steer.classList.remove('touching');
+        window.game.keys['a'] = false;
+        window.game.keys['d'] = false;
+      });
+
+      // --- Pedal buttons ---
+      // GO (accelerate) — hold (maps to W key)
+      const goBtn = $('kid-go-btn');
+      goBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (window.game) window.game.keys['w'] = true;
+      }, { passive: false });
+      goBtn.addEventListener('touchend', function() {
+        if (window.game) window.game.keys['w'] = false;
+      });
+      goBtn.addEventListener('touchcancel', function() {
+        if (window.game) window.game.keys['w'] = false;
+      });
+
+      // STOP (brake) — hold (maps to S key)
+      const stopBtn = $('kid-stop-btn');
+      stopBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (window.game) window.game.keys['s'] = true;
+      }, { passive: false });
+      stopBtn.addEventListener('touchend', function() {
+        if (window.game) window.game.keys['s'] = false;
+      });
+      stopBtn.addEventListener('touchcancel', function() {
+        if (window.game) window.game.keys['s'] = false;
+      });
+
+      // HORN — tap (calls _horn() method)
+      $('kid-horn-btn').addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (window.game && window.game._horn) window.game._horn();
+      }, { passive: false });
+
+      // --- Indicator buttons ---
+      // Left indicator (calls toggleTurnSignal(-1))
+      $('kid-left-btn').addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (window.game && window.game.toggleTurnSignal) window.game.toggleTurnSignal(-1);
+      }, { passive: false });
+      // Right indicator (calls toggleTurnSignal(1))
+      $('kid-right-btn').addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (window.game && window.game.toggleTurnSignal) window.game.toggleTurnSignal(1);
+      }, { passive: false });
+      // Headlights (calls toggleHighBeam)
+      $('kid-headlight-btn').addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        if (window.game && window.game.toggleHighBeam) window.game.toggleHighBeam();
+      }, { passive: false });
+
+      // --- Update hearts display (5 hearts based on HP%) ---
+      window._kidUpdateHearts = function(hp, maxHp) {
+        const hearts = $('kid-hearts');
+        const pct = maxHp > 0 ? hp / maxHp : 1;
+        const count = 5;
+        const full = Math.round(pct * count);
+        let html = '';
+        for (let i = 0; i < count; i++) {
+          html += i < full ? '❤️' : '🖤';
+        }
+        hearts.innerHTML = html;
+      };
+
+      // --- Update level name ---
+      window._kidUpdateLevelName = function(name) {
+        $('kid-level-name').textContent = '🏁 ' + name;
+      };
+
+      // --- Update task progress ---
+      window._kidUpdateTask = function(text, progress) {
+        $('kid-task-text').textContent = text;
+        $('kid-task-fill').style.width = Math.min(100, Math.max(0, progress)) + '%';
+      };
+
+      // --- Show tutorial ---
+      window._kidShowTutorial = function(emoji, text, arrowDir) {
+        $('kid-tut-emoji').textContent = emoji || '🚗';
+        $('kid-tut-text').textContent = text || 'Turn the wheel to drive!';
+        const arrow = $('kid-tut-arrow');
+        if (arrowDir === 'left') {
+          arrow.textContent = '👈';
+          arrow.style.display = 'block';
+        } else if (arrowDir === 'right') {
+          arrow.textContent = '👉';
+          arrow.style.display = 'block';
+        } else {
+          arrow.style.display = 'none';
+        }
+        $('kid-tutorial').style.display = 'flex';
+      };
+
+      window._kidDismissTutorial = function() {
+        $('kid-tutorial').style.display = 'none';
+        if (window.game && window.game.onTutorialDismiss) window.game.onTutorialDismiss();
+      };
+
+      // --- Show celebration ---
+      window._kidShowCelebrate = function(stars, text, sub) {
+        $('kid-cel-stars').textContent = stars || '⭐⭐⭐';
+        $('kid-cel-text').textContent = text || 'Amazing!';
+        $('kid-cel-sub').textContent = sub || 'You did it!';
+        $('kid-celebrate').style.display = 'flex';
+        spawnConfetti();
+      };
+
+      window._kidDismissCelebrate = function() {
+        $('kid-celebrate').style.display = 'none';
+        if (window.ui && window.ui.showStart) window.ui.showStart();
+      };
+
+      // --- Show crash (friendly) ---
+      window._kidShowCrash = function(msg) {
+        $('kid-crash-sub').textContent = msg || 'Be careful next time!';
+        $('kid-crash').style.display = 'flex';
+      };
+
+      window._kidDismissCrash = function() {
+        $('kid-crash').style.display = 'none';
+      };
+
+      window._kidRetry = function() {
+        window._kidDismissCrash();
+        if (window.game && window.game.retryLevel) window.game.retryLevel();
+      };
+
+      window._kidGoHome = function() {
+        window._kidDismissCrash();
+        if (window.ui && window.ui.showStart) window.ui.showStart();
+      };
+
+      // --- Show countdown ---
+      window._kidCountdown = function(callback) {
+        const cd = $('kid-countdown');
+        const num = $('kid-count-num');
+        cd.style.display = 'flex';
+        let count = 3;
+        num.textContent = count;
+        num.style.animation = 'none';
+        void num.offsetWidth;
+        num.style.animation = 'kidCountPulse 0.8s ease-in-out';
+        const iv = setInterval(() => {
+          count--;
+          if (count > 0) {
+            num.textContent = count;
+            num.style.animation = 'none';
+            void num.offsetWidth;
+            num.style.animation = 'kidCountPulse 0.8s ease-in-out';
+          } else {
+            num.textContent = 'GO!';
+            num.style.animation = 'none';
+            void num.offsetWidth;
+            num.style.animation = 'kidCountPulse 0.8s ease-in-out';
+            setTimeout(() => {
+              cd.style.display = 'none';
+              if (callback) callback();
+            }, 600);
+            clearInterval(iv);
+          }
+        }, 800);
+      };
+
+      // --- Show off-road warning ---
+      window._kidShowOffroad = function() {
+        const ow = $('kid-offroad');
+        ow.style.display = 'block';
+        ow.style.animation = 'none';
+        void ow.offsetWidth;
+        ow.style.animation = 'kidShake 0.3s ease-in-out';
+        clearTimeout(window._kidOffroadTimer);
+        window._kidOffroadTimer = setTimeout(() => {
+          ow.style.display = 'none';
+        }, 1500);
+      };
+
+      // --- Confetti ---
+      function spawnConfetti() {
+        const colors = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
+        for (let i = 0; i < 40; i++) {
+          setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'kid-confetti';
+            el.style.left = (Math.random() * 100) + 'vw';
+            el.style.top = '-10px';
+            el.style.background = colors[Math.floor(Math.random() * colors.length)];
+            el.style.width = (6 + Math.random() * 8) + 'px';
+            el.style.height = (6 + Math.random() * 8) + 'px';
+            el.style.animationDuration = (1 + Math.random() * 1.5) + 's';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+          }, i * 30);
+        }
+      }
+
+      // --- Hook into game events ---
+      // Wait for game object, then override _go (crash) and completeLevel (win)
+      let _kidOrigUh = null; // save original _uh once
+      let _kidOrigComplete = null; // save original completeLevel once
+      let _kidOrigCheckTasks = null; // save original _checkTasks once
+
+      function _kidHookGame() {
+        if (!window.game) { setTimeout(_kidHookGame, 200); return; }
+
+        // Override crash screen — show kid-friendly "Oops!" instead of legal report
+        const origGo = window.game._go.bind(window.game);
+        window.game._go = function(reason) {
+          origGo(reason);
+          // After original crash screen appears, show kid overlay on top
+          setTimeout(() => {
+            const kidFriendly = reason || 'Be careful next time!';
+            window._kidShowCrash(kidFriendly);
+          }, 600);
+        };
+
+        // Save original completeLevel once
+        if (!_kidOrigComplete) {
+          _kidOrigComplete = window.game.completeLevel.bind(window.game);
+        }
+        // Override level completion — suppress original overlay, show kid celebration
+        window.game.completeLevel = function() {
+          if (window.KID_MODE) {
+            // Call original but remove its overlay after it appears
+            _kidOrigComplete();
+            setTimeout(() => {
+              // Remove the original "MISSION COMPLETE!" overlay
+              const overlays = document.querySelectorAll('div[style*="z-index:9998"]');
+              overlays.forEach(el => el.remove());
+              // Show kid-friendly celebration instead
+              window._kidShowCelebrate('⭐⭐⭐', 'Amazing!', 'You did it!');
+            }, 100);
+          } else {
+            _kidOrigComplete();
+          }
+        };
+
+        // Save original _uh once
+        if (!_kidOrigUh) {
+          _kidOrigUh = window.game._uh.bind(window.game);
+        }
+
+        // Show kid controls when game starts
+        const origActualStart = window.game._actualStart.bind(window.game);
+        window.game._actualStart = function(lv) {
+          origActualStart(lv);
+          setTimeout(() => {
+            showSteerAndPedals();
+            window._kidUpdateLevelName(lv.name || 'Level ' + lv.id);
+            // Initialize hearts
+            window._kidUpdateHearts(100, 100);
+            // Hook hearts update into _uh (use saved original to avoid stacking)
+            window.game._uh = function() {
+              _kidOrigUh();
+              window._kidUpdateHearts(window.game.hp, 100);
+            };
+
+            // Progressive control unlock based on level
+            const lvNum = lv.id || ui.cur || 1;
+            const stopBtn = $('kid-stop-btn');
+            const hornBtn = $('kid-horn-btn');
+            const leftBtn = $('kid-left-btn');
+            const rightBtn = $('kid-right-btn');
+            const headBtn = $('kid-headlight-btn');
+            // Reset all locks
+            [stopBtn, hornBtn, leftBtn, rightBtn, headBtn].forEach(b => { if (b) b.classList.remove('kid-locked'); });
+            // Tier 1 (1-3): steering + gas only
+            if (lvNum <= 3) {
+              [stopBtn, hornBtn, leftBtn, rightBtn, headBtn].forEach(b => { if (b) b.classList.add('kid-locked'); });
+            }
+            // Tier 2 (4-6): add brake
+            else if (lvNum <= 6) {
+              [hornBtn, leftBtn, rightBtn, headBtn].forEach(b => { if (b) b.classList.add('kid-locked'); });
+            }
+            // Tier 3 (7-9): add horn
+            else if (lvNum <= 9) {
+              [leftBtn, rightBtn, headBtn].forEach(b => { if (b) b.classList.add('kid-locked'); });
+            }
+            // Tier 4 (10+): all controls unlocked
+            // Show unlock toast on tier transitions
+            const prevTier = parseInt(localStorage.getItem('kid_tier') || '0', 10);
+            let curTier = 1;
+            if (lvNum > 9) curTier = 4;
+            else if (lvNum > 6) curTier = 3;
+            else if (lvNum > 3) curTier = 2;
+            if (curTier > prevTier && prevTier > 0) {
+              const unlockMsgs = { 2: '🆕 Brake unlocked!', 3: '🆕 Horn unlocked!', 4: '🆕 Indicators & lights unlocked!' };
+              const toast = $('kid-unlock-toast');
+              toast.textContent = unlockMsgs[curTier] || '🆕 New control!';
+              toast.style.display = 'block';
+              setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            }
+            localStorage.setItem('kid_tier', curTier.toString());
+            // Auto-unlock controls needed by current tasks
+            const neededTargets = (window.game.tasks || []).map(t => t.target);
+            if (neededTargets.includes('indicator') || neededTargets.includes('hazards')) {
+              if (leftBtn) leftBtn.classList.remove('kid-locked');
+              if (rightBtn) rightBtn.classList.remove('kid-locked');
+            }
+            if (neededTargets.includes('headlights')) {
+              if (headBtn) headBtn.classList.remove('kid-locked');
+            }
+            const taskMap = {
+              'stop': { 'red_light': ['🚦', 'Wait for green light!'], 'stationary': ['🛑', 'Stop the car!'], 'walking_speed': ['🐢', 'Drive slowly!'], 'parking_zone': ['🅿️', 'Park here!'], 'parking_spot': ['🅿️', 'Park here!'] },
+              'reach': { 'destination': ['🏁', 'Drive to the end!'], 'green_light': ['🟢', 'Go when green!'], 'parking_spot': ['🅿️', 'Find parking!'], 'market_zone': ['🏪', 'Go to market!'], 'left_side': ['👈', 'Move left!'], 'left_lane': ['👈', 'Use left lane!'], 'main_road': ['🛣️', 'Get on main road!'], 'forward_space': ['⬆️', 'Keep going!'], 'away_gate': ['🚪', 'Drive to exit!'] },
+              'avoid': { 'honk': ['🤫', 'No honking!'], 'speed_zone': ['🐢', 'Drive slowly!'], 'speed_night': ['🌙', 'Slow at night!'], 'speed_puddle': ['💧', 'Avoid puddles!'], 'speed_hospital': ['🏥', 'Slow near hospital!'], 'pedestrian': ['🚶', 'Watch for people!'], 'collision': ['🚗', 'Don\'t crash!'], 'ambulance': ['🚑', 'Let ambulance pass!'] },
+              'toggle': { 'seatbelt': ['🔒', 'Buckle up!'], 'indicator': ['➡️', 'Use indicator!'], 'headlights': ['💡', 'Turn on lights!'], 'hazards': ['⚠️', 'Turn on hazard lights!'] }
+            };
+            const firstTask = window.game.tasks && window.game.tasks.find(t => !t.done);
+            if (firstTask) {
+              const tm = taskMap[firstTask.type] && taskMap[firstTask.type][firstTask.target];
+              const emoji = tm ? tm[0] : '🚗';
+              const text = tm ? tm[1] : firstTask.text;
+              window._kidShowTutorial(emoji, text);
+              // Auto-dismiss after 4 seconds
+              setTimeout(() => { window._kidDismissTutorial(); }, 4000);
+            }
+
+            // Hook task completion for kid task bar updates (save original once)
+            if (!_kidOrigCheckTasks) {
+              _kidOrigCheckTasks = window.game._checkTasks.bind(window.game);
+            }
+            window.game._checkTasks = function() {
+              _kidOrigCheckTasks();
+              const next = window.game.tasks && window.game.tasks.find(t => !t.done);
+              if (next) {
+                const tm = taskMap[next.type] && taskMap[next.type][next.target];
+                window._kidUpdateTask(tm ? tm[1] : next.text, 0);
+              } else {
+                window._kidUpdateTask('All done!', 100);
+              }
+            };
+            // Initial task bar
+            if (firstTask) {
+              const tm = taskMap[firstTask.type] && taskMap[firstTask.type][firstTask.target];
+              window._kidUpdateTask(tm ? tm[1] : firstTask.text, 0);
+            }
+          }, 200);
+        };
+
+        console.log('[Kid Mode] Game hooks installed');
+      }
+      _kidHookGame();
+
+      console.log('[Kid Mode] Initialized — simplified UI for children');
+    })();
+    </script>
   </body>
 </html>

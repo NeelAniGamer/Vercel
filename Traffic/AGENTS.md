@@ -165,4 +165,74 @@ const LEVEL_CONFIG = {
 
 ---
 
-_Last updated: June 28, 2026_
+## 🔴 Skill-First Rule (MANDATORY)
+
+**Before making ANY code change to this project, ALWAYS:**
+
+1. **Find a relevant skill** from the available skill library (loaded skills list)
+2. **If no skill exists** → search the internet for best practices/patterns for the task, download or reference the knowledge, then proceed
+3. **Apply the skill's guidance** when planning and implementing changes
+4. **Plan before coding** — never jump into edits without understanding the domain
+
+This prevents reinventing wheels, ensures industry-standard patterns, and avoids known pitfalls.
+
+---
+
+## Execution Progress
+
+### Completed (June 28–29, 2026)
+- [x] Mobile camera look (camYaw/camPitch) — touch-to-look with decay
+- [x] Road-relative building spawn — `_buildRoadZones()`, `_isOnRoad()`, `_isInBuildZone()`
+- [x] Driving.html canvas `touch-action:none` + swipe hint
+- [x] 20-level audit — all levels follow theory+practical format
+- [x] Full codebase re-read — verified all critical code paths
+- [x] Browser traffic game research — Poki/Drive Mad/Rush 3D benchmarks
+- [x] 35+ skills loaded and cross-referenced
+- [x] OVERHAUL_PLAN.md created — comprehensive 11-phase plan with 50 levels
+- [x] Physics audit — camera shake, rain, puddles, fog, night mode verified
+
+### In Progress
+- [x] AGENTS.md update (skill-first rule, progress, physics findings)
+- [x] Phase 0: Critical bug fixes (currentRoad, this.levelCfg, puddles, barricades, cleanup)
+- [x] Phase 1: Building + obstacle AABB collision (halfW/halfD on all obstacles, AABB overlap test, push-out on contact)
+
+### Upcoming Phases
+- [ ] Phase 2: UI simplification for 4-5 year olds
+
+### Physics Audit Results
+| System | Status | Details |
+|--------|--------|---------|
+| Camera shake | ✅ Working | `_camShakeAmt`: NPC=0.40, barricade=0.35, breaker=0.15. Exponential decay. |
+| Rain physics | ✅ Working | turn×0.65, grip×0.3, fric+0.025 when `hasRain` |
+| Fog | ✅ Working | Rain: 0.3×near, 0.5×far. Normal: full fog. |
+| Puddles (level 5) | ✅ Working | 10 puddles, collision at dist<2.5, speed>0.15 = fine |
+| Puddles (hasRain levels) | ✅ Fixed | Created AND pushed to `this.puddles[]` — collision now fires |
+| Night mode | ⚠️ Incomplete | Sky darkens, moonlight, but no headlights/streetlights/NPC behavior |
+| `speed_puddle` task | ❌ BROKEN | Depends on `this.puddles[]` which is incomplete for hasRain |
+| `speed_night` task | ⚠️ Partial | Task type exists but no visual night mode beyond sky color |
+
+### Critical Bugs Found (Phase 0)
+| Bug | Location | Status |
+|-----|----------|--------|
+| `currentRoad` undefined | game_core.js:2304 | ✅ Fixed — defined via roadSegments loop |
+| `this.levelCfg` wrong ref | game_core.js:2267 | ✅ Fixed — changed to `this.mapCfg` |
+| `window.LVL_REWARD_CALLED` | game_core.js:~525 | ⏭️ N/A — variable doesn't exist, guard already in place |
+| Puddles not in array | game_core.js:1514-1525 | ✅ Fixed — `this.puddles.push(p)` added to rain loop |
+| Barricade spawn on road | game_core.js:1912-1928 | ✅ Fixed — offset changed from ±5 to ±10 |
+| Buildings removed by cleanup | game_core.js:1930-1937 | ✅ Fixed — `isBuilding` check added |
+| Procedural buildings no tag | game_core.js:1172 | ✅ Fixed — `userData.isBuilding = true` added |
+
+### Upcoming Phases
+- **Phase 2**: UI simplification for 4-5 year olds
+- **Phase 3**: Tutorial system (progressive unlock, visual-only for kids)
+- **Phase 4**: NPC AI fixes (stuck detection, traffic light obedience)
+- **Phase 5**: Visual polish (MeshToonMaterial, day/night, weather)
+- **Phase 6**: Level routes + physics completeness
+- **Phase 7**: Performance & polish (object pooling, draw calls, 30fps mobile)
+- **Phase 8**: 2D Phaser 4 scenario demo
+- **Phase 9**: 50 level definitions (Indian traffic theory)
+- **Phase 10**: Seerle Traffic Academy Android app (React Native/Expo)
+
+---
+
+_Last updated: June 29, 2026_
