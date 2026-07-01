@@ -1480,6 +1480,15 @@ const _buildHuman = (isPlayer = false) => {
     hModel.scale.set(s, s, s)
     hModel.position.y = 0
 
+    // Ensure all meshes in cloned model render properly
+    hModel.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = !isPlayer
+        child.receiveShadow = true
+        child.frustumCulled = false
+      }
+    })
+
     // Add invisible hitbox for collisions
     const hbGeo = new THREE.BoxGeometry(0.8, 2.0, 0.8)
     const hbMat = new THREE.MeshBasicMaterial({ visible: false })
@@ -1489,14 +1498,15 @@ const _buildHuman = (isPlayer = false) => {
     g.add(hModel)
     g.add(hb)
 
-    // Create visible mesh legs that overlay on the Kenney model for walk animation
-    const legColor = 0x333333
-    const legMat = new THREE.MeshLambertMaterial({ color: legColor })
-    const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.15 * s, 0.45 * s, 0.15 * s), legMat)
-    lLeg.position.set(-0.12 * s, 0.22 * s, 0)
+    // Visible leg meshes for walk animation (dark, small, overlay on GLB model)
+    const legMat = new THREE.MeshLambertMaterial({ color: 0x222222 })
+    const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.14 * s, 0.4 * s, 0.14 * s), legMat)
+    lLeg.position.set(-0.1 * s, 0.2 * s, 0)
+    lLeg.castShadow = true
     g.add(lLeg)
-    const rLeg = new THREE.Mesh(new THREE.BoxGeometry(0.15 * s, 0.45 * s, 0.15 * s), legMat)
-    rLeg.position.set(0.12 * s, 0.22 * s, 0)
+    const rLeg = new THREE.Mesh(new THREE.BoxGeometry(0.14 * s, 0.4 * s, 0.14 * s), legMat)
+    rLeg.position.set(0.1 * s, 0.2 * s, 0)
+    rLeg.castShadow = true
     g.add(rLeg)
 
     g.userData = { lLeg, rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }

@@ -1560,13 +1560,6 @@
         color: #fff;
       }
 
-      #task-tracker {
-        position: fixed;
-        top: 180px;
-        left: 20px;
-        z-index: 22;
-      }
-
       #gread {
         position: fixed;
         bottom: 80px;
@@ -2071,112 +2064,112 @@
           width: 100vw;
           height: 100vh;
           z-index: 1;
-          background: #000; /* Prevent bright flashes or letterboxing issues */
+          background: #000;
         }
 
-        /* HUD Scaling and Repositioning */
+        /* HUD — compact top-left cluster */
         #hud {
-          top: 8px;
-          left: 8px;
+          top: 6px;
+          left: 6px;
           right: auto;
           padding: 0;
-          gap: 6px;
+          gap: 4px;
         }
         .hp {
-          padding: 4px 8px;
-          font-size: 0.75rem;
-          border-radius: 6px;
+          padding: 3px 7px;
+          font-size: 0.7rem;
+          border-radius: 5px;
         }
         #hudbar {
-          top: 48px;
-          left: 8px;
+          top: 40px;
+          left: 6px;
           right: auto;
-          gap: 6px;
+          gap: 4px;
           padding: 0;
         }
         .hb {
-          padding: 4px 10px;
-          font-size: 0.7rem;
-          border-radius: 6px;
+          padding: 3px 8px;
+          font-size: 0.65rem;
+          border-radius: 5px;
         }
         #hwrap {
-          top: 80px;
-          left: 8px;
+          top: 72px;
+          left: 6px;
           right: auto;
           flex-direction: row;
           align-items: center;
-          gap: 8px;
-          padding: 4px 8px;
-          border-radius: 6px;
+          gap: 6px;
+          padding: 3px 7px;
+          border-radius: 5px;
           z-index: 25;
-          max-width: 45vw;
+          max-width: 38vw;
           overflow-x: auto;
-        }
-        #objective-overlay {
-          top: 144px;
-          right: 8px;
-          left: auto;
-          width: auto;
-          max-width: 42vw;
-          padding: 6px 10px;
-          z-index: 25;
-          max-height: 30vh;
-          overflow-y: auto;
-          font-size: 0.75rem;
-        }
-        #task-tracker {
-          top: 120px;
-          bottom: auto;
-          left: 8px;
-          right: auto;
-          width: auto;
-          max-width: 45vw;
-          max-height: 25vh;
-          font-size: 0.75rem;
-          padding: 12px;
-        }
-        #sig-ind {
-          top: 8px;
-          left: 50%;
-          transform: translateX(-50%);
-          font-size: 0.8rem;
-          padding: 6px 12px;
-          gap: 8px;
-        }
-        #sind-state {
-          min-width: 40px;
-          font-size: 0.85rem;
-        }
-        #sind-timer {
-          font-size: 0.9rem;
-          min-width: 24px;
         }
         #hwrap .hl {
           margin: 0;
-          font-size: 0.6rem;
+          font-size: 0.55rem;
         }
         #hwallet {
-          font-size: 0.85rem;
+          font-size: 0.75rem;
         }
         .ht {
-          width: 60px;
-          height: 6px;
+          width: 50px;
+          height: 5px;
+        }
+        #objective-overlay {
+          top: 110px;
+          right: 6px;
+          left: auto;
+          width: auto;
+          max-width: 36vw;
+          padding: 5px 8px;
+          z-index: 25;
+          max-height: 28vh;
+          overflow-y: auto;
+          font-size: 0.68rem;
+        }
+        #task-tracker {
+          top: 100px;
+          bottom: auto;
+          left: 6px;
+          right: auto;
+          width: auto;
+          max-width: 38vw;
+          max-height: 22vh;
+          font-size: 0.68rem;
+          padding: 8px;
+        }
+        #sig-ind {
+          top: 6px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 0.7rem;
+          padding: 4px 10px;
+          gap: 6px;
+        }
+        #sind-state {
+          min-width: 36px;
+          font-size: 0.78rem;
+        }
+        #sind-timer {
+          font-size: 0.82rem;
+          min-width: 20px;
         }
 
         /* Touch Controls (Center Bottom) */
         #tc {
-          bottom: 12px;
+          bottom: 8px;
           left: 50%;
           transform: translateX(-50%);
           padding: 0;
-          gap: 12px;
+          gap: 10px;
           justify-content: center;
         }
         .db {
-          width: 44px;
-          height: 44px;
-          font-size: 1.1rem;
-          border-radius: 12px;
+          width: 40px;
+          height: 40px;
+          font-size: 1rem;
+          border-radius: 10px;
         }
 
         /* Gear Selector (Vertical on Left) */
@@ -2185,117 +2178,117 @@
         }
         #gp {
           bottom: 50%;
-          left: 12px;
+          left: 8px;
           transform: translateY(50%);
           flex-direction: column;
-          padding: 6px;
-          gap: 6px;
-          background: rgba(255, 255, 255, 0.6);
+          padding: 5px;
+          gap: 5px;
+          background: rgba(255, 255, 255, 0.55);
           backdrop-filter: blur(8px);
-          border-radius: 16px;
+          border-radius: 14px;
         }
         .gb {
-          width: 38px;
-          height: 38px;
-          font-size: 0.85rem;
-          border-radius: 10px;
+          width: 34px;
+          height: 34px;
+          font-size: 0.8rem;
+          border-radius: 9px;
         }
         #gread {
-          bottom: 70px;
+          bottom: 60px;
           top: auto;
-          left: 12px;
+          left: 8px;
           transform: none;
-          font-size: 0.75rem;
-          padding: 4px 8px;
-          background: rgba(255, 255, 255, 0.8);
+          font-size: 0.7rem;
+          padding: 3px 7px;
+          background: rgba(255, 255, 255, 0.75);
         }
 
         /* Mobile Controls Wrapper */
         #mobile-controls {
-          bottom: 12px;
-          padding: 0 20px;
-          background: none; /* remove gradient to keep view clear */
+          bottom: 8px;
+          padding: 0 14px;
+          background: none;
         }
 
         /* Steering Wheel (Bottom Left) */
         #steer-wheel-container {
-          width: 110px;
-          height: 110px;
+          width: 100px;
+          height: 100px;
           border-width: 3px;
           background: rgba(0, 0, 0, 0.25);
-          margin-left: 50px; /* Offset to not overlap gears */
+          margin-left: 42px;
         }
 
         /* Pedals (Bottom Right) */
         .mc-col {
-          gap: 12px;
+          gap: 10px;
         }
         .mc-btn {
-          width: 65px;
-          height: 65px;
-          font-size: 20px;
+          width: 58px;
+          height: 58px;
+          font-size: 18px;
           border-width: 2px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
 
         #da {
           display: none !important;
         }
         #mmc {
-          top: 8px;
-          right: 8px;
-          width: 90px;
-          height: 90px;
+          top: 6px;
+          right: 6px;
+          width: 80px;
+          height: 80px;
           border-width: 3px;
           z-index: 18;
         }
         #spgauge {
           right: auto;
-          left: 12px;
-          bottom: 100px;
-          width: 80px;
-          height: 80px;
+          left: 8px;
+          bottom: 90px;
+          width: 72px;
+          height: 72px;
         }
         #spgauge svg {
-          width: 80px;
-          height: 80px;
+          width: 72px;
+          height: 72px;
         }
         #boostgauge {
-          right: 12px;
-          bottom: 185px;
+          right: 8px;
+          bottom: 170px;
         }
         #boostgauge svg {
-          width: 56px;
-          height: 56px;
+          width: 48px;
+          height: 48px;
         }
         #civic-controls {
-          top: 104px;
-          right: 8px;
+          top: 96px;
+          right: 6px;
           bottom: auto;
           left: auto;
-          gap: 4px;
+          gap: 3px;
         }
         #civic-controls button {
-          padding: 6px 10px;
-          font-size: 0.7rem;
-          border-radius: 14px;
+          padding: 5px 9px;
+          font-size: 0.65rem;
+          border-radius: 12px;
         }
 
         /* Phone GPS Button mobile sizing */
         #phone-gps-btn {
-          width: 50px !important;
-          height: 50px !important;
-          font-size: 20px !important;
+          width: 46px !important;
+          height: 46px !important;
+          font-size: 18px !important;
         }
 
         /* Gyro Button mobile sizing */
         #mc-gyro {
-          width: 50px !important;
-          height: 50px !important;
+          width: 46px !important;
+          height: 46px !important;
         }
         #mc-gyro svg {
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
         }
       }
 
@@ -2488,6 +2481,17 @@
 
   <body class="lm">
     <!-- Script entry points -->
+
+    <!-- Rotate-to-play overlay for portrait mobile -->
+    <div id="rotate-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#fff;font-family:'Inter',sans-serif;text-align:center;padding:24px;">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:rotatePhone 1.5s ease-in-out infinite">
+        <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+        <line x1="12" y1="18" x2="12" y2="18.01"/>
+      </svg>
+      <div style="font-size:1.2rem;font-weight:600;color:#34D399;">Rotate your device</div>
+      <div style="font-size:0.85rem;color:#aaa;">Play in landscape mode for the best experience</div>
+      <style>@keyframes rotatePhone{0%,100%{transform:rotate(0deg)}50%{transform:rotate(90deg)}}</style>
+    </div>
 
     <div
       id="mobile-controls"
@@ -3507,6 +3511,26 @@
     <script src="levels/level19.js"></script>
     <script src="levels/level20.js"></script>
 
+    <script>
+      // Rotate-to-play overlay for portrait mobile screens
+      (function(){
+        const ov = document.getElementById('rotate-overlay');
+        if (!ov) return;
+        function isMobile(){ return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); }
+        function isPortrait(){ return window.innerHeight > window.innerWidth; }
+        function update(){
+          if (isMobile() && isPortrait() && game && game.playing) {
+            ov.style.display = 'flex';
+          } else {
+            ov.style.display = 'none';
+          }
+        }
+        window.addEventListener('resize', update);
+        window.addEventListener('orientationchange', function(){ setTimeout(update, 150); });
+        // Check periodically in case playing state changes
+        setInterval(update, 500);
+      })();
+    </script>
     <script src="course.js"></script>
     <script src="ui.js"></script>
     <script src="game_core.js"></script>

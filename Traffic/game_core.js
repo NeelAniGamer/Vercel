@@ -326,6 +326,26 @@ class Game {
             }
           }
         };
+        this._autoGyro = () => {
+          if (!this._gyroSupported || this.gyroOn) return;
+          const doEnable = () => {
+            this.gyroOn = true;
+            this.gyroBaseGamma = 0;
+            this._startGyro();
+            const btn = document.getElementById('mc-gyro');
+            if (btn) btn.classList.add('gyro-active');
+            setTimeout(() => {
+              if (this.gyroOn && this._lastGyroGamma != null) this.gyroBaseGamma = this._lastGyroGamma;
+            }, 200);
+          };
+          if (this._gyroNeedsPermission) {
+            DeviceOrientationEvent.requestPermission().then(state => {
+              if (state === 'granted') doEnable();
+            }).catch(() => {});
+          } else {
+            doEnable();
+          }
+        };
 
 
         const sb = (id, k) => {
@@ -427,7 +447,7 @@ class Game {
         if (btnM) { btnM.style.background = '#333'; btnM.textContent = '📱 Use Mobile Phone'; }
         
         if (mob()) document.getElementById('tc').classList.add('on');
-        if (mob() && this._requestGyroPermission) this._requestGyroPermission();
+        if (mob()) this._autoGyro();
         document.getElementById('hlv').textContent = lv.id; document.getElementById('hobj').textContent = lv.tg; this._uh(); sfx.play('ok');
         
         // Initialize tasks for this level
@@ -2091,6 +2111,18 @@ class Game {
             rx: this.playerVehicle.rotation.x.toFixed(4),
             ry: this.playerVehicle.rotation.y.toFixed(4),
             rz: this.playerVehicle.rotation.z.toFixed(4)
+          });
+        }
+
+        // DEBUG: Check if camera has unwanted roll
+        const camRx = this.camera.rotation.x;
+        const camRz = this.camera.rotation.z;
+        if (Math.abs(camRx) > 0.01 || Math.abs(camRz) > 0.01) {
+          console.warn('[FLIP-DBG] Camera has X/Z rotation!', {
+            rx: camRx.toFixed(4),
+            rz: camRz.toFixed(4),
+            playerRy: this.player?.rotation?.y?.toFixed(4),
+            vehiclePos: {x: this.playerVehicle?.position?.x?.toFixed(2), z: this.playerVehicle?.position?.z?.toFixed(2)}
           });
         }
 
