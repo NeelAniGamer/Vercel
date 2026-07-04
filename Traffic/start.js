@@ -79,6 +79,9 @@ window.ASSET_MANIFEST = {}
   // Trains
   M.train = tkKit + 'train-locomotive-a.glb'; M.metro = tkKit + 'train-electric-subway-a.glb'
   ;['train-diesel-a','train-electric-bullet-a','train-tram-modern','train-carriage-box'].forEach(t => { M['tk_'+t] = tkKit + t + '.glb' })
+
+  // Trees & greenery
+  M.tree_small = subKit + 'tree-small.glb'; M.tree_large = subKit + 'tree-large.glb'; M.planter = subKit + 'planter.glb'
 })()
 
 // Logical groups — level configs reference these in their assets[] array
@@ -99,7 +102,8 @@ window.ASSET_GROUPS = {
 window.CORE_ASSETS = [
   'car','taxi','police','bus','truck','auto','bike',
   'road_straight','road_intersect','road_cross','road_cross_path','road_intersect_path','road_bend','road_crossing','road_roundabout',
-  'char_f_a','char_f_b','char_f_c','char_m_a','char_m_b','char_m_c'
+  'char_f_a','char_f_b','char_f_c','char_m_a','char_m_b','char_m_c',
+  'tree_small','tree_large'
 ]
 
 // Expand an assets[] array: resolve group names to individual keys, deduplicate

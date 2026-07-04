@@ -1589,18 +1589,9 @@ const _buildHuman = (isPlayer = false) => {
     g.add(hModel)
     g.add(hb)
 
-    // Visible leg meshes for walk animation (dark, small, overlay on GLB model)
-    const legMat = new THREE.MeshToonMaterial({ color: 0x222222 })
-    const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.14 * s, 0.4 * s, 0.14 * s), legMat)
-    lLeg.position.set(-0.1 * s, 0.2 * s, 0)
-    lLeg.castShadow = true
-    g.add(lLeg)
-    const rLeg = new THREE.Mesh(new THREE.BoxGeometry(0.14 * s, 0.4 * s, 0.14 * s), legMat)
-    rLeg.position.set(0.1 * s, 0.2 * s, 0)
-    rLeg.castShadow = true
-    g.add(rLeg)
-
-    g.userData = { lLeg, rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
+    // GLB model already has full body — no procedural legs needed
+    // Walk animation uses lLeg/rLeg userData; set to null so game_core skips them
+    g.userData = { lLeg: null, rLeg: null, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
     return g
   }
 

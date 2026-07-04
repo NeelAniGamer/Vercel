@@ -534,7 +534,6 @@ class Game {
             if (e.key.toLowerCase() === 'h') this.toggleHighBeam();
             if (e.key.toLowerCase() === 'q') this.toggleTurnSignal(-1);
             if (e.key.toLowerCase() === 'e') this.toggleTurnSignal(1);
-            if (e.key.toLowerCase() === 'g') this._toggleGyro();
             if (e.key.toLowerCase() === 'm') this.togglePhoneGps();
             if (e.key === 'Escape') this.togglePause();
         });
@@ -633,6 +632,16 @@ class Game {
           };
           wheel.addEventListener('touchend', resetSteer);
           wheel.addEventListener('touchcancel', resetSteer);
+
+          wheel.addEventListener('mousedown', (e) => {
+            isSteering = true;
+            updateSteer(e.clientX, e.clientY);
+          });
+          window.addEventListener('mousemove', (e) => {
+            if (!isSteering) return;
+            updateSteer(e.clientX, e.clientY);
+          });
+          window.addEventListener('mouseup', resetSteer);
         }
         const swC = document.getElementById('steer-wheel-container');
         const sw = document.getElementById('steer-wheel');
@@ -758,45 +767,12 @@ class Game {
           }
           window.gyroSteering = 0;
         };
-        this._toggleGyro = () => {
-          if (!this._gyroSupported) { toast('Gyro not supported on this device', '#ff3b30'); return; }
-          if (this.gyroOn) {
-            this.gyroOn = false;
-            this._stopGyro();
-            toast('Gyro OFF', '#95a5a6');
-            const btn = document.getElementById('mc-gyro');
-            if (btn) btn.classList.remove('gyro-active');
-          } else {
-            const doEnable = () => {
-              this.gyroOn = true;
-              this.gyroBaseGamma = 0;
-              this._startGyro();
-              toast('Gyro ON — tilt to steer', '#00c851');
-              const btn = document.getElementById('mc-gyro');
-              if (btn) btn.classList.add('gyro-active');
-              // Snapshot center after a short delay so device has settled
-              setTimeout(() => {
-                if (this.gyroOn && this._lastGyroGamma != null) this.gyroBaseGamma = this._lastGyroGamma;
-              }, 150);
-            };
-            if (this._gyroNeedsPermission) {
-              DeviceOrientationEvent.requestPermission().then(state => {
-                if (state === 'granted') doEnable();
-                else toast('Gyro permission denied', '#ff3b30');
-              }).catch(() => toast('Gyro permission error', '#ff3b30'));
-            } else {
-              doEnable();
-            }
-          }
-        };
         this._autoGyro = () => {
           if (!this._gyroSupported || this.gyroOn) return;
           const doEnable = () => {
             this.gyroOn = true;
             this.gyroBaseGamma = 0;
             this._startGyro();
-            const btn = document.getElementById('mc-gyro');
-            if (btn) btn.classList.add('gyro-active');
             setTimeout(() => {
               if (this.gyroOn && this._lastGyroGamma != null) this.gyroBaseGamma = this._lastGyroGamma;
             }, 200);
@@ -819,12 +795,7 @@ class Game {
         };
         sb('tl', 'arrowleft'); sb('tr', 'arrowright'); sb('tu', 'arrowup'); sb('abb', 'b'); sb('abh', ' ');
 
-        // Gyro toggle button
-        const gyroBtn = document.getElementById('mc-gyro');
-        if (gyroBtn) {
-          gyroBtn.addEventListener('click', () => this._toggleGyro());
-          gyroBtn.addEventListener('touchstart', (e) => { e.preventDefault(); this._toggleGyro(); }, { passive: false });
-        }
+
         this._initMobileCameraLook();
       }
       _initG() { document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); }); }
@@ -833,7 +804,7 @@ class Game {
         if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
         const isControl = (el) => {
           if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-gyro','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile'];
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile'];
           for (const id of ctrlIds) {
             const c = document.getElementById(id);
             if (c && (el === c || c.contains(el))) return true;
@@ -1596,7 +1567,7 @@ class Game {
         const tg = window._toonGrad;
 
         const mats = {
-          grass: new THREE.MeshToonMaterial({ color: cfg.ground || 0x3a9a3a, gradientMap: tg }),
+          grass: new THREE.MeshToonMaterial({ color: cfg.ground || 0x8B7355, gradientMap: tg }),
           road: new THREE.MeshToonMaterial({ color: 0x3d3f45, gradientMap: tg }),
           pave: new THREE.MeshToonMaterial({ color: 0x8a8a8a, gradientMap: tg }),
           yellowLine: new THREE.MeshBasicMaterial({ color: 0xffcc00 }),
@@ -1683,7 +1654,7 @@ class Game {
             this.scene.add(gof);
 
             // Green park ground around monument
-            const parkGround = new THREE.Mesh(new THREE.CircleGeometry(35, 32), new THREE.MeshToonMaterial({ color: 0x3a9a3a }));
+            const parkGround = new THREE.Mesh(new THREE.CircleGeometry(35, 32), new THREE.MeshToonMaterial({ color: 0x8B7355 }));
             parkGround.rotation.x = -Math.PI / 2;
             parkGround.position.set(-50, 0.02, -60);
             this.scene.add(parkGround);
@@ -1741,32 +1712,6 @@ class Game {
               this.scene.add(g); this.obstacles.push(g);
           }
         };
-
-        // Green strips between sidewalk and buildings
-        const grassMat = new THREE.MeshToonMaterial({ color: 0x3a9a3a, gradientMap: tg });
-        cfg.roads.forEach(r => {
-          const isV = r.type === 'v';
-          const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
-          const cx = isV ? r.x : (r.x1 + r.x2) / 2;
-          const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
-          [-1, 1].forEach(s => {
-            const swW = cfg.isPedestrian ? 6 : 4;
-            const gw = 5; // green strip width
-            const gx = isV ? cx + s * (RW / 2 + swW + gw / 2) : cx;
-            const gz = isV ? cz : cz + s * (RW / 2 + swW + gw / 2);
-            const grass = new THREE.Mesh(isV ? new THREE.BoxGeometry(gw, 0.3, len) : new THREE.BoxGeometry(len, 0.3, gw), grassMat);
-            grass.position.set(gx, 0.15, gz);
-            this.scene.add(grass);
-            // Bushes along green strips
-            const bushCount = Math.floor(len / 20);
-            for (let bi = 0; bi < bushCount; bi++) {
-              const bush = new THREE.Mesh(new THREE.SphereGeometry(0.8 + Math.random() * 0.5, 6, 6), new THREE.MeshToonMaterial({ color: 0x2d7a2d + Math.floor(Math.random() * 0x102010) }));
-              const bOff = (Math.random() - 0.5) * (len - 4);
-              bush.position.set(isV ? gx : gx + bOff, 0.4, isV ? gz + bOff : gz);
-              this.scene.add(bush);
-            }
-          });
-        });
 
         // Spawn buildings on a grid — only in build zones near roads
         const bGrid = 30;
@@ -1903,6 +1848,44 @@ class Game {
                    this.obstacles.push(obs);
                 });
             });
+        }
+
+        // ── Trees along sidewalks ──
+        if (window.PRELOADED_MODELS && (window.PRELOADED_MODELS.tree_small || window.PRELOADED_MODELS.tree_large)) {
+          const treeKeys = [];
+          if (window.PRELOADED_MODELS.tree_small) treeKeys.push('tree_small');
+          if (window.PRELOADED_MODELS.tree_large) treeKeys.push('tree_large');
+          cfg.roads.forEach(r => {
+            const isV = r.type === 'v';
+            const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
+            const cx = isV ? r.x : (r.x1 + r.x2) / 2;
+            const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
+            const swW = cfg.isPedestrian ? 6 : 4;
+            const spacing = 18 + Math.random() * 6;
+            const count = Math.max(1, Math.floor(len / spacing));
+            [-1, 1].forEach(side => {
+              const offset = RW / 2 + swW + 2;
+              for (let i = 0; i < count; i++) {
+                if (Math.random() > 0.65) continue;
+                const t = (i + 0.3 + Math.random() * 0.4) / count;
+                let tx, tz;
+                if (isV) {
+                  tx = cx + side * offset;
+                  tz = (r.z1 < r.z2 ? r.z1 : r.z2) + t * len;
+                } else {
+                  tx = (r.x1 < r.x2 ? r.x1 : r.x2) + t * len;
+                  tz = cz + side * offset;
+                }
+                const key = treeKeys[Math.floor(Math.random() * treeKeys.length)];
+                const tree = window.PRELOADED_MODELS[key].clone();
+                const s = key === 'tree_large' ? 6 + Math.random() * 3 : 3.5 + Math.random() * 2;
+                tree.scale.set(s, s, s);
+                tree.position.set(tx, 0, tz);
+                tree.rotation.y = Math.random() * Math.PI * 2;
+                this.scene.add(tree);
+              }
+            });
+          });
         }
 
         // ── Mobile LOD: cull/simplify distant buildings ──
@@ -3491,6 +3474,120 @@ class Game {
                     n.userData.spd += (n.userData.baseSpd * 0.5 - n.userData.spd) * 0.05;
                     break;
                 }
+            } else if (distToPlayer < 200 && n.userData.useRoute) {
+              // Route-following NPC obstacle detection (axis-aware via segment direction)
+              let rfsm = { approachingObstacle: false, obstacleDist: 999, redLight: false, yellowLight: false };
+
+              const rt = n.userData.route;
+              const rIdx = n.userData.routeIdx || 0;
+              const pCurr = rt[rIdx];
+              const pNext = rt[(rIdx + 1) % rt.length];
+              const segDx = pNext.x - pCurr.x;
+              const segDz = pNext.z - pCurr.z;
+              const isSegV = Math.abs(segDz) > Math.abs(segDx);
+              const segDirX = segDx !== 0 ? Math.sign(segDx) : 0;
+              const segDirZ = segDz !== 0 ? Math.sign(segDz) : 0;
+
+              // Traffic lights
+              this.sigs.forEach(sg => {
+                const isRed = sg.userData.st === 'red';
+                const isYellow = sg.userData.st === 'yellow';
+                if (!isRed && !isYellow) return;
+                if (isSegV) {
+                  const dz = sg.position.z - n.position.z;
+                  if (segDirZ !== 0 && dz * segDirZ > 0 && dz * segDirZ < 15 && Math.abs(n.position.x - sg.position.x) < 5) {
+                    rfsm.approachingObstacle = true;
+                    rfsm.obstacleDist = Math.min(rfsm.obstacleDist, Math.abs(dz));
+                    rfsm.redLight = isRed;
+                    rfsm.yellowLight = isYellow;
+                  }
+                } else {
+                  const dx = sg.position.x - n.position.x;
+                  if (segDirX !== 0 && dx * segDirX > 0 && dx * segDirX < 15 && Math.abs(n.position.z - sg.position.z) < 5) {
+                    rfsm.approachingObstacle = true;
+                    rfsm.obstacleDist = Math.min(rfsm.obstacleDist, Math.abs(dx));
+                    rfsm.redLight = isRed;
+                    rfsm.yellowLight = isYellow;
+                  }
+                }
+              });
+
+              // Vehicles ahead
+              this.npcs.forEach(other => {
+                if (other === n || other.userData.spd === undefined) return;
+                const adx = other.position.x - n.position.x;
+                const adz = other.position.z - n.position.z;
+                if (isSegV) {
+                  if (adz * segDirZ > 0 && Math.abs(adz) < 25 && Math.abs(adx) < 3) {
+                    rfsm.approachingObstacle = true;
+                    rfsm.obstacleDist = Math.min(rfsm.obstacleDist, Math.abs(adz));
+                  }
+                } else {
+                  if (adx * segDirX > 0 && Math.abs(adx) < 25 && Math.abs(adz) < 3) {
+                    rfsm.approachingObstacle = true;
+                    rfsm.obstacleDist = Math.min(rfsm.obstacleDist, Math.abs(adx));
+                  }
+                }
+              });
+
+              // Player vehicle
+              if (this.player && this.player.position && !this.isPedestrian) {
+                const pdx = this.player.position.x - n.position.x;
+                const pdz = this.player.position.z - n.position.z;
+                if (isSegV) {
+                  if (pdz * segDirZ > 0 && Math.abs(pdz) < 30 && Math.abs(pdx) < 3) {
+                    rfsm.approachingObstacle = true;
+                    rfsm.obstacleDist = Math.min(rfsm.obstacleDist, Math.abs(pdz));
+                  }
+                } else {
+                  if (pdx * segDirX > 0 && Math.abs(pdx) < 30 && Math.abs(pdz) < 3) {
+                    rfsm.approachingObstacle = true;
+                    rfsm.obstacleDist = Math.min(rfsm.obstacleDist, Math.abs(pdx));
+                  }
+                }
+              }
+
+              // Pedestrians
+              if (this.peds) {
+                this.peds.forEach(ped => {
+                  const pdx = Math.abs(ped.position.x - n.position.x);
+                  const pdz = Math.abs(ped.position.z - n.position.z);
+                  const withinLane = isSegV ? pdx < 4 : pdz < 4;
+                  const withinRange = isSegV ? pdz < 25 : pdx < 25;
+                  if (withinRange && withinLane) {
+                    rfsm.approachingObstacle = true;
+                    const d = isSegV ? pdz : pdx;
+                    rfsm.obstacleDist = Math.min(rfsm.obstacleDist, d);
+                  }
+                });
+              }
+
+              // Route NPC state transitions
+              if (rfsm.approachingObstacle && rfsm.obstacleDist < 11) {
+                n.userData.state = 'STOPPED';
+              } else if (rfsm.approachingObstacle && rfsm.obstacleDist < 30 && rfsm.yellowLight) {
+                n.userData.state = 'SLOW_DOWN';
+              } else if (rfsm.approachingObstacle && rfsm.obstacleDist < 30) {
+                n.userData.state = 'FOLLOW';
+              } else {
+                n.userData.state = 'CRUISE';
+              }
+
+              // Route NPC state behavior
+              switch (n.userData.state) {
+                case 'CRUISE':
+                  n.userData.spd += (n.userData.baseSpd - n.userData.spd) * 0.12;
+                  break;
+                case 'FOLLOW':
+                  n.userData.spd += (n.userData.baseSpd * 0.3 - n.userData.spd) * 0.15;
+                  break;
+                case 'SLOW_DOWN':
+                  n.userData.spd += (n.userData.baseSpd * 0.35 - n.userData.spd) * 0.18;
+                  break;
+                case 'STOPPED':
+                  n.userData.spd += (0 - n.userData.spd) * 0.2;
+                  break;
+              }
             } else {
                // Far away, just cruise
                n.userData.spd += (n.userData.baseSpd - n.userData.spd) * 0.12;
@@ -3626,8 +3723,8 @@ class Game {
         }
 
         // Spawn new pedestrians dynamically
-        const maxPeds = (this.mapCfg && this.mapCfg.isPedestrian) ? 25 : 12;
-        if (this.peds.length < maxPeds && Math.random() < 0.15 && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
+        const maxPeds = (this.mapCfg && this.mapCfg.isPedestrian) ? 30 : 16;
+        if (this.peds.length < maxPeds && Math.random() < 0.2 && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
           const r = this.mapCfg.roads[Math.floor(Math.random() * this.mapCfg.roads.length)];
           const isV = r.type === 'v';
           const rx = isV ? r.x : Math.min(r.x1, r.x2) + Math.random() * Math.abs(r.x2 - r.x1);
@@ -3655,7 +3752,7 @@ class Game {
             ped.position.set(px, 0, pz);
             ped.userData = {
               t: Math.random() * 10,
-              spd: 0.05 + Math.random() * 0.05,
+              spd: 0.3 + Math.random() * 0.4,
               isV: isV,
               dir: Math.random() > 0.5 ? 1 : -1,
               startZ: isV ? pz : px,
@@ -3664,7 +3761,9 @@ class Game {
               rLeg: ped.children.find(c => c.name === 'rLeg') || new THREE.Group(),
               state: exiting ? 'exiting' : 'sidewalk',
               side: side,
-              targetDist: lDist
+              targetDist: lDist,
+              destDist: 15 + Math.random() * 25,
+              distTraveled: 0
             };
             
             if (exiting) {
@@ -3691,6 +3790,8 @@ class Game {
                 p.userData.state = 'sidewalk';
                 p.rotation.y = p.userData.dir > 0 ? 0 : Math.PI;
                 p.userData.startZ = p.position.z;
+                p.userData.destDist = 15 + Math.random() * 25;
+                p.userData.distTraveled = 0;
               }
             } else {
               p.position.z += -p.userData.side * dt * p.userData.spd;
@@ -3699,24 +3800,54 @@ class Game {
                 p.userData.state = 'sidewalk';
                 p.rotation.y = p.userData.dir > 0 ? Math.PI/2 : -Math.PI/2;
                 p.userData.startZ = p.position.x;
+                p.userData.destDist = 15 + Math.random() * 25;
+                p.userData.distTraveled = 0;
               }
             }
           } else {
+            const moveAmt = p.userData.spd * 4 * dt;
             if (p.userData.isV) {
-              p.position.z += p.userData.dir * dt * p.userData.spd;
-              if (Math.abs(p.position.z - p.userData.startZ) > 30) { p.userData.dir *= -1; p.rotation.y += Math.PI; }
+              p.position.z += p.userData.dir * moveAmt;
+              p.userData.distTraveled += moveAmt;
             } else {
-              p.position.x += p.userData.dir * dt * p.userData.spd;
-              if (Math.abs(p.position.x - p.userData.startZ) > 30) { p.userData.dir *= -1; p.rotation.y += Math.PI; }
+              p.position.x += p.userData.dir * moveAmt;
+              p.userData.distTraveled += moveAmt;
+            }
+
+            if (p.userData.distTraveled >= p.userData.destDist) {
+              p.userData.dir *= -1;
+              if (p.userData.isV) {
+                p.rotation.y = p.userData.dir > 0 ? 0 : Math.PI;
+              } else {
+                p.rotation.y = p.userData.dir > 0 ? Math.PI/2 : -Math.PI/2;
+              }
+              p.userData.distTraveled = 0;
+              p.userData.destDist = 15 + Math.random() * 25;
             }
           }
-          
-          if (p.userData.lLeg) p.userData.lLeg.rotation.x = Math.sin(p.userData.t * 8) * 0.5;
-          if (p.userData.rLeg) p.userData.rLeg.rotation.x = Math.sin(p.userData.t * 8 + Math.PI) * 0.5;
+
+          // Inter-pedestrian avoidance: steer away from nearby peds
+          this.peds.forEach(other => {
+            if (other === p) return;
+            const dx = p.position.x - other.position.x;
+            const dz = p.position.z - other.position.z;
+            const dist = Math.sqrt(dx * dx + dz * dz);
+            if (dist < 1.8 && dist > 0.01) {
+              const push = (1.8 - dist) * 0.5;
+              if (p.userData.isV) {
+                p.position.x += (dx / dist) * push * dt * 8;
+              } else {
+                p.position.z += (dz / dist) * push * dt * 8;
+              }
+            }
+          });
+
+          if (p.userData.lLeg) p.userData.lLeg.rotation.x = Math.sin(p.userData.t * 10) * 0.6;
+          if (p.userData.rLeg) p.userData.rLeg.rotation.x = Math.sin(p.userData.t * 10 + Math.PI) * 0.6;
 
           if (!this.isPedestrian && this.player.position.distanceTo(p.position) < 2.5) {
             this.speed = 0; this.hp = 0;
-            toast('💀 HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
+            toast(' HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
             this._uh(); this._go("Structural Failure");
           }
         });
