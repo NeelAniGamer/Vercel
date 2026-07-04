@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'crawl_zone', text: 'Crawl through school zone', type: 'avoid', target: 'speed_zone', done: false },
     { id: 'wait_children', text: 'Wait for children to clear', type: 'stop', target: 'stationary', done: false },
     { id: 'no_splash_kids', text: 'Do not splash school children', type: 'avoid', target: 'pedestrian', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

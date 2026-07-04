@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'find_spot', text: 'Find legal parking spot', type: 'reach', target: 'parking_spot', done: false },
     { id: 'park_legal', text: 'Park in designated zone', type: 'stop', target: 'parking_zone', done: false },
     { id: 'walk_dest', text: 'Walk to destination', type: 'reach', target: 'destination', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

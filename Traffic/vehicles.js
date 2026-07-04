@@ -62,7 +62,7 @@ window.IndianVehicles = {
   },
 
   buildWheel: function () {
-    const w = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.2, 16), new THREE.MeshLambertMaterial({ color: 0x111111, map: this.textures.wheel }))
+    const w = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.2, 16), new THREE.MeshToonMaterial({ color: 0x111111, map: this.textures.wheel }))
     w.rotation.z = Math.PI / 2
     return w
   },
@@ -71,9 +71,9 @@ window.IndianVehicles = {
     if (!this.textures.grille) this.init()
 
     const g = new THREE.Group()
-    const bMat = new THREE.MeshPhongMaterial({ color: colorHex, shininess: 80 })
-    const gMat = new THREE.MeshPhongMaterial({ color: 0xffffff, map: this.textures.glass, shininess: 100 })
-    const grMat = new THREE.MeshLambertMaterial({ color: 0xffffff, map: this.textures.grille })
+    const bMat = new THREE.MeshToonMaterial({ color: colorHex })
+    const gMat = new THREE.MeshToonMaterial({ color: 0xffffff, map: this.textures.glass, transparent: true, opacity: 0.7 })
+    const grMat = new THREE.MeshToonMaterial({ color: 0xffffff, map: this.textures.grille })
 
     let body, roof
 
@@ -100,8 +100,8 @@ window.IndianVehicles = {
     // --- THREE WHEELERS ---
     else if (type === 'auto') {
       // Auto Rickshaw (Yellow/Black or Green/Yellow)
-      const aMat = new THREE.MeshPhongMaterial({ color: 0x2e8b57 }) // Green body
-      const rMat = new THREE.MeshPhongMaterial({ color: 0xffd700 }) // Yellow roof
+      const aMat = new THREE.MeshToonMaterial({ color: 0x2e8b57 }) // Green body
+      const rMat = new THREE.MeshToonMaterial({ color: 0xffd700 }) // Yellow roof
       body = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.8, 2.4), aMat)
       body.position.y = 0.6
       roof = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.0, 2.0), rMat)
@@ -146,14 +146,14 @@ window.IndianVehicles = {
       this.addFourWheels(g, 1.8, 4.6)
     } else if (type === 'cab' || type === 'taxi') {
       // Dzire cab
-      const wMat = new THREE.MeshPhongMaterial({ color: 0xffffff })
+      const wMat = new THREE.MeshToonMaterial({ color: 0xffffff })
       body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 3.8), wMat)
       body.position.y = 0.6
       roof = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 1.8), gMat)
       roof.position.set(0, 1.3, 0)
 
       // Taxi sign
-      const sign = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.4), new THREE.MeshLambertMaterial({ color: 0xffd700 }))
+      const sign = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.4), new THREE.MeshToonMaterial({ color: 0xffd700 }))
       sign.position.set(0, 1.75, 0)
 
       g.add(body, roof, sign)
@@ -166,23 +166,23 @@ window.IndianVehicles = {
       body.position.y = 0.65
       const cab = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.2, 1.2), bMat)
       cab.position.set(0, 1.6, -1.15)
-      const bed = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.0, 2.3), new THREE.MeshLambertMaterial({ color: 0x888888 }))
+      const bed = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.0, 2.3), new THREE.MeshToonMaterial({ color: 0x888888 }))
       bed.position.set(0, 1.2, 0.6)
       g.add(body, cab, bed)
       this.addFourWheels(g, 1.5, 3.5)
     } else if (type === 'truck' || type === 'eicher') {
-      body = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.8, 7.0), new THREE.MeshPhongMaterial({ color: 0x222222 }))
+      body = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.8, 7.0), new THREE.MeshToonMaterial({ color: 0x222222 }))
       body.position.y = 0.8
       const cab = new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.2, 1.8), bMat)
       cab.position.set(0, 2.3, -2.6)
-      const cargo = new THREE.Mesh(new THREE.BoxGeometry(2.5, 2.6, 5.0), new THREE.MeshLambertMaterial({ color: 0xaa4422 }))
+      const cargo = new THREE.Mesh(new THREE.BoxGeometry(2.5, 2.6, 5.0), new THREE.MeshToonMaterial({ color: 0xaa4422 }))
       cargo.position.set(0, 2.5, 1.0)
       g.add(body, cab, cargo)
       this.addFourWheels(g, 2.4, 7.0, 0.5)
     }
     // --- PUBLIC TRANSPORT ---
     else if (type === 'bus' || type === 'msrtc') {
-      const msrtcMat = new THREE.MeshPhongMaterial({ color: 0xcc2222 }) // Red MSRTC bus
+      const msrtcMat = new THREE.MeshToonMaterial({ color: 0xcc2222 }) // Red MSRTC bus
       body = new THREE.Mesh(new THREE.BoxGeometry(2.6, 3.2, 10.0), msrtcMat)
       body.position.y = 2.0
       const windows = new THREE.Mesh(new THREE.BoxGeometry(2.65, 1.2, 9.8), gMat)
@@ -218,6 +218,18 @@ window.IndianVehicles = {
     }
 
     g.type = type
+
+    // ── PER-TYPE SCALE ADJUSTMENTS ──
+    // Bikes 0.6×, Trucks 1.5×, Buses 1.7× (relative to car baseline)
+    if (type === 'splendor' || type === 'bike' || type === 'twowheeler' ||
+        type === 'activa' || type === 'scooter' || type === 'cycle') {
+      g.scale.set(0.6, 0.6, 0.6)
+    } else if (type === 'truck' || type === 'eicher') {
+      g.scale.set(1.5, 1.5, 1.5)
+    } else if (type === 'bus' || type === 'msrtc') {
+      g.scale.set(1.7, 1.7, 1.7)
+    }
+
     return g
   },
 

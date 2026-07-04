@@ -6,6 +6,435 @@ const VEHICLE_STATS = {
   truck:     { maxSpd: 0.90, accel: 0.033, fric: 0.960, turn: 0.042, grip: 0.50 },
   auto:      { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.072, grip: 0.40 },
 };
+
+// ── Phase 7: NPC/Vehicle Template Cache ──
+// Pre-builds one mesh per (type, color) combo; clones on spawn instead of rebuild.
+const _npcTplCache = new Map();
+function _npcTplKey(type, col) { return type + '_' + (col | 0).toString(16); }
+function _getNpcTemplate(type, col) {
+  const k = _npcTplKey(type, col);
+  if (_npcTplCache.has(k)) return _npcTplCache.get(k);
+  const m = _buildVehicle(type, col);
+  if (_npcTplCache.size < 120) _npcTplCache.set(k, m);
+  return m;
+}
+
+// ── Theme-based road templates for levels 16-50 ──
+// Generates road configs from themeType so we don't need 35 manual M entries.
+function _getThemeRoads(themeType) {
+  const t = themeType || 'urban_grid';
+  const templates = {
+    urban_grid: {
+      name: 'Urban Grid', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car'],
+      roads: [
+        { type:'v', x:-360, z1:-480, z2:480 }, { type:'v', x:-240, z1:-480, z2:480 },
+        { type:'v', x:-120, z1:-480, z2:480 }, { type:'v', x:0,    z1:-480, z2:480 },
+        { type:'v', x:120,  z1:-480, z2:480 }, { type:'v', x:240,  z1:-480, z2:480 },
+        { type:'v', x:360,  z1:-480, z2:480 },
+        { type:'h', z:-480, x1:-360, x2:360 }, { type:'h', z:-360, x1:-360, x2:360 },
+        { type:'h', z:-240, x1:-360, x2:360 }, { type:'h', z:-120, x1:-360, x2:360 },
+        { type:'h', z:0,    x1:-360, x2:360 }, { type:'h', z:120,  x1:-360, x2:360 },
+        { type:'h', z:240,  x1:-360, x2:360 }, { type:'h', z:360,  x1:-360, x2:360 },
+        { type:'h', z:480,  x1:-360, x2:360 }
+      ],
+      route: [{ x:0,z:-480 },{ x:0,z:-360 },{ x:0,z:-240 },{ x:0,z:-120 },{ x:0,z:0 },{ x:0,z:120 },{ x:0,z:240 },{ x:0,z:360 },{ x:0,z:480 },
+              { x:120,z:480 },{ x:240,z:480 },{ x:360,z:480 },{ x:360,z:360 },{ x:360,z:240 },{ x:360,z:120 },{ x:360,z:0 },{ x:360,z:-120 },{ x:360,z:-240 },{ x:360,z:-360 },{ x:360,z:-480 }]
+    },
+    signal_jump: {
+      name: 'Signal Junction', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car'],
+      roads: [
+        { type:'v', x:0,    z1:-600, z2:600 }, { type:'v', x:-240, z1:-480, z2:480 }, { type:'v', x:240, z1:-480, z2:480 },
+        { type:'h', z:0,    x1:-600, x2:600 }, { type:'h', z:-240, x1:-480, x2:480 }, { type:'h', z:240, x1:-480, x2:480 }
+      ],
+      route: [{ x:0,z:-480 },{ x:0,z:-240 },{ x:0,z:0 },{ x:0,z:240 },{ x:0,z:480 },
+              { x:240,z:480 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:240,z:-480 },
+              { x:-240,z:-480 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },{ x:-240,z:480 }]
+    },
+    road_rage: {
+      name: 'Wide Arterial', sky: 0x9ec5d9, fog: 600, ground: 0x3a5a2e, amb: 0.85, veh: 'car',
+      npcTypes: ['car','car','truck','bus','car','car','auto','bike','car','truck','bus','car','car','car','auto','car'],
+      roads: [
+        { type:'h', z:0,    x1:-800, x2:800 }, { type:'h', z:120,  x1:-800, x2:800 },
+        { type:'v', x:0,    z1:-600, z2:600 }, { type:'v', x:120,  z1:-600, z2:600 },
+        { type:'h', z:-240, x1:-400, x2:400 }, { type:'h', z:360,  x1:-400, x2:400 },
+        { type:'v', x:-240, z1:-400, z2:400 }, { type:'v', x:360,  z1:-400, z2:400 }
+      ],
+      route: [{ x:-600,z:60 },{ x:-240,z:60 },{ x:0,z:60 },{ x:240,z:60 },{ x:480,z:60 },
+              { x:480,z:-240 },{ x:480,z:0 },{ x:480,z:240 },{ x:360,z:360 },{ x:240,z:360 },
+              { x:0,z:360 },{ x:-240,z:360 },{ x:-400,z:360 },{ x:-400,z:240 },{ x:-400,z:0 },
+              { x:-400,z:-240 },{ x:-400,z:-400 },{ x:-240,z:-400 },{ x:0,z:-400 },{ x:240,z:-400 }]
+    },
+    rain_driving: {
+      name: 'Wet Streets', sky: 0x1a2a3a, fog: 400, ground: 0x2a3a2a, amb: 0.5, veh: 'car',
+      npcTypes: ['car','auto','bike','car','auto','taxi','car','bike','car','auto','car','bike'],
+      hasRain: true, hasPuddles: true,
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-240, z1:-360, z2:360 }, { type:'v', x:240,  z1:-360, z2:360 },
+        { type:'h', z:-240, x1:-360, x2:360 }, { type:'h', z:240,  x1:-360, x2:360 }
+      ],
+      route: [{ x:0,z:0 },{ x:0,z:-240 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },
+              { x:0,z:240 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 }]
+    },
+    ambulance_priority: {
+      name: 'Hospital Arterial', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','car','bike','auto','ambulance','car','bus','truck','car','bike','car','auto'],
+      roads: [
+        { type:'v', x:0,    z1:-700, z2:700 }, { type:'v', x:-240, z1:-500, z2:500 },
+        { type:'v', x:240,  z1:-500, z2:500 },
+        { type:'h', z:-360, x1:-400, x2:400 }, { type:'h', z:0,    x1:-600, x2:600 },
+        { type:'h', z:360,  x1:-400, x2:400 }
+      ],
+      route: [{ x:0,z:-600 },{ x:0,z:-360 },{ x:0,z:0 },{ x:0,z:360 },{ x:0,z:600 },
+              { x:240,z:600 },{ x:240,z:360 },{ x:240,z:0 },{ x:240,z:-360 },{ x:240,z:-600 },
+              { x:-240,z:-600 },{ x:-240,z:-360 },{ x:-240,z:0 },{ x:-240,z:360 },{ x:-240,z:600 }]
+    },
+    puddle_etiquette: {
+      name: 'Rain Puddles', sky: 0x1a2a3a, fog: 400, ground: 0x2a3a2a, amb: 0.5, veh: 'car',
+      npcTypes: ['car','auto','bike','car','auto','taxi','car','bike','car','auto','car','bike'],
+      hasRain: true, hasPuddles: true,
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-200, z1:-300, z2:300 }, { type:'v', x:200,  z1:-300, z2:300 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:0 },{ x:-200,z:0 },{ x:-200,z:-200 },{ x:0,z:-200 },{ x:200,z:-200 },
+              { x:200,z:0 },{ x:200,z:200 },{ x:0,z:200 },{ x:-200,z:200 }]
+    },
+    pedestrian_courtesy: {
+      name: 'Pedestrian Zone', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','car','bike','auto','car','car','car','bike','car','auto','car','car'],
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-200, z1:-300, z2:300 }, { type:'v', x:200,  z1:-300, z2:300 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
+              { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 },
+              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }]
+    },
+    narrow_street: {
+      name: 'Narrow Lanes', sky: 0x87b6d8, fog: 500, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','auto','bike','car','auto','taxi','car','bike','car','auto','car','bike'],
+      roads: [
+        { type:'v', x:0,    z1:-500, z2:500 }, { type:'v', x:-160, z1:-300, z2:300 },
+        { type:'v', x:160,  z1:-300, z2:300 },
+        { type:'h', z:0,    x1:-400, x2:400 }, { type:'h', z:-200, x1:-200, x2:200 },
+        { type:'h', z:200,  x1:-200, x2:200 }
+      ],
+      route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
+              { x:160,z:400 },{ x:160,z:200 },{ x:160,z:0 },{ x:160,z:-200 },{ x:160,z:-400 },
+              { x:-160,z:-400 },{ x:-160,z:-200 },{ x:-160,z:0 },{ x:-160,z:200 },{ x:-160,z:400 }]
+    },
+    parking_rules: {
+      name: 'Parking Lot', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','car','car','car','car','car','auto','car','car','car','car','car'],
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-200, z1:-300, z2:300 }, { type:'v', x:200,  z1:-300, z2:300 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
+      ],
+      route: [{ x:-300,z:0 },{ x:-200,z:0 },{ x:0,z:0 },{ x:200,z:0 },{ x:300,z:0 },
+              { x:300,z:200 },{ x:200,z:200 },{ x:0,z:200 },{ x:-200,z:200 },{ x:-300,z:200 },
+              { x:-300,z:-200 },{ x:-200,z:-200 },{ x:0,z:-200 },{ x:200,z:-200 },{ x:300,z:-200 }]
+    },
+    auto_dance: {
+      name: 'Auto Zone', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'auto',
+      npcTypes: ['auto','auto','auto','auto','auto','bike','auto','auto','auto','auto','auto','bike'],
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-200, z1:-300, z2:300 }, { type:'v', x:200,  z1:-300, z2:300 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:0 },{ x:0,z:-200 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },
+              { x:0,z:200 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 }]
+    },
+    toll: {
+      name: 'Highway Toll', sky: 0x87b6d8, fog: 600, ground: 0x3a5a2e, amb: 0.85, veh: 'car',
+      npcTypes: ['car','car','truck','bus','car','car','truck','car','car','truck','bus','car'],
+      roads: [
+        { type:'h', z:0,    x1:-800, x2:800 }, { type:'h', z:120,  x1:-800, x2:800 },
+        { type:'v', x:0,    z1:-300, z2:300 }
+      ],
+      route: [{ x:-700,z:60 },{ x:-500,z:60 },{ x:-300,z:60 },{ x:-100,z:60 },{ x:100,z:60 },
+              { x:300,z:60 },{ x:500,z:60 },{ x:700,z:60 },{ x:700,z:-60 },{ x:500,z:-60 },
+              { x:300,z:-60 },{ x:100,z:-60 },{ x:-100,z:-60 },{ x:-300,z:-60 },{ x:-500,z:-60 },{ x:-700,z:-60 }]
+    },
+    blind_corner: {
+      name: 'Blind Corners', sky: 0x87b6d8, fog: 450, ground: 0x33691e, amb: 0.7, veh: 'car',
+      npcTypes: ['car','car','truck','auto','car','bus','car','car','auto','car','car','truck'],
+      roads: [
+        { type:'v', x:0,    z1:-500, z2:500 }, { type:'v', x:-240, z1:-400, z2:400 },
+        { type:'v', x:240,  z1:-400, z2:400 },
+        { type:'h', z:-200, x1:-400, x2:400 }, { type:'h', z:200,  x1:-400, x2:400 },
+        { type:'h', z:0,    x1:-240, x2:240 }
+      ],
+      route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
+              { x:240,z:400 },{ x:240,z:200 },{ x:240,z:0 },{ x:240,z:-200 },{ x:240,z:-400 },
+              { x:-240,z:-400 },{ x:-240,z:-200 },{ x:-240,z:0 },{ x:-240,z:200 },{ x:-240,z:400 }]
+    },
+    hill_driving: {
+      name: 'Hill Roads', sky: 0x7ab8e0, fog: 400, ground: 0x2d5016, amb: 0.75, veh: 'car',
+      npcTypes: ['car','car','truck','bus','car','car','car','truck','car','car','bus','car'],
+      roads: [
+        { type:'v', x:0,    z1:-500, z2:500 }, { type:'v', x:-300, z1:-300, z2:300 },
+        { type:'v', x:300,  z1:-300, z2:300 },
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'h', z:-300, x1:-300, x2:300 },
+        { type:'h', z:300,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:-400 },{ x:0,z:0 },{ x:0,z:400 },{ x:300,z:400 },{ x:300,z:0 },
+              { x:300,z:-400 },{ x:-300,z:-400 },{ x:-300,z:0 },{ x:-300,z:400 }]
+    },
+    bus_stop: {
+      name: 'Bus Corridor', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','bus','car','car','bus','car','auto','car','bus','car','car','bus'],
+      roads: [
+        { type:'v', x:0,    z1:-700, z2:700 }, { type:'v', x:-240, z1:-500, z2:500 },
+        { type:'v', x:240,  z1:-500, z2:500 },
+        { type:'h', z:-360, x1:-400, x2:400 }, { type:'h', z:0,    x1:-500, x2:500 },
+        { type:'h', z:360,  x1:-400, x2:400 }
+      ],
+      route: [{ x:0,z:-600 },{ x:0,z:-360 },{ x:0,z:0 },{ x:0,z:360 },{ x:0,z:600 },
+              { x:-240,z:600 },{ x:-240,z:360 },{ x:-240,z:0 },{ x:-240,z:-360 },{ x:-240,z:-600 }]
+    },
+    construction: {
+      name: 'Construction Zone', sky: 0x9aa8b8, fog: 450, ground: 0x5a4a3a, amb: 0.7, veh: 'car',
+      npcTypes: ['car','truck','car','truck','car','auto','car','truck','car','car','truck','car'],
+      roads: [
+        { type:'h', z:0,    x1:-600, x2:600 }, { type:'v', x:0,    z1:-600, z2:600 },
+        { type:'v', x:-240, z1:-360, z2:360 }, { type:'v', x:240,  z1:-360, z2:360 },
+        { type:'h', z:-240, x1:-360, x2:360 }, { type:'h', z:240,  x1:-360, x2:360 }
+      ],
+      route: [{ x:0,z:-500 },{ x:0,z:-240 },{ x:0,z:0 },{ x:0,z:240 },{ x:0,z:500 },
+              { x:240,z:500 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:240,z:-500 },
+              { x:-240,z:-500 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },{ x:-240,z:500 }]
+    },
+    one_way: {
+      name: 'One-Way Streets', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','car','auto','car','car','taxi','car','auto','car','car','car','auto'],
+      roads: [
+        { type:'h', z:0,    x1:-600, x2:600 }, { type:'h', z:120,  x1:-600, x2:600 },
+        { type:'v', x:0,    z1:-400, z2:400 }, { type:'v', x:120,  z1:-400, z2:400 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:320,  x1:-300, x2:300 }
+      ],
+      route: [{ x:-500,z:60 },{ x:-300,z:60 },{ x:-100,z:60 },{ x:100,z:60 },{ x:300,z:60 },{ x:500,z:60 },
+              { x:500,z:-200 },{ x:300,z:-200 },{ x:100,z:-200 },{ x:-100,z:-200 },{ x:-300,z:-200 },{ x:-500,z:-200 }]
+    },
+    hospital_quiet: {
+      name: 'Hospital Zone', sky: 0x87b6d8, fog: 500, ground: 0x33691e, amb: 0.7, veh: 'car',
+      npcTypes: ['car','car','auto','car','car','car','bike','car','car','auto','car','car'],
+      roads: [
+        { type:'v', x:0,    z1:-500, z2:500 }, { type:'v', x:-200, z1:-300, z2:300 },
+        { type:'v', x:200,  z1:-300, z2:300 },
+        { type:'h', z:0,    x1:-400, x2:400 }, { type:'h', z:-200, x1:-200, x2:200 },
+        { type:'h', z:200,  x1:-200, x2:200 }
+      ],
+      route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
+              { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 },
+              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }]
+    },
+    festival: {
+      name: 'Festival Route', sky: 0xf5a623, fog: 500, ground: 0x444444, amb: 0.9, veh: 'car',
+      npcTypes: ['car','auto','bike','car','car','auto','bike','car','car','auto','bike','car'],
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-240, z1:-360, z2:360 }, { type:'v', x:240,  z1:-360, z2:360 },
+        { type:'h', z:-240, x1:-360, x2:360 }, { type:'h', z:240,  x1:-360, x2:360 }
+      ],
+      route: [{ x:0,z:0 },{ x:0,z:-240 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },
+              { x:0,z:240 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:0,z:-240 }]
+    },
+    cyclist: {
+      name: 'Cyclist Lanes', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'bike',
+      npcTypes: ['bike','car','bike','auto','bike','car','bike','car','bike','auto','bike','car'],
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-200, z1:-300, z2:300 }, { type:'v', x:200,  z1:-300, z2:300 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
+              { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 }]
+    },
+    grand_test: {
+      name: 'Grand Test', sky: 0x87b6d8, fog: 600, ground: 0x33691e, amb: 0.85, veh: 'car',
+      npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car','truck','car'],
+      roads: [
+        { type:'v', x:-360, z1:-480, z2:480 }, { type:'v', x:-240, z1:-480, z2:480 },
+        { type:'v', x:-120, z1:-480, z2:480 }, { type:'v', x:0,    z1:-480, z2:480 },
+        { type:'v', x:120,  z1:-480, z2:480 }, { type:'v', x:240,  z1:-480, z2:480 },
+        { type:'v', x:360,  z1:-480, z2:480 },
+        { type:'h', z:-480, x1:-360, x2:360 }, { type:'h', z:-240, x1:-360, x2:360 },
+        { type:'h', z:0,    x1:-360, x2:360 }, { type:'h', z:240,  x1:-360, x2:360 },
+        { type:'h', z:480,  x1:-360, x2:360 }
+      ],
+      route: [{ x:0,z:-480 },{ x:0,z:-240 },{ x:0,z:0 },{ x:0,z:240 },{ x:0,z:480 },
+              { x:120,z:480 },{ x:240,z:480 },{ x:360,z:480 },{ x:360,z:240 },{ x:360,z:0 },
+              { x:360,z:-240 },{ x:360,z:-480 },{ x:240,z:-480 },{ x:120,z:-480 },
+              { x:-120,z:-480 },{ x:-240,z:-480 },{ x:-360,z:-480 },{ x:-360,z:-240 },
+              { x:-360,z:0 },{ x:-360,z:240 },{ x:-360,z:480 }]
+    },
+    night_monsoon: {
+      name: 'Night Monsoon', sky: 0x0a0a12, fog: 300, ground: 0x1a1a2a, amb: 0.3, veh: 'car',
+      npcTypes: ['car','auto','bike','car','auto','car','bike','car','auto','car'],
+      hasRain: true, hasPuddles: true, isNight: true,
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-200, z1:-300, z2:300 }, { type:'v', x:200,  z1:-300, z2:300 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:0 },{ x:0,z:-200 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },
+              { x:0,z:200 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 }]
+    },
+    wrong_side: {
+      name: 'Wrong Side', sky: 0x9ec5d9, fog: 600, ground: 0x3a5a2e, amb: 0.85, veh: 'car',
+      npcTypes: ['car','car','truck','car','car','bus','car','car','truck','car','car','bus'],
+      roads: [
+        { type:'h', z:0,    x1:-800, x2:800 }, { type:'h', z:120,  x1:-800, x2:800 },
+        { type:'v', x:0,    z1:-400, z2:400 }, { type:'v', x:120,  z1:-400, z2:400 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:320,  x1:-300, x2:300 }
+      ],
+      route: [{ x:-700,z:60 },{ x:-400,z:60 },{ x:-100,z:60 },{ x:200,z:60 },{ x:500,z:60 },
+              { x:500,z:-200 },{ x:200,z:-200 },{ x:-100,z:-200 },{ x:-400,z:-200 },{ x:-700,z:-200 }]
+    },
+    highway_merge: {
+      name: 'Highway Merge', sky: 0x87b6d8, fog: 700, ground: 0x3a5a2e, amb: 0.9, veh: 'car',
+      npcTypes: ['car','car','truck','bus','car','car','truck','car','car','truck','bus','car'],
+      roads: [
+        { type:'h', z:0,    x1:-1000, x2:1000 }, { type:'h', z:120,  x1:-1000, x2:1000 },
+        { type:'v', x:0,    z1:-300, z2:300 }, { type:'v', x:-300, z1:-200, z2:200 }
+      ],
+      route: [{ x:-900,z:60 },{ x:-600,z:60 },{ x:-300,z:60 },{ x:0,z:60 },{ x:300,z:60 },
+              { x:600,z:60 },{ x:900,z:60 },{ x:900,z:-60 },{ x:600,z:-60 },{ x:300,z:-60 },
+              { x:0,z:-60 },{ x:-300,z:-60 },{ x:-600,z:-60 },{ x:-900,z:-60 }]
+    },
+    zero_visibility: {
+      name: 'Zero Visibility', sky: 0x0a0a0a, fog: 200, ground: 0x1a1a1a, amb: 0.2, veh: 'car',
+      npcTypes: ['car','auto','car','car','auto','car','car','auto','car','car'],
+      hasRain: true, isNight: true,
+      roads: [
+        { type:'h', z:0,    x1:-400, x2:400 }, { type:'v', x:0,    z1:-400, z2:400 },
+        { type:'v', x:-200, z1:-300, z2:300 }, { type:'v', x:200,  z1:-300, z2:300 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:0 },{ x:0,z:-200 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },
+              { x:0,z:200 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 }]
+    },
+    mountain: {
+      name: 'Mountain Pass', sky: 0x7ab8e0, fog: 400, ground: 0x2d5016, amb: 0.75, veh: 'car',
+      npcTypes: ['car','car','truck','bus','car','car','car','truck','car','car','bus','car'],
+      roads: [
+        { type:'v', x:0,    z1:-600, z2:600 }, { type:'v', x:-300, z1:-400, z2:400 },
+        { type:'v', x:300,  z1:-400, z2:400 },
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'h', z:-300, x1:-300, x2:300 },
+        { type:'h', z:300,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:-500 },{ x:0,z:-300 },{ x:0,z:0 },{ x:0,z:300 },{ x:0,z:500 },
+              { x:300,z:500 },{ x:300,z:300 },{ x:300,z:0 },{ x:300,z:-300 },{ x:300,z:-500 },
+              { x:-300,z:-500 },{ x:-300,z:-300 },{ x:-300,z:0 },{ x:-300,z:300 },{ x:-300,z:500 }]
+    },
+    rural: {
+      name: 'Rural Roads', sky: 0xa8d4e8, fog: 700, ground: 0x5a7a3a, amb: 0.9, veh: 'car',
+      npcTypes: ['car','car','truck','bike','car','auto','car','truck','car','bike','car','auto'],
+      roads: [
+        { type:'h', z:0,    x1:-600, x2:600 }, { type:'v', x:0,    z1:-600, z2:600 },
+        { type:'v', x:-300, z1:-200, z2:200 }, { type:'v', x:300,  z1:-200, z2:200 }
+      ],
+      route: [{ x:-500,z:0 },{ x:-300,z:0 },{ x:0,z:0 },{ x:300,z:0 },{ x:500,z:0 },
+              { x:500,z:-200 },{ x:300,z:-200 },{ x:0,z:-200 },{ x:-300,z:-200 },{ x:-500,z:-200 }]
+    },
+    multi_modal: {
+      name: 'Multi-Modal Hub', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','bus','bike','auto','car','bus','car','bike','auto','car','bus','car','bike','auto','car','bus'],
+      roads: [
+        { type:'v', x:-360, z1:-480, z2:480 }, { type:'v', x:-240, z1:-480, z2:480 },
+        { type:'v', x:0,    z1:-480, z2:480 }, { type:'v', x:240,  z1:-480, z2:480 },
+        { type:'v', x:360,  z1:-480, z2:480 },
+        { type:'h', z:-360, x1:-360, x2:360 }, { type:'h', z:0,    x1:-360, x2:360 },
+        { type:'h', z:360,  x1:-360, x2:360 }
+      ],
+      route: [{ x:0,z:-480 },{ x:0,z:-360 },{ x:0,z:0 },{ x:0,z:360 },{ x:0,z:480 },
+              { x:240,z:480 },{ x:240,z:360 },{ x:240,z:0 },{ x:240,z:-360 },{ x:240,z:-480 },
+              { x:-240,z:-480 },{ x:-240,z:-360 },{ x:-240,z:0 },{ x:-240,z:360 },{ x:-240,z:480 }]
+    },
+    no_honking: {
+      name: 'Silent Zone', sky: 0x87b6d8, fog: 500, ground: 0x33691e, amb: 0.7, veh: 'car',
+      npcTypes: ['car','car','auto','car','bike','car','auto','car','car','bike','car','car'],
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-200, z1:-300, z2:300 }, { type:'v', x:200,  z1:-300, z2:300 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
+              { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 },
+              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }]
+    },
+    pedestrian_priority: {
+      name: 'Pedestrian Priority', sky: 0x87b6d8, fog: 500, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','car','bike','auto','car','car','bike','car','auto','car','car','car'],
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-200, z1:-300, z2:300 }, { type:'v', x:200,  z1:-300, z2:300 },
+        { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
+              { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 },
+              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }]
+    },
+    signs: {
+      name: 'Signage Zone', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
+      npcTypes: ['car','car','auto','bike','car','auto','car','car','bike','car','auto','car'],
+      roads: [
+        { type:'h', z:0,    x1:-600, x2:600 }, { type:'v', x:0,    z1:-600, z2:600 },
+        { type:'v', x:-240, z1:-400, z2:400 }, { type:'v', x:240,  z1:-400, z2:400 },
+        { type:'h', z:-240, x1:-400, x2:400 }, { type:'h', z:240,  x1:-400, x2:400 }
+      ],
+      route: [{ x:0,z:-500 },{ x:0,z:-240 },{ x:0,z:0 },{ x:0,z:240 },{ x:0,z:500 },
+              { x:240,z:500 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:240,z:-500 },
+              { x:-240,z:-500 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },{ x:-240,z:500 }]
+    },
+    animals: {
+      name: 'Animal Crossing', sky: 0xa8d4e8, fog: 600, ground: 0x5a7a3a, amb: 0.85, veh: 'car',
+      npcTypes: ['car','car','truck','bike','car','auto','car','car','bike','car','auto','car'],
+      roads: [
+        { type:'h', z:0,    x1:-500, x2:500 }, { type:'v', x:0,    z1:-500, z2:500 },
+        { type:'v', x:-240, z1:-300, z2:300 }, { type:'v', x:240,  z1:-300, z2:300 },
+        { type:'h', z:-240, x1:-300, x2:300 }, { type:'h', z:240,  x1:-300, x2:300 }
+      ],
+      route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
+              { x:240,z:400 },{ x:240,z:200 },{ x:240,z:0 },{ x:240,z:-200 },{ x:240,z:-400 },
+              { x:-240,z:-400 },{ x:-240,z:-200 },{ x:-240,z:0 },{ x:-240,z:200 },{ x:-240,z:400 }]
+    },
+    lane_discipline: {
+      name: 'Lane Discipline', sky: 0x87b6d8, fog: 600, ground: 0x3a5a2e, amb: 0.85, veh: 'car',
+      npcTypes: ['car','car','truck','bus','car','car','truck','car','car','truck','bus','car'],
+      roads: [
+        { type:'h', z:0,    x1:-1000, x2:1000 }, { type:'h', z:120,  x1:-1000, x2:1000 },
+        { type:'h', z:-120, x1:-800, x2:800 },
+        { type:'v', x:-300, z1:-400, z2:400 }, { type:'v', x:300,  z1:-400, z2:400 }
+      ],
+      route: [{ x:-800,z:60 },{ x:-500,z:60 },{ x:-200,z:60 },{ x:100,z:60 },{ x:400,z:60 },
+              { x:700,z:60 },{ x:700,z:-60 },{ x:400,z:-60 },{ x:100,z:-60 },{ x:-200,z:-60 },
+              { x:-500,z:-60 },{ x:-800,z:-60 }]
+    },
+    driving_school: {
+      name: 'Driving School', sky: 0x87b6d8, fog: 600, ground: 0x33691e, amb: 0.85, veh: 'car',
+      npcTypes: ['car','car','bike','auto','car','car','bike','auto','car','car'],
+      roads: [
+        { type:'v', x:0,    z1:-200, z2:200 },
+        { type:'v', x:-120, z1:-200, z2:200 },
+        { type:'h', z:0,    x1:-200, x2:200 },
+        { type:'h', z:-120, x1:-200, x2:200 },
+        { type:'h', z:120,  x1:-200, x2:200 }
+      ],
+      route: [{ x:0,z:-200 },{ x:0,z:-120 },{ x:0,z:0 },{ x:0,z:120 },{ x:0,z:200 },
+              { x:-120,z:200 },{ x:-120,z:120 },{ x:-120,z:0 },{ x:-120,z:-120 },{ x:-120,z:-200 }]
+    }
+  };
+  return templates[t] || templates.urban_grid;
+}
+
 class Game {
       constructor() {
         this.renderer = null; this.scene = null; this.camera = null; this.player = null;
@@ -19,20 +448,41 @@ class Game {
         this._isDraggingMobileLook = false; this._mobileLookTouchId = null;
         this._prevMobileLookX = 0; this._prevMobileLookY = 0;
         this.dom = {}; // Cached DOM elements
+        // Phase 7: Object pools (initialized in _buildScene)
+        this.npcPool = null; this.pedPool = null; this._brakeDustCd = false;
         this._initR(); this._initIn(); this._initG(); this._loop();
         window.addEventListener('resize', () => this._rsz());
         document.addEventListener('fullscreenchange', () => this._rsz());
       }
       _initR() {
-        const cv = document.getElementById('3c'); 
+        const cv = document.getElementById('3c');
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        this.renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !isMobile, powerPreference: "high-performance" });
+        this._isMobile = isMobile;
+
+        // PERFORMANCE: Cap pixel ratio lower on mobile to reduce render cost
+        let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2);
         const maxW = 1920, maxH = 1080;
         let w = innerWidth, h = innerHeight;
-        let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
         if (w * dpr > maxW) dpr = maxW / w;
         if (h * dpr > maxH) dpr = maxH / h;
         this._dpr = dpr;
+
+        this.renderer = new THREE.WebGLRenderer({
+          canvas: cv,
+          antialias: !isMobile,
+          powerPreference: "high-performance"
+        });
+        // Auto-detect low-end GPU via WebGL debug info
+        let isLowGPU = false;
+        try {
+          const ext = this.renderer.getContext().getExtension('WEBGL_debug_renderer_info');
+          if (ext) {
+            const gpu = this.renderer.getContext().getParameter(ext.UNMASKED_RENDERER_WEBGL).toLowerCase();
+            isLowGPU = /intel|adreno 5|adreno 4|mali-4|mali-t6|swiftshader|llvmpipe/.test(gpu);
+          }
+        } catch(e) {}
+        this._isLowGPU = isLowGPU;
+        if (isLowGPU) { dpr = Math.min(dpr, 1.0); }
         this.renderer.setSize(w * dpr, h * dpr, false);
         this.renderer.domElement.style.width = w + 'px';
         this.renderer.domElement.style.height = h + 'px';
@@ -41,17 +491,22 @@ class Game {
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 1.2;
         this.renderer.shadowMap.enabled = true;
-        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+
+        // PERFORMANCE: Reduce shadow quality on mobile or low-end GPU
+        if (isMobile || isLowGPU) {
           this.renderer.shadowMap.type = THREE.BasicShadowMap;
-          this.renderer.shadowMap.mapSize.width = 1024;
-          this.renderer.shadowMap.mapSize.height = 1024;
+          this.renderer.shadowMap.mapSize.width = 512; // Reduced from 1024
+          this.renderer.shadowMap.mapSize.height = 512;
         } else {
           this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+          this.renderer.shadowMap.mapSize.width = 1024;
+          this.renderer.shadowMap.mapSize.height = 1024;
         }
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
-        
+
+        // PERFORMANCE: Disable expensive bloom on mobile
         try {
-          if (THREE.EffectComposer) {
+          if (THREE.EffectComposer && !isMobile && !isLowGPU) {
             this.composer = new THREE.EffectComposer(this.renderer);
             this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
             const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.6, 0.6, 0.85);
@@ -59,6 +514,8 @@ class Game {
             bloomPass.strength = 0.35;
             bloomPass.radius = 0.5;
             this.composer.addPass(bloomPass);
+          } else {
+            this.composer = null; // No post-processing on mobile
           }
         } catch(e) { console.warn("Post processing err:", e); }
         
@@ -79,6 +536,7 @@ class Game {
             if (e.key.toLowerCase() === 'e') this.toggleTurnSignal(1);
             if (e.key.toLowerCase() === 'g') this._toggleGyro();
             if (e.key.toLowerCase() === 'm') this.togglePhoneGps();
+            if (e.key === 'Escape') this.togglePause();
         });
         window.addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
 
@@ -98,6 +556,8 @@ class Game {
           const locked = document.pointerLockElement === this.renderer.domElement;
           if (!locked && this.isPointerLocked) this._lastPointerUnlock = Date.now();
           this.isPointerLocked = locked;
+          // Phase 7.4: Trigger smooth camera transition on mode switch
+          if (locked) this._camTransition = 0.4; // 1st→3rd: lerp over 0.4s
         });
         document.addEventListener('mousemove', (e) => {
           if (this.isPointerLocked) {
@@ -520,7 +980,7 @@ class Game {
       }
       _brake() { this.speed *= .35; sfx.play('brake'); toast('🛑 Hard Deceleration Active', '#fff'); }
       startLevel() { const cd = document.getElementById('cdown'); cd.classList.add('on'); const gc = document.getElementById('gc'); if (gc && !document.fullscreenElement && gc.requestFullscreen) { gc.requestFullscreen().catch(() => {}); } setTimeout(() => { cd.classList.remove('on'); this._actualStart(ui.cur); }, 1500); }
-      _actualStart(lv) {
+      async _actualStart(lv) {
         this.mode = lv.mode; this.vehMode = lv.vehMode; this.lvId = lv.id; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0; this.speed = 0; this.routeIdx = 0; this.retries = 0; this.vx = 0; this.vz = 0;
         this.ms = { inSz: false, passed: false, amb: null };
         this.challanFired = new Set();
@@ -556,7 +1016,13 @@ class Game {
         if (ui.cq) ui.cq = [];
         ui.cbusy = false;
         this.setGear('N');
-        this._buildScene(lv.mode); this.playing = true; this.pause = false; ui.show(null); this.timeLimit = this.mapCfg ? this.mapCfg.timeLimit || 120 : 120;
+        // Lazy-load level-specific models before building scene
+        if (typeof window.loadLevelAssets === 'function') {
+          await new Promise(resolve => window.loadLevelAssets(lv.assets, resolve));
+        }
+        this._buildScene(lv.mode); this.playing = true; this.pause = false; ui.show(null);         const baseTime = this.mapCfg ? this.mapCfg.timeLimit || 120 : 120;
+        const ageTimeScale = (typeof ui !== 'undefined' && ui.getAgeScale) ? ui.getAgeScale() : 1.0;
+        this.timeLimit = Math.round(baseTime / ageTimeScale);
         const cfg = this.mapCfg || {};
         ['gc', 'hud', 'hudbar', 'hwrap', 'mobile-controls', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
         if (this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'flex';
@@ -610,7 +1076,32 @@ class Game {
           this.highBeamOn = !this.highBeamOn;
           if (this.hL) this.hL.distance = this.highBeamOn ? 300 : 150;
           if (this.hR) this.hR.distance = this.highBeamOn ? 300 : 150;
+          // Sync visible cone geometry scale
+          if (this._headlightCones) {
+            const s = this.highBeamOn ? 1.5 : 0.8;
+            this._headlightCones.forEach(c => c.scale.set(1, 1, s));
+          }
           toast(this.highBeamOn ? 'High Beam ON' : 'Low Beam ON', '#3498db');
+      }
+      togglePause() {
+          if (!this.playing) return;
+          this.pause = !this.pause;
+          const overlay = document.getElementById('pause-overlay');
+          if (overlay) {
+            overlay.classList.toggle('on', this.pause);
+            if (this.pause && !this._pauseWired) {
+              this._pauseWired = true;
+              document.getElementById('pause-resume')?.addEventListener('click', () => this.togglePause());
+              document.getElementById('pause-restart')?.addEventListener('click', () => { this.pause = false; location.reload(); });
+              document.getElementById('pause-quit')?.addEventListener('click', () => {
+                this.pause = false;
+                this.playing = false;
+                const o = document.getElementById('pause-overlay');
+                if (o) o.classList.remove('on');
+                document.getElementById('game-over')?.classList.add('on');
+              });
+            }
+          }
       }
       togglePhoneGps() {
           this.phoneGpsOn = !this.phoneGpsOn;
@@ -747,6 +1238,26 @@ class Game {
         // Maintained speed: no sudden deceleration this frame
         this._maintainedSpeed = (this._prevSpeed !== undefined) ? (spd >= this._prevSpeed * 0.7 || spd > 0.3) : true;
         this._prevSpeed = spd;
+
+        // Driving-instructor task flags (latched)
+        // Lane change: player.x moved from positive (right) to negative (left)
+        if (this._prevPx !== undefined && this._prevPx > 0 && px < 0) this._changedLaneLeft = true;
+        // Merge back: player.x moved from negative (left) to positive (right)
+        if (this._prevPx !== undefined && this._prevPx < 0 && px > 0) this._mergedBack = true;
+        this._prevPx = px;
+
+        // Overtake bus: player passed a bus NPC (was behind, now ahead)
+        this._didOvertakeBus = false;
+        if (this.npcs) {
+          for (const n of this.npcs) {
+            if (!n.position || !(n.userData && n.userData.npcType === 'bus')) continue;
+            const d = this.player ? this.player.position.distanceTo(n.position) : 999;
+            if (d < 20 && this._prevPx !== undefined) {
+              // Bus is nearby; check if player is ahead (smaller z) and on right side
+              if (px > n.position.x && d < 12) this._didOvertakeBus = true;
+            }
+          }
+        }
       }
 
       _checkTasks() {
@@ -770,6 +1281,9 @@ class Game {
               else if (t.target === 'market_zone' && this._reachedMarket) complete = true;
               else if (t.target === 'left_side' && this._reachedLeftSide) complete = true;
               else if (t.target === 'left_lane' && this._reachedLeftLane) complete = true;
+              else if (t.target === 'left_lane_changed' && this._changedLaneLeft) complete = true;
+              else if (t.target === 'overtake_bus' && this._didOvertakeBus) complete = true;
+              else if (t.target === 'merged_back' && this._mergedBack) complete = true;
               else if (t.target === 'forward_space' && Math.abs(this.speed) > 0.01) complete = true;
               else if (t.target === 'away_gate' && Math.abs(this.speed) > 0.01) complete = true;
               else if (t.target === 'visitor_parking' && this._reachedParking) complete = true;
@@ -795,6 +1309,7 @@ class Game {
               if (t.target === 'seatbelt' && this.seatbeltOn) complete = true;
               else if (t.target === 'hazards' && this.highBeamOn) complete = true;
               else if (t.target === 'indicator' && this.turnSignal !== 0) complete = true;
+              else if (t.target === 'indicator_right' && this.turnSignal === 1) complete = true;
               else if (t.target === 'headlights' && this.highBeamOn) complete = true;
               break;
           }
@@ -879,21 +1394,21 @@ class Game {
         }
         
         const M = {
-          1: { name: 'Andheri Junction', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car', npcTypes: ['car', 'car', 'bike', 'auto', 'bus', 'truck', 'car', 'bike', 'taxi', 'car', 'auto', 'car', 'car', 'bike', 'bus', 'car', 'auto', 'truck', 'car', 'car', 'car', 'bike', 'auto', 'car'], roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -140, z2: 20 }, { type: 'v', x: 240, z1: -20, z2: 140 }, { type: 'v', x: 240, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 100, x2: 260 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 100, z2: 260 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -20, z2: 140 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'h', z: -120, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -380, x2: -220 }, { type: 'h', z: -360, x1: -260, x2: 880 }, { type: 'h', z: 120, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -880, z2: 1120 }, { type: 'h', z: 240, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -760, z2: 1240 }, { type: 'h', z: 0, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1000, z2: 1000 }, { type: 'h', z: 240, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -760, z2: 1240 }, { type: 'h', z: -240, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1240, z2: 760 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 240, z: -120 }, { x: 240, z: 0 }, { x: 240, z: 120 }, { x: 240, z: 240 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 120 }, { x: -120, z: 120 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -480, z: -120 }, { x: -480, z: -240 }, { x: -360, z: -240 }, { x: -360, z: -360 }, { x: -240, z: -360 }, { x: -120, z: -360 }], ints: [[240, 0], [0, 240], [-120, -360], [0, 120], [-240, -120], [0, 0], [-360, -240], [120, 240], [240, -120], [-360, -360], [-360, -120], [-120, 0], [240, 240], [-120, 120], [0, -120], [-120, -120], [-480, -240], [120, -120], [-480, -120], [-240, -360], [240, 120]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 218, z1: -120, z2: 0, s: 0.9 }, { x: 262, z1: -120, z2: 0, s: 0.9 }, { x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 }, { x: 218, z1: 120, z2: 240, s: 0.9 }, { x: 262, z1: 120, z2: 240, s: 0.9 }, { x: -22, z1: 120, z2: 240, s: 0.9 }, { x: 22, z1: 120, z2: 240, s: 0.9 }, { x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -502, z1: -240, z2: -120, s: 0.9 }, { x: -458, z1: -240, z2: -120, s: 0.9 }, { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 }], timeLimit: 600, hasGarage: true },
-          2: { name: 'Dadar Junction', sky: 0x9ec5d9, fog: 500, ground: 0x4a6741, amb: 0.85, isPedestrian: true, veh: 'pedestrian', npcTypes: ['car', 'bus', 'auto', 'car', 'bike', 'truck', 'car', 'auto', 'taxi', 'car', 'bus', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'bus', 'truck', 'car', 'auto', 'car', 'car', 'bike'], sidewalkWidth: 5, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -140, z2: 20 }, { type: 'v', x: -240, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -380, x2: -220 }, { type: 'h', z: 120, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -20, z2: 140 }, { type: 'v', x: -600, z1: 100, z2: 260 }, { type: 'v', x: -600, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -860, x2: -700 }, { type: 'h', z: 480, x1: -980, x2: -820 }, { type: 'h', z: 480, x1: -1100, x2: -940 }, { type: 'v', x: -1080, z1: 340, z2: 500 }, { type: 'h', z: 360, x1: -1220, x2: -1060 }, { type: 'v', x: -1200, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -1340, x2: -1180 }, { type: 'h', z: 480, x1: -1460, x2: -1300 }, { type: 'v', x: -1440, z1: 460, z2: 620 }, { type: 'v', x: -1440, z1: 580, z2: 1720 }, { type: 'h', z: 360, x1: -1720, x2: 280 }, { type: 'v', x: -720, z1: -640, z2: 1360 }, { type: 'h', z: 120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -880, z2: 1120 }, { type: 'h', z: 480, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -520, z2: 1480 }, { type: 'h', z: 120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -880, z2: 1120 }, { type: 'h', z: 120, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: -880, z2: 1120 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -240, z: 0 }, { x: -240, z: 120 }, { x: -360, z: 120 }, { x: -480, z: 120 }, { x: -480, z: 0 }, { x: -600, z: 0 }, { x: -600, z: 120 }, { x: -600, z: 240 }, { x: -600, z: 360 }, { x: -720, z: 360 }, { x: -720, z: 480 }, { x: -840, z: 480 }, { x: -960, z: 480 }, { x: -1080, z: 480 }, { x: -1080, z: 360 }, { x: -1200, z: 360 }, { x: -1200, z: 480 }, { x: -1320, z: 480 }, { x: -1440, z: 480 }, { x: -1440, z: 600 }, { x: -1440, z: 720 }], ints: [[-600, 240], [-600, 0], [-1440, 600], [-240, 120], [-240, -120], [-480, 120], [-480, 0], [0, 0], [-1200, 480], [-1080, 360], [-1080, 480], [-1440, 720], [-840, 480], [-1200, 360], [-1320, 480], [-360, 120], [-720, 480], [-120, 0], [-120, -120], [-240, 0], [-720, 360], [-600, 120], [-1440, 480], [-600, 360], [-960, 480]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 }, { x: -262, z1: 0, z2: 120, s: 0.9 }, { x: -218, z1: 0, z2: 120, s: 0.9 }, { x: -502, z1: 0, z2: 120, s: 0.9 }, { x: -458, z1: 0, z2: 120, s: 0.9 }, { x: -622, z1: 0, z2: 120, s: 0.9 }, { x: -578, z1: 0, z2: 120, s: 0.9 }, { x: -622, z1: 120, z2: 240, s: 0.9 }, { x: -578, z1: 120, z2: 240, s: 0.9 }, { x: -622, z1: 240, z2: 360, s: 0.9 }, { x: -578, z1: 240, z2: 360, s: 0.9 }, { x: -742, z1: 360, z2: 480, s: 0.9 }, { x: -698, z1: 360, z2: 480, s: 0.9 }, { x: -1102, z1: 360, z2: 480, s: 0.9 }, { x: -1058, z1: 360, z2: 480, s: 0.9 }, { x: -1222, z1: 360, z2: 480, s: 0.9 }, { x: -1178, z1: 360, z2: 480, s: 0.9 }, { x: -1462, z1: 480, z2: 600, s: 0.9 }, { x: -1418, z1: 480, z2: 600, s: 0.9 }, { x: -1462, z1: 600, z2: 720, s: 0.9 }, { x: -1418, z1: 600, z2: 720, s: 0.9 }], timeLimit: 720, hasGarage: true },
-          3: { name: 'Bandra Backroads', sky: 0xa8c4d8, fog: 500, ground: 0x3a5a2e, amb: 0.75, veh: 'twowheeler', npcTypes: ['car', 'auto', 'bike', 'cycle', 'auto', 'car', 'taxi', 'bike', 'auto', 'car', 'bike', 'car', 'auto', 'cycle', 'car', 'bike', 'auto', 'car'], roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'h', z: -240, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -620, z2: -460 }, { type: 'v', x: -240, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -380, x2: -220 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'h', z: -720, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -980, z2: -820 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -1220, z2: -1060 }, { type: 'h', z: -1200, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: -1220, z2: -1060 }, { type: 'h', z: -1080, x1: -260, x2: -100 }, { type: 'h', z: -1080, x1: -140, x2: 20 }, { type: 'h', z: -1080, x1: -20, x2: 140 }, { type: 'h', z: -1080, x1: 100, x2: 260 }, { type: 'h', z: -1080, x1: 220, x2: 1360 }, { type: 'h', z: -1080, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -2080, z2: -80 }, { type: 'h', z: -240, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -1240, z2: 760 }, { type: 'h', z: -1080, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -2080, z2: -80 }, { type: 'h', z: -360, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -240, z: -240 }, { x: -240, z: -360 }, { x: -120, z: -360 }, { x: -120, z: -480 }, { x: -240, z: -480 }, { x: -240, z: -600 }, { x: -240, z: -720 }, { x: -360, z: -720 }, { x: -480, z: -720 }, { x: -600, z: -720 }, { x: -600, z: -840 }, { x: -480, z: -840 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -360, z: -1080 }, { x: -360, z: -1200 }, { x: -240, z: -1200 }, { x: -240, z: -1080 }, { x: -120, z: -1080 }, { x: 0, z: -1080 }, { x: 120, z: -1080 }, { x: 240, z: -1080 }, { x: 360, z: -1080 }], ints: [[-240, -240], [-360, -720], [-120, -360], [-480, -960], [0, 0], [-120, -480], [-600, -720], [-240, -480], [120, -240], [120, -1080], [-480, -720], [0, -240], [-480, -1080], [-600, -840], [-240, -1080], [-120, -1080], [240, -1080], [-360, -1080], [-240, -720], [360, -1080], [-360, -1200], [0, -1080], [-240, -1200], [0, -120], [120, -120], [-480, -840], [-240, -360], [-240, -600], [-120, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -262, z1: -360, z2: -240, s: 0.9 }, { x: -218, z1: -360, z2: -240, s: 0.9 }, { x: -142, z1: -480, z2: -360, s: 0.9 }, { x: -98, z1: -480, z2: -360, s: 0.9 }, { x: -262, z1: -600, z2: -480, s: 0.9 }, { x: -218, z1: -600, z2: -480, s: 0.9 }, { x: -262, z1: -720, z2: -600, s: 0.9 }, { x: -218, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -840, z2: -720, s: 0.9 }, { x: -578, z1: -840, z2: -720, s: 0.9 }, { x: -502, z1: -960, z2: -840, s: 0.9 }, { x: -458, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -382, z1: -1200, z2: -1080, s: 0.9 }, { x: -338, z1: -1200, z2: -1080, s: 0.9 }, { x: -262, z1: -1200, z2: -1080, s: 0.9 }, { x: -218, z1: -1200, z2: -1080, s: 0.9 }], timeLimit: 830, hasGarage: true },
-          4: { name: 'Juhu Boulevard', sky: 0x6fb8e0, fog: 650, ground: 0x2e6b3a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'taxi'], hasBeach: true, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'h', z: -120, x1: -500, x2: -340 }, { type: 'h', z: -120, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -380, z2: -220 }, { type: 'h', z: -240, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -380, z2: -220 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1100, x2: -940 }, { type: 'v', x: -1080, z1: -500, z2: -340 }, { type: 'v', x: -1080, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1220, x2: -1060 }, { type: 'v', x: -1200, z1: -620, z2: -460 }, { type: 'v', x: -1200, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1340, x2: -1180 }, { type: 'h', z: -360, x1: -1460, x2: -1300 }, { type: 'v', x: -1440, z1: -500, z2: -340 }, { type: 'v', x: -1440, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1460, x2: -1300 }, { type: 'v', x: -1320, z1: -620, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1120, z2: 880 }, { type: 'h', z: -120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -480, z: -120 }, { x: -600, z: -120 }, { x: -600, z: -240 }, { x: -480, z: -240 }, { x: -480, z: -360 }, { x: -600, z: -360 }, { x: -720, z: -360 }, { x: -720, z: -240 }, { x: -840, z: -240 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -960, z: -480 }, { x: -960, z: -360 }, { x: -1080, z: -360 }, { x: -1080, z: -480 }, { x: -1080, z: -600 }, { x: -1200, z: -600 }, { x: -1200, z: -480 }, { x: -1200, z: -360 }, { x: -1320, z: -360 }, { x: -1440, z: -360 }, { x: -1440, z: -480 }, { x: -1440, z: -600 }, { x: -1320, z: -600 }, { x: -1320, z: -480 }], ints: [[-840, -240], [-1440, -360], [-480, -360], [-960, -360], [-1440, -600], [-1320, -600], [-960, -480], [-240, -120], [-1080, -600], [0, 0], [-1440, -480], [-1200, -480], [-1200, -360], [-720, -360], [-1080, -480], [-600, -360], [-600, -120], [-1320, -360], [-360, -120], [-120, 0], [-840, -360], [-1320, -480], [-1200, -600], [-120, -120], [-480, -240], [-480, -120], [-1080, -360], [-720, -240], [-840, -480], [-600, -240]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -622, z1: -240, z2: -120, s: 0.9 }, { x: -578, z1: -240, z2: -120, s: 0.9 }, { x: -502, z1: -360, z2: -240, s: 0.9 }, { x: -458, z1: -360, z2: -240, s: 0.9 }, { x: -742, z1: -360, z2: -240, s: 0.9 }, { x: -698, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -360, z2: -240, s: 0.9 }, { x: -818, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -982, z1: -480, z2: -360, s: 0.9 }, { x: -938, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -480, z2: -360, s: 0.9 }, { x: -1058, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -600, z2: -480, s: 0.9 }, { x: -1058, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -600, z2: -480, s: 0.9 }, { x: -1178, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -480, z2: -360, s: 0.9 }, { x: -1178, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -480, z2: -360, s: 0.9 }, { x: -1418, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -600, z2: -480, s: 0.9 }, { x: -1418, z1: -600, z2: -480, s: 0.9 }, { x: -1342, z1: -600, z2: -480, s: 0.9 }, { x: -1298, z1: -600, z2: -480, s: 0.9 }], timeLimit: 940, hasGarage: true },
-          5: { name: 'Parel School Zone', sky: 0x95c0d4, fog: 500, ground: 0x447a3e, amb: 0.8, veh: 'bus', npcTypes: ['car', 'auto', 'cycle', 'bike', 'auto', 'car', 'taxi', 'car', 'auto', 'bike', 'car', 'cycle', 'auto', 'car', 'bus', 'car', 'auto', 'car'], hasSchool: true, speedLimit: 30, isSilenceZone: true, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -260, z2: -100 }, { type: 'v', x: -360, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -500, x2: -340 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -500, z2: -340 }, { type: 'v', x: -600, z1: -620, z2: -460 }, { type: 'v', x: -600, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -620, x2: -460 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'v', x: -360, z1: -980, z2: -820 }, { type: 'v', x: -360, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -380, x2: -220 }, { type: 'h', z: -1080, x1: -260, x2: -100 }, { type: 'h', z: -1080, x1: -140, x2: 20 }, { type: 'h', z: -1080, x1: -20, x2: 140 }, { type: 'h', z: -1080, x1: 100, x2: 260 }, { type: 'h', z: -1080, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -1100, z2: -940 }, { type: 'v', x: 360, z1: -980, z2: -820 }, { type: 'v', x: 360, z1: -860, z2: -700 }, { type: 'v', x: 360, z1: -740, z2: -580 }, { type: 'h', z: -600, x1: 340, x2: 500 }, { type: 'h', z: -600, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: -620, z2: -460 }, { type: 'h', z: -480, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: 340, x2: 500 }, { type: 'v', x: 360, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: 220, x2: 380 }, { type: 'v', x: 240, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -880, x2: 260 }, { type: 'h', z: -360, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -1360, z2: 640 }, { type: 'h', z: -1080, x1: -640, x2: 1360 }, { type: 'v', x: 360, z1: -2080, z2: -80 }, { type: 'h', z: -120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1120, z2: 880 }, { type: 'h', z: -360, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1360, z2: 640 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -360, z: -240 }, { x: -360, z: -360 }, { x: -480, z: -360 }, { x: -600, z: -360 }, { x: -600, z: -480 }, { x: -600, z: -600 }, { x: -600, z: -720 }, { x: -480, z: -720 }, { x: -360, z: -720 }, { x: -360, z: -840 }, { x: -360, z: -960 }, { x: -360, z: -1080 }, { x: -240, z: -1080 }, { x: -120, z: -1080 }, { x: 0, z: -1080 }, { x: 120, z: -1080 }, { x: 240, z: -1080 }, { x: 360, z: -1080 }, { x: 360, z: -960 }, { x: 360, z: -840 }, { x: 360, z: -720 }, { x: 360, z: -600 }, { x: 480, z: -600 }, { x: 600, z: -600 }, { x: 600, z: -480 }, { x: 480, z: -480 }, { x: 480, z: -360 }, { x: 360, z: -360 }, { x: 360, z: -480 }, { x: 240, z: -480 }, { x: 240, z: -600 }, { x: 120, z: -600 }], ints: [[360, -360], [600, -600], [-360, -840], [-480, -360], [-600, -600], [480, -600], [240, -480], [-360, -720], [120, -600], [-240, -120], [0, 0], [-600, -720], [-360, -240], [120, -1080], [-240, -1080], [-480, -720], [360, -840], [480, -480], [-120, -1080], [360, -480], [-600, -360], [240, -1080], [-360, -1080], [-360, -360], [360, -1080], [360, -720], [-360, -120], [-120, 0], [-360, -960], [600, -480], [480, -360], [0, -1080], [360, -600], [-120, -120], [240, -600], [360, -960], [-600, -480]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 }, { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 }, { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 }, { x: -622, z1: -600, z2: -480, s: 0.9 }, { x: -578, z1: -600, z2: -480, s: 0.9 }, { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }, { x: -382, z1: -960, z2: -840, s: 0.9 }, { x: -338, z1: -960, z2: -840, s: 0.9 }, { x: -382, z1: -1080, z2: -960, s: 0.9 }, { x: -338, z1: -1080, z2: -960, s: 0.9 }, { x: 338, z1: -1080, z2: -960, s: 0.9 }, { x: 382, z1: -1080, z2: -960, s: 0.9 }, { x: 338, z1: -960, z2: -840, s: 0.9 }, { x: 382, z1: -960, z2: -840, s: 0.9 }, { x: 338, z1: -840, z2: -720, s: 0.9 }, { x: 382, z1: -840, z2: -720, s: 0.9 }, { x: 338, z1: -720, z2: -600, s: 0.9 }, { x: 382, z1: -720, z2: -600, s: 0.9 }, { x: 578, z1: -600, z2: -480, s: 0.9 }, { x: 622, z1: -600, z2: -480, s: 0.9 }, { x: 458, z1: -480, z2: -360, s: 0.9 }, { x: 502, z1: -480, z2: -360, s: 0.9 }, { x: 338, z1: -480, z2: -360, s: 0.9 }, { x: 382, z1: -480, z2: -360, s: 0.9 }, { x: 218, z1: -600, z2: -480, s: 0.9 }, { x: 262, z1: -600, z2: -480, s: 0.9 }], timeLimit: 1050, hasGarage: true },
-          6: { name: 'Matunga Rail Corridor', sky: 0x7fafc4, fog: 600, ground: 0x3a6130, amb: 0.7, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'car', 'auto', 'taxi', 'car', 'auto', 'bike', 'car', 'truck', 'auto', 'car', 'car', 'bike', 'car', 'auto'], hasRailway: true, railZ: [0], hasMetro: true, hasMountain: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'v', x: 120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'h', z: -120, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: 340, x2: 500 }, { type: 'v', x: 480, z1: -260, z2: -100 }, { type: 'v', x: 480, z1: -140, z2: 20 }, { type: 'v', x: 480, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: -20, z2: 140 }, { type: 'v', x: 720, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 700, x2: 860 }, { type: 'h', z: 240, x1: 820, x2: 980 }, { type: 'h', z: 240, x1: 940, x2: 1100 }, { type: 'v', x: 1080, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 940, x2: 1100 }, { type: 'v', x: 960, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 940, x2: 1100 }, { type: 'h', z: 480, x1: 1060, x2: 1220 }, { type: 'v', x: 1200, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 1060, x2: 1220 }, { type: 'v', x: 1080, z1: 580, z2: 740 }, { type: 'v', x: 1080, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 940, x2: 1100 }, { type: 'v', x: 960, z1: 700, z2: 860 }, { type: 'h', z: 720, x1: 820, x2: 980 }, { type: 'v', x: 840, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 820, x2: 1960 }, { type: 'h', z: 0, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -1000, z2: 1000 }, { type: 'h', z: 120, x1: -400, x2: 1600 }, { type: 'v', x: 600, z1: -880, z2: 1120 }, { type: 'h', z: 120, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -160, x2: 1840 }, { type: 'v', x: 840, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: 80, x2: 2080 }, { type: 'v', x: 1080, z1: -280, z2: 1720 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 120, z: -120 }, { x: 240, z: -120 }, { x: 360, z: -120 }, { x: 360, z: -240 }, { x: 480, z: -240 }, { x: 480, z: -120 }, { x: 480, z: 0 }, { x: 480, z: 120 }, { x: 600, z: 120 }, { x: 600, z: 0 }, { x: 720, z: 0 }, { x: 720, z: 120 }, { x: 720, z: 240 }, { x: 840, z: 240 }, { x: 960, z: 240 }, { x: 1080, z: 240 }, { x: 1080, z: 360 }, { x: 960, z: 360 }, { x: 960, z: 480 }, { x: 1080, z: 480 }, { x: 1200, z: 480 }, { x: 1200, z: 600 }, { x: 1080, z: 600 }, { x: 1080, z: 720 }, { x: 1080, z: 840 }, { x: 960, z: 840 }, { x: 960, z: 720 }, { x: 840, z: 720 }, { x: 840, z: 600 }, { x: 960, z: 600 }], ints: [[600, 0], [360, -120], [480, -120], [720, 120], [960, 720], [960, 480], [480, 120], [0, 0], [480, -240], [720, 0], [840, 720], [960, 840], [240, -120], [360, -240], [960, 360], [1080, 840], [120, 0], [840, 600], [600, 120], [1080, 720], [1080, 360], [1200, 480], [960, 240], [1080, 480], [120, -120], [1080, 240], [1080, 600], [480, 0], [720, 240], [960, 600], [1200, 600], [840, 240]], bldg: [{ x: 98, z1: -120, z2: 0, s: 0.9 }, { x: 142, z1: -120, z2: 0, s: 0.9 }, { x: 338, z1: -240, z2: -120, s: 0.9 }, { x: 382, z1: -240, z2: -120, s: 0.9 }, { x: 458, z1: -240, z2: -120, s: 0.9 }, { x: 502, z1: -240, z2: -120, s: 0.9 }, { x: 458, z1: -120, z2: 0, s: 0.9 }, { x: 502, z1: -120, z2: 0, s: 0.9 }, { x: 458, z1: 0, z2: 120, s: 0.9 }, { x: 502, z1: 0, z2: 120, s: 0.9 }, { x: 578, z1: 0, z2: 120, s: 0.9 }, { x: 622, z1: 0, z2: 120, s: 0.9 }, { x: 698, z1: 0, z2: 120, s: 0.9 }, { x: 742, z1: 0, z2: 120, s: 0.9 }, { x: 698, z1: 120, z2: 240, s: 0.9 }, { x: 742, z1: 120, z2: 240, s: 0.9 }, { x: 1058, z1: 240, z2: 360, s: 0.9 }, { x: 1102, z1: 240, z2: 360, s: 0.9 }, { x: 938, z1: 360, z2: 480, s: 0.9 }, { x: 982, z1: 360, z2: 480, s: 0.9 }, { x: 1178, z1: 480, z2: 600, s: 0.9 }, { x: 1222, z1: 480, z2: 600, s: 0.9 }, { x: 1058, z1: 600, z2: 720, s: 0.9 }, { x: 1102, z1: 600, z2: 720, s: 0.9 }, { x: 1058, z1: 720, z2: 840, s: 0.9 }, { x: 1102, z1: 720, z2: 840, s: 0.9 }, { x: 938, z1: 720, z2: 840, s: 0.9 }, { x: 982, z1: 720, z2: 840, s: 0.9 }, { x: 818, z1: 600, z2: 720, s: 0.9 }, { x: 862, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1160, hasGarage: true },
-          7: { name: 'Marine Drive', sky: 0x4a90d9, fog: 700, ground: 0x1a6b5a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'car', 'bike', 'car', 'car', 'bus', 'auto', 'taxi', 'car', 'bike', 'car', 'auto'], hasOcean: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'h', z: 0, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 340, x2: 500 }, { type: 'h', z: 240, x1: 460, x2: 620 }, { type: 'h', z: 240, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 100, z2: 260 }, { type: 'v', x: 720, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: -20, z2: 140 }, { type: 'v', x: 840, z1: 100, z2: 260 }, { type: 'v', x: 840, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 700, x2: 860 }, { type: 'h', z: 360, x1: 580, x2: 740 }, { type: 'h', z: 360, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: 340, z2: 500 }, { type: 'v', x: 480, z1: 460, z2: 620 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 340, x2: 500 }, { type: 'v', x: 360, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 460, z2: 620 }, { type: 'v', x: 120, z1: 340, z2: 500 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 220, z2: 380 }, { type: 'v', x: 0, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -140, x2: 20 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 460, z2: 620 }, { type: 'v', x: -240, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: -500, x2: -340 }, { type: 'h', z: 840, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 820, z2: 980 }, { type: 'v', x: -600, z1: 940, z2: 1100 }, { type: 'h', z: 1080, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 940, z2: 1100 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 940, z2: 2080 }, { type: 'h', z: 600, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -400, z2: 1600 }, { type: 'h', z: 600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -400, z2: 1600 }, { type: 'h', z: 480, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -520, z2: 1480 }, { type: 'h', z: 720, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -280, z2: 1720 }, { type: 'h', z: 1080, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: 80, z2: 2080 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 240, z: 0 }, { x: 240, z: 120 }, { x: 360, z: 120 }, { x: 360, z: 240 }, { x: 480, z: 240 }, { x: 600, z: 240 }, { x: 720, z: 240 }, { x: 720, z: 120 }, { x: 720, z: 0 }, { x: 840, z: 0 }, { x: 840, z: 120 }, { x: 840, z: 240 }, { x: 840, z: 360 }, { x: 720, z: 360 }, { x: 600, z: 360 }, { x: 480, z: 360 }, { x: 480, z: 480 }, { x: 480, z: 600 }, { x: 480, z: 720 }, { x: 360, z: 720 }, { x: 360, z: 600 }, { x: 240, z: 600 }, { x: 120, z: 600 }, { x: 120, z: 480 }, { x: 120, z: 360 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 360 }, { x: 0, z: 480 }, { x: -120, z: 480 }, { x: -240, z: 480 }, { x: -240, z: 600 }, { x: -240, z: 720 }, { x: -360, z: 720 }, { x: -360, z: 840 }, { x: -480, z: 840 }, { x: -600, z: 840 }, { x: -600, z: 960 }, { x: -600, z: 1080 }, { x: -480, z: 1080 }, { x: -480, z: 960 }, { x: -360, z: 960 }, { x: -360, z: 1080 }], ints: [[240, 0], [840, 0], [0, 240], [360, 240], [-600, 960], [-240, 480], [720, 120], [120, 360], [360, 120], [-360, 960], [0, 0], [720, 0], [480, 720], [840, 360], [840, 120], [120, 240], [480, 240], [-600, 840], [-600, 1080], [360, 600], [-240, 720], [-240, 600], [120, 600], [120, 480], [-480, 1080], [-480, 960], [120, 0], [0, 360], [240, 600], [-360, 720], [600, 360], [480, 360], [360, 720], [480, 600], [600, 240], [-120, 480], [720, 240], [240, 120], [480, 480], [-360, 840], [720, 360], [0, 480], [-360, 1080], [-480, 840], [840, 240]], bldg: [{ x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 }, { x: 338, z1: 120, z2: 240, s: 0.9 }, { x: 382, z1: 120, z2: 240, s: 0.9 }, { x: 698, z1: 120, z2: 240, s: 0.9 }, { x: 742, z1: 120, z2: 240, s: 0.9 }, { x: 698, z1: 0, z2: 120, s: 0.9 }, { x: 742, z1: 0, z2: 120, s: 0.9 }, { x: 818, z1: 0, z2: 120, s: 0.9 }, { x: 862, z1: 0, z2: 120, s: 0.9 }, { x: 818, z1: 120, z2: 240, s: 0.9 }, { x: 862, z1: 120, z2: 240, s: 0.9 }, { x: 818, z1: 240, z2: 360, s: 0.9 }, { x: 862, z1: 240, z2: 360, s: 0.9 }, { x: 458, z1: 360, z2: 480, s: 0.9 }, { x: 502, z1: 360, z2: 480, s: 0.9 }, { x: 458, z1: 480, z2: 600, s: 0.9 }, { x: 502, z1: 480, z2: 600, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 338, z1: 600, z2: 720, s: 0.9 }, { x: 382, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 480, z2: 600, s: 0.9 }, { x: 142, z1: 480, z2: 600, s: 0.9 }, { x: 98, z1: 360, z2: 480, s: 0.9 }, { x: 142, z1: 360, z2: 480, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 240, z2: 360, s: 0.9 }, { x: 22, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 360, z2: 480, s: 0.9 }, { x: 22, z1: 360, z2: 480, s: 0.9 }, { x: -262, z1: 480, z2: 600, s: 0.9 }, { x: -218, z1: 480, z2: 600, s: 0.9 }, { x: -262, z1: 600, z2: 720, s: 0.9 }, { x: -218, z1: 600, z2: 720, s: 0.9 }, { x: -382, z1: 720, z2: 840, s: 0.9 }, { x: -338, z1: 720, z2: 840, s: 0.9 }, { x: -622, z1: 840, z2: 960, s: 0.9 }, { x: -578, z1: 840, z2: 960, s: 0.9 }, { x: -622, z1: 960, z2: 1080, s: 0.9 }, { x: -578, z1: 960, z2: 1080, s: 0.9 }, { x: -502, z1: 960, z2: 1080, s: 0.9 }, { x: -458, z1: 960, z2: 1080, s: 0.9 }, { x: -382, z1: 960, z2: 1080, s: 0.9 }, { x: -338, z1: 960, z2: 1080, s: 0.9 }], timeLimit: 1270, hasGarage: true },
-          8: { name: 'Byculla', sky: 0x7a9eb5, fog: 550, ground: 0x345a2a, amb: 0.7, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'auto', 'car', 'truck', 'car', 'taxi', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'car', 'bike', 'auto', 'car', 'taxi', 'car', 'car', 'auto'], hasEmergency: true, roads: [{ type: 'v', x: 0, z1: -1000, z2: 140 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'h', z: 120, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -140, z2: 20 }, { type: 'h', z: 0, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -260, x2: -100 }, { type: 'h', z: 360, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 580, z2: 740 }, { type: 'v', x: 240, z1: 700, z2: 860 }, { type: 'v', x: 240, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -20, x2: 140 }, { type: 'h', z: 840, x1: -140, x2: 20 }, { type: 'h', z: 840, x1: -260, x2: -100 }, { type: 'h', z: 840, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'h', z: 960, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 700, z2: 860 }, { type: 'v', x: -480, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -620, x2: -460 }, { type: 'h', z: 480, x1: -500, x2: -340 }, { type: 'h', z: 480, x1: -380, x2: -220 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: -20, x2: 1120 }, { type: 'h', z: 120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 840, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -160, z2: 1840 }, { type: 'h', z: 960, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -40, z2: 1960 }, { type: 'h', z: 600, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -400, z2: 1600 }], route: [{ x: 0, z: 0 }, { x: 0, z: 120 }, { x: -120, z: 120 }, { x: -240, z: 120 }, { x: -240, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -360, z: 0 }, { x: -480, z: 0 }, { x: -480, z: 120 }, { x: -360, z: 120 }, { x: -360, z: 240 }, { x: -240, z: 240 }, { x: -240, z: 360 }, { x: -120, z: 360 }, { x: 0, z: 360 }, { x: 0, z: 480 }, { x: 120, z: 480 }, { x: 120, z: 600 }, { x: 240, z: 600 }, { x: 240, z: 720 }, { x: 240, z: 840 }, { x: 240, z: 960 }, { x: 120, z: 960 }, { x: 120, z: 840 }, { x: 0, z: 840 }, { x: -120, z: 840 }, { x: -240, z: 840 }, { x: -360, z: 840 }, { x: -360, z: 960 }, { x: -480, z: 960 }, { x: -600, z: 960 }, { x: -600, z: 840 }, { x: -480, z: 840 }, { x: -480, z: 720 }, { x: -480, z: 600 }, { x: -600, z: 600 }, { x: -600, z: 480 }, { x: -480, z: 480 }, { x: -360, z: 480 }, { x: -240, z: 480 }, { x: -120, z: 480 }, { x: -120, z: 600 }, { x: 0, z: 600 }, { x: 0, z: 720 }, { x: 120, z: 720 }], ints: [[-120, 360], [-360, 240], [240, 960], [120, 960], [-360, 0], [-600, 960], [-240, 120], [-600, 600], [-240, 480], [-480, 720], [0, 120], [-240, -120], [-480, 120], [-480, 0], [0, 0], [120, 840], [-360, 960], [-480, 480], [-480, 600], [0, 840], [-600, 840], [-360, 480], [-240, 840], [240, 720], [-360, 120], [-240, 360], [0, 600], [120, 600], [120, 480], [-240, 240], [-480, 960], [-360, -120], [-120, 0], [-120, 120], [0, 360], [-120, 600], [-120, -120], [240, 600], [-240, 0], [240, 840], [-120, 840], [0, 720], [-120, 480], [-600, 480], [-360, 840], [0, 480], [120, 720], [-480, 840]], bldg: [{ x: -22, z1: 0, z2: 120, s: 0.9 }, { x: 22, z1: 0, z2: 120, s: 0.9 }, { x: -262, z1: 0, z2: 120, s: 0.9 }, { x: -218, z1: 0, z2: 120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 }, { x: -502, z1: 0, z2: 120, s: 0.9 }, { x: -458, z1: 0, z2: 120, s: 0.9 }, { x: -382, z1: 120, z2: 240, s: 0.9 }, { x: -338, z1: 120, z2: 240, s: 0.9 }, { x: -262, z1: 240, z2: 360, s: 0.9 }, { x: -218, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 360, z2: 480, s: 0.9 }, { x: 22, z1: 360, z2: 480, s: 0.9 }, { x: 98, z1: 480, z2: 600, s: 0.9 }, { x: 142, z1: 480, z2: 600, s: 0.9 }, { x: 218, z1: 600, z2: 720, s: 0.9 }, { x: 262, z1: 600, z2: 720, s: 0.9 }, { x: 218, z1: 720, z2: 840, s: 0.9 }, { x: 262, z1: 720, z2: 840, s: 0.9 }, { x: 218, z1: 840, z2: 960, s: 0.9 }, { x: 262, z1: 840, z2: 960, s: 0.9 }, { x: 98, z1: 840, z2: 960, s: 0.9 }, { x: 142, z1: 840, z2: 960, s: 0.9 }, { x: -382, z1: 840, z2: 960, s: 0.9 }, { x: -338, z1: 840, z2: 960, s: 0.9 }, { x: -622, z1: 840, z2: 960, s: 0.9 }, { x: -578, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 720, z2: 840, s: 0.9 }, { x: -458, z1: 720, z2: 840, s: 0.9 }, { x: -502, z1: 600, z2: 720, s: 0.9 }, { x: -458, z1: 600, z2: 720, s: 0.9 }, { x: -622, z1: 480, z2: 600, s: 0.9 }, { x: -578, z1: 480, z2: 600, s: 0.9 }, { x: -142, z1: 480, z2: 600, s: 0.9 }, { x: -98, z1: 480, z2: 600, s: 0.9 }, { x: -22, z1: 600, z2: 720, s: 0.9 }, { x: 22, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1380, hasGarage: true },
-          9: { name: 'Hindmata', sky: 0x152234, fog: 450, ground: 0x1a291d, amb: 0.4, veh: 'car', npcTypes: ['car', 'auto', 'bike', 'car', 'auto', 'taxi', 'car', 'auto', 'bike', 'car', 'auto', 'car', 'bus', 'auto', 'car', 'bike'], hasRain: true, hasPuddles: true, roads: [{ type: 'v', x: 0, z1: -1000, z2: 140 }, { type: 'v', x: 0, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'h', z: 240, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 220, z2: 380 }, { type: 'v', x: 240, z1: 340, z2: 500 }, { type: 'v', x: 240, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: 340, x2: 500 }, { type: 'v', x: 480, z1: 460, z2: 620 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'v', x: 480, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 340, x2: 500 }, { type: 'v', x: 360, z1: 700, z2: 860 }, { type: 'h', z: 720, x1: 220, x2: 380 }, { type: 'v', x: 240, z1: 700, z2: 860 }, { type: 'v', x: 240, z1: 820, z2: 980 }, { type: 'v', x: 240, z1: 940, z2: 1100 }, { type: 'v', x: 240, z1: 1060, z2: 1220 }, { type: 'h', z: 1200, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: 1180, z2: 1340 }, { type: 'v', x: 360, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: 340, x2: 500 }, { type: 'h', z: 1440, x1: 460, x2: 620 }, { type: 'h', z: 1440, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: 580, x2: 740 }, { type: 'h', z: 1560, x1: 460, x2: 620 }, { type: 'h', z: 1560, x1: 340, x2: 500 }, { type: 'h', z: 1560, x1: 220, x2: 380 }, { type: 'h', z: 1560, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 1420, z2: 1580 }, { type: 'v', x: 120, z1: 1300, z2: 1460 }, { type: 'v', x: 120, z1: 1180, z2: 1340 }, { type: 'v', x: 120, z1: 1060, z2: 1220 }, { type: 'h', z: 1080, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 1060, z2: 1220 }, { type: 'v', x: 0, z1: 1180, z2: 1340 }, { type: 'v', x: 0, z1: 1300, z2: 1460 }, { type: 'v', x: 0, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -140, x2: 20 }, { type: 'h', z: 1560, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 1540, z2: 1700 }, { type: 'h', z: 1680, x1: -380, x2: -220 }, { type: 'h', z: 1680, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 1540, z2: 1700 }, { type: 'h', z: 1560, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 1420, z2: 1580 }, { type: 'v', x: -600, z1: 1300, z2: 1460 }, { type: 'h', z: 1320, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 200, z2: 1340 }, { type: 'h', z: 840, x1: -640, x2: 1360 }, { type: 'v', x: 360, z1: -160, z2: 1840 }, { type: 'h', z: 600, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -400, z2: 1600 }, { type: 'h', z: 600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -400, z2: 1600 }, { type: 'h', z: 840, x1: -640, x2: 1360 }, { type: 'v', x: 360, z1: -160, z2: 1840 }, { type: 'h', z: 1440, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: 440, z2: 2440 }], route: [{ x: 0, z: 0 }, { x: 0, z: 120 }, { x: 0, z: 240 }, { x: 120, z: 240 }, { x: 240, z: 240 }, { x: 240, z: 360 }, { x: 240, z: 480 }, { x: 240, z: 600 }, { x: 360, z: 600 }, { x: 360, z: 480 }, { x: 480, z: 480 }, { x: 480, z: 600 }, { x: 480, z: 720 }, { x: 480, z: 840 }, { x: 360, z: 840 }, { x: 360, z: 720 }, { x: 240, z: 720 }, { x: 240, z: 840 }, { x: 240, z: 960 }, { x: 240, z: 1080 }, { x: 240, z: 1200 }, { x: 360, z: 1200 }, { x: 360, z: 1320 }, { x: 360, z: 1440 }, { x: 480, z: 1440 }, { x: 600, z: 1440 }, { x: 720, z: 1440 }, { x: 720, z: 1560 }, { x: 600, z: 1560 }, { x: 480, z: 1560 }, { x: 360, z: 1560 }, { x: 240, z: 1560 }, { x: 120, z: 1560 }, { x: 120, z: 1440 }, { x: 120, z: 1320 }, { x: 120, z: 1200 }, { x: 120, z: 1080 }, { x: 0, z: 1080 }, { x: 0, z: 1200 }, { x: 0, z: 1320 }, { x: 0, z: 1440 }, { x: 0, z: 1560 }, { x: -120, z: 1560 }, { x: -240, z: 1560 }, { x: -240, z: 1680 }, { x: -360, z: 1680 }, { x: -480, z: 1680 }, { x: -480, z: 1560 }, { x: -600, z: 1560 }, { x: -600, z: 1440 }, { x: -600, z: 1320 }, { x: -480, z: 1320 }, { x: -480, z: 1200 }], ints: [[0, 240], [240, 1200], [720, 1560], [480, 1560], [-480, 1320], [240, 960], [-480, 1680], [240, 1080], [480, 840], [360, 1320], [0, 120], [120, 1440], [600, 1560], [0, 0], [360, 1560], [120, 1200], [480, 720], [360, 1440], [-240, 1680], [-120, 1560], [0, 1320], [480, 1440], [360, 480], [120, 240], [120, 1560], [-360, 1680], [-600, 1440], [360, 600], [240, 720], [720, 1440], [240, 1560], [120, 1080], [360, 840], [0, 1080], [-600, 1560], [240, 240], [0, 1440], [-480, 1200], [-600, 1320], [240, 480], [240, 600], [360, 720], [240, 840], [0, 1200], [240, 360], [480, 600], [600, 1440], [120, 1320], [-240, 1560], [480, 480], [0, 1560], [360, 1200], [-480, 1560]], bldg: [{ x: -22, z1: 0, z2: 120, s: 0.9 }, { x: 22, z1: 0, z2: 120, s: 0.9 }, { x: -22, z1: 120, z2: 240, s: 0.9 }, { x: 22, z1: 120, z2: 240, s: 0.9 }, { x: 218, z1: 240, z2: 360, s: 0.9 }, { x: 262, z1: 240, z2: 360, s: 0.9 }, { x: 218, z1: 360, z2: 480, s: 0.9 }, { x: 262, z1: 360, z2: 480, s: 0.9 }, { x: 218, z1: 480, z2: 600, s: 0.9 }, { x: 262, z1: 480, z2: 600, s: 0.9 }, { x: 338, z1: 480, z2: 600, s: 0.9 }, { x: 382, z1: 480, z2: 600, s: 0.9 }, { x: 458, z1: 480, z2: 600, s: 0.9 }, { x: 502, z1: 480, z2: 600, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 458, z1: 720, z2: 840, s: 0.9 }, { x: 502, z1: 720, z2: 840, s: 0.9 }, { x: 338, z1: 720, z2: 840, s: 0.9 }, { x: 382, z1: 720, z2: 840, s: 0.9 }, { x: 218, z1: 720, z2: 840, s: 0.9 }, { x: 262, z1: 720, z2: 840, s: 0.9 }, { x: 218, z1: 840, z2: 960, s: 0.9 }, { x: 262, z1: 840, z2: 960, s: 0.9 }, { x: 218, z1: 960, z2: 1080, s: 0.9 }, { x: 262, z1: 960, z2: 1080, s: 0.9 }, { x: 218, z1: 1080, z2: 1200, s: 0.9 }, { x: 262, z1: 1080, z2: 1200, s: 0.9 }, { x: 338, z1: 1200, z2: 1320, s: 0.9 }, { x: 382, z1: 1200, z2: 1320, s: 0.9 }, { x: 338, z1: 1320, z2: 1440, s: 0.9 }, { x: 382, z1: 1320, z2: 1440, s: 0.9 }, { x: 698, z1: 1440, z2: 1560, s: 0.9 }, { x: 742, z1: 1440, z2: 1560, s: 0.9 }, { x: 98, z1: 1440, z2: 1560, s: 0.9 }, { x: 142, z1: 1440, z2: 1560, s: 0.9 }, { x: 98, z1: 1320, z2: 1440, s: 0.9 }, { x: 142, z1: 1320, z2: 1440, s: 0.9 }, { x: 98, z1: 1200, z2: 1320, s: 0.9 }, { x: 142, z1: 1200, z2: 1320, s: 0.9 }, { x: 98, z1: 1080, z2: 1200, s: 0.9 }, { x: 142, z1: 1080, z2: 1200, s: 0.9 }, { x: -22, z1: 1080, z2: 1200, s: 0.9 }, { x: 22, z1: 1080, z2: 1200, s: 0.9 }, { x: -22, z1: 1200, z2: 1320, s: 0.9 }, { x: 22, z1: 1200, z2: 1320, s: 0.9 }, { x: -22, z1: 1320, z2: 1440, s: 0.9 }, { x: 22, z1: 1320, z2: 1440, s: 0.9 }, { x: -22, z1: 1440, z2: 1560, s: 0.9 }, { x: 22, z1: 1440, z2: 1560, s: 0.9 }, { x: -262, z1: 1560, z2: 1680, s: 0.9 }, { x: -218, z1: 1560, z2: 1680, s: 0.9 }, { x: -502, z1: 1560, z2: 1680, s: 0.9 }, { x: -458, z1: 1560, z2: 1680, s: 0.9 }, { x: -622, z1: 1440, z2: 1560, s: 0.9 }, { x: -578, z1: 1440, z2: 1560, s: 0.9 }, { x: -622, z1: 1320, z2: 1440, s: 0.9 }, { x: -578, z1: 1320, z2: 1440, s: 0.9 }, { x: -502, z1: 1200, z2: 1320, s: 0.9 }, { x: -458, z1: 1200, z2: 1320, s: 0.9 }], timeLimit: 1490, hasGarage: true },
-          10: { name: 'Eastern Express Hwy', sky: 0x8cbbd6, fog: 750, ground: 0x2a5e28, amb: 0.85, veh: 'auto', npcTypes: ['car', 'truck', 'bus', 'car', 'auto', 'bike', 'car', 'truck', 'bus', 'car', 'taxi', 'auto', 'car', 'bike', 'car', 'truck', 'bus', 'car', 'auto', 'bike', 'car', 'car', 'bus', 'auto'], hasMetro: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'h', z: 0, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -380, z2: -220 }, { type: 'v', x: 240, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -500, z2: -340 }, { type: 'v', x: 360, z1: -380, z2: -220 }, { type: 'h', z: -240, x1: 340, x2: 500 }, { type: 'h', z: -240, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: -380, z2: -220 }, { type: 'v', x: 600, z1: -500, z2: -340 }, { type: 'v', x: 600, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: 580, x2: 740 }, { type: 'h', z: -600, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: -740, z2: -580 }, { type: 'v', x: 840, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: 820, x2: 980 }, { type: 'h', z: -840, x1: 940, x2: 1100 }, { type: 'h', z: -840, x1: 1060, x2: 1220 }, { type: 'h', z: -840, x1: 1180, x2: 1340 }, { type: 'v', x: 1320, z1: -860, z2: -700 }, { type: 'h', z: -720, x1: 1300, x2: 1460 }, { type: 'v', x: 1440, z1: -740, z2: -580 }, { type: 'h', z: -600, x1: 1420, x2: 1580 }, { type: 'v', x: 1560, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: 1540, x2: 1700 }, { type: 'v', x: 1680, z1: -740, z2: -580 }, { type: 'v', x: 1680, z1: -620, z2: -460 }, { type: 'v', x: 1680, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: 1660, x2: 1820 }, { type: 'h', z: -360, x1: 1780, x2: 1940 }, { type: 'v', x: 1920, z1: -380, z2: -220 }, { type: 'v', x: 1920, z1: -260, z2: -100 }, { type: 'h', z: -120, x1: 1780, x2: 1940 }, { type: 'v', x: 1800, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: 1660, x2: 1820 }, { type: 'v', x: 1680, z1: -260, z2: -100 }, { type: 'h', z: -120, x1: 1540, x2: 1700 }, { type: 'h', z: -120, x1: 1420, x2: 1580 }, { type: 'v', x: 1440, z1: -140, z2: 20 }, { type: 'v', x: 1440, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 1300, x2: 1460 }, { type: 'h', z: 120, x1: 1180, x2: 1340 }, { type: 'h', z: 120, x1: 1060, x2: 1220 }, { type: 'v', x: 1080, z1: 100, z2: 260 }, { type: 'v', x: 1080, z1: 220, z2: 380 }, { type: 'v', x: 1080, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 1060, x2: 1220 }, { type: 'v', x: 1200, z1: 460, z2: 620 }, { type: 'v', x: 1200, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 1060, x2: 1220 }, { type: 'h', z: 720, x1: -40, x2: 1100 }, { type: 'h', z: -600, x1: -160, x2: 1840 }, { type: 'v', x: 840, z1: -1600, z2: 400 }, { type: 'h', z: 720, x1: 80, x2: 2080 }, { type: 'v', x: 1080, z1: -280, z2: 1720 }, { type: 'h', z: -120, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -1120, z2: 880 }, { type: 'h', z: 240, x1: 80, x2: 2080 }, { type: 'v', x: 1080, z1: -760, z2: 1240 }, { type: 'h', z: -120, x1: 680, x2: 2680 }, { type: 'v', x: 1680, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 240, z: 0 }, { x: 240, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 240, z: -240 }, { x: 240, z: -360 }, { x: 240, z: -480 }, { x: 360, z: -480 }, { x: 360, z: -360 }, { x: 360, z: -240 }, { x: 480, z: -240 }, { x: 600, z: -240 }, { x: 600, z: -360 }, { x: 600, z: -480 }, { x: 600, z: -600 }, { x: 720, z: -600 }, { x: 840, z: -600 }, { x: 840, z: -720 }, { x: 840, z: -840 }, { x: 960, z: -840 }, { x: 1080, z: -840 }, { x: 1200, z: -840 }, { x: 1320, z: -840 }, { x: 1320, z: -720 }, { x: 1440, z: -720 }, { x: 1440, z: -600 }, { x: 1560, z: -600 }, { x: 1560, z: -720 }, { x: 1680, z: -720 }, { x: 1680, z: -600 }, { x: 1680, z: -480 }, { x: 1680, z: -360 }, { x: 1800, z: -360 }, { x: 1920, z: -360 }, { x: 1920, z: -240 }, { x: 1920, z: -120 }, { x: 1800, z: -120 }, { x: 1800, z: -240 }, { x: 1680, z: -240 }, { x: 1680, z: -120 }, { x: 1560, z: -120 }, { x: 1440, z: -120 }, { x: 1440, z: 0 }, { x: 1440, z: 120 }, { x: 1320, z: 120 }, { x: 1200, z: 120 }, { x: 1080, z: 120 }, { x: 1080, z: 240 }, { x: 1080, z: 360 }, { x: 1080, z: 480 }, { x: 1200, z: 480 }, { x: 1200, z: 600 }, { x: 1200, z: 720 }, { x: 1080, z: 720 }, { x: 960, z: 720 }], ints: [[240, 0], [360, -360], [720, -600], [1680, -600], [600, -600], [1320, -720], [1440, 120], [1080, 120], [1440, -120], [600, -240], [1560, -600], [840, -600], [1560, -120], [240, -360], [240, -480], [1440, -720], [840, -840], [240, -240], [960, 720], [960, -840], [1680, -480], [0, 0], [480, -240], [1440, 0], [1200, 120], [1920, -360], [1440, -600], [1800, -240], [120, -240], [1680, -360], [1800, -360], [1680, -240], [240, -120], [360, -240], [1320, 120], [360, -480], [1200, -840], [1200, 720], [1320, -840], [1680, -120], [840, -720], [1080, -840], [120, 0], [1560, -720], [600, -480], [1080, 720], [1080, 360], [600, -360], [1680, -720], [1800, -120], [1920, -240], [1200, 480], [1080, 480], [120, -120], [1080, 240], [1920, -120], [1200, 600]], bldg: [{ x: 218, z1: -120, z2: 0, s: 0.9 }, { x: 262, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: 218, z1: -360, z2: -240, s: 0.9 }, { x: 262, z1: -360, z2: -240, s: 0.9 }, { x: 218, z1: -480, z2: -360, s: 0.9 }, { x: 262, z1: -480, z2: -360, s: 0.9 }, { x: 338, z1: -480, z2: -360, s: 0.9 }, { x: 382, z1: -480, z2: -360, s: 0.9 }, { x: 338, z1: -360, z2: -240, s: 0.9 }, { x: 382, z1: -360, z2: -240, s: 0.9 }, { x: 578, z1: -360, z2: -240, s: 0.9 }, { x: 622, z1: -360, z2: -240, s: 0.9 }, { x: 578, z1: -480, z2: -360, s: 0.9 }, { x: 622, z1: -480, z2: -360, s: 0.9 }, { x: 578, z1: -600, z2: -480, s: 0.9 }, { x: 622, z1: -600, z2: -480, s: 0.9 }, { x: 818, z1: -720, z2: -600, s: 0.9 }, { x: 862, z1: -720, z2: -600, s: 0.9 }, { x: 818, z1: -840, z2: -720, s: 0.9 }, { x: 862, z1: -840, z2: -720, s: 0.9 }, { x: 1298, z1: -840, z2: -720, s: 0.9 }, { x: 1342, z1: -840, z2: -720, s: 0.9 }, { x: 1418, z1: -720, z2: -600, s: 0.9 }, { x: 1462, z1: -720, z2: -600, s: 0.9 }, { x: 1538, z1: -720, z2: -600, s: 0.9 }, { x: 1582, z1: -720, z2: -600, s: 0.9 }, { x: 1658, z1: -720, z2: -600, s: 0.9 }, { x: 1702, z1: -720, z2: -600, s: 0.9 }, { x: 1658, z1: -600, z2: -480, s: 0.9 }, { x: 1702, z1: -600, z2: -480, s: 0.9 }, { x: 1658, z1: -480, z2: -360, s: 0.9 }, { x: 1702, z1: -480, z2: -360, s: 0.9 }, { x: 1898, z1: -360, z2: -240, s: 0.9 }, { x: 1942, z1: -360, z2: -240, s: 0.9 }, { x: 1898, z1: -240, z2: -120, s: 0.9 }, { x: 1942, z1: -240, z2: -120, s: 0.9 }, { x: 1778, z1: -240, z2: -120, s: 0.9 }, { x: 1822, z1: -240, z2: -120, s: 0.9 }, { x: 1658, z1: -240, z2: -120, s: 0.9 }, { x: 1702, z1: -240, z2: -120, s: 0.9 }, { x: 1418, z1: -120, z2: 0, s: 0.9 }, { x: 1462, z1: -120, z2: 0, s: 0.9 }, { x: 1418, z1: 0, z2: 120, s: 0.9 }, { x: 1462, z1: 0, z2: 120, s: 0.9 }, { x: 1058, z1: 120, z2: 240, s: 0.9 }, { x: 1102, z1: 120, z2: 240, s: 0.9 }, { x: 1058, z1: 240, z2: 360, s: 0.9 }, { x: 1102, z1: 240, z2: 360, s: 0.9 }, { x: 1058, z1: 360, z2: 480, s: 0.9 }, { x: 1102, z1: 360, z2: 480, s: 0.9 }, { x: 1178, z1: 480, z2: 600, s: 0.9 }, { x: 1222, z1: 480, z2: 600, s: 0.9 }, { x: 1178, z1: 600, z2: 720, s: 0.9 }, { x: 1222, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1600, hasGarage: true },
-          11: { name: 'Sion Hospital', sky: 0x0a0f1d, fog: 500, ground: 0x1a2a1d, amb: 0.35, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'taxi', 'car', 'auto', 'bike', 'car', 'auto', 'car', 'bike', 'auto', 'car', 'taxi', 'car'], isNight: true, hasSilentZone: true, silentZ1: 0, silentZ2: 250, roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'v', x: 0, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: 100, x2: 260 }, { type: 'h', z: -360, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -140, x2: 20 }, { type: 'h', z: -600, x1: -20, x2: 140 }, { type: 'h', z: -600, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -740, z2: -580 }, { type: 'v', x: 360, z1: -620, z2: -460 }, { type: 'h', z: -480, x1: 220, x2: 380 }, { type: 'h', z: -480, x1: -880, x2: 260 }, { type: 'h', z: -360, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1360, z2: 640 }, { type: 'h', z: 0, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1000, z2: 1000 }, { type: 'h', z: -600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1600, z2: 400 }, { type: 'h', z: -600, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1600, z2: 400 }, { type: 'h', z: -240, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1240, z2: 760 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 0, z: -240 }, { x: 120, z: -240 }, { x: 240, z: -240 }, { x: 240, z: -360 }, { x: 120, z: -360 }, { x: 0, z: -360 }, { x: 0, z: -480 }, { x: -120, z: -480 }, { x: -120, z: -600 }, { x: 0, z: -600 }, { x: 120, z: -600 }, { x: 240, z: -600 }, { x: 240, z: -720 }, { x: 360, z: -720 }, { x: 360, z: -600 }, { x: 360, z: -480 }, { x: 240, z: -480 }, { x: 120, z: -480 }], ints: [[240, -360], [0, -600], [240, -480], [240, -240], [120, -600], [0, 0], [-120, -480], [120, -240], [-120, -600], [0, -240], [0, -480], [360, -480], [120, -360], [360, -720], [120, -480], [360, -600], [0, -120], [240, -600], [240, -720], [0, -360]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: -22, z1: -240, z2: -120, s: 0.9 }, { x: 22, z1: -240, z2: -120, s: 0.9 }, { x: 218, z1: -360, z2: -240, s: 0.9 }, { x: 262, z1: -360, z2: -240, s: 0.9 }, { x: -22, z1: -480, z2: -360, s: 0.9 }, { x: 22, z1: -480, z2: -360, s: 0.9 }, { x: -142, z1: -600, z2: -480, s: 0.9 }, { x: -98, z1: -600, z2: -480, s: 0.9 }, { x: 218, z1: -720, z2: -600, s: 0.9 }, { x: 262, z1: -720, z2: -600, s: 0.9 }, { x: 338, z1: -720, z2: -600, s: 0.9 }, { x: 382, z1: -720, z2: -600, s: 0.9 }, { x: 338, z1: -600, z2: -480, s: 0.9 }, { x: 382, z1: -600, z2: -480, s: 0.9 }], timeLimit: 1710, hasGarage: true },
-          12: { name: 'Dharavi', sky: 0x8aafca, fog: 450, ground: 0x3a5228, amb: 0.7, veh: 'twowheeler', npcTypes: ['auto', 'bike', 'cycle', 'auto', 'car', 'bike', 'cycle', 'taxi', 'auto', 'car', 'bike', 'auto', 'car', 'cycle', 'auto', 'bike'], roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -380, z2: -220 }, { type: 'v', x: -120, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -140, x2: 20 }, { type: 'h', z: -840, x1: -260, x2: -100 }, { type: 'h', z: -840, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'h', z: -720, x1: -380, x2: 760 }, { type: 'h', z: -600, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1600, z2: 400 }, { type: 'h', z: -240, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1240, z2: 760 }, { type: 'h', z: -120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1120, z2: 880 }, { type: 'h', z: -480, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1480, z2: 520 }, { type: 'h', z: -840, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -1840, z2: 160 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -240, z: 0 }, { x: -240, z: -120 }, { x: -120, z: -120 }, { x: 0, z: -120 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -120, z: -360 }, { x: -120, z: -480 }, { x: -240, z: -480 }, { x: -240, z: -600 }, { x: -120, z: -600 }, { x: -120, z: -720 }, { x: 0, z: -720 }, { x: 0, z: -840 }, { x: -120, z: -840 }, { x: -240, z: -840 }, { x: -360, z: -840 }, { x: -360, z: -720 }, { x: -240, z: -720 }], ints: [[-240, -840], [0, -840], [-360, -840], [-360, -720], [-120, -360], [-240, -120], [0, 0], [-120, -480], [-240, -480], [-120, -600], [-120, -720], [0, -240], [-240, -720], [-120, -840], [-120, 0], [0, -120], [-120, -120], [-240, 0], [0, -720], [-240, -600], [-120, -240]], bldg: [{ x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 }, { x: -22, z1: -240, z2: -120, s: 0.9 }, { x: 22, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -360, z2: -240, s: 0.9 }, { x: -98, z1: -360, z2: -240, s: 0.9 }, { x: -142, z1: -480, z2: -360, s: 0.9 }, { x: -98, z1: -480, z2: -360, s: 0.9 }, { x: -262, z1: -600, z2: -480, s: 0.9 }, { x: -218, z1: -600, z2: -480, s: 0.9 }, { x: -142, z1: -720, z2: -600, s: 0.9 }, { x: -98, z1: -720, z2: -600, s: 0.9 }, { x: -22, z1: -840, z2: -720, s: 0.9 }, { x: 22, z1: -840, z2: -720, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }], timeLimit: 1820, hasGarage: true },
-          13: { name: 'Linking Road', sky: 0x7a9eb5, fog: 550, ground: 0x346a2e, amb: 0.75, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'car', 'taxi', 'auto', 'bike', 'car', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'bike'], hasCheckpoint: true, checkpointZ: 0, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'v', x: 120, z1: -20, z2: 140 }, { type: 'v', x: 120, z1: 100, z2: 260 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'v', x: 120, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 460, z2: 620 }, { type: 'v', x: 240, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 100, x2: 260 }, { type: 'h', z: 720, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 580, z2: 740 }, { type: 'v', x: 0, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -140, x2: 20 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 340, z2: 500 }, { type: 'v', x: -240, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 460, z2: 620 }, { type: 'v', x: -360, z1: 580, z2: 740 }, { type: 'v', x: -360, z1: 700, z2: 860 }, { type: 'v', x: -360, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 940, z2: 1100 }, { type: 'h', z: 1080, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 1060, z2: 1220 }, { type: 'h', z: 1200, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: 1180, z2: 1340 }, { type: 'v', x: -720, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: 1300, z2: 1460 }, { type: 'h', z: 1320, x1: -620, x2: -460 }, { type: 'h', z: 1320, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 1180, z2: 1340 }, { type: 'h', z: 1200, x1: -1480, x2: -340 }, { type: 'h', z: 480, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -520, z2: 1480 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 480, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -520, z2: 1480 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 120, z: 120 }, { x: 120, z: 240 }, { x: 120, z: 360 }, { x: 120, z: 480 }, { x: 240, z: 480 }, { x: 240, z: 600 }, { x: 240, z: 720 }, { x: 120, z: 720 }, { x: 0, z: 720 }, { x: 0, z: 600 }, { x: 0, z: 480 }, { x: -120, z: 480 }, { x: -240, z: 480 }, { x: -240, z: 360 }, { x: -240, z: 240 }, { x: -360, z: 240 }, { x: -360, z: 360 }, { x: -480, z: 360 }, { x: -480, z: 480 }, { x: -360, z: 480 }, { x: -360, z: 600 }, { x: -360, z: 720 }, { x: -360, z: 840 }, { x: -360, z: 960 }, { x: -480, z: 960 }, { x: -480, z: 1080 }, { x: -600, z: 1080 }, { x: -600, z: 1200 }, { x: -720, z: 1200 }, { x: -720, z: 1320 }, { x: -720, z: 1440 }, { x: -600, z: 1440 }, { x: -600, z: 1320 }, { x: -480, z: 1320 }, { x: -360, z: 1320 }, { x: -360, z: 1200 }, { x: -480, z: 1200 }], ints: [[-480, 1320], [-360, 240], [-240, 480], [-720, 1320], [120, 360], [-360, 1200], [-360, 960], [0, 0], [-480, 480], [-360, 1320], [-720, 1200], [-720, 1440], [120, 240], [-600, 1440], [-360, 480], [-480, 360], [-600, 1080], [240, 720], [0, 600], [-240, 360], [120, 480], [-240, 240], [-480, 960], [-480, 1080], [120, 0], [120, 120], [-600, 1200], [-480, 1200], [-600, 1320], [240, 480], [240, 600], [-360, 720], [0, 720], [-120, 480], [-360, 840], [0, 480], [120, 720], [-360, 360], [-360, 600]], bldg: [{ x: 98, z1: 0, z2: 120, s: 0.9 }, { x: 142, z1: 0, z2: 120, s: 0.9 }, { x: 98, z1: 120, z2: 240, s: 0.9 }, { x: 142, z1: 120, z2: 240, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: 98, z1: 360, z2: 480, s: 0.9 }, { x: 142, z1: 360, z2: 480, s: 0.9 }, { x: 218, z1: 480, z2: 600, s: 0.9 }, { x: 262, z1: 480, z2: 600, s: 0.9 }, { x: 218, z1: 600, z2: 720, s: 0.9 }, { x: 262, z1: 600, z2: 720, s: 0.9 }, { x: -22, z1: 600, z2: 720, s: 0.9 }, { x: 22, z1: 600, z2: 720, s: 0.9 }, { x: -22, z1: 480, z2: 600, s: 0.9 }, { x: 22, z1: 480, z2: 600, s: 0.9 }, { x: -262, z1: 360, z2: 480, s: 0.9 }, { x: -218, z1: 360, z2: 480, s: 0.9 }, { x: -262, z1: 240, z2: 360, s: 0.9 }, { x: -218, z1: 240, z2: 360, s: 0.9 }, { x: -382, z1: 240, z2: 360, s: 0.9 }, { x: -338, z1: 240, z2: 360, s: 0.9 }, { x: -502, z1: 360, z2: 480, s: 0.9 }, { x: -458, z1: 360, z2: 480, s: 0.9 }, { x: -382, z1: 480, z2: 600, s: 0.9 }, { x: -338, z1: 480, z2: 600, s: 0.9 }, { x: -382, z1: 600, z2: 720, s: 0.9 }, { x: -338, z1: 600, z2: 720, s: 0.9 }, { x: -382, z1: 720, z2: 840, s: 0.9 }, { x: -338, z1: 720, z2: 840, s: 0.9 }, { x: -382, z1: 840, z2: 960, s: 0.9 }, { x: -338, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 960, z2: 1080, s: 0.9 }, { x: -458, z1: 960, z2: 1080, s: 0.9 }, { x: -622, z1: 1080, z2: 1200, s: 0.9 }, { x: -578, z1: 1080, z2: 1200, s: 0.9 }, { x: -742, z1: 1200, z2: 1320, s: 0.9 }, { x: -698, z1: 1200, z2: 1320, s: 0.9 }, { x: -742, z1: 1320, z2: 1440, s: 0.9 }, { x: -698, z1: 1320, z2: 1440, s: 0.9 }, { x: -622, z1: 1320, z2: 1440, s: 0.9 }, { x: -578, z1: 1320, z2: 1440, s: 0.9 }, { x: -382, z1: 1200, z2: 1320, s: 0.9 }, { x: -338, z1: 1200, z2: 1320, s: 0.9 }], timeLimit: 1930, hasGarage: true },
-          14: { name: 'Bandra-Worli Sea Link', sky: 0x4a90d9, fog: 750, ground: 0x1a5a8a, amb: 0.9, veh: 'car_highway', npcTypes: ['car', 'car', 'car', 'truck', 'car', 'car', 'bus', 'car', 'car', 'car', 'car', 'car', 'car', 'car', 'taxi', 'car', 'car', 'car', 'car', 'bus', 'car', 'car', 'car', 'car', 'car', 'car', 'car', 'car'], isBridge: true, speedMin: 40, speedMax: 80, roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -260, z2: -100 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'h', z: 0, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -140, z2: 20 }, { type: 'v', x: -360, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -500, x2: -340 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'h', z: -240, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -260, z2: -100 }, { type: 'h', z: -120, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -980, x2: -820 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -860, x2: -700 }, { type: 'h', z: -480, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -620, z2: -460 }, { type: 'v', x: -480, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -500, x2: -340 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -980, z2: -820 }, { type: 'h', z: -960, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -620, x2: -460 }, { type: 'h', z: -1080, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -1100, z2: -940 }, { type: 'v', x: -720, z1: -980, z2: -820 }, { type: 'v', x: -720, z1: -860, z2: -700 }, { type: 'v', x: -720, z1: -740, z2: -580 }, { type: 'h', z: -600, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: -1720, z2: -580 }, { type: 'h', z: -240, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1240, z2: 760 }, { type: 'h', z: 0, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1000, z2: 1000 }, { type: 'h', z: -840, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1840, z2: 160 }, { type: 'h', z: -480, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1480, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -120, z: -120 }, { x: -120, z: 0 }, { x: -240, z: 0 }, { x: -360, z: 0 }, { x: -360, z: -120 }, { x: -360, z: -240 }, { x: -480, z: -240 }, { x: -600, z: -240 }, { x: -720, z: -240 }, { x: -720, z: -120 }, { x: -840, z: -120 }, { x: -840, z: -240 }, { x: -960, z: -240 }, { x: -960, z: -360 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -720, z: -480 }, { x: -600, z: -480 }, { x: -600, z: -360 }, { x: -480, z: -360 }, { x: -360, z: -360 }, { x: -360, z: -480 }, { x: -480, z: -480 }, { x: -480, z: -600 }, { x: -480, z: -720 }, { x: -360, z: -720 }, { x: -360, z: -840 }, { x: -480, z: -840 }, { x: -600, z: -840 }, { x: -600, z: -960 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -600, z: -1080 }, { x: -720, z: -1080 }, { x: -720, z: -960 }, { x: -720, z: -840 }, { x: -720, z: -720 }, { x: -720, z: -600 }, { x: -600, z: -600 }, { x: -600, z: -720 }], ints: [[-600, -1080], [-840, -240], [-360, 0], [-360, -840], [-480, -360], [-600, -600], [-960, -240], [-960, -360], [-360, -720], [-720, -120], [-480, -960], [0, 0], [-720, -480], [-720, -600], [-600, -720], [-480, -600], [-480, -480], [120, -240], [-720, -1080], [-360, -240], [-480, -720], [0, -240], [-480, -1080], [-360, -480], [-600, -840], [-720, -840], [-720, -960], [-600, -360], [-360, -360], [-360, -120], [-120, 0], [-840, -360], [-720, -720], [0, -120], [-120, -120], [-480, -240], [-240, 0], [120, -120], [-840, -120], [-600, -960], [-480, -840], [-720, -240], [-120, -240], [-600, -480], [-840, -480], [-600, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -240, z2: -120, s: 0.9 }, { x: -98, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 }, { x: -742, z1: -240, z2: -120, s: 0.9 }, { x: -698, z1: -240, z2: -120, s: 0.9 }, { x: -862, z1: -240, z2: -120, s: 0.9 }, { x: -818, z1: -240, z2: -120, s: 0.9 }, { x: -982, z1: -360, z2: -240, s: 0.9 }, { x: -938, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 }, { x: -382, z1: -480, z2: -360, s: 0.9 }, { x: -338, z1: -480, z2: -360, s: 0.9 }, { x: -502, z1: -600, z2: -480, s: 0.9 }, { x: -458, z1: -600, z2: -480, s: 0.9 }, { x: -502, z1: -720, z2: -600, s: 0.9 }, { x: -458, z1: -720, z2: -600, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }, { x: -622, z1: -960, z2: -840, s: 0.9 }, { x: -578, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -742, z1: -1080, z2: -960, s: 0.9 }, { x: -698, z1: -1080, z2: -960, s: 0.9 }, { x: -742, z1: -960, z2: -840, s: 0.9 }, { x: -698, z1: -960, z2: -840, s: 0.9 }, { x: -742, z1: -840, z2: -720, s: 0.9 }, { x: -698, z1: -840, z2: -720, s: 0.9 }, { x: -742, z1: -720, z2: -600, s: 0.9 }, { x: -698, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 }], timeLimit: 2040, hasGarage: true },
-          15: { name: 'South Mumbai Circuit', sky: 0x7ab5d0, fog: 700, ground: 0x2e6b32, amb: 0.8, veh: 'car', npcTypes: ['car', 'bus', 'auto', 'bike', 'truck', 'car', 'cycle', 'auto', 'car', 'bus', 'bike', 'car', 'taxi', 'auto', 'car', 'bus', 'bike', 'car', 'auto', 'taxi', 'car', 'bus', 'auto', 'bike', 'car', 'truck', 'car', 'auto', 'car', 'bus'], roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'h', z: 120, x1: -20, x2: 140 }, { type: 'h', z: 120, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 100, z2: 260 }, { type: 'v', x: 240, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: 340, z2: 500 }, { type: 'v', x: -120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -20, x2: 140 }, { type: 'h', z: 480, x1: 100, x2: 260 }, { type: 'h', z: 480, x1: 220, x2: 380 }, { type: 'h', z: 480, x1: 340, x2: 500 }, { type: 'h', z: 480, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 580, z2: 740 }, { type: 'v', x: 720, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 580, x2: 740 }, { type: 'h', z: 840, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: 700, z2: 860 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 340, x2: 500 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 580, z2: 740 }, { type: 'v', x: 120, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -260, x2: -100 }, { type: 'h', z: 840, x1: -380, x2: -220 }, { type: 'h', z: 840, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 940, z2: 1100 }, { type: 'v', x: -360, z1: 1060, z2: 1220 }, { type: 'v', x: -360, z1: 1180, z2: 1340 }, { type: 'v', x: -360, z1: 1300, z2: 1460 }, { type: 'v', x: -360, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -380, x2: -220 }, { type: 'h', z: 1560, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: 1420, z2: 1580 }, { type: 'h', z: 1440, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -20, x2: 140 }, { type: 'h', z: 1560, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 1420, z2: 1580 }, { type: 'h', z: 1440, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 1300, z2: 1460 }, { type: 'v', x: 120, z1: 1180, z2: 1340 }, { type: 'h', z: 1200, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 1180, z2: 1340 }, { type: 'h', z: 1320, x1: 220, x2: 380 }, { type: 'h', z: 1320, x1: 340, x2: 500 }, { type: 'h', z: 1320, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: 580, x2: 740 }, { type: 'v', x: 600, z1: 1540, z2: 1700 }, { type: 'v', x: 600, z1: 1660, z2: 1820 }, { type: 'v', x: 600, z1: 1780, z2: 1940 }, { type: 'v', x: 600, z1: 1900, z2: 2060 }, { type: 'v', x: 600, z1: 2020, z2: 2180 }, { type: 'h', z: 2160, x1: 580, x2: 740 }, { type: 'h', z: 2160, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: 2140, z2: 2300 }, { type: 'v', x: 840, z1: 2260, z2: 2420 }, { type: 'h', z: 2400, x1: 700, x2: 860 }, { type: 'v', x: 720, z1: 2380, z2: 2540 }, { type: 'v', x: 720, z1: 2500, z2: 3640 }, { type: 'h', z: 840, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -160, z2: 1840 }, { type: 'h', z: 1560, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: 560, z2: 2560 }, { type: 'h', z: 120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -280, z2: 1720 }, { type: 'h', z: 480, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -520, z2: 1480 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: 120 }, { x: 0, z: 120 }, { x: 120, z: 120 }, { x: 240, z: 120 }, { x: 240, z: 240 }, { x: 240, z: 360 }, { x: 120, z: 360 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 360 }, { x: -120, z: 360 }, { x: -120, z: 480 }, { x: -120, z: 600 }, { x: 0, z: 600 }, { x: 0, z: 480 }, { x: 120, z: 480 }, { x: 240, z: 480 }, { x: 360, z: 480 }, { x: 480, z: 480 }, { x: 600, z: 480 }, { x: 600, z: 600 }, { x: 720, z: 600 }, { x: 720, z: 720 }, { x: 720, z: 840 }, { x: 600, z: 840 }, { x: 480, z: 840 }, { x: 480, z: 720 }, { x: 480, z: 600 }, { x: 360, z: 600 }, { x: 240, z: 600 }, { x: 120, z: 600 }, { x: 120, z: 720 }, { x: 120, z: 840 }, { x: 0, z: 840 }, { x: 0, z: 960 }, { x: -120, z: 960 }, { x: -120, z: 840 }, { x: -240, z: 840 }, { x: -360, z: 840 }, { x: -480, z: 840 }, { x: -480, z: 960 }, { x: -360, z: 960 }, { x: -360, z: 1080 }, { x: -360, z: 1200 }, { x: -360, z: 1320 }, { x: -360, z: 1440 }, { x: -360, z: 1560 }, { x: -240, z: 1560 }, { x: -120, z: 1560 }, { x: -120, z: 1440 }, { x: 0, z: 1440 }, { x: 0, z: 1560 }, { x: 120, z: 1560 }, { x: 240, z: 1560 }, { x: 240, z: 1440 }, { x: 120, z: 1440 }, { x: 120, z: 1320 }, { x: 120, z: 1200 }, { x: 240, z: 1200 }, { x: 240, z: 1320 }, { x: 360, z: 1320 }, { x: 480, z: 1320 }, { x: 600, z: 1320 }, { x: 600, z: 1440 }, { x: 720, z: 1440 }, { x: 720, z: 1560 }, { x: 600, z: 1560 }, { x: 600, z: 1680 }, { x: 600, z: 1800 }, { x: 600, z: 1920 }, { x: 600, z: 2040 }, { x: 600, z: 2160 }, { x: 720, z: 2160 }, { x: 840, z: 2160 }, { x: 840, z: 2280 }, { x: 840, z: 2400 }, { x: 720, z: 2400 }, { x: 720, z: 2520 }, { x: 720, z: 2640 }], ints: [[-120, 960], [480, 840], [-360, 960], [840, 2160], [120, 1200], [360, 600], [840, 2280], [120, 600], [600, 1320], [-360, 1080], [0, 1560], [0, 480], [600, 1920], [0, 240], [240, 1200], [720, 1560], [-120, 360], [720, 720], [120, 360], [120, 1440], [480, 720], [720, 2160], [120, 240], [360, 480], [120, 1560], [-240, 840], [240, 1560], [120, 480], [240, 1440], [600, 840], [-480, 960], [480, 1320], [240, 240], [720, 840], [0, 360], [0, 1440], [240, 480], [240, 600], [120, 1320], [600, 1440], [240, 120], [-360, 840], [-360, 1560], [600, 1800], [360, 1320], [600, 2160], [-360, 1200], [0, 120], [600, 1560], [-360, 1320], [720, 2640], [600, 2040], [720, 600], [-120, 120], [120, 120], [-120, 600], [-120, 840], [240, 1320], [240, 360], [-240, 1560], [480, 480], [600, 600], [120, 840], [0, 0], [0, 840], [-120, 1560], [600, 1680], [600, 480], [0, 960], [720, 2520], [720, 1440], [0, 600], [-120, 0], [720, 2400], [-120, 1440], [-360, 1440], [480, 600], [-120, 480], [120, 720], [-480, 840], [840, 2400]], bldg: [{ x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 }, { x: 218, z1: 120, z2: 240, s: 0.9 }, { x: 262, z1: 120, z2: 240, s: 0.9 }, { x: 218, z1: 240, z2: 360, s: 0.9 }, { x: 262, z1: 240, z2: 360, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 240, z2: 360, s: 0.9 }, { x: 22, z1: 240, z2: 360, s: 0.9 }, { x: -142, z1: 360, z2: 480, s: 0.9 }, { x: -98, z1: 360, z2: 480, s: 0.9 }, { x: -142, z1: 480, z2: 600, s: 0.9 }, { x: -98, z1: 480, z2: 600, s: 0.9 }, { x: -22, z1: 480, z2: 600, s: 0.9 }, { x: 22, z1: 480, z2: 600, s: 0.9 }, { x: 578, z1: 480, z2: 600, s: 0.9 }, { x: 622, z1: 480, z2: 600, s: 0.9 }, { x: 698, z1: 600, z2: 720, s: 0.9 }, { x: 742, z1: 600, z2: 720, s: 0.9 }, { x: 698, z1: 720, z2: 840, s: 0.9 }, { x: 742, z1: 720, z2: 840, s: 0.9 }, { x: 458, z1: 720, z2: 840, s: 0.9 }, { x: 502, z1: 720, z2: 840, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 600, z2: 720, s: 0.9 }, { x: 142, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 720, z2: 840, s: 0.9 }, { x: 142, z1: 720, z2: 840, s: 0.9 }, { x: -22, z1: 840, z2: 960, s: 0.9 }, { x: 22, z1: 840, z2: 960, s: 0.9 }, { x: -142, z1: 840, z2: 960, s: 0.9 }, { x: -98, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 840, z2: 960, s: 0.9 }, { x: -458, z1: 840, z2: 960, s: 0.9 }, { x: -382, z1: 960, z2: 1080, s: 0.9 }, { x: -338, z1: 960, z2: 1080, s: 0.9 }, { x: -382, z1: 1080, z2: 1200, s: 0.9 }, { x: -338, z1: 1080, z2: 1200, s: 0.9 }, { x: -382, z1: 1200, z2: 1320, s: 0.9 }, { x: -338, z1: 1200, z2: 1320, s: 0.9 }, { x: -382, z1: 1320, z2: 1440, s: 0.9 }, { x: -338, z1: 1320, z2: 1440, s: 0.9 }, { x: -382, z1: 1440, z2: 1560, s: 0.9 }, { x: -338, z1: 1440, z2: 1560, s: 0.9 }, { x: -142, z1: 1440, z2: 1560, s: 0.9 }, { x: -98, z1: 1440, z2: 1560, s: 0.9 }, { x: -22, z1: 1440, z2: 1560, s: 0.9 }, { x: 22, z1: 1440, z2: 1560, s: 0.9 }, { x: 218, z1: 1440, z2: 1560, s: 0.9 }, { x: 262, z1: 1440, z2: 1560, s: 0.9 }, { x: 98, z1: 1320, z2: 1440, s: 0.9 }, { x: 142, z1: 1320, z2: 1440, s: 0.9 }, { x: 98, z1: 1200, z2: 1320, s: 0.9 }, { x: 142, z1: 1200, z2: 1320, s: 0.9 }, { x: 218, z1: 1200, z2: 1320, s: 0.9 }, { x: 262, z1: 1200, z2: 1320, s: 0.9 }, { x: 578, z1: 1320, z2: 1440, s: 0.9 }, { x: 622, z1: 1320, z2: 1440, s: 0.9 }, { x: 698, z1: 1440, z2: 1560, s: 0.9 }, { x: 742, z1: 1440, z2: 1560, s: 0.9 }, { x: 578, z1: 1560, z2: 1680, s: 0.9 }, { x: 622, z1: 1560, z2: 1680, s: 0.9 }, { x: 578, z1: 1680, z2: 1800, s: 0.9 }, { x: 622, z1: 1680, z2: 1800, s: 0.9 }, { x: 578, z1: 1800, z2: 1920, s: 0.9 }, { x: 622, z1: 1800, z2: 1920, s: 0.9 }, { x: 578, z1: 1920, z2: 2040, s: 0.9 }, { x: 622, z1: 1920, z2: 2040, s: 0.9 }, { x: 578, z1: 2040, z2: 2160, s: 0.9 }, { x: 622, z1: 2040, z2: 2160, s: 0.9 }, { x: 818, z1: 2160, z2: 2280, s: 0.9 }, { x: 862, z1: 2160, z2: 2280, s: 0.9 }, { x: 818, z1: 2280, z2: 2400, s: 0.9 }, { x: 862, z1: 2280, z2: 2400, s: 0.9 }, { x: 698, z1: 2400, z2: 2520, s: 0.9 }, { x: 742, z1: 2400, z2: 2520, s: 0.9 }, { x: 698, z1: 2520, z2: 2640, s: 0.9 }, { x: 742, z1: 2520, z2: 2640, s: 0.9 }], timeLimit: 2300, hasGarage: true }
+          1: { name: 'Andheri Junction', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car', npcTypes: ['car', 'car', 'bike', 'auto', 'bus', 'truck', 'car', 'bike', 'taxi', 'car', 'auto', 'car', 'car', 'bike', 'bus', 'car', 'auto', 'truck', 'car', 'car', 'car', 'bike', 'auto', 'car'], roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -140, z2: 20 }, { type: 'v', x: 240, z1: -20, z2: 140 }, { type: 'v', x: 240, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 100, x2: 260 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 100, z2: 260 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -20, z2: 140 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'h', z: -120, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -380, x2: -220 }, { type: 'h', z: -360, x1: -260, x2: 880 }, { type: 'h', z: 120, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -880, z2: 1120 }, { type: 'h', z: 240, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -760, z2: 1240 }, { type: 'h', z: 0, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1000, z2: 1000 }, { type: 'h', z: 240, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -760, z2: 1240 }, { type: 'h', z: -240, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1240, z2: 760 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 240, z: -120 }, { x: 240, z: 0 }, { x: 240, z: 120 }, { x: 240, z: 240 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 120 }, { x: -120, z: 120 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -480, z: -120 }, { x: -480, z: -240 }, { x: -360, z: -240 }, { x: -360, z: -360 }, { x: -240, z: -360 }, { x: -120, z: -360 }], ints: [[240, 0], [0, 240], [-120, -360], [0, 120], [-240, -120], [0, 0], [-360, -240], [120, 240], [240, -120], [-360, -360], [-360, -120], [-120, 0], [240, 240], [-120, 120], [0, -120], [-120, -120], [-480, -240], [120, -120], [-480, -120], [-240, -360], [240, 120]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 218, z1: -120, z2: 0, s: 0.9 }, { x: 262, z1: -120, z2: 0, s: 0.9 }, { x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 }, { x: 218, z1: 120, z2: 240, s: 0.9 }, { x: 262, z1: 120, z2: 240, s: 0.9 }, { x: -22, z1: 120, z2: 240, s: 0.9 }, { x: 22, z1: 120, z2: 240, s: 0.9 }, { x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -502, z1: -240, z2: -120, s: 0.9 }, { x: -458, z1: -240, z2: -120, s: 0.9 }, { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 }], timeLimit: 600, hasGarage: true, assets: ['suburban', 'industrial'] },
+          2: { name: 'Dadar Junction', sky: 0x9ec5d9, fog: 500, ground: 0x4a6741, amb: 0.85, isPedestrian: true, veh: 'pedestrian', npcTypes: ['car', 'bus', 'auto', 'car', 'bike', 'truck', 'car', 'auto', 'taxi', 'car', 'bus', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'bus', 'truck', 'car', 'auto', 'car', 'car', 'bike'], sidewalkWidth: 5, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -140, z2: 20 }, { type: 'v', x: -240, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -380, x2: -220 }, { type: 'h', z: 120, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -20, z2: 140 }, { type: 'v', x: -600, z1: 100, z2: 260 }, { type: 'v', x: -600, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -860, x2: -700 }, { type: 'h', z: 480, x1: -980, x2: -820 }, { type: 'h', z: 480, x1: -1100, x2: -940 }, { type: 'v', x: -1080, z1: 340, z2: 500 }, { type: 'h', z: 360, x1: -1220, x2: -1060 }, { type: 'v', x: -1200, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -1340, x2: -1180 }, { type: 'h', z: 480, x1: -1460, x2: -1300 }, { type: 'v', x: -1440, z1: 460, z2: 620 }, { type: 'v', x: -1440, z1: 580, z2: 1720 }, { type: 'h', z: 360, x1: -1720, x2: 280 }, { type: 'v', x: -720, z1: -640, z2: 1360 }, { type: 'h', z: 120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -880, z2: 1120 }, { type: 'h', z: 480, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -520, z2: 1480 }, { type: 'h', z: 120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -880, z2: 1120 }, { type: 'h', z: 120, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: -880, z2: 1120 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -240, z: 0 }, { x: -240, z: 120 }, { x: -360, z: 120 }, { x: -480, z: 120 }, { x: -480, z: 0 }, { x: -600, z: 0 }, { x: -600, z: 120 }, { x: -600, z: 240 }, { x: -600, z: 360 }, { x: -720, z: 360 }, { x: -720, z: 480 }, { x: -840, z: 480 }, { x: -960, z: 480 }, { x: -1080, z: 480 }, { x: -1080, z: 360 }, { x: -1200, z: 360 }, { x: -1200, z: 480 }, { x: -1320, z: 480 }, { x: -1440, z: 480 }, { x: -1440, z: 600 }, { x: -1440, z: 720 }], ints: [[-600, 240], [-600, 0], [-1440, 600], [-240, 120], [-240, -120], [-480, 120], [-480, 0], [0, 0], [-1200, 480], [-1080, 360], [-1080, 480], [-1440, 720], [-840, 480], [-1200, 360], [-1320, 480], [-360, 120], [-720, 480], [-120, 0], [-120, -120], [-240, 0], [-720, 360], [-600, 120], [-1440, 480], [-600, 360], [-960, 480]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 }, { x: -262, z1: 0, z2: 120, s: 0.9 }, { x: -218, z1: 0, z2: 120, s: 0.9 }, { x: -502, z1: 0, z2: 120, s: 0.9 }, { x: -458, z1: 0, z2: 120, s: 0.9 }, { x: -622, z1: 0, z2: 120, s: 0.9 }, { x: -578, z1: 0, z2: 120, s: 0.9 }, { x: -622, z1: 120, z2: 240, s: 0.9 }, { x: -578, z1: 120, z2: 240, s: 0.9 }, { x: -622, z1: 240, z2: 360, s: 0.9 }, { x: -578, z1: 240, z2: 360, s: 0.9 }, { x: -742, z1: 360, z2: 480, s: 0.9 }, { x: -698, z1: 360, z2: 480, s: 0.9 }, { x: -1102, z1: 360, z2: 480, s: 0.9 }, { x: -1058, z1: 360, z2: 480, s: 0.9 }, { x: -1222, z1: 360, z2: 480, s: 0.9 }, { x: -1178, z1: 360, z2: 480, s: 0.9 }, { x: -1462, z1: 480, z2: 600, s: 0.9 }, { x: -1418, z1: 480, z2: 600, s: 0.9 }, { x: -1462, z1: 600, z2: 720, s: 0.9 }, { x: -1418, z1: 600, z2: 720, s: 0.9 }], timeLimit: 720, hasGarage: true, assets: ['suburban', 'industrial'] },
+          3: { name: 'Bandra Backroads', sky: 0xa8c4d8, fog: 500, ground: 0x3a5a2e, amb: 0.75, veh: 'twowheeler', npcTypes: ['car', 'auto', 'bike', 'cycle', 'auto', 'car', 'taxi', 'bike', 'auto', 'car', 'bike', 'car', 'auto', 'cycle', 'car', 'bike', 'auto', 'car'], roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'h', z: -240, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -620, z2: -460 }, { type: 'v', x: -240, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -380, x2: -220 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'h', z: -720, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -980, z2: -820 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -1220, z2: -1060 }, { type: 'h', z: -1200, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: -1220, z2: -1060 }, { type: 'h', z: -1080, x1: -260, x2: -100 }, { type: 'h', z: -1080, x1: -140, x2: 20 }, { type: 'h', z: -1080, x1: -20, x2: 140 }, { type: 'h', z: -1080, x1: 100, x2: 260 }, { type: 'h', z: -1080, x1: 220, x2: 1360 }, { type: 'h', z: -1080, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -2080, z2: -80 }, { type: 'h', z: -240, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -1240, z2: 760 }, { type: 'h', z: -1080, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -2080, z2: -80 }, { type: 'h', z: -360, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -240, z: -240 }, { x: -240, z: -360 }, { x: -120, z: -360 }, { x: -120, z: -480 }, { x: -240, z: -480 }, { x: -240, z: -600 }, { x: -240, z: -720 }, { x: -360, z: -720 }, { x: -480, z: -720 }, { x: -600, z: -720 }, { x: -600, z: -840 }, { x: -480, z: -840 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -360, z: -1080 }, { x: -360, z: -1200 }, { x: -240, z: -1200 }, { x: -240, z: -1080 }, { x: -120, z: -1080 }, { x: 0, z: -1080 }, { x: 120, z: -1080 }, { x: 240, z: -1080 }, { x: 360, z: -1080 }], ints: [[-240, -240], [-360, -720], [-120, -360], [-480, -960], [0, 0], [-120, -480], [-600, -720], [-240, -480], [120, -240], [120, -1080], [-480, -720], [0, -240], [-480, -1080], [-600, -840], [-240, -1080], [-120, -1080], [240, -1080], [-360, -1080], [-240, -720], [360, -1080], [-360, -1200], [0, -1080], [-240, -1200], [0, -120], [120, -120], [-480, -840], [-240, -360], [-240, -600], [-120, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -262, z1: -360, z2: -240, s: 0.9 }, { x: -218, z1: -360, z2: -240, s: 0.9 }, { x: -142, z1: -480, z2: -360, s: 0.9 }, { x: -98, z1: -480, z2: -360, s: 0.9 }, { x: -262, z1: -600, z2: -480, s: 0.9 }, { x: -218, z1: -600, z2: -480, s: 0.9 }, { x: -262, z1: -720, z2: -600, s: 0.9 }, { x: -218, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -840, z2: -720, s: 0.9 }, { x: -578, z1: -840, z2: -720, s: 0.9 }, { x: -502, z1: -960, z2: -840, s: 0.9 }, { x: -458, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -382, z1: -1200, z2: -1080, s: 0.9 }, { x: -338, z1: -1200, z2: -1080, s: 0.9 }, { x: -262, z1: -1200, z2: -1080, s: 0.9 }, { x: -218, z1: -1200, z2: -1080, s: 0.9 }], timeLimit: 830, hasGarage: true, assets: ['suburban', 'industrial'] },
+          4: { name: 'Juhu Boulevard', sky: 0x6fb8e0, fog: 650, ground: 0x2e6b3a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'taxi'], hasBeach: true, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'h', z: -120, x1: -500, x2: -340 }, { type: 'h', z: -120, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -380, z2: -220 }, { type: 'h', z: -240, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -380, z2: -220 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1100, x2: -940 }, { type: 'v', x: -1080, z1: -500, z2: -340 }, { type: 'v', x: -1080, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1220, x2: -1060 }, { type: 'v', x: -1200, z1: -620, z2: -460 }, { type: 'v', x: -1200, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1340, x2: -1180 }, { type: 'h', z: -360, x1: -1460, x2: -1300 }, { type: 'v', x: -1440, z1: -500, z2: -340 }, { type: 'v', x: -1440, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1460, x2: -1300 }, { type: 'v', x: -1320, z1: -620, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1120, z2: 880 }, { type: 'h', z: -120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -480, z: -120 }, { x: -600, z: -120 }, { x: -600, z: -240 }, { x: -480, z: -240 }, { x: -480, z: -360 }, { x: -600, z: -360 }, { x: -720, z: -360 }, { x: -720, z: -240 }, { x: -840, z: -240 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -960, z: -480 }, { x: -960, z: -360 }, { x: -1080, z: -360 }, { x: -1080, z: -480 }, { x: -1080, z: -600 }, { x: -1200, z: -600 }, { x: -1200, z: -480 }, { x: -1200, z: -360 }, { x: -1320, z: -360 }, { x: -1440, z: -360 }, { x: -1440, z: -480 }, { x: -1440, z: -600 }, { x: -1320, z: -600 }, { x: -1320, z: -480 }], ints: [[-840, -240], [-1440, -360], [-480, -360], [-960, -360], [-1440, -600], [-1320, -600], [-960, -480], [-240, -120], [-1080, -600], [0, 0], [-1440, -480], [-1200, -480], [-1200, -360], [-720, -360], [-1080, -480], [-600, -360], [-600, -120], [-1320, -360], [-360, -120], [-120, 0], [-840, -360], [-1320, -480], [-1200, -600], [-120, -120], [-480, -240], [-480, -120], [-1080, -360], [-720, -240], [-840, -480], [-600, -240]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -622, z1: -240, z2: -120, s: 0.9 }, { x: -578, z1: -240, z2: -120, s: 0.9 }, { x: -502, z1: -360, z2: -240, s: 0.9 }, { x: -458, z1: -360, z2: -240, s: 0.9 }, { x: -742, z1: -360, z2: -240, s: 0.9 }, { x: -698, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -360, z2: -240, s: 0.9 }, { x: -818, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -982, z1: -480, z2: -360, s: 0.9 }, { x: -938, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -480, z2: -360, s: 0.9 }, { x: -1058, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -600, z2: -480, s: 0.9 }, { x: -1058, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -600, z2: -480, s: 0.9 }, { x: -1178, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -480, z2: -360, s: 0.9 }, { x: -1178, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -480, z2: -360, s: 0.9 }, { x: -1418, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -600, z2: -480, s: 0.9 }, { x: -1418, z1: -600, z2: -480, s: 0.9 }, { x: -1342, z1: -600, z2: -480, s: 0.9 }, { x: -1298, z1: -600, z2: -480, s: 0.9 }], timeLimit: 940, hasGarage: true, assets: ['suburban', 'industrial'] },
+          5: { name: 'Parel School Zone', sky: 0x95c0d4, fog: 500, ground: 0x447a3e, amb: 0.8, veh: 'bus', npcTypes: ['car', 'auto', 'cycle', 'bike', 'auto', 'car', 'taxi', 'car', 'auto', 'bike', 'car', 'cycle', 'auto', 'car', 'bus', 'car', 'auto', 'car'], hasSchool: true, speedLimit: 30, isSilenceZone: true, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -260, z2: -100 }, { type: 'v', x: -360, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -500, x2: -340 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -500, z2: -340 }, { type: 'v', x: -600, z1: -620, z2: -460 }, { type: 'v', x: -600, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -620, x2: -460 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'v', x: -360, z1: -980, z2: -820 }, { type: 'v', x: -360, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -380, x2: -220 }, { type: 'h', z: -1080, x1: -260, x2: -100 }, { type: 'h', z: -1080, x1: -140, x2: 20 }, { type: 'h', z: -1080, x1: -20, x2: 140 }, { type: 'h', z: -1080, x1: 100, x2: 260 }, { type: 'h', z: -1080, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -1100, z2: -940 }, { type: 'v', x: 360, z1: -980, z2: -820 }, { type: 'v', x: 360, z1: -860, z2: -700 }, { type: 'v', x: 360, z1: -740, z2: -580 }, { type: 'h', z: -600, x1: 340, x2: 500 }, { type: 'h', z: -600, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: -620, z2: -460 }, { type: 'h', z: -480, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: 340, x2: 500 }, { type: 'v', x: 360, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: 220, x2: 380 }, { type: 'v', x: 240, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -880, x2: 260 }, { type: 'h', z: -360, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -1360, z2: 640 }, { type: 'h', z: -1080, x1: -640, x2: 1360 }, { type: 'v', x: 360, z1: -2080, z2: -80 }, { type: 'h', z: -120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1120, z2: 880 }, { type: 'h', z: -360, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1360, z2: 640 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -360, z: -240 }, { x: -360, z: -360 }, { x: -480, z: -360 }, { x: -600, z: -360 }, { x: -600, z: -480 }, { x: -600, z: -600 }, { x: -600, z: -720 }, { x: -480, z: -720 }, { x: -360, z: -720 }, { x: -360, z: -840 }, { x: -360, z: -960 }, { x: -360, z: -1080 }, { x: -240, z: -1080 }, { x: -120, z: -1080 }, { x: 0, z: -1080 }, { x: 120, z: -1080 }, { x: 240, z: -1080 }, { x: 360, z: -1080 }, { x: 360, z: -960 }, { x: 360, z: -840 }, { x: 360, z: -720 }, { x: 360, z: -600 }, { x: 480, z: -600 }, { x: 600, z: -600 }, { x: 600, z: -480 }, { x: 480, z: -480 }, { x: 480, z: -360 }, { x: 360, z: -360 }, { x: 360, z: -480 }, { x: 240, z: -480 }, { x: 240, z: -600 }, { x: 120, z: -600 }], ints: [[360, -360], [600, -600], [-360, -840], [-480, -360], [-600, -600], [480, -600], [240, -480], [-360, -720], [120, -600], [-240, -120], [0, 0], [-600, -720], [-360, -240], [120, -1080], [-240, -1080], [-480, -720], [360, -840], [480, -480], [-120, -1080], [360, -480], [-600, -360], [240, -1080], [-360, -1080], [-360, -360], [360, -1080], [360, -720], [-360, -120], [-120, 0], [-360, -960], [600, -480], [480, -360], [0, -1080], [360, -600], [-120, -120], [240, -600], [360, -960], [-600, -480]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 }, { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 }, { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 }, { x: -622, z1: -600, z2: -480, s: 0.9 }, { x: -578, z1: -600, z2: -480, s: 0.9 }, { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }, { x: -382, z1: -960, z2: -840, s: 0.9 }, { x: -338, z1: -960, z2: -840, s: 0.9 }, { x: -382, z1: -1080, z2: -960, s: 0.9 }, { x: -338, z1: -1080, z2: -960, s: 0.9 }, { x: 338, z1: -1080, z2: -960, s: 0.9 }, { x: 382, z1: -1080, z2: -960, s: 0.9 }, { x: 338, z1: -960, z2: -840, s: 0.9 }, { x: 382, z1: -960, z2: -840, s: 0.9 }, { x: 338, z1: -840, z2: -720, s: 0.9 }, { x: 382, z1: -840, z2: -720, s: 0.9 }, { x: 338, z1: -720, z2: -600, s: 0.9 }, { x: 382, z1: -720, z2: -600, s: 0.9 }, { x: 578, z1: -600, z2: -480, s: 0.9 }, { x: 622, z1: -600, z2: -480, s: 0.9 }, { x: 458, z1: -480, z2: -360, s: 0.9 }, { x: 502, z1: -480, z2: -360, s: 0.9 }, { x: 338, z1: -480, z2: -360, s: 0.9 }, { x: 382, z1: -480, z2: -360, s: 0.9 }, { x: 218, z1: -600, z2: -480, s: 0.9 }, { x: 262, z1: -600, z2: -480, s: 0.9 }], timeLimit: 1050, hasGarage: true, assets: ['suburban', 'industrial'] },
+          6: { name: 'Matunga Rail Corridor', sky: 0x7fafc4, fog: 600, ground: 0x3a6130, amb: 0.7, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'car', 'auto', 'taxi', 'car', 'auto', 'bike', 'car', 'truck', 'auto', 'car', 'car', 'bike', 'car', 'auto'], hasRailway: true, railZ: [0], hasMetro: true, hasMountain: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'v', x: 120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'h', z: -120, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: 340, x2: 500 }, { type: 'v', x: 480, z1: -260, z2: -100 }, { type: 'v', x: 480, z1: -140, z2: 20 }, { type: 'v', x: 480, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: -20, z2: 140 }, { type: 'v', x: 720, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 700, x2: 860 }, { type: 'h', z: 240, x1: 820, x2: 980 }, { type: 'h', z: 240, x1: 940, x2: 1100 }, { type: 'v', x: 1080, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 940, x2: 1100 }, { type: 'v', x: 960, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 940, x2: 1100 }, { type: 'h', z: 480, x1: 1060, x2: 1220 }, { type: 'v', x: 1200, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 1060, x2: 1220 }, { type: 'v', x: 1080, z1: 580, z2: 740 }, { type: 'v', x: 1080, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 940, x2: 1100 }, { type: 'v', x: 960, z1: 700, z2: 860 }, { type: 'h', z: 720, x1: 820, x2: 980 }, { type: 'v', x: 840, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 820, x2: 1960 }, { type: 'h', z: 0, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -1000, z2: 1000 }, { type: 'h', z: 120, x1: -400, x2: 1600 }, { type: 'v', x: 600, z1: -880, z2: 1120 }, { type: 'h', z: 120, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -160, x2: 1840 }, { type: 'v', x: 840, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: 80, x2: 2080 }, { type: 'v', x: 1080, z1: -280, z2: 1720 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 120, z: -120 }, { x: 240, z: -120 }, { x: 360, z: -120 }, { x: 360, z: -240 }, { x: 480, z: -240 }, { x: 480, z: -120 }, { x: 480, z: 0 }, { x: 480, z: 120 }, { x: 600, z: 120 }, { x: 600, z: 0 }, { x: 720, z: 0 }, { x: 720, z: 120 }, { x: 720, z: 240 }, { x: 840, z: 240 }, { x: 960, z: 240 }, { x: 1080, z: 240 }, { x: 1080, z: 360 }, { x: 960, z: 360 }, { x: 960, z: 480 }, { x: 1080, z: 480 }, { x: 1200, z: 480 }, { x: 1200, z: 600 }, { x: 1080, z: 600 }, { x: 1080, z: 720 }, { x: 1080, z: 840 }, { x: 960, z: 840 }, { x: 960, z: 720 }, { x: 840, z: 720 }, { x: 840, z: 600 }, { x: 960, z: 600 }], ints: [[600, 0], [360, -120], [480, -120], [720, 120], [960, 720], [960, 480], [480, 120], [0, 0], [480, -240], [720, 0], [840, 720], [960, 840], [240, -120], [360, -240], [960, 360], [1080, 840], [120, 0], [840, 600], [600, 120], [1080, 720], [1080, 360], [1200, 480], [960, 240], [1080, 480], [120, -120], [1080, 240], [1080, 600], [480, 0], [720, 240], [960, 600], [1200, 600], [840, 240]], bldg: [{ x: 98, z1: -120, z2: 0, s: 0.9 }, { x: 142, z1: -120, z2: 0, s: 0.9 }, { x: 338, z1: -240, z2: -120, s: 0.9 }, { x: 382, z1: -240, z2: -120, s: 0.9 }, { x: 458, z1: -240, z2: -120, s: 0.9 }, { x: 502, z1: -240, z2: -120, s: 0.9 }, { x: 458, z1: -120, z2: 0, s: 0.9 }, { x: 502, z1: -120, z2: 0, s: 0.9 }, { x: 458, z1: 0, z2: 120, s: 0.9 }, { x: 502, z1: 0, z2: 120, s: 0.9 }, { x: 578, z1: 0, z2: 120, s: 0.9 }, { x: 622, z1: 0, z2: 120, s: 0.9 }, { x: 698, z1: 0, z2: 120, s: 0.9 }, { x: 742, z1: 0, z2: 120, s: 0.9 }, { x: 698, z1: 120, z2: 240, s: 0.9 }, { x: 742, z1: 120, z2: 240, s: 0.9 }, { x: 1058, z1: 240, z2: 360, s: 0.9 }, { x: 1102, z1: 240, z2: 360, s: 0.9 }, { x: 938, z1: 360, z2: 480, s: 0.9 }, { x: 982, z1: 360, z2: 480, s: 0.9 }, { x: 1178, z1: 480, z2: 600, s: 0.9 }, { x: 1222, z1: 480, z2: 600, s: 0.9 }, { x: 1058, z1: 600, z2: 720, s: 0.9 }, { x: 1102, z1: 600, z2: 720, s: 0.9 }, { x: 1058, z1: 720, z2: 840, s: 0.9 }, { x: 1102, z1: 720, z2: 840, s: 0.9 }, { x: 938, z1: 720, z2: 840, s: 0.9 }, { x: 982, z1: 720, z2: 840, s: 0.9 }, { x: 818, z1: 600, z2: 720, s: 0.9 }, { x: 862, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1160, hasGarage: true, assets: ['suburban', 'industrial', 'trains'] },
+          7: { name: 'Marine Drive', sky: 0x4a90d9, fog: 700, ground: 0x1a6b5a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'car', 'bike', 'car', 'car', 'bus', 'auto', 'taxi', 'car', 'bike', 'car', 'auto'], hasOcean: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'h', z: 0, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 340, x2: 500 }, { type: 'h', z: 240, x1: 460, x2: 620 }, { type: 'h', z: 240, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 100, z2: 260 }, { type: 'v', x: 720, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: -20, z2: 140 }, { type: 'v', x: 840, z1: 100, z2: 260 }, { type: 'v', x: 840, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 700, x2: 860 }, { type: 'h', z: 360, x1: 580, x2: 740 }, { type: 'h', z: 360, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: 340, z2: 500 }, { type: 'v', x: 480, z1: 460, z2: 620 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 340, x2: 500 }, { type: 'v', x: 360, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 460, z2: 620 }, { type: 'v', x: 120, z1: 340, z2: 500 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 220, z2: 380 }, { type: 'v', x: 0, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -140, x2: 20 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 460, z2: 620 }, { type: 'v', x: -240, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: -500, x2: -340 }, { type: 'h', z: 840, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 820, z2: 980 }, { type: 'v', x: -600, z1: 940, z2: 1100 }, { type: 'h', z: 1080, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 940, z2: 1100 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 940, z2: 2080 }, { type: 'h', z: 600, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -400, z2: 1600 }, { type: 'h', z: 600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -400, z2: 1600 }, { type: 'h', z: 480, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -520, z2: 1480 }, { type: 'h', z: 720, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -280, z2: 1720 }, { type: 'h', z: 1080, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: 80, z2: 2080 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 240, z: 0 }, { x: 240, z: 120 }, { x: 360, z: 120 }, { x: 360, z: 240 }, { x: 480, z: 240 }, { x: 600, z: 240 }, { x: 720, z: 240 }, { x: 720, z: 120 }, { x: 720, z: 0 }, { x: 840, z: 0 }, { x: 840, z: 120 }, { x: 840, z: 240 }, { x: 840, z: 360 }, { x: 720, z: 360 }, { x: 600, z: 360 }, { x: 480, z: 360 }, { x: 480, z: 480 }, { x: 480, z: 600 }, { x: 480, z: 720 }, { x: 360, z: 720 }, { x: 360, z: 600 }, { x: 240, z: 600 }, { x: 120, z: 600 }, { x: 120, z: 480 }, { x: 120, z: 360 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 360 }, { x: 0, z: 480 }, { x: -120, z: 480 }, { x: -240, z: 480 }, { x: -240, z: 600 }, { x: -240, z: 720 }, { x: -360, z: 720 }, { x: -360, z: 840 }, { x: -480, z: 840 }, { x: -600, z: 840 }, { x: -600, z: 960 }, { x: -600, z: 1080 }, { x: -480, z: 1080 }, { x: -480, z: 960 }, { x: -360, z: 960 }, { x: -360, z: 1080 }], ints: [[240, 0], [840, 0], [0, 240], [360, 240], [-600, 960], [-240, 480], [720, 120], [120, 360], [360, 120], [-360, 960], [0, 0], [720, 0], [480, 720], [840, 360], [840, 120], [120, 240], [480, 240], [-600, 840], [-600, 1080], [360, 600], [-240, 720], [-240, 600], [120, 600], [120, 480], [-480, 1080], [-480, 960], [120, 0], [0, 360], [240, 600], [-360, 720], [600, 360], [480, 360], [360, 720], [480, 600], [600, 240], [-120, 480], [720, 240], [240, 120], [480, 480], [-360, 840], [720, 360], [0, 480], [-360, 1080], [-480, 840], [840, 240]], bldg: [{ x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 }, { x: 338, z1: 120, z2: 240, s: 0.9 }, { x: 382, z1: 120, z2: 240, s: 0.9 }, { x: 698, z1: 120, z2: 240, s: 0.9 }, { x: 742, z1: 120, z2: 240, s: 0.9 }, { x: 698, z1: 0, z2: 120, s: 0.9 }, { x: 742, z1: 0, z2: 120, s: 0.9 }, { x: 818, z1: 0, z2: 120, s: 0.9 }, { x: 862, z1: 0, z2: 120, s: 0.9 }, { x: 818, z1: 120, z2: 240, s: 0.9 }, { x: 862, z1: 120, z2: 240, s: 0.9 }, { x: 818, z1: 240, z2: 360, s: 0.9 }, { x: 862, z1: 240, z2: 360, s: 0.9 }, { x: 458, z1: 360, z2: 480, s: 0.9 }, { x: 502, z1: 360, z2: 480, s: 0.9 }, { x: 458, z1: 480, z2: 600, s: 0.9 }, { x: 502, z1: 480, z2: 600, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 338, z1: 600, z2: 720, s: 0.9 }, { x: 382, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 480, z2: 600, s: 0.9 }, { x: 142, z1: 480, z2: 600, s: 0.9 }, { x: 98, z1: 360, z2: 480, s: 0.9 }, { x: 142, z1: 360, z2: 480, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 240, z2: 360, s: 0.9 }, { x: 22, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 360, z2: 480, s: 0.9 }, { x: 22, z1: 360, z2: 480, s: 0.9 }, { x: -262, z1: 480, z2: 600, s: 0.9 }, { x: -218, z1: 480, z2: 600, s: 0.9 }, { x: -262, z1: 600, z2: 720, s: 0.9 }, { x: -218, z1: 600, z2: 720, s: 0.9 }, { x: -382, z1: 720, z2: 840, s: 0.9 }, { x: -338, z1: 720, z2: 840, s: 0.9 }, { x: -622, z1: 840, z2: 960, s: 0.9 }, { x: -578, z1: 840, z2: 960, s: 0.9 }, { x: -622, z1: 960, z2: 1080, s: 0.9 }, { x: -578, z1: 960, z2: 1080, s: 0.9 }, { x: -502, z1: 960, z2: 1080, s: 0.9 }, { x: -458, z1: 960, z2: 1080, s: 0.9 }, { x: -382, z1: 960, z2: 1080, s: 0.9 }, { x: -338, z1: 960, z2: 1080, s: 0.9 }], timeLimit: 1270, hasGarage: true, assets: ['suburban', 'industrial'] },
+          8: { name: 'Byculla', sky: 0x7a9eb5, fog: 550, ground: 0x345a2a, amb: 0.7, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'auto', 'car', 'truck', 'car', 'taxi', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'car', 'bike', 'auto', 'car', 'taxi', 'car', 'car', 'auto'], hasEmergency: true, roads: [{ type: 'v', x: 0, z1: -1000, z2: 140 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'h', z: 120, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -140, z2: 20 }, { type: 'h', z: 0, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -260, x2: -100 }, { type: 'h', z: 360, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 580, z2: 740 }, { type: 'v', x: 240, z1: 700, z2: 860 }, { type: 'v', x: 240, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -20, x2: 140 }, { type: 'h', z: 840, x1: -140, x2: 20 }, { type: 'h', z: 840, x1: -260, x2: -100 }, { type: 'h', z: 840, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'h', z: 960, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 700, z2: 860 }, { type: 'v', x: -480, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -620, x2: -460 }, { type: 'h', z: 480, x1: -500, x2: -340 }, { type: 'h', z: 480, x1: -380, x2: -220 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: -20, x2: 1120 }, { type: 'h', z: 120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 840, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -160, z2: 1840 }, { type: 'h', z: 960, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -40, z2: 1960 }, { type: 'h', z: 600, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -400, z2: 1600 }], route: [{ x: 0, z: 0 }, { x: 0, z: 120 }, { x: -120, z: 120 }, { x: -240, z: 120 }, { x: -240, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -360, z: 0 }, { x: -480, z: 0 }, { x: -480, z: 120 }, { x: -360, z: 120 }, { x: -360, z: 240 }, { x: -240, z: 240 }, { x: -240, z: 360 }, { x: -120, z: 360 }, { x: 0, z: 360 }, { x: 0, z: 480 }, { x: 120, z: 480 }, { x: 120, z: 600 }, { x: 240, z: 600 }, { x: 240, z: 720 }, { x: 240, z: 840 }, { x: 240, z: 960 }, { x: 120, z: 960 }, { x: 120, z: 840 }, { x: 0, z: 840 }, { x: -120, z: 840 }, { x: -240, z: 840 }, { x: -360, z: 840 }, { x: -360, z: 960 }, { x: -480, z: 960 }, { x: -600, z: 960 }, { x: -600, z: 840 }, { x: -480, z: 840 }, { x: -480, z: 720 }, { x: -480, z: 600 }, { x: -600, z: 600 }, { x: -600, z: 480 }, { x: -480, z: 480 }, { x: -360, z: 480 }, { x: -240, z: 480 }, { x: -120, z: 480 }, { x: -120, z: 600 }, { x: 0, z: 600 }, { x: 0, z: 720 }, { x: 120, z: 720 }], ints: [[-120, 360], [-360, 240], [240, 960], [120, 960], [-360, 0], [-600, 960], [-240, 120], [-600, 600], [-240, 480], [-480, 720], [0, 120], [-240, -120], [-480, 120], [-480, 0], [0, 0], [120, 840], [-360, 960], [-480, 480], [-480, 600], [0, 840], [-600, 840], [-360, 480], [-240, 840], [240, 720], [-360, 120], [-240, 360], [0, 600], [120, 600], [120, 480], [-240, 240], [-480, 960], [-360, -120], [-120, 0], [-120, 120], [0, 360], [-120, 600], [-120, -120], [240, 600], [-240, 0], [240, 840], [-120, 840], [0, 720], [-120, 480], [-600, 480], [-360, 840], [0, 480], [120, 720], [-480, 840]], bldg: [{ x: -22, z1: 0, z2: 120, s: 0.9 }, { x: 22, z1: 0, z2: 120, s: 0.9 }, { x: -262, z1: 0, z2: 120, s: 0.9 }, { x: -218, z1: 0, z2: 120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 }, { x: -502, z1: 0, z2: 120, s: 0.9 }, { x: -458, z1: 0, z2: 120, s: 0.9 }, { x: -382, z1: 120, z2: 240, s: 0.9 }, { x: -338, z1: 120, z2: 240, s: 0.9 }, { x: -262, z1: 240, z2: 360, s: 0.9 }, { x: -218, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 360, z2: 480, s: 0.9 }, { x: 22, z1: 360, z2: 480, s: 0.9 }, { x: 98, z1: 480, z2: 600, s: 0.9 }, { x: 142, z1: 480, z2: 600, s: 0.9 }, { x: 218, z1: 600, z2: 720, s: 0.9 }, { x: 262, z1: 600, z2: 720, s: 0.9 }, { x: 218, z1: 720, z2: 840, s: 0.9 }, { x: 262, z1: 720, z2: 840, s: 0.9 }, { x: 218, z1: 840, z2: 960, s: 0.9 }, { x: 262, z1: 840, z2: 960, s: 0.9 }, { x: 98, z1: 840, z2: 960, s: 0.9 }, { x: 142, z1: 840, z2: 960, s: 0.9 }, { x: -382, z1: 840, z2: 960, s: 0.9 }, { x: -338, z1: 840, z2: 960, s: 0.9 }, { x: -622, z1: 840, z2: 960, s: 0.9 }, { x: -578, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 720, z2: 840, s: 0.9 }, { x: -458, z1: 720, z2: 840, s: 0.9 }, { x: -502, z1: 600, z2: 720, s: 0.9 }, { x: -458, z1: 600, z2: 720, s: 0.9 }, { x: -622, z1: 480, z2: 600, s: 0.9 }, { x: -578, z1: 480, z2: 600, s: 0.9 }, { x: -142, z1: 480, z2: 600, s: 0.9 }, { x: -98, z1: 480, z2: 600, s: 0.9 }, { x: -22, z1: 600, z2: 720, s: 0.9 }, { x: 22, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1380, hasGarage: true, assets: ['suburban', 'industrial', 'emergency'] },
+          9: { name: 'Hindmata', sky: 0x152234, fog: 450, ground: 0x1a291d, amb: 0.4, veh: 'car', npcTypes: ['car', 'auto', 'bike', 'car', 'auto', 'taxi', 'car', 'auto', 'bike', 'car', 'auto', 'car', 'bus', 'auto', 'car', 'bike'], hasRain: true, hasPuddles: true, roads: [{ type: 'v', x: 0, z1: -1000, z2: 140 }, { type: 'v', x: 0, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'h', z: 240, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 220, z2: 380 }, { type: 'v', x: 240, z1: 340, z2: 500 }, { type: 'v', x: 240, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: 340, x2: 500 }, { type: 'v', x: 480, z1: 460, z2: 620 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'v', x: 480, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 340, x2: 500 }, { type: 'v', x: 360, z1: 700, z2: 860 }, { type: 'h', z: 720, x1: 220, x2: 380 }, { type: 'v', x: 240, z1: 700, z2: 860 }, { type: 'v', x: 240, z1: 820, z2: 980 }, { type: 'v', x: 240, z1: 940, z2: 1100 }, { type: 'v', x: 240, z1: 1060, z2: 1220 }, { type: 'h', z: 1200, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: 1180, z2: 1340 }, { type: 'v', x: 360, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: 340, x2: 500 }, { type: 'h', z: 1440, x1: 460, x2: 620 }, { type: 'h', z: 1440, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: 580, x2: 740 }, { type: 'h', z: 1560, x1: 460, x2: 620 }, { type: 'h', z: 1560, x1: 340, x2: 500 }, { type: 'h', z: 1560, x1: 220, x2: 380 }, { type: 'h', z: 1560, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 1420, z2: 1580 }, { type: 'v', x: 120, z1: 1300, z2: 1460 }, { type: 'v', x: 120, z1: 1180, z2: 1340 }, { type: 'v', x: 120, z1: 1060, z2: 1220 }, { type: 'h', z: 1080, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 1060, z2: 1220 }, { type: 'v', x: 0, z1: 1180, z2: 1340 }, { type: 'v', x: 0, z1: 1300, z2: 1460 }, { type: 'v', x: 0, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -140, x2: 20 }, { type: 'h', z: 1560, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 1540, z2: 1700 }, { type: 'h', z: 1680, x1: -380, x2: -220 }, { type: 'h', z: 1680, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 1540, z2: 1700 }, { type: 'h', z: 1560, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 1420, z2: 1580 }, { type: 'v', x: -600, z1: 1300, z2: 1460 }, { type: 'h', z: 1320, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 200, z2: 1340 }, { type: 'h', z: 840, x1: -640, x2: 1360 }, { type: 'v', x: 360, z1: -160, z2: 1840 }, { type: 'h', z: 600, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -400, z2: 1600 }, { type: 'h', z: 600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -400, z2: 1600 }, { type: 'h', z: 840, x1: -640, x2: 1360 }, { type: 'v', x: 360, z1: -160, z2: 1840 }, { type: 'h', z: 1440, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: 440, z2: 2440 }], route: [{ x: 0, z: 0 }, { x: 0, z: 120 }, { x: 0, z: 240 }, { x: 120, z: 240 }, { x: 240, z: 240 }, { x: 240, z: 360 }, { x: 240, z: 480 }, { x: 240, z: 600 }, { x: 360, z: 600 }, { x: 360, z: 480 }, { x: 480, z: 480 }, { x: 480, z: 600 }, { x: 480, z: 720 }, { x: 480, z: 840 }, { x: 360, z: 840 }, { x: 360, z: 720 }, { x: 240, z: 720 }, { x: 240, z: 840 }, { x: 240, z: 960 }, { x: 240, z: 1080 }, { x: 240, z: 1200 }, { x: 360, z: 1200 }, { x: 360, z: 1320 }, { x: 360, z: 1440 }, { x: 480, z: 1440 }, { x: 600, z: 1440 }, { x: 720, z: 1440 }, { x: 720, z: 1560 }, { x: 600, z: 1560 }, { x: 480, z: 1560 }, { x: 360, z: 1560 }, { x: 240, z: 1560 }, { x: 120, z: 1560 }, { x: 120, z: 1440 }, { x: 120, z: 1320 }, { x: 120, z: 1200 }, { x: 120, z: 1080 }, { x: 0, z: 1080 }, { x: 0, z: 1200 }, { x: 0, z: 1320 }, { x: 0, z: 1440 }, { x: 0, z: 1560 }, { x: -120, z: 1560 }, { x: -240, z: 1560 }, { x: -240, z: 1680 }, { x: -360, z: 1680 }, { x: -480, z: 1680 }, { x: -480, z: 1560 }, { x: -600, z: 1560 }, { x: -600, z: 1440 }, { x: -600, z: 1320 }, { x: -480, z: 1320 }, { x: -480, z: 1200 }], ints: [[0, 240], [240, 1200], [720, 1560], [480, 1560], [-480, 1320], [240, 960], [-480, 1680], [240, 1080], [480, 840], [360, 1320], [0, 120], [120, 1440], [600, 1560], [0, 0], [360, 1560], [120, 1200], [480, 720], [360, 1440], [-240, 1680], [-120, 1560], [0, 1320], [480, 1440], [360, 480], [120, 240], [120, 1560], [-360, 1680], [-600, 1440], [360, 600], [240, 720], [720, 1440], [240, 1560], [120, 1080], [360, 840], [0, 1080], [-600, 1560], [240, 240], [0, 1440], [-480, 1200], [-600, 1320], [240, 480], [240, 600], [360, 720], [240, 840], [0, 1200], [240, 360], [480, 600], [600, 1440], [120, 1320], [-240, 1560], [480, 480], [0, 1560], [360, 1200], [-480, 1560]], bldg: [{ x: -22, z1: 0, z2: 120, s: 0.9 }, { x: 22, z1: 0, z2: 120, s: 0.9 }, { x: -22, z1: 120, z2: 240, s: 0.9 }, { x: 22, z1: 120, z2: 240, s: 0.9 }, { x: 218, z1: 240, z2: 360, s: 0.9 }, { x: 262, z1: 240, z2: 360, s: 0.9 }, { x: 218, z1: 360, z2: 480, s: 0.9 }, { x: 262, z1: 360, z2: 480, s: 0.9 }, { x: 218, z1: 480, z2: 600, s: 0.9 }, { x: 262, z1: 480, z2: 600, s: 0.9 }, { x: 338, z1: 480, z2: 600, s: 0.9 }, { x: 382, z1: 480, z2: 600, s: 0.9 }, { x: 458, z1: 480, z2: 600, s: 0.9 }, { x: 502, z1: 480, z2: 600, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 458, z1: 720, z2: 840, s: 0.9 }, { x: 502, z1: 720, z2: 840, s: 0.9 }, { x: 338, z1: 720, z2: 840, s: 0.9 }, { x: 382, z1: 720, z2: 840, s: 0.9 }, { x: 218, z1: 720, z2: 840, s: 0.9 }, { x: 262, z1: 720, z2: 840, s: 0.9 }, { x: 218, z1: 840, z2: 960, s: 0.9 }, { x: 262, z1: 840, z2: 960, s: 0.9 }, { x: 218, z1: 960, z2: 1080, s: 0.9 }, { x: 262, z1: 960, z2: 1080, s: 0.9 }, { x: 218, z1: 1080, z2: 1200, s: 0.9 }, { x: 262, z1: 1080, z2: 1200, s: 0.9 }, { x: 338, z1: 1200, z2: 1320, s: 0.9 }, { x: 382, z1: 1200, z2: 1320, s: 0.9 }, { x: 338, z1: 1320, z2: 1440, s: 0.9 }, { x: 382, z1: 1320, z2: 1440, s: 0.9 }, { x: 698, z1: 1440, z2: 1560, s: 0.9 }, { x: 742, z1: 1440, z2: 1560, s: 0.9 }, { x: 98, z1: 1440, z2: 1560, s: 0.9 }, { x: 142, z1: 1440, z2: 1560, s: 0.9 }, { x: 98, z1: 1320, z2: 1440, s: 0.9 }, { x: 142, z1: 1320, z2: 1440, s: 0.9 }, { x: 98, z1: 1200, z2: 1320, s: 0.9 }, { x: 142, z1: 1200, z2: 1320, s: 0.9 }, { x: 98, z1: 1080, z2: 1200, s: 0.9 }, { x: 142, z1: 1080, z2: 1200, s: 0.9 }, { x: -22, z1: 1080, z2: 1200, s: 0.9 }, { x: 22, z1: 1080, z2: 1200, s: 0.9 }, { x: -22, z1: 1200, z2: 1320, s: 0.9 }, { x: 22, z1: 1200, z2: 1320, s: 0.9 }, { x: -22, z1: 1320, z2: 1440, s: 0.9 }, { x: 22, z1: 1320, z2: 1440, s: 0.9 }, { x: -22, z1: 1440, z2: 1560, s: 0.9 }, { x: 22, z1: 1440, z2: 1560, s: 0.9 }, { x: -262, z1: 1560, z2: 1680, s: 0.9 }, { x: -218, z1: 1560, z2: 1680, s: 0.9 }, { x: -502, z1: 1560, z2: 1680, s: 0.9 }, { x: -458, z1: 1560, z2: 1680, s: 0.9 }, { x: -622, z1: 1440, z2: 1560, s: 0.9 }, { x: -578, z1: 1440, z2: 1560, s: 0.9 }, { x: -622, z1: 1320, z2: 1440, s: 0.9 }, { x: -578, z1: 1320, z2: 1440, s: 0.9 }, { x: -502, z1: 1200, z2: 1320, s: 0.9 }, { x: -458, z1: 1200, z2: 1320, s: 0.9 }], timeLimit: 1490, hasGarage: true, assets: ['suburban', 'industrial'] },
+          10: { name: 'Eastern Express Hwy', sky: 0x8cbbd6, fog: 750, ground: 0x2a5e28, amb: 0.85, veh: 'auto', npcTypes: ['car', 'truck', 'bus', 'car', 'auto', 'bike', 'car', 'truck', 'bus', 'car', 'taxi', 'auto', 'car', 'bike', 'car', 'truck', 'bus', 'car', 'auto', 'bike', 'car', 'car', 'bus', 'auto'], hasMetro: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'h', z: 0, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -380, z2: -220 }, { type: 'v', x: 240, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -500, z2: -340 }, { type: 'v', x: 360, z1: -380, z2: -220 }, { type: 'h', z: -240, x1: 340, x2: 500 }, { type: 'h', z: -240, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: -380, z2: -220 }, { type: 'v', x: 600, z1: -500, z2: -340 }, { type: 'v', x: 600, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: 580, x2: 740 }, { type: 'h', z: -600, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: -740, z2: -580 }, { type: 'v', x: 840, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: 820, x2: 980 }, { type: 'h', z: -840, x1: 940, x2: 1100 }, { type: 'h', z: -840, x1: 1060, x2: 1220 }, { type: 'h', z: -840, x1: 1180, x2: 1340 }, { type: 'v', x: 1320, z1: -860, z2: -700 }, { type: 'h', z: -720, x1: 1300, x2: 1460 }, { type: 'v', x: 1440, z1: -740, z2: -580 }, { type: 'h', z: -600, x1: 1420, x2: 1580 }, { type: 'v', x: 1560, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: 1540, x2: 1700 }, { type: 'v', x: 1680, z1: -740, z2: -580 }, { type: 'v', x: 1680, z1: -620, z2: -460 }, { type: 'v', x: 1680, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: 1660, x2: 1820 }, { type: 'h', z: -360, x1: 1780, x2: 1940 }, { type: 'v', x: 1920, z1: -380, z2: -220 }, { type: 'v', x: 1920, z1: -260, z2: -100 }, { type: 'h', z: -120, x1: 1780, x2: 1940 }, { type: 'v', x: 1800, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: 1660, x2: 1820 }, { type: 'v', x: 1680, z1: -260, z2: -100 }, { type: 'h', z: -120, x1: 1540, x2: 1700 }, { type: 'h', z: -120, x1: 1420, x2: 1580 }, { type: 'v', x: 1440, z1: -140, z2: 20 }, { type: 'v', x: 1440, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 1300, x2: 1460 }, { type: 'h', z: 120, x1: 1180, x2: 1340 }, { type: 'h', z: 120, x1: 1060, x2: 1220 }, { type: 'v', x: 1080, z1: 100, z2: 260 }, { type: 'v', x: 1080, z1: 220, z2: 380 }, { type: 'v', x: 1080, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 1060, x2: 1220 }, { type: 'v', x: 1200, z1: 460, z2: 620 }, { type: 'v', x: 1200, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 1060, x2: 1220 }, { type: 'h', z: 720, x1: -40, x2: 1100 }, { type: 'h', z: -600, x1: -160, x2: 1840 }, { type: 'v', x: 840, z1: -1600, z2: 400 }, { type: 'h', z: 720, x1: 80, x2: 2080 }, { type: 'v', x: 1080, z1: -280, z2: 1720 }, { type: 'h', z: -120, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -1120, z2: 880 }, { type: 'h', z: 240, x1: 80, x2: 2080 }, { type: 'v', x: 1080, z1: -760, z2: 1240 }, { type: 'h', z: -120, x1: 680, x2: 2680 }, { type: 'v', x: 1680, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 240, z: 0 }, { x: 240, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 240, z: -240 }, { x: 240, z: -360 }, { x: 240, z: -480 }, { x: 360, z: -480 }, { x: 360, z: -360 }, { x: 360, z: -240 }, { x: 480, z: -240 }, { x: 600, z: -240 }, { x: 600, z: -360 }, { x: 600, z: -480 }, { x: 600, z: -600 }, { x: 720, z: -600 }, { x: 840, z: -600 }, { x: 840, z: -720 }, { x: 840, z: -840 }, { x: 960, z: -840 }, { x: 1080, z: -840 }, { x: 1200, z: -840 }, { x: 1320, z: -840 }, { x: 1320, z: -720 }, { x: 1440, z: -720 }, { x: 1440, z: -600 }, { x: 1560, z: -600 }, { x: 1560, z: -720 }, { x: 1680, z: -720 }, { x: 1680, z: -600 }, { x: 1680, z: -480 }, { x: 1680, z: -360 }, { x: 1800, z: -360 }, { x: 1920, z: -360 }, { x: 1920, z: -240 }, { x: 1920, z: -120 }, { x: 1800, z: -120 }, { x: 1800, z: -240 }, { x: 1680, z: -240 }, { x: 1680, z: -120 }, { x: 1560, z: -120 }, { x: 1440, z: -120 }, { x: 1440, z: 0 }, { x: 1440, z: 120 }, { x: 1320, z: 120 }, { x: 1200, z: 120 }, { x: 1080, z: 120 }, { x: 1080, z: 240 }, { x: 1080, z: 360 }, { x: 1080, z: 480 }, { x: 1200, z: 480 }, { x: 1200, z: 600 }, { x: 1200, z: 720 }, { x: 1080, z: 720 }, { x: 960, z: 720 }], ints: [[240, 0], [360, -360], [720, -600], [1680, -600], [600, -600], [1320, -720], [1440, 120], [1080, 120], [1440, -120], [600, -240], [1560, -600], [840, -600], [1560, -120], [240, -360], [240, -480], [1440, -720], [840, -840], [240, -240], [960, 720], [960, -840], [1680, -480], [0, 0], [480, -240], [1440, 0], [1200, 120], [1920, -360], [1440, -600], [1800, -240], [120, -240], [1680, -360], [1800, -360], [1680, -240], [240, -120], [360, -240], [1320, 120], [360, -480], [1200, -840], [1200, 720], [1320, -840], [1680, -120], [840, -720], [1080, -840], [120, 0], [1560, -720], [600, -480], [1080, 720], [1080, 360], [600, -360], [1680, -720], [1800, -120], [1920, -240], [1200, 480], [1080, 480], [120, -120], [1080, 240], [1920, -120], [1200, 600]], bldg: [{ x: 218, z1: -120, z2: 0, s: 0.9 }, { x: 262, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: 218, z1: -360, z2: -240, s: 0.9 }, { x: 262, z1: -360, z2: -240, s: 0.9 }, { x: 218, z1: -480, z2: -360, s: 0.9 }, { x: 262, z1: -480, z2: -360, s: 0.9 }, { x: 338, z1: -480, z2: -360, s: 0.9 }, { x: 382, z1: -480, z2: -360, s: 0.9 }, { x: 338, z1: -360, z2: -240, s: 0.9 }, { x: 382, z1: -360, z2: -240, s: 0.9 }, { x: 578, z1: -360, z2: -240, s: 0.9 }, { x: 622, z1: -360, z2: -240, s: 0.9 }, { x: 578, z1: -480, z2: -360, s: 0.9 }, { x: 622, z1: -480, z2: -360, s: 0.9 }, { x: 578, z1: -600, z2: -480, s: 0.9 }, { x: 622, z1: -600, z2: -480, s: 0.9 }, { x: 818, z1: -720, z2: -600, s: 0.9 }, { x: 862, z1: -720, z2: -600, s: 0.9 }, { x: 818, z1: -840, z2: -720, s: 0.9 }, { x: 862, z1: -840, z2: -720, s: 0.9 }, { x: 1298, z1: -840, z2: -720, s: 0.9 }, { x: 1342, z1: -840, z2: -720, s: 0.9 }, { x: 1418, z1: -720, z2: -600, s: 0.9 }, { x: 1462, z1: -720, z2: -600, s: 0.9 }, { x: 1538, z1: -720, z2: -600, s: 0.9 }, { x: 1582, z1: -720, z2: -600, s: 0.9 }, { x: 1658, z1: -720, z2: -600, s: 0.9 }, { x: 1702, z1: -720, z2: -600, s: 0.9 }, { x: 1658, z1: -600, z2: -480, s: 0.9 }, { x: 1702, z1: -600, z2: -480, s: 0.9 }, { x: 1658, z1: -480, z2: -360, s: 0.9 }, { x: 1702, z1: -480, z2: -360, s: 0.9 }, { x: 1898, z1: -360, z2: -240, s: 0.9 }, { x: 1942, z1: -360, z2: -240, s: 0.9 }, { x: 1898, z1: -240, z2: -120, s: 0.9 }, { x: 1942, z1: -240, z2: -120, s: 0.9 }, { x: 1778, z1: -240, z2: -120, s: 0.9 }, { x: 1822, z1: -240, z2: -120, s: 0.9 }, { x: 1658, z1: -240, z2: -120, s: 0.9 }, { x: 1702, z1: -240, z2: -120, s: 0.9 }, { x: 1418, z1: -120, z2: 0, s: 0.9 }, { x: 1462, z1: -120, z2: 0, s: 0.9 }, { x: 1418, z1: 0, z2: 120, s: 0.9 }, { x: 1462, z1: 0, z2: 120, s: 0.9 }, { x: 1058, z1: 120, z2: 240, s: 0.9 }, { x: 1102, z1: 120, z2: 240, s: 0.9 }, { x: 1058, z1: 240, z2: 360, s: 0.9 }, { x: 1102, z1: 240, z2: 360, s: 0.9 }, { x: 1058, z1: 360, z2: 480, s: 0.9 }, { x: 1102, z1: 360, z2: 480, s: 0.9 }, { x: 1178, z1: 480, z2: 600, s: 0.9 }, { x: 1222, z1: 480, z2: 600, s: 0.9 }, { x: 1178, z1: 600, z2: 720, s: 0.9 }, { x: 1222, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1600, hasGarage: true, assets: ['suburban', 'industrial', 'trains'] },
+          11: { name: 'Sion Hospital', sky: 0x0a0f1d, fog: 500, ground: 0x1a2a1d, amb: 0.35, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'taxi', 'car', 'auto', 'bike', 'car', 'auto', 'car', 'bike', 'auto', 'car', 'taxi', 'car'], isNight: true, hasSilentZone: true, silentZ1: 0, silentZ2: 250, roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'v', x: 0, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: 100, x2: 260 }, { type: 'h', z: -360, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -140, x2: 20 }, { type: 'h', z: -600, x1: -20, x2: 140 }, { type: 'h', z: -600, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -740, z2: -580 }, { type: 'v', x: 360, z1: -620, z2: -460 }, { type: 'h', z: -480, x1: 220, x2: 380 }, { type: 'h', z: -480, x1: -880, x2: 260 }, { type: 'h', z: -360, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1360, z2: 640 }, { type: 'h', z: 0, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1000, z2: 1000 }, { type: 'h', z: -600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1600, z2: 400 }, { type: 'h', z: -600, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1600, z2: 400 }, { type: 'h', z: -240, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1240, z2: 760 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 0, z: -240 }, { x: 120, z: -240 }, { x: 240, z: -240 }, { x: 240, z: -360 }, { x: 120, z: -360 }, { x: 0, z: -360 }, { x: 0, z: -480 }, { x: -120, z: -480 }, { x: -120, z: -600 }, { x: 0, z: -600 }, { x: 120, z: -600 }, { x: 240, z: -600 }, { x: 240, z: -720 }, { x: 360, z: -720 }, { x: 360, z: -600 }, { x: 360, z: -480 }, { x: 240, z: -480 }, { x: 120, z: -480 }], ints: [[240, -360], [0, -600], [240, -480], [240, -240], [120, -600], [0, 0], [-120, -480], [120, -240], [-120, -600], [0, -240], [0, -480], [360, -480], [120, -360], [360, -720], [120, -480], [360, -600], [0, -120], [240, -600], [240, -720], [0, -360]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: -22, z1: -240, z2: -120, s: 0.9 }, { x: 22, z1: -240, z2: -120, s: 0.9 }, { x: 218, z1: -360, z2: -240, s: 0.9 }, { x: 262, z1: -360, z2: -240, s: 0.9 }, { x: -22, z1: -480, z2: -360, s: 0.9 }, { x: 22, z1: -480, z2: -360, s: 0.9 }, { x: -142, z1: -600, z2: -480, s: 0.9 }, { x: -98, z1: -600, z2: -480, s: 0.9 }, { x: 218, z1: -720, z2: -600, s: 0.9 }, { x: 262, z1: -720, z2: -600, s: 0.9 }, { x: 338, z1: -720, z2: -600, s: 0.9 }, { x: 382, z1: -720, z2: -600, s: 0.9 }, { x: 338, z1: -600, z2: -480, s: 0.9 }, { x: 382, z1: -600, z2: -480, s: 0.9 }], timeLimit: 1710, hasGarage: true, assets: ['suburban', 'industrial'] },
+          12: { name: 'Dharavi', sky: 0x8aafca, fog: 450, ground: 0x3a5228, amb: 0.7, veh: 'twowheeler', npcTypes: ['auto', 'bike', 'cycle', 'auto', 'car', 'bike', 'cycle', 'taxi', 'auto', 'car', 'bike', 'auto', 'car', 'cycle', 'auto', 'bike'], roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -380, z2: -220 }, { type: 'v', x: -120, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -140, x2: 20 }, { type: 'h', z: -840, x1: -260, x2: -100 }, { type: 'h', z: -840, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'h', z: -720, x1: -380, x2: 760 }, { type: 'h', z: -600, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1600, z2: 400 }, { type: 'h', z: -240, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1240, z2: 760 }, { type: 'h', z: -120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1120, z2: 880 }, { type: 'h', z: -480, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1480, z2: 520 }, { type: 'h', z: -840, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -1840, z2: 160 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -240, z: 0 }, { x: -240, z: -120 }, { x: -120, z: -120 }, { x: 0, z: -120 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -120, z: -360 }, { x: -120, z: -480 }, { x: -240, z: -480 }, { x: -240, z: -600 }, { x: -120, z: -600 }, { x: -120, z: -720 }, { x: 0, z: -720 }, { x: 0, z: -840 }, { x: -120, z: -840 }, { x: -240, z: -840 }, { x: -360, z: -840 }, { x: -360, z: -720 }, { x: -240, z: -720 }], ints: [[-240, -840], [0, -840], [-360, -840], [-360, -720], [-120, -360], [-240, -120], [0, 0], [-120, -480], [-240, -480], [-120, -600], [-120, -720], [0, -240], [-240, -720], [-120, -840], [-120, 0], [0, -120], [-120, -120], [-240, 0], [0, -720], [-240, -600], [-120, -240]], bldg: [{ x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 }, { x: -22, z1: -240, z2: -120, s: 0.9 }, { x: 22, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -360, z2: -240, s: 0.9 }, { x: -98, z1: -360, z2: -240, s: 0.9 }, { x: -142, z1: -480, z2: -360, s: 0.9 }, { x: -98, z1: -480, z2: -360, s: 0.9 }, { x: -262, z1: -600, z2: -480, s: 0.9 }, { x: -218, z1: -600, z2: -480, s: 0.9 }, { x: -142, z1: -720, z2: -600, s: 0.9 }, { x: -98, z1: -720, z2: -600, s: 0.9 }, { x: -22, z1: -840, z2: -720, s: 0.9 }, { x: 22, z1: -840, z2: -720, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }], timeLimit: 1820, hasGarage: true, assets: ['suburban', 'industrial'] },
+          13: { name: 'Linking Road', sky: 0x7a9eb5, fog: 550, ground: 0x346a2e, amb: 0.75, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'car', 'taxi', 'auto', 'bike', 'car', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'bike'], hasCheckpoint: true, checkpointZ: 0, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'v', x: 120, z1: -20, z2: 140 }, { type: 'v', x: 120, z1: 100, z2: 260 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'v', x: 120, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 460, z2: 620 }, { type: 'v', x: 240, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 100, x2: 260 }, { type: 'h', z: 720, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 580, z2: 740 }, { type: 'v', x: 0, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -140, x2: 20 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 340, z2: 500 }, { type: 'v', x: -240, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 460, z2: 620 }, { type: 'v', x: -360, z1: 580, z2: 740 }, { type: 'v', x: -360, z1: 700, z2: 860 }, { type: 'v', x: -360, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 940, z2: 1100 }, { type: 'h', z: 1080, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 1060, z2: 1220 }, { type: 'h', z: 1200, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: 1180, z2: 1340 }, { type: 'v', x: -720, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: 1300, z2: 1460 }, { type: 'h', z: 1320, x1: -620, x2: -460 }, { type: 'h', z: 1320, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 1180, z2: 1340 }, { type: 'h', z: 1200, x1: -1480, x2: -340 }, { type: 'h', z: 480, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -520, z2: 1480 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 480, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -520, z2: 1480 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 120, z: 120 }, { x: 120, z: 240 }, { x: 120, z: 360 }, { x: 120, z: 480 }, { x: 240, z: 480 }, { x: 240, z: 600 }, { x: 240, z: 720 }, { x: 120, z: 720 }, { x: 0, z: 720 }, { x: 0, z: 600 }, { x: 0, z: 480 }, { x: -120, z: 480 }, { x: -240, z: 480 }, { x: -240, z: 360 }, { x: -240, z: 240 }, { x: -360, z: 240 }, { x: -360, z: 360 }, { x: -480, z: 360 }, { x: -480, z: 480 }, { x: -360, z: 480 }, { x: -360, z: 600 }, { x: -360, z: 720 }, { x: -360, z: 840 }, { x: -360, z: 960 }, { x: -480, z: 960 }, { x: -480, z: 1080 }, { x: -600, z: 1080 }, { x: -600, z: 1200 }, { x: -720, z: 1200 }, { x: -720, z: 1320 }, { x: -720, z: 1440 }, { x: -600, z: 1440 }, { x: -600, z: 1320 }, { x: -480, z: 1320 }, { x: -360, z: 1320 }, { x: -360, z: 1200 }, { x: -480, z: 1200 }], ints: [[-480, 1320], [-360, 240], [-240, 480], [-720, 1320], [120, 360], [-360, 1200], [-360, 960], [0, 0], [-480, 480], [-360, 1320], [-720, 1200], [-720, 1440], [120, 240], [-600, 1440], [-360, 480], [-480, 360], [-600, 1080], [240, 720], [0, 600], [-240, 360], [120, 480], [-240, 240], [-480, 960], [-480, 1080], [120, 0], [120, 120], [-600, 1200], [-480, 1200], [-600, 1320], [240, 480], [240, 600], [-360, 720], [0, 720], [-120, 480], [-360, 840], [0, 480], [120, 720], [-360, 360], [-360, 600]], bldg: [{ x: 98, z1: 0, z2: 120, s: 0.9 }, { x: 142, z1: 0, z2: 120, s: 0.9 }, { x: 98, z1: 120, z2: 240, s: 0.9 }, { x: 142, z1: 120, z2: 240, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: 98, z1: 360, z2: 480, s: 0.9 }, { x: 142, z1: 360, z2: 480, s: 0.9 }, { x: 218, z1: 480, z2: 600, s: 0.9 }, { x: 262, z1: 480, z2: 600, s: 0.9 }, { x: 218, z1: 600, z2: 720, s: 0.9 }, { x: 262, z1: 600, z2: 720, s: 0.9 }, { x: -22, z1: 600, z2: 720, s: 0.9 }, { x: 22, z1: 600, z2: 720, s: 0.9 }, { x: -22, z1: 480, z2: 600, s: 0.9 }, { x: 22, z1: 480, z2: 600, s: 0.9 }, { x: -262, z1: 360, z2: 480, s: 0.9 }, { x: -218, z1: 360, z2: 480, s: 0.9 }, { x: -262, z1: 240, z2: 360, s: 0.9 }, { x: -218, z1: 240, z2: 360, s: 0.9 }, { x: -382, z1: 240, z2: 360, s: 0.9 }, { x: -338, z1: 240, z2: 360, s: 0.9 }, { x: -502, z1: 360, z2: 480, s: 0.9 }, { x: -458, z1: 360, z2: 480, s: 0.9 }, { x: -382, z1: 480, z2: 600, s: 0.9 }, { x: -338, z1: 480, z2: 600, s: 0.9 }, { x: -382, z1: 600, z2: 720, s: 0.9 }, { x: -338, z1: 600, z2: 720, s: 0.9 }, { x: -382, z1: 720, z2: 840, s: 0.9 }, { x: -338, z1: 720, z2: 840, s: 0.9 }, { x: -382, z1: 840, z2: 960, s: 0.9 }, { x: -338, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 960, z2: 1080, s: 0.9 }, { x: -458, z1: 960, z2: 1080, s: 0.9 }, { x: -622, z1: 1080, z2: 1200, s: 0.9 }, { x: -578, z1: 1080, z2: 1200, s: 0.9 }, { x: -742, z1: 1200, z2: 1320, s: 0.9 }, { x: -698, z1: 1200, z2: 1320, s: 0.9 }, { x: -742, z1: 1320, z2: 1440, s: 0.9 }, { x: -698, z1: 1320, z2: 1440, s: 0.9 }, { x: -622, z1: 1320, z2: 1440, s: 0.9 }, { x: -578, z1: 1320, z2: 1440, s: 0.9 }, { x: -382, z1: 1200, z2: 1320, s: 0.9 }, { x: -338, z1: 1200, z2: 1320, s: 0.9 }], timeLimit: 1930, hasGarage: true, assets: ['suburban', 'industrial', 'construction'] },
+          14: { name: 'Bandra-Worli Sea Link', sky: 0x4a90d9, fog: 750, ground: 0x1a5a8a, amb: 0.9, veh: 'car_highway', npcTypes: ['car', 'car', 'car', 'truck', 'car', 'car', 'bus', 'car', 'car', 'car', 'car', 'car', 'car', 'car', 'taxi', 'car', 'car', 'car', 'car', 'bus', 'car', 'car', 'car', 'car', 'car', 'car', 'car', 'car'], isBridge: true, speedMin: 40, speedMax: 80, roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -260, z2: -100 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'h', z: 0, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -140, z2: 20 }, { type: 'v', x: -360, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -500, x2: -340 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'h', z: -240, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -260, z2: -100 }, { type: 'h', z: -120, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -980, x2: -820 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -860, x2: -700 }, { type: 'h', z: -480, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -620, z2: -460 }, { type: 'v', x: -480, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -500, x2: -340 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -980, z2: -820 }, { type: 'h', z: -960, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -620, x2: -460 }, { type: 'h', z: -1080, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -1100, z2: -940 }, { type: 'v', x: -720, z1: -980, z2: -820 }, { type: 'v', x: -720, z1: -860, z2: -700 }, { type: 'v', x: -720, z1: -740, z2: -580 }, { type: 'h', z: -600, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: -1720, z2: -580 }, { type: 'h', z: -240, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1240, z2: 760 }, { type: 'h', z: 0, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1000, z2: 1000 }, { type: 'h', z: -840, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1840, z2: 160 }, { type: 'h', z: -480, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1480, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -120, z: -120 }, { x: -120, z: 0 }, { x: -240, z: 0 }, { x: -360, z: 0 }, { x: -360, z: -120 }, { x: -360, z: -240 }, { x: -480, z: -240 }, { x: -600, z: -240 }, { x: -720, z: -240 }, { x: -720, z: -120 }, { x: -840, z: -120 }, { x: -840, z: -240 }, { x: -960, z: -240 }, { x: -960, z: -360 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -720, z: -480 }, { x: -600, z: -480 }, { x: -600, z: -360 }, { x: -480, z: -360 }, { x: -360, z: -360 }, { x: -360, z: -480 }, { x: -480, z: -480 }, { x: -480, z: -600 }, { x: -480, z: -720 }, { x: -360, z: -720 }, { x: -360, z: -840 }, { x: -480, z: -840 }, { x: -600, z: -840 }, { x: -600, z: -960 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -600, z: -1080 }, { x: -720, z: -1080 }, { x: -720, z: -960 }, { x: -720, z: -840 }, { x: -720, z: -720 }, { x: -720, z: -600 }, { x: -600, z: -600 }, { x: -600, z: -720 }], ints: [[-600, -1080], [-840, -240], [-360, 0], [-360, -840], [-480, -360], [-600, -600], [-960, -240], [-960, -360], [-360, -720], [-720, -120], [-480, -960], [0, 0], [-720, -480], [-720, -600], [-600, -720], [-480, -600], [-480, -480], [120, -240], [-720, -1080], [-360, -240], [-480, -720], [0, -240], [-480, -1080], [-360, -480], [-600, -840], [-720, -840], [-720, -960], [-600, -360], [-360, -360], [-360, -120], [-120, 0], [-840, -360], [-720, -720], [0, -120], [-120, -120], [-480, -240], [-240, 0], [120, -120], [-840, -120], [-600, -960], [-480, -840], [-720, -240], [-120, -240], [-600, -480], [-840, -480], [-600, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -240, z2: -120, s: 0.9 }, { x: -98, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 }, { x: -742, z1: -240, z2: -120, s: 0.9 }, { x: -698, z1: -240, z2: -120, s: 0.9 }, { x: -862, z1: -240, z2: -120, s: 0.9 }, { x: -818, z1: -240, z2: -120, s: 0.9 }, { x: -982, z1: -360, z2: -240, s: 0.9 }, { x: -938, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 }, { x: -382, z1: -480, z2: -360, s: 0.9 }, { x: -338, z1: -480, z2: -360, s: 0.9 }, { x: -502, z1: -600, z2: -480, s: 0.9 }, { x: -458, z1: -600, z2: -480, s: 0.9 }, { x: -502, z1: -720, z2: -600, s: 0.9 }, { x: -458, z1: -720, z2: -600, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }, { x: -622, z1: -960, z2: -840, s: 0.9 }, { x: -578, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -742, z1: -1080, z2: -960, s: 0.9 }, { x: -698, z1: -1080, z2: -960, s: 0.9 }, { x: -742, z1: -960, z2: -840, s: 0.9 }, { x: -698, z1: -960, z2: -840, s: 0.9 }, { x: -742, z1: -840, z2: -720, s: 0.9 }, { x: -698, z1: -840, z2: -720, s: 0.9 }, { x: -742, z1: -720, z2: -600, s: 0.9 }, { x: -698, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 }], timeLimit: 2040, hasGarage: true, assets: ['suburban', 'industrial'] },
+          15: { name: 'South Mumbai Circuit', sky: 0x7ab5d0, fog: 700, ground: 0x2e6b32, amb: 0.8, veh: 'car', npcTypes: ['car', 'bus', 'auto', 'bike', 'truck', 'car', 'cycle', 'auto', 'car', 'bus', 'bike', 'car', 'taxi', 'auto', 'car', 'bus', 'bike', 'car', 'auto', 'taxi', 'car', 'bus', 'auto', 'bike', 'car', 'truck', 'car', 'auto', 'car', 'bus'], roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'h', z: 120, x1: -20, x2: 140 }, { type: 'h', z: 120, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 100, z2: 260 }, { type: 'v', x: 240, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: 340, z2: 500 }, { type: 'v', x: -120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -20, x2: 140 }, { type: 'h', z: 480, x1: 100, x2: 260 }, { type: 'h', z: 480, x1: 220, x2: 380 }, { type: 'h', z: 480, x1: 340, x2: 500 }, { type: 'h', z: 480, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 580, z2: 740 }, { type: 'v', x: 720, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 580, x2: 740 }, { type: 'h', z: 840, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: 700, z2: 860 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 340, x2: 500 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 580, z2: 740 }, { type: 'v', x: 120, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -260, x2: -100 }, { type: 'h', z: 840, x1: -380, x2: -220 }, { type: 'h', z: 840, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 940, z2: 1100 }, { type: 'v', x: -360, z1: 1060, z2: 1220 }, { type: 'v', x: -360, z1: 1180, z2: 1340 }, { type: 'v', x: -360, z1: 1300, z2: 1460 }, { type: 'v', x: -360, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -380, x2: -220 }, { type: 'h', z: 1560, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: 1420, z2: 1580 }, { type: 'h', z: 1440, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -20, x2: 140 }, { type: 'h', z: 1560, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 1420, z2: 1580 }, { type: 'h', z: 1440, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 1300, z2: 1460 }, { type: 'v', x: 120, z1: 1180, z2: 1340 }, { type: 'h', z: 1200, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 1180, z2: 1340 }, { type: 'h', z: 1320, x1: 220, x2: 380 }, { type: 'h', z: 1320, x1: 340, x2: 500 }, { type: 'h', z: 1320, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: 580, x2: 740 }, { type: 'v', x: 600, z1: 1540, z2: 1700 }, { type: 'v', x: 600, z1: 1660, z2: 1820 }, { type: 'v', x: 600, z1: 1780, z2: 1940 }, { type: 'v', x: 600, z1: 1900, z2: 2060 }, { type: 'v', x: 600, z1: 2020, z2: 2180 }, { type: 'h', z: 2160, x1: 580, x2: 740 }, { type: 'h', z: 2160, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: 2140, z2: 2300 }, { type: 'v', x: 840, z1: 2260, z2: 2420 }, { type: 'h', z: 2400, x1: 700, x2: 860 }, { type: 'v', x: 720, z1: 2380, z2: 2540 }, { type: 'v', x: 720, z1: 2500, z2: 3640 }, { type: 'h', z: 840, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -160, z2: 1840 }, { type: 'h', z: 1560, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: 560, z2: 2560 }, { type: 'h', z: 120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -280, z2: 1720 }, { type: 'h', z: 480, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -520, z2: 1480 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: 120 }, { x: 0, z: 120 }, { x: 120, z: 120 }, { x: 240, z: 120 }, { x: 240, z: 240 }, { x: 240, z: 360 }, { x: 120, z: 360 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 360 }, { x: -120, z: 360 }, { x: -120, z: 480 }, { x: -120, z: 600 }, { x: 0, z: 600 }, { x: 0, z: 480 }, { x: 120, z: 480 }, { x: 240, z: 480 }, { x: 360, z: 480 }, { x: 480, z: 480 }, { x: 600, z: 480 }, { x: 600, z: 600 }, { x: 720, z: 600 }, { x: 720, z: 720 }, { x: 720, z: 840 }, { x: 600, z: 840 }, { x: 480, z: 840 }, { x: 480, z: 720 }, { x: 480, z: 600 }, { x: 360, z: 600 }, { x: 240, z: 600 }, { x: 120, z: 600 }, { x: 120, z: 720 }, { x: 120, z: 840 }, { x: 0, z: 840 }, { x: 0, z: 960 }, { x: -120, z: 960 }, { x: -120, z: 840 }, { x: -240, z: 840 }, { x: -360, z: 840 }, { x: -480, z: 840 }, { x: -480, z: 960 }, { x: -360, z: 960 }, { x: -360, z: 1080 }, { x: -360, z: 1200 }, { x: -360, z: 1320 }, { x: -360, z: 1440 }, { x: -360, z: 1560 }, { x: -240, z: 1560 }, { x: -120, z: 1560 }, { x: -120, z: 1440 }, { x: 0, z: 1440 }, { x: 0, z: 1560 }, { x: 120, z: 1560 }, { x: 240, z: 1560 }, { x: 240, z: 1440 }, { x: 120, z: 1440 }, { x: 120, z: 1320 }, { x: 120, z: 1200 }, { x: 240, z: 1200 }, { x: 240, z: 1320 }, { x: 360, z: 1320 }, { x: 480, z: 1320 }, { x: 600, z: 1320 }, { x: 600, z: 1440 }, { x: 720, z: 1440 }, { x: 720, z: 1560 }, { x: 600, z: 1560 }, { x: 600, z: 1680 }, { x: 600, z: 1800 }, { x: 600, z: 1920 }, { x: 600, z: 2040 }, { x: 600, z: 2160 }, { x: 720, z: 2160 }, { x: 840, z: 2160 }, { x: 840, z: 2280 }, { x: 840, z: 2400 }, { x: 720, z: 2400 }, { x: 720, z: 2520 }, { x: 720, z: 2640 }], ints: [[-120, 960], [480, 840], [-360, 960], [840, 2160], [120, 1200], [360, 600], [840, 2280], [120, 600], [600, 1320], [-360, 1080], [0, 1560], [0, 480], [600, 1920], [0, 240], [240, 1200], [720, 1560], [-120, 360], [720, 720], [120, 360], [120, 1440], [480, 720], [720, 2160], [120, 240], [360, 480], [120, 1560], [-240, 840], [240, 1560], [120, 480], [240, 1440], [600, 840], [-480, 960], [480, 1320], [240, 240], [720, 840], [0, 360], [0, 1440], [240, 480], [240, 600], [120, 1320], [600, 1440], [240, 120], [-360, 840], [-360, 1560], [600, 1800], [360, 1320], [600, 2160], [-360, 1200], [0, 120], [600, 1560], [-360, 1320], [720, 2640], [600, 2040], [720, 600], [-120, 120], [120, 120], [-120, 600], [-120, 840], [240, 1320], [240, 360], [-240, 1560], [480, 480], [600, 600], [120, 840], [0, 0], [0, 840], [-120, 1560], [600, 1680], [600, 480], [0, 960], [720, 2520], [720, 1440], [0, 600], [-120, 0], [720, 2400], [-120, 1440], [-360, 1440], [480, 600], [-120, 480], [120, 720], [-480, 840], [840, 2400]], bldg: [{ x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 }, { x: 218, z1: 120, z2: 240, s: 0.9 }, { x: 262, z1: 120, z2: 240, s: 0.9 }, { x: 218, z1: 240, z2: 360, s: 0.9 }, { x: 262, z1: 240, z2: 360, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 240, z2: 360, s: 0.9 }, { x: 22, z1: 240, z2: 360, s: 0.9 }, { x: -142, z1: 360, z2: 480, s: 0.9 }, { x: -98, z1: 360, z2: 480, s: 0.9 }, { x: -142, z1: 480, z2: 600, s: 0.9 }, { x: -98, z1: 480, z2: 600, s: 0.9 }, { x: -22, z1: 480, z2: 600, s: 0.9 }, { x: 22, z1: 480, z2: 600, s: 0.9 }, { x: 578, z1: 480, z2: 600, s: 0.9 }, { x: 622, z1: 480, z2: 600, s: 0.9 }, { x: 698, z1: 600, z2: 720, s: 0.9 }, { x: 742, z1: 600, z2: 720, s: 0.9 }, { x: 698, z1: 720, z2: 840, s: 0.9 }, { x: 742, z1: 720, z2: 840, s: 0.9 }, { x: 458, z1: 720, z2: 840, s: 0.9 }, { x: 502, z1: 720, z2: 840, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 600, z2: 720, s: 0.9 }, { x: 142, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 720, z2: 840, s: 0.9 }, { x: 142, z1: 720, z2: 840, s: 0.9 }, { x: -22, z1: 840, z2: 960, s: 0.9 }, { x: 22, z1: 840, z2: 960, s: 0.9 }, { x: -142, z1: 840, z2: 960, s: 0.9 }, { x: -98, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 840, z2: 960, s: 0.9 }, { x: -458, z1: 840, z2: 960, s: 0.9 }, { x: -382, z1: 960, z2: 1080, s: 0.9 }, { x: -338, z1: 960, z2: 1080, s: 0.9 }, { x: -382, z1: 1080, z2: 1200, s: 0.9 }, { x: -338, z1: 1080, z2: 1200, s: 0.9 }, { x: -382, z1: 1200, z2: 1320, s: 0.9 }, { x: -338, z1: 1200, z2: 1320, s: 0.9 }, { x: -382, z1: 1320, z2: 1440, s: 0.9 }, { x: -338, z1: 1320, z2: 1440, s: 0.9 }, { x: -382, z1: 1440, z2: 1560, s: 0.9 }, { x: -338, z1: 1440, z2: 1560, s: 0.9 }, { x: -142, z1: 1440, z2: 1560, s: 0.9 }, { x: -98, z1: 1440, z2: 1560, s: 0.9 }, { x: -22, z1: 1440, z2: 1560, s: 0.9 }, { x: 22, z1: 1440, z2: 1560, s: 0.9 }, { x: 218, z1: 1440, z2: 1560, s: 0.9 }, { x: 262, z1: 1440, z2: 1560, s: 0.9 }, { x: 98, z1: 1320, z2: 1440, s: 0.9 }, { x: 142, z1: 1320, z2: 1440, s: 0.9 }, { x: 98, z1: 1200, z2: 1320, s: 0.9 }, { x: 142, z1: 1200, z2: 1320, s: 0.9 }, { x: 218, z1: 1200, z2: 1320, s: 0.9 }, { x: 262, z1: 1200, z2: 1320, s: 0.9 }, { x: 578, z1: 1320, z2: 1440, s: 0.9 }, { x: 622, z1: 1320, z2: 1440, s: 0.9 }, { x: 698, z1: 1440, z2: 1560, s: 0.9 }, { x: 742, z1: 1440, z2: 1560, s: 0.9 }, { x: 578, z1: 1560, z2: 1680, s: 0.9 }, { x: 622, z1: 1560, z2: 1680, s: 0.9 }, { x: 578, z1: 1680, z2: 1800, s: 0.9 }, { x: 622, z1: 1680, z2: 1800, s: 0.9 }, { x: 578, z1: 1800, z2: 1920, s: 0.9 }, { x: 622, z1: 1800, z2: 1920, s: 0.9 }, { x: 578, z1: 1920, z2: 2040, s: 0.9 }, { x: 622, z1: 1920, z2: 2040, s: 0.9 }, { x: 578, z1: 2040, z2: 2160, s: 0.9 }, { x: 622, z1: 2040, z2: 2160, s: 0.9 }, { x: 818, z1: 2160, z2: 2280, s: 0.9 }, { x: 862, z1: 2160, z2: 2280, s: 0.9 }, { x: 818, z1: 2280, z2: 2400, s: 0.9 }, { x: 862, z1: 2280, z2: 2400, s: 0.9 }, { x: 698, z1: 2400, z2: 2520, s: 0.9 }, { x: 742, z1: 2400, z2: 2520, s: 0.9 }, { x: 698, z1: 2520, z2: 2640, s: 0.9 }, { x: 742, z1: 2520, z2: 2640, s: 0.9 }], timeLimit: 2300, hasGarage: true, assets: ['suburban', 'industrial'] }
         };
         
         if (lvId === 15) {
@@ -911,7 +1426,8 @@ class Game {
           cfg.startOutside = true;
           return cfg;
         }
-        let cfg = Object.assign({}, M[lvId] || M[1]);
+        let base = M[lvId] || _getThemeRoads(lv ? lv.themeType : null);
+        let cfg = Object.assign({}, base);
         if (lv) Object.assign(cfg, lv);
         cfg.startOutside = true;
         return cfg;
@@ -970,6 +1486,20 @@ class Game {
             this.playerVehicle.add(this.hL.target);
             this.playerVehicle.add(this.hR);
             this.playerVehicle.add(this.hR.target);
+            // ── PLAYER TAILLIGHTS ──
+            const tlGeo = new THREE.SphereGeometry(0.15, 6, 6);
+            const tlMat = new THREE.MeshBasicMaterial({ color: 0xff2200 });
+            const ptlL = new THREE.Mesh(tlGeo, tlMat); ptlL.position.set(1.2, 1, -2.8);
+            const ptlR = new THREE.Mesh(tlGeo, tlMat); ptlR.position.set(-1.2, 1, -2.8);
+            this.playerVehicle.add(ptlL); this.playerVehicle.add(ptlR);
+            this._playerTaillights = [ptlL, ptlR]; // store ref for brake glow
+            // Visible headlight cone meshes (semi-transparent yellow glow)
+            const coneGeo = new THREE.ConeGeometry(3, 20, 12, 1, true);
+            const coneMat = new THREE.MeshBasicMaterial({ color: 0xffffcc, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false });
+            const coneL = new THREE.Mesh(coneGeo, coneMat); coneL.position.set(1.5, 0.5, 13); coneL.rotation.x = Math.PI / 2;
+            const coneR = new THREE.Mesh(coneGeo.clone(), coneMat.clone()); coneR.position.set(-1.5, 0.5, 13); coneR.rotation.x = Math.PI / 2;
+            this.playerVehicle.add(coneL); this.playerVehicle.add(coneR);
+            this._headlightCones = [coneL, coneR];
           }
 
           this.scene.add(this.playerVehicle);
@@ -998,30 +1528,37 @@ class Game {
         if (typeof initGTex === 'function') initGTex();
         while (this.scene && this.scene.children.length) this.scene.remove(this.scene.children[0]);
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.speedBreakers = [];
+        // Phase 7: Recycle existing NPC groups into free pool before clearing scene
+        if (!this._npcFree) this._npcFree = [];
+        if (!this._pedFree) this._pedFree = [];
+        if (this.npcs) this.npcs.forEach(n => { n.visible = false; n.children.length = 0; this._npcFree.push(n); });
+        if (this.peds) this.peds.forEach(p => { p.visible = false; this._pedFree.push(p); });
+        if (this.scene) this.scene.children.filter(c => c.userData?.isNPC).forEach(c => { c.visible = false; c.children.length = 0; this._npcFree.push(c); });
 
         const lvId = ui.cur ? ui.cur.id : 1;
         const cfg = this._getMapConfig(lvId);
         this.mapCfg = cfg;
-        this.timeLimit = cfg.timeLimit || 120;
+        this.timeLimit = cfg.timeLimit || 120; // default; overridden by age-adaptive logic in _actualStart
         this.isPedestrian = (this.vehMode === 'pedestrian') || (!this.vehMode && !!cfg.isPedestrian);
 
         const sk = cfg.sky;
         this.scene.background = new THREE.Color(sk);
         const fogDist = cfg.fog || 200;
         const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-        const fogNear = isMobile ? Math.min(fogDist * 0.35, 50) : fogDist * 0.35;
-        const fogFar = isMobile ? Math.min(fogDist * 1.2, 250) : fogDist * 1.2;
+        const lowPerf = isMobile || this._isLowGPU;
+        const fogNear = lowPerf ? Math.min(fogDist * 0.35, 50) : fogDist * 0.35;
+        const fogFar = lowPerf ? Math.min(fogDist * 1.2, 250) : fogDist * 1.2;
         if (cfg.mode === 'rain' || cfg.hasRain) {
             this.scene.fog = new THREE.Fog(sk, fogNear * 0.3, fogFar * 0.5);
         } else {
             this.scene.fog = new THREE.Fog(sk, fogNear, fogFar);
         }
         // Enhanced true color lighting with better contrast and shadows
-        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.15 : 0.45));
-        const hemi = new THREE.HemisphereLight(0x87ceeb, 0x444444, cfg.isNight ? 0.1 : 0.3);
+        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.1 : 0.35));
+        const hemi = new THREE.HemisphereLight(0x87ceeb, 0x8a7560, cfg.isNight ? 0.1 : 0.45);
         this.scene.add(hemi);
 
-        const sun = new THREE.DirectionalLight(0xffeedd, cfg.isNight ? 0.5 : 1.0);
+        const sun = new THREE.DirectionalLight(0xfff5e0, cfg.isNight ? 0.4 : 1.2);
         sun.position.set(30, 60, 20); 
         sun.castShadow = true;
         sun.shadow.camera.near = 0.5;
@@ -1034,6 +1571,7 @@ class Game {
         sun.shadow.mapSize.width = 2048;
         sun.shadow.mapSize.height = 2048;
         this.scene.add(sun);
+        this._sun = sun; this._sunLastPos = null;
         
         if (cfg.isNight) {
           const moon = new THREE.DirectionalLight(0x88aacc, 0.5); 
@@ -1046,16 +1584,27 @@ class Game {
         this.roadSegments = cfg.roads;
         this.driveRoute = cfg.route;
         this._buildRoadZones(RW);
+
+        // Toon gradient map (3-step cel shading)
+        if (!window._toonGrad) {
+          const gc = new Uint8Array([40, 130, 255]);
+          window._toonGrad = new THREE.DataTexture(gc, 3, 1, THREE.RedFormat);
+          window._toonGrad.minFilter = THREE.NearestFilter;
+          window._toonGrad.magFilter = THREE.NearestFilter;
+          window._toonGrad.needsUpdate = true;
+        }
+        const tg = window._toonGrad;
+
         const mats = {
-          grass: new THREE.MeshPhongMaterial({ color: cfg.ground || 0x33691e }),
-          road: new THREE.MeshPhongMaterial({ color: 0x3d3f45, map: _genTex('asphalt') }),
-          pave: new THREE.MeshPhongMaterial({ color: 0xb5543a, map: _genTex('pave') }),
+          grass: new THREE.MeshToonMaterial({ color: cfg.ground || 0x3a9a3a, gradientMap: tg }),
+          road: new THREE.MeshToonMaterial({ color: 0x3d3f45, gradientMap: tg }),
+          pave: new THREE.MeshToonMaterial({ color: 0x8a8a8a, gradientMap: tg }),
           yellowLine: new THREE.MeshBasicMaterial({ color: 0xffcc00 }),
-          water: new THREE.MeshPhongMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 }),
-          urban: new THREE.MeshLambertMaterial({ color: 0x4a4a4f })
+          water: new THREE.MeshToonMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 }),
+          urban: new THREE.MeshToonMaterial({ color: 0x4a4a4f, gradientMap: tg })
         };
 
-        const ground = new THREE.Mesh(new THREE.PlaneGeometry(cfg.is50km ? 100000 : 2000, cfg.is50km ? 100000 : 2000), cfg.isBridge ? mats.water : (cfg.is50km ? new THREE.MeshLambertMaterial({ color: 0x444444 }) : mats.urban));
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(cfg.is50km ? 100000 : 2000, cfg.is50km ? 100000 : 2000), cfg.isBridge ? mats.water : (cfg.is50km ? new THREE.MeshToonMaterial({ color: 0x444444 }) : mats.urban));
         ground.rotation.x = -Math.PI / 2; this.scene.add(ground);
 
         // Build roads using GLB tiles
@@ -1105,9 +1654,9 @@ class Game {
         // Procedural Gateway of India (for Mumbai theme)
         if (cfg.name && (cfg.name.includes("Marine Drive") || cfg.name.includes("Colaba") || cfg.name.includes("Gateway") || cfg.name.includes("Exam") || Math.random() < 0.2)) {
             const gof = new THREE.Group();
-            const matBase = new THREE.MeshLambertMaterial({color: 0xd4c4a8});
-            const matWall = new THREE.MeshLambertMaterial({color: 0xc4b498});
-            const matTop = new THREE.MeshLambertMaterial({color: 0xb4a488});
+            const matBase = new THREE.MeshToonMaterial({color: 0xd4c4a8});
+            const matWall = new THREE.MeshToonMaterial({color: 0xc4b498});
+            const matTop = new THREE.MeshToonMaterial({color: 0xb4a488});
             
             const base = new THREE.Mesh(new THREE.BoxGeometry(40, 4, 25), matBase);
             base.position.y = 2; gof.add(base);
@@ -1134,7 +1683,7 @@ class Game {
             this.scene.add(gof);
 
             // Green park ground around monument
-            const parkGround = new THREE.Mesh(new THREE.CircleGeometry(35, 32), new THREE.MeshLambertMaterial({ color: 0x3a9a3a }));
+            const parkGround = new THREE.Mesh(new THREE.CircleGeometry(35, 32), new THREE.MeshToonMaterial({ color: 0x3a9a3a }));
             parkGround.rotation.x = -Math.PI / 2;
             parkGround.position.set(-50, 0.02, -60);
             this.scene.add(parkGround);
@@ -1142,10 +1691,10 @@ class Game {
 
         // Advanced Procedural Cityscape
         const bMats = [
-          new THREE.MeshLambertMaterial({ color: 0xd9cfc4, map: gTex.building }),
-          new THREE.MeshLambertMaterial({ color: 0xc4b8a8, map: gTex.building }),
-          new THREE.MeshLambertMaterial({ color: 0xb0a898, map: gTex.building }),
-          new THREE.MeshLambertMaterial({ color: 0xd4c8b8, map: gTex.building })
+          new THREE.MeshToonMaterial({ color: 0xd9cfc4, gradientMap: tg }),
+          new THREE.MeshToonMaterial({ color: 0xc4b8a8, gradientMap: tg }),
+          new THREE.MeshToonMaterial({ color: 0xb0a898, gradientMap: tg }),
+          new THREE.MeshToonMaterial({ color: 0xd4c8b8, gradientMap: tg })
         ];
         const winMat = new THREE.MeshBasicMaterial({ color: 0x304050 });
         const instancedBldgData = {};
@@ -1168,6 +1717,25 @@ class Game {
              const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 14), mat);
              bMesh.position.y = bh / 2;
              g.add(bMesh);
+             // ── BUILDING WINDOWS (night mode) ──
+             if (cfg.isNight) {
+               const winMat = new THREE.MeshBasicMaterial({ color: 0xffdd88 });
+               const winRows = Math.floor(bh / 4);
+               const winCols = Math.floor(bw / 3.5);
+               for (let wr = 0; wr < winRows; wr++) {
+                 for (let wc = 0; wc < winCols; wc++) {
+                   if (Math.random() > 0.55) continue; // ~45% windows lit
+                   const wMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.6), winMat);
+                   wMesh.position.set(-bw / 2 + 2 + wc * 3.5, 3 + wr * 4, 7.01);
+                   g.add(wMesh);
+                   // back side
+                   const wMesh2 = wMesh.clone();
+                   wMesh2.position.z = -7.01;
+                   wMesh2.rotation.y = Math.PI;
+                   g.add(wMesh2);
+                 }
+               }
+             }
              g.position.set(bx, 0, bz); g.rotation.y = rot;
               g.userData = { isBuilding: true, halfW: bw / 2, halfD: 7 };
               this.scene.add(g); this.obstacles.push(g);
@@ -1175,7 +1743,7 @@ class Game {
         };
 
         // Green strips between sidewalk and buildings
-        const grassMat = new THREE.MeshLambertMaterial({ color: 0x3a9a3a });
+        const grassMat = new THREE.MeshToonMaterial({ color: 0x3a9a3a, gradientMap: tg });
         cfg.roads.forEach(r => {
           const isV = r.type === 'v';
           const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
@@ -1192,7 +1760,7 @@ class Game {
             // Bushes along green strips
             const bushCount = Math.floor(len / 20);
             for (let bi = 0; bi < bushCount; bi++) {
-              const bush = new THREE.Mesh(new THREE.SphereGeometry(0.8 + Math.random() * 0.5, 6, 6), new THREE.MeshLambertMaterial({ color: 0x2d7a2d + Math.floor(Math.random() * 0x102010) }));
+              const bush = new THREE.Mesh(new THREE.SphereGeometry(0.8 + Math.random() * 0.5, 6, 6), new THREE.MeshToonMaterial({ color: 0x2d7a2d + Math.floor(Math.random() * 0x102010) }));
               const bOff = (Math.random() - 0.5) * (len - 4);
               bush.position.set(isV ? gx : gx + bOff, 0.4, isV ? gz + bOff : gz);
               this.scene.add(bush);
@@ -1242,42 +1810,48 @@ class Game {
               const lz = isV ? pos : cz + side * lDist;
               const prnd = Math.random();
               if (prnd > 0.85) {
-                const bench = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.6, 0.6), new THREE.MeshLambertMaterial({ color: 0x4a3728 }));
+                const bench = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.6, 0.6), new THREE.MeshToonMaterial({ color: 0x4a3728 }));
                 bench.position.set(lx, 0.3, lz);
                 if (!isV) bench.rotation.y = Math.PI / 2;
                 this.scene.add(bench); this.obstacles.push(bench);
               } else if (prnd > 0.7) {
                 const treeG = new THREE.Group();
-                const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 3), new THREE.MeshLambertMaterial({ color: 0x5c4033 }));
+                const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 3), new THREE.MeshToonMaterial({ color: 0x5c4033 }));
                 trunk.position.y = 1.5; treeG.add(trunk);
-                const leaves = new THREE.Mesh(new THREE.SphereGeometry(1.8, 7, 7), new THREE.MeshLambertMaterial({ color: 0x2ecc71 }));
+                const leaves = new THREE.Mesh(new THREE.SphereGeometry(1.8, 7, 7), new THREE.MeshToonMaterial({ color: 0x2ecc71 }));
                 leaves.position.y = 3.5; treeG.add(leaves);
                 treeG.position.set(lx, 0, lz); this.scene.add(treeG); this.obstacles.push(treeG);
               } else if (prnd > 0.65) {
                 const bStop = new THREE.Group();
-                const r1 = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 2), new THREE.MeshLambertMaterial({ color: 0x2980b9 }));
+                const r1 = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 2), new THREE.MeshToonMaterial({ color: 0x2980b9 }));
                 r1.position.y = 2.5; bStop.add(r1);
-                const p1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), new THREE.MeshLambertMaterial({ color: 0xcccccc }));
+                const p1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), new THREE.MeshToonMaterial({ color: 0xcccccc }));
                 p1.position.set(-1.2, 1.25, -0.8); bStop.add(p1);
                 const p2 = p1.clone(); p2.position.set(1.2, 1.25, -0.8); bStop.add(p2);
                 bStop.position.set(lx, 0, lz); if (!isV) bStop.rotation.y = Math.PI / 2;
                 this.scene.add(bStop); this.obstacles.push(bStop);
               } else if (prnd > 0.5) {
                 const stall = new THREE.Group();
-                const table = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.8, 1), new THREE.MeshLambertMaterial({ color: 0x8B4513 }));
+                const table = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.8, 1), new THREE.MeshToonMaterial({ color: 0x8B4513 }));
                 table.position.y = 0.4; stall.add(table);
-                const umb = new THREE.Mesh(new THREE.ConeGeometry(1.2, 0.5, 8), new THREE.MeshLambertMaterial({ color: Math.random() > 0.5 ? 0x3498db : 0xe74c3c }));
+                const umb = new THREE.Mesh(new THREE.ConeGeometry(1.2, 0.5, 8), new THREE.MeshToonMaterial({ color: Math.random() > 0.5 ? 0x3498db : 0xe74c3c }));
                 umb.position.y = 2.2; stall.add(umb);
                 const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.2), new THREE.MeshBasicMaterial({ color: 0xffffff }));
                 stick.position.y = 1.1; stall.add(stick);
                 stall.position.set(lx, 0, lz);
                 this.scene.add(stall); this.obstacles.push(stall);
               } else {
-                const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.18, 7), new THREE.MeshLambertMaterial({ color: 0x444444 }));
+                const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.18, 7), new THREE.MeshToonMaterial({ color: 0x444444 }));
                 pole.position.set(lx, 3.5, lz); this.scene.add(pole);
                 const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.35, 0.9), new THREE.MeshBasicMaterial({ color: 0xffffee }));
                 lamp.position.set(lx + (isV ? -side * 0.4 : 0), 7, lz + (!isV ? -side * 0.4 : 0));
                 this.scene.add(lamp);
+                // ── STREETLIGHT PointLight (night mode) ──
+                if (cfg.isNight) {
+                  const sl = new THREE.PointLight(0xffffee, 0.8, 35);
+                  sl.position.set(lamp.position.x, 6.8, lamp.position.z);
+                  this.scene.add(sl);
+                }
               }
             });
           }
@@ -1353,16 +1927,16 @@ class Game {
           const buildGarage = (gx, gz, label) => {
             const gg = new THREE.Group();
             // Garage body
-            const walls = new THREE.Mesh(new THREE.BoxGeometry(10, 5, 12), new THREE.MeshLambertMaterial({ color: 0x555555 }));
+            const walls = new THREE.Mesh(new THREE.BoxGeometry(10, 5, 12), new THREE.MeshToonMaterial({ color: 0x555555 }));
             walls.position.y = 2.5; gg.add(walls);
             // Roof
-            const roof = new THREE.Mesh(new THREE.BoxGeometry(11, 0.3, 13), new THREE.MeshLambertMaterial({ color: 0x333333 }));
+            const roof = new THREE.Mesh(new THREE.BoxGeometry(11, 0.3, 13), new THREE.MeshToonMaterial({ color: 0x333333 }));
             roof.position.y = 5; gg.add(roof);
             // Open front (remove front face with a dark plane)
             const front = new THREE.Mesh(new THREE.PlaneGeometry(8, 4), new THREE.MeshBasicMaterial({ color: 0x111111 }));
             front.position.set(0, 2.5, 6.01); gg.add(front);
             // Floor
-            const floor = new THREE.Mesh(new THREE.PlaneGeometry(9, 11), new THREE.MeshLambertMaterial({ color: 0x444444 }));
+            const floor = new THREE.Mesh(new THREE.PlaneGeometry(9, 11), new THREE.MeshToonMaterial({ color: 0x444444 }));
             floor.rotation.x = -Math.PI / 2; floor.position.y = 0.02; gg.add(floor);
             // Sign
             const sign = new THREE.Mesh(new THREE.PlaneGeometry(4, 1), new THREE.MeshBasicMaterial({ color: 0xffd54a }));
@@ -1373,8 +1947,34 @@ class Game {
           buildGarage(gs.x, gs.z, 'START');
           if (ge.x !== gs.x || ge.z !== gs.z) buildGarage(ge.x, ge.z, 'FINISH');
         }
-        // Checkpoints
-        cfg.route.forEach(pt => this._cp(pt.x, pt.z));
+        // Checkpoints — in pedestrian mode, offset rings to sidewalk
+        const swW = cfg.isPedestrian ? 6 : 4;
+        const swOffset = RW / 2 + swW / 2; // distance from road center to sidewalk center
+        const route = cfg.route;
+        for (let ri = 0; ri < route.length; ri++) {
+            const pt = route[ri];
+            if (this.isPedestrian && route.length >= 2) {
+                // Determine road direction from neighbors
+                const prev = route[Math.max(0, ri - 1)];
+                const next = route[Math.min(route.length - 1, ri + 1)];
+                const dx = next.x - prev.x, dz = next.z - prev.z;
+                const len = Math.sqrt(dx * dx + dz * dz);
+                if (len > 0.5) {
+                    const nx = -dz / len, nz = dx / len; // perpendicular
+                    const swx = pt.x + nx * swOffset, swz = pt.z + nz * swOffset;
+                    const rdx = pt.x - nx * swOffset, rdz = pt.z - nz * swOffset;
+                    const cp = this._cp(swx, swz);
+                    cp.userData.pathPts = [[swx, swz], [rdx, rdz], [swx, swz]];
+                } else {
+                    const cp = this._cp(pt.x - swOffset, pt.z);
+                    cp.userData.pathPts = [[pt.x - swOffset, pt.z], [pt.x, pt.z], [pt.x - swOffset, pt.z]];
+                }
+            } else {
+                this._cp(pt.x, pt.z);
+            }
+        }
+        // Directional path arrows on road/sidewalk
+        this._buildArrows();
 
         // Intersections with signals and zebra crossings
         (cfg.ints || []).forEach(([ix, iz]) => {
@@ -1457,12 +2057,23 @@ class Game {
         const allRoads = cfg.roads;
         let multipliedNpcs = [];
         const npcDensityMap = { light: 2, moderate: 4, heavy: 6 };
-        const npcMult = npcDensityMap[cfg.npcDensity] || 4;
+        const ageScale = (typeof ui !== 'undefined' && ui.getAgeScale) ? ui.getAgeScale() : 1.0;
+        const npcMult = Math.round((npcDensityMap[cfg.npcDensity] || 4) * ageScale);
         for (let m = 0; m < npcMult; m++) {
           multipliedNpcs.push(...npcTypes);
         }
         multipliedNpcs.forEach((nType, i) => {
-          const nv = this._makeNPC(nType, designColors[i % designColors.length]);
+          // Phase 7: Reuse freed group or create new one
+          let nv;
+          if (this._npcFree.length > 0) {
+            nv = this._npcFree.pop();
+            nv.children.length = 0; // clear old headlight/taillight children
+          } else {
+            nv = new THREE.Group();
+          }
+          // Clone from template cache (fast — skips full build)
+          const tpl = _getNpcTemplate(nType, designColors[i % designColors.length]);
+          tpl.children.forEach(c => nv.add(c.clone()));
           const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
           // ── BIDIRECTIONAL: 35% of NPCs go opposing direction ──
           const isOpp = i < Math.floor(multipliedNpcs.length * 0.35);
@@ -1475,28 +2086,94 @@ class Game {
             nv.rotation.y = isOpp ? -Math.PI / 2 : Math.PI / 2;
           }
           const spdMult = nType === 'truck' ? 0.6 : nType === 'bus' ? 0.7 : nType === 'cycle' ? 0.4 : nType === 'bike' ? 0.9 : nType === 'auto' ? 0.75 : 0.8;
-          nv.userData = {
-            spd: (0.3 + Math.random() * 0.22) * spdMult,
-            baseSpd: (0.3 + Math.random() * 0.22) * spdMult,
-            isAmb: false,
-            npcType: nType,
-            moveAxis: seg.type,
-            isOpp,
-            baseCoord: seg.type === 'v' ? seg.x : seg.z,
-            dir: isOpp ? -1 : 1,    // direction multiplier
-            minPos: seg.type === 'v' ? Math.min(seg.z1, seg.z2) : Math.min(seg.x1, seg.x2),
-            maxPos: seg.type === 'v' ? Math.max(seg.z1, seg.z2) : Math.max(seg.x1, seg.x2),
-            txX: seg.type === 'v' ? seg.x + laneOffset : undefined,
-            state: 'CRUISE'
-          };
+          const nightSpdMult = cfg.isNight ? 0.6 : 1.0; // NPCs drive slower at night
+           nv.userData = {
+             spd: (0.3 + Math.random() * 0.22) * spdMult * nightSpdMult,
+             baseSpd: (0.3 + Math.random() * 0.22) * spdMult * nightSpdMult,
+             isAmb: false,
+             npcType: nType,
+             moveAxis: seg.type,
+             isOpp,
+             baseCoord: seg.type === 'v' ? seg.x : seg.z,
+             dir: isOpp ? -1 : 1,    // direction multiplier
+             minPos: seg.type === 'v' ? Math.min(seg.z1, seg.z2) : Math.min(seg.x1, seg.x2),
+             maxPos: seg.type === 'v' ? Math.max(seg.z1, seg.z2) : Math.max(seg.x1, seg.x2),
+             txX: seg.type === 'v' ? seg.x + laneOffset : undefined,
+             state: 'CRUISE',
+             useRoute: !!(cfg.route && cfg.route.length >= 2),
+             route: cfg.route ? (isOpp ? [...cfg.route].reverse() : [...cfg.route]) : null,
+             routeIdx: cfg.route ? Math.floor(Math.random() * cfg.route.length) : 0,
+             laneOffset: laneOffset
+           };
+          // ── NPC HEADLIGHTS (night mode) ──
+          if (cfg.isNight && nType !== 'cycle') {
+            const hlL = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
+            hlL.position.set(0.8, 1.2, 2);
+            hlL.target.position.set(0.8, 0, 12);
+            nv.add(hlL); nv.add(hlL.target);
+            const hlR = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
+            hlR.position.set(-0.8, 1.2, 2);
+            hlR.target.position.set(-0.8, 0, 12);
+            nv.add(hlR); nv.add(hlR.target);
+            // Red taillights
+            const tlGeo = new THREE.SphereGeometry(0.15, 6, 6);
+            const tlMat = new THREE.MeshBasicMaterial({ color: 0xff2200 });
+            const tlL = new THREE.Mesh(tlGeo, tlMat); tlL.position.set(0.6, 1, -2.5);
+            const tlR = new THREE.Mesh(tlGeo, tlMat); tlR.position.set(-0.6, 1, -2.5);
+            nv.add(tlL); nv.add(tlR);
+          }
+          nv.frustumCulled = true;
+          nv.userData.isNPC = true; // Phase 7: mark for recycling on level change
           this.npcs.push(nv); this.scene.add(nv);
         });
+
+        // ── LEVEL-DEFINED NPCs (from lv.npcs array) ──
+        if (lv && lv.npcs) {
+          lv.npcs.forEach((npcDef, i) => {
+            const nv = new THREE.Group();
+            const tpl = _getNpcTemplate(npcDef.type, npcDef.color || 0x888888);
+            tpl.children.forEach(c => nv.add(c.clone()));
+            const spd = npcDef.speed || 0.06;
+            const routePts = (npcDef.route || []).map(p => ({ x: p[0], z: p[1] }));
+            const startPt = routePts[0] || { x: 0, z: 0 };
+            nv.position.set(startPt.x, 0, startPt.z);
+            if (routePts.length >= 2) {
+              const dx = routePts[1].x - routePts[0].x;
+              const dz = routePts[1].z - routePts[0].z;
+              if (Math.abs(dx) > Math.abs(dz)) nv.rotation.y = dx > 0 ? -Math.PI / 2 : Math.PI / 2;
+              else nv.rotation.y = dz > 0 ? 0 : Math.PI;
+            }
+            nv.userData = {
+              spd, baseSpd: spd, isAmb: false, npcType: npcDef.type,
+              moveAxis: null, isOpp: false, baseCoord: 0, dir: 1,
+              minPos: 0, maxPos: 0, txX: undefined,
+              state: 'CRUISE', useRoute: routePts.length >= 2,
+              route: routePts, routeIdx: 0, laneOffset: 0,
+              isNPC: true, isLevelDefined: true
+            };
+            if (cfg.isNight && npcDef.type !== 'cycle') {
+              const hlL = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
+              hlL.position.set(0.8, 1.2, 2); hlL.target.position.set(0.8, 0, 12);
+              nv.add(hlL); nv.add(hlL.target);
+              const hlR = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
+              hlR.position.set(-0.8, 1.2, 2); hlR.target.position.set(-0.8, 0, 12);
+              nv.add(hlR); nv.add(hlR.target);
+              const tlGeo = new THREE.SphereGeometry(0.15, 6, 6);
+              const tlMat = new THREE.MeshBasicMaterial({ color: 0xff2200 });
+              const tlL = new THREE.Mesh(tlGeo, tlMat); tlL.position.set(0.6, 1, -2.5);
+              const tlR = new THREE.Mesh(tlGeo, tlMat); tlR.position.set(-0.6, 1, -2.5);
+              nv.add(tlL); nv.add(tlR);
+            }
+            nv.frustumCulled = true;
+            this.npcs.push(nv); this.scene.add(nv);
+          });
+        }
 
         // ── STATIC PARKED CARS ──
         for (let i = 0; i < allRoads.length * 3; i++) {
           const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
           const pType = ['car', 'taxi', 'truck'][Math.floor(Math.random() * 3)];
-          const pc = this._makeNPC(pType, designColors[Math.floor(Math.random() * designColors.length)]);
+          const pc = _getNpcTemplate(pType, designColors[Math.floor(Math.random() * designColors.length)]).clone();
           const isLeft = Math.random() > 0.5;
           const parkOffset = isLeft ? -4.5 : 4.5;
           if (seg.type === 'v') {
@@ -1507,6 +2184,14 @@ class Game {
             pc.rotation.y = isLeft ? -Math.PI / 2 : Math.PI / 2;
           }
           this.scene.add(pc);
+          // ── PARKED CAR TAILLIGHTS (night mode) ──
+          if (cfg.isNight) {
+            const tlGeo = new THREE.SphereGeometry(0.12, 6, 6);
+            const tlMat = new THREE.MeshBasicMaterial({ color: 0xff2200 });
+            const tlL = new THREE.Mesh(tlGeo, tlMat); tlL.position.set(0.5, 0.8, -2);
+            const tlR = new THREE.Mesh(tlGeo, tlMat); tlR.position.set(-0.5, 0.8, -2);
+            pc.add(tlL); pc.add(tlR);
+          }
           if (this.obstacles) this.obstacles.push(pc);
         }
 
@@ -1530,7 +2215,7 @@ class Game {
             this.puddles.push(p);
           }
           for (let i = 0; i < 15; i++) {
-            const p = new THREE.Mesh(new THREE.CylinderGeometry(1.4 + Math.random(), 1.5 + Math.random(), .08, 12), new THREE.MeshPhongMaterial({ color: 0x0c101a, transparent: true, opacity: 0.6 }));
+            const p = new THREE.Mesh(new THREE.CylinderGeometry(1.4 + Math.random(), 1.5 + Math.random(), .08, 12), new THREE.MeshToonMaterial({ color: 0x0c101a, transparent: true, opacity: 0.6 }));
             p.position.set((Math.random() - .5) * 120, 0.016, (Math.random() - .5) * 160); this.scene.add(p); this.spc.push(p); p.userData = { isPH: true };
           }
         }
@@ -1560,7 +2245,7 @@ class Game {
               this.ms.amb.scale.set(1.5, 1.5, 1.5);
               this.ms.amb.traverse(c => { if(c.isMesh) { c.castShadow = true; c.receiveShadow = true; }});
           } else {
-              this.ms.amb = this._makeNPC('car', 0xffffff);
+              this.ms.amb = _getNpcTemplate('car', 0xffffff).clone();
           }
           this.ms.amb.position.set(0, 0.5, -230);
           this.ms.amb.userData = { spd: 1.2, isAmb: true, npcType: 'ambulance', moveAxis: 'v' };
@@ -1603,7 +2288,7 @@ class Game {
             this.scene.add(busStop);
             this.obstacles.push(busStop);
             
-            const bus = this._makeNPC('bus', 0xffffff);
+            const bus = _getNpcTemplate('bus', 0xffffff).clone();
             bus.position.set(4, 0, 30);
             bus.userData = { spd: 0, npcType: 'bus', moveAxis: 'v', isStopped: true };
             this.npcs.push(bus);
@@ -1621,7 +2306,7 @@ class Game {
         if (cfg.id === 1) {
             // Sneh Asha Building
             const saGeo = new THREE.BoxGeometry(10, 40, 10);
-            const saMat = new THREE.MeshPhongMaterial({ color: 0xe0e0e0 });
+            const saMat = new THREE.MeshToonMaterial({ color: 0xe0e0e0 });
             const saBldg = new THREE.Mesh(saGeo, saMat);
             saBldg.position.set(-30, 20, 0);
             this.scene.add(saBldg);
@@ -1636,7 +2321,7 @@ class Game {
             
             // Gateway of India (Detailed representation for Mumbai)
             const gwGroup = new THREE.Group();
-            const stoneMat = new THREE.MeshPhongMaterial({ color: 0xdfd3c3 }); // Basalt color
+            const stoneMat = new THREE.MeshToonMaterial({ color: 0xdfd3c3 }); // Basalt color
             
             // Main Pillars
             const p1 = new THREE.Mesh(new THREE.BoxGeometry(6, 18, 8), stoneMat); p1.position.set(-10, 9, 0); gwGroup.add(p1);
@@ -1663,7 +2348,7 @@ class Game {
         // Gully / Narrow Road Elements
         if (cfg.id === 10) {
             for (let i=0; i<15; i++) {
-                const cart = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 3), new THREE.MeshLambertMaterial({ color: 0x8b4513 }));
+                const cart = new THREE.Mesh(new THREE.BoxGeometry(2, 1.5, 3), new THREE.MeshToonMaterial({ color: 0x8b4513 }));
                 cart.position.set((Math.random() > 0.5 ? 1 : -1) * (2 + Math.random()*2), 0.75, (Math.random() - 0.5) * 150);
                 this.scene.add(cart);
                 this.obstacles.push(cart);
@@ -1688,7 +2373,7 @@ class Game {
         } else if (cfg.themeType === 'respectful_parking') {
             // Spawn haphazard parked cars
             for (let i = 0; i < 15; i++) {
-                const pc = this._makeNPC('car', 0x999999);
+                const pc = _getNpcTemplate('car', 0x999999).clone();
                 pc.position.set((Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 4), 0, (Math.random() - 0.5) * 150);
                 pc.rotation.y = (Math.random() - 0.5) * 0.5;
                 pc.userData.spd = 0; pc.userData.isStopped = true; pc.userData.isParked = true;
@@ -1696,7 +2381,7 @@ class Game {
             }
         } else if (cfg.themeType === 'ambulance_priority') {
             if (!this.ms.amb) {
-                this.ms.amb = this._makeNPC('car', 0xffffff);
+              this.ms.amb = _getNpcTemplate('car', 0xffffff).clone();
                 this.ms.amb.userData = { spd: 1.2, isAmb: true, npcType: 'ambulance', moveAxis: 'v' };
                 const flash = new THREE.PointLight(0xff0000, 2, 8); flash.position.y = 1.5; this.ms.amb.add(flash);
                 const flash2 = new THREE.PointLight(0x0000ff, 2, 8); flash2.position.set(.5, 1.5, 0); this.ms.amb.add(flash2);
@@ -1726,14 +2411,14 @@ class Game {
         } else if (cfg.themeType === 'no_honking') {
             cfg.isSilenceZone = true;
             for (let i = 0; i < 6; i++) {
-                const block = this._makeNPC('car', Math.random() * 0xffffff);
+                const block = _getNpcTemplate('car', Math.random() * 0xffffff).clone();
                 block.position.set(0, 0, -20 - i * 15);
                 block.userData.spd = 0; block.userData.isStopped = true;
                 this.npcs.push(block); this.scene.add(block);
             }
             // Hospital sign
             const hGeo = new THREE.BoxGeometry(10, 10, 10);
-            const hMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+            const hMat = new THREE.MeshToonMaterial({ color: 0xffffff });
             const hospital = new THREE.Mesh(hGeo, hMat);
             hospital.position.set(-15, 5, -30);
             this.scene.add(hospital); this.obstacles.push(hospital);
@@ -1741,8 +2426,8 @@ class Game {
         
         // ── MOUNTAIN BACKDROP ──
         if (cfg.hasMountain) {
-          const mM = new THREE.MeshPhongMaterial({ color: 0x4a6040 });
-          const rM = new THREE.MeshPhongMaterial({ color: 0x7a6d5c });
+          const mM = new THREE.MeshToonMaterial({ color: 0x4a6040 });
+          const rM = new THREE.MeshToonMaterial({ color: 0x7a6d5c });
           [
             { x: 200, z: -300, h: 80, w: 160 },
             { x: -180, z: -200, h: 95, w: 140 },
@@ -1758,7 +2443,7 @@ class Game {
           });
           // Guardrails along main road for ghat feel
           for (let rz = -350; rz <= 100; rz += 8) {
-            const grL = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.7, 3), new THREE.MeshPhongMaterial({ color: 0xcccccc }));
+            const grL = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.7, 3), new THREE.MeshToonMaterial({ color: 0xcccccc }));
             grL.position.set(8, 0.35, rz); this.scene.add(grL);
             const grR = grL.clone(); grR.position.x = -8; this.scene.add(grR);
           }
@@ -1769,19 +2454,19 @@ class Game {
           (cfg.railZ || []).forEach(rz => {
             // Rail tracks
             for (let t = -25; t < 25; t += 2) {
-              const rail = new THREE.Mesh(new THREE.BoxGeometry(0.1, .05, 1.5), new THREE.MeshPhongMaterial({ color: 0x888888 }));
+              const rail = new THREE.Mesh(new THREE.BoxGeometry(0.1, .05, 1.5), new THREE.MeshToonMaterial({ color: 0x888888 }));
               rail.position.set(t, .04, rz); this.scene.add(rail);
             }
             // Crossbar ties
             for (let t = -25; t < 25; t += 4) {
-              const tie = new THREE.Mesh(new THREE.BoxGeometry(3, .08, .3), new THREE.MeshPhongMaterial({ color: 0x4a3728 }));
+              const tie = new THREE.Mesh(new THREE.BoxGeometry(3, .08, .3), new THREE.MeshToonMaterial({ color: 0x4a3728 }));
               tie.position.set(t, .03, rz); this.scene.add(tie);
             }
             // Gate poles
             [-8, 8].forEach(gx => {
-              const pole = new THREE.Mesh(new THREE.CylinderGeometry(.08, .08, 3, 8), new THREE.MeshPhongMaterial({ color: 0xcc0000 }));
+              const pole = new THREE.Mesh(new THREE.CylinderGeometry(.08, .08, 3, 8), new THREE.MeshToonMaterial({ color: 0xcc0000 }));
               pole.position.set(gx, 1.5, rz + 7); this.scene.add(pole);
-              const arm = new THREE.Mesh(new THREE.BoxGeometry(6, .12, .12), new THREE.MeshPhongMaterial({ color: 0xcc0000 }));
+              const arm = new THREE.Mesh(new THREE.BoxGeometry(6, .12, .12), new THREE.MeshToonMaterial({ color: 0xcc0000 }));
               arm.position.set(gx, 3, rz + 7); this.scene.add(arm);
             });
           });
@@ -1795,29 +2480,29 @@ class Game {
             const cx = isV ? r.x : (r.x1 + r.x2) / 2;
             const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
 
-            const track = new THREE.Mesh(new THREE.BoxGeometry(isV ? 6 : len, 1, isV ? len : 6), new THREE.MeshLambertMaterial({ color: 0x555555 }));
+            const track = new THREE.Mesh(new THREE.BoxGeometry(isV ? 6 : len, 1, isV ? len : 6), new THREE.MeshToonMaterial({ color: 0x555555 }));
             track.position.set(cx, 12, cz);
             this.scene.add(track);
 
             for (let p = start + 10; p < end; p += 40) {
               const px = isV ? cx : p;
               const pz = isV ? p : cz;
-              const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1, 12, 12), new THREE.MeshLambertMaterial({ color: 0x999999 }));
+              const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1, 12, 12), new THREE.MeshToonMaterial({ color: 0x999999 }));
               pillar.position.set(px, 6, pz);
               this.scene.add(pillar); this.obstacles.push(pillar);
             }
 
-            const train = new THREE.Mesh(new THREE.BoxGeometry(isV ? 4.5 : 30, 3, isV ? 30 : 4.5), new THREE.MeshLambertMaterial({ color: 0xdddddd }));
+            const train = new THREE.Mesh(new THREE.BoxGeometry(isV ? 4.5 : 30, 3, isV ? 30 : 4.5), new THREE.MeshToonMaterial({ color: 0xdddddd }));
             train.position.set(cx, 14, cz);
-            const stripe = new THREE.Mesh(new THREE.BoxGeometry(isV ? 4.6 : 30.1, 0.4, isV ? 30.1 : 4.6), new THREE.MeshLambertMaterial({ color: 0x3498db }));
+            const stripe = new THREE.Mesh(new THREE.BoxGeometry(isV ? 4.6 : 30.1, 0.4, isV ? 30.1 : 4.6), new THREE.MeshToonMaterial({ color: 0x3498db }));
             stripe.position.set(cx, 14, cz);
             this.scene.add(train); this.scene.add(stripe);
           });
         }
         if (cfg.isBridge) {
           // ── TOLL BOOTH on the bridge ──
-          const tollM = new THREE.MeshPhongMaterial({ color: 0x888888 });
-          const tollY = new THREE.MeshPhongMaterial({ color: 0xffcc00 });
+          const tollM = new THREE.MeshToonMaterial({ color: 0x888888 });
+          const tollY = new THREE.MeshToonMaterial({ color: 0xffcc00 });
           // 3 toll pillars
           [-8, 0, 8].forEach(ox => {
             const tp = new THREE.Mesh(new THREE.BoxGeometry(1.2, 4, 1), tollM);
@@ -1827,20 +2512,20 @@ class Game {
           });
           const beam = new THREE.Mesh(new THREE.BoxGeometry(18, 0.5, 0.5), tollM);
           beam.position.set(0, 4, -120); this.scene.add(beam);
-          const sign = new THREE.Mesh(new THREE.BoxGeometry(12, 2, 0.2), new THREE.MeshPhongMaterial({ color: 0x003399 }));
+          const sign = new THREE.Mesh(new THREE.BoxGeometry(12, 2, 0.2), new THREE.MeshToonMaterial({ color: 0x003399 }));
           sign.position.set(0, 5.5, -120); this.scene.add(sign);
           // Bridge railings
           [-7.5, 7.5].forEach(rx => {
             for (let z = -600; z < 100; z += 8) {
-              const post = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, 1.5, 6), new THREE.MeshPhongMaterial({ color: 0xcccccc }));
+              const post = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, 1.5, 6), new THREE.MeshToonMaterial({ color: 0xcccccc }));
               post.position.set(rx, .75, z); this.scene.add(post);
             }
-            const cable = new THREE.Mesh(new THREE.BoxGeometry(.04, 700, .04), new THREE.MeshPhongMaterial({ color: 0xdddddd }));
+            const cable = new THREE.Mesh(new THREE.BoxGeometry(.04, 700, .04), new THREE.MeshToonMaterial({ color: 0xdddddd }));
             cable.position.set(rx, 1.5, -250); cable.rotation.x = Math.PI / 2; this.scene.add(cable);
           });
           // Bridge pylons
           [-200, 0, -400].forEach(pz => {
-            const pylon = new THREE.Mesh(new THREE.CylinderGeometry(.8, .6, 25, 8), new THREE.MeshPhongMaterial({ color: 0xcccccc }));
+            const pylon = new THREE.Mesh(new THREE.CylinderGeometry(.8, .6, 25, 8), new THREE.MeshToonMaterial({ color: 0xcccccc }));
             pylon.position.set(0, 12, pz); this.scene.add(pylon);
           });
         }
@@ -1850,22 +2535,22 @@ class Game {
           const buildLandmark = (type, bx, bz) => {
             const lg = new THREE.Group();
             if (type === 'gateway') {
-              const m1 = new THREE.Mesh(new THREE.BoxGeometry(20, 18, 12), new THREE.MeshPhongMaterial({ color: 0xd4a373 }));
+              const m1 = new THREE.Mesh(new THREE.BoxGeometry(20, 18, 12), new THREE.MeshToonMaterial({ color: 0xd4a373 }));
               m1.position.y = 9; lg.add(m1);
               const m2 = new THREE.Mesh(new THREE.CylinderGeometry(4, 4, 18, 16), new THREE.MeshBasicMaterial({ color: 0x111111 }));
               m2.position.set(0, 9, 1); m2.rotation.x = Math.PI / 2; lg.add(m2); // Arch hole
-              const m3 = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 6, 8), new THREE.MeshPhongMaterial({ color: 0xd4a373 }));
+              const m3 = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 6, 8), new THREE.MeshToonMaterial({ color: 0xd4a373 }));
               m3.position.set(-8, 21, 0); lg.add(m3);
               const m4 = m3.clone(); m4.position.set(8, 21, 0); lg.add(m4);
             } else if (type === 'bse') {
-              const m1 = new THREE.Mesh(new THREE.CylinderGeometry(8, 8, 45, 16), new THREE.MeshPhongMaterial({ color: 0xcccccc }));
+              const m1 = new THREE.Mesh(new THREE.CylinderGeometry(8, 8, 45, 16), new THREE.MeshToonMaterial({ color: 0xcccccc }));
               m1.position.y = 22.5; lg.add(m1);
-              const m2 = new THREE.Mesh(new THREE.CylinderGeometry(10, 10, 5, 16), new THREE.MeshPhongMaterial({ color: 0x444444 }));
+              const m2 = new THREE.Mesh(new THREE.CylinderGeometry(10, 10, 5, 16), new THREE.MeshToonMaterial({ color: 0x444444 }));
               m2.position.y = 47.5; lg.add(m2);
             } else if (type === 'antilia') {
               for (let i = 0; i < 8; i++) {
                 const w = 12 + Math.random() * 8;
-                const m = new THREE.Mesh(new THREE.BoxGeometry(w, 5, w), new THREE.MeshPhongMaterial({ color: (i % 2 === 0) ? 0x88aa88 : 0xaaaaaa }));
+                const m = new THREE.Mesh(new THREE.BoxGeometry(w, 5, w), new THREE.MeshToonMaterial({ color: (i % 2 === 0) ? 0x88aa88 : 0xaaaaaa }));
                 m.position.set(Math.random() * 4 - 2, 2.5 + i * 6, Math.random() * 4 - 2);
                 lg.add(m);
               }
@@ -1884,10 +2569,10 @@ class Game {
 
         if (cfg.hasSchool) {
           // School building
-          const school = new THREE.Mesh(new THREE.BoxGeometry(18, 8, 12), new THREE.MeshPhongMaterial({ color: 0xd4ac0d }));
+          const school = new THREE.Mesh(new THREE.BoxGeometry(18, 8, 12), new THREE.MeshToonMaterial({ color: 0xd4ac0d }));
           school.position.set(-40, 4, -80); this.scene.add(school); this.obstacles.push(school);
           // School sign
-          const sign = new THREE.Mesh(new THREE.BoxGeometry(3, 1.5, .1), new THREE.MeshPhongMaterial({ color: 0xffff00 }));
+          const sign = new THREE.Mesh(new THREE.BoxGeometry(3, 1.5, .1), new THREE.MeshToonMaterial({ color: 0xffff00 }));
           sign.position.set(0, 2.5, -60); this.scene.add(sign);
         }
         if (cfg.hasOcean) {
@@ -1895,21 +2580,21 @@ class Game {
           ocean.rotation.x = -Math.PI / 2; ocean.position.set(350, .01, -150); this.scene.add(ocean);
         }
         if (cfg.hasBeach) {
-          const sand = new THREE.Mesh(new THREE.PlaneGeometry(200, 600), new THREE.MeshPhongMaterial({ color: 0xc2b280 }));
+          const sand = new THREE.Mesh(new THREE.PlaneGeometry(200, 600), new THREE.MeshToonMaterial({ color: 0xc2b280 }));
           sand.rotation.x = -Math.PI / 2; sand.position.set(80, .005, -100); this.scene.add(sand);
           const ocean = new THREE.Mesh(new THREE.PlaneGeometry(400, 800), mats.water);
           ocean.rotation.x = -Math.PI / 2; ocean.position.set(250, .01, -100); this.scene.add(ocean);
         }
         if (cfg.hasSilentZone) {
           // Hospital building
-          const hosp = new THREE.Mesh(new THREE.BoxGeometry(20, 12, 15), new THREE.MeshPhongMaterial({ color: 0xeeeeee }));
+          const hosp = new THREE.Mesh(new THREE.BoxGeometry(20, 12, 15), new THREE.MeshToonMaterial({ color: 0xeeeeee }));
           hosp.position.set(25, 6, -20); hosp.userData = { isBuilding: true, halfW: 10, halfD: 7.5 };
           this.scene.add(hosp); this.obstacles.push(hosp);
-          const cross = new THREE.Mesh(new THREE.BoxGeometry(2, 2, .1), new THREE.MeshPhongMaterial({ color: 0xff0000 }));
+          const cross = new THREE.Mesh(new THREE.BoxGeometry(2, 2, .1), new THREE.MeshToonMaterial({ color: 0xff0000 }));
           cross.position.set(25, 10, 7.6); this.scene.add(cross);
           // Silent zone markers
           [cfg.silentZ1 || 0, cfg.silentZ2 || 0].forEach(sz => {
-            const marker = new THREE.Mesh(new THREE.BoxGeometry(1, 2, .1), new THREE.MeshPhongMaterial({ color: 0xff6600 }));
+            const marker = new THREE.Mesh(new THREE.BoxGeometry(1, 2, .1), new THREE.MeshToonMaterial({ color: 0xff6600 }));
             marker.position.set(-7, 1, sz); this.scene.add(marker);
             const m2 = marker.clone(); m2.position.x = 7; this.scene.add(m2);
           });
@@ -1923,12 +2608,12 @@ class Game {
           const bz = seg.type === 'v' ? seg.z1 + Math.random() * (seg.z2 - seg.z1) : seg.z + (Math.random() > .5 ? 10 : -10);
           // Big red-white striped barricade
           const barG = new THREE.Group();
-          const bp1 = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, 1.5, 8), new THREE.MeshPhongMaterial({ color: 0xff3300 }));
+          const bp1 = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, 1.5, 8), new THREE.MeshToonMaterial({ color: 0xff3300 }));
           bp1.position.set(-0.5, 0.75, 0); barG.add(bp1);
           const bp2 = bp1.clone(); bp2.position.set(0.5, 0.75, 0); barG.add(bp2);
-          const bBar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.25, 0.15), new THREE.MeshPhongMaterial({ color: 0xffffff }));
+          const bBar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.25, 0.15), new THREE.MeshToonMaterial({ color: 0xffffff }));
           bBar.position.set(0, 1.3, 0); barG.add(bBar);
-          const rSt = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.25, 0.16), new THREE.MeshPhongMaterial({ color: 0xff0000 }));
+          const rSt = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.25, 0.16), new THREE.MeshToonMaterial({ color: 0xff0000 }));
           rSt.position.set(0, 1.3, 0); barG.add(rSt);
           const bBar2 = bBar.clone(); bBar2.position.set(0, 0.9, 0); barG.add(bBar2);
           barG.position.set(bx, 0, bz);
@@ -1951,7 +2636,7 @@ class Game {
           for (let i = 0; i < 6; i++) {
             const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
             const types = ['car', 'auto', 'bike'];
-            const pc = this._makeNPC(types[i % 3], Math.random() * 0xffffff);
+            const pc = _getNpcTemplate(types[i % 3], Math.random() * 0xffffff).clone();
             if (seg.type === 'v') pc.position.set(seg.x + (Math.random() > .5 ? 5.5 : -5.5), 0, seg.z1 + Math.random() * (seg.z2 - seg.z1));
             else pc.position.set(seg.x1 + Math.random() * (seg.x2 - seg.x1), 0, seg.z + (Math.random() > .5 ? 5.5 : -5.5));
             pc.userData = { isParked: true, halfW: 2.5, halfD: 1.5 };
@@ -1987,30 +2672,89 @@ class Game {
         this.rain = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x9cc9ff, size: 0.06, transparent: true, opacity: 0.55 }));
         this.scene.add(this.rain);
       }
+      _spawnSplash(x, y, z) {
+        const count = 12;
+        const geo = new THREE.BufferGeometry();
+        const pos = new Float32Array(count * 3);
+        const vel = [];
+        for (let i = 0; i < count; i++) {
+          pos[i * 3] = x; pos[i * 3 + 1] = y + 0.2; pos[i * 3 + 2] = z;
+          vel.push((Math.random() - 0.5) * 4, 3 + Math.random() * 4, (Math.random() - 0.5) * 4);
+        }
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+        const pts = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x9cc9ff, size: 0.15, transparent: true, opacity: 0.8 }));
+        this.scene.add(pts);
+        let elapsed = 0;
+        const animSplash = () => {
+          elapsed += 0.016;
+          if (elapsed > 0.6) { this.scene.remove(pts); geo.dispose(); return; }
+          const p = pts.geometry.attributes.position.array;
+          for (let i = 0; i < count; i++) {
+            p[i * 3] += vel[i * 3] * 0.016;
+            p[i * 3 + 1] += vel[i * 3 + 1] * 0.016;
+            p[i * 3 + 2] += vel[i * 3 + 2] * 0.016;
+            vel[i * 3 + 1] -= 12 * 0.016; // gravity
+          }
+          pts.geometry.attributes.position.needsUpdate = true;
+          pts.material.opacity = 0.8 * (1 - elapsed / 0.6);
+          requestAnimationFrame(animSplash);
+        };
+        animSplash();
+      }
+      _spawnDust(x, y, z) {
+        const count = 8;
+        const geo = new THREE.BufferGeometry();
+        const pos = new Float32Array(count * 3);
+        const vel = [];
+        for (let i = 0; i < count; i++) {
+          pos[i * 3] = x + (Math.random() - 0.5) * 1.5; pos[i * 3 + 1] = y + 0.1; pos[i * 3 + 2] = z + (Math.random() - 0.5) * 1.5;
+          vel.push((Math.random() - 0.5) * 1.5, 1 + Math.random() * 2, (Math.random() - 0.5) * 1.5);
+        }
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+        const dustColor = 0xc2b280; // dust tan color
+        const pts = new THREE.Points(geo, new THREE.PointsMaterial({ color: dustColor, size: 0.2, transparent: true, opacity: 0.7 }));
+        this.scene.add(pts);
+        let elapsed = 0;
+        const animDust = () => {
+          elapsed += 0.016;
+          if (elapsed > 0.5) { this.scene.remove(pts); geo.dispose(); return; }
+          const p = pts.geometry.attributes.position.array;
+          for (let i = 0; i < count; i++) {
+            p[i * 3] += vel[i * 3] * 0.016;
+            p[i * 3 + 1] += vel[i * 3 + 1] * 0.016;
+            p[i * 3 + 2] += vel[i * 3 + 2] * 0.016;
+            vel[i * 3 + 1] -= 4 * 0.016; // gravity
+          }
+          pts.geometry.attributes.position.needsUpdate = true;
+          pts.material.opacity = 0.7 * (1 - elapsed / 0.5);
+          requestAnimationFrame(animDust);
+        };
+        animDust();
+      }
 
       _cp(x, z, col = 0x00c851) {
         const ring = new THREE.Mesh(new THREE.TorusGeometry(1.7, .16, 10, 20), new THREE.MeshBasicMaterial({ color: col })); ring.rotation.x = -Math.PI / 2;
-        ring.position.set(x, .8, z); this.scene.add(ring); this.cps.push(ring); return ring;
+        ring.position.set(x, .8, z); ring.userData.pathT = 0; this.scene.add(ring); this.cps.push(ring); return ring;
       }
       _sig(x, z) {
         const g = new THREE.Group();
         // Main pole - taller Indian-style
-        const p = new THREE.Mesh(new THREE.CylinderGeometry(.08, .12, 4.5, 8), new THREE.MeshPhongMaterial({ color: 0x666666 }));
+        const p = new THREE.Mesh(new THREE.CylinderGeometry(.08, .12, 4.5, 8), new THREE.MeshToonMaterial({ color: 0x666666 }));
         p.position.y = 2.25;
         // Vertical signal head (Indian 3-aspect)
-        const bx = new THREE.Mesh(new THREE.BoxGeometry(.55, 1.5, .35), new THREE.MeshPhongMaterial({ color: 0x1a1a1a }));
+        const bx = new THREE.Mesh(new THREE.BoxGeometry(.55, 1.5, .35), new THREE.MeshToonMaterial({ color: 0x1a1a1a }));
         bx.position.y = 4.3;
         // Visor hoods for each aspect
         const mkHood = (y) => {
-          const hood = new THREE.Mesh(new THREE.CylinderGeometry(.18, .22, .15, 8, 1, true), new THREE.MeshPhongMaterial({ color: 0x222222, side: THREE.DoubleSide }));
+          const hood = new THREE.Mesh(new THREE.CylinderGeometry(.18, .22, .15, 8, 1, true), new THREE.MeshToonMaterial({ color: 0x222222, side: THREE.DoubleSide }));
           hood.position.set(0, y, .22); hood.rotation.x = Math.PI / 2;
           return hood;
         };
         const mk = (y, n) => { const s = new THREE.Mesh(new THREE.SphereGeometry(.16), new THREE.MeshBasicMaterial({ color: 0x111111 })); s.position.set(0, y, .18); s.name = n; return s; };
         // Pedestrian signal pole
-        const ps_pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, 1.8, 8), new THREE.MeshPhongMaterial({ color: 0x666666 }));
+        const ps_pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, 1.8, 8), new THREE.MeshToonMaterial({ color: 0x666666 }));
         ps_pole.position.set(0, 0.9, 2.2);
-        const ps_box = new THREE.Mesh(new THREE.BoxGeometry(.3, .6, .2), new THREE.MeshPhongMaterial({ color: 0x1a1a1a }));
+        const ps_box = new THREE.Mesh(new THREE.BoxGeometry(.3, .6, .2), new THREE.MeshToonMaterial({ color: 0x1a1a1a }));
         ps_box.position.set(0, 1.8, 2.2);
         const mks = (y, n) => { const s = new THREE.Mesh(new THREE.SphereGeometry(.09), new THREE.MeshBasicMaterial({ color: 0x111111 })); s.position.set(0, y, 2.31); s.name = n; return s; };
         g.add(ps_pole, ps_box, mks(1.95, 'p_red'), mks(1.65, 'p_green'));
@@ -2021,7 +2765,7 @@ class Game {
       
       _addTrafficSign(x, z, type, rotY = 0) {
           const g = new THREE.Group();
-          const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3, 8), new THREE.MeshPhongMaterial({ color: 0x555555 }));
+          const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3, 8), new THREE.MeshToonMaterial({ color: 0x555555 }));
           pole.position.y = 1.5;
           const canvas = document.createElement('canvas'); canvas.width = 128; canvas.height = 128;
           const ctx = canvas.getContext('2d');
@@ -2059,20 +2803,95 @@ class Game {
       }
 
       _addSpeedBreaker(x, z, rotY = 0) {
-          const bump = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 6, 12, 1, false, 0, Math.PI), new THREE.MeshPhongMaterial({ color: 0xdddd00 }));
+          const bump = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 6, 12, 1, false, 0, Math.PI), new THREE.MeshToonMaterial({ color: 0xdddd00 }));
           bump.rotation.z = Math.PI / 2;
           bump.rotation.y = rotY;
           bump.position.set(x, 0, z);
           this.scene.add(bump);
           this.speedBreakers.push(bump);
       }
+
+      // ── PATH ARROW INDICATORS (Idea #1) ──
+      // Directional chevron arrows placed on the road (vehicle mode) or
+      // sidewalk (pedestrian/position mode) showing the player where to go.
+      _buildArrows() {
+          if (!this.mapCfg || !this.mapCfg.route || this.mapCfg.route.length < 2) { this._arrows = []; return; }
+          this._arrows = [];
+          const route = this.mapCfg.route;
+          const arrowMat = new THREE.MeshBasicMaterial({ color: this.isPedestrian ? 0xffab40 : 0x00e676, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false });
+          // In pedestrian mode, arrows go on the sidewalk (offset left); in vehicle mode, left side of road
+          const cfg = this.mapCfg;
+          const RW = cfg.isPedestrian ? 10 : 12;
+          const swW = cfg.isPedestrian ? 6 : 4;
+          const sideOffset = this.isPedestrian ? -(RW / 2 + swW / 2) : -3.5;
+
+          for (let i = 0; i < route.length - 1; i++) {
+              const a = route[i], b = route[i + 1];
+              const dx = b.x - a.x, dz = b.z - a.z;
+              const len = Math.sqrt(dx * dx + dz * dz);
+              if (len < 1) continue;
+              const ang = Math.atan2(dx, dz);
+              const nx = -dz / len, nz = dx / len;
+
+              const count = Math.max(2, Math.floor(len / 18));
+              for (let j = 0; j < count; j++) {
+                  const t = (j + 0.5) / count;
+                  const px = a.x + dx * t + nx * sideOffset;
+                  const pz = a.z + dz * t + nz * sideOffset;
+                  const g = new THREE.Group();
+                  const wing1 = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
+                      new THREE.Vector3(0, 0, -1.8), new THREE.Vector3(-1.1, 0, 0.6), new THREE.Vector3(0, 0, -0.2)
+                  ]), arrowMat.clone());
+                  const wing2 = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
+                      new THREE.Vector3(0, 0, -1.8), new THREE.Vector3(1.1, 0, 0.6), new THREE.Vector3(0, 0, -0.2)
+                  ]), arrowMat.clone());
+                  g.add(wing1, wing2);
+                  g.rotation.x = -Math.PI / 2;
+                  g.rotation.z = -ang;
+                  g.position.set(px, 0.12, pz);
+                  g.userData = { seg: i, baseY: 0.12, ped: !!this.isPedestrian };
+                  this.scene.add(g);
+                  this._arrows.push(g);
+              }
+          }
+      }
+
+      // Called each frame to pulse arrows and hide segments past the next checkpoint
+      _updateArrows() {
+          if (!this._arrows || !this._arrows.length || !this.cps) return;
+          const nextCP = this.cps.find(c => !c.userData.hit);
+          const nextIdx = nextCP ? this.cps.indexOf(nextCP) : this.cps.length;
+          const pulse = 0.55 + 0.25 * Math.sin(this.timer * 4);
+          const onRoad = this.isPedestrian && this._isOnRoad(this.player.position.x, this.player.position.z);
+          this._arrows.forEach(a => {
+              const visible = a.userData.seg < nextIdx && !(onRoad && a.userData.ped);
+              a.visible = visible;
+              if (visible) {
+                  a.position.y = a.userData.baseY + 0.08 * Math.sin(this.timer * 3 + a.userData.seg);
+                  if (a.children[0] && a.children[0].material) a.children[0].material.opacity = pulse;
+                  if (a.children[1] && a.children[1].material) a.children[1].material.opacity = pulse;
+              }
+          });
+      }
+
       _loop() {
+        // PERFORMANCE: Frame rate capping to prevent excessive CPU/GPU usage
+        const now = performance.now();
+        const isLowEnd = this._isMobile && (navigator.deviceMemory || 4) < 6;
+        const frameInterval = isLowEnd ? 1000 / 30 : 1000 / 60;
+        const elapsed = now - (this._lastFrame || 0);
+        if (elapsed < frameInterval) {
+          requestAnimationFrame(() => this._loop());
+          return;
+        }
+        this._lastFrame = now - (elapsed % frameInterval);
+
         requestAnimationFrame(() => this._loop()); if (!this.playing || this.pause) { if (this.renderer && this.scene && this.camera) this.renderer.render(this.scene, this.camera); return; }
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(); this._ugps(); this._uobs(dt); this._umode(dt); this._decayCameraLook(dt); this._ucam(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks();
-        
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks();
+
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
         if (this.composer) this.composer.render(); else this.renderer.render(this.scene, this.camera);
@@ -2185,6 +3004,25 @@ class Game {
           if (isRev) { this.speed = Math.max(this.speed, -cap); } else { this.speed = Math.min(this.speed, cap); }
           // Frame-rate independent friction: pow(fric, dt*60) makes 0.945 feel identical at 30fps and 120fps
           this.speed *= Math.pow(this.fric, dt * 60);
+
+          // ── TAILLIGHT BRAKE GLOW (night mode) ──
+          if (this._playerTaillights) {
+            const braking = this.keys['arrowdown'] || this.keys['s'] || (this.speed < -0.01);
+            const intensity = braking ? 1.0 : 0.3;
+            this._playerTaillights.forEach(tl => {
+              tl.material.color.setHex(braking ? 0xff4400 : 0xff2200);
+              tl.scale.setScalar(braking ? 1.5 : 1.0);
+            });
+            // ── BRAKE DUST PARTICLES ──
+            if (braking && Math.abs(this.speed) > 0.25 && !this._brakeDustCd) {
+              this._brakeDustCd = true;
+              const px = this.playerVehicle ? this.playerVehicle.position.x : (this.player ? this.player.position.x : 0);
+              const py = this.playerVehicle ? this.playerVehicle.position.y : (this.player ? this.player.position.y : 0);
+              const pz = this.playerVehicle ? this.playerVehicle.position.z : (this.player ? this.player.position.z : 0);
+              this._spawnDust(px, py, pz);
+              setTimeout(() => { this._brakeDustCd = false; }, 150);
+            }
+          }
 
           // Sprint / Boost — Shift key (frame-rate independent, requires seatbelt)
           if (this.keys['shift'] && this.boostFuel > 0 && up && this.gear === 'D' && this.seatbeltOn) {
@@ -2415,6 +3253,52 @@ class Game {
               n.userData.txX = n.position.x; 
               n.userData.baseSpd = n.userData.spd; 
               n.userData.state = 'CRUISE';
+              n.userData._stuckTimer = 0;
+              n.userData._lastPos = n.position.clone();
+            }
+
+            // Stuck detection — if NPC barely moves for 3s, teleport to safe position
+            if (!n.userData._lastPos) n.userData._lastPos = n.position.clone();
+            const movedDist = n.position.distanceTo(n.userData._lastPos);
+            if (movedDist < 0.1 && n.userData.state !== 'STOPPED') {
+              n.userData._stuckTimer = (n.userData._stuckTimer || 0) + dt;
+            } else {
+              n.userData._stuckTimer = 0;
+            }
+            n.userData._lastPos.copy(n.position);
+            if (n.userData._stuckTimer > 3) {
+              if (n.userData.isLevelDefined && n.userData.route && n.userData.route.length) {
+                // Route-following NPC: teleport back to first route point
+                const rp = n.userData.route[0];
+                n.position.set(rp.x, 0, rp.z);
+                n.userData.routeIdx = 0;
+              } else if (n.userData.moveAxis === 'h') {
+                n.position.x = n.userData.baseCoord || 0;
+              } else if (n.userData.moveAxis) {
+                n.position.z = n.userData.baseCoord || 0;
+                n.position.x = n.userData.baseCoord || 0;
+              }
+              n.userData.spd = n.userData.baseSpd;
+              n.userData.state = 'CRUISE';
+              n.userData._stuckTimer = 0;
+            }
+
+            // Smooth route wrapping — lerp back to start over 1.2s instead of teleporting
+            if (n.userData._wrapT > 0) {
+              n.userData._wrapT -= dt;
+              const p = Math.max(0, n.userData._wrapT / 1.2);
+              if (n.userData.moveAxis === 'h') {
+                n.position.x = n.userData._wrapFrom + (n.userData._wrapTo - n.userData._wrapFrom) * (1 - p);
+              } else {
+                n.position.z = n.userData._wrapFrom + (n.userData._wrapTo - n.userData._wrapFrom) * (1 - p);
+                n.position.x += (n.userData.txX - n.position.x) * 0.08;
+              }
+              n.userData.spd = 0;
+              if (n.userData._wrapT <= 0) {
+                n.userData.spd = n.userData.baseSpd;
+                n.userData.state = 'CRUISE';
+              }
+              return;
             }
 
             const distToPlayer = this.player ? this.player.position.distanceToSquared(n.position) : 0;
@@ -2427,41 +3311,47 @@ class Game {
             n.userData.laneT -= dt;
             let myLane = n.userData.txX;
 
-            if (distToPlayer < 150) {
+            if (distToPlayer < 200 && n.userData.moveAxis) {
               let fsm = {
                 approachingObstacle: false,
                 obstacleDist: 999,
                 obstacleSpeed: 0,
-                redLight: false
+                redLight: false,
+                yellowLight: false
               };
 
-              // 1. Check Red Lights & Zebra Crossings
-              this.sigs.forEach(sg => {
-                if (sg.userData.st === 'red') {
-                  if (n.userData.moveAxis === 'h') {
-                    // Horizontal NPCs: check X-axis offset
-                    const dx = sg.position.x - n.position.x;
-                    if (n.userData.dir === 1 && dx > 0 && dx < 30 && Math.abs(n.position.z - sg.position.z) < 5) {
-                      fsm.approachingObstacle = true;
+                // 1. Check Traffic Lights (Red + Yellow) — tightened to 15m
+                this.sigs.forEach(sg => {
+                  const isRed = sg.userData.st === 'red';
+                  const isYellow = sg.userData.st === 'yellow';
+                  if (isRed || isYellow) {
+                    if (n.userData.moveAxis === 'h') {
+                      const dx = sg.position.x - n.position.x;
+                      if (n.userData.dir === 1 && dx > 0 && dx < 15 && Math.abs(n.position.z - sg.position.z) < 5) {
+                        fsm.approachingObstacle = true;
                       fsm.obstacleDist = Math.min(fsm.obstacleDist, dx);
-                      fsm.redLight = true;
+                      fsm.redLight = isRed;
+                      fsm.yellowLight = isYellow;
                     }
-                    if (n.userData.dir === -1 && dx < 0 && dx > -30 && Math.abs(n.position.z - sg.position.z) < 5) {
+                    if (n.userData.dir === -1 && dx < 0 && dx > -15 && Math.abs(n.position.z - sg.position.z) < 5) {
                       fsm.approachingObstacle = true;
                       fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dx));
-                      fsm.redLight = true;
+                      fsm.redLight = isRed;
+                      fsm.yellowLight = isYellow;
                     }
                   } else {
                     const dz = sg.position.z - n.position.z;
-                    if (n.userData.dir === 1 && dz > 0 && dz < 30 && Math.abs(n.position.x - sg.position.x) < 5) {
+                    if (n.userData.dir === 1 && dz > 0 && dz < 15 && Math.abs(n.position.x - sg.position.x) < 5) {
                       fsm.approachingObstacle = true;
                       fsm.obstacleDist = Math.min(fsm.obstacleDist, dz);
-                      fsm.redLight = true;
+                      fsm.redLight = isRed;
+                      fsm.yellowLight = isYellow;
                     }
-                    if (n.userData.dir === -1 && dz < 0 && dz > -30 && Math.abs(n.position.x - sg.position.x) < 5) {
+                    if (n.userData.dir === -1 && dz < 0 && dz > -15 && Math.abs(n.position.x - sg.position.x) < 5) {
                       fsm.approachingObstacle = true;
                       fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
-                      fsm.redLight = true;
+                      fsm.redLight = isRed;
+                      fsm.yellowLight = isYellow;
                     }
                   }
                 }
@@ -2548,12 +3438,14 @@ class Game {
                 if (!yieldingToAmbulance) {
                   if (fsm.approachingObstacle && fsm.obstacleDist < 11.0) {
                     n.userData.state = 'STOPPED';
+                  } else if (fsm.approachingObstacle && fsm.obstacleDist < 30 && fsm.yellowLight) {
+                    n.userData.state = 'SLOW_DOWN';
                   } else if (fsm.approachingObstacle && fsm.obstacleDist < 30 && !fsm.redLight) {
                     n.userData.state = 'FOLLOW';
                     // Overtake Logic
                     if (n.userData.laneT <= 0) {
                       const lanes = n.userData.dir === 1 ? [-4.8, -2.4, 0, 2.4, 4.8] : [-4.8, -2.4, 0, 2.4, 4.8];
-                      let safeLanes = lanes.filter(l => Math.abs(l - myLane) <= 3.0 && l !== myLane && l * n.userData.dir > 0);
+                      let safeLanes = lanes.filter(l => Math.abs(l - myLane) <= 3.0 && l !== myLane);
                       
                       safeLanes = safeLanes.filter(l => {
                         let blocked = false;
@@ -2586,6 +3478,9 @@ class Game {
                     let tgtSpd = Math.max(0, fsm.obstacleSpeed - 0.2);
                     n.userData.spd += (tgtSpd - n.userData.spd) * 0.15;
                     break;
+                  case 'SLOW_DOWN':
+                    n.userData.spd += (n.userData.baseSpd * 0.35 - n.userData.spd) * 0.18;
+                    break;
                   case 'STOPPED':
                     n.userData.spd += (0 - n.userData.spd) * 0.2;
                     break;
@@ -2602,28 +3497,64 @@ class Game {
             }
 
             // Movement Execution
-            if (n.userData.moveAxis === 'h') {
-              n.position.x += n.userData.spd * 35 * dt * n.userData.dir; 
-              if (n.position.x > n.userData.maxPos && n.userData.dir === 1) n.position.x = n.userData.minPos;
-              if (n.position.x < n.userData.minPos && n.userData.dir === -1) n.position.x = n.userData.maxPos;
-            } else {
-              n.position.x += (n.userData.txX - n.position.x) * 0.08;
-              let yawT = Math.atan2(n.userData.txX - n.position.x, 8) * 0.5;
-              if (n.userData.dir === -1) yawT += Math.PI;
-              
-              // Smooth rotation
-              let diff = yawT - n.rotation.y;
+            if (n.userData.useRoute) {
+              const rt = n.userData.route;
+              const idx = n.userData.routeIdx;
+              const pCurr = rt[idx];
+              const pNext = rt[(idx + 1) % rt.length];
+              const isVertical = Math.abs(pNext.z - pCurr.z) > Math.abs(pNext.x - pCurr.x);
+              const lOff = n.userData.laneOffset;
+              const tX = isVertical ? pNext.x + lOff : pNext.x;
+              const tZ = isVertical ? pNext.z : pNext.z + lOff;
+              const moveDir = new THREE.Vector3(tX - n.position.x, 0, tZ - n.position.z).normalize();
+              n.position.addScaledVector(moveDir, n.userData.spd * 35 * dt);
+              let targetYaw = Math.atan2(moveDir.x, moveDir.z);
+              let diff = targetYaw - n.rotation.y;
               while (diff < -Math.PI) diff += Math.PI * 2;
               while (diff > Math.PI) diff -= Math.PI * 2;
               n.rotation.y += diff * 0.2;
-              
-              n.position.z += n.userData.spd * 35 * dt * n.userData.dir;
-
-              if (n.position.z > n.userData.maxPos && n.userData.dir === 1) { 
-                n.position.z = n.userData.minPos; n.position.x = n.userData.baseCoord + 2.5; n.userData.spd = n.userData.baseSpd; n.userData.txX = n.position.x; n.userData.state = 'CRUISE';
+              if (n.position.distanceTo(new THREE.Vector3(tX, 0, tZ)) < 2) {
+                n.userData.routeIdx = (idx + 1) % rt.length;
               }
-              if (n.position.z < n.userData.minPos && n.userData.dir === -1) { 
-                n.position.z = n.userData.maxPos; n.position.x = n.userData.baseCoord - 2.5; n.userData.spd = n.userData.baseSpd; n.userData.txX = n.position.x; n.userData.state = 'CRUISE';
+            } else {
+              if (n.userData.moveAxis === 'h') {
+                n.position.x += n.userData.spd * 35 * dt * n.userData.dir; 
+                if (n.position.x > n.userData.maxPos && n.userData.dir === 1) {
+                  n.userData._wrapT = 1.2;
+                  n.userData._wrapFrom = n.position.x;
+                  n.userData._wrapTo = n.userData.minPos;
+                  n.userData.state = 'CRUISE';
+                }
+                if (n.position.x < n.userData.minPos && n.userData.dir === -1) {
+                  n.userData._wrapT = 1.2;
+                  n.userData._wrapFrom = n.position.x;
+                  n.userData._wrapTo = n.userData.maxPos;
+                  n.userData.state = 'CRUISE';
+                }
+              } else {
+                n.userData.txX = Math.max(-6, Math.min(6, n.userData.txX));
+                n.position.x += (n.userData.txX - n.position.x) * 0.08;
+                let yawT = Math.atan2(n.userData.txX - n.position.x, 8) * 0.5;
+                if (n.userData.dir === -1) yawT += Math.PI;
+                let diff = yawT - n.rotation.y;
+                while (diff < -Math.PI) diff += Math.PI * 2;
+                while (diff > Math.PI) diff -= Math.PI * 2;
+                n.rotation.y += diff * 0.2;
+                n.position.z += n.userData.spd * 35 * dt * n.userData.dir;
+                if (n.position.z > n.userData.maxPos && n.userData.dir === 1) {
+                  n.userData._wrapT = 1.2;
+                  n.userData._wrapFrom = n.position.z;
+                  n.userData._wrapTo = n.userData.minPos;
+                  n.userData.txX = n.userData.baseCoord + 2.5;
+                  n.userData.state = 'CRUISE';
+                }
+                if (n.position.z < n.userData.minPos && n.userData.dir === -1) {
+                  n.userData._wrapT = 1.2;
+                  n.userData._wrapFrom = n.position.z;
+                  n.userData._wrapTo = n.userData.maxPos;
+                  n.userData.txX = n.userData.baseCoord - 2.5;
+                  n.userData.state = 'CRUISE';
+                }
               }
             }
           }
@@ -2682,12 +3613,15 @@ class Game {
           if (this.player.position.distanceTo(p.position) < 8) this._nearbyPedCount++;
         });
         
-        // Despawn far pedestrians
+        // Despawn far pedestrians (Phase 7: hide instead of destroy, reuse later)
+        if (!this._pedFree) this._pedFree = [];
         for (let i = this.peds.length - 1; i >= 0; i--) {
           const p = this.peds[i];
           if (p.position.distanceTo(this.player.position) > 100) {
             this.scene.remove(p);
             this.peds.splice(i, 1);
+            p.visible = false;
+            this._pedFree.push(p);
           }
         }
 
@@ -2702,7 +3636,14 @@ class Game {
           const distToPlayer = Math.hypot(rx - this.player.position.x, rz - this.player.position.z);
           // Spawn just outside the view radius
           if (distToPlayer > 30 && distToPlayer < 120) {
-            const ped = _buildHuman();
+            // Phase 7: Reuse freed pedestrian or create new
+            let ped;
+            if (this._pedFree && this._pedFree.length > 0) {
+              ped = this._pedFree.pop();
+              ped.visible = true;
+            } else {
+              ped = _buildHuman();
+            }
             const side = Math.random() > 0.5 ? 1 : -1;
             const lDist = 18 / 2 + 1.25; // Sidewalk distance
             const bDist = lDist + 6.0;   // Building distance
@@ -2733,6 +3674,7 @@ class Game {
               ped.rotation.y = isV ? (ped.userData.dir > 0 ? 0 : Math.PI) : (ped.userData.dir > 0 ? Math.PI/2 : -Math.PI/2);
             }
 
+            ped.frustumCulled = true;
             this.scene.add(ped);
             this.peds.push(ped);
           }
@@ -2815,6 +3757,10 @@ class Game {
                     ui.issueChallan('Splashed water on pedestrians', 'Sec 184 MV Act', '₹500', 'Reckless Driving');
                     toast('💦 Splashed Water! Too Fast!', '#ff3b30');
                     sfx.play('error');
+                    // Splash particle burst
+                    this._spawnSplash(p.position.x, p.position.y, p.position.z);
+                    // Reset splashed flag after cooldown
+                    setTimeout(() => { p.userData.splashed = false; }, 3000);
                 }
             });
         }
@@ -2851,10 +3797,20 @@ class Game {
               if (t.mesh.position.x < -100) t.mesh.position.x = 100;
           });
       }
-      _ucps() {
+      _ucps(dt) {
         let hits = 0;
         this.cps.forEach(cp => {
           if (cp.userData.hit) { hits++; return; }
+          // Smart ring path animation: ring moves along pathPts (sidewalk → crossing → sidewalk)
+          if (cp.userData.pathPts && cp.userData.pathPts.length >= 2) {
+              cp.userData.pathT = (cp.userData.pathT + dt * 0.5) % 1.0;
+              const pts = cp.userData.pathPts;
+              const totalSegs = pts.length - 1;
+              const seg = Math.min(Math.floor(cp.userData.pathT * totalSegs), totalSegs - 1);
+              const segT = (cp.userData.pathT * totalSegs) - seg;
+              cp.position.x = pts[seg][0] + (pts[seg + 1][0] - pts[seg][0]) * segT;
+              cp.position.z = pts[seg][1] + (pts[seg + 1][1] - pts[seg][1]) * segT;
+          }
           if (this.player.position.distanceTo(cp.position) < 3.2) { cp.userData.hit = true; cp.visible = false; this.score += 100; hits++; toast('✅ Node Verified!', '#00c851'); sfx.play('ok'); }
         });
         this.hits = hits;
@@ -2897,9 +3853,33 @@ class Game {
       }
       _umode(dt) {
         this.score += dt; document.getElementById('hsc').textContent = Math.round(this.score);
-        if (this.mode === 'rain' && this.rain) {
-          const p = this.rain.geometry.attributes.position.array; for (let i = 1; i < p.length; i += 3) { p[i] -= 10 * dt; if (p[i] < 0) p[i] = 25; }
+        if ((this.mode === 'rain' || this.mapCfg?.hasRain) && this.rain) {
+          const p = this.rain.geometry.attributes.position.array;
+          for (let i = 1; i < p.length; i += 3) { p[i] -= 10 * dt; if (p[i] < 0) p[i] = 25; }
           this.rain.geometry.attributes.position.needsUpdate = true;
+          // 20% speed reduction in rain
+          if (this.speed > this.maxSpd * 0.8) this.speed = this.maxSpd * 0.8;
+          // Lightning flash + thunder every 8-15s
+          this.lightningTimer -= dt;
+          if (this.lightningTimer <= 0) {
+            this.lightningTimer = 8 + Math.random() * 7;
+            // Screen flash
+            const flash = document.createElement('div');
+            flash.style.cssText = 'position:fixed;inset:0;background:rgba(255,255,255,0.35);z-index:99999;pointer-events:none;transition:opacity 0.3s';
+            document.body.appendChild(flash);
+            setTimeout(() => { flash.style.opacity = '0'; }, 50);
+            setTimeout(() => { if (flash.parentNode) flash.parentNode.removeChild(flash); }, 400);
+            // Thunder sound (delayed slightly for realism)
+            setTimeout(() => { if (window.sfx && window.sfx.play) window.sfx.play('thunder'); }, 200 + Math.random() * 400);
+          }
+        }
+        // Puddle shimmer animation
+        if (this.puddles) {
+          this.puddles.forEach((pu, i) => {
+            if (pu.material) {
+              pu.material.opacity = 0.45 + 0.15 * Math.sin(this.score * 2.5 + i * 0.7);
+            }
+          });
         }
         if (this.mode === 'silentzone' && this.ms) this.ms.inSz = this.player.position.z > -60 && this.player.position.z < 20;
       }
@@ -2941,13 +3921,16 @@ class Game {
               camHeight - pitchOffset,
               this.player.position.z - Math.cos(rotY) * camDist + Math.cos(rotY) * lookAhead
           );
-          // On first frame, snap camera to correct position (avoid lerp from origin)
+          // Phase 7.4: Smooth camera transition on mode switch (0.4s lerp) or instant snap
           if (!this._camSnapped) {
             this._camSnapped = true;
             this.camera.position.copy(this._camTarget);
           }
           // Frame-rate independent camera lerp
-          const camLerp = Math.min(1, dt * 6);
+          const transT = (this._camTransition && this._camTransition > 0) ? this._camTransition : 0;
+          if (transT > 0) this._camTransition = Math.max(0, transT - dt);
+          const baseLerp = Math.min(1, dt * 6);
+          const camLerp = transT > 0 ? Math.min(1, dt * 3) : baseLerp; // slower during transition
           this.camera.position.lerp(this._camTarget, camLerp);
 
           // Camera shake: decays exponentially
@@ -3000,6 +3983,35 @@ class Game {
             }
           }
         }
+      }
+      _usun(dt) {
+        if (!this._sun || !this.player) return;
+        // Dynamic shadow quality: monitor FPS, downscale shadow map if below threshold
+        this._fpsFrameCount = (this._fpsFrameCount || 0) + 1;
+        if (this._fpsFrameCount % 60 === 0) {
+          const fps = 1 / Math.max(dt, 0.001);
+          if (!this._shadowQuality) this._shadowQuality = 2048;
+          if (fps < 25 && this._shadowQuality > 512) {
+            this._shadowQuality = Math.max(512, this._shadowQuality / 2);
+            this._sun.shadow.mapSize.set(this._shadowQuality, this._shadowQuality);
+            if (this._sun.shadow.map) { this._sun.shadow.map.dispose(); this._sun.shadow.map = null; }
+            this._sun.shadow.needsUpdate = true;
+          } else if (fps > 50 && this._shadowQuality < 2048) {
+            this._shadowQuality = Math.min(2048, this._shadowQuality * 2);
+            this._sun.shadow.mapSize.set(this._shadowQuality, this._shadowQuality);
+            if (this._sun.shadow.map) { this._sun.shadow.map.dispose(); this._sun.shadow.map = null; }
+            this._sun.shadow.needsUpdate = true;
+          }
+        }
+        const p = this.player.position;
+        if (this._sunLastPos && Math.abs(p.x - this._sunLastPos.x) + Math.abs(p.z - this._sunLastPos.z) < 8) return;
+        if (!this._sunLastPos) this._sunLastPos = new THREE.Vector3();
+        this._sunLastPos.copy(p);
+        this._sun.position.set(p.x + 30, 60, p.z + 20);
+        const sc = this._sun.shadow.camera;
+        sc.left = -60; sc.right = 60; sc.top = 60; sc.bottom = -60;
+        sc.updateProjectionMatrix();
+        this._sun.shadow.needsUpdate = true;
       }
       _uhud() {
         const k = Math.round(Math.abs(this.speed) * 100);

@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'no_honk', text: 'Do not honk near library', type: 'avoid', target: 'honk', done: false },
     { id: 'wait_npc', text: 'Wait for NPC to move', type: 'stop', target: 'stationary', done: false },
     { id: 'pass_quiet', text: 'Pass quietly', type: 'reach', target: 'destination', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

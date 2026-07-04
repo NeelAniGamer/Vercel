@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'use_headlights', text: 'Use headlights to scan puddles', type: 'toggle', target: 'headlights', done: false },
     { id: 'slow_night', text: 'Drive slowly in dark rain', type: 'avoid', target: 'speed_night', done: false },
     { id: 'wide_berth', text: 'Give pedestrians wide berth', type: 'avoid', target: 'pedestrian', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial', 'construction']
 })

@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; connect-src 'self' https: wss:; font-src 'self' https: data:;" />
     <title>Mumbai Traffic Hero Academy - Simulation</title>
 
     <!-- Cloud Auth & Sync Logic -->
@@ -43,6 +44,17 @@
         --yellow: #f2b84b;
         --signal: #5ed4f5;
         --r: 16px;
+        /* Z-index scale — 10 semantic layers, everything fits here */
+        --z-canvas: 1;
+        --z-effects: 19;
+        --z-vehicle: 20;
+        --z-minimap: 24;
+        --z-controls: 100;
+        --z-hud: 9998;
+        --z-kid-toast: 9999;
+        --z-overlay: 100000;
+        --z-modal: 100001;
+        --z-loading: 999999;
       }
 
       .mobile-dl {
@@ -78,7 +90,7 @@
         position: fixed;
         inset: 0;
         background: #070a14;
-        z-index: 9999999;
+        z-index: var(--z-loading);
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -245,7 +257,7 @@
         inset: 0;
         overflow: hidden;
         pointer-events: none;
-        z-index: 1;
+        z-index: var(--z-canvas);
       }
 
       .rd {
@@ -1282,9 +1294,8 @@
         inset: 0;
         width: 100vw;
         height: 100vh;
-        z-index: 1;
-        display: none;
-        overflow: hidden;
+        z-index: var(--z-canvas);
+        display: none;        overflow: hidden;
       }
 
       #gc.on {
@@ -1445,7 +1456,7 @@
         display: none;
         flex-direction: column;
         gap: 16px;
-        z-index: 100;
+        z-index: var(--z-controls);
         width: 90%;
         max-width: 420px;
         opacity: 0;
@@ -1571,7 +1582,7 @@
         background: rgba(255, 255, 255, 0.8);
         padding: 4px 12px;
         border-radius: 12px;
-        z-index: 24;
+        z-index: var(--z-minimap);
         display: none;
       }
 
@@ -1679,7 +1690,7 @@
         right: 0;
         padding: 0 20px;
         justify-content: space-between;
-        z-index: 9999;
+        z-index: var(--z-hud);
         pointer-events: none;
       }
 
@@ -2063,7 +2074,7 @@
           inset: 0;
           width: 100vw;
           height: 100vh;
-          z-index: 1;
+          z-index: var(--z-canvas);
           background: #000;
         }
 
@@ -2298,6 +2309,75 @@
         }
       }
 
+      /* Pause overlay — show/hide */
+      #pause-overlay.on { display: flex !important; }
+
+      /* 400–768px breakpoint: tablet / large phone landscape */
+        #task-tracker {
+          width: 240px;
+          max-width: 75vw;
+          padding: 12px 14px;
+          font-size: 0.78rem;
+        }
+        #objective-overlay {
+          font-size: 0.7rem;
+          max-width: 70vw;
+          padding: 8px 12px;
+        }
+        #phone-gps {
+          width: min(280px, 80vw);
+          height: min(280px, 80vw);
+        }
+        #kid-steer {
+          width: 140px;
+          height: 140px;
+          bottom: 20px;
+        }
+        #kid-pedals .kid-btn.go-btn,
+        #kid-pedals .kid-btn.stop-btn {
+          width: 64px;
+          height: 64px;
+          font-size: 1.8rem;
+        }
+        #kid-pedals .kid-btn.horn-btn {
+          width: 52px;
+          height: 52px;
+        }
+        #kid-hearts {
+          top: 50px;
+          right: 10px;
+        }
+        #kid-hearts .heart {
+          font-size: 1.3rem;
+        }
+        #kid-msg {
+          font-size: 1.1rem;
+          bottom: 200px;
+        }
+        #steer-wheel-container {
+          width: 80px;
+          height: 80px;
+          margin-left: 30px;
+        }
+        #civic-controls button {
+          padding: 4px 7px;
+          font-size: 0.6rem;
+        }
+        #spgauge {
+          bottom: 80px;
+          width: 60px;
+          height: 60px;
+        }
+        #spgauge svg {
+          width: 60px;
+          height: 60px;
+        }
+        #boostgauge svg {
+          width: 40px;
+          height: 40px;
+        }
+      }
+
       /* Very small screens: hide signal indicator */
       @media (max-width: 400px) {
         #sig-ind {
@@ -2485,7 +2565,7 @@
         border-radius: 50%;
         border: 6px solid rgba(255,255,255,0.6);
         background: radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(59,130,246,0.2) 60%, transparent 100%);
-        z-index: 9998;
+        z-index: var(--z-hud);
         pointer-events: auto;
         touch-action: none;
       }
@@ -2510,7 +2590,7 @@
         position: fixed;
         bottom: 30px;
         right: 24px;
-        z-index: 9998;
+        z-index: var(--z-hud);
         pointer-events: auto;
         flex-direction: column;
         gap: 16px;
@@ -2545,13 +2625,16 @@
       #kid-indicators {
         display: none;
         position: fixed;
-        bottom: 30px;
-        left: 24px;
-        z-index: 9998;
-        pointer-events: auto;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: var(--z-hud);
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
+        transition: opacity 0.3s ease;
+        opacity: 0;
       }
+      #kid-indicators.on { opacity: 1; }
       #kid-indicators .kid-btn {
         width: 64px;
         height: 64px;
@@ -2585,7 +2668,7 @@
         bottom: 280px;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 9999;
+        z-index: var(--z-kid-toast);
         font-size: 1.3rem;
         font-weight: 800;
         color: white;
@@ -2611,7 +2694,7 @@
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 9998;
+        z-index: var(--z-hud);
         font-size: 2.5rem;
         gap: 8px;
         text-shadow: 0 3px 8px rgba(0,0,0,0.3);
@@ -2620,6 +2703,7 @@
         padding: 8px 20px;
         border-radius: 40px;
         backdrop-filter: blur(8px);
+        transition: opacity 0.3s ease;
       }
 
       /* Kid level name display */
@@ -2629,7 +2713,7 @@
         top: 80px;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 9998;
+        z-index: var(--z-hud);
         font-size: 1.1rem;
         font-weight: 800;
         color: white;
@@ -2642,48 +2726,72 @@
         white-space: nowrap;
       }
 
-      /* Kid task indicator — simple progress bar */
+      /* Kid task indicator — visual emoji card */
       #kid-task-bar {
         display: none;
         position: fixed;
-        top: 130px;
+        top: 120px;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 9998;
-        background: rgba(0,0,0,0.4);
-        padding: 8px 20px;
-        border-radius: 20px;
+        z-index: var(--z-hud);
+        background: rgba(0,0,0,0.6);
+        padding: 14px 28px 12px;
+        border-radius: 28px;
         pointer-events: none;
-        backdrop-filter: blur(6px);
-        max-width: 80vw;
+        backdrop-filter: blur(10px);
+        max-width: 85vw;
+        border: 2px solid rgba(255,255,255,0.15);
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        transition: opacity 0.35s ease, transform 0.35s ease;
+        opacity: 0;
+      }
+      #kid-task-bar.on { opacity: 1; }
+      #kid-task-bar .task-emoji {
+        font-size: 3rem;
+        line-height: 1.1;
+        filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+        animation: taskEmojiBounce 2s ease-in-out infinite;
+      }
+      @keyframes taskEmojiBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
       }
       #kid-task-bar .task-text {
         color: white;
-        font-size: 0.85rem;
-        font-weight: 700;
+        font-size: 1.3rem;
+        font-weight: 800;
         text-align: center;
-        margin-bottom: 4px;
+        margin-top: 4px;
+        margin-bottom: 6px;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        font-family: var(--sans);
       }
-      #kid-task-bar .task-track {
-        width: 200px;
-        height: 8px;
-        background: rgba(255,255,255,0.2);
-        border-radius: 4px;
-        overflow: hidden;
+      #kid-task-bar .task-progress {
+        display: flex;
+        justify-content: center;
+        gap: 2px;
+        font-size: 1.1rem;
       }
-      #kid-task-bar .task-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #22c55e, #4ade80);
-        border-radius: 4px;
-        transition: width 0.4s ease;
+      #kid-task-bar .task-progress .star {
+        opacity: 0.25;
+        transition: opacity 0.3s, transform 0.3s;
       }
+      #kid-task-bar .task-progress .star.filled {
+        opacity: 1;
+        transform: scale(1.15);
+      }
+
+      /* Progressive HUD hide — applied to body.kid-lvl-N class */
+      body.kid-lvl-low #mmc { display: none !important; }
+      body.kid-lvl-low #phone-gps { display: none !important; }
 
       /* Kid countdown — big, centered, colorful */
       #kid-countdown {
         display: none;
         position: fixed;
         inset: 0;
-        z-index: 99999;
+        z-index: var(--z-overlay);
         background: rgba(0,0,0,0.6);
         align-items: center;
         justify-content: center;
@@ -2707,7 +2815,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        z-index: 99999;
+        z-index: var(--z-overlay);
         background: rgba(0,0,0,0.5);
         align-items: center;
         justify-content: center;
@@ -2735,7 +2843,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        z-index: 100000;
+        z-index: var(--z-overlay);
         background: rgba(0,0,0,0.7);
         align-items: center;
         justify-content: center;
@@ -2778,12 +2886,87 @@
         margin-top: 16px;
       }
 
+      /* Kid level intro card — 5s visual demo before gameplay */
+      #kid-intro {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: var(--z-overlay);
+        background: rgba(0,0,0,0.75);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 16px;
+        padding: 40px;
+        backdrop-filter: blur(6px);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+      #kid-intro.on { opacity: 1; }
+      #kid-intro .intro-emoji {
+        font-size: 5rem;
+        animation: introFloat 1.5s ease-in-out infinite alternate;
+      }
+      @keyframes introFloat {
+        0% { transform: translateY(0) scale(1); }
+        100% { transform: translateY(-15px) scale(1.05); }
+      }
+      #kid-intro .intro-text {
+        color: white;
+        font-size: 1.4rem;
+        font-weight: 700;
+        text-align: center;
+        max-width: 440px;
+        line-height: 1.5;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      }
+      #kid-intro .intro-level {
+        color: rgba(255,255,255,0.6);
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      #kid-intro .intro-progress {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      #kid-intro .intro-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transition: background 0.3s, transform 0.3s;
+      }
+      #kid-intro .intro-dot.active {
+        background: #22c55e;
+        transform: scale(1.3);
+      }
+
+      /* Animated hand pointer — points at the control being taught */
+      #kid-hand {
+        display: none;
+        position: fixed;
+        z-index: 100001;
+        font-size: 3.5rem;
+        filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+        pointer-events: none;
+        animation: kidHandPoint 0.8s ease-in-out infinite alternate;
+        transition: left 0.4s ease, top 0.4s ease;
+      }
+      @keyframes kidHandPoint {
+        0% { transform: translate(-50%, 0) scale(1); }
+        50% { transform: translate(-50%, -12px) scale(1.15); }
+        100% { transform: translate(-50%, 0) scale(1); }
+      }
+
       /* Kid celebration — stars + confetti */
       #kid-celebrate {
         display: none;
         position: fixed;
         inset: 0;
-        z-index: 100001;
+        z-index: var(--z-modal);
         background: rgba(0,0,0,0.5);
         align-items: center;
         justify-content: center;
@@ -2826,7 +3009,7 @@
         display: none;
         position: fixed;
         inset: 0;
-        z-index: 100000;
+        z-index: var(--z-overlay);
         background: rgba(0,0,0,0.6);
         align-items: center;
         justify-content: center;
@@ -2877,7 +3060,7 @@
         bottom: 240px;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 9998;
+        z-index: var(--z-kid-toast);
         font-size: 1.2rem;
         font-weight: 800;
         color: white;
@@ -2999,7 +3182,7 @@
         width: 10px;
         height: 10px;
         border-radius: 2px;
-        z-index: 100002;
+        z-index: var(--z-modal);
         pointer-events: none;
         animation: confettiFall 1.5s ease-out forwards;
       }
@@ -3007,6 +3190,28 @@
         0% { transform: translateY(0) rotate(0deg); opacity: 1; }
         100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
       }
+
+      /* --- Age-adaptive visuals --- */
+      /* Child tier: bigger HUD, simpler info, hide numeric speed */
+      [data-age-tier="child"] #kid-hearts { font-size: 3.2rem; padding: 10px 28px; }
+      [data-age-tier="child"] #kid-task-bar .task-emoji { font-size: 4rem; }
+      [data-age-tier="child"] #kid-task-bar .task-text { font-size: 1.6rem; }
+      [data-age-tier="child"] #gspd { display: none; }
+      [data-age-tier="child"] #garc { display: none; }
+      [data-age-tier="child"] #htmr { font-size: 1rem; opacity: 0.6; }
+      [data-age-tier="child"] #hfin { display: none; }
+      [data-age-tier="child"] #speed-lines { display: none !important; }
+
+      /* Teen tier: slightly larger, keep all info */
+      [data-age-tier="teen"] #kid-hearts { font-size: 2.8rem; }
+      [data-age-tier="teen"] #kid-task-bar .task-text { font-size: 1.4rem; }
+
+      /* Senior tier: larger text, higher contrast */
+      [data-age-tier="senior"] #kid-hearts { font-size: 3rem; }
+      [data-age-tier="senior"] #kid-task-bar .task-text { font-size: 1.5rem; }
+      [data-age-tier="senior"] #htmr { font-size: 1.2rem; font-weight: 800; }
+
+      /* Adult and young: default sizing, all HUD visible (no overrides needed) */
     </style>
 
     <script>
@@ -3054,7 +3259,7 @@
     <!-- Script entry points -->
 
     <!-- Rotate-to-play overlay for portrait mobile -->
-    <div id="rotate-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#fff;font-family:'Inter',sans-serif;text-align:center;padding:24px;">
+    <div id="rotate-overlay" style="display:none;position:fixed;inset:0;z-index:var(--z-hud);background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#fff;font-family:'Inter',sans-serif;text-align:center;padding:24px;">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:rotatePhone 1.5s ease-in-out infinite">
         <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
         <line x1="12" y1="18" x2="12" y2="18.01"/>
@@ -3220,7 +3425,7 @@
     </div>
 
     <div id="gc"><canvas id="3c" style="touch-action:none;"></canvas></div>
-    <div id="swipe-look-hint" style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:20px; font-size:0.85rem; pointer-events:none; z-index:999; display:none; font-family:Inter,sans-serif; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.5s;">
+    <div id="swipe-look-hint" style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:20px; font-size:0.85rem; pointer-events:none; z-index:var(--z-hud); display:none; font-family:Inter,sans-serif; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.5s;">
       👆 Swipe empty area to look around
     </div>
     <div id="hud">
@@ -3238,6 +3443,14 @@
       <div id="objective-title">Current Objective</div>
       <div id="objective-desc">Loading...</div>
     </div>
+
+    <div id="pause-overlay" style="display:none; position:fixed; inset:0; z-index:100000; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); flex-direction:column; align-items:center; justify-content:center; gap:18px; pointer-events:auto;">
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:3rem; color:#fff; text-shadow:0 4px 12px rgba(0,0,0,0.5);">PAUSED</div>
+      <button id="pause-resume" style="font-family:'Inter',sans-serif; font-size:1.1rem; font-weight:600; padding:12px 36px; border:none; border-radius:12px; background:rgba(52,152,219,0.85); color:#fff; cursor:pointer; transition:background 0.2s;">Resume (Esc)</button>
+      <button id="pause-restart" style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(255,149,0,0.8); color:#fff; cursor:pointer;">Restart Level</button>
+      <button id="pause-quit" style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(231,76,60,0.8); color:#fff; cursor:pointer;">Quit to Menu</button>
+    </div>
+
     <div
       id="task-tracker"
       style="
@@ -3252,6 +3465,7 @@
         padding: 16px 20px;
         color: white;
         width: 280px;
+        max-width: min(280px, 85vw);
         max-height: 40vh;
         overflow-y: auto;
         display: none;
@@ -3262,7 +3476,7 @@
       <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--yellow); font-weight: 800; margin-bottom: 10px">📋 Tasks</div>
       <div id="task-list" style="display: flex; flex-direction: column; gap: 8px"></div>
     </div>
-    <div id="civic-controls" style="position: fixed; bottom: 16px; right: 20px; z-index: 100; display: flex; flex-direction: row; gap: 6px">
+    <div id="civic-controls" style="position: fixed; bottom: 16px; right: 20px; z-index: var(--z-controls); display: flex; flex-direction: row; gap: 6px">
       <button
         id="btn-seatbelt"
         style="background: #333; color: var(--ink); border: 2px solid #555; padding: 8px 12px; border-radius: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.8rem"
@@ -3494,14 +3708,14 @@
         <text x="32" y="48" text-anchor="middle" font-size="7" font-weight="600" fill="var(--muted)">BOOST</text>
       </svg>
     </div>
-    <div id="boost-vignette" style="position:fixed;inset:0;pointer-events:none;z-index:19;display:none;border:4px solid transparent;border-radius:0;box-shadow:inset 0 0 80px rgba(0,240,204,0.35),inset 0 0 160px rgba(0,240,204,0.15);transition:opacity 0.3s;opacity:0;"></div>
-    <div id="speed-lines" style="position:fixed;inset:0;pointer-events:none;z-index:19;display:none;opacity:0;transition:opacity 0.15s;background:radial-gradient(ellipse at center,transparent 40%,rgba(255,255,255,0.06) 60%,rgba(255,255,255,0.18) 100%);mix-blend-mode:screen;"></div>
+    <div id="boost-vignette" style="position:fixed;inset:0;pointer-events:none;z-index:var(--z-effects);display:none;border:4px solid transparent;border-radius:0;box-shadow:inset 0 0 80px rgba(0,240,204,0.35),inset 0 0 160px rgba(0,240,204,0.15);transition:opacity 0.3s;opacity:0;"></div>
+    <div id="speed-lines" style="position:fixed;inset:0;pointer-events:none;z-index:var(--z-effects);display:none;opacity:0;transition:opacity 0.15s;background:radial-gradient(ellipse at center,transparent 40%,rgba(255,255,255,0.06) 60%,rgba(255,255,255,0.18) 100%);mix-blend-mode:screen;"></div>
     <div id="boost-ready" style="position:fixed;right:32px;bottom:130px;z-index:26;font-size:0.7rem;font-family:var(--sans);color:#00f0cc;background:var(--card);border:1px solid #00f0cc;border-radius:12px;padding:4px 10px;display:none;opacity:0;transition:opacity 0.3s;box-shadow:0 0 10px rgba(0,240,204,0.3);">Boost Ready</div>
     <canvas
       id="mmc"
       width="160"
       height="160"
-      style="position: fixed; top: 32px; right: 32px; border-radius: 50%; border: 4px solid var(--card); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); z-index: 18; display: none"
+      style="position: fixed; top: 32px; right: 32px; border-radius: 50%; border: 4px solid var(--card); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); z-index: var(--z-effects); display: none"
     ></canvas>
 
     <div id="challan-stack"></div>
@@ -3616,7 +3830,7 @@
 
     <div
       id="profile-dlg"
-      style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px)"
+      style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: var(--z-hud); display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px)"
     >
       <div class="nd-c" style="background: #fff; padding: 30px; border-radius: 16px; max-width: 400px; width: 90%; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2); text-align: center">
         <h3 style="font-size: 1.6rem; margin-bottom: 8px">Driver Profile</h3>
@@ -3625,6 +3839,19 @@
         <div style="text-align: left; margin-bottom: 12px">
           <label style="font-weight: 600; font-size: 0.9rem; color: #555">Full Name</label>
           <input type="text" id="prof-name" class="nd-i" placeholder="e.g. Rahul Sharma" maxlength="30" style="margin-top: 6px; width: 100%; box-sizing: border-box" />
+        </div>
+
+        <div style="text-align: left; margin-bottom: 12px">
+          <label style="font-weight: 600; font-size: 0.9rem; color: #555">Age</label>
+          <input type="number" id="prof-age" class="nd-i" min="8" max="99" placeholder="E.g., 18" style="margin-top: 6px; width: 100%; box-sizing: border-box" />
+        </div>
+
+        <div style="text-align: left; margin-bottom: 12px">
+          <label style="font-weight: 600; font-size: 0.9rem; color: #555">Preferred Language</label>
+          <select id="prof-lang" class="nd-i" style="margin-top: 6px; width: 100%; box-sizing: border-box; cursor: pointer; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem">
+            <option value="en">English</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+          </select>
         </div>
 
         <div style="text-align: left; margin-bottom: 24px">
@@ -3735,7 +3962,7 @@
     <!-- SCREENS -->
 
     <div id="ss" class="screen active">
-      <div id="top-bar-container" style="position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px">
+      <div id="top-bar-container" style="position: absolute; top: 20px; right: 20px; z-index: var(--z-controls); display: flex; gap: 10px">
         <button
           onclick="
             document.body.classList.toggle('lm')
@@ -4084,6 +4311,38 @@
     <script src="levels/level18.js"></script>
     <script src="levels/level19.js"></script>
     <script src="levels/level20.js"></script>
+    <script src="levels/level21.js"></script>
+    <script src="levels/level22.js"></script>
+    <script src="levels/level23.js"></script>
+    <script src="levels/level24.js"></script>
+    <script src="levels/level25.js"></script>
+    <script src="levels/level26.js"></script>
+    <script src="levels/level27.js"></script>
+    <script src="levels/level28.js"></script>
+    <script src="levels/level29.js"></script>
+    <script src="levels/level30.js"></script>
+    <script src="levels/level31.js"></script>
+    <script src="levels/level32.js"></script>
+    <script src="levels/level33.js"></script>
+    <script src="levels/level34.js"></script>
+    <script src="levels/level35.js"></script>
+    <script src="levels/level36.js"></script>
+    <script src="levels/level37.js"></script>
+    <script src="levels/level38.js"></script>
+    <script src="levels/level39.js"></script>
+    <script src="levels/level40.js"></script>
+    <script src="levels/level41.js"></script>
+    <script src="levels/level42.js"></script>
+    <script src="levels/level43.js"></script>
+    <script src="levels/level44.js"></script>
+    <script src="levels/level45.js"></script>
+    <script src="levels/level46.js"></script>
+    <script src="levels/level47.js"></script>
+    <script src="levels/level48.js"></script>
+    <script src="levels/level49.js"></script>
+    <script src="levels/level50.js"></script>
+    <script src="levels/level51.js"></script>
+    <script src="levels/level52.js"></script>
 
     <script>
       // Rotate-to-play overlay for portrait mobile screens
@@ -4140,8 +4399,9 @@
     <div id="kid-hearts"></div>
     <div id="kid-level-name"></div>
     <div id="kid-task-bar">
+      <div class="task-emoji" id="kid-task-emoji">🚗</div>
       <div class="task-text" id="kid-task-text">Driving...</div>
-      <div class="task-track"><div class="task-fill" id="kid-task-fill" style="width: 0%"></div></div>
+      <div class="task-progress" id="kid-task-progress"></div>
     </div>
     <div id="kid-countdown"><div class="count-num" id="kid-count-num">3</div></div>
     <div id="kid-go-flash"><div class="go-text">GO!</div></div>
@@ -4150,6 +4410,13 @@
       <div class="tut-text" id="kid-tut-text">Turn the wheel to drive!</div>
       <div class="tut-arrow" id="kid-tut-arrow" style="display:none">👉</div>
       <button class="kid-btn tut-ok" id="kid-tut-ok" onclick="window._kidDismissTutorial()">OK! 👍</button>
+    </div>
+    <div id="kid-hand">👆</div>
+    <div id="kid-intro">
+      <div class="intro-level" id="kid-intro-level">Level 1</div>
+      <div class="intro-emoji" id="kid-intro-emoji">🚗</div>
+      <div class="intro-text" id="kid-intro-text">Let's learn to drive!</div>
+      <div class="intro-progress" id="kid-intro-dots"></div>
     </div>
     <div id="kid-celebrate">
       <div class="cel-stars" id="kid-cel-stars">⭐⭐⭐</div>
@@ -4175,6 +4442,8 @@
       if (!window.KID_MODE) return;
 
       const $ = id => document.getElementById(id);
+      // Track last time each kid control was used (for reminder tooltips)
+      window._kidLastUsed = { go: 0, stop: 0, horn: 0, indicator: 0, headlight: 0 };
 
       // --- Activate kid mode class on body ---
       document.body.classList.add('kid-mode');
@@ -4221,6 +4490,7 @@
       $('kid-hearts').style.display = 'flex';
       $('kid-level-name').style.display = 'block';
       $('kid-task-bar').style.display = 'block';
+      requestAnimationFrame(() => { $('kid-task-bar').classList.add('on'); });
 
       // --- Kid steering wheel touch (left/right tap zones) ---
       const steer = $('kid-steer');
@@ -4230,9 +4500,26 @@
 
       function showSteerAndPedals() {
         if (!window.game || !window.game.playing) return;
+        const lv = window.game._lv || 1;
         steer.style.display = 'block';
         $('kid-pedals').style.display = 'flex';
-        $('kid-indicators').style.display = 'flex';
+        // Progressive HUD: indicators only after level 10
+        if (lv >= 11) {
+          $('kid-indicators').style.display = 'flex';
+          $('kid-indicators').classList.add('on');
+        } else {
+          $('kid-indicators').classList.remove('on');
+          setTimeout(() => { $('kid-indicators').style.display = 'none'; }, 350);
+        }
+        // Progressive: hide minimap/GPS for early levels
+        document.body.classList.remove('kid-lvl-low', 'kid-lvl-mid', 'kid-lvl-high');
+        if (lv <= 5) {
+          document.body.classList.add('kid-lvl-low');
+        } else if (lv <= 10) {
+          document.body.classList.add('kid-lvl-mid');
+        } else {
+          document.body.classList.add('kid-lvl-high');
+        }
       }
 
       steer.addEventListener('touchstart', function(e) {
@@ -4294,6 +4581,7 @@
       goBtn.addEventListener('touchstart', function(e) {
         e.preventDefault();
         if (window.game) window.game.keys['w'] = true;
+        window._kidLastUsed.go = Date.now();
       }, { passive: false });
       goBtn.addEventListener('touchend', function() {
         if (window.game) window.game.keys['w'] = false;
@@ -4307,6 +4595,7 @@
       stopBtn.addEventListener('touchstart', function(e) {
         e.preventDefault();
         if (window.game) window.game.keys['s'] = true;
+        window._kidLastUsed.stop = Date.now();
       }, { passive: false });
       stopBtn.addEventListener('touchend', function() {
         if (window.game) window.game.keys['s'] = false;
@@ -4319,6 +4608,7 @@
       $('kid-horn-btn').addEventListener('touchstart', function(e) {
         e.preventDefault();
         if (window.game && window.game._horn) window.game._horn();
+        window._kidLastUsed.horn = Date.now();
       }, { passive: false });
 
       // --- Indicator buttons ---
@@ -4326,16 +4616,19 @@
       $('kid-left-btn').addEventListener('touchstart', function(e) {
         e.preventDefault();
         if (window.game && window.game.toggleTurnSignal) window.game.toggleTurnSignal(-1);
+        window._kidLastUsed.indicator = Date.now();
       }, { passive: false });
       // Right indicator (calls toggleTurnSignal(1))
       $('kid-right-btn').addEventListener('touchstart', function(e) {
         e.preventDefault();
         if (window.game && window.game.toggleTurnSignal) window.game.toggleTurnSignal(1);
+        window._kidLastUsed.indicator = Date.now();
       }, { passive: false });
       // Headlights (calls toggleHighBeam)
       $('kid-headlight-btn').addEventListener('touchstart', function(e) {
         e.preventDefault();
         if (window.game && window.game.toggleHighBeam) window.game.toggleHighBeam();
+        window._kidLastUsed.headlight = Date.now();
       }, { passive: false });
 
       // --- Update hearts display (5 hearts based on HP%) ---
@@ -4357,13 +4650,21 @@
       };
 
       // --- Update task progress ---
-      window._kidUpdateTask = function(text, progress) {
+      window._kidUpdateTask = function(text, progress, emoji) {
         $('kid-task-text').textContent = text;
-        $('kid-task-fill').style.width = Math.min(100, Math.max(0, progress)) + '%';
+        if (emoji) $('kid-task-emoji').textContent = emoji;
+        // Star progress: show up to 5 stars, fill based on progress
+        var stars = '';
+        var total = 5;
+        var filled = Math.round((progress / 100) * total);
+        for (var i = 0; i < total; i++) {
+          stars += '<span class="star ' + (i < filled ? 'filled' : '') + '">⭐</span>';
+        }
+        $('kid-task-progress').innerHTML = stars;
       };
 
-      // --- Show tutorial ---
-      window._kidShowTutorial = function(emoji, text, arrowDir) {
+      // --- Show tutorial with animated hand pointer ---
+      window._kidShowTutorial = function(emoji, text, arrowDir, targetBtnId) {
         $('kid-tut-emoji').textContent = emoji || '🚗';
         $('kid-tut-text').textContent = text || 'Turn the wheel to drive!';
         const arrow = $('kid-tut-arrow');
@@ -4377,11 +4678,82 @@
           arrow.style.display = 'none';
         }
         $('kid-tutorial').style.display = 'flex';
+        // Position animated hand below the target button
+        const hand = $('kid-hand');
+        if (targetBtnId) {
+          const btn = $(targetBtnId);
+          if (btn) {
+            const rect = btn.getBoundingClientRect();
+            hand.style.left = (rect.left + rect.width / 2) + 'px';
+            hand.style.top = (rect.top - 50) + 'px';
+            hand.style.display = 'block';
+          }
+        } else {
+          hand.style.display = 'none';
+        }
       };
 
       window._kidDismissTutorial = function() {
         $('kid-tutorial').style.display = 'none';
+        $('kid-hand').style.display = 'none';
         if (window.game && window.game.onTutorialDismiss) window.game.onTutorialDismiss();
+      };
+
+      // --- Level intro card — multi-step for first play, single card for repeat ---
+      var _introSteps = [
+        { emoji: '🖐️', text: 'Use left and right buttons to steer!' },
+        { emoji: '⛽', text: 'Press the green pedal to go!' },
+        { emoji: '🛑', text: 'Press red to stop — you\'ll need it!' },
+        { emoji: '🏁', text: 'Follow checkpoints to the finish!' }
+      ];
+
+      window._kidShowIntro = function(lvNum, lvName, isFirstPlay, cb) {
+        var intro = $('kid-intro');
+        var introEmoji = $('kid-intro-emoji');
+        var introText = $('kid-intro-text');
+        var introLevel = $('kid-intro-level');
+        var dots = $('kid-intro-dots');
+        if (isFirstPlay && lvNum === 1) {
+          // Multi-step walkthrough for Level 1 first play
+          var tier = (document.body.dataset.ageTier || 'adult');
+          var maxSteps = tier === 'child' ? 2 : tier === 'teen' ? 3 : _introSteps.length;
+          var steps = _introSteps.slice(0, maxSteps);
+          var step = 0;
+          introLevel.textContent = 'Welcome! 🎉';
+          dots.innerHTML = '';
+          for (var d = 0; d < steps.length; d++) {
+            var dot = document.createElement('div');
+            dot.className = 'intro-dot' + (d === 0 ? ' active' : '');
+            dots.appendChild(dot);
+          }
+          function showStep() {
+            if (step >= steps.length) {
+              intro.classList.remove('on');
+              setTimeout(function() { intro.style.display = 'none'; cb(); }, 400);
+              return;
+            }
+            introEmoji.textContent = steps[step].emoji;
+            introText.textContent = steps[step].text;
+            var allDots = dots.querySelectorAll('.intro-dot');
+            allDots.forEach(function(d, i) { d.classList.toggle('active', i === step); });
+            intro.style.display = 'flex';
+            requestAnimationFrame(function() { intro.classList.add('on'); });
+            setTimeout(function() { step++; showStep(); }, 2500);
+          }
+          showStep();
+        } else {
+          // Single card for all other levels
+          introLevel.textContent = 'Level ' + lvNum;
+          introEmoji.textContent = lvNum <= 3 ? '🚗' : lvNum <= 6 ? '🚦' : lvNum <= 9 ? '🏙️' : '🌙';
+          introText.textContent = lvName || 'Let\'s go!';
+          dots.innerHTML = '';
+          intro.style.display = 'flex';
+          requestAnimationFrame(function() { intro.classList.add('on'); });
+          setTimeout(function() {
+            intro.classList.remove('on');
+            setTimeout(function() { intro.style.display = 'none'; cb(); }, 400);
+          }, 2000);
+        }
       };
 
       // --- Show celebration ---
@@ -4531,6 +4903,8 @@
         const origActualStart = window.game._actualStart.bind(window.game);
         window.game._actualStart = function(lv) {
           origActualStart(lv);
+          const lvNum = lv.id || ui.cur || 1;
+          const isFirstPlay = !localStorage.getItem('kid_tutorial_done');
           setTimeout(() => {
             showSteerAndPedals();
             window._kidUpdateLevelName(lv.name || 'Level ' + lv.id);
@@ -4542,8 +4916,23 @@
               window._kidUpdateHearts(window.game.hp, 100);
             };
 
+            // Show intro card (non-blocking overlay)
+            window._kidShowIntro(lvNum, lv.name || 'Level ' + lvNum, isFirstPlay, function() {
+              // After intro dismisses, show task tutorial if applicable
+              if (isFirstPlay && lvNum === 1) {
+                localStorage.setItem('kid_tutorial_done', '1');
+                // Show first task tutorial after intro
+                setTimeout(function() {
+                  var firstTask = window.game.tasks && window.game.tasks.find(function(t) { return !t.done; });
+                  if (firstTask) {
+                    window._kidShowTutorial('🖐️', 'Tap the arrows to steer!', 'right', 'kid-steer');
+                    setTimeout(function() { window._kidDismissTutorial(); }, 4000);
+                  }
+                }, 300);
+              }
+            });
+
             // Progressive control unlock based on level
-            const lvNum = lv.id || ui.cur || 1;
             const stopBtn = $('kid-stop-btn');
             const hornBtn = $('kid-horn-btn');
             const leftBtn = $('kid-left-btn');
@@ -4588,17 +4977,19 @@
               if (headBtn) headBtn.classList.remove('kid-locked');
             }
             const taskMap = {
-              'stop': { 'red_light': ['🚦', 'Wait for green light!'], 'stationary': ['🛑', 'Stop the car!'], 'walking_speed': ['🐢', 'Drive slowly!'], 'parking_zone': ['🅿️', 'Park here!'], 'parking_spot': ['🅿️', 'Park here!'] },
-              'reach': { 'destination': ['🏁', 'Drive to the end!'], 'green_light': ['🟢', 'Go when green!'], 'parking_spot': ['🅿️', 'Find parking!'], 'market_zone': ['🏪', 'Go to market!'], 'left_side': ['👈', 'Move left!'], 'left_lane': ['👈', 'Use left lane!'], 'main_road': ['🛣️', 'Get on main road!'], 'forward_space': ['⬆️', 'Keep going!'], 'away_gate': ['🚪', 'Drive to exit!'] },
-              'avoid': { 'honk': ['🤫', 'No honking!'], 'speed_zone': ['🐢', 'Drive slowly!'], 'speed_night': ['🌙', 'Slow at night!'], 'speed_puddle': ['💧', 'Avoid puddles!'], 'speed_hospital': ['🏥', 'Slow near hospital!'], 'pedestrian': ['🚶', 'Watch for people!'], 'collision': ['🚗', 'Don\'t crash!'], 'ambulance': ['🚑', 'Let ambulance pass!'] },
-              'toggle': { 'seatbelt': ['🔒', 'Buckle up!'], 'indicator': ['➡️', 'Use indicator!'], 'headlights': ['💡', 'Turn on lights!'], 'hazards': ['⚠️', 'Turn on hazard lights!'] }
+              'stop': { 'red_light': ['🚦', 'Wait for green light!', 'kid-stop-btn'], 'stationary': ['🛑', 'Stop the car!', 'kid-stop-btn'], 'walking_speed': ['🐢', 'Drive slowly!', 'kid-go-btn'], 'parking_zone': ['🅿️', 'Park here!', 'kid-go-btn'], 'parking_spot': ['🅿️', 'Park here!', 'kid-go-btn'] },
+              'reach': { 'destination': ['🏁', 'Drive to the end!', 'kid-go-btn'], 'green_light': ['🟢', 'Go when green!', 'kid-go-btn'], 'parking_spot': ['🅿️', 'Find parking!', 'kid-go-btn'], 'market_zone': ['🏪', 'Go to market!', 'kid-go-btn'], 'left_side': ['👈', 'Move left!', 'kid-steer'], 'left_lane': ['👈', 'Use left lane!', 'kid-steer'], 'main_road': ['🛣️', 'Get on main road!', 'kid-go-btn'], 'forward_space': ['⬆️', 'Keep going!', 'kid-go-btn'], 'away_gate': ['🚪', 'Drive to exit!', 'kid-go-btn'] },
+              'avoid': { 'honk': ['🤫', 'No honking!', ''], 'speed_zone': ['🐢', 'Drive slowly!', 'kid-go-btn'], 'speed_night': ['🌙', 'Slow at night!', 'kid-go-btn'], 'speed_puddle': ['💧', 'Avoid puddles!', 'kid-steer'], 'speed_hospital': ['🏥', 'Slow near hospital!', 'kid-go-btn'], 'pedestrian': ['🚶', 'Watch for people!', ''], 'collision': ['🚗', 'Don\'t crash!', ''], 'ambulance': ['🚑', 'Let ambulance pass!', ''] },
+              'toggle': { 'seatbelt': ['🔒', 'Buckle up!', ''], 'indicator': ['➡️', 'Use indicator!', 'kid-left-btn'], 'headlights': ['💡', 'Turn on lights!', 'kid-headlight-btn'], 'hazards': ['⚠️', 'Turn on hazard lights!', 'kid-left-btn'] }
             };
             const firstTask = window.game.tasks && window.game.tasks.find(t => !t.done);
-            if (firstTask) {
+            // Skip task tutorial if intro already handled it (Level 1 first play)
+            if (firstTask && !(isFirstPlay && lvNum === 1)) {
               const tm = taskMap[firstTask.type] && taskMap[firstTask.type][firstTask.target];
               const emoji = tm ? tm[0] : '🚗';
               const text = tm ? tm[1] : firstTask.text;
-              window._kidShowTutorial(emoji, text);
+              const btnId = tm ? tm[2] : '';
+              window._kidShowTutorial(emoji, text, '', btnId);
               // Auto-dismiss after 4 seconds
               setTimeout(() => { window._kidDismissTutorial(); }, 4000);
             }
@@ -4607,20 +4998,33 @@
             if (!_kidOrigCheckTasks) {
               _kidOrigCheckTasks = window.game._checkTasks.bind(window.game);
             }
+            var _kidLastTaskUpdate = 0;
             window.game._checkTasks = function() {
               _kidOrigCheckTasks();
-              const next = window.game.tasks && window.game.tasks.find(t => !t.done);
+              var now = performance.now();
+              if (now - _kidLastTaskUpdate < 500) return; // throttle to 2x/sec
+              _kidLastTaskUpdate = now;
+              var tasks = window.game.tasks || [];
+              var doneCount = tasks.filter(function(t) { return t.done; }).length;
+              var total = tasks.length;
+              var pct = total > 0 ? (doneCount / total) * 100 : 0;
+              // For reach destination, use checkpoint progress
+              var next = tasks.find(function(t) { return !t.done; });
+              if (next && next.type === 'reach' && next.target === 'destination' && window.game.cps && window.game.cps.length > 0) {
+                var cpPct = (window.game.hits / window.game.cps.length) * 100;
+                pct = Math.max(pct, cpPct); // at least the task-based pct
+              }
               if (next) {
-                const tm = taskMap[next.type] && taskMap[next.type][next.target];
-                window._kidUpdateTask(tm ? tm[1] : next.text, 0);
+                var tm = taskMap[next.type] && taskMap[next.type][next.target];
+                window._kidUpdateTask(tm ? tm[1] : next.text, pct, tm ? tm[0] : null);
               } else {
-                window._kidUpdateTask('All done!', 100);
+                window._kidUpdateTask('All done!', 100, '🎉');
               }
             };
             // Initial task bar
             if (firstTask) {
-              const tm = taskMap[firstTask.type] && taskMap[firstTask.type][firstTask.target];
-              window._kidUpdateTask(tm ? tm[1] : firstTask.text, 0);
+              var tm0 = taskMap[firstTask.type] && taskMap[firstTask.type][firstTask.target];
+              window._kidUpdateTask(tm0 ? tm0[1] : firstTask.text, 0, tm0 ? tm0[0] : null);
             }
           }, 200);
         };
@@ -4630,6 +5034,41 @@
       _kidHookGame();
 
       console.log('[Kid Mode] Initialized — simplified UI for children');
+
+      // --- Reminder tooltips: pulse buttons when unused for 20s during relevant tasks ---
+      const REMIND_MS = 20000;
+      const _remindMap = {
+        'stop': 'stop',
+        'stationary': 'stop',
+        'walking_speed': 'stop',
+        'red_light': 'stop',
+        'parking_zone': 'stop',
+        'parking_spot': 'stop',
+        'indicator': 'indicator',
+        'hazards': 'indicator',
+        'headlights': 'headlight'
+      };
+      setInterval(() => {
+        if (!window.game || !window.game.tasks) return;
+        const nextTask = window.game.tasks.find(t => !t.done);
+        if (!nextTask) return;
+        const ctrl = _remindMap[nextTask.target];
+        if (!ctrl) return;
+        const last = window._kidLastUsed[ctrl] || 0;
+        if (Date.now() - last < REMIND_MS) return;
+        // Don't remind if control is locked
+        const btnMap = { stop: 'kid-stop-btn', indicator: 'kid-left-btn', headlight: 'kid-headlight-btn' };
+        const btn = $(btnMap[ctrl]);
+        if (!btn || btn.classList.contains('kid-locked')) return;
+        // Pulse the button briefly
+        btn.style.transition = 'transform 0.3s, box-shadow 0.3s';
+        btn.style.transform = 'scale(1.25)';
+        btn.style.boxShadow = '0 0 20px rgba(255,255,0,0.7)';
+        setTimeout(() => {
+          btn.style.transform = 'scale(1)';
+          btn.style.boxShadow = 'none';
+        }, 1200);
+      }, 5000);
     })();
     </script>
   </body>

@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'slow_puddle', text: 'Slow down before puddle', type: 'avoid', target: 'speed_puddle', done: false },
     { id: 'no_splash', text: 'Pass without splashing pedestrians', type: 'avoid', target: 'pedestrian', done: false },
     { id: 'crawl_past', text: 'Crawl past at walking pace', type: 'stop', target: 'walking_speed', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

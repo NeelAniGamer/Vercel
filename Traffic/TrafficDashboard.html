@@ -234,6 +234,14 @@
             <div class="stat-label">Vehicle</div>
           </div>
           <div class="stat-card">
+            <div class="stat-value" id="s-age">-</div>
+            <div class="stat-label">Age Group</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="s-lang">-</div>
+            <div class="stat-label">Language</div>
+          </div>
+          <div class="stat-card">
             <div class="stat-value" id="s-score">0</div>
             <div class="stat-label">Total Score</div>
           </div>
@@ -310,6 +318,11 @@
       // Populate Stats
       document.getElementById('s-name').innerText = tUser.name || S.name || 'Driver'
       document.getElementById('s-veh').innerText = tUser.vehicle || S.vehicle || 'Car'
+      const ageVal = tUser.age || S.age || 18
+      const ageLabels = { child: '8-12 (Kids)', teen: '13-17 (Teens)', young: '18-25 (Young)', adult: '26-50 (Adult)', senior: '51+ (Senior)' }
+      const ageBracket = ageVal <= 12 ? 'child' : ageVal <= 17 ? 'teen' : ageVal <= 25 ? 'young' : ageVal <= 50 ? 'adult' : 'senior'
+      document.getElementById('s-age').innerText = ageLabels[ageBracket] || '18'
+      document.getElementById('s-lang').innerText = (tUser.language || S.language || 'en') === 'hi' ? 'हिन्दी' : 'English'
       document.getElementById('s-score').innerText = (S.score || 0).toLocaleString()
 
       let completed = 0

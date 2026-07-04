@@ -22,212 +22,194 @@ document.addEventListener('keydown', (e) => {
 })
 
 window.PRELOADED_MODELS = {}
-function preloadModels(callback) {
-  if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') {
-    callback()
-    return
+// ─── Per-Level Model Loading System ─────────────────────────────────────────
+// Every GLB key mapped to its file path. Used by loadLevelAssets() to
+// lazy-load only the models a level actually needs.
+window.ASSET_MANIFEST = {}
+;(function () {
+  const carKit = 'Models/kenney_car-kit/Models/GLB format/'
+  const roadKit = 'Models/kenney_city-kit-roads/Models/GLB format/'
+  const charKit = 'Models/kenney_mini-characters/Models/GLB format/'
+  const subKit = 'Models/kenney_city-kit-suburban_20/Models/GLB format/'
+  const indKit = 'Models/kenney_city-kit-industrial_1.0/Models/GLB format/'
+  const mbKit = 'Models/kenney_modular-buildings/Models/GLB format/'
+  const bkKit = 'Models/kenney_building-kit/Models/GLB format/'
+  const wcKit = 'Models/kenney_watercraft-pack/Models/GLB format/'
+  const tkKit = 'Models/kenney_train-kit/Models/GLB format/'
+  const M = window.ASSET_MANIFEST
+
+  // Vehicles — core
+  M.car = carKit + 'sedan.glb'; M.taxi = carKit + 'taxi.glb'; M.police = carKit + 'police.glb'
+  M.bus = carKit + 'delivery.glb'; M.truck = carKit + 'truck.glb'; M.auto = carKit + 'van.glb'; M.bike = carKit + 'race.glb'
+
+  // Vehicles — variants
+  M.ambulance = carKit + 'ambulance.glb'
+  ;['hatchback-sports','suv','suv-luxury','race-future','sedan-sports','kart-oobi','kart-oodi','kart-ooli','kart-oopi','kart-oozi','tractor','tractor-police','tractor-shovel'].forEach(c => { M['car_'+c] = carKit + c + '.glb' })
+  ;['firetruck','garbage-truck','truck-flat'].forEach(t => { M['truck_'+t] = carKit + t + '.glb' })
+
+  // Roads
+  M.road_straight = roadKit + 'road-straight.glb'; M.road_intersect = roadKit + 'road-intersection.glb'
+  M.road_cross = roadKit + 'road-crossroad.glb'; M.road_cross_path = roadKit + 'road-crossroad-path.glb'
+  M.road_intersect_path = roadKit + 'road-intersection-path.glb'; M.road_bend = roadKit + 'road-bend-sidewalk.glb'
+  M.road_crossing = roadKit + 'road-crossing.glb'; M.road_roundabout = roadKit + 'road-roundabout.glb'
+  M.barrier = roadKit + 'construction-barrier.glb'; M.cone = roadKit + 'construction-cone.glb'; M.sign_highway = roadKit + 'sign-highway.glb'
+
+  // Characters
+  M.char_f_a = charKit + 'character-female-a.glb'; M.char_f_b = charKit + 'character-female-b.glb'; M.char_f_c = charKit + 'character-female-c.glb'
+  M.char_m_a = charKit + 'character-male-a.glb'; M.char_m_b = charKit + 'character-male-b.glb'; M.char_m_c = charKit + 'character-male-c.glb'
+
+  // Suburban buildings (a-u)
+  'abcdefghijklmnopqrstu'.split('').forEach(l => { M['suburban_'+l] = subKit + 'building-type-' + l + '.glb' })
+
+  // Industrial buildings (a-t)
+  'abcdefghijklmnopqrst'.split('').forEach(l => { M['industrial_'+l] = indKit + 'building-' + l + '.glb' })
+
+  // Modular buildings
+  ;['sample-house-a','sample-house-b','sample-house-c'].forEach(h => { M['mbuilding_'+h] = mbKit + 'building-' + h + '.glb' })
+  ;['sample-tower-a','sample-tower-b','sample-tower-c','sample-tower-d'].forEach(t => { M['mbuilding_'+t] = mbKit + 'building-' + t + '.glb' })
+
+  // Building kit
+  ;['wall','wall-doorway-square','column','column-wide'].forEach(w => { M['bkit_'+w] = bkKit + w + '.glb' })
+  ;['barricade-doorway-a','barricade-doorway-b'].forEach(b => { M['bkit_'+b] = bkKit + b + '.glb' })
+
+  // Watercraft
+  M.ship_cargo = wcKit + 'ship-cargo-a.glb'; M.boat_speed = wcKit + 'boat-speed-a.glb'
+  ;['boat-speed-b','boat-speed-c','boat-fishing-small','boat-tug-a','ship-cargo-b','ship-small'].forEach(w => { M['wc_'+w] = wcKit + w + '.glb' })
+
+  // Trains
+  M.train = tkKit + 'train-locomotive-a.glb'; M.metro = tkKit + 'train-electric-subway-a.glb'
+  ;['train-diesel-a','train-electric-bullet-a','train-tram-modern','train-carriage-box'].forEach(t => { M['tk_'+t] = tkKit + t + '.glb' })
+})()
+
+// Logical groups — level configs reference these in their assets[] array
+window.ASSET_GROUPS = {
+  suburban:  'abcdefghijklmnopqrstu'.split('').map(l => 'suburban_' + l),
+  industrial:'abcdefghijklmnopqrst'.split('').map(l => 'industrial_' + l),
+  cars:      ['car_hatchback-sports','car_suv','car_suv-luxury','car_race-future','car_sedan-sports','car_kart-oobi','car_kart-oodi','car_kart-ooli','car_kart-oopi','car_kart-oozi','car_tractor','car_tractor-police','car_tractor-shovel'],
+  trucks:    ['truck_firetruck','truck_garbage-truck','truck_truck-flat'],
+  modular:   ['mbuilding_sample-house-a','mbuilding_sample-house-b','mbuilding_sample-house-c','mbuilding_sample-tower-a','mbuilding_sample-tower-b','mbuilding_sample-tower-c','mbuilding_sample-tower-d'],
+  bkit:      ['bkit_wall','bkit_wall-doorway-square','bkit_column','bkit_column-wide','bkit_barricade-doorway-a','bkit_barricade-doorway-b'],
+  watercraft:['ship_cargo','boat_speed','wc_boat-speed-b','wc_boat-speed-c','wc_boat-fishing-small','wc_boat-tug-a','wc_ship-cargo-b','wc_ship-small'],
+  trains:    ['train','metro','tk_train-diesel-a','tk_train-electric-bullet-a','tk_train-tram-modern','tk_train-carriage-box'],
+  emergency: ['ambulance'],
+  construction:['barrier','cone','sign_highway']
+}
+
+// Keys always loaded at startup (fast boot — 21 models instead of 109)
+window.CORE_ASSETS = [
+  'car','taxi','police','bus','truck','auto','bike',
+  'road_straight','road_intersect','road_cross','road_cross_path','road_intersect_path','road_bend','road_crossing','road_roundabout',
+  'char_f_a','char_f_b','char_f_c','char_m_a','char_m_b','char_m_c'
+]
+
+// Expand an assets[] array: resolve group names to individual keys, deduplicate
+window._expandAssets = function (assets) {
+  if (!assets || !assets.length) return []
+  const out = new Set()
+  assets.forEach(a => {
+    if (window.ASSET_GROUPS[a]) window.ASSET_GROUPS[a].forEach(k => out.add(k))
+    else out.add(a)
+  })
+  return [...out]
+}
+
+// Load specific model keys into PRELOADED_MODELS (skips already-loaded ones)
+// calls callback() when done. If no keys given, loads ALL keys (backward compat).
+window.loadLevelAssets = function (keys, callback) {
+  if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') { callback(); return }
+  const loader = new THREE.GLTFLoader()
+  const manifest = window.ASSET_MANIFEST
+
+  // Determine which keys to load
+  let toLoad
+  if (keys === undefined || keys === null) {
+    // Backward compat: no assets specified → load everything not yet loaded
+    toLoad = Object.keys(manifest).filter(k => !window.PRELOADED_MODELS[k])
+  } else {
+    // Explicit assets array (even empty) → expand and load only those
+    const expanded = window._expandAssets(keys)
+    toLoad = expanded.filter(k => !window.PRELOADED_MODELS[k])
   }
 
-  const loader = new THREE.GLTFLoader()
-  const basePath = 'Models/kenney_car-kit/Models/GLB format/'
-  const filesToLoad = [
-    // Core
-    { key: 'car', file: basePath + 'sedan.glb' },
-    { key: 'taxi', file: basePath + 'taxi.glb' },
-    { key: 'police', file: basePath + 'police.glb' },
-    { key: 'bus', file: basePath + 'delivery.glb' },
-    { key: 'truck', file: basePath + 'truck.glb' },
-    { key: 'auto', file: basePath + 'van.glb' },
-    { key: 'bike', file: basePath + 'race.glb' },
-
-    // Roads
-    { key: 'road_straight', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-straight.glb' },
-    { key: 'road_intersect', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-intersection.glb' },
-    { key: 'road_cross', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossroad.glb' },
-    { key: 'road_cross_path', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossroad-path.glb' },
-    { key: 'road_intersect_path', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-intersection-path.glb' },
-    { key: 'road_bend', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-bend-sidewalk.glb' },
-    { key: 'road_crossing', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-crossing.glb' },
-    { key: 'road_roundabout', file: 'Models/kenney_city-kit-roads/Models/GLB format/road-roundabout.glb' },
-
-    // Characters
-    { key: 'char_f_a', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-a.glb' },
-    { key: 'char_f_b', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-b.glb' },
-    { key: 'char_f_c', file: 'Models/kenney_mini-characters/Models/GLB format/character-female-c.glb' },
-    { key: 'char_m_a', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-a.glb' },
-    { key: 'char_m_b', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-b.glb' },
-    { key: 'char_m_c', file: 'Models/kenney_mini-characters/Models/GLB format/character-male-c.glb' },
-
-    // Watercraft
-    { key: 'ship_cargo', file: 'Models/kenney_watercraft-pack/Models/GLB format/ship-cargo-a.glb' },
-    { key: 'boat_speed', file: 'Models/kenney_watercraft-pack/Models/GLB format/boat-speed-a.glb' },
-
-    // Emergency
-    { key: 'ambulance', file: 'Models/kenney_car-kit/Models/GLB format/ambulance.glb' },
-
-    // Transit
-    { key: 'train', file: 'Models/kenney_train-kit/Models/GLB format/train-locomotive-a.glb' },
-    { key: 'metro', file: 'Models/kenney_train-kit/Models/GLB format/train-electric-subway-a.glb' },
-
-    // Construction / Barriers
-    { key: 'barrier', file: 'Models/kenney_city-kit-roads/Models/GLB format/construction-barrier.glb' },
-    { key: 'cone', file: 'Models/kenney_city-kit-roads/Models/GLB format/construction-cone.glb' },
-    { key: 'sign_highway', file: 'Models/kenney_city-kit-roads/Models/GLB format/sign-highway.glb' }
-  ]
-
-  // Add Suburban Buildings (a to u)
-  'abcdefghijklmnopqrstu'.split('').forEach((l) => {
-    filesToLoad.push({ key: 'suburban_' + l, file: `Models/kenney_city-kit-suburban_20/Models/GLB format/building-type-${l}.glb` })
-  })
-
-  // Add Industrial Buildings (a to t)
-  'abcdefghijklmnopqrst'.split('').forEach((l) => {
-    filesToLoad.push({ key: 'industrial_' + l, file: `Models/kenney_city-kit-industrial_1.0/Models/GLB format/building-${l}.glb` })
-  })
-
-  // Add more cars randomly
-  ;['hatchback-sports', 'suv', 'suv-luxury', 'race-future', 'sedan-sports', 'kart-oobi', 'kart-oodi', 'kart-ooli', 'kart-oopi', 'kart-oozi', 'tractor', 'tractor-police', 'tractor-shovel'].forEach(
-    (c) => {
-      filesToLoad.push({ key: 'car_' + c, file: `Models/kenney_car-kit/Models/GLB format/${c}.glb` })
-    }
-  )
-
-  // Add more trucks randomly
-  ;['firetruck', 'garbage-truck', 'truck-flat'].forEach((t) => {
-    filesToLoad.push({ key: 'truck_' + t, file: `Models/kenney_car-kit/Models/GLB format/${t}.glb` })
-  })
-
-  // Add Modular Buildings (sample houses and towers)
-  const mbBase = 'Models/kenney_modular-buildings/Models/GLB format/'
-  ;['sample-house-a', 'sample-house-b', 'sample-house-c'].forEach((h) => {
-    filesToLoad.push({ key: 'mbuilding_' + h, file: mbBase + 'building-' + h + '.glb' })
-  })
-  ;['sample-tower-a', 'sample-tower-b', 'sample-tower-c', 'sample-tower-d'].forEach((t) => {
-    filesToLoad.push({ key: 'mbuilding_' + t, file: mbBase + 'building-' + t + '.glb' })
-  })
-
-  // Add Building Kit (barricades, walls, columns for road-side use)
-  const bkBase = 'Models/kenney_building-kit/Models/GLB format/'
-  ;['wall', 'wall-doorway-square', 'column', 'column-wide'].forEach((w) => {
-    filesToLoad.push({ key: 'bkit_' + w, file: bkBase + w + '.glb' })
-  })
-  ;['barricade-doorway-a', 'barricade-doorway-b'].forEach((b) => {
-    filesToLoad.push({ key: 'bkit_' + b, file: bkBase + b + '.glb' })
-  })
-
-  // Add more Watercraft
-  const wcBase = 'Models/kenney_watercraft-pack/Models/GLB format/'
-  ;['boat-speed-b', 'boat-speed-c', 'boat-fishing-small', 'boat-tug-a', 'ship-cargo-b', 'ship-small'].forEach((w) => {
-    filesToLoad.push({ key: 'wc_' + w, file: wcBase + w + '.glb' })
-  })
-
-  // Add more Trains
-  const tkBase = 'Models/kenney_train-kit/Models/GLB format/'
-  ;['train-diesel-a', 'train-electric-bullet-a', 'train-tram-modern', 'train-carriage-box'].forEach((t) => {
-    filesToLoad.push({ key: 'tk_' + t, file: tkBase + t + '.glb' })
-  })
+  if (toLoad.length === 0) { callback(); return }
 
   let loaded = 0
+  const total = toLoad.length
   const ld = document.getElementById('loading-screen')
   const pctEl = document.getElementById('loading-pct')
   const barEl = document.getElementById('loading-bar')
   const statusEl = document.getElementById('loading-status')
 
-  // Sequential loading to prevent main thread freezing
   const loadNext = (index) => {
-    if (index >= filesToLoad.length) {
-      if (ld) {
-        ld.innerHTML = `
-                    <h1 style="color: #34D399;">World Ready!</h1>
-                    <div style="font-size: 1rem; color: #8891AA;">Entering Traffic Academy...</div>
-                `
-        setTimeout(() => {
-          ld.style.opacity = '0'
-          ld.style.transform = 'scale(1.05)'
-          setTimeout(() => ld.remove(), 800)
-        }, 800)
+    if (index >= toLoad.length) {
+      if (ld && ld.parentNode) {
+        ld.innerHTML = '<h1 style="color:#34D399;">World Ready!</h1><div style="font-size:1rem;color:#8891AA;">Entering level...</div>'
+        setTimeout(() => { ld.style.opacity = '0'; ld.style.transform = 'scale(1.05)'; setTimeout(() => { if (ld.parentNode) ld.remove() }, 800) }, 600)
       }
       callback()
       return
     }
+    const key = toLoad[index]
+    const file = manifest[key]
+    if (!file) { loaded++; setTimeout(() => loadNext(index + 1), 0); return }
+    if (statusEl) statusEl.textContent = 'Loading: ' + key + '...'
 
-    const asset = filesToLoad[index]
-    if (statusEl) statusEl.textContent = `Loading: ${asset.key}...`
-
-    loader.load(
-      asset.file,
-      (gltf) => {
-        // Apply materials and cast shadows on the loaded model
-        gltf.scene.traverse((child) => {
-          if (child.isMesh) {
-            // Roads shouldn't cast shadows, it severely impacts performance
-            child.castShadow = !asset.key.includes('road')
-            child.receiveShadow = true
-            // Removed child.frustumCulled = false to allow culling of unseen objects
-
-            if (child.material) {
-              if (child.material.map) {
-                child.material.map.magFilter = THREE.NearestFilter
-                child.material.map.minFilter = THREE.NearestFilter
-                child.material.map.needsUpdate = true
-              }
-              // Enhance lighting contrast response
-              child.material.roughness = 0.8
-              child.material.metalness = 0.1
-            }
+    loader.load(file, (gltf) => {
+      gltf.scene.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = !key.includes('road')
+          child.receiveShadow = true
+          if (child.material) {
+            if (child.material.map) { child.material.map.magFilter = THREE.NearestFilter; child.material.map.minFilter = THREE.NearestFilter; child.material.map.needsUpdate = true }
+            child.material.roughness = 0.8; child.material.metalness = 0.1
           }
-        })
-
-        // Scale up models to game-world proportions
-        gltf.scene.scale.set(4.5, 4.5, 4.5)
-        window.PRELOADED_MODELS[asset.key] = gltf.scene
-
-        loaded++
-        const pct = Math.round((loaded / filesToLoad.length) * 100)
-        if (pctEl) pctEl.textContent = pct + '%'
-        if (barEl) barEl.style.width = pct + '%'
-
-        // Yield to main thread
-        setTimeout(() => loadNext(index + 1), 20) // Faster background loading 20ms instead of 100ms
-      },
-      undefined,
-      (err) => {
-        console.error('Error loading asset:', asset.file, err)
-        loaded++
-        setTimeout(() => loadNext(index + 1), 20)
-      }
-    )
+        }
+      })
+      gltf.scene.scale.set(4.5, 4.5, 4.5)
+      window.PRELOADED_MODELS[key] = gltf.scene
+      loaded++
+      const pct = Math.round((loaded / total) * 100)
+      if (pctEl) pctEl.textContent = pct + '%'
+      if (barEl) barEl.style.width = pct + '%'
+      setTimeout(() => loadNext(index + 1), 0)
+    }, undefined, (err) => {
+      console.error('Error loading asset:', key, file, err)
+      loaded++
+      setTimeout(() => loadNext(index + 1), 0)
+    })
   }
+  setTimeout(() => loadNext(0), 50)
+}
 
-  // Start immediately
-  setTimeout(() => loadNext(0), 100)
+// ─── Startup: load only core assets (fast boot) ────────────────────────────
+function preloadModels(callback) {
+  if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') { callback(); return }
 
-  // Also load base64 models from window.MODELS into PRELOADED_MODELS
-  if (window.MODELS) {
-    Object.keys(window.MODELS).forEach((key) => {
-      if (window.MODELS[key] && !window.PRELOADED_MODELS[key]) {
-        loader.load(
-          window.MODELS[key],
-          (gltf) => {
+  // Show loading screen
+  const ld = document.getElementById('loading-screen')
+  const pctEl = document.getElementById('loading-pct')
+  const barEl = document.getElementById('loading-bar')
+  const statusEl = document.getElementById('loading-status')
+
+  // Load core assets only — 21 models instead of 109
+  window.loadLevelAssets(window.CORE_ASSETS, () => {
+    // Also load base64 models from window.MODELS into PRELOADED_MODELS
+    if (window.MODELS) {
+      const loader = new THREE.GLTFLoader()
+      Object.keys(window.MODELS).forEach((key) => {
+        if (window.MODELS[key] && !window.PRELOADED_MODELS[key]) {
+          loader.load(window.MODELS[key], (gltf) => {
             gltf.scene.traverse((child) => {
-              if (child.isMesh) {
-                child.castShadow = true
-                child.receiveShadow = true
-                if (child.material) {
-                  child.material.roughness = 0.8
-                  child.material.metalness = 0.1
-                }
-              }
+              if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; if (child.material) { child.material.roughness = 0.8; child.material.metalness = 0.1 } }
             })
             gltf.scene.scale.set(4.5, 4.5, 4.5)
             window.PRELOADED_MODELS[key] = gltf.scene
-          },
-          undefined,
-          (err) => console.warn('Failed to load base64 model:', key, err)
-        )
-      }
-    })
-  }
+          }, undefined, (err) => console.warn('Failed to load base64 model:', key, err))
+        }
+      })
+    }
+    callback()
+  })
 }
 // Confetti particle system
 window.confetti = {
@@ -238,7 +220,7 @@ window.confetti = {
   init() {
     if (this.canvas) return
     this.canvas = document.createElement('canvas')
-    this.canvas.style.cssText = 'position:fixed;inset:0;z-index:9998;pointer-events:none;'
+    this.canvas.style.cssText = 'position:fixed;inset:0;z-index:20;pointer-events:none;'
     document.body.appendChild(this.canvas)
     this.ctx = this.canvas.getContext('2d')
   },

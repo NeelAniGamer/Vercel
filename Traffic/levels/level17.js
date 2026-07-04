@@ -25,5 +25,6 @@ window.LVS.push({
     { id: 'hazards_on', text: 'Turn on hazard lights', type: 'toggle', target: 'hazards', done: false },
     { id: 'inch_forward', text: 'Inch forward to create space', type: 'reach', target: 'forward_space', done: false },
     { id: 'pull_left', text: 'Pull as far left as possible', type: 'reach', target: 'left_side', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

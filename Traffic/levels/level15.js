@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'move_gate', text: "Move from resident's gate", type: 'reach', target: 'away_gate', done: false },
     { id: 'find_visitor', text: 'Find visitor parking spot', type: 'reach', target: 'visitor_parking', done: false },
     { id: 'walk_dest', text: 'Walk to destination', type: 'reach', target: 'destination', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

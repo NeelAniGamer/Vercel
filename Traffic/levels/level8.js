@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'find_gap', text: 'Find gap between parked cars', type: 'reach', target: 'gap_spot', done: false },
     { id: 'signal', text: 'Signal intention before maneuvering', type: 'toggle', target: 'indicator', done: false },
     { id: 'let_pass', text: 'Let ambulance pass', type: 'avoid', target: 'ambulance', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial', 'emergency']
 })

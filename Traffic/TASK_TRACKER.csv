@@ -1,0 +1,155 @@
+ID,Task,Category,Priority,Status,Source File,Estimated Effort,Description
+P0-01,currentRoad undefined bug fix,Phase 0 Bug Fixes,P0 - Critical,Done,game_core.js:2359,5 min,Define currentRoad via roadSegments loop
+P0-02,this.levelCfg → this.mapCfg rename,Phase 0 Bug Fixes,P0 - Critical,Done,game_core.js:2267,5 min,Property name mismatch — levelCfg doesn't exist
+P0-03,Barricade spawn on road offset,Phase 0 Bug Fixes,P0 - Critical,Done,game_core.js:1987-2007,10 min,Changed offset from ±5 to ±10 so barricades land on sidewalks
+P0-04,Obstacle cleanup near spawn,Phase 0 Bug Fixes,P0 - Critical,Done,game_core.js:2014,10 min,Added isBuilding check — only removes barricades/parked vehicles
+P0-05,Rain puddles not in collision array,Phase 0 Bug Fixes,P0 - Critical,Done,game_core.js:1583,15 min,Moved this.puddles before rain creation; added push to array
+P0-06,Procedural buildings missing userData,Phase 0 Bug Fixes,P0 - Critical,Done,game_core.js:1209/1371/1975,5 min,Added userData.isBuilding = true to procedural buildings
+P1-01,AABB building collision system,Phase 1 Building Collision,P1 - High,Done,game_core.js:2935-2960,2 hrs,AABB test with halfW/halfD + axis-of-least-penetration push-out
+P1-02,Store building bounding boxes,Phase 1 Building Collision,P1 - High,Done,game_core.js,1 hr,Box3 per building stored in userData
+P2-01,Fix z-index overlap (47 → 10 layers),Phase 2 UI Simplification,P1 - High,Done,Driving.html,2 hrs,Consolidated to semantic z-index CSS variables
+P2-02,Task bar redesign with emoji stars,Phase 2 UI Simplification,P1 - High,Done,Driving.html,2 hrs,Replaced text-heavy task list with emoji progress stars
+P2-03,Progressive HUD reveal,Phase 2 UI Simplification,P1 - High,Done,Driving.html,2 hrs,Level 1-5 speed+objective; 6-15 add minimap; 16+ full HUD
+P2-04,Touch-friendly layout (48px targets),Phase 2 UI Simplification,P1 - High,Done,Driving.html,1 hr,Minimum 48px touch targets for all interactive elements
+P3-01,Tutorial system overlay,Phase 3 Tutorial,P1 - High,Done,Driving.html,3 hrs,kid-tutorial overlay gated on localStorage kid_tutorial_done
+P3-02,Progressive control unlock,Phase 3 Tutorial,P1 - High,Done,Driving.html + game_core.js,2 hrs,Level 1-3 steering+gas; 4-6 add brake; 7-9 add horn; 10+ signals
+P3-03,Level intro card (5s visual demo),Phase 3 Tutorial,P1 - High,Done,Driving.html,1 hr,Animated emoji + text intro before each level
+P3-04,Animated hand pointer for controls,Phase 3 Tutorial,P1 - High,Done,Driving.html,1 hr,Points at control being taught with floating animation
+P4-01,NPC stuck detection timer (3s),Phase 4 NPC AI,P1 - High,Done,game_core.js:2501-2521,30 min,3s timer + teleport-back-to-base in _unpcs()
+P4-02,Smooth route wrapping,Phase 4 NPC AI,P1 - High,Done,game_core.js:2501-2521,30 min,Lerp over 1.2s with _wrapT
+P4-03,Lane target clamping [-6 6],Phase 4 NPC AI,P1 - High,Done,game_core.js:2501-2521,15 min,Lane target clamped to prevent road drift
+P4-04,Traffic light detection range (15m),Phase 4 NPC AI,P1 - High,Done,game_core.js:2567-2592,30 min,Tightened detection range from 30m to 15m
+P5-01,MeshToonMaterial pass,Phase 5 Visual Polish,P1 - High,Not Started,game_core.js + ui.js,4-6 hrs,Replace MeshPhongMaterial/MeshLambertMaterial with MeshToonMaterial for cartoon look
+P5-02,Color-coded surfaces,Phase 5 Visual Polish,P1 - High,Not Started,game_core.js,1 hr,Road #3d3f45; Sidewalk #8a8a8a; Grass #4a7c3f
+P5-03,Reduce vehicle sizes 30%,Phase 5 Visual Polish,P2 - Medium,Not Started,game_core.js,1 hr,Scale down VEHICLE_STATS geometries by 0.7
+P5-04,Better lighting (HemisphereLight),Phase 5 Visual Polish,P2 - Medium,Not Started,game_core.js,2 hrs,HemisphereLight (sky/ground) + soft DirectionalLight with shadows
+P5-05,Character completion in pedestrian mode,Phase 5 Visual Polish,P2 - Medium,Not Started,ui.js,2 hrs,Ensure full body model loads (head/torso/arms/legs)
+P5-06,Camera shake on collision/brake,Phase 5 Visual Polish,P1 - High,Not Started,game_core.js,2-3 hrs,_shakeT accumulator with decay; trigger on collision + hard brake
+P6-01,Multi-point routes per level,Phase 6 Level Routes,P1 - High,Done,game_core.js:875,2 hrs,3-5 waypoints per level in _getMapConfig() M table
+P6-02,Rain/puddle visual effects,Phase 6 Level Routes,P1 - High,Done,game_core.js,3 hrs,1200 particles; splash particles + thunder SFX; puddle shimmer
+P6-03,Night mode headlights,Phase 6 Level Routes,P1 - High,Done,game_core.js,3 hrs,Headlight SpotLights + visible ConeGeometry cones; taillight glow
+P6-04,Level-specific road layouts,Phase 6 Level Routes,P1 - High,Done,game_core.js:875,4 hrs,L1-L20 each unique with roads/route/trafficLight/pedSpawn/buildings
+P7-01,NPC template cache + pooling,Phase 7 Performance,P2 - Medium,Done,game_core.js,2 hrs,_getNpcTemplate() with _npcFree[]/_pedFree[] reuse
+P7-02,Smooth camera transitions,Phase 7 Performance,P2 - Medium,Done,game_core.js,1 hr,0.4s lerp on pointer-lock toggle
+P7-03,Audio category system,Phase 7 Performance,P2 - Medium,Done,game_core.js,2 hrs,sfx.vol: {sfx, ui, env} with sfx.setVol()
+PERF-01,Disable bloom on mobile,Performance Quick Wins,P1 - High,Not Started,game_core.js:68-77,5 min,UnrealBloomPass is GPU-intensive; disable on mobile/low-end
+PERF-02,Cap mobile DPR at 1.0,Performance Quick Wins,P1 - High,Not Started,game_core.js:46-48,5 min,Current 1.5x means 2.25x more pixels on mobile
+PERF-03,Lower shadow map to 512x512,Performance Quick Wins,P1 - High,Not Started,game_core.js:57-64,5 min,Current 1024x1024 still too large for mobile
+PERF-04,Use distanceToSquared,Performance Quick Wins,P2 - Medium,Not Started,game_core.js:734-741,5 min,Replace distanceTo() with distanceToSquared() in NPC loops
+PERF-05,Cap frame rate at 60fps,Performance Quick Wins,P2 - Medium,Not Started,game_core.js:2247,10 min,Game runs at monitor refresh rate; cap with fixed timestep
+PERF-06,Implement frustum culling,Performance Medium,P2 - Medium,Not Started,game_core.js,1 hr,Proper frustum culling beyond distance-based visibility toggle
+PERF-07,Reduce max NPCs on mobile,Performance Medium,P2 - Medium,Not Started,game_core.js,1 hr,O(n²) collision with 50+ NPCs is expensive on mobile
+PERF-08,Throttle event listeners,Performance Medium,P2 - Medium,Not Started,game_core.js,30 min,mousemove/touchmove fire at display refresh rate
+PERF-09,Proper memory disposal on level change,Performance Medium,P2 - Medium,Not Started,game_core.js:1034-1039,30 min,Brute-force scene removal; geometries/materials not disposed
+PERF-10,Add LOD system,Performance Advanced,P3 - Low,Not Started,game_core.js,4-8 hrs,Level of Detail for buildings and vehicles
+PERF-11,Spatial partitioning for collision,Performance Advanced,P3 - Low,Not Started,game_core.js:743-755,4-8 hrs,Quadtree/octree instead of O(n²) brute force
+PERF-12,Entity component system,Performance Advanced,P3 - Low,Not Started,game_core.js,1-2 days,Consolidate 9+ arrays updated every frame
+PERF-13,Shrink ground plane from 100k to manageable size,Performance Medium,P2 - Medium,Not Started,game_core.js:1110,15 min,100000x100000 unit plane = 10 billion units² geometry
+PERF-14,Skip updates when not visible,Performance Medium,P2 - Medium,Not Started,game_core.js:2251,30 min,Skip pedestrian update in vehicle mode; skip minimap when hidden
+PERF-15,CSS contain property on UI elements,Performance Medium,P3 - Low,Not Started,Driving.html,10 min,Use contain: layout style paint to prevent reflows
+ASSET-01,Per-level asset loading,Asset Loading,P1 - High,Not Started,start.js,4-6 hrs,Split into CORE_ASSETS + LEVEL_ASSETS; extend M[lvId] with assets[]
+ASSET-02,FBX/OBJ loader support,Asset Loading,P2 - Medium,Not Started,start.js,3-4 hrs,Add FBXLoader/OBJLoader for non-GLB models in Models/
+ASSET-03,JSZip for .zip archives,Asset Loading,P2 - Medium,Not Started,start.js,1-2 hrs,Already loaded via CDN; extract .zip model packs in-browser
+ASSET-04,Fixed reset-to-home bug (asset loading),Asset Loading,P1 - High,Not Started,start.js,2 hrs,Loading callback accidentally resets game; add dedicated loading screen
+GTA-01,GTA-style pedestrian-first start,GTA Open World,P1 - High,Not Started,game_core.js,3-4 hrs,Every level drops player as pedestrian; press F to enter vehicle
+GTA-02,Road__avenue__street integration,GTA Open World,P1 - High,Not Started,game_core.js + start.js,3 hrs,Integrate high-res road textures; align intersections
+GTA-03,Kenney building models integration,GTA Open World,P2 - Medium,Not Started,game_core.js,2 hrs,Load all 21 Suburban + 20 Industrial buildings; populate city
+GTA-04,Kenney animated characters for walking,GTA Open World,P2 - Medium,Not Started,game_core.js + ui.js,2 hrs,Hook up kenney_animated-characters-protagonists GLBs
+GTA-05,Pedestrian courtesy scenarios,GTA Ethical Driving,P2 - Medium,Not Started,game_core.js,2 hrs,Levels 1/5/14/19: wait for pedestrians despite NPC honking
+GTA-06,Respectful parking scenarios,GTA Ethical Driving,P2 - Medium,Not Started,game_core.js,2 hrs,Levels 2/6/10/15: find legal parking; walk to shop
+GTA-07,Ambulance priority scenarios,GTA Ethical Driving,P2 - Medium,Not Started,game_core.js,2 hrs,Levels 3/8/12/17: pull over for ambulances
+GTA-08,Puddle etiquette scenarios,GTA Ethical Driving,P2 - Medium,Not Started,game_core.js,2 hrs,Levels 4/9/13/18: slow near puddles; avoid splashing
+GTA-09,No honking zone scenarios,GTA Ethical Driving,P2 - Medium,Not Started,game_core.js,2 hrs,Levels 7/11/16/20: no horn near hospitals/schools
+GTA-10,Seatbelt mechanics,GTA Civic Sense,P2 - Medium,Not Started,game_core.js,1 hr,Toggle seatbelt; keep on throughout drive
+GTA-11,Animals on the road,GTA Civic Sense,P2 - Medium,Not Started,game_core.js,2 hrs,Stop for cow; don't honk; wait patiently
+GTA-12,Two-wheeler discipline,GTA Civic Sense,P2 - Medium,Not Started,game_core.js,1 hr,Helmet mandatory; no overloading
+GTA-13,Littering & environment,GTA Civic Sense,P2 - Medium,Not Started,game_core.js,1 hr,Penalty for littering; recycling bins
+GTA-14,Indicator & hand signals,GTA Signals,P2 - Medium,Not Started,game_core.js,2 hrs,Turn signal before turning; cancel after; indicator lights
+GTA-15,Phone temptation mechanic,GTA Distracted Driving,P2 - Medium,Not Started,game_core.js,2 hrs,Press key to check phone; causes control loss + challan
+GTA-16,Impaired vision scenarios,GTA Distracted Driving,P2 - Medium,Not Started,game_core.js,1 hr,Blurred vision; difficulty steering
+GTA-17,Speed breaker damage,GTA Road Features,P2 - Medium,Not Started,game_core.js,1 hr,Speed breakers damage vehicle at high speed
+GTA-18,Zebra crossing strict stopping,GTA Road Features,P2 - Medium,Not Started,game_core.js,1 hr,Must come to complete stop at zebra crossings
+GTA-19,School zone strict limits,GTA Road Features,P2 - Medium,Not Started,game_core.js,1 hr,30 km/h limit; no honking in school zones
+GTA-20,Road signage system,GTA Road Features,P2 - Medium,Not Started,game_core.js,2 hrs,Procedural placement of official traffic signs per zone
+GTA-21,Wrong-side driving detection,GTA Road Rage,P2 - Medium,Not Started,game_core.js,2 hrs,Detect and penalize wrong-side driving
+GTA-22,Overtaking rules (right side only),GTA Road Rage,P2 - Medium,Not Started,game_core.js,1 hr,Enforce right-side overtaking only (India rule)
+GTA-23,Road rage NPCs,GTA Road Rage,P2 - Medium,Not Started,game_core.js,2 hrs,NPCs that aggressively honk/tailgate
+GTA-24,Police checkpoints,GTA E-Challan,P2 - Medium,Not Started,game_core.js,2 hrs,Random police checkpoints; document check
+GTA-25,E-Challan log system,GTA E-Challan,P2 - Medium,Not Started,game_core.js,2 hrs,Track all fines and violations in a log
+GTA-26,Auto-rickshaw mode,GTA Vehicles,P2 - Medium,Not Started,game_core.js,1 hr,No overloading; correct routes
+GTA-27,Shared auto chaos,GTA Vehicles,P2 - Medium,Not Started,game_core.js,1 hr,NPC autos stopping abruptly
+GTA-28,Specialized zones (train/metro/bus),GTA Zones,P3 - Low,Not Started,game_core.js,3 hrs,Train/Metro Hubs, Bus/BRTS, Construction, Bazaars, Gully, Flyovers
+GTA-29,Coastal areas & boats,GTA Zones,P3 - Low,Not Started,game_core.js,2 hrs,Sea boats; coastline driving
+GTA-30,Monument areas (Gateway of India),GTA Zones,P3 - Low,Not Started,game_core.js,2 hrs,Famous Mumbai landmarks as driveable areas
+GTA-31,Sneh Asha landmark building,GTA Zones,P3 - Low,Not Started,game_core.js,1 hr,Custom 3D building with storefront texture
+IDEA-01,Footpath arrow navigation,New Ideas,P2 - Medium,Not Started,game_core.js + ui.js,2 hrs,Directional arrows on footpath when in position mode
+IDEA-02,Smart ring path on sidewalks,New Ideas,P2 - Medium,Not Started,game_core.js,2 hrs,Rings follow sidewalk path; cross in middle when needed
+IDEA-03,Driving instructor level,New Ideas,P2 - Medium,Not Started,levels/level*.js + game_core.js,4 hrs,Lane discipline; overtaking lessons; driving instructor mode
+IDEA-04,Age-adaptive visuals on signup,New Ideas,P2 - Medium,Not Started,TrafficSetup.html + ui.js,3 hrs,Enter name + age; visuals adapt to age group
+2D-01,Phaser 4 setup in Academy.html,2D Scenario Demo,P2 - Medium,Done,Academy.html,2 hrs,Phaser 4 CDN loaded; screen-2d container created
+2D-02,scenario2d.js game engine,2D Scenario Demo,P2 - Medium,Done,scenario2d.js,4-6 hrs,2D top-down traffic scenario with tap interactions
+2D-03,2D scenario per-level data,2D Scenario Demo,P2 - Medium,Not Started,scenario2d.js,3 hrs,Each level gets a matching 2D scenario demo
+LEVEL-21,Level 21: U-Turn U-Turn!,Level Authoring Tier 3,P3 - Low,Not Started,levels/level21.js,1 hr,U-turns at designated spots; signal and yield
+LEVEL-22,Level 22: Unmarked Crosswalk!,Level Authoring Tier 3,P3 - Low,Not Started,levels/level22.js,1 hr,Pedestrian priority at all intersections
+LEVEL-23,Level 23: Bus Stop Patrol!,Level Authoring Tier 3,P3 - Low,Not Started,levels/level23.js,1 hr,Don't overtake at bus stops
+LEVEL-24,Level 24: Construction Zone!,Level Authoring Tier 3,P3 - Low,Not Started,levels/level24.js,1 hr,Follow detour signs; obey flagman
+LEVEL-25,Level 25: Know Your Signs!,Level Authoring Tier 3,P3 - Low,Not Started,levels/level25.js,1 hr,Blue mandatory; red caution; green info signs
+LEVEL-26,Level 26: Cows on the Road!,Level Authoring Tier 3,P3 - Low,Not Started,levels/level26.js,1 hr,Stop for cow; don't honk; wait patiently
+LEVEL-27,Level 27: Narrow Street!,Level Authoring Tier 3,P3 - Low,Not Started,levels/level27.js,1 hr,Crawl at walking pace; yield to oncoming
+LEVEL-28,Level 28: Parking Rules!,Level Authoring Tier 3,P3 - Low,Not Started,levels/level28.js,1 hr,Avoid hydrant area; park in zone; walk to dest
+LEVEL-29,Level 29: Auto-Rickshaw Dance!,Level Authoring Tier 3,P3 - Low,Not Started,levels/level29.js,1 hr,Keep safe distance; react to auto stopping
+LEVEL-30,Level 30: Toll Plaza!,Level Authoring Tier 3,P3 - Low,Not Started,levels/level30.js,1 hr,FASTag or cash lanes; stop at booth
+LEVEL-31,Level 31: Blind Corner!,Level Authoring Tier 4,P3 - Low,Not Started,levels/level31.js,1 hr,Honk once; crawl; yield to oncoming
+LEVEL-32,Level 32: Hill Driving!,Level Authoring Tier 4,P3 - Low,Not Started,levels/level32.js,1 hr,Low gear up; engine brake down; honk at bends
+LEVEL-33,Level 33: Bus Stop Yield!,Level Authoring Tier 4,P3 - Low,Not Started,levels/level33.js,1 hr,Wait behind bus; don't overtake
+LEVEL-34,Level 34: Construction Zone!,Level Authoring Tier 4,P3 - Low,Not Started,levels/level34.js,1 hr,Strict limits; temporary signs
+LEVEL-35,Level 35: One-Way Wonder!,Level Authoring Tier 4,P3 - Low,Not Started,levels/level35.js,1 hr,Enter from correct end; follow flow
+LEVEL-36,Level 36: Sign Recognition!,Level Authoring Tier 4,P3 - Low,Not Started,levels/level36.js,1 hr,Identify mandatory/cautionary/info signs
+LEVEL-37,Level 37: Hospital Quiet Zone!,Level Authoring Tier 4,P3 - Low,Not Started,levels/level37.js,1 hr,No honking; slow down; watch for ambulance
+LEVEL-38,Level 38: Festival Traffic!,Level Authoring Tier 4,P3 - Low,Not Started,levels/level38.js,1 hr,Expect crowds; follow diversion; yield to procession
+LEVEL-39,Level 39: Cyclist Safety!,Level Authoring Tier 4,P3 - Low,Not Started,levels/level39.js,1 hr,Give 1m space; don't overtake near intersection
+LEVEL-40,Level 40: Grand Test!,Level Authoring Tier 4,P3 - Low,Not Started,levels/level40.js,2 hrs,Apply all skills from previous 39 levels
+LEVEL-41,Level 41: First Aid Scene!,Level Authoring Tier 5,P3 - Low,Not Started,levels/level41.js,1 hr,Stop at accident; call help; wait for ambulance
+LEVEL-42,Level 42: Road Rage!,Level Authoring Tier 5,P3 - Low,Not Started,levels/level42.js,1 hr,Ignore provocation; stay calm; don't engage
+LEVEL-43,Level 43: Pollution Check!,Level Authoring Tier 5,P3 - Low,Not Started,levels/level43.js,1 hr,Get PUC certificate; show at checkpoint
+LEVEL-44,Level 44: Child Safety!,Level Authoring Tier 5,P3 - Low,Not Started,levels/level44.js,1 hr,Install child seat; buckle child; drive safely
+LEVEL-45,Level 45: Passenger Safety!,Level Authoring Tier 5,P3 - Low,Not Started,levels/level45.js,1 hr,All passengers seatbelted; check before moving
+LEVEL-46,Level 46: Weather Emergency!,Level Authoring Tier 5,P3 - Low,Not Started,levels/level46.js,1 hr,Heavy rain/fog; pull over safely; wait for conditions
+LEVEL-47,Level 47: Night Parking!,Level Authoring Tier 5,P3 - Low,Not Started,levels/level47.js,1 hr,Park in well-lit area; use parking lights
+LEVEL-48,Level 48: Trip Preparation!,Level Authoring Tier 5,P3 - Low,Not Started,levels/level48.js,1 hr,Check vehicle; plan route; carry emergency kit
+LEVEL-49,Level 49: City Navigation!,Level Authoring Tier 5,P3 - Low,Not Started,levels/level49.js,2 hrs,Complex city; obey all signals; avoid obstacles
+LEVEL-50,Level 50: Comprehensive Final Exam!,Level Authoring Tier 5,P3 - Low,Not Started,levels/level50.js,3 hrs,10-question theory test; complex route; all skills
+SEC-01,Remove NEXT_PUBLIC_ from secrets,Security Setup,P0 - Critical,Not Started,Vercel Dashboard,2 min,Secret keys exposed to browser if prefixed
+SEC-02,Enable Vercel Deployment Protection,Security Setup,P0 - Critical,Not Started,Vercel Dashboard,1 min,Toggle Vercel Authentication to ON
+SEC-03,GitHub branch protection (main),Security Setup,P1 - High,Not Started,GitHub Settings,2 min,Require PR reviews; status checks; include admins
+SEC-04,GitHub 2FA enabled,Security Setup,P1 - High,Not Started,GitHub Settings,3 min,Enable two-factor authentication with authenticator app
+SEC-05,Supabase email confirm + password 12+,Security Setup,P1 - High,Not Started,Supabase Dashboard,3 min,Confirm email ON; password min 12; JWT expiry 3600
+SEC-06,ClouDNS hidden master + SPF,Security Setup,P2 - Medium,Not Started,ClouDNS Dashboard,3 min,Enable hidden master; disable recursion; add SPF record
+SEC-07,Enable RLS on all Supabase tables,Security Setup,P0 - Critical,Not Started,Supabase SQL Editor,5 min,ALTER TABLE ENABLE ROW LEVEL SECURITY on all tables
+SEC-08,Enable Dependabot alerts,Security Setup,P1 - High,Done,.github/dependabot.yml,0 min,Already created
+SEC-09,Create SECURITY.md,Security Setup,P1 - High,Done,.github/SECURITY.md,0 min,Already created
+SEC-10,vercel.json security headers,Security Setup,P1 - High,Done,vercel.json,0 min,Already configured
+ANDROID-01,React Native/Expo project setup,Android App,P3 - Low,Not Started,SeerleTrafficAcademy/,1 day,npx create-expo-app; configure app.json
+ANDROID-02,Port game logic to TypeScript,Android App,P3 - Low,Not Started,SeerleTrafficAcademy/src/,1-2 weeks,Port game_core.js physics/collision/vehicle system
+ANDROID-03,Port level data,Android App,P3 - Low,Not Started,SeerleTrafficAcademy/src/,1 week,Port all 50 levels from levels/level*.js
+ANDROID-04,Mobile touch controls,Android App,P3 - Low,Not Started,SeerleTrafficAcademy/src/,1 week,Touch-optimized steering/gas/brake; haptic feedback
+ANDROID-05,Offline gameplay + AsyncStorage,Android App,P3 - Low,Not Started,SeerleTrafficAcademy/src/,3 days,Save progress locally; no internet required
+ANDROID-06,Parental controls,Android App,P3 - Low,Not Started,SeerleTrafficAcademy/src/,2 days,Time limits; play history
+ANDROID-07,Play Store assets & listing,Android App,P3 - Low,Not Started,N/A,2 days,App icon; screenshots; description; age rating 4+
+ANDROID-08,COPPA compliance review,Android App,P3 - Low,Not Started,N/A,1 day,Privacy policy for children's app
+MOBILE-01,Gyroscope tilt-to-steer,Mobile Improvements,P2 - Medium,Not Started,game_core.js,2 hrs,Add device orientation for steering
+MOBILE-02,Swipe gestures for lane changes,Mobile Improvements,P2 - Medium,Not Started,game_core.js,2 hrs,Swipe left/right to change lanes
+MOBILE-03,48px+ touch targets audit,Mobile Improvements,P2 - Medium,Not Started,Driving.html,1 hr,Verify all buttons meet Apple HIG minimum
+AUDIO-01,Engine sound synthesis,Audio Improvements,P3 - Low,Not Started,game_core.js,4 hrs,Web Audio API oscillator for engine loop
+AUDIO-02,Collision impact sounds,Audio Improvements,P3 - Low,Not Started,game_core.js,2 hrs,Impact sound on vehicle collision
+AUDIO-03,Level complete jingle,Audio Improvements,P3 - Low,Not Started,game_core.js,1 hr,Melody on level completion
+AUDIO-04,Ambient city sounds,Audio Improvements,P3 - Low,Not Started,game_core.js,3 hrs,Traffic noise; birds; city ambience
+CAMERA-01,Smooth camera lerp transitions,Camera,P2 - Medium,Not Started,game_core.js,2 hrs,Smooth position/rotation lerp between views
+CAMERA-02,Mobile camera look with decay,Camera,P2 - Medium,Done,game_core.js,1 hr,camYaw/camPitch with touch decay (already implemented)
+VEH-01,Vehicle grip adjustment,Vehicle Handling,P2 - Medium,Not Started,game_core.js,1 hr,Increase grip slightly for smoother handling
+VEH-02,Auto-brake on high-speed collision,Vehicle Handling,P2 - Medium,Not Started,game_core.js,30 min,Apply brakes automatically on fast collision
+VEH-03,Better suspension feel,Vehicle Handling,P2 - Medium,Not Started,game_core.js,1 hr,Improved vertical bounce on bumps
+UI-01,Admin unlock (Ctrl+Shift+D),UI Features,P3 - Low,Done,ui.js,0 min,Already implemented
+UI-02,Speedometer + gear indicator,UI Features,P3 - Low,Done,ui.js,0 min,Already implemented
+UI-03,GPS arrow,UI Features,P3 - Low,Done,ui.js,0 min,Already implemented
+UI-04,Minimap canvas,UI Features,P3 - Low,Done,game_core.js,0 min,Already implemented

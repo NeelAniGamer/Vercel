@@ -10,15 +10,18 @@ function toast(msg, col = '#ffd54a') {
 }
 const mob = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
-// 🚦 SOUND FX 🚦
+// 🚦 SOUND FX 🚦 (Phase 7.5: audio categories)
 const sfx = {
   _c: null,
+  vol: { sfx: 1, ui: 1, env: 1 }, // volume multipliers: car sounds, UI sounds, environmental
+  _cat: { horn: 'sfx', brake: 'sfx', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
   init() {
     if (this._c) return
     try {
       this._c = new (window.AudioContext || window.webkitAudioContext)()
     } catch (e) {}
   },
+  setVol(cat, v) { if (this.vol[cat] !== undefined) this.vol[cat] = Math.max(0, Math.min(1, v)); },
   play(t) {
     if (!this._c) return
     const p = {
@@ -26,9 +29,12 @@ const sfx = {
       brake: { f: 160, ty: 'sawtooth', d: 0.15, v: 0.08 },
       challan: { f: 880, ty: 'triangle', d: 0.32, v: 0.11 },
       ok: { f: 660, ty: 'sine', d: 0.22, v: 0.09 },
-      error: { f: 110, ty: 'square', d: 0.28, v: 0.1 }
+      error: { f: 110, ty: 'square', d: 0.28, v: 0.1 },
+      thunder: { f: 55, ty: 'sawtooth', d: 0.6, v: 0.15 }
     }
     const pp = p[t] || p.horn
+    const cat = this._cat[t] || 'sfx'
+    const catVol = this.vol[cat] !== undefined ? this.vol[cat] : 1
     try {
       const o = this._c.createOscillator(),
         g = this._c.createGain()
@@ -36,7 +42,7 @@ const sfx = {
       g.connect(this._c.destination)
       o.type = pp.ty
       o.frequency.setValueAtTime(pp.f, this._c.currentTime)
-      g.gain.setValueAtTime(pp.v, this._c.currentTime)
+      g.gain.setValueAtTime(pp.v * catVol, this._c.currentTime)
       g.gain.exponentialRampToValueAtTime(0.001, this._c.currentTime + pp.d)
       o.start()
       o.stop(this._c.currentTime + pp.d)
@@ -120,6 +126,7 @@ const ui = {
     if (hwalletEl) {
       hwalletEl.textContent = '₹' + (S.wallet || 50000).toLocaleString('en-IN')
     }
+    this._applyAgeTier()
   },
   show(id) {
     if (id && id !== null && document.fullscreenElement) {
@@ -141,18 +148,39 @@ const ui = {
     if (!wrap) return
     wrap.innerHTML = ''
 
+    const catMap = {
+      pedestrian_courtesy: 'courtesy', pedestrian_priority: 'courtesy',
+      respectful_parking: 'parking', street_parking: 'parking', parking_rules: 'parking',
+      ambulance_priority: 'emergency',
+      puddle_etiquette: 'weather', rain_driving: 'weather', night_monsoon: 'weather', zero_visibility: 'weather',
+      no_honking: 'silence', hospital_quiet: 'silence',
+      signal_jump: 'signals', signs: 'signals', one_way: 'signals',
+      road_rage: 'discipline', narrow_street: 'discipline', wrong_side: 'discipline', highway_merge: 'discipline', lane_discipline: 'discipline',
+      animals: 'nature', cyclist: 'nature',
+      auto_dance: 'vehicles', toll: 'vehicles', bus_stop: 'vehicles',
+      blind_corner: 'challenges', hill_driving: 'challenges', construction: 'challenges', mountain: 'challenges', rural: 'challenges',
+      festival: 'special',
+      grand_test: 'grand', multi_modal: 'grand'
+    }
     const cats = {
-      pedestrian_courtesy: { title: '🚶 Pedestrian Courtesy', levels: [] },
-      respectful_parking: { title: '🅿️ Respectful Parking', levels: [] },
-      ambulance_priority: { title: '🚑 Emergency Priority', levels: [] },
-      puddle_etiquette: { title: '🌧️ Monsoon Etiquette', levels: [] },
-      no_honking: { title: '🔇 Silence Zones', levels: [] },
-      general: { title: '🚧 General Rules', levels: [] }
+      courtesy:    { title: '🚶 Pedestrian Courtesy', levels: [] },
+      parking:     { title: '🅿️ Parking Rules', levels: [] },
+      emergency:   { title: '🚑 Emergency Priority', levels: [] },
+      weather:     { title: '🌧️ Weather Driving', levels: [] },
+      silence:     { title: '🔇 Silence Zones', levels: [] },
+      signals:     { title: '🚦 Signals & Signs', levels: [] },
+      discipline:  { title: '😡 Road Discipline', levels: [] },
+      nature:      { title: '🐄 Animals & Cyclists', levels: [] },
+      vehicles:    { title: '🛺 Vehicle Etiquette', levels: [] },
+      challenges:  { title: '⛰️ Driving Challenges', levels: [] },
+      special:     { title: '🎪 Special Events', levels: [] },
+      grand:       { title: '🏆 Grand Tests', levels: [] },
+      general:     { title: '📚 General', levels: [] }
     }
 
     LVS.forEach((lv) => {
-      const cat = cats[lv.themeType] || cats.general
-      cat.levels.push(lv)
+      const catKey = catMap[lv.themeType] || 'general'
+      cats[catKey].levels.push(lv)
     })
 
     Object.values(cats).forEach((cat) => {
@@ -176,6 +204,11 @@ const ui = {
         const badgeText = done ? '✓ Completed' : started ? '● Started' : '○ Not Started'
         const badgeColor = done ? '#00f0cc' : started ? '#5ed4f5' : 'rgba(184,155,255,0.5)'
         const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')
+        // Check if a 2D scenario exists for this level
+        const s2dSc = (typeof SCENARIOS !== 'undefined') ? SCENARIOS.find(s => s.levelRef === lv.id) : null
+        const s2dDone = s2dSc && S.scenario2d && S.scenario2d[`s${s2dSc.id}_done`]
+        const s2dStars = s2dDone ? (S.scenario2d[`s${s2dSc.id}_stars`] || 1) : 0
+        const s2dBadge = s2dSc ? (s2dDone ? '⭐'.repeat(s2dStars) + ' Completed' : '🎮 Play 2D') : ''
         div.innerHTML = `
                   <div class="syl-ck"></div>
                   <div class="syl-top">
@@ -186,6 +219,7 @@ const ui = {
                     <div class="syl-lbl">${cleanName}</div>
                     <div class="syl-sub">${lv.ds}</div>
                     <div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div>
+                    ${s2dSc ? `<button class="play2d-btn${s2dDone ? '' : ''}" onclick="event.stopPropagation();ui.show2D(${s2dSc.id})">${s2dBadge}</button>` : ''}
                   </div>
                 `
         div.style.animationDelay = `${idx * 0.08}s`
@@ -237,12 +271,16 @@ const ui = {
   saveProfile() {
     const n = document.getElementById('prof-name').value.trim()
     const v = document.getElementById('prof-veh').value
+    const ageEl = document.getElementById('prof-age')
+    const langEl = document.getElementById('prof-lang')
     if (n.length > 0 && n.length < 3) {
       toast('Please enter a valid name', 'darkred')
       return
     }
     S.name = n
     S.vehicle = v
+    if (ageEl) S.age = parseInt(ageEl.value) || 18
+    if (langEl) S.language = langEl.value
     save()
     document.getElementById('profile-dlg').style.display = 'none'
     toast('Profile Saved!', '#3b8c66')
@@ -251,6 +289,23 @@ const ui = {
     if (cnameEl) {
       cnameEl.innerText = S.name || 'DRIVER'
     }
+  },
+  getAgeBracket() {
+    const age = S.age || 18
+    if (age <= 12) return 'child'
+    if (age <= 17) return 'teen'
+    if (age <= 25) return 'young'
+    if (age <= 50) return 'adult'
+    return 'senior'
+  },
+  getAgeScale() {
+    const b = this.getAgeBracket()
+    const scale = { child: 0.7, teen: 0.85, young: 1.0, adult: 1.0, senior: 0.9 }
+    return scale[b] || 1.0
+  },
+  _applyAgeTier() {
+    const tier = this.getAgeBracket()
+    document.body.dataset.ageTier = tier
   },
   showCert(badgeId = null) {
     this.show('screen-certificate')
@@ -408,11 +463,15 @@ const ui = {
     const body = document.getElementById('lvbody')
     body.innerHTML = ''
     const done = Object.keys(S.comp).length
-    document.getElementById('pchip').textContent = done + '/6 ✅'
+    document.getElementById('pchip').textContent = done + '/' + LVS.length + ' ✅'
+    const total = LVS.length
+    const chunk = Math.ceil(total / 5)
     const secs = [
-      { t: '🔰 Fundamentals & Mixed Rules', ids: [1, 2] },
-      { t: '🔰 Highways & Speed', ids: [3] },
-      { t: '🎓 Special Systems', ids: [4, 5, 6] }
+      { t: '🔰 Fundamentals (Levels 1–' + Math.min(chunk, total) + ')', ids: LVS.slice(0, chunk).map(l => l.id) },
+      { t: '🚦 Signals & Discipline (Levels ' + (chunk + 1) + '–' + Math.min(chunk * 2, total) + ')', ids: LVS.slice(chunk, chunk * 2).map(l => l.id) },
+      { t: '🌧️ Weather & Animals (Levels ' + (chunk * 2 + 1) + '–' + Math.min(chunk * 3, total) + ')', ids: LVS.slice(chunk * 2, chunk * 3).map(l => l.id) },
+      { t: '⛰️ Challenges (Levels ' + (chunk * 3 + 1) + '–' + Math.min(chunk * 4, total) + ')', ids: LVS.slice(chunk * 3, chunk * 4).map(l => l.id) },
+      { t: '🏆 Grand Tests (Levels ' + (chunk * 4 + 1) + '–' + total + ')', ids: LVS.slice(chunk * 4).map(l => l.id) }
     ]
     secs.forEach((sec) => {
       const sh = document.createElement('div')
@@ -470,6 +529,7 @@ const ui = {
     this._sylItems = items
     this._sylViewed = new Set()
     this._sylLv = lv
+    this._lawLang = S.language === 'hi' ? 'hi' : 'en'
     const list = document.getElementById('br-syllabus')
     list.innerHTML = ''
     items.forEach((it) => {
@@ -538,7 +598,7 @@ const ui = {
     } else if (id === 'law') {
       const lawEn = lv.law
       const lawHi = { sec: lv.law.secHi || lv.law.sec, fine: lv.law.fineHi || lv.law.fine, off: lv.law.offHi || lv.law.off }
-      this._lawLang = this._lawLang || 'en'
+      this._lawLang = this._lawLang || (S.language === 'hi' ? 'hi' : 'en')
       const d = this._lawLang === 'hi' ? lawHi : lawEn
       const langLabel = this._lawLang === 'hi' ? 'English' : 'हिन्दी'
       card.innerHTML = `<div class="bc-ttl" style="text-align:center;">🏛️ Statutory Provisions / कानूनी प्रावधान</div>
@@ -547,7 +607,11 @@ const ui = {
           <div class="fr" style="text-align:center; max-width:400px; margin:20px auto;"><div class="fl" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Fine / जुर्माना</div><div class="fa" style="font-size:2.4rem; font-weight:800;">${d.fine}</div></div>
      <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('rule'+(lv.hps.length-1))"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('theory')">Concepts &rarr;</button></div>`
     } else if (id === 'theory') {
-      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">📊 Analytical Model</div><div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${lv.theory}</div>
+      const bracket = this.getAgeBracket()
+      const isYoung = bracket === 'child' || bracket === 'teen'
+      const theoryLabel = isYoung ? '📊 Simple Explanation' : '📊 Analytical Model'
+      const theoryHint = isYoung ? '<div style="text-align:center; font-size:0.85rem; color:var(--signal); margin-bottom:8px; font-weight:600;">Easy version for young drivers</div>' : ''
+      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">${theoryLabel}</div>${theoryHint}<div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${lv.theory}</div>
      <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`
     } else if (id === 'practical') {
       const btnsHTML = (lv.modes || ['car'])
@@ -696,13 +760,13 @@ const ui = {
       renderer.setClearColor(0x0a0a12, 1)
     }
     const groundG = new THREE.PlaneGeometry(80, 80)
-    const groundM = new THREE.MeshLambertMaterial({ color: isNight ? 0x222233 : 0x888888 })
+    const groundM = new THREE.MeshToonMaterial({ color: isNight ? 0x222233 : 0x888888 })
     const ground = new THREE.Mesh(groundG, groundM)
     ground.rotation.x = -Math.PI / 2
     ground.position.y = -0.1
     t.add(ground)
     const roadG = new THREE.PlaneGeometry(80, 10)
-    const roadM = new THREE.MeshLambertMaterial({ color: 0x3d3f45 })
+    const roadM = new THREE.MeshToonMaterial({ color: 0x3d3f45 })
     const road = new THREE.Mesh(roadG, roadM)
     road.rotation.x = -Math.PI / 2
     road.position.y = 0.01
@@ -724,7 +788,7 @@ const ui = {
       t.add(e)
     })
     const swG = new THREE.PlaneGeometry(80, 4)
-    const swM = new THREE.MeshLambertMaterial({ color: 0xb5543a })
+    const swM = new THREE.MeshToonMaterial({ color: 0xb5543a })
     ;[-7, 7].forEach((z) => {
       const sw = new THREE.Mesh(swG, swM)
       sw.rotation.x = -Math.PI / 2
@@ -732,12 +796,12 @@ const ui = {
       t.add(sw)
     })
     const carG = new THREE.BoxGeometry(1.4, 0.8, 2.8)
-    const carM = new THREE.MeshLambertMaterial({ color: isNight ? 0x4488cc : 0x3388ee })
+    const carM = new THREE.MeshToonMaterial({ color: isNight ? 0x4488cc : 0x3388ee })
     const car = new THREE.Mesh(carG, carM)
     car.position.set(0, 0.5, 0)
     t.add(car)
     const cabinG = new THREE.BoxGeometry(1.2, 0.5, 1.4)
-    const cabinM = new THREE.MeshLambertMaterial({ color: 0x222222 })
+    const cabinM = new THREE.MeshToonMaterial({ color: 0x222222 })
     const cabin = new THREE.Mesh(cabinG, cabinM)
     cabin.position.set(0, 0.5, -0.3)
     car.add(cabin)
@@ -760,7 +824,7 @@ const ui = {
       car.add(spot)
     }
     const tlG = new THREE.BoxGeometry(0.5, 2, 0.5)
-    const tlM = new THREE.MeshLambertMaterial({ color: 0x444444 })
+    const tlM = new THREE.MeshToonMaterial({ color: 0x444444 })
     const pole = new THREE.Mesh(tlG, tlM)
     pole.position.set(12, 1, 6)
     t.add(pole)
@@ -783,7 +847,7 @@ const ui = {
     for (let i = 0; i < 3; i++) {
       const nc = carColors[i % carColors.length]
       const ncG = new THREE.BoxGeometry(1.3, 0.7, 2.6)
-      const ncM = new THREE.MeshLambertMaterial({ color: nc })
+      const ncM = new THREE.MeshToonMaterial({ color: nc })
       const npc = new THREE.Mesh(ncG, ncM)
       npc.position.set(-10 - i * 8, 0.45, i % 2 === 0 ? -2 : 2)
       npc.userData = { speed: 2.5 + Math.random() * 1.5, startX: npc.position.x }
@@ -792,12 +856,12 @@ const ui = {
     }
     if (theme === 'pedestrian_courtesy' || isPed) {
       const pBodyG = new THREE.CylinderGeometry(0.2, 0.2, 0.7, 6)
-      const pBodyM = new THREE.MeshLambertMaterial({ color: 0xffcc88 })
+      const pBodyM = new THREE.MeshToonMaterial({ color: 0xffcc88 })
       const ped = new THREE.Mesh(pBodyG, pBodyM)
       ped.position.set(8, 0.55, 7)
       t.add(ped)
       const headG = new THREE.SphereGeometry(0.18, 8, 8)
-      const headM = new THREE.MeshLambertMaterial({ color: 0xffcc88 })
+      const headM = new THREE.MeshToonMaterial({ color: 0xffcc88 })
       const head = new THREE.Mesh(headG, headM)
       head.position.y = 0.55
       ped.add(head)
@@ -805,9 +869,9 @@ const ui = {
     }
     if (theme.includes('school') || theme.includes('children')) {
       for (let i = 0; i < 3; i++) {
-        const chBody = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.5, 6), new THREE.MeshLambertMaterial({ color: [0xff6666, 0x66ccff, 0xffcc00][i] }))
+        const chBody = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.5, 6), new THREE.MeshToonMaterial({ color: [0xff6666, 0x66ccff, 0xffcc00][i] }))
         chBody.position.set(6 + i * 2, 0.45, 6.5)
-        const chHead = new THREE.Mesh(new THREE.SphereGeometry(0.13, 6, 6), new THREE.MeshLambertMaterial({ color: 0xffcc88 }))
+        const chHead = new THREE.Mesh(new THREE.SphereGeometry(0.13, 6, 6), new THREE.MeshToonMaterial({ color: 0xffcc88 }))
         chHead.position.y = 0.4
         chBody.add(chHead)
         t.add(chBody)
@@ -815,12 +879,12 @@ const ui = {
     }
     if (theme.includes('market')) {
       const stallG = new THREE.BoxGeometry(2, 1.2, 1.5)
-      const stallM = new THREE.MeshLambertMaterial({ color: 0xcc6633 })
+      const stallM = new THREE.MeshToonMaterial({ color: 0xcc6633 })
       const stall = new THREE.Mesh(stallG, stallM)
       stall.position.set(-10, 0.6, 7)
       t.add(stall)
       const awningG = new THREE.PlaneGeometry(2.4, 1.6)
-      const awningM = new THREE.MeshLambertMaterial({ color: 0xdd4444, side: THREE.DoubleSide })
+      const awningM = new THREE.MeshToonMaterial({ color: 0xdd4444, side: THREE.DoubleSide })
       const awning = new THREE.Mesh(awningG, awningM)
       awning.rotation.x = -0.3
       awning.position.set(0, 0.7, 1)
@@ -828,12 +892,12 @@ const ui = {
     }
     if (theme.includes('temple') || theme.includes('festival')) {
       const tmG = new THREE.BoxGeometry(3, 2, 2)
-      const tmM = new THREE.MeshLambertMaterial({ color: 0xcc8844 })
+      const tmM = new THREE.MeshToonMaterial({ color: 0xcc8844 })
       const temple = new THREE.Mesh(tmG, tmM)
       temple.position.set(-10, 1, -7)
       t.add(temple)
       const domeG = new THREE.SphereGeometry(0.8, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2)
-      const domeM = new THREE.MeshLambertMaterial({ color: 0xddaa44 })
+      const domeM = new THREE.MeshToonMaterial({ color: 0xddaa44 })
       const dome = new THREE.Mesh(domeG, domeM)
       dome.position.y = 1
       temple.add(dome)
@@ -1028,7 +1092,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     clone.style.width = rect.width + 'px'
     clone.style.height = rect.height + 'px'
     clone.style.margin = '0'
-    clone.style.zIndex = '999999'
+    clone.style.zIndex = getComputedStyle(document.documentElement).getPropertyValue('--z-modal').trim() || '100001'
     clone.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
     document.body.appendChild(clone)
 
@@ -1062,6 +1126,33 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       if (game.playing) game.pause = false
       setTimeout(() => this._nc(), 80)
     }, 500)
+  },
+  show2D(scenarioId) {
+    const sc = (typeof SCENARIOS !== 'undefined') ? SCENARIOS.find(s => s.id === scenarioId) : null
+    if (!sc) return
+    this._cur2D = sc
+    document.getElementById('s2d-title').textContent = sc.icon + ' ' + sc.name
+    this.show('screen-2d')
+    setTimeout(() => {
+      if (typeof initScenario2D === 'function') {
+        initScenario2D('scenario2d-container', scenarioId)
+      }
+    }, 100)
+  },
+  exit2D() {
+    if (typeof destroyScenario2D === 'function') destroyScenario2D()
+    this._cur2D = null
+    this.showLevels()
+  },
+  restart2D() {
+    if (!this._cur2D) return
+    const id = this._cur2D.id
+    if (typeof destroyScenario2D === 'function') destroyScenario2D()
+    setTimeout(() => {
+      if (typeof initScenario2D === 'function') {
+        initScenario2D('scenario2d-container', id)
+      }
+    }, 100)
   }
 }
 
@@ -1243,10 +1334,10 @@ const _buildVehicle = (type, col) => {
     case 'car':
     case 'taxi': {
       const isT = type === 'taxi'
-      const bodyM = new THREE.MeshPhongMaterial({ color: isT ? 0xffd54a : col })
-      const glassM = new THREE.MeshPhongMaterial({ color: 0x1a2e4a, transparent: true, opacity: 0.75 })
-      const wheelM = new THREE.MeshPhongMaterial({ color: 0x111111 })
-      const rimM = new THREE.MeshPhongMaterial({ color: 0xcccccc })
+      const bodyM = new THREE.MeshToonMaterial({ color: isT ? 0xffd54a : col })
+      const glassM = new THREE.MeshToonMaterial({ color: 0x1a2e4a, transparent: true, opacity: 0.75 })
+      const wheelM = new THREE.MeshToonMaterial({ color: 0x111111 })
+      const rimM = new THREE.MeshToonMaterial({ color: 0xcccccc })
       const hlM = new THREE.MeshBasicMaterial({ color: 0xffffcc })
       const tlM = new THREE.MeshBasicMaterial({ color: 0xff0000 })
       // Chassis
@@ -1296,9 +1387,9 @@ const _buildVehicle = (type, col) => {
       break
     }
     case 'bus': {
-      const bM = new THREE.MeshPhongMaterial({ color: col || 0xe74c3c }) // BEST bus red
-      const gM = new THREE.MeshPhongMaterial({ color: 0x88bbdd, transparent: true, opacity: 0.6 })
-      const wM = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const bM = new THREE.MeshToonMaterial({ color: col || 0xe74c3c }) // BEST bus red
+      const gM = new THREE.MeshToonMaterial({ color: 0x88bbdd, transparent: true, opacity: 0.6 })
+      const wM = new THREE.MeshToonMaterial({ color: 0x111111 })
       const bdy = new THREE.Mesh(new THREE.BoxGeometry(2.3, 2.2, 8.0), bM)
       bdy.position.y = 1.18
       g.add(bdy)
@@ -1330,9 +1421,9 @@ const _buildVehicle = (type, col) => {
       break
     }
     case 'auto': {
-      const aM = new THREE.MeshPhongMaterial({ color: 0xffd54a })
-      const sM = new THREE.MeshPhongMaterial({ color: 0x111111 })
-      const wM = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const aM = new THREE.MeshToonMaterial({ color: 0xffd54a })
+      const sM = new THREE.MeshToonMaterial({ color: 0x111111 })
+      const wM = new THREE.MeshToonMaterial({ color: 0x111111 })
       const abody = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.95, 2.1), aM)
       abody.position.y = 0.52
       g.add(abody)
@@ -1359,10 +1450,10 @@ const _buildVehicle = (type, col) => {
       break
     }
     case 'truck': {
-      const cM = new THREE.MeshPhongMaterial({ color: col || 0x1565c0 })
-      const contM = new THREE.MeshPhongMaterial({ color: 0xeeeeee })
-      const gM2 = new THREE.MeshPhongMaterial({ color: 0x88ccff, transparent: true, opacity: 0.6 })
-      const wM2 = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const cM = new THREE.MeshToonMaterial({ color: col || 0x1565c0 })
+      const contM = new THREE.MeshToonMaterial({ color: 0xeeeeee })
+      const gM2 = new THREE.MeshToonMaterial({ color: 0x88ccff, transparent: true, opacity: 0.6 })
+      const wM2 = new THREE.MeshToonMaterial({ color: 0x111111 })
       const cab = new THREE.Mesh(new THREE.BoxGeometry(2.1, 2.1, 2.6), cM)
       cab.position.set(0, 1.05, 2.5)
       g.add(cab)
@@ -1393,18 +1484,18 @@ const _buildVehicle = (type, col) => {
       break
     }
     case 'bike': {
-      const bkM = new THREE.MeshPhongMaterial({ color: col })
-      const wkM = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const bkM = new THREE.MeshToonMaterial({ color: col })
+      const wkM = new THREE.MeshToonMaterial({ color: 0x111111 })
       const frame = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.38, 1.9), bkM)
       frame.position.y = 0.62
       g.add(frame)
       const tank = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.32, 0.75), bkM)
       tank.position.set(0, 0.88, 0.3)
       g.add(tank)
-      const seat = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.12, 0.85), new THREE.MeshPhongMaterial({ color: 0x1a1a1a }))
+      const seat = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.12, 0.85), new THREE.MeshToonMaterial({ color: 0x1a1a1a }))
       seat.position.set(0, 0.88, -0.18)
       g.add(seat)
-      const hbar = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.08, 0.12), new THREE.MeshPhongMaterial({ color: 0xaaaaaa }))
+      const hbar = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.08, 0.12), new THREE.MeshToonMaterial({ color: 0xaaaaaa }))
       hbar.position.set(0, 1.02, 0.88)
       g.add(hbar)
       const wf = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.14, 8), wkM)
@@ -1417,9 +1508,9 @@ const _buildVehicle = (type, col) => {
       break
     }
     case 'suv': {
-      const suvM = new THREE.MeshPhongMaterial({ color: col })
-      const gS = new THREE.MeshPhongMaterial({ color: 0x1a3a5a, transparent: true, opacity: 0.7 })
-      const wS = new THREE.MeshPhongMaterial({ color: 0x111111 })
+      const suvM = new THREE.MeshToonMaterial({ color: col })
+      const gS = new THREE.MeshToonMaterial({ color: 0x1a3a5a, transparent: true, opacity: 0.7 })
+      const wS = new THREE.MeshToonMaterial({ color: 0x111111 })
       const sbody = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.58, 4.3), suvM)
       sbody.position.y = 0.44
       g.add(sbody)
@@ -1444,12 +1535,12 @@ const _buildVehicle = (type, col) => {
       break
     }
     case 'cycle': {
-      const cycM = new THREE.MeshPhongMaterial({ color: col })
-      const wCy = new THREE.MeshPhongMaterial({ color: 0x333333 })
+      const cycM = new THREE.MeshToonMaterial({ color: col })
+      const wCy = new THREE.MeshToonMaterial({ color: 0x333333 })
       const cyframe = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.25, 1.3), cycM)
       cyframe.position.y = 0.5
       g.add(cyframe)
-      const han = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.06, 0.1), new THREE.MeshPhongMaterial({ color: 0xaaaaaa }))
+      const han = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.06, 0.1), new THREE.MeshToonMaterial({ color: 0xaaaaaa }))
       han.position.set(0, 0.85, 0.6)
       g.add(han)
       ;[0.6, -0.6].forEach((z) => {
@@ -1462,7 +1553,7 @@ const _buildVehicle = (type, col) => {
     }
     default: {
       // Fallback: simple colored box
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 3.5), new THREE.MeshPhongMaterial({ color: col })))
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 3.5), new THREE.MeshToonMaterial({ color: col })))
     }
   }
   return g
@@ -1499,7 +1590,7 @@ const _buildHuman = (isPlayer = false) => {
     g.add(hb)
 
     // Visible leg meshes for walk animation (dark, small, overlay on GLB model)
-    const legMat = new THREE.MeshLambertMaterial({ color: 0x222222 })
+    const legMat = new THREE.MeshToonMaterial({ color: 0x222222 })
     const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.14 * s, 0.4 * s, 0.14 * s), legMat)
     lLeg.position.set(-0.1 * s, 0.2 * s, 0)
     lLeg.castShadow = true
@@ -1521,15 +1612,15 @@ const _buildHuman = (isPlayer = false) => {
 
   const scale = isPlayer ? 1.1 : 1.0
 
-  const skin = new THREE.MeshLambertMaterial({ color: sColor })
-  const shirt = new THREE.MeshLambertMaterial({ color: shColor })
-  const pants = new THREE.MeshLambertMaterial({ color: pColor })
+  const skin = new THREE.MeshToonMaterial({ color: sColor })
+  const shirt = new THREE.MeshToonMaterial({ color: shColor })
+  const pants = new THREE.MeshToonMaterial({ color: pColor })
 
   const head = new THREE.Mesh(new THREE.BoxGeometry(0.4 * scale, 0.4 * scale, 0.4 * scale), skin)
   head.position.y = 1.8 * scale
   g.add(head)
 
-  const hair = new THREE.Mesh(new THREE.BoxGeometry(0.42 * scale, 0.1 * scale, 0.42 * scale), new THREE.MeshLambertMaterial({ color: 0x111111 }))
+  const hair = new THREE.Mesh(new THREE.BoxGeometry(0.42 * scale, 0.1 * scale, 0.42 * scale), new THREE.MeshToonMaterial({ color: 0x111111 }))
   hair.position.y = 2.0 * scale
   g.add(hair)
 
@@ -1538,7 +1629,7 @@ const _buildHuman = (isPlayer = false) => {
   g.add(torso)
 
   if (isPlayer) {
-    const bag = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.2), new THREE.MeshLambertMaterial({ color: 0xf39c12 }))
+    const bag = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.2), new THREE.MeshToonMaterial({ color: 0xf39c12 }))
     bag.position.set(0, 1.25 * scale, -0.2)
     g.add(bag)
   }
@@ -1550,7 +1641,7 @@ const _buildHuman = (isPlayer = false) => {
   rLeg.position.set(0.15 * scale, 0.45 * scale, 0)
   g.add(rLeg)
 
-  const shoeM = new THREE.MeshLambertMaterial({ color: 0x111111 })
+  const shoeM = new THREE.MeshToonMaterial({ color: 0x111111 })
   const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26 * scale, 0.1 * scale, 0.3 * scale), shoeM)
   lShoe.position.set(-0.15 * scale, 0.05 * scale, 0.05)
   g.add(lShoe)

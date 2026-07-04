@@ -296,6 +296,19 @@
           </div>
 
           <div class="input-group">
+            <label for="prof-age">Your Age <span style="color:var(--dim);font-weight:400;font-size:0.8rem">(for best experience)</span></label>
+            <input type="number" id="prof-age" min="8" max="99" placeholder="E.g., 18" required />
+          </div>
+
+          <div class="input-group">
+            <label for="prof-lang">Preferred Language</label>
+            <select id="prof-lang">
+              <option value="en">English</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+            </select>
+          </div>
+
+          <div class="input-group">
             <label for="prof-veh">Preferred Vehicle</label>
             <select id="prof-veh">
               <option value="Car">Standard Car</option>
@@ -573,6 +586,8 @@
 
       if (S.name) document.getElementById('prof-name').value = S.name
       if (S.vehicle) document.getElementById('prof-veh').value = S.vehicle
+      if (S.age) document.getElementById('prof-age').value = S.age
+      if (S.language) document.getElementById('prof-lang').value = S.language
 
       if (localStorage.getItem('trafficSetupComplete') === 'true' || S.name) {
         const authDashBtn = document.getElementById('auth-dashboard-btn')
@@ -587,13 +602,20 @@
         const name = document.getElementById('prof-name').value.trim()
         const veh = document.getElementById('prof-veh').value
         const pin = document.getElementById('prof-pin').value.trim()
+        const age = parseInt(document.getElementById('prof-age').value) || 18
+        const language = document.getElementById('prof-lang').value
 
         if (name.length < 2) {
           alert('Please enter a valid name.')
           return
         }
 
-        const tUser = { name, vehicle: veh, pin, createdAt: new Date().toISOString() }
+        if (age < 8 || age > 99) {
+          alert('Please enter a valid age (8-99).')
+          return
+        }
+
+        const tUser = { name, vehicle: veh, pin, age, language, createdAt: new Date().toISOString() }
         localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
 
         let L = {}

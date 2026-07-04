@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'follow_volunteer', text: 'Follow traffic volunteer signals', type: 'reach', target: 'volunteer_signal', done: false },
     { id: 'crawl_crowd', text: 'Crawl through festival crowd', type: 'avoid', target: 'speed_festival', done: false },
     { id: 'no_honk_fest', text: 'Do not honk at festival', type: 'avoid', target: 'honk', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

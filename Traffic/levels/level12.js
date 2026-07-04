@@ -25,5 +25,6 @@ window.LVS.push({
     { id: 'indicate_left', text: 'Indicate left before merging', type: 'toggle', target: 'indicator', done: false },
     { id: 'merge_left', text: 'Merge to left lane', type: 'reach', target: 'left_lane', done: false },
     { id: 'maintain_speed', text: 'Maintain speed, do not stop', type: 'avoid', target: 'stop_sudden', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

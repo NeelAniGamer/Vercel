@@ -1,0 +1,13 @@
+model_list:
+  - model_name: gemini-3.1-pro-preview
+    litellm_params:
+      model: gemini/gemini-1.5-pro-latest
+  - model_name: gemini-3.1-pro
+    litellm_params:
+      model: gemini/gemini-1.5-pro-latest
+  - model_name: gemini-2.5-pro
+    litellm_params:
+      model: gemini/gemini-1.5-pro-latest
+
+litellm_settings:
+  drop_params: true

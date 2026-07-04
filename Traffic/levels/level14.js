@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'dip_headlights', text: 'Dip headlights for oncoming traffic', type: 'toggle', target: 'headlights', done: false },
     { id: 'yield_elderly', text: 'Wait for elderly to cross', type: 'stop', target: 'stationary', done: false },
     { id: 'no_speed', text: 'Do not speed at night', type: 'avoid', target: 'speed_night', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

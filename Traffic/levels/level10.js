@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'navigate_market', text: 'Navigate through market', type: 'reach', target: 'market_zone', done: false },
     { id: 'find_zone', text: 'Find parking zone', type: 'reach', target: 'parking_zone', done: false },
     { id: 'park_spot', text: 'Park in designated spot', type: 'stop', target: 'parking_spot', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial', 'trains']
 })

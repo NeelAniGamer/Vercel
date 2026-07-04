@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'no_honk', text: 'Do not honk in silence zone', type: 'avoid', target: 'honk', done: false },
     { id: 'slow_down', text: 'Slow down near hospital', type: 'avoid', target: 'speed_hospital', done: false },
     { id: 'maintain_dist', text: 'Maintain safe following distance', type: 'avoid', target: 'collision', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

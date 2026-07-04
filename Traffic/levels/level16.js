@@ -24,5 +24,6 @@ window.LVS.push({
   tasks: [
     { id: 'no_honk_night', text: 'Do not honk in residential night', type: 'avoid', target: 'honk', done: false },
     { id: 'reach_main', text: 'Reach main road quietly', type: 'reach', target: 'main_road', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

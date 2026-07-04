@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'slow_zone', text: 'Slow to 20 km/h in school zone', type: 'avoid', target: 'speed_zone', done: false },
     { id: 'watch_kids', text: 'Watch for crossing children', type: 'avoid', target: 'pedestrian', done: false },
     { id: 'follow_guard', text: 'Follow school guard signals', type: 'reach', target: 'guard_signal', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

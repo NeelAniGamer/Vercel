@@ -180,59 +180,51 @@ This prevents reinventing wheels, ensures industry-standard patterns, and avoids
 
 ## Execution Progress
 
-### Completed (June 28–29, 2026)
-- [x] Mobile camera look (camYaw/camPitch) — touch-to-look with decay
-- [x] Road-relative building spawn — `_buildRoadZones()`, `_isOnRoad()`, `_isInBuildZone()`
-- [x] Driving.html canvas `touch-action:none` + swipe hint
-- [x] 20-level audit — all levels follow theory+practical format
-- [x] Full codebase re-read — verified all critical code paths
-- [x] Browser traffic game research — Poki/Drive Mad/Rush 3D benchmarks
-- [x] 35+ skills loaded and cross-referenced
-- [x] OVERHAUL_PLAN.md created — comprehensive 11-phase plan with 50 levels
-- [x] Physics audit — camera shake, rain, puddles, fog, night mode verified
+### Completed — verified 2026-07-01 (code audit on game_core.js / start.js / Driving.html)
+- [x] **Phase 0 bug fixes** — `currentRoad` declared at `game_core.js:2359`; `this.mapCfg` only (no `this.levelCfg`); barricade offset `±10` at `game_core.js:1987-2007`; obstacle cleanup skips buildings at `game_core.js:2014`; `this.puddles` declared before rain-puddle creation at `game_core.js:1583`; procedural buildings have `userData.isBuilding: true` at `game_core.js:1209, 1371, 1975`.
+- [x] **Phase 0.6 — non-issue:** `_buildHuman` is defined as a global `const` at `ui.js:1471` and called from `game_core.js` as a bare global. Works because both scripts share global scope. No context fix needed.
+- [x] **Phase 1 — building collision:** AABB test with `halfW`/`halfD` + axis-of-least-penetration push-out at `game_core.js:2935-2960`. The OVERHAUL_PLAN claim that collision is "point-distance < 1.6" is stale.
+- [x] **Phase 2 — UI simplification:** z-index vars, task bar redesign, emoji progress stars, progressive HUD (done in earlier sessions).
+- [x] **Phase 3 — Tutorial system:** `kid-tutorial` overlay in `Driving.html`, gated on `localStorage('kid_tutorial_done')`, first-play level 1 only. The OVERHAUL_PLAN reference to `localStorage('tutorial_complete')` is stale — actual key is `kid_tutorial_done`.
+- [x] **Phase 4 — NPC AI:** 3s stuck timer + teleport at `game_core.js:2501-2521`; lane clamp at the same site; traffic-light detection range tightened to 15m at `game_core.js:2567-2592`.
+- [x] **Phase 5 — partial:** night mode is implemented and used at 10+ sites in `game_core.js` (line 609, 962, 1027-1031, 1190, 1319, 1521, 1537, 1572). **`MeshToonMaterial` is NOT used** (only `MeshPhongMaterial` / `MeshLambertMaterial`) — this is a real remaining gap.
+- [x] **Phase 6 — Level Route Completeness:** Multi-point routes in `_unpcs` NPCs follow `cfg.route` waypoints with `laneOffset` and automatic wrapping. Rain system: 1200 particles, speed cap at 80%, fog halved, puddle shimmer + splash particles + thunder SFX via Web Audio oscillator. Night: headlight SpotLights + visible ConeGeometry cones (`this._headlightCones`), toggle sync, taillight brake glow. Level-specific layouts complete in `_getMapConfig()` M table (L1-L20 each unique with `roads[]`, `route[]`, `trafficLight[]`, `pedSpawn[]`, `speedBreakers[]`, `buildings[]`).
 
-### In Progress
-- [x] AGENTS.md update (skill-first rule, progress, physics findings)
-- [x] Phase 0: Critical bug fixes (currentRoad, this.levelCfg, puddles, barricades, cleanup)
-- [x] Phase 1: Building + obstacle AABB collision (halfW/halfD on all obstacles, AABB overlap test, push-out on contact)
+- [x] **Phase 7 — Performance & polish:** NPC template cache (`_getNpcTemplate()`) with `_npcFree[]`/`_pedFree[]` reuse, smooth camera transition on pointer-lock toggle (0.4s lerp), audio category system (`sfx.vol: {sfx, ui, env}`) with `sfx.setVol()`. Frustum culling, shadow autoUpdate, and InstancedMesh already present for GLB buildings. Phase 7.2 (task bar redesign), 7.3 (InstancedMesh), 7.5 (audio UI) deprioritized — code-level infrastructure in place, UI polish deferred.
 
-### Upcoming Phases
-- [ ] Phase 2: UI simplification for 4-5 year olds
+### Architecture ground truth (verified)
+- **Class is `Game`, not `TrafficGame`.** `AGENTS.md` previously said "TrafficGame" — that was a doc error. Defined at `game_core.js:9`.
+- **Levels are lesson data only.** All 20 `levels/levelN.js` files push to `window.LVS[]` with `{id, icon, name, modes, theory, tasks, law, ...}`. There is no separate per-level `LEVEL_CONFIG` — the 3D world for every level comes from the hard-coded `M` table inside `_getMapConfig(lvId)` at `game_core.js:875`. L15 is a special 50km open-world override built procedurally inside the same function.
+- **Preloader is monolithic.** `start.js:25-77+` preloads ~100+ GLBs at startup. No per-level loading. Many models in `Models/` are unreferenced (`kenney_animated-characters-*`, `kenney_cube-pets`, `kenney_platformer-pack-remastered`, `road__avenue__street`, the `uploads_files_*` archive).
+- **uploads_files_* archive format gap.** The "new model packs" in `New Ideas.txt` are `.rar` / `.zip` / `.fbx` / `.3ds` / `.obj` / `.mtl`. The current loader is GLB-only. Plan: use JSZip in-browser for `.zip` (already loaded), add `FBXLoader` / `OBJLoader` for the other formats, and park `.rar` as future work (JSZip cannot read RAR — needs `node-unrar-js` or a pre-extracted vendor copy).
 
-### Physics Audit Results
-| System | Status | Details |
-|--------|--------|---------|
-| Camera shake | ✅ Working | `_camShakeAmt`: NPC=0.40, barricade=0.35, breaker=0.15. Exponential decay. |
-| Rain physics | ✅ Working | turn×0.65, grip×0.3, fric+0.025 when `hasRain` |
-| Fog | ✅ Working | Rain: 0.3×near, 0.5×far. Normal: full fog. |
-| Puddles (level 5) | ✅ Working | 10 puddles, collision at dist<2.5, speed>0.15 = fine |
-| Puddles (hasRain levels) | ✅ Fixed | Created AND pushed to `this.puddles[]` — collision now fires |
-| Night mode | ⚠️ Incomplete | Sky darkens, moonlight, but no headlights/streetlights/NPC behavior |
-| `speed_puddle` task | ❌ BROKEN | Depends on `this.puddles[]` which is incomplete for hasRain |
-| `speed_night` task | ⚠️ Partial | Task type exists but no visual night mode beyond sky color |
+### Remaining work (per OVERHAUL_PLAN §2026-07-01 plan, ordered)
+1. **Per-level asset loading** (Step 1) — split `start.js` into `CORE_ASSETS` + `LEVEL_ASSETS`, extend `_getMapConfig`'s `M[lvId]` with `assets: [...]`.
+2. **MeshToonMaterial pass** (Step 2) — switch procedural buildings + NPC factories to toon shading; add a shared `THREE.GradientMap`.
+3. **GTA-style open world foundation** (Step 3) — pedestrian-first start, F-to-enter/exit hint button, `road__avenue__street` integration, Kenney building verification.
+4. **Ethical-driving mechanics** (Step 4) — 13 sub-systems: scenario scripts per theme, seatbelts/animals/littering, indicators, phone temptation, zebra crossings, signage, wrong-side/overtaking, road-rage NPCs, police checkpoints + e-challan log.
+5. **Tier 1-2 level authoring** (Step 5) — extend existing 1-20 with `assets:` and `scenario:`; defer 21-50.
+6. **New Ideas #1, #3, #4, #6** (Step 6) — footpath arrow, smart ring path, driving-instructor level, age-adaptive visuals.
+7. **2D scenario demo** (Step 7) — Phaser 4 on `Academy.html`.
+8. **Performance & polish** (Step 8) — object pooling, frustum-cull-aware shadow autoUpdate, InstancedMesh, camera lerp, mobile 30fps target.
 
-### Critical Bugs Found (Phase 0)
-| Bug | Location | Status |
-|-----|----------|--------|
-| `currentRoad` undefined | game_core.js:2304 | ✅ Fixed — defined via roadSegments loop |
-| `this.levelCfg` wrong ref | game_core.js:2267 | ✅ Fixed — changed to `this.mapCfg` |
-| `window.LVL_REWARD_CALLED` | game_core.js:~525 | ⏭️ N/A — variable doesn't exist, guard already in place |
-| Puddles not in array | game_core.js:1514-1525 | ✅ Fixed — `this.puddles.push(p)` added to rain loop |
-| Barricade spawn on road | game_core.js:1912-1928 | ✅ Fixed — offset changed from ±5 to ±10 |
-| Buildings removed by cleanup | game_core.js:1930-1937 | ✅ Fixed — `isBuilding` check added |
-| Procedural buildings no tag | game_core.js:1172 | ✅ Fixed — `userData.isBuilding = true` added |
+### Post-audit fixes — verified 2026-07-04
+- [x] **Fix 1 — confetti z-index:** `start.js:223` changed from `9998` → `20` (sits between canvas and HUD layers).
+- [x] **Fix 2 — task-tracker overflow:** `#task-tracker` in `Driving.html` now has `max-width: min(280px, 85vw)`.
+- [x] **Fix 3 — 400–768px breakpoint:** New CSS media query in `Driving.html` scales `#task-tracker`, `#objective-overlay`, `#phone-gps`, kid elements, steering wheel, and gauge SVGs.
+- [x] **Fix 4 — pause menu:** Escape key handler in `game_core.js:540`; `togglePause()` method; HTML overlay `#pause-overlay` with Resume/Restart/Quit buttons; CSS `#pause-overlay.on { display: flex }`.
+- [x] **Fix 5 — steering wheel narrow screens:** `#steer-wheel-container` sized down in 400–768px breakpoint (80px vs 100px).
+- [x] **Fix 6 — frustum culling on NPC/ped meshes:** Added `nv.frustumCulled = true` at NPC spawn (lines ~2105, 2145) and `ped.frustumCulled = true` at ped spawn (line ~3655).
+- [x] **Fix 7 — dynamic shadow quality:** `_usun()` now monitors FPS every 60 frames; downgrades shadow map to 512 when FPS < 25, upgrades back to 2048 when FPS > 50.
+- [x] **Fix 8 — ui.js clone z-index:** `dismissChallan()` clone z-index changed from hardcoded `'999999'` → reads `--z-modal` CSS variable (fallback `'100001'`).
+- [x] **Fix 9 — CSP meta tag:** Added `Content-Security-Policy` meta tag to `Driving.html` `<head>`.
 
-### Upcoming Phases
-- **Phase 2**: UI simplification for 4-5 year olds
-- **Phase 3**: Tutorial system (progressive unlock, visual-only for kids)
-- **Phase 4**: NPC AI fixes (stuck detection, traffic light obedience)
-- **Phase 5**: Visual polish (MeshToonMaterial, day/night, weather)
-- **Phase 6**: Level routes + physics completeness
-- **Phase 7**: Performance & polish (object pooling, draw calls, 30fps mobile)
-- **Phase 8**: 2D Phaser 4 scenario demo
-- **Phase 9**: 50 level definitions (Indian traffic theory)
-- **Phase 10**: Seerle Traffic Academy Android app (React Native/Expo)
+### Out of scope (deferred)
+- **Seerle Traffic Academy Android app** (was OVERHAUL_PLAN Phase 10) — separate product, separate plan.
+- **RAR archive extraction** — JSZip cannot read RAR. Pre-extract on disk or accept a build-time `node-unrar-js` step.
+- **Audio system overhaul** — blocked on asset sourcing.
+- **road__avenue__street GLTF integration** — Step 3.3 deferred; current road system works.
 
 ---
 
-_Last updated: June 29, 2026_
+_Last updated: 2026-07-04_

@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'pull_over', text: 'Pull over left immediately', type: 'reach', target: 'left_side', done: false },
     { id: 'stop_complete', text: 'Stop completely', type: 'stop', target: 'stationary', done: false },
     { id: 'wait_pass', text: 'Wait for ambulance to pass', type: 'avoid', target: 'ambulance', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

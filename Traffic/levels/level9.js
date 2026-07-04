@@ -25,5 +25,6 @@ window.LVS.push({
     { id: 'wait_clear', text: 'Wait for commuters to clear', type: 'stop', target: 'stationary', done: false },
     { id: 'slow_pass', text: 'Pass slowly when clear', type: 'avoid', target: 'speed_puddle', done: false },
     { id: 'no_splash', text: 'Do not splash commuters', type: 'avoid', target: 'pedestrian', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

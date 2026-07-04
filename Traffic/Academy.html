@@ -31,6 +31,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/4.1.0/phaser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
     <style>
       :root {
@@ -2445,6 +2446,43 @@
           display: none !important;
         }
       }
+
+      /* 2D Scenario Game */
+      .play2d-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 10px;
+        border: 1.5px solid #2ecc71;
+        background: rgba(46, 204, 113, 0.1);
+        color: #2ecc71;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        margin-top: 4px;
+      }
+      .play2d-btn:hover {
+        background: rgba(46, 204, 113, 0.25);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+      }
+      .play2d-btn.locked {
+        border-color: rgba(148,163,184,0.3);
+        background: rgba(148,163,184,0.05);
+        color: rgba(148,163,184,0.5);
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+      #scenario2d-container canvas {
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        max-width: 100%;
+        max-height: 100%;
+      }
     </style>
 
     <script>
@@ -2709,7 +2747,7 @@
             what it takes to be a true Traffic Hero and earn your official certification.
           </div>
           <div class="pls" style="justify-content: center; margin-top: 40px">
-            <button class="btn btn-p" onclick="ui.showLevels()" style="font-size: 1.1rem; padding: 12px 32px">Enter Academy</button>
+            <button class="btn btn-p" onclick="ui.showLevels()" style="font-size: 1.25rem; padding: 16px 36px" id="enter-academy-btn">Enter Academy</button>
             <button class="btn btn-g" onclick="ui.hardReset()" style="font-size: 1.1rem; padding: 12px 32px">Reset Progress</button>
             <button
               class="btn btn-s"
@@ -2836,6 +2874,23 @@
       </div>
     </div>
 
+    <!-- 2D Scenario Game Screen -->
+    <div id="screen-2d" class="screen" style="flex-direction:column; height:100vh; background:#1a1a2e;">
+      <div class="tb" style="flex-shrink:0;">
+        <button class="back-btn" onclick="ui.exit2D()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+        <div style="font-weight:700;font-size:0.95rem;color:#fff" id="s2d-title">2D Scenario</div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <button class="btn btn-g" id="s2d-restart" onclick="ui.restart2D()" style="padding:8px 16px;font-size:0.9rem;">↻ Retry</button>
+        </div>
+      </div>
+      <div id="scenario2d-container" style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;"></div>
+    </div>
+
     <div id="screen-badges" class="screen">
       <div class="tb">
         <button class="back-btn" onclick="ui.showLevels()">
@@ -2938,8 +2993,20 @@
           type="text"
           id="prof-name"
           placeholder="Enter your name"
-          style="width: 100%; padding: 10px; margin: 20px 0; background: var(--void); color: var(--text); border: 1px solid var(--border); border-radius: 8px"
+          style="width: 100%; padding: 10px; margin: 20px 0 12px; background: var(--void); color: var(--text); border: 1px solid var(--border); border-radius: 8px"
         />
+        <input
+          type="number"
+          id="prof-age"
+          min="8"
+          max="99"
+          placeholder="Age"
+          style="width: 100%; padding: 10px; margin-bottom: 12px; background: var(--void); color: var(--text); border: 1px solid var(--border); border-radius: 8px"
+        />
+        <select id="prof-lang" style="width: 100%; padding: 10px; margin-bottom: 12px; background: var(--void); color: var(--text); border: 1px solid var(--border); border-radius: 8px">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+        </select>
         <select id="prof-veh" style="width: 100%; padding: 10px; margin-bottom: 20px; background: var(--void); color: var(--text); border: 1px solid var(--border); border-radius: 8px">
           <option value="Car">Standard Car</option>
           <option value="Bike">Motorcycle</option>
@@ -2993,6 +3060,38 @@
     <script src="levels/level18.js"></script>
     <script src="levels/level19.js"></script>
     <script src="levels/level20.js"></script>
+    <script src="levels/level21.js"></script>
+    <script src="levels/level22.js"></script>
+    <script src="levels/level23.js"></script>
+    <script src="levels/level24.js"></script>
+    <script src="levels/level25.js"></script>
+    <script src="levels/level26.js"></script>
+    <script src="levels/level27.js"></script>
+    <script src="levels/level28.js"></script>
+    <script src="levels/level29.js"></script>
+    <script src="levels/level30.js"></script>
+    <script src="levels/level31.js"></script>
+    <script src="levels/level32.js"></script>
+    <script src="levels/level33.js"></script>
+    <script src="levels/level34.js"></script>
+    <script src="levels/level35.js"></script>
+    <script src="levels/level36.js"></script>
+    <script src="levels/level37.js"></script>
+    <script src="levels/level38.js"></script>
+    <script src="levels/level39.js"></script>
+    <script src="levels/level40.js"></script>
+    <script src="levels/level41.js"></script>
+    <script src="levels/level42.js"></script>
+    <script src="levels/level43.js"></script>
+    <script src="levels/level44.js"></script>
+    <script src="levels/level45.js"></script>
+    <script src="levels/level46.js"></script>
+    <script src="levels/level47.js"></script>
+    <script src="levels/level48.js"></script>
+    <script src="levels/level49.js"></script>
+    <script src="levels/level50.js"></script>
+    <script src="levels/level51.js"></script>
+    <script src="levels/level52.js"></script>
 
     <script src="course.js"></script>
     <script>
@@ -3021,6 +3120,7 @@
       })
     </script>
     <script src="ui.js"></script>
+    <script src="scenario2d.js"></script>
     <script>
       // Academy.html doesn't load start.js, so we init directly
       ;(function () {

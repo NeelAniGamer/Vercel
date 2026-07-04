@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'wait_red', text: 'Wait at the red light', type: 'stop', target: 'red_light', done: false },
     { id: 'let_cross', text: 'Let all pedestrians cross', type: 'avoid', target: 'pedestrian', done: false },
     { id: 'move_green', text: 'Move only when light turns green', type: 'reach', target: 'green_light', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial']
 })

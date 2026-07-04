@@ -1,0 +1,12 @@
+function Load-Env {
+    $envFile = Join-Path (Get-Location) ".env"
+    if (Test-Path $envFile) {
+        Get-Content $envFile | ForEach-Object {
+            if ($_ -match "^\s*([^#][^=]+)=(.+)$") {
+                [System.Environment]::SetEnvironmentVariable($matches[1].Trim(), $matches[2].Trim(), "Process")
+            }
+        }
+        Write-Host ".env loaded" -ForegroundColor Green
+    }
+}
+Load-Env

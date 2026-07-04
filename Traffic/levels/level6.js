@@ -29,5 +29,6 @@ window.LVS.push({
     { id: 'avoid_hospital', text: 'Do not park within 100m of hospital', type: 'avoid', target: 'hospital_zone', done: false },
     { id: 'find_legal', text: 'Find parking 100m+ away', type: 'reach', target: 'parking_spot', done: false },
     { id: 'walk_back', text: 'Walk back to hospital', type: 'reach', target: 'destination', done: false }
-  ]
+  ],
+  assets: ['suburban', 'industrial', 'trains']
 })
