@@ -7,19 +7,14 @@
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Work+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="app.js" defer></script>
 </head>
 <body>
 
-    <!-- 3D Interactive Background (Light mode aesthetic spline) -->
-    <div class="spline-bg">
-        <!-- We use a subtle 3D background that fits light mode -->
-        <spline-viewer url="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" events-target="global"></spline-viewer>
-        <div class="bg-gradient-overlay"></div>
-    </div>
+    <!-- Animated Ambient Background -->
+    <div class="ambient-bg"></div>
 
     <!-- UI Overlay -->
     <div id="desktop">
@@ -52,10 +47,14 @@
         </header>
 
         <!-- Fullscreen Clock Overlay -->
-        <div id="clock-overlay" class="glass-panel" style="display: none; z-index: 1000; position: absolute; inset: 0; border-radius: 0; backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); background: var(--surface-glass); flex-direction: column; justify-content: center; align-items: center;">
-            <button id="close-clock-btn" class="glass-btn secondary" style="position: absolute; top: 32px; right: 32px; border-radius: var(--radius-full); width: 48px; height: 48px; padding: 0;"><i data-lucide="x"></i></button>
-            <div id="clock-time" style="font-size: clamp(6rem, 15vw, 15rem); font-family: var(--font-heading); font-weight: 800; letter-spacing: -5px; line-height: 1; color: var(--text-primary);">00:00</div>
-            <div id="clock-date" style="font-size: clamp(1.5rem, 3vw, 3rem); font-family: var(--font-body); color: var(--text-secondary); margin-top: 16px;">Monday, January 1</div>
+        <div id="clock-overlay" style="display: none;">
+            <button id="close-clock-btn" class="clock-close-btn" title="Close Clock">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="clock-display">
+                <span id="clock-time">12:00:00</span>
+                <span id="clock-period">am</span>
+            </div>
         </div>
 
         <!-- Main Content Area -->

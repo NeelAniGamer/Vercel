@@ -40,27 +40,16 @@ h1, h2, h3, h4, .logo {
     font-family: var(--font-heading);
 }
 
-/* 3D Spline Background */
-.spline-bg {
+/* Animated Ambient Background */
+.ambient-bg {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     z-index: 0;
-    pointer-events: all;
-    background: #F8FAFC;
-}
-
-.bg-gradient-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: radial-gradient(circle at top left, rgba(255,255,255,0.8), transparent 70%),
-                radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.1), transparent 60%);
     pointer-events: none;
+    background: radial-gradient(circle at top left, #F8FAFC, #EFF6FF);
 }
 
 /* Overlay System */
@@ -623,4 +612,59 @@ h1, h2, h3, h4, .logo {
 .focusable:focus-visible {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
+}
+
+/* Fullscreen Clock Overlay - clockfaceonline.com style */
+#clock-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background-color: #D5D5B0; /* Warm beige/olive cream background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.clock-close-btn {
+    position: absolute;
+    top: 32px;
+    right: 32px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: #2F3E2F; /* Dark olive green */
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.clock-close-btn:hover {
+    background: rgba(47, 62, 47, 0.1);
+    transform: scale(1.1);
+}
+
+.clock-display {
+    color: #2F3E2F; /* Dark olive green */
+    font-family: "Georgia", "Times New Roman", serif; /* Elegant serif font */
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+}
+
+#clock-time {
+    font-size: clamp(6rem, 15vw, 15rem);
+    font-weight: normal;
+    letter-spacing: -2px;
+    line-height: 1;
+}
+
+#clock-period {
+    font-size: clamp(2rem, 5vw, 5rem);
+    font-weight: normal;
+    text-transform: lowercase;
 }
