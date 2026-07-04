@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CastFlow 3D Desktop</title>
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+    <!-- 3D Interactive Background -->
+    <div class="spline-bg">
+        <spline-viewer url="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" events-target="global"></spline-viewer>
+    </div>
+
+    <!-- UI Overlay -->
+    <div id="desktop">
+        <!-- Glassmorphism Top Bar -->
+        <header id="top-bar">
+            <div class="logo">
+                <span class="logo-icon"></span>
+                CastFlow <span class="logo-accent">PWA</span>
+            </div>
+            
+            <nav class="nav-tabs">
+                <button class="nav-btn active focusable" data-target="panel-cast">Cast Viewer</button>
+                <button class="nav-btn focusable" data-target="panel-share">File Share</button>
+            </nav>
+
+            <div class="connection-module">
+                <div id="connection-status" class="status-disconnected">
+                    <span class="pulse-dot"></span> <span id="status-text">Disconnected</span>
+                </div>
+                <div class="controls">
+                    <select id="connection-type" class="glass-input">
+                        <option value="local">Local LAN</option>
+                        <option value="azure">Cloud (Azure)</option>
+                    </select>
+                    <input type="text" id="target-ip" class="glass-input" placeholder="Device IP / ID">
+                    <button id="connect-btn" class="glass-btn focusable">Connect</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            
+            <!-- Panel: Cast Viewer -->
+            <section id="panel-cast" class="glass-panel active">
+                <div class="panel-layout">
+                    <!-- Stream Container -->
+                    <div id="screen-container">
+                        <img id="stream-img" src="" style="display:none;" />
+                        <div id="placeholder" class="glass-card">
+                            <div class="placeholder-icon">🔗</div>
+                            <h2>Ready to Connect</h2>
+                            <p>Enter your phone's IP address to begin casting.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Remote Control Sidebar -->
+                    <aside id="remote-control" class="glass-sidebar">
+                        <h3>TV Remote</h3>
+                        <div class="d-pad">
+                            <button class="d-btn up focusable" data-key="up">↑</button>
+                            <div class="d-row">
+                                <button class="d-btn left focusable" data-key="left">←</button>
+                                <button class="d-btn ok focusable" data-key="ok">OK</button>
+                                <button class="d-btn right focusable" data-key="right">→</button>
+                            </div>
+                            <button class="d-btn down focusable" data-key="down">↓</button>
+                        </div>
+                        <div class="d-actions">
+                            <button class="action-btn focusable" data-key="home">Home</button>
+                            <button class="action-btn focusable" data-key="back">Back</button>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- Panel: Share Files -->
+            <section id="panel-share" class="glass-panel">
+                <div class="share-layout">
+                    <div class="share-card upload-zone" id="drop-zone">
+                        <div class="upload-icon">⬆️</div>
+                        <h2>Send to Phone</h2>
+                        <p>Drag & drop files here</p>
+                        <span class="or-divider">or</span>
+                        <button class="glass-btn primary focusable">Browse Files</button>
+                        <input type="file" id="file-input" style="display: none;" multiple>
+                    </div>
+
+                    <div class="share-card download-list">
+                        <h2>Available Files</h2>
+                        <p class="subtitle">Shared from your phone</p>
+                        <div id="shared-files-container" class="file-list">
+                            <!-- Files will be injected here via JS -->
+                            <div class="empty-state">
+                                No files currently shared.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>
