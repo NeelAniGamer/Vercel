@@ -206,11 +206,62 @@ function addSharedFile(file) {
             <span class="file-meta">${sizeFormatted} &bull; ${file.mimeType}</span>
         </div>
         <a href="http://${currentIp}:8080/share/${file.id}/download" class="download-btn focusable" download>
-            ⬇
+            <i data-lucide="download"></i>
         </a>
     `;
     container.appendChild(div);
+    if(window.lucide) {
+        lucide.createIcons();
+    }
 }
+
+// QR Code Logic
+document.getElementById('show-qr-btn').addEventListener('click', () => {
+    const qrContainer = document.getElementById('qr-code-container');
+    qrContainer.innerHTML = '';
+    
+    // Just a demo URL or actual app URL
+    const urlToShare = currentIp ? `http://${currentIp}:8080/` : 'https://castflow.app/download';
+    
+    new QRCode(qrContainer, {
+        text: urlToShare,
+        width: 180,
+        height: 180,
+        colorDark : "#0F172A",
+        colorLight : "#FFFFFF",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+});
+
+// Clock Overlay Logic
+let clockInterval;
+
+function updateClock() {
+    const now = new Date();
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    
+    hours = hours < 10 ? '0' + hours : hours;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    
+    document.getElementById('clock-time').textContent = `${hours}:${minutes}`;
+    
+    const options = { weekday: 'long', month: 'long', day: 'numeric' };
+    document.getElementById('clock-date').textContent = now.toLocaleDateString(undefined, options);
+}
+
+document.getElementById('clock-toggle-btn').addEventListener('click', () => {
+    const clockOverlay = document.getElementById('clock-overlay');
+    clockOverlay.style.display = 'flex';
+    updateClock();
+    clockInterval = setInterval(updateClock, 1000);
+});
+
+document.getElementById('close-clock-btn').addEventListener('click', () => {
+    const clockOverlay = document.getElementById('clock-overlay');
+    clockOverlay.style.display = 'none';
+    clearInterval(clockInterval);
+});
 
 // For demo purposes:
 // setTimeout(() => {

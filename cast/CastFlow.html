@@ -3,60 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CastFlow 3D Desktop</title>
+    <title>CastFlow | Premium Casting</title>
     <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Work+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="app.js" defer></script>
 </head>
 <body>
 
-    <!-- 3D Interactive Background -->
+    <!-- 3D Interactive Background (Light mode aesthetic spline) -->
     <div class="spline-bg">
+        <!-- We use a subtle 3D background that fits light mode -->
         <spline-viewer url="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" events-target="global"></spline-viewer>
+        <div class="bg-gradient-overlay"></div>
     </div>
 
     <!-- UI Overlay -->
     <div id="desktop">
         <!-- Glassmorphism Top Bar -->
-        <header id="top-bar">
+        <header id="top-bar" class="glass-element">
             <div class="logo">
-                <span class="logo-icon"></span>
-                CastFlow <span class="logo-accent">PWA</span>
+                <i data-lucide="cast" class="logo-icon-svg"></i>
+                CastFlow
             </div>
             
             <nav class="nav-tabs">
-                <button class="nav-btn active focusable" data-target="panel-cast">Cast Viewer</button>
+                <button class="nav-btn active focusable" data-target="panel-about">About</button>
+                <button class="nav-btn focusable" data-target="panel-cast">Cast Viewer</button>
                 <button class="nav-btn focusable" data-target="panel-share">File Share</button>
             </nav>
 
             <div class="connection-module">
+                <!-- Clock Toggle Button -->
+                <button id="clock-toggle-btn" class="nav-btn focusable" title="Toggle Clock Overlay">
+                    <i data-lucide="clock"></i>
+                </button>
                 <div id="connection-status" class="status-disconnected">
                     <span class="pulse-dot"></span> <span id="status-text">Disconnected</span>
                 </div>
                 <div class="controls">
-                    <select id="connection-type" class="glass-input">
-                        <option value="local">Local LAN</option>
-                        <option value="azure">Cloud (Azure)</option>
-                    </select>
-                    <input type="text" id="target-ip" class="glass-input" placeholder="Device IP / ID">
-                    <button id="connect-btn" class="glass-btn focusable">Connect</button>
+                    <input type="text" id="target-ip" class="glass-input" placeholder="Device IP (e.g. 192.168.1.5)">
+                    <button id="connect-btn" class="glass-btn primary focusable">Connect</button>
                 </div>
             </div>
         </header>
 
+        <!-- Fullscreen Clock Overlay -->
+        <div id="clock-overlay" class="glass-panel" style="display: none; z-index: 1000; position: absolute; inset: 0; border-radius: 0; backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); background: var(--surface-glass); flex-direction: column; justify-content: center; align-items: center;">
+            <button id="close-clock-btn" class="glass-btn secondary" style="position: absolute; top: 32px; right: 32px; border-radius: var(--radius-full); width: 48px; height: 48px; padding: 0;"><i data-lucide="x"></i></button>
+            <div id="clock-time" style="font-size: clamp(6rem, 15vw, 15rem); font-family: var(--font-heading); font-weight: 800; letter-spacing: -5px; line-height: 1; color: var(--text-primary);">00:00</div>
+            <div id="clock-date" style="font-size: clamp(1.5rem, 3vw, 3rem); font-family: var(--font-body); color: var(--text-secondary); margin-top: 16px;">Monday, January 1</div>
+        </div>
+
         <!-- Main Content Area -->
         <main id="main-content">
             
+            <!-- Panel: About & Download -->
+            <section id="panel-about" class="glass-panel active">
+                <div class="about-layout">
+                    <div class="hero-content">
+                        <h1>Seamlessly Cast & Share.</h1>
+                        <p>Experience the most premium way to share files, cast screens, and control your device locally.</p>
+                        <div class="action-buttons">
+                            <button class="glass-btn primary big focusable">
+                                <i data-lucide="download"></i> Download APK
+                            </button>
+                            <button class="glass-btn secondary big focusable" id="show-qr-btn">
+                                <i data-lucide="qr-code"></i> Show QR Code
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hero-mockup glass-card">
+                        <i data-lucide="smartphone" class="mockup-icon"></i>
+                        <p>Scan to Connect</p>
+                        <!-- QR Code placeholder -->
+                        <div id="qr-code-container" class="qr-placeholder"></div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Panel: Cast Viewer -->
-            <section id="panel-cast" class="glass-panel active">
+            <section id="panel-cast" class="glass-panel">
                 <div class="panel-layout">
                     <!-- Stream Container -->
                     <div id="screen-container">
                         <img id="stream-img" src="" style="display:none;" />
                         <div id="placeholder" class="glass-card">
-                            <div class="placeholder-icon">🔗</div>
+                            <i data-lucide="monitor-smartphone" class="placeholder-icon"></i>
                             <h2>Ready to Connect</h2>
                             <p>Enter your phone's IP address to begin casting.</p>
                         </div>
@@ -66,17 +102,17 @@
                     <aside id="remote-control" class="glass-sidebar">
                         <h3>TV Remote</h3>
                         <div class="d-pad">
-                            <button class="d-btn up focusable" data-key="up">↑</button>
+                            <button class="d-btn up focusable" data-key="up"><i data-lucide="chevron-up"></i></button>
                             <div class="d-row">
-                                <button class="d-btn left focusable" data-key="left">←</button>
+                                <button class="d-btn left focusable" data-key="left"><i data-lucide="chevron-left"></i></button>
                                 <button class="d-btn ok focusable" data-key="ok">OK</button>
-                                <button class="d-btn right focusable" data-key="right">→</button>
+                                <button class="d-btn right focusable" data-key="right"><i data-lucide="chevron-right"></i></button>
                             </div>
-                            <button class="d-btn down focusable" data-key="down">↓</button>
+                            <button class="d-btn down focusable" data-key="down"><i data-lucide="chevron-down"></i></button>
                         </div>
                         <div class="d-actions">
-                            <button class="action-btn focusable" data-key="home">Home</button>
-                            <button class="action-btn focusable" data-key="back">Back</button>
+                            <button class="action-btn focusable" data-key="home"><i data-lucide="home"></i> Home</button>
+                            <button class="action-btn focusable" data-key="back"><i data-lucide="arrow-left"></i> Back</button>
                         </div>
                     </aside>
                 </div>
@@ -85,22 +121,22 @@
             <!-- Panel: Share Files -->
             <section id="panel-share" class="glass-panel">
                 <div class="share-layout">
-                    <div class="share-card upload-zone" id="drop-zone">
-                        <div class="upload-icon">⬆️</div>
+                    <div class="share-card upload-zone glass-card" id="drop-zone">
+                        <i data-lucide="upload-cloud" class="upload-icon"></i>
                         <h2>Send to Phone</h2>
                         <p>Drag & drop files here</p>
                         <span class="or-divider">or</span>
-                        <button class="glass-btn primary focusable">Browse Files</button>
+                        <button class="glass-btn primary focusable" onclick="document.getElementById('file-input').click()">Browse Files</button>
                         <input type="file" id="file-input" style="display: none;" multiple>
                     </div>
 
-                    <div class="share-card download-list">
+                    <div class="share-card download-list glass-card">
                         <h2>Available Files</h2>
                         <p class="subtitle">Shared from your phone</p>
                         <div id="shared-files-container" class="file-list">
-                            <!-- Files will be injected here via JS -->
                             <div class="empty-state">
-                                No files currently shared.
+                                <i data-lucide="folder-open"></i>
+                                <p>No files currently shared.</p>
                             </div>
                         </div>
                     </div>
@@ -110,5 +146,10 @@
         </main>
     </div>
 
+    <!-- QR Code Script (to generate QR dynamically if needed) -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
