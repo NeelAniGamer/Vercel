@@ -4398,7 +4398,7 @@
         function isPortrait(){ return window.innerHeight > window.innerWidth; }
         let hideTimer = null;
         function update(){
-          if (isMobile() && isPortrait() && game && game.playing) {
+          if (isMobile() && isPortrait() && typeof game !== 'undefined' && game && game.playing) {
             ov.style.display = 'block';
             ov.style.opacity = '1';
             clearTimeout(hideTimer);
@@ -4417,7 +4417,7 @@
         if (!hint) return;
         let shown = false;
         setInterval(function(){
-          if (!game || !game.playing || shown) return;
+          if (typeof game === 'undefined' || !game || !game.playing || shown) return;
           if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
             hint.style.display = 'block';
             shown = true;
