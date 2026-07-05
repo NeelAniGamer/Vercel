@@ -2108,9 +2108,9 @@ class Game {
           this.npcs.push(nv); this.scene.add(nv);
         });
 
-        // ── LEVEL-DEFINED NPCs (from lv.npcs array) ──
-        if (lv && lv.npcs) {
-          lv.npcs.forEach((npcDef, i) => {
+        // ── LEVEL-DEFINED NPCs (from level npcs array) ──
+        if (cfg.npcs) {
+          cfg.npcs.forEach((npcDef, i) => {
             const nv = new THREE.Group();
             const tpl = _getNpcTemplate(npcDef.type, npcDef.color || 0x888888);
             tpl.children.forEach(c => nv.add(c.clone()));
