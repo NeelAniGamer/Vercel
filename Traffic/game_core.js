@@ -1431,7 +1431,7 @@ class Game {
           }
         }
 
-        if (vt === 'pedestrian' && !this.mapCfg.startOutside) {
+        if (vt === 'pedestrian') {
           this.isPedestrian = true;
           this.player = _buildHuman(true);
           this.player.position.set(pStartX, 0, pStartZ);
@@ -2152,14 +2152,20 @@ class Game {
 
         // ── FESTIVAL CROWD BURST ── Spawn a visible crowd upfront for festival/crowd levels
         if (cfg.crowdFestival) {
-          const crowdCount = 40 + Math.floor(Math.random() * 20);
+          const crowdCount = 80 + Math.floor(Math.random() * 40);
           for (let c = 0; c < crowdCount; c++) {
             const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
             const isV = seg.type === 'v';
             const roadLen = isV ? Math.abs(seg.z2 - seg.z1) : Math.abs(seg.x2 - seg.x1);
             const t = Math.random();
-            const px = isV ? seg.x + (Math.random() - 0.5) * 14 : (isV ? seg.x : seg.x1 + t * roadLen);
-            const pz = isV ? (seg.z1 + t * roadLen) : seg.z + (Math.random() - 0.5) * 14;
+            // Spawn on sidewalks, NOT on the road — offset perpendicular to road direction
+            const side = Math.random() > 0.5 ? 1 : -1;
+            const lDist = 9 + 1.25; // sidewalk offset from road center
+            const bDist = lDist + 6.0; // building zone offset
+            const exiting = Math.random() > 0.5;
+            const spawnDist = exiting ? bDist : lDist;
+            const px = isV ? seg.x + side * spawnDist : (seg.x1 + t * roadLen);
+            const pz = isV ? (seg.z1 + t * roadLen) : seg.z + side * spawnDist;
             let ped;
             if (this._pedFree && this._pedFree.length > 0) {
               ped = this._pedFree.pop();
@@ -2170,21 +2176,89 @@ class Game {
             ped.position.set(px, 0, pz);
             ped.userData = {
               t: Math.random() * 10,
-              spd: 0.1 + Math.random() * 0.3,
+              spd: 0.3 + Math.random() * 0.7,
               isV: isV,
               dir: Math.random() > 0.5 ? 1 : -1,
               startZ: isV ? pz : px,
               roadC: isV ? seg.x : seg.z,
               lLeg: ped.children.find(c => c.name === 'lLeg') || new THREE.Group(),
               rLeg: ped.children.find(c => c.name === 'rLeg') || new THREE.Group(),
-              state: 'sidewalk',
-              side: Math.random() > 0.5 ? 1 : -1,
-              targetDist: 9 + 1.25,
-              destDist: 10 + Math.random() * 20,
+              state: exiting ? 'exiting' : 'sidewalk',
+              side: side,
+              targetDist: lDist,
+              destDist: 15 + Math.random() * 25,
               distTraveled: 0
             };
+            if (exiting) {
+              if (isV) ped.rotation.y = side > 0 ? -Math.PI/2 : Math.PI/2;
+              else ped.rotation.y = side > 0 ? Math.PI : 0;
+            } else {
+              ped.rotation.y = Math.random() * Math.PI * 2;
+            }
             this.peds.push(ped);
             this.scene.add(ped);
+          }
+        }
+
+        // ── FESTIVAL VEHICLE SURGE ── Extra NPC traffic for festival driving levels
+        if (cfg.crowdFestival && !cfg.isPedestrian) {
+          const surgeCount = 20 + Math.floor(Math.random() * 10);
+          const surgeTypes = ['car', 'taxi', 'auto', 'bike', 'bus', 'truck'];
+          for (let s = 0; s < surgeCount; s++) {
+            let nv;
+            if (this._npcFree.length > 0) {
+              nv = this._npcFree.pop();
+              nv.children.length = 0;
+            } else {
+              nv = new THREE.Group();
+            }
+            const sType = surgeTypes[Math.floor(Math.random() * surgeTypes.length)];
+            const tpl = _getNpcTemplate(sType, designColors[Math.floor(Math.random() * designColors.length)]);
+            tpl.children.forEach(c => nv.add(c.clone()));
+            const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+            const isOpp = s < Math.floor(surgeCount * 0.35);
+            const laneOffset = isOpp ? -2.5 : 2.5;
+            if (seg.type === 'v') {
+              nv.position.set(seg.x + laneOffset, 0, seg.z1 + Math.random() * Math.abs(seg.z2 - seg.z1));
+              if (isOpp) nv.rotation.y = Math.PI;
+            } else {
+              nv.position.set(seg.x1 + Math.random() * Math.abs(seg.x2 - seg.x1), 0, seg.z + laneOffset);
+              nv.rotation.y = isOpp ? -Math.PI / 2 : Math.PI / 2;
+            }
+            const spdMult = sType === 'truck' ? 0.6 : sType === 'bus' ? 0.7 : sType === 'cycle' ? 0.4 : sType === 'bike' ? 0.9 : sType === 'auto' ? 0.75 : 0.8;
+            const nightSpdMult = cfg.isNight ? 0.6 : 1.0;
+            nv.userData = {
+              spd: (0.3 + Math.random() * 0.22) * spdMult * nightSpdMult,
+              baseSpd: (0.3 + Math.random() * 0.22) * spdMult * nightSpdMult,
+              isAmb: false, npcType: sType,
+              moveAxis: seg.type, isOpp,
+              baseCoord: seg.type === 'v' ? seg.x : seg.z,
+              dir: isOpp ? -1 : 1,
+              minPos: seg.type === 'v' ? Math.min(seg.z1, seg.z2) : Math.min(seg.x1, seg.x2),
+              maxPos: seg.type === 'v' ? Math.max(seg.z1, seg.z2) : Math.max(seg.x1, seg.x2),
+              txX: seg.type === 'v' ? seg.x + laneOffset : undefined,
+              state: 'CRUISE',
+              useRoute: !!(cfg.route && cfg.route.length >= 2),
+              route: cfg.route ? (isOpp ? [...cfg.route].reverse() : [...cfg.route]) : null,
+              routeIdx: cfg.route ? Math.floor(Math.random() * cfg.route.length) : 0,
+              laneOffset: laneOffset
+            };
+            if (cfg.isNight && sType !== 'cycle') {
+              const hlL = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
+              hlL.position.set(0.8, 1.2, 2); hlL.target.position.set(0.8, 0, 12);
+              nv.add(hlL); nv.add(hlL.target);
+              const hlR = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
+              hlR.position.set(-0.8, 1.2, 2); hlR.target.position.set(-0.8, 0, 12);
+              nv.add(hlR); nv.add(hlR.target);
+              const tlGeo = new THREE.SphereGeometry(0.15, 6, 6);
+              const tlMat = new THREE.MeshBasicMaterial({ color: 0xff2200 });
+              const tlL = new THREE.Mesh(tlGeo, tlMat); tlL.position.set(0.6, 1, -2.5);
+              const tlR = new THREE.Mesh(tlGeo, tlMat); tlR.position.set(-0.6, 1, -2.5);
+              nv.add(tlL); nv.add(tlR);
+            }
+            nv.frustumCulled = true;
+            nv.userData.isNPC = true;
+            this.npcs.push(nv); this.scene.add(nv);
           }
         }
 
@@ -3748,9 +3822,11 @@ class Game {
         
         // Despawn far pedestrians (Phase 7: hide instead of destroy, reuse later)
         if (!this._pedFree) this._pedFree = [];
+        const isFest = this.mapCfg && (this.mapCfg.crowdFestival || this.mapCfg.themeType === 'festival');
         for (let i = this.peds.length - 1; i >= 0; i--) {
           const p = this.peds[i];
-          if (p.position.distanceTo(this.player.position) > 100) {
+          const despawnDist = isFest ? 200 : 100;
+          if (p.position.distanceTo(this.player.position) > despawnDist) {
             this.scene.remove(p);
             this.peds.splice(i, 1);
             p.visible = false;
@@ -3760,8 +3836,8 @@ class Game {
 
         // Spawn new pedestrians dynamically
         const isFestCrowd = this.mapCfg && (this.mapCfg.crowdFestival || this.mapCfg.themeType === 'festival');
-        const maxPeds = isFestCrowd ? 80 : ((this.mapCfg && this.mapCfg.isPedestrian) ? 30 : 16);
-        const pedSpawnRate = isFestCrowd ? 0.6 : 0.2;
+        const maxPeds = isFestCrowd ? 120 : ((this.mapCfg && this.mapCfg.isPedestrian) ? 30 : 16);
+        const pedSpawnRate = isFestCrowd ? 0.8 : 0.2;
         if (this.peds.length < maxPeds && Math.random() < pedSpawnRate && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
           const r = this.mapCfg.roads[Math.floor(Math.random() * this.mapCfg.roads.length)];
           const isV = r.type === 'v';
@@ -3770,7 +3846,9 @@ class Game {
           
           const distToPlayer = Math.hypot(rx - this.player.position.x, rz - this.player.position.z);
           // Spawn just outside the view radius
-          if (distToPlayer > 30 && distToPlayer < 120) {
+          const spawnMin = isFestCrowd ? 20 : 30;
+          const spawnMax = isFestCrowd ? 180 : 120;
+          if (distToPlayer > spawnMin && distToPlayer < spawnMax) {
             // Phase 7: Reuse freed pedestrian or create new
             let ped;
             if (this._pedFree && this._pedFree.length > 0) {
