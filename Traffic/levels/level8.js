@@ -24,6 +24,8 @@ window.LVS.push({
   pract: 'Find a gap between parked cars. Signal, maneuver into it, and let the ambulance pass.',
   mode: 'practical',
   themeType: 'ambulance_priority',
+  scenarioType: 'emergency',
+  npcDensity: 'moderate',
   startOutside: true,
   tasks: [
     { id: 'find_gap', text: 'Find gap between parked cars', type: 'reach', target: 'gap_spot', done: false },

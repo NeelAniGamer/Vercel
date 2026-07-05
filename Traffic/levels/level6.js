@@ -24,6 +24,11 @@ window.LVS.push({
   pract: 'Drive past the hospital. Park in a legal spot at least 100 meters away. Walk back.',
   mode: 'practical',
   themeType: 'respectful_parking',
+  hasSilentZone: true,
+  hasHospital: true,
+  silentZ1: 30,
+  silentZ2: 80,
+  scenarioType: 'cars_only',
   startOutside: true,
   tasks: [
     { id: 'avoid_hospital', text: 'Do not park within 100m of hospital', type: 'avoid', target: 'hospital_zone', done: false },

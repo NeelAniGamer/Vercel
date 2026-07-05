@@ -24,6 +24,9 @@ window.LVS.push({
   pract: 'Slow down, use headlights responsibly, and wait for the elderly person to cross completely.',
   mode: 'practical',
   themeType: 'pedestrian_courtesy',
+  scenarioType: 'mixed',
+  npcDensity: 'moderate',
+  isNight: true,
   startOutside: true,
   tasks: [
     { id: 'dip_headlights', text: 'Dip headlights for oncoming traffic', type: 'toggle', target: 'headlights', done: false },

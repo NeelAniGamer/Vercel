@@ -20,6 +20,9 @@ window.LVS.push({
   pract: 'Maintain 1 meter space when passing. Do not overtake near intersections. Wait for a clear, safe opportunity.',
   mode: 'practical',
   themeType: 'cyclist',
+  hasCyclist: true,
+  npcDensity: 'moderate',
+  scenarioType: 'mixed',
   startOutside: true,
   tasks: [
     { id: 'keep_space', text: 'Keep 1m space from cyclist', type: 'avoid', target: 'safe_distance', done: false },

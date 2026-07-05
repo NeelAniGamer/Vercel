@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Stay in your lane. Predict wrong-side vehicle movements. Use horn to alert. Reach destination without collision.',
   mode: 'practical',
   themeType: 'wrong_side',
+  scenarioType: 'cars_only',
+  npcDensity: 'moderate',
   startOutside: true,
   tasks: [
     { id: 'stay_lane', text: 'Stay in correct lane', type: 'avoid', target: 'wrong_lane', done: false },

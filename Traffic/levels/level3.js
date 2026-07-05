@@ -24,6 +24,8 @@ window.LVS.push({
   pract: 'Pull over left and stop when you hear the ambulance siren. Do not move until it passes.',
   mode: 'practical',
   themeType: 'ambulance_priority',
+  scenarioType: 'emergency',
+  npcDensity: 'moderate',
   startOutside: true,
   tasks: [
     { id: 'pull_over', text: 'Pull over left immediately', type: 'reach', target: 'left_side', done: false },

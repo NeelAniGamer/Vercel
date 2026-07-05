@@ -20,6 +20,9 @@ window.LVS.push({
   pract: 'Maintain safe distance from all vehicle types. Predict auto and bike movements. Navigate through the chaos.',
   mode: 'practical',
   themeType: 'multi_modal',
+  npcDensity: 'heavy',
+  scenarioType: 'mixed',
+  vehicleTypes: ['car', 'auto', 'bus', 'truck', 'bike', 'cycle'],
   startOutside: true,
   tasks: [
     { id: 'bus_dist', text: 'Keep distance from buses', type: 'avoid', target: 'bus_collision', done: false },

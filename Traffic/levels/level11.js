@@ -24,6 +24,11 @@ window.LVS.push({
   pract: 'Wait patiently for the NPC to move. Do not honk near the library.',
   mode: 'practical',
   themeType: 'no_honking',
+  hasSilentZone: true,
+  hasLibrary: true,
+  silentZ1: -40,
+  silentZ2: 20,
+  scenarioType: 'cars_only',
   startOutside: true,
   tasks: [
     { id: 'no_honk', text: 'Do not honk near library', type: 'avoid', target: 'honk', done: false },

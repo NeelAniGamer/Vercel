@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Identify and obey the mandatory sign. Slow down for the cautionary sign. Use the informational sign for navigation.',
   mode: 'practical',
   themeType: 'signs',
+  scenarioType: 'cars_only',
+  npcDensity: 'light',
   startOutside: true,
   tasks: [
     { id: 'mandatory', text: 'Obey mandatory sign', type: 'reach', target: 'blue_sign', done: false },

@@ -20,8 +20,11 @@ window.LVS.push({
   pract: 'Yield to the procession. Follow the diversion route. Drive extremely slowly through the crowd. Reach your destination.',
   mode: 'practical',
   themeType: 'festival',
+  scenarioType: 'mixed',
   npcDensity: 'heavy',
   crowdFestival: true,
+  hasMusicVehicle: true,
+  hasFestivalLights: false,
   startOutside: true,
   tasks: [
     { id: 'yield_procession', text: 'Yield to procession', type: 'stop', target: 'procession', done: false },

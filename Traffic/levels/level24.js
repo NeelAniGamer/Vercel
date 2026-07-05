@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Stop at the zebra crossing. Wait patiently for the elderly person to cross completely. Do not honk.',
   mode: 'practical',
   themeType: 'pedestrian_priority',
+  scenarioType: 'cars_only',
+  npcDensity: 'light',
   startOutside: true,
   tasks: [
     { id: 'stop_zebra', text: 'Stop at zebra crossing', type: 'stop', target: 'zebra', done: false },

@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Turn on hazard lights. Inch forward. Pull left. Keep creating space until the ambulance passes.',
   mode: 'practical',
   themeType: 'ambulance_priority',
+  scenarioType: 'emergency',
+  npcDensity: 'heavy',
   startOutside: true,
   tasks: [
     { id: 'hazards_on', text: 'Turn on hazard lights', type: 'toggle', target: 'hazards', done: false },

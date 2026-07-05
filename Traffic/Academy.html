@@ -49,8 +49,18 @@
         --yellow: #d97706;
         --signal: #0369a1;
         --r: 16px;
+        /* Grade-based UI defaults */
+        --btn-scale: 1;
+        --btn-padding: 10px 16px;
+        --ui-font-size: 0.95rem;
         /* Glassmorphism effects applied directly to elements using var(--card) in their CSS */
       }
+
+      /* Grade-based UI classes */
+      body.grade-low { --btn-scale: 1.3; --btn-padding: 20px 30px; --ui-font-size: 1.2rem; }
+      body.grade-mid { --btn-scale: 1.15; --btn-padding: 14px 22px; --ui-font-size: 1rem; }
+      body.grade-high { --btn-scale: 1; --btn-padding: 10px 16px; --ui-font-size: 0.95rem; }
+      body.grade-max { --btn-scale: 0.95; --btn-padding: 8px 14px; --ui-font-size: 0.85rem; }
 
       body.lm {
         /* Light mode custom variables for Academy */
@@ -2273,6 +2283,39 @@
           margin: 20px auto;
         }
 
+        /* Mobile level box styling */
+        .syl-item {
+          padding: 16px;
+          border-radius: 16px;
+          gap: 10px;
+        }
+        .syl-lbl {
+          font-size: 1.2rem;
+          padding-right: 40px;
+          line-height: 1.3;
+        }
+        .syl-sub {
+          font-size: 0.85rem;
+          line-height: 1.5;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .syl-ck {
+          top: 16px;
+          right: 16px;
+          width: 28px;
+          height: 28px;
+        }
+        .syl-badge {
+          font-size: 0.75rem;
+          padding: 4px 10px;
+        }
+        .syl-icon {
+          font-size: 1.5rem;
+        }
+
         /* Certificate mobile scaling */
         #cert-wrapper {
           overflow-x: auto;
@@ -2743,7 +2786,7 @@
           <div style="font-size: 6rem; margin-bottom: 20px; text-shadow: 0 12px 24px rgba(0, 0, 0, 0.1)">🚦🏙️🚗</div>
           <div class="st" style="text-align: center">Mumbai Traffic Hero Academy</div>
           <div class="su" style="max-width: 700px; margin-left: auto; margin-right: auto; text-align: center">
-            Welcome to the premier driving simulation! Complete 15 rigorous real-world scenarios designed by the Mumbai Traffic Police to test your skills, patience, and compliance. Prove you have
+            Welcome to the premier driving simulation! Complete 52 rigorous real-world scenarios designed by the Mumbai Traffic Police to test your skills, patience, and compliance. Prove you have
             what it takes to be a true Traffic Hero and earn your official certification.
           </div>
           <div class="pls" style="justify-content: center; margin-top: 40px">
@@ -2793,7 +2836,7 @@
             class="btn btn-g"
             style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap"
           >
-            0/15 ✅
+            0/52 ✅
           </div>
         </div>
       </div>
@@ -2958,7 +3001,7 @@
           <div class="crt-body" id="cert-doc-text" style="margin-top: 32px">This document certifies that</div>
           <div class="crt-course" id="cname">DRIVER</div>
           <div class="crt-body" style="margin-bottom: 60px">
-            has successfully completed the comprehensive traffic regulations and virtual operations training program, demonstrating mastery across 15 real-world compliance scenarios.
+            has successfully completed the comprehensive traffic regulations and virtual operations training program, demonstrating mastery across 52 real-world compliance scenarios.
           </div>
 
           <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-top: auto; padding-top: 40px; border-top: 1px solid #e0dfd7; text-align: left">
@@ -3003,6 +3046,18 @@
           placeholder="Age"
           style="width: 100%; padding: 10px; margin-bottom: 12px; background: var(--void); color: var(--text); border: 1px solid var(--border); border-radius: 8px"
         />
+        <select id="prof-grade" style="width: 100%; padding: 10px; margin-bottom: 12px; background: var(--void); color: var(--text); border: 1px solid var(--border); border-radius: 8px">
+          <option value="5">Std 5 (Age 10-11)</option>
+          <option value="1">Std 1 (Age 6-7)</option>
+          <option value="2">Std 2 (Age 7-8)</option>
+          <option value="3">Std 3 (Age 8-9)</option>
+          <option value="4">Std 4 (Age 9-10)</option>
+          <option value="6">Std 6 (Age 11-12)</option>
+          <option value="7">Std 7 (Age 12-13)</option>
+          <option value="8">Std 8 (Age 13-14)</option>
+          <option value="9">Std 9 (Age 14-15)</option>
+          <option value="10">Std 10 (Age 15-16)</option>
+        </select>
         <select id="prof-lang" style="width: 100%; padding: 10px; margin-bottom: 12px; background: var(--void); color: var(--text); border: 1px solid var(--border); border-radius: 8px">
           <option value="en">English</option>
           <option value="hi">हिन्दी (Hindi)</option>
@@ -3095,21 +3150,17 @@
 
     <script src="course.js"></script>
     <script>
+      // REMOVED: Auto-sorting code - levels now keep their original numbers (1, 5, 7, 4, etc.)
+      // If you need to re-enable sorting, uncomment the code below:
+      /*
       window.LVS.forEach((levelData, index) => {
-        // 1. Calculate The True Sequential Number Based On Array Order
         const correctNumber = index + 1
-
-        // 2. Force All Internal IDs To Match The Correct Number
         levelData.id = correctNumber
         levelData.num = correctNumber
         levelData.level = correctNumber
-
-        // 3. Scan And Rewrite The Main Name (E.g., "Lesson 18" -> "Lesson 2")
         if (typeof levelData.name === 'string') {
           levelData.name = levelData.name.replace(/Lesson\s+\d+/i, `Lesson ${correctNumber}`)
         }
-
-        // 4. Scan Deeply Into The Syllabus To Fix The Text Displayed In The UI Cards
         if (Array.isArray(levelData.syllabus)) {
           levelData.syllabus.forEach((lesson) => {
             if (typeof lesson.title === 'string') {
@@ -3118,6 +3169,7 @@
           })
         }
       })
+      */
     </script>
     <script src="ui.js"></script>
     <script src="scenario2d.js"></script>

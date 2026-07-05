@@ -3,7 +3,7 @@ window.LVS.push({
   id: 46,
   icon: '🪔',
   name: 'Lesson 46 - Festival Night Parade!',
-  modes: ['car'],
+  modes: ['pedestrian', 'car'],
   col: '#9b59b6',
   ds: 'Night-time festival procession with lights, music, and crowds spilling onto the road. Navigate through Diwali celebrations safely.',
   hps: ['Festival night = distracted pedestrians everywhere.', 'Procession has priority — find an alternate route if needed.', 'Decorative lights can be distracting — focus on the road.'],
@@ -22,6 +22,9 @@ window.LVS.push({
   themeType: 'festival',
   npcDensity: 'heavy',
   crowdFestival: true,
+  hasMusicVehicle: true,
+  hasFestivalLights: true,
+  isNight: true,
   startOutside: true,
   tasks: [
     { id: 'yield', text: 'Yield to procession', type: 'stop', target: 'procession', done: false },

@@ -272,6 +272,7 @@ const ui = {
     const n = document.getElementById('prof-name').value.trim()
     const v = document.getElementById('prof-veh').value
     const ageEl = document.getElementById('prof-age')
+    const gradeEl = document.getElementById('prof-grade')
     const langEl = document.getElementById('prof-lang')
     if (n.length > 0 && n.length < 3) {
       toast('Please enter a valid name', 'darkred')
@@ -280,8 +281,10 @@ const ui = {
     S.name = n
     S.vehicle = v
     if (ageEl) S.age = parseInt(ageEl.value) || 18
+    if (gradeEl) S.grade = parseInt(gradeEl.value) || 5
     if (langEl) S.language = langEl.value
     save()
+    this._applyAgeTier()
     document.getElementById('profile-dlg').style.display = 'none'
     toast('Profile Saved!', '#3b8c66')
 
@@ -298,6 +301,24 @@ const ui = {
     if (age <= 50) return 'adult'
     return 'senior'
   },
+  getGradeTier() {
+    // Map standard (grade) to tier - Std 1-10
+    const grade = S.grade || 5
+    if (grade <= 3) return 'grade-low'      // Std 1-3: Very childish
+    if (grade <= 6) return 'grade-mid'       // Std 4-6: Childish but more text
+    if (grade <= 9) return 'grade-high'      // Std 7-9: Teen - normal
+    return 'grade-max'                         // Std 10: Young adult
+  },
+  getGradeConfig() {
+    const tier = this.getGradeTier()
+    const configs = {
+      'grade-low': { buttonSize: 'large', hints: 'max', theme: 'bright', fontSize: 'large' },
+      'grade-mid': { buttonSize: 'medium', hints: 'frequent', theme: 'warm', fontSize: 'medium' },
+      'grade-high': { buttonSize: 'normal', hints: 'some', theme: 'neutral', fontSize: 'normal' },
+      'grade-max': { buttonSize: 'normal', hints: 'minimal', theme: 'professional', fontSize: 'small' }
+    }
+    return configs[tier] || configs['grade-high']
+  },
   getAgeScale() {
     const b = this.getAgeBracket()
     const scale = { child: 0.7, teen: 0.85, young: 1.0, adult: 1.0, senior: 0.9 }
@@ -305,7 +326,41 @@ const ui = {
   },
   _applyAgeTier() {
     const tier = this.getAgeBracket()
+    const gradeTier = this.getGradeTier()
     document.body.dataset.ageTier = tier
+    document.body.dataset.gradeTier = gradeTier
+
+    // Default grade if not set
+    if (!S.grade) S.grade = 5
+
+    this._applyGradeUI()
+  },
+  _applyGradeUI() {
+    const cfg = this.getGradeConfig()
+    const root = document.documentElement
+
+    // Apply button size
+    if (cfg.buttonSize === 'large') {
+      root.style.setProperty('--btn-scale', '1.3')
+      root.style.setProperty('--btn-padding', '20px 30px')
+    } else if (cfg.buttonSize === 'medium') {
+      root.style.setProperty('--btn-scale', '1.15')
+      root.style.setProperty('--btn-padding', '14px 22px')
+    } else {
+      root.style.setProperty('--btn-scale', '1')
+      root.style.setProperty('--btn-padding', '10px 16px')
+    }
+
+    // Apply font size
+    if (cfg.fontSize === 'large') {
+      root.style.setProperty('--ui-font-size', '1.2rem')
+    } else if (cfg.fontSize === 'medium') {
+      root.style.setProperty('--ui-font-size', '1rem')
+    } else if (cfg.fontSize === 'small') {
+      root.style.setProperty('--ui-font-size', '0.85rem')
+    } else {
+      root.style.setProperty('--ui-font-size', '0.95rem')
+    }
   },
   showCert(badgeId = null) {
     this.show('screen-certificate')
@@ -325,29 +380,39 @@ const ui = {
     const cIcon = document.getElementById('cert-icon')
     const cStat = document.getElementById('cstat')
     const cScoreLbl = document.getElementById('cscore')
+    const cdownloadBtn = document.getElementById('cdownload')
+
+    // Check if user is logged in (via local or Supabase)
+    const localData = localStorage.getItem('traffic_local_user')
+    const isLoggedIn = localData || (window.colUser && window.colUser.user)
 
     if (badgeId && typeof BADGES !== 'undefined') {
       const b = BADGES.find((x) => x.id === badgeId)
       if (b) {
+        const hasBadge = S.badges && S.badges.includes(badgeId)
         if (cTitle) cTitle.innerText = b.name
         if (cIcon) {
           cIcon.innerText = b.icon
           cIcon.style.display = 'block'
         }
-        if (cStat) cStat.innerText = `ACHIEVEMENT UNLOCKED: ${b.desc}`
+        if (cStat) cStat.innerText = hasBadge ? `ACHIEVEMENT UNLOCKED: ${b.desc}` : `LOCKED: Complete requirements to unlock`
         if (certNum)
-          certNum.innerText = `BDG-${badgeId
+          certNum.innerText = hasBadge ? `BDG-${badgeId
             .toUpperCase()
             .replace(/[^A-Z]/g, '')
-            .substring(0, 5)}-${Math.floor(Math.random() * 10000)}`
-        if (cScoreLbl) cScoreLbl.innerText = 'Mastered'
+            .substring(0, 5)}-${Math.floor(Math.random() * 10000)}` : '---'
+        if (cScoreLbl) cScoreLbl.innerText = hasBadge ? 'Mastered' : 'Locked'
+        if (cdownloadBtn) cdownloadBtn.style.display = hasBadge ? 'flex' : 'none'
         return
       }
     }
 
-    // Default behavior
+    // Default behavior - Main certificate
     if (cTitle) cTitle.innerText = 'Traffic Hero Certification'
     if (cIcon) cIcon.style.display = 'none'
+
+    const completedLevels = Object.keys(S.comp || {}).length
+    const totalLevels = 52
 
     let totalScore = 0,
       count = 0
@@ -358,9 +423,19 @@ const ui = {
       }
     }
     let avgScore = count > 0 ? totalScore / count : 0
-    if (cStat) cStat.innerText = `COMPLETED WITH ${Math.round(avgScore)}% PROFICIENCY`
-    if (cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`
-    if (certNum) certNum.innerText = S.certId
+
+    // Show progress toward certificate
+    if (completedLevels >= totalLevels) {
+      if (cStat) cStat.innerText = `COMPLETED WITH ${Math.round(avgScore)}% PROFICIENCY`
+      if (cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`
+      if (cdownloadBtn) cdownloadBtn.style.display = 'flex'
+    } else {
+      if (cStat) cStat.innerText = `IN PROGRESS: ${completedLevels}/${totalLevels} levels completed`
+      if (cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`
+      // Enable download for logged-in users even if not complete
+      if (cdownloadBtn) cdownloadBtn.style.display = isLoggedIn ? 'flex' : 'none'
+    }
+    if (certNum) certNum.innerText = completedLevels >= totalLevels ? S.certId : '---'
   },
   showBadges() {
     this.show('screen-badges')
@@ -371,11 +446,11 @@ const ui = {
       statsBody.innerHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <div style="color:#666;font-size:0.9rem;font-weight:600;">COMPLETED LEVELS</div>
-                    <div style="font-weight:700;color:var(--accent);">${Object.keys(S.comp).length}/20</div>
+                    <div style="font-weight:700;color:var(--accent);">${Object.keys(S.comp).length}/52</div>
                 </div>
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <div style="color:#666;font-size:0.9rem;font-weight:600;">STARTED LEVELS</div>
-                    <div style="font-weight:700;color:#5ed4f5;">${startedCount}/20</div>
+                    <div style="font-weight:700;color:#5ed4f5;">${startedCount}/52</div>
                 </div>
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <div style="color:#666;font-size:0.9rem;font-weight:600;">TOTAL WALLET</div>
@@ -609,9 +684,20 @@ const ui = {
     } else if (id === 'theory') {
       const bracket = this.getAgeBracket()
       const isYoung = bracket === 'child' || bracket === 'teen'
+      this._theoryLang = this._theoryLang || (S.language === 'hi' ? 'hi' : 'en')
       const theoryLabel = isYoung ? '📊 Simple Explanation' : '📊 Analytical Model'
       const theoryHint = isYoung ? '<div style="text-align:center; font-size:0.85rem; color:var(--signal); margin-bottom:8px; font-weight:600;">Easy version for young drivers</div>' : ''
-      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">${theoryLabel}</div>${theoryHint}<div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${lv.theory}</div>
+      const langLabel = this._theoryLang === 'hi' ? 'English' : 'हिन्दी'
+
+      // Get theory content based on language
+      let theoryContent = lv.theory || ''
+      if (this._theoryLang === 'hi' && lv.theoryHi) {
+        theoryContent = lv.theoryHi
+      }
+
+      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">${theoryLabel}</div>${theoryHint}
+          <div style="text-align:center; margin:12px auto;"><button class="btn btn-s" style="background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.1); color:var(--ink); font-size:0.85rem; padding:6px 16px; border-radius:8px;" onclick="ui._theoryLang=ui._theoryLang==='hi'?'en':'hi'; ui._selSyl('theory')">${langLabel}</button></div>
+          <div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${theoryContent}</div>
      <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`
     } else if (id === 'practical') {
       const btnsHTML = (lv.modes || ['car'])
@@ -1038,12 +1124,41 @@ const ui = {
     }
     if (!S.badges.includes('signal_master') && Object.keys(S.comp).length >= 5 && !stats.vio) S.badges.push('signal_master')
     if (S.badges.includes('traffic_hero') && !S.badges.includes('smart_citizen')) S.badges.push('smart_citizen')
+
+    // Check for level group badges
+    const completedCount = Object.keys(S.comp).length
+    if (completedCount >= 10 && !S.badges.includes('level_10')) S.badges.push('level_10')
+    if (completedCount >= 20 && !S.badges.includes('level_20')) S.badges.push('level_20')
+    if (completedCount >= 30 && !S.badges.includes('level_30')) S.badges.push('level_30')
+    if (completedCount >= 40 && !S.badges.includes('level_40')) S.badges.push('level_40')
+    if (completedCount >= 52 && !S.badges.includes('level_52')) S.badges.push('level_52')
+    if (completedCount >= 52 && !S.badges.includes('traffic_hero')) S.badges.push('traffic_hero')
+
+    // Check for category badges based on level themeType
+    const themeTypes = {
+      pedestrian_expert: ['pedestrian_courtesy', 'pedestrian_priority', 'pedestrian', 'crosswalk'],
+      night_driver: ['night', 'night_driving', 'night_monsoon', 'blind_corner', 'zero_visibility'],
+      weather_pro: ['rain', 'rain_driving', 'puddle_etiquette', 'weather', 'monsoon', 'flood'],
+      emergency_hero: ['ambulance', 'emergency', 'ambulance_priority', 'hospital'],
+      parking_master: ['parking', 'street_parking', 'respectful_parking', 'parking_rules']
+    }
+
+    // Check if all levels of a category are completed
+    for (const [badgeId, themes] of Object.entries(themeTypes)) {
+      if (S.badges.includes(badgeId)) continue
+      const categoryLevels = LVS.filter(l => themes.some(t => (l.themeType || '').includes(t)))
+      const completedCategoryLevels = categoryLevels.filter(l => S.comp[l.id])
+      if (completedCategoryLevels.length >= categoryLevels.length && categoryLevels.length > 0) {
+        S.badges.push(badgeId)
+      }
+    }
+
     save()
     document.getElementById('rico').textContent = score > 200 ? '🌟' : '⭐'
     document.getElementById('rtit').textContent = 'Level Complete!'
     document.getElementById('rsub').textContent = lv.name + ' 🔄 Well done!'
     document.getElementById('rcard').innerHTML =
-      `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 20</span></div>
+      `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 52</span></div>
 ${stats.reward ? `<div class="rr"><span class="rl" style="color:#00c851">Level Reward</span><span class="rv" style="color:#00c851">+₹${stats.reward.toLocaleString('en-IN')}</span></div>` : ''}
 ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines Deducted</span><span class="rv" style="color:#ff3b30">-₹${stats.fineAmt.toLocaleString('en-IN')}</span></div>` : ''}
 <div class="rr" style="margin-top:10px; border-top:1px solid #333; padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:#f1c40f">₹${S.wallet.toLocaleString('en-IN')}</span></div>`
@@ -1565,20 +1680,35 @@ const _buildHuman = (isPlayer = false) => {
   const chars = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c']
   const charKey = chars[Math.floor(Math.random() * chars.length)]
 
-  if (window.PRELOADED_MODELS && window.PRELOADED_MODELS[charKey]) {
+  // Debug: Check if character models are loaded
+  const charLoaded = window.PRELOADED_MODELS && window.PRELOADED_MODELS[charKey];
+  if (!charLoaded) {
+    console.log('[DEBUG] Character model not loaded:', charKey, 'Available:', Object.keys(window.PRELOADED_MODELS || {}).filter(k => k.startsWith('char')).join(', '));
+  }
+
+  if (charLoaded) {
     const hModel = window.PRELOADED_MODELS[charKey].clone()
-    const s = isPlayer ? 1.5 : 1.2
-    hModel.scale.set(s, s, s)
-    hModel.position.y = 0
+
+    // Characters are loaded at 4.5x in start.js, now scale to visible size
+    // Original GLB ~1 unit, loaded at 4.5, scale to ~1.2-1.5 visible
+    const loadScale = 4.5;
+    const targetScale = isPlayer ? 1.5 : 1.2;
+    hModel.scale.set(targetScale / loadScale, targetScale / loadScale, targetScale / loadScale);
+    hModel.position.y = 0;
 
     // Ensure all meshes in cloned model render properly
     hModel.traverse((child) => {
       if (child.isMesh) {
-        child.castShadow = !isPlayer
-        child.receiveShadow = true
-        child.frustumCulled = false
+        child.castShadow = !isPlayer;
+        child.receiveShadow = true;
+        child.frustumCulled = false;
+        // Ensure material is visible
+        if (child.material) {
+          child.material.opacity = 1;
+          child.material.transparent = false;
+        }
       }
-    })
+    });
 
     // Add invisible hitbox for collisions
     const hbGeo = new THREE.BoxGeometry(0.8, 2.0, 0.8)
@@ -1589,9 +1719,19 @@ const _buildHuman = (isPlayer = false) => {
     g.add(hModel)
     g.add(hb)
 
+    // Find legs in the model for animation - look for child groups with leg-like names
+    let lLeg = null, rLeg = null;
+    hModel.traverse((child) => {
+      if (child.isGroup) {
+        const name = child.name.toLowerCase();
+        if (name.includes('leg') || name.includes('left')) lLeg = child;
+        if (name.includes('leg') || name.includes('right')) rLeg = child;
+      }
+    });
+
     // GLB model already has full body — no procedural legs needed
-    // Walk animation uses lLeg/rLeg userData; set to null so game_core skips them
-    g.userData = { lLeg: null, rLeg: null, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
+    // Walk animation uses lLeg/rLeg userData if found
+    g.userData = { lLeg: lLeg, rLeg: rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
     return g
   }
 
@@ -1645,10 +1785,24 @@ const _buildHuman = (isPlayer = false) => {
 }
 
 function updateTrafficAuthUI() {
+  // Check both local storage and Supabase (colUser) for logged in status
   const localData = localStorage.getItem('traffic_local_user')
-  const user = localData ? JSON.parse(localData) : null
+  let user = localData ? JSON.parse(localData) : null
+
+  // If not found locally, check for Supabase user (colUser)
+  if (!user && window.colUser && window.colUser.user) {
+    const meta = window.colUser.user.user_metadata || {}
+    user = {
+      name: meta.full_name || meta.name || 'Driver',
+      email: window.colUser.user.email,
+      avatar: meta.avatar_url
+    }
+  }
 
   const profileDiv = document.getElementById('trafficUserProfile')
+  const pfp = document.getElementById('trafficUserPfp')
+  const initials = document.getElementById('trafficUserInitials')
+  const userName = document.getElementById('trafficUserName')
 
   document.querySelectorAll('.dynamic-auth-btn').forEach((b) => {
     b.innerHTML = user ? '📊 Dashboard' : 'Sign In'
@@ -1664,17 +1818,26 @@ function updateTrafficAuthUI() {
       profileDiv.onclick = () => (window.location.href = 'TrafficDashboard.html')
     }
 
-    const nameNode = profileDiv ? profileDiv.querySelector('#trafficUserName') : null
-    const initialsNode = profileDiv ? profileDiv.querySelector('#trafficUserInitials') : null
-
-    if (nameNode) nameNode.textContent = user.name || 'Driver'
-    if (initialsNode && user.name) {
-      initialsNode.textContent = user.name.charAt(0).toUpperCase()
-      initialsNode.style.display = 'flex'
+    if (userName) userName.textContent = user.name || 'Driver'
+    if (initials && user.name) {
+      initials.textContent = user.name.charAt(0).toUpperCase()
+      initials.style.display = 'flex'
+    }
+    if (pfp && user.avatar) {
+      pfp.src = user.avatar
+      pfp.style.display = 'block'
+      initials.style.display = 'none'
     }
   } else {
     if (profileDiv) profileDiv.style.display = 'none'
   }
+}
+
+// Also listen for col-auth-changed event to update UI when Supabase auth changes
+if (typeof window !== 'undefined') {
+  window.addEventListener('col-auth-changed', function() {
+    setTimeout(updateTrafficAuthUI, 500)
+  })
 }
 
 // Run immediately

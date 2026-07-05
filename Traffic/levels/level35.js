@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Enter the one-way from the correct end. Follow the traffic flow. Exit at the designated intersection.',
   mode: 'practical',
   themeType: 'one_way',
+  scenarioType: 'cars_only',
+  npcDensity: 'moderate',
   startOutside: true,
   tasks: [
     { id: 'correct_entry', text: 'Enter from correct end', type: 'reach', target: 'one_way_entry', done: false },

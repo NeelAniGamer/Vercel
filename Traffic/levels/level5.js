@@ -24,6 +24,9 @@ window.LVS.push({
   pract: 'Drive slowly through the school zone. Stop if children are crossing. Do not honk near the school.',
   mode: 'practical',
   themeType: 'pedestrian_courtesy',
+  hasSchool: true,
+  npcDensity: 'heavy',
+  scenarioType: 'peds_only',
   startOutside: true,
   tasks: [
     { id: 'slow_zone', text: 'Slow to 20 km/h in school zone', type: 'avoid', target: 'speed_zone', done: false },

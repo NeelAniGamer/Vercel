@@ -20,6 +20,10 @@ window.LVS.push({
   pract: 'Wait for commuters to board the bus or clear the road. Pass slowly when the way is clear.',
   mode: 'practical',
   themeType: 'puddle_etiquette',
+  scenarioType: 'mixed',
+  npcDensity: 'heavy',
+  hasRain: true,
+  hasBusStop: true,
   startOutside: true,
   tasks: [
     { id: 'wait_clear', text: 'Wait for commuters to clear', type: 'stop', target: 'stationary', done: false },

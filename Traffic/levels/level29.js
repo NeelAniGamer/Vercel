@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Maintain 3 car lengths behind the auto. Stop when it stops. Do not overtake until the road is completely clear.',
   mode: 'practical',
   themeType: 'auto_dance',
+  scenarioType: 'cars_only',
+  npcDensity: 'moderate',
   startOutside: true,
   tasks: [
     { id: 'keep_distance', text: 'Keep safe distance', type: 'avoid', target: 'safe_distance', done: false },

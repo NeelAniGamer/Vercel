@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Obey the blue mandatory sign. Slow down for the red cautionary sign. Read the green informational sign.',
   mode: 'practical',
   themeType: 'signs',
+  scenarioType: 'cars_only',
+  npcDensity: 'light',
   startOutside: true,
   tasks: [
     { id: 'blue_sign', text: 'Obey mandatory sign', type: 'reach', target: 'blue_sign', done: false },

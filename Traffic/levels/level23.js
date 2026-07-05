@@ -20,6 +20,9 @@ window.LVS.push({
   pract: 'Turn on low beam headlights. Slow down to half speed. Avoid all puddles. Use hazard lights if visibility is very low.',
   mode: 'practical',
   themeType: 'rain_driving',
+  scenarioType: 'cars_only',
+  npcDensity: 'moderate',
+  hasRain: true,
   startOutside: true,
   tasks: [
     { id: 'headlights', text: 'Turn on headlights', type: 'toggle', target: 'headlights', done: false },

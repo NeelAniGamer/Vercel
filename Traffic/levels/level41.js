@@ -20,6 +20,10 @@ window.LVS.push({
   pract: 'Navigate the flooded night grid. Use headlights wisely. Crawl through puddles. Complete all intersections without stalling.',
   mode: 'practical',
   themeType: 'night_monsoon',
+  npcDensity: 'heavy',
+  hasPuddles: true,
+  isNight: true,
+  scenarioType: 'emergency',
   startOutside: true,
   tasks: [
     { id: 'use_headlights', text: 'Use headlights properly', type: 'avoid', target: 'no_lights', done: false },

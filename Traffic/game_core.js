@@ -518,7 +518,7 @@ class Game {
         } catch(e) { console.warn("Post processing err:", e); }
         
         // Cache DOM elements to prevent query overhead per frame
-        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn'];
+        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'da-dist', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
       _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
@@ -795,6 +795,8 @@ class Game {
 
 
         this._initMobileCameraLook();
+        this._initSwipeTurn();
+        this._initMouseSteer();
       }
       _initG() { document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); }); }
 
@@ -867,6 +869,139 @@ class Game {
           this._isDraggingMobileLook = false;
           this._mobileLookTouchId = null;
         }, { passive: true });
+      }
+
+      // ── SWIPE TO TURN: Touch swipe turns player character toward swipe direction ──
+      _initSwipeTurn() {
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+
+        const isControl = (el) => {
+          if (!el) return false;
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile'];
+          for (const id of ctrlIds) {
+            const c = document.getElementById(id);
+            if (c && (el === c || c.contains(el))) return true;
+          }
+          if (el.closest && el.closest('#mobile-controls')) return true;
+          if (el.closest && el.closest('#hud')) return true;
+          if (el.closest && el.closest('#hudbar')) return true;
+          if (el.closest && el.closest('#civic-controls')) return true;
+          return false;
+        };
+
+        const SWIPE_THRESHOLD = 20;
+        let touchStartX = 0, touchStartY = 0;
+        let swipeTouchId = null;
+
+        document.addEventListener('touchstart', (e) => {
+          if (!this.playing || this.pause) return;
+          // Only enable swipe turn in pedestrian mode OR when stationary
+          if (!this.isPedestrian && Math.abs(this.speed) > 0.1) return;
+
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            const t = e.changedTouches[i];
+            if (isControl(t.target)) continue;
+            if (swipeTouchId !== null) continue; // Already tracking
+
+            touchStartX = t.clientX;
+            touchStartY = t.clientY;
+            swipeTouchId = t.identifier;
+            break;
+          }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+          if (swipeTouchId === null) return;
+          if (!this.playing || this.pause) return;
+
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            const t = e.changedTouches[i];
+            if (t.identifier !== swipeTouchId) continue;
+
+            const dx = t.clientX - touchStartX;
+            const dy = t.clientY - touchStartY;
+
+            if (Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_THRESHOLD) {
+              // Calculate angle from swipe direction
+              // Swipe UP = turn forward (0), SWIPE DOWN = turn backward (PI)
+              // Swipe LEFT = turn left, SWIPE RIGHT = turn right
+              const angle = Math.atan2(dx, -dy); // Negate dy because screen Y is inverted
+
+              // Smoothly rotate player toward swipe direction
+              const targetRot = angle;
+              const currentRot = this.player.rotation.y;
+
+              // Shortest rotation path
+              let diff = targetRot - currentRot;
+              while (diff > Math.PI) diff -= Math.PI * 2;
+              while (diff < -Math.PI) diff += Math.PI * 2;
+
+              // Apply rotation (smooth interpolation)
+              this.player.rotation.y += diff * 0.15;
+
+              // Reset start for continuous tracking
+              touchStartX = t.clientX;
+              touchStartY = t.clientY;
+            }
+            break;
+          }
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === swipeTouchId) {
+              swipeTouchId = null;
+              break;
+            }
+          }
+        }, { passive: true });
+
+        document.addEventListener('touchcancel', () => {
+          swipeTouchId = null;
+        }, { passive: true });
+      }
+
+      // ── MOUSE STEER: Mouse position controls direction when not in pointer lock ──
+      _initMouseSteer() {
+        const canvas = document.getElementById('gc');
+        if (!canvas) return;
+
+        let mouseActive = false;
+
+        canvas.addEventListener('mousedown', (e) => {
+          if (e.button === 0 && this.playing && !this.pause) {
+            // Enable mouse steering when clicking on canvas in pedestrian mode or stationary
+            if (this.isPedestrian || Math.abs(this.speed) < 0.1) {
+              mouseActive = true;
+            }
+          }
+        });
+
+        window.addEventListener('mouseup', () => {
+          mouseActive = false;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!mouseActive || !this.playing || this.pause) return;
+
+          const cx = window.innerWidth / 2;
+          const cy = window.innerHeight / 2;
+
+          // Calculate angle from center of screen
+          const dx = e.clientX - cx;
+          const dy = e.clientY - cy;
+
+          // Only steer if mouse is away from center
+          if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
+            const targetAngle = Math.atan2(dx, -dy);
+
+            let diff = targetAngle - this.player.rotation.y;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+
+            this.player.rotation.y += diff * 0.08;
+          }
+        });
       }
 
       _decayCameraLook(dt) {
@@ -1025,18 +1160,22 @@ class Game {
           const isBike = (this.vehMode === 'bike' || this.vehMode === 'cycle');
           if (this.seatbeltOn) {
               btn.style.background = '#27ae60';
-              btn.textContent = isBike ? '🪖 Helmet ON' : '💺 Seatbelt ON';
-              toast(isBike ? 'Helmet Secured! +10% Speed' : 'Seatbelt Fastened! +10% Speed', '#27ae60');
+              btn.textContent = isBike ? '🪖 Helmet ON' : '💺 Belt ON';
+              const bonus = isBike ? '+15% Speed' : '+10% Speed +50% Safety';
+              toast(isBike ? 'Helmet Secured! +15% Speed' : 'Seatbelt Fastened! +10% Speed, 50% Less Damage', '#27ae60');
               if (!this.isPedestrian) {
                   const base = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
-                  this.maxSpd = base * 1.1;
+                  this.maxSpd = base * (isBike ? 1.15 : 1.1);
+                  // Reduce collision damage
+                  this._seatbeltDamageReduction = true;
               }
           } else {
               btn.style.background = '#333';
-              btn.textContent = isBike ? '🪖 Helmet OFF' : '💺 Seatbelt OFF';
-              toast(isBike ? 'Helmet Removed!' : 'Seatbelt Unfastened! -10% Speed', '#ff3b30');
+              btn.textContent = isBike ? '🪖 Helmet OFF' : '💺 Belt OFF';
+              toast(isBike ? 'Helmet Removed! -15% Speed' : 'Seatbelt Unfastened! Full Collision Damage', '#ff3b30');
               if (!this.isPedestrian) {
                   this.maxSpd = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
+                  this._seatbeltDamageReduction = false;
               }
           }
       }
@@ -1100,12 +1239,26 @@ class Game {
       toggleMobile(btn) {
           this.mobileOn = !this.mobileOn;
           const isParked = this.isPedestrian || Math.abs(this.speed) < 0.05;
+          // Cycle through: Normal -> GPS -> Music -> Normal
           if (this.mobileOn) {
-              if (isParked) {
+              this._mobileMode = (this._mobileMode || 0) + 1;
+              if (this._mobileMode > 2) this._mobileMode = 0;
+
+              if (this._mobileMode === 1 && isParked) {
+                  // GPS Mode - parked
                   btn.style.background = '#2196F3';
-                  btn.textContent = '🗺️ GPS Maps';
-                  toast('🗺️ Using GPS — Parked safely!', '#2196F3');
-              } else {
+                  btn.textContent = '🗺️ GPS Active';
+                  toast('🗺️ GPS Navigation — Shows route to checkpoint!', '#2196F3');
+                  this.phoneGpsOn = true;
+                  if (this.dom['phone-gps']) this.dom['phone-gps'].classList.add('on');
+                  if (this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'block';
+              } else if (this._mobileMode === 2 && isParked) {
+                  // Music Mode - parked
+                  btn.style.background = '#9b59b6';
+                  btn.textContent = '🎵 Music On';
+                  toast('🎵 Background Music Enabled', '#9b59b6');
+              } else if (this._mobileMode === 0) {
+                  // Normal / Using while driving
                   btn.style.background = '#e74c3c';
                   btn.textContent = '📵 Using Mobile...';
                   toast('⚠️ Distracted Driving! ₹500 fine', '#e74c3c');
@@ -1115,10 +1268,22 @@ class Game {
                       this.vio++; this.score -= 50; this.fine += 5000;
                       this.hp -= 10; this._uh();
                   }
+              } else {
+                  // Using GPS or Music while driving - warn
+                  btn.style.background = '#e74c3c';
+                  btn.textContent = '⚠️ Not Safe!';
+                  toast('📵 Cannot use phone while driving!', '#e74c3c');
+                  this._mobileMode = 0;
+                  this.mobileOn = false;
               }
           } else {
+              // Turned off
               btn.style.background = '#333';
-              btn.textContent = '📱 Use Mobile Phone';
+              btn.textContent = '📱 Use Mobile';
+              this.phoneGpsOn = false;
+              if (this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on');
+              this._mobileMode = 0;
+              toast('Phone Put Away', '#666');
           }
       }
       _uh() { const p = Math.max(0, this.hp); const f = this.dom['hfill']; if (f) f.style.width = p + '%'; if (p <= 0) this._go("Structural Failure"); }
@@ -1567,7 +1732,10 @@ class Game {
         const mats = {
           grass: new THREE.MeshToonMaterial({ color: cfg.ground || 0x8B7355, gradientMap: tg }),
           road: new THREE.MeshToonMaterial({ color: 0x3d3f45, gradientMap: tg }),
-          pave: new THREE.MeshToonMaterial({ color: 0x8a8a8a, gradientMap: tg }),
+          // Sidewalk colors: concrete gray with slight warmth
+          pave: new THREE.MeshToonMaterial({ color: 0xb0b0a0, gradientMap: tg }),
+          // Tactile paving for crosswalks (yellow/orange dots)
+          tactile: new THREE.MeshToonMaterial({ color: 0xd4a017, gradientMap: tg }),
           yellowLine: new THREE.MeshBasicMaterial({ color: 0xffcc00 }),
           water: new THREE.MeshToonMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 }),
           urban: new THREE.MeshToonMaterial({ color: 0x4a4a4f, gradientMap: tg })
@@ -2219,6 +2387,59 @@ class Game {
           }
         }
 
+        // ── POLICE VOLUNTEER: Traffic controller for festival/construction levels
+        if (cfg.hasPoliceVolunteer) {
+          let pvol;
+          if (this._pedFree && this._pedFree.length > 0) {
+            pvol = this._pedFree.pop();
+            pvol.visible = true;
+          } else {
+            pvol = _buildHuman();
+          }
+
+          // Position near road intersection or middle of road
+          const pPos = this.player ? this.player.position : new THREE.Vector3(0, 0, 0);
+          const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+          const isV = seg.type === 'v';
+          const roadCenter = isV ? seg.x : seg.z;
+
+          // Place volunteer on the road shoulder
+          if (isV) {
+            pvol.position.set(roadCenter + 4, 0, pPos.z + 30);
+            pvol.rotation.y = Math.PI / 2;
+          } else {
+            pvol.position.set(pPos.x + 30, 0, roadCenter + 4);
+            pvol.rotation.y = 0;
+          }
+
+          pvol.userData = {
+            isPoliceVolunteer: true,
+            t: 0,
+            spd: 0, // Stationary
+            state: 'directing',
+            dir: 1,
+            _idleTimer: 999,
+            _idleState: false
+          };
+
+          // Add volunteer hat indicator (yellow cap)
+          const capGeo = new THREE.BoxGeometry(0.5, 0.2, 0.5);
+          const capMat = new THREE.MeshToonMaterial({ color: 0xffd700 });
+          const cap = new THREE.Mesh(capGeo, capMat);
+          cap.position.set(0, 2.3, 0);
+          pvol.add(cap);
+
+          // Add arm band (orange)
+          const bandGeo = new THREE.BoxGeometry(0.15, 0.4, 0.15);
+          const bandMat = new THREE.MeshToonMaterial({ color: 0xff6600 });
+          const band = new THREE.Mesh(bandGeo, bandMat);
+          band.position.set(0.4, 1.5, 0);
+          pvol.add(band);
+
+          this.scene.add(pvol);
+          this.peds.push(pvol);
+        }
+
         // ── FESTIVAL VEHICLE SURGE ── Extra NPC traffic for festival driving levels
         if (cfg.crowdFestival && !cfg.isPedestrian) {
           const surgeCount = 20 + Math.floor(Math.random() * 10);
@@ -2295,6 +2516,88 @@ class Game {
             nv.frustumCulled = true;
             nv.userData.isNPC = true;
             this.npcs.push(nv); this.scene.add(nv);
+          }
+        }
+
+        // ── MUSIC VEHICLE (Festival) ── Decorated truck with speakers
+        if (cfg.hasMusicVehicle && !cfg.isPedestrian) {
+          const musicTypes = ['truck', 'bus'];
+          const mType = musicTypes[Math.floor(Math.random() * musicTypes.length)];
+          let mv;
+          if (this._npcFree.length > 0) {
+            mv = this._npcFree.pop();
+            mv.children.length = 0;
+          } else {
+            mv = new THREE.Group();
+          }
+          const mtpl = _getNpcTemplate(mType, 0xff6b35); // Orange decorated truck
+          mtpl.children.forEach(c => mv.add(c.clone()));
+
+          // Position on road near player
+          const pPos = this.player ? this.player.position : new THREE.Vector3(0, 0, 0);
+          const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+          const isV = seg.type === 'v';
+
+          // Add speaker boxes (decorations)
+          const spkGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+          const spkMat = new THREE.MeshToonMaterial({ color: 0x333333 });
+          const spk1 = new THREE.Mesh(spkGeo, spkMat); spk1.position.set(1.5, 1.2, 0);
+          const spk2 = new THREE.Mesh(spkGeo, spkMat); spk2.position.set(-1.5, 1.2, 0);
+          mv.add(spk1); mv.add(spk2);
+
+          // Add colorful bunting
+          const buntColors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff];
+          buntColors.forEach((col, i) => {
+            const flag = new THREE.Mesh(
+              new THREE.BoxGeometry(0.3, 0.4, 0.05),
+              new THREE.MeshToonMaterial({ color: col })
+            );
+            flag.position.set(-1.2 + i * 0.6, 2.2, 0);
+            mv.add(flag);
+          });
+
+          if (isV) {
+            mv.position.set(seg.x + 3, 0, pPos.z + 50 + Math.random() * 50);
+            mv.rotation.y = Math.PI;
+          } else {
+            mv.position.set(pPos.x + 50 + Math.random() * 50, 0, seg.z + 3);
+            mv.rotation.y = -Math.PI / 2;
+          }
+
+          mv.userData = {
+            spd: 0.15, baseSpd: 0.15, // Slow moving music vehicle
+            baseCoord: isV ? seg.x : seg.z,
+            dir: -1,
+            moveAxis: isV ? 'v' : 'h',
+            minPos: isV ? Math.min(seg.z1, seg.z2) : Math.min(seg.x1, seg.x2),
+            maxPos: isV ? Math.max(seg.z1, seg.z2) : Math.max(seg.x1, seg.x2),
+            txX: isV ? seg.x + 3 : undefined,
+            state: 'CRUISE',
+            isMusicVehicle: true,
+            useRoute: false
+          };
+          mv.frustumCulled = true;
+          this.npcs.push(mv); this.scene.add(mv);
+        }
+
+        // ── FESTIVAL LIGHTS (Night Festival) ── String lights across roads
+        if (cfg.hasFestivalLights && cfg.isNight) {
+          // Add string lights between buildings
+          const lightColors = [0xff6b35, 0xffd700, 0x00ff00, 0xff1493];
+          for (let l = 0; l < 20; l++) {
+            const light = new THREE.PointLight(
+              lightColors[Math.floor(Math.random() * lightColors.length)],
+              0.8, 15
+            );
+            const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+            const isV = seg.type === 'v';
+            const side = Math.random() > 0.5 ? 1 : -1;
+            light.position.set(
+              isV ? seg.x + side * 15 : seg.x1 + Math.random() * (seg.x2 - seg.x1),
+              4 + Math.random() * 2,
+              isV ? seg.z1 + Math.random() * (seg.z2 - seg.z1) : seg.z + side * 15
+            );
+            this.scene.add(light);
           }
         }
 
@@ -2729,6 +3032,91 @@ class Game {
           });
         }
 
+        // Temple (level 20)
+        if (cfg.hasTemple) {
+          const temple = new THREE.Mesh(new THREE.BoxGeometry(16, 10, 14), new THREE.MeshToonMaterial({ color: 0xd4a574 }));
+          temple.position.set(-35, 5, -70); this.scene.add(temple); this.obstacles.push(temple);
+          // Temple dome
+          const dome = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 8, 0, Math.PI*2, 0, Math.PI/2), new THREE.MeshToonMaterial({ color: 0xffd700 }));
+          dome.position.set(-35, 10, -70); this.scene.add(dome);
+          // Aarti lamp glow
+          const lamp = new THREE.PointLight(0xffaa00, 1.5, 20);
+          lamp.position.set(-35, 8, -65); this.scene.add(lamp);
+        }
+
+        // Bus Stop (level 33)
+        if (cfg.hasBusStop) {
+          const shelter = new THREE.Mesh(new THREE.BoxGeometry(4, 3, 2), new THREE.MeshToonMaterial({ color: 0x3366cc }));
+          shelter.position.set(5, 1.5, 20); this.scene.add(shelter);
+          const roof = new THREE.Mesh(new THREE.BoxGeometry(5, 0.2, 2.5), new THREE.MeshToonMaterial({ color: 0x2255aa }));
+          roof.position.set(5, 3.1, 20); this.scene.add(roof);
+        }
+
+        // Fire Hydrant (level 28)
+        if (cfg.hasFireHydrant) {
+          const hydrant = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.35, 1.2, 8), new THREE.MeshToonMaterial({ color: 0xff0000 }));
+          hydrant.position.set(12, 0.6, 15); this.scene.add(hydrant);
+          const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.3, 8), new THREE.MeshToonMaterial({ color: 0xcc0000 }));
+          cap.position.set(12, 1.35, 15); this.scene.add(cap);
+        }
+
+        // Toll Booth (level 30)
+        if (cfg.hasTollBooth) {
+          const booth = new THREE.Mesh(new THREE.BoxGeometry(6, 4, 3), new THREE.MeshToonMaterial({ color: 0x888888 }));
+          booth.position.set(0, 2, 50); this.scene.add(booth);
+          const roof2 = new THREE.Mesh(new THREE.BoxGeometry(8, 0.3, 4), new THREE.MeshToonMaterial({ color: 0x666666 }));
+          roof2.position.set(0, 4.15, 50); this.scene.add(roof2);
+          // Toll sign
+          const tSign = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 0.2), new THREE.MeshToonMaterial({ color: 0xffd700 }));
+          tSign.position.set(0, 5.5, 50); this.scene.add(tSign);
+        }
+
+        // Construction Zone with Flagman (level 34)
+        if (cfg.hasConstruction) {
+          // Construction barriers
+          for (let cb = 0; cb < 6; cb++) {
+            const barrier = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 0.3), new THREE.MeshToonMaterial({ color: cb % 2 === 0 ? 0xff6600 : 0xffffff }));
+            barrier.position.set(-10 + cb * 4, 0.5, 30 + Math.sin(cb) * 2);
+            this.scene.add(barrier);
+          }
+          // Flagman
+          if (cfg.hasFlagman) {
+            let flagman;
+            if (this._pedFree && this._pedFree.length > 0) {
+              flagman = this._pedFree.pop();
+              flagman.visible = true;
+            } else {
+              flagman = _buildHuman();
+            }
+            flagman.position.set(0, 0, 35);
+            flagman.userData = { spd: 0, state: 'flagman' };
+            // Add orange vest
+            const vest = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.4), new THREE.MeshToonMaterial({ color: 0xff6600 }));
+            vest.position.set(0, 1.2, 0); flagman.add(vest);
+            // Add flag
+            const flagPole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 2, 8), new THREE.MeshToonMaterial({ color: 0x8B4513 }));
+            flagPole.position.set(0.4, 2, 0); flagman.add(flagPole);
+            const flag = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.4, 0.05), new THREE.MeshToonMaterial({ color: 0xff0000 }));
+            flag.position.set(0.7, 2.8, 0); flagman.add(flag);
+            this.scene.add(flagman);
+            this.peds.push(flagman);
+          }
+        }
+
+        // Cyclist (level 39)
+        if (cfg.hasCyclist) {
+          const cycle = new THREE.Group();
+          const frame = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.8, 1.5), new THREE.MeshToonMaterial({ color: 0x333333 }));
+          frame.position.y = 0.5; cycle.add(frame);
+          const wheel1 = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.08, 8, 16), new THREE.MeshToonMaterial({ color: 0x111111 }));
+          wheel1.position.set(0, 0.35, 0.6); wheel1.rotation.y = Math.PI/2; cycle.add(wheel1);
+          const wheel2 = wheel1.clone(); wheel2.position.z = -0.6; cycle.add(wheel2);
+          cycle.position.set(-3, 0, 25);
+          cycle.userData = { spd: 0.4, dir: -1 };
+          this.scene.add(cycle);
+          this.npcs.push(cycle);
+        }
+
         // Bollards and barricades
         const bCount = cfg.isPedestrian ? 2 : 6;
         for (let i = 0; i < bCount; i++) {
@@ -2795,11 +3183,53 @@ class Game {
         this.world.push(b);
       }
       _create3DRain() {
-        const count = 1200; const geo = new THREE.BufferGeometry(); const pos = [];
-        for (let i = 0; i < count; i++)pos.push((Math.random() - .5) * 300, Math.random() * 30, (Math.random() - .5) * 500);
+        const count = 2000; const geo = new THREE.BufferGeometry(); const pos = [];
+        for (let i = 0; i < count; i++)pos.push((Math.random() - .5) * 400, Math.random() * 40, (Math.random() - .5) * 600);
         geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-        this.rain = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x9cc9ff, size: 0.06, transparent: true, opacity: 0.55 }));
+        this.rain = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x9cc9ff, size: 0.08, transparent: true, opacity: 0.6 }));
         this.scene.add(this.rain);
+        this._rainCenter = { x: 0, z: 0 };
+        // Add lightning for night rain levels
+        if (this.mapCfg && this.mapCfg.isNight) {
+            this._lightningTimer = 0;
+            this._lightningFlash = null;
+        }
+      }
+      _updateRain(dt) {
+        if (!this.rain) return;
+        // Keep rain centered around player for larger coverage
+        if (this.player) {
+            const px = this.player.position.x;
+            const pz = this.player.position.z;
+            // Smooth center transition
+            this._rainCenter.x += (px - this._rainCenter.x) * 0.05;
+            this._rainCenter.z += (pz - this._rainCenter.z) * 0.05;
+        }
+        const pos = this.rain.geometry.attributes.position.array;
+        const count = pos.length / 3;
+        for (let i = 0; i < count; i++) {
+            pos[i * 3 + 1] -= 25 * dt; // fall speed
+            if (pos[i * 3 + 1] < 0) {
+                pos[i * 3 + 1] = 35 + Math.random() * 5;
+                pos[i * 3] = this._rainCenter.x + (Math.random() - .5) * 400;
+                pos[i * 3 + 2] = this._rainCenter.z + (Math.random() - .5) * 600;
+            }
+        }
+        this.rain.geometry.attributes.position.needsUpdate = true;
+        // Lightning effect for night rain
+        if (this._lightningTimer !== undefined) {
+            this._lightningTimer += dt;
+            if (this._lightningTimer > 4 + Math.random() * 6) {
+                this._lightningTimer = 0;
+                // Flash effect
+                this.scene.fog.color.setHex(0x4488aa);
+                this._ambient && (this._ambient.intensity = 2);
+                setTimeout(() => {
+                    if (this.scene.fog) this.scene.fog.color.setHex(this.mapCfg.isNight ? 0x0a0a12 : 0x1a2a3a);
+                    if (this._ambient) this._ambient.intensity = this.mapCfg.isNight ? 0.1 : 0.35;
+                }, 80);
+            }
+        }
       }
       _spawnSplash(x, y, z) {
         const count = 12;
@@ -2862,8 +3292,29 @@ class Game {
       }
 
       _cp(x, z, col = 0x00c851) {
-        const ring = new THREE.Mesh(new THREE.TorusGeometry(1.7, .16, 10, 20), new THREE.MeshBasicMaterial({ color: col })); ring.rotation.x = -Math.PI / 2;
-        ring.position.set(x, .8, z); ring.userData.pathT = 0; this.scene.add(ring); this.cps.push(ring); return ring;
+        const group = new THREE.Group();
+        // Outer ring with glow
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(1.7, .18, 12, 32), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.9 }));
+        ring.rotation.x = -Math.PI / 2;
+        group.add(ring);
+        // Inner glow ring
+        const glow = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.6, 32), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.4, side: THREE.DoubleSide }));
+        glow.rotation.x = -Math.PI / 2;
+        glow.position.y = 0.02;
+        group.add(glow);
+        // Center marker
+        const center = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.08, 16), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.6 }));
+        center.position.y = 0.04;
+        group.add(center);
+        // Vertical beam effect
+        const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.3, 8, 8), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.15 }));
+        beam.position.y = 4;
+        group.add(beam);
+        group.position.set(x, 0.8, z);
+        group.userData = { pathT: 0, ring, glow, center, beam, baseY: 0.8 };
+        this.scene.add(group);
+        this.cps.push(group);
+        return group;
       }
       _sig(x, z) {
         const g = new THREE.Group();
@@ -2940,14 +3391,30 @@ class Game {
           this.speedBreakers.push(bump);
       }
 
-      // ── PATH ARROW INDICATORS (Idea #1) ──
+      // ── PATH ARROW INDICATORS ──
       // Directional chevron arrows placed on the road (vehicle mode) or
-      // sidewalk (pedestrian/position mode) showing the player where to go.
+      // sidewalk (pedestrian mode) showing the player where to go.
+      // Enhanced with glow effect and better visibility.
       _buildArrows() {
           if (!this.mapCfg || !this.mapCfg.route || this.mapCfg.route.length < 2) { this._arrows = []; return; }
           this._arrows = [];
           const route = this.mapCfg.route;
-          const arrowMat = new THREE.MeshBasicMaterial({ color: this.isPedestrian ? 0xffab40 : 0x00e676, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false });
+          const arrowColor = this.isPedestrian ? 0xffab40 : 0x00e676;
+          // Enhanced arrow material with glow effect
+          const arrowMat = new THREE.MeshBasicMaterial({
+              color: arrowColor,
+              transparent: true,
+              opacity: 0.85,
+              side: THREE.DoubleSide,
+              depthWrite: false
+          });
+          // Add glow ring for each arrow cluster
+          const glowMat = new THREE.MeshBasicMaterial({
+              color: arrowColor,
+              transparent: true,
+              opacity: 0.25,
+              side: THREE.DoubleSide
+          });
           // In pedestrian mode, arrows go on the sidewalk (offset left); in vehicle mode, left side of road
           const cfg = this.mapCfg;
           const RW = cfg.isPedestrian ? 10 : 12;
@@ -3019,7 +3486,7 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks();
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt);
 
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
@@ -3583,10 +4050,15 @@ class Game {
                   }
                 }
 
+                // ── GREEN LIGHT BOOST: accelerate faster when just cleared a red light ──
+                const wasStopped = n.userData._prevState === 'STOPPED';
+                const greenBoost = wasStopped && n.userData.state === 'CRUISE';
+
                 // Apply State Behavior — realistic braking & acceleration curves
                 switch(n.userData.state) {
                   case 'CRUISE':
-                    n.userData.spd += (n.userData.baseSpd - n.userData.spd) * 0.12;
+                    // Boost acceleration if just cleared a red light
+                    n.userData.spd += (n.userData.baseSpd - n.userData.spd) * (greenBoost ? 0.25 : 0.12);
                     break;
                   case 'FOLLOW':
                     let tgtSpd = Math.max(0, fsm.obstacleSpeed - 0.2);
@@ -3606,6 +4078,9 @@ class Game {
                     break;
                 }
 
+                // Store previous state for green light boost detection
+                n.userData._prevState = n.userData.state;
+
                 // ── BRAKE LIGHTS: brighten when decelerating ──
                 if (n.children) {
                   const isBraking = n.userData.state === 'STOPPED' || n.userData.state === 'SLOW_DOWN' || n.userData.state === 'FOLLOW';
@@ -3617,10 +4092,18 @@ class Game {
                   });
                 }
 
-                // ── HORN HONK: random horn when stuck >3s ──
-                if (n.userData.state === 'STOPPED') {
+                // ── HORN HONK: random horn when stuck >3s OR when player blocks ──
+                const isBlockedByPlayer = this.player && this.player.position && !this.isPedestrian &&
+                  ((n.userData.moveAxis === 'h' && Math.abs(this.player.position.x - n.position.x) < 8 &&
+                    Math.abs(this.player.position.z - n.position.z) < 15 && (this.player.position.x - n.position.x) * n.userData.dir > 0) ||
+                   (n.userData.moveAxis !== 'h' && Math.abs(this.player.position.z - n.position.z) < 8 &&
+                    Math.abs(this.player.position.x - n.position.x) < 15 && (this.player.position.z - n.position.z) * n.userData.dir > 0));
+
+                if (n.userData.state === 'STOPPED' || isBlockedByPlayer) {
                   n.userData._stoppedTime = (n.userData._stoppedTime || 0) + dt;
-                  if (n.userData._stoppedTime > 3 && Math.random() < 0.02 && window.sfx) {
+                  // Honk more aggressively when player blocks (every 2s vs 3s)
+                  const honkThreshold = isBlockedByPlayer ? 2 : 3;
+                  if (n.userData._stoppedTime > honkThreshold && Math.random() < (isBlockedByPlayer ? 0.03 : 0.02) && window.sfx) {
                     window.sfx.play('horn');
                     n.userData._stoppedTime = 0;
                   }
@@ -3974,12 +4457,16 @@ class Game {
           p.userData.t += dt * p.userData.spd;
 
           // ── IDLE STATES: pedestrians pause, look around, check phones ──
+          // Skip idle for police volunteer - they stay active directing traffic
+          const isPoliceVolunteer = p.userData.isPoliceVolunteer;
+
           if (!p.userData._idleState) {
             p.userData._idleTimer = Math.random() * 8;
             p.userData._idleState = false;
             p.userData._idleDur = 0;
           }
-          if (p.userData.state !== 'exiting' && !p.userData._idleState) {
+          // Police volunteer doesn't get idle - they direct traffic continuously
+          if (p.userData.state !== 'exiting' && !p.userData._idleState && !isPoliceVolunteer) {
             p.userData._idleTimer -= dt;
             if (p.userData._idleTimer <= 0) {
               // Randomly enter idle: check phone, look around, wait
@@ -4065,6 +4552,68 @@ class Game {
             }
           }
 
+          // ── CROSSWALK SAFETY: wait at crosswalk if vehicle is approaching ──
+          // Check if pedestrian is near a road crossing (on road edge)
+          const nearRoadEdge = p.userData.state === 'sidewalk' &&
+            Math.abs(p.userData.distTraveled) < 2 && // Just started moving
+            ((p.userData.isV && Math.abs(p.position.x - p.userData.roadC) > 8) ||
+             (!p.userData.isV && Math.abs(p.position.z - p.userData.roadC) > 8));
+
+          if (nearRoadEdge && p.userData.state !== 'exiting' && !p.userData._idleState) {
+            // Check for approaching vehicles (player or NPCs)
+            let vehicleApproaching = false;
+
+            // Check player vehicle
+            if (this.player && !this.isPedestrian && this.speed && Math.abs(this.speed) > 0.1) {
+              const pvDist = this.player.position.distanceTo(p.position);
+              if (pvDist < 25) {
+                const approachingDir = p.userData.isV ?
+                  (this.player.position.z - p.position.z) * p.userData.dir :
+                  (this.player.position.x - p.position.x) * p.userData.dir;
+                if (approachingDir > 0) vehicleApproaching = true;
+              }
+            }
+
+            // Check NPCs
+            if (!vehicleApproaching && this.npcs) {
+              this.npcs.forEach(n => {
+                if (vehicleApproaching || !n.userData.spd) return;
+                const npcDist = n.position.distanceTo(p.position);
+                if (npcDist < 20) {
+                  const approachingDir = p.userData.isV ?
+                    (n.position.z - p.position.z) * p.userData.dir :
+                    (n.position.x - p.position.x) * p.userData.dir;
+                  if (approachingDir > 0) vehicleApproaching = true;
+                }
+              });
+            }
+
+            // If vehicle approaching, don't cross - stop and wait
+            if (vehicleApproaching) {
+              p.userData._waitingForVehicle = true;
+              p.userData._waitTimer = (p.userData._waitTimer || 0) + dt;
+              // Keep still, face direction of traffic (looking left/right)
+              p.rotation.y = p.userData.dir > 0 ? (p.userData.isV ? 0 : Math.PI/2) : (p.userData.isV ? Math.PI : -Math.PI/2);
+            } else {
+              if (p.userData._waitingForVehicle) {
+                // Vehicle passed, reset and continue
+                p.userData._waitingForVehicle = false;
+                p.userData._waitTimer = 0;
+                p.userData.distTraveled = 0; // Restart crossing
+              }
+              p.userData._waitTimer = 0;
+            }
+          } else {
+            p.userData._waitingForVehicle = false;
+            p.userData._waitTimer = 0;
+          }
+
+          // Override movement if waiting for vehicle
+          if (p.userData._waitingForVehicle) {
+            // Skip normal movement
+            return;
+          }
+
           // Inter-pedestrian avoidance: steer away from nearby peds
           this.peds.forEach(other => {
             if (other === p) return;
@@ -4085,6 +4634,21 @@ class Game {
           const walkSpeed = p.userData._idleState ? 0.08 : 10;
           if (p.userData.lLeg) p.userData.lLeg.rotation.x = Math.sin(p.userData.t * walkSpeed) * (p.userData._idleState ? 0.05 : 0.6);
           if (p.userData.rLeg) p.userData.rLeg.rotation.x = Math.sin(p.userData.t * walkSpeed + Math.PI) * (p.userData._idleState ? 0.05 : 0.6);
+
+          // ── POLICE VOLUNTEER ARM SIGNAL: waving to direct traffic ──
+          if (isPoliceVolunteer) {
+            // Simple arm wave animation to simulate traffic directing
+            p.userData.t += dt * 3;
+            const armWave = Math.sin(p.userData.t) * 0.8;
+            // Find and animate arm (if has arms)
+            p.children.forEach(ch => {
+              if (ch.name && ch.name.includes('Arm')) {
+                ch.rotation.z = armWave;
+              }
+            });
+            // If no specific arm, rotate entire pedestrian slightly left-right
+            p.rotation.y = Math.sin(p.userData.t * 0.5) * 0.3 + (p.userData.isV ? Math.PI/2 : 0);
+          }
 
           if (!this.isPedestrian && this.player.position.distanceTo(p.position) < 2.5) {
             this.speed = 0; this.hp = 0;
@@ -4173,6 +4737,17 @@ class Game {
         let hits = 0;
         this.cps.forEach(cp => {
           if (cp.userData.hit) { hits++; return; }
+          // Pulse animation for checkpoint groups
+          if (cp.userData.ring && !cp.userData.hit) {
+              const pulse = 0.8 + 0.2 * Math.sin(this.timer * 3);
+              cp.userData.ring.material.opacity = pulse;
+              if (cp.userData.glow) cp.userData.glow.material.opacity = 0.3 + 0.2 * Math.sin(this.timer * 3 + 1);
+              if (cp.userData.center) cp.userData.center.material.opacity = 0.5 + 0.3 * Math.sin(this.timer * 4);
+              if (cp.userData.beam) {
+                  cp.userData.beam.material.opacity = 0.1 + 0.08 * Math.sin(this.timer * 2);
+                  cp.userData.beam.scale.y = 0.9 + 0.2 * Math.sin(this.timer * 3);
+              }
+          }
           // Smart ring path animation: ring moves along pathPts (sidewalk → crossing → sidewalk)
           if (cp.userData.pathPts && cp.userData.pathPts.length >= 2) {
               cp.userData.pathT = (cp.userData.pathT + dt * 0.5) % 1.0;
@@ -4183,7 +4758,7 @@ class Game {
               cp.position.x = pts[seg][0] + (pts[seg + 1][0] - pts[seg][0]) * segT;
               cp.position.z = pts[seg][1] + (pts[seg + 1][1] - pts[seg][1]) * segT;
           }
-          if (this.player.position.distanceTo(cp.position) < 3.2) { cp.userData.hit = true; cp.visible = false; this.score += 100; hits++; toast('✅ Node Verified!', '#00c851'); sfx.play('ok'); }
+          if (this.player.position.distanceTo(cp.position) < 4.5) { cp.userData.hit = true; cp.visible = false; this.score += 100; hits++; toast('✅ Node Verified!', '#00c851'); sfx.play('ok'); }
         });
         this.hits = hits;
         if (this.dom['hcp']) this.dom['hcp'].textContent = hits + '/' + this.cps.length;
@@ -4191,18 +4766,22 @@ class Game {
         // Realtime GPS Arrow Target Tracking
         const nextNode = this.cps.find(c => !c.userData.hit); const da = this.dom['da'];
         if (nextNode && this.playing) {
-          if (da) da.style.display = 'block';
+          if (da) { da.style.display = 'flex'; da.classList.add('on'); }
           const dx = nextNode.position.x - this.player.position.x, dz = nextNode.position.z - this.player.position.z;
           const dist = Math.round(Math.hypot(dx, dz));
           // FIX: use atan2(dx,dz) not atan2(dx,-dz) for correct forward direction
           let rel = Math.atan2(dx, dz) - this.player.rotation.y;
           while (rel < -Math.PI) rel += Math.PI * 2; while (rel > Math.PI) rel -= Math.PI * 2;
           const deg = rel * 180 / Math.PI;
-          // Rotate the arrow emoji using CSS transform
+          // Rotate the arrow using CSS transform (negative for correct direction)
           const arrowEl = this.dom['da-arrow'];
-          if (arrowEl) arrowEl.style.transform = 'rotate(' + Math.round(deg) + 'deg)';
-          if (this.dom['dal']) this.dom['dal'].textContent = dist + 'm · ' + (Math.abs(deg) < 20 ? 'STRAIGHT' : deg > 0 ? 'RIGHT' : 'LEFT');
-        } else if (da) da.style.display = 'none';
+          if (arrowEl) arrowEl.style.transform = 'rotate(' + Math.round(-deg) + 'deg)';
+          // Update direction text
+          const dirText = Math.abs(deg) < 20 ? 'GO STRAIGHT' : deg > 0 ? 'TURN RIGHT' : 'TURN LEFT';
+          if (this.dom['dal']) this.dom['dal'].textContent = dirText;
+          // Update distance in the new da-dist element
+          if (this.dom['da-dist']) this.dom['da-dist'].textContent = dist + 'm';
+        } else if (da) { da.style.display = 'none'; da.classList.remove('on'); }
 
         if (hits >= this.cps.length && this.cps.length > 0) this.completeLevel();
       }
@@ -4500,26 +5079,72 @@ class Game {
           else ctx.fillRect(-600, r.z - 6, 1200, 12);
         });
 
+        // GPS Route line to checkpoint (when phone GPS is on)
+        if (this.phoneGpsOn && this.cps && this.cps.length > 0) {
+            const nextCP = this.cps[0];
+            if (nextCP) {
+                ctx.strokeStyle = '#5dade2';
+                ctx.lineWidth = 4;
+                ctx.setLineDash([8, 6]);
+                ctx.beginPath();
+                ctx.moveTo(this.player.position.x, this.player.position.z);
+                ctx.lineTo(nextCP.position.x, nextCP.position.z);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        // Checkpoints
+        this.cps.forEach((cp, i) => {
+            ctx.fillStyle = i === 0 ? '#00c851' : 'rgba(0,200,81,0.4)';
+            ctx.beginPath(); ctx.arc(cp.position.x, cp.position.z, 4, 0, Math.PI * 2); ctx.fill();
+        });
+
         // Track dynamic real-time colors for oncoming signals
         this.sigs.forEach(s => {
           ctx.fillStyle = s.userData.st === 'red' ? '#ff3b30' : s.userData.st === 'green' ? '#00c851' : '#ffd54a';
-          ctx.beginPath(); ctx.arc(s.position.x, s.position.z, 6, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(s.position.x, s.position.z, 5, 0, Math.PI * 2); ctx.fill();
         });
 
         // Draw NPC Traffic Tracking Dots
         ctx.fillStyle = '#3498db';
         this.npcs.forEach(n => {
-          ctx.fillRect(n.position.x - 3, n.position.z - 3, 6, 6);
+          ctx.fillRect(n.position.x - 2.5, n.position.z - 2.5, 5, 5);
         });
+
+        // Draw Pedestrians
+        if (this.peds) {
+            ctx.fillStyle = '#e91e63';
+            this.peds.forEach(p => {
+                ctx.fillRect(p.position.x - 1.5, p.position.z - 1.5, 3, 3);
+            });
+        }
 
         // Draw Player
         ctx.fillStyle = '#ffd54a';
-        ctx.beginPath(); ctx.arc(this.player.position.x, this.player.position.z, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(this.player.position.x, this.player.position.z, 5, 0, Math.PI * 2); ctx.fill();
+        // Player direction indicator
+        if (!this.isPedestrian && this.playerVehicle) {
+            const angle = this.playerVehicle.rotation.y;
+            ctx.strokeStyle = '#ffd54a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(this.player.position.x, this.player.position.z);
+            ctx.lineTo(this.player.position.x + Math.sin(angle) * 12, this.player.position.z + Math.cos(angle) * 12);
+            ctx.stroke();
+        }
         ctx.restore();
 
         // Minimap Borders
         ctx.strokeStyle = 'rgba(255,255,255,.15)'; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.arc(cx, cy, cx - 2, 0, Math.PI * 2); ctx.stroke();
+
+        // GPS label
+        if (this.phoneGpsOn) {
+            ctx.fillStyle = '#5dade2';
+            ctx.font = 'bold 9px Inter';
+            ctx.fillText('GPS', 4, 106);
+        }
       }
     }
 

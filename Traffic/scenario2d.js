@@ -1893,6 +1893,187 @@ class ResultScene extends Phaser.Scene {
 }
 
 // ═══════════════════════════════════════════════════════════════════
+// 2D DEMO MODE - Shows correct behavior before playing
+// ═══════════════════════════════════════════════════════════════════
+
+// Show a demo of the level - auto-plays with perfect behavior
+function showScenario2DDemo(scenarioId, onComplete) {
+  const cfg = SCENARIOS.find(s => s.id === scenarioId);
+  if (!cfg) { if (onComplete) onComplete(); return; }
+
+  const container = document.getElementById('scenario2d-container');
+  if (!container) { if (onComplete) onComplete(); return; }
+
+  // Create demo overlay
+  const overlay = document.createElement('div');
+  overlay.id = 's2d-demo-overlay';
+  overlay.innerHTML = `
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;color:white;font-family:Inter,sans-serif;">
+      <div style="font-size:48px;margin-bottom:16px;">${cfg.icon}</div>
+      <div style="font-size:24px;font-weight:bold;margin-bottom:8px;">${cfg.name}</div>
+      <div style="font-size:14px;color:#aaa;margin-bottom:24px;max-width:300px;text-align:center;">${cfg.desc}</div>
+      <div style="font-size:18px;color:#ffd54a;margin-bottom:24px;">🎬 Watching Demo...</div>
+      <div id="demo-status" style="font-size:13px;color:#888;">Preparing demonstration...</div>
+    </div>
+  `;
+  container.appendChild(overlay);
+
+  // Start a simpler Phaser game for demo
+  const demo = new Phaser.Game({
+    type: Phaser.AUTO,
+    width: W,
+    height: H,
+    parent: container,
+    backgroundColor: '#4a7c59',
+    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+    physics: { default: false },
+    scene: [DemoScene]
+  });
+
+  // Store for cleanup
+  window._demoGame = demo;
+  window._demoOverlay = overlay;
+  window._demoOnComplete = onComplete;
+}
+
+// Demo scene that auto-plays the scenario
+class DemoScene extends Phaser.Scene {
+  constructor() { super('Demo'); }
+
+  init() {
+    this.scenarioId = window._s2d_pendingId || 1;
+    this.cfg = SCENARIOS.find(s => s.id === this.scenarioId) || SCENARIOS[0];
+    this.stepIndex = 0;
+    this.stepTimer = 0;
+    this.demoComplete = false;
+  }
+
+  create() {
+    const c = this.cfg;
+    const isNight = c.road && c.road.night;
+    this.cameras.main.setBackgroundColor(isNight ? COLORS.nightBg : COLORS.bg);
+
+    // Draw road
+    const roadLanes = c.road.lanes;
+    const roadW = roadLanes * ROAD_LW;
+    const roadX = (W - roadW) / 2;
+    const roadG = this.add.graphics();
+    roadG.fillStyle(isNight ? COLORS.nightRoad : COLORS.road, 1);
+    roadG.fillRect(roadX, 0, roadW, c.road.length);
+
+    // Lane markings
+    for (let i = 1; i < roadLanes; i++) {
+      const lx = roadX + i * ROAD_LW;
+      roadG.lineStyle(2, COLORS.roadLine, 0.5);
+      for (let y = 0; y < c.road.length; y += 30) {
+        roadG.lineBetween(lx, y, lx, y + 15);
+      }
+    }
+    roadG.lineStyle(3, COLORS.roadEdge, 0.8);
+    roadG.lineBetween(roadX, 0, roadX, c.road.length);
+    roadG.lineBetween(roadX + roadW, 0, roadX + roadW, c.road.length);
+
+    // Create player car
+    const playerX = laneX(roadLanes > 1 ? 1 : 0, roadLanes);
+    const playerY = c.road.length - 100;
+    this.player = this.add.image(playerX, playerY, 'player');
+    this.player.setDisplaySize(PLAYER_W, PLAYER_H);
+
+    // Camera
+    this.cameras.main.setBounds(0, 0, W, c.road.length);
+    this.cameras.main.startFollow(this.player, true, 1, 0.1);
+    this.cameras.main.setFollowOffset(-W/2, H/2 - 100);
+
+    // Update status
+    this.updateStatus('Starting demonstration...');
+
+    // Demo steps - simulate correct behavior
+    this.demoSteps = [
+      { text: 'Waiting for signal...', delay: 2000, action: 'wait' },
+      { text: 'Green light! Moving carefully...', delay: 1500, action: 'go' },
+      { text: 'Checking for pedestrians...', delay: 1000, action: 'check' },
+      { text: 'All clear - proceeding!', delay: 1500, action: 'proceed' },
+      { text: 'Approaching destination...', delay: 2000, action: 'finish' },
+    ];
+  }
+
+  update(time, delta) {
+    if (this.demoComplete) return;
+
+    this.stepTimer += delta;
+
+    const step = this.demoSteps[this.stepIndex];
+    if (!step) {
+      this.completeDemo();
+      return;
+    }
+
+    if (this.stepTimer >= step.delay) {
+      // Execute step action
+      if (step.action === 'go') {
+        this.player.y -= 0.5;
+      } else if (step.action === 'proceed') {
+        this.player.y -= 1;
+      } else if (step.action === 'finish') {
+        this.player.y -= 0.8;
+      }
+
+      this.updateStatus(step.text);
+      this.stepTimer = 0;
+      this.stepIndex++;
+
+      if (this.stepIndex >= this.demoSteps.length) {
+        this.completeDemo();
+      }
+    }
+  }
+
+  updateStatus(text) {
+    const el = document.getElementById('demo-status');
+    if (el) el.textContent = text;
+  }
+
+  completeDemo() {
+    if (this.demoComplete) return;
+    this.demoComplete = true;
+
+    // Show "Your Turn" button
+    const overlay = document.getElementById('s2d-demo-overlay');
+    if (overlay) {
+      overlay.innerHTML = `
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;">
+          <div style="font-size:48px;margin-bottom:16px;">🎉</div>
+          <div style="font-size:20px;color:#34d399;margin-bottom:16px;">Demo Complete!</div>
+          <div style="font-size:14px;color:#888;margin-bottom:24px;">Now you try it!</div>
+          <button id="try-s2d-btn" style="padding:16px 32px;font-size:18px;background:#ffd54a;border:none;border-radius:8px;cursor:pointer;font-weight:bold;color:#000;">
+            ▶️ Play Now
+          </button>
+        </div>
+      `;
+      document.getElementById('try-s2d-btn').onclick = () => {
+        this.startRealGame();
+      };
+    }
+  }
+
+  startRealGame() {
+    // Clean up demo and start real game
+    if (window._demoGame) {
+      window._demoGame.destroy(true);
+      window._demoGame = null;
+    }
+    const overlay = document.getElementById('s2d-demo-overlay');
+    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+
+    // Initialize the actual 2D game
+    initScenario2D('scenario2d-container', this.scenarioId);
+
+    // Callback
+    if (window._demoOnComplete) window._demoOnComplete();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // PHASER GAME INSTANCE
 // ═══════════════════════════════════════════════════════════════════
 window._scenario2dGame = null

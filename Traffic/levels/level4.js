@@ -24,6 +24,9 @@ window.LVS.push({
   pract: 'Slow down before the puddle. Pass pedestrians at walking pace without splashing them.',
   mode: 'practical',
   themeType: 'puddle_etiquette',
+  scenarioType: 'cars_only',
+  npcDensity: 'moderate',
+  hasRain: true,
   startOutside: true,
   tasks: [
     { id: 'slow_puddle', text: 'Slow down before puddle', type: 'avoid', target: 'speed_puddle', done: false },

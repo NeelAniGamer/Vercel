@@ -20,6 +20,9 @@ window.LVS.push({
   pract: 'Drive slowly around the sleeping dog. Do not honk. Reach the main road quietly.',
   mode: 'practical',
   themeType: 'no_honking',
+  scenarioType: 'cars_only',
+  npcDensity: 'light',
+  isNight: true,
   startOutside: true,
   tasks: [
     { id: 'no_honk_night', text: 'Do not honk in residential night', type: 'avoid', target: 'honk', done: false },

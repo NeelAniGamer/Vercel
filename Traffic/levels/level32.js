@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Use low gear uphill. Honk at every hairpin bend. Engine brake downhill. Reach the top safely.',
   mode: 'practical',
   themeType: 'hill_driving',
+  scenarioType: 'cars_only',
+  npcDensity: 'light',
   startOutside: true,
   tasks: [
     { id: 'low_gear', text: 'Use low gear uphill', type: 'toggle', target: 'gear', done: false },

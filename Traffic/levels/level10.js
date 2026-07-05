@@ -23,7 +23,9 @@ window.LVS.push({
     '<h2>Market Area Parking</h2><p>Market mein sab kuch ek saath hai — vendors, log, gaadiyan, sab! Jagah bahut kam hai aur sab jagah jaana chahte hain.</p><p>Tight gali hai, dono taraf vendors hain. Auto-rickshaw waale beech mein khade hain. Lekin market ke entrance pe ek paid parking zone hai — wahan lagao!</p><h3>🛒 Kya karna hai?</h3><ul><li>Gali tight hai, vendors dono taraf hain — slowly jao.</li><li>Auto-rickshaw waale road pe khade hain — darr mat, space banao.</li><li>Market entrance pe parking zone hai — wahan ruko!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Market zone mein bina permission parking karna municipal bye-laws aur MV Act Section 122 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
   pract: 'Navigate through the market carefully. Park in the designated paid zone. Walk to your destination.',
   mode: 'practical',
-  themeType: 'respectful_parking',
+  themeType: 'market_street',
+  scenarioType: 'mixed',
+  npcDensity: 'heavy',
   startOutside: true,
   tasks: [
     { id: 'navigate_market', text: 'Navigate through market', type: 'reach', target: 'market_zone', done: false },

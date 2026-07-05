@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Match speed on the ramp. Check blind spot. Find a gap and merge. Do not linger beside trucks.',
   mode: 'practical',
   themeType: 'highway_merge',
+  scenarioType: 'highway',
+  npcDensity: 'heavy',
   startOutside: true,
   tasks: [
     { id: 'match_speed', text: 'Match highway speed', type: 'avoid', target: 'slow_merge', done: false },

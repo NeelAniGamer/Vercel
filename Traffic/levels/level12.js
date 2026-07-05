@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Indicate left, merge to the left lane, maintain your speed, and let the ambulance pass.',
   mode: 'practical',
   themeType: 'ambulance_priority',
+  scenarioType: 'emergency',
+  npcDensity: 'heavy',
   startOutside: true,
   tasks: [
     { id: 'indicate_left', text: 'Indicate left before merging', type: 'toggle', target: 'indicator', done: false },

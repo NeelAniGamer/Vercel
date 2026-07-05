@@ -1612,19 +1612,57 @@
       #da {
         color: #111827 !important;
         position: fixed;
-        top: 150px;
+        top: 130px;
         left: 50%;
         transform: translateX(-50%);
         display: none;
-        background: rgba(255, 255, 255, 0.9);
-        padding: 12px 24px;
-        border-radius: 30px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(240,250,255,0.95) 100%);
+        padding: 14px 28px;
+        border-radius: 20px;
         align-items: center;
-        gap: 12px;
+        gap: 16px;
         font-weight: 700;
-        font-size: 1.2rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        font-size: 1.15rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 0 0 2px rgba(0,200,100,0.2);
         z-index: 26;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(0,200,100,0.3);
+      }
+      #da.on {
+        display: flex;
+        animation: daPulse 2s ease-in-out infinite;
+      }
+      @keyframes daPulse {
+        0%, 100% { transform: translateX(-50%) scale(1); }
+        50% { transform: translateX(-50%) scale(1.02); }
+      }
+      .da-arrow-icon {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #00c851 0%, #00a854 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,200,81,0.4);
+      }
+      .da-arrow-icon svg {
+        width: 26px;
+        height: 26px;
+        color: white;
+      }
+      .dal {
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: #1a1a1a;
+      }
+      .da-dist {
+        font-size: 0.85rem;
+        color: #00a854;
+        font-weight: 800;
+        background: rgba(0,200,81,0.1);
+        padding: 4px 10px;
+        border-radius: 8px;
       }
 
       #da.on {
@@ -2050,6 +2088,45 @@
           transform-origin: top left;
           transform: scale(min(1, calc((100vw - 40px) / 800)));
           /* 800 is approx width of cert, scales down to fit screen width */
+        }
+
+        /* Mobile direction box */
+        #da {
+          top: 100px;
+          padding: 10px 18px;
+          font-size: 0.95rem;
+          gap: 10px;
+        }
+        .da-arrow-icon {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+        }
+        .da-arrow-icon svg {
+          width: 20px;
+          height: 20px;
+        }
+        .da-dist {
+          font-size: 0.75rem;
+          padding: 3px 8px;
+        }
+        .dal {
+          font-size: 0.9rem;
+        }
+
+        /* Mobile objective overlay */
+        #objective-overlay {
+          top: auto;
+          bottom: 100px;
+          padding: 12px 16px;
+          font-size: 0.85rem;
+          max-width: 90vw;
+        }
+        #objective-title {
+          font-size: 0.7rem;
+        }
+        #objective-desc {
+          font-size: 0.9rem;
         }
       }
 
@@ -3574,14 +3651,17 @@
     <div id="ow">⚠️ OFF ROAD - Return to road!</div>
 
     <div id="da">
-      <div class="dai" id="da-arrow-container" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
-        <div id="da-arrow" style="transition: transform 0.1s ease-out; display: inline-block">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <div class="da-arrow-icon" id="da-arrow-container">
+        <div id="da-arrow" style="transition: transform 0.15s ease-out;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 19V5M5 12l7-7 7 7" />
           </svg>
         </div>
       </div>
-      <div class="dal" id="dal">GO STRAIGHT</div>
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <div class="dal" id="dal">GO STRAIGHT</div>
+        <div class="da-dist" id="da-dist">--m</div>
+      </div>
     </div>
 
     <div id="phone-gps">
@@ -4176,7 +4256,7 @@
             class="btn btn-g"
             style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap"
           >
-            0/15 ✅
+            0/52 ✅
           </div>
         </div>
       </div>

@@ -24,6 +24,10 @@ window.LVS.push({
   pract: 'Crawl through the school zone. Wait for children to clear your path. Do not splash them.',
   mode: 'practical',
   themeType: 'puddle_etiquette',
+  scenarioType: 'mixed',
+  npcDensity: 'moderate',
+  hasRain: true,
+  hasSchool: true,
   startOutside: true,
   tasks: [
     { id: 'crawl_zone', text: 'Crawl through school zone', type: 'avoid', target: 'speed_zone', done: false },

@@ -20,6 +20,9 @@ window.LVS.push({
   pract: 'Stop behind the bus. Wait for passengers to cross. Do not overtake until the bus moves away.',
   mode: 'practical',
   themeType: 'bus_stop',
+  hasBusStop: true,
+  npcDensity: 'moderate',
+  scenarioType: 'cars_only',
   startOutside: true,
   tasks: [
     { id: 'wait_bus', text: 'Wait behind bus', type: 'stop', target: 'bus_stop', done: false },

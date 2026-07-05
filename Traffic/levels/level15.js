@@ -24,6 +24,8 @@ window.LVS.push({
   pract: 'Move your car immediately. Park in the visitor parking zone. Walk to the objective.',
   mode: 'practical',
   themeType: 'respectful_parking',
+  scenarioType: 'cars_only',
+  npcDensity: 'light',
   startOutside: true,
   tasks: [
     { id: 'move_gate', text: "Move from resident's gate", type: 'reach', target: 'away_gate', done: false },

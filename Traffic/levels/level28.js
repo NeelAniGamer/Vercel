@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Drive past the hydrant and no-parking zone. Park in the designated parking zone. Walk to your destination.',
   mode: 'practical',
   themeType: 'parking_rules',
+  hasFireHydrant: true,
+  scenarioType: 'cars_only',
   startOutside: true,
   tasks: [
     { id: 'avoid_hydrant', text: 'Avoid hydrant area', type: 'avoid', target: 'hydrant_zone', done: false },

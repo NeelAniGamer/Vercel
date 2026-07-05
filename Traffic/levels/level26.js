@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Stop and wait patiently. Do not honk. Give the cow space. Pass only when it moves clear.',
   mode: 'practical',
   themeType: 'animals',
+  scenarioType: 'cars_only',
+  npcDensity: 'light',
   startOutside: true,
   tasks: [
     { id: 'stop_cow', text: 'Stop for cow', type: 'stop', target: 'cow', done: false },

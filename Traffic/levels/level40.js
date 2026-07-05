@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Complete the complex route following all traffic rules. Apply everything from the previous 39 levels. Stay calm and focused.',
   mode: 'practical',
   themeType: 'grand_test',
+  scenarioType: 'mixed',
+  npcDensity: 'heavy',
   startOutside: true,
   tasks: [
     { id: 'signals', text: 'Obey all signals', type: 'avoid', target: 'signal_jump', done: false },

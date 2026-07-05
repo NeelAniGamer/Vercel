@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Wait for the signal to turn green. Check all directions before proceeding. Do not follow the truck.',
   mode: 'practical',
   themeType: 'signal_jump',
+  scenarioType: 'cars_only',
+  npcDensity: 'heavy',
   startOutside: true,
   tasks: [
     { id: 'stop_signal', text: 'Stop at red light', type: 'stop', target: 'red_light', done: false },

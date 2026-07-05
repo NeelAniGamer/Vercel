@@ -20,6 +20,9 @@ window.LVS.push({
   pract: 'Wait for the cow to move. Drive past the temple slowly and silently. Do not honk under any circumstances.',
   mode: 'practical',
   themeType: 'no_honking',
+  hasTemple: true,
+  hasCow: true,
+  scenarioType: 'cars_only',
   startOutside: true,
   tasks: [
     { id: 'wait_cow', text: 'Wait for cow to move', type: 'stop', target: 'stationary', done: false },

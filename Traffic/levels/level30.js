@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Slow down on approach. Choose the correct lane. Stop at the booth and pay. Proceed on the highway.',
   mode: 'practical',
   themeType: 'toll',
+  hasTollBooth: true,
+  scenarioType: 'highway',
   startOutside: true,
   tasks: [
     { id: 'slow_toll', text: 'Slow down at toll plaza', type: 'avoid', target: 'speed', done: false },

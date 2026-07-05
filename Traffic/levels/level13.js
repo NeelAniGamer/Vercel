@@ -24,6 +24,10 @@ window.LVS.push({
   pract: 'Drive slowly, scan for water reflections, and give pedestrians a wide berth in the dark.',
   mode: 'practical',
   themeType: 'puddle_etiquette',
+  scenarioType: 'mixed',
+  npcDensity: 'moderate',
+  hasRain: true,
+  isNight: true,
   startOutside: true,
   tasks: [
     { id: 'use_headlights', text: 'Use headlights to scan puddles', type: 'toggle', target: 'headlights', done: false },

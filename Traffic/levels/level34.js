@@ -20,6 +20,9 @@ window.LVS.push({
   pract: 'Slow down to 20 km/h. Follow the detour signs. Obey the flagman. Exit the construction zone carefully.',
   mode: 'practical',
   themeType: 'construction',
+  hasConstruction: true,
+  hasFlagman: true,
+  scenarioType: 'cars_only',
   startOutside: true,
   tasks: [
     { id: 'slow_zone', text: 'Slow down in zone', type: 'avoid', target: 'speed', done: false },

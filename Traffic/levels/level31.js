@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Honk once before the corner. Crawl around the corner at walking speed. Yield to any oncoming vehicle.',
   mode: 'practical',
   themeType: 'blind_corner',
+  scenarioType: 'cars_only',
+  npcDensity: 'light',
   startOutside: true,
   tasks: [
     { id: 'honk_warn', text: 'Honk once to warn', type: 'toggle', target: 'honk', done: false },

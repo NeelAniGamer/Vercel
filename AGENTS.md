@@ -7,10 +7,11 @@
 
 ## No Build System
 
-- No `npm`, no bundler, no type checker, no test runner, no linter
+- No `npm run build`, no bundler, no type checker, no test runner, no linter
 - All CSS/JS is inline in HTML or single standalone files (`col-*.js`, `col-ui.css`)
 - Libraries loaded from CDN: Three.js r128, Supabase JS, qr-code-styling, JSZip, html2canvas
 - To deploy: commit to repo → Vercel auto-deploys
+- `package.json` only has `prettier` as devDependency — optional, not enforced
 
 ---
 
@@ -139,4 +140,4 @@ Each HTML page follows this structure:
 
 ---
 
-_Last updated: June 29, 2026_
+_Last updated: July 5, 2026_

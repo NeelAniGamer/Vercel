@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Stay calm. Give the taxi extra space. Do not honk back or tailgate. Drive safely to destination.',
   mode: 'practical',
   themeType: 'road_rage',
+  scenarioType: 'cars_only',
+  npcDensity: 'moderate',
   startOutside: true,
   tasks: [
     { id: 'stay_calm', text: 'Stay calm and patient', type: 'avoid', target: 'honk', done: false },

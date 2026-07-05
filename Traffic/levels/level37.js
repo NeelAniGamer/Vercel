@@ -20,6 +20,9 @@ window.LVS.push({
   pract: 'Drive through the hospital zone silently. No honking under any circumstances. Watch for ambulances and yield immediately.',
   mode: 'practical',
   themeType: 'hospital_quiet',
+  scenarioType: 'cars_only',
+  npcDensity: 'light',
+  hasHospital: true,
   startOutside: true,
   tasks: [
     { id: 'no_honk', text: 'No honking in zone', type: 'avoid', target: 'honk', done: false },

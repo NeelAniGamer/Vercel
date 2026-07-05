@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Crawl at walking pace. Signal the auto to let them know you\'re there. Find a wider spot and let the auto pass first.',
   mode: 'practical',
   themeType: 'narrow_street',
+  scenarioType: 'cars_only',
+  npcDensity: 'light',
   startOutside: true,
   tasks: [
     { id: 'crawl_slow', text: 'Crawl at walking pace', type: 'avoid', target: 'speed', done: false },
