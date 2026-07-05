@@ -26,6 +26,7 @@ window.LVS.push({
   themeType: 'pedestrian_courtesy',
   npcDensity: 'heavy',
   crowdFestival: true,
+  isPedestrian: true,
   startOutside: true,
   tasks: [
     { id: 'follow_volunteer', text: 'Follow traffic volunteer signals', type: 'reach', target: 'volunteer_signal', done: false },
