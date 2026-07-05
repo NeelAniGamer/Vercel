@@ -18,13 +18,13 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg: #0a0a0a;
-            --bg-secondary: #141414;
-            --text: #fafafa;
-            --text-muted: #a0a0a0;
-            --accent: #00E5C3;
-            --accent-dark: #00BFA5;
-            --border: #2a2a2a;
+            --bg: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text: #0a0a0a;
+            --text-muted: #6b6b6b;
+            --accent: #ff6b35;
+            --accent-hover: #e55a28;
+            --border: #e5e5e5;
             --font: 'Space Grotesk', sans-serif;
             --container: min(90%, 1200px);
         }
@@ -47,7 +47,7 @@
 
         /* ── Announcement Bar ─────────────────────────────────────── */
         .announcement {
-            background: var(--accent-dark);
+            background: var(--accent);
             color: var(--bg);
             text-align: center;
             padding: 8px 20px;
@@ -63,7 +63,7 @@
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 10, 10, 0.85);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
@@ -86,8 +86,6 @@
             font-weight: 700;
             letter-spacing: -0.03em;
         }
-
-        .logo span { color: var(--accent); }
 
         nav ul {
             display: flex;
@@ -116,8 +114,8 @@
         }
 
         .nav-cta:hover {
-            background: var(--accent-dark);
-            border-color: var(--accent-dark) !important;
+            background: var(--accent-hover);
+            border-color: var(--accent-hover) !important;
         }
 
         /* ── Hero Section ─────────────────────────────────────────── */
@@ -133,20 +131,20 @@
         .hero::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(0, 229, 195, 0.08) 0%, transparent 70%);
+            top: -30%;
+            right: -10%;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.04) 0%, transparent 70%);
             pointer-events: none;
         }
 
         .hero-content {
-            max-width: 700px;
+            max-width: 680px;
         }
 
         .hero h1 {
-            font-size: clamp(3rem, 8vw, 5rem);
+            font-size: clamp(2.75rem, 7vw, 4.5rem);
             font-weight: 700;
             line-height: 1.05;
             letter-spacing: -0.04em;
@@ -154,14 +152,15 @@
         }
 
         .hero h1 .highlight {
-            color: var(--accent);
             display: block;
+            color: var(--accent);
+            font-style: italic;
         }
 
         .hero p {
             font-size: 1.125rem;
             color: var(--text-muted);
-            max-width: 480px;
+            max-width: 460px;
             margin-bottom: 2rem;
         }
 
@@ -179,7 +178,7 @@
         }
 
         .hero-cta:hover {
-            background: var(--accent-dark);
+            background: var(--accent-hover);
             transform: translateY(-2px);
         }
 
@@ -212,7 +211,7 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 24px;
         }
 
@@ -232,13 +231,13 @@
         .feature-icon {
             width: 48px;
             height: 48px;
-            background: rgba(0, 229, 195, 0.1);
+            background: var(--accent);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
-            color: var(--accent);
+            color: var(--bg);
         }
 
         .feature-icon svg {
@@ -327,9 +326,8 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            color: var(--text);
+            background: var(--accent);
+            color: var(--bg);
             padding: 14px 24px;
             border-radius: 8px;
             font-weight: 500;
@@ -337,14 +335,56 @@
         }
 
         .download-btn:hover {
-            border-color: var(--accent);
-            background: rgba(0, 229, 195, 0.05);
+            background: var(--accent-hover);
+            transform: translateY(-2px);
         }
 
         .download-btn svg {
             width: 20px;
             height: 20px;
-            color: var(--accent);
+        }
+
+        /* ── About Section ───────────────────────────────────────── */
+        .about {
+            padding: 100px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .about h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+        }
+
+        .about p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .about-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .stat h3 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat p {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin: 0;
         }
 
         /* ── Newsletter ─────────────────────────────────────────── */
@@ -415,13 +455,14 @@
         }
 
         .newsletter-form button:hover {
-            background: var(--accent-dark);
+            background: var(--accent-hover);
         }
 
         /* ── Footer ──────────────────────────────────────────────── */
         footer {
             padding: 60px 0 30px;
-            border-top: 1px solid var(--border);
+            background: var(--text);
+            color: var(--bg);
         }
 
         .footer-grid {
@@ -432,7 +473,7 @@
         }
 
         .footer-brand p {
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.6);
             font-size: 0.875rem;
             max-width: 280px;
             margin-top: 16px;
@@ -443,7 +484,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.5);
             margin-bottom: 20px;
         }
 
@@ -457,8 +498,8 @@
 
         .footer-col a {
             font-size: 0.875rem;
-            color: var(--text);
-            transition: color 0.2s;
+            color: var(--bg);
+            transition: opacity 0.2s;
         }
 
         .footer-col a:hover {
@@ -470,9 +511,9 @@
             justify-content: space-between;
             align-items: center;
             padding-top: 30px;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
             font-size: 0.8125rem;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .social-links {
@@ -481,12 +522,12 @@
         }
 
         .social-links a {
-            color: var(--text-muted);
-            transition: color 0.2s;
+            color: var(--bg);
+            transition: opacity 0.2s;
         }
 
         .social-links a:hover {
-            color: var(--accent);
+            opacity: 0.7;
         }
 
         /* ── Responsive ─────────────────────────────────────────── */
@@ -512,6 +553,11 @@
                 gap: 40px;
             }
 
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
             .footer-grid {
                 grid-template-columns: 1fr 1fr;
             }
@@ -526,6 +572,10 @@
 
             .newsletter-form {
                 flex-direction: column;
+            }
+
+            .about-stats {
+                gap: 24px;
             }
         }
 
@@ -545,19 +595,19 @@
 <body>
     <!-- Announcement Bar -->
     <div class="announcement">
-        Now available on Google Play Store
+        Open Source — No Tracking — No Ads
     </div>
 
     <!-- Header -->
     <header>
         <div class="header-inner">
-            <a href="#" class="logo">Cast<span>Flow</span></a>
+            <a href="#" class="logo">CastFlow</a>
             <nav>
                 <ul>
                     <li><a href="#features">Features</a></li>
                     <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="#download">Download</a></li>
-                    <li><a href="#newsletter" class="nav-cta">Get Early Access</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#download" class="nav-cta">Download APK</a></li>
                 </ul>
             </nav>
         </div>
@@ -572,13 +622,13 @@
                     <span class="highlight">Any Screen.</span>
                 </h1>
                 <p>
-                    CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs on the receiver.
+                    CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs needed on the TV or PC.
                 </p>
                 <a href="#download" class="hero-cta">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
-                    Get CastFlow Free
+                    Download APK
                 </a>
             </div>
         </div>
@@ -588,7 +638,7 @@
     <section class="features" id="features">
         <div class="container">
             <div class="section-header fade-up">
-                <h2>Why CastFlow?</h2>
+                <h2>What can CastFlow do?</h2>
                 <p>Powerful features that transform how you use your phone on any display.</p>
             </div>
             <div class="features-grid">
@@ -648,7 +698,7 @@
                         </svg>
                     </div>
                     <h3>Multi-Viewer</h3>
-                    <p>Multiple people can view the same screen simultaneously. Great for collaborative work or sharing with friends and family.</p>
+                    <p>Multiple people can view the same screen simultaneously. Great for collaborative work or sharing with friends.</p>
                 </div>
                 <div class="feature-card fade-up">
                     <div class="feature-icon">
@@ -660,7 +710,7 @@
                         </svg>
                     </div>
                     <h3>PDF Support</h3>
-                    <p>View PDFs with page navigation, zoom, and rotation. Perfect for documents, presentations, or reading on the big screen.</p>
+                    <p>View PDFs with page navigation, zoom, and rotation. Perfect for documents on the big screen.</p>
                 </div>
             </div>
         </div>
@@ -670,19 +720,19 @@
     <section class="how-it-works" id="how-it-works">
         <div class="container">
             <div class="section-header" style="text-align: center;">
-                <h2>How It Works</h2>
+                <h2>How it works</h2>
                 <p style="margin: 0 auto;">Three simple steps to cast your screen anywhere.</p>
             </div>
             <div class="steps">
                 <div class="step fade-up">
                     <div class="step-number">01</div>
                     <h3>Install CastFlow</h3>
-                    <p>Download CastFlow from the Google Play Store on your Android device.</p>
+                    <p>Download the APK and install it on your Android device.</p>
                 </div>
                 <div class="step fade-up">
                     <div class="step-number">02</div>
                     <h3>Start the Server</h3>
-                    <p>Tap to start the web server. CastFlow will show you a URL to open in your browser.</p>
+                    <p>Tap to start the web server. CastFlow shows you a URL to open in your browser.</p>
                 </div>
                 <div class="step fade-up">
                     <div class="step-number">03</div>
@@ -693,31 +743,51 @@
         </div>
     </section>
 
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="fade-up">
+                    <h2>Built for the curious.</h2>
+                    <p>CastFlow was born from a simple idea: your phone is already powerful enough to be your desktop. Why buy extra hardware?</p>
+                    <p>We believe in software that respects your privacy. No accounts, no tracking, no ads. Just pure functionality.</p>
+                    <div class="about-stats">
+                        <div class="stat">
+                            <h3>100%</h3>
+                            <p>Free & Open Source</p>
+                        </div>
+                        <div class="stat">
+                            <h3>0</h3>
+                            <p>Trackers</p>
+                        </div>
+                        <div class="stat">
+                            <h3>∞</h3>
+                            <p>Possibilities</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="fade-up">
+                    <!-- Placeholder for image -->
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; height: 400px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.875rem;">
+                        [ CastFlow Preview Image ]
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Download Section -->
     <section class="download" id="download">
         <div class="container">
             <h2 class="fade-up">Get CastFlow</h2>
-            <p class="fade-up">Free and open source. No subscriptions, no hidden fees.</p>
+            <p class="fade-up">Free and open source. No subscriptions. No hidden fees.</p>
             <div class="download-buttons fade-up">
                 <a href="#" class="download-btn">
                     <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 20.5v-17c0-.59.34-1.11.85-1.41L13.69 12l-9.89 10.44a1.19 1.19 0 0 0-.8 1.41v.15z"/>
+                        <path d="M5 20.5v-17c0-.59.34-1.11.85-1.41L13.69 12l-9.89 10.44a1.19 1.19 0 0 0-.8 1.41v.15z"/>
                         <path d="M14.33 12l-4.33-4.36v3h8v1.36z"/>
                     </svg>
                     Download APK
-                </a>
-                <a href="#" class="download-btn">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 20.5v-17c0-.59.34-1.11.85-1.41L13.69 12l-9.89 10.44a1.19 1.19 0 0 0-.8 1.41v.15z"/>
-                        <path d="M14.33 12l-4.33-4.36v3h8v1.36z"/>
-                    </svg>
-                    Google Play
-                </a>
-                <a href="https://github.com" class="download-btn">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                    View Source
                 </a>
             </div>
         </div>
@@ -727,11 +797,11 @@
     <section class="newsletter" id="newsletter">
         <div class="container">
             <div class="newsletter-inner fade-up">
-                <h2>Join the Experiment</h2>
+                <h2>Join the experiment</h2>
                 <p>Get early access to new features and help shape the future of CastFlow.</p>
                 <form class="newsletter-form" onsubmit="return false;">
                     <input type="email" placeholder="Enter your email" required>
-                    <button type="submit">Count Me In</button>
+                    <button type="submit">Count me in</button>
                 </form>
             </div>
         </div>
@@ -742,16 +812,15 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <a href="#" class="logo">Cast<span>Flow</span></a>
-                    <p>Transform your phone into a powerful casting device. No cables, no limits.</p>
+                    <a href="#" class="logo" style="color: var(--accent);">CastFlow</a>
+                    <p>Transform your phone into a powerful casting device. No cables. No limits.</p>
                 </div>
                 <div class="footer-col">
                     <h4>Product</h4>
                     <ul>
                         <li><a href="#features">Features</a></li>
                         <li><a href="#download">Download</a></li>
-                        <li><a href="#">Changelog</a></li>
-                        <li><a href="#">Roadmap</a></li>
+                        <li><a href="#">Source Code</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -759,7 +828,6 @@
                     <ul>
                         <li><a href="#">Documentation</a></li>
                         <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Contact</a></li>
                         <li><a href="#">Report Bug</a></li>
                     </ul>
                 </div>
@@ -769,12 +837,11 @@
                         <li><a href="#">GitHub</a></li>
                         <li><a href="#">Discord</a></li>
                         <li><a href="#">Twitter</a></li>
-                        <li><a href="#">Reddit</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <span>© 2024 CastFlow. Built with passion.</span>
+                <span>© 2024 CastFlow. Open source.</span>
                 <div class="social-links">
                     <a href="#">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -819,9 +886,9 @@
         window.addEventListener('scroll', () => {
             const header = document.querySelector('header');
             if (window.scrollY > 50) {
-                header.style.background = 'rgba(10, 10, 10, 0.95)';
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
             } else {
-                header.style.background = 'rgba(10, 10, 10, 0.85)';
+                header.style.background = 'rgba(255, 255, 255, 0.92)';
             }
         });
     </script>
