@@ -3405,7 +3405,7 @@ class Game {
                 n.position.x = n.userData.baseCoord || 0;
               } else if (n.userData.moveAxis) {
                 n.position.z = n.userData.baseCoord || 0;
-                n.position.x = n.userData.baseCoord || 0;
+                if (n.userData.txX != null) n.position.x = n.userData.txX;
               }
               n.userData.spd = n.userData.baseSpd;
               n.userData.state = 'CRUISE';
@@ -3468,21 +3468,6 @@ class Game {
                       fsm.redLight = isRed;
                       fsm.yellowLight = isYellow;
                     }
-                  } else {
-                    const dz = sg.position.z - n.position.z;
-                    if (n.userData.dir === 1 && dz > 0 && dz < 15 && Math.abs(n.position.x - sg.position.x) < 5) {
-                      fsm.approachingObstacle = true;
-                      fsm.obstacleDist = Math.min(fsm.obstacleDist, dz);
-                      fsm.redLight = isRed;
-                      fsm.yellowLight = isYellow;
-                    }
-                    if (n.userData.dir === -1 && dz < 0 && dz > -15 && Math.abs(n.position.x - sg.position.x) < 5) {
-                      fsm.approachingObstacle = true;
-                      fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
-                      fsm.redLight = isRed;
-                      fsm.yellowLight = isYellow;
-                    }
-                  }
                 }
               });
 
@@ -3793,6 +3778,17 @@ class Game {
               }
             } else {
               if (n.userData.moveAxis === 'h') {
+                // Lateral repulsion for horizontal NPCs (push apart on z-axis)
+                this.npcs.forEach(other => {
+                  if (other !== n) {
+                    const dLateral = Math.abs(other.position.z - n.position.z);
+                    const dForward = Math.abs(other.position.x - n.position.x);
+                    if (dLateral < 2.2 && dForward < 5) {
+                      const push = (other.position.z - n.position.z) > 0 ? -0.12 : 0.12;
+                      n.position.z += push;
+                    }
+                  }
+                });
                 n.position.x += n.userData.spd * 35 * dt * n.userData.dir; 
                 if (n.position.x > n.userData.maxPos && n.userData.dir === 1) {
                   n.userData._wrapT = 1.2;
@@ -3807,8 +3803,19 @@ class Game {
                   n.userData.state = 'CRUISE';
                 }
               } else {
+                // Lateral repulsion — push NPCs apart if too close on cross-axis
+                this.npcs.forEach(other => {
+                  if (other !== n) {
+                    const dLateral = Math.abs(other.position.x - n.position.x);
+                    const dForward = Math.abs(other.position.z - n.position.z);
+                    if (dLateral < 2.2 && dForward < 5) {
+                      const push = (other.position.x - n.position.x) > 0 ? -0.12 : 0.12;
+                      n.userData.txX += push;
+                    }
+                  }
+                });
                 n.userData.txX = Math.max(-6, Math.min(6, n.userData.txX));
-                n.position.x += (n.userData.txX - n.position.x) * 0.08;
+                n.position.x += (n.userData.txX - n.position.x) * 0.15;
                 let yawT = Math.atan2(n.userData.txX - n.position.x, 8) * 0.5;
                 if (n.userData.dir === -1) yawT += Math.PI;
                 let diff = yawT - n.rotation.y;
