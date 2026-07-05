@@ -2150,6 +2150,44 @@ class Game {
           });
         }
 
+        // ── FESTIVAL CROWD BURST ── Spawn a visible crowd upfront for festival/crowd levels
+        if (cfg.crowdFestival) {
+          const crowdCount = 40 + Math.floor(Math.random() * 20);
+          for (let c = 0; c < crowdCount; c++) {
+            const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+            const isV = seg.type === 'v';
+            const roadLen = isV ? Math.abs(seg.z2 - seg.z1) : Math.abs(seg.x2 - seg.x1);
+            const t = Math.random();
+            const px = isV ? seg.x + (Math.random() - 0.5) * 14 : (isV ? seg.x : seg.x1 + t * roadLen);
+            const pz = isV ? (seg.z1 + t * roadLen) : seg.z + (Math.random() - 0.5) * 14;
+            let ped;
+            if (this._pedFree && this._pedFree.length > 0) {
+              ped = this._pedFree.pop();
+              ped.visible = true;
+            } else {
+              ped = _buildHuman();
+            }
+            ped.position.set(px, 0, pz);
+            ped.userData = {
+              t: Math.random() * 10,
+              spd: 0.1 + Math.random() * 0.3,
+              isV: isV,
+              dir: Math.random() > 0.5 ? 1 : -1,
+              startZ: isV ? pz : px,
+              roadC: isV ? seg.x : seg.z,
+              lLeg: ped.children.find(c => c.name === 'lLeg') || new THREE.Group(),
+              rLeg: ped.children.find(c => c.name === 'rLeg') || new THREE.Group(),
+              state: 'sidewalk',
+              side: Math.random() > 0.5 ? 1 : -1,
+              targetDist: 9 + 1.25,
+              destDist: 10 + Math.random() * 20,
+              distTraveled: 0
+            };
+            this.peds.push(ped);
+            this.scene.add(ped);
+          }
+        }
+
         // ── STATIC PARKED CARS ──
         for (let i = 0; i < allRoads.length * 3; i++) {
           const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
@@ -3721,8 +3759,10 @@ class Game {
         }
 
         // Spawn new pedestrians dynamically
-        const maxPeds = (this.mapCfg && this.mapCfg.isPedestrian) ? 30 : 16;
-        if (this.peds.length < maxPeds && Math.random() < 0.2 && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
+        const isFestCrowd = this.mapCfg && (this.mapCfg.crowdFestival || this.mapCfg.themeType === 'festival');
+        const maxPeds = isFestCrowd ? 80 : ((this.mapCfg && this.mapCfg.isPedestrian) ? 30 : 16);
+        const pedSpawnRate = isFestCrowd ? 0.6 : 0.2;
+        if (this.peds.length < maxPeds && Math.random() < pedSpawnRate && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
           const r = this.mapCfg.roads[Math.floor(Math.random() * this.mapCfg.roads.length)];
           const isV = r.type === 'v';
           const rx = isV ? r.x : Math.min(r.x1, r.x2) + Math.random() * Math.abs(r.x2 - r.x1);

@@ -20,6 +20,8 @@ window.LVS.push({
   pract: 'Yield to the procession. Find an alternate route. Avoid distracted pedestrians. Complete safely.',
   mode: 'practical',
   themeType: 'festival',
+  npcDensity: 'heavy',
+  crowdFestival: true,
   startOutside: true,
   tasks: [
     { id: 'yield', text: 'Yield to procession', type: 'stop', target: 'procession', done: false },

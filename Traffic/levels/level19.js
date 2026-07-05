@@ -24,6 +24,8 @@ window.LVS.push({
   pract: "Follow the traffic volunteer's signals. Crawl through the crowd. Do not honk.",
   mode: 'practical',
   themeType: 'pedestrian_courtesy',
+  npcDensity: 'heavy',
+  crowdFestival: true,
   startOutside: true,
   tasks: [
     { id: 'follow_volunteer', text: 'Follow traffic volunteer signals', type: 'reach', target: 'volunteer_signal', done: false },
