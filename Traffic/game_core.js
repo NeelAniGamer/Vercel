@@ -2150,22 +2150,41 @@ class Game {
           });
         }
 
-        // ── FESTIVAL CROWD BURST ── Spawn a visible crowd upfront for festival/crowd levels
+        // ── FESTIVAL CROWD BURST ── Spawn a visible crowd NEAR the player
         if (cfg.crowdFestival) {
           const crowdCount = 80 + Math.floor(Math.random() * 40);
+          const pPos = this.player ? this.player.position : new THREE.Vector3(0, 0, 0);
+          // Find road segments closest to the player (within 150 units)
+          const nearbyRoads = allRoads.filter(seg => {
+            const cx = seg.type === 'v' ? seg.x : (seg.x1 + seg.x2) / 2;
+            const cz = seg.type === 'v' ? (seg.z1 + seg.z2) / 2 : seg.z;
+            return Math.abs(cx - pPos.x) < 200 && Math.abs(cz - pPos.z) < 200;
+          });
+          const pool = nearbyRoads.length > 0 ? nearbyRoads : allRoads;
           for (let c = 0; c < crowdCount; c++) {
-            const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+            const seg = pool[Math.floor(Math.random() * pool.length)];
             const isV = seg.type === 'v';
             const roadLen = isV ? Math.abs(seg.z2 - seg.z1) : Math.abs(seg.x2 - seg.x1);
-            const t = Math.random();
-            // Spawn on sidewalks, NOT on the road — offset perpendicular to road direction
+            // Clamp t to keep peds near the player's Z/X position
+            let t = Math.random();
+            if (isV) {
+              const tPlayer = (pPos.z - seg.z1) / roadLen;
+              t = tPlayer + (Math.random() - 0.5) * 0.6;
+              t = Math.max(0, Math.min(1, t));
+            } else {
+              const tPlayer = (pPos.x - seg.x1) / roadLen;
+              t = tPlayer + (Math.random() - 0.5) * 0.6;
+              t = Math.max(0, Math.min(1, t));
+            }
+            // Spawn on sidewalks
             const side = Math.random() > 0.5 ? 1 : -1;
-            const lDist = 9 + 1.25; // sidewalk offset from road center
-            const bDist = lDist + 6.0; // building zone offset
-            const exiting = Math.random() > 0.5;
-            const spawnDist = exiting ? bDist : lDist;
+            const lDist = 9 + 1.25;
+            const exiting = Math.random() > 0.4;
+            const spawnDist = exiting ? lDist + 6.0 : lDist;
             const px = isV ? seg.x + side * spawnDist : (seg.x1 + t * roadLen);
             const pz = isV ? (seg.z1 + t * roadLen) : seg.z + side * spawnDist;
+            // Skip if too far from player (>200 units) — would be immediately despawned
+            if (Math.abs(px - pPos.x) > 200 || Math.abs(pz - pPos.z) > 200) continue;
             let ped;
             if (this._pedFree && this._pedFree.length > 0) {
               ped = this._pedFree.pop();
@@ -2186,7 +2205,7 @@ class Game {
               state: exiting ? 'exiting' : 'sidewalk',
               side: side,
               targetDist: lDist,
-              destDist: 15 + Math.random() * 25,
+              destDist: 10 + Math.random() * 20,
               distTraveled: 0
             };
             if (exiting) {
@@ -2204,6 +2223,13 @@ class Game {
         if (cfg.crowdFestival && !cfg.isPedestrian) {
           const surgeCount = 20 + Math.floor(Math.random() * 10);
           const surgeTypes = ['car', 'taxi', 'auto', 'bike', 'bus', 'truck'];
+          const pPos = this.player ? this.player.position : new THREE.Vector3(0, 0, 0);
+          const nearbyRoads = allRoads.filter(seg => {
+            const cx = seg.type === 'v' ? seg.x : (seg.x1 + seg.x2) / 2;
+            const cz = seg.type === 'v' ? (seg.z1 + seg.z2) / 2 : seg.z;
+            return Math.abs(cx - pPos.x) < 200 && Math.abs(cz - pPos.z) < 200;
+          });
+          const pool = nearbyRoads.length > 0 ? nearbyRoads : allRoads;
           for (let s = 0; s < surgeCount; s++) {
             let nv;
             if (this._npcFree.length > 0) {
@@ -2215,14 +2241,24 @@ class Game {
             const sType = surgeTypes[Math.floor(Math.random() * surgeTypes.length)];
             const tpl = _getNpcTemplate(sType, designColors[Math.floor(Math.random() * designColors.length)]);
             tpl.children.forEach(c => nv.add(c.clone()));
-            const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+            const seg = pool[Math.floor(Math.random() * pool.length)];
             const isOpp = s < Math.floor(surgeCount * 0.35);
             const laneOffset = isOpp ? -2.5 : 2.5;
             if (seg.type === 'v') {
-              nv.position.set(seg.x + laneOffset, 0, seg.z1 + Math.random() * Math.abs(seg.z2 - seg.z1));
+              const roadLen = Math.abs(seg.z2 - seg.z1);
+              let t = Math.random();
+              const tPlayer = (pPos.z - seg.z1) / roadLen;
+              t = tPlayer + (Math.random() - 0.5) * 0.6;
+              t = Math.max(0, Math.min(1, t));
+              nv.position.set(seg.x + laneOffset, 0, seg.z1 + t * roadLen);
               if (isOpp) nv.rotation.y = Math.PI;
             } else {
-              nv.position.set(seg.x1 + Math.random() * Math.abs(seg.x2 - seg.x1), 0, seg.z + laneOffset);
+              const roadLen = Math.abs(seg.x2 - seg.x1);
+              let t = Math.random();
+              const tPlayer = (pPos.x - seg.x1) / roadLen;
+              t = tPlayer + (Math.random() - 0.5) * 0.6;
+              t = Math.max(0, Math.min(1, t));
+              nv.position.set(seg.x1 + t * roadLen, 0, seg.z + laneOffset);
               nv.rotation.y = isOpp ? -Math.PI / 2 : Math.PI / 2;
             }
             const spdMult = sType === 'truck' ? 0.6 : sType === 'bus' ? 0.7 : sType === 'cycle' ? 0.4 : sType === 'bike' ? 0.9 : sType === 'auto' ? 0.75 : 0.8;
@@ -3562,7 +3598,7 @@ class Game {
                   }
                 }
 
-                // Apply State Behavior
+                // Apply State Behavior — realistic braking & acceleration curves
                 switch(n.userData.state) {
                   case 'CRUISE':
                     n.userData.spd += (n.userData.baseSpd - n.userData.spd) * 0.12;
@@ -3583,6 +3619,38 @@ class Game {
                   case 'YIELD_AMBULANCE':
                     n.userData.spd += (n.userData.baseSpd * 0.5 - n.userData.spd) * 0.05;
                     break;
+                }
+
+                // ── BRAKE LIGHTS: brighten when decelerating ──
+                if (n.children) {
+                  const isBraking = n.userData.state === 'STOPPED' || n.userData.state === 'SLOW_DOWN' || n.userData.state === 'FOLLOW';
+                  n.children.forEach(ch => {
+                    if (ch.material && ch.material.color && ch.material.color.getHex() === 0xff2200) {
+                      ch.material.emissive = ch.material.emissive || new THREE.Color(0);
+                      ch.material.emissiveIntensity = isBraking ? 2.0 : 0.2;
+                    }
+                  });
+                }
+
+                // ── HORN HONK: random horn when stuck >3s ──
+                if (n.userData.state === 'STOPPED') {
+                  n.userData._stoppedTime = (n.userData._stoppedTime || 0) + dt;
+                  if (n.userData._stoppedTime > 3 && Math.random() < 0.02 && window.sfx) {
+                    window.sfx.play('horn');
+                    n.userData._stoppedTime = 0;
+                  }
+                } else {
+                  n.userData._stoppedTime = 0;
+                }
+
+                // ── SPEED BREAKER: NPCs slow down over speed breakers ──
+                if (this.speedBreakers) {
+                  this.speedBreakers.forEach(sb => {
+                    const sbDist = n.position.distanceTo(sb.position);
+                    if (sbDist < 5 && n.userData.state !== 'STOPPED') {
+                      n.userData.spd *= 0.6;
+                    }
+                  });
                 }
             } else if (distToPlayer < 200 && n.userData.useRoute) {
               // Route-following NPC obstacle detection (axis-aware via segment direction)
@@ -3897,7 +3965,43 @@ class Game {
 
         this.peds.forEach(p => {
           p.userData.t += dt * p.userData.spd;
-          
+
+          // ── IDLE STATES: pedestrians pause, look around, check phones ──
+          if (!p.userData._idleState) {
+            p.userData._idleTimer = Math.random() * 8;
+            p.userData._idleState = false;
+            p.userData._idleDur = 0;
+          }
+          if (p.userData.state !== 'exiting' && !p.userData._idleState) {
+            p.userData._idleTimer -= dt;
+            if (p.userData._idleTimer <= 0) {
+              // Randomly enter idle: check phone, look around, wait
+              const idleType = Math.random();
+              if (idleType < 0.35) {
+                p.userData._idleState = true;
+                p.userData._idleDur = 2 + Math.random() * 5;
+                p.userData._idleType = 'phone'; // looking at phone
+              } else if (idleType < 0.55) {
+                p.userData._idleState = true;
+                p.userData._idleDur = 3 + Math.random() * 6;
+                p.userData._idleType = 'wait'; // waiting / resting
+              } else {
+                p.userData._idleTimer = 6 + Math.random() * 12;
+              }
+            }
+          }
+          if (p.userData._idleState) {
+            p.userData._idleDur -= dt;
+            // Slight head tilt for phone lookers
+            if (p.userData._idleType === 'phone') {
+              p.rotation.y += Math.sin(p.userData.t * 2) * 0.002;
+            }
+            if (p.userData._idleDur <= 0) {
+              p.userData._idleState = false;
+              p.userData._idleTimer = 4 + Math.random() * 10;
+            }
+          }
+
           if (p.userData.state === 'exiting') {
             if (p.userData.isV) {
               p.position.x += -p.userData.side * dt * p.userData.spd;
@@ -3906,7 +4010,7 @@ class Game {
                 p.userData.state = 'sidewalk';
                 p.rotation.y = p.userData.dir > 0 ? 0 : Math.PI;
                 p.userData.startZ = p.position.z;
-                p.userData.destDist = 15 + Math.random() * 25;
+                p.userData.destDist = 10 + Math.random() * 20;
                 p.userData.distTraveled = 0;
               }
             } else {
@@ -3916,11 +4020,11 @@ class Game {
                 p.userData.state = 'sidewalk';
                 p.rotation.y = p.userData.dir > 0 ? Math.PI/2 : -Math.PI/2;
                 p.userData.startZ = p.position.x;
-                p.userData.destDist = 15 + Math.random() * 25;
+                p.userData.destDist = 10 + Math.random() * 20;
                 p.userData.distTraveled = 0;
               }
             }
-          } else {
+          } else if (!p.userData._idleState) {
             const moveAmt = p.userData.spd * 4 * dt;
             if (p.userData.isV) {
               p.position.z += p.userData.dir * moveAmt;
@@ -3938,7 +4042,19 @@ class Game {
                 p.rotation.y = p.userData.dir > 0 ? Math.PI/2 : -Math.PI/2;
               }
               p.userData.distTraveled = 0;
-              p.userData.destDist = 15 + Math.random() * 25;
+              p.userData.destDist = 10 + Math.random() * 25;
+            }
+          }
+
+          // ── VEHICLE FLEE: pedestrians jump/step back when vehicle approaches fast ──
+          if (this.player && this.speed && Math.abs(this.speed) > 0.3 && !this.isPedestrian) {
+            const dpv = this.player.position.distanceTo(p.position);
+            if (dpv < 8 && dpv > 2.5) {
+              const fleeDir = new THREE.Vector3().subVectors(p.position, this.player.position).normalize();
+              p.position.x += fleeDir.x * dt * 2.5;
+              p.position.z += fleeDir.z * dt * 2.5;
+              // Face away from vehicle
+              p.rotation.y = Math.atan2(-fleeDir.x, -fleeDir.z);
             }
           }
 
@@ -3958,8 +4074,10 @@ class Game {
             }
           });
 
-          if (p.userData.lLeg) p.userData.lLeg.rotation.x = Math.sin(p.userData.t * 10) * 0.6;
-          if (p.userData.rLeg) p.userData.rLeg.rotation.x = Math.sin(p.userData.t * 10 + Math.PI) * 0.6;
+          // Leg animation: slower when idle, full stride when walking
+          const walkSpeed = p.userData._idleState ? 0.08 : 10;
+          if (p.userData.lLeg) p.userData.lLeg.rotation.x = Math.sin(p.userData.t * walkSpeed) * (p.userData._idleState ? 0.05 : 0.6);
+          if (p.userData.rLeg) p.userData.rLeg.rotation.x = Math.sin(p.userData.t * walkSpeed + Math.PI) * (p.userData._idleState ? 0.05 : 0.6);
 
           if (!this.isPedestrian && this.player.position.distanceTo(p.position) < 2.5) {
             this.speed = 0; this.hp = 0;
