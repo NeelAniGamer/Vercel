@@ -495,12 +495,10 @@ class Game {
         // PERFORMANCE: Reduce shadow quality on mobile or low-end GPU
         if (isMobile || isLowGPU) {
           this.renderer.shadowMap.type = THREE.BasicShadowMap;
-          this.renderer.shadowMap.mapSize.width = 512; // Reduced from 1024
-          this.renderer.shadowMap.mapSize.height = 512;
+          if (this.renderer.shadowMap.mapSize) this.renderer.shadowMap.mapSize.set(512, 512);
         } else {
           this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-          this.renderer.shadowMap.mapSize.width = 1024;
-          this.renderer.shadowMap.mapSize.height = 1024;
+          if (this.renderer.shadowMap.mapSize) this.renderer.shadowMap.mapSize.set(1024, 1024);
         }
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
 
