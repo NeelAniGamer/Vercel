@@ -685,6 +685,8 @@ class Game {
             if (!isDragging) return;
             if (e.cancelable) e.preventDefault();
             let angle = getAngle(e) - startAngle;
+            while (angle > 180) angle -= 360;
+            while (angle < -180) angle += 360;
             if (angle > 90) angle = 90;
             if (angle < -90) angle = -90;
             currentRot = angle;
@@ -699,44 +701,6 @@ class Game {
             currentRot = 0;
             sw.style.transform = `rotate(0deg)`;
             window.analogSteering = 0;
-            const wheel = document.getElementById('steer-wheel');
-            const knob = document.getElementById('steer-knob');
-            if (wheel && knob) {
-              let isSteering = false;
-              const cw = 140 / 2;
-
-              const updateSteer = (cx, cy) => {
-                const rect = wheel.getBoundingClientRect();
-                const wx = rect.left + cw;
-                const wy = rect.top + cw;
-                let dx = cx - wx;
-                let dy = cy - wy;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist > cw - 25) {
-                  dx = (dx / dist) * (cw - 25);
-                  dy = (dy / dist) * (cw - 25);
-                }
-                knob.style.transform = `translate(${dx}px, ${dy}px)`;
-                window.analogSteering = dx / (cw - 25);
-              };
-
-              wheel.addEventListener('touchstart', (e) => {
-                isSteering = true;
-                updateSteer(e.touches[0].clientX, e.touches[0].clientY);
-              });
-              wheel.addEventListener('touchmove', (e) => {
-                if (!isSteering) return;
-                e.preventDefault();
-                updateSteer(e.touches[0].clientX, e.touches[0].clientY);
-              }, { passive: false });
-              const resetSteer = () => {
-                isSteering = false;
-                knob.style.transform = `translate(0px, 0px)`;
-                window.analogSteering = 0;
-              };
-              wheel.addEventListener('touchend', resetSteer);
-              wheel.addEventListener('touchcancel', resetSteer);
-            }
           };
           swC.addEventListener('touchend', up);
           swC.addEventListener('touchcancel', up);
@@ -4497,7 +4461,7 @@ class Game {
               n.userData._lastPos = n.position.clone();
             }
 
-            // Stuck detection — if NPC barely moves for 3s, teleport to safe position
+            // Stuck detection — wait and honk instead of teleporting
             if (!n.userData._lastPos) n.userData._lastPos = n.position.clone();
             const movedDist = n.position.distanceTo(n.userData._lastPos);
             if (movedDist < 0.1 && n.userData.state !== 'STOPPED') {
@@ -4506,22 +4470,13 @@ class Game {
               n.userData._stuckTimer = 0;
             }
             n.userData._lastPos.copy(n.position);
-            if (n.userData._stuckTimer > 3) {
-              if (n.userData.isLevelDefined && n.userData.route && n.userData.route.length) {
-                // Route-following NPC: teleport back to first route point
-                const rp = n.userData.route[0];
-                n.position.set(rp.x, 0, rp.z);
-                n.userData.routeIdx = 0;
-              } else if (n.userData.moveAxis === 'h') {
-                n.position.x = n.userData.baseCoord || 0;
-                if (n.userData.txZ != null) n.position.z = n.userData.txZ;
-              } else if (n.userData.moveAxis) {
-                n.position.z = n.userData.baseCoord || 0;
-                if (n.userData.txX != null) n.position.x = n.userData.txX;
+            if (n.userData._stuckTimer > 5) {
+              // Instead of teleporting magically, just honk horn and wait
+              if (Math.random() < 0.05 && window.sfx && window.sfx.play) {
+                window.sfx.play('horn');
               }
-              n.userData.spd = n.userData.baseSpd;
-              n.userData.state = 'CRUISE';
-              n.userData._stuckTimer = 0;
+              // Reset timer to avoid spamming
+              if (n.userData._stuckTimer > 7) n.userData._stuckTimer = 0;
             }
 
             // Smooth route wrapping — lerp back to start over 1.2s instead of teleporting
@@ -4959,14 +4914,23 @@ class Game {
               const tX = isVertical ? pNext.x + lOff : pNext.x;
               const tZ = isVertical ? pNext.z : pNext.z + lOff;
               this._v1.set(tX - n.position.x, 0, tZ - n.position.z).normalize();
-              n.position.addScaledVector(this._v1, n.userData.spd * 35 * dt);
+              
+              // Smooth rotation - turn faster if moving faster
               let targetYaw = Math.atan2(this._v1.x, this._v1.z);
               let diff = targetYaw - n.rotation.y;
               while (diff < -Math.PI) diff += Math.PI * 2;
               while (diff > Math.PI) diff -= Math.PI * 2;
-              n.rotation.y += diff * 0.2;
+              const turnSpeed = Math.max(0.1, n.userData.spd * 0.5);
+              n.rotation.y += diff * turnSpeed;
+              
+              // Move forward in the direction the car is ACTUALLY facing to prevent crab-walking
+              const moveDist = n.userData.spd * 35 * dt;
+              n.position.x += Math.sin(n.rotation.y) * moveDist;
+              n.position.z += Math.cos(n.rotation.y) * moveDist;
+              
               this._v2.set(tX, 0, tZ);
-              if (n.position.distanceTo(this._v2) < 2) {
+              // Larger hit radius to prevent orbiting the waypoint endlessly
+              if (n.position.distanceTo(this._v2) < 6.5) {
                 n.userData.routeIdx = (idx + 1) % rt.length;
               }
             } else {
