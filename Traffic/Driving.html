@@ -3405,6 +3405,39 @@
       Rotate for best view
     </div>
 
+    <!-- Virtual Joystick for Mobile -->
+    <div
+      id="virtual-joystick"
+      style="
+        position: fixed;
+        bottom: 100px;
+        left: 30px;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        border: 3px solid rgba(255, 255, 255, 0.35);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        touch-action: none;
+        z-index: 10000;
+        backdrop-filter: blur(4px);
+      "
+    >
+      <div
+        id="joystick-knob"
+        style="
+          width: 55px;
+          height: 55px;
+          border-radius: 50%;
+          background: linear-gradient(145deg, #ffd54a, #ffb300);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+          transition: transform 0.05s ease-out;
+        "
+      ></div>
+    </div>
+
     <div
       id="mobile-controls"
       style="

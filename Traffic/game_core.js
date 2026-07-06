@@ -450,7 +450,7 @@ class Game {
         this.dom = {}; // Cached DOM elements
         // Phase 7: Object pools (initialized in _buildScene)
         this.npcPool = null; this.pedPool = null; this._brakeDustCd = false;
-        this._initR(); this._initIn(); this._initG(); this._loop();
+        this._initR(); this._initIn(); this._initG(); this._initVirtualJoystick(); this._loop();
         window.addEventListener('resize', () => this._rsz());
         document.addEventListener('fullscreenchange', () => this._rsz());
       }
@@ -800,11 +800,90 @@ class Game {
       }
       _initG() { document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); }); }
 
+      // ── VIRTUAL JOYSTICK FOR MOBILE ──
+      _initVirtualJoystick() {
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+
+        const joystick = document.getElementById('virtual-joystick');
+        const knob = document.getElementById('joystick-knob');
+        if (!joystick || !knob) return;
+
+        // Show joystick on mobile
+        joystick.style.display = 'flex';
+
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        const maxDist = 40; // Max distance knob can move from center
+        const joystickRadius = 65; // Half of joystick width
+
+        const handleJoystickMove = (clientX, clientY) => {
+          const rect = joystick.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+
+          let dx = clientX - centerX;
+          let dy = clientY - centerY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          // Clamp to max distance
+          if (dist > maxDist) {
+            dx = (dx / dist) * maxDist;
+            dy = (dy / dist) * maxDist;
+          }
+
+          // Move knob
+          knob.style.transform = `translate(${dx}px, ${dy}px)`;
+
+          // Set steering based on horizontal movement
+          window.analogSteering = dx / maxDist;
+        };
+
+        const resetJoystick = () => {
+          isDragging = false;
+          knob.style.transform = 'translate(0px, 0px)';
+          window.analogSteering = 0;
+        };
+
+        // Touch events for joystick
+        joystick.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          isDragging = true;
+          handleJoystickMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        joystick.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          e.preventDefault();
+          handleJoystickMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        joystick.addEventListener('touchend', resetJoystick);
+        joystick.addEventListener('touchcancel', resetJoystick);
+
+        // Also support mouse for testing
+        joystick.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          handleJoystickMove(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          handleJoystickMove(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('mouseup', resetJoystick);
+
+        // Hide default steering wheel when joystick is active
+        const steerWheel = document.getElementById('steer-wheel-container');
+        if (steerWheel) steerWheel.style.display = 'none';
+      }
+
       _initMobileCameraLook() {
         if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
         const isControl = (el) => {
           if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile'];
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob'];
           for (const id of ctrlIds) {
             const c = document.getElementById(id);
             if (c && (el === c || c.contains(el))) return true;
@@ -877,7 +956,7 @@ class Game {
 
         const isControl = (el) => {
           if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile'];
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob'];
           for (const id of ctrlIds) {
             const c = document.getElementById(id);
             if (c && (el === c || c.contains(el))) return true;
@@ -3913,39 +3992,76 @@ class Game {
                 obstacleDist: 999,
                 obstacleSpeed: 0,
                 redLight: false,
-                yellowLight: false
+                yellowLight: false,
+                nearPedestrian: false  // Track if pedestrian is nearby for extra caution
               };
 
                 // 1. Check Traffic Lights (Red + Yellow) — tightened to 15m
+                // Works for both horizontal AND vertical NPCs
                 this.sigs.forEach(sg => {
                   const isRed = sg.userData.st === 'red';
                   const isYellow = sg.userData.st === 'yellow';
                   if (isRed || isYellow) {
                     if (n.userData.moveAxis === 'h') {
+                      // Horizontal NPC checking traffic light
                       const dx = sg.position.x - n.position.x;
                       if (n.userData.dir === 1 && dx > 0 && dx < 15 && Math.abs(n.position.z - sg.position.z) < 5) {
                         fsm.approachingObstacle = true;
-                      fsm.obstacleDist = Math.min(fsm.obstacleDist, dx);
-                      fsm.redLight = isRed;
-                      fsm.yellowLight = isYellow;
+                        fsm.obstacleDist = Math.min(fsm.obstacleDist, dx);
+                        fsm.redLight = isRed;
+                        fsm.yellowLight = isYellow;
+                      }
+                      if (n.userData.dir === -1 && dx < 0 && dx > -15 && Math.abs(n.position.z - sg.position.z) < 5) {
+                        fsm.approachingObstacle = true;
+                        fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dx));
+                        fsm.redLight = isRed;
+                        fsm.yellowLight = isYellow;
+                      }
+                    } else {
+                      // Vertical NPC checking traffic light (NEW)
+                      const dz = sg.position.z - n.position.z;
+                      if (n.userData.dir === 1 && dz > 0 && dz < 15 && Math.abs(n.position.x - sg.position.x) < 5) {
+                        fsm.approachingObstacle = true;
+                        fsm.obstacleDist = Math.min(fsm.obstacleDist, dz);
+                        fsm.redLight = isRed;
+                        fsm.yellowLight = isYellow;
+                      }
+                      if (n.userData.dir === -1 && dz < 0 && dz > -15 && Math.abs(n.position.x - sg.position.x) < 5) {
+                        fsm.approachingObstacle = true;
+                        fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
+                        fsm.redLight = isRed;
+                        fsm.yellowLight = isYellow;
+                      }
                     }
-                    if (n.userData.dir === -1 && dx < 0 && dx > -15 && Math.abs(n.position.z - sg.position.z) < 5) {
-                      fsm.approachingObstacle = true;
-                      fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dx));
-                      fsm.redLight = isRed;
-                      fsm.yellowLight = isYellow;
-                    }
-                }
-              });
+                  }
+                });
 
-              // 1.5 Yield to pedestrians on Zebra Crossings
+              // 1.5 Yield to pedestrians on Zebra Crossings AND police volunteers
+              // Enhanced: NPCs now detect pedestrians from further away and slow down more
               if (this.peds) {
                 this.peds.forEach(ped => {
-                  const dz = ped.position.z - n.position.z;
-                  const dx = Math.abs(ped.position.x - n.position.x);
-                  if (dz * n.userData.dir > 0 && Math.abs(dz) < 25 && dx < 4) {
+                  const dx = ped.position.x - n.position.x;
+                  const dz = Math.abs(ped.position.z - n.position.z);
+                  // For horizontal NPCs (move along X): check dx for ahead, dz for lateral
+                  // For vertical NPCs (move along Z): check dz for ahead, dx for lateral
+                  let isAhead, longDist, latDist;
+                  if (n.userData.moveAxis === 'h') {
+                    isAhead = dx * n.userData.dir > 0;
+                    longDist = Math.abs(dx);
+                    latDist = dz;
+                  } else {
+                    isAhead = (ped.position.z - n.position.z) * n.userData.dir > 0;
+                    longDist = Math.abs(ped.position.z - n.position.z);
+                    latDist = Math.abs(dx);
+                  }
+                  // Police volunteers have larger stop zone (40m) since they direct traffic
+                  const maxDist = ped.userData?.isPoliceVolunteer ? 40 : 30;
+                  const maxLat = ped.userData?.isPoliceVolunteer ? 8 : 5;
+                  if (isAhead && longDist < maxDist && latDist < maxLat) {
                     fsm.approachingObstacle = true;
-                    fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
+                    fsm.nearPedestrian = true;  // Mark pedestrian nearby
+                    // For pedestrians, be more aggressive about stopping (yield zone is larger)
+                    fsm.obstacleDist = Math.min(fsm.obstacleDist, longDist);
                   }
                 });
               }
@@ -3964,12 +4080,15 @@ class Game {
                     }
                   }
                 });
-                // Check player for horizontal NPCs
-                if (this.player && this.player.position && !this.isPedestrian) {
+                // Check player for horizontal NPCs (works for both vehicle and pedestrian mode)
+                if (this.player && this.player.position) {
                   const dx = this.player.position.x - n.position.x;
                   const dz = Math.abs(this.player.position.z - n.position.z);
-                  if (dx * n.userData.dir > 0 && Math.abs(dx) < 30 && dz < 2.5) {
+                  // If player is pedestrian, be more lenient with lateral distance (they can be on sidewalks)
+                  const lateralTol = this.isPedestrian ? 6 : 2.5;
+                  if (dx * n.userData.dir > 0 && Math.abs(dx) < 30 && dz < lateralTol) {
                     fsm.approachingObstacle = true;
+                    if (this.isPedestrian) fsm.nearPedestrian = true;  // Mark player-pedestrian
                     fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dx));
                   }
                 }
@@ -3986,12 +4105,16 @@ class Game {
                   }
                 });
 
-                // 3. Check Player (vertical)
-                if (this.player && this.player.position && !this.isPedestrian) {
+                // Pedestrian detection for vertical NPCs is now handled in the general section above
+                // 3. Check Player (vertical) — works for both vehicle and pedestrian mode
+                if (this.player && this.player.position) {
                   const dz = this.player.position.z - n.position.z;
                   const dx = Math.abs(this.player.position.x - n.position.x);
-                  if (dz * n.userData.dir > 0 && Math.abs(dz) < 30 && dx < 2.5) {
+                  // If player is pedestrian, be more lenient with lateral distance
+                  const lateralTol = this.isPedestrian ? 6 : 2.5;
+                  if (dz * n.userData.dir > 0 && Math.abs(dz) < 30 && dx < lateralTol) {
                     fsm.approachingObstacle = true;
+                    if (this.isPedestrian) fsm.nearPedestrian = true;  // Mark player-pedestrian
                     fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.abs(dz));
                     const pDir = Math.cos(this.player.rotation.y) < 0 ? 1 : -1;
                     fsm.obstacleSpeed = (pDir === n.userData.dir) ? (this.speed || 0) : 0;
@@ -4016,12 +4139,15 @@ class Game {
                 }
 
                 // State Transitions
+                // Enhanced: stop sooner when pedestrian is nearby (safety first)
+                const stopDist = fsm.nearPedestrian ? 15.0 : 11.0;  // Stop 15m away for pedestrians, 11m for vehicles
+                const followDist = fsm.nearPedestrian ? 35.0 : 30.0; // Start following from further for pedestrians
                 if (!yieldingToAmbulance) {
-                  if (fsm.approachingObstacle && fsm.obstacleDist < 11.0) {
+                  if (fsm.approachingObstacle && fsm.obstacleDist < stopDist) {
                     n.userData.state = 'STOPPED';
-                  } else if (fsm.approachingObstacle && fsm.obstacleDist < 30 && fsm.yellowLight) {
+                  } else if (fsm.approachingObstacle && fsm.obstacleDist < followDist && fsm.yellowLight) {
                     n.userData.state = 'SLOW_DOWN';
-                  } else if (fsm.approachingObstacle && fsm.obstacleDist < 30 && !fsm.redLight) {
+                  } else if (fsm.approachingObstacle && fsm.obstacleDist < followDist && !fsm.redLight) {
                     n.userData.state = 'FOLLOW';
                     // Overtake Logic
                     if (n.userData.laneT <= 0) {
@@ -4033,8 +4159,11 @@ class Game {
                         this.npcs.forEach(other => {
                           if (other !== n && Math.abs(other.position.x - l) < 2.5 && Math.abs(other.position.z - n.position.z) < 22 && (other.position.z - n.position.z)*n.userData.dir > -10) blocked = true;
                         });
-                        if (this.player && this.player.position && !this.isPedestrian) {
-                          if (Math.abs(this.player.position.x - l) < 2.5 && Math.abs(this.player.position.z - n.position.z) < 25 && (this.player.position.z - n.position.z)*n.userData.dir > -10) blocked = true;
+                        // Check player blocking for lane changes - works in both vehicle and pedestrian mode
+                        if (this.player && this.player.position) {
+                          // Pedestrians are on sidewalks, less likely to block road lanes
+                          const lateralTol = this.isPedestrian ? 3 : 2.5;
+                          if (Math.abs(this.player.position.x - l) < lateralTol && Math.abs(this.player.position.z - n.position.z) < 25 && (this.player.position.z - n.position.z)*n.userData.dir > -10) blocked = true;
                         }
                         return !blocked;
                       });
@@ -4081,6 +4210,13 @@ class Game {
                 // Store previous state for green light boost detection
                 n.userData._prevState = n.userData.state;
 
+                // ── RAIN SPEED REDUCTION: NPCs slow down in wet conditions ──
+                const isRain = this.mapCfg && (this.mapCfg.hasRain || this.mapCfg.themeType === 'rain_driving' || this.mapCfg.themeType === 'puddle_etiquette' || this.mapCfg.themeType === 'night_monsoon' || this.mapCfg.themeType === 'zero_visibility');
+                if (isRain && n.userData.state === 'CRUISE') {
+                  // NPCs reduce speed by 20% in rain (matching player)
+                  n.userData.spd = Math.min(n.userData.spd, n.userData.baseSpd * 0.8);
+                }
+
                 // ── BRAKE LIGHTS: brighten when decelerating ──
                 if (n.children) {
                   const isBraking = n.userData.state === 'STOPPED' || n.userData.state === 'SLOW_DOWN' || n.userData.state === 'FOLLOW';
@@ -4093,7 +4229,8 @@ class Game {
                 }
 
                 // ── HORN HONK: random horn when stuck >3s OR when player blocks ──
-                const isBlockedByPlayer = this.player && this.player.position && !this.isPedestrian &&
+                // Works for both vehicle and pedestrian mode - NPCs honk at pedestrians in their path too
+                const isBlockedByPlayer = this.player && this.player.position &&
                   ((n.userData.moveAxis === 'h' && Math.abs(this.player.position.x - n.position.x) < 8 &&
                     Math.abs(this.player.position.z - n.position.z) < 15 && (this.player.position.x - n.position.x) * n.userData.dir > 0) ||
                    (n.userData.moveAxis !== 'h' && Math.abs(this.player.position.z - n.position.z) < 8 &&
@@ -4176,17 +4313,19 @@ class Game {
                 }
               });
 
-              // Player vehicle
-              if (this.player && this.player.position && !this.isPedestrian) {
+              // Player (vehicle or pedestrian) - NPCs should detect both
+              if (this.player && this.player.position) {
                 const pdx = this.player.position.x - n.position.x;
                 const pdz = this.player.position.z - n.position.z;
+                // More lenient lateral distance for pedestrians (on sidewalks)
+                const lateralTol = this.isPedestrian ? 6 : 3;
                 if (isSegV) {
-                  if (pdz * segDirZ > 0 && Math.abs(pdz) < 30 && Math.abs(pdx) < 3) {
+                  if (pdz * segDirZ > 0 && Math.abs(pdz) < 30 && Math.abs(pdx) < lateralTol) {
                     rfsm.approachingObstacle = true;
                     rfsm.obstacleDist = Math.min(rfsm.obstacleDist, Math.abs(pdz));
                   }
                 } else {
-                  if (pdx * segDirX > 0 && Math.abs(pdx) < 30 && Math.abs(pdz) < 3) {
+                  if (pdx * segDirX > 0 && Math.abs(pdx) < 30 && Math.abs(pdz) < lateralTol) {
                     rfsm.approachingObstacle = true;
                     rfsm.obstacleDist = Math.min(rfsm.obstacleDist, Math.abs(pdx));
                   }
@@ -4349,14 +4488,49 @@ class Game {
           }
           
           // Player Collision
+          // Handle both vehicle mode and pedestrian mode (instant fail when hit as pedestrian)
           if (this.player.position.distanceTo(n.position) < 2.2) {
-            this.hp -= this.seatbeltOn ? 9.6 : 12;
-            if (this.hp <= 0) this._go('Collided with ' + (n.userData.npcType || 'Vehicle')); 
-            else this._uh(); 
-            this.speed *= -.22;
-            this._camShakeAmt = Math.max(this._camShakeAmt, 0.40);
-            if(window.sfx) window.sfx.play('error'); 
-            toast('💥 Collision!', '#ff3b30'); 
+            if (this.isPedestrian) {
+              // Pedestrian hit by vehicle - instant failure
+              this.hp = 0;
+              this._go('Hit by ' + (n.userData.npcType || 'Vehicle'));
+              toast('🚨 HIT BY VEHICLE!', '#ff3b30');
+            } else {
+              // Vehicle collision
+              this.hp -= this.seatbeltOn ? 9.6 : 12;
+              if (this.hp <= 0) this._go('Collided with ' + (n.userData.npcType || 'Vehicle'));
+              else this._uh();
+              this.speed *= -.22;
+              this._camShakeAmt = Math.max(this._camShakeAmt, 0.40);
+              if(window.sfx) window.sfx.play('error');
+              toast('💥 Collision!', '#ff3b30');
+            }
+          }
+
+          // ── NPC-to-PEDESTRIAN COLLISION ──
+          // NPCs can hit pedestrians - push pedestrian and slow down NPC
+          if (this.peds) {
+            this.peds.forEach(ped => {
+              if (!ped.userData) return;
+              const npcPedDist = n.position.distanceTo(ped.position);
+              const npcRadius = n.userData?.halfD || 2;
+              const pedRadius = 0.8;
+              if (npcPedDist < npcRadius + pedRadius) {
+                // Push pedestrian away from NPC
+                const pushDir = new THREE.Vector3().subVectors(ped.position, n.position).normalize();
+                ped.position.x += pushDir.x * 1.5;
+                ped.position.z += pushDir.z * 1.5;
+                // Set pedestrian to fleeing state
+                ped.userData.aiState = 'fleeing';
+                ped.userData.fleeTimer = 0;
+                // Slow down NPC slightly
+                n.userData.spd *= 0.7;
+                // Visual feedback
+                if (Math.random() < 0.1) {
+                  toast('⚠️ Pedestrian nearly hit!', '#ff9500');
+                }
+              }
+            });
           }
         });
       }
@@ -4453,207 +4627,341 @@ class Game {
           }
         }
 
+        // ═══════════════════════════════════════════════════════════════
+        // COMPREHENSIVE PEDESTRIAN AI SYSTEM
+        // State Machine: IDLE → WALKING → WAITING → CROSSING → FLEEING → ENTERING
+        // ═══════════════════════════════════════════════════════════════
+
+        // Helper: Check traffic light state for crossing pedestrians
+        const _checkTrafficLight = (pedPos, game) => {
+          if (!game.sigs || game.sigs.length === 0) return { shouldWait: false, signalState: 'none' };
+
+          for (const sig of game.sigs) {
+            const sigDist = pedPos.distanceTo(sig.position);
+            // Check if signal is nearby (within crossing distance)
+            if (sigDist < 15) {
+              const sigState = sig.userData?.st || 'green';
+              // Pedestrians can cross on green, but should wait on red
+              if (sigState === 'red') {
+                return { shouldWait: true, signalState: 'red' };
+              }
+            }
+          }
+          return { shouldWait: false, signalState: 'green' };
+        };
+
+        // Helper: Check if position is on sidewalk (not on road)
+        const _isOnSidewalk = (px, pz, roadConfig) => {
+          if (!roadConfig || !roadConfig.roads) return true;
+          for (const r of roadConfig.roads) {
+            const isV = r.type === 'v';
+            const roadW = 9; // Road half-width
+            const minX = Math.min(r.x1, r.x2) - roadW;
+            const maxX = Math.max(r.x1, r.x2) + roadW;
+            const minZ = Math.min(r.z1, r.z2) - roadW;
+            const maxZ = Math.max(r.z1, r.z2) + roadW;
+            if (isV) {
+              if (px > minX && px < maxX && pz > r.z - 2 && pz < r.z + 2) return false;
+            } else {
+              if (pz > minZ && pz < maxZ && px > r.x - 2 && px < r.x + 2) return false;
+            }
+          }
+          return true;
+        };
+
+        // Helper: Check for approaching vehicles (player + NPCs)
+        const _checkVehicleApproaching = (ped, game) => {
+          let approaching = false;
+          let threatDir = null;
+          let minDist = Infinity;
+
+          // Check player vehicle
+          if (game.player && !game.isPedestrian && game.speed && Math.abs(game.speed) > 0.1) {
+            const pvDist = game.player.position.distanceTo(ped.position);
+            if (pvDist < 30 && pvDist < minDist) {
+              const isV = ped.userData.isV;
+              const pedDir = ped.userData.dir;
+              const approachingDir = isV
+                ? (game.player.position.z - ped.position.z) * pedDir
+                : (game.player.position.x - ped.position.x) * pedDir;
+              if (approachingDir > 0 && pvDist < 25) {
+                approaching = true;
+                threatDir = game.player.position.clone();
+                minDist = pvDist;
+              }
+            }
+          }
+
+          // Check NPC vehicles
+          if (!approaching && game.npcs) {
+            for (const n of game.npcs) {
+              if (!n.userData || !n.userData.spd || Math.abs(n.userData.spd) < 0.05) continue;
+              const npcDist = n.position.distanceTo(ped.position);
+              if (npcDist < 30 && npcDist < minDist) {
+                const isV = ped.userData.isV;
+                const pedDir = ped.userData.dir;
+                const approachingDir = isV
+                  ? (n.position.z - ped.position.z) * pedDir
+                  : (n.position.x - ped.position.x) * pedDir;
+                if (approachingDir > 0 && npcDist < 20) {
+                  approaching = true;
+                  threatDir = n.position.clone();
+                  minDist = npcDist;
+                  break;
+                }
+              }
+            }
+          }
+
+          return { approaching, threatDir, dist: minDist };
+        };
+
+        // Helper: Get safe escape direction from vehicle
+        const _getFleeVector = (pedPos, threatPos, sidewalkSide) => {
+          const fleeDir = new THREE.Vector3().subVectors(pedPos, threatPos).normalize();
+          // Push toward sidewalk (away from road)
+          fleeDir.y = 0;
+          if (sidewalkSide) {
+            // Add lateral push toward sidewalk
+            const lateral = new THREE.Vector3(-fleeDir.z, 0, fleeDir.x).multiplyScalar(sidewalkSide * 0.5);
+            fleeDir.add(lateral).normalize();
+          }
+          return fleeDir;
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // MAIN PEDESTRIAN UPDATE LOOP
+        // ═══════════════════════════════════════════════════════════════
         this.peds.forEach(p => {
+          // Initialize pedestrian AI state if needed
+          p.userData.aiState = p.userData.aiState || 'walking'; // walking, idle, waiting, crossing, fleeing, exiting, entering
           p.userData.t += dt * p.userData.spd;
 
-          // ── IDLE STATES: pedestrians pause, look around, check phones ──
-          // Skip idle for police volunteer - they stay active directing traffic
           const isPoliceVolunteer = p.userData.isPoliceVolunteer;
+          const ud = p.userData;
 
-          if (!p.userData._idleState) {
-            p.userData._idleTimer = Math.random() * 8;
-            p.userData._idleState = false;
-            p.userData._idleDur = 0;
-          }
-          // Police volunteer doesn't get idle - they direct traffic continuously
-          if (p.userData.state !== 'exiting' && !p.userData._idleState && !isPoliceVolunteer) {
-            p.userData._idleTimer -= dt;
-            if (p.userData._idleTimer <= 0) {
-              // Randomly enter idle: check phone, look around, wait
-              const idleType = Math.random();
-              if (idleType < 0.35) {
-                p.userData._idleState = true;
-                p.userData._idleDur = 2 + Math.random() * 5;
-                p.userData._idleType = 'phone'; // looking at phone
-              } else if (idleType < 0.55) {
-                p.userData._idleState = true;
-                p.userData._idleDur = 3 + Math.random() * 6;
-                p.userData._idleType = 'wait'; // waiting / resting
-              } else {
-                p.userData._idleTimer = 6 + Math.random() * 12;
-              }
-            }
-          }
-          if (p.userData._idleState) {
-            p.userData._idleDur -= dt;
-            // Slight head tilt for phone lookers
-            if (p.userData._idleType === 'phone') {
-              p.rotation.y += Math.sin(p.userData.t * 2) * 0.002;
-            }
-            if (p.userData._idleDur <= 0) {
-              p.userData._idleState = false;
-              p.userData._idleTimer = 4 + Math.random() * 10;
-            }
-          }
+          // ── BOUNDARY ENFORCEMENT: Keep pedestrians on sidewalks AND within world ──
+          // Enforce lateral bounds (sidewalk width)
+          const sidewalkMin = ud.roadC - ud.targetDist - 2; // Inner edge
+          const sidewalkMax = ud.roadC + ud.targetDist + 2;  // Outer edge
 
-          if (p.userData.state === 'exiting') {
-            if (p.userData.isV) {
-              p.position.x += -p.userData.side * dt * p.userData.spd;
-              if (Math.abs(p.position.x - p.userData.roadC) <= p.userData.targetDist) {
-                p.position.x = p.userData.roadC + p.userData.side * p.userData.targetDist;
-                p.userData.state = 'sidewalk';
-                p.rotation.y = p.userData.dir > 0 ? 0 : Math.PI;
-                p.userData.startZ = p.position.z;
-                p.userData.destDist = 10 + Math.random() * 20;
-                p.userData.distTraveled = 0;
-              }
-            } else {
-              p.position.z += -p.userData.side * dt * p.userData.spd;
-              if (Math.abs(p.position.z - p.userData.roadC) <= p.userData.targetDist) {
-                p.position.z = p.userData.roadC + p.userData.side * p.userData.targetDist;
-                p.userData.state = 'sidewalk';
-                p.rotation.y = p.userData.dir > 0 ? Math.PI/2 : -Math.PI/2;
-                p.userData.startZ = p.position.x;
-                p.userData.destDist = 10 + Math.random() * 20;
-                p.userData.distTraveled = 0;
-              }
-            }
-          } else if (!p.userData._idleState) {
-            const moveAmt = p.userData.spd * 4 * dt;
-            if (p.userData.isV) {
-              p.position.z += p.userData.dir * moveAmt;
-              p.userData.distTraveled += moveAmt;
-            } else {
-              p.position.x += p.userData.dir * moveAmt;
-              p.userData.distTraveled += moveAmt;
-            }
+          // World boundary limits (keep pedestrians within playable area)
+          const WORLD_BOUND = 150;
 
-            if (p.userData.distTraveled >= p.userData.destDist) {
-              p.userData.dir *= -1;
-              if (p.userData.isV) {
-                p.rotation.y = p.userData.dir > 0 ? 0 : Math.PI;
-              } else {
-                p.rotation.y = p.userData.dir > 0 ? Math.PI/2 : -Math.PI/2;
-              }
-              p.userData.distTraveled = 0;
-              p.userData.destDist = 10 + Math.random() * 25;
-            }
-          }
-
-          // ── VEHICLE FLEE: pedestrians jump/step back when vehicle approaches fast ──
-          if (this.player && this.speed && Math.abs(this.speed) > 0.3 && !this.isPedestrian) {
-            const dpv = this.player.position.distanceTo(p.position);
-            if (dpv < 8 && dpv > 2.5) {
-              const fleeDir = new THREE.Vector3().subVectors(p.position, this.player.position).normalize();
-              p.position.x += fleeDir.x * dt * 2.5;
-              p.position.z += fleeDir.z * dt * 2.5;
-              // Face away from vehicle
-              p.rotation.y = Math.atan2(-fleeDir.x, -fleeDir.z);
-            }
-          }
-
-          // ── CROSSWALK SAFETY: wait at crosswalk if vehicle is approaching ──
-          // Check if pedestrian is near a road crossing (on road edge)
-          const nearRoadEdge = p.userData.state === 'sidewalk' &&
-            Math.abs(p.userData.distTraveled) < 2 && // Just started moving
-            ((p.userData.isV && Math.abs(p.position.x - p.userData.roadC) > 8) ||
-             (!p.userData.isV && Math.abs(p.position.z - p.userData.roadC) > 8));
-
-          if (nearRoadEdge && p.userData.state !== 'exiting' && !p.userData._idleState) {
-            // Check for approaching vehicles (player or NPCs)
-            let vehicleApproaching = false;
-
-            // Check player vehicle
-            if (this.player && !this.isPedestrian && this.speed && Math.abs(this.speed) > 0.1) {
-              const pvDist = this.player.position.distanceTo(p.position);
-              if (pvDist < 25) {
-                const approachingDir = p.userData.isV ?
-                  (this.player.position.z - p.position.z) * p.userData.dir :
-                  (this.player.position.x - p.position.x) * p.userData.dir;
-                if (approachingDir > 0) vehicleApproaching = true;
-              }
-            }
-
-            // Check NPCs
-            if (!vehicleApproaching && this.npcs) {
-              this.npcs.forEach(n => {
-                if (vehicleApproaching || !n.userData.spd) return;
-                const npcDist = n.position.distanceTo(p.position);
-                if (npcDist < 20) {
-                  const approachingDir = p.userData.isV ?
-                    (n.position.z - p.position.z) * p.userData.dir :
-                    (n.position.x - p.position.x) * p.userData.dir;
-                  if (approachingDir > 0) vehicleApproaching = true;
-                }
-              });
-            }
-
-            // If vehicle approaching, don't cross - stop and wait
-            if (vehicleApproaching) {
-              p.userData._waitingForVehicle = true;
-              p.userData._waitTimer = (p.userData._waitTimer || 0) + dt;
-              // Keep still, face direction of traffic (looking left/right)
-              p.rotation.y = p.userData.dir > 0 ? (p.userData.isV ? 0 : Math.PI/2) : (p.userData.isV ? Math.PI : -Math.PI/2);
-            } else {
-              if (p.userData._waitingForVehicle) {
-                // Vehicle passed, reset and continue
-                p.userData._waitingForVehicle = false;
-                p.userData._waitTimer = 0;
-                p.userData.distTraveled = 0; // Restart crossing
-              }
-              p.userData._waitTimer = 0;
-            }
+          if (ud.isV) {
+            // Vertical road - enforce X bounds
+            if (p.position.x < sidewalkMin) p.position.x = sidewalkMin;
+            if (p.position.x > sidewalkMax) p.position.x = sidewalkMax;
+            // Enforce world bounds
+            if (p.position.z < -WORLD_BOUND) p.position.z = -WORLD_BOUND;
+            if (p.position.z > WORLD_BOUND) p.position.z = WORLD_BOUND;
           } else {
-            p.userData._waitingForVehicle = false;
-            p.userData._waitTimer = 0;
+            // Horizontal road - enforce Z bounds
+            if (p.position.z < sidewalkMin) p.position.z = sidewalkMin;
+            if (p.position.z > sidewalkMax) p.position.z = sidewalkMax;
+            // Enforce world bounds
+            if (p.position.x < -WORLD_BOUND) p.position.x = -WORLD_BOUND;
+            if (p.position.x > WORLD_BOUND) p.position.x = WORLD_BOUND;
           }
 
-          // Override movement if waiting for vehicle
-          if (p.userData._waitingForVehicle) {
-            // Skip normal movement
+          // ── VEHICLE THREAT DETECTION: Check for nearby vehicles ──
+          const vehicleCheck = _checkVehicleApproaching(p, this);
+          const threatDist = vehicleCheck.dist;
+          const isThreatClose = threatDist < 12;
+
+          // ── STATE MACHINE ──
+
+          // STATE: FLEEING (highest priority) - Vehicle very close
+          if (isThreatClose && ud.aiState !== 'fleeing' && ud.aiState !== 'exiting' && ud.aiState !== 'entering') {
+            ud.aiState = 'fleeing';
+            ud.fleeTimer = 0;
+          }
+
+          if (ud.aiState === 'fleeing') {
+            ud.fleeTimer += dt;
+            if (vehicleCheck.approaching && threatDist < 10) {
+              // Active flee - run away from threat
+              const fleeVec = _getFleeVector(p.position, vehicleCheck.threatDir, ud.side);
+              const fleeSpeed = 4.5; // Faster than walking when fleeing
+              p.position.x += fleeVec.x * dt * fleeSpeed;
+              p.position.z += fleeVec.z * dt * fleeSpeed;
+              // Face away from threat
+              p.rotation.y = Math.atan2(-fleeVec.x, -fleeVec.z);
+            } else if (ud.fleeTimer > 1.5) {
+              // Threat passed, return to walking after brief pause
+              ud.aiState = 'walking';
+              ud.fleeTimer = 0;
+            }
+            // Skip other states while fleeing
             return;
           }
 
-          // Inter-pedestrian avoidance: steer away from nearby peds
+          // STATE: EXITING BUILDING
+          if (ud.state === 'exiting') {
+            ud.aiState = 'exiting';
+            const moveSpeed = ud.spd * 3.5;
+            if (ud.isV) {
+              p.position.x += -ud.side * dt * moveSpeed;
+              if (Math.abs(p.position.x - ud.roadC) <= ud.targetDist) {
+                p.position.x = ud.roadC + ud.side * ud.targetDist;
+                ud.state = 'sidewalk';
+                ud.aiState = 'walking';
+                p.rotation.y = ud.dir > 0 ? 0 : Math.PI;
+                ud.startZ = p.position.z;
+                ud.destDist = 10 + Math.random() * 20;
+                ud.distTraveled = 0;
+              }
+            } else {
+              p.position.z += -ud.side * dt * moveSpeed;
+              if (Math.abs(p.position.z - ud.roadC) <= ud.targetDist) {
+                p.position.z = ud.roadC + ud.side * ud.targetDist;
+                ud.state = 'sidewalk';
+                ud.aiState = 'walking';
+                p.rotation.y = ud.dir > 0 ? Math.PI/2 : -Math.PI/2;
+                ud.startZ = p.position.x;
+                ud.destDist = 10 + Math.random() * 20;
+                ud.distTraveled = 0;
+              }
+            }
+            return;
+          }
+
+          // STATE: WAITING (at crosswalk, checking for vehicles AND traffic lights)
+          // Check traffic light state first
+          const trafficLightCheck = _checkTrafficLight(p.position, this);
+          const shouldWaitForLight = trafficLightCheck.shouldWait && ud.aiState !== 'fleeing';
+
+          if (shouldWaitForLight || (vehicleCheck.approaching && ud.aiState !== 'idle' && ud.aiState !== 'entering')) {
+            ud.aiState = 'waiting';
+            ud.waitTimer = (ud.waitTimer || 0) + dt;
+            // Look toward approaching vehicle
+            if (vehicleCheck.threatDir) {
+              p.rotation.y = Math.atan2(
+                vehicleCheck.threatDir.x - p.position.x,
+                vehicleCheck.threatDir.z - p.position.z
+              );
+            }
+            // Stop movement while waiting
+            return;
+          }
+
+          // STATE: IDLE (phone, look around, rest)
+          // Skip idle for police volunteer
+          if (!ud._idleState && !isPoliceVolunteer && ud.aiState === 'walking') {
+            ud._idleTimer = (ud._idleTimer !== undefined ? ud._idleTimer : Math.random() * 8);
+            ud._idleTimer -= dt;
+            if (ud._idleTimer <= 0) {
+              const idleRoll = Math.random();
+              if (idleRoll < 0.30) {
+                ud._idleState = true;
+                ud._idleDur = 2 + Math.random() * 4;
+                ud._idleType = 'phone';
+              } else if (idleRoll < 0.50) {
+                ud._idleState = true;
+                ud._idleDur = 2 + Math.random() * 5;
+                ud._idleType = 'look';
+              } else {
+                ud._idleTimer = 6 + Math.random() * 12;
+              }
+            }
+          }
+
+          if (ud._idleState) {
+            ud.aiState = 'idle';
+            ud._idleDur -= dt;
+            // Animate based on idle type
+            if (ud._idleType === 'phone') {
+              p.rotation.y += Math.sin(ud.t * 2.5) * 0.003;
+            } else if (ud._idleType === 'look') {
+              // Look left-right periodically
+              p.rotation.y += Math.sin(ud.t * 0.8) * 0.004;
+            }
+            if (ud._idleDur <= 0) {
+              ud._idleState = false;
+              ud._idleTimer = 4 + Math.random() * 10;
+              ud.aiState = 'walking';
+            }
+            // Skip walking while idle
+            return;
+          }
+
+          // STATE: WALKING (default)
+          ud.aiState = 'walking';
+          const walkSpeed = ud.spd * 3.5;
+          const moveAmt = walkSpeed * dt;
+
+          if (ud.isV) {
+            p.position.z += ud.dir * moveAmt;
+            ud.distTraveled += moveAmt;
+          } else {
+            p.position.x += ud.dir * moveAmt;
+            ud.distTraveled += moveAmt;
+          }
+
+          // Reverse direction at destination
+          if (ud.distTraveled >= ud.destDist) {
+            ud.dir *= -1;
+            p.rotation.y = ud.isV ? (ud.dir > 0 ? 0 : Math.PI) : (ud.dir > 0 ? Math.PI/2 : -Math.PI/2);
+            ud.distTraveled = 0;
+            ud.destDist = 10 + Math.random() * 25;
+          }
+
+          // ── INTER-PEDESTRIAN AVOIDANCE ──
           this.peds.forEach(other => {
-            if (other === p) return;
+            if (other === p || !other.userData) return;
             const dx = p.position.x - other.position.x;
             const dz = p.position.z - other.position.z;
             const dist = Math.sqrt(dx * dx + dz * dz);
-            if (dist < 1.8 && dist > 0.01) {
-              const push = (1.8 - dist) * 0.5;
-              if (p.userData.isV) {
-                p.position.x += (dx / dist) * push * dt * 8;
-              } else {
-                p.position.z += (dz / dist) * push * dt * 8;
-              }
+            // Maintain safe distance (1.5 units)
+            if (dist < 1.5 && dist > 0.01) {
+              const push = (1.5 - dist) * 0.6;
+              const nx = dx / dist;
+              const nz = dz / dist;
+              p.position.x += nx * push * dt * 6;
+              p.position.z += nz * push * dt * 6;
             }
           });
 
-          // Leg animation: slower when idle, full stride when walking
-          const walkSpeed = p.userData._idleState ? 0.08 : 10;
-          if (p.userData.lLeg) p.userData.lLeg.rotation.x = Math.sin(p.userData.t * walkSpeed) * (p.userData._idleState ? 0.05 : 0.6);
-          if (p.userData.rLeg) p.userData.rLeg.rotation.x = Math.sin(p.userData.t * walkSpeed + Math.PI) * (p.userData._idleState ? 0.05 : 0.6);
+          // ── OBSTACLE AVOIDANCE (buildings, poles, etc) ──
+          if (this.obstacles) {
+            this.obstacles.forEach(obs => {
+              const dx = p.position.x - obs.position.x;
+              const dz = p.position.z - obs.position.z;
+              const dist = Math.sqrt(dx * dx + dz * dz);
+              const obsRadius = (obs.userData?.halfW || 1.5) + 0.8; // Obstacle size + pedestrian radius
+              if (dist < obsRadius && dist > 0.01) {
+                const push = (obsRadius - dist) * 0.8;
+                p.position.x += (dx / dist) * push;
+                p.position.z += (dz / dist) * push;
+              }
+            });
+          }
 
-          // ── POLICE VOLUNTEER ARM SIGNAL: waving to direct traffic ──
+          // ── LEG ANIMATION ──
+          const legAnimSpeed = ud.aiState === 'idle' ? 0.08 : 12;
+          const legAnimAmp = ud.aiState === 'idle' ? 0.05 : 0.55;
+          if (ud.lLeg) ud.lLeg.rotation.x = Math.sin(ud.t * legAnimSpeed) * legAnimAmp;
+          if (ud.rLeg) ud.rLeg.rotation.x = Math.sin(ud.t * legAnimSpeed + Math.PI) * legAnimAmp;
+
+          // ── POLICE VOLUNTEER SPECIAL BEHAVIOR ──
           if (isPoliceVolunteer) {
-            // Simple arm wave animation to simulate traffic directing
-            p.userData.t += dt * 3;
-            const armWave = Math.sin(p.userData.t) * 0.8;
-            // Find and animate arm (if has arms)
+            ud.t += dt * 3;
+            const armWave = Math.sin(ud.t) * 0.8;
             p.children.forEach(ch => {
               if (ch.name && ch.name.includes('Arm')) {
                 ch.rotation.z = armWave;
               }
             });
-            // If no specific arm, rotate entire pedestrian slightly left-right
-            p.rotation.y = Math.sin(p.userData.t * 0.5) * 0.3 + (p.userData.isV ? Math.PI/2 : 0);
+            p.rotation.y = Math.sin(ud.t * 0.5) * 0.3 + (ud.isV ? Math.PI/2 : 0);
           }
 
-          if (!this.isPedestrian && this.player.position.distanceTo(p.position) < 2.5) {
-            this.speed = 0; this.hp = 0;
+          // ── PLAYER COLLISION CHECK (INSTANT FAILURE) ──
+          if (!this.isPedestrian && this.player.position.distanceTo(p.position) < 2.2) {
+            this.speed = 0;
+            this.hp = 0;
             toast(' HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
-            this._uh(); this._go("Structural Failure");
+            this._uh();
+            this._go("Structural Failure");
           }
         });
       }
