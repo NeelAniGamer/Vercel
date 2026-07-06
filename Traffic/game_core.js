@@ -3812,7 +3812,7 @@ class Game {
         const pPos = this.player.position;
         const candidates = lights.map(l => ({
           l,
-          distSq: pPos.distanceSquared(l.position)
+          distSq: pPos.distanceToSquared(l.position)
         }));
 
         candidates.sort((a, b) => a.distSq - b.distSq);
