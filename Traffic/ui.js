@@ -770,8 +770,9 @@ const ui = {
       </div>`
     }
     c.appendChild(card)
-    if (id === 'practical' && typeof THREE !== 'undefined') {
-      requestAnimationFrame(() => this._initBriefingScene(lv))
+    if (id === 'practical') {
+      // Use 2D CSS Art instead of 3D Scene
+      requestAnimationFrame(() => this._initBriefingArt(lv))
     }
   },
   _diag(id) {
@@ -788,6 +789,61 @@ const ui = {
     return `<div id="briefing-canvas-wrap" style="position:relative; width:100%; height:clamp(200px, 32vw, 280px); border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); background:#1a1f2e;">
           <div style="position:absolute; top:12px; left:12px; color:var(--muted2, #6B7280); font-size:0.7rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(255,255,255,0.75); padding:6px 14px; border-radius:8px; letter-spacing:1.2px; backdrop-filter:blur(8px); border:1px solid rgba(0,0,0,0.06); font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>
         </div>`
+  },
+  _initBriefingArt(lv) {
+    const wrap = document.getElementById('briefing-canvas-wrap');
+    if (!wrap) return;
+
+    const theme = lv.themeType || 'default';
+    let artHTML = '';
+
+    // Base Road CSS
+    const roadStyle = `position:absolute; bottom:40px; left:0; width:100%; height:60px; background:#3d3f45; border-top:4px solid #fff; border-bottom:4px solid #fff;`;
+    const zebraStyle = `position:absolute; top:0; left:50%; transform:translateX(-50%); width:60px; height:60px; background:repeating-linear-gradient(90deg, #fff 0, #fff 10px, transparent 10px, transparent 20px);`;
+
+    if (theme === 'pedestrian_courtesy' || lv.id === 5) {
+      // School Zone Art
+      artHTML = `
+        <div style="${roadStyle}">
+          <div style="${zebraStyle}"></div>
+        </div>
+        <div style="position:absolute; top:20px; right:40px; font-size:4rem;">🏫</div>
+        <div style="position:absolute; bottom:60px; left:20%; font-size:2rem; transition: all 2s linear; animation: moveRight 4s infinite alternate;">🚶</div>
+        <div style="position:absolute; bottom:60px; left:25%; font-size:1.5rem; transition: all 2s linear; animation: moveRight 3s infinite alternate;">🚶</div>
+        <div style="position:absolute; bottom:50px; left:60%; font-size:2.5rem; transition: all 3s ease-in-out; animation: stopCar 4s infinite;">🚗</div>
+        <style>
+          @keyframes moveRight { from { left: 20%; } to { left: 60%; } }
+          @keyframes stopCar {
+            0% { left: 80%; }
+            50% { left: 65%; }
+            100% { left: 65%; }
+          }
+        </style>
+      `;
+    } else if (theme === 'intersection' || theme === 'signals') {
+      artHTML = `
+        <div style="${roadStyle}"></div>
+        <div style="position:absolute; top:40%; left:45%; font-size:3rem;">🚥</div>
+        <div style="position:absolute; bottom:60px; left:10%; font-size:2rem; animation: moveRight 5s infinite linear;">🚗</div>
+        <style>
+          @keyframes moveRight { from { left: -10%; } to { left: 110%; } }
+        </style>
+      `;
+    } else {
+      // Default generic road
+      artHTML = `
+        <div style="${roadStyle}"></div>
+        <div style="position:absolute; bottom:60px; left:40%; font-size:2.5rem; animation: moveRight 4s infinite linear;">🚗</div>
+        <style>
+          @keyframes moveRight { from { left: -10%; } to { left: 110%; } }
+        </style>
+      `;
+    }
+
+    wrap.innerHTML = `
+      <div style="position:absolute; top:12px; left:12px; color:var(--muted2, #6B7280); font-size:0.7rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(255,255,255,0.75); padding:6px 14px; border-radius:8px; letter-spacing:1.2px; backdrop-filter:blur(8px); border:1px solid rgba(0,0,0,0.06); font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>
+      ${artHTML}
+    `;
   },
   _disposeBriefingScene() {
     if (this._bScene) {

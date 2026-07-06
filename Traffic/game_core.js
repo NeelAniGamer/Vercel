@@ -500,8 +500,10 @@ class Game {
         this._isLowGPU = isLowGPU;
         if (isLowGPU) { dpr = Math.min(dpr, 1.0); }
         this.renderer.setSize(w * dpr, h * dpr, false);
-        this.renderer.domElement.style.width = w + 'px';
-        this.renderer.domElement.style.height = h + 'px';
+        if (this.renderer.domElement && this.renderer.domElement.style) {
+          this.renderer.domElement.style.width = w + 'px';
+          this.renderer.domElement.style.height = h + 'px';
+        }
         this.renderer.setPixelRatio(1);
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -537,7 +539,7 @@ class Game {
         const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'da-dist', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn', 'dn-clock', 'dn-time', 'dn-icon', 'hsc'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
-      _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
+      _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); if (this.renderer.domElement && this.renderer.domElement.style) { this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
       _initIn() {
         window.addEventListener('keydown', e => {
             this.keys[e.key.toLowerCase()] = true;
@@ -1147,7 +1149,21 @@ class Game {
           } 
       }
       _brake() { this.speed *= .35; sfx.play('brake'); toast('🛑 Hard Deceleration Active', '#fff'); }
-      startLevel() { const cd = document.getElementById('cdown'); cd.classList.add('on'); const gc = document.getElementById('gc'); if (gc && !document.fullscreenElement && gc.requestFullscreen) { gc.requestFullscreen().catch(() => {}); } setTimeout(() => { cd.classList.remove('on'); this._actualStart(ui.cur); }, 1500); }
+      startLevel() {
+        const cd = document.getElementById('cdown');
+        if (cd) cd.classList.add('on');
+        const gc = document.getElementById('gc');
+        // Fullscreen is only allowed on user gesture.
+        if (gc && !document.fullscreenElement && gc.requestFullscreen) {
+          gc.requestFullscreen().catch(err => {
+            console.warn('Fullscreen denied: ', err.message);
+          });
+        }
+        setTimeout(() => {
+          if (cd) cd.classList.remove('on');
+          this._actualStart(ui.cur);
+        }, 1500);
+      }
       async _actualStart(lv) {
         this.mode = lv.mode; this.vehMode = lv.vehMode; this.lvId = lv.id; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0; this.speed = 0; this.routeIdx = 0; this.retries = 0; this.vx = 0; this.vz = 0;
         this.ms = { inSz: false, passed: false, amb: null };
@@ -2109,7 +2125,7 @@ class Game {
                 lamp.position.set(lx + (isV ? -side * 0.4 : 0), 7, lz + (!isV ? -side * 0.4 : 0));
                 this.scene.add(lamp);
                 // ── STREETLIGHT PointLight (day/night cycle) ──
-                const sl = new THREE.PointLight(0xffffee, cfg.isNight ? 0.8 : 0, 35);
+                const sl = new THREE.Object3D(); // changed to Object3D to avoid shader uniform limit crash
                 sl.position.set(lamp.position.x, 6.8, lamp.position.z);
                 sl.visible = false;
                 this.scene.add(sl);
@@ -2174,7 +2190,7 @@ class Game {
         const maxWL = Math.min(bldgObs.length, 25);
         const shuffledBldg = [...bldgObs].sort(() => Math.random() - 0.5).slice(0, maxWL);
         shuffledBldg.forEach(obs => {
-          const wl = new THREE.PointLight(0xffeeaa, cfg.isNight ? 0.6 : 0, 12);
+          const wl = new THREE.Object3D(); // changed to Object3D to avoid shader uniform limit crash
           wl.position.set(obs.position.x, 3 + Math.random() * 3, obs.position.z);
           wl.castShadow = false;
           wl.visible = false;
@@ -2423,11 +2439,11 @@ class Game {
            };
           // ── NPC HEADLIGHTS (always create, visibility toggled by day/night cycle) ──
           if (nType !== 'cycle') {
-            const hlL = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
+            const hlL = new THREE.Object3D(); hlL.target = new THREE.Object3D(); // changed to Object3D to avoid shader uniform limit crash
             hlL.position.set(0.8, 1.2, 2);
             hlL.target.position.set(0.8, 0, 12);
             nv.add(hlL); nv.add(hlL.target);
-            const hlR = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
+            const hlR = new THREE.Object3D(); hlR.target = new THREE.Object3D();
             hlR.position.set(-0.8, 1.2, 2);
             hlR.target.position.set(-0.8, 0, 12);
             nv.add(hlR); nv.add(hlR.target);
@@ -2476,10 +2492,10 @@ class Game {
               isNPC: true, isLevelDefined: true
             };
             if (cfg.isNight && npcDef.type !== 'cycle') {
-              const hlL = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
+              const hlL = new THREE.Object3D(); hlL.target = new THREE.Object3D();
               hlL.position.set(0.8, 1.2, 2); hlL.target.position.set(0.8, 0, 12);
               nv.add(hlL); nv.add(hlL.target);
-              const hlR = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
+              const hlR = new THREE.Object3D(); hlR.target = new THREE.Object3D();
               hlR.position.set(-0.8, 1.2, 2); hlR.target.position.set(-0.8, 0, 12);
               nv.add(hlR); nv.add(hlR.target);
               const tlGeo = new THREE.SphereGeometry(0.15, 6, 6);
