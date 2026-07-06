@@ -820,6 +820,38 @@ const ui = {
           }
         </style>
       `;
+    } else if (theme === 'ambulance_priority') {
+      // Ambulance Priority Art
+      artHTML = `
+        <div style="${roadStyle}"></div>
+        <div style="position:absolute; bottom:50px; left:10%; font-size:2.5rem; animation: ambulanceDrive 4s infinite linear;">🚑</div>
+        <div style="position:absolute; bottom:50px; left:40%; font-size:2rem; animation: pullOver 4s infinite ease-in-out;">🚗</div>
+        <div style="position:absolute; bottom:50px; left:60%; font-size:2rem; animation: pullOver 4s infinite ease-in-out 1s;">🚕</div>
+        <style>
+          @keyframes ambulanceDrive { from { left: -20%; } to { left: 120%; } }
+          @keyframes pullOver {
+            0% { left: 40%; transform: translateX(0); }
+            30% { left: 35%; transform: translateX(-10px); }
+            100% { left: 35%; transform: translateX(-10px); }
+          }
+        </style>
+      `;
+    } else if (theme === 'market_street') {
+      // Market Street Art
+      artHTML = `
+        <div style="${roadStyle}"></div>
+        <div style="position:absolute; top:40px; left:10%; font-size:3rem;">🎪</div>
+        <div style="position:absolute; top:40px; left:30%; font-size:3rem;">🎪</div>
+        <div style="position:absolute; top:40px; left:50%; font-size:3rem;">🎪</div>
+        <div style="position:absolute; bottom:50px; left:10%; font-size:2rem; animation: slowDrive 6s infinite linear;">🛺</div>
+        <div style="position:absolute; bottom:50px; left:40%; font-size:2rem; animation: slowDrive 7s infinite linear -1s;">🚗</div>
+        <div style="position:absolute; bottom:60px; left:20%; font-size:1.5rem; animation: moveRight 3s infinite alternate;">🚶</div>
+        <div style="position:absolute; bottom:60px; left:60%; font-size:1.5rem; animation: moveRight 3s infinite alternate -1s;">🚶</div>
+        <style>
+          @keyframes slowDrive { from { left: -20%; } to { left: 120%; } }
+          @keyframes moveRight { from { left: 20%; } to { left: 60%; } }
+        </style>
+      `;
     } else if (theme === 'intersection' || theme === 'signals') {
       artHTML = `
         <div style="${roadStyle}"></div>
