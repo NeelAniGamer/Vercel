@@ -25,6 +25,7 @@ window.LVS.push({
   crowdFestival: true,
   hasMusicVehicle: true,
   hasFestivalLights: false,
+  hasPoliceVolunteer: true,
   startOutside: true,
   tasks: [
     { id: 'yield_procession', text: 'Yield to procession', type: 'stop', target: 'procession', done: false },

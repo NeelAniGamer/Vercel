@@ -3675,6 +3675,32 @@
       <div style="width: 1px; height: 20px; background: var(--border)"></div>
       <div id="sind-dist" style="color: var(--muted); font-size: 0.85rem">--m</div>
     </div>
+    <div
+      id="dn-clock"
+      style="
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 25;
+        display: none;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(12px);
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text);
+        transition: background 1s, color 1s;
+      "
+    >
+      <span id="dn-icon">☀️</span>
+      <span id="dn-time">12:00</span>
+    </div>
     <div id="hwrap">
       <div class="hl" style="font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em">💰 WALLET</div>
       <div id="hwallet" style="font-size: 1.05rem; font-weight: 900; color: #ffd54a; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em">₹50,000</div>
@@ -5089,6 +5115,24 @@
                     setTimeout(function() { window._kidDismissTutorial(); }, 4000);
                   }
                 }, 300);
+                // ── E. Progressive tutorial tooltips (levels 2-5) ──
+                const tutStage = parseInt(localStorage.getItem('kid_tutorial_stage') || '1', 10);
+                if (lvNum >= 2 && lvNum <= 5 && lvNum > tutStage) {
+                  const tips = {
+                    2: { emoji: '💡', text: 'Use Q/E for turn signals!', dir: 'left', target: 'kid-left-btn' },
+                    3: { emoji: '💡', text: 'Press H for high beam!', dir: 'right', target: 'kid-headlight-btn' },
+                    4: { emoji: '💡', text: 'Press P to park & earn points!', dir: 'right', target: 'kid-stop-btn' },
+                    5: { emoji: '💡', text: 'Follow the GPS arrows!', dir: 'right', target: null },
+                  };
+                  const tip = tips[lvNum];
+                  if (tip) {
+                    setTimeout(function() {
+                      window._kidShowTutorial(tip.emoji, tip.text, tip.dir, tip.target || 'kid-steer');
+                      setTimeout(function() { window._kidDismissTutorial(); }, 5000);
+                    }, 2500);
+                    localStorage.setItem('kid_tutorial_stage', String(lvNum));
+                  }
+                }
               }
             });
 

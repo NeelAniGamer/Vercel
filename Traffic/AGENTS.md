@@ -187,8 +187,8 @@ This prevents reinventing wheels, ensures industry-standard patterns, and avoids
 - [x] **Phase 2 — UI simplification:** z-index vars, task bar redesign, emoji progress stars, progressive HUD (done in earlier sessions).
 - [x] **Phase 3 — Tutorial system:** `kid-tutorial` overlay in `Driving.html`, gated on `localStorage('kid_tutorial_done')`, first-play level 1 only. The OVERHAUL_PLAN reference to `localStorage('tutorial_complete')` is stale — actual key is `kid_tutorial_done`.
 - [x] **Phase 4 — NPC AI:** 3s stuck timer + teleport at `game_core.js:2501-2521`; lane clamp at the same site; traffic-light detection range tightened to 15m at `game_core.js:2567-2592`.
-- [x] **Phase 5 — partial:** night mode is implemented and used at 10+ sites in `game_core.js` (line 609, 962, 1027-1031, 1190, 1319, 1521, 1537, 1572). **`MeshToonMaterial` is NOT used** (only `MeshPhongMaterial` / `MeshLambertMaterial`) — this is a real remaining gap.
-- [x] **Phase 6 — Level Route Completeness:** Multi-point routes in `_unpcs` NPCs follow `cfg.route` waypoints with `laneOffset` and automatic wrapping. Rain system: 1200 particles, speed cap at 80%, fog halved, puddle shimmer + splash particles + thunder SFX via Web Audio oscillator. Night: headlight SpotLights + visible ConeGeometry cones (`this._headlightCones`), toggle sync, taillight brake glow. Level-specific layouts complete in `_getMapConfig()` M table (L1-L20 each unique with `roads[]`, `route[]`, `trafficLight[]`, `pedSpawn[]`, `speedBreakers[]`, `buildings[]`).
+- [x] **Phase 5 — partial:** night mode is implemented and used at 10+ sites in `game_core.js` (line 609, 962, 1027-1031, 1190, 1319, 1521, 1537, 1572). **`MeshToonMaterial` IS the dominant material** (92 usages across game_core.js) — this is NOT a remaining gap.
+- [x] **Phase 6 — Level Route Completeness:** Multi-point routes in `_unpcs` NPCs follow `cfg.route` waypoints with `laneOffset` and automatic wrapping. Rain system: 2000 particles, speed cap at 80%, fog halved, puddle shimmer + splash particles + thunder SFX via Web Audio oscillator. Night: headlight SpotLights + visible ConeGeometry cones (`this._headlightCones`), toggle sync, taillight brake glow. Level-specific layouts complete in `_getMapConfig()` M table (L1-L20 each unique with `roads[]`, `route[]`, `trafficLight[]`, `pedSpawn[]`, `speedBreakers[]`, `buildings[]`).
 
 - [x] **Phase 7 — Performance & polish:** NPC template cache (`_getNpcTemplate()`) with `_npcFree[]`/`_pedFree[]` reuse, smooth camera transition on pointer-lock toggle (0.4s lerp), audio category system (`sfx.vol: {sfx, ui, env}`) with `sfx.setVol()`. Frustum culling, shadow autoUpdate, and InstancedMesh already present for GLB buildings. Phase 7.2 (task bar redesign), 7.3 (InstancedMesh), 7.5 (audio UI) deprioritized — code-level infrastructure in place, UI polish deferred.
 
@@ -200,7 +200,7 @@ This prevents reinventing wheels, ensures industry-standard patterns, and avoids
 
 ### Remaining work (per OVERHAUL_PLAN §2026-07-01 plan, ordered)
 1. **Per-level asset loading** (Step 1) — split `start.js` into `CORE_ASSETS` + `LEVEL_ASSETS`, extend `_getMapConfig`'s `M[lvId]` with `assets: [...]`.
-2. **MeshToonMaterial pass** (Step 2) — switch procedural buildings + NPC factories to toon shading; add a shared `THREE.GradientMap`.
+2. ~~**MeshToonMaterial pass**~~ — DONE. Already dominant material (92 usages).
 3. **GTA-style open world foundation** (Step 3) — pedestrian-first start, F-to-enter/exit hint button, `road__avenue__street` integration, Kenney building verification.
 4. **Ethical-driving mechanics** (Step 4) — 13 sub-systems: scenario scripts per theme, seatbelts/animals/littering, indicators, phone temptation, zebra crossings, signage, wrong-side/overtaking, road-rage NPCs, police checkpoints + e-challan log.
 5. **Tier 1-2 level authoring** (Step 5) — extend existing 1-20 with `assets:` and `scenario:`; defer 21-50.

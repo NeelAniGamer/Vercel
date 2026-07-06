@@ -448,6 +448,22 @@ class Game {
         this._isDraggingMobileLook = false; this._mobileLookTouchId = null;
         this._prevMobileLookX = 0; this._prevMobileLookY = 0;
         this.dom = {}; // Cached DOM elements
+        // Day/Night cycle state
+        this.timeOfDay = 0.5; // 0=midnight, 0.25=dawn, 0.5=noon, 0.75=dusk
+        this.dayNightCycle = false;
+        this._dayNightSpeed = 1 / 300; // full cycle in 5 minutes
+        this._ambient = null; this._hemi = null; this._moon = null;
+        this._streetLights = []; this._windowLights = [];
+        this._dnSkyA = new THREE.Color(); this._dnSkyB = new THREE.Color();
+        this._dnFogA = new THREE.Color(); this._dnFogB = new THREE.Color();
+        this._dnDawnSky = new THREE.Color(0xffaa66); this._dnDuskSky = new THREE.Color(0xdd6633);
+        this._dnDawnFog = new THREE.Color(0xaa8855); this._dnDuskFog = new THREE.Color(0x884433);
+        this._dnDaySky = new THREE.Color();
+        this._dnTmp = new THREE.Color(); // reusable temp for dusk multiply
+        // Pre-allocated reusable vectors (avoid per-frame GC pressure)
+        this._v1 = new THREE.Vector3(); this._v2 = new THREE.Vector3();
+        this._v3 = new THREE.Vector3(); this._e1 = new THREE.Euler();
+        this._clockEl = null;
         // Phase 7: Object pools (initialized in _buildScene)
         this.npcPool = null; this.pedPool = null; this._brakeDustCd = false;
         this._initR(); this._initIn(); this._initG(); this._initVirtualJoystick(); this._loop();
@@ -518,13 +534,15 @@ class Game {
         } catch(e) { console.warn("Post processing err:", e); }
         
         // Cache DOM elements to prevent query overhead per frame
-        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'da-dist', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn'];
+        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'da-dist', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn', 'dn-clock', 'dn-time', 'dn-icon', 'hsc'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
-      _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
+      _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
       _initIn() {
         window.addEventListener('keydown', e => {
             this.keys[e.key.toLowerCase()] = true;
+            this._lastInputTime = this.timer;
+            if (this._idleHintShown) { this._idleHintShown = false; const h = document.getElementById('idle-hint'); if (h) h.style.display = 'none'; }
             const gm = { p: 'P', r: 'R', n: 'N', d: 'D', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5' };
             if (gm[e.key.toLowerCase()]) this.setGear(gm[e.key.toLowerCase()]);
             if (e.key === ' ') this._horn();
@@ -1187,6 +1205,22 @@ class Game {
         this._reachedMarket = false;
         this._reachedLeftSide = false;
         this._reachedLeftLane = false;
+        // Ethical driving state flags (new mechanics)
+        this._turnAccum = 0;          // sustained turning time without indicator
+        this._turnAccumDir = 0;       // which direction accumulator is tracking
+        this._lastInputTime = 0;      // timestamp of last keyboard/touch input
+        this._idleHintShown = false;  // whether idle hint is currently showing
+        this._phoneRingTimer = 15;    // seconds until next phone ring temptation
+        this._phoneRinging = false;   // whether phone ring overlay is active
+        this._zebraYieldShown = false; // whether zebra yield prompt is showing
+        this._zebraYieldCD = 0;       // cooldown for zebra yield prompt
+        this._roadSignCD = 0;         // cooldown for road-sign interaction
+        this._animalCrossCount = 0;   // animals successfully stopped for
+        this._litterHits = 0;         // litter items hit
+        this._overtakeCheckDone = false; // whether overtake safety was checked
+        this._roadRageCD = 0;         // cooldown for road-rage effects
+        this._policeStopActive = false;  // police checkpoint stop in progress
+        this._policeStopTimer = 0;    // time player has been stopped at checkpoint
         this._reachedMainRoad = false;
         this._reachedGuard = false;
         this._reachedVolunteer = false;
@@ -1314,6 +1348,52 @@ class Game {
               this.turnSignal = dir;
               toast(dir === -1 ? 'Left Signal ON' : 'Right Signal ON', '#f39c12');
           }
+      }
+      // ── Road-sign recognition quiz (C) ──
+      _showRoadSignQuiz(sign) {
+        const signTypes = [
+          { q: 'What does this sign mean?', icon: '🚸', correct: 'School Zone', opts: ['School Zone', 'No Parking', 'Speed Breaker', 'Toll Ahead'] },
+          { q: 'Identify this sign:', icon: '🛑', correct: 'Stop', opts: ['Stop', 'Give Way', 'No Entry', 'One Way'] },
+          { q: 'What does this sign indicate?', icon: '⚠️', correct: 'Speed Breaker Ahead', opts: ['Speed Breaker Ahead', 'Narrow Road', 'Slippery Road', 'Falling Rocks'] },
+          { q: 'Read this road sign:', icon: '🚫', correct: 'No Entry', opts: ['No Entry', 'No Parking', 'No Horn', 'No Overtaking'] },
+          { q: 'What does this sign mean?', icon: '🛣️', correct: 'Speed Limit', opts: ['Speed Limit', 'End of Restricted Zone', 'Highway Start', 'Toll Ahead'] },
+          { q: 'Identify this sign:', icon: '🚧', correct: 'Road Work Ahead', opts: ['Road Work Ahead', 'Detour', 'Closed Road', 'Accident Zone'] },
+          { q: 'What does this sign indicate?', icon: '🏭', correct: 'Industrial Area', opts: ['Industrial Area', 'Hospital Zone', 'School Zone', 'Residential Zone'] },
+          { q: 'Read this road sign:', icon: '⛪', correct: 'Hospital Zone', opts: ['Hospital Zone', 'School Zone', 'Religious Place', 'Community Center'] },
+        ];
+        const pick = signTypes[Math.floor(Math.random() * signTypes.length)];
+        const shuffled = pick.opts.sort(() => Math.random() - 0.5);
+        let quiz = document.getElementById('road-sign-quiz');
+        if (!quiz) {
+          quiz = document.createElement('div');
+          quiz.id = 'road-sign-quiz';
+          quiz.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:3px solid #5ed4f5;border-radius:16px;padding:24px;z-index:10010;width:min(400px,85vw);box-shadow:0 8px 40px rgba(0,0,0,.7);';
+          document.body.appendChild(quiz);
+        }
+        quiz.innerHTML = `<div style="text-align:center;margin-bottom:16px"><div style="font-size:48px">${pick.icon}</div><div style="color:#e8e3d8;font-size:18px;margin-top:8px;font-weight:600">${pick.q}</div></div><div style="display:flex;flex-direction:column;gap:8px" id="rsq-opts"></div>`;
+        quiz.style.display = 'block';
+        const optContainer = quiz.querySelector('#rsq-opts');
+        shuffled.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.textContent = opt;
+          btn.style.cssText = 'padding:12px;border:2px solid #333;border-radius:10px;background:#111;color:#e8e3d8;font-size:16px;cursor:pointer;transition:all .2s;font-weight:600;';
+          btn.addEventListener('mouseenter', () => { btn.style.borderColor = '#5ed4f5'; btn.style.background = '#1a2a3e'; });
+          btn.addEventListener('mouseleave', () => { btn.style.borderColor = '#333'; btn.style.background = '#111'; });
+          btn.addEventListener('click', () => {
+            quiz.style.display = 'none';
+            if (opt === pick.correct) {
+              toast('✅ Correct! +50 bonus points', '#34d399');
+              this.score += 50;
+              sfx.play('correct');
+            } else {
+              toast(`❌ Wrong! It means: ${pick.correct}`, '#ef4444');
+              this.score -= 20;
+              sfx.play('error');
+            }
+            if (sign) sign._answered = true;
+          });
+          optContainer.appendChild(btn);
+        });
       }
       toggleMobile(btn) {
           this.mobileOn = !this.mobileOn;
@@ -1643,6 +1723,20 @@ class Game {
         let cfg = Object.assign({}, base);
         if (lv) Object.assign(cfg, lv);
         cfg.startOutside = true;
+        // Auto-generate intersection points from road data if not defined
+        if (!cfg.ints && cfg.roads) {
+          const vRoads = cfg.roads.filter(r => r.type === 'v');
+          const hRoads = cfg.roads.filter(r => r.type === 'h');
+          const ints = [];
+          for (const vr of vRoads) {
+            for (const hr of hRoads) {
+              if (vr.x >= hr.x1 && vr.x <= hr.x2 && hr.z >= vr.z1 && hr.z <= vr.z2) {
+                ints.push([vr.x, hr.z]);
+              }
+            }
+          }
+          cfg.ints = ints;
+        }
         return cfg;
 
       }
@@ -1757,8 +1851,7 @@ class Game {
         const sk = cfg.sky;
         this.scene.background = new THREE.Color(sk);
         const fogDist = cfg.fog || 200;
-        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-        const lowPerf = isMobile || this._isLowGPU;
+        const lowPerf = this._isMobile || this._isLowGPU;
         const fogNear = lowPerf ? Math.min(fogDist * 0.35, 50) : fogDist * 0.35;
         const fogFar = lowPerf ? Math.min(fogDist * 1.2, 250) : fogDist * 1.2;
         if (cfg.mode === 'rain' || cfg.hasRain) {
@@ -1767,30 +1860,42 @@ class Game {
             this.scene.fog = new THREE.Fog(sk, fogNear, fogFar);
         }
         // Enhanced true color lighting with better contrast and shadows
-        this.scene.add(new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.1 : 0.35));
-        const hemi = new THREE.HemisphereLight(0x87ceeb, 0x8a7560, cfg.isNight ? 0.1 : 0.45);
-        this.scene.add(hemi);
+        this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.1 : 0.35);
+        this.scene.add(this._ambient);
+        this._hemi = new THREE.HemisphereLight(0x87ceeb, 0x8a7560, cfg.isNight ? 0.1 : 0.45);
+        this.scene.add(this._hemi);
 
-        const sun = new THREE.DirectionalLight(0xfff5e0, cfg.isNight ? 0.4 : 1.2);
-        sun.position.set(30, 60, 20); 
-        sun.castShadow = true;
-        sun.shadow.camera.near = 0.5;
-        sun.shadow.camera.far = 200;
-        sun.shadow.camera.left = -60;
-        sun.shadow.camera.right = 60;
-        sun.shadow.camera.top = 60;
-        sun.shadow.camera.bottom = -60;
-        sun.shadow.bias = -0.0005;
-        sun.shadow.mapSize.width = 2048;
-        sun.shadow.mapSize.height = 2048;
-        this.scene.add(sun);
-        this._sun = sun; this._sunLastPos = null;
-        
+        this._sun = new THREE.DirectionalLight(0xfff5e0, cfg.isNight ? 0.4 : 1.2);
+        this._sun.position.set(30, 60, 20);
+        this._sun.castShadow = true;
+        this._sun.shadow.camera.near = 0.5;
+        this._sun.shadow.camera.far = 200;
+        this._sun.shadow.camera.left = -60;
+        this._sun.shadow.camera.right = 60;
+        this._sun.shadow.camera.top = 60;
+        this._sun.shadow.camera.bottom = -60;
+        this._sun.shadow.bias = -0.0005;
+        const initShadowRes = (this._isMobile || this._isLowGPU) ? 512 : 1024;
+        this._sun.shadow.mapSize.width = initShadowRes;
+        this._sun.shadow.mapSize.height = initShadowRes;
+        this._shadowQuality = initShadowRes;
+        this.scene.add(this._sun);
+        this._sunLastPos = null;
+
+        // Moon light (always created, toggled by day/night cycle)
+        this._moon = new THREE.DirectionalLight(0x88aacc, cfg.isNight ? 0.5 : 0);
+        this._moon.position.set(-20, 40, -30);
+        this.scene.add(this._moon);
+
+        // Initialize day/night cycle
+        this._streetLights = [];
+        this._windowLights = [];
         if (cfg.isNight) {
-          const moon = new THREE.DirectionalLight(0x88aacc, 0.5); 
-          moon.position.set(-20, 40, -30); 
-          moon.castShadow = true;
-          this.scene.add(moon);
+          this.dayNightCycle = false;
+          this.timeOfDay = 0.85;
+        } else {
+          this.dayNightCycle = true;
+          this.timeOfDay = 0.4;
         }
 
         const RW = cfg.isPedestrian ? 10 : 12;
@@ -2036,12 +2141,11 @@ class Game {
                 const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.35, 0.9), new THREE.MeshBasicMaterial({ color: 0xffffee }));
                 lamp.position.set(lx + (isV ? -side * 0.4 : 0), 7, lz + (!isV ? -side * 0.4 : 0));
                 this.scene.add(lamp);
-                // ── STREETLIGHT PointLight (night mode) ──
-                if (cfg.isNight) {
-                  const sl = new THREE.PointLight(0xffffee, 0.8, 35);
-                  sl.position.set(lamp.position.x, 6.8, lamp.position.z);
-                  this.scene.add(sl);
-                }
+                // ── STREETLIGHT PointLight (day/night cycle) ──
+                const sl = new THREE.PointLight(0xffffee, cfg.isNight ? 0.8 : 0, 35);
+                sl.position.set(lamp.position.x, 6.8, lamp.position.z);
+                this.scene.add(sl);
+                this._streetLights.push(sl);
               }
             });
           }
@@ -2071,6 +2175,7 @@ class Game {
                     instancedMesh.frustumCulled = false;
                     
                     const dummy = new THREE.Object3D();
+                    const finalMatrix = new THREE.Matrix4();
                     
                     instances.forEach((inst, i) => {
                         dummy.position.set(inst.x, 0, inst.z);
@@ -2078,7 +2183,7 @@ class Game {
                         dummy.scale.set(inst.s, inst.s, inst.s);
                         dummy.updateMatrix();
                         
-                        const finalMatrix = new THREE.Matrix4().multiplyMatrices(dummy.matrix, mesh.matrixWorld);
+                        finalMatrix.multiplyMatrices(dummy.matrix, mesh.matrixWorld);
                         instancedMesh.setMatrixAt(i, finalMatrix);
                     });
                     instancedMesh.instanceMatrix.needsUpdate = true;
@@ -2094,6 +2199,19 @@ class Game {
                 });
             });
         }
+
+        // ── Building window glow lights (night effect) ──
+        this._windowLights = [];
+        const bldgObs = this.obstacles.filter(o => o.userData && o.userData.isBuilding);
+        const maxWL = Math.min(bldgObs.length, 25);
+        const shuffledBldg = [...bldgObs].sort(() => Math.random() - 0.5).slice(0, maxWL);
+        shuffledBldg.forEach(obs => {
+          const wl = new THREE.PointLight(0xffeeaa, cfg.isNight ? 0.6 : 0, 12);
+          wl.position.set(obs.position.x, 3 + Math.random() * 3, obs.position.z);
+          wl.castShadow = false;
+          this.scene.add(wl);
+          this._windowLights.push(wl);
+        });
 
         // ── Trees along sidewalks ──
         if (window.PRELOADED_MODELS && (window.PRELOADED_MODELS.tree_small || window.PRELOADED_MODELS.tree_large)) {
@@ -2134,7 +2252,7 @@ class Game {
         }
 
         // ── Mobile LOD: cull/simplify distant buildings ──
-        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+        if (this._isMobile) {
           this.scene.children.forEach(child => {
             if (child.isMesh || child.isInstancedMesh) {
               const d = child.position ? child.position.length() : 0;
@@ -2333,8 +2451,8 @@ class Game {
              routeIdx: cfg.route ? Math.floor(Math.random() * cfg.route.length) : 0,
              laneOffset: laneOffset
            };
-          // ── NPC HEADLIGHTS (night mode) ──
-          if (cfg.isNight && nType !== 'cycle') {
+          // ── NPC HEADLIGHTS (always create, visibility toggled by day/night cycle) ──
+          if (nType !== 'cycle') {
             const hlL = new THREE.SpotLight(0xffffee, 1.2, 60, Math.PI / 6, 0.6, 1);
             hlL.position.set(0.8, 1.2, 2);
             hlL.target.position.set(0.8, 0, 12);
@@ -2349,6 +2467,14 @@ class Game {
             const tlL = new THREE.Mesh(tlGeo, tlMat); tlL.position.set(0.6, 1, -2.5);
             const tlR = new THREE.Mesh(tlGeo, tlMat); tlR.position.set(-0.6, 1, -2.5);
             nv.add(tlL); nv.add(tlR);
+            // Start off if day, on if night
+            const startOn = !!cfg.isNight;
+            hlL.intensity = startOn ? 1.2 : 0;
+            hlR.intensity = startOn ? 1.2 : 0;
+            tlL.visible = startOn;
+            tlR.visible = startOn;
+            hlL.target.visible = startOn;
+            hlR.target.visible = startOn;
           }
           nv.frustumCulled = true;
           nv.userData.isNPC = true; // Phase 7: mark for recycling on level change
@@ -2677,6 +2803,86 @@ class Game {
               isV ? seg.z1 + Math.random() * (seg.z2 - seg.z1) : seg.z + side * 15
             );
             this.scene.add(light);
+          }
+        }
+
+        // ── FESTIVAL BUNTING (across-road triangular flags) ──
+        if (cfg.crowdFestival) {
+          const buntingColors = [0xff6b35, 0xffd700, 0xff1493, 0x00ff00, 0xff4444, 0x4488ff];
+          const poleGeo = new THREE.CylinderGeometry(0.06, 0.06, 7, 6);
+          const poleMat = new THREE.MeshToonMaterial({ color: 0x888888 });
+          const flagGeo = new THREE.BufferGeometry();
+          // Each flag is a triangle (2 triangles = 6 vertices for flat shading)
+          const flagPositions = new Float32Array([
+            -0.5, 0, 0,   0.5, 0, 0,   0, -1.2, 0
+          ]);
+          flagGeo.setAttribute('position', new THREE.Float32BufferAttribute(flagPositions, 3));
+          flagGeo.computeVertexNormals();
+          const numBuntings = Math.min(allRoads.length * 2, 30);
+          for (let b = 0; b < numBuntings; b++) {
+            const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+            const isV = seg.type === 'v';
+            // Pick a position along the road
+            let roadLen, roadPos;
+            if (isV) {
+              roadLen = Math.abs(seg.z2 - seg.z1);
+              roadPos = seg.z1 + Math.random() * roadLen;
+            } else {
+              roadLen = Math.abs(seg.x2 - seg.x1);
+              roadPos = seg.x1 + Math.random() * roadLen;
+            }
+            // Place poles on both sides of road, perpendicular to road direction
+            const roadHalfW = 6; // offset from road center to pole
+            const numFlags = 5 + Math.floor(Math.random() * 4);
+            const flagColor = buntingColors[Math.floor(Math.random() * buntingColors.length)];
+            const flagMat = new THREE.MeshToonMaterial({ color: flagColor, side: THREE.DoubleSide });
+            if (isV) {
+              // Vertical road — poles at seg.x ± roadHalfW, flags spaced along Z
+              const p1 = new THREE.Mesh(poleGeo, poleMat);
+              p1.position.set(seg.x - roadHalfW, 3.5, roadPos);
+              this.scene.add(p1);
+              const p2 = new THREE.Mesh(poleGeo, poleMat);
+              p2.position.set(seg.x + roadHalfW, 3.5, roadPos);
+              this.scene.add(p2);
+              // String line between poles (cylinder stretched thin)
+              const span = roadHalfW * 2;
+              const stringGeo = new THREE.CylinderGeometry(0.02, 0.02, span, 4);
+              const stringMat = new THREE.MeshToonMaterial({ color: 0xaaaaaa });
+              const string = new THREE.Mesh(stringGeo, stringMat);
+              string.rotation.z = Math.PI / 2;
+              string.position.set(seg.x, 6.8, roadPos);
+              this.scene.add(string);
+              // Flags along the string
+              for (let f = 0; f < numFlags; f++) {
+                const flag = new THREE.Mesh(flagGeo, flagMat);
+                const t = (f + 1) / (numFlags + 1);
+                flag.position.set(seg.x - roadHalfW + t * span, 6.2, roadPos);
+                flag.rotation.y = Math.random() * 0.3;
+                this.scene.add(flag);
+              }
+            } else {
+              // Horizontal road — poles at seg.z ± roadHalfW, flags spaced along X
+              const p1 = new THREE.Mesh(poleGeo, poleMat);
+              p1.position.set(roadPos, 3.5, seg.z - roadHalfW);
+              this.scene.add(p1);
+              const p2 = new THREE.Mesh(poleGeo, poleMat);
+              p2.position.set(roadPos, 3.5, seg.z + roadHalfW);
+              this.scene.add(p2);
+              const span = roadHalfW * 2;
+              const stringGeo = new THREE.CylinderGeometry(0.02, 0.02, span, 4);
+              const stringMat = new THREE.MeshToonMaterial({ color: 0xaaaaaa });
+              const string = new THREE.Mesh(stringGeo, stringMat);
+              string.rotation.x = Math.PI / 2;
+              string.position.set(roadPos, 6.8, seg.z);
+              this.scene.add(string);
+              for (let f = 0; f < numFlags; f++) {
+                const flag = new THREE.Mesh(flagGeo, flagMat);
+                const t = (f + 1) / (numFlags + 1);
+                flag.position.set(roadPos, 6.2, seg.z - roadHalfW + t * span);
+                flag.rotation.y = Math.PI / 2 + Math.random() * 0.3;
+                this.scene.add(flag);
+              }
+            }
           }
         }
 
@@ -3268,11 +3474,62 @@ class Game {
         this.rain = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x9cc9ff, size: 0.08, transparent: true, opacity: 0.6 }));
         this.scene.add(this.rain);
         this._rainCenter = { x: 0, z: 0 };
+        // Wind drift for slanted rain
+        this._rainWindX = 0;
+        this._rainWindZ = 0;
+        this._rainWindTargetX = 0;
+        this._rainWindTargetZ = 0;
+        this._rainWindTimer = 0;
         // Add lightning for night rain levels
         if (this.mapCfg && this.mapCfg.isNight) {
             this._lightningTimer = 0;
             this._lightningFlash = null;
         }
+        // Rain ambient audio — filtered white noise loop
+        this._rainAudio = null;
+        this._rainGain = null;
+        this._startRainAudio();
+      }
+      _startRainAudio() {
+        try {
+          const actx = window.sfx && window.sfx._c;
+          if (!actx) return;
+          // Create white noise buffer (2 seconds, looping)
+          const sr = actx.sampleRate;
+          const len = sr * 2;
+          const buf = actx.createBuffer(1, len, sr);
+          const data = buf.getChannelData(0);
+          for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+          const src = actx.createBufferSource();
+          src.buffer = buf;
+          src.loop = true;
+          // Low-pass filter for rain-like sound
+          const lp = actx.createBiquadFilter();
+          lp.type = 'lowpass';
+          lp.frequency.value = 800;
+          lp.Q.value = 0.5;
+          // Gain node for volume control
+          const gain = actx.createGain();
+          gain.gain.value = 0;
+          src.connect(lp);
+          lp.connect(gain);
+          gain.connect(actx.destination);
+          src.start();
+          this._rainAudio = src;
+          this._rainGain = gain;
+          this._rainFilter = lp;
+        } catch (e) {}
+      }
+      _updateRainAudio(active) {
+        const g = this._rainGain;
+        if (!g) return;
+        try {
+          const actx = window.sfx && window.sfx._c;
+          const catVol = (window.sfx && window.sfx.vol && window.sfx.vol.env) || 1;
+          const target = active ? 0.04 * catVol : 0;
+          const now = actx ? actx.currentTime : 0;
+          g.gain.linearRampToValueAtTime(target, now + 1.5);
+        } catch (e) {}
       }
       _updateRain(dt) {
         if (!this.rain) return;
@@ -3284,10 +3541,22 @@ class Game {
             this._rainCenter.x += (px - this._rainCenter.x) * 0.05;
             this._rainCenter.z += (pz - this._rainCenter.z) * 0.05;
         }
+        // Wind drift — slowly vary direction for realism
+        this._rainWindTimer += dt;
+        if (this._rainWindTimer > 3 + Math.random() * 4) {
+            this._rainWindTimer = 0;
+            this._rainWindTargetX = (Math.random() - 0.5) * 12;
+            this._rainWindTargetZ = (Math.random() - 0.5) * 8;
+        }
+        this._rainWindX += (this._rainWindTargetX - this._rainWindX) * dt * 0.3;
+        this._rainWindZ += (this._rainWindTargetZ - this._rainWindZ) * dt * 0.3;
         const pos = this.rain.geometry.attributes.position.array;
         const count = pos.length / 3;
+        const fallSpeed = 25;
         for (let i = 0; i < count; i++) {
-            pos[i * 3 + 1] -= 25 * dt; // fall speed
+            pos[i * 3] += this._rainWindX * dt; // horizontal wind drift
+            pos[i * 3 + 1] -= fallSpeed * dt; // fall speed
+            pos[i * 3 + 2] += this._rainWindZ * dt;
             if (pos[i * 3 + 1] < 0) {
                 pos[i * 3 + 1] = 35 + Math.random() * 5;
                 pos[i * 3] = this._rainCenter.x + (Math.random() - .5) * 400;
@@ -3552,7 +3821,7 @@ class Game {
       _loop() {
         // PERFORMANCE: Frame rate capping to prevent excessive CPU/GPU usage
         const now = performance.now();
-        const isLowEnd = this._isMobile && (navigator.deviceMemory || 4) < 6;
+        const isLowEnd = this._isMobile && (navigator.deviceMemory || 8) < 6;
         const frameInterval = isLowEnd ? 1000 / 30 : 1000 / 60;
         const elapsed = now - (this._lastFrame || 0);
         if (elapsed < frameInterval) {
@@ -3565,7 +3834,7 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt);
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain);
 
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
@@ -3736,6 +4005,28 @@ class Game {
           const tiltTarget = -tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04);
           this._camTilt += (tiltTarget - this._camTilt) * Math.min(1, dt * 8);
 
+          // ── Indicator non-use fine (F) ──
+          // Track sustained turning; fine if turning > 1.5s without indicator
+          if (!this.isPedestrian && tAmt !== 0 && Math.abs(this.speed) > 0.05) {
+            const turnDir = tAmt > 0 ? -1 : 1; // left=1, right=-1 (maps to turnSignal convention)
+            if (this._turnAccumDir === turnDir) {
+              this._turnAccum += dt;
+            } else {
+              this._turnAccum = dt;
+              this._turnAccumDir = turnDir;
+            }
+            if (this._turnAccum > 1.5 && this.turnSignal === 0 && !this.challanFired.has('no_indicator')) {
+              this.challanFired.add('no_indicator');
+              ui.issueChallan('Turning without Indicator', 'Sec 125 MV Act', '₹500', 'Signal Violation');
+              this.vio++; this.score -= 30; this.fine += 500;
+              toast('⚠️ Use turn signals! ₹500 fine', '#ff9500');
+              sfx.play('error');
+            }
+          } else {
+            this._turnAccum = 0;
+            this._turnAccumDir = 0;
+          }
+
           const targetVx = Math.sin(this.player.rotation.y) * this.speed;
           const targetVz = Math.cos(this.player.rotation.y) * this.speed;
           // ── Lateral grip model ──
@@ -3867,7 +4158,272 @@ class Game {
                  }
               }
             }
+
+            // ── Idle-time reminder tooltips (D) ──
+            if (!this.isPedestrian && Math.abs(this.speed) < 0.02 && (this.timer - this._lastInputTime) > 10 && !this._idleHintShown) {
+              this._idleHintShown = true;
+              let hint = document.getElementById('idle-hint');
+              if (!hint) {
+                hint = document.createElement('div');
+                hint.id = 'idle-hint';
+                hint.style.cssText = 'position:fixed;bottom:22%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 22px;border-radius:12px;font-size:18px;z-index:10001;pointer-events:none;text-align:center;transition:opacity .4s;white-space:nowrap;';
+                document.body.appendChild(hint);
+              }
+              const hints = ['⬆️ Press W or ↑ to drive', '🔄 Q/E to use turn signals', '🅿️ Press P to park', '💡 H for high beam', '📱 M for GPS'];
+              hint.textContent = hints[Math.floor(Math.random() * hints.length)];
+              hint.style.opacity = '1';
+            }
+            if (this._idleHintShown && (this.timer - this._lastInputTime) < 10) {
+              this._idleHintShown = false;
+              const h = document.getElementById('idle-hint');
+              if (h) h.style.opacity = '0';
+            }
+
+            // ── Phone ringing temptation overlay (G) ──
+            if (!this.isPedestrian && this.mode !== 'pedestrian') {
+              this._phoneRingTimer -= dt;
+              if (this._phoneRingTimer <= 0 && !this._phoneRinging && !this._phoneDismissed) {
+                this._phoneRinging = true;
+                this._phoneRingTimer = 25 + Math.random() * 15;
+                this._phoneRingingStart = this.timer;
+                // Play ring SFX
+                if (typeof sfx !== 'undefined' && sfx.play) sfx.play('horn');
+                let ringEl = document.getElementById('phone-ring-overlay');
+                if (!ringEl) {
+                  ringEl = document.createElement('div');
+                  ringEl.id = 'phone-ring-overlay';
+                  ringEl.style.cssText = 'position:fixed;top:12%;left:50%;transform:translateX(-50%);background:#1a1a2e;border:3px solid #f2b84b;border-radius:16px;padding:20px 30px;z-index:10002;display:flex;flex-direction:column;align-items:center;gap:12px;animation:ring-pulse 1s ease-in-out infinite;box-shadow:0 0 30px rgba(242,184,75,.4);';
+                  ringEl.innerHTML = '<div style="font-size:36px">📱</div><div style="color:#f2b84b;font-size:18px;font-weight:700">Incoming Call!</div><div style="color:#ccc;font-size:14px">Mom is calling...</div><div style="display:flex;gap:12px;margin-top:8px"><button id="phone-answer" style="background:#34d399;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:700">Answer</button><button id="phone-ignore" style="background:#ef4444;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:700">Ignore</button></div>';
+                  document.body.appendChild(ringEl);
+                } else { ringEl.style.display = 'flex'; ringEl.style.animation = 'ring-pulse 1s ease-in-out infinite'; }
+                document.getElementById('phone-answer')?.addEventListener('click', () => {
+                  ringEl.style.display = 'none'; ringEl.style.animation = 'none';
+                  this._phoneRinging = false; this._phoneDismissed = true;
+                  if (typeof sfx !== 'undefined' && sfx.play) sfx.play('error');
+                  if (window.ui && window.ui.issueChallan) {
+                    window.ui.issueChallan('Distracted Driving - Phone', 'Sec 184 MV Act', '₹1,000', 'Mobile Use');
+                    this.score -= 25; this.fine += 1000; this.vio++;
+                  }
+                  toast('📱 Phone use while driving! ₹1,000 fine', '#ef4444');
+                });
+                document.getElementById('phone-ignore')?.addEventListener('click', () => {
+                  ringEl.style.display = 'none'; ringEl.style.animation = 'none';
+                  this._phoneRinging = false; this._phoneDismissed = true;
+                  toast('Good choice — ignore the phone! ✓', '#34d399');
+                });
+              }
+            }
+            if (this._phoneDismissed && this._phoneRingTimer < -5) { this._phoneDismissed = false; }
+
+            // ── Zebra crossing yield prompt (H) ──
+            if (!this.isPedestrian && Math.abs(this.speed) > 0.05 && this._zebraYieldCD <= 0) {
+              const ints = this.mapCfg?.ints || [];
+              const pp = this.player.position;
+              for (const [ix, iz] of ints) {
+                const dx = Math.abs(pp.x - ix), dz = Math.abs(pp.z - iz);
+                if (dx < 8 && dz < 8) {
+                  // Check if any pedestrian is near this crossing
+                  const nearPed = this.peds?.some(p => p && Math.abs(p.position.x - ix) < 5 && Math.abs(p.position.z - iz) < 5);
+                  if (nearPed) {
+                    this._zebraYieldShown = true;
+                    this._zebraYieldCD = 12;
+                    let zp = document.getElementById('zebra-yield-prompt');
+                    if (!zp) {
+                      zp = document.createElement('div');
+                      zp.id = 'zebra-yield-prompt';
+                      zp.style.cssText = 'position:fixed;top:18%;left:50%;transform:translateX(-50%);background:rgba(239,68,68,.92);color:#fff;padding:16px 28px;border-radius:14px;font-size:22px;z-index:10003;pointer-events:none;text-align:center;animation:zebra-flash .6s ease-in-out 3;box-shadow:0 0 25px rgba(239,68,68,.5);';
+                      zp.innerHTML = '🚶 Zebra Crossing — Yield to Pedestrians! 🚶';
+                      document.body.appendChild(zp);
+                    } else { zp.style.display = 'block'; zp.style.animation = 'zebra-flash .6s ease-in-out 3'; }
+                    setTimeout(() => { if (zp) zp.style.display = 'none'; }, 2500);
+                    break;
+                  }
+                }
+              }
+            }
+            if (this._zebraYieldCD > 0) this._zebraYieldCD -= dt;
+            if (this._zebraYieldShown && this._zebraYieldCD <= 0) this._zebraYieldShown = false;
+
+            // ── Road-sign recognition mini-tasks (C) ──
+            if (!this.isPedestrian && Math.abs(this.speed) > 0.3 && this._roadSignCD <= 0) {
+              const signs = this.mapCfg?.signs || [];
+              const pp = this.player.position;
+              for (const sign of signs) {
+                const dx = Math.abs(pp.x - sign.x), dz = Math.abs(pp.z - sign.z);
+                if (dx < 6 && dz < 6 && !sign._answered) {
+                  this._roadSignCD = 15;
+                  this._showRoadSignQuiz(sign);
+                  break;
+                }
+              }
+            }
+            if (this._roadSignCD > 0) this._roadSignCD -= dt;
+
+            // ── Overtaking safety check (I) ──
+            if (!this.isPedestrian && this.turnSignal !== 0 && Math.abs(this.speed) > 0.3 && !this._overtakeCheckDone) {
+              this._overtakeCheckDone = true;
+              const pp = this.player.position;
+              const fwd = new THREE.Vector3(Math.sin(this.player.rotation.y), 0, Math.cos(this.player.rotation.y));
+              let oncoming = false;
+              for (const nv of this.npcs) {
+                if (!nv || !nv.position) continue;
+                const toNpc = new THREE.Vector3().subVectors(nv.position, pp);
+                const dot = toNpc.dot(fwd);
+                if (dot > 0 && dot < 20) {
+                  const npcSpeed = nv.userData?.speed || 0;
+                  if (npcSpeed < -0.05) { oncoming = true; break; }
+                }
+              }
+              if (oncoming) {
+                toast('⚠️ Oncoming traffic detected! Check before overtaking.', '#ef4444');
+                if (typeof sfx !== 'undefined' && sfx.play) sfx.play('error');
+              }
+            }
+            if (this.turnSignal === 0 && this._overtakeCheckDone) this._overtakeCheckDone = false;
           }
+        }
+
+        // ── Animal crossing zones (A) ──
+        if (!this.isPedestrian && this.mapCfg?.animalCrossings) {
+          if (!this._animals) {
+            this._animals = [];
+            this._animalCrossCount = 0;
+            this.mapCfg.animalCrossings.forEach(([ax, az]) => {
+              const animalColors = [0x8B4513, 0xD2691E, 0xA0522D, 0x6B3A2A];
+              const isCow = Math.random() > 0.4;
+              const body = new THREE.Mesh(
+                new THREE.BoxGeometry(isCow ? 1.2 : 0.8, isCow ? 0.9 : 0.6, isCow ? 2.0 : 1.4),
+                new THREE.MeshPhongMaterial({ color: animalColors[Math.floor(Math.random() * animalColors.length)] })
+              );
+              body.position.set(ax + (Math.random() - 0.5) * 3, isCow ? 0.5 : 0.3, az + (Math.random() - 0.5) * 3);
+              body.castShadow = true;
+              body.userData = { crossing: true, ax, az, dir: Math.random() > 0.5 ? 1 : -1, crossed: false, speed: 0.3 + Math.random() * 0.2 };
+              this.scene.add(body);
+              this._animals.push(body);
+            });
+          }
+          const pp = this.player.position;
+          this._animals.forEach(a => {
+            const adx = pp.x - a.position.x, adz = pp.z - a.position.z;
+            const aDist = Math.sqrt(adx * adx + adz * adz);
+            // Animate crossing when player is within 20 units
+            if (aDist < 20 && !a.userData.crossed) {
+              a.position.x += a.userData.dir * a.userData.speed * dt;
+              if (Math.abs(a.position.x - a.userData.ax) > 6) { a.userData.crossed = true; }
+            }
+            // Stop + fine if player hits animal
+            if (aDist < 2.5 && !a.userData.hit) {
+              a.userData.hit = true;
+              this.speed *= 0.1;
+              if (typeof sfx !== 'undefined' && sfx.play) sfx.play('brake');
+              toast('🐄 Animal crossing! Slow down and yield!', '#ff9500');
+            }
+            // Successful yield: player stops near animal
+            if (aDist < 5 && aDist > 2.5 && Math.abs(this.speed) < 0.05 && !a.userData.counted) {
+              a.userData.counted = true;
+              this._animalCrossCount++;
+              toast(`🐾 Animals yielded: ${this._animalCrossCount}/3`, '#34d399');
+            }
+          });
+        }
+
+        // ── Littering penalty system (B) ──
+        if (!this.isPedestrian && !this._litterSpawned && this.playing) {
+          this._litterSpawned = true;
+          this._litters = [];
+          // Spawn 5-8 random litter items along roads
+          const litterCount = 5 + Math.floor(Math.random() * 4);
+          for (let i = 0; i < litterCount; i++) {
+            const roads = this.mapCfg?.roads || [];
+            if (roads.length === 0) break;
+            const r = roads[Math.floor(Math.random() * roads.length)];
+            const lx = r.type === 'v' ? r.x + (Math.random() - 0.5) * 4 : (r.x1 || -50) + Math.random() * ((r.x2 || 50) - (r.x1 || -50));
+            const lz = r.type === 'h' ? r.z + (Math.random() - 0.5) * 4 : (r.z1 || -50) + Math.random() * ((r.z2 || 50) - (r.z1 || -50));
+            const litterTypes = [0.4, 0.3, 0.2]; // boxW, boxH, boxD
+            const boxW = 0.4 + Math.random() * 0.3;
+            const litter = new THREE.Mesh(
+              new THREE.BoxGeometry(boxW, 0.15 + Math.random() * 0.2, boxW),
+              new THREE.MeshPhongMaterial({ color: [0xffffff, 0x4488ff, 0xff6600, 0x88cc44][Math.floor(Math.random() * 4)] })
+            );
+            litter.position.set(lx, 0.1, lz);
+            litter.rotation.y = Math.random() * Math.PI;
+            litter.userData = { isLitter: true };
+            this.scene.add(litter);
+            this._litters.push(litter);
+          }
+        }
+        // Check litter collision
+        if (this._litters) {
+          const pp = this.player.position;
+          this._litters.forEach(l => {
+            if (l.userData.hit) return;
+            const dx = pp.x - l.position.x, dz = pp.z - l.position.z;
+            if (Math.sqrt(dx * dx + dz * dz) < 1.8 && Math.abs(this.speed) > 0.1) {
+              l.userData.hit = true;
+              this._litterHits++;
+              this.vio++; this.score -= 15;
+              toast(`🗑️ Litter hit! -15 pts (${this._litterHits} total)`, '#ff9500');
+              if (typeof sfx !== 'undefined' && sfx.play) sfx.play('error');
+            }
+          });
+        }
+
+        // ── Police checkpoint stop-and-check (K) ──
+        if (!this.isPedestrian && this.mapCfg?.policeCheckpoints) {
+          if (!this._policeCheckpoints) {
+            this._policeCheckpoints = [];
+            this.mapCfg.policeCheckpoints.forEach(([cx, cz]) => {
+              // Build a police officer NPC
+              const cop = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.3, 0.3, 1.8, 8),
+                new THREE.MeshPhongMaterial({ color: 0x000066 })
+              );
+              cop.position.set(cx, 0.9, cz);
+              cop.castShadow = true;
+              // Stop sign above cop
+              const sign = new THREE.Mesh(
+                new THREE.BoxGeometry(1.2, 0.8, 0.1),
+                new THREE.MeshPhongMaterial({ color: 0xff0000 })
+              );
+              sign.position.set(cx, 2.2, cz);
+              this.scene.add(cop, sign);
+              this._policeCheckpoints.push({ cop, sign, cx, cz, triggered: false, cleared: false });
+            });
+          }
+          const pp = this.player.position;
+          this._policeCheckpoints.forEach(cp => {
+            const dx = pp.x - cp.cx, dz = pp.z - cp.cz;
+            const dist = Math.sqrt(dx * dx + dz * dz);
+            if (dist < 12 && dist > 4 && !cp.triggered && !cp.cleared) {
+              cp.triggered = true;
+              toast('👮 Police checkpoint — Stop your vehicle!', '#3b82f6');
+              if (typeof sfx !== 'undefined' && sfx.play) sfx.play('horn');
+              this._policeStopActive = true;
+              this._policeStopTimer = 0;
+            }
+            if (cp.triggered && !cp.cleared) {
+              if (Math.abs(this.speed) < 0.02) {
+                this._policeStopTimer += dt;
+                if (this._policeStopTimer > 3) {
+                  cp.cleared = true;
+                  this._policeStopActive = false;
+                  this._policeStopTimer = 0;
+                  toast('✅ Checkpoint cleared! Drive safe.', '#34d399');
+                  this.score += 20;
+                }
+              } else if (dist < 15 && this._policeStopTimer > 0.5 && Math.abs(this.speed) > 0.3) {
+                // Tried to speed through
+                cp.cleared = true;
+                this._policeStopActive = false;
+                this._policeStopTimer = 0;
+                if (window.ui && window.ui.issueChallan) {
+                  window.ui.issueChallan('Fleeing Police Checkpoint', 'Sec 186 MV Act', '₹2,000', 'Checkpoint Evasion');
+                  this.score -= 50; this.fine += 2000; this.vio++;
+                }
+                toast('🚨 You fled the checkpoint! ₹2,000 fine!', '#ef4444');
+              }
+            }
+          });
         }
       }
       _usigs(dt) {
@@ -4389,14 +4945,15 @@ class Game {
               const lOff = n.userData.laneOffset;
               const tX = isVertical ? pNext.x + lOff : pNext.x;
               const tZ = isVertical ? pNext.z : pNext.z + lOff;
-              const moveDir = new THREE.Vector3(tX - n.position.x, 0, tZ - n.position.z).normalize();
-              n.position.addScaledVector(moveDir, n.userData.spd * 35 * dt);
-              let targetYaw = Math.atan2(moveDir.x, moveDir.z);
+              this._v1.set(tX - n.position.x, 0, tZ - n.position.z).normalize();
+              n.position.addScaledVector(this._v1, n.userData.spd * 35 * dt);
+              let targetYaw = Math.atan2(this._v1.x, this._v1.z);
               let diff = targetYaw - n.rotation.y;
               while (diff < -Math.PI) diff += Math.PI * 2;
               while (diff > Math.PI) diff -= Math.PI * 2;
               n.rotation.y += diff * 0.2;
-              if (n.position.distanceTo(new THREE.Vector3(tX, 0, tZ)) < 2) {
+              this._v2.set(tX, 0, tZ);
+              if (n.position.distanceTo(this._v2) < 2) {
                 n.userData.routeIdx = (idx + 1) % rt.length;
               }
             } else {
@@ -4505,6 +5062,23 @@ class Game {
               this._camShakeAmt = Math.max(this._camShakeAmt, 0.40);
               if(window.sfx) window.sfx.play('error');
               toast('💥 Collision!', '#ff3b30');
+
+              // ── J. Road-rage NPC reaction ──
+              if (!this._roadRageCD || this._roadRageCD <= 0) {
+                this._roadRageCD = 8;
+                // Screen flash red
+                let flash = document.getElementById('rage-flash');
+                if (!flash) { flash = document.createElement('div'); flash.id = 'rage-flash'; flash.style.cssText = 'position:fixed;inset:0;background:red;z-index:9999;pointer-events:none;opacity:0;transition:opacity .3s'; document.body.appendChild(flash); }
+                flash.style.opacity = '0.35';
+                setTimeout(() => { flash.style.opacity = '0'; }, 300);
+                // Aggressive honk SFX
+                if (typeof sfx !== 'undefined' && sfx.play) sfx.play('horn');
+                // NPC flashes (tint red briefly)
+                const origColor = n.material?.color?.getHex();
+                if (n.material) { n.material.emissive?.setHex(0xff0000); setTimeout(() => { n.material.emissive?.setHex(0x000000); }, 1500); }
+                toast('😠 Road rage! NPC is angry!', '#ef4444');
+                this.score -= 10;
+              }
             }
           }
 
@@ -4518,7 +5092,7 @@ class Game {
               const pedRadius = 0.8;
               if (npcPedDist < npcRadius + pedRadius) {
                 // Push pedestrian away from NPC
-                const pushDir = new THREE.Vector3().subVectors(ped.position, n.position).normalize();
+                const pushDir = this._v3.subVectors(ped.position, n.position).normalize();
                 ped.position.x += pushDir.x * 1.5;
                 ped.position.z += pushDir.z * 1.5;
                 // Set pedestrian to fleeing state
@@ -4537,7 +5111,7 @@ class Game {
       }
       _upeds(dt) {
         if (!this.peds) this.peds = [];
-        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+        if (this._isMobile) {
           this.peds.forEach(p => {
             if (p.position.distanceToSquared(this.player.position) > 62500) {
               p.visible = false;
@@ -4561,7 +5135,7 @@ class Game {
           const despawnDist = isFest ? 200 : 100;
           if (p.position.distanceTo(this.player.position) > despawnDist) {
             this.scene.remove(p);
-            this.peds.splice(i, 1);
+            this.peds[i] = this.peds[this.peds.length - 1]; this.peds.pop();
             p.visible = false;
             this._pedFree.push(p);
           }
@@ -4651,23 +5225,15 @@ class Game {
           return { shouldWait: false, signalState: 'green' };
         };
 
-        // Helper: Check if position is on sidewalk (not on road)
-        const _isOnSidewalk = (px, pz, roadConfig) => {
-          if (!roadConfig || !roadConfig.roads) return true;
-          for (const r of roadConfig.roads) {
-            const isV = r.type === 'v';
-            const roadW = 9; // Road half-width
-            const minX = Math.min(r.x1, r.x2) - roadW;
-            const maxX = Math.max(r.x1, r.x2) + roadW;
-            const minZ = Math.min(r.z1, r.z2) - roadW;
-            const maxZ = Math.max(r.z1, r.z2) + roadW;
-            if (isV) {
-              if (px > minX && px < maxX && pz > r.z - 2 && pz < r.z + 2) return false;
-            } else {
-              if (pz > minZ && pz < maxZ && px > r.x - 2 && px < r.x + 2) return false;
-            }
+        // Helper: Find nearest intersection to a position (for crosswalk crossing)
+        const _nearestIntersection = (px, pz, ints) => {
+          if (!ints || ints.length === 0) return null;
+          let best = null, bestD = Infinity;
+          for (const [ix, iz] of ints) {
+            const d = Math.hypot(px - ix, pz - iz);
+            if (d < bestD) { bestD = d; best = [ix, iz]; }
           }
-          return true;
+          return bestD < 30 ? best : null; // Only if within 30 units
         };
 
         // Helper: Check for approaching vehicles (player + NPCs)
@@ -4719,12 +5285,12 @@ class Game {
 
         // Helper: Get safe escape direction from vehicle
         const _getFleeVector = (pedPos, threatPos, sidewalkSide) => {
-          const fleeDir = new THREE.Vector3().subVectors(pedPos, threatPos).normalize();
+          const fleeDir = this._v1.subVectors(pedPos, threatPos).normalize();
           // Push toward sidewalk (away from road)
           fleeDir.y = 0;
           if (sidewalkSide) {
             // Add lateral push toward sidewalk
-            const lateral = new THREE.Vector3(-fleeDir.z, 0, fleeDir.x).multiplyScalar(sidewalkSide * 0.5);
+            const lateral = this._v3.set(-fleeDir.z, 0, fleeDir.x).multiplyScalar(sidewalkSide * 0.5);
             fleeDir.add(lateral).normalize();
           }
           return fleeDir;
@@ -4832,7 +5398,7 @@ class Game {
           const trafficLightCheck = _checkTrafficLight(p.position, this);
           const shouldWaitForLight = trafficLightCheck.shouldWait && ud.aiState !== 'fleeing';
 
-          if (shouldWaitForLight || (vehicleCheck.approaching && ud.aiState !== 'idle' && ud.aiState !== 'entering')) {
+          if (ud.aiState !== 'crossing' && (shouldWaitForLight || (vehicleCheck.approaching && ud.aiState !== 'idle' && ud.aiState !== 'entering'))) {
             ud.aiState = 'waiting';
             ud.waitTimer = (ud.waitTimer || 0) + dt;
             // Look toward approaching vehicle
@@ -4843,6 +5409,49 @@ class Game {
               );
             }
             // Stop movement while waiting
+            return;
+          }
+          // Was waiting for crossing and light is now green — proceed to cross
+          if (ud._crossPending && ud.aiState === 'waiting') {
+            ud._crossPending = false;
+            ud.aiState = 'crossing';
+            ud.state = 'crossing';
+            return;
+          }
+
+          // STATE: CROSSING (crossing the road perpendicular to traffic)
+          if (ud.aiState === 'crossing') {
+            const cx = ud.crossTarget.x - p.position.x;
+            const cz = ud.crossTarget.z - p.position.z;
+            const crossDist = Math.sqrt(cx * cx + cz * cz);
+            if (crossDist < 1.0) {
+              // Reached the other side — resume walking on new sidewalk
+              ud.aiState = 'walking';
+              ud.state = 'sidewalk';
+              ud.side = -ud.side; // Now on opposite side
+              ud.roadC = ud.crossRoadCenter;
+              ud.targetDist = ud.crossTargetDist;
+              ud.dir = Math.random() > 0.5 ? 1 : -1;
+              ud.distTraveled = 0;
+              ud.destDist = 15 + Math.random() * 25;
+              p.rotation.y = ud.isV
+                ? (ud.dir > 0 ? 0 : Math.PI)
+                : (ud.dir > 0 ? Math.PI/2 : -Math.PI/2);
+            } else {
+              // Move toward crossing target
+              const crossSpeed = ud.spd * 2.5; // Slower than walking when crossing
+              p.position.x += (cx / crossDist) * crossSpeed * dt;
+              p.position.z += (cz / crossDist) * crossSpeed * dt;
+              // Face crossing direction
+              p.rotation.y = Math.atan2(cx, cz);
+              // Check for approaching vehicles mid-crossing — freeze if danger
+              const midCheck = _checkVehicleApproaching(p, this);
+              if (midCheck.approaching && midCheck.dist < 15) {
+                ud.aiState = 'waiting';
+                ud.waitTimer = 0;
+                ud._crossPending = true; // Remember to resume crossing after
+              }
+            }
             return;
           }
 
@@ -4899,12 +5508,54 @@ class Game {
             ud.distTraveled += moveAmt;
           }
 
-          // Reverse direction at destination
+          // Reverse direction at destination — or cross the road
           if (ud.distTraveled >= ud.destDist) {
-            ud.dir *= -1;
-            p.rotation.y = ud.isV ? (ud.dir > 0 ? 0 : Math.PI) : (ud.dir > 0 ? Math.PI/2 : -Math.PI/2);
-            ud.distTraveled = 0;
-            ud.destDist = 10 + Math.random() * 25;
+            // ~25% chance to cross the road (more likely at intersections)
+            const ints = this.mapCfg && this.mapCfg.ints;
+            const nearInt = _nearestIntersection(p.position.x, p.position.z, ints);
+            const crossChance = nearInt ? 0.45 : 0.2;
+            if (Math.random() < crossChance) {
+              // Calculate crossing target on the other side of the road
+              const isV = ud.isV;
+              const roadC = isV ? ud.roadC : ud.roadC;
+              const otherSide = -ud.side;
+              const crossOffset = otherSide * (18 / 2 + 1.25); // Sidewalk center distance
+              let targetX, targetZ;
+              if (isV) {
+                targetX = roadC + crossOffset;
+                targetZ = p.position.z; // Move perpendicular (X-axis) while keeping Z
+              } else {
+                targetX = p.position.x; // Move perpendicular (Z-axis) while keeping X
+                targetZ = roadC + crossOffset;
+              }
+
+              // If near an intersection, prefer to cross there — adjust target toward it
+              if (nearInt) {
+                if (isV) {
+                  targetZ = nearInt[1] + (Math.random() - 0.5) * 4; // Slight Z offset near crosswalk
+                } else {
+                  targetX = nearInt[0] + (Math.random() - 0.5) * 4;
+                }
+              }
+
+              ud.aiState = 'crossing';
+              ud.state = 'crossing';
+              ud.crossTarget = { x: targetX, z: targetZ };
+              ud.crossRoadCenter = ud.roadC;
+              ud.crossTargetDist = Math.abs(crossOffset);
+              // Freeze until traffic light allows
+              const tlCheck = _checkTrafficLight(p.position, this);
+              if (tlCheck.shouldWait) {
+                ud.aiState = 'waiting';
+                ud.waitTimer = 0;
+                ud._crossPending = true; // Remember we want to cross after waiting
+              }
+            } else {
+              ud.dir *= -1;
+              p.rotation.y = ud.isV ? (ud.dir > 0 ? 0 : Math.PI) : (ud.dir > 0 ? Math.PI/2 : -Math.PI/2);
+              ud.distTraveled = 0;
+              ud.destDist = 10 + Math.random() * 25;
+            }
           }
 
           // ── INTER-PEDESTRIAN AVOIDANCE ──
@@ -5112,10 +5763,12 @@ class Game {
         if (this.dom['phone-gps-obj']) this.dom['phone-gps-obj'].textContent = task ? task.label : 'Next checkpoint';
       }
       _umode(dt) {
-        this.score += dt; document.getElementById('hsc').textContent = Math.round(this.score);
+        this.score += dt; const hscEl = this.dom['hsc']; if (hscEl) hscEl.textContent = Math.round(this.score);
         if ((this.mode === 'rain' || this.mapCfg?.hasRain) && this.rain) {
           const p = this.rain.geometry.attributes.position.array;
-          for (let i = 1; i < p.length; i += 3) { p[i] -= 10 * dt; if (p[i] < 0) p[i] = 25; }
+          const wdx = this._rainWindX || 0;
+          const wdz = this._rainWindZ || 0;
+          for (let i = 0; i < p.length; i += 3) { p[i] += wdx * dt; p[i + 1] -= 10 * dt; p[i + 2] += wdz * dt; if (p[i + 1] < 0) p[i + 1] = 25; }
           this.rain.geometry.attributes.position.needsUpdate = true;
           // 20% speed reduction in rain
           if (this.speed > this.maxSpd * 0.8) this.speed = this.maxSpd * 0.8;
@@ -5215,12 +5868,12 @@ class Game {
           // }
 
           // DEBUG: Log camera state if rotation looks unusual
-          const _camEuler = new THREE.Euler().setFromQuaternion(this.camera.quaternion, 'YXZ');
-          if (Math.abs(_camEuler.x) > 0.15 || Math.abs(_camEuler.z) > 0.15) {
+          this._e1.setFromQuaternion(this.camera.quaternion, 'YXZ');
+          if (Math.abs(this._e1.x) > 0.15 || Math.abs(this._e1.z) > 0.15) {
             console.warn('[FLIP-DBG] Camera Euler (YXZ):', {
-              x: _camEuler.x.toFixed(3),
-              y: _camEuler.y.toFixed(3),
-              z: _camEuler.z.toFixed(3)
+              x: this._e1.x.toFixed(3),
+              y: this._e1.y.toFixed(3),
+              z: this._e1.z.toFixed(3)
             }, 'pos:', {
               x: this.camera.position.x.toFixed(1),
               y: this.camera.position.y.toFixed(1),
@@ -5246,17 +5899,21 @@ class Game {
       }
       _usun(dt) {
         if (!this._sun || !this.player) return;
-        // Dynamic shadow quality: monitor FPS, downscale shadow map if below threshold
-        this._fpsFrameCount = (this._fpsFrameCount || 0) + 1;
-        if (this._fpsFrameCount % 60 === 0) {
-          const fps = 1 / Math.max(dt, 0.001);
-          if (!this._shadowQuality) this._shadowQuality = 2048;
-          if (fps < 25 && this._shadowQuality > 512) {
+        // Dynamic shadow quality: rolling-average FPS → adjust shadow map
+        if (!this._fpsBuf) { this._fpsBuf = []; this._fpsIdx = 0; this._fpsSum = 0; }
+        const curFps = 1 / Math.max(dt, 0.001);
+        this._fpsSum -= (this._fpsBuf[this._fpsIdx] || 0);
+        this._fpsBuf[this._fpsIdx] = curFps;
+        this._fpsSum += curFps;
+        this._fpsIdx = (this._fpsIdx + 1) % 60;
+        if (this._fpsBuf.length >= 60) {
+          const avgFps = this._fpsSum / this._fpsBuf.length;
+          if (avgFps < 25 && this._shadowQuality > 512) {
             this._shadowQuality = Math.max(512, this._shadowQuality / 2);
             this._sun.shadow.mapSize.set(this._shadowQuality, this._shadowQuality);
             if (this._sun.shadow.map) { this._sun.shadow.map.dispose(); this._sun.shadow.map = null; }
             this._sun.shadow.needsUpdate = true;
-          } else if (fps > 50 && this._shadowQuality < 2048) {
+          } else if (avgFps > 50 && this._shadowQuality < 2048) {
             this._shadowQuality = Math.min(2048, this._shadowQuality * 2);
             this._sun.shadow.mapSize.set(this._shadowQuality, this._shadowQuality);
             if (this._sun.shadow.map) { this._sun.shadow.map.dispose(); this._sun.shadow.map = null; }
@@ -5264,15 +5921,106 @@ class Game {
           }
         }
         const p = this.player.position;
-        if (this._sunLastPos && Math.abs(p.x - this._sunLastPos.x) + Math.abs(p.z - this._sunLastPos.z) < 8) return;
-        if (!this._sunLastPos) this._sunLastPos = new THREE.Vector3();
-        this._sunLastPos.copy(p);
-        this._sun.position.set(p.x + 30, 60, p.z + 20);
-        const sc = this._sun.shadow.camera;
-        sc.left = -60; sc.right = 60; sc.top = 60; sc.bottom = -60;
-        sc.updateProjectionMatrix();
+        // Sun position follows day/night cycle arc when enabled
+        if (this.dayNightCycle) {
+          const sunAngle = this.timeOfDay * Math.PI * 2 - Math.PI / 2;
+          const sx = Math.cos(sunAngle) * 60;
+          const sy = Math.sin(sunAngle) * 60 + 10;
+          this._sun.position.set(p.x + sx, Math.max(5, sy), p.z + 20);
+        } else {
+          if (this._sunLastPos && Math.abs(p.x - this._sunLastPos.x) + Math.abs(p.z - this._sunLastPos.z) < 8) return;
+          if (!this._sunLastPos) this._sunLastPos = new THREE.Vector3();
+          this._sunLastPos.copy(p);
+          this._sun.position.set(p.x + 30, 60, p.z + 20);
+        }
         this._sun.shadow.needsUpdate = true;
       }
+      _updateDayNight(dt) {
+        if (!this.dayNightCycle || !this.mapCfg) return;
+        const CYCLE = 300;
+        this.timeOfDay = (this.timeOfDay + dt / CYCLE) % 1;
+        const t = this.timeOfDay;
+        const cfg = this.mapCfg;
+
+        // Sun elevation: sinusoidal arc, 0 at night, 1 at peak noon
+        const sunAngle = t * Math.PI * 2 - Math.PI / 2;
+        const sunElev = Math.max(0, Math.sin(sunAngle));
+
+        // Dawn/dusk accent factors (peaks at 0.25 and 0.75)
+        const dawnF = Math.max(0, 1 - Math.abs(t - 0.25) * 8);
+        const duskF = Math.max(0, 1 - Math.abs(t - 0.75) * 8);
+
+        // ── Sky color ──
+        this._dnDaySky.setHex(cfg.sky || 0x87b6d8);
+        this._dnSkyA.copy(this._dnSkyB).setHex(0x0a0a12).lerp(this._dnDaySky, sunElev);
+        this._dnSkyB.copy(this._dnDawnSky).multiplyScalar(dawnF).add(this._dnTmp.copy(this._dnDuskSky).multiplyScalar(duskF));
+        this.scene.background.copy(this._dnSkyA).add(this._dnSkyB);
+
+        // ── Fog color ──
+        this._dnFogA.copy(this._dnFogB).setHex(0x0a0a12).lerp(this._dnDaySky, sunElev);
+        this._dnFogB.copy(this._dnDawnFog).multiplyScalar(dawnF).add(this._dnTmp.copy(this._dnDuskFog).multiplyScalar(duskF));
+        if (this.scene.fog) this.scene.fog.color.copy(this._dnFogA).add(this._dnFogB);
+
+        // ── Ambient light ──
+        if (this._ambient) this._ambient.intensity = this._dnLerp(0.08, cfg.amb || 0.35, sunElev);
+
+        // ── Hemisphere light ──
+        if (this._hemi) this._hemi.intensity = this._dnLerp(0.08, 0.45, sunElev);
+
+        // ── Sun intensity ──
+        if (this._sun) this._sun.intensity = this._dnLerp(0.05, 1.2, sunElev);
+
+        // ── Moon (opposite to sun) ──
+        if (this._moon && this.player) {
+          this._moon.intensity = this._dnLerp(0.4, 0, sunElev);
+          const moonAngle = sunAngle + Math.PI;
+          const mx = Math.cos(moonAngle) * 50;
+          const my = Math.abs(Math.sin(moonAngle)) * 40 + 5;
+          this._moon.position.set(this.player.position.x + mx, my, this.player.position.z - 30);
+        }
+
+        // ── Tone mapping exposure ──
+        if (this.renderer) this.renderer.toneMappingExposure = this._dnLerp(0.6, 1.2, sunElev);
+
+        // ── Street lights ──
+        const slIntensity = sunElev < 0.3 ? this._dnLerp(0.8, 0, sunElev / 0.3) : 0;
+        for (let i = 0; i < this._streetLights.length; i++) this._streetLights[i].intensity = slIntensity;
+
+        // ── Building window glow ──
+        const wlOn = sunElev < 0.4;
+        const wlIntensity = wlOn ? this._dnLerp(0.6, 0, sunElev / 0.4) : 0;
+        for (let i = 0; i < this._windowLights.length; i++) this._windowLights[i].intensity = wlIntensity;
+
+        // ── Player headlights ──
+        if (this.hL && this.hR) {
+          const hlI = this._dnLerp(2.5, 0, sunElev);
+          this.hL.intensity = hlI; this.hR.intensity = hlI;
+        }
+        if (this._headlightCones) {
+          const coneA = this._dnLerp(0.08, 0, sunElev);
+          for (let i = 0; i < this._headlightCones.length; i++) this._headlightCones[i].material.opacity = coneA;
+        }
+
+        // ── NPC headlights/taillights: toggle on day/night transition ──
+        const nightOn = sunElev < 0.2;
+        if (nightOn !== this._lastNpcLightState && this.npcs) {
+          this._lastNpcLightState = nightOn;
+          for (let ni = 0; ni < this.npcs.length; ni++) {
+            const nv = this.npcs[ni];
+            for (let ci = 0; ci < nv.children.length; ci++) {
+              const c = nv.children[ci];
+              if (c.isSpotLight) c.intensity = nightOn ? 1.2 : 0;
+              if (c.isMesh && c.material && c.material.color && c.material.color.r > 0.8 && c.material.color.g < 0.2) {
+                c.visible = nightOn;
+              }
+            }
+          }
+        }
+
+        // ── Sync isNight for other systems (rain, NPC headlights) ──
+        cfg.isNight = nightOn;
+      }
+      _dnLerp(a, b, t) { return a + (b - a) * Math.min(1, Math.max(0, t)); }
       _uhud() {
         const k = Math.round(Math.abs(this.speed) * 100);
         
@@ -5369,6 +6117,30 @@ class Game {
         }
         if (rem <= 0 && this.playing) { this._go("Structural Failure"); toast('⏰ Time Up!', '#ff3b30'); return; }
         const hfin = this.dom['hfin']; if (hfin && this.fine > 0) hfin.textContent = '₹' + this.fine;
+        // ── Day/Night clock HUD ──
+        if (this.dayNightCycle || this.mapCfg.isNight) {
+          const dnClock = this.dom['dn-clock'];
+          if (dnClock) {
+            dnClock.style.display = 'flex';
+            const tod = this.timeOfDay;
+            const hours = Math.floor(tod * 24) % 24;
+            const mins = Math.floor((tod * 24 - hours) * 60);
+            const h12 = hours % 12 || 12;
+            const ampm = hours < 12 ? 'AM' : 'PM';
+            const timeStr = h12 + ':' + (mins < 10 ? '0' : '') + mins + ' ' + ampm;
+            const dnTimeEl = this.dom['dn-time'];
+            const dnIconEl = this.dom['dn-icon'];
+            if (dnTimeEl) dnTimeEl.textContent = timeStr;
+            const sunElev = Math.max(0, Math.sin(tod * Math.PI * 2 - Math.PI / 2));
+            if (dnIconEl) dnIconEl.textContent = sunElev > 0.3 ? '☀️' : sunElev > 0.05 ? (tod < 0.5 ? '🌅' : '🌇') : '🌙';
+            if (sunElev > 0.05 && sunElev < 0.3) {
+              dnClock.style.background = tod < 0.5 ? 'rgba(255,170,100,0.92)' : 'rgba(220,100,50,0.92)';
+            } else {
+              dnClock.style.background = sunElev >= 0.3 ? 'rgba(255,255,255,0.92)' : 'rgba(20,20,40,0.92)';
+              dnClock.style.color = sunElev < 0.3 ? '#ccc' : 'var(--text)';
+            }
+          }
+        }
       }
       _ummap() {
         const mc = this.dom['mmc']; if (!mc || !this.playing) return; mc.classList.add('on');

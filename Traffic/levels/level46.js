@@ -24,6 +24,7 @@ window.LVS.push({
   crowdFestival: true,
   hasMusicVehicle: true,
   hasFestivalLights: true,
+  hasPoliceVolunteer: true,
   isNight: true,
   startOutside: true,
   tasks: [
