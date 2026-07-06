@@ -2111,6 +2111,7 @@ class Game {
                 // ── STREETLIGHT PointLight (day/night cycle) ──
                 const sl = new THREE.PointLight(0xffffee, cfg.isNight ? 0.8 : 0, 35);
                 sl.position.set(lamp.position.x, 6.8, lamp.position.z);
+                sl.visible = false;
                 this.scene.add(sl);
                 this._streetLights.push(sl);
               }
@@ -2176,6 +2177,7 @@ class Game {
           const wl = new THREE.PointLight(0xffeeaa, cfg.isNight ? 0.6 : 0, 12);
           wl.position.set(obs.position.x, 3 + Math.random() * 3, obs.position.z);
           wl.castShadow = false;
+          wl.visible = false;
           this.scene.add(wl);
           this._windowLights.push(wl);
         });
@@ -3786,6 +3788,24 @@ class Game {
           });
       }
 
+      _updateLights(dt) {
+        if (!this.playing || this.pause) return;
+        const lights = [...(this._streetLights || []), ...(this._windowLights || [])];
+        if (!lights.length) return;
+
+        const pPos = this.player.position;
+        const candidates = lights.map(l => ({
+          l,
+          distSq: pPos.distanceSquared(l.position)
+        }));
+
+        candidates.sort((a, b) => a.distSq - b.distSq);
+
+        for (let i = 0; i < candidates.length; i++) {
+          candidates[i].l.visible = i < 8;
+        }
+      }
+
       _loop() {
         // PERFORMANCE: Frame rate capping to prevent excessive CPU/GPU usage
         const now = performance.now();
@@ -3802,7 +3822,7 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain);
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain);
 
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
@@ -4029,7 +4049,7 @@ class Game {
         // DEBUG: Check if camera has unwanted roll
         const camRx = this.camera.rotation.x;
         const camRz = this.camera.rotation.z;
-        if (Math.abs(camRx) > 0.01 || Math.abs(camRz) > 0.01) {
+        if (Math.abs(camRz) > 0.01) {
           console.warn('[FLIP-DBG] Camera has X/Z rotation!', {
             rx: camRx.toFixed(4),
             rz: camRz.toFixed(4),
@@ -5808,6 +5828,7 @@ class Game {
           const ly = Math.sin(pitch);
           const lz = Math.cos(yaw) * Math.cos(pitch);
           
+          this.camera.up.set(0, 1, 0);
           this.camera.lookAt(
             this.camera.position.x + lx,
             this.camera.position.y + ly,
@@ -5847,6 +5868,7 @@ class Game {
           }
 
           const tiltRoll = this._camTilt || 0;
+          this.camera.up.set(0, 1, 0);
           this.camera.lookAt(
             this.player.position.x + Math.sin(rotY) * 15 + shakeX,
             1.5 - pitchOffset * 0.3 + shakeY,
@@ -5861,7 +5883,7 @@ class Game {
 
           // DEBUG: Log camera state if rotation looks unusual
           this._e1.setFromQuaternion(this.camera.quaternion, 'YXZ');
-          if (Math.abs(this._e1.x) > 0.15 || Math.abs(this._e1.z) > 0.15) {
+          if (Math.abs(this._e1.z) > 0.15) {
             console.warn('[FLIP-DBG] Camera Euler (YXZ):', {
               x: this._e1.x.toFixed(3),
               y: this._e1.y.toFixed(3),
