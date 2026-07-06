@@ -1,0 +1,1824 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="FutureScape Career Guide — Discover your ideal career path with immersive exploration across 24 professional domains." />
+    <title>FutureScape — Career Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #030305;
+        --surface: rgba(12, 14, 22, 0.65);
+        --surface-hover: rgba(22, 26, 44, 0.82);
+        --glass-border: rgba(255, 255, 255, 0.06);
+        --glass-border-hover: rgba(255, 255, 255, 0.14);
+        --primary: #818cf8;
+        --primary-deep: #6366f1;
+        --primary-glow: rgba(99, 102, 241, 0.35);
+        --accent: #38bdf8;
+        --accent-warm: #f472b6;
+        --accent-green: #34d399;
+        --accent-amber: #fbbf24;
+        --text: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --text-dim: #64748b;
+        --radius: 18px;
+        --radius-sm: 12px;
+        --radius-xs: 8px;
+        --transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family:
+          'Inter',
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+        cursor: none;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ===== CUSTOM CURSOR ===== */
+      .cursor-orb {
+        width: 20px;
+        height: 20px;
+        background: radial-gradient(circle at 35% 35%, #fff, var(--accent), var(--primary-deep));
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 10000;
+        transform: translate(-50%, -50%);
+        box-shadow:
+          0 0 18px var(--primary-glow),
+          0 0 60px rgba(56, 189, 248, 0.15);
+        transition:
+          width 0.25s,
+          height 0.25s,
+          box-shadow 0.25s,
+          opacity 0.25s;
+        will-change: transform;
+      }
+      .cursor-orb.active {
+        width: 44px;
+        height: 44px;
+        box-shadow:
+          0 0 30px var(--primary-glow),
+          0 0 80px rgba(56, 189, 248, 0.2);
+        background: radial-gradient(circle at 35% 35%, #fff, var(--accent-warm), var(--primary-deep));
+      }
+      .cursor-trail {
+        width: 8px;
+        height: 8px;
+        background: var(--primary);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        opacity: 0.4;
+        transition: opacity 0.6s;
+        will-change: transform;
+      }
+
+      /* ===== CANVAS ===== */
+      #cosmos {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+      }
+
+      /* ===== AMBIENT GLOW ORBS ===== */
+      .ambient-orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(100px);
+        opacity: 0.08;
+        pointer-events: none;
+        z-index: 0;
+        animation: orbFloat 20s ease-in-out infinite alternate;
+      }
+      .ambient-orb:nth-child(1) {
+        width: 600px;
+        height: 600px;
+        background: #6366f1;
+        top: -10%;
+        left: -10%;
+        animation-duration: 25s;
+      }
+      .ambient-orb:nth-child(2) {
+        width: 500px;
+        height: 500px;
+        background: #38bdf8;
+        bottom: -15%;
+        right: -10%;
+        animation-duration: 30s;
+        animation-delay: -5s;
+      }
+      .ambient-orb:nth-child(3) {
+        width: 400px;
+        height: 400px;
+        background: #f472b6;
+        top: 40%;
+        left: 50%;
+        animation-duration: 22s;
+        animation-delay: -10s;
+      }
+
+      @keyframes orbFloat {
+        0% {
+          transform: translate(0, 0) scale(1);
+        }
+        50% {
+          transform: translate(40px, -30px) scale(1.1);
+        }
+        100% {
+          transform: translate(-20px, 20px) scale(0.95);
+        }
+      }
+
+      /* ===== LAYOUT ===== */
+      .app {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+      }
+
+      /* ===== NAVBAR ===== */
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 40px;
+        background: rgba(3, 3, 5, 0.6);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--glass-border);
+        transition: var(--transition);
+      }
+      .navbar.scrolled {
+        background: rgba(3, 3, 5, 0.85);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        font-size: 22px;
+        background: linear-gradient(135deg, var(--text), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+      }
+      .nav-brand .brand-dot {
+        width: 10px;
+        height: 10px;
+        background: var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 12px var(--accent);
+        animation: pulse 2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(0.8);
+        }
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+      }
+      .nav-link {
+        color: var(--text-secondary);
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: var(--transition);
+        position: relative;
+        cursor: none;
+      }
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        transition: width 0.3s ease;
+        border-radius: 2px;
+      }
+      .nav-link:hover {
+        color: var(--text);
+      }
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      .nav-cta {
+        padding: 8px 20px;
+        border-radius: var(--radius-xs);
+        background: linear-gradient(135deg, var(--primary-deep), var(--accent));
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+        cursor: none;
+        transition: var(--transition);
+        text-decoration: none;
+      }
+      .nav-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--primary-glow);
+      }
+
+      /* ===== HERO ===== */
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-height: 100vh;
+        padding: 120px 24px 60px;
+        position: relative;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        border-radius: 20px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 24px;
+        animation: fadeSlideUp 0.8s ease-out;
+      }
+      .hero-badge .badge-pulse {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent-green);
+        box-shadow: 0 0 8px var(--accent-green);
+        animation: pulse 1.5s infinite;
+      }
+      .hero h1 {
+        font-size: clamp(40px, 6vw, 76px);
+        font-weight: 900;
+        line-height: 1.05;
+        letter-spacing: -2px;
+        margin-bottom: 20px;
+        animation: fadeSlideUp 0.8s ease-out 0.1s both;
+      }
+      .hero h1 .gradient-text {
+        background: linear-gradient(135deg, var(--primary), var(--accent), var(--accent-warm));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-size: 200% 200%;
+        animation: gradientShift 5s ease infinite;
+      }
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .hero-sub {
+        font-size: clamp(16px, 2vw, 20px);
+        color: var(--text-secondary);
+        max-width: 600px;
+        line-height: 1.6;
+        margin-bottom: 40px;
+        font-weight: 300;
+        animation: fadeSlideUp 0.8s ease-out 0.2s both;
+      }
+
+      .hero-stats {
+        display: flex;
+        gap: 48px;
+        margin-bottom: 50px;
+        animation: fadeSlideUp 0.8s ease-out 0.3s both;
+      }
+      .stat {
+        text-align: center;
+      }
+      .stat-num {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+      .stat-label {
+        font-size: 12px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 4px;
+      }
+
+      .scroll-indicator {
+        position: absolute;
+        bottom: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        animation: fadeSlideUp 0.8s ease-out 0.5s both;
+      }
+      .scroll-indicator span {
+        font-size: 11px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      .scroll-arrow {
+        width: 20px;
+        height: 20px;
+        border-right: 2px solid var(--text-dim);
+        border-bottom: 2px solid var(--text-dim);
+        transform: rotate(45deg);
+        animation: scrollBounce 2s infinite;
+      }
+      @keyframes scrollBounce {
+        0%,
+        100% {
+          transform: rotate(45deg) translate(0, 0);
+        }
+        50% {
+          transform: rotate(45deg) translate(5px, 5px);
+        }
+      }
+
+      @keyframes fadeSlideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ===== SEARCH & FILTER ===== */
+      .controls {
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 24px 40px;
+      }
+      .search-wrapper {
+        position: relative;
+        max-width: 500px;
+        margin: 0 auto 30px;
+      }
+      .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-dim);
+        font-size: 16px;
+      }
+      .search-input {
+        width: 100%;
+        padding: 14px 20px 14px 44px;
+        background: var(--surface);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-size: 15px;
+        font-family: inherit;
+        transition: var(--transition);
+        outline: none;
+        cursor: none;
+      }
+      .search-input::placeholder {
+        color: var(--text-dim);
+      }
+      .search-input:focus {
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        background: var(--surface-hover);
+      }
+
+      .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      .filter-btn {
+        padding: 8px 18px;
+        border-radius: 20px;
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: none;
+        transition: var(--transition);
+        font-family: inherit;
+      }
+      .filter-btn:hover {
+        border-color: var(--glass-border-hover);
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .filter-btn.active {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(56, 189, 248, 0.15));
+        border-color: rgba(99, 102, 241, 0.4);
+        color: var(--text);
+      }
+
+      /* ===== CAREER GRID ===== */
+      .grid-section {
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+      }
+      .grid-section-title {
+        font-size: 14px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 24px;
+        padding-left: 4px;
+        font-weight: 600;
+      }
+      .career-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .career-card {
+        position: relative;
+        background: var(--surface);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius);
+        padding: 32px 28px;
+        cursor: none;
+        transition: var(--transition);
+        overflow: hidden;
+      }
+      .career-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, transparent 40%, rgba(99, 102, 241, 0.05));
+        opacity: 0;
+        transition: opacity 0.4s;
+        border-radius: var(--radius);
+      }
+      .career-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--glass-border-hover);
+        box-shadow:
+          0 12px 40px rgba(0, 0, 0, 0.3),
+          0 0 0 1px rgba(99, 102, 241, 0.1);
+        background: var(--surface-hover);
+      }
+      .career-card:hover::before {
+        opacity: 1;
+      }
+      .career-card.hidden {
+        display: none;
+      }
+
+      .card-icon-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .card-icon {
+        width: 52px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        font-size: 26px;
+        position: relative;
+        z-index: 1;
+      }
+      .card-tag {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        position: relative;
+        z-index: 1;
+        letter-spacing: -0.3px;
+      }
+      .card-desc {
+        color: var(--text-secondary);
+        font-size: 13px;
+        line-height: 1.65;
+        position: relative;
+        z-index: 1;
+        margin-bottom: 18px;
+      }
+      .card-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 11px;
+        color: var(--text-dim);
+        position: relative;
+        z-index: 1;
+      }
+      .card-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* Category color coding */
+      .cat-tech .card-icon {
+        background: rgba(99, 102, 241, 0.12);
+      }
+      .cat-tech .card-tag {
+        background: rgba(99, 102, 241, 0.15);
+        color: var(--primary);
+      }
+
+      .cat-eco .card-icon {
+        background: rgba(52, 211, 153, 0.12);
+      }
+      .cat-eco .card-tag {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--accent-green);
+      }
+
+      .cat-human .card-icon {
+        background: rgba(244, 114, 182, 0.12);
+      }
+      .cat-human .card-tag {
+        background: rgba(244, 114, 182, 0.15);
+        color: var(--accent-warm);
+      }
+
+      .cat-biz .card-icon {
+        background: rgba(251, 191, 36, 0.12);
+      }
+      .cat-biz .card-tag {
+        background: rgba(251, 191, 36, 0.15);
+        color: var(--accent-amber);
+      }
+
+      .cat-creative .card-icon {
+        background: rgba(56, 189, 248, 0.12);
+      }
+      .cat-creative .card-tag {
+        background: rgba(56, 189, 248, 0.15);
+        color: var(--accent);
+      }
+
+      /* ===== DETAIL PANEL (MODAL) ===== */
+      .detail-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        animation: fadeIn 0.3s ease;
+        overflow-y: auto;
+      }
+      .detail-overlay.open {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .detail-panel {
+        background: linear-gradient(160deg, rgba(12, 14, 24, 0.95), rgba(8, 10, 18, 0.98));
+        border: 1px solid var(--glass-border-hover);
+        border-radius: 24px;
+        max-width: 860px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow:
+          0 40px 80px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(255, 255, 255, 0.05);
+        animation: panelSlideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        position: relative;
+      }
+      @keyframes panelSlideUp {
+        from {
+          opacity: 0;
+          transform: translateY(40px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .detail-panel::-webkit-scrollbar {
+        width: 6px;
+      }
+      .detail-panel::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .detail-panel::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+      }
+
+      .detail-hero {
+        padding: 48px 48px 32px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .detail-hero-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+      .detail-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+      }
+      .detail-close {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-secondary);
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: none;
+        transition: var(--transition);
+      }
+      .detail-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+      }
+
+      .detail-title {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 10px;
+      }
+      .detail-subtitle {
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.7;
+        max-width: 640px;
+      }
+
+      .detail-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        padding: 0 48px;
+        margin: -16px 0 0;
+        position: relative;
+        z-index: 2;
+      }
+      .detail-stat {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: var(--radius-sm);
+        padding: 20px;
+        text-align: center;
+      }
+      .detail-stat-value {
+        font-size: 22px;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+      .detail-stat-label {
+        font-size: 11px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .detail-stat-value.green {
+        color: var(--accent-green);
+      }
+      .detail-stat-value.blue {
+        color: var(--accent);
+      }
+      .detail-stat-value.pink {
+        color: var(--accent-warm);
+      }
+
+      .detail-body {
+        padding: 40px 48px 48px;
+      }
+
+      .detail-section {
+        margin-bottom: 36px;
+      }
+      .detail-section:last-child {
+        margin-bottom: 0;
+      }
+      .detail-section-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .detail-section-title .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+
+      .detail-advice {
+        font-size: 16px;
+        line-height: 1.85;
+        color: var(--text-secondary);
+        padding: 20px 24px;
+        background: rgba(255, 255, 255, 0.02);
+        border-left: 3px solid var(--primary);
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      }
+
+      .skills-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .skill-tag {
+        padding: 6px 14px;
+        border-radius: 6px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .roles-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .role-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: var(--radius-xs);
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        font-size: 13px;
+        color: var(--text-secondary);
+      }
+      .role-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--accent);
+        flex-shrink: 0;
+      }
+
+      .questions-list {
+        display: grid;
+        gap: 12px;
+      }
+      .q-item {
+        padding: 16px 20px;
+        border-radius: var(--radius-sm);
+        background: rgba(255, 255, 255, 0.02);
+        border-left: 3px solid var(--accent);
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .resources-list {
+        display: grid;
+        gap: 8px;
+      }
+      .resource-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: var(--radius-xs);
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        color: var(--text-secondary);
+        font-size: 13px;
+        text-decoration: none;
+        transition: var(--transition);
+        cursor: none;
+      }
+      .resource-link:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+      }
+
+      /* ===== FOOTER ===== */
+      .footer {
+        text-align: center;
+        padding: 40px 24px;
+        border-top: 1px solid var(--glass-border);
+        color: var(--text-dim);
+        font-size: 13px;
+      }
+      .footer a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .navbar {
+          padding: 12px 20px;
+        }
+        .nav-links {
+          display: none;
+        }
+        .hero h1 {
+          letter-spacing: -1px;
+        }
+        .hero-stats {
+          gap: 24px;
+          flex-wrap: wrap;
+        }
+        .career-grid {
+          grid-template-columns: 1fr;
+        }
+        .detail-hero {
+          padding: 32px 24px 24px;
+        }
+        .detail-stats {
+          grid-template-columns: 1fr;
+          padding: 0 24px;
+          margin-top: -8px;
+        }
+        .detail-body {
+          padding: 28px 24px 36px;
+        }
+        .roles-list {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===== LOADING SCREEN ===== */
+      .loader-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: var(--bg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition:
+          opacity 0.6s ease,
+          visibility 0.6s ease;
+      }
+      .loader-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .loader-ring {
+        width: 48px;
+        height: 48px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .loader-text {
+        font-size: 14px;
+        color: var(--text-dim);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      /* ===== NO RESULTS ===== */
+      .no-results {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-dim);
+        font-size: 16px;
+        display: none;
+        grid-column: 1/-1;
+      }
+      .no-results.show {
+        display: block;
+      }
+      .no-results .big-emoji {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+    </style>
+    <link rel="manifest" href="manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div class="loader-screen" id="loader">
+      <div class="loader-ring"></div>
+      <div class="loader-text">Loading FutureScape</div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-orb" id="cursor-orb"></div>
+    <div class="cursor-trail" id="cursor-trail"></div>
+
+    <!-- Ambient Glow -->
+    <div class="ambient-orb"></div>
+    <div class="ambient-orb"></div>
+    <div class="ambient-orb"></div>
+
+    <!-- 3D Background -->
+    <canvas id="cosmos"></canvas>
+
+    <div class="app">
+      <!-- Navigation -->
+      <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+          <span class="brand-dot"></span>
+          FutureScape
+        </div>
+        <div class="nav-links">
+          <a href="#explore" class="nav-link">Explore</a>
+          <a href="#" class="nav-link" onclick="scrollToTop(event)">Home</a>
+          <a href="#" class="nav-cta" onclick="scrollToExplore(event)">Get Started</a>
+        </div>
+      </nav>
+
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-badge">
+          <span class="badge-pulse"></span>
+          Launching Your Future
+        </div>
+        <h1>Navigate Your<br /><span class="gradient-text">Professional Destiny</span></h1>
+        <p class="hero-sub">Explore 24 cutting-edge career domains, from Artificial Intelligence to Space Engineering. Find the path that ignites your passion and shapes the world.</p>
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-num">24</div>
+            <div class="stat-label">Career Paths</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">150+</div>
+            <div class="stat-label">Roles Mapped</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">∞</div>
+            <div class="stat-label">Possibilities</div>
+          </div>
+        </div>
+        <div class="scroll-indicator">
+          <span>Scroll to Explore</span>
+          <div class="scroll-arrow"></div>
+        </div>
+      </section>
+
+      <!-- Search & Filter -->
+      <section class="controls" id="explore">
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="search-input" placeholder="Search career paths..." autocomplete="off" />
+        </div>
+        <div class="filter-bar" id="filter-bar">
+          <button class="filter-btn active" data-filter="all">All Domains</button>
+          <button class="filter-btn" data-filter="tech">⚡ Technology</button>
+          <button class="filter-btn" data-filter="eco">🌿 Sustainability</button>
+          <button class="filter-btn" data-filter="human">💜 Human Sciences</button>
+          <button class="filter-btn" data-filter="biz">📊 Business</button>
+          <button class="filter-btn" data-filter="creative">🎨 Creative</button>
+        </div>
+      </section>
+
+      <!-- Career Grid -->
+      <section class="grid-section">
+        <div class="grid-section-title" id="grid-title">All Career Paths — 24 domains</div>
+        <div class="career-grid" id="career-grid"></div>
+        <div class="no-results" id="no-results">
+          <div class="big-emoji">🔭</div>
+          No career paths match your search. Try a different keyword.
+        </div>
+      </section>
+
+      <!-- Detail Panel Overlay -->
+      <div class="detail-overlay" id="detail-overlay">
+        <div class="detail-panel" id="detail-panel"></div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>Built with passion for the explorers of tomorrow &nbsp;·&nbsp; FutureScape &copy; 2026</p>
+      </footer>
+    </div>
+
+    <!-- Three.js -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="col-3d.js"></script>
+
+    <script>
+      // ============================== DATA ==============================
+      const careers = [
+        {
+          id: 'ai',
+          cat: 'tech',
+          icon: '🤖',
+          title: 'Artificial Intelligence',
+          tagline: 'Build minds that think',
+          desc: 'Design intelligent systems — from LLMs to autonomous agents — that redefine how humanity interacts with information.',
+          salary: '$95K–$250K+',
+          growth: '36%',
+          demand: 'Extreme',
+          advice:
+            'You are at the epicenter of the greatest technological revolution since the internet. AI engineers and researchers are not just building tools — they are creating entities that learn, reason, and create. Master deep learning frameworks, study cognitive science for inspiration, and always anchor your work in ethical AI principles. The world needs builders who ask "should we?" as often as "can we?"',
+          skills: ['Python', 'TensorFlow / PyTorch', 'NLP', 'Computer Vision', 'MLOps', 'Linear Algebra', 'Reinforcement Learning', 'Ethics in AI'],
+          roles: ['ML Engineer', 'AI Research Scientist', 'Prompt Engineer', 'AI Ethics Officer', 'Computer Vision Engineer', 'NLP Specialist'],
+          questions: [
+            'How can I ensure the AI I build remains ethical and unbiased?',
+            'Am I drawn to research breakthroughs or production-grade systems?',
+            'What human problem do I want AI to solve first?'
+          ],
+          resources: ['Fast.ai — Free deep learning courses', 'Papers With Code — Stay current on SOTA', 'AI Alignment Forum — Ethics & safety research']
+        },
+        {
+          id: 'cyber',
+          cat: 'tech',
+          icon: '🛡️',
+          title: 'Cybersecurity',
+          tagline: 'Defend the digital frontier',
+          desc: 'Protect organizations and individuals from evolving cyber threats through offense and defense strategies.',
+          salary: '$85K–$200K+',
+          growth: '32%',
+          demand: 'Very High',
+          advice:
+            'In a world where data is the new currency, you are the vault keeper. Cybersecurity professionals are the unsung heroes of the digital age. Start with networking fundamentals, then explore penetration testing, incident response, or governance. The field rewards curiosity — every vulnerability you find is a puzzle solved. Stay relentlessly curious and never stop learning, because the attackers never stop evolving.',
+          skills: ['Network Security', 'Penetration Testing', 'SIEM Tools', 'Cloud Security', 'Cryptography', 'Threat Modeling', 'Incident Response', 'Zero Trust Architecture'],
+          roles: ['Penetration Tester', 'SOC Analyst', 'Security Architect', 'CISO', 'Threat Hunter', 'Cloud Security Engineer'],
+          questions: [
+            'Am I more excited by offense (red team) or defense (blue team)?',
+            'How do I stay ahead of constantly evolving attack vectors?',
+            'Do I want to protect corporations, governments, or individuals?'
+          ],
+          resources: ['TryHackMe — Hands-on cybersecurity training', 'OWASP — Web application security standards', 'SANS Institute — Professional certifications']
+        },
+        {
+          id: 'cloud',
+          cat: 'tech',
+          icon: '☁️',
+          title: 'Cloud & DevOps',
+          tagline: 'Architect infinite scale',
+          desc: 'Build and manage the cloud infrastructure that powers every modern application and service at global scale.',
+          salary: '$90K–$190K+',
+          growth: '25%',
+          demand: 'High',
+          advice:
+            'You are the backbone engineer — the one who ensures the digital world stays running at 99.99% uptime. Cloud and DevOps is about automation, reliability, and elegant infrastructure design. Master at least one major cloud platform deeply, understand containerization inside-out, and embrace Infrastructure as Code. The best in this field think in systems, not servers.',
+          skills: ['AWS / Azure / GCP', 'Kubernetes', 'Docker', 'Terraform', 'CI/CD Pipelines', 'Linux', 'Monitoring & Observability', 'Site Reliability Engineering'],
+          roles: ['Cloud Architect', 'DevOps Engineer', 'SRE', 'Platform Engineer', 'Infrastructure Lead', 'Cloud Consultant'],
+          questions: [
+            'Do I enjoy building systems that need to handle extreme scale?',
+            'Am I more interested in automation or architecture?',
+            'How do I balance speed of deployment with system reliability?'
+          ],
+          resources: ['AWS Well-Architected Framework', 'Kubernetes Documentation', 'Google SRE Book — Free online']
+        },
+        {
+          id: 'data',
+          cat: 'tech',
+          icon: '📊',
+          title: 'Data Science & Analytics',
+          tagline: 'Decode the signal from noise',
+          desc: 'Extract actionable insights from massive datasets to drive strategic decisions across every industry.',
+          salary: '$80K–$180K+',
+          growth: '28%',
+          demand: 'High',
+          advice:
+            'Data is the language of the universe, and you are learning to speak it fluently. As a data scientist, you sit at the intersection of statistics, programming, and domain expertise. The most impactful data professionals are not just technically skilled — they are brilliant storytellers who translate numbers into narratives that move organizations. Focus on statistical rigor, learn to communicate clearly, and always question your assumptions.',
+          skills: ['Python / R', 'SQL', 'Statistical Modeling', 'Data Visualization', 'Machine Learning', 'A/B Testing', 'Big Data (Spark)', 'Business Intelligence'],
+          roles: ['Data Scientist', 'Data Analyst', 'Analytics Engineer', 'BI Developer', 'Quantitative Analyst', 'Data Strategist'],
+          questions: [
+            'Am I energized by discovering patterns or by building predictive systems?',
+            'What industries would benefit most from my analytical lens?',
+            'How do I ensure my data narratives drive real action?'
+          ],
+          resources: ['Kaggle — Competitions & datasets', 'Mode Analytics SQL Tutorial', 'Towards Data Science — Community articles']
+        },
+        {
+          id: 'web3',
+          cat: 'tech',
+          icon: '⛓️',
+          title: 'Blockchain & Web3',
+          tagline: 'Decentralize everything',
+          desc: 'Build decentralized applications, smart contracts, and protocols that redistribute power and trust.',
+          salary: '$90K–$220K+',
+          growth: '20%',
+          demand: 'Growing',
+          advice:
+            'Web3 is the frontier of digital sovereignty. Beyond the hype, blockchain technology represents a fundamental rethinking of how humans coordinate, transact, and trust. Learn smart contract development, understand consensus mechanisms deeply, and study tokenomics. The builders who will succeed are those who focus on real utility — solving genuine coordination problems — not speculation.',
+          skills: ['Solidity', 'Smart Contracts', 'DeFi Protocols', 'Cryptography', 'Rust', 'Zero-Knowledge Proofs', 'DAOs', 'Tokenomics'],
+          roles: ['Smart Contract Developer', 'Protocol Engineer', 'DeFi Architect', 'Blockchain Auditor', 'DAO Strategist', 'Web3 Product Manager'],
+          questions: [
+            'What real-world problem can decentralization uniquely solve?',
+            'How do I navigate the volatility and hype in this space?',
+            'Am I building for institutional adoption or individual empowerment?'
+          ],
+          resources: ['Ethereum.org — Developer documentation', 'CryptoZombies — Learn Solidity', 'a16z Crypto Canon — Essential reading']
+        },
+        {
+          id: 'quantum',
+          cat: 'tech',
+          icon: '⚛️',
+          title: 'Quantum Computing',
+          tagline: 'Compute the impossible',
+          desc: 'Harness quantum mechanics to solve problems classical computers cannot — from drug discovery to cryptography.',
+          salary: '$100K–$250K+',
+          growth: '30%',
+          demand: 'Emerging',
+          advice:
+            'Quantum computing is where physics meets computation at the most fundamental level. This is a field for the deeply curious — those who are comfortable with uncertainty (literally). Start with a strong foundation in linear algebra and quantum mechanics, then explore quantum algorithms and quantum error correction. The field is still nascent, which means early entrants will define its trajectory.',
+          skills: ['Quantum Mechanics', 'Linear Algebra', 'Qiskit / Cirq', 'Quantum Algorithms', 'Error Correction', 'Python', 'Quantum Machine Learning', 'Complex Analysis'],
+          roles: ['Quantum Software Engineer', 'Quantum Researcher', 'Quantum Algorithm Designer', 'Quantum Hardware Engineer', 'Quantum Application Scientist'],
+          questions: [
+            'Am I comfortable working on technology that may take decades to mature?',
+            'Do I enjoy theoretical research or applied engineering more?',
+            'What classical computing limits frustrate me the most?'
+          ],
+          resources: ['IBM Quantum Learning — Free courses', 'Qiskit Textbook — Interactive quantum computing', 'Quantum Country — Spaced-repetition learning']
+        },
+        {
+          id: 'robotics',
+          cat: 'tech',
+          icon: '🦾',
+          title: 'Robotics & Automation',
+          tagline: 'Bring machines to life',
+          desc: 'Design autonomous robots and intelligent automation systems that operate in the physical world.',
+          salary: '$85K–$200K+',
+          growth: '22%',
+          demand: 'High',
+          advice:
+            'Robotics is where software meets the physical world in spectacular fashion. You will combine mechanical engineering, electronics, control systems, and AI to create machines that see, think, and act. The most rewarding part? Your work has tangible, visible impact — from surgical robots to autonomous vehicles to warehouse automation. Focus on sensor fusion, ROS, and embedded systems.',
+          skills: ['ROS', 'Control Systems', 'Computer Vision', 'C++', 'Sensor Fusion', 'Embedded Systems', 'Simulation (Gazebo)', 'Mechanical Design'],
+          roles: ['Robotics Engineer', 'Automation Architect', 'Controls Engineer', 'Robotics Software Developer', 'Perception Engineer', 'Hardware Prototyper'],
+          questions: [
+            'Am I drawn to humanoid robots, industrial automation, or autonomous vehicles?',
+            'How do I balance precision engineering with rapid prototyping?',
+            'What safety standards do I need to master for my target domain?'
+          ],
+          resources: ['ROS Wiki — Robot Operating System', 'MIT OpenCourseWare — Robotics', 'Boston Dynamics — Inspiration & research']
+        },
+        {
+          id: 'climate',
+          cat: 'eco',
+          icon: '🌍',
+          title: 'Climate Technology',
+          tagline: 'Engineer planetary survival',
+          desc: 'Develop technological solutions to climate change — from carbon capture to renewable energy systems.',
+          salary: '$75K–$180K+',
+          growth: '27%',
+          demand: 'Critical',
+          advice:
+            'Climate tech is not just a career — it is a calling. The planet is running out of time, and the engineers, scientists, and entrepreneurs working on climate solutions are the most important workforce of this century. Whether you focus on solar optimization, carbon capture, or grid modernization, your work will literally determine the future of life on Earth. Combine deep technical skills with systems thinking.',
+          skills: ['Renewable Energy Systems', 'Carbon Accounting', 'Energy Storage', 'Climate Modeling', 'Sustainability Metrics', 'Material Science', 'Grid Technology', 'Environmental Policy'],
+          roles: ['Climate Tech Engineer', 'Sustainability Analyst', 'Carbon Market Specialist', 'Clean Energy Developer', 'Environmental Consultant', 'Green Building Architect'],
+          questions: [
+            'Where can my skills create the most immediate climate impact?',
+            'How do I balance economic viability with ecological urgency?',
+            'Am I drawn to energy, agriculture, transportation, or built environment?'
+          ],
+          resources: ['Project Drawdown — Top climate solutions', 'Climate Tech VC — Industry newsletter', 'IPCC Reports — Scientific foundation']
+        },
+        {
+          id: 'agritech',
+          cat: 'eco',
+          icon: '🌱',
+          title: 'Agricultural Technology',
+          tagline: 'Feed the future sustainably',
+          desc: 'Revolutionize food production with precision agriculture, vertical farming, and bioengineered crops.',
+          salary: '$70K–$160K+',
+          growth: '18%',
+          demand: 'Growing',
+          advice:
+            'By 2050, we need to feed 10 billion people on a warming planet with degrading soil. AgriTech is where biology, data science, and engineering converge to solve this existential challenge. Explore precision agriculture using IoT and drones, investigate cellular agriculture, or build vertical farming systems. The most successful AgriTech professionals combine deep agricultural knowledge with cutting-edge technology.',
+          skills: ['Precision Agriculture', 'IoT & Sensors', 'Drone Technology', 'Plant Biology', 'Data Analytics', 'Supply Chain', 'Soil Science', 'Vertical Farming'],
+          roles: ['AgriTech Engineer', 'Precision Farming Specialist', 'Food Systems Analyst', 'Vertical Farm Manager', 'Agricultural Data Scientist', 'Sustainable Supply Chain Lead'],
+          questions: [
+            'Am I passionate about food systems, environmental conservation, or technology?',
+            'How do I bridge the gap between traditional farming and innovation?',
+            'What region or community could benefit most from my contributions?'
+          ],
+          resources: ['FAO — Food and Agriculture Organization', 'AgFunder — AgriTech investment news', 'MIT Food & Agriculture Innovation']
+        },
+        {
+          id: 'ocean',
+          cat: 'eco',
+          icon: '🌊',
+          title: 'Ocean & Marine Science',
+          tagline: "Explore Earth's last frontier",
+          desc: 'Study and protect marine ecosystems while developing sustainable ocean industries and blue technologies.',
+          salary: '$65K–$140K+',
+          growth: '15%',
+          demand: 'Growing',
+          advice:
+            "The ocean covers 71% of Earth's surface yet remains largely unexplored. Marine science is rapidly evolving with underwater robotics, satellite monitoring, and marine biotech creating entirely new career possibilities. Whether you are drawn to marine biology, oceanographic engineering, or sustainable fisheries, the blue economy is emerging as a major growth sector. Combine your love of the ocean with technical skills for maximum impact.",
+          skills: ['Marine Biology', 'Oceanography', 'Remote Sensing', 'Underwater Robotics', 'Marine Conservation', 'GIS Mapping', 'Aquaculture', 'Environmental Law'],
+          roles: ['Marine Biologist', 'Oceanographic Engineer', 'Coral Reef Ecologist', 'Fisheries Manager', 'Marine Policy Advisor', 'Blue Economy Consultant'],
+          questions: [
+            'Am I drawn to field research, lab work, or policy advocacy?',
+            'How can technology amplify ocean conservation efforts?',
+            'What marine ecosystem is most critically in need of protection?'
+          ],
+          resources: ['NOAA — Ocean science & careers', 'Ocean Conservancy — Advocacy & research', 'Schmidt Ocean Institute — Exploration missions']
+        },
+        {
+          id: 'biotech',
+          cat: 'human',
+          icon: '🧬',
+          title: 'Biotechnology',
+          tagline: 'Rewrite the code of life',
+          desc: 'Engineer biological systems for medicine, agriculture, and industry using CRISPR, synthetic biology, and genomics.',
+          salary: '$80K–$200K+',
+          growth: '24%',
+          demand: 'High',
+          advice:
+            'Biotechnology is the most profound toolkit humanity has ever wielded. With CRISPR gene editing, synthetic biology, and advanced genomics, you will work at the intersection of engineering and biology to solve problems from genetic disease to sustainable materials. This field demands both deep scientific rigor and creative thinking. Build a strong foundation in molecular biology, then specialize in your area of passion.',
+          skills: ['Molecular Biology', 'CRISPR/Gene Editing', 'Bioinformatics', 'Protein Engineering', 'Cell Culture', 'Regulatory Affairs', 'Genomics', 'Lab Automation'],
+          roles: ['Biotech Research Scientist', 'Genetic Engineer', 'Bioinformatics Analyst', 'Clinical Research Lead', 'Bioprocess Engineer', 'Regulatory Scientist'],
+          questions: [
+            'Am I more excited by therapeutic applications or industrial biotech?',
+            'How do I navigate the ethical complexities of genetic engineering?',
+            'Do I thrive in research environments or commercial development?'
+          ],
+          resources: ['Nature Biotechnology — Leading journal', 'Addgene — CRISPR resources', 'BioSpace — Industry careers & news']
+        },
+        {
+          id: 'neuro',
+          cat: 'human',
+          icon: '🧠',
+          title: 'Neuroscience & BCI',
+          tagline: "Map the mind's architecture",
+          desc: 'Decode brain function and build brain-computer interfaces that merge human cognition with technology.',
+          salary: '$85K–$210K+',
+          growth: '20%',
+          demand: 'High',
+          advice:
+            'The human brain is the most complex object in the known universe, and you want to understand it. Neuroscience is branching into revolutionary applications: brain-computer interfaces that restore movement, neurofeedback for mental health, and computational models of consciousness. Whether you pursue academic research or join companies like Neuralink, your work will redefine what it means to be human. Master neurobiology, signal processing, and machine learning.',
+          skills: ['Neuroanatomy', 'EEG/fMRI Analysis', 'Signal Processing', 'Computational Neuroscience', 'Python/MATLAB', 'Neural Engineering', 'Cognitive Science', 'Brain-Computer Interfaces'],
+          roles: ['Neuroscientist', 'BCI Engineer', 'Neurotech Product Developer', 'Computational Neuroscience Researcher', 'Clinical Neuroscientist', 'Neural Data Analyst'],
+          questions: [
+            'Am I fascinated by how the brain works, or by what we can build with that knowledge?',
+            'How do I feel about the ethical implications of brain augmentation?',
+            'Do I want to work in clinical settings, research labs, or startups?'
+          ],
+          resources: ['NeuroAI — Intersection of neuroscience & AI', 'BrainFacts.org — Neuroscience education', 'IEEE Brain — BCI research community']
+        },
+        {
+          id: 'health',
+          cat: 'human',
+          icon: '💊',
+          title: 'Digital Health & MedTech',
+          tagline: 'Heal with innovation',
+          desc: 'Transform healthcare delivery through telemedicine, wearable diagnostics, and AI-powered clinical tools.',
+          salary: '$80K–$190K+',
+          growth: '26%',
+          demand: 'Very High',
+          advice:
+            'Healthcare is undergoing its most dramatic transformation in a century. Digital health combines clinical knowledge with technology to make healthcare more accessible, predictive, and personalized. From wearable devices that detect disease early to AI systems that analyze medical images with superhuman accuracy, this field is saving lives at scale. You need empathy as much as engineering skill — always remember there is a patient at the other end of your code.',
+          skills: ['Health Informatics', 'FDA Regulations', 'HIPAA Compliance', 'Wearable Tech', 'Medical Imaging', 'EHR Systems', 'Clinical Trials', 'UX for Healthcare'],
+          roles: ['Health Tech Product Manager', 'Clinical Data Scientist', 'Medical Device Engineer', 'Telemedicine Architect', 'Health AI Specialist', 'Digital Therapeutics Designer'],
+          questions: [
+            'What aspect of healthcare frustrates me most as a potential user?',
+            'How do I navigate the complex regulatory landscape of medical devices?',
+            'Am I building for patients, clinicians, or health systems?'
+          ],
+          resources: ['Rock Health — Digital health funding data', 'WHO Digital Health — Global perspective', 'HIMSS — Health information & technology']
+        },
+        {
+          id: 'psych',
+          cat: 'human',
+          icon: '🫂',
+          title: 'Psychology & Well-being',
+          tagline: 'Elevate the human spirit',
+          desc: 'Apply psychological science to improve mental health, organizational culture, and human performance.',
+          salary: '$60K–$150K+',
+          growth: '16%',
+          demand: 'High',
+          advice:
+            'In an age of unprecedented connectivity yet rising loneliness, psychological expertise is invaluable. You can pursue clinical therapy, organizational psychology, UX research, or positive psychology coaching. The key is to combine empirical research with genuine compassion. Whether you help individuals heal from trauma or design workplace cultures that promote flourishing, your work addresses the most fundamental human need — to be understood.',
+          skills: [
+            'Clinical Assessment',
+            'CBT / DBT',
+            'Research Methods',
+            'Psychometrics',
+            'Organizational Behavior',
+            'Positive Psychology',
+            'Trauma-Informed Care',
+            'Mindfulness-Based Interventions'
+          ],
+          roles: ['Clinical Psychologist', 'I/O Psychologist', 'UX Researcher', 'Behavioral Scientist', 'Well-being Coach', 'Neuropsychologist'],
+          questions: [
+            'Am I drawn to clinical work with individuals or systemic organizational change?',
+            'How do I maintain my own mental health while supporting others?',
+            'What population or community do I feel called to serve?'
+          ],
+          resources: ['APA — American Psychological Association', 'Psychology Today — Practice & research', 'Greater Good Science Center — Well-being research']
+        },
+        {
+          id: 'fintech',
+          cat: 'biz',
+          icon: '💳',
+          title: 'FinTech & DeFi',
+          tagline: 'Reinvent money itself',
+          desc: 'Build financial technology that democratizes access to banking, investing, and economic participation.',
+          salary: '$85K–$220K+',
+          growth: '23%',
+          demand: 'Very High',
+          advice:
+            'Money is being reimagined from the ground up. FinTech is about removing barriers — making financial services accessible to the 1.7 billion unbanked people worldwide, creating instant cross-border payments, and building algorithmic trading systems. Whether you are drawn to neobanking, embedded finance, or decentralized protocols, your work can fundamentally reshape economic equity. Combine financial literacy with strong engineering skills.',
+          skills: ['Payment Systems', 'Banking APIs', 'Risk Modeling', 'Compliance & RegTech', 'Algorithmic Trading', 'Financial Modeling', 'Blockchain', 'Product Management'],
+          roles: ['FinTech Engineer', 'Quantitative Developer', 'Product Manager (Payments)', 'Risk Analyst', 'RegTech Specialist', 'Embedded Finance Architect'],
+          questions: [
+            'Do I want to disrupt traditional banking or build within it?',
+            'How do I balance innovation speed with regulatory compliance?',
+            'What financial inequality frustrates me the most?'
+          ],
+          resources: ['Fintech Blueprint — Industry analysis', 'Stripe Press — Future of payments', 'CFA Institute — Financial foundations']
+        },
+        {
+          id: 'impact',
+          cat: 'biz',
+          icon: '🌟',
+          title: 'Impact & Social Enterprise',
+          tagline: 'Profit with purpose',
+          desc: 'Build ventures that generate measurable social and environmental impact alongside financial returns.',
+          salary: '$65K–$160K+',
+          growth: '18%',
+          demand: 'Growing',
+          advice:
+            'The next generation of business leaders will be measured not by shareholder returns alone, but by their total impact on people and planet. Social enterprise sits at the intersection of capitalism and compassion. Learn to build sustainable business models, measure impact rigorously, and tell stories that inspire stakeholders. The most successful impact entrepreneurs are ruthlessly practical about execution while being deeply idealistic about their mission.',
+          skills: ['Impact Measurement', 'Social Business Models', 'Grant Writing', 'Stakeholder Management', 'ESG Frameworks', 'Community Engagement', 'Fundraising', 'Systems Thinking'],
+          roles: ['Social Entrepreneur', 'Impact Investment Analyst', 'ESG Consultant', 'Program Director (Nonprofit)', 'Chief Impact Officer', 'Community Development Lead'],
+          questions: ['What systemic issue keeps me up at night?', 'How do I measure success beyond financial metrics?', 'Am I building a product, a movement, or an institution?'],
+          resources: ['Skoll Foundation — Social entrepreneurship', 'GIIN — Impact investing network', 'Stanford Social Innovation Review']
+        },
+        {
+          id: 'strategy',
+          cat: 'biz',
+          icon: '♟️',
+          title: 'Strategy & Consulting',
+          tagline: 'Solve impossible puzzles',
+          desc: 'Advise organizations on critical decisions — from market entry to digital transformation to M&A.',
+          salary: '$80K–$250K+',
+          growth: '14%',
+          demand: 'Steady',
+          advice:
+            'Strategy consulting is the ultimate training ground for business minds. You will work across industries, tackle ambiguous problems with incomplete data, and learn to communicate complex ideas with crystalline clarity. The best consultants are not just smart — they are intensely curious, deeply empathetic with clients, and relentlessly structured in their thinking. Build your analytical toolkit, practice frameworks, and develop the soft skills that separate good analysts from trusted advisors.',
+          skills: ['Problem Structuring', 'Financial Analysis', 'Market Sizing', 'Data Storytelling', 'Change Management', 'Stakeholder Communication', 'Competitive Analysis', 'Presentation Design'],
+          roles: ['Management Consultant', 'Strategy Analyst', 'Transformation Lead', 'Principal Consultant', 'Corporate Strategist', 'Due Diligence Analyst'],
+          questions: [
+            'Do I thrive under ambiguity and tight deadlines?',
+            'Am I energized by variety across industries or depth in one sector?',
+            'How do I handle the trade-off between analytical rigor and client relationships?'
+          ],
+          resources: ['McKinsey Insights — Strategic thinking', 'Case Interview Prep — Frameworks & practice', 'Harvard Business Review — Business strategy']
+        },
+        {
+          id: 'product',
+          cat: 'biz',
+          icon: '🎯',
+          title: 'Product Management',
+          tagline: 'Ship what the world needs',
+          desc: 'Define product vision, prioritize ruthlessly, and lead cross-functional teams to build products people love.',
+          salary: '$90K–$220K+',
+          growth: '22%',
+          demand: 'Very High',
+          advice:
+            "Product Management is the art and science of building the right thing. You are the voice of the user, the translator between business and engineering, and the strategist who decides what NOT to build. Great PMs combine analytical thinking with deep empathy, technical fluency with business acumen. Start by mastering user research, learn to write crisp product specs, and develop your ability to influence without authority. Every great product started as someone's conviction about an unmet need.",
+          skills: ['User Research', 'Roadmap Planning', 'A/B Testing', 'Agile/Scrum', 'SQL & Analytics', 'Wireframing', 'Go-To-Market Strategy', 'Cross-Functional Leadership'],
+          roles: ['Product Manager', 'Senior PM', 'Group PM', 'VP of Product', 'Technical PM', 'Growth Product Manager'],
+          questions: [
+            'Am I more passionate about discovery (finding problems) or delivery (shipping solutions)?',
+            'How do I balance user needs with business objectives?',
+            'What product do I use daily that I wish I had built?'
+          ],
+          resources: ['Inspired by Marty Cagan', "Lenny's Newsletter — PM insights", 'ProductBoard — Product management tools']
+        },
+        {
+          id: 'space',
+          cat: 'eco',
+          icon: '🚀',
+          title: 'Space Technology',
+          tagline: "Expand humanity's horizon",
+          desc: 'Design spacecraft, satellite systems, and space habitats that extend civilization beyond Earth.',
+          salary: '$90K–$220K+',
+          growth: '17%',
+          demand: 'Growing',
+          advice:
+            "Space is no longer the exclusive domain of government agencies — it is a booming commercial frontier. From SpaceX's reusable rockets to satellite constellations providing global internet, the space industry is creating opportunities at an unprecedented pace. Whether you want to design propulsion systems, build satellite payloads, or plan Mars habitats, you will need strong foundations in aerospace engineering, orbital mechanics, and systems thinking. Dream big — literally.",
+          skills: ['Aerospace Engineering', 'Orbital Mechanics', 'Propulsion Systems', 'Satellite Design', 'Mission Planning', 'Systems Engineering', 'Radiation Hardening', 'Launch Operations'],
+          roles: ['Aerospace Engineer', 'Mission Architect', 'Satellite Systems Engineer', 'Space Policy Analyst', 'Astrobiology Researcher', 'Spacecraft Software Engineer'],
+          questions: [
+            'Am I drawn to Earth observation, deep space exploration, or commercial space?',
+            'How do I feel about working on technology with very long development timelines?',
+            'What inspires me more — building the rocket or deciding where it goes?'
+          ],
+          resources: ['NASA Careers — Opportunities & pathways', 'Space.com — Industry news', 'The Planetary Society — Exploration advocacy']
+        },
+        {
+          id: 'design',
+          cat: 'creative',
+          icon: '🎨',
+          title: 'UX & Product Design',
+          tagline: 'Design experiences that matter',
+          desc: 'Create intuitive, beautiful, and accessible digital experiences that put humans at the center of technology.',
+          salary: '$75K–$180K+',
+          growth: '21%',
+          demand: 'High',
+          advice:
+            'Design is not how it looks — it is how it works. As a UX designer, you are the advocate for every user who will never be in the room when decisions are made. The best designers combine aesthetic sensibility with rigorous research methodology, creating interfaces that feel inevitable in their simplicity. Learn user research, master prototyping tools, understand accessibility standards, and develop the courage to challenge assumptions — including your own.',
+          skills: ['User Research', 'Figma', 'Prototyping', 'Information Architecture', 'Accessibility (WCAG)', 'Design Systems', 'Usability Testing', 'Interaction Design'],
+          roles: ['UX Designer', 'Product Designer', 'Design Lead', 'UX Researcher', 'Interaction Designer', 'Design Systems Architect'],
+          questions: [
+            'Am I more energized by research (understanding users) or craft (creating interfaces)?',
+            'How do I advocate for users when business pressures push for shortcuts?',
+            'What digital product has the worst UX that I could reimagine?'
+          ],
+          resources: ['Nielsen Norman Group — UX research', 'Laws of UX — Design principles', 'Figma Community — Design resources']
+        },
+        {
+          id: 'content',
+          cat: 'creative',
+          icon: '✍️',
+          title: 'Content & Storytelling',
+          tagline: 'Words that move worlds',
+          desc: 'Craft compelling narratives across media — from brand strategy and journalism to screenwriting and content design.',
+          salary: '$55K–$150K+',
+          growth: '15%',
+          demand: 'Steady',
+          advice:
+            'In the attention economy, storytelling is the most valuable skill in existence. Whether you write for brands, newsrooms, film studios, or tech products, your ability to distill complex ideas into compelling narratives will make you indispensable. The best content professionals understand both art and analytics — they craft stories that move hearts while tracking metrics that prove business value. Read voraciously, write daily, and develop your unique voice.',
+          skills: ['Copywriting', 'Content Strategy', 'SEO', 'Brand Voice Development', 'Video Scripting', 'Editorial Planning', 'Analytics', 'Content Design (UX Writing)'],
+          roles: ['Content Strategist', 'Brand Writer', 'UX Writer', 'Journalist', 'Content Marketing Lead', 'Screenwriter'],
+          questions: [
+            'Am I a natural storyteller or a strategic communicator — or both?',
+            'What medium (text, video, audio, interactive) excites me most?',
+            'How do I maintain creative integrity while serving business objectives?'
+          ],
+          resources: ["Ann Handley's Everybody Writes", 'Content Strategy Alliance', 'The Content Design Book by Sarah Winters']
+        },
+        {
+          id: 'gamedev',
+          cat: 'creative',
+          icon: '🎮',
+          title: 'Game Development',
+          tagline: 'Build worlds people live in',
+          desc: 'Create immersive interactive experiences — from indie masterpieces to AAA titles to XR simulations.',
+          salary: '$65K–$175K+',
+          growth: '16%',
+          demand: 'Growing',
+          advice:
+            'Games are the most complex creative medium ever invented — combining narrative, art, music, engineering, and psychology into a single interactive experience. Whether you are drawn to programming game engines, designing levels, creating 3D art, or composing adaptive soundtracks, the games industry offers extraordinary creative fulfillment. Start making small games immediately — every shipped project teaches you more than months of tutorials.',
+          skills: ['Unity / Unreal Engine', 'C# / C++', '3D Modeling', 'Game Design', 'Shader Programming', 'Animation', 'Level Design', 'Multiplayer Networking'],
+          roles: ['Game Developer', 'Game Designer', 'Technical Artist', 'Level Designer', 'Narrative Designer', 'Engine Programmer'],
+          questions: [
+            'Do I want to create art, write code, design systems, or all three?',
+            'Am I drawn to indie games with creative freedom or AAA with big teams?',
+            'What game changed my life, and what made it special?'
+          ],
+          resources: ['GDC Vault — Game Developers Conference talks', 'Brackeys — Game development tutorials', 'Gamasutra — Industry analysis & postmortems']
+        },
+        {
+          id: 'xr',
+          cat: 'creative',
+          icon: '🥽',
+          title: 'XR & Spatial Computing',
+          tagline: 'Merge realities',
+          desc: 'Build augmented, virtual, and mixed reality experiences that transform how we work, learn, and connect.',
+          salary: '$85K–$200K+',
+          growth: '25%',
+          demand: 'High',
+          advice:
+            'Spatial computing is the next major computing platform. AR glasses, VR headsets, and mixed reality devices are creating entirely new interaction paradigms. You will need a blend of 3D development, UX design thinking adapted for spatial interfaces, and understanding of human perception. The field is still young enough that you can help define its conventions. Think about how spatial computing can solve real problems — industrial training, remote collaboration, therapeutic applications — not just entertainment.',
+          skills: ['Unity/Unreal for XR', '3D Interaction Design', 'Spatial Audio', 'ARKit / ARCore', 'Hand Tracking', 'WebXR', 'Volumetric Capture', 'Human Factors'],
+          roles: ['XR Developer', 'Spatial Designer', 'AR/VR Engineer', 'Immersive Experience Director', '3D Interaction Developer', 'XR Research Scientist'],
+          questions: [
+            'Am I building for entertainment, enterprise, education, or healthcare?',
+            'How do I design for comfort and reduce motion sickness?',
+            'What real-world task would be dramatically improved by spatial computing?'
+          ],
+          resources: ['Unity XR Documentation', 'Meta Quest Developer Hub', 'WebXR Samples — Browser-based XR']
+        },
+        {
+          id: 'edtech',
+          cat: 'human',
+          icon: '📚',
+          title: 'Education Technology',
+          tagline: 'Democratize knowledge',
+          desc: 'Build platforms and tools that make quality education accessible, personalized, and engaging for everyone.',
+          salary: '$70K–$160K+',
+          growth: '19%',
+          demand: 'Growing',
+          advice:
+            'Education is the single most powerful force for social mobility, yet it remains inequitable worldwide. EdTech is about using technology to break down barriers — geographic, economic, and cognitive. Whether you build adaptive learning platforms, create gamified curricula, or design assessment tools that measure true understanding, your work can impact millions of learners. The best EdTech products are built by people who deeply understand how humans actually learn, not just how to build software.',
+          skills: ['Learning Science', 'Instructional Design', 'LMS Development', 'Gamification', 'Adaptive Learning', 'Assessment Design', 'Accessibility', 'Data-Driven Personalization'],
+          roles: ['EdTech Product Manager', 'Learning Experience Designer', 'Curriculum Developer', 'Assessment Specialist', 'EdTech Engineer', 'Chief Learning Officer'],
+          questions: [
+            'What educational experience transformed my own life, and why?',
+            'How do I measure genuine learning versus superficial engagement?',
+            'Am I building for K-12, higher education, corporate training, or lifelong learning?'
+          ],
+          resources: ['EdSurge — EdTech news & research', 'Learning Scientists — Evidence-based strategies', 'Khan Academy — Model for accessible education']
+        }
+      ]
+
+      // ============================== RENDER GRID ==============================
+      const grid = document.getElementById('career-grid')
+      const noResults = document.getElementById('no-results')
+      const gridTitle = document.getElementById('grid-title')
+
+      function renderCards(filteredCareers) {
+        grid.innerHTML = ''
+        if (filteredCareers.length === 0) {
+          noResults.classList.add('show')
+          gridTitle.textContent = 'No results found'
+          return
+        }
+        noResults.classList.remove('show')
+        gridTitle.textContent = `Showing ${filteredCareers.length} career path${filteredCareers.length !== 1 ? 's' : ''}`
+
+        filteredCareers.forEach((c, i) => {
+          const card = document.createElement('div')
+          card.className = `career-card cat-${c.cat}`
+          card.style.animationDelay = `${i * 0.04}s`
+          card.style.animation = 'fadeSlideUp 0.5s ease-out both'
+          card.setAttribute('data-id', c.id)
+          card.innerHTML = `
+                <div class="card-icon-row">
+                    <div class="card-icon">${c.icon}</div>
+                    <span class="card-tag">${c.cat === 'tech' ? 'Technology' : c.cat === 'eco' ? 'Sustainability' : c.cat === 'human' ? 'Human Sciences' : c.cat === 'biz' ? 'Business' : 'Creative'}</span>
+                </div>
+                <h3 class="card-title">${c.title}</h3>
+                <p class="card-desc">${c.desc}</p>
+                <div class="card-meta">
+                    <div class="card-meta-item">💰 ${c.salary}</div>
+                    <div class="card-meta-item">📈 ${c.growth} growth</div>
+                </div>
+            `
+          card.addEventListener('click', () => openDetail(c))
+          card.addEventListener('mouseenter', () => cursorOrb.classList.add('active'))
+          card.addEventListener('mouseleave', () => cursorOrb.classList.remove('active'))
+          grid.appendChild(card)
+        })
+      }
+
+      renderCards(careers)
+
+      // ============================== FILTERS ==============================
+      const filterBtns = document.querySelectorAll('.filter-btn')
+      let activeFilter = 'all'
+
+      filterBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach((b) => b.classList.remove('active'))
+          btn.classList.add('active')
+          activeFilter = btn.dataset.filter
+          applyFilters()
+        })
+        btn.addEventListener('mouseenter', () => cursorOrb.classList.add('active'))
+        btn.addEventListener('mouseleave', () => cursorOrb.classList.remove('active'))
+      })
+
+      const searchInput = document.getElementById('search-input')
+      searchInput.addEventListener('input', applyFilters)
+
+      function applyFilters() {
+        const query = searchInput.value.toLowerCase().trim()
+        let filtered = careers
+        if (activeFilter !== 'all') {
+          filtered = filtered.filter((c) => c.cat === activeFilter)
+        }
+        if (query) {
+          filtered = filtered.filter(
+            (c) =>
+              c.title.toLowerCase().includes(query) ||
+              c.desc.toLowerCase().includes(query) ||
+              c.tagline.toLowerCase().includes(query) ||
+              c.skills.some((s) => s.toLowerCase().includes(query)) ||
+              c.roles.some((r) => r.toLowerCase().includes(query))
+          )
+        }
+        renderCards(filtered)
+      }
+
+      // ============================== DETAIL PANEL ==============================
+      const overlay = document.getElementById('detail-overlay')
+      const panel = document.getElementById('detail-panel')
+
+      function openDetail(c) {
+        const catColors = {
+          tech: 'var(--primary)',
+          eco: 'var(--accent-green)',
+          human: 'var(--accent-warm)',
+          biz: 'var(--accent-amber)',
+          creative: 'var(--accent)'
+        }
+        const color = catColors[c.cat]
+
+        panel.innerHTML = `
+            <div class="detail-hero">
+                <div class="detail-hero-top">
+                    <div class="detail-icon cat-${c.cat}" style="font-size:36px;width:72px;height:72px;display:flex;align-items:center;justify-content:center;border-radius:18px">${c.icon}</div>
+                    <button class="detail-close" id="detail-close" title="Close">✕</button>
+                </div>
+                <h2 class="detail-title">${c.title}</h2>
+                <p class="detail-subtitle">${c.tagline} — ${c.desc}</p>
+            </div>
+            <div class="detail-stats">
+                <div class="detail-stat">
+                    <div class="detail-stat-value green">${c.salary}</div>
+                    <div class="detail-stat-label">Salary Range</div>
+                </div>
+                <div class="detail-stat">
+                    <div class="detail-stat-value blue">${c.growth}</div>
+                    <div class="detail-stat-label">Projected Growth</div>
+                </div>
+                <div class="detail-stat">
+                    <div class="detail-stat-value pink">${c.demand}</div>
+                    <div class="detail-stat-label">Market Demand</div>
+                </div>
+            </div>
+            <div class="detail-body">
+                <div class="detail-section">
+                    <div class="detail-section-title"><span class="dot" style="background:${color}"></span> Career Guidance</div>
+                    <div class="detail-advice">${c.advice}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title"><span class="dot" style="background:${color}"></span> Core Skills to Master</div>
+                    <div class="skills-grid">${c.skills.map((s) => `<span class="skill-tag">${s}</span>`).join('')}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title"><span class="dot" style="background:${color}"></span> Trending Roles</div>
+                    <div class="roles-list">${c.roles.map((r) => `<div class="role-item"><span class="role-dot"></span>${r}</div>`).join('')}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title"><span class="dot" style="background:${color}"></span> Crucial Questions for Your Journey</div>
+                    <div class="questions-list">${c.questions.map((q) => `<div class="q-item">${q}</div>`).join('')}</div>
+                </div>
+                <div class="detail-section">
+                    <div class="detail-section-title"><span class="dot" style="background:${color}"></span> Recommended Resources</div>
+                    <div class="resources-list">${c.resources.map((r) => `<div class="resource-link">📌 ${r}</div>`).join('')}</div>
+                </div>
+            </div>
+        `
+
+        overlay.classList.add('open')
+        document.body.style.overflow = 'hidden'
+
+        // Close handlers
+        document.getElementById('detail-close').addEventListener('click', closeDetail)
+        document.getElementById('detail-close').addEventListener('mouseenter', () => cursorOrb.classList.add('active'))
+        document.getElementById('detail-close').addEventListener('mouseleave', () => cursorOrb.classList.remove('active'))
+      }
+
+      function closeDetail() {
+        overlay.classList.remove('open')
+        document.body.style.overflow = ''
+      }
+
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeDetail()
+      })
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeDetail()
+      })
+
+      // ============================== CURSOR ==============================
+      const cursorOrb = document.getElementById('cursor-orb')
+      const cursorTrail = document.getElementById('cursor-trail')
+      let mx = 0,
+        my = 0,
+        tx = 0,
+        ty = 0
+
+      document.addEventListener('mousemove', (e) => {
+        mx = e.clientX
+        my = e.clientY
+        cursorOrb.style.left = mx + 'px'
+        cursorOrb.style.top = my + 'px'
+      })
+
+      // Smooth trail
+      function animateTrail() {
+        tx += (mx - tx) * 0.15
+        ty += (my - ty) * 0.15
+        cursorTrail.style.left = tx + 'px'
+        cursorTrail.style.top = ty + 'px'
+        requestAnimationFrame(animateTrail)
+      }
+      animateTrail()
+
+      // Hover effects for interactive elements
+      document.querySelectorAll('a, button, input, .nav-cta').forEach((el) => {
+        el.addEventListener('mouseenter', () => cursorOrb.classList.add('active'))
+        el.addEventListener('mouseleave', () => cursorOrb.classList.remove('active'))
+      })
+
+      // ============================== NAVBAR SCROLL ==============================
+      const navbar = document.getElementById('navbar')
+      window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 50)
+      })
+
+      function scrollToTop(e) {
+        e.preventDefault()
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+      function scrollToExplore(e) {
+        e.preventDefault()
+        document.getElementById('explore').scrollIntoView({ behavior: 'smooth' })
+      }
+
+      // ============================== THREE.JS COSMOS ==============================
+    </script>
+  </body>
+</html>

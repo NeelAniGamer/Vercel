@@ -1,0 +1,1343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Send feedback or bug reports to Class Of Learners. Help us improve our applications." />
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+    <title>Feedback | Class Of Learners</title>
+    <link rel="icon" type="image/webp" href="icon.webp" />
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/feedback" />
+
+    <script>
+      ;(function () {
+        try {
+          var c = localStorage.getItem('col_admin_config')
+          if (c) {
+            var cfg = JSON.parse(c),
+              p = window.location.pathname.split('/').pop() || 'home',
+              s = cfg.pages[p] || '200'
+            if (s === '503') {
+              document.write(
+                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>'
+              )
+              window.stop()
+            }
+            if (s === '404') {
+              document.write(
+                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="home" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'
+              )
+              window.stop()
+            }
+          }
+        } catch (e) {}
+      })()
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --void: #070a14;
+        --void2: #0c1224;
+        --panel: #111827;
+        --line: rgba(255, 255, 255, 0.08);
+        --lineb: rgba(255, 255, 255, 0.16);
+        --ink: #e8e3d8;
+        --dim: #8891aa;
+        --signal: #f2b84b;
+        --ion: #5ed4f5;
+        --teal: #00f0cc;
+        --plasma: #b89bff;
+        --em: #34d399;
+        --nav: rgba(7, 10, 20, 0.68);
+        --serif: 'Instrument Serif', Georgia, serif;
+        --sans: 'Inter', system-ui, sans-serif;
+        --mono: 'Space Mono', monospace;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --r: 18px;
+      }
+      body.lm {
+        --void: #f0ede4;
+        --void2: #e6e2d8;
+        --panel: #fff;
+        --line: rgba(0, 0, 0, 0.09);
+        --lineb: rgba(0, 0, 0, 0.18);
+        --ink: #15181f;
+        --dim: #5c6175;
+        --signal: #b8720a;
+        --ion: #0e72a0;
+        --teal: #0a8c7a;
+        --plasma: #6f4fe0;
+        --em: #1b9d66;
+        --nav: rgba(240, 237, 228, 0.75);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--void);
+        color: var(--ink);
+        font-family: var(--sans);
+        line-height: 1.6;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        transition:
+          background 0.5s var(--ease),
+          color 0.5s var(--ease);
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+      }
+      button {
+        font-family: var(--sans);
+      }
+      ::selection {
+        background: var(--signal);
+        color: #0a0800;
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--void);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--lineb);
+        border-radius: 10px;
+        border: 3px solid var(--void);
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--signal);
+      }
+
+      .loader {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: var(--void);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        transition:
+          opacity 0.7s var(--ease),
+          visibility 0.7s;
+      }
+      .loader.gone {
+        opacity: 0;
+        visibility: hidden;
+      }
+      .lid {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.42em;
+        color: var(--dim);
+        text-transform: uppercase;
+      }
+      .lid span {
+        color: var(--signal);
+      }
+      .lbar {
+        width: 180px;
+        height: 1px;
+        background: var(--lineb);
+        position: relative;
+        overflow: hidden;
+      }
+      .lbar::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--signal);
+        transform-origin: left;
+        transform: scaleX(0);
+        animation: lf 1.1s var(--ease) 0.2s forwards;
+      }
+      @keyframes lf {
+        to {
+          transform: scaleX(1);
+        }
+      }
+      .cd,
+      .cr {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 9999;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        will-change: transform;
+      }
+      .cd {
+        width: 6px;
+        height: 6px;
+        background: var(--signal);
+      }
+      .cr {
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(94, 212, 245, 0.5);
+        opacity: 0.55;
+        transition:
+          width 0.22s var(--ease),
+          height 0.22s var(--ease),
+          border-color 0.22s,
+          opacity 0.22s;
+      }
+      body.ch .cr {
+        width: 64px;
+        height: 64px;
+        border-color: var(--signal);
+        opacity: 0.9;
+      }
+      @media (pointer: coarse) {
+        .cd,
+        .cr {
+          display: none;
+        }
+      }
+
+      .top-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 32px;
+        background: var(--nav);
+        backdrop-filter: blur(18px) saturate(1.4);
+        border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
+        gap: 14px;
+        transition:
+          background 0.5s var(--ease),
+          border-color 0.5s,
+          padding 0.4s var(--ease);
+      }
+      .top-nav.s {
+        padding: 10px 32px;
+        border-bottom-color: var(--lineb);
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+      }
+      .brand-logo {
+        height: 28px;
+        width: auto;
+        border-radius: 8px;
+      }
+      .brand-name {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--ink);
+      }
+      .nav-links {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .nav-link {
+        color: var(--dim);
+        font-weight: 500;
+        font-size: 0.82rem;
+        transition: color 0.25s;
+        position: relative;
+      }
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -7px;
+        width: 0;
+        height: 1px;
+        background: var(--signal);
+        transition: width 0.3s var(--ease);
+      }
+      .nav-link:hover {
+        color: var(--ink);
+      }
+      .nav-link:hover::after,
+      .nav-link.act::after {
+        width: 100%;
+      }
+      .nav-link.act {
+        color: var(--ink);
+      }
+      .nav-dl-btn {
+        background: var(--signal);
+        color: #0a0500;
+        padding: 8px 18px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.84rem;
+        transition:
+          transform 0.3s var(--ease),
+          box-shadow 0.3s;
+      }
+      .nav-dl-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px -10px var(--signal);
+      }
+      .desktop-dl {
+      }
+      .mobile-dl {
+        display: none;
+      }
+      .dropdown {
+        position: relative;
+      }
+      .dropdown-btn {
+        color: var(--dim);
+        background: none;
+        border: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--sans);
+        transition: color 0.25s;
+        padding: 0;
+      }
+      .dropdown.active .dropdown-btn,
+      .dropdown-btn:hover {
+        color: var(--ink);
+      }
+      .darr {
+        font-size: 0.68rem;
+        display: inline-block;
+        transition: transform 0.3s var(--ease);
+      }
+      .dropdown.active .darr {
+        transform: rotate(180deg);
+      }
+      .dropdown-content {
+        position: absolute;
+        top: calc(100% + 14px);
+        left: 50%;
+        transform: translateX(-50%) translateY(6px);
+        min-width: 225px;
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+          opacity 0.28s var(--ease),
+          transform 0.28s var(--ease),
+          visibility 0s linear 0.32s;
+      }
+      .dropdown.active .dropdown-content {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateX(-50%) translateY(0);
+        transition-delay: 0s;
+      }
+      .dropdown-content-inner {
+        background: var(--panel);
+        border: 1px solid var(--lineb);
+        border-radius: 14px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .dropdown-content a {
+        color: var(--dim);
+        padding: 11px 14px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: 0.2s;
+      }
+      .dropdown-content a:hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--ink);
+        padding-left: 18px;
+      }
+      .tw {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 18px;
+        border-left: 1px solid var(--lineb);
+      }
+      .tl {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        min-width: 32px;
+      }
+      .tsb {
+        position: relative;
+        width: 46px;
+        height: 24px;
+        cursor: pointer;
+        display: inline-block;
+        flex-shrink: 0;
+      }
+      .tsb input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        position: absolute;
+      }
+      .tst {
+        position: absolute;
+        inset: 0;
+        border-radius: 30px;
+        background: var(--void2);
+        border: 1px solid var(--lineb);
+        transition: 0.4s;
+      }
+      .tsth {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        top: 3px;
+        left: 3px;
+        background: var(--signal);
+        transition: transform 0.4s var(--spring);
+        font-size: 0.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      input:checked + .tst .tsth {
+        transform: translateX(22px);
+      }
+      .nav-login-btn {
+        background: transparent;
+        color: var(--em);
+        border: 1px solid var(--em);
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.82rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.25s;
+        font-family: var(--sans);
+      }
+      .nav-login-btn:hover {
+        background: var(--em);
+        color: #06140e;
+        box-shadow: 0 0 24px -6px var(--em);
+      }
+      .nav-user-profile {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 14px 4px 4px;
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.25s;
+      }
+      .nav-user-profile:hover {
+        border-color: var(--em);
+      }
+      .nav-user-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--em);
+        color: #06140e;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 800;
+        font-size: 0.8rem;
+        overflow: hidden;
+      }
+      .nun {
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+      .mmb {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+      }
+      .mmb svg {
+        width: 22px;
+        height: 22px;
+        stroke: var(--ink);
+      }
+
+      /* Hero */
+      .col-hero {
+        position: relative;
+        width: 100%;
+        min-height: 75vh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+      }
+      #bgCanvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        opacity: 0;
+        transition: opacity 1.8s var(--ease);
+      }
+      #bgCanvas.v {
+        opacity: 1;
+      }
+      .hvig {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(ellipse 65% 90% at 50% 50%, transparent 0%, var(--void) 90%);
+        transition: background 0.5s;
+        z-index: 1;
+      }
+      .hvigb {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 220px;
+        background: linear-gradient(to top, var(--void), transparent);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .shc {
+        position: relative;
+        z-index: 2;
+        max-width: 1360px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 160px 52px 40px;
+        text-align: center;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0, 240, 204, 0.1);
+        border: 1px solid rgba(0, 240, 204, 0.3);
+        color: var(--teal);
+        font-weight: 700;
+        font-size: 0.78rem;
+        font-family: var(--mono);
+        padding: 7px 18px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 24px;
+        opacity: 0;
+        transform: translateY(14px);
+        animation: fu 0.7s var(--ease) 0.9s forwards;
+      }
+      .pg-title {
+        font-family: var(--serif);
+        font-size: clamp(3.2rem, 8vw, 6rem);
+        font-weight: 400;
+        line-height: 1.05;
+        letter-spacing: -0.01em;
+        opacity: 0;
+        transform: translateY(28px);
+        animation: fu 0.95s var(--ease) 1.05s forwards;
+        margin: 0 auto;
+        max-width: 20ch;
+      }
+      .pg-title i {
+        color: var(--teal);
+        font-style: italic;
+      }
+      .pg-desc {
+        font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+        line-height: 1.7;
+        color: var(--dim);
+        max-width: 55ch;
+        margin: 28px auto 0;
+        opacity: 0;
+        transform: translateY(18px);
+        animation: fu 0.8s var(--ease) 1.25s forwards;
+      }
+      @keyframes fu {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .page-wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 52px;
+        position: relative;
+        z-index: 2;
+        padding-bottom: 100px;
+      }
+      .rv {
+        opacity: 0;
+        transform: translateY(36px);
+        transition:
+          opacity 0.8s var(--ease),
+          transform 0.8s var(--ease);
+      }
+      .rv.vis {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Feedback Layout */
+      .fb-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        align-items: start;
+      }
+      @media (max-width: 800px) {
+        .fb-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .fb-card {
+        background: rgba(255, 255, 255, 0.015);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        padding: 36px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        transition: 0.5s;
+        border-top: 3px solid var(--teal);
+      }
+      .fb-card:hover {
+        border-color: rgba(0, 240, 204, 0.3);
+        box-shadow: 0 40px 80px -20px rgba(0, 240, 204, 0.15);
+      }
+      .history-card {
+        border-top: 1px solid var(--line);
+      }
+      .history-card:hover {
+        border-color: var(--lineb);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .fbr {
+        margin-bottom: 24px;
+      }
+      .fbr > label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 10px;
+        font-family: var(--mono);
+      }
+      .fb-types {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .ft-pill {
+        cursor: pointer;
+        position: relative;
+      }
+      .ft-pill input {
+        position: absolute;
+        opacity: 0;
+      }
+      .ft-pill span {
+        display: block;
+        padding: 10px 18px;
+        border: 1px solid var(--lineb);
+        border-radius: 30px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--dim);
+        transition: 0.3s;
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .ft-pill input:checked + span {
+        border-color: var(--teal);
+        color: var(--teal);
+        background: rgba(0, 240, 204, 0.08);
+      }
+      .ft-pill:hover span {
+        border-color: var(--teal);
+        color: var(--ink);
+      }
+
+      /* Enhanced Animated Urgency Slider */
+      .urg-slider {
+        position: relative;
+        margin-top: 10px;
+        --active-color: var(--teal); /* Default starting color */
+      }
+      .urg-slider input {
+        width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 8px; /* Slightly thicker for the animation */
+        background: linear-gradient(to right, var(--active-color) 0%, var(--lineb) 0%);
+        border-radius: 4px;
+        outline: none;
+        cursor: pointer;
+        transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .urg-slider input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--active-color);
+        cursor: pointer;
+        transition:
+          transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+          box-shadow 0.25s ease,
+          background 0.3s ease;
+        box-shadow: 0 0 12px var(--active-color);
+      }
+      .urg-slider input::-webkit-slider-thumb:hover,
+      .urg-slider input:active::-webkit-slider-thumb {
+        transform: scale(1.3);
+        box-shadow: 0 0 20px var(--active-color);
+      }
+      .urg-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 12px;
+        font-size: 0.8rem;
+        color: var(--dim);
+        font-weight: 600;
+      }
+      .urg-labels span {
+        transition:
+          color 0.3s ease,
+          transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transform-origin: center;
+      }
+      .urg-labels span.active {
+        transform: scale(1.1);
+      }
+
+      .file-up {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border: 1px dashed var(--lineb);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        color: var(--dim);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .file-up:hover {
+        border-color: var(--teal);
+        color: var(--teal);
+        background: rgba(0, 240, 204, 0.05);
+      }
+      .file-up input {
+        display: none;
+      }
+      .file-up span {
+        font-size: 0.9rem;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .inline-t {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .sml {
+        font-size: 0.8rem;
+        color: var(--dim);
+        margin-top: 4px;
+      }
+
+      .fb-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 20px;
+      }
+      .fbi {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.02);
+        transition: 0.3s;
+      }
+      .fbi:hover {
+        border-color: var(--lineb);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .fbi-hd {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .fbi-type {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--teal);
+        background: rgba(0, 240, 204, 0.1);
+        padding: 4px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .fbi-date {
+        font-size: 0.8rem;
+        color: var(--dim);
+        font-family: var(--mono);
+      }
+      .fbi-msg {
+        font-size: 0.95rem;
+        color: var(--ink);
+        line-height: 1.6;
+      }
+      .fbi-meta {
+        margin-top: 12px;
+        font-size: 0.8rem;
+        color: var(--dim);
+        display: flex;
+        gap: 14px;
+        border-top: 1px solid var(--line);
+        padding-top: 10px;
+      }
+      .fbi-meta span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .emr {
+        color: #ef4444 !important;
+      }
+
+      /* Footer */
+      .sf {
+        border-top: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.012);
+        backdrop-filter: blur(8px);
+        padding: 48px 52px 36px;
+        transition:
+          border-color 0.5s,
+          background 0.5s;
+        position: relative;
+        z-index: 2;
+      }
+      .fi {
+        max-width: 1360px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 22px;
+      }
+      .fb {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--dim);
+      }
+      .fb span {
+        color: var(--signal);
+      }
+      .fl {
+        display: flex;
+        gap: 26px;
+        flex-wrap: wrap;
+      }
+      .fl a {
+        color: var(--dim);
+        font-size: 0.88rem;
+        font-weight: 500;
+        transition: color 0.25s;
+      }
+      .fl a:hover {
+        color: var(--ink);
+      }
+      .fc {
+        color: var(--dim);
+        font-size: 0.82rem;
+      }
+
+      @media (max-width: 768px) {
+        .shc {
+          padding: 100px 22px 40px;
+        }
+        .page-wrap {
+          padding: 0 22px;
+        }
+        .fb-card {
+          padding: 28px;
+        }
+        .sf {
+          padding: 40px 22px 28px;
+        }
+        .fi {
+          flex-direction: column;
+          gap: 16px;
+        }
+      }
+      @media (max-width: 480px) {
+        .pg-title {
+          font-size: 2.8rem;
+        }
+      }
+    </style>
+    <script defer src="col-router.js"></script>
+    <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+    <script defer src="col-ui.js"></script>
+    <script defer src="col-auth.js"></script>
+    <link rel="manifest" href="manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  </head>
+  <body>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
+        } catch (e) {}
+      })()
+    </script>
+    <div class="loader" id="loader">
+      <div class="lid"><span>CoL</span> &middot; Feedback</div>
+      <div class="lbar"></div>
+    </div>
+    <div class="cd" id="cDot"></div>
+    <div class="cr" id="cRing"></div>
+
+    <nav class="top-nav" id="topNav">
+      <a href="home" class="nav-brand">
+        <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
+        <span class="brand-name">Class Of Learners</span>
+      </a>
+      <button class="mmb" id="mmb" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" stroke="currentColor" /></svg>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="home" class="nav-link">Home</a>
+        <a href="about" class="nav-link">About</a>
+        <a href="school" class="nav-link">School</a>
+        <a href="sneh-asha" class="nav-link">Sneh Asha</a>
+        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
+          <button class="dropdown-btn">Projects <span class="darr">▼</span></button>
+          <div class="dropdown-content">
+            <div class="dropdown-content-inner">
+              <a href="ati">Typing Instructor <span>⌨️</span></a>
+              <a href="solar">Solar Engine <span>🌍</span></a>
+              <a href="gesture">Gesture Control <span>🖐️</span></a>
+              <a href="rpg">RPG Game <span>⚔️</span></a>
+              <a href="qr">QR Generator <span>⬛</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="tw">
+          <span class="tl" id="tLabel">Light</span>
+          <label class="tsb" for="tsck">
+            <input type="checkbox" id="tsck" aria-label="Toggle light mode" onchange="window.toggleTheme ? window.toggleTheme(this) : null" />
+            <div class="tst"><div class="tsth">☀️</div></div>
+          </label>
+        </div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z" /></svg
+          >Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download" class="nav-dl-btn mobile-dl">Downloads</a>
+      </div>
+      <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+    </nav>
+
+    <section class="col-hero">
+      <canvas id="bgCanvas"></canvas>
+      <div class="hvig"></div>
+      <div class="hvigb"></div>
+      <div class="shc">
+        <div class="hero-badge">📢 Voice Your Thoughts</div>
+        <h1 class="pg-title">Feedback <i>Portal</i>.</h1>
+        <p class="pg-desc">Found a bug? Have a brilliant feature idea? Let us know. We read every piece of feedback to improve the Class Of Learners experience.</p>
+      </div>
+    </section>
+
+    <div class="page-wrap">
+      <div class="fb-grid rv">
+        <div class="fb-card">
+          <form id="fbForm" onsubmit="submitFeedback(event)">
+            <div class="fbr">
+              <label>Feedback Type</label>
+              <div class="fb-types">
+                <label class="ft-pill"><input type="radio" name="fbType" value="Bug Report" checked /><span>🐞 Bug Report</span></label>
+                <label class="ft-pill"><input type="radio" name="fbType" value="Feature Request" /><span>✨ Feature Request</span></label>
+                <label class="ft-pill"><input type="radio" name="fbType" value="General" /><span>💬 General</span></label>
+              </div>
+            </div>
+
+            <div class="fbr">
+              <label for="fbMsg">Message</label>
+              <textarea id="fbMsg" class="mi" rows="5" placeholder="Describe your issue or idea in detail..." required></textarea>
+            </div>
+
+            <div class="fbr">
+              <label>Urgency Level</label>
+              <div class="urg-slider">
+                <input type="range" id="fbUrg" min="1" max="3" value="1" />
+                <div class="urg-labels"><span>Low Priority</span><span>Medium</span><span class="emr">Critical</span></div>
+              </div>
+            </div>
+
+            <div class="fbr">
+              <label class="file-up">
+                <input type="file" id="fbFile" accept="image/*" onchange="upFN(this)" />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                <span id="fName">Attach Screenshot (Optional)</span>
+              </label>
+            </div>
+
+            <div class="fbr inline-t">
+              <div>
+                <label style="margin-bottom: 0">Contact Permission</label>
+                <p class="sml">Can we email you if we need more details?</p>
+              </div>
+              <label class="tsb" style="margin-bottom: 0">
+                <input type="checkbox" id="fbContact" checked />
+                <div class="tst"><div class="tsth"></div></div>
+              </label>
+            </div>
+
+            <button type="submit" class="ms">Submit Feedback</button>
+          </form>
+        </div>
+
+        <div class="fb-card history-card">
+          <h3 style="font-family: var(--sans); font-size: 1.2rem; margin-bottom: 4px">Your Past Submissions</h3>
+          <p style="font-size: 0.85rem; color: var(--dim); margin-bottom: 16px">Stored locally on your device.</p>
+
+          <div id="fbList" class="fb-list"></div>
+
+          <button
+            onclick="clearFb()"
+            style="background: none; border: none; color: var(--dim); font-size: 0.8rem; text-decoration: underline; cursor: pointer; margin-top: 24px; font-family: var(--sans)"
+          >
+            Clear History
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="sf">
+      <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+          <a href="privacy">Privacy</a>
+          <a href="terms">Terms</a>
+          <a href="feedback">Feedback</a>
+          <a href="download">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="col-3d.js"></script>
+    <script>
+      function removeLoader() { var l = document.getElementById('loader'); if (l && !l.classList.contains('gone')) l.classList.add('gone'); } window.addEventListener('load', function () { setTimeout(removeLoader, 1300); }); setTimeout(removeLoader, 4000);
+      var navEl = document.getElementById('topNav')
+      window.addEventListener(
+        'scroll',
+        function () {
+          navEl.classList.toggle('s', scrollY > 60)
+        },
+        { passive: true }
+      )
+      window.addEventListener('click', function (e) {
+        if (!e.target.closest('.dropdown'))
+          document.querySelectorAll('.dropdown').forEach(function (d) {
+            d.classList.remove('active')
+          })
+      })
+
+      // Theme logic
+      var Storage = {
+        get: function (k) {
+          try {
+            return localStorage.getItem(k)
+          } catch (e) {
+            return null
+          }
+        },
+        set: function (k, v) {
+          try {
+            localStorage.setItem(k, v)
+          } catch (e) {}
+        }
+      }
+
+      function initializeTheme() {
+        var tsck = document.getElementById('tsck')
+        var tl = document.getElementById('tLabel')
+
+        if (Storage.get('theme') === 'light') {
+          document.body.classList.add('lm')
+          if (tsck) tsck.checked = true
+          if (tl) tl.textContent = 'Light Mode'
+        } else {
+          // Explicitly enforce Dark Mode on first visit or if missing
+          document.body.classList.remove('lm')
+          if (tsck) tsck.checked = false
+          if (tl) tl.textContent = 'Dark Mode'
+          Storage.set('theme', 'dark')
+        }
+      }
+
+      window.toggleTheme = function (el) {
+        var tl = document.getElementById('tLabel')
+        if (el.checked) {
+          document.body.classList.add('lm')
+          Storage.set('theme', 'light')
+          if (tl) tl.textContent = 'Light Mode'
+        } else {
+          document.body.classList.remove('lm')
+          Storage.set('theme', 'dark')
+          if (tl) tl.textContent = 'Dark Mode'
+        }
+      }
+      initializeTheme()
+
+      ;(function () {
+        var els = document.querySelectorAll('.rv')
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('vis')
+                io.unobserve(entry.target)
+              }
+            })
+          },
+          { threshold: 0.08 }
+        )
+        els.forEach(function (el) {
+          io.observe(el)
+        })
+      })()
+
+      // Feedback logic
+      function upFN(inp) {
+        var l = document.getElementById('fName')
+        if (inp.files && inp.files[0]) l.textContent = inp.files[0].name
+        else l.textContent = 'Attach Screenshot (Optional)'
+      }
+
+      function loadFb() {
+        var d = Storage.get('col_fbs')
+        var ls = document.getElementById('fbList')
+        if (!d) {
+          ls.innerHTML = '<p style="color:var(--dim);font-size:.9rem;font-style:italic">No feedback submitted yet.</p>'
+          return
+        }
+        var p = JSON.parse(d)
+        if (p.length === 0) {
+          ls.innerHTML = '<p style="color:var(--dim);font-size:.9rem;font-style:italic">No feedback submitted yet.</p>'
+          return
+        }
+        ls.innerHTML = ''
+        p.slice()
+          .reverse()
+          .forEach(function (f) {
+            var urgLabel = f.urg == 3 ? '<span class="emr">Critical</span>' : f.urg == 2 ? 'Medium' : 'Low'
+            var urgIcon = f.urg == 3 ? '🔴' : f.urg == 2 ? '🟡' : '🟢'
+            var ht = '<div class="fbi"><div class="fbi-hd"><span class="fbi-type">' + f.type + '</span><span class="fbi-date">' + new Date(f.date).toLocaleDateString() + '</span></div>'
+            ht += '<div class="fbi-msg">' + f.msg.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>'
+            ht += '<div class="fbi-meta"><span>' + urgIcon + ' ' + urgLabel + ' Priority</span>'
+            if (f.file) ht += '<span>📎 Attached</span>'
+            if (f.contact) ht += '<span>✉️ Contact OK</span>'
+            ht += '</div></div>'
+            ls.innerHTML += ht
+          })
+      }
+
+      function submitFeedback(e) {
+        e.preventDefault()
+        var types = document.getElementsByName('fbType')
+        var type = 'General'
+        for (var i = 0; i < types.length; i++) {
+          if (types[i].checked) {
+            type = types[i].value
+            break
+          }
+        }
+        var msg = document.getElementById('fbMsg').value
+        var urg = document.getElementById('fbUrg').value
+        var contact = document.getElementById('fbContact').checked
+        var fileInp = document.getElementById('fbFile')
+        var hasFile = fileInp.files && fileInp.files.length > 0
+
+        if (!msg.trim()) return
+
+        var nw = {
+          id: Date.now().toString(36),
+          type: type,
+          msg: msg.substring(0, 500),
+          urg: urg,
+          contact: contact,
+          file: hasFile,
+          date: Date.now()
+        }
+
+        var d = Storage.get('col_fbs')
+        var p = d ? JSON.parse(d) : []
+        p.push(nw)
+        Storage.set('col_fbs', JSON.stringify(p))
+
+        document.getElementById('fbForm').reset()
+        document.getElementById('fName').textContent = 'Attach Screenshot (Optional)'
+        showToast('Feedback submitted securely.', true)
+        loadFb()
+        if (typeof updateSlider === 'function') updateSlider() // Reset slider visual
+      }
+
+      function clearFb() {
+        if (confirm('Clear all feedback history?')) {
+          Storage.set('col_fbs', '[]')
+          loadFb()
+        }
+      }
+
+      function showToast(msg, isSuccess) {
+        var t = document.getElementById('toast')
+        t.textContent = msg
+        if (isSuccess) t.classList.add('green')
+        else t.classList.remove('green')
+        t.classList.add('show')
+        setTimeout(function () {
+          t.classList.remove('show')
+        }, 3000)
+      }
+
+      window.addEventListener('DOMContentLoaded', loadFb)
+
+      // Animated Range Slider Logic
+      var urgSlider = document.getElementById('fbUrg')
+      var urgLabels = document.querySelectorAll('.urg-labels span')
+      var sliderContainer = document.querySelector('.urg-slider')
+
+      if (urgSlider && urgLabels.length === 3 && sliderContainer) {
+        function updateSlider() {
+          var val = ((urgSlider.value - urgSlider.min) / (urgSlider.max - urgSlider.min)) * 100
+
+          var activeHex = 'var(--teal)' // Low
+          if (urgSlider.value == 2) {
+            activeHex = '#F2B84B' // Medium
+          } else if (urgSlider.value == 3) {
+            activeHex = '#ef4444' // Critical
+          }
+
+          sliderContainer.style.setProperty('--active-color', activeHex)
+          urgSlider.style.background = `linear-gradient(to right, ${activeHex} ${val}%, var(--lineb) ${val}%)`
+
+          urgLabels.forEach(function (lbl, index) {
+            if (index + 1 == urgSlider.value) {
+              lbl.classList.add('active')
+              lbl.style.color = activeHex
+            } else {
+              lbl.classList.remove('active')
+              lbl.style.color = 'var(--dim)'
+            }
+          })
+        }
+
+        urgSlider.addEventListener('input', updateSlider)
+        updateSlider()
+      }
+
+      // Hardware-Accelerated Cursor Logic
+      var dot = document.getElementById('cDot'),
+        ring = document.getElementById('cRing')
+      if (dot && ring) {
+        dot.style.left = '0'
+        dot.style.top = '0'
+        ring.style.left = '0'
+        ring.style.top = '0'
+
+        var rx = window.innerWidth / 2,
+          ry = window.innerHeight / 2,
+          dx = rx,
+          dy = ry
+
+        document.addEventListener('mousemove', function (e) {
+          dx = e.clientX
+          dy = e.clientY
+          dot.style.transform = `translate3d(${dx}px, ${dy}px, 0) translate(-50%, -50%)`
+        })
+
+        function rf() {
+          rx += (dx - rx) * 0.15
+          ry += (dy - ry) * 0.15
+          ring.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`
+          requestAnimationFrame(rf)
+        }
+        rf()
+      }
+    </script>
+  </body>
+</html>

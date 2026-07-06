@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Traffic Academy - Setup</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (async function() {
+      try {
+        var res = await fetch('config.json?t=' + Date.now());
+        var cfg = await res.json();
+        var auth = (cfg.auth || cfg.supabase || {});
+        var url = auth.supabaseUrl || auth.url || '';
+        var key = auth.supabaseKey || auth.anonKey || auth.key || '';
+        if (url && key && window.supabase) {
+          window.supabaseClient = window.supabase.createClient(url, key);
+          var session = await window.supabaseClient.auth.getSession();
+          var user = session && session.data && session.data.session && session.data.session.user;
+          if (user) {
+            window.colUser = user;
+            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: user } }));
+          }
+        }
+      } catch(e) {}
+    })();
+  </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+      body {
+        background: var(--void);
+        color: var(--ink);
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      #bg-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .setup-container {
+        position: relative;
+        z-index: 10;
+        background: rgba(11, 16, 26, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--lineb);
+        border-radius: 24px;
+        padding: 40px;
+        width: 100%;
+        max-width: 480px;
+        box-shadow:
+          0 25px 60px rgba(0, 0, 0, 0.8),
+          inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        text-align: center;
+        transition: all 0.4s ease;
+      }
+
+      body.lm .setup-container {
+        background: rgba(255, 255, 255, 0.7);
+        border-color: rgba(0, 0, 0, 0.1);
+        box-shadow:
+          0 25px 60px rgba(0, 0, 0, 0.1),
+          inset 0 1px 1px rgba(255, 255, 255, 0.8);
+      }
+
+      h1 {
+        font-family: 'Lora', serif;
+        font-size: 2.4rem;
+        color: var(--ink);
+        margin-bottom: 10px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      p.subtitle {
+        color: var(--dim);
+        margin-bottom: 30px;
+        font-size: 1rem;
+      }
+
+      .input-group {
+        margin-bottom: 24px;
+        text-align: left;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--ink);
+      }
+
+      input[type='text'],
+      input[type='password'],
+      input[type='email'],
+      select {
+        width: 100%;
+        padding: 14px 16px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: 'Inter', sans-serif;
+        transition: 0.3s;
+        outline: none;
+        color: var(--ink);
+      }
+
+      body.lm input[type='text'],
+      body.lm input[type='password'],
+      body.lm input[type='email'],
+      body.lm select {
+        background: rgba(255, 255, 255, 0.6);
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+
+      input:focus,
+      select:focus {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: var(--signal);
+        box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.15);
+      }
+
+      body.lm input:focus,
+      body.lm select:focus {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 0 3px rgba(14, 114, 160, 0.15);
+      }
+
+      .btn-submit {
+        background: var(--signal);
+        color: #000;
+        border: none;
+        padding: 16px;
+        width: 100%;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        margin-top: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 8px 25px rgba(242, 184, 75, 0.2);
+      }
+
+      body.lm .btn-submit {
+        color: #fff;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(242, 184, 75, 0.4);
+        background: #fff;
+      }
+
+      body.lm .btn-submit:hover {
+        background: var(--page-theme-light);
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        margin-bottom: 10px;
+        box-shadow: none;
+      }
+
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink);
+        box-shadow: none;
+        border-color: var(--lineb);
+      }
+
+      body.lm .btn-outline {
+        color: var(--ink);
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+
+      body.lm .btn-outline:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      #setupFormArea {
+        display: block;
+      }
+
+      /* Tabs */
+      .tab-btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--dim);
+      }
+      .tab-btn.active {
+        background: rgba(242, 184, 75, 0.1);
+        border-color: var(--signal);
+        color: var(--signal);
+      }
+      body.lm .tab-btn.active {
+        background: rgba(14, 114, 160, 0.1);
+        color: var(--page-theme-light);
+        border-color: var(--page-theme-light);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="setup-container">
+      <h1>Welcome to the Academy</h1>
+      <p class="subtitle" id="subtitle-text">Let's setup your driver profile to get started.</p>
+
+      <!-- Auth Area -->
+      <div id="authArea">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px">
+          <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+          <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <div id="col-auth-err" style="color: #ef4444; font-size: 0.9rem; margin-bottom: 15px; font-weight: 600"></div>
+
+        <div class="input-group">
+          <label for="auth-email">Email Address</label>
+          <input type="email" id="auth-email" placeholder="you@example.com" />
+        </div>
+        <div class="input-group">
+          <label for="auth-pass">Password</label>
+          <input type="password" id="auth-pass" placeholder="••••••••" />
+        </div>
+
+        <button class="btn-submit" id="auth-submit-btn" onclick="handleEmailAuth()" style="margin-bottom: 15px">Sign In with Email</button>
+
+        <div style="display: flex; align-items: center; margin: 15px 0; color: var(--dim); font-size: 0.9rem">
+          <div style="flex: 1; height: 1px; background: var(--line)"></div>
+          <div style="padding: 0 10px">OR</div>
+          <div style="flex: 1; height: 1px; background: var(--line)"></div>
+        </div>
+
+        <button class="btn-submit btn-outline" onclick="handleGoogleAuth()" style="background: rgba(255, 255, 255, 0.05); color: var(--ink)">
+          <svg width="18" height="18" viewBox="0 0 24 24" style="margin-right: 8px">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+          </svg>
+          Continue with Google
+        </button>
+
+        <button type="button" class="btn-submit btn-outline" onclick="window.location.href = 'Academy.html'" style="margin-top: 25px">Skip Cloud & Play Locally</button>
+        <button type="button" class="btn-submit btn-outline" onclick="window.location.href = 'Academy.html'" style="margin-top: 15px">Back to Academy</button>
+        <button
+          type="button"
+          class="btn-submit btn-outline"
+          id="auth-dashboard-btn"
+          style="display: none; margin-top: 15px; border-color: var(--em); color: var(--em)"
+          onclick="window.location.href = 'TrafficDashboard.html'"
+        >
+          Go to Dashboard &rarr;
+        </button>
+      </div>
+
+      <!-- Setup Form Area -->
+      <div id="setupFormArea" style="display: none">
+        <div id="cloud-status" style="margin-bottom: 20px; font-weight: 600; color: var(--em); display: none">✅ Cloud Account Connected</div>
+        <form id="setupForm">
+          <div class="input-group">
+            <label for="prof-name">Full Name (For Certificate)</label>
+            <input type="text" id="prof-name" placeholder="E.g., John Doe" required />
+          </div>
+
+          <div class="input-group">
+            <label for="prof-age">Your Age <span style="color:var(--dim);font-weight:400;font-size:0.8rem">(for best experience)</span></label>
+            <input type="number" id="prof-age" min="8" max="99" placeholder="E.g., 18" required />
+          </div>
+
+          <div class="input-group">
+            <label for="prof-lang">Preferred Language</label>
+            <select id="prof-lang">
+              <option value="en">English</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="prof-veh">Preferred Vehicle</label>
+            <select id="prof-veh">
+              <option value="Car">Standard Car</option>
+              <option value="Bike">Motorcycle</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="prof-pin">Local Login PIN (Optional)</label>
+            <input type="password" id="prof-pin" placeholder="4-digit PIN (e.g. 1234)" />
+          </div>
+
+          <button type="submit" class="btn-submit">Complete Setup &rarr;</button>
+          <button type="button" class="btn-submit btn-outline" onclick="window.location.href = 'Academy.html'" style="margin-top: 15px">Back to Academy</button>
+          <button
+            type="button"
+            class="btn-submit btn-outline"
+            id="setup-dashboard-btn"
+            style="display: none; margin-top: 15px; border-color: var(--em); color: var(--em)"
+            onclick="window.location.href = 'TrafficDashboard.html'"
+          >
+            Go to Dashboard &rarr;
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // --- THEME LOGIC ---
+      // Load theme from localStorage and apply class
+      const currentTheme = localStorage.getItem('theme') || 'dark'
+      if (currentTheme === 'light') {
+        document.body.classList.add('lm')
+      }
+
+      // --- 3D BACKGROUND LOGIC ---
+      let scene, camera, renderer, particles
+      const init3D = () => {
+        const canvas = document.getElementById('bg-canvas')
+        scene = new THREE.Scene()
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+
+        const isLowEnd = /iPhone|iPad|Android/i.test(navigator.userAgent) || window.innerWidth < 768
+
+        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isLowEnd })
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.setPixelRatio(isLowEnd ? 1 : Math.min(window.devicePixelRatio, 2))
+
+        const isLight = document.body.classList.contains('lm')
+
+        // Create particles
+        const count = isLowEnd ? 800 : 3000
+        const geometry = new THREE.BufferGeometry()
+        const positions = new Float32Array(count * 3)
+        const colors = new Float32Array(count * 3)
+
+        const color1 = new THREE.Color(isLight ? 0x0e72a0 : 0xf2b84b) // Theme primary
+        const color2 = new THREE.Color(isLight ? 0x34d399 : 0x00f0cc) // Accent teal/green
+
+        for (let i = 0; i < count; i++) {
+          // Generate points in a wide galaxy/disc shape
+          const radius = 2 + Math.random() * 15
+          const theta = Math.random() * 2 * Math.PI
+          const y = (Math.random() - 0.5) * 4 * (1 - radius / 18)
+
+          positions[i * 3] = radius * Math.cos(theta)
+          positions[i * 3 + 1] = y
+          positions[i * 3 + 2] = radius * Math.sin(theta)
+
+          const mix = Math.random()
+          const mixedColor = color1.clone().lerp(color2, mix)
+          colors[i * 3] = mixedColor.r
+          colors[i * 3 + 1] = mixedColor.g
+          colors[i * 3 + 2] = mixedColor.b
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+
+        // Soft circular particle texture
+        const texCanvas = document.createElement('canvas')
+        texCanvas.width = 32
+        texCanvas.height = 32
+        const context = texCanvas.getContext('2d')
+        const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16)
+        gradient.addColorStop(0, 'rgba(255,255,255,1)')
+        gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)')
+        gradient.addColorStop(1, 'rgba(0,0,0,0)')
+        context.fillStyle = gradient
+        context.fillRect(0, 0, 32, 32)
+        const texture = new THREE.CanvasTexture(canvas)
+
+        const material = new THREE.PointsMaterial({
+          size: 0.15,
+          vertexColors: true,
+          map: texture,
+          transparent: true,
+          opacity: 0.8,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+
+        particles = new THREE.Points(geometry, material)
+        // Tilt the galaxy a bit
+        particles.rotation.x = 0.3
+        scene.add(particles)
+
+        // Add a subtle grid floor
+        const grid = new THREE.GridHelper(40, 40, isLight ? 0x0e72a0 : 0xf2b84b, isLight ? 0x0e72a0 : 0xf2b84b)
+        grid.position.y = -3
+        grid.material.opacity = 0.08
+        grid.material.transparent = true
+        grid.material.blending = THREE.AdditiveBlending
+        scene.add(grid)
+
+        camera.position.z = 8
+        camera.position.y = 1
+
+        // Mouse interaction
+        let mouseX = 0
+        let mouseY = 0
+        document.addEventListener('mousemove', (event) => {
+          mouseX = (event.clientX / window.innerWidth) * 2 - 1
+          mouseY = -(event.clientY / window.innerHeight) * 2 - 1
+        })
+
+        let time = 0
+        const animate = () => {
+          requestAnimationFrame(animate)
+          time += 0.005
+
+          particles.rotation.y = time * 0.5
+
+          // Subtle breathing effect on particles
+          if (!isLowEnd) {
+            const positions = particles.geometry.attributes.position.array
+            for (let i = 0; i < count; i++) {
+              const i3 = i * 3
+              positions[i3 + 1] += Math.sin(time * 2 + positions[i3]) * 0.002
+            }
+            particles.geometry.attributes.position.needsUpdate = true
+          }
+
+          // Moving grid effect
+          grid.position.z = (time * 5) % 1
+
+          // Dynamic camera movement based on mouse
+          camera.position.x += (mouseX * 2 - camera.position.x) * 0.05
+          camera.position.y += (-mouseY * 1 - camera.position.y + 1) * 0.05
+          camera.lookAt(scene.position)
+
+          renderer.render(scene, camera)
+        }
+
+        animate()
+
+        window.addEventListener('resize', () => {
+          camera.aspect = window.innerWidth / window.innerHeight
+          camera.updateProjectionMatrix()
+          renderer.setSize(window.innerWidth, window.innerHeight)
+        })
+      }
+
+      // Wait for Three.js to be available
+      window.addEventListener('load', () => {
+        if (typeof THREE !== 'undefined') {
+          init3D()
+        }
+      })
+
+      // --- AUTH LOGIC ---
+      let authMode = 'login'
+
+      function switchTab(mode) {
+        authMode = mode
+        const btnLogin = document.getElementById('tab-login')
+        const btnSignup = document.getElementById('tab-signup')
+        const submitBtn = document.getElementById('auth-submit-btn')
+
+        if (mode === 'login') {
+          btnLogin.classList.add('active')
+          btnSignup.classList.remove('active')
+          submitBtn.innerHTML = 'Sign In with Email'
+        } else {
+          btnSignup.classList.add('active')
+          btnLogin.classList.remove('active')
+          submitBtn.innerHTML = 'Create Account'
+        }
+      }
+
+      async function handleEmailAuth() {
+        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
+
+        const email = document.getElementById('auth-email').value.trim()
+        const pass = document.getElementById('auth-pass').value
+        const errDiv = document.getElementById('col-auth-err')
+
+        if (!email || !pass) {
+          errDiv.textContent = 'Please fill out all fields.'
+          return
+        }
+
+        errDiv.textContent = 'Authenticating...'
+        errDiv.style.color = 'var(--dim)'
+
+        try {
+          let res
+          if (authMode === 'signup') {
+            res = await window.supabaseClient.auth.signUp({ email, password: pass })
+          } else {
+            res = await window.supabaseClient.auth.signInWithPassword({ email, password: pass })
+          }
+
+          if (res.error) throw res.error
+
+          if (authMode === 'signup' && res.data.user && !res.data.session) {
+            errDiv.textContent = 'Please check your email to confirm registration!'
+            errDiv.style.color = 'var(--em)'
+          } else {
+            errDiv.textContent = 'Success!'
+            errDiv.style.color = 'var(--em)'
+          }
+        } catch (err) {
+          errDiv.textContent = err.message || 'Authentication failed.'
+          errDiv.style.color = '#ef4444'
+        }
+      }
+
+      async function handleGoogleAuth() {
+        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
+        try {
+          await window.supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: window.location.origin + window.location.pathname }
+          })
+        } catch (err) {
+          alert('Google Sign-In failed: ' + err.message)
+        }
+      }
+
+      function showLocalSetup() {
+        document.getElementById('authArea').style.display = 'none'
+        document.getElementById('setupFormArea').style.display = 'block'
+        document.getElementById('subtitle-text').textContent = "Let's setup your driver profile to get started."
+      }
+
+      window.addEventListener('col-auth-changed', (e) => {
+        const user = e.detail && e.detail.user ? e.detail.user : window.colUser
+        if (user) {
+          showLocalSetup()
+          document.getElementById('cloud-status').style.display = 'block'
+          if (user.user_metadata && user.user_metadata.full_name) {
+            document.getElementById('prof-name').value = user.user_metadata.full_name
+          }
+        }
+      })
+
+      setTimeout(() => {
+        if (window.colUser) {
+          showLocalSetup()
+          document.getElementById('cloud-status').style.display = 'block'
+          if (window.colUser.user_metadata && window.colUser.user_metadata.full_name) {
+            if (!document.getElementById('prof-name').value) {
+              document.getElementById('prof-name').value = window.colUser.user_metadata.full_name
+            }
+          }
+        }
+      }, 500)
+
+      let S = {}
+      try {
+        const raw = localStorage.getItem('traffic_local_user')
+        if (raw) S = JSON.parse(raw)
+      } catch (e) {}
+
+      if (S.name) document.getElementById('prof-name').value = S.name
+      if (S.vehicle) document.getElementById('prof-veh').value = S.vehicle
+      if (S.age) document.getElementById('prof-age').value = S.age
+      if (S.language) document.getElementById('prof-lang').value = S.language
+
+      if (localStorage.getItem('trafficSetupComplete') === 'true' || S.name) {
+        const authDashBtn = document.getElementById('auth-dashboard-btn')
+        const setupDashBtn = document.getElementById('setup-dashboard-btn')
+        if (authDashBtn) authDashBtn.style.display = 'inline-flex'
+        if (setupDashBtn) setupDashBtn.style.display = 'inline-flex'
+      }
+
+      document.getElementById('setupForm').addEventListener('submit', function (e) {
+        e.preventDefault()
+
+        const name = document.getElementById('prof-name').value.trim()
+        const veh = document.getElementById('prof-veh').value
+        const pin = document.getElementById('prof-pin').value.trim()
+        const age = parseInt(document.getElementById('prof-age').value) || 18
+        const language = document.getElementById('prof-lang').value
+
+        if (name.length < 2) {
+          alert('Please enter a valid name.')
+          return
+        }
+
+        if (age < 8 || age > 99) {
+          alert('Please enter a valid age (8-99).')
+          return
+        }
+
+        const tUser = { name, vehicle: veh, pin, age, language, createdAt: new Date().toISOString() }
+        localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
+
+        let L = {}
+        try {
+          const r = localStorage.getItem('th-save')
+          if (r) L = JSON.parse(r)
+        } catch (e) {}
+        L.name = name
+        L.vehicle = veh
+        if (pin) L.localPin = pin
+        localStorage.setItem('th-save', JSON.stringify(L))
+        localStorage.setItem('trafficSetupComplete', 'true')
+
+        window.location.href = 'Academy.html'
+      })
+    </script>
+  </body>
+</html>
