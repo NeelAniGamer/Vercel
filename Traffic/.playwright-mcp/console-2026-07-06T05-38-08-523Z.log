@@ -1,0 +1,11 @@
+[    1748ms] [LOG] SW registered:  http://127.0.0.1:8080/ @ http://127.0.0.1:8080/col-ui.js:145
+[    1829ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8080/favicon.ico:0
+[    2100ms] [WARNING] [GSI_LOGGER]: Your client application uses one of the Google One Tap prompt UI status methods that may stop functioning when FedCM becomes mandatory. Refer to the migration guide to update your code accordingly and opt-in to FedCM to test your changes. Learn more: https://developers.google.com/identity/gsi/web/guides/fedcm-migration?s=dc#display_moment and https://developers.google.com/identity/gsi/web/guides/fedcm-migration?s=dc#skipped_moment @ http://127.0.0.1:8080/Traffic/Academy.html:22
+[    2106ms] [ERROR] Not signed in with the identity provider. @ http://127.0.0.1:8080/Traffic/Academy.html:0
+[    5733ms] [LOG] One tap skipped:  tap_outside @ http://127.0.0.1:8080/col-auth.js:142
+[    5824ms] [ERROR] [GSI_LOGGER]: FedCM get() rejects with AbortError: signal is aborted without reason @ https://accounts.google.com/gsi/client:87
+[  371953ms] [LOG] SW registered:  http://127.0.0.1:8080/ @ http://127.0.0.1:8080/col-ui.js:145
+[  373378ms] [WARNING] [GSI_LOGGER]: Your client application uses one of the Google One Tap prompt UI status methods that may stop functioning when FedCM becomes mandatory. Refer to the migration guide to update your code accordingly and opt-in to FedCM to test your changes. Learn more: https://developers.google.com/identity/gsi/web/guides/fedcm-migration?s=dc#display_moment and https://developers.google.com/identity/gsi/web/guides/fedcm-migration?s=dc#skipped_moment @ http://127.0.0.1:8080/Traffic/Academy.html:22
+[  373383ms] [ERROR] Not signed in with the identity provider. @ http://127.0.0.1:8080/Traffic/Academy.html:0
+[  374196ms] [LOG] One tap skipped:  tap_outside @ http://127.0.0.1:8080/col-auth.js:142
+[  374228ms] [ERROR] [GSI_LOGGER]: FedCM get() rejects with AbortError: signal is aborted without reason @ https://accounts.google.com/gsi/client:87

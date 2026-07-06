@@ -204,11 +204,8 @@ const ui = {
         const badgeText = done ? '✓ Completed' : started ? '● Started' : '○ Not Started'
         const badgeColor = done ? '#00f0cc' : started ? '#5ed4f5' : 'rgba(184,155,255,0.5)'
         const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')
-        // Check if a 2D scenario exists for this level
-        const s2dSc = (typeof SCENARIOS !== 'undefined') ? SCENARIOS.find(s => s.levelRef === lv.id) : null
-        const s2dDone = s2dSc && S.scenario2d && S.scenario2d[`s${s2dSc.id}_done`]
-        const s2dStars = s2dDone ? (S.scenario2d[`s${s2dSc.id}_stars`] || 1) : 0
-        const s2dBadge = s2dSc ? (s2dDone ? '⭐'.repeat(s2dStars) + ' Completed' : '🎮 Play 2D') : ''
+        // 2D game option removed from level list
+        const s2dBadge = ''
         div.innerHTML = `
                   <div class="syl-ck"></div>
                   <div class="syl-top">
@@ -219,7 +216,6 @@ const ui = {
                     <div class="syl-lbl">${cleanName}</div>
                     <div class="syl-sub">${lv.ds}</div>
                     <div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div>
-                    ${s2dSc ? `<button class="play2d-btn${s2dDone ? '' : ''}" onclick="event.stopPropagation();ui.show2D(${s2dSc.id})">${s2dBadge}</button>` : ''}
                   </div>
                 `
         div.style.animationDelay = `${idx * 0.08}s`

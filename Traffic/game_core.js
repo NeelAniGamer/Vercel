@@ -4055,8 +4055,9 @@ class Game {
                     latDist = Math.abs(dx);
                   }
                   // Police volunteers have larger stop zone (40m) since they direct traffic
-                  const maxDist = ped.userData?.isPoliceVolunteer ? 40 : 30;
-                  const maxLat = ped.userData?.isPoliceVolunteer ? 8 : 5;
+                  const isVolunteer = ped.userData && ped.userData.isPoliceVolunteer;
+                  const maxDist = isVolunteer ? 40 : 30;
+                  const maxLat = isVolunteer ? 8 : 5;
                   if (isAhead && longDist < maxDist && latDist < maxLat) {
                     fsm.approachingObstacle = true;
                     fsm.nearPedestrian = true;  // Mark pedestrian nearby
