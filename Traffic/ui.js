@@ -1022,6 +1022,17 @@ const ui = {
     const lv = this.cur
     localStorage.setItem('traffic_lv', lv.id)
     localStorage.setItem('traffic_mode', mode)
+    if (typeof SCENARIOS !== 'undefined') {
+      const sc = SCENARIOS.find(s => s.levelRef === lv.id)
+      if (sc) {
+        this.show2D(sc.id)
+        return
+      } else {
+        // Fallback to scenario 1 if not mapped
+        this.show2D(1)
+        return
+      }
+    }
     window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`
   },
   showQuiz(mode) {
@@ -1103,6 +1114,16 @@ const ui = {
       if (window.location.pathname.toLowerCase().includes('driving')) {
         window.location.href = 'Academy.html'
       } else {
+        if (typeof SCENARIOS !== 'undefined') {
+          const sc = SCENARIOS.find(x => x.levelRef === lv.id)
+          if (sc) {
+            this.show2D(sc.id)
+            return
+          } else {
+            this.show2D(1)
+            return
+          }
+        }
         window.location.href = `Driving.html?lv=${lv.id}&mode=${s.mode}`
       }
     }

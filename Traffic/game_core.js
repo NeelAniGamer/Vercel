@@ -854,12 +854,15 @@ class Game {
 
           // Set steering based on horizontal movement
           window.analogSteering = dx / maxDist;
+          // Set throttle based on vertical movement (negative dy is up)
+          window.analogThrottle = -dy / maxDist;
         };
 
         const resetJoystick = () => {
           isDragging = false;
           knob.style.transform = 'translate(0px, 0px)';
           window.analogSteering = 0;
+          window.analogThrottle = 0;
         };
 
         // Touch events for joystick
@@ -2445,6 +2448,7 @@ class Game {
              minPos: seg.type === 'v' ? Math.min(seg.z1, seg.z2) : Math.min(seg.x1, seg.x2),
              maxPos: seg.type === 'v' ? Math.max(seg.z1, seg.z2) : Math.max(seg.x1, seg.x2),
              txX: seg.type === 'v' ? seg.x + laneOffset : undefined,
+             txZ: seg.type === 'h' ? seg.z + laneOffset : undefined,
              state: 'CRUISE',
              useRoute: !!(cfg.route && cfg.route.length >= 2),
              route: cfg.route ? (isOpp ? [...cfg.route].reverse() : [...cfg.route]) : null,
@@ -2500,7 +2504,7 @@ class Game {
             nv.userData = {
               spd, baseSpd: spd, isAmb: false, npcType: npcDef.type,
               moveAxis: null, isOpp: false, baseCoord: 0, dir: 1,
-              minPos: 0, maxPos: 0, txX: undefined,
+              minPos: 0, maxPos: 0, txX: undefined, txZ: undefined,
               state: 'CRUISE', useRoute: routePts.length >= 2,
               route: routePts, routeIdx: 0, laneOffset: 0,
               isNPC: true, isLevelDefined: true
@@ -3899,7 +3903,12 @@ class Game {
         }
         if (!this.keys['f']) this._fPressed = false;
 
-        const up = !this.bucklingUp && (this.keys['arrowup'] || this.keys['w']), dn = !this.bucklingUp && (this.keys['arrowdown'] || this.keys['s']), lt = !this.bucklingUp && (this.keys['arrowleft'] || this.keys['a']), rt = !this.bucklingUp && (this.keys['arrowright'] || this.keys['d']);
+        let at = window.analogThrottle || 0;
+        const up = !this.bucklingUp && (this.keys['arrowup'] || this.keys['w'] || at > 0.1);
+        const dn = !this.bucklingUp && (this.keys['arrowdown'] || this.keys['s'] || at < -0.1);
+        const lt = !this.bucklingUp && (this.keys['arrowleft'] || this.keys['a']);
+        const rt = !this.bucklingUp && (this.keys['arrowright'] || this.keys['d']);
+        
         // Per-gear acceleration multipliers 🔄 each gear feels clearly different
         const gAccel = { 'D': 1.30, 'R': .55, 'N': 0, 'P': 0 };
         const mult = gAccel[this.gear] ?? 0;
@@ -4505,6 +4514,7 @@ class Game {
                 n.userData.routeIdx = 0;
               } else if (n.userData.moveAxis === 'h') {
                 n.position.x = n.userData.baseCoord || 0;
+                if (n.userData.txZ != null) n.position.z = n.userData.txZ;
               } else if (n.userData.moveAxis) {
                 n.position.z = n.userData.baseCoord || 0;
                 if (n.userData.txX != null) n.position.x = n.userData.txX;
@@ -4520,9 +4530,10 @@ class Game {
               const p = Math.max(0, n.userData._wrapT / 1.2);
               if (n.userData.moveAxis === 'h') {
                 n.position.x = n.userData._wrapFrom + (n.userData._wrapTo - n.userData._wrapFrom) * (1 - p);
+                if (n.userData.txZ != null) n.position.z += (n.userData.txZ - n.position.z) * 0.08;
               } else {
                 n.position.z = n.userData._wrapFrom + (n.userData._wrapTo - n.userData._wrapFrom) * (1 - p);
-                n.position.x += (n.userData.txX - n.position.x) * 0.08;
+                if (n.userData.txX != null) n.position.x += (n.userData.txX - n.position.x) * 0.08;
               }
               n.userData.spd = 0;
               if (n.userData._wrapT <= 0) {
@@ -4540,7 +4551,7 @@ class Game {
             }
             n.visible = true;
             n.userData.laneT -= dt;
-            let myLane = n.userData.txX;
+            let myLane = n.userData.moveAxis === 'h' ? n.userData.txZ : n.userData.txX;
 
             if (distToPlayer < 200 && n.userData.moveAxis) {
               let fsm = {
@@ -4726,7 +4737,9 @@ class Game {
                       });
 
                       if (safeLanes.length > 0) {
-                        n.userData.txX = safeLanes[Math.floor(Math.random() * safeLanes.length)];
+                        const newLane = safeLanes[Math.floor(Math.random() * safeLanes.length)];
+                        if (n.userData.moveAxis === 'h') n.userData.txZ = newLane;
+                        else n.userData.txX = newLane;
                         n.userData.laneT = Math.random() * 3 + 2;
                         n.userData.state = 'OVERTAKE';
                       }
@@ -4965,21 +4978,36 @@ class Game {
                     const dForward = Math.abs(other.position.x - n.position.x);
                     if (dLateral < 2.2 && dForward < 5) {
                       const push = (other.position.z - n.position.z) > 0 ? -0.12 : 0.12;
-                      n.position.z += push;
+                      if (n.userData.txZ !== undefined) n.userData.txZ += push;
                     }
                   }
                 });
+                
+                if (n.userData.txZ !== undefined) {
+                  n.userData.txZ = Math.max(-6, Math.min(6, n.userData.txZ));
+                  n.position.z += (n.userData.txZ - n.position.z) * 0.15;
+                  
+                  let yawT = (n.userData.dir === 1) ? Math.PI / 2 : -Math.PI / 2;
+                  yawT -= (n.userData.txZ - n.position.z) * 0.1 * n.userData.dir;
+                  let diff = yawT - n.rotation.y;
+                  while (diff < -Math.PI) diff += Math.PI * 2;
+                  while (diff > Math.PI) diff -= Math.PI * 2;
+                  n.rotation.y += diff * 0.2;
+                }
+
                 n.position.x += n.userData.spd * 35 * dt * n.userData.dir; 
                 if (n.position.x > n.userData.maxPos && n.userData.dir === 1) {
                   n.userData._wrapT = 1.2;
                   n.userData._wrapFrom = n.position.x;
                   n.userData._wrapTo = n.userData.minPos;
+                  if (n.userData.baseCoord !== undefined && n.userData.laneOffset !== undefined) n.userData.txZ = n.userData.baseCoord + n.userData.laneOffset;
                   n.userData.state = 'CRUISE';
                 }
                 if (n.position.x < n.userData.minPos && n.userData.dir === -1) {
                   n.userData._wrapT = 1.2;
                   n.userData._wrapFrom = n.position.x;
                   n.userData._wrapTo = n.userData.maxPos;
+                  if (n.userData.baseCoord !== undefined && n.userData.laneOffset !== undefined) n.userData.txZ = n.userData.baseCoord + n.userData.laneOffset;
                   n.userData.state = 'CRUISE';
                 }
               } else {

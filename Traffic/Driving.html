@@ -1375,9 +1375,10 @@
         left: auto;
         transform: translateX(150%);
         z-index: 23;
-        background: rgba(15, 23, 42, 0.85);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 16px;
         padding: 16px 24px;
         color: white;
@@ -2472,8 +2473,8 @@
         }
         #task-tracker {
           top: 32px;
-          left: 4px;
-          right: auto;
+          right: 4px;
+          left: auto;
           bottom: auto;
           max-width: 48vw;
           max-height: 14vh;
@@ -3410,10 +3411,10 @@
       id="virtual-joystick"
       style="
         position: fixed;
-        bottom: 100px;
-        left: 30px;
-        width: 130px;
-        height: 130px;
+        bottom: clamp(40px, 12vh, 100px);
+        left: clamp(20px, 6vw, 40px);
+        width: clamp(120px, 18vw, 160px);
+        height: clamp(120px, 18vw, 160px);
         border-radius: 50%;
         background: rgba(255, 255, 255, 0.15);
         border: 3px solid rgba(255, 255, 255, 0.35);
@@ -3457,8 +3458,8 @@
           id="steer-wheel-container"
           style="
             position: relative;
-            width: 150px;
-            height: 150px;
+            width: clamp(120px, 18vw, 160px);
+            height: clamp(120px, 18vw, 160px);
             border-radius: 50%;
             background: rgba(0, 0, 0, 0.4);
             border: 4px solid rgba(255, 255, 255, 0.4);
@@ -3493,8 +3494,8 @@
           class="mc-btn"
           id="mc-boost"
           style="
-            width: 72px;
-            height: 72px;
+            width: clamp(64px, 12vw, 84px);
+            height: clamp(64px, 12vw, 84px);
             background: rgba(94, 212, 245, 0.5);
             color: white;
             border: 2px solid rgba(94, 212, 245, 0.7);
@@ -3519,8 +3520,8 @@
           class="mc-btn"
           id="mc-brake"
           style="
-            width: 80px;
-            height: 80px;
+            width: clamp(70px, 14vw, 96px);
+            height: clamp(70px, 14vw, 96px);
             background: rgba(220, 40, 40, 0.6);
             margin-top: 0;
             color: white;
@@ -3548,9 +3549,9 @@
             color: white;
             border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 20px;
-            width: 80px;
-            height: 80px;
-            backdrop-filter: blur(4px);
+            width: clamp(70px, 14vw, 96px);
+            height: clamp(70px, 14vw, 96px);
+            backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -3611,11 +3612,13 @@
       style="
         position: fixed;
         top: 24px;
-        left: 24px;
+        right: 24px;
+        left: auto;
         z-index: 23;
-        background: rgba(15, 23, 42, 0.85);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 16px;
         padding: 16px 20px;
         color: white;
