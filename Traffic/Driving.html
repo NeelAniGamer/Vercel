@@ -2062,6 +2062,18 @@
       font-size: clamp(0.7rem, 1.2vw, 0.85rem);
     }
 
+    /* Ensure proper separation between overlapping elements */
+    @media (max-width: 768px) {
+      #task-tracker {
+        top: 2vh;
+      }
+
+      #objective-overlay {
+        top: auto;
+        bottom: 120px;
+      }
+    }
+
     #dn-clock {
       position: fixed;
       top: 3vw;
@@ -2381,7 +2393,7 @@
       }
 
       #task-tracker {
-        top: 80px;
+        top: 140px;
         bottom: auto;
         left: 4px;
         right: auto;
@@ -2564,6 +2576,8 @@
 
     @media (min-width: 400px) and (max-width: 768px) {
       #task-tracker {
+        top: 24px;
+        right: 24px;
         width: 240px;
         max-width: 75vw;
         padding: 12px 14px;
@@ -2571,6 +2585,9 @@
       }
 
       #objective-overlay {
+        top: auto;
+        bottom: 120px;
+        right: 24px;
         font-size: 0.7rem;
         max-width: 70vw;
         padding: 8px 12px;
