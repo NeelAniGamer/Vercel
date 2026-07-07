@@ -1,8 +1,0 @@
-I have a new, better idea: more ideas, like:
-1. On the road, add an arrow thing, and if it's in the position mode, then on the footpath add an arrow where it will show the direction where to go.
-2. I have found many more models of houses, traffic cones, and roads, and I will go on adding more models. You can find them in the models folder.
-3. The rings which are there now, the rings which are in the node verification if it is on the pedestrian option, now make it go on the path. If they are going on the footpath or sidewalk, then it will be on the sidewalk, not on their own. If they have to cross, then it will be in the middle, like keeping it where they're actually going.
-4. I forgot to say, but in one of the levels, add a lanes option also, like how to drive, a proper driving instructor type. Also, we need in that not only traffic rules, like how to go in lanes, how to overtake someone, and all examples, etc.
-5. and make that in that level, the used models will only load, others wont load they  will only load in the levels they are used in 
-6. and when first signup add anem and the age option, then according to the age give the visuals, not only for kids i want but for higher education kids too they should have fun, add write there enter your real age for best experience
-7. see first in new ser it will give as name then age then prefred language with these info it will change the data of academy and levels, also according to the age make the levels according to the age and 

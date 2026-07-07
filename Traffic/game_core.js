@@ -39,7 +39,12 @@ function _getThemeRoads(themeType) {
         { type:'h', z:480,  x1:-360, x2:360 }
       ],
       route: [{ x:0,z:-480 },{ x:0,z:-360 },{ x:0,z:-240 },{ x:0,z:-120 },{ x:0,z:0 },{ x:0,z:120 },{ x:0,z:240 },{ x:0,z:360 },{ x:0,z:480 },
-              { x:120,z:480 },{ x:240,z:480 },{ x:360,z:480 },{ x:360,z:360 },{ x:360,z:240 },{ x:360,z:120 },{ x:360,z:0 },{ x:360,z:-120 },{ x:360,z:-240 },{ x:360,z:-360 },{ x:360,z:-480 }]
+              { x:120,z:480 },{ x:240,z:480 },{ x:360,z:480 },{ x:360,z:360 },{ x:360,z:240 },{ x:360,z:120 },{ x:360,z:0 },{ x:360,z:-120 },{ x:360,z:-240 },{ x:360,z:-360 },{ x:360,z:-480 }],
+      npcs: [
+        { type:'taxi', color:0xffcc00, route:[[-360,-480],[-360,-240],[-360,0],[-360,240],[-360,480],[-240,480],[-120,480],[0,480]] },
+        { type:'auto', color:0xff8800, route:[[0,480],[0,360],[0,240],[0,120],[0,0],[0,-120],[0,-240],[0,-360],[0,-480]] },
+        { type:'car', color:0x2288ff, route:[[360,-480],[360,-240],[360,0],[360,240],[360,480]] }
+      ]
     },
     signal_jump: {
       name: 'Signal Junction', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
@@ -50,7 +55,11 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-480 },{ x:0,z:-240 },{ x:0,z:0 },{ x:0,z:240 },{ x:0,z:480 },
               { x:240,z:480 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:240,z:-480 },
-              { x:-240,z:-480 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },{ x:-240,z:480 }]
+              { x:-240,z:-480 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },{ x:-240,z:480 }],
+      npcs: [
+        { type:'taxi', color:0xffcc00, route:[[240,-480],[240,-240],[240,0],[240,240],[240,480]] },
+        { type:'car', color:0xff3333, route:[[0,480],[0,240],[0,0],[0,-240],[0,-480]] }
+      ]
     },
     road_rage: {
       name: 'Wide Arterial', sky: 0x9ec5d9, fog: 600, ground: 0x3a5a2e, amb: 0.85, veh: 'car',
@@ -64,7 +73,11 @@ function _getThemeRoads(themeType) {
       route: [{ x:-600,z:60 },{ x:-240,z:60 },{ x:0,z:60 },{ x:240,z:60 },{ x:480,z:60 },
               { x:480,z:-240 },{ x:480,z:0 },{ x:480,z:240 },{ x:360,z:360 },{ x:240,z:360 },
               { x:0,z:360 },{ x:-240,z:360 },{ x:-400,z:360 },{ x:-400,z:240 },{ x:-400,z:0 },
-              { x:-400,z:-240 },{ x:-400,z:-400 },{ x:-240,z:-400 },{ x:0,z:-400 },{ x:240,z:-400 }]
+              { x:-400,z:-240 },{ x:-400,z:-400 },{ x:-240,z:-400 },{ x:0,z:-400 },{ x:240,z:-400 }],
+      npcs: [
+        { type:'truck', color:0x884400, route:[[-600,60],[-240,60],[0,60],[240,60],[480,60]] },
+        { type:'bus', color:0x0044aa, route:[[480,-240],[480,0],[480,240],[360,360],[240,360]] }
+      ]
     },
     rain_driving: {
       name: 'Wet Streets', sky: 0x1a2a3a, fog: 400, ground: 0x2a3a2a, amb: 0.5, veh: 'car',
@@ -76,7 +89,11 @@ function _getThemeRoads(themeType) {
         { type:'h', z:-240, x1:-360, x2:360 }, { type:'h', z:240,  x1:-360, x2:360 }
       ],
       route: [{ x:0,z:0 },{ x:0,z:-240 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },
-              { x:0,z:240 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 }]
+              { x:0,z:240 },              { x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 }],
+      npcs: [
+        { type:'taxi', color:0xffcc00, route:[[0,0],[0,-240],[-240,-240],[-240,0]] },
+        { type:'car', color:0x2288ff, route:[[240,240],[240,0],[240,-240],[0,-240]] }
+      ]
     },
     ambulance_priority: {
       name: 'Hospital Arterial', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
@@ -89,7 +106,12 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-600 },{ x:0,z:-360 },{ x:0,z:0 },{ x:0,z:360 },{ x:0,z:600 },
               { x:240,z:600 },{ x:240,z:360 },{ x:240,z:0 },{ x:240,z:-360 },{ x:240,z:-600 },
-              { x:-240,z:-600 },{ x:-240,z:-360 },{ x:-240,z:0 },{ x:-240,z:360 },{ x:-240,z:600 }]
+              { x:-240,z:-600 },{ x:-240,z:-360 },{ x:-240,z:0 },{ x:-240,z:360 },{ x:-240,z:600 }],
+      npcs: [
+        { type:'ambulance', color:0xffffff, route:[[0,-600],[0,-360],[0,0],[0,360],[0,600]] },
+        { type:'car', color:0x444444, route:[[-240,-600],[-240,-360],[-240,0],[-240,360]] },
+        { type:'bus', color:0x0044aa, route:[[240,600],[240,360],[240,0],[240,-360],[240,-600]] }
+      ]
     },
     puddle_etiquette: {
       name: 'Rain Puddles', sky: 0x1a2a3a, fog: 400, ground: 0x2a3a2a, amb: 0.5, veh: 'car',
@@ -101,7 +123,11 @@ function _getThemeRoads(themeType) {
         { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
       ],
       route: [{ x:0,z:0 },{ x:-200,z:0 },{ x:-200,z:-200 },{ x:0,z:-200 },{ x:200,z:-200 },
-              { x:200,z:0 },{ x:200,z:200 },{ x:0,z:200 },{ x:-200,z:200 }]
+              { x:200,z:0 },{ x:200,z:200 },{ x:0,z:200 },{ x:-200,z:200 }],
+      npcs: [
+        { type:'car', color:0x3366cc, route:[[-200,0],[-200,-200],[0,-200],[200,-200],[200,0]] },
+        { type:'auto', color:0xff6600, route:[[0,0],[0,200],[-200,200],[-200,0]] }
+      ]
     },
     pedestrian_courtesy: {
       name: 'Pedestrian Zone', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
@@ -113,7 +139,11 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
               { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 },
-              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }]
+              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }],
+      npcs: [
+        { type:'car', color:0x555555, route:[[0,-400],[0,-200],[0,0],[0,200],[0,400]] },
+        { type:'bike', color:0x00cc66, route:[[-200,400],[-200,200],[-200,0],[-200,-200],[-200,-400]] }
+      ]
     },
     narrow_street: {
       name: 'Narrow Lanes', sky: 0x87b6d8, fog: 500, ground: 0x33691e, amb: 0.8, veh: 'car',
@@ -126,7 +156,11 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
               { x:160,z:400 },{ x:160,z:200 },{ x:160,z:0 },{ x:160,z:-200 },{ x:160,z:-400 },
-              { x:-160,z:-400 },{ x:-160,z:-200 },{ x:-160,z:0 },{ x:-160,z:200 },{ x:-160,z:400 }]
+              { x:-160,z:-400 },{ x:-160,z:-200 },{ x:-160,z:0 },{ x:-160,z:200 },{ x:-160,z:400 }],
+      npcs: [
+        { type:'auto', color:0xff8800, route:[[0,-400],[0,-200],[0,0],[0,200],[0,400]] },
+        { type:'bike', color:0x00cc44, route:[[160,-400],[160,-200],[160,0],[160,200],[160,400]] }
+      ]
     },
     parking_rules: {
       name: 'Parking Lot', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
@@ -138,7 +172,11 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:-300,z:0 },{ x:-200,z:0 },{ x:0,z:0 },{ x:200,z:0 },{ x:300,z:0 },
               { x:300,z:200 },{ x:200,z:200 },{ x:0,z:200 },{ x:-200,z:200 },{ x:-300,z:200 },
-              { x:-300,z:-200 },{ x:-200,z:-200 },{ x:0,z:-200 },{ x:200,z:-200 },{ x:300,z:-200 }]
+              { x:-300,z:-200 },{ x:-200,z:-200 },{ x:0,z:-200 },{ x:200,z:-200 },{ x:300,z:-200 }],
+      npcs: [
+        { type:'car', color:0x2266cc, route:[[-300,0],[-200,0],[0,0],[200,0],[300,0],[300,200],[200,200]] },
+        { type:'car', color:0xcc3333, route:[[300,-200],[200,-200],[0,-200],[-200,-200],[-300,-200]] }
+      ]
     },
     auto_dance: {
       name: 'Auto Zone', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'auto',
@@ -149,7 +187,12 @@ function _getThemeRoads(themeType) {
         { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
       ],
       route: [{ x:0,z:0 },{ x:0,z:-200 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },
-              { x:0,z:200 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 }]
+              { x:0,z:200 },              { x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 }],
+      npcs: [
+        { type:'auto', color:0xff6600, route:[[0,-200],[-200,-200],[-200,0],[-200,200],[0,200]] },
+        { type:'auto', color:0xff8800, route:[[200,-200],[200,0],[200,200],[0,200],[-200,200]] },
+        { type:'auto', color:0xffaa00, route:[[-200,0],[0,0],[200,0],[200,-200],[0,-200]] }
+      ]
     },
     toll: {
       name: 'Highway Toll', sky: 0x87b6d8, fog: 600, ground: 0x3a5a2e, amb: 0.85, veh: 'car',
@@ -160,7 +203,11 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:-700,z:60 },{ x:-500,z:60 },{ x:-300,z:60 },{ x:-100,z:60 },{ x:100,z:60 },
               { x:300,z:60 },{ x:500,z:60 },{ x:700,z:60 },{ x:700,z:-60 },{ x:500,z:-60 },
-              { x:300,z:-60 },{ x:100,z:-60 },{ x:-100,z:-60 },{ x:-300,z:-60 },{ x:-500,z:-60 },{ x:-700,z:-60 }]
+              { x:300,z:-60 },{ x:100,z:-60 },{ x:-100,z:-60 },{ x:-300,z:-60 },{ x:-500,z:-60 },{ x:-700,z:-60 }],
+      npcs: [
+        { type:'truck', color:0x884400, route:[[-700,60],[-500,60],[-300,60],[-100,60],[100,60],[300,60],[500,60],[700,60]] },
+        { type:'bus', color:0x0044aa, route:[[700,-60],[500,-60],[300,-60],[100,-60],[-100,-60],[-300,-60],[-500,-60],[-700,-60]] }
+      ]
     },
     blind_corner: {
       name: 'Blind Corners', sky: 0x87b6d8, fog: 450, ground: 0x33691e, amb: 0.7, veh: 'car',
@@ -173,7 +220,11 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
               { x:240,z:400 },{ x:240,z:200 },{ x:240,z:0 },{ x:240,z:-200 },{ x:240,z:-400 },
-              { x:-240,z:-400 },{ x:-240,z:-200 },{ x:-240,z:0 },{ x:-240,z:200 },{ x:-240,z:400 }]
+              { x:-240,z:-400 },{ x:-240,z:-200 },{ x:-240,z:0 },{ x:-240,z:200 },{ x:-240,z:400 }],
+      npcs: [
+        { type:'truck', color:0x664422, route:[[0,-400],[0,-200],[0,0],[0,200],[0,400]] },
+        { type:'car', color:0x336699, route:[[-240,400],[-240,200],[-240,0],[-240,-200],[-240,-400]] }
+      ]
     },
     hill_driving: {
       name: 'Hill Roads', sky: 0x7ab8e0, fog: 400, ground: 0x2d5016, amb: 0.75, veh: 'car',
@@ -185,7 +236,11 @@ function _getThemeRoads(themeType) {
         { type:'h', z:300,  x1:-300, x2:300 }
       ],
       route: [{ x:0,z:-400 },{ x:0,z:0 },{ x:0,z:400 },{ x:300,z:400 },{ x:300,z:0 },
-              { x:300,z:-400 },{ x:-300,z:-400 },{ x:-300,z:0 },{ x:-300,z:400 }]
+              { x:300,z:-400 },              { x:-300,z:-400 },{ x:-300,z:0 },{ x:-300,z:400 }],
+      npcs: [
+        { type:'truck', color:0x556633, route:[[0,-400],[0,0],[0,400]] },
+        { type:'bus', color:0x0044aa, route:[[300,400],[300,0],[300,-400]] }
+      ]
     },
     bus_stop: {
       name: 'Bus Corridor', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
@@ -197,7 +252,12 @@ function _getThemeRoads(themeType) {
         { type:'h', z:360,  x1:-400, x2:400 }
       ],
       route: [{ x:0,z:-600 },{ x:0,z:-360 },{ x:0,z:0 },{ x:0,z:360 },{ x:0,z:600 },
-              { x:-240,z:600 },{ x:-240,z:360 },{ x:-240,z:0 },{ x:-240,z:-360 },{ x:-240,z:-600 }]
+              { x:-240,z:600 },{ x:-240,z:360 },{ x:-240,z:0 },{ x:-240,z:-360 },{ x:-240,z:-600 }],
+      npcs: [
+        { type:'bus', color:0x0066cc, route:[[0,-600],[0,-360],[0,0],[0,360],[0,600]] },
+        { type:'bus', color:0x004499, route:[[0,600],[0,360],[0,0],[0,-360],[0,-600]] },
+        { type:'car', color:0x888888, route:[[-240,-600],[-240,-360],[-240,0],[-240,360],[-240,600]] }
+      ]
     },
     construction: {
       name: 'Construction Zone', sky: 0x9aa8b8, fog: 450, ground: 0x5a4a3a, amb: 0.7, veh: 'car',
@@ -209,7 +269,11 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-500 },{ x:0,z:-240 },{ x:0,z:0 },{ x:0,z:240 },{ x:0,z:500 },
               { x:240,z:500 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:240,z:-500 },
-              { x:-240,z:-500 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },{ x:-240,z:500 }]
+              { x:-240,z:-500 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },{ x:-240,z:500 }],
+      npcs: [
+        { type:'truck', color:0x885533, route:[[0,-500],[0,-240],[0,0],[0,240],[0,500]] },
+        { type:'car', color:0x4477aa, route:[[240,-500],[240,-240],[240,0],[240,240],[240,500]] }
+      ]
     },
     one_way: {
       name: 'One-Way Streets', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
@@ -220,7 +284,11 @@ function _getThemeRoads(themeType) {
         { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:320,  x1:-300, x2:300 }
       ],
       route: [{ x:-500,z:60 },{ x:-300,z:60 },{ x:-100,z:60 },{ x:100,z:60 },{ x:300,z:60 },{ x:500,z:60 },
-              { x:500,z:-200 },{ x:300,z:-200 },{ x:100,z:-200 },{ x:-100,z:-200 },{ x:-300,z:-200 },{ x:-500,z:-200 }]
+              { x:500,z:-200 },{ x:300,z:-200 },{ x:100,z:-200 },{ x:-100,z:-200 },{ x:-300,z:-200 },{ x:-500,z:-200 }],
+      npcs: [
+        { type:'taxi', color:0xffcc00, route:[[-500,60],[-300,60],[-100,60],[100,60],[300,60],[500,60]] },
+        { type:'car', color:0x445566, route:[[500,-200],[300,-200],[100,-200],[-100,-200],[-300,-200],[-500,-200]] }
+      ]
     },
     hospital_quiet: {
       name: 'Hospital Zone', sky: 0x87b6d8, fog: 500, ground: 0x33691e, amb: 0.7, veh: 'car',
@@ -233,7 +301,11 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
               { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 },
-              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }]
+              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }],
+      npcs: [
+        { type:'car', color:0x445566, route:[[0,-400],[0,-200],[0,0],[0,200],[0,400]] },
+        { type:'bike', color:0x00aa66, route:[[200,-400],[200,-200],[200,0],[200,200],[200,400]] }
+      ]
     },
     festival: {
       name: 'Festival Route', sky: 0xf5a623, fog: 500, ground: 0x444444, amb: 0.9, veh: 'car',
@@ -244,7 +316,12 @@ function _getThemeRoads(themeType) {
         { type:'h', z:-240, x1:-360, x2:360 }, { type:'h', z:240,  x1:-360, x2:360 }
       ],
       route: [{ x:0,z:0 },{ x:0,z:-240 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },
-              { x:0,z:240 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:0,z:-240 }]
+              { x:0,z:240 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:0,z:-240 }],
+      npcs: [
+        { type:'auto', color:0xff6600, route:[[-240,-240],[0,-240],[240,-240],[240,0],[240,240],[0,240]] },
+        { type:'car', color:0xcc2222, route:[[0,0],[0,240],[-240,240],[-240,0],[-240,-240],[0,-240]] },
+        { type:'bike', color:0x00cc44, route:[[240,-240],[0,-240],[-240,-240],[-240,0],[-240,240]] }
+      ]
     },
     cyclist: {
       name: 'Cyclist Lanes', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'bike',
@@ -255,7 +332,12 @@ function _getThemeRoads(themeType) {
         { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
       ],
       route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
-              { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 }]
+              { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 }],
+      npcs: [
+        { type:'bike', color:0x00cc66, route:[[-200,-300],[-200,0],[-200,300]] },
+        { type:'bike', color:0x00aa44, route:[[200,-300],[200,0],[200,300]] },
+        { type:'car', color:0x667788, route:[[0,-500],[0,0],[0,500]] }
+      ]
     },
     grand_test: {
       name: 'Grand Test', sky: 0x87b6d8, fog: 600, ground: 0x33691e, amb: 0.85, veh: 'car',
@@ -273,7 +355,13 @@ function _getThemeRoads(themeType) {
               { x:120,z:480 },{ x:240,z:480 },{ x:360,z:480 },{ x:360,z:240 },{ x:360,z:0 },
               { x:360,z:-240 },{ x:360,z:-480 },{ x:240,z:-480 },{ x:120,z:-480 },
               { x:-120,z:-480 },{ x:-240,z:-480 },{ x:-360,z:-480 },{ x:-360,z:-240 },
-              { x:-360,z:0 },{ x:-360,z:240 },{ x:-360,z:480 }]
+              { x:-360,z:0 },{ x:-360,z:240 },{ x:-360,z:480 }],
+      npcs: [
+        { type:'taxi', color:0xffcc00, route:[[0,-480],[0,0],[0,480]] },
+        { type:'bus', color:0x0044aa, route:[[240,-480],[240,0],[240,480]] },
+        { type:'truck', color:0x884400, route:[[-240,480],[-240,0],[-240,-480]] },
+        { type:'auto', color:0xff6600, route:[[360,-480],[360,0],[360,480]] }
+      ]
     },
     night_monsoon: {
       name: 'Night Monsoon', sky: 0x0a0a12, fog: 300, ground: 0x1a1a2a, amb: 0.3, veh: 'car',
@@ -285,7 +373,11 @@ function _getThemeRoads(themeType) {
         { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
       ],
       route: [{ x:0,z:0 },{ x:0,z:-200 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },
-              { x:0,z:200 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 }]
+              { x:0,z:200 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 }],
+      npcs: [
+        { type:'car', color:0x223355, route:[[-200,-200],[-200,0],[-200,200],[0,200],[200,200]] },
+        { type:'auto', color:0xdd6600, route:[[200,-200],[0,-200],[-200,-200],[-200,0]] }
+      ]
     },
     wrong_side: {
       name: 'Wrong Side', sky: 0x9ec5d9, fog: 600, ground: 0x3a5a2e, amb: 0.85, veh: 'car',
@@ -296,7 +388,11 @@ function _getThemeRoads(themeType) {
         { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:320,  x1:-300, x2:300 }
       ],
       route: [{ x:-700,z:60 },{ x:-400,z:60 },{ x:-100,z:60 },{ x:200,z:60 },{ x:500,z:60 },
-              { x:500,z:-200 },{ x:200,z:-200 },{ x:-100,z:-200 },{ x:-400,z:-200 },{ x:-700,z:-200 }]
+              { x:500,z:-200 },{ x:200,z:-200 },{ x:-100,z:-200 },{ x:-400,z:-200 },{ x:-700,z:-200 }],
+      npcs: [
+        { type:'car', color:0x334455, route:[[-700,60],[-400,60],[200,60],[500,60]] },
+        { type:'bus', color:0x0044aa, route:[[500,-200],[200,-200],[-100,-200],[-400,-200],[-700,-200]] }
+      ]
     },
     highway_merge: {
       name: 'Highway Merge', sky: 0x87b6d8, fog: 700, ground: 0x3a5a2e, amb: 0.9, veh: 'car',
@@ -307,7 +403,12 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:-900,z:60 },{ x:-600,z:60 },{ x:-300,z:60 },{ x:0,z:60 },{ x:300,z:60 },
               { x:600,z:60 },{ x:900,z:60 },{ x:900,z:-60 },{ x:600,z:-60 },{ x:300,z:-60 },
-              { x:0,z:-60 },{ x:-300,z:-60 },{ x:-600,z:-60 },{ x:-900,z:-60 }]
+              { x:0,z:-60 },{ x:-300,z:-60 },{ x:-600,z:-60 },{ x:-900,z:-60 }],
+      npcs: [
+        { type:'car', color:0x445566, route:[[-900,60],[-300,60],[300,60],[900,60]] },
+        { type:'truck', color:0x884400, route:[[900,-60],[300,-60],[-300,-60],[-900,-60]] },
+        { type:'car', color:0x336699, route:[[-600,-60],[-300,-60],[0,-60],[300,-60],[600,-60]] }
+      ]
     },
     zero_visibility: {
       name: 'Zero Visibility', sky: 0x0a0a0a, fog: 200, ground: 0x1a1a1a, amb: 0.2, veh: 'car',
@@ -319,7 +420,11 @@ function _getThemeRoads(themeType) {
         { type:'h', z:-200, x1:-300, x2:300 }, { type:'h', z:200,  x1:-300, x2:300 }
       ],
       route: [{ x:0,z:0 },{ x:0,z:-200 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },
-              { x:0,z:200 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 }]
+              { x:0,z:200 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 }],
+      npcs: [
+        { type:'car', color:0x223355, route:[[-200,-200],[-200,0],[-200,200],[0,200],[200,200]] },
+        { type:'car', color:0x334466, route:[[200,-200],[0,-200],[-200,-200],[-200,0]] }
+      ]
     },
     mountain: {
       name: 'Mountain Pass', sky: 0x7ab8e0, fog: 400, ground: 0x2d5016, amb: 0.75, veh: 'car',
@@ -332,7 +437,12 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-500 },{ x:0,z:-300 },{ x:0,z:0 },{ x:0,z:300 },{ x:0,z:500 },
               { x:300,z:500 },{ x:300,z:300 },{ x:300,z:0 },{ x:300,z:-300 },{ x:300,z:-500 },
-              { x:-300,z:-500 },{ x:-300,z:-300 },{ x:-300,z:0 },{ x:-300,z:300 },{ x:-300,z:500 }]
+              { x:-300,z:-500 },{ x:-300,z:-300 },{ x:-300,z:0 },{ x:-300,z:300 },{ x:-300,z:500 }],
+      npcs: [
+        { type:'truck', color:0x556633, route:[[0,-500],[0,0],[0,500]] },
+        { type:'bus', color:0x0044aa, route:[[-300,500],[-300,0],[-300,-500]] },
+        { type:'car', color:0x4477aa, route:[[300,-500],[300,0],[300,500]] }
+      ]
     },
     rural: {
       name: 'Rural Roads', sky: 0xa8d4e8, fog: 700, ground: 0x5a7a3a, amb: 0.9, veh: 'car',
@@ -342,7 +452,12 @@ function _getThemeRoads(themeType) {
         { type:'v', x:-300, z1:-200, z2:200 }, { type:'v', x:300,  z1:-200, z2:200 }
       ],
       route: [{ x:-500,z:0 },{ x:-300,z:0 },{ x:0,z:0 },{ x:300,z:0 },{ x:500,z:0 },
-              { x:500,z:-200 },{ x:300,z:-200 },{ x:0,z:-200 },{ x:-300,z:-200 },{ x:-500,z:-200 }]
+              { x:500,z:-200 },{ x:300,z:-200 },{ x:0,z:-200 },{ x:-300,z:-200 },{ x:-500,z:-200 }],
+      npcs: [
+        { type:'car', color:0x336699, route:[[-500,0],[0,0],[500,0]] },
+        { type:'truck', color:0x884400, route:[[500,-200],[0,-200],[-500,-200]] },
+        { type:'bike', color:0x00cc44, route:[[-300,-200],[0,-200],[300,-200]] }
+      ]
     },
     multi_modal: {
       name: 'Multi-Modal Hub', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
@@ -356,7 +471,13 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-480 },{ x:0,z:-360 },{ x:0,z:0 },{ x:0,z:360 },{ x:0,z:480 },
               { x:240,z:480 },{ x:240,z:360 },{ x:240,z:0 },{ x:240,z:-360 },{ x:240,z:-480 },
-              { x:-240,z:-480 },{ x:-240,z:-360 },{ x:-240,z:0 },{ x:-240,z:360 },{ x:-240,z:480 }]
+              { x:-240,z:-480 },{ x:-240,z:-360 },{ x:-240,z:0 },{ x:-240,z:360 },{ x:-240,z:480 }],
+      npcs: [
+        { type:'bus', color:0x0044aa, route:[[0,-480],[0,0],[0,480]] },
+        { type:'car', color:0x445566, route:[[240,-480],[240,0],[240,480]] },
+        { type:'bike', color:0x00cc66, route:[[-240,-480],[-240,0],[-240,480]] },
+        { type:'auto', color:0xff6600, route:[[360,-480],[360,0],[360,480]] }
+      ]
     },
     no_honking: {
       name: 'Silent Zone', sky: 0x87b6d8, fog: 500, ground: 0x33691e, amb: 0.7, veh: 'car',
@@ -368,7 +489,12 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
               { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 },
-              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }]
+              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }],
+      npcs: [
+        { type:'car', color:0x445566, route:[[0,-400],[0,0],[0,400]] },
+        { type:'auto', color:0xff6600, route:[[200,-400],[200,0],[200,400]] },
+        { type:'bike', color:0x00cc66, route:[[-200,400],[-200,0],[-200,-400]] }
+      ]
     },
     pedestrian_priority: {
       name: 'Pedestrian Priority', sky: 0x87b6d8, fog: 500, ground: 0x33691e, amb: 0.8, veh: 'car',
@@ -380,7 +506,11 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
               { x:200,z:400 },{ x:200,z:200 },{ x:200,z:0 },{ x:200,z:-200 },{ x:200,z:-400 },
-              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }]
+              { x:-200,z:-400 },{ x:-200,z:-200 },{ x:-200,z:0 },{ x:-200,z:200 },{ x:-200,z:400 }],
+      npcs: [
+        { type:'car', color:0x556677, route:[[0,-400],[0,0],[0,400]] },
+        { type:'bike', color:0x00cc44, route:[[200,-400],[200,0],[200,400]] }
+      ]
     },
     signs: {
       name: 'Signage Zone', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
@@ -392,7 +522,12 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-500 },{ x:0,z:-240 },{ x:0,z:0 },{ x:0,z:240 },{ x:0,z:500 },
               { x:240,z:500 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:240,z:-500 },
-              { x:-240,z:-500 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },{ x:-240,z:500 }]
+              { x:-240,z:-500 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },{ x:-240,z:500 }],
+      npcs: [
+        { type:'car', color:0x445566, route:[[0,-500],[0,0],[0,500]] },
+        { type:'car', color:0x336699, route:[[240,500],[240,0],[240,-500]] },
+        { type:'auto', color:0xff6600, route:[[-240,-500],[-240,0],[-240,500]] }
+      ]
     },
     animals: {
       name: 'Animal Crossing', sky: 0xa8d4e8, fog: 600, ground: 0x5a7a3a, amb: 0.85, veh: 'car',
@@ -404,7 +539,12 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:0,z:-400 },{ x:0,z:-200 },{ x:0,z:0 },{ x:0,z:200 },{ x:0,z:400 },
               { x:240,z:400 },{ x:240,z:200 },{ x:240,z:0 },{ x:240,z:-200 },{ x:240,z:-400 },
-              { x:-240,z:-400 },{ x:-240,z:-200 },{ x:-240,z:0 },{ x:-240,z:200 },{ x:-240,z:400 }]
+              { x:-240,z:-400 },{ x:-240,z:-200 },{ x:-240,z:0 },{ x:-240,z:200 },{ x:-240,z:400 }],
+      npcs: [
+        { type:'car', color:0x445566, route:[[0,-400],[0,0],[0,400]] },
+        { type:'car', color:0x336699, route:[[240,400],[240,0],[240,-400]] },
+        { type:'truck', color:0x884400, route:[[-240,-400],[-240,0],[-240,400]] }
+      ]
     },
     lane_discipline: {
       name: 'Lane Discipline', sky: 0x87b6d8, fog: 600, ground: 0x3a5a2e, amb: 0.85, veh: 'car',
@@ -416,7 +556,11 @@ function _getThemeRoads(themeType) {
       ],
       route: [{ x:-800,z:60 },{ x:-500,z:60 },{ x:-200,z:60 },{ x:100,z:60 },{ x:400,z:60 },
               { x:700,z:60 },{ x:700,z:-60 },{ x:400,z:-60 },{ x:100,z:-60 },{ x:-200,z:-60 },
-              { x:-500,z:-60 },{ x:-800,z:-60 }]
+              { x:-500,z:-60 },{ x:-800,z:-60 }],
+      npcs: [
+        { type:'car', color:0x445566, route:[[-800,60],[-200,60],[400,60],[700,60]] },
+        { type:'bus', color:0x0044aa, route:[[700,-60],[400,-60],[-200,-60],[-800,-60]] }
+      ]
     },
     driving_school: {
       name: 'Driving School', sky: 0x87b6d8, fog: 600, ground: 0x33691e, amb: 0.85, veh: 'car',
@@ -429,7 +573,11 @@ function _getThemeRoads(themeType) {
         { type:'h', z:120,  x1:-200, x2:200 }
       ],
       route: [{ x:0,z:-200 },{ x:0,z:-120 },{ x:0,z:0 },{ x:0,z:120 },{ x:0,z:200 },
-              { x:-120,z:200 },{ x:-120,z:120 },{ x:-120,z:0 },{ x:-120,z:-120 },{ x:-120,z:-200 }]
+              { x:-120,z:200 },{ x:-120,z:120 },{ x:-120,z:0 },{ x:-120,z:-120 },{ x:-120,z:-200 }],
+      npcs: [
+        { type:'car', color:0x557744, route:[[0,-200],[0,0],[0,200]] },
+        { type:'bike', color:0x00cc44, route:[[-120,200],[-120,0],[-120,-200]] }
+      ]
     }
   };
   return templates[t] || templates.urban_grid;
@@ -1700,7 +1848,20 @@ class Game {
                 ints.push([i, j]);
              }
           }
-          let cfg = { name: '50km Open World', sky: 0x6fb8e0, fog: 2000, ground: 0x444444, amb: 0.9, veh: 'car', npcTypes: ['car', 'bike', 'bus', 'truck'], roads: rds, ints: ints, bldg: [], route: [], timeLimit: 999999, is50km: true };
+          let cfg = { name: '50km Open World', sky: 0x6fb8e0, fog: 2000, ground: 0x444444, amb: 0.9, veh: 'car', npcTypes: ['car', 'bike', 'bus', 'truck'], roads: rds, ints: ints, bldg: [], route: [], timeLimit: 999999, is50km: true,
+            npcRoutes: [
+              // Route 1: East-west along z=0, loop back via z=5000
+              [{x:-24000,z:0},{x:0,z:0},{x:24000,z:0},{x:24000,z:5000},{x:0,z:5000},{x:-24000,z:5000},{x:-24000,z:0}],
+              // Route 2: North-south along x=0, loop back via x=8000
+              [{x:0,z:-24000},{x:0,z:0},{x:0,z:24000},{x:8000,z:24000},{x:8000,z:0},{x:8000,z:-24000},{x:0,z:-24000}],
+              // Route 3: Perimeter clockwise
+              [{x:-24000,z:-24000},{x:24000,z:-24000},{x:24000,z:24000},{x:-24000,z:24000},{x:-24000,z:-24000}],
+              // Route 4: Diagonal zigzag through center
+              [{x:-20000,z:-15000},{x:-10000,z:-5000},{x:0,z:5000},{x:10000,z:15000},{x:20000,z:24000}],
+              // Route 5: Inner loop
+              [{x:-10000,z:-10000},{x:10000,z:-10000},{x:10000,z:10000},{x:-10000,z:10000},{x:-10000,z:-10000}]
+            ]
+          };
           cfg.startOutside = true;
           return cfg;
         }
@@ -1927,22 +2088,25 @@ class Game {
           this.scene.add(roadHb);
           this.world.push(roadHb);
 
-          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['road_straight']) {
-              // The GLTF model is 1000x1500 units. We scale it to match RW (12).
+          if (window.PRELOADED_MODELS && (window.PRELOADED_MODELS['road_avenue'] || window.PRELOADED_MODELS['road_straight'])) {
+              const roadKey = window.PRELOADED_MODELS['road_avenue'] ? 'road_avenue' : 'road_straight';
+              // Scale model (1000x1500) to match RW, stretch length 3x to reduce tile count
               const tileScale = RW / 1000;
-              const tileSize = 1500 * tileScale; // 18 units long
+              const tileLenScale = 3; // stretch each tile 3x longer = 3x fewer draw calls
+              const tileSize = 1500 * tileScale * tileLenScale; // ~54 units per tile
               const numTiles = Math.max(1, Math.floor(len / tileSize));
               const startX = isV ? cx : Math.min(r.x1, r.x2) + tileSize / 2 + (len - numTiles * tileSize) / 2;
               const startZ = isV ? Math.min(r.z1, r.z2) + tileSize / 2 + (len - numTiles * tileSize) / 2 : cz;
 
               for (let i = 0; i < numTiles; i++) {
-                  const tile = window.PRELOADED_MODELS['road_straight'].clone();
-                  tile.scale.set(tileScale, tileScale, tileScale);
+                  const tile = window.PRELOADED_MODELS[roadKey].clone();
+                  tile.scale.set(tileScale, tileScale, tileScale * tileLenScale);
+                  tile.frustumCulled = true;
+                  // Disable shadows on all child meshes — road is flat ground, no cast needed
+                  tile.traverse(c => { if (c.isMesh) { c.castShadow = false; c.receiveShadow = false; } });
                   if (isV) {
-                      // Model natively points along Z
                       tile.position.set(cx, 0.08, startZ + i * tileSize);
                   } else {
-                      // Rotate 90 degrees around Y so length spans X
                       tile.rotation.y = Math.PI / 2;
                       tile.position.set(startX + i * tileSize, 0.08, cz);
                   }
@@ -2023,8 +2187,8 @@ class Game {
              const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 14), mat);
              bMesh.position.y = bh / 2;
              g.add(bMesh);
-             // ── BUILDING WINDOWS (night mode) ──
-             if (cfg.isNight) {
+             // ── BUILDING WINDOWS (night mode, skip for 50km open world) ──
+             if (cfg.isNight && !cfg.is50km) {
                const winMat = new THREE.MeshBasicMaterial({ color: 0xffdd88 });
                const winRows = Math.floor(bh / 4);
                const winCols = Math.floor(bw / 3.5);
@@ -2048,43 +2212,80 @@ class Game {
           }
         };
 
-        // Spawn buildings on a grid — only in build zones near roads
-        const bGrid = 30;
-        const bGridExtent = 600;
-        for (let gx = -bGridExtent; gx <= bGridExtent; gx += bGrid) {
-          for (let gz = -bGridExtent; gz <= bGridExtent; gz += bGrid) {
-            if (this._isOnRoad(gx, gz)) continue;
-            if (!this._isInBuildZone(gx, gz)) continue;
-            // skip if too close to any intersection
-            let nearInt = false;
-            (cfg.ints || []).forEach(([ix, iz]) => {
-              if (Math.abs(gx - ix) < 20 && Math.abs(gz - iz) < 20) nearInt = true;
-            });
-            if (nearInt) continue;
-            const rot = [0, Math.PI / 2, Math.PI, -Math.PI / 2][Math.floor(Math.random() * 4)];
-            const rnd = Math.random();
-            let type = 'normal';
-            if (rnd > 0.98) type = 'police';
-            else if (rnd > 0.96) type = 'hospital';
-            else if (rnd > 0.94) type = 'bank';
-            else if (rnd > 0.92) type = 'temple';
-            else if (rnd > 0.70) type = 'shop';
-            else if (rnd > 0.55) type = 'chawl';
-            else if (rnd > 0.45) type = 'skyscraper';
-            drawBldg(gx, gz, type, rot);
+        // Spawn buildings near roads
+        if (cfg.is50km) {
+          // L15 (50km open world): road-following placement — iterate each road, place buildings along its edges
+          const buildSpacing = 280;
+          const buildOffset = RW / 2 + 6;
+          cfg.roads.forEach(r => {
+            const isV = r.type === 'v';
+            const cx = isV ? r.x : (r.x1 + r.x2) / 2;
+            const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
+            const roadStart = isV ? Math.min(r.z1, r.z2) : Math.min(r.x1, r.x2);
+            const roadEnd = isV ? Math.max(r.z1, r.z2) : Math.max(r.x1, r.x2);
+            for (let pos = roadStart + buildSpacing; pos < roadEnd; pos += buildSpacing) {
+              [-1, 1].forEach(side => {
+                if (Math.random() > 0.22) return;
+                const bx = isV ? cx + side * buildOffset : pos;
+                const bz = isV ? pos : cz + side * buildOffset;
+                // O(1) intersection proximity check via modular arithmetic (roads at 1000-unit intervals)
+                const modX = ((bx % 1000) + 1000) % 1000;
+                const modZ = ((bz % 1000) + 1000) % 1000;
+                if ((modX < 25 || modX > 975) && (modZ < 25 || modZ > 975)) return;
+                const rot = isV ? (side > 0 ? 0 : Math.PI) : (side > 0 ? Math.PI / 2 : -Math.PI / 2);
+                const rnd = Math.random();
+                let type = 'normal';
+                if (rnd > 0.98) type = 'police';
+                else if (rnd > 0.96) type = 'hospital';
+                else if (rnd > 0.94) type = 'bank';
+                else if (rnd > 0.92) type = 'temple';
+                else if (rnd > 0.70) type = 'shop';
+                else if (rnd > 0.55) type = 'chawl';
+                else if (rnd > 0.45) type = 'skyscraper';
+                drawBldg(bx, bz, type, rot);
+              });
+            }
+          });
+        } else {
+          // Standard levels: grid-based placement near roads
+          const bGrid = 30;
+          const bGridExtent = 600;
+          for (let gx = -bGridExtent; gx <= bGridExtent; gx += bGrid) {
+            for (let gz = -bGridExtent; gz <= bGridExtent; gz += bGrid) {
+              if (this._isOnRoad(gx, gz)) continue;
+              if (!this._isInBuildZone(gx, gz)) continue;
+              let nearInt = false;
+              (cfg.ints || []).forEach(([ix, iz]) => {
+                if (Math.abs(gx - ix) < 20 && Math.abs(gz - iz) < 20) nearInt = true;
+              });
+              if (nearInt) continue;
+              const rot = [0, Math.PI / 2, Math.PI, -Math.PI / 2][Math.floor(Math.random() * 4)];
+              const rnd = Math.random();
+              let type = 'normal';
+              if (rnd > 0.98) type = 'police';
+              else if (rnd > 0.96) type = 'hospital';
+              else if (rnd > 0.94) type = 'bank';
+              else if (rnd > 0.92) type = 'temple';
+              else if (rnd > 0.70) type = 'shop';
+              else if (rnd > 0.55) type = 'chawl';
+              else if (rnd > 0.45) type = 'skyscraper';
+              drawBldg(gx, gz, type, rot);
+            }
           }
         }
 
         // Props along sidewalk edges (benches, trees, bus stops, stalls, lamps)
+        const propSpacing = cfg.is50km ? 180 : 60;
+        const propDensity = cfg.is50km ? 0.25 : 0.5;
         cfg.roads.forEach(r => {
           const isV = r.type === 'v';
           const cx = isV ? r.x : (r.x1 + r.x2) / 2;
           const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
           const start = isV ? Math.min(r.z1, r.z2) + 15 : Math.min(r.x1, r.x2) + 15;
           const end = isV ? Math.max(r.z1, r.z2) - 15 : Math.max(r.x1, r.x2) - 15;
-          for (let pos = start; pos < end; pos += 60) {
+          for (let pos = start; pos < end; pos += propSpacing) {
             [-1, 1].forEach(side => {
-              if (Math.random() > 0.5) return;
+              if (Math.random() > propDensity) return;
               const lDist = RW / 2 + 1;
               const lx = isV ? cx + side * lDist : pos;
               const lz = isV ? pos : cz + side * lDist;
@@ -2156,9 +2357,9 @@ class Game {
                 
                 meshes.forEach(mesh => {
                     const instancedMesh = new THREE.InstancedMesh(mesh.geometry, mesh.material, instances.length);
-                    instancedMesh.castShadow = true;
+                    instancedMesh.castShadow = false;
                     instancedMesh.receiveShadow = true;
-                    instancedMesh.frustumCulled = false;
+                    instancedMesh.frustumCulled = true;
                     
                     const dummy = new THREE.Object3D();
                     const finalMatrix = new THREE.Matrix4();
@@ -2313,15 +2514,16 @@ class Game {
         (cfg.ints || []).forEach(([ix, iz]) => {
           this._sig(ix + 4.2, iz);
 
-          if (window.PRELOADED_MODELS && (window.PRELOADED_MODELS['road_cross_path'] || window.PRELOADED_MODELS['road_cross'])) {
-             const intModel = window.PRELOADED_MODELS['road_cross_path'] || window.PRELOADED_MODELS['road_cross'];
-             const intTile = intModel.clone();
-             const tileScale = RW / 10;
-             intTile.scale.set(tileScale, tileScale, tileScale);
-             intTile.position.set(ix, 0.03, iz);
-             intTile.traverse(c => { if(c.isMesh) { c.receiveShadow = true; }});
-             this.scene.add(intTile);
-          }
+           if (window.PRELOADED_MODELS && (window.PRELOADED_MODELS['road_cross_path'] || window.PRELOADED_MODELS['road_cross'])) {
+              const intModel = window.PRELOADED_MODELS['road_cross_path'] || window.PRELOADED_MODELS['road_cross'];
+              const intTile = intModel.clone();
+              const tileScale = RW / 10;
+              intTile.scale.set(tileScale, tileScale, tileScale);
+              intTile.position.set(ix, 0.03, iz);
+              intTile.frustumCulled = true;
+              intTile.traverse(c => { if(c.isMesh) { c.castShadow = false; c.receiveShadow = false; }});
+              this.scene.add(intTile);
+           }
 
           // Add a Stop sign at some intersections
           if (Math.random() < 0.5) this._addTrafficSign(ix + 6, iz + 6, 'STOP', -Math.PI / 4);
@@ -2688,8 +2890,8 @@ class Game {
               maxPos: seg.type === 'v' ? Math.max(seg.z1, seg.z2) : Math.max(seg.x1, seg.x2),
               txX: seg.type === 'v' ? seg.x + laneOffset : undefined,
               state: 'CRUISE',
-              useRoute: !!(cfg.route && cfg.route.length >= 2),
-              route: cfg.route ? (isOpp ? [...cfg.route].reverse() : [...cfg.route]) : null,
+              useRoute: !!(cfg.route && cfg.route.length >= 2) || !!(cfg.npcRoutes && cfg.npcRoutes.length > 0),
+              route: cfg.route && cfg.route.length >= 2 ? (isOpp ? [...cfg.route].reverse() : [...cfg.route]) : (cfg.npcRoutes && cfg.npcRoutes.length > 0 ? cfg.npcRoutes[Math.floor(Math.random() * cfg.npcRoutes.length)] : null),
               routeIdx: cfg.route ? Math.floor(Math.random() * cfg.route.length) : 0,
               laneOffset: laneOffset
             };

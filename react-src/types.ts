@@ -81,16 +81,7 @@ export interface GameState {
   gear: 'D' | 'R' | 'N' | 'P';
   timeOfDay: number;
   violations: string[];
+  violationsLog: string[];
   score: number;
   fine: number;
 }
-
-export const CORRECTIVE_QUIZ: Record<string, { q: string, o: string[], a: number }> = {
-  'NO_HONKING': { q: 'Corrective Check: What is the rule for honking in silence zones?', o: ['It is strictly prohibited and carries a fine.', 'Honking is allowed once', 'Only honk if traffic is slow', 'Honk to warn pedestrians'], a: 0 },
-  'MOBILE_USE': { q: 'Corrective Check: Why is phone use prohibited while driving?', o: ['It causes distraction and significantly increases accident risk.', 'It is only banned on highways', 'It is allowed if using a speaker', 'It only affects the vehicle speed'], a: 0 },
-  'SAFETY_VIOLATION': { q: 'Corrective Check: What is the primary purpose of safety gear like helmets/seatbelts?', o: ['To reduce fatalities and injuries during accidents', 'To avoid police fines', 'To make the driver look professional', 'To improve vehicle aerodynamics'], a: 0 },
-  'NO_INDICATOR': { q: 'Corrective Check: When is it mandatory to use a turn indicator?', o: ['Every time you intend to change direction or merge', 'Only at red lights', 'Only on highways', 'Only when other cars are present'], a: 0 },
-  'LITTER_HIT': { q: 'Corrective Check: How does road litter affect vehicle control?', o: ['It can cause skidding or damage tires', 'It has no effect on control', 'It improves grip on wet roads', 'It only affects the paint'], a: 0 },
-  'CHECKPOINT_EVASION': { q: 'Corrective Check: What is the legal consequence of fleeing a police checkpoint?', o: ['It is a serious offense often leading to immediate arrest', 'A simple warning', 'A small fine payable online', 'No consequence if you have a license'], a: 0 },
-  'RED_LIGHT_VIOLATION': { q: 'Corrective Check: What is the mandatory action when a signal turns red?', o: ['Stop completely before the stop line', 'Slow down and proceed cautiously', 'Stop only if cars are coming', 'Flash headlights and pass quickly'], a: 0 }
-};

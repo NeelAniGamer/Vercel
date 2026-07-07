@@ -53,6 +53,7 @@ window.ASSET_MANIFEST = {}
   M.road_intersect_path = roadKit + 'road-intersection-path.glb'; M.road_bend = roadKit + 'road-bend-sidewalk.glb'
   M.road_crossing = roadKit + 'road-crossing.glb'; M.road_roundabout = roadKit + 'road-roundabout.glb'
   M.barrier = roadKit + 'construction-barrier.glb'; M.cone = roadKit + 'construction-cone.glb'; M.sign_highway = roadKit + 'sign-highway.glb'
+  M.road_avenue = 'Models/road__avenue__street/scene.gltf'
 
   // Characters
   M.char_f_a = charKit + 'character-female-a.glb'; M.char_f_b = charKit + 'character-female-b.glb'; M.char_f_c = charKit + 'character-female-c.glb'
@@ -101,7 +102,7 @@ window.ASSET_GROUPS = {
 // Keys always loaded at startup (fast boot — 21 models instead of 109)
 window.CORE_ASSETS = [
   'car','taxi','police','bus','truck','auto','bike',
-  'road_straight','road_intersect','road_cross','road_cross_path','road_intersect_path','road_bend','road_crossing','road_roundabout',
+  'road_straight','road_intersect','road_cross','road_cross_path','road_intersect_path','road_bend','road_crossing','road_roundabout','road_avenue',
   'char_f_a','char_f_b','char_f_c','char_m_a','char_m_b','char_m_c',
   'tree_small','tree_large'
 ]

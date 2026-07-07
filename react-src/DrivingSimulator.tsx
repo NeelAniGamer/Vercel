@@ -1,333 +1,521 @@
+/**
+ * DrivingSimulator — Main React component. WebGPU renderer with WebGL2 fallback.
+ * Phase 1: Renderer + input + camera + environment + basic NPC demo.
+ */
+
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { WebGPURenderer } from 'three/webgpu';
-import { VEHICLE_STATS, LevelConfig, GameState, CORRECTIVE_QUIZ, RoadSegment, NPC, CollisionBox } from "./types";
+import { GameState, RoadSegment, NPC, CollisionBox } from "./types";
+import { InputManager } from "./engine/InputManager";
+import { CameraController } from "./engine/CameraController";
+import { Environment, EnvironmentConfig } from "./engine/Environment";
+import { useGameLoop } from "./hooks/useGameLoop";
+import { loadCoreAssets } from "./engine/AssetLoader";
+import { buildVehicle, buildHuman, getVehicleStats } from "./vehicles/VehicleFactory";
+import { BehaviorTracker } from "./engine/BehaviorTracker";
+import { assembleQuiz, type QuizQuestion } from "./data/CorrectiveQuiz";
 
-const THEME_CONFIGS: Record<string, any> = {
-  urban_grid: {
-    name: 'Urban Grid', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
-    roads: [
-      { type:'v', x:-360, z1:-480, z2:480 }, { type:'v', x:-240, z1:-480, z2:480 },
-      { type:'v', x:-120, z1:-480, z2:480 }, { type:'v', x:0,    z1:-480, z2:480 },
-      { type:'v', x:120,  z1:-480, z2:480 }, { type:'v', x:240,  z1:-480, z2:480 },
-      { type:'v', x:360,  z1:-480, z2:480 },
-      { type:'h', z:-480, x1:-360, x2:360 }, { type:'h', z:-360, x1:-360, x2:360 },
-      { type:'h', z:-240, x1:-360, x2:360 }, { type:'h', z:-120, x1:-360, x2:360 },
-      { type:'h', z:0,    x1:-360, x2:360 }, { type:'h', z:120,  x1:-360, x2:360 },
-      { type:'h', z:240,  x1:-360, x2:360 }, { type:'h', z:360,  x1:-360, x2:360 },
-      { type:'h', z:480,  x1:-360, x2:360 }
-    ],
-    route: [{ x:0,z:-480 },{ x:0,z:-360 },{ x:0,z:-240 },{ x:0,z:-120 },{ x:0,z:0 },{ x:0,z:120 },{ x:0,z:240 },{ x:0,z:360 },{ x:0,z:480 },
-            { x:120,z:480 },{ x:240,z:480 },{ x:360,z:480 },{ x:360,z:360 },{ x:360,z:240 },{ x:360,z:120 },{ x:360,z:0 },{ x:360,z:-120 },{ x:360,z:-240 },{ x:360,z:-360 },{ x:360,z:-480 }]
-  },
-  signal_jump: {
-    name: 'Signal Junction', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
-    roads: [
-      { type:'v', x:0,    z1:-600, z2:600 }, { type:'v', x:-240, z1:-480, z2:480 }, { type:'v', x:240, z1:-480, z2:480 },
-      { type:'h', z:0,    x1:-600, x2:600 }, { type:'h', z:-240, x1:-480, x2:480 }, { type:'h', z:240, x1:-480, x2:480 }
-    ],
-    route: [{ x:0,z:-480 },{ x:0,z:-240 },{ x:0,z:0 },{ x:0,z:240 },{ x:0,z:480 },
-            { x:240,z:480 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:240,z:-480 },
-            { x:-240,z:-480 },{ x:-240,z:-240 },{ x:-240,z:0 },{ x:-240,z:240 },{ x:-240,z:480 }]
-  }
+// ─── Level 1 Demo Theme (urban_grid) ───
+
+const DEMO_THEME = {
+  name: 'Urban Grid',
+  sky: 0x87b6d8,
+  fog: 550,
+  ground: 0x4a4a4f,
+  amb: 0.8,
+  veh: 'car',
+  roads: [
+    { type: 'v' as const, x: -360, z1: -480, z2: 480 },
+    { type: 'v' as const, x: -240, z1: -480, z2: 480 },
+    { type: 'v' as const, x: -120, z1: -480, z2: 480 },
+    { type: 'v' as const, x: 0,    z1: -480, z2: 480 },
+    { type: 'v' as const, x: 120,  z1: -480, z2: 480 },
+    { type: 'v' as const, x: 240,  z1: -480, z2: 480 },
+    { type: 'v' as const, x: 360,  z1: -480, z2: 480 },
+    { type: 'h' as const, z: -480, x1: -360, x2: 360 },
+    { type: 'h' as const, z: -360, x1: -360, x2: 360 },
+    { type: 'h' as const, z: -240, x1: -360, x2: 360 },
+    { type: 'h' as const, z: -120, x1: -360, x2: 360 },
+    { type: 'h' as const, z: 0,    x1: -360, x2: 360 },
+    { type: 'h' as const, z: 120,  x1: -360, x2: 360 },
+    { type: 'h' as const, z: 240,  x1: -360, x2: 360 },
+    { type: 'h' as const, z: 360,  x1: -360, x2: 360 },
+    { type: 'h' as const, z: 480,  x1: -360, x2: 360 },
+  ] as RoadSegment[],
+  route: [
+    { x: 0, z: -480 }, { x: 0, z: -360 }, { x: 0, z: -240 },
+    { x: 0, z: -120 }, { x: 0, z: 0 }, { x: 0, z: 120 },
+    { x: 0, z: 240 }, { x: 0, z: 360 }, { x: 0, z: 480 },
+    { x: 120, z: 480 }, { x: 240, z: 480 }, { x: 360, z: 480 },
+    { x: 360, z: 360 }, { x: 360, z: 240 }, { x: 360, z: 120 },
+    { x: 360, z: 0 }, { x: 360, z: -120 }, { x: 360, z: -240 },
+    { x: 360, z: -360 }, { x: 360, z: -480 },
+  ],
 };
+
+// ─── Helpers ───
+
+function isMobileDevice(): boolean {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+}
+
+function isLowEndGPU(renderer: THREE.WebGLRenderer): boolean {
+  try {
+    const ext = renderer.getContext().getExtension('WEBGL_debug_renderer_info');
+    if (ext) {
+      const gpu = renderer.getContext().getParameter(ext.UNMASKED_RENDERER_WEBGL).toLowerCase();
+      return /intel|adreno 5|adreno 4|mali-4|mali-t6|swiftshader|llvmpipe/.test(gpu);
+    }
+  } catch (_) {}
+  return false;
+}
+
+function createRoadMesh(r: RoadSegment, roadWidth: number): THREE.Mesh {
+  const roadMat = new THREE.MeshToonMaterial({ color: 0x3d3f45 });
+  let mesh: THREE.Mesh;
+  if (r.type === 'v') {
+    mesh = new THREE.Mesh(new THREE.PlaneGeometry(roadWidth, r.z2! - r.z1!), roadMat);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set(r.x!, 0.01, (r.z1! + r.z2!) / 2);
+  } else {
+    mesh = new THREE.Mesh(new THREE.PlaneGeometry(r.x2! - r.x1!, roadWidth), roadMat);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set((r.x1! + r.x2!) / 2, 0.01, r.z!);
+  }
+  return mesh;
+}
+
+function createSidewalkMesh(r: RoadSegment, roadWidth: number, offset: number): THREE.Mesh {
+  const sideMat = new THREE.MeshToonMaterial({ color: 0xb0b0a0 });
+  const sideW = 2;
+  let mesh: THREE.Mesh;
+  if (r.type === 'v') {
+    const len = r.z2! - r.z1!;
+    mesh = new THREE.Mesh(new THREE.PlaneGeometry(sideW, len), sideMat);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set(r.x! + offset * (roadWidth / 2 + sideW / 2), 0.05, (r.z1! + r.z2!) / 2);
+  } else {
+    const len = r.x2! - r.x1!;
+    mesh = new THREE.Mesh(new THREE.PlaneGeometry(len, sideW), sideMat);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set((r.x1! + r.x2!) / 2, 0.05, r.z! + offset * (roadWidth / 2 + sideW / 2));
+  }
+  return mesh;
+}
+
+// ─── Vehicle Cache ───
+
+const vehicleCache = new Map<string, THREE.Group>();
+const humanCache = new Map<string, THREE.Group>();
+
+async function getOrBuildVehicle(type: string, color: number): Promise<THREE.Group> {
+  const key = `${type}_${color}`;
+  if (vehicleCache.has(key)) return vehicleCache.get(key)!.clone();
+  const { group } = await buildVehicle(type, color);
+  vehicleCache.set(key, group);
+  return group.clone();
+}
+
+async function getOrBuildHuman(isPlayer: boolean): Promise<THREE.Group> {
+  const key = isPlayer ? 'player' : 'npc';
+  if (humanCache.has(key)) return humanCache.get(key)!.clone();
+  const { group } = await buildHuman(isPlayer);
+  humanCache.set(key, group);
+  return group.clone();
+}
+
+// ─── Main Component ───
 
 export default function DrivingSimulator() {
   const mountRef = useRef<HTMLDivElement>(null);
-  const miniRef = useRef<HTMLCanvasElement>(null);
-  const [status, setStatus] = useState<string>("Initializing WebGPU…");
+  const [status, setStatus] = useState("Initializing…");
   const [unsupported, setUnsupported] = useState(false);
   const [gameStats, setGameStats] = useState<GameState>({
     speed: 0,
     gear: "N",
     timeOfDay: 8,
     violations: [],
+    violationsLog: [],
     score: 100,
     fine: 0,
   });
-  const [showQuiz, setShowQuiz] = useState(false);
+
+  // Internal engine refs (not React state — 60fps update)
+  const engineRef = useRef<{
+    renderer: THREE.WebGLRenderer | null;
+    scene: THREE.Scene;
+    camera: THREE.PerspectiveCamera;
+    input: InputManager;
+    camCtrl: CameraController;
+    env: Environment;
+    player: THREE.Group;
+    playerVehicle: THREE.Group;
+    playerCharacter: THREE.Group;
+    isPedestrian: boolean;
+    velocity: number;
+    heading: number;
+    steerAngle: number;
+    timeHours: number;
+    npcs: NPC[];
+    camSnapped: boolean;
+    frameCount: number;
+    lastFpsTime: number;
+    fpsAvg: number;
+    keys: Record<string, boolean>;
+    behaviorTracker: BehaviorTracker;
+    violationsLog: string[];
+  } | null>(null);
+
+  // ─── Game Loop ───
+
+  const gameLoop = (dt: number) => {
+    const eng = engineRef.current;
+    if (!eng || !eng.renderer) return;
+    const { scene, camera, input, camCtrl, npcs } = eng;
+
+    // FPS tracking
+    eng.frameCount++;
+    const now = performance.now();
+    if (now - eng.lastFpsTime >= 1000) {
+      eng.fpsAvg = eng.frameCount / ((now - eng.lastFpsTime) / 1000);
+      eng.frameCount = 0;
+      eng.lastFpsTime = now;
+      eng.env.updateShadowQuality(scene, eng.fpsAvg);
+    }
+
+    // Input decay
+    input.update(dt);
+
+    // Day/night cycle (slow)
+    eng.timeHours = (eng.timeHours + 0.15 * dt) % 24;
+    const daylight = Math.max(0, Math.sin((eng.timeHours - 6) / 24 * Math.PI * 2));
+    eng.env.sun.position.set(Math.cos(eng.timeHours) * 100, daylight * 100, 50);
+    eng.env.sun.intensity = daylight * 1.6;
+
+    const keys = input.state.keys;
+
+    // F key — enter/exit vehicle
+    if (keys['f']) {
+      if (eng.isPedestrian) {
+        if (eng.player.position.distanceTo(eng.playerVehicle.position) < 3) {
+          eng.isPedestrian = false;
+          eng.playerCharacter.visible = false;
+          eng.player = eng.playerVehicle;
+          camCtrl.setPedestrian(false);
+          eng.camSnapped = false;
+        }
+      } else {
+        eng.isPedestrian = true;
+        eng.playerCharacter.visible = true;
+        eng.playerCharacter.position.copy(eng.playerVehicle.position).add(new THREE.Vector3(3, 0, 0));
+        eng.player = eng.playerCharacter;
+        camCtrl.setPedestrian(true);
+        eng.camSnapped = false;
+      }
+      keys['f'] = false;
+    }
+
+    // Movement
+    const forward = keys['w'] || keys['arrowup'];
+    const back = keys['s'] || keys['arrowdown'];
+    const left = keys['a'] || keys['arrowleft'];
+    const right = keys['d'] || keys['arrowright'];
+
+    if (eng.isPedestrian) {
+      const speed = 0.12;
+      let dx = 0, dz = 0;
+      if (forward) dz = 1;
+      if (back) dz = -1;
+      if (left) dx = 1;
+      if (right) dx = -1;
+      if (dx !== 0 || dz !== 0) {
+        const yaw = eng.player.rotation.y;
+        const moveX = Math.sin(yaw) * dz + Math.sin(yaw + Math.PI / 2) * dx;
+        const moveZ = Math.cos(yaw) * dz + Math.cos(yaw + Math.PI / 2) * dx;
+        const len = Math.hypot(moveX, moveZ);
+        eng.player.position.x += (moveX / len) * speed;
+        eng.player.position.z += (moveZ / len) * speed;
+      }
+    } else {
+      const stats = getVehicleStats('car');
+      if (forward) eng.velocity += stats.accel * 60 * dt;
+      else if (back) eng.velocity -= stats.accel * 40 * dt;
+      eng.velocity *= Math.pow(stats.friction, dt * 60);
+      eng.velocity = Math.max(-18, Math.min(stats.maxSpeed * 50, eng.velocity));
+      const steerTarget = ((left ? 1 : 0) - (right ? 1 : 0)) * 0.5;
+      eng.steerAngle += (steerTarget - eng.steerAngle) * Math.min(1, dt * 8);
+      eng.heading += eng.steerAngle * stats.turnSpeed * dt * 60 * Math.sign(eng.velocity || 1);
+      eng.player.rotation.y = eng.heading;
+      eng.player.position.x += Math.sin(eng.heading) * eng.velocity * dt;
+      eng.player.position.z += Math.cos(eng.heading) * eng.velocity * dt;
+    }
+
+    // NPC waypoint following
+    npcs.forEach(n => {
+      const target = n.route[n.routeIdx];
+      const dx = target.x - n.obj.position.x;
+      const dz = target.z - n.obj.position.z;
+      const dist = Math.hypot(dx, dz);
+      if (dist < 5) {
+        n.routeIdx = (n.routeIdx + 1) % n.route.length;
+      }
+      const dirX = dx / (dist || 1);
+      const dirZ = dz / (dist || 1);
+      n.obj.position.x += dirX * n.speed * dt;
+      n.obj.position.z += dirZ * n.speed * dt;
+      n.obj.rotation.y = Math.atan2(dirX, dirZ);
+    });
+
+    // Behavior tracking
+    if (!eng.isPedestrian) {
+      const stats = getVehicleStats('car');
+      eng.behaviorTracker.update(dt, {
+        speed: eng.velocity,
+        position: { x: eng.player.position.x, z: eng.player.position.z },
+        heading: eng.heading,
+        inVehicle: true,
+        keys,
+        isReversing: eng.velocity < -0.1,
+        speedLimit: stats.maxSpeed * 50,
+      });
+    }
+
+    // Camera
+    const carStats = getVehicleStats('car');
+    camCtrl.setPhysicsState(eng.velocity, carStats.maxSpeed * 50, false);
+    camCtrl.update(dt, eng.player.position, eng.player.rotation.y, input);
+
+    // Update HUD stats (throttled)
+    if (eng.frameCount % 6 === 0) {
+      setGameStats(prev => ({
+        ...prev,
+        speed: Math.round(Math.abs(eng.velocity) * 3.6),
+        gear: eng.velocity > 0.1 ? "D" : eng.velocity < -0.1 ? "R" : "N",
+        timeOfDay: eng.timeHours,
+        violationsLog: eng.violationsLog,
+      }));
+    }
+
+    // Render
+    eng.renderer.render(scene, camera);
+  };
+
+  const [isRunning, setIsRunning] = useState(false);
+  useGameLoop(gameLoop, isRunning);
+
+  // ─── Init Effect (runs once) ───
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
 
     let disposed = false;
-    let renderer: any = null;
-    let animationId = 0;
-
-    const state = {
-      velocity: 0,
-      heading: 0,
-      steerAngle: 0,
-      timeHours: 8,
-      isPedestrian: true,
-      camSnapped: false,
-      camPos: new THREE.Vector3(0, 8, -12),
-      camTarget: new THREE.Vector3(),
-      keys: {} as Record<string, boolean>,
-      violationsLog: [] as string[],
-      player: new THREE.Group(),
-      playerVehicle: new THREE.Group(),
-      playerCharacter: new THREE.Group(),
-      npcs: [] as NPC[],
-      peds: [] as any[],
-      obstacles: [] as CollisionBox[],
-      world: [] as any[],
-    };
 
     (async () => {
-      if (!("gpu" in navigator)) {
-        setUnsupported(true);
-        setStatus("WebGPU not available.");
-        return;
-      }
+      const isMobile = isMobileDevice();
+      let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2);
+      const maxW = 1920, maxH = 1080;
+      let w = innerWidth, h = innerHeight;
+      if (w * dpr > maxW) dpr = maxW / w;
+      if (h * dpr > maxH) dpr = maxH / h;
 
+      // Create WebGL2 renderer (WebGPU fallback disabled for reliability)
+      let renderer: THREE.WebGLRenderer;
       try {
-        renderer = new WebGPURenderer({ antialias: true });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setSize(mount.clientWidth, mount.clientHeight);
-        renderer.shadowMap.enabled = true;
-        await renderer.init();
-      } catch (err) {
-        console.error(err);
+        renderer = new THREE.WebGLRenderer({
+          antialias: !isMobile,
+          powerPreference: 'high-performance',
+        });
+      } catch (e) {
+        console.error('WebGL2 renderer failed:', e);
         setUnsupported(true);
-        setStatus("Failed to init WebGPU.");
+        setStatus("WebGL2 not available.");
         return;
       }
 
-      if (disposed || !renderer) return;
+      if (disposed) { renderer.dispose(); return; }
+
+      const isLowGPU = isLowEndGPU(renderer);
+      if (isLowGPU) dpr = Math.min(dpr, 1.0);
+
+      renderer.setSize(w * dpr, h * dpr, false);
+      if (renderer.domElement?.style) {
+        renderer.domElement.style.width = w + 'px';
+        renderer.domElement.style.height = h + 'px';
+      }
+      renderer.setPixelRatio(1);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.2;
+      renderer.shadowMap.enabled = true;
+
+      if (isMobile || isLowGPU) {
+        renderer.shadowMap.type = THREE.BasicShadowMap;
+        if (renderer.shadowMap.mapSize) renderer.shadowMap.mapSize.set(512, 512);
+      } else {
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        if (renderer.shadowMap.mapSize) renderer.shadowMap.mapSize.set(1024, 1024);
+      }
+
       mount.appendChild(renderer.domElement);
-      setStatus("");
 
+      // Scene + Camera
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x87b6d8);
-      scene.fog = new THREE.Fog(0x0b1020, 120, 500);
-      const camera = new THREE.PerspectiveCamera(60, mount.clientWidth / mount.clientHeight, 0.1, 1200);
+      const camera = new THREE.PerspectiveCamera(65, w / h, 0.1, 350);
 
-      const hemi = new THREE.HemisphereLight(0x88aaff, 0x223355, 0.6);
-      scene.add(hemi);
-      const sun = new THREE.DirectionalLight(0xffe0b0, 1.4);
-      sun.castShadow = true;
-      scene.add(sun);
+      // Environment
+      const env = new Environment();
+      const envCfg: EnvironmentConfig = {
+        sky: DEMO_THEME.sky,
+        fog: DEMO_THEME.fog,
+        ground: DEMO_THEME.ground,
+        isNight: false,
+      };
+      env.setup(scene, envCfg, isMobile, isLowGPU);
 
-      // --- World Generation (THEMED) ---
-      const theme = THEME_CONFIGS.urban_grid;
-      const roadMat = new THREE.MeshStandardMaterial({ color: 0x14161c });
-      const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0x6b7280 });
-
-      const ground = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), new THREE.MeshStandardMaterial({ color: 0x1a2a1f }));
-      ground.rotation.x = -Math.PI / 2;
-      ground.receiveShadow = true;
-      scene.add(ground);
-
-      theme.roads.forEach((r: RoadSegment) => {
-        let mesh: THREE.Mesh;
-        if (r.type === 'v') {
-          mesh = new THREE.Mesh(new THREE.PlaneGeometry(12, r.z2! - r.z1!), roadMat);
-          mesh.rotation.x = -Math.PI / 2;
-          mesh.position.set(r.x!, 0.01, (r.z1! + r.z2!) / 2);
-        } else {
-          mesh = new THREE.Mesh(new THREE.PlaneGeometry(r.x2! - r.x1!, 12), roadMat);
-          mesh.rotation.x = -Math.PI / 2;
-          mesh.position.set((r.x1! + r.x2!) / 2, 0.01, r.z!);
-        }
-        scene.add(mesh);
+      // Build roads
+      const roadWidth = 12;
+      DEMO_THEME.roads.forEach(r => {
+        scene.add(createRoadMesh(r, roadWidth));
+        scene.add(createSidewalkMesh(r, roadWidth, -1));
+        scene.add(createSidewalkMesh(r, roadWidth, 1));
       });
 
-      // --- Player Setup ---
-      const createCar = (color: number) => {
-        const g = new THREE.Group();
-        const body = new THREE.Mesh(new THREE.BoxGeometry(2, 0.6, 4.4), new THREE.MeshStandardMaterial({ color }));
-        body.position.y = 0.55;
-        g.add(body);
-        const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.7, 2.2), new THREE.MeshStandardMaterial({ color: 0x14141e }));
-        cabin.position.set(0, 1.15, -0.2);
-        g.add(cabin);
-        return g;
-      };
+      // Load core assets (21 GLB models)
+      setStatus("Loading models…");
+      await loadCoreAssets();
 
-      state.playerVehicle = createCar(0xe63946);
-      state.playerVehicle.position.set(0, 0, -480);
-      scene.add(state.playerVehicle);
+      // Build player vehicles from GLB
+      setStatus("Building scene…");
+      const playerVehicle = await getOrBuildVehicle('car', 0xe63946);
+      playerVehicle.position.set(0, 0, -480);
+      scene.add(playerVehicle);
 
-      const createHuman = () => {
-        const g = new THREE.Group();
-        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.3, 1.2), new THREE.MeshStandardMaterial({ color: 0xccd5e1 }));
-        body.position.y = 0.6;
-        g.add(body);
-        const head = new THREE.Mesh(new THREE.SphereGeometry(0.22), new THREE.MeshStandardMaterial({ color: 0xffd7a8 }));
-        head.position.y = 1.4;
-        g.add(head);
-        return g;
-      };
+      const playerCharacter = await getOrBuildHuman(true);
+      playerCharacter.position.set(5, 0, -480);
+      scene.add(playerCharacter);
 
-      state.playerCharacter = createHuman();
-      state.playerCharacter.position.set(5, 0, -480);
-      scene.add(state.playerCharacter);
-      state.player = state.playerCharacter;
-
-      // --- NPCs with Waypoints ---
-      const spawnNPC = () => {
-        const car = createCar(Math.random() * 0xffffff);
-        const route = theme.route;
+      // NPCs — use GLB models if cached, else fall back to procedural
+      const npcs: NPC[] = [];
+      const npcColors = [0x4488cc, 0x44aa66, 0xcc4444, 0xaa8844, 0x8866aa, 0x44aaaa];
+      for (let i = 0; i < 20; i++) {
+        const color = npcColors[i % npcColors.length];
+        const car = await getOrBuildVehicle('sedan', color);
         const npc: NPC = {
           obj: car,
           headMat: new THREE.MeshStandardMaterial(),
           tailMat: new THREE.MeshStandardMaterial(),
-          route: route,
+          route: DEMO_THEME.route,
           routeIdx: 0,
           speed: 10 + Math.random() * 10,
           stuckTimer: 0,
           axis: 'z',
           lane: 0,
-          dir: 1
+          dir: 1,
         };
-        npc.obj.position.set(route[0].x, 0, route[0].z);
+        car.position.set(DEMO_THEME.route[0].x, 0, DEMO_THEME.route[0].z);
         scene.add(car);
-        return npc;
+        npcs.push(npc);
+      }
+
+      // Input
+      const input = new InputManager();
+      input.bind(renderer.domElement);
+
+      // Camera controller
+      const camCtrl = new CameraController(camera);
+      camCtrl.setPedestrian(true);
+
+      // Behavior tracker
+      const behaviorTracker = new BehaviorTracker();
+
+      if (disposed) {
+        renderer.dispose();
+        return;
+      }
+
+      engineRef.current = {
+        renderer,
+        scene,
+        camera,
+        input,
+        camCtrl,
+        env,
+        player: playerCharacter,
+        playerVehicle,
+        playerCharacter,
+        isPedestrian: true,
+        velocity: 0,
+        heading: 0,
+        steerAngle: 0,
+        timeHours: 8,
+        npcs,
+        camSnapped: false,
+        frameCount: 0,
+        lastFpsTime: performance.now(),
+        fpsAvg: 60,
+        keys: {},
+        behaviorTracker,
+        violationsLog: [],
       };
 
-      for (let i = 0; i < 20; i++) state.npcs.push(spawnNPC());
-
-      // --- Input ---
-      const onKey = (e: KeyboardEvent, down: boolean) => {
-        const k = e.key.toLowerCase();
-        state.keys[k] = down;
-      };
-      window.addEventListener("keydown", (e) => onKey(e, true));
-      window.addEventListener("keyup", (e) => onKey(e, false));
-
-      const clock = new THREE.Clock();
-      const tick = () => {
-        const dt = Math.min(clock.getDelta(), 0.05);
-
-        // Day/Night
-        state.timeHours = (state.timeHours + 0.15 * dt) % 24;
-        const daylight = Math.max(0, Math.sin((state.timeHours - 6) / 24 * Math.PI * 2));
-        sun.position.set(Math.cos(state.timeHours) * 100, daylight * 100, 50);
-        sun.intensity = daylight * 1.6;
-        scene.background?.setHSL(0.6, 0.5, 0.2 + daylight * 0.5);
-
-        // GTA Interaction
-        if (state.keys['f']) {
-          if (state.isPedestrian) {
-            if (state.player.position.distanceTo(state.playerVehicle.position) < 3) {
-              state.isPedestrian = false;
-              state.playerCharacter.visible = false;
-              state.player = state.playerVehicle;
-              state.camSnapped = false;
-            }
-          } else {
-            state.isPedestrian = true;
-            state.playerCharacter.visible = true;
-            state.playerCharacter.position.copy(state.playerVehicle.position).add(new THREE.Vector3(3, 0, 0));
-            state.player = state.playerCharacter;
-            state.camSnapped = false;
-          }
-          state.keys['f'] = false;
-        }
-
-        // Movement
-        const forward = state.keys['w'];
-        const back = state.keys['s'];
-        const left = state.keys['a'];
-        const right = state.keys['d'];
-
-        if (state.isPedestrian) {
-          const speed = 0.12;
-          let dx = 0, dz = 0;
-          if (forward) dz = 1; if (back) dz = -1;
-          if (left) dx = 1; if (right) dx = -1;
-          if (dx !== 0 || dz !== 0) {
-            const yaw = state.player.rotation.y;
-            const moveX = Math.sin(yaw) * dz + Math.sin(yaw + Math.PI/2) * dx;
-            const moveZ = Math.cos(yaw) * dz + Math.cos(yaw + Math.PI/2) * dx;
-            const len = Math.hypot(moveX, moveZ);
-            state.player.position.x += (moveX/len) * speed;
-            state.player.position.z += (moveZ/len) * speed;
-          }
-        } else {
-          const stats = VEHICLE_STATS.car;
-          if (forward) state.velocity += stats.accel * 60 * dt;
-          else if (back) state.velocity -= stats.accel * 40 * dt;
-          state.velocity *= Math.pow(stats.fric, dt * 60);
-          state.velocity = Math.max(-18, Math.min(stats.maxSpd * 50, state.velocity));
-          const steerTarget = ((left ? 1 : 0) - (right ? 1 : 0)) * 0.5;
-          state.steerAngle += (steerTarget - state.steerAngle) * Math.min(1, dt * 8);
-          state.heading += state.steerAngle * stats.turn * dt * 60 * Math.sign(state.velocity || 1);
-          state.player.rotation.y = state.heading;
-          state.player.position.x += Math.sin(state.heading) * state.velocity * dt;
-          state.player.position.z += Math.cos(state.heading) * state.velocity * dt;
-        }
-
-        // NPC AI (Waypoint Following)
-        state.npcs.forEach(n => {
-          const target = n.route[n.routeIdx];
-          const dist = n.obj.position.distanceTo(new THREE.Vector3(target.x, 0, target.z));
-          if (dist < 5) {
-            n.routeIdx = (n.routeIdx + 1) % n.route.length;
-          }
-          const dir = new THREE.Vector3(target.x - n.obj.position.x, 0, target.z - n.obj.position.z).normalize();
-          n.obj.position.addScaledVector(dir, n.speed * dt);
-          n.obj.rotation.y = Math.atan2(dir.x, dir.z);
-        });
-
-        // Camera
-        const rotY = state.player.rotation.y;
-        const camDist = state.isPedestrian ? 4 : 12;
-        const camHeight = state.isPedestrian ? 2.5 : 4.5;
-        const desired = new THREE.Vector3(
-          state.player.position.x - Math.sin(rotY) * camDist,
-          camHeight,
-          state.player.position.z - Math.cos(rotY) * camDist
-        );
-        state.camPos.lerp(desired, 1 - Math.pow(0.001, dt));
-        camera.position.copy(state.camPos);
-        const lookAhead = state.isPedestrian ? 3 : 7;
-        camera.lookAt(state.player.position.x + Math.sin(rotY) * lookAhead, 1.5, state.player.position.z + Math.cos(rotY) * lookAhead);
-
-        if (Math.random() < 0.1) {
-          setGameStats(prev => ({ ...prev, speed: Math.round(Math.abs(state.velocity) * 3.6), gear: state.velocity > 0.1 ? "D" : state.velocity < -0.1 ? "R" : "N", timeOfDay: state.timeHours }));
-        }
-
-        renderer.render(scene, camera);
-        animationId = requestAnimationFrame(tick);
-      };
-
-      tick();
-      return () => {
-        disposed = true;
-        cancelAnimationFrame(animationId);
-        renderer?.dispose();
-      };
+      setStatus("");
+      setIsRunning(true);
     })();
+
+    return () => {
+      disposed = true;
+      const eng = engineRef.current;
+      if (eng) {
+        eng.input.dispose();
+        eng.renderer?.dispose();
+        if (eng.renderer?.domElement && mount.contains(eng.renderer.domElement)) {
+          mount.removeChild(eng.renderer.domElement);
+        }
+        engineRef.current = null;
+      }
+    };
   }, []);
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-[#0b1020]">
       <div ref={mountRef} className="absolute inset-0" />
+
       {status && (
         <div className="absolute inset-0 flex items-center justify-center p-6">
           <div className="max-w-md rounded-lg border border-white/10 bg-black/60 p-6 text-center backdrop-blur">
-            <h2 className="text-lg font-semibold text-white">{unsupported ? "WebGPU required" : "Loading"}</h2>
+            <h2 className="text-lg font-semibold text-white">
+              {unsupported ? "WebGPU required" : "Loading"}
+            </h2>
             <p className="mt-2 text-sm text-white/70">{status}</p>
           </div>
         </div>
       )}
+
       {!status && (
         <>
+          {/* Speed HUD */}
           <div className="pointer-events-none absolute left-4 top-4 rounded-lg border border-white/10 bg-black/50 px-4 py-3 font-mono text-white backdrop-blur">
-            <div className="text-[10px] uppercase tracking-widest text-white/50">NeoDrive · WebGPU</div>
+            <div className="text-[10px] uppercase tracking-widest text-white/50">
+              Traffic Simulator
+            </div>
             <div className="mt-1 flex items-baseline gap-3">
               <span className="text-4xl font-bold tabular-nums">{gameStats.speed}</span>
               <span className="text-xs text-white/60">km/h</span>
-              <span className="ml-2 rounded bg-white/10 px-2 py-0.5 text-sm font-semibold">{gameStats.gear}</span>
-            </div >
-            <div className="mt-1 text-[11px] text-white/50">🕒 {Math.floor(gameStats.timeOfDay).toString().padStart(2, '0')}:00</div>
+              <span className="ml-2 rounded bg-white/10 px-2 py-0.5 text-sm font-semibold">
+                {gameStats.gear}
+              </span>
+            </div>
+            <div className="mt-1 text-[11px] text-white/50">
+              {Math.floor(gameStats.timeOfDay).toString().padStart(2, "0")}:00
+            </div>
           </div>
+
+          {/* Controls hint */}
           <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg border border-white/10 bg-black/50 px-5 py-2.5 text-xs text-white/80 backdrop-blur">
             <span className="font-mono">
-              <kbd className="rounded bg-white/10 px-1.5 py-0.5">W A S D</kbd> move · <kbd className="rounded bg-white/10 px-1.5 py-0.5">F</kbd> enter/exit car
+              <kbd className="rounded bg-white/10 px-1.5 py-0.5">W A S D</kbd> move{" "}
+              · <kbd className="rounded bg-white/10 px-1.5 py-0.5">F</kbd> enter/exit car
             </span>
           </div>
         </>
