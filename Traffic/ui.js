@@ -804,89 +804,415 @@ const ui = {
   _initBriefingArt(lv) {
     const wrap = document.getElementById('briefing-canvas-wrap');
     if (!wrap) return;
-
     const theme = lv.themeType || 'default';
-    let artHTML = '';
 
-    // Base Road CSS
-    const roadStyle = `position:absolute; bottom:40px; left:0; width:100%; height:60px; background:#3d3f45; border-top:4px solid #fff; border-bottom:4px solid #fff;`;
-    const zebraStyle = `position:absolute; top:0; left:50%; transform:translateX(-50%); width:60px; height:60px; background:repeating-linear-gradient(90deg, #fff 0, #fff 10px, transparent 10px, transparent 20px);`;
+    // ── Shared CSS building blocks ──
+    const road = (w, l, b) => `position:absolute; bottom:${b||40}px; left:${l||0}; width:${w||'100%'}; height:60px; background:#3d3f45; border-top:4px solid #fff; border-bottom:4px solid #fff;`;
+    const zebra = `position:absolute; top:0; left:50%; transform:translateX(-50%); width:60px; height:60px; background:repeating-linear-gradient(90deg,#fff 0,#fff 10px,transparent 10px,transparent 20px);`;
+    const sidewalk = `position:absolute; bottom:100px; left:0; width:100%; height:18px; background:#6b7280;`;
+    const nightBg = `background:rgba(0,0,30,0.35);`;
+    const badge = `<div style="position:absolute;top:12px;left:12px;color:var(--muted2,#6B7280);font-size:.7rem;font-weight:800;opacity:.9;z-index:10;background:rgba(255,255,255,.75);padding:6px 14px;border-radius:8px;letter-spacing:1.2px;backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.06);font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>`;
 
-    if (theme === 'pedestrian_courtesy' || lv.id === 5) {
-      // School Zone Art
-      artHTML = `
-        <div style="${roadStyle}">
-          <div style="${zebraStyle}"></div>
-        </div>
-        <div style="position:absolute; top:20px; right:40px; font-size:4rem;">🏫</div>
-        <div style="position:absolute; bottom:60px; left:20%; font-size:2rem; transition: all 2s linear; animation: moveRight 4s infinite alternate;">🚶</div>
-        <div style="position:absolute; bottom:60px; left:25%; font-size:1.5rem; transition: all 2s linear; animation: moveRight 3s infinite alternate;">🚶</div>
-        <div style="position:absolute; bottom:50px; left:60%; font-size:2.5rem; transition: all 3s ease-in-out; animation: stopCar 4s infinite;">🚗</div>
-        <style>
-          @keyframes moveRight { from { left: 20%; } to { left: 60%; } }
-          @keyframes stopCar {
-            0% { left: 80%; }
-            50% { left: 65%; }
-            100% { left: 65%; }
-          }
-        </style>
-      `;
-    } else if (theme === 'ambulance_priority') {
-      // Ambulance Priority Art
-      artHTML = `
-        <div style="${roadStyle}"></div>
-        <div style="position:absolute; bottom:50px; left:10%; font-size:2.5rem; animation: ambulanceDrive 4s infinite linear;">🚑</div>
-        <div style="position:absolute; bottom:50px; left:40%; font-size:2rem; animation: pullOver 4s infinite ease-in-out;">🚗</div>
-        <div style="position:absolute; bottom:50px; left:60%; font-size:2rem; animation: pullOver 4s infinite ease-in-out 1s;">🚕</div>
-        <style>
-          @keyframes ambulanceDrive { from { left: -20%; } to { left: 120%; } }
-          @keyframes pullOver {
-            0% { left: 40%; transform: translateX(0); }
-            30% { left: 35%; transform: translateX(-10px); }
-            100% { left: 35%; transform: translateX(-10px); }
-          }
-        </style>
-      `;
-    } else if (theme === 'market_street') {
-      // Market Street Art
-      artHTML = `
-        <div style="${roadStyle}"></div>
-        <div style="position:absolute; top:40px; left:10%; font-size:3rem;">🎪</div>
-        <div style="position:absolute; top:40px; left:30%; font-size:3rem;">🎪</div>
-        <div style="position:absolute; top:40px; left:50%; font-size:3rem;">🎪</div>
-        <div style="position:absolute; bottom:50px; left:10%; font-size:2rem; animation: slowDrive 6s infinite linear;">🛺</div>
-        <div style="position:absolute; bottom:50px; left:40%; font-size:2rem; animation: slowDrive 7s infinite linear -1s;">🚗</div>
-        <div style="position:absolute; bottom:60px; left:20%; font-size:1.5rem; animation: moveRight 3s infinite alternate;">🚶</div>
-        <div style="position:absolute; bottom:60px; left:60%; font-size:1.5rem; animation: moveRight 3s infinite alternate -1s;">🚶</div>
-        <style>
-          @keyframes slowDrive { from { left: -20%; } to { left: 120%; } }
-          @keyframes moveRight { from { left: 20%; } to { left: 60%; } }
-        </style>
-      `;
-    } else if (theme === 'intersection' || theme === 'signals') {
-      artHTML = `
-        <div style="${roadStyle}"></div>
-        <div style="position:absolute; top:40%; left:45%; font-size:3rem;">🚥</div>
-        <div style="position:absolute; bottom:60px; left:10%; font-size:2rem; animation: moveRight 5s infinite linear;">🚗</div>
-        <style>
-          @keyframes moveRight { from { left: -10%; } to { left: 110%; } }
-        </style>
-      `;
-    } else {
-      // Default generic road
-      artHTML = `
-        <div style="${roadStyle}"></div>
-        <div style="position:absolute; bottom:60px; left:40%; font-size:2.5rem; animation: moveRight 4s infinite linear;">🚗</div>
-        <style>
-          @keyframes moveRight { from { left: -10%; } to { left: 110%; } }
-        </style>
-      `;
-    }
-
-    wrap.innerHTML = `
-      <div style="position:absolute; top:12px; left:12px; color:var(--muted2, #6B7280); font-size:0.7rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(255,255,255,0.75); padding:6px 14px; border-radius:8px; letter-spacing:1.2px; backdrop-filter:blur(8px); border:1px solid rgba(0,0,0,0.06); font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>
-      ${artHTML}
+    // ── Keyframes (collected, injected once) ──
+    const K = `
+      @keyframes ba{from{left:-15%}to{left:115%}}
+      @keyframes ab{from{left:115%}to{left:-15%}}
+      @keyframes ped{0%{left:15%}100%{left:70%}}
+      @keyframes ped2{0%{left:70%}100%{left:15%}}
+      @keyframes carStop{0%{left:85%}40%{left:62%}100%{left:62%}}
+      @keyframes carStopR{0%{right:85%}40%{right:62%}100%{right:62%}}
+      @keyframes pullOver{0%{transform:translateY(0)}40%{transform:translateY(-8px)}100%{transform:translateY(-8px)}}
+      @keyframes slow{from{left:-20%}to{left:120%}}
+      @keyframes weave{0%{left:30%;transform:translateY(0)}25%{left:50%;transform:translateY(-6px)}50%{left:35%;transform:translateY(4px)}75%{left:55%;transform:translateY(-4px)}100%{left:30%;transform:translateY(0)}}
+      @keyframes rain{0%{top:-20px;opacity:1}100%{top:220px;opacity:.3}}
+      @keyframes splash{0%{transform:scaleX(1)}50%{transform:scaleX(1.6)}100%{transform:scaleX(1)}}
+      @keyframes flash{0%,100%{opacity:1}50%{opacity:.3}}
+      @keyframes siren{0%,100%{color:#f44}50%{color:#48f}}
+      @keyframes fogPulse{0%{opacity:.5}100%{opacity:.85}}
+      @keyframes wiper{0%{transform:rotate(-30deg)}50%{transform:rotate(30deg)}100%{transform:rotate(-30deg)}}
+      @keyframes sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+      @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+      @keyframes drift{0%{transform:translateX(0)}50%{transform:translateX(6px)}100%{transform:translateX(0)}}
+      @keyframes honk{0%,80%,100%{opacity:0}85%{opacity:1}95%{opacity:1}}
+      @keyframes merge{0%{left:20%}100%{left:45%}}
     `;
+
+    // ── Theme art map ──
+    const A = {};
+
+    // 1. PEDESTRIAN COURTESY — school zone, zebra crossing, walking peds, car braking
+    A.pedestrian_courtesy = () => `
+      <div style="${road()}">${`<div style="${zebra}"></div>`}</div>
+      <div style="position:absolute;top:20px;right:40px;font-size:4rem;">🏫</div>
+      <div style="position:absolute;bottom:55px;left:20%;font-size:1.8rem;animation:ped 3.5s infinite alternate;">🚶</div>
+      <div style="position:absolute;bottom:58px;left:26%;font-size:1.4rem;animation:ped 2.8s infinite alternate;">🚶‍♀️</div>
+      <div style="position:absolute;bottom:50px;font-size:2.4rem;animation:carStop 4s infinite ease-out;">🚗</div>`;
+
+    // 2. AMBULANCE PRIORITY — ambulance rushing, cars pulling over
+    A.ambulance_priority = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:48px;font-size:2.6rem;animation:ab 3.5s infinite linear;">🚑<span style="position:absolute;top:-18px;left:8px;font-size:.9rem;animation:flash .4s infinite;">🚨</span></div>
+      <div style="position:absolute;bottom:48px;left:35%;font-size:2rem;animation:pullOver 4s infinite ease-out;">🚗</div>
+      <div style="position:absolute;bottom:48px;left:58%;font-size:2rem;animation:pullOver 4s infinite ease-out .6s;">🚕</div>`;
+
+    // 3. MARKET STREET — market tents, auto, pedestrians
+    A.market_street = () => `
+      <div style="${road()}"></div>
+      <div style="${sidewalk}"></div>
+      <div style="position:absolute;top:30px;left:8%;font-size:2.8rem;">🎪</div>
+      <div style="position:absolute;top:30px;left:30%;font-size:2.8rem;">🏪</div>
+      <div style="position:absolute;top:30px;left:52%;font-size:2.8rem;">🛒</div>
+      <div style="position:absolute;bottom:48px;font-size:2rem;animation:slow 6s infinite linear;">🛺</div>
+      <div style="position:absolute;bottom:48px;left:45%;font-size:1.8rem;animation:slow 7s infinite linear -2s;">🚗</div>
+      <div style="position:absolute;bottom:105px;left:18%;font-size:1.3rem;animation:ped 3s infinite alternate;">🚶</div>
+      <div style="position:absolute;bottom:105px;left:62%;font-size:1.3rem;animation:ped2 3.2s infinite alternate;">🚶‍♀️</div>`;
+
+    // 4. STREET PARKING — cars parked, one pulling into spot
+    A.street_parking = () => `
+      <div style="${road()}"></div>
+      <div style="${sidewalk}"></div>
+      <div style="position:absolute;bottom:42px;left:12%;width:45px;height:18px;background:#2a2d35;border:2px dashed #888;border-radius:4px;"></div>
+      <div style="position:absolute;bottom:42px;left:30%;width:45px;height:18px;background:#2a2d35;border:2px dashed #888;border-radius:4px;"></div>
+      <div style="position:absolute;bottom:44px;left:13%;font-size:1.6rem;">🚙</div>
+      <div style="position:absolute;bottom:44px;left:31%;font-size:1.6rem;">🚗</div>
+      <div style="position:absolute;bottom:104px;left:50%;font-size:2.2rem;animation:carStop 5s infinite ease-out;">🚗</div>
+      <div style="position:absolute;top:30px;right:30px;font-size:2.4rem;">🅿️</div>`;
+
+    // 5. PUDDLE ETIQUETTE — rain, puddle, car driving carefully around
+    A.puddle_etiquette = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:48px;left:42%;width:70px;height:20px;background:rgba(80,140,255,.45);border-radius:50%;animation:splash 2s infinite;"></div>
+      ${[15,30,50,65,80].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:14px;background:rgba(120,180,255,.5);border-radius:0 0 2px 2px;animation:rain .8s infinite linear ${x*.02}s;"></div>`).join('')}
+      <div style="position:absolute;bottom:48px;left:15%;font-size:2.2rem;animation:slow 5s infinite linear;">🚗</div>
+      <div style="position:absolute;top:25px;right:40px;font-size:2rem;">🌧️</div>`;
+
+    // 6. RESPECTFUL PARKING — hospital nearby, car parked neatly, green check
+    A.respectful_parking = () => `
+      <div style="${road()}"></div>
+      <div style="${sidewalk}"></div>
+      <div style="position:absolute;top:20px;right:30px;font-size:3.5rem;">🏥</div>
+      <div style="position:absolute;bottom:42px;left:20%;width:50px;height:18px;background:#2a2d35;border:2px solid #4a4; border-radius:4px;"></div>
+      <div style="position:absolute;bottom:44px;left:21%;font-size:1.5rem;">🚗</div>
+      <div style="position:absolute;bottom:58px;left:28%;font-size:1.2rem;color:#4a4;">✓</div>
+      <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:slow 5s infinite linear;">🚑</div>`;
+
+    // 7. SILENT ZONE — hospital, mute symbol, car creeping
+    A.silent_zone = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;top:15px;left:30%;font-size:3.5rem;">🏥</div>
+      <div style="position:absolute;top:20px;left:58%;font-size:2.5rem;">🔇</div>
+      <div style="position:absolute;bottom:48px;left:45%;font-size:2rem;animation:slow 7s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:104px;left:32%;font-size:1.5rem;opacity:.4;">📢</div>
+      <div style="position:absolute;bottom:110px;left:38%;font-size:1rem;color:#f66;">✕</div>`;
+
+    // 8. NO HONKING — muted speaker, library/temple, no-honk sign
+    A.no_honking = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;top:15px;left:20%;font-size:3rem;">📚</div>
+      <div style="position:absolute;top:15px;right:25%;font-size:3rem;">🛕</div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;border-radius:50%;border:4px solid #f44;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:rgba(255,0,0,.08);">🔇</div>
+      <div style="position:absolute;bottom:48px;left:30%;font-size:2rem;animation:slow 6s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:65px;left:38%;font-size:1rem;animation:honk 3s infinite;">💬HONK</div>`;
+
+    // 9. FESTIVAL — bunting, decorations, crowd, slow traffic
+    A.festival = () => `
+      <div style="${road()}"></div>
+      <div style="${sidewalk}"></div>
+      <div style="position:absolute;top:25px;left:10%;font-size:2.5rem;">🎪</div>
+      <div style="position:absolute;top:25px;right:20%;font-size:2.5rem;">🪔</div>
+      <div style="position:absolute;top:20px;left:40%;font-size:1.8rem;">🎉</div>
+      <div style="position:absolute;top:30px;left:55%;font-size:1.5rem;animation:bounce 1.5s infinite;">🎊</div>
+      <div style="position:absolute;bottom:105px;left:15%;font-size:1.2rem;animation:drift 2s infinite;">🚶</div>
+      <div style="position:absolute;bottom:105px;left:35%;font-size:1.2rem;animation:drift 2.5s infinite .3s;">🚶‍♀️</div>
+      <div style="position:absolute;bottom:105px;left:55%;font-size:1.2rem;animation:drift 1.8s infinite .6s;">🚶</div>
+      <div style="position:absolute;bottom:105px;left:72%;font-size:1.2rem;animation:drift 2.2s infinite .9s;">🚶‍♂️</div>
+      <div style="position:absolute;bottom:48px;font-size:2rem;animation:slow 8s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:48px;left:35%;font-size:1.8rem;animation:slow 9s infinite linear -3s;">🛺</div>`;
+
+    // 10. SIGNAL JUMP — traffic light red, car zooming past
+    A.signal_jump = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;top:30%;left:42%;width:36px;height:80px;background:#222;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;">
+        <div style="width:20px;height:20px;border-radius:50%;background:#f33;box-shadow:0 0 8px #f33;"></div>
+        <div style="width:20px;height:20px;border-radius:50%;background:#555;"></div>
+        <div style="width:20px;height:20px;border-radius:50%;background:#555;"></div>
+      </div>
+      <div style="position:absolute;bottom:48px;font-size:2.4rem;animation:ba 2.5s infinite linear;">🚗<span style="position:absolute;top:-12px;right:-5px;font-size:1rem;">⚡</span></div>
+      <div style="position:absolute;bottom:110px;left:48%;font-size:1.5rem;animation:flash .6s infinite;">❗</div>`;
+
+    // 11. ROAD RAGE — two cars close, angry emoji, swerving
+    A.road_rage = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:48px;left:30%;font-size:2.2rem;animation:ba 3s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:48px;left:22%;font-size:2rem;animation:ba 2.8s infinite linear .2s;">🚕</div>
+      <div style="position:absolute;bottom:80px;left:28%;font-size:1.8rem;animation:bounce .5s infinite;">😡</div>
+      <div style="position:absolute;bottom:85px;left:36%;font-size:1.2rem;color:#f44;">❗❗</div>`;
+
+    // 12. RAIN DRIVING — heavy rain, headlights, wiper
+    A.rain_driving = () => `
+      <div style="${road()};background:#2d2f35;"></div>
+      ${[10,18,26,34,42,50,58,66,74,82].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:18px;background:rgba(100,160,255,.5);border-radius:0 0 2px 2px;animation:rain .6s infinite linear ${x*.015}s;"></div>`).join('')}
+      <div style="position:absolute;bottom:48px;left:35%;font-size:2.4rem;">🚗</div>
+      <div style="position:absolute;bottom:54px;left:37%;width:12px;height:6px;background:rgba(255,255,150,.7);border-radius:2px;"></div>
+      <div style="position:absolute;bottom:54px;left:52%;width:12px;height:6px;background:rgba(255,255,150,.7);border-radius:2px;"></div>
+      <div style="position:absolute;bottom:60px;left:42%;width:2px;height:16px;background:#fff;transform-origin:bottom;animation:wiper 1.5s infinite;"></div>
+      <div style="position:absolute;top:20px;right:30px;font-size:2rem;">⛈️</div>`;
+
+    // 13. PEDESTRIAN PRIORITY — zebra crossing, ped walking, car stopped, green signal
+    A.pedestrian_priority = () => `
+      <div style="${road()}">${`<div style="${zebra}"></div>`}</div>
+      <div style="position:absolute;top:25%;left:42%;width:30px;height:60px;background:#222;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:4px 0;">
+        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
+        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
+        <div style="width:16px;height:16px;border-radius:50%;background:#4f4;box-shadow:0 0 6px #4f4;"></div>
+      </div>
+      <div style="position:absolute;bottom:55px;left:45%;font-size:2rem;animation:ped 4s infinite alternate;">🚶</div>
+      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:carStop 5s infinite ease-out;">🚗</div>`;
+
+    // 14. SIGNS — road with multiple traffic signs
+    A.signs = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:100px;left:15%;width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:32px solid #fc0;transform:rotate(0deg);"></div>
+      <div style="position:absolute;bottom:108px;left:19%;font-size:.7rem;font-weight:900;color:#000;">40</div>
+      <div style="position:absolute;bottom:100px;left:45%;width:34px;height:34px;background:#f44;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#fff;font-weight:900;">STOP</div>
+      <div style="position:absolute;bottom:100px;right:18%;width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:28px solid #fc0;transform:rotate(90deg);"></div>
+      <div style="position:absolute;bottom:108px;right:20%;font-size:.6rem;">⚠️</div>
+      <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>`;
+
+    // 15. ANIMALS — cow on road, car stopped
+    A.animals = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:48px;left:45%;font-size:2.8rem;">🐄</div>
+      <div style="position:absolute;bottom:55px;left:55%;font-size:1rem;">🪰</div>
+      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:carStop 4s infinite ease-out;">🚗</div>
+      <div style="position:absolute;top:25px;left:25%;font-size:2rem;">🌾</div>
+      <div style="position:absolute;top:25px;right:25%;font-size:2rem;">🌾</div>`;
+
+    // 16. NARROW STREET — buildings close, car squeezing through
+    A.narrow_street = () => `
+      <div style="${road('45%',null,null)}"></div>
+      <div style="position:absolute;bottom:40px;left:55%;width:45%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;"></div>
+      <div style="position:absolute;bottom:100px;left:2%;font-size:2.5rem;">🏠</div>
+      <div style="position:absolute;bottom:100px;left:18%;font-size:2.5rem;">🏘️</div>
+      <div style="position:absolute;bottom:100px;right:5%;font-size:2.5rem;">🏠</div>
+      <div style="position:absolute;bottom:100px;right:20%;font-size:2.5rem;">🏘️</div>
+      <div style="position:absolute;bottom:48px;left:42%;font-size:1.8rem;animation:ba 6s infinite linear;">🚗</div>`;
+
+    // 17. PARKING RULES — marked bays, one correct, one wrong
+    A.parking_rules = () => `
+      <div style="${road()}"></div>
+      <div style="${sidewalk}"></div>
+      <div style="position:absolute;bottom:42px;left:12%;width:48px;height:18px;background:#2a2d35;border:2px solid #4a4;border-radius:4px;"></div>
+      <div style="position:absolute;bottom:44px;left:13%;font-size:1.4rem;">🚗</div>
+      <div style="position:absolute;bottom:56px;left:18%;font-size:.9rem;color:#4a4;">✓</div>
+      <div style="position:absolute;bottom:42px;left:35%;width:48px;height:18px;background:#2a2d35;border:2px dashed #f44;border-radius:4px;"></div>
+      <div style="position:absolute;bottom:44px;left:36%;font-size:1.4rem;transform:rotate(8deg);">🚙</div>
+      <div style="position:absolute;bottom:56px;left:41%;font-size:.9rem;color:#f44;">✗</div>
+      <div style="position:absolute;top:25px;right:30px;font-size:2.5rem;">🅿️</div>
+      <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:slow 6s infinite linear;">🚗</div>`;
+
+    // 18. AUTO DANCE — auto-rickshaw weaving between cars
+    A.auto_dance = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:48px;left:25%;font-size:2rem;">🚗</div>
+      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;">🚕</div>
+      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:weave 4s infinite ease-in-out;">🛺</div>`;
+
+    // 19. TOLL — toll booth, car stopped, queue
+    A.toll = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:40px;left:48%;width:50px;height:65px;background:#555;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;">
+        <div style="width:20px;height:24px;background:#333;border-radius:3px;"></div>
+      </div>
+      <div style="position:absolute;bottom:70px;left:51%;font-size:1.3rem;">💳</div>
+      <div style="position:absolute;bottom:48px;left:25%;font-size:2rem;animation:carStop 5s infinite ease-out;">🚗</div>
+      <div style="position:absolute;bottom:48px;left:5%;font-size:1.8rem;animation:slow 8s infinite linear -3s;">🚙</div>
+      <div style="position:absolute;bottom:48px;left:-10%;font-size:1.8rem;animation:slow 9s infinite linear -5s;">🚕</div>`;
+
+    // 20. BLIND CORNER — curved road, warning sign, car approaching
+    A.blind_corner = () => `
+      <div style="position:absolute;bottom:40px;left:0;width:55%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 30px 30px 0;"></div>
+      <div style="position:absolute;bottom:40px;right:0;width:50%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:30px 0 0 30px;transform:rotate(-15deg);transform-origin:left center;"></div>
+      <div style="position:absolute;bottom:110px;left:42%;font-size:2rem;">⚠️</div>
+      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
+      <div style="position:absolute;top:25px;right:30px;font-size:1.5rem;">👁️‍🗨️</div>`;
+
+    // 21. HILL DRIVING — inclined road, mountain backdrop, car climbing
+    A.hill_driving = () => `
+      <div style="position:absolute;bottom:30px;left:0;width:110%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;transform:rotate(-8deg);transform-origin:left bottom;"></div>
+      <div style="position:absolute;top:10px;right:20%;font-size:4rem;">⛰️</div>
+      <div style="position:absolute;top:25px;left:15%;font-size:3rem;">🏔️</div>
+      <div style="position:absolute;bottom:68px;left:20%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>`;
+
+    // 22. BUS STOP — bus shelter, bus stopped, passengers waiting
+    A.bus_stop = () => `
+      <div style="${road()}"></div>
+      <div style="${sidewalk}"></div>
+      <div style="position:absolute;bottom:100px;left:20%;width:70px;height:30px;background:#555;border-radius:4px 4px 0 0;border-bottom:3px solid #888;"></div>
+      <div style="position:absolute;bottom:105px;left:22%;font-size:1rem;">🪑</div>
+      <div style="position:absolute;bottom:100px;left:33%;font-size:1rem;animation:drift 2s infinite;">🚶</div>
+      <div style="position:absolute;bottom:100px;left:38%;font-size:1rem;animation:drift 2.5s infinite .4s;">🚶‍♀️</div>
+      <div style="position:absolute;bottom:48px;left:18%;font-size:2.4rem;animation:slow 6s infinite linear;">🚌</div>
+      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>`;
+
+    // 23. CONSTRUCTION — barricades, worker, car detouring
+    A.construction = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:52px;left:35%;width:30px;height:10px;background:repeating-linear-gradient(90deg,#f90 0,#f90 6px,#fff 6px,#fff 12px);border-radius:2px;"></div>
+      <div style="position:absolute;bottom:52px;left:50%;width:30px;height:10px;background:repeating-linear-gradient(90deg,#f90 0,#f90 6px,#fff 6px,#fff 12px);border-radius:2px;"></div>
+      <div style="position:absolute;bottom:58px;left:40%;font-size:1.8rem;">🚧</div>
+      <div style="position:absolute;bottom:100px;left:45%;font-size:1.8rem;">👷</div>
+      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:108px;left:55%;font-size:1.2rem;">➡️</div>`;
+
+    // 24. ONE WAY — road with big arrow, wrong-way car
+    A.one_way = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:55px;left:40%;font-size:3rem;opacity:.3;">➡️</div>
+      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:ba 4s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ab 3.5s infinite linear;">🚙</div>
+      <div style="position:absolute;bottom:80px;left:62%;font-size:1.2rem;color:#f44;">⚠️</div>
+      <div style="position:absolute;top:25px;left:30%;font-size:1.5rem;">➡️</div>
+      <div style="position:absolute;top:25px;left:50%;font-size:1.5rem;">ONE WAY</div>`;
+
+    // 25. HOSPITAL QUIET — hospital zone, silence markings
+    A.hospital_quiet = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:100px;left:0;width:100%;height:18px;border:2px dashed rgba(100,150,255,.4);background:rgba(100,150,255,.05);"></div>
+      <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:3.5rem;">🏥</div>
+      <div style="position:absolute;top:15px;right:20%;font-size:2rem;">🤫</div>
+      <div style="position:absolute;bottom:48px;left:40%;font-size:2rem;animation:slow 7s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:70px;left:50%;font-size:1rem;opacity:.5;">🔇 SILENCE ZONE</div>`;
+
+    // 26. CYCLIST — bike lane, cyclist, car maintaining distance
+    A.cyclist = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:100px;left:0;width:100%;height:4px;background:repeating-linear-gradient(90deg,#4a4 0,#4a4 12px,transparent 12px,transparent 18px);"></div>
+      <div style="position:absolute;bottom:105px;left:40%;font-size:1.8rem;animation:ba 6s infinite linear;">🚲</div>
+      <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:108px;left:60%;font-size:.9rem;color:#4a4;">BIKE LANE</div>`;
+
+    // 27. GRAND TEST — trophy, multiple vehicles, complex
+    A.grand_test = () => `
+      <div style="${road()}"></div>
+      <div style="${road('50%','50%',100)};transform:rotate(90deg);transform-origin:left bottom;height:50px;"></div>
+      <div style="position:absolute;top:15px;left:50%;transform:translateX(-50%);font-size:3.5rem;">🏆</div>
+      <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:48px;left:30%;font-size:1.8rem;animation:ba 5s infinite linear -1s;">🚌</div>
+      <div style="position:absolute;bottom:140px;left:52%;font-size:1.5rem;animation:ab 6s infinite linear;">🛺</div>
+      <div style="position:absolute;top:20px;right:25%;font-size:1.5rem;">🥇</div>`;
+
+    // 28. NIGHT MONSOON — night overlay, heavy rain, lightning, puddle
+    A.night_monsoon = () => `
+      <div style="${road()};background:#2a2d35;"></div>
+      <div style="position:absolute;inset:0;background:rgba(0,0,30,.4);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:48px;left:42%;width:80px;height:22px;background:rgba(60,120,255,.5);border-radius:50%;animation:splash 1.5s infinite;"></div>
+      ${[12,24,36,48,60,72,84].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:20px;background:rgba(100,160,255,.6);border-radius:0 0 2px 2px;animation:rain .5s infinite linear ${x*.01}s;"></div>`).join('')}
+      <div style="position:absolute;bottom:48px;left:20%;font-size:2.2rem;">🚗</div>
+      <div style="position:absolute;bottom:54px;left:22%;width:14px;height:7px;background:rgba(255,255,150,.8);border-radius:2px;"></div>
+      <div style="position:absolute;bottom:54px;left:36%;width:14px;height:7px;background:rgba(255,255,150,.8);border-radius:2px;"></div>
+      <div style="position:absolute;top:15px;right:30px;font-size:2rem;">🌙</div>
+      <div style="position:absolute;top:30px;left:40%;font-size:2rem;animation:flash 2s infinite;">⚡</div>`;
+
+    // 29. WRONG SIDE — car on wrong lane, head-on, danger
+    A.wrong_side = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:68px;left:0;width:100%;height:2px;background:repeating-linear-gradient(90deg,#fc0 0,#fc0 12px,transparent 12px,transparent 20px);"></div>
+      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:ba 4s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:72px;left:60%;font-size:2rem;animation:ab 3.5s infinite linear;">🚙</div>
+      <div style="position:absolute;bottom:85px;left:48%;font-size:1.5rem;color:#f44;animation:flash .5s infinite;">⚠️</div>`;
+
+    // 30. HIGHWAY MERGE — two lanes merging, cars merging
+    A.highway_merge = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:100px;left:0;width:55%;height:50px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 0 20px 0;"></div>
+      <div style="position:absolute;bottom:110px;left:45%;font-size:1.2rem;">↘️</div>
+      <div style="position:absolute;bottom:110px;left:55%;font-size:1.2rem;">↙️</div>
+      <div style="position:absolute;bottom:48px;left:20%;font-size:2rem;animation:merge 4s infinite ease-in-out;">🚗</div>
+      <div style="position:absolute;bottom:108px;left:15%;font-size:1.8rem;animation:ba 5s infinite linear;">🚙</div>
+      <div style="position:absolute;bottom:48px;left:65%;font-size:2rem;animation:ba 4s infinite linear;">🚕</div>`;
+
+    // 31. ZERO VISIBILITY — fog, barely visible car
+    A.zero_visibility = () => `
+      <div style="${road()};background:#4a4d55;"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(200,200,210,.8) 0%,rgba(200,200,210,.3) 40%,transparent 70%);animation:fogPulse 4s infinite alternate;pointer-events:none;"></div>
+      <div style="position:absolute;bottom:48px;left:40%;font-size:2rem;opacity:.35;">🚗</div>
+      <div style="position:absolute;bottom:54px;left:42%;width:10px;height:5px;background:rgba(255,255,150,.5);border-radius:2px;opacity:.4;"></div>
+      <div style="position:absolute;bottom:54px;left:54%;width:10px;height:5px;background:rgba(255,255,150,.5);border-radius:2px;opacity:.4;"></div>
+      <div style="position:absolute;top:20px;right:30px;font-size:2rem;opacity:.4;">👻</div>`;
+
+    // 32. MOUNTAIN — winding road, hairpin, car navigating
+    A.mountain = () => `
+      <div style="position:absolute;bottom:40px;left:0;width:45%;height:50px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 20px 20px 0;"></div>
+      <div style="position:absolute;bottom:55px;left:40%;width:50px;height:40px;background:#3d3f45;border:4px solid #fff;border-radius:50%;border-left-color:transparent;border-bottom-color:transparent;transform:rotate(-45deg);"></div>
+      <div style="position:absolute;bottom:80px;left:55%;width:45%;height:50px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:20px 0 0 20px;transform:rotate(8deg);"></div>
+      <div style="position:absolute;top:5px;right:15%;font-size:3.5rem;">🏔️</div>
+      <div style="position:absolute;top:10px;left:10%;font-size:3rem;">⛰️</div>
+      <div style="position:absolute;bottom:48px;left:10%;font-size:1.8rem;animation:ba 5s infinite linear;">🚗</div>`;
+
+    // 33. RURAL — dirt road, wheat fields, cow
+    A.rural = () => `
+      <div style="position:absolute;bottom:40px;left:0;width:100%;height:60px;background:repeating-linear-gradient(90deg,#8B7355 0,#8B7355 4px,#9B8365 4px,#9B8365 8px);border-top:3px solid #6B5335;border-bottom:3px solid #6B5335;"></div>
+      <div style="position:absolute;bottom:100px;left:0;width:100%;height:30px;background:#5a7a3a;"></div>
+      <div style="position:absolute;bottom:105px;left:10%;font-size:1.5rem;">🌾</div>
+      <div style="position:absolute;bottom:105px;left:30%;font-size:1.5rem;">🌾</div>
+      <div style="position:absolute;bottom:105px;right:20%;font-size:1.5rem;">🌾</div>
+      <div style="position:absolute;bottom:48px;left:50%;font-size:2.2rem;">🐄</div>
+      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 6s infinite linear;">🚗</div>`;
+
+    // 34. MULTI MODAL — mixed traffic: car, auto, cyclist, ped, bus
+    A.multi_modal = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:48px;left:10%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:48px;left:30%;font-size:1.8rem;animation:ba 5s infinite linear -1s;">🛺</div>
+      <div style="position:absolute;bottom:48px;left:55%;font-size:1.6rem;animation:ba 4.5s infinite linear -.5s;">🚲</div>
+      <div style="position:absolute;bottom:104px;left:40%;font-size:1.4rem;animation:ped 3s infinite alternate;">🚶</div>
+      <div style="position:absolute;bottom:48px;left:70%;font-size:2.2rem;animation:ba 5.5s infinite linear -2s;">🚌</div>
+      <div style="position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:1.5rem;">🌪️</div>`;
+
+    // 35. LANE DISCIPLINE — dashed center, one car correct, one straddling
+    A.lane_discipline = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:68px;left:0;width:100%;height:3px;background:repeating-linear-gradient(90deg,#fff 0,#fff 14px,transparent 14px,transparent 22px);"></div>
+      <div style="position:absolute;bottom:48px;left:20%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:56px;left:22%;font-size:.9rem;color:#4a4;">✓</div>
+      <div style="position:absolute;bottom:60px;left:55%;font-size:2rem;animation:ba 4.5s infinite linear -.5s;transform:translateY(-3px);">🚙</div>
+      <div style="position:absolute;bottom:72px;left:58%;font-size:.9rem;color:#f44;">✗</div>`;
+
+    // 36. DRIVING SCHOOL — L plate, instructor car, cones, classroom
+    A.driving_school = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;top:15px;left:20%;font-size:3rem;">🏫</div>
+      <div style="position:absolute;bottom:48px;left:35%;font-size:2rem;animation:slow 5s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:66px;left:38%;width:18px;height:18px;background:#fff;border:2px solid #f00;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:#f00;">L</div>
+      <div style="position:absolute;bottom:42px;left:55%;font-size:1.2rem;">🚧</div>
+      <div style="position:absolute;bottom:42px;left:65%;font-size:1.2rem;">🚧</div>
+      <div style="position:absolute;bottom:42px;left:75%;font-size:1.2rem;">🚧</div>
+      <div style="position:absolute;top:20px;right:25%;font-size:2rem;">🎓</div>`;
+
+    // 37. INTERSECTION / SIGNALS — crossroad, traffic light, car through
+    A.intersection = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:40px;left:45%;width:60px;height:100%;background:#3d3f45;border-left:4px solid #fff;border-right:4px solid #fff;"></div>
+      <div style="position:absolute;top:30%;left:42%;width:36px;height:80px;background:#222;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;z-index:2;">
+        <div style="width:18px;height:18px;border-radius:50%;background:#555;"></div>
+        <div style="width:18px;height:18px;border-radius:50%;background:#fc0;box-shadow:0 0 6px #fc0;"></div>
+        <div style="width:18px;height:18px;border-radius:50%;background:#555;"></div>
+      </div>
+      <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
+      <div style="position:absolute;bottom:48px;left:30%;font-size:1.8rem;animation:ba 6s infinite linear -2s;">🚕</div>`;
+    A.signals = A.intersection;
+
+    // DEFAULT — generic car driving across
+    A._default = () => `
+      <div style="${road()}"></div>
+      <div style="position:absolute;bottom:48px;font-size:2.4rem;animation:ba 4s infinite linear;">🚗</div>`;
+
+    // ── Resolve and render ──
+    const artFn = A[theme] || A._default;
+    const artHTML = artFn();
+
+    wrap.innerHTML = badge + artHTML + `<style>${K}</style>`;
   },
   _disposeBriefingScene() {
     if (this._bScene) {
