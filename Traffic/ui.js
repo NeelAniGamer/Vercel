@@ -222,9 +222,15 @@ const ui = {
     let i = 0
     function flush() {
       const end = Math.min(i + BATCH, queue.length)
-      const frag = document.createDocumentFragment()
+      let frag = document.createDocumentFragment()
+      let curGrid = null
       for (; i < end; i++) {
         const { lv, idx, grid } = queue[i]
+        if (grid !== curGrid) {
+          if (curGrid) curGrid.appendChild(frag)
+          frag = document.createDocumentFragment()
+          curGrid = grid
+        }
         const done = S.comp[lv.id]
         const started = S.started && S.started[lv.id]
         const statusClass = done ? ' syl-done' : started ? ' syl-started' : ''
@@ -238,7 +244,7 @@ const ui = {
         div.onclick = () => ui.showBriefing(lv.id)
         frag.appendChild(div)
       }
-      grid.appendChild(frag)
+      if (curGrid) curGrid.appendChild(frag)
       if (i < queue.length) requestAnimationFrame(flush)
     }
     if (queue.length) requestAnimationFrame(flush)
@@ -846,9 +852,14 @@ const ui = {
     // ── Theme art map ──
     const A = {};
 
-    // 1. PEDESTRIAN COURTESY — school zone, zebra crossing, walking peds, car braking
+    // 1. PEDESTRIAN COURTESY — school zone, zebra crossing, traffic light, walking peds, car braking
     A.pedestrian_courtesy = () => `
       <div style="${road()}">${`<div style="${zebra}"></div>`}</div>
+      <div style="position:absolute;top:30%;left:10%;width:28px;height:64px;background:#222;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:4px 0;">
+        <div style="width:16px;height:16px;border-radius:50%;background:#f33;box-shadow:0 0 6px #f33;"></div>
+        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
+        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
+      </div>
       <div style="position:absolute;top:20px;right:40px;font-size:4rem;">🏫</div>
       <div style="position:absolute;bottom:55px;left:20%;font-size:1.8rem;animation:ped 3.5s infinite alternate;">🚶</div>
       <div style="position:absolute;bottom:58px;left:26%;font-size:1.4rem;animation:ped 2.8s infinite alternate;">🚶‍♀️</div>
@@ -1114,7 +1125,7 @@ const ui = {
       <div style="position:absolute;inset:0;background:rgba(0,0,30,.4);pointer-events:none;"></div>
       <div style="position:absolute;bottom:48px;left:42%;width:80px;height:22px;background:rgba(60,120,255,.5);border-radius:50%;animation:splash 1.5s infinite;"></div>
       ${[12,24,36,48,60,72,84].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:20px;background:rgba(100,160,255,.6);border-radius:0 0 2px 2px;animation:rain .5s infinite linear ${x*.01}s;"></div>`).join('')}
-      <div style="position:absolute;bottom:48px;left:20%;font-size:2.2rem;">🚗</div>
+      <div style="position:absolute;bottom:46px;left:18%;font-size:1.6rem;line-height:1;">🚗</div>
       <div style="position:absolute;bottom:54px;left:22%;width:14px;height:7px;background:rgba(255,255,150,.8);border-radius:2px;"></div>
       <div style="position:absolute;bottom:54px;left:36%;width:14px;height:7px;background:rgba(255,255,150,.8);border-radius:2px;"></div>
       <div style="position:absolute;top:15px;right:30px;font-size:2rem;">🌙</div>
@@ -1128,14 +1139,13 @@ const ui = {
       <div style="position:absolute;bottom:72px;left:60%;font-size:2rem;animation:ab 3.5s infinite linear;">🚙</div>
       <div style="position:absolute;bottom:85px;left:48%;font-size:1.5rem;color:#f44;animation:flash .5s infinite;">⚠️</div>`;
 
-    // 30. HIGHWAY MERGE — two lanes merging, cars merging
+    // 30. HIGHWAY MERGE — two lanes merging, car merging
     A.highway_merge = () => `
       <div style="${road()}"></div>
-      <div style="position:absolute;bottom:98px;left:0;width:38%;height:28px;background:#3d3f45;border-top:3px solid #fff;border-bottom:3px solid #fff;border-radius:0 0 14px 0;"></div>
-      <div style="position:absolute;bottom:102px;left:36%;font-size:1rem;">↘️</div>
-      <div style="position:absolute;bottom:102px;left:48%;font-size:1rem;">↙️</div>
-      <div style="position:absolute;bottom:48px;left:20%;font-size:2rem;animation:merge 4s infinite ease-in-out;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:65%;font-size:2rem;animation:ba 4s infinite linear;">🚕</div>`;
+      <div style="position:absolute;bottom:98px;left:0;width:22%;height:18px;background:#3d3f45;border-top:2px solid #fff;border-bottom:2px solid #fff;border-radius:0 0 10px 0;"></div>
+      <div style="position:absolute;bottom:100px;left:20%;font-size:.85rem;opacity:.7;">↘️</div>
+      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:merge 4s infinite ease-in-out;">🚗</div>
+      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ba 4s infinite linear;">🚕</div>`;
 
     // 31. ZERO VISIBILITY — fog, barely visible car
     A.zero_visibility = () => `
