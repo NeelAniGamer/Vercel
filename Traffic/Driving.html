@@ -1385,38 +1385,14 @@
       display: flex;
     }
 
-    /* In-Game Objective Overlay */
-    #objective-overlay {
-      position: fixed;
-      top: 80px;
-      right: 24px;
-      left: auto;
-      transform: translateX(150%);
-      z-index: 23;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 16px;
-      padding: 16px 24px;
-      color: white;
-      max-width: 90vw;
-      width: 400px;
-      text-align: center;
-      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      pointer-events: none;
-    }
+    /* objective-overlay — fluid version defined below under "Fluid HUD Elements" */
 
     #objective-overlay.on {
       transform: translateX(0);
     }
 
     #objective-title {
-      font-size: 0.8rem;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
       text-transform: uppercase;
       letter-spacing: 2px;
       color: var(--yellow);
@@ -1424,7 +1400,7 @@
     }
 
     #objective-desc {
-      font-size: 1rem;
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
       line-height: 1.4;
       font-weight: 500;
     }
@@ -3814,6 +3790,117 @@
     }
 
     /* Adult and young: default sizing, all HUD visible (no overrides needed) */
+
+    /* Landscape phone: compact HUD for short viewports */
+    @media (max-height: 450px) and (orientation: landscape) {
+      #objective-overlay {
+        top: auto;
+        bottom: 8px;
+        right: 8px;
+        max-width: 35vw;
+        padding: 6px 10px;
+        font-size: clamp(0.55rem, 1vw, 0.7rem);
+      }
+
+      #task-tracker {
+        top: 4px;
+        right: 8px;
+        max-width: 35vw;
+        max-height: 30vh;
+        padding: 4px 8px;
+        font-size: clamp(0.5rem, 0.9vw, 0.65rem);
+      }
+
+      #dn-clock {
+        top: 4px;
+        padding: 2px 8px;
+        font-size: clamp(0.55rem, 1vw, 0.7rem);
+      }
+
+      #spgauge {
+        bottom: 4px;
+        left: 8px;
+        right: auto;
+        width: clamp(40px, 5vw, 56px);
+        height: clamp(40px, 5vw, 56px);
+        padding: 3px;
+      }
+
+      #spgauge svg {
+        width: clamp(40px, 5vw, 56px);
+        height: clamp(40px, 5vw, 56px);
+      }
+
+      #boostgauge {
+        right: 8px;
+        bottom: auto;
+        top: 36px;
+        width: clamp(32px, 4vw, 48px);
+        height: clamp(32px, 4vw, 48px);
+        padding: 3px;
+      }
+
+      #boostgauge svg {
+        width: clamp(32px, 4vw, 48px);
+        height: clamp(32px, 4vw, 48px);
+      }
+
+      #hwrap {
+        top: 4px;
+        left: 4px;
+        padding: 4px 8px;
+      }
+
+      #sig-ind {
+        top: 2px;
+        padding: 2px 6px;
+        font-size: 0.55rem;
+      }
+
+      #steer-wheel-container {
+        width: 60px;
+        height: 60px;
+      }
+
+      #civic-controls {
+        top: 40px;
+        right: 4px;
+      }
+
+      #civic-controls button {
+        padding: 2px 6px;
+        font-size: 0.55rem;
+      }
+
+      #tc {
+        bottom: 4px;
+      }
+
+      .db {
+        width: 30px;
+        height: 30px;
+        font-size: 0.7rem;
+      }
+
+      #gp {
+        bottom: auto;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      #hwallet {
+        font-size: 0.6rem;
+      }
+
+      #hwrap .hl {
+        font-size: 0.45rem;
+      }
+
+      .ht {
+        width: 28px;
+        height: 3px;
+      }
+    }
   </style>
 
   <script>
