@@ -23,7 +23,7 @@ document.addEventListener('keydown', (e) => {
 
 window.PRELOADED_MODELS = {}
 // ─── Per-Level Model Loading System ─────────────────────────────────────────
-// Every GLB key mapped to its file path. Used by loadLevelAssets() to
+// Every asset key mapped to its file path + format. Used by loadLevelAssets() to
 // lazy-load only the models a level actually needs.
 window.ASSET_MANIFEST = {}
 ;(function () {
@@ -38,51 +38,67 @@ window.ASSET_MANIFEST = {}
   const tkKit = 'Models/kenney_train-kit/Models/GLB format/'
   const M = window.ASSET_MANIFEST
 
+  // Helper: manifest entry = { path, fmt }
+  // fmt: 'glb' (default), 'fbx', 'obj', 'gltf'
+  function glb(p) { return { path: p, fmt: 'glb' } }
+  function fbx(p) { return { path: p, fmt: 'fbx' } }
+  function obj(p, m) { return { path: p, fmt: 'obj', mtl: m || null } }
+
   // Vehicles — core
-  M.car = carKit + 'sedan.glb'; M.taxi = carKit + 'taxi.glb'; M.police = carKit + 'police.glb'
-  M.bus = carKit + 'delivery.glb'; M.truck = carKit + 'truck.glb'; M.auto = carKit + 'van.glb'; M.bike = carKit + 'race.glb'
+  M.car = glb(carKit + 'sedan.glb'); M.taxi = glb(carKit + 'taxi.glb'); M.police = glb(carKit + 'police.glb')
+  M.bus = glb(carKit + 'delivery.glb'); M.truck = glb(carKit + 'truck.glb'); M.auto = glb(carKit + 'van.glb'); M.bike = glb(carKit + 'race.glb')
 
   // Vehicles — variants
-  M.ambulance = carKit + 'ambulance.glb'
-  ;['hatchback-sports','suv','suv-luxury','race-future','sedan-sports','kart-oobi','kart-oodi','kart-ooli','kart-oopi','kart-oozi','tractor','tractor-police','tractor-shovel'].forEach(c => { M['car_'+c] = carKit + c + '.glb' })
-  ;['firetruck','garbage-truck','truck-flat'].forEach(t => { M['truck_'+t] = carKit + t + '.glb' })
+  M.ambulance = glb(carKit + 'ambulance.glb')
+  ;['hatchback-sports','suv','suv-luxury','race-future','sedan-sports','kart-oobi','kart-oodi','kart-ooli','kart-oopi','kart-oozi','tractor','tractor-police','tractor-shovel'].forEach(c => { M['car_'+c] = glb(carKit + c + '.glb') })
+  ;['firetruck','garbage-truck','truck-flat'].forEach(t => { M['truck_'+t] = glb(carKit + t + '.glb') })
+
+  // LowPoly Cars (FBX — multi-mesh file, bodies only)
+  M.lowpoly_cars = fbx('Models/uploads_files_3354643_LowPoly_Cars_01_fbx.FBX')
 
   // Roads
-  M.road_straight = roadKit + 'road-straight.glb'; M.road_intersect = roadKit + 'road-intersection.glb'
-  M.road_cross = roadKit + 'road-crossroad.glb'; M.road_cross_path = roadKit + 'road-crossroad-path.glb'
-  M.road_intersect_path = roadKit + 'road-intersection-path.glb'; M.road_bend = roadKit + 'road-bend-sidewalk.glb'
-  M.road_crossing = roadKit + 'road-crossing.glb'; M.road_roundabout = roadKit + 'road-roundabout.glb'
-  M.barrier = roadKit + 'construction-barrier.glb'; M.cone = roadKit + 'construction-cone.glb'; M.sign_highway = roadKit + 'sign-highway.glb'
-  M.road_avenue = 'Models/road__avenue__street/scene.gltf'
+  M.road_straight = glb(roadKit + 'road-straight.glb'); M.road_intersect = glb(roadKit + 'road-intersection.glb')
+  M.road_cross = glb(roadKit + 'road-crossroad.glb'); M.road_cross_path = glb(roadKit + 'road-crossroad-path.glb')
+  M.road_intersect_path = glb(roadKit + 'road-intersection-path.glb'); M.road_bend = glb(roadKit + 'road-bend-sidewalk.glb')
+  M.road_crossing = glb(roadKit + 'road-crossing.glb'); M.road_roundabout = glb(roadKit + 'road-roundabout.glb')
+  M.barrier = glb(roadKit + 'construction-barrier.glb'); M.cone = glb(roadKit + 'construction-cone.glb'); M.sign_highway = glb(roadKit + 'sign-highway.glb')
+  M.road_avenue = { path: 'Models/road__avenue__street/scene.gltf', fmt: 'gltf' }
 
-  // Characters
-  M.char_f_a = charKit + 'character-female-a.glb'; M.char_f_b = charKit + 'character-female-b.glb'; M.char_f_c = charKit + 'character-female-c.glb'
-  M.char_m_a = charKit + 'character-male-a.glb'; M.char_m_b = charKit + 'character-male-b.glb'; M.char_m_c = charKit + 'character-male-c.glb'
+  // Characters — GLB (Kenney mini-characters)
+  M.char_f_a = glb(charKit + 'character-female-a.glb'); M.char_f_b = glb(charKit + 'character-female-b.glb'); M.char_f_c = glb(charKit + 'character-female-c.glb')
+  M.char_m_a = glb(charKit + 'character-male-a.glb'); M.char_m_b = glb(charKit + 'character-male-b.glb'); M.char_m_c = glb(charKit + 'character-male-c.glb')
+
+  // Characters — animated FBX (Kenney animated character packs)
+  const animPacks = ['survivors','retro','protagonists']
+  animPacks.forEach(pack => {
+    const base = 'Models/kenney_animated-characters-' + pack + '/Model/characterMedium.fbx'
+    M['anim_' + pack] = fbx(base)
+  })
 
   // Suburban buildings (a-u)
-  'abcdefghijklmnopqrstu'.split('').forEach(l => { M['suburban_'+l] = subKit + 'building-type-' + l + '.glb' })
+  'abcdefghijklmnopqrstu'.split('').forEach(l => { M['suburban_'+l] = glb(subKit + 'building-type-' + l + '.glb') })
 
   // Industrial buildings (a-t)
-  'abcdefghijklmnopqrst'.split('').forEach(l => { M['industrial_'+l] = indKit + 'building-' + l + '.glb' })
+  'abcdefghijklmnopqrst'.split('').forEach(l => { M['industrial_'+l] = glb(indKit + 'building-' + l + '.glb') })
 
   // Modular buildings
-  ;['sample-house-a','sample-house-b','sample-house-c'].forEach(h => { M['mbuilding_'+h] = mbKit + 'building-' + h + '.glb' })
-  ;['sample-tower-a','sample-tower-b','sample-tower-c','sample-tower-d'].forEach(t => { M['mbuilding_'+t] = mbKit + 'building-' + t + '.glb' })
+  ;['sample-house-a','sample-house-b','sample-house-c'].forEach(h => { M['mbuilding_'+h] = glb(mbKit + 'building-' + h + '.glb') })
+  ;['sample-tower-a','sample-tower-b','sample-tower-c','sample-tower-d'].forEach(t => { M['mbuilding_'+t] = glb(mbKit + 'building-' + t + '.glb') })
 
   // Building kit
-  ;['wall','wall-doorway-square','column','column-wide'].forEach(w => { M['bkit_'+w] = bkKit + w + '.glb' })
-  ;['barricade-doorway-a','barricade-doorway-b'].forEach(b => { M['bkit_'+b] = bkKit + b + '.glb' })
+  ;['wall','wall-doorway-square','column','column-wide'].forEach(w => { M['bkit_'+w] = glb(bkKit + w + '.glb') })
+  ;['barricade-doorway-a','barricade-doorway-b'].forEach(b => { M['bkit_'+b] = glb(bkKit + b + '.glb') })
 
   // Watercraft
-  M.ship_cargo = wcKit + 'ship-cargo-a.glb'; M.boat_speed = wcKit + 'boat-speed-a.glb'
-  ;['boat-speed-b','boat-speed-c','boat-fishing-small','boat-tug-a','ship-cargo-b','ship-small'].forEach(w => { M['wc_'+w] = wcKit + w + '.glb' })
+  M.ship_cargo = glb(wcKit + 'ship-cargo-a.glb'); M.boat_speed = glb(wcKit + 'boat-speed-a.glb')
+  ;['boat-speed-b','boat-speed-c','boat-fishing-small','boat-tug-a','ship-cargo-b','ship-small'].forEach(w => { M['wc_'+w] = glb(wcKit + w + '.glb') })
 
   // Trains
-  M.train = tkKit + 'train-locomotive-a.glb'; M.metro = tkKit + 'train-electric-subway-a.glb'
-  ;['train-diesel-a','train-electric-bullet-a','train-tram-modern','train-carriage-box'].forEach(t => { M['tk_'+t] = tkKit + t + '.glb' })
+  M.train = glb(tkKit + 'train-locomotive-a.glb'); M.metro = glb(tkKit + 'train-electric-subway-a.glb')
+  ;['train-diesel-a','train-electric-bullet-a','train-tram-modern','train-carriage-box'].forEach(t => { M['tk_'+t] = glb(tkKit + t + '.glb') })
 
   // Trees & greenery
-  M.tree_small = subKit + 'tree-small.glb'; M.tree_large = subKit + 'tree-large.glb'; M.planter = subKit + 'planter.glb'
+  M.tree_small = glb(subKit + 'tree-small.glb'); M.tree_large = glb(subKit + 'tree-large.glb'); M.planter = glb(subKit + 'planter.glb')
 })()
 
 // Logical groups — level configs reference these in their assets[] array
@@ -121,8 +137,7 @@ window._expandAssets = function (assets) {
 // Load specific model keys into PRELOADED_MODELS (skips already-loaded ones)
 // calls callback() when done. If no keys given, loads ALL keys (backward compat).
 window.loadLevelAssets = function (keys, callback) {
-  if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') { callback(); return }
-  const loader = new THREE.GLTFLoader()
+  if (typeof THREE === 'undefined') { callback(); return }
   const manifest = window.ASSET_MANIFEST
 
   // Determine which keys to load
@@ -145,43 +160,80 @@ window.loadLevelAssets = function (keys, callback) {
   const barEl = document.getElementById('loading-bar')
   const statusEl = document.getElementById('loading-status')
 
-  const loadNext = (index) => {
-    if (index >= toLoad.length) {
-      if (ld && ld.parentNode) {
-        ld.innerHTML = '<h1 style="color:#34D399;">World Ready!</h1><div style="font-size:1rem;color:#8891AA;">Entering level...</div>'
-        setTimeout(() => { ld.style.opacity = '0'; ld.style.transform = 'scale(1.05)'; setTimeout(() => { if (ld.parentNode) ld.remove() }, 800) }, 600)
+  // Shared post-process: set shadow + material props on every mesh
+  function postProcess(root, key) {
+    root.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = !key.includes('road')
+        child.receiveShadow = true
+        if (child.material) {
+          if (child.material.map) { child.material.map.magFilter = THREE.NearestFilter; child.material.map.minFilter = THREE.NearestFilter; child.material.map.needsUpdate = true }
+          child.material.roughness = 0.8; child.material.metalness = 0.1
+        }
       }
-      callback()
-      return
+    })
+  }
+
+  // Progress helper
+  function tick() {
+    loaded++
+    const pct = Math.round((loaded / total) * 100)
+    if (pctEl) pctEl.textContent = pct + '%'
+    if (barEl) barEl.style.width = pct + '%'
+  }
+
+  function done() {
+    if (ld && ld.parentNode) {
+      ld.innerHTML = '<h1 style="color:#34D399;">World Ready!</h1><div style="font-size:1rem;color:#8891AA;">Entering level...</div>'
+      setTimeout(() => { ld.style.opacity = '0'; ld.style.transform = 'scale(1.05)'; setTimeout(() => { if (ld.parentNode) ld.remove() }, 800) }, 600)
     }
+    callback()
+  }
+
+  const loadNext = (index) => {
+    if (index >= toLoad.length) { done(); return }
     const key = toLoad[index]
-    const file = manifest[key]
-    if (!file) { loaded++; setTimeout(() => loadNext(index + 1), 0); return }
+    const entry = manifest[key]
+    if (!entry) { tick(); setTimeout(() => loadNext(index + 1), 0); return }
     if (statusEl) statusEl.textContent = 'Loading: ' + key + '...'
 
-    loader.load(file, (gltf) => {
-      gltf.scene.traverse((child) => {
-        if (child.isMesh) {
-          child.castShadow = !key.includes('road')
-          child.receiveShadow = true
-          if (child.material) {
-            if (child.material.map) { child.material.map.magFilter = THREE.NearestFilter; child.material.map.minFilter = THREE.NearestFilter; child.material.map.needsUpdate = true }
-            child.material.roughness = 0.8; child.material.metalness = 0.1
-          }
-        }
-      })
-      gltf.scene.scale.set(4.5, 4.5, 4.5)
-      window.PRELOADED_MODELS[key] = gltf.scene
-      loaded++
-      const pct = Math.round((loaded / total) * 100)
-      if (pctEl) pctEl.textContent = pct + '%'
-      if (barEl) barEl.style.width = pct + '%'
+    // Resolve entry — legacy plain string = GLB
+    const fmt = (typeof entry === 'string') ? 'glb' : (entry.fmt || 'glb')
+    const filePath = (typeof entry === 'string') ? entry : entry.path
+
+    const onOk = (root) => {
+      postProcess(root, key)
+      // GLB: ~1 unit tall → scale 4.5x;  FBX/OBJ: already large → store at 1x, callers rescale
+      const isFBXOBJ = (fmt === 'fbx' || fmt === 'obj')
+      if (!isFBXOBJ) root.scale.set(4.5, 4.5, 4.5)
+      window.PRELOADED_MODELS[key] = root
+      tick()
       setTimeout(() => loadNext(index + 1), 0)
-    }, undefined, (err) => {
-      console.error('Error loading asset:', key, file, err)
-      loaded++
+    }
+    const onErr = (err) => {
+      console.error('Error loading asset:', key, filePath, err)
+      tick()
       setTimeout(() => loadNext(index + 1), 0)
-    })
+    }
+
+    if (fmt === 'fbx' && typeof THREE.FBXLoader !== 'undefined') {
+      new THREE.FBXLoader().load(filePath, (fbx) => { onOk(fbx) }, undefined, onErr)
+    } else if (fmt === 'obj' && typeof THREE.OBJLoader !== 'undefined') {
+      if (entry.mtl && typeof THREE.MTLLoader !== 'undefined') {
+        new THREE.MTLLoader().load(entry.mtl, (mtl) => {
+          mtl.preload()
+          new THREE.OBJLoader().setMaterials(mtl).load(filePath, (obj) => { onOk(obj) }, undefined, onErr)
+        }, undefined, onErr)
+      } else {
+        new THREE.OBJLoader().load(filePath, (obj) => { onOk(obj) }, undefined, onErr)
+      }
+    } else if ((fmt === 'glb' || fmt === 'gltf') && typeof THREE.GLTFLoader !== 'undefined') {
+      new THREE.GLTFLoader().load(filePath, (gltf) => { onOk(gltf.scene) }, undefined, onErr)
+    } else {
+      console.warn('Unknown format or missing loader for:', key, fmt)
+      tick()
+      setTimeout(() => loadNext(index + 1), 0)
+    }
   }
   setTimeout(() => loadNext(0), 50)
 }

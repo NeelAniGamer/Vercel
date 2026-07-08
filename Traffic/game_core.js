@@ -4044,6 +4044,11 @@ class Game {
         this._collidedThisFrame = false;
         this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain);
 
+        // Update player character FBX animation mixer
+        if (this.playerCharacter && this.playerCharacter.userData && this.playerCharacter.userData.isFBXAnimated && this.playerCharacter.userData.mixer) {
+          this.playerCharacter.userData.mixer.update(dt);
+        }
+
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
         if (this.composer) this.composer.render(); else this.renderer.render(this.scene, this.camera);
@@ -5405,6 +5410,11 @@ class Game {
             const pz = isV ? rz : rz + side * (exiting ? bDist : lDist);
             
             ped.position.set(px, 0, pz);
+            // Preserve FBX animation properties from _buildHuman()
+            const savedMixer = ped.userData.mixer;
+            const savedIdle = ped.userData.idleAction;
+            const savedRun = ped.userData.runAction;
+            const savedFBXAnim = ped.userData.isFBXAnimated;
             ped.userData = {
               t: Math.random() * 10,
               spd: 0.3 + Math.random() * 0.4,
@@ -5420,6 +5430,13 @@ class Game {
               destDist: 15 + Math.random() * 25,
               distTraveled: 0
             };
+            // Restore FBX animation properties
+            if (savedFBXAnim) {
+              ped.userData.mixer = savedMixer;
+              ped.userData.idleAction = savedIdle;
+              ped.userData.runAction = savedRun;
+              ped.userData.isFBXAnimated = true;
+            }
             
             if (exiting) {
               if (isV) ped.rotation.y = side > 0 ? -Math.PI/2 : Math.PI/2;
@@ -5826,6 +5843,18 @@ class Game {
           const legAnimAmp = ud.aiState === 'idle' ? 0.05 : 0.55;
           if (ud.lLeg) ud.lLeg.rotation.x = Math.sin(ud.t * legAnimSpeed) * legAnimAmp;
           if (ud.rLeg) ud.rLeg.rotation.x = Math.sin(ud.t * legAnimSpeed + Math.PI) * legAnimAmp;
+
+          // ── FBX ANIMATED CHARACTER BLEND ──
+          if (ud.isFBXAnimated && ud.mixer) {
+            const moving = ud.aiState === 'walk' || ud.aiState === 'chase'
+            if (ud.idleAction && ud.runAction) {
+              const targetIdle = moving ? 0 : 1
+              const targetRun = moving ? 1 : 0
+              ud.idleAction.setEffectiveWeight(ud.idleAction.getEffectiveWeight() + (targetIdle - ud.idleAction.getEffectiveWeight()) * 0.1)
+              ud.runAction.setEffectiveWeight(ud.runAction.getEffectiveWeight() + (targetRun - ud.runAction.getEffectiveWeight()) * 0.1)
+            }
+            ud.mixer.update(dt)
+          }
 
           // ── POLICE VOLUNTEER SPECIAL BEHAVIOR ──
           if (isPoliceVolunteer) {

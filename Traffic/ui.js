@@ -1514,27 +1514,52 @@ const _buildVehicle = (type, col) => {
   let rotY = 0
 
   if (window.PRELOADED_MODELS) {
-    let modelKey = type
-    const keysForType = Object.keys(window.PRELOADED_MODELS).filter((k) => k === type || k.startsWith(type + '_'))
-    if (keysForType.length > 0) {
-      modelKey = keysForType[Math.floor(Math.random() * keysForType.length)]
+    // For 'car' type, sometimes use LowPoly Cars FBX instead of GLB variants
+    if (type === 'car' && window.PRELOADED_MODELS['lowpoly_cars'] && Math.random() < 0.4) {
+      const lpRoot = window.PRELOADED_MODELS['lowpoly_cars']
+      // FBX multi-mesh: pick a random child car body
+      const cars = []
+      lpRoot.traverse(c => { if (c.isGroup && c.children.length > 0) cars.push(c) })
+      if (cars.length > 0) {
+        baseModel = cars[Math.floor(Math.random() * cars.length)].clone()
+        s = 3.2
+        // Apply color to body meshes
+        baseModel.traverse((child) => {
+          if (child.isMesh && child.material) {
+            const n = child.name.toLowerCase()
+            if (n.includes('body') || n.includes('paint') || n.includes('chassis') || (!n.includes('wheel') && !n.includes('glass') && !n.includes('window'))) {
+              child.material = child.material.clone()
+              child.material.color.setHex(col)
+            }
+          }
+        })
+      }
     }
 
-    if (window.PRELOADED_MODELS[modelKey]) {
-      baseModel = window.PRELOADED_MODELS[modelKey].clone()
-      if (type === 'bus' || type === 'truck') s = 4.0
-      else if (type === 'auto' || type === 'bike') s = 2.5
-      else s = 3.2
+    // Default: GLB variant pool
+    if (!baseModel) {
+      let modelKey = type
+      const keysForType = Object.keys(window.PRELOADED_MODELS).filter((k) => k === type || k.startsWith(type + '_'))
+      if (keysForType.length > 0) {
+        modelKey = keysForType[Math.floor(Math.random() * keysForType.length)]
+      }
 
-      baseModel.traverse((child) => {
-        if (child.isMesh && child.material) {
-          // Kenney models usually use materials like "paint", "body", "color"
-          if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
-            child.material = child.material.clone()
-            child.material.color.setHex(col)
+      if (window.PRELOADED_MODELS[modelKey]) {
+        baseModel = window.PRELOADED_MODELS[modelKey].clone()
+        if (type === 'bus' || type === 'truck') s = 4.0
+        else if (type === 'auto' || type === 'bike') s = 2.5
+        else s = 3.2
+
+        baseModel.traverse((child) => {
+          if (child.isMesh && child.material) {
+            // Kenney models usually use materials like "paint", "body", "color"
+            if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
+              child.material = child.material.clone()
+              child.material.color.setHex(col)
+            }
           }
-        }
-      })
+        })
+      }
     }
   }
 
@@ -1796,24 +1821,34 @@ const _buildVehicle = (type, col) => {
 const _buildHuman = (isPlayer = false) => {
   const g = new THREE.Group()
 
-  const chars = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c']
-  const charKey = chars[Math.floor(Math.random() * chars.length)]
+  // Pool: GLB mini-characters + animated FBX characters (when loaded)
+  const glbChars = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c']
+  const fbxChars = ['anim_survivors', 'anim_retro', 'anim_protagonists'].filter(k => window.PRELOADED_MODELS && window.PRELOADED_MODELS[k])
+  const allChars = glbChars.concat(fbxChars)
+  const charKey = allChars[Math.floor(Math.random() * allChars.length)]
 
   // Debug: Check if character models are loaded
   const charLoaded = window.PRELOADED_MODELS && window.PRELOADED_MODELS[charKey];
   if (!charLoaded) {
-    console.log('[DEBUG] Character model not loaded:', charKey, 'Available:', Object.keys(window.PRELOADED_MODELS || {}).filter(k => k.startsWith('char')).join(', '));
+    console.log('[DEBUG] Character model not loaded:', charKey, 'Available:', Object.keys(window.PRELOADED_MODELS || {}).filter(k => k.startsWith('char') || k.startsWith('anim')).join(', '));
   }
 
   if (charLoaded) {
     const hModel = window.PRELOADED_MODELS[charKey].clone()
+    const isFBX = charKey.startsWith('anim_')
 
-    // Characters are loaded at 4.5x in start.js, now scale to visible size
-    // Original GLB ~1 unit, loaded at 4.5, scale to ~1.2-1.5 visible
-    const loadScale = 4.5;
-    const targetScale = isPlayer ? 1.5 : 1.2;
-    hModel.scale.set(targetScale / loadScale, targetScale / loadScale, targetScale / loadScale);
-    hModel.position.y = 0;
+    if (isFBX) {
+      // FBX models stored at 1x (already ~180 units). Scale to visible pedestrian size.
+      const targetH = isPlayer ? 1.8 : 1.5
+      hModel.scale.setScalar(targetH / 180)
+      hModel.position.y = 0
+    } else {
+      // GLB characters loaded at 4.5x, scale down to visible size
+      const loadScale = 4.5;
+      const targetScale = isPlayer ? 1.5 : 1.2;
+      hModel.scale.set(targetScale / loadScale, targetScale / loadScale, targetScale / loadScale);
+      hModel.position.y = 0;
+    }
 
     // Ensure all meshes in cloned model render properly
     hModel.traverse((child) => {
@@ -1851,6 +1886,23 @@ const _buildHuman = (isPlayer = false) => {
     // GLB model already has full body — no procedural legs needed
     // Walk animation uses lLeg/rLeg userData if found
     g.userData = { lLeg: lLeg, rLeg: rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
+
+    // FBX animated characters: set up AnimationMixer for idle/run clips
+    if (isFBX && hModel.animations && hModel.animations.length > 0) {
+      const mixer = new THREE.AnimationMixer(hModel)
+      // Prefer 'idle' or first clip
+      const idleClip = hModel.animations.find(c => c.name.toLowerCase().includes('idle')) || hModel.animations[0]
+      const runClip = hModel.animations.find(c => c.name.toLowerCase().includes('run') || c.name.toLowerCase().includes('walk'))
+      const idleAction = mixer.clipAction(idleClip)
+      idleAction.play()
+      let runAction = null
+      if (runClip) { runAction = mixer.clipAction(runClip); runAction.setEffectiveWeight(0); runAction.play() }
+      g.userData.mixer = mixer
+      g.userData.idleAction = idleAction
+      g.userData.runAction = runAction
+      g.userData.isFBXAnimated = true
+    }
+
     return g
   }
 
