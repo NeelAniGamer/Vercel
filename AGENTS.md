@@ -1,17 +1,49 @@
 # Class Of Learners — Agent Rules
 
-> Static HTML site on Vercel. No build system, no framework, no tests, no lint.
-> All CSS/JS is inline or single files loaded from CDN. Read this before editing.
+> Static HTML site on Vercel. Mostly no-build, but `react-src/` bundles via esbuild.
+> Read this before editing any file in the repo.
 
 ---
 
-## No Build System
+## Build System
 
-- No `npm run build`, no bundler, no type checker, no test runner, no linter
-- All CSS/JS is inline in HTML or single standalone files (`col-*.js`, `col-ui.css`)
-- Libraries loaded from CDN: Three.js r128, Supabase JS, qr-code-styling, JSZip, html2canvas
-- To deploy: commit to repo → Vercel auto-deploys
-- `package.json` only has `prettier` as devDependency — optional, not enforced
+- **Primary deployment:** Static HTML — commit to repo → Vercel auto-deploys (no build step)
+- **React bundle (optional):** `npm run build` runs `build.js` → esbuild bundles `react-src/GamePage.tsx` → `dist/Traffic/simulator-bundle.js`. This is a secondary产物, not the primary site.
+- **No lint, no tests, no type checker** enforced in CI
+- `package.json` dependencies: React 19, Three.js 0.185, esbuild, TypeScript 6, Prettier (optional)
+
+---
+
+## File Structure
+
+```
+├── *.html              # Static pages (home, about, solar, etc.)
+├── col-router.js       # Global router (fetches config.json, renders 503/404)
+├── col-ui.js           # Shared UI (nav, theme, APK updater)
+├── col-ui.css          # CSS variables + typography
+├── col-auth.js         # Supabase Google OAuth + email/password
+├── col-3d.js           # Three.js procedural backgrounds (desktop only)
+├── supabase.js         # Minified Supabase SDK v2.108.1
+├── config.json         # Supabase auth creds + page status routing
+├── build.js            # esbuild bundler for react-src/
+├── manifest.json       # PWA manifest ("Class Of Learners")
+├── sw.js               # Service worker (cache-first for core assets)
+├── version.json        # APK version info (v1.6, code 7)
+├── cast-version.json   # Cast app version (v1.1, code 2)
+├── Traffic/            # 3D driving simulator sub-app (see Traffic/AGENTS.md)
+├── react-src/          # React/TypeScript source for simulator bundle
+│   ├── GamePage.tsx    # Main entrypoint → bundled to dist/Traffic/
+│   ├── engine/         # Game engine modules
+│   ├── vehicles/       # Vehicle system
+│   ├── hud/            # HUD components
+│   ├── state/          # State management
+│   └── systems/        # Game systems
+├── cast/               # CastFlow PWA (separate mini-app)
+├── dist/               # Build output (gitignored usually)
+├── skills-lock.json    # Installed agent skills registry
+├── .agents/skills/     # Agent skills (3d-game-builder, browser-use, etc.)
+└── .claude/            # Claude Code settings + skills
+```
 
 ---
 
@@ -21,7 +53,7 @@
 | ---------------------- | ------------------------------------------------------------------------------------------------ |
 | `config.json`          | Supabase auth credentials + page status routing. Changes break auth site-wide                    |
 | `Traffic/config.json`  | Separate Supabase creds for Traffic sub-app. Do NOT mix with root config                         |
-| `col-auth.js`          | Global auth system (Google OAuth + email/password via Supabase)                                  |
+| `col-auth.js`          | Global auth system (Google OAuth + email/password via Supabase). 497 lines.                      |
 | `col-router.js`        | Global router — fetches config.json, renders 503/404 screens. Affects ALL pages                  |
 | `supabase.js`          | Minified Supabase SDK v2.108.1. Replace only via CDN update                                      |
 | Google OAuth Client ID | Hardcoded in multiple HTML files (`500448449044-...`). Changing breaks Google sign-in everywhere |
@@ -52,7 +84,7 @@ Every standard page loads these in `<head>` (all `defer`):
 
 ## Two Auth Systems
 
-1. **`col-auth.js`** — Used by most pages. Supabase-based Google OAuth + email/password. Injects `colAuthModal` / `loginMo` modal. Exposes `openLogin()`, `closeMo()` globally.
+1. **`col-auth.js`** — Used by most pages. Supabase-based Google OAuth + email/password. Injects `colAuthModal` / `loginMo` modal. Exposes `openLogin()`, `closeMo()` globally. On auth state change, fires `col-auth-changed` CustomEvent.
 2. **QR inline auth** — `qr.html` has its own legacy `gSignIn()` function and inline Google OAuth (access token in URL hash). Only `qr.html` defines `gSignIn()`.
 
 Do NOT merge these systems without understanding both. Most pages' `openLogin()` calls are bridged by `col-auth.js`.
@@ -89,10 +121,28 @@ Two layers control page status (200/503/404/500):
 
 `Traffic/` is a semi-independent sub-app with its own auth and game engine. Key gotchas:
 
-- All Traffic HTML pages (`Driving.html`, `Academy.html`, `TrafficDashboard.html`, `TrafficSetup.html`) DO load the shared `../col-router.js`, `../col-ui.js`, `../col-auth.js` with `../` prefix
+- Traffic HTML pages (`Driving.html`, `Academy.html`, `TrafficDashboard.html`, `TrafficSetup.html`) DO load shared `../col-router.js`, `../col-ui.js`, `../col-auth.js` with `../` prefix
 - `Driving.html` and `Academy.html` **patch `fetch()`** to redirect `config.json` requests to `../config.json`
 - `Cyberpunk/` inside Traffic/ is an archive — never modify
 - For deep Traffic architecture, see `Traffic/AGENTS.md`
+
+---
+
+## PWA & APK System
+
+- **PWA:** `manifest.json` + `sw.js` for "Add to Home Screen" on Android
+- **Service worker:** caches core assets (`/`, `/home.html`, `/col-*.js`, `/col-ui.css`, `/icon.webp`)
+- **APK updater:** `version.json` checked by `col-ui.js` for in-app update prompts
+- **Cast app:** `cast/` directory has its own mini-app (`CastFlow.html`) with separate manifest
+
+---
+
+## Installed Agent Skills
+
+Skills in `.agents/skills/` are registered in `skills-lock.json`:
+- `browser-use` — browser automation via CDP
+- `valyu-best-practices` — Valyu API toolkit
+- Plus 8 more in `.agents/skills/` (3d-game-builder, 3d-game-dev, humanizer, etc.)
 
 ---
 
@@ -126,7 +176,7 @@ Before deleting any file:
 
 1. Search ALL HTML files for references: `grep -r "filename" *.html`
 2. Check `config.json`, `vercel.json`, and any JS file
-3. Historical archives (`Traffic_Archives_Index.md` describes old directories that may not exist on disk)
+3. Historical archives: `Traffic_Archives_Index.md` indexes old directories (`Traffic - Major UI Change/`, `Traffic - Major Updates/`)
 
 ---
 
@@ -140,4 +190,4 @@ Each HTML page follows this structure:
 
 ---
 
-_Last updated: July 5, 2026_
+_Last updated: July 8, 2026_

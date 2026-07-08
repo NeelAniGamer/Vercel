@@ -12,8 +12,8 @@
 
 - **3D Engine:** Three.js (r128, CDN-loaded)
 - **Models:** Kenney asset packs (GLB/GLTF) — cars, buildings, roads, characters
-- **Auth:** Supabase (separate from root `col-auth.js`)
-- **Levels:** 20+ procedural levels defined in `levels/level*.js`
+- **Auth:** Supabase — root `col-auth.js` loaded via `../` prefix, plus Traffic-specific handlers in `course.js` and `ui.js`
+- **Levels:** 20 procedural levels defined in `levels/level*.js`
 - **Hosting:** Vercel (static site, served from `Traffic/` subdirectory)
 
 ---
@@ -57,7 +57,7 @@ Traffic/
 3. `env.js` — environment textures
 4. `vehicles.js` — vehicle factory functions
 5. `auto.js`, `bus.js`, `lambo.js` — specific vehicle builders
-6. `game_core.js` — main game class (`TrafficGame`)
+6. `game_core.js` — main game class (`Game` at `game_core.js:9`)
 7. `ui.js` — UI/HUD overlay class (`TrafficUI`)
 8. Level data (`levels/level1.js` through `levels/level20.js`)
 
@@ -98,7 +98,7 @@ Traffic/
 5. **Road tiles are GLTF** — Road geometry comes from `road_straight` model, not procedural. Tiles are positioned at y=0.08 to sit above ground.
 6. **Pedestrian mode** — When `vehMode === 'pedestrian'`, `isPedestrian = true` and the player controls a human character. In vehicle mode, the player starts as a pedestrian who can enter/exit a vehicle with F key.
 7. **Building rotation** — Buildings rotate to face the road. Vertical road: ±PI/2. Horizontal road: PI or 0. Do NOT add extra rotation offsets.
-8. **Shared scripts NOT loaded** — Traffic pages do NOT load `col-router.js`, `col-ui.js`, `col-auth.js`, or `col-3d.js`. They have their own auth/UI system.
+8. **Shared scripts loaded with `../` prefix** — Traffic pages load `../col-router.js`, `../col-ui.js`, and `../col-auth.js` (root shared scripts). They also have their own Traffic-specific auth/UI handlers in `course.js` and `ui.js`.
 
 ---
 
@@ -227,4 +227,4 @@ This prevents reinventing wheels, ensures industry-standard patterns, and avoids
 
 ---
 
-_Last updated: 2026-07-04_
+_Last updated: 2026-07-08_
