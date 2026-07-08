@@ -928,8 +928,10 @@ class Game {
 
 
         this._initMobileCameraLook();
+        this._initCameraJoystick();
         this._initSwipeTurn();
         this._initMouseSteer();
+        this._initMobileHudAutohide();
       }
       _initG() { document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); }); }
 
@@ -1015,11 +1017,130 @@ class Game {
         if (steerWheel) steerWheel.style.display = 'none';
       }
 
+      // ── CAMERA JOYSTICK FOR MOBILE LOOK-AROUND ──
+      _initCameraJoystick() {
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+
+        const camJoy = document.getElementById('camera-joystick');
+        const camKnob = document.getElementById('camera-joystick-knob');
+        if (!camJoy || !camKnob) return;
+
+        camJoy.style.display = 'flex';
+
+        let isDragging = false;
+        const maxDist = 35;
+        this._camJoyActive = false;
+
+        const handleCamMove = (clientX, clientY) => {
+          const rect = camJoy.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          let dx = clientX - centerX;
+          let dy = clientY - centerY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > maxDist) {
+            dx = (dx / dist) * maxDist;
+            dy = (dy / dist) * maxDist;
+          }
+          camKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+          // Map joystick displacement to camYaw/camPitch changes
+          const sensitivity = 0.04;
+          this.camYaw -= dx * sensitivity;
+          this.camPitch -= dy * sensitivity;
+          this.camPitch = Math.max(-1.2, Math.min(1.2, this.camPitch));
+        };
+
+        const resetCamJoy = () => {
+          isDragging = false;
+          this._camJoyActive = false;
+          camKnob.style.transform = 'translate(0px, 0px)';
+        };
+
+        camJoy.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          isDragging = true;
+          this._camJoyActive = true;
+          this._camJoyEverUsed = true;
+          handleCamMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        camJoy.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          e.preventDefault();
+          handleCamMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        camJoy.addEventListener('touchend', resetCamJoy);
+        camJoy.addEventListener('touchcancel', resetCamJoy);
+
+        // Mouse fallback for testing
+        camJoy.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          this._camJoyActive = true;
+          handleCamMove(e.clientX, e.clientY);
+        });
+        window.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          handleCamMove(e.clientX, e.clientY);
+        });
+        window.addEventListener('mouseup', resetCamJoy);
+      }
+
+      // ── HUD AUTO-HIDE ON MOBILE ──
+      _initMobileHudAutohide() {
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+        const hud = document.getElementById('hud');
+        const hudbar = document.getElementById('hudbar');
+        const hwrap = document.getElementById('hwrap');
+        const obj = document.getElementById('objective-overlay');
+        const panels = [hud, hudbar, hwrap, obj].filter(Boolean);
+        if (!panels.length) return;
+
+        let fadeTimer = null;
+        const FADE_DELAY = 3000;
+        const FADE_OPACITY = '0.25';
+        const NORMAL_OPACITY = '1';
+
+        const doFade = () => {
+          panels.forEach(p => {
+            p.style.transition = 'opacity 0.6s ease';
+            p.style.opacity = FADE_OPACITY;
+          });
+        };
+        const doShow = () => {
+          panels.forEach(p => {
+            p.style.transition = 'opacity 0.3s ease';
+            p.style.opacity = NORMAL_OPACITY;
+          });
+        };
+        const restartTimer = () => {
+          doShow();
+          clearTimeout(fadeTimer);
+          fadeTimer = setTimeout(doFade, FADE_DELAY);
+        };
+
+        // Start fade after level loads
+        fadeTimer = setTimeout(doFade, FADE_DELAY);
+
+        // Tap anywhere on canvas (not on controls) to reveal
+        document.addEventListener('touchstart', (e) => {
+          const t = e.target;
+          if (t.closest('#mobile-controls') || t.closest('#hud') || t.closest('#hudbar') ||
+              t.closest('#hwrap') || t.closest('#civic-controls') || t.closest('#camera-joystick') ||
+              t.closest('#virtual-joystick') || t.closest('#gp') || t.closest('#phone-gps')) return;
+          restartTimer();
+        }, { passive: true });
+
+        // Also reveal briefly on score/objective change
+        this._hudShowBrief = () => restartTimer();
+      }
+
       _initMobileCameraLook() {
         if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
         const isControl = (el) => {
           if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob'];
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
           for (const id of ctrlIds) {
             const c = document.getElementById(id);
             if (c && (el === c || c.contains(el))) return true;
@@ -1092,7 +1213,7 @@ class Game {
 
         const isControl = (el) => {
           if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob'];
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
           for (const id of ctrlIds) {
             const c = document.getElementById(id);
             if (c && (el === c || c.contains(el))) return true;
@@ -1221,8 +1342,10 @@ class Game {
 
       _decayCameraLook(dt) {
         if (this._isDraggingMobileLook) return;
+        if (this._camJoyActive) return;
         if (this.isPointerLocked || this._isDraggingCamera) return;
-        const decayRate = 4;
+        // After camera joystick use, use very slow decay so angle is preserved
+        const decayRate = this._camJoyEverUsed ? 0.3 : 4;
         const threshold = 0.005;
         if (Math.abs(this.camYaw) > threshold || Math.abs(this.camPitch) > threshold) {
           const factor = Math.max(0, 1 - decayRate * dt);
@@ -1396,6 +1519,7 @@ class Game {
         if (mob()) document.getElementById('tc').classList.add('on');
         if (mob()) this._autoGyro();
         document.getElementById('hlv').textContent = lv.id; document.getElementById('hobj').textContent = lv.tg; this._uh(); sfx.play('ok');
+        if (this._hudShowBrief) this._hudShowBrief();
         
         // Initialize tasks for this level
         this._initTasks(lv);

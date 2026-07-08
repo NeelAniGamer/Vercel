@@ -3984,6 +3984,35 @@
         "></div>
   </div>
 
+  <!-- Right-side Camera Joystick for Mobile Look-Around -->
+  <div id="camera-joystick" style="
+        position: fixed;
+        bottom: clamp(40px, 12vh, 100px);
+        right: clamp(20px, 6vw, 40px);
+        width: clamp(100px, 15vw, 140px);
+        height: clamp(100px, 15vw, 140px);
+        border-radius: 50%;
+        background: rgba(100, 200, 255, 0.12);
+        border: 2px solid rgba(100, 200, 255, 0.3);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        touch-action: none;
+        z-index: 10000;
+        backdrop-filter: blur(4px);
+      ">
+    <div id="camera-joystick-knob" style="
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: linear-gradient(145deg, #5ed4f5, #3ba8d0);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+          transition: transform 0.05s ease-out;
+          opacity: 0.8;
+        "></div>
+    <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:0.55rem;color:rgba(255,255,255,0.5);pointer-events:none;white-space:nowrap;font-family:Inter,sans-serif;">👁 LOOK</div>
+  </div>
+
   <div id="mobile-controls" style="
         position: fixed;
         bottom: 0;
