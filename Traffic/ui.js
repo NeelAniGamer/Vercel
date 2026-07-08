@@ -194,19 +194,37 @@ const ui = {
       cats[catKey].levels.push(lv)
     })
 
+    const pchip = document.getElementById('pchip')
+    if (pchip) {
+      const done = Object.keys(S.comp).length
+      pchip.textContent = done + '/' + LVS.length + ' ✅'
+    }
+
+    const BATCH = 6
+    const queue = []
     Object.values(cats).forEach((cat) => {
       if (cat.levels.length === 0) return
 
       const hdr = document.createElement('div')
       hdr.className = 'category-header'
       hdr.textContent = cat.title
-      wrap.appendChild(hdr)
-
       const grid = document.createElement('div')
       grid.className = 'category-grid'
-      wrap.appendChild(grid)
 
       cat.levels.forEach((lv, idx) => {
+        queue.push({ lv, idx, grid })
+      })
+
+      wrap.appendChild(hdr)
+      wrap.appendChild(grid)
+    })
+
+    let i = 0
+    function flush() {
+      const end = Math.min(i + BATCH, queue.length)
+      const frag = document.createDocumentFragment()
+      for (; i < end; i++) {
+        const { lv, idx, grid } = queue[i]
         const done = S.comp[lv.id]
         const started = S.started && S.started[lv.id]
         const statusClass = done ? ' syl-done' : started ? ' syl-started' : ''
@@ -215,27 +233,15 @@ const ui = {
         const badgeText = done ? '✓ Completed' : started ? '● Started' : '○ Not Started'
         const badgeColor = done ? '#00f0cc' : started ? '#5ed4f5' : 'rgba(184,155,255,0.5)'
         const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')
-        // 2D game option removed from level list
-        const s2dBadge = ''
-        div.innerHTML = `
-                  <div class="syl-ck"></div>
-                  <div class="syl-top">
-                    <span class="syl-icon">${lv.icon}</span>
-                    <span class="syl-num">Level ${lv.id}</span>
-                  </div>
-                  <div class="syl-info">
-                    <div class="syl-lbl">${cleanName}</div>
-                    <div class="syl-sub">${lv.ds}</div>
-                    <div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div>
-                  </div>
-                `
+        div.innerHTML = `<div class="syl-ck"></div><div class="syl-top"><span class="syl-icon">${lv.icon}</span><span class="syl-num">Level ${lv.id}</span></div><div class="syl-info"><div class="syl-lbl">${cleanName}</div><div class="syl-sub">${lv.ds}</div><div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div></div>`
         div.style.animationDelay = `${idx * 0.08}s`
-        div.onclick = () => {
-          ui.showBriefing(lv.id)
-        }
-        grid.appendChild(div)
-      })
-    })
+        div.onclick = () => ui.showBriefing(lv.id)
+        frag.appendChild(div)
+      }
+      grid.appendChild(frag)
+      if (i < queue.length) requestAnimationFrame(flush)
+    }
+    if (queue.length) requestAnimationFrame(flush)
   },
   showLevels() {
     if (window.location.pathname.toLowerCase().includes('driving')) {
@@ -243,7 +249,7 @@ const ui = {
       return
     }
     this.show('screen-levels')
-    this._buildSylList()
+    requestAnimationFrame(() => this._buildSylList())
   },
   showNamePrompt() {
     const dlg = document.getElementById('name-prompt-dlg')
@@ -452,20 +458,20 @@ const ui = {
       const startedCount = S.started ? Object.keys(S.started).length : 0
       statsBody.innerHTML = `
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <div style="color:#666;font-size:0.9rem;font-weight:600;">COMPLETED LEVELS</div>
+                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">COMPLETED LEVELS</div>
                     <div style="font-weight:700;color:var(--accent);">${Object.keys(S.comp).length}/52</div>
                 </div>
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <div style="color:#666;font-size:0.9rem;font-weight:600;">STARTED LEVELS</div>
-                    <div style="font-weight:700;color:#5ed4f5;">${startedCount}/52</div>
+                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">STARTED LEVELS</div>
+                    <div style="font-weight:700;color:#0284c7;">${startedCount}/52</div>
                 </div>
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <div style="color:#666;font-size:0.9rem;font-weight:600;">TOTAL WALLET</div>
-                    <div style="font-weight:700;color:#2ecc71;">₹${S.wallet || 0}</div>
+                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">TOTAL WALLET</div>
+                    <div style="font-weight:700;color:#059669;">₹${S.wallet || 0}</div>
                 </div>
                 <div style="display:flex; justify-content:space-between;">
-                    <div style="color:#666;font-size:0.9rem;font-weight:600;">TOTAL BADGES</div>
-                    <div style="font-weight:700;color:#9b59b6;">${S.badges ? S.badges.length : 0}</div>
+                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">TOTAL BADGES</div>
+                    <div style="font-weight:700;color:#7c3aed;">${S.badges ? S.badges.length : 0}</div>
                 </div>
             `
     }
@@ -476,11 +482,11 @@ const ui = {
       BADGES.forEach((b) => {
         const has = S.badges && S.badges.includes(b.id)
         bHtml += `
-                    <div style="background:#fff;padding:20px;border-radius:12px;border:2px solid ${has ? '#ffd54a' : '#eee'};text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.05);filter:${has ? 'none' : 'grayscale(1)'};opacity:${has ? '1' : '0.5'};${has ? 'cursor:pointer;' : ''}" ${has ? `onclick="ui.showCert('${b.id}')"` : ''}>
+                    <div style="background:#fff;padding:20px;border-radius:12px;border:2px solid ${has ? 'var(--accent, #d97706)' : 'var(--line, #eee)'};text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.05);filter:${has ? 'none' : 'grayscale(1)'};opacity:${has ? '1' : '0.5'};${has ? 'cursor:pointer;' : ''}" ${has ? `onclick="ui.showCert('${b.id}')"` : ''}>
                         <div style="font-size:3rem;margin-bottom:10px;">${b.icon}</div>
                         <div style="font-weight:700;margin-bottom:6px;color:#2c3e50;">${b.name}</div>
-                        <div style="font-size:0.85rem;color:#666;">${b.desc}</div>
-                        ${has ? `<div style="margin-top:12px; font-size:0.75rem; color:#ffd54a; font-weight:bold; text-transform:uppercase;">Click to view Certificate</div>` : ''}
+                        <div style="font-size:0.85rem;color:var(--muted, #475569);">${b.desc}</div>
+                        ${has ? `<div style="margin-top:12px; font-size:0.75rem; color:#b45309; font-weight:bold; text-transform:uppercase;">Click to view Certificate</div>` : ''}
                     </div>
                 `
       })
@@ -580,7 +586,7 @@ const ui = {
                         ${cm ? '<span style="color:white; font-size:14px;">✔</span>' : ''}
                     </div>
                 </div>
-                <div style="font-size:0.9rem; color:#64748B; line-height:1.5;">${lv.ds || ''}</div>
+                <div style="font-size:0.9rem; color:var(--muted, #475569); line-height:1.5;">${lv.ds || ''}</div>
                 <div style="margin-top:12px; font-size:0.8rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em;">${un ? (cm ? '✔ Completed' : '▶ Start Module') : '🔒 Locked'}</div>
             `
         if (un) {
@@ -834,7 +840,7 @@ const ui = {
       @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
       @keyframes drift{0%{transform:translateX(0)}50%{transform:translateX(6px)}100%{transform:translateX(0)}}
       @keyframes honk{0%,80%,100%{opacity:0}85%{opacity:1}95%{opacity:1}}
-      @keyframes merge{0%{left:20%}100%{left:45%}}
+      @keyframes merge{0%{left:20%}50%{left:42%}100%{left:20%}}
     `;
 
     // ── Theme art map ──
@@ -1125,11 +1131,10 @@ const ui = {
     // 30. HIGHWAY MERGE — two lanes merging, cars merging
     A.highway_merge = () => `
       <div style="${road()}"></div>
-      <div style="position:absolute;bottom:100px;left:0;width:55%;height:50px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 0 20px 0;"></div>
-      <div style="position:absolute;bottom:110px;left:45%;font-size:1.2rem;">↘️</div>
-      <div style="position:absolute;bottom:110px;left:55%;font-size:1.2rem;">↙️</div>
+      <div style="position:absolute;bottom:98px;left:0;width:38%;height:28px;background:#3d3f45;border-top:3px solid #fff;border-bottom:3px solid #fff;border-radius:0 0 14px 0;"></div>
+      <div style="position:absolute;bottom:102px;left:36%;font-size:1rem;">↘️</div>
+      <div style="position:absolute;bottom:102px;left:48%;font-size:1rem;">↙️</div>
       <div style="position:absolute;bottom:48px;left:20%;font-size:2rem;animation:merge 4s infinite ease-in-out;">🚗</div>
-      <div style="position:absolute;bottom:108px;left:15%;font-size:1.8rem;animation:ba 5s infinite linear;">🚙</div>
       <div style="position:absolute;bottom:48px;left:65%;font-size:2rem;animation:ba 4s infinite linear;">🚕</div>`;
 
     // 31. ZERO VISIBILITY — fog, barely visible car
@@ -1604,9 +1609,9 @@ const ui = {
     document.getElementById('rsub').textContent = lv.name + ' 🔄 Well done!'
     document.getElementById('rcard').innerHTML =
       `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 52</span></div>
-${stats.reward ? `<div class="rr"><span class="rl" style="color:#00c851">Level Reward</span><span class="rv" style="color:#00c851">+₹${stats.reward.toLocaleString('en-IN')}</span></div>` : ''}
+${stats.reward ? `<div class="rr"><span class="rl" style="color:var(--green, #059669)">Level Reward</span><span class="rv" style="color:var(--green, #059669)">+₹${stats.reward.toLocaleString('en-IN')}</span></div>` : ''}
 ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines Deducted</span><span class="rv" style="color:#ff3b30">-₹${stats.fineAmt.toLocaleString('en-IN')}</span></div>` : ''}
-<div class="rr" style="margin-top:10px; border-top:1px solid #333; padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:#f1c40f">₹${S.wallet.toLocaleString('en-IN')}</span></div>`
+<div class="rr" style="margin-top:10px; border-top:1px solid var(--line, rgba(0,0,0,0.15)); padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:var(--accent, #b45309); font-weight:700;">₹${S.wallet.toLocaleString('en-IN')}</span></div>`
     document.getElementById('ro').classList.add('on')
     sfx.play('win')
   },

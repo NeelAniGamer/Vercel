@@ -42,17 +42,17 @@ window.addEventListener('col-auth-changed', (e) => {
 
   // UPDATE NAV BAR PROFILE UI
   if (user) {
+    const meta = user.user_metadata || {}
+    const name = meta.full_name || 'Driver'
+    const fName = name.split(' ')[0]
+
+    // Driving.html IDs
     const navBtn = document.getElementById('nav-sign-in-btn')
     const navProf = document.getElementById('navUserProfile')
     if (navBtn && navProf) {
       navBtn.style.display = 'none'
       navProf.style.display = 'flex'
-
-      const meta = user.user_metadata || {}
-      const name = meta.full_name || 'Driver'
-      const fName = name.split(' ')[0]
       document.getElementById('navUserName').innerText = fName
-
       const pfp = document.getElementById('navUserPfp')
       const ini = document.getElementById('navUserInitials')
       if (meta.avatar_url && pfp && ini) {
@@ -65,6 +65,34 @@ window.addEventListener('col-auth-changed', (e) => {
         if (pfp) pfp.style.display = 'none'
       }
     }
+
+    // Academy.html IDs
+    const acadBtn = document.getElementById('academy-sign-in-btn')
+    const acadProf = document.getElementById('trafficUserProfile')
+    if (acadBtn) acadBtn.style.display = 'none'
+    if (acadProf) {
+      acadProf.style.display = 'flex'
+      acadProf.onclick = () => (window.location.href = 'TrafficDashboard.html')
+    }
+    const acadName = document.getElementById('trafficUserName')
+    if (acadName) acadName.textContent = fName
+    const acadPfp = document.getElementById('trafficUserPfp')
+    const acadIni = document.getElementById('trafficUserInitials')
+    if (meta.avatar_url && acadPfp && acadIni) {
+      acadPfp.src = meta.avatar_url
+      acadPfp.style.display = 'block'
+      acadIni.style.display = 'none'
+    } else if (acadIni) {
+      acadIni.textContent = fName.charAt(0).toUpperCase()
+      acadIni.style.display = 'flex'
+      if (acadPfp) acadPfp.style.display = 'none'
+    }
+  } else {
+    // Signed out — hide profile, show sign-in on Academy.html
+    const acadBtn = document.getElementById('academy-sign-in-btn')
+    const acadProf = document.getElementById('trafficUserProfile')
+    if (acadBtn) acadBtn.style.display = 'block'
+    if (acadProf) acadProf.style.display = 'none'
   }
 
   if (user && user.user_metadata && user.user_metadata.progress) {
