@@ -726,6 +726,69 @@
         margin-bottom: 60px;
       }
 
+      /* Map Toggle Button */
+      .map-toggle-btn {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      .map-toggle-btn:hover {
+        background: var(--hover);
+        transform: scale(1.05);
+      }
+
+      /* Duolingo-style Level Map */
+      .level-map-container {
+        position: relative;
+        height: calc(100vh - 200px);
+        min-height: 400px;
+        overflow: hidden;
+        padding: 20px;
+      }
+      .map-scroll-area {
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        position: relative;
+      }
+      .level-path-svg {
+        width: 100%;
+        min-height: 2000px;
+        display: block;
+      }
+      .level-node {
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .level-node:hover {
+        transform: scale(1.15);
+      }
+      .level-node.completed circle { fill: #00c851; }
+      .level-node.current circle { fill: #f39c12; }
+      .level-node.locked circle { fill: #6b7280; }
+      .level-node-label {
+        font-size: 12px;
+        fill: white;
+        font-weight: 700;
+        text-anchor: middle;
+        dominant-baseline: middle;
+        pointer-events: none;
+      }
+
+      /* Mobile Map View - Show by default on mobile */
+      @media (max-width: 768px) {
+        .level-map-container { display: block; }
+        .lw { display: none; }
+      }
+
       .category-header {
         font-family: 'Instrument Serif', serif;
         font-size: 2.5rem;
@@ -2602,44 +2665,88 @@
         visibility: hidden;
         pointer-events: none;
       }
+      /* Section-based progress bar - moved down */
       .onb-prog {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 5px;
-        background: rgba(0, 0, 0, 0.08);
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(400px, 85vw);
+        height: 8px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        z-index: 10001;
+        display: flex;
+        gap: 4px;
+        padding: 4px;
+        box-sizing: border-box;
+      }
+      .onb-prog-section {
+        flex: 1;
+        height: 100%;
+        background: rgba(255,255,255,0.2);
+        border-radius: 6px;
+        transition: all 0.4s ease;
+      }
+      .onb-prog-section.completed {
+        background: linear-gradient(90deg, #00c851, #00e676);
+      }
+      .onb-prog-section.active {
+        background: linear-gradient(90deg, #f39c12, #f1c40f);
+        animation: pulse-section 1s infinite;
+      }
+      @keyframes pulse-section {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+      /* Hide the old fill bar */
+      .onb-prog-fill { display: none; }
+
+      /* Progress percentage label */
+      .onb-pct-label {
+        position: fixed;
+        top: 38px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text);
         z-index: 10001;
       }
-      .onb-prog-fill {
-        height: 100%;
-        width: 0%;
-        background: linear-gradient(90deg, #0369a1, #d97706);
-        transition: width 0.4s ease;
-        border-radius: 0 3px 3px 0;
-      }
+      /* Full-page onboarding - like landing page */
       .onb-box {
-        background: var(--card);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 32px 24px;
-        width: min(420px, 90vw);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: none;
+        border-radius: 0;
+        padding: 20px;
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        box-shadow: none;
         text-align: center;
+        min-height: 60vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
       }
+      .onb-box > * { max-width: 100%; }
       .onb-h {
-        font-size: 1.5rem;
+        font-size: clamp(1.8rem, 5vw, 2.8rem);
         font-weight: 700;
         color: var(--text);
-        margin: 0 0 8px;
+        margin: 0 0 16px;
+        text-align: center;
       }
       .onb-sub {
-        font-size: 0.95rem;
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
         color: var(--muted);
-        margin: 0 0 24px;
-        line-height: 1.5;
+        margin: 0 0 32px;
+        line-height: 1.6;
+        text-align: center;
+        max-width: 600px;
       }
       .onb-input {
         width: 100%;
@@ -3210,8 +3317,21 @@
           >
             0/52 ✅
           </div>
+          <button class="map-toggle-btn" onclick="toggleLevelView()" title="Toggle Map View">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/>
+            </svg>
+          </button>
         </div>
       </div>
+
+      <!-- Duolingo-style Level Map (hidden by default) -->
+      <div class="level-map-container" id="level-map" style="display: none;">
+        <div class="map-scroll-area" id="map-scroll">
+          <svg class="level-path-svg" id="level-path-svg"></svg>
+        </div>
+      </div>
+
       <div class="lw" id="lvbody"></div>
     </div>
 
@@ -3445,19 +3565,23 @@
       </div>
     </div>
 
-    <!-- Onboarding Wizard -->
+    <!-- Onboarding Wizard - Full Page Style -->
     <div class="onb-overlay hidden" id="onb-overlay" style="display:none">
+      <!-- Section-based progress -->
       <div class="onb-prog" id="onb-progress">
-        <div class="onb-prog-fill" id="onb-progress-fill"></div>
+        <div class="onb-prog-section"></div>
+        <div class="onb-prog-section"></div>
+        <div class="onb-prog-section"></div>
+        <div class="onb-prog-section"></div>
       </div>
+      <div class="onb-pct-label">0% Complete</div>
 
       <!-- Screen 0: Welcome -->
-      <div class="onb-box" style="display:block">
-        <div style="font-size:3rem;margin-bottom:16px">🚦</div>
-        <h2 class="onb-h">Welcome to Traffic Hero Academy</h2>
-        <p class="onb-sub">Learn to drive responsibly with Mumbai's interactive driving course.</p>
-        <button class="onb-btn" onclick="showOnboardingScreen(1)">Get Started</button>
-        <button class="onb-skip" onclick="skipOnboarding()">Skip for now</button>
+      <div class="onb-box" style="display:flex">
+        <div style="font-size: clamp(3rem, 10vw, 5rem); margin-bottom: 20px">🚦🏙️</div>
+        <h2 class="onb-h">Welcome to Mumbai Traffic Hero Academy</h2>
+        <p class="onb-sub">Complete 52 real-world driving scenarios designed by Mumbai Traffic Police. Earn your official certification and become a responsible driver.</p>
+        <button class="onb-btn" onclick="showOnboardingScreen(1)" style="max-width: 300px; font-size: 1.2rem; padding: 16px 32px;">Get Started</button>
       </div>
 
       <!-- Screen 1: Name -->
@@ -3468,24 +3592,27 @@
           oninput="document.getElementById('onb-proceed-name').disabled=!this.value.trim()">
         <div style="height:16px"></div>
         <button class="onb-btn" id="onb-proceed-name" disabled onclick="_onbSaveName();showOnboardingScreen(2)">Continue</button>
-        <button class="onb-skip" onclick="skipOnboarding()">Skip for now</button>
+        <button class="onb-skip" onclick="skipOnboarding()">Skip & Continue</button>
       </div>
 
       <!-- Screen 2: Auth choice -->
       <div class="onb-box" style="display:none">
-        <h2 class="onb-h">Choose your sign-in</h2>
-        <p class="onb-sub">Sign in to save your progress across devices.</p>
-        <div class="onb-chips">
-          <button class="onb-chip" onclick="if(typeof ui!=='undefined'&&ui.openLogin)ui.openLogin();showOnboardingScreen(3)">
-            <span class="onb-chip-icon">🔑</span>
-            <span class="onb-chip-label">Sign in with Google</span>
+        <h2 class="onb-h">Save Your Progress</h2>
+        <p class="onb-sub">Sign in to continue your learning across devices and earn your certificate.</p>
+        <div class="onb-chips" style="flex-direction: column; gap: 16px;">
+          <button class="onb-chip" onclick="handleGoogleLogin()" style="padding: 20px 32px; min-height: 60px;">
+            <span class="onb-chip-icon" style="font-size: 1.8rem;">🔐</span>
+            <span class="onb-chip-label" style="font-size: 1.1rem;">Continue with Google</span>
           </button>
-          <button class="onb-chip" onclick="showOnboardingScreen(3)">
-            <span class="onb-chip-icon">🎮</span>
-            <span class="onb-chip-label">Play without sign-in</span>
+          <button class="onb-chip" onclick="handleEmailLogin()" style="padding: 20px 32px; min-height: 60px;">
+            <span class="onb-chip-icon" style="font-size: 1.8rem;">📧</span>
+            <span class="onb-chip-label" style="font-size: 1.1rem;">Sign Up / Login with Email</span>
+          </button>
+          <button class="onb-chip" onclick="showOnboardingScreen(3)" style="padding: 16px 24px; background: rgba(255,255,255,0.3);">
+            <span class="onb-chip-icon" style="font-size: 1.5rem;">🎮</span>
+            <span class="onb-chip-label" style="font-size: 1rem;">Continue as Guest</span>
           </button>
         </div>
-        <button class="onb-skip" onclick="skipOnboarding()">Skip for now</button>
       </div>
 
       <!-- Screen 3: Details -->
@@ -3507,7 +3634,7 @@
           <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')">🚌 Bus</button>
         </div>
         <button class="onb-btn" onclick="showOnboardingScreen(4)">Continue</button>
-        <button class="onb-skip" onclick="skipOnboarding()">Skip for now</button>
+        <button class="onb-skip" onclick="skipOnboarding()">Skip & Continue</button>
       </div>
 
       <!-- Screen 4: Completion -->
@@ -3652,10 +3779,27 @@
         if (lbl) lbl.textContent = msg || ''
       }
 
+      // Update section-based progress
+      function _updateSectionProgress() {
+        const sections = document.querySelectorAll('.onb-prog-section')
+        const pctLabel = document.querySelector('.onb-pct-label')
+        const totalSections = 4 // 4 sections: welcome, name, auth, details
+        sections.forEach((sec, i) => {
+          sec.classList.remove('completed', 'active')
+          if (i < _onbCur) {
+            sec.classList.add('completed')
+          } else if (i === _onbCur) {
+            sec.classList.add('active')
+          }
+        })
+        if (pctLabel) {
+          pctLabel.textContent = Math.round((_onbCur / totalSections) * 100) + '% Complete'
+        }
+      }
+
       function showOnboardingScreen(n) {
         _onbCur = n
         var boxes = document.querySelectorAll('.onb-box')
-        var pct = Math.round((n / _onbTotal) * 100)
         var msgs = [
           'Let\'s get started',
           'What should we call you?',
@@ -3663,9 +3807,11 @@
           'Tell us about yourself',
           'You\'re all set!'
         ]
-        _onbUpdateProgress(pct, msgs[n] || 'Setting up your profile...')
 
-        // Show progress toast at each step
+        // Update section progress
+        _updateSectionProgress()
+
+        // Show progress toasts with confetti at milestones
         if (n === 1) {
           setTimeout(function() {
             if (typeof toast !== 'undefined') toast('📝 Great! 25% - Let\'s set up your profile', '#3b8c66')
@@ -3677,12 +3823,14 @@
           }, 500)
         }
         if (n === 3) {
+          // 75% completion - show confetti
           setTimeout(function() {
-            if (typeof toast !== 'undefined') toast('🎯 Almost there! 75% - Few more details', '#9b59b6')
+            if (typeof window.confetti !== 'undefined') { window.confetti.init(); window.confetti.burst(2000) }
+            if (typeof toast !== 'undefined') toast('🎯 Amazing! 75% - Almost there!', '#9b59b6')
           }, 500)
         }
 
-        boxes.forEach(function (b, i) { b.style.display = i === n ? 'block' : 'none' })
+        boxes.forEach(function (b, i) { b.style.display = i === n ? 'flex' : 'none' })
         if (n === 2) {
           var nm = document.getElementById('onb-name-input') || document.getElementById('prompt-name')
           if (nm && nm.value.trim().length > 0) {
@@ -3691,10 +3839,14 @@
         }
         if (n === 3) _onbUpdateAuthChips()
         if (n === 4) {
-          // 100% completion - show celebration
+          // 100% completion - show big celebration and go to levels
           setTimeout(function () {
-            if (typeof window.confetti !== 'undefined') { window.confetti.init(); window.confetti.burst(4000) }
+            if (typeof window.confetti !== 'undefined') { window.confetti.init(); window.confetti.burst(5000) }
             if (typeof toast !== 'undefined') toast('🎉 Congratulations! 100% - Profile setup complete!', '#00c851')
+            // Auto-navigate to levels after 2 seconds
+            setTimeout(function() {
+              _onbComplete()
+            }, 2000)
           }, 300)
         }
       }
@@ -3707,6 +3859,58 @@
           ov.style.display = 'flex'
         }
         showOnboardingScreen(0)
+      }
+
+      // Handle Google Login - show login modal
+      function handleGoogleLogin() {
+        if (typeof ui !== 'undefined' && ui.openLogin) {
+          ui.openLogin()
+          // After login is successful, continue to next step
+          // The login modal should handle this
+          setTimeout(function() {
+            showOnboardingScreen(3)
+          }, 1000)
+        } else if (typeof window.openLogin === 'function') {
+          window.openLogin()
+          setTimeout(function() {
+            showOnboardingScreen(3)
+          }, 1000)
+        } else {
+          // Fallback - just continue
+          showOnboardingScreen(3)
+        }
+      }
+
+      // Handle Email Login
+      function handleEmailLogin() {
+        if (typeof ui !== 'undefined' && ui.openLogin) {
+          ui.openLogin()
+          setTimeout(function() {
+            showOnboardingScreen(3)
+          }, 1000)
+        } else {
+          showOnboardingScreen(3)
+        }
+      }
+
+      // Hidden dev unlock - click version 5 times
+      let devClickCount = 0
+      function handleDevClick() {
+        devClickCount++
+        if (devClickCount >= 5) {
+          devClickCount = 0
+          const p = prompt('Developer Password:')
+          if (['Neel', 'Ansh', 'Sanjana'].includes(p)) {
+            if (typeof ui !== 'undefined' && ui && ui.adminUnlock) {
+              ui.adminUnlock()
+            } else {
+              toast('🔓 Developer Unlock Triggered!', '#00c851')
+              if (typeof ui !== 'undefined' && ui) ui.showLevels()
+            }
+          } else if (p) {
+            if (typeof toast !== 'undefined') toast('❌ Access Denied', '#ff3b30')
+          }
+        }
       }
 
       function _onbUpdateAuthChips() {
@@ -3736,13 +3940,20 @@
         var ov = document.getElementById('onb-overlay')
         if (ov) { ov.classList.add('hidden'); setTimeout(function () { ov.style.display = 'none' }, 400) }
         if (typeof ui !== 'undefined' && ui && ui.init) ui.init()
+        // Go to levels page after completion (not back to start page)
         setTimeout(function () {
-          if (typeof ui !== 'undefined' && ui && ui.showStart) ui.showStart()
+          if (typeof ui !== 'undefined' && ui && ui.showLevels) {
+            ui.showLevels()
+          } else {
+            // Fallback: redirect directly to levels
+            window.location.href = 'Academy.html?screen=levels'
+          }
         }, 500)
       }
 
       function skipOnboarding() {
-        document.getElementById('onb-skip-popup').classList.add('show')
+        // Skip directly to levels without confirmation popup
+        _onbComplete()
       }
 
       function skipCancel() {
@@ -3752,6 +3963,140 @@
       function skipConfirm() {
         document.getElementById('onb-skip-popup').classList.remove('show')
         _onbComplete()
+      }
+
+      // Toggle between list view and map view
+      let mapViewActive = false
+      function toggleLevelView() {
+        mapViewActive = !mapViewActive
+        const mapEl = document.getElementById('level-map')
+        const listEl = document.getElementById('lvbody')
+        if (mapViewActive) {
+          mapEl.style.display = 'block'
+          listEl.style.display = 'none'
+          buildLevelMap()
+        } else {
+          mapEl.style.display = 'none'
+          listEl.style.display = 'block'
+        }
+      }
+
+      // Auto-show map on mobile devices
+      function checkMobileAndShowMap() {
+        if (window.innerWidth <= 768) {
+          const mapEl = document.getElementById('level-map')
+          const listEl = document.getElementById('lvbody')
+          if (mapEl && listEl) {
+            mapViewActive = true
+            mapEl.style.display = 'block'
+            listEl.style.display = 'none'
+            buildLevelMap()
+          }
+        }
+      }
+
+      // Build Duolingo-style level map
+      function buildLevelMap() {
+        const svg = document.getElementById('level-path-svg')
+        svg.innerHTML = ''
+
+        // Get completed levels from storage
+        let S = {}
+        try { S = JSON.parse(localStorage.getItem('mth4') || '{}') } catch(e) {}
+        const completed = S.comp || {}
+        const totalLevels = window.LVS?.length || 52
+
+        // Calculate positions in a spiral/circular pattern
+        const centerX = 300
+        const centerY = 1000
+        const radiusX = 250
+        const radiusY = 800
+
+        // Generate nodes in a winding path pattern
+        const nodes = []
+        for (let i = 0; i < totalLevels; i++) {
+          // Winding path: go right, then down, then left, etc.
+          const row = Math.floor(i / 8)
+          const col = i % 8
+          const direction = row % 2 === 0 ? 1 : -1
+
+          let x, y
+          if (i < 8) {
+            // First row: arc at top
+            const angle = (i / 7) * Math.PI
+            x = centerX + Math.cos(angle) * radiusX * 0.8
+            y = centerY - 600 + Math.sin(angle) * 150
+          } else if (i < 16) {
+            // Second row: arc on right
+            const angle = ((i - 8) / 7) * Math.PI
+            x = centerX + radiusX + Math.cos(angle + Math.PI/2) * 150
+            y = centerY - 400 + Math.sin(angle + Math.PI/2) * 300
+          } else if (i < 24) {
+            // Third row: arc at bottom
+            const angle = ((i - 16) / 7) * Math.PI
+            x = centerX + Math.cos(angle + Math.PI) * radiusX * 0.8
+            y = centerY + Math.sin(angle + Math.PI) * 200
+          } else if (i < 32) {
+            // Fourth row: arc on left
+            const angle = ((i - 24) / 7) * Math.PI
+            x = centerX - radiusX + Math.cos(angle + Math.PI*1.5) * 150
+            y = centerY - 200 + Math.sin(angle + Math.PI*1.5) * 300
+          } else {
+            // Remaining: zigzag down
+            const yOffset = 150 * (row - 3)
+            x = 100 + col * 60 + (row % 2) * 30
+            y = centerY + yOffset
+          }
+          nodes.push({ id: i + 1, x, y })
+        }
+
+        // Draw path lines
+        let pathD = ''
+        nodes.forEach((n, i) => {
+          if (i === 0) pathD = `M ${n.x} ${n.y}`
+          else pathD += ` L ${n.x} ${n.y}`
+        })
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+        path.setAttribute('d', pathD)
+        path.setAttribute('fill', 'none')
+        path.setAttribute('stroke', 'rgba(255,255,255,0.2)')
+        path.setAttribute('stroke-width', '4')
+        path.setAttribute('stroke-linecap', 'round')
+        svg.appendChild(path)
+
+        // Draw nodes
+        nodes.forEach((n, i) => {
+          const lvlId = n.id
+          const isDone = completed[lvlId] && completed[lvlId].score > 0
+          const isCurrent = !isDone && (i === 0 || completed[nodes[i-1].id])
+
+          const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+          g.classList.add('level-node')
+          g.classList.add(isDone ? 'completed' : isCurrent ? 'current' : 'locked')
+          g.setAttribute('transform', `translate(${n.x}, ${n.y})`)
+          g.onclick = () => {
+            if (typeof ui !== 'undefined' && ui.showBriefing) ui.showBriefing(lvlId)
+          }
+
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+          circle.setAttribute('r', '22')
+          circle.setAttribute('fill', isDone ? '#00c851' : isCurrent ? '#f39c12' : '#6b7280')
+          circle.setAttribute('stroke', 'white')
+          circle.setAttribute('stroke-width', '3')
+
+          const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+          label.classList.add('level-node-label')
+          label.textContent = lvlId
+
+          g.appendChild(circle)
+          g.appendChild(label)
+          svg.appendChild(g)
+        })
+
+        // Set SVG height based on nodes
+        const maxY = Math.max(...nodes.map(n => n.y)) + 100
+        svg.style.minHeight = maxY + 'px'
       }
 
       function _onbSelectDot(el, group) {
@@ -3783,6 +4128,10 @@
           tick('Ready', 100)
           // Init the UI
           if (typeof ui !== 'undefined' && ui.init) ui.init()
+          // Auto-show map on mobile
+          if (window.innerWidth <= 768) {
+            setTimeout(checkMobileAndShowMap, 500)
+          }
           // Dismiss loading screen
           setTimeout(() => {
             if (ld) {
@@ -3792,8 +4141,8 @@
                 if (ld && ld.parentNode) ld.parentNode.removeChild(ld)
               }, 500)
             }
-            // Show onboarding if first visit
-            initOnboardingScreens()
+            // NOTE: Onboarding is now triggered ONLY by clicking "Get Started" button
+            // Removed auto-show to prevent loop issues
 
             // Keyboard overlap detection — adds .keyboard-open class to body
             if (window.visualViewport) {
@@ -3810,5 +4159,7 @@
         }, 400)
       })()
     </script>
+      <!-- Hidden dev unlock (click 5 times) -->
+      <div style="position: fixed; bottom: 5px; right: 10px; font-size: 0.7rem; color: var(--muted2); opacity: 0.3; cursor: pointer; z-index: 9999" onclick="handleDevClick()" title="Dev options">v2.4.1</div>
   </body>
 </html>

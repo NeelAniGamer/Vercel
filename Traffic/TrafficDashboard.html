@@ -434,6 +434,35 @@
         .share-bar { gap: 8px; }
         .share-btn { padding: 8px 12px; font-size: 0.85rem; min-height: 44px; }
       }
+    /* Certificate Print Styles - Fit on one page */
+      @media print {
+        body { background: white !important; }
+        .dashboard-container { max-width: 100%; padding: 10px; }
+        .glass-panel, .header { display: none !important; }
+        #cert-wrapper {
+          display: block !important;
+          filter: none !important;
+          opacity: 1 !important;
+          box-shadow: none !important;
+        }
+        .crt {
+          width: 100% !important;
+          max-width: 700px !important;
+          margin: 0 auto !important;
+          padding: 20px !important;
+          border-width: 6px !important;
+          font-size: 12pt !important;
+          page-break-inside: avoid;
+          transform: scale(0.95);
+          transform-origin: top center;
+        }
+        .crtn { font-size: 18pt !important; }
+        .crt-course { font-size: 24pt !important; }
+        .crt-body { font-size: 12pt !important; }
+        .cert-details { font-size: 10pt !important; }
+        /* Hide non-certificate elements */
+        .partner-strip, .btn, .cert-progress-ring, #no-cert-msg, #share-bar { display: none !important; }
+      }
     </style>
   </head>
   <body>
@@ -560,7 +589,8 @@
     <script>
       let S = {}
       try {
-        const raw = localStorage.getItem('th-save')
+        // FIXED: Read from correct key 'mth4' instead of 'th-save'
+        const raw = localStorage.getItem('mth4')
         if (raw) S = JSON.parse(raw)
       } catch (e) {}
 
@@ -602,8 +632,9 @@
       document.getElementById('s-score').innerText = (S.score || 0).toLocaleString()
 
       let completed = 0
-      if (S.lvl) {
-        completed = Object.keys(S.lvl).filter((k) => S.lvl[k] > 0).length
+      // FIXED: Use S.comp for completed levels (not S.lvl)
+      if (S.comp) {
+        completed = Object.keys(S.comp).filter((k) => S.comp[k] && S.comp[k].score > 0).length
       }
       document.getElementById('s-prog').innerText = `${completed}/52`
 
