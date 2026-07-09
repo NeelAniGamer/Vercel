@@ -688,7 +688,7 @@ class Game {
         const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'da-dist', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn', 'dn-clock', 'dn-time', 'dn-icon', 'hsc'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
-      _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); if (this.renderer.domElement && this.renderer.domElement.style) { this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
+      _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); if (this.renderer.domElement && this.renderer.domElement.style) { this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
       _initIn() {
         window.addEventListener('keydown', e => {
             this.keys[e.key.toLowerCase()] = true;
@@ -3782,7 +3782,7 @@ class Game {
         this.world.push(b);
       }
       _create3DRain() {
-        const count = 2000; const geo = new THREE.BufferGeometry(); const pos = [];
+        const count = this._isMobile ? 800 : 2000; const geo = new THREE.BufferGeometry(); const pos = [];
         for (let i = 0; i < count; i++)pos.push((Math.random() - .5) * 400, Math.random() * 40, (Math.random() - .5) * 600);
         geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
         this.rain = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x9cc9ff, size: 0.08, transparent: true, opacity: 0.6 }));
@@ -5504,7 +5504,7 @@ class Game {
 
         // Spawn new pedestrians dynamically
         const isFestCrowd = this.mapCfg && (this.mapCfg.crowdFestival || this.mapCfg.themeType === 'festival');
-        const maxPeds = isFestCrowd ? 120 : ((this.mapCfg && this.mapCfg.isPedestrian) ? 30 : 16);
+        const maxPeds = isFestCrowd ? (this._isMobile ? 30 : 120) : ((this.mapCfg && this.mapCfg.isPedestrian) ? 30 : 16);
         const pedSpawnRate = isFestCrowd ? 0.8 : 0.2;
         if (this.peds.length < maxPeds && Math.random() < pedSpawnRate && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
           const r = this.mapCfg.roads[Math.floor(Math.random() * this.mapCfg.roads.length)];
@@ -6301,8 +6301,8 @@ class Game {
             this._sun.shadow.mapSize.set(this._shadowQuality, this._shadowQuality);
             if (this._sun.shadow.map) { this._sun.shadow.map.dispose(); this._sun.shadow.map = null; }
             this._sun.shadow.needsUpdate = true;
-          } else if (avgFps > 50 && this._shadowQuality < 2048) {
-            this._shadowQuality = Math.min(2048, this._shadowQuality * 2);
+          } else if (avgFps > 50 && this._shadowQuality < (this._isMobile ? 1024 : 2048)) {
+            this._shadowQuality = Math.min(this._isMobile ? 1024 : 2048, this._shadowQuality * 2);
             this._sun.shadow.mapSize.set(this._shadowQuality, this._shadowQuality);
             if (this._sun.shadow.map) { this._sun.shadow.map.dispose(); this._sun.shadow.map = null; }
             this._sun.shadow.needsUpdate = true;

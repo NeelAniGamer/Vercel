@@ -51,6 +51,7 @@ Two large classes handle the core logic:
 
 ### Model System
 - `start.js` preloads ~100 GLBs into `window.PRELOADED_MODELS`.
+- **Asset Manifest:** `window.ASSET_MANIFEST` maps asset keys to `{path, fmt}` for lazy loading.
 - **Model scale chain:** GLB loaded → stored at **4.5×** → instanced buildings reset to 1× and apply their own `s` value → character models replace scale directly.
 - Road tiles (`road_straight`, etc.) sit at `y=0.08`.
 
@@ -84,6 +85,14 @@ The Vercel root (`../`) has its own auth, router, and UI. **Traffic pages do not
 - **New level:** copy `levels/levelN.js` to `levels/levelN+1.js`, edit the data object, and add a `<script src="levels/levelN+1.js">` tag in `Driving.html` after the last level.
 - **New HUD element:** add the DOM id to the `ids` array in `_initR()` of `game_core.js` (the `this.dom[id]` cache) so per-frame lookups stay O(1), and to the HTML in `Driving.html`. Then read/write through `this.dom[…]`.
 - **Touch / mobile:** `Driving.html` has `touch-action:none` on the canvas. Mobile camera look uses `camYaw` / `camPitch` with decay — see `_initIn()` in `game_core.js`.
+
+## Key Implementation Details
+
+- **Class name:** `Game`, not `TrafficGame`. Defined at `game_core.js:586`.
+- **Pedestrian mode:** When `vehMode === 'pedestrian'`, `isPedestrian = true` and player controls a human character. In vehicle mode, player starts as pedestrian who can enter/exit vehicle with F key.
+- **NPC stuck detection:** 3-second timer triggers teleport to next waypoint. Lane clamp at [-6, 6]. Traffic light detection range: 15m.
+- **Building rotation:** Buildings rotate to face the road. Vertical road: ±PI/2. Horizontal road: PI or 0. Do NOT add extra rotation offsets.
+- **Confetti z-index:** Uses 20 (between canvas and HUD), not 9998.
 
 ## 🔴 Skill-First Rule (MANDATORY)
 

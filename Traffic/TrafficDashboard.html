@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <title>Traffic Academy - Dashboard</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet" />
@@ -34,8 +34,12 @@
         color: var(--text);
         font-family: 'Inter', sans-serif;
         margin: 0;
-        padding: 0;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
         min-height: 100vh;
+        min-height: 100dvh;
         background-image: radial-gradient(circle at 15% 50%, rgba(217, 119, 6, 0.1), transparent 25%), radial-gradient(circle at 85% 30%, rgba(52, 211, 153, 0.1), transparent 25%);
       }
 
@@ -106,6 +110,7 @@
         color: #fff;
         border: none;
         padding: 12px 24px;
+        min-height: 48px;
         border-radius: 30px;
         font-weight: 600;
         font-size: 1rem;
@@ -207,18 +212,245 @@
           font-size: 1.2rem;
         }
       }
+
+      /* ── Mobile responsive overrides ── */
+      @media (max-width: 600px) {
+        .dashboard-container {
+          padding: 16px;
+          max-width: 100%;
+        }
+        .header {
+          padding: 16px;
+          border-radius: 12px;
+        }
+        .header h1 {
+          font-size: clamp(1.2rem, 4vw, 1.6rem);
+        }
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+        .stat-card {
+          padding: 12px;
+        }
+        .stat-value {
+          font-size: clamp(1.4rem, 4vw, 1.8rem);
+        }
+        .stat-label {
+          font-size: 0.8rem;
+        }
+        .header {
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .header > div:last-child {
+          width: 100%;
+          flex-direction: column;
+          display: flex;
+          gap: 8px;
+        }
+        .btn {
+          min-height: 48px;
+          width: 100%;
+          justify-content: center;
+        }
+        .crt {
+          padding: 16px;
+          border-width: 6px;
+          aspect-ratio: auto;
+          border-radius: 8px;
+        }
+        .crtn {
+          font-size: 1.6rem;
+        }
+        .crt-body {
+          font-size: 0.9rem;
+        }
+        .crt-course {
+          font-size: 1rem;
+          padding: 6px 12px;
+          margin: 16px 0;
+        }
+      }
+      /* Avatar / Profile chip */
+      .profile-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: default;
+      }
+      .avatar-circle {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        overflow: hidden;
+        border: 2px solid rgba(255,255,255,0.6);
+      }
+      .avatar-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .profile-info {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.3;
+      }
+      .profile-info .name { font-weight: 600; font-size: 0.95rem; color: var(--text); }
+      .profile-info .sub  { font-size: 0.8rem; color: var(--muted); }
+      .btn-edit {
+        background: transparent;
+        border: 1px solid var(--text);
+        color: var(--text);
+        padding: 6px 14px;
+        min-height: 36px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .btn-edit:hover { background: rgba(0,0,0,0.05); }
+
+      /* Share buttons */
+      .share-bar {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      .share-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        min-height: 44px;
+        border-radius: 24px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border: none;
+        color: #fff;
+        transition: transform 0.15s, box-shadow 0.15s;
+      }
+      .share-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+      .share-wa { background: #25d366; }
+      .share-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+      .share-copy { background: var(--text); }
+
+      /* Certificate unlock animation */
+      .cert-unlocking {
+        animation: certUnlock 0.8s ease-out forwards;
+      }
+      @keyframes certUnlock {
+        0%   { filter: grayscale(1) blur(4px); opacity: 0.5; }
+        50%  { filter: grayscale(0.3) blur(1px); opacity: 0.8; }
+        100% { filter: grayscale(0) blur(0); opacity: 1; }
+      }
+      #cert-wrapper {
+        transition: filter 0.6s ease, opacity 0.6s ease;
+      }
+
+      /* Partner section */
+      .partner-strip {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        flex-wrap: wrap;
+        padding: 16px 0;
+      }
+      .partner-strip img {
+        height: 48px;
+        object-fit: contain;
+        opacity: 0.85;
+        transition: opacity 0.2s;
+      }
+      .partner-strip img:hover { opacity: 1; }
+      .partner-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 4px;
+      }
+
+      /* Edit profile modal */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+      }
+      .modal-overlay.show { display: flex; }
+      .modal-box {
+        background: #fff;
+        border-radius: 20px;
+        padding: 28px 24px;
+        width: min(400px, 90vw);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      }
+      .modal-box h3 { margin: 0 0 16px; font-family: 'Lora', serif; }
+      .modal-box .field { margin-bottom: 14px; }
+      .modal-box .field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+      .modal-box .field input, .modal-box .field select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: max(1rem, 16px);
+        min-height: 44px;
+        background: rgba(255,255,255,0.6);
+        appearance: none;
+        -webkit-appearance: none;
+      }
+      .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+      .modal-actions .btn { flex: 1; justify-content: center; }
+
+      @media (max-width: 600px) {
+        .header { flex-wrap: wrap; gap: 12px; }
+        .header > div:last-child { width: 100%; display: flex; gap: 8px; }
+        .profile-chip .name { font-size: 0.85rem; }
+        .partner-strip { gap: 16px; }
+        .partner-strip img { height: 36px; }
+        .share-bar { gap: 8px; }
+        .share-btn { padding: 8px 12px; font-size: 0.85rem; min-height: 44px; }
+      }
     </style>
   </head>
   <body>
     <div class="dashboard-container">
       <div class="header">
-        <div>
-          <h1>Driver Dashboard</h1>
-          <div style="color: var(--muted); margin-top: 5px">Manage your profile and certificates</div>
+        <div class="profile-chip">
+          <div class="avatar-circle" id="avatar"></div>
+          <div class="profile-info">
+            <span class="name" id="d-name">Driver</span>
+            <span class="sub" id="d-sub">Student</span>
+          </div>
         </div>
-        <div style="display: flex; gap: 10px">
-          <button class="btn btn-outline" onclick="window.location.href = 'Academy.html'">&larr; Back to Academy</button>
-          <button class="btn btn-outline" style="color: var(--red); border-color: var(--red)" onclick="logoutAndClear()">Sign Out</button>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+          <button class="btn-edit" onclick="openEditModal()">✏️ Edit Profile</button>
+          <button class="btn btn-outline" onclick="window.location.href = 'Academy.html'">← Back to Academy</button>
+          <button class="btn-edit" style="color: var(--red); border-color: var(--red);" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</button>
+          <button class="btn btn-outline" style="color: var(--red); border-color: var(--red); font-size: 0.85rem" onclick="logoutAndClear()">Sign Out</button>
         </div>
       </div>
 
@@ -252,21 +484,38 @@
         </div>
       </div>
 
+      <div class="glass-panel" style="padding: 20px">
+        <div class="partner-label">Our Partners</div>
+        <div class="partner-strip">
+          <img loading="lazy" src="mumbai-police-logo.webp" alt="Mumbai Police" onerror="this.style.display='none'" />
+          <img loading="lazy" src="sneh-logo.webp" alt="Sneh Asha Foundation" onerror="this.style.display='none'" />
+        </div>
+      </div>
+
       <div class="glass-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px">
           <h2 style="margin: 0">Certificates & Achievements</h2>
+          <!-- Progress Ring -->
+          <div class="cert-progress-ring" id="cert-progress-ring" style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px; padding: 16px; background: rgba(255,255,255,0.5); border-radius: 12px;">
+            <svg width="60" height="60" viewBox="0 0 60 60" style="transform: rotate(-90deg)">
+              <circle cx="30" cy="30" r="25" fill="none" stroke="#e5e7eb" stroke-width="6"/>
+              <circle cx="30" cy="30" r="25" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="157" id="cert-progress-circle"/>
+            </svg>
+            <div style="flex: 1">
+              <div style="font-weight: 700; font-size: 1.1rem;" id="cert-progress-text">0% to Certificate</div>
+              <div style="font-size: 0.85rem; color: var(--muted);" id="cert-progress-sub">Complete all 52 modules to unlock</div>
+            </div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent);" id="cert-progress-pct">0%</div>
+          </div>
           <button class="btn" onclick="dlCert()">&#128190; Download PDF</button>
         </div>
 
         <div id="cert-wrapper">
           <div class="crt" id="cert">
-            <div style="margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; width: 100%">
-              <div style="display: flex; gap: 16px; align-items: center">
-                <div style="text-align: right; margin-right: 4px">
-                  <div style="font-size: 0.8rem; color: #7c7968; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase">Partnered With</div>
-                </div>
-                <img loading="lazy" src="mumbai-police-logo.webp" style="height: 75px; object-fit: contain" alt="Mumbai Police" onerror="this.style.display = 'none'" />
-                <img loading="lazy" src="sneh-logo.webp" style="height: 75px; object-fit: contain" alt="Sneh Asha" onerror="this.style.display = 'none'" />
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%">
+              <div style="display: flex; gap: 14px; align-items: center">
+                <img loading="lazy" src="mumbai-police-logo.webp" style="height: 65px; object-fit: contain" alt="Mumbai Police" onerror="this.style.display='none'" />
+                <img loading="lazy" src="sneh-logo.webp" style="height: 65px; object-fit: contain" alt="Sneh Asha" onerror="this.style.display='none'" />
               </div>
             </div>
 
@@ -295,6 +544,12 @@
           </div>
         </div>
 
+        <div id="share-bar" class="share-bar" style="display: none">
+          <button class="share-btn share-wa" onclick="shareWhatsApp()">&#128172; WhatsApp</button>
+          <button class="share-btn share-ig" onclick="shareInstagram()">&#128247; Instagram</button>
+          <button class="share-btn share-copy" onclick="copyCertLink()">&#128279; Copy Link</button>
+        </div>
+
         <div id="no-cert-msg" style="display: none; padding: 40px; text-align: center; background: rgba(255, 255, 255, 0.6); border-radius: 16px; margin-top: 20px">
           <h3 style="margin-top: 0; color: var(--muted)">Certificate Locked</h3>
           <p>Complete all 15 modules to unlock your Traffic Hero Certification.</p>
@@ -315,8 +570,29 @@
         if (raw) tUser = JSON.parse(raw)
       } catch (e) {}
 
+      const displayName = tUser.name || S.name || 'Driver'
+      const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+
+      // Populate avatar
+      const avatarEl = document.getElementById('avatar')
+      let userPhoto = null
+      try {
+        const ls = localStorage.getItem('col_user')
+        if (ls) { const u = JSON.parse(ls); userPhoto = u.avatar || u.photo || null }
+      } catch (e) {}
+      if (userPhoto) {
+        avatarEl.innerHTML = '<img src="' + userPhoto + '" alt="avatar" />'
+      } else {
+        avatarEl.textContent = userInitials
+      }
+
+      // Populate header name + sub
+      document.getElementById('d-name').innerText = displayName
+      const role = (tUser.role || S.role || 'student')
+      document.getElementById('d-sub').innerText = role.charAt(0).toUpperCase() + role.slice(1)
+
       // Populate Stats
-      document.getElementById('s-name').innerText = tUser.name || S.name || 'Driver'
+      document.getElementById('s-name').innerText = displayName
       document.getElementById('s-veh').innerText = tUser.vehicle || S.vehicle || 'Car'
       const ageVal = tUser.age || S.age || 18
       const ageLabels = { child: '8-12 (Kids)', teen: '13-17 (Teens)', young: '18-25 (Young)', adult: '26-50 (Adult)', senior: '51+ (Senior)' }
@@ -329,30 +605,95 @@
       if (S.lvl) {
         completed = Object.keys(S.lvl).filter((k) => S.lvl[k] > 0).length
       }
-      document.getElementById('s-prog').innerText = `${completed}/15`
+      document.getElementById('s-prog').innerText = `${completed}/52`
+
+      // Update certificate progress ring
+      const progressPct = Math.round((completed / 52) * 100)
+      const circle = document.getElementById('cert-progress-circle')
+      const dashOffset = 157 - (157 * progressPct / 100)
+      circle.style.strokeDashoffset = dashOffset
+      document.getElementById('cert-progress-pct').textContent = progressPct + '%'
+      if (completed >= 52) {
+        document.getElementById('cert-progress-text').textContent = '🎉 Certificate Unlocked!'
+        document.getElementById('cert-progress-sub').textContent = 'You can now download your certificate'
+        document.getElementById('cert-progress-ring').style.background = 'rgba(52, 211, 153, 0.2)'
+      } else if (completed > 0) {
+        document.getElementById('cert-progress-text').textContent = progressPct + '% to Certificate'
+        document.getElementById('cert-progress-sub').textContent = `${completed} of 52 modules completed`
+      } else {
+        document.getElementById('cert-progress-text').textContent = 'Start Learning!'
+        document.getElementById('cert-progress-sub').textContent = 'Complete modules to unlock your certificate'
+      }
 
       // Populate Certificate
-      document.getElementById('cert-name').innerText = (S.name || 'DRIVER').toUpperCase()
+      document.getElementById('cert-name').innerText = displayName.toUpperCase()
       document.getElementById('cert-score').innerText = S.score || 0
 
       const d = new Date()
       document.getElementById('cert-date').innerText = d.toLocaleDateString()
       document.getElementById('cert-ref').innerText = 'TH-' + Math.random().toString(36).substr(2, 6).toUpperCase()
 
-      if (completed < 15) {
-        document.getElementById('cert-wrapper').style.filter = 'grayscale(1) blur(4px)'
-        document.getElementById('cert-wrapper').style.opacity = '0.5'
-        document.getElementById('cert-wrapper').style.pointerEvents = 'none'
-        document.getElementById('no-cert-msg').style.display = 'block'
+      const certWrapper = document.getElementById('cert-wrapper')
+      const noCertMsg = document.getElementById('no-cert-msg')
+      const shareBar = document.getElementById('share-bar')
+      const dlCertBtn = document.querySelector('.glass-panel:last-of-type .btn')
+
+      if (completed >= 52) {
+        // Unlocked — animate
+        certWrapper.classList.add('cert-unlocking')
+        shareBar.style.display = 'flex'
+        noCertMsg.style.display = 'none'
+      } else if (completed > 0) {
+        // Partially complete — blur scales with progress
+        const blurPx = ((52 - completed) / 52 * 10).toFixed(1)
+        certWrapper.style.filter = `grayscale(1) blur(${blurPx}px)`
+        certWrapper.style.opacity = (0.3 + (completed / 52) * 0.5).toFixed(2)
+        certWrapper.style.pointerEvents = 'none'
+        noCertMsg.style.display = 'block'
+        noCertMsg.querySelector('p').innerText = `Complete all 52 modules to unlock your certificate. (${completed}/52 done)`
+        dlCertBtn.style.display = 'none'
+      } else {
+        certWrapper.style.filter = 'grayscale(1) blur(10px)'
+        certWrapper.style.opacity = '0.3'
+        certWrapper.style.pointerEvents = 'none'
+        noCertMsg.style.display = 'block'
+        noCertMsg.querySelector('p').innerText = 'Complete all 52 modules to unlock your certificate.'
+        dlCertBtn.style.display = 'none'
       }
 
+      // Edit Profile Modal
+      function openEditModal() {
+        const m = document.getElementById('edit-modal')
+        document.getElementById('ed-name').value = tUser.name || S.name || ''
+        document.getElementById('ed-age').value = tUser.age || S.age || ''
+        document.getElementById('ed-vehicle').value = tUser.vehicle || S.vehicle || 'car'
+        m.classList.add('show')
+      }
+      function closeEditModal() { document.getElementById('edit-modal').classList.remove('show') }
+      function saveEditModal() {
+        const name = document.getElementById('ed-name').value.trim()
+        const age = parseInt(document.getElementById('ed-age').value) || 18
+        const vehicle = document.getElementById('ed-vehicle').value
+        if (name) {
+          tUser.name = name
+          tUser.age = age
+          tUser.vehicle = vehicle
+          S.name = name
+          S.age = age
+          S.vehicle = vehicle
+          localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
+          localStorage.setItem('th-save', JSON.stringify(S))
+          window.location.reload()
+        }
+      }
+
+      // Download certificate
       function dlCert() {
-        if (completed < 15) {
-          alert('You must complete all 15 modules to download your certificate.')
+        if (completed < 52) {
+          alert('You must complete all 52 modules to download your certificate.')
           return
         }
         if (typeof html2pdf !== 'undefined') {
-          const el = document.getElementById('cert-wrapper')
           html2pdf()
             .set({
               margin: 0,
@@ -361,11 +702,28 @@
               html2canvas: { scale: 2, useCORS: true },
               jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
             })
-            .from(el)
+            .from(document.getElementById('cert-wrapper'))
             .save()
         } else {
           alert('PDF library not loaded.')
         }
+      }
+
+      // Share functions
+      const certUrl = window.location.href
+      const shareText = `I completed my Traffic Hero Certification! ${displayName} — ${completed}/52 modules done.`
+      function shareWhatsApp() {
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + '\n' + certUrl)}`, '_blank')
+      }
+      function shareInstagram() {
+        navigator.clipboard.writeText(shareText + '\n' + certUrl).then(() => {
+          alert('Copied! Open Instagram and paste in your story.')
+        })
+      }
+      function copyCertLink() {
+        navigator.clipboard.writeText(certUrl).then(() => {
+          alert('Certificate link copied!')
+        })
       }
 
       function logoutAndClear() {
@@ -374,6 +732,47 @@
         if (window.doLogout) window.doLogout()
         window.location.href = 'Academy.html'
       }
+
+      function resetProgressFromDashboard() {
+        if (confirm('⚠️ Are you sure you want to reset ALL your progress?\n\nThis will delete all your completed levels, scores, badges, and certificates. This cannot be undone!')) {
+          if (confirm('Double-check: This will PERMANENTLY delete your progress. Continue?')) {
+            localStorage.removeItem('traffic_local_user')
+            localStorage.removeItem('trafficSetupComplete')
+            localStorage.removeItem('col_user')
+            alert('Progress has been reset. You will be redirected to the Academy.')
+            window.location.href = 'Academy.html'
+          }
+        }
+      }
     </script>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="edit-modal">
+      <div class="modal-box">
+        <h3>Edit Profile</h3>
+        <div class="field">
+          <label>Name</label>
+          <input id="ed-name" type="text" placeholder="Your name" />
+        </div>
+        <div class="field">
+          <label>Age</label>
+          <input id="ed-age" type="number" min="5" max="100" placeholder="e.g. 22" />
+        </div>
+        <div class="field">
+          <label>Vehicle</label>
+          <select id="ed-vehicle">
+            <option value="car">Car</option>
+            <option value="bike">Bike</option>
+            <option value="bus">Bus</option>
+            <option value="truck">Truck</option>
+            <option value="auto">Auto Rickshaw</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+          <button class="btn" onclick="saveEditModal()">Save Changes</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

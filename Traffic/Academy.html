@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <title>Mumbai Traffic Hero Academy - Hub</title>
 
     <!-- Cloud Auth & Sync Logic -->
@@ -256,6 +256,10 @@
       body {
         background: var(--bg);
         color: var(--text);
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
       }
 
       .screen {
@@ -299,6 +303,20 @@
       .btn:hover {
         background: var(--muted2);
         transform: translateY(-1px);
+      }
+
+      /* Pulse animation for Get Started button */
+      @keyframes pulse-glow {
+        0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.5); }
+        70% { box-shadow: 0 0 0 15px rgba(217, 119, 6, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+      }
+      .pulse-btn {
+        animation: pulse-glow 2s infinite;
+      }
+      .pulse-btn:hover {
+        animation: none;
+        transform: translateY(-2px) scale(1.02);
       }
 
       .btn-g {
@@ -494,7 +512,8 @@
         align-items: center;
         gap: 8px;
         font-size: 0.95rem;
-        padding: 8px 20px;
+        padding: 12px 24px;
+        min-height: 48px;
         transition: all 0.2s ease;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       }
@@ -2528,6 +2547,343 @@
         max-width: 100%;
         max-height: 100%;
       }
+
+      /* ── Mobile touch-target & responsive overrides ── */
+      @media (max-width: 600px) {
+        .brand-header img,
+        .brand-header [id^="cert-logo"] {
+          height: clamp(36px, 8vw, 60px) !important;
+        }
+        .brand-header > div:first-child {
+          gap: clamp(12px, 3vw, 24px) !important;
+        }
+        .sc > div[style*="font-size: 6rem"],
+        .sc .st {
+          font-size: clamp(2.2rem, 5.5vw, 3.5rem) !important;
+        }
+        .sc > div:first-of-type > div[style*="6rem"] {
+          font-size: clamp(2.5rem, 7vw, 4rem) !important;
+        }
+        .sc .btn,
+        .sc .btn-p {
+          min-height: 48px;
+          padding: 12px 28px;
+        }
+        .back-btn,
+        .btn-g,
+        .btn-danger {
+          min-height: 48px;
+        }
+        #academy-sign-in-btn {
+          padding: 12px 24px !important;
+          min-height: 48px !important;
+        }
+        .nav-user-profile {
+          padding: 8px 16px 8px 8px !important;
+          min-height: 48px !important;
+        }
+      }
+
+      /* ===== ONBOARDING WIZARD ===== */
+      .onb-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: var(--bg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        transition: opacity 0.3s, visibility 0.3s;
+      }
+      .onb-overlay.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .onb-prog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: rgba(0, 0, 0, 0.08);
+        z-index: 10001;
+      }
+      .onb-prog-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #0369a1, #d97706);
+        transition: width 0.4s ease;
+        border-radius: 0 3px 3px 0;
+      }
+      .onb-box {
+        background: var(--card);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 32px 24px;
+        width: min(420px, 90vw);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .onb-h {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0 0 8px;
+      }
+      .onb-sub {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin: 0 0 24px;
+        line-height: 1.5;
+      }
+      .onb-input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        font-size: max(1rem, 16px);
+        font-family: inherit;
+        background: rgba(255, 255, 255, 0.6);
+        color: var(--text);
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+        -webkit-appearance: none;
+        min-height: 48px;
+      }
+      .onb-input:focus {
+        border-color: var(--signal);
+      }
+      .onb-btn {
+        width: 100%;
+        min-height: 48px;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        background: var(--signal);
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+        font-family: inherit;
+      }
+      .onb-btn:hover { opacity: 0.9; }
+      .onb-btn:active { transform: scale(0.98); }
+      .onb-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .onb-skip {
+        margin-top: 16px;
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-size: 0.9rem;
+        cursor: pointer;
+        font-family: inherit;
+        padding: 8px;
+      }
+      .onb-skip:hover { color: var(--text); }
+      .onb-chips {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .onb-chip {
+        flex: 1;
+        padding: 16px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: 0.2s;
+        font-family: inherit;
+        text-align: center;
+        color: var(--text);
+        min-height: 48px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .onb-chip:hover { border-color: var(--signal); background: rgba(3, 105, 161, 0.05); }
+      .onb-chip.selected { border-color: var(--signal); background: rgba(3, 105, 161, 0.1); }
+      .onb-chip-icon { font-size: 1.5rem; }
+      .onb-chip-label { font-size: 0.85rem; font-weight: 600; }
+      .onb-dots {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .onb-dot {
+        min-height: 48px;
+        min-width: 48px;
+        padding: 10px 16px;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text);
+        font-family: inherit;
+      }
+      .onb-dot:hover { border-color: var(--signal); }
+      .onb-dot.selected { border-color: var(--signal); background: rgba(3, 105, 161, 0.1); color: var(--signal); font-weight: 700; }
+      .onb-skip-popup {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10002;
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .onb-skip-popup.show { display: flex; }
+      .onb-skip-box {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 32px 24px;
+        width: min(380px, 90vw);
+        text-align: center;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+      }
+      .onb-skip-box h3 {
+        font-size: 1.2rem;
+        margin: 0 0 8px;
+        color: var(--text);
+      }
+      .onb-skip-box p {
+        font-size: 0.95rem;
+        color: var(--muted);
+        margin: 0 0 24px;
+      }
+      .onb-skip-btns {
+        display: flex;
+        gap: 12px;
+      }
+      .onb-skip-btns button {
+        flex: 1;
+        min-height: 48px;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .onb-stay {
+        background: var(--signal);
+        color: #fff;
+        border-color: var(--signal) !important;
+      }
+      .onb-leave {
+        background: transparent;
+        color: var(--muted);
+      }
+      @media (max-width: 480px) {
+        .onb-box { padding: 24px 16px; }
+        .onb-h { font-size: 1.3rem; }
+        .onb-chips { flex-direction: column; }
+        .onb-skip-btns { flex-direction: column; }
+      }
+    </style>
+
+    <style>
+      /* Keyboard overlap handling — hide fixed bottom elements when mobile keyboard is open */
+      body.keyboard-open #task-tracker,
+      body.keyboard-open #objective-overlay,
+      body.keyboard-open #steer-wheel-container,
+      body.keyboard-open #minimap {
+        display: none !important;
+      }
+      body.keyboard-open #pause-btn,
+      body.keyboard-open #resume-btn {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 12px) !important;
+      }
+
+      /* Force 16px+ on all text inputs to prevent iOS auto-zoom */
+      #prof-name, #prof-age, #prof-grade, #prof-lang, #prof-veh, #prompt-name {
+        font-size: max(1rem, 16px) !important;
+        -webkit-appearance: none !important;
+        appearance: none !important;
+      }
+
+      /* Partner section on start screen */
+      .partner-section {
+        background: rgba(255,255,255,0.65);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+        margin-top: 24px;
+        text-align: center;
+      }
+      .partner-section .partner-heading {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--muted2);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+      .partner-section .partner-logos {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      .partner-section .partner-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .partner-section .partner-item img {
+        height: clamp(36px, 8vw, 50px);
+        width: auto;
+        object-fit: contain;
+      }
+      .partner-section .partner-item span {
+        font-weight: 700;
+        color: var(--muted);
+        font-size: clamp(0.65rem, 2vw, 0.8rem);
+        text-align: left;
+        line-height: 1.2;
+      }
+      .partner-section .partner-divider {
+        width: 1px;
+        height: 40px;
+        background: var(--border);
+      }
+      .partner-section .trust-badge {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--muted2);
+        letter-spacing: 0.05em;
+        margin-top: 12px;
+      }
+      @media (max-width: 480px) {
+        .partner-section { padding: 16px; margin-top: 20px; }
+        .partner-section .partner-logos { gap: 16px; }
+        .partner-section .partner-divider { display: none; }
+      }
     </style>
 
     <script>
@@ -2716,7 +3072,8 @@
             color: var(--text);
             border: 1px solid var(--border);
             border-radius: 30px;
-            padding: 8px 16px;
+            padding: 12px 24px;
+            min-height: 48px;
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -2738,19 +3095,20 @@
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 30px;
-            padding: 5px 15px 5px 5px;
+            padding: 8px 16px 8px 8px;
+            min-height: 48px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transition: 0.3s;
           "
         >
-          <img class="nav-user-avatar" id="trafficUserPfp" src="" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; display: none" />
+          <img class="nav-user-avatar" id="trafficUserPfp" src="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; display: none" />
           <div
             class="nav-user-avatar"
             id="trafficUserInitials"
             style="
-              width: 28px;
-              height: 28px;
+              width: 32px;
+              height: 32px;
               border-radius: 50%;
               background: var(--signal);
               color: white;
@@ -2784,35 +3142,47 @@
           </div>
           <div style="font-size: 0.85rem; font-weight: 600; color: var(--muted2); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 8px">Proudly Sponsored By</div>
         </div>
-        <div style="text-align: center">
-          <div style="font-size: 6rem; margin-bottom: 20px; text-shadow: 0 12px 24px rgba(0, 0, 0, 0.1)">🚦🏙️🚗</div>
-          <div class="st" style="text-align: center">Mumbai Traffic Hero Academy</div>
-          <div class="su" style="max-width: 700px; margin-left: auto; margin-right: auto; text-align: center">
-            Welcome to the premier driving simulation! Complete 52 rigorous real-world scenarios designed by the Mumbai Traffic Police to test your skills, patience, and compliance. Prove you have
-            what it takes to be a true Traffic Hero and earn your official certification.
+        <!-- Partner Badges - Prominent Display -->
+        <div class="partner-badges" style="display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap">
+          <div style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1a237e 0%, #283593 100%); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(26, 35, 126, 0.3)">
+            <img src="mumbai-police-logo.webp" style="height: 24px; width: auto" alt="Mumbai Police" onerror="this.style.display='none'" />
+            <span>Partnered with Mumbai Police</span>
           </div>
-          <div class="pls" style="justify-content: center; margin-top: 40px">
-            <button class="btn btn-p" onclick="ui.showLevels()" style="font-size: 1.25rem; padding: 16px 36px" id="enter-academy-btn">Enter Academy</button>
-            <button class="btn btn-g" onclick="ui.hardReset()" style="font-size: 1.1rem; padding: 12px 32px">Reset Progress</button>
-            <button
-              class="btn btn-s"
-              style="background: var(--red); font-size: 1.1rem; padding: 12px 32px; color: var(--ink)"
-              onclick="
-                const p = prompt('Developer Password:')
-                if (['Neel', 'Ansh', 'Sanjana'].includes(p)) {
-                  ui.adminUnlock()
-                } else if (p) {
-                  toast('❌ Access Denied', '#ff3b30')
-                }
-              "
-            >
-              🔓 Dev Unlock
-            </button>
-            <button class="btn btn-g mobile-dl" style="border-color: var(--signal); color: var(--signal); font-size: 1.1rem; padding: 12px 32px" onclick="window.location.href = '../COL.apk'">
-              📱 Download Android App
+          <div style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3)">
+            <img src="sneh-logo.webp" style="height: 24px; width: auto" alt="Sneh Asha" onerror="this.style.display='none'" />
+            <span>Sneh Asha Foundation</span>
+          </div>
+        </div>
+
+        <div style="text-align: center">
+          <div class="st" style="text-align: center; font-size: clamp(1.8rem, 5vw, 2.8rem); margin-bottom: 16px;">Mumbai Traffic Hero Academy</div>
+          <div class="su" style="max-width: 700px; margin-left: auto; margin-right: auto; text-align: center; font-size: clamp(0.9rem, 2vw, 1.1rem); line-height: 1.6;">
+            Welcome to the premier driving simulation! Complete 52 rigorous real-world scenarios designed by the Mumbai Traffic Police to test your skills, patience, and compliance. Prove you have what it takes to be a true Traffic Hero and earn your official certification.
+          </div>
+          <div class="pls" style="justify-content: center; margin-top: 40px; flex-wrap: wrap; gap: 12px;">
+            <button class="btn btn-p pulse-btn" onclick="showOnboardingFromStart()" style="font-size: 1.25rem; padding: 16px 48px; min-width: 200px;" id="enter-academy-btn">Get Started</button>
+            <button class="btn btn-g mobile-dl" style="border-color: var(--signal); color: var(--signal); font-size: 1rem; padding: 12px 24px" onclick="window.location.href = '../COL.apk'">
+              📱 Download App
             </button>
           </div>
         </div>
+      </div>
+
+      <!-- Dedicated Partner Section (Hidden - Partners now shown as badges above) -->
+      <div class="partner-section" style="display: none;">
+        <div class="partner-heading">Our Trusted Partners</div>
+        <div class="partner-logos">
+          <div class="partner-item">
+            <img src="mumbai-police-logo.webp" alt="Mumbai Police" />
+            <span>Mumbai<br/>Police</span>
+          </div>
+          <div class="partner-divider"></div>
+          <div class="partner-item">
+            <img src="sneh-logo.webp" alt="Sneh Asha Foundation" />
+            <span>Sneh Asha<br/>Foundation</span>
+          </div>
+        </div>
+        <div class="trust-badge">Trusted by learners across India</div>
       </div>
     </div>
 
@@ -3075,6 +3445,92 @@
       </div>
     </div>
 
+    <!-- Onboarding Wizard -->
+    <div class="onb-overlay hidden" id="onb-overlay" style="display:none">
+      <div class="onb-prog" id="onb-progress">
+        <div class="onb-prog-fill" id="onb-progress-fill"></div>
+      </div>
+
+      <!-- Screen 0: Welcome -->
+      <div class="onb-box" style="display:block">
+        <div style="font-size:3rem;margin-bottom:16px">🚦</div>
+        <h2 class="onb-h">Welcome to Traffic Hero Academy</h2>
+        <p class="onb-sub">Learn to drive responsibly with Mumbai's interactive driving course.</p>
+        <button class="onb-btn" onclick="showOnboardingScreen(1)">Get Started</button>
+        <button class="onb-skip" onclick="skipOnboarding()">Skip for now</button>
+      </div>
+
+      <!-- Screen 1: Name -->
+      <div class="onb-box" style="display:none">
+        <h2 class="onb-h">What should we call you?</h2>
+        <p class="onb-sub">This will appear on your certificate.</p>
+        <input class="onb-input" type="text" id="onb-name-input" placeholder="Enter your name"
+          oninput="document.getElementById('onb-proceed-name').disabled=!this.value.trim()">
+        <div style="height:16px"></div>
+        <button class="onb-btn" id="onb-proceed-name" disabled onclick="_onbSaveName();showOnboardingScreen(2)">Continue</button>
+        <button class="onb-skip" onclick="skipOnboarding()">Skip for now</button>
+      </div>
+
+      <!-- Screen 2: Auth choice -->
+      <div class="onb-box" style="display:none">
+        <h2 class="onb-h">Choose your sign-in</h2>
+        <p class="onb-sub">Sign in to save your progress across devices.</p>
+        <div class="onb-chips">
+          <button class="onb-chip" onclick="if(typeof ui!=='undefined'&&ui.openLogin)ui.openLogin();showOnboardingScreen(3)">
+            <span class="onb-chip-icon">🔑</span>
+            <span class="onb-chip-label">Sign in with Google</span>
+          </button>
+          <button class="onb-chip" onclick="showOnboardingScreen(3)">
+            <span class="onb-chip-icon">🎮</span>
+            <span class="onb-chip-label">Play without sign-in</span>
+          </button>
+        </div>
+        <button class="onb-skip" onclick="skipOnboarding()">Skip for now</button>
+      </div>
+
+      <!-- Screen 3: Details -->
+      <div class="onb-box" style="display:none">
+        <h2 class="onb-h">A few more details</h2>
+        <p class="onb-sub">Help us personalize your experience.</p>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;text-align:left;font-weight:600">Your age</p>
+        <div class="onb-dots">
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')">Under 18</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')">18–25</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')">26–40</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')">40+</button>
+        </div>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;text-align:left;font-weight:600">Vehicle you drive most</p>
+        <div class="onb-dots">
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')">🚗 Car</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')">🏍️ Bike</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')">🛺 Auto</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')">🚌 Bus</button>
+        </div>
+        <button class="onb-btn" onclick="showOnboardingScreen(4)">Continue</button>
+        <button class="onb-skip" onclick="skipOnboarding()">Skip for now</button>
+      </div>
+
+      <!-- Screen 4: Completion -->
+      <div class="onb-box" style="display:none">
+        <div style="font-size:3.5rem;margin-bottom:16px">🎉</div>
+        <h2 class="onb-h">You're all set!</h2>
+        <p class="onb-sub">Start your journey to become a certified Traffic Hero.</p>
+        <button class="onb-btn" onclick="_onbComplete()">Start Learning</button>
+      </div>
+
+      <!-- Skip confirmation popup -->
+      <div class="onb-skip-popup" id="onb-skip-popup">
+        <div class="onb-skip-box">
+          <h3>Are you sure?</h3>
+          <p>You might lose your progress if you skip sign-in.</p>
+          <div class="onb-skip-btns">
+            <button class="onb-stay" onclick="skipCancel()">Continue with Sign Up</button>
+            <button class="onb-leave" onclick="skipConfirm()">I'll Risk It</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div
       id="name-prompt-dlg"
       style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999; align-items: center; justify-content: center"
@@ -3176,7 +3632,136 @@
     <script src="ui.js"></script>
     <script src="scenario2d.js"></script>
     <script>
-      // Academy.html doesn't load start.js, so we init directly
+      /* ===== ONBOARDING WIZARD JS ===== */
+      let _onbCur = 0
+      let _onbTotal = 4
+
+      function initOnboardingScreens() {
+        if (localStorage.getItem('onboardingComplete')) return
+        var ov = document.getElementById('onb-overlay')
+        if (!ov) return
+        ov.classList.remove('hidden')
+        ov.style.display = 'flex'
+        showOnboardingScreen(0)
+      }
+
+      function _onbUpdateProgress(pct, msg) {
+        var fill = document.getElementById('onb-progress-fill')
+        if (fill) fill.style.width = pct + '%'
+        var lbl = document.getElementById('onb-progress-label')
+        if (lbl) lbl.textContent = msg || ''
+      }
+
+      function showOnboardingScreen(n) {
+        _onbCur = n
+        var boxes = document.querySelectorAll('.onb-box')
+        var pct = Math.round((n / _onbTotal) * 100)
+        var msgs = [
+          'Let\'s get started',
+          'What should we call you?',
+          'Choose how to sign in',
+          'Tell us about yourself',
+          'You\'re all set!'
+        ]
+        _onbUpdateProgress(pct, msgs[n] || 'Setting up your profile...')
+
+        // Show progress toast at each step
+        if (n === 1) {
+          setTimeout(function() {
+            if (typeof toast !== 'undefined') toast('📝 Great! 25% - Let\'s set up your profile', '#3b8c66')
+          }, 500)
+        }
+        if (n === 2) {
+          setTimeout(function() {
+            if (typeof toast !== 'undefined') toast('🔐 Great progress! 50% - Sign in to save progress', '#2196F3')
+          }, 500)
+        }
+        if (n === 3) {
+          setTimeout(function() {
+            if (typeof toast !== 'undefined') toast('🎯 Almost there! 75% - Few more details', '#9b59b6')
+          }, 500)
+        }
+
+        boxes.forEach(function (b, i) { b.style.display = i === n ? 'block' : 'none' })
+        if (n === 2) {
+          var nm = document.getElementById('onb-name-input') || document.getElementById('prompt-name')
+          if (nm && nm.value.trim().length > 0) {
+            document.getElementById('onb-proceed-name').disabled = false
+          }
+        }
+        if (n === 3) _onbUpdateAuthChips()
+        if (n === 4) {
+          // 100% completion - show celebration
+          setTimeout(function () {
+            if (typeof window.confetti !== 'undefined') { window.confetti.init(); window.confetti.burst(4000) }
+            if (typeof toast !== 'undefined') toast('🎉 Congratulations! 100% - Profile setup complete!', '#00c851')
+          }, 300)
+        }
+      }
+
+      // Start onboarding from the Get Started button
+      function showOnboardingFromStart() {
+        var ov = document.getElementById('onb-overlay')
+        if (ov) {
+          ov.classList.remove('hidden')
+          ov.style.display = 'flex'
+        }
+        showOnboardingScreen(0)
+      }
+
+      function _onbUpdateAuthChips() {
+        var authed = typeof ui !== 'undefined' && ui && ui._user
+        var chips = document.querySelectorAll('.onb-chip')
+        if (authed) {
+          chips[0].classList.add('selected')
+          chips[0].querySelector('.onb-chip-label').textContent = 'Signed in'
+          chips[1].style.display = 'none'
+        }
+      }
+
+      function _onbSaveName() {
+        var nm = document.getElementById('onb-name-input') || document.getElementById('prompt-name')
+        if (nm) {
+          var val = nm.value.trim()
+          if (val.length > 0) {
+            if (typeof ui !== 'undefined' && ui) { ui.name = val; if (ui.save) ui.save() }
+            var cn = document.getElementById('cname')
+            if (cn) cn.textContent = val.toUpperCase()
+          }
+        }
+      }
+
+      function _onbComplete() {
+        localStorage.setItem('onboardingComplete', '1')
+        var ov = document.getElementById('onb-overlay')
+        if (ov) { ov.classList.add('hidden'); setTimeout(function () { ov.style.display = 'none' }, 400) }
+        if (typeof ui !== 'undefined' && ui && ui.init) ui.init()
+        setTimeout(function () {
+          if (typeof ui !== 'undefined' && ui && ui.showStart) ui.showStart()
+        }, 500)
+      }
+
+      function skipOnboarding() {
+        document.getElementById('onb-skip-popup').classList.add('show')
+      }
+
+      function skipCancel() {
+        document.getElementById('onb-skip-popup').classList.remove('show')
+      }
+
+      function skipConfirm() {
+        document.getElementById('onb-skip-popup').classList.remove('show')
+        _onbComplete()
+      }
+
+      function _onbSelectDot(el, group) {
+        var siblings = document.querySelectorAll('.onb-dots .onb-dot')
+        var ownGroup = el.parentNode
+        Array.prototype.slice.call(ownGroup.children).forEach(function (s) { s.classList.remove('selected') })
+        el.classList.add('selected')
+      }
+
+      /* ===== INIT ===== */
       ;(function () {
         const ld = document.getElementById('loading-screen')
         const bar = document.getElementById('loading-bar')
@@ -3191,7 +3776,6 @@
           if (status) status.textContent = msg
         }
 
-        // Simulate quick module load
         tick('Loading UI modules...', 30)
         setTimeout(() => tick('Building syllabus...', 60), 150)
         setTimeout(() => tick('Preparing interface...', 85), 300)
@@ -3207,6 +3791,20 @@
               setTimeout(() => {
                 if (ld && ld.parentNode) ld.parentNode.removeChild(ld)
               }, 500)
+            }
+            // Show onboarding if first visit
+            initOnboardingScreens()
+
+            // Keyboard overlap detection — adds .keyboard-open class to body
+            if (window.visualViewport) {
+              var vkOpen = false
+              window.visualViewport.addEventListener('resize', function () {
+                var kb = (window.innerHeight - window.visualViewport.height) > 80
+                if (kb !== vkOpen) {
+                  vkOpen = kb
+                  document.body.classList.toggle('keyboard-open', kb)
+                }
+              })
             }
           }, 200)
         }, 400)

@@ -283,11 +283,14 @@ window.confetti = {
   },
   burst(duration = 3000) {
     this.init()
+    // Skip confetti if user prefers reduced motion
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     this.canvas.width = window.innerWidth
     this.canvas.height = window.innerHeight
     this.particles = []
     const colors = ['#ff6b35', '#ffd54a', '#4caf50', '#2196f3', '#e91e63', '#9c27b0', '#00bcd4', '#ff9800']
-    for (let i = 0; i < 150; i++) {
+    const count = window.innerWidth < 600 ? 50 : 100
+    for (let i = 0; i < count; i++) {
       this.particles.push({
         x: window.innerWidth / 2 + (Math.random() - 0.5) * 200,
         y: window.innerHeight / 2,

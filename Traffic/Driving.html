@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; connect-src 'self' https: wss:; font-src 'self' https: data:;" />
   <title>Mumbai Traffic Hero Academy - Simulation</title>
@@ -3899,6 +3899,14 @@
       .ht {
         width: 28px;
         height: 3px;
+      }
+    }
+
+    /* Perf: disable backdrop-filter on mobile (GPU compositing overhead) */
+    @media (max-width: 600px) {
+      * {
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
       }
     }
   </style>

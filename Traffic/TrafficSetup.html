@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <title>Traffic Academy - Setup</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet" />
@@ -36,12 +36,17 @@
         color: var(--ink);
         font-family: 'Inter', sans-serif;
         margin: 0;
-        padding: 0;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
         display: flex;
         align-items: center;
         justify-content: center;
         min-height: 100vh;
-        overflow: hidden;
+        min-height: 100dvh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       #bg-canvas {
@@ -113,10 +118,11 @@
       select {
         width: 100%;
         padding: 14px 16px;
+        min-height: 48px;
         background: rgba(0, 0, 0, 0.2);
         border: 1px solid var(--line);
         border-radius: 12px;
-        font-size: 1rem;
+        font-size: max(1rem, 16px);
         font-family: 'Inter', sans-serif;
         transition: 0.3s;
         outline: none;
@@ -227,6 +233,55 @@
         background: rgba(14, 114, 160, 0.1);
         color: var(--page-theme-light);
         border-color: var(--page-theme-light);
+      }
+
+      /* ── Mobile responsive overrides ── */
+      @media (max-width: 600px) {
+        .setup-container {
+          padding: 24px 16px;
+          border-radius: 16px;
+          margin: 12px;
+          max-width: calc(100vw - 24px);
+        }
+        h1 {
+          font-size: clamp(1.4rem, 5vw, 2rem) !important;
+          margin-bottom: 6px;
+        }
+        .subtitle {
+          font-size: clamp(0.8rem, 3vw, 0.95rem) !important;
+          margin-bottom: 20px;
+        }
+        .input-group {
+          margin-bottom: 18px;
+        }
+        label {
+          font-size: 0.85rem;
+          margin-bottom: 6px;
+        }
+        .btn-submit {
+          min-height: 48px;
+          font-size: 1rem;
+          padding: 14px;
+          border-radius: 10px;
+        }
+        .tab-btn {
+          min-height: 48px;
+          font-size: 0.95rem;
+          padding: 10px;
+        }
+        input[type='text'],
+        input[type='password'],
+        input[type='email'],
+        input[type='number'],
+        select {
+          font-size: max(1rem, 16px) !important;
+          min-height: 48px !important;
+          padding: 12px 14px !important;
+        }
+        /* OR divider spacing */
+        #authArea > div:nth-child(3) {
+          margin: 12px 0;
+        }
       }
     </style>
   </head>
