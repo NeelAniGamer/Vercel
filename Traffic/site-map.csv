@@ -1,0 +1,76 @@
+Type,Category,File Path,Description
+HTML,Main Pages,Academy.html,Lesson picker / home page
+HTML,Main Pages,Driving.html,Main 3D game page
+HTML,Main Pages,TrafficSetup.html,Vehicle selection page
+HTML,Main Pages,TrafficDashboard.html,User stats & certificate page
+HTML,Main Pages,GamePage.html,Legacy game page (unused)
+JS,Core Engine,game_core.js,Main game engine (Game class, physics, AI)
+JS,Core Engine,start.js,Asset preloader & model loading
+JS,Core Engine,env.js,Environment textures & scene setup
+JS,Core Engine,ui.js,TrafficUI class (HUD, menus, auth)
+JS,Core Engine,course.js,Course/lesson logic & progress save
+JS,Vehicles,vehicles.js,Vehicle factory functions
+JS,Vehicles,auto.js,Auto rickshaw vehicle builder
+JS,Vehicles,bus.js,Bus vehicle builder
+JS,Vehicles,lambo.js,Lamborghini vehicle builder
+JS,Levels,levels/level1.js,Level 1 - Basic controls
+JS,Levels,levels/level2.js,Level 2 - Traffic signals
+JS,Levels,levels/level3.js,Level 3 - Speed limits
+JS,Levels,levels/level4.js,Level 4 - Parking
+JS,Levels,levels/level5.js,Level 5 - Pedestrian crossing
+JS,Levels,levels/level6.js,Level 6 - Night driving
+JS,Levels,levels/level7.js,Level 7 - Rain driving
+JS,Levels,levels/level8.js,Level 8 - Highway driving
+JS,Levels,levels/level9.js,Level 9 - Roundabouts
+JS,Levels,levels/level10.js,Level 10 - Overtaking
+JS,Levels,levels/level11.js,Level 11 - Reverse parking
+JS,Levels,levels/level12.js,Level 12 - Hill start
+JS,Levels,levels/level13.js,Level 13 - Narrow roads
+JS,Levels,levels/level14.js,Level 14 - Construction zone
+JS,Levels,levels/level15.js,Level 15 - Open world
+JS,Levels,levels/level16.js,Level 16 - Theme level
+JS,Levels,levels/level17.js,Level 17 - Theme level
+JS,Levels,levels/level18.js,Level 18 - Theme level
+JS,Levels,levels/level19.js,Level 19 - Theme level
+JS,Levels,levels/level20.js,Level 20 - Grand test
+JS,Levels,levels/level21.js,Level 21 - Additional
+JS,Levels,levels/level22.js,Level 22 - Additional
+JS,Levels,levels/level23.js,Level 23 - Additional
+JS,Levels,levels/level24.js,Level 24 - Additional
+JS,Levels,levels/level25.js,Level 25 - Additional
+JS,Levels,levels/level26.js,Level 26 - Additional
+JS,Levels,levels/level27.js,Level 27 - Additional
+JS,Levels,levels/level28.js,Level 28 - Additional
+JS,Levels,levels/level29.js,Level 29 - Additional
+JS,Levels,levels/level30.js,Level 30 - Additional
+JS,Levels,levels/level31.js,Level 31 - Additional
+JS,Levels,levels/level32.js,Level 32 - Additional
+JS,Levels,levels/level33.js,Level 33 - Additional
+JS,Levels,levels/level34.js,Level 34 - Additional
+JS,Levels,levels/level35.js,Level 35 - Additional
+JS,Levels,levels/level36.js,Level 36 - Additional
+JS,Levels,levels/level37.js,Level 37 - Additional
+JS,Levels,levels/level38.js,Level 38 - Additional
+JS,Levels,levels/level39.js,Level 39 - Additional
+JS,Levels,levels/level40.js,Level 40 - Additional
+JS,Levels,levels/level41.js,Level 41 - Additional
+JS,Levels,levels/level42.js,Level 42 - Additional
+JS,Levels,levels/level43.js,Level 43 - Additional
+JS,Levels,levels/level44.js,Level 44 - Additional
+JS,Levels,levels/level45.js,Level 45 - Additional
+JS,Levels,levels/level46.js,Level 46 - Additional
+JS,Levels,levels/level47.js,Level 47 - Additional
+JS,Levels,levels/level48.js,Level 48 - Additional
+JS,Levels,levels/level49.js,Level 49 - Additional
+JS,Levels,levels/level50.js,Level 50 - Additional
+JS,Levels,levels/level51.js,Level 51 - Additional
+JS,Levels,levels/level52.js,Level 52 - Additional
+JS,Features,cert_assets.js,Certificate rendering
+JS,Features,scenario2d.js,2D scenario demo (Phaser)
+JSON,Config,config.json,Supabase auth credentials
+JSON,Config,vercel.json,Vercel deployment config
+Markdown,Docs,CLAUDE.md,Claude Code guidance
+Markdown,Docs,AGENTS.md,Agent rules & implementation details
+Markdown,Plans,GTA_Style_Open_World_Upgrade_Plan.md,Open world upgrade plan
+Markdown,Plans,OVERHAUL_PLAN.md,Complete overhaul plan
+Markdown,Plans,IMPROVEMENT_PLAN.md,Improvement plan
