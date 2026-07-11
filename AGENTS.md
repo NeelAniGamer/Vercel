@@ -8,9 +8,10 @@
 ## Build System
 
 - **Primary deployment:** Static HTML — commit to repo → Vercel auto-deploys (no build step)
-- **React bundle (optional):** `npm run build` runs `build.js` → esbuild bundles `react-src/GamePage.tsx` → `dist/Traffic/simulator-bundle.js`. This is a secondary产物, not the primary site.
+- **React bundle (optional):** `npm run build` runs `build.js` → esbuild bundles `react-src/GamePage.tsx` → `dist/Traffic/simulator-bundle.js`. This is a secondary output, not the primary site.
 - **No lint, no tests, no type checker** enforced in CI
 - `package.json` dependencies: React 19, Three.js 0.185, esbuild, TypeScript 6, Prettier (optional)
+- No `tsconfig.json` at root — TypeScript is only used for the React bundle in `react-src/`
 
 ---
 
@@ -33,13 +34,19 @@
 ├── Traffic/            # 3D driving simulator sub-app (see Traffic/AGENTS.md)
 ├── react-src/          # React/TypeScript source for simulator bundle
 │   ├── GamePage.tsx    # Main entrypoint → bundled to dist/Traffic/
+│   ├── DrivingSimulator.tsx  # Top-level simulator component
+│   ├── types.ts        # Shared TypeScript types
 │   ├── engine/         # Game engine modules
 │   ├── vehicles/       # Vehicle system
 │   ├── hud/            # HUD components
 │   ├── state/          # State management
-│   └── systems/        # Game systems
+│   ├── hooks/          # React hooks
+│   ├── systems/        # Game systems
+│   ├── assets/         # Static assets (textures, models)
+│   ├── audio/          # Audio files
+│   └── data/           # Game data files
 ├── cast/               # CastFlow PWA (separate mini-app)
-├── dist/               # Build output (gitignored usually)
+├── dist/               # Build output (committed to git — includes full site copy + Traffic bundle)
 ├── skills-lock.json    # Installed agent skills registry
 ├── .agents/skills/     # Agent skills (3d-game-builder, browser-use, etc.)
 └── .claude/            # Claude Code settings + skills
@@ -110,9 +117,21 @@ Two layers control page status (200/503/404/500):
 ## CSS Variables (CoL Design System)
 
 ```css
---void: #070a14 (background) --void2: #0c1224 (secondary bg) --panel: #111827 (card bg) --line: rgba(255, 255, 255, 0.08) (borders) --lineb: rgba(255, 255, 255, 0.16) (strong borders) --ink: #e8e3d8
-  (primary text) --dim: #8891aa (muted text) --signal: #f2b84b (accent gold) --ion: #5ed4f5 (accent blue) --teal: #00f0cc (accent teal) --plasma: #b89bff (accent purple) --em: #34d399 (accent green)
-  --serif: 'Instrument Serif' --sans: 'Inter' --mono: 'Space Mono';
+--void: #070a14;      /* background */
+--void2: #0c1224;     /* secondary bg */
+--panel: #111827;     /* card bg */
+--line: rgba(255, 255, 255, 0.08);   /* borders */
+--lineb: rgba(255, 255, 255, 0.16);  /* strong borders */
+--ink: #e8e3d8;       /* primary text */
+--dim: #8891aa;       /* muted text */
+--signal: #f2b84b;    /* accent gold */
+--ion: #5ed4f5;       /* accent blue */
+--teal: #00f0cc;      /* accent teal */
+--plasma: #b89bff;    /* accent purple */
+--em: #34d399;        /* accent green */
+--serif: 'Instrument Serif';
+--sans: 'Inter';
+--mono: 'Space Mono';
 ```
 
 ---
@@ -133,7 +152,7 @@ Two layers control page status (200/503/404/500):
 - **PWA:** `manifest.json` + `sw.js` for "Add to Home Screen" on Android
 - **Service worker:** caches core assets (`/`, `/home.html`, `/col-*.js`, `/col-ui.css`, `/icon.webp`)
 - **APK updater:** `version.json` checked by `col-ui.js` for in-app update prompts
-- **Cast app:** `cast/` directory has its own mini-app (`CastFlow.html`) with separate manifest
+- **Cast app:** `cast/` directory has its own mini-app (`CastFlow.html`) with separate manifest, plus root `CastFlow.html`
 
 ---
 
@@ -153,7 +172,7 @@ Skills in `.agents/skills/` are registered in `skills-lock.json`:
 | **Pages**     | `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `download.html`, `sneh-asha.html`, `admin.html`, `Career.html`, `Database_Logic.html`, `sitemap.html` |
 | **Apps**      | `solar.html`, `ati.html`, `ati-demo.html`, `gesture.html`, `rpg.html`, `engine.html`                                                                                                           |
 | **QR System** | `qr.html`, `qr-editor.html`                                                                                                                                                                    |
-| **Shared UI** | `col-ui.js`, `col-ui.css`, `col-3d.js`, `col-admin.js`, `style.css`                                                                                                                            |
+| **Shared UI** | `col-ui.js`, `col-ui.css`, `col-3d.js`, `style.css`                                                                                                                        |
 | **Assets**    | Any `.webp`, `.png`, `.glb` files                                                                                                                                                              |
 | **Config**    | `vercel.json`, `robots.txt`, `sitemap.xml`                                                                                                                                                     |
 | **Traffic/**  | All files under `Traffic/` except `Traffic/config.json`                                                                                                                                        |

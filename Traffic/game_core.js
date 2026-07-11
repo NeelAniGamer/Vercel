@@ -861,6 +861,7 @@ class Game {
         bindTouch('mc-gas', 'arrowup');
         bindTouch('mc-brake', 'arrowdown');
         bindTouch('mc-boost', 'shift');
+        bindTouch('mc-enter', 'f');
 
         // Phone GPS toggle button
         const gpsBtn = document.getElementById('phone-gps-btn');
@@ -1140,7 +1141,7 @@ class Game {
         if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
         const isControl = (el) => {
           if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-enter','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
           for (const id of ctrlIds) {
             const c = document.getElementById(id);
             if (c && (el === c || c.contains(el))) return true;
@@ -1213,7 +1214,7 @@ class Game {
 
         const isControl = (el) => {
           if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-enter','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
           for (const id of ctrlIds) {
             const c = document.getElementById(id);
             if (c && (el === c || c.contains(el))) return true;
@@ -1444,6 +1445,15 @@ class Game {
         this.seatbeltOn = false;
         this.mobileOn = false;
         this.bucklingUp = false;
+        // GTA-style enter/exit state machine
+        this._enterState = 'IDLE';
+        this._enterTimer = 0;
+        this._enterDir = 1;
+        this._enterDoorSide = 'L';
+        this._enterWalkStart = null;
+        this._enterWalkEnd = null;
+        this._camOverride = false;
+        this._lastStepTime = 0;
         this.boostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
         this.highBeamOn = false;
@@ -4166,7 +4176,7 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain);
+        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain);
 
         // Update player character FBX animation mixer
         if (this.playerCharacter && this.playerCharacter.userData && this.playerCharacter.userData.isFBXAnimated && this.playerCharacter.userData.mixer) {
@@ -4187,60 +4197,52 @@ class Game {
             }
         }
 
-        if (this.keys['f'] && !this._fPressed && !this.bucklingUp) {
+        if (this.keys['f'] && !this._fPressed && this._enterState === 'IDLE') {
           this._fPressed = true;
           if (this.playerVehicle && this.playerCharacter) {
             if (this.isPedestrian) {
               const dist = this.player.position.distanceTo(this.playerVehicle.position);
               if (dist < 3.0) {
-                this.bucklingUp = true;
-                toast('Buckling up...', '#f39c12');
-                setTimeout(() => {
-                    this.bucklingUp = false;
-                    if (!this.playing) return;
-                    this.isPedestrian = false;
-                    this.playerCharacter.position.set(0, 0.6, 0.2);
-                    this.playerCharacter.scale.set(0.55, 0.55, 0.55);
-                    this.playerVehicle.add(this.playerCharacter);
-                    this.player = this.playerVehicle;
-                    this._camSnapped = false;
-                    const vt = this.vehMode || 'car';
-                    const rain = window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain);
-                    const hw = this.mapCfg && this.mapCfg.themeType === 'highway';
-                    const vs = VEHICLE_STATS[vt] || VEHICLE_STATS.car;
-                    this.maxSpd = (hw ? vs.maxSpd * 1.3 : vs.maxSpd) * (this.seatbeltOn ? 1.1 : 1.0);
-                    this.accel = vs.accel;
-                    this.turn = rain ? vs.turn * 0.65 : vs.turn;
-                    this.fric = rain ? vs.fric + 0.025 : vs.fric;
-                    this._grip = rain ? vs.grip * 0.3 : vs.grip;
-                    toast(this.seatbeltOn ? '🚗 Entered +10% Speed Bonus!' : '🚗 Entered Vehicle!', this.seatbeltOn ? '#27ae60' : '#00c851');
-                }, 1500);
+                this._enterDir = 1;
+                this._enterTimer = 0;
+                this._enterState = 'WALKING_TO_DOOR';
+                this._camOverride = true;
+                this._enterDoorSide = 'L';
+                const vehPos = this.playerVehicle.position;
+                const vehRot = this.playerVehicle.rotation.y;
+                const doorLocal = new THREE.Vector3(1.2, 0, 0.4);
+                doorLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
+                this._enterWalkStart = this.player.position.clone();
+                this._enterWalkEnd = vehPos.clone().add(doorLocal);
+                this._enterWalkEnd.y = 0;
+                toast('Walking to vehicle...', '#f39c12');
               } else {
                 toast('Too far from vehicle.', '#ff9500');
               }
             } else {
-              this.isPedestrian = true;
-              this.playerVehicle.remove(this.playerCharacter);
-              this.playerCharacter.scale.set(1, 1, 1);
-              this.playerCharacter.position.copy(this.playerVehicle.position);
-              this.playerCharacter.position.x += 6;
-              this.scene.add(this.playerCharacter);
-              this.player = this.playerCharacter;
-              this._camSnapped = false;
-              this.player.visible = true;
-              this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
-              this.setGear('N');
-              toast('🚶 Exited Vehicle!', '#00c851');
+              this._enterDir = -1;
+              this._enterTimer = 0;
+              this._enterState = 'OPENING_DOOR';
+              this._camOverride = true;
+              this._enterDoorSide = 'L';
+              const vehPos = this.playerVehicle.position;
+              const vehRot = this.playerVehicle.rotation.y;
+              const outLocal = new THREE.Vector3(3.0, 0, 0.4);
+              outLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
+              this._enterWalkEnd = vehPos.clone().add(outLocal);
+              this._enterWalkEnd.y = 0;
+              toast('Exiting vehicle...', '#f39c12');
             }
           }
         }
         if (!this.keys['f']) this._fPressed = false;
 
+        const inTransition = this._enterState !== 'IDLE';
         let at = window.analogThrottle || 0;
-        const up = !this.bucklingUp && (this.keys['arrowup'] || this.keys['w'] || at > 0.1);
-        const dn = !this.bucklingUp && (this.keys['arrowdown'] || this.keys['s'] || at < -0.1);
-        const lt = !this.bucklingUp && (this.keys['arrowleft'] || this.keys['a']);
-        const rt = !this.bucklingUp && (this.keys['arrowright'] || this.keys['d']);
+        const up = !inTransition && (this.keys['arrowup'] || this.keys['w'] || at > 0.1);
+        const dn = !inTransition && (this.keys['arrowdown'] || this.keys['s'] || at < -0.1);
+        const lt = !inTransition && (this.keys['arrowleft'] || this.keys['a']);
+        const rt = !inTransition && (this.keys['arrowright'] || this.keys['d']);
         
         // Per-gear acceleration multipliers 🔄 each gear feels clearly different
         const gAccel = { 'D': 1.30, 'R': .55, 'N': 0, 'P': 0 };
@@ -6181,6 +6183,152 @@ class Game {
         }
         if (this.mode === 'silentzone' && this.ms) this.ms.inSz = this.player.position.z > -60 && this.player.position.z < 20;
       }
+      // ── GTA-style enter/exit state machine ──
+      _tickEnterExit(dt) {
+        const s = this._enterState;
+        if (s === 'IDLE') return;
+        this._enterTimer += dt;
+        const t = this._enterTimer;
+        const char = this.playerCharacter;
+        const veh = this.playerVehicle;
+        if (!char || !veh) { this._enterState = 'IDLE'; return; }
+        const doorPivot = this._enterDoorSide === 'L' ? veh.userData.doorPivotL : veh.userData.doorPivotR;
+
+        if (this._enterDir === 1) {
+          // ══════ ENTERING VEHICLE ══════
+          if (s === 'WALKING_TO_DOOR') {
+            const dur = 1.2;
+            const p = Math.min(t / dur, 1);
+            char.position.lerpVectors(this._enterWalkStart, this._enterWalkEnd, p);
+            char.position.y = 0;
+            const angle = Math.atan2(veh.position.x - char.position.x, veh.position.z - char.position.z);
+            char.rotation.y = angle;
+            this._animateCharacterWalk(char, 1.0, dt);
+            if (t - this._lastStepTime > 0.3) { this._lastStepTime = t; sfx.play('step'); }
+            const camPos = new THREE.Vector3(
+              char.position.x - Math.sin(angle) * 3, 2.5,
+              char.position.z - Math.cos(angle) * 3
+            );
+            this.camera.position.lerp(camPos, dt * 4);
+            this.camera.lookAt(char.position.x, 1.0, char.position.z);
+            if (p >= 1) { this._enterState = 'OPENING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
+          } else if (s === 'OPENING_DOOR') {
+            const dur = 0.5;
+            const p = Math.min(t / dur, 1);
+            if (doorPivot) doorPivot.rotation.y = p * (Math.PI * 0.45);
+            this._animateCharacterWalk(char, 0, dt);
+            if (p >= 1) { this._enterState = 'SITTING_DOWN'; this._enterTimer = 0; }
+          } else if (s === 'SITTING_DOWN') {
+            const dur = 0.8;
+            const p = Math.min(t / dur, 1);
+            const ease = p * p * (3 - 2 * p);
+            const seatPos = new THREE.Vector3(0, 0.6, 0.2);
+            char.position.lerpVectors(this._enterWalkEnd, seatPos, ease);
+            char.scale.setScalar(1 - ease * 0.45);
+            const cp = ease;
+            this.camera.position.set(
+              veh.position.x * (1 - cp) + this.camera.position.x * cp,
+              2.5 * (1 - cp) + 1.3 * cp,
+              veh.position.z * (1 - cp) + this.camera.position.z * cp
+            );
+            this.camera.lookAt(veh.position.x, 1.0, veh.position.z);
+            if (p >= 1) { this._enterState = 'CLOSING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
+          } else if (s === 'CLOSING_DOOR') {
+            const dur = 0.4;
+            const p = Math.min(t / dur, 1);
+            if (doorPivot) doorPivot.rotation.y = (1 - p) * (Math.PI * 0.45);
+            if (p >= 1) {
+              this.isPedestrian = false;
+              char.position.set(0, 0.6, 0.2);
+              char.scale.set(0.55, 0.55, 0.55);
+              veh.add(char);
+              this.player = veh;
+              this._camSnapped = false;
+              this._camOverride = false;
+              this._enterState = 'IDLE';
+              const vt = this.vehMode || 'car';
+              const rain = window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain);
+              const hw = this.mapCfg && this.mapCfg.themeType === 'highway';
+              const vs = VEHICLE_STATS[vt] || VEHICLE_STATS.car;
+              this.maxSpd = (hw ? vs.maxSpd * 1.3 : vs.maxSpd) * (this.seatbeltOn ? 1.1 : 1.0);
+              this.accel = vs.accel;
+              this.turn = rain ? vs.turn * 0.65 : vs.turn;
+              this.fric = rain ? vs.fric + 0.025 : vs.fric;
+              this._grip = rain ? vs.grip * 0.3 : vs.grip;
+              toast(this.seatbeltOn ? '🚗 Entered +10% Speed Bonus!' : '🚗 Entered Vehicle!', this.seatbeltOn ? '#27ae60' : '#00c851');
+            }
+          }
+        } else {
+          // ══════ EXITING VEHICLE ══════
+          if (s === 'OPENING_DOOR') {
+            const dur = 0.5;
+            const p = Math.min(t / dur, 1);
+            if (doorPivot) doorPivot.rotation.y = p * (Math.PI * 0.45);
+            if (p >= 1) { this._enterState = 'WALKING_OUT'; this._enterTimer = 0; sfx.play('door'); }
+          } else if (s === 'WALKING_OUT') {
+            const dur = 0.6;
+            const p = Math.min(t / dur, 1);
+            const ease = p * p * (3 - 2 * p);
+            const standPos = this._enterWalkEnd.clone();
+            standPos.y = 0;
+            char.position.lerpVectors(new THREE.Vector3(0, 0.6, 0.2), standPos, ease);
+            char.position.y = ease * 0;
+            char.scale.setScalar(0.55 + ease * 0.45);
+            if (ease > 0.5 && t - this._lastStepTime > 0.3) { this._lastStepTime = t; sfx.play('step'); }
+            this.camera.position.set(
+              veh.position.x + (standPos.x - veh.position.x) * ease * 0.5,
+              1.3 + ease * 1.2,
+              veh.position.z + (standPos.z - veh.position.z) * ease * 0.5
+            );
+            this.camera.lookAt(char.position.x, 1.0, char.position.z);
+            if (p >= 1) { this._enterState = 'CLOSING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
+          } else if (s === 'CLOSING_DOOR') {
+            const dur = 0.4;
+            const p = Math.min(t / dur, 1);
+            if (doorPivot) doorPivot.rotation.y = (1 - p) * (Math.PI * 0.45);
+            this._animateCharacterWalk(char, 0, dt);
+            if (p >= 1) {
+              this.isPedestrian = true;
+              veh.remove(char);
+              char.scale.set(1, 1, 1);
+              char.position.copy(this._enterWalkEnd);
+              char.position.y = 0;
+              this.scene.add(char);
+              this.player = char;
+              this._camSnapped = false;
+              this._camOverride = false;
+              this._enterState = 'IDLE';
+              this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
+              this.setGear('N');
+              toast('Exited Vehicle!', '#00c851');
+            }
+          }
+        }
+      }
+
+      // ── Character walk animation (FBX mixer blend + GLB/procedural leg swing) ──
+      _animateCharacterWalk(character, speed, dt) {
+        if (!character) return
+        const ud = character.userData
+        // FBX animated characters: blend idle ↔ run weights
+        if (ud.isFBXAnimated && ud.mixer) {
+          const walkW = Math.min(Math.abs(speed) * 3, 1)
+          if (ud.idleAction) ud.idleAction.setEffectiveWeight(1 - walkW)
+          if (ud.runAction) ud.runAction.setEffectiveWeight(walkW)
+          ud.mixer.update(dt)
+          return
+        }
+        // GLB / procedural characters: swing legs + body bob
+        const t = (ud.t || 0) + dt * 8
+        ud.t = t
+        const swing = Math.sin(t) * 0.4 * Math.min(Math.abs(speed) * 4, 1)
+        if (ud.lLeg) ud.lLeg.rotation.x = swing
+        if (ud.rLeg) ud.rLeg.rotation.x = -swing
+        // Subtle body bob
+        if (character.children[0]) {
+          character.children[0].position.y = Math.abs(Math.sin(t)) * 0.04 * Math.min(Math.abs(speed) * 4, 1)
+        }
+      }
       _ucam(dt) {
         if (this.isPointerLocked) {
           // First Person Mode
@@ -6429,18 +6577,27 @@ class Game {
             if (!this.warnEl.classList.contains('flash')) { this.warnEl.classList.add('flash'); }
         } else {
             // ── Interaction Hint ──
-            if (this.isPedestrian && this.playerVehicle) {
+            if (this._enterState !== 'IDLE') {
+              this.warnEl.style.display = 'none';
+              const mcEnter = document.getElementById('mc-enter');
+              if (mcEnter) mcEnter.style.display = 'none';
+            } else if (this.isPedestrian && this.playerVehicle) {
               const dist = this.player.position.distanceTo(this.playerVehicle.position);
+              const mcEnter = document.getElementById('mc-enter');
               if (dist < 5) {
                 this.warnEl.textContent = '🚗 PRESS [F] TO ENTER CAR';
                 this.warnEl.style.display = 'block';
                 this.warnEl.style.color = '#f1c40f';
                 if (!this.warnEl.classList.contains('flash')) { this.warnEl.classList.add('flash'); }
+                if (mcEnter) mcEnter.style.display = 'flex';
               } else {
                 this.warnEl.style.display = 'none';
+                if (mcEnter) mcEnter.style.display = 'none';
               }
             } else {
               this.warnEl.style.display = 'none';
+              const mcEnterHide = document.getElementById('mc-enter');
+              if (mcEnterHide) mcEnterHide.style.display = 'none';
             }
             this.warnEl.classList.remove('flash');
         }

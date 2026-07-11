@@ -30,7 +30,9 @@ const sfx = {
       challan: { f: 880, ty: 'triangle', d: 0.32, v: 0.11 },
       ok: { f: 660, ty: 'sine', d: 0.22, v: 0.09 },
       error: { f: 110, ty: 'square', d: 0.28, v: 0.1 },
-      thunder: { f: 55, ty: 'sawtooth', d: 0.6, v: 0.15 }
+      thunder: { f: 55, ty: 'sawtooth', d: 0.6, v: 0.15 },
+      door: { f: 220, ty: 'triangle', d: 0.25, v: 0.10 },
+      step: { f: 80, ty: 'sine', d: 0.06, v: 0.04 }
     }
     const pp = p[t] || p.horn
     const cat = this._cat[t] || 'sfx'
@@ -1925,6 +1927,37 @@ const _buildVehicle = (type, col) => {
 
     g.add(baseModel)
     g.add(hb)
+
+    // ── GTA-style door pivots (GLB cars) ──
+    const doorGeoGLB = new THREE.BoxGeometry(0.06, 0.5, 1.0)
+    // Find body color from model materials for door overlay
+    let bodyColGLB = col || 0x888888
+    baseModel.traverse((child) => {
+      if (child.isMesh && child.material && child.material.color) {
+        const n = child.name.toLowerCase()
+        if (n.includes('body') || n.includes('paint') || n.includes('chassis'))
+          bodyColGLB = child.material.color.getHex()
+      }
+    })
+    const doorMatGLB = new THREE.MeshToonMaterial({ color: bodyColGLB })
+    const doorWGLB = hw * 0.95
+    // Left door — hinge at front edge
+    const dpLGLB = new THREE.Group()
+    dpLGLB.position.set(doorWGLB, 1.0, 0.5)
+    const dmLGLB = new THREE.Mesh(doorGeoGLB, doorMatGLB.clone())
+    dmLGLB.position.set(0, 0, -0.5)
+    dpLGLB.add(dmLGLB)
+    g.add(dpLGLB)
+    // Right door — hinge at front edge
+    const dpRGLB = new THREE.Group()
+    dpRGLB.position.set(-doorWGLB, 1.0, 0.5)
+    const dmRGLB = new THREE.Mesh(doorGeoGLB, doorMatGLB.clone())
+    dmRGLB.position.set(0, 0, -0.5)
+    dpRGLB.add(dmRGLB)
+    g.add(dpRGLB)
+    g.userData.doorPivotL = dpLGLB
+    g.userData.doorPivotR = dpRGLB
+
     g.type = type
     return g
   }
@@ -1984,6 +2017,25 @@ const _buildVehicle = (type, col) => {
         l.position.set(x, y, z)
         g.add(l)
       })
+      // ── GTA-style door pivots (procedural car) ──
+      const doorGeoPC = new THREE.BoxGeometry(0.04, 0.38, 0.85)
+      const doorMatPC = bodyM.clone()
+      // Left door — hinge at front edge (B-pillar)
+      const dpLPC = new THREE.Group()
+      dpLPC.position.set(0.82, 0.65, 0.4)
+      const dmLPC = new THREE.Mesh(doorGeoPC, doorMatPC.clone())
+      dmLPC.position.set(0, 0, -0.425)
+      dpLPC.add(dmLPC)
+      g.add(dpLPC)
+      // Right door — hinge at front edge
+      const dpRPC = new THREE.Group()
+      dpRPC.position.set(-0.82, 0.65, 0.4)
+      const dmRPC = new THREE.Mesh(doorGeoPC, doorMatPC.clone())
+      dmRPC.position.set(0, 0, -0.425)
+      dpRPC.add(dmRPC)
+      g.add(dpRPC)
+      g.userData.doorPivotL = dpLPC
+      g.userData.doorPivotR = dpRPC
       break
     }
     case 'bus': {
