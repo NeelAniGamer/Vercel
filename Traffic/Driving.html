@@ -3909,6 +3909,107 @@
         backdrop-filter: none !important;
       }
     }
+
+    /* ── Light mode overrides (matches parent site pattern) ── */
+    body.lm {
+      --bg: #f3f2eb;
+      --card: rgba(255, 255, 255, 0.45);
+      --text: #1a1a2e;
+      --border: rgba(0, 0, 0, 0.15);
+      --hover: rgba(0, 0, 0, 0.05);
+      --muted: #475569;
+      --muted2: #94a3b8;
+      --accent: #f2b84b;
+      --green: #10b981;
+      --red: #dc2626;
+      --yellow: #f2b84b;
+      --signal: #0369a1;
+    }
+
+    /* ── Scenic Day/Night Toggle ── */
+    #theme-toggle {
+      position: relative;
+      width: 369px;
+      height: 145px;
+      border-radius: 72.5px;
+      background-color: #117AF5;
+      box-shadow: inset 0px 7px 9px rgba(0, 0, 0, 0.25),
+                  inset 0px -5px 14px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      overflow: hidden;
+      transition: background-color 0.5s ease;
+      flex-shrink: 0;
+    }
+    #theme-toggle.dark {
+      background-color: #1a202c;
+    }
+
+    #theme-toggle .tg-sky {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    #theme-toggle .tg-clouds-back {
+      position: absolute;
+      top: 0; left: 0;
+      width: 369px;
+      height: 145px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='369' height='145' viewBox='0 0 369 145'%3E%3Cg id='clouds_back' style='filter:drop-shadow(0px 4px 4px rgba(0,0,0,0.05))'%3E%3Cpath d='M49.5 85.5C49.5 85.5 43 81.5 43 77C43 72.5 46.5 69.5 51 70C51 63.5 56.5 58.5 63.5 58.5C66.5 58.5 69 59.5 71 61C73.5 55 79.5 50.5 87 50.5C96 50.5 103.5 57 104.5 65.5C104.5 65.5 105 65.5 105.5 65.5C112.5 65.5 118.5 71 118.5 78C118.5 85 112.5 91 105.5 91L53 91C48.5 91 44 88 43 83.5' fill='white'/%3E%3Cpath d='M343.5 100C343.5 100 339 97 339 93.5C339 90 341.5 87.5 345 88C345 82.5 349 78.5 354 78.5C356.5 78.5 358.5 79.5 360 81C362 76 366.5 72.5 372.5 72.5C379.5 72.5 385.5 77.5 386.5 84C386.5 84 387 84 387.5 84C393 84 397.5 88.5 397.5 94C397.5 99.5 393 104 387.5 104L346 104C342.5 104 339 102 338 98.5' fill='white'/%3E%3C/g%3E%3C/svg%3E");
+      transition: transform 0.5s ease, opacity 0.5s ease;
+      pointer-events: none;
+    }
+    #theme-toggle.dark .tg-clouds-back {
+      transform: translateY(100%);
+    }
+
+    #theme-toggle .tg-clouds-front {
+      position: absolute;
+      top: 0; left: 0;
+      width: 362px;
+      height: 137px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='362' height='137' viewBox='0 0 362 137'%3E%3Cg id='clouds_front' style='filter:drop-shadow(0px 4px 4px rgba(0,0,0,0.05))'%3E%3Cpath d='M44.5 95.5C44.5 95.5 41 93 41 90C41 87 43 85 46 85.5C46 80.5 49.5 76.5 54 76.5C56 76.5 57.5 77 59 78.5C61 74 65 71 70 71C77 71 82.5 76 83 82C83 82 83.5 82 84 82C89 82 93 86 93 91C93 96 89 100 84 100L47.5 100C44 100 40 98 39.5 94.5' fill='white'/%3E%3Cpath d='M269 75C269 75 265.5 72.5 265.5 69.5C265.5 66.5 267.5 64.5 270.5 65C270.5 60 274 56 278.5 56C280.5 56 282 56.5 283.5 58C285.5 53.5 289.5 50.5 294.5 50.5C301.5 50.5 307 55.5 307.5 61.5C307.5 61.5 308 61.5 308.5 61.5C313.5 61.5 317.5 65.5 317.5 70.5C317.5 75.5 313.5 79.5 308.5 79.5L272.5 79.5C269 79.5 265 77.5 264.5 74' fill='white'/%3E%3C/g%3E%3C/svg%3E");
+      transition: transform 0.6s ease 0.1s, opacity 0.5s ease;
+      pointer-events: none;
+    }
+    #theme-toggle.dark .tg-clouds-front {
+      transform: translateY(100%);
+    }
+
+    #theme-toggle .tg-handle {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 143px;
+      height: 137px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='143' height='137' viewBox='0 0 143 137'%3E%3Cg id='Sun_and_Moon' data-name='Sun and Moon'%3E%3Cfilter id='inner_shadow' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeFlood flood-color='%23000'/%3E%3CfeComposite in2='SourceAlpha' operator='arithmetic' k2='-1' k3='1'/%3E%3CfeGaussianBlur stdDeviation='2.5'/%3E%3CfeComposite in2='SourceAlpha' operator='arithmetic' k2='0' k3='1' k1='0'/%3E%3CfeComposite in='SourceGraphic'/%3E%3C/filter%3E%3Cfilter id='shadow' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='1'/%3E%3C/filter%3E%3Ccircle id='Sun' cx='71.5' cy='68.5' r='56' fill='%23ECCD2D' filter='url(%23inner_shadow)'/%3E%3Cpath d='M113.84 31.43L116.68 38.18L124.33 37.07L118.45 42.09L121.29 48.84L113.84 45.37L106.39 48.84L109.23 42.09L103.35 37.07L111 38.18Z' fill='white' filter='url(%23shadow)' opacity='0.6'/%3E%3Ccircle cx='48.5' cy='62.5' r='20' fill='white' opacity='0.15'/%3E%3Ccircle cx='38.5' cy='82.5' r='10' fill='white' opacity='0.15'/%3E%3Ccircle cx='71.5' cy='45.5' r='5' fill='white' opacity='0.15'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: contain;
+      background-repeat: no-repeat;
+      transition: transform 0.5s ease, filter 0.5s ease;
+      pointer-events: none;
+    }
+    #theme-toggle.dark .tg-handle {
+      transform: translateX(218px);
+      filter: grayscale(100%) brightness(75%);
+    }
+
+    @media (max-width: 420px) {
+      #theme-toggle {
+        width: 280px;
+        height: 110px;
+        border-radius: 55px;
+      }
+      #theme-toggle .tg-clouds-back { width: 280px; height: 110px; }
+      #theme-toggle .tg-clouds-front { width: 275px; height: 105px; }
+      #theme-toggle .tg-handle {
+        width: 108px;
+        height: 104px;
+      }
+      #theme-toggle.dark .tg-handle {
+        transform: translateX(166px);
+      }
+    }
   </style>
 
   <script>
@@ -4675,23 +4776,12 @@
   <div id="ss" class="screen active">
     <div id="top-bar-container"
       style="position: absolute; top: 20px; right: 20px; z-index: var(--z-controls); display: flex; gap: 10px">
-      <button onclick="
-            document.body.classList.toggle('lm')
-            try {
-              localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark')
-            } catch (e) {}
-          " style="
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 8px 16px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            font-size: 0.95rem;
-          ">
-        🌓 Theme
-      </button>
+      <div id="theme-toggle" onclick="toggleScenicTheme()">
+        <div class="tg-sky"></div>
+        <div class="tg-clouds-back"></div>
+        <div class="tg-clouds-front"></div>
+        <div class="tg-handle"></div>
+      </div>
 
       <button class="nav-login-btn" onclick="
             window.gameDifficulty = window.gameDifficulty === 'Hard' ? 'Easy' : 'Hard'
@@ -5810,6 +5900,30 @@
           btn.style.boxShadow = 'none';
         }, 1200);
       }, 5000);
+    })();
+
+    /* ── Scenic Theme Toggle ── */
+    function toggleScenicTheme() {
+      var el = document.getElementById('theme-toggle');
+      var isDark = el.classList.toggle('dark');
+      document.body.classList.toggle('lm', !isDark);
+      try {
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      } catch (e) {}
+    }
+    (function initScenicToggle() {
+      try {
+        var saved = localStorage.getItem('theme');
+        var el = document.getElementById('theme-toggle');
+        if (!el) return;
+        if (saved === 'light') {
+          el.classList.remove('dark');
+          document.body.classList.add('lm');
+        } else {
+          el.classList.add('dark');
+          document.body.classList.remove('lm');
+        }
+      } catch (e) {}
     })();
   </script>
 </body>

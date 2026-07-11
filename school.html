@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="CBSE Bhavani Shankar School, Mumbai — The academic foundation behind Class Of Learners. Discover the school's programs, facilities, and how it fostered our technical innovation."
+      content="CBSE Bhavani Shankar School, Mumbai ï¿½ The academic foundation behind Class Of Learners. Discover the school's programs, facilities, and how it fostered our technical innovation."
     />
     <meta property="og:title" content="Our School | Class Of Learners" />
-    <meta property="og:description" content="CBSE Bhavani Shankar School, Mumbai — Where Class Of Learners began. Our school's academic programs and technical innovation." />
+    <meta property="og:description" content="CBSE Bhavani Shankar School, Mumbai ï¿½ Where Class Of Learners began. Our school's academic programs and technical innovation." />
     <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/school" />
     <meta property="og:type" content="website" />
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
@@ -1132,13 +1132,7 @@
             </div>
           </div>
         </div>
-        <div class="tw">
-          <span class="tl" id="tLabel">Light</span
-          ><label class="tsb" for="tsck"
-            ><input type="checkbox" id="tsck" aria-label="Toggle light mode" onchange="toggleTheme(this)" />
-            <div class="tst"><div class="tsth">&#9728;&#65039;</div></div></label
-          >
-        </div>
+        <div id="theme-toggle" onclick="toggleScenicTheme()"><div class="tg-sky"></div><div class="tg-clouds-back"></div><div class="tg-clouds-front"></div><div class="tg-handle"></div></div>
         <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
@@ -1234,7 +1228,7 @@
             <h3 style="font-family: var(--serif); font-size: 1.4rem; font-weight: 400; color: var(--ink); margin-bottom: 14px">Computer Science Program</h3>
             <p style="color: var(--dim); line-height: 1.8; font-size: 0.95rem">
               The school's dedicated computer science program goes beyond textbook theory. Students learn Python, HTML/CSS, JavaScript, and database fundamentals through hands-on projects. It was this
-              program that planted the seeds for Class Of Learners — encouraging us to build real tools rather than just study about them.
+              program that planted the seeds for Class Of Learners ï¿½ encouraging us to build real tools rather than just study about them.
             </p>
           </div>
         </div>
@@ -1478,5 +1472,11 @@
         <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
       </div>
     </footer>
+    <script>
+    function initScenicTheme(){var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}syncScenicToggle()}
+    function syncScenicToggle(){var el=document.getElementById('theme-toggle');if(!el)return;if(document.body.classList.contains('lm')){el.classList.remove('dark')}else{el.classList.add('dark')}}
+    function toggleScenicTheme(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');syncScenicToggle()}
+    initScenicTheme()
+    </script>
   </body>
 </html>

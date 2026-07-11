@@ -35,7 +35,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
     <style>
       :root {
-        /* Creme Theme & Glassmorphism */
+        /* Dark theme (default) — matches parent site dark mode */
+        --bg: #070a14;
+        --card: rgba(17, 24, 39, 0.85);
+        --text: #e8e3d8;
+        --ink: #e8e3d8;
+        --border: rgba(255, 255, 255, 0.08);
+        --hover: rgba(255, 255, 255, 0.06);
+        --muted: #8891aa;
+        --muted2: #8891aa;
+        --accent: #f2b84b;
+        --green: #34d399;
+        --red: #ef4444;
+        --yellow: #d97706;
+        --signal: #5ed4f5;
+        --r: 16px;
+        --btn-scale: 1;
+        --btn-padding: 10px 16px;
+        --ui-font-size: 0.95rem;
+      }
+
+      /* Grade-based UI classes */
+      body.grade-low { --btn-scale: 1.3; --btn-padding: 20px 30px; --ui-font-size: 1.2rem; }
+      body.grade-mid { --btn-scale: 1.15; --btn-padding: 14px 22px; --ui-font-size: 1rem; }
+      body.grade-high { --btn-scale: 1; --btn-padding: 10px 16px; --ui-font-size: 0.95rem; }
+      body.grade-max { --btn-scale: 0.95; --btn-padding: 8px 14px; --ui-font-size: 0.85rem; }
+
+      body.lm {
+        /* Light mode — toggled via scenic toggle */
         --bg: #f3f2eb;
         --card: rgba(255, 255, 255, 0.45);
         --text: #111827;
@@ -48,37 +75,6 @@
         --green: #34d399;
         --red: #ef4444;
         --yellow: #d97706;
-        --signal: #0369a1;
-        --r: 16px;
-        /* Grade-based UI defaults */
-        --btn-scale: 1;
-        --btn-padding: 10px 16px;
-        --ui-font-size: 0.95rem;
-        /* Glassmorphism effects applied directly to elements using var(--card) in their CSS */
-      }
-
-      /* Grade-based UI classes */
-      body.grade-low { --btn-scale: 1.3; --btn-padding: 20px 30px; --ui-font-size: 1.2rem; }
-      body.grade-mid { --btn-scale: 1.15; --btn-padding: 14px 22px; --ui-font-size: 1rem; }
-      body.grade-high { --btn-scale: 1; --btn-padding: 10px 16px; --ui-font-size: 0.95rem; }
-      body.grade-max { --btn-scale: 0.95; --btn-padding: 8px 14px; --ui-font-size: 0.85rem; }
-
-      body.lm {
-        /* Light mode custom variables for Academy */
-        --bg: #f3f2eb;
-        --card: #ffffff;
-        --text: #111827;
-        --ink: #1e293b;
-        --border: rgba(0, 0, 0, 0.15);
-        --hover: rgba(0, 0, 0, 0.05);
-        --muted: #475569;
-        --muted2: #475569;
-        --dim: #475569;
-        --accent: #d97706;
-        --void: #e8e6df;
-        --green: #10b981;
-        --red: #dc2626;
-        --yellow: #b45309;
         --signal: #0369a1;
       }
 
@@ -182,52 +178,6 @@
 
       body.lm #loading-bar {
         background: linear-gradient(90deg, #d97706, #0369a1) !important;
-      }
-
-      /* Theme Toggle Slider */
-      .theme-slider-container {
-        position: relative;
-        display: inline-block;
-        width: 56px;
-        height: 30px;
-      }
-      .theme-slider-container input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-      .theme-slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: var(--card);
-        border: 1px solid var(--border);
-        transition: 0.4s;
-        border-radius: 34px;
-      }
-      .theme-slider:before {
-        position: absolute;
-        content: '🌙';
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 22px;
-        width: 22px;
-        left: 3px;
-        bottom: 3px;
-        background-color: #111827;
-        border-radius: 50%;
-        transition: 0.4s;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      }
-      body.lm .theme-slider:before {
-        content: '☀️';
-        background-color: #fff;
-        transform: translateX(26px);
       }
 
       .mobile-dl {
@@ -2909,6 +2859,85 @@
         .onb-chips { flex-direction: column; }
         .onb-skip-btns { flex-direction: column; }
       }
+
+      /* ── Scenic Day/Night Toggle ── */
+      #theme-toggle {
+        position: relative;
+        display: inline-block;
+        width: 369px;
+        height: 145px;
+        border-radius: 72.5px;
+        overflow: hidden;
+        cursor: pointer;
+        box-shadow: inset 0px 7px 9px rgba(0,0,0,0.25), inset 0px -5px 14px rgba(0,0,0,0.25);
+        transition: background-color 0.6s ease;
+        flex-shrink: 0;
+      }
+      #theme-toggle .tg-sky {
+        position: absolute;
+        inset: 0;
+        background-color: #117AF5;
+        border-radius: inherit;
+        transition: background-color 0.6s ease;
+      }
+      #theme-toggle.dark .tg-sky {
+        background-color: #1a202c;
+      }
+      #theme-toggle .tg-clouds-back {
+        position: absolute;
+        width: 312px;
+        height: 110px;
+        right: 40px;
+        bottom: -50px;
+        opacity: 0.7;
+        transition: transform 0.6s ease;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='312' height='110'%3E%3Cg opacity='.7'%3E%3Cellipse cx='60' cy='70' rx='60' ry='40' fill='%23fff'/%3E%3Cellipse cx='100' cy='55' rx='50' ry='35' fill='%23fff'/%3E%3Cellipse cx='150' cy='65' rx='55' ry='38' fill='%23fff'/%3E%3Cellipse cx='200' cy='50' rx='45' ry='32' fill='%23fff'/%3E%3Cellipse cx='240' cy='62' rx='52' ry='36' fill='%23fff'/%3E%3Cellipse cx='280' cy='58' rx='32' ry='24' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+      #theme-toggle.dark .tg-clouds-back {
+        transform: translateY(100%);
+      }
+      #theme-toggle .tg-clouds-front {
+        position: absolute;
+        width: 345px;
+        height: 110px;
+        right: -20px;
+        bottom: -30px;
+        transition: transform 0.6s ease;
+        transition-delay: 0.1s;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='345' height='110'%3E%3Cg opacity='.75'%3E%3Cellipse cx='50' cy='70' rx='50' ry='38' fill='%23fff'/%3E%3Cellipse cx='100' cy='55' rx='55' ry='40' fill='%23fff'/%3E%3Cellipse cx='160' cy='60' rx='60' ry='42' fill='%23fff'/%3E%3Cellipse cx='220' cy='52' rx='48' ry='34' fill='%23fff'/%3E%3Cellipse cx='270' cy='58' rx='42' ry='30' fill='%23fff'/%3E%3Cellipse cx='310' cy='65' rx='35' ry='25' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+      #theme-toggle.dark .tg-clouds-front {
+        transform: translateY(100%);
+      }
+      #theme-toggle .tg-handle {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 143px;
+        height: 137px;
+        border-radius: 50%;
+        transition: transform 0.4s ease, filter 0.4s ease;
+        z-index: 2;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='143' height='137'%3E%3Ccircle cx='71.5' cy='68.5' r='60' fill='%23FBBF24' stroke='%23F59E0B' stroke-width='4'/%3E%3Ccircle cx='71.5' cy='68.5' r='45' fill='%23FCD34D' opacity='.6'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+      #theme-toggle.dark .tg-handle {
+        transform: translateX(218px);
+        filter: grayscale(100%) brightness(75%);
+      }
+      @media (max-width: 420px) {
+        #theme-toggle { width: 280px; height: 110px; border-radius: 55px; }
+        #theme-toggle .tg-handle { width: 105px; height: 100px; }
+        #theme-toggle.dark .tg-handle { transform: translateX(168px); }
+        #theme-toggle .tg-clouds-back { width: 240px; height: 85px; }
+        #theme-toggle .tg-clouds-front { width: 265px; height: 85px; }
+      }
+
     </style>
 
     <style>
@@ -3149,26 +3178,12 @@
 
     <div id="ss" class="screen active">
       <div id="top-bar-container" style="position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; align-items: center">
-        <label class="theme-slider-container">
-          <input
-            type="checkbox"
-            id="theme-slider"
-            onclick="
-              document.body.classList.toggle('lm')
-              try {
-                localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark')
-              } catch (e) {}
-            "
-          />
-          <span class="theme-slider"></span>
-        </label>
-        <script>
-          setTimeout(() => {
-            if (document.body.classList.contains('lm') || localStorage.getItem('theme') === 'light') {
-              document.getElementById('theme-slider').checked = true
-            }
-          }, 100)
-        </script>
+        <div id="theme-toggle" onclick="toggleAcademyTheme()">
+          <div class="tg-sky"></div>
+          <div class="tg-clouds-back"></div>
+          <div class="tg-clouds-front"></div>
+          <div class="tg-handle"></div>
+        </div>
 
         <button
           class=""
@@ -4158,6 +4173,36 @@
           }, 200)
         }, 400)
       })()
+
+      /* ── Scenic Toggle Logic ── */
+      function toggleAcademyTheme() {
+        const toggle = document.getElementById('theme-toggle');
+        toggle.classList.toggle('dark');
+        document.body.classList.toggle('lm');
+        try {
+          localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
+        } catch (e) {}
+        // Sync parent site toggle if available
+        if (typeof window.toggleTheme === 'function') {
+          window.toggleTheme(document.getElementById('theme-toggle'));
+        }
+      }
+      (function initAcademyScenicToggle() {
+        const saved = localStorage.getItem('theme');
+        const isLight = saved === 'light' || (!saved && document.body.classList.contains('lm'));
+        if (isLight) {
+          document.body.classList.add('lm');
+          const t = document.getElementById('theme-toggle');
+          if (t) t.classList.remove('dark');
+        } else {
+          document.body.classList.remove('lm');
+          const t = document.getElementById('theme-toggle');
+          if (t) t.classList.add('dark');
+        }
+        // Sync parent toggle checkbox if present
+        const parentCb = document.querySelector('.tw input[type="checkbox"]');
+        if (parentCb) parentCb.checked = isLight;
+      })();
     </script>
       <!-- Hidden dev unlock (click 5 times) -->
       <div style="position: fixed; bottom: 5px; right: 10px; font-size: 0.7rem; color: var(--muted2); opacity: 0.3; cursor: pointer; z-index: 9999" onclick="handleDevClick()" title="Dev options">v2.4.1</div>

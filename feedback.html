@@ -1110,16 +1110,7 @@
                     </div>
                 </div>
             </div>
-            <div class="tw">
-                <span class="tl" id="tLabel">Light</span>
-                <label class="tsb" for="tsck">
-                    <input type="checkbox" id="tsck" aria-label="Toggle light mode"
-                        onchange="window.toggleTheme?window.toggleTheme(this):null">
-                    <div class="tst">
-                        <div class="tsth">☀️</div>
-                    </div>
-                </label>
-            </div>
+            <div id="theme-toggle" onclick="toggleScenicTheme()"><div class="tg-sky"></div><div class="tg-clouds-back"></div><div class="tg-clouds-front"></div><div class="tg-handle"></div></div>
             <button class="nav-login-btn" id="navLoginBtn"
                 onclick="window.openGlobalLogin?window.openGlobalLogin():(window.openLogin?window.openLogin():null)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -1508,6 +1499,12 @@
         }
         rf();
     }
+    </script>
+    <script>
+    function initScenicTheme(){var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}syncScenicToggle()}
+    function syncScenicToggle(){var el=document.getElementById('theme-toggle');if(!el)return;if(document.body.classList.contains('lm')){el.classList.remove('dark')}else{el.classList.add('dark')}}
+    function toggleScenicTheme(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');syncScenicToggle()}
+    initScenicTheme()
     </script>
 </body>
 

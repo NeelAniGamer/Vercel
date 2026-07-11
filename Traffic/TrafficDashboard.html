@@ -16,6 +16,22 @@
 
     <style>
       :root {
+        /* Dark theme (default) — matches parent site dark mode */
+        --bg: #070a14;
+        --card: rgba(17, 24, 39, 0.85);
+        --text: #e8e3d8;
+        --border: rgba(255, 255, 255, 0.08);
+        --hover: rgba(255, 255, 255, 0.06);
+        --muted: #8891aa;
+        --muted2: #8891aa;
+        --accent: #f2b84b;
+        --green: #34d399;
+        --red: #ef4444;
+        --r: 16px;
+      }
+
+      body.lm {
+        /* Light mode — toggled via scenic toggle */
         --bg: #f3f2eb;
         --card: rgba(255, 255, 255, 0.45);
         --text: #111827;
@@ -26,7 +42,6 @@
         --accent: #d97706;
         --green: #34d399;
         --red: #ef4444;
-        --r: 16px;
       }
 
       body {
@@ -463,6 +478,75 @@
         /* Hide non-certificate elements */
         .partner-strip, .btn, .cert-progress-ring, #no-cert-msg, #share-bar { display: none !important; }
       }
+
+      /* ── Scenic Toggle Styles (matching Figma FinalLook.js) ── */
+      #theme-toggle {
+        width: 147px;
+        height: 58px;
+        border-radius: 29px;
+        background-color: #117AF5;
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+        box-shadow: inset 0px 7px 9px rgba(0,0,0,0.25), inset 0px -5px 14px rgba(0,0,0,0.25);
+        transition: background-color 0.6s ease;
+        flex-shrink: 0;
+      }
+      #theme-toggle.dark {
+        background-color: #1a202c;
+      }
+      .tg-sky {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+      }
+      .tg-clouds-back {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 147 58'%3E%3Cpath d='M20 35c-4 0-7-2-7-5s3-5 7-5c1-4 5-7 9-7 3 0 6 2 7 5 1-1 2-1 3-1 4 0 7 3 7 6 0 1 0 2-1 3 3 1 5 4 5 7 0 4-3 7-7 7H20z' fill='white' opacity='0.6'/%3E%3C/svg%3E");
+        background-size: 50%;
+        transition: transform 0.6s ease 0.1s;
+      }
+      #theme-toggle.dark .tg-clouds-back {
+        transform: translateY(100%);
+      }
+      .tg-clouds-front {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 147 58'%3E%3Cpath d='M10 42c-3 0-5-2-5-4s2-4 5-4c1-3 4-6 8-6 2 0 5 2 6 4 1 0 2-1 4-1 3 0 6 2 6 5 0 1 0 2-1 3 2 1 4 3 4 6 0 3-3 6-7 6H10z' fill='white' opacity='0.8'/%3E%3C/svg%3E");
+        background-size: 45%;
+        transition: transform 0.6s ease 0s;
+      }
+      #theme-toggle.dark .tg-clouds-front {
+        transform: translateY(100%);
+      }
+      .tg-handle {
+        position: absolute;
+        top: 4px; left: 4px;
+        width: 50px; height: 50px;
+        border-radius: 50%;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23FFD130'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23FFED4A'/%3E%3Ccircle cx='50' cy='50' r='25' fill='%23FFF076'/%3E%3C/svg%3E");
+        background-size: cover;
+        transition: transform 0.6s ease, filter 0.6s ease;
+      }
+      #theme-toggle.dark .tg-handle {
+        transform: translateX(89px);
+        filter: grayscale(100%) brightness(75%);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23C4C4C4'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23E0E0E0'/%3E%3Ccircle cx='30' cy='50' r='15' fill='%23F0F0F0'/%3E%3C/svg%3E");
+      }
+
+      @media (max-width: 420px) {
+        #theme-toggle {
+          width: 112px;
+          height: 44px;
+          border-radius: 22px;
+        }
+        .tg-handle {
+          width: 38px; height: 38px;
+        }
+        #theme-toggle.dark .tg-handle {
+          transform: translateX(68px);
+        }
+      }
     </style>
   </head>
   <body>
@@ -478,6 +562,7 @@
         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
           <button class="btn-edit" onclick="openEditModal()">✏️ Edit Profile</button>
           <button class="btn btn-outline" onclick="window.location.href = 'Academy.html'">← Back to Academy</button>
+          <div id="theme-toggle" onclick="toggleDashTheme()"><div class="tg-sky"></div><div class="tg-clouds-back"></div><div class="tg-clouds-front"></div><div class="tg-handle"></div></div>
           <button class="btn-edit" style="color: var(--red); border-color: var(--red);" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</button>
           <button class="btn btn-outline" style="color: var(--red); border-color: var(--red); font-size: 0.85rem" onclick="logoutAndClear()">Sign Out</button>
         </div>
@@ -805,5 +890,27 @@
         </div>
       </div>
     </div>
+
+    <script>
+    /* ── Scenic Toggle JS ── */
+    function initDashTheme() {
+      var t = localStorage.getItem('theme');
+      if (t === 'light') { document.body.classList.add('lm'); }
+      else { document.body.classList.remove('lm'); }
+      syncDashToggle();
+    }
+    function syncDashToggle() {
+      var el = document.getElementById('theme-toggle');
+      if (!el) return;
+      if (document.body.classList.contains('lm')) { el.classList.remove('dark'); }
+      else { el.classList.add('dark'); }
+    }
+    function toggleDashTheme() {
+      document.body.classList.toggle('lm');
+      localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
+      syncDashToggle();
+    }
+    initDashTheme();
+    </script>
   </body>
 </html>
