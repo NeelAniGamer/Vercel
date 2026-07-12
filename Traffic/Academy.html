@@ -2860,82 +2860,145 @@
         .onb-skip-btns { flex-direction: column; }
       }
 
-      /* ── Scenic Day/Night Toggle ── */
-      #theme-toggle {
+      /* ── Horizon Toggle ── */
+      .hz-toggle {
         position: relative;
-        display: inline-block;
         width: 369px;
         height: 145px;
         border-radius: 72.5px;
-        overflow: hidden;
         cursor: pointer;
-        box-shadow: inset 0px 7px 9px rgba(0,0,0,0.25), inset 0px -5px 14px rgba(0,0,0,0.25);
-        transition: background-color 0.6s ease;
+        overflow: hidden;
         flex-shrink: 0;
+        background: linear-gradient(180deg, #3B82F6 0%, #60A5FA 25%, #93C5FD 50%, #FDE68A 80%, #F59E0B 100%);
+        transition: background 0.7s cubic-bezier(0.4,0,0.2,1);
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.12);
       }
-      #theme-toggle .tg-sky {
-        position: absolute;
-        inset: 0;
-        background-color: #117AF5;
+      .hz-toggle.night {
+        background: linear-gradient(180deg, #070B1A 0%, #0F172A 25%, #1E293B 50%, #334155 80%, #1E1B4B 100%);
+      }
+      .hz-toggle:active { transform: scale(0.97); }
+      .hz-stars {
+        position: absolute; inset: 0;
         border-radius: inherit;
-        transition: background-color 0.6s ease;
+        opacity: 0;
+        transition: opacity 0.7s ease;
+        pointer-events: none;
+        box-shadow:
+          60px 18px 0 1px #fff, 120px 35px 0 0px #fff, 185px 15px 0 0.5px #fff,
+          230px 40px 0 0px #fff, 290px 22px 0 1px #fff, 340px 45px 0 0px #fff,
+          85px 50px 0 0.5px #fff, 155px 8px 0 0px #fff, 210px 55px 0 0px #fff,
+          310px 12px 0 1px #fff, 355px 28px 0 0px #fff, 40px 42px 0 0px #fff,
+          100px 62px 0 0.5px #fff, 175px 72px 0 0px #fff, 250px 18px 0 0px #fff,
+          50px 28px 0 0.5px #fff, 130px 48px 0 0px #fff, 200px 32px 0 1px #fff,
+          275px 58px 0 0px #fff, 320px 38px 0 0px #fff;
       }
-      #theme-toggle.dark .tg-sky {
-        background-color: #1a202c;
+      .hz-toggle.night .hz-stars { opacity: 1; }
+      @keyframes hz-twinkle {
+        0%,100% { opacity: 1; }
+        50% { opacity: 0.4; }
       }
-      #theme-toggle .tg-clouds-back {
+      .hz-stars::before {
+        content: '';
         position: absolute;
-        width: 312px;
-        height: 110px;
-        right: 40px;
-        bottom: -50px;
-        opacity: 0.7;
-        transition: transform 0.6s ease;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='312' height='110'%3E%3Cg opacity='.7'%3E%3Cellipse cx='60' cy='70' rx='60' ry='40' fill='%23fff'/%3E%3Cellipse cx='100' cy='55' rx='50' ry='35' fill='%23fff'/%3E%3Cellipse cx='150' cy='65' rx='55' ry='38' fill='%23fff'/%3E%3Cellipse cx='200' cy='50' rx='45' ry='32' fill='%23fff'/%3E%3Cellipse cx='240' cy='62' rx='52' ry='36' fill='%23fff'/%3E%3Cellipse cx='280' cy='58' rx='32' ry='24' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E");
-        background-size: contain;
-        background-repeat: no-repeat;
-      }
-      #theme-toggle.dark .tg-clouds-back {
-        transform: translateY(100%);
-      }
-      #theme-toggle .tg-clouds-front {
-        position: absolute;
-        width: 345px;
-        height: 110px;
-        right: -20px;
-        bottom: -30px;
-        transition: transform 0.6s ease;
-        transition-delay: 0.1s;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='345' height='110'%3E%3Cg opacity='.75'%3E%3Cellipse cx='50' cy='70' rx='50' ry='38' fill='%23fff'/%3E%3Cellipse cx='100' cy='55' rx='55' ry='40' fill='%23fff'/%3E%3Cellipse cx='160' cy='60' rx='60' ry='42' fill='%23fff'/%3E%3Cellipse cx='220' cy='52' rx='48' ry='34' fill='%23fff'/%3E%3Cellipse cx='270' cy='58' rx='42' ry='30' fill='%23fff'/%3E%3Cellipse cx='310' cy='65' rx='35' ry='25' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E");
-        background-size: contain;
-        background-repeat: no-repeat;
-      }
-      #theme-toggle.dark .tg-clouds-front {
-        transform: translateY(100%);
-      }
-      #theme-toggle .tg-handle {
-        position: absolute;
-        top: 4px;
-        left: 4px;
-        width: 143px;
-        height: 137px;
+        width: 2px; height: 2px;
+        background: white;
         border-radius: 50%;
-        transition: transform 0.4s ease, filter 0.4s ease;
-        z-index: 2;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='143' height='137'%3E%3Ccircle cx='71.5' cy='68.5' r='60' fill='%23FBBF24' stroke='%23F59E0B' stroke-width='4'/%3E%3Ccircle cx='71.5' cy='68.5' r='45' fill='%23FCD34D' opacity='.6'/%3E%3C/svg%3E");
-        background-size: contain;
-        background-repeat: no-repeat;
+        top: 30px; left: 95px;
+        box-shadow: 0 0 4px 1px rgba(255,255,255,0.6);
+        animation: hz-twinkle 3s ease-in-out infinite;
       }
-      #theme-toggle.dark .tg-handle {
-        transform: translateX(218px);
-        filter: grayscale(100%) brightness(75%);
+      .hz-stars::after {
+        content: '';
+        position: absolute;
+        width: 2px; height: 2px;
+        background: white;
+        border-radius: 50%;
+        top: 50px; left: 260px;
+        box-shadow: 0 0 4px 1px rgba(255,255,255,0.6);
+        animation: hz-twinkle 3s ease-in-out 1.5s infinite;
       }
+      .hz-skyline {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 38px;
+        background: #1E3A5F;
+        clip-path: polygon(
+          0% 100%, 0% 60%, 3% 60%, 3% 30%, 6% 30%, 6% 55%, 9% 55%,
+          9% 40%, 12% 40%, 12% 20%, 15% 20%, 15% 40%, 18% 40%,
+          18% 50%, 22% 50%, 22% 25%, 25% 25%, 25% 45%, 28% 45%,
+          28% 35%, 31% 35%, 31% 15%, 34% 15%, 34% 35%, 37% 35%,
+          37% 55%, 40% 55%, 40% 30%, 43% 30%, 43% 10%, 46% 10%,
+          46% 30%, 49% 30%, 49% 50%, 53% 50%, 53% 20%, 56% 20%,
+          56% 45%, 59% 45%, 59% 35%, 62% 35%, 62% 5%, 65% 5%,
+          65% 35%, 68% 35%, 68% 55%, 71% 55%, 71% 40%, 74% 40%,
+          74% 15%, 77% 15%, 77% 40%, 80% 40%, 80% 55%, 83% 55%,
+          83% 25%, 86% 25%, 86% 50%, 89% 50%, 89% 35%, 92% 35%,
+          92% 60%, 95% 60%, 95% 45%, 98% 45%, 98% 70%, 100% 70%, 100% 100%
+        );
+        transition: background 0.7s cubic-bezier(0.4,0,0.2,1);
+      }
+      .hz-toggle.night .hz-skyline { background: #0B1120; }
+      .hz-windows {
+        position: absolute;
+        bottom: 4px; left: 0; right: 0;
+        height: 30px;
+        opacity: 0;
+        transition: opacity 0.7s ease;
+        pointer-events: none;
+        box-shadow:
+          38px -8px 0 1px #FDE68A, 44px -8px 0 1px #FDE68A,
+          107px -16px 0 1px #FDE68A, 130px -16px 0 1px #FDE68A,
+          202px -12px 0 1px #FDE68A, 208px -12px 0 1px #FDE68A,
+          253px -8px 0 1px #FDE68A, 342px -4px 0 1px #FDE68A,
+          182px -2px 0 1px #FDE68A, 260px -2px 0 1px #FDE68A;
+      }
+      .hz-toggle.night .hz-windows { opacity: 1; }
+      .hz-orb {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        left: 22px;
+        background: radial-gradient(circle at 40% 35%, #FFF7C2 0%, #FCD34D 35%, #F59E0B 70%, #D97706 100%);
+        box-shadow: 0 0 24px 8px rgba(252,211,77,0.35), 0 0 60px 16px rgba(252,211,77,0.12);
+        transition: left 0.7s cubic-bezier(0.4,0,0.2,1), background 0.7s ease, box-shadow 0.7s ease;
+        pointer-events: none;
+      }
+      .hz-toggle.night .hz-orb {
+        left: 262px;
+        background: radial-gradient(circle at 45% 40%, #E2E8F0 0%, #94A3B8 40%, #64748B 75%, #475569 100%);
+        box-shadow: 0 0 20px 6px rgba(148,163,184,0.2), 0 0 50px 12px rgba(148,163,184,0.08);
+      }
+      .hz-orb::after {
+        content: '';
+        position: absolute;
+        top: 8px; left: 15px;
+        width: 70px; height: 70px;
+        border-radius: 50%;
+        background: transparent;
+        transition: background 0.7s ease;
+      }
+      .hz-toggle.night .hz-orb::after {
+        background: #0F172A;
+      }
+      @keyframes hz-sun-pulse {
+        0%, 100% { box-shadow: 0 0 24px 8px rgba(252,211,77,0.35), 0 0 60px 16px rgba(252,211,77,0.12); }
+        50% { box-shadow: 0 0 32px 12px rgba(252,211,77,0.45), 0 0 80px 24px rgba(252,211,77,0.18); }
+      }
+      .hz-toggle:not(.night) .hz-orb { animation: hz-sun-pulse 4s ease-in-out infinite; }
+      @keyframes hz-moon-glow {
+        0%, 100% { box-shadow: 0 0 20px 6px rgba(148,163,184,0.2), 0 0 50px 12px rgba(148,163,184,0.08); }
+        50% { box-shadow: 0 0 28px 10px rgba(148,163,184,0.3), 0 0 65px 18px rgba(148,163,184,0.12); }
+      }
+      .hz-toggle.night .hz-orb { animation: hz-moon-glow 5s ease-in-out infinite; }
       @media (max-width: 420px) {
-        #theme-toggle { width: 280px; height: 110px; border-radius: 55px; }
-        #theme-toggle .tg-handle { width: 105px; height: 100px; }
-        #theme-toggle.dark .tg-handle { transform: translateX(168px); }
-        #theme-toggle .tg-clouds-back { width: 240px; height: 85px; }
-        #theme-toggle .tg-clouds-front { width: 265px; height: 85px; }
+        .hz-toggle { width: 300px; height: 98px; border-radius: 49px; }
+        .hz-orb { width: 76px; height: 76px; left: 14px; }
+        .hz-toggle.night .hz-orb { left: 202px; }
+        .hz-orb::after { width: 48px; height: 48px; top: 6px; left: 10px; }
+        .hz-skyline { height: 26px; }
       }
 
     </style>
@@ -3178,11 +3241,11 @@
 
     <div id="ss" class="screen active">
       <div id="top-bar-container" style="position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; align-items: center">
-        <div id="theme-toggle" onclick="toggleAcademyTheme()">
-          <div class="tg-sky"></div>
-          <div class="tg-clouds-back"></div>
-          <div class="tg-clouds-front"></div>
-          <div class="tg-handle"></div>
+        <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-stars"></div>
+          <div class="hz-skyline"></div>
+          <div class="hz-windows"></div>
+          <div class="hz-orb"></div>
         </div>
 
         <button
@@ -4174,35 +4237,25 @@
         }, 400)
       })()
 
-      /* ── Scenic Toggle Logic ── */
-      function toggleAcademyTheme() {
-        const toggle = document.getElementById('theme-toggle');
-        toggle.classList.toggle('dark');
-        document.body.classList.toggle('lm');
-        try {
-          localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
-        } catch (e) {}
-        // Sync parent site toggle if available
-        if (typeof window.toggleTheme === 'function') {
-          window.toggleTheme(document.getElementById('theme-toggle'));
-        }
+      /* ── Horizon Toggle ── */
+      function hzInit() {
+        var t = localStorage.getItem('theme');
+        if (t === 'light') { document.body.classList.add('lm'); }
+        else { document.body.classList.remove('lm'); }
+        hzSync();
       }
-      (function initAcademyScenicToggle() {
-        const saved = localStorage.getItem('theme');
-        const isLight = saved === 'light' || (!saved && document.body.classList.contains('lm'));
-        if (isLight) {
-          document.body.classList.add('lm');
-          const t = document.getElementById('theme-toggle');
-          if (t) t.classList.remove('dark');
-        } else {
-          document.body.classList.remove('lm');
-          const t = document.getElementById('theme-toggle');
-          if (t) t.classList.add('dark');
-        }
-        // Sync parent toggle checkbox if present
-        const parentCb = document.querySelector('.tw input[type="checkbox"]');
-        if (parentCb) parentCb.checked = isLight;
-      })();
+      function hzSync() {
+        var el = document.querySelector('.hz-toggle');
+        if (!el) return;
+        if (document.body.classList.contains('lm')) { el.classList.remove('night'); }
+        else { el.classList.add('night'); }
+      }
+      function hzToggle() {
+        document.body.classList.toggle('lm');
+        localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
+        hzSync();
+      }
+      hzInit();
     </script>
       <!-- Hidden dev unlock (click 5 times) -->
       <div style="position: fixed; bottom: 5px; right: 10px; font-size: 0.7rem; color: var(--muted2); opacity: 0.3; cursor: pointer; z-index: 9999" onclick="handleDevClick()" title="Dev options">v2.4.1</div>

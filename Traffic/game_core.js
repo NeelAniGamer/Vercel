@@ -1522,9 +1522,19 @@ class Game {
         
         // Reset button styles
         const btnS = document.getElementById('btn-seatbelt');
-        if (btnS) { btnS.style.background = '#333'; btnS.textContent = (this.vehMode === 'bike' || this.vehMode === 'cycle') ? '🪖 Helmet OFF' : '💺 Seatbelt OFF'; }
+        if (btnS) {
+            const wrap = document.getElementById('sb-icon-wrap');
+            const label = document.getElementById('sb-label');
+            if (wrap) { wrap.classList.remove('on'); wrap.classList.add('off'); }
+            if (label) { label.textContent = (this.vehMode === 'bike' || this.vehMode === 'cycle') ? 'Helmet OFF' : 'Belt OFF'; label.classList.remove('on'); label.classList.add('off'); }
+        }
         const btnM = document.getElementById('btn-mobile');
-        if (btnM) { btnM.style.background = '#333'; btnM.textContent = '📱 Use Mobile Phone'; }
+        if (btnM) {
+            btnM.style.borderColor = '#555';
+            const ml = btnM.querySelector('.civic-label');
+            if (ml) { ml.textContent = 'Phone'; ml.style.color = ''; }
+        }
+        this._syncIndicatorUI();
         
         if (mob()) document.getElementById('tc').classList.add('on');
         if (mob()) this._autoGyro();
@@ -1538,20 +1548,20 @@ class Game {
       toggleSeatbelt(btn) {
           this.seatbeltOn = !this.seatbeltOn;
           const isBike = (this.vehMode === 'bike' || this.vehMode === 'cycle');
+          const wrap = document.getElementById('sb-icon-wrap');
+          const label = document.getElementById('sb-label');
           if (this.seatbeltOn) {
-              btn.style.background = '#27ae60';
-              btn.textContent = isBike ? '🪖 Helmet ON' : '💺 Belt ON';
-              const bonus = isBike ? '+15% Speed' : '+10% Speed +50% Safety';
+              if (wrap) { wrap.classList.remove('off'); wrap.classList.add('on'); }
+              if (label) { label.textContent = isBike ? 'Helmet ON' : 'Belt ON'; label.classList.remove('off'); label.classList.add('on'); }
               toast(isBike ? 'Helmet Secured! +15% Speed' : 'Seatbelt Fastened! +10% Speed, 50% Less Damage', '#27ae60');
               if (!this.isPedestrian) {
                   const base = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
                   this.maxSpd = base * (isBike ? 1.15 : 1.1);
-                  // Reduce collision damage
                   this._seatbeltDamageReduction = true;
               }
           } else {
-              btn.style.background = '#333';
-              btn.textContent = isBike ? '🪖 Helmet OFF' : '💺 Belt OFF';
+              if (wrap) { wrap.classList.remove('on'); wrap.classList.add('off'); }
+              if (label) { label.textContent = isBike ? 'Helmet OFF' : 'Belt OFF'; label.classList.remove('on'); label.classList.add('off'); }
               toast(isBike ? 'Helmet Removed! -15% Speed' : 'Seatbelt Unfastened! Full Collision Damage', '#ff3b30');
               if (!this.isPedestrian) {
                   this.maxSpd = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
@@ -1609,12 +1619,19 @@ class Game {
       }
       toggleTurnSignal(dir) {
           if (this.turnSignal === dir) {
-              this.turnSignal = 0; // turn off if same
+              this.turnSignal = 0;
               toast('Turn Signal OFF', '#95a5a6');
           } else {
               this.turnSignal = dir;
               toast(dir === -1 ? 'Left Signal ON' : 'Right Signal ON', '#f39c12');
           }
+          this._syncIndicatorUI();
+      }
+      _syncIndicatorUI() {
+          const l = document.getElementById('btn-ind-left');
+          const r = document.getElementById('btn-ind-right');
+          if (l) l.classList.toggle('active', this.turnSignal === -1);
+          if (r) r.classList.toggle('active', this.turnSignal === 1);
       }
       // ── Road-sign recognition quiz (C) ──
       _showRoadSignQuiz(sign) {
@@ -1665,28 +1682,25 @@ class Game {
       toggleMobile(btn) {
           this.mobileOn = !this.mobileOn;
           const isParked = this.isPedestrian || Math.abs(this.speed) < 0.05;
-          // Cycle through: Normal -> GPS -> Music -> Normal
+          const label = btn ? btn.querySelector('.civic-label') : null;
           if (this.mobileOn) {
               this._mobileMode = (this._mobileMode || 0) + 1;
               if (this._mobileMode > 2) this._mobileMode = 0;
 
               if (this._mobileMode === 1 && isParked) {
-                  // GPS Mode - parked
-                  btn.style.background = '#2196F3';
-                  btn.textContent = '🗺️ GPS Active';
+                  if (btn) btn.style.borderColor = '#2196F3';
+                  if (label) { label.textContent = 'GPS'; label.style.color = '#2196F3'; }
                   toast('🗺️ GPS Navigation — Shows route to checkpoint!', '#2196F3');
                   this.phoneGpsOn = true;
                   if (this.dom['phone-gps']) this.dom['phone-gps'].classList.add('on');
                   if (this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'block';
               } else if (this._mobileMode === 2 && isParked) {
-                  // Music Mode - parked
-                  btn.style.background = '#9b59b6';
-                  btn.textContent = '🎵 Music On';
+                  if (btn) btn.style.borderColor = '#9b59b6';
+                  if (label) { label.textContent = 'Music'; label.style.color = '#9b59b6'; }
                   toast('🎵 Background Music Enabled', '#9b59b6');
               } else if (this._mobileMode === 0) {
-                  // Normal / Using while driving
-                  btn.style.background = '#e74c3c';
-                  btn.textContent = '📵 Using Mobile...';
+                  if (btn) btn.style.borderColor = '#e74c3c';
+                  if (label) { label.textContent = 'Distracted!'; label.style.color = '#e74c3c'; }
                   toast('⚠️ Distracted Driving! ₹500 fine', '#e74c3c');
                   if (!this.challanFired.has('mobile_drive')) {
                       this.challanFired.add('mobile_drive');
@@ -1695,17 +1709,15 @@ class Game {
                       this.hp -= 10; this._uh();
                   }
               } else {
-                  // Using GPS or Music while driving - warn
-                  btn.style.background = '#e74c3c';
-                  btn.textContent = '⚠️ Not Safe!';
+                  if (btn) btn.style.borderColor = '#e74c3c';
+                  if (label) { label.textContent = 'Unsafe!'; label.style.color = '#e74c3c'; }
                   toast('📵 Cannot use phone while driving!', '#e74c3c');
                   this._mobileMode = 0;
                   this.mobileOn = false;
               }
           } else {
-              // Turned off
-              btn.style.background = '#333';
-              btn.textContent = '📱 Use Mobile';
+              if (btn) btn.style.borderColor = '#555';
+              if (label) { label.textContent = 'Phone'; label.style.color = ''; }
               this.phoneGpsOn = false;
               if (this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on');
               this._mobileMode = 0;

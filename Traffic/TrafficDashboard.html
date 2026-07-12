@@ -479,73 +479,103 @@
         .partner-strip, .btn, .cert-progress-ring, #no-cert-msg, #share-bar { display: none !important; }
       }
 
-      /* ── Scenic Toggle Styles (matching Figma FinalLook.js) ── */
-      #theme-toggle {
+      /* ── Horizon Toggle ── */
+      .hz-toggle {
         width: 147px;
         height: 58px;
         border-radius: 29px;
-        background-color: #117AF5;
-        position: relative;
         cursor: pointer;
         overflow: hidden;
-        box-shadow: inset 0px 7px 9px rgba(0,0,0,0.25), inset 0px -5px 14px rgba(0,0,0,0.25);
-        transition: background-color 0.6s ease;
         flex-shrink: 0;
+        background: linear-gradient(180deg, #3B82F6 0%, #60A5FA 25%, #93C5FD 50%, #FDE68A 80%, #F59E0B 100%);
+        transition: background 0.7s cubic-bezier(0.4,0,0.2,1);
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.12);
       }
-      #theme-toggle.dark {
-        background-color: #1a202c;
+      .hz-toggle.night {
+        background: linear-gradient(180deg, #070B1A 0%, #0F172A 25%, #1E293B 50%, #334155 80%, #1E1B4B 100%);
       }
-      .tg-sky {
+      .hz-toggle:active { transform: scale(0.97); }
+      .hz-stars {
+        position: absolute; inset: 0;
+        border-radius: inherit;
+        opacity: 0;
+        transition: opacity 0.7s ease;
+        pointer-events: none;
+        box-shadow:
+          14px 7px 0 0.5px #fff, 28px 12px 0 0px #fff, 44px 5px 0 0px #fff,
+          56px 14px 0 0.5px #fff, 72px 8px 0 0px #fff, 86px 16px 0 0px #fff,
+          22px 22px 0 0px #fff, 48px 26px 0 0.5px #fff, 66px 20px 0 0px #fff;
+      }
+      .hz-toggle.night .hz-stars { opacity: 1; }
+      .hz-skyline {
         position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
+        bottom: 0; left: 0; right: 0;
+        height: 18px;
+        background: #1E3A5F;
+        clip-path: polygon(
+          0% 100%, 0% 60%, 8% 60%, 8% 30%, 16% 30%, 16% 50%,
+          24% 50%, 24% 15%, 32% 15%, 32% 40%, 40% 40%,
+          40% 25%, 48% 25%, 48% 55%, 56% 55%,
+          56% 10%, 64% 10%, 64% 35%, 72% 35%,
+          72% 50%, 80% 50%, 80% 20%, 88% 20%, 88% 60%, 100% 60%, 100% 100%
+        );
+        transition: background 0.7s cubic-bezier(0.4,0,0.2,1);
       }
-      .tg-clouds-back {
+      .hz-toggle.night .hz-skyline { background: #0B1120; }
+      .hz-windows {
         position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 147 58'%3E%3Cpath d='M20 35c-4 0-7-2-7-5s3-5 7-5c1-4 5-7 9-7 3 0 6 2 7 5 1-1 2-1 3-1 4 0 7 3 7 6 0 1 0 2-1 3 3 1 5 4 5 7 0 4-3 7-7 7H20z' fill='white' opacity='0.6'/%3E%3C/svg%3E");
-        background-size: 50%;
-        transition: transform 0.6s ease 0.1s;
+        bottom: 2px; left: 0; right: 0;
+        height: 14px;
+        opacity: 0;
+        transition: opacity 0.7s ease;
+        pointer-events: none;
+        box-shadow:
+          12px -6px 0 0.5px #FDE68A, 16px -6px 0 0.5px #FDE68A,
+          40px -10px 0 0.5px #FDE68A, 44px -10px 0 0.5px #FDE68A,
+          68px -4px 0 0.5px #FDE68A, 76px -4px 0 0.5px #FDE68A;
       }
-      #theme-toggle.dark .tg-clouds-back {
-        transform: translateY(100%);
-      }
-      .tg-clouds-front {
+      .hz-toggle.night .hz-windows { opacity: 1; }
+      .hz-orb {
         position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 147 58'%3E%3Cpath d='M10 42c-3 0-5-2-5-4s2-4 5-4c1-3 4-6 8-6 2 0 5 2 6 4 1 0 2-1 4-1 3 0 6 2 6 5 0 1 0 2-1 3 2 1 4 3 4 6 0 3-3 6-7 6H10z' fill='white' opacity='0.8'/%3E%3C/svg%3E");
-        background-size: 45%;
-        transition: transform 0.6s ease 0s;
-      }
-      #theme-toggle.dark .tg-clouds-front {
-        transform: translateY(100%);
-      }
-      .tg-handle {
-        position: absolute;
-        top: 4px; left: 4px;
-        width: 50px; height: 50px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23FFD130'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23FFED4A'/%3E%3Ccircle cx='50' cy='50' r='25' fill='%23FFF076'/%3E%3C/svg%3E");
-        background-size: cover;
-        transition: transform 0.6s ease, filter 0.6s ease;
+        left: 8px;
+        background: radial-gradient(circle at 40% 35%, #FFF7C2 0%, #FCD34D 35%, #F59E0B 70%, #D97706 100%);
+        box-shadow: 0 0 12px 4px rgba(252,211,77,0.35), 0 0 28px 8px rgba(252,211,77,0.12);
+        transition: left 0.7s cubic-bezier(0.4,0,0.2,1), background 0.7s ease, box-shadow 0.7s ease;
+        pointer-events: none;
       }
-      #theme-toggle.dark .tg-handle {
-        transform: translateX(89px);
-        filter: grayscale(100%) brightness(75%);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23C4C4C4'/%3E%3Ccircle cx='50' cy='50' r='35' fill='%23E0E0E0'/%3E%3Ccircle cx='30' cy='50' r='15' fill='%23F0F0F0'/%3E%3C/svg%3E");
+      .hz-toggle.night .hz-orb {
+        left: 94px;
+        background: radial-gradient(circle at 45% 40%, #E2E8F0 0%, #94A3B8 40%, #64748B 75%, #475569 100%);
+        box-shadow: 0 0 10px 3px rgba(148,163,184,0.2), 0 0 24px 6px rgba(148,163,184,0.08);
       }
-
+      .hz-orb::after {
+        content: '';
+        position: absolute;
+        top: 4px; left: 6px;
+        width: 28px; height: 28px;
+        border-radius: 50%;
+        background: transparent;
+        transition: background 0.7s ease;
+      }
+      .hz-toggle.night .hz-orb::after {
+        background: #0F172A;
+      }
+      @keyframes hz-sun-pulse-sm {
+        0%, 100% { box-shadow: 0 0 12px 4px rgba(252,211,77,0.35), 0 0 28px 8px rgba(252,211,77,0.12); }
+        50% { box-shadow: 0 0 16px 6px rgba(252,211,77,0.45), 0 0 36px 12px rgba(252,211,77,0.18); }
+      }
+      .hz-toggle:not(.night) .hz-orb { animation: hz-sun-pulse-sm 4s ease-in-out infinite; }
       @media (max-width: 420px) {
-        #theme-toggle {
-          width: 112px;
-          height: 44px;
-          border-radius: 22px;
-        }
-        .tg-handle {
-          width: 38px; height: 38px;
-        }
-        #theme-toggle.dark .tg-handle {
-          transform: translateX(68px);
-        }
+        .hz-toggle { width: 112px; height: 44px; border-radius: 22px; }
+        .hz-orb { width: 32px; height: 32px; left: 6px; }
+        .hz-toggle.night .hz-orb { left: 72px; }
+        .hz-orb::after { width: 20px; height: 20px; top: 3px; left: 5px; }
+        .hz-skyline { height: 14px; }
       }
     </style>
   </head>
@@ -562,7 +592,7 @@
         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
           <button class="btn-edit" onclick="openEditModal()">✏️ Edit Profile</button>
           <button class="btn btn-outline" onclick="window.location.href = 'Academy.html'">← Back to Academy</button>
-          <div id="theme-toggle" onclick="toggleDashTheme()"><div class="tg-sky"></div><div class="tg-clouds-back"></div><div class="tg-clouds-front"></div><div class="tg-handle"></div></div>
+          <div class="hz-toggle" onclick="hzToggle()"><div class="hz-stars"></div><div class="hz-skyline"></div><div class="hz-windows"></div><div class="hz-orb"></div></div>
           <button class="btn-edit" style="color: var(--red); border-color: var(--red);" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</button>
           <button class="btn btn-outline" style="color: var(--red); border-color: var(--red); font-size: 0.85rem" onclick="logoutAndClear()">Sign Out</button>
         </div>
@@ -892,25 +922,25 @@
     </div>
 
     <script>
-    /* ── Scenic Toggle JS ── */
-    function initDashTheme() {
+    /* ── Horizon Toggle ── */
+    function hzInit() {
       var t = localStorage.getItem('theme');
       if (t === 'light') { document.body.classList.add('lm'); }
       else { document.body.classList.remove('lm'); }
-      syncDashToggle();
+      hzSync();
     }
-    function syncDashToggle() {
-      var el = document.getElementById('theme-toggle');
+    function hzSync() {
+      var el = document.querySelector('.hz-toggle');
       if (!el) return;
-      if (document.body.classList.contains('lm')) { el.classList.remove('dark'); }
-      else { el.classList.add('dark'); }
+      if (document.body.classList.contains('lm')) { el.classList.remove('night'); }
+      else { el.classList.add('night'); }
     }
-    function toggleDashTheme() {
+    function hzToggle() {
       document.body.classList.toggle('lm');
       localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
-      syncDashToggle();
+      hzSync();
     }
-    initDashTheme();
+    hzInit();
     </script>
   </body>
 </html>

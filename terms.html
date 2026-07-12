@@ -1071,7 +1071,7 @@
             </div>
           </div>
         </div>
-        <div id="theme-toggle" onclick="toggleScenicTheme()"><div class="tg-sky"></div><div class="tg-clouds-back"></div><div class="tg-clouds-front"></div><div class="tg-handle"></div></div>
+        <div class="hz-toggle" onclick="hzToggle()"><div class="hz-stars"></div><div class="hz-skyline"></div><div class="hz-windows"></div><div class="hz-orb"></div></div>
         <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z" /></svg
@@ -1276,10 +1276,10 @@
       })()
     </script>
     <script>
-    function initScenicTheme(){var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}syncScenicToggle()}
-    function syncScenicToggle(){var el=document.getElementById('theme-toggle');if(!el)return;if(document.body.classList.contains('lm')){el.classList.remove('dark')}else{el.classList.add('dark')}}
-    function toggleScenicTheme(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');syncScenicToggle()}
-    initScenicTheme()
+    function hzInit(){var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}hzSync()}
+    function hzSync(){var el=document.querySelector('.hz-toggle');if(!el)return;if(document.body.classList.contains('lm')){el.classList.remove('night')}else{el.classList.add('night')}}
+    function hzToggle(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');hzSync()}
+    hzInit()
     </script>
   </body>
 </html>

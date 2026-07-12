@@ -2523,7 +2523,7 @@
         gap: 2px;
       }
 
-      #civic-controls button {
+      #civic-controls .civic-btn {
         padding: 3px 6px;
         font-size: 0.65rem;
         border-radius: 12px;
@@ -2612,7 +2612,7 @@
         margin-left: 24px;
       }
 
-      #civic-controls button {
+      #civic-controls .civic-btn {
         padding: 3px 5px;
         font-size: 0.55rem;
       }
@@ -3867,7 +3867,7 @@
         right: 4px;
       }
 
-      #civic-controls button {
+      #civic-controls .civic-btn {
         padding: 2px 6px;
         font-size: 0.55rem;
       }
@@ -3926,89 +3926,247 @@
       --signal: #0369a1;
     }
 
-    /* ── Scenic Day/Night Toggle ── */
-    #theme-toggle {
+    /* ── Horizon Toggle ── */
+    .hz-toggle {
       position: relative;
       width: 369px;
       height: 145px;
       border-radius: 72.5px;
-      background-color: #117AF5;
-      box-shadow: inset 0px 7px 9px rgba(0, 0, 0, 0.25),
-                  inset 0px -5px 14px rgba(0, 0, 0, 0.25);
       cursor: pointer;
       overflow: hidden;
-      transition: background-color 0.5s ease;
+      flex-shrink: 0;
+      background: linear-gradient(180deg, #3B82F6 0%, #60A5FA 25%, #93C5FD 50%, #FDE68A 80%, #F59E0B 100%);
+      transition: background 0.7s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .hz-toggle.night {
+      background: linear-gradient(180deg, #070B1A 0%, #0F172A 25%, #1E293B 50%, #334155 80%, #1E1B4B 100%);
+    }
+    .hz-toggle:active { transform: scale(0.97); }
+    .hz-stars {
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      pointer-events: none;
+      box-shadow:
+        60px 18px 0 1px #fff, 120px 35px 0 0px #fff, 185px 15px 0 0.5px #fff,
+        230px 40px 0 0px #fff, 290px 22px 0 1px #fff, 340px 45px 0 0px #fff,
+        85px 50px 0 0.5px #fff, 155px 8px 0 0px #fff, 210px 55px 0 0px #fff,
+        310px 12px 0 1px #fff, 355px 28px 0 0px #fff, 40px 42px 0 0px #fff,
+        100px 62px 0 0.5px #fff, 175px 72px 0 0px #fff, 250px 18px 0 0px #fff,
+        50px 28px 0 0.5px #fff, 130px 48px 0 0px #fff, 200px 32px 0 1px #fff,
+        275px 58px 0 0px #fff, 320px 38px 0 0px #fff;
+    }
+    .hz-toggle.night .hz-stars { opacity: 1; }
+    @keyframes hz-twinkle {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .hz-stars::before {
+      content: '';
+      position: absolute;
+      width: 2px; height: 2px;
+      background: white;
+      border-radius: 50%;
+      top: 30px; left: 95px;
+      box-shadow: 0 0 4px 1px rgba(255,255,255,0.6);
+      animation: hz-twinkle 3s ease-in-out infinite;
+    }
+    .hz-stars::after {
+      content: '';
+      position: absolute;
+      width: 2px; height: 2px;
+      background: white;
+      border-radius: 50%;
+      top: 50px; left: 260px;
+      box-shadow: 0 0 4px 1px rgba(255,255,255,0.6);
+      animation: hz-twinkle 3s ease-in-out 1.5s infinite;
+    }
+    .hz-skyline {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 38px;
+      background: #1E3A5F;
+      clip-path: polygon(
+        0% 100%, 0% 60%, 3% 60%, 3% 30%, 6% 30%, 6% 55%, 9% 55%,
+        9% 40%, 12% 40%, 12% 20%, 15% 20%, 15% 40%, 18% 40%,
+        18% 50%, 22% 50%, 22% 25%, 25% 25%, 25% 45%, 28% 45%,
+        28% 35%, 31% 35%, 31% 15%, 34% 15%, 34% 35%, 37% 35%,
+        37% 55%, 40% 55%, 40% 30%, 43% 30%, 43% 10%, 46% 10%,
+        46% 30%, 49% 30%, 49% 50%, 53% 50%, 53% 20%, 56% 20%,
+        56% 45%, 59% 45%, 59% 35%, 62% 35%, 62% 5%, 65% 5%,
+        65% 35%, 68% 35%, 68% 55%, 71% 55%, 71% 40%, 74% 40%,
+        74% 15%, 77% 15%, 77% 40%, 80% 40%, 80% 55%, 83% 55%,
+        83% 25%, 86% 25%, 86% 50%, 89% 50%, 89% 35%, 92% 35%,
+        92% 60%, 95% 60%, 95% 45%, 98% 45%, 98% 70%, 100% 70%, 100% 100%
+      );
+      transition: background 0.7s cubic-bezier(0.4,0,0.2,1);
+    }
+    .hz-toggle.night .hz-skyline { background: #0B1120; }
+    .hz-windows {
+      position: absolute;
+      bottom: 4px; left: 0; right: 0;
+      height: 30px;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      pointer-events: none;
+      box-shadow:
+        38px -8px 0 1px #FDE68A, 44px -8px 0 1px #FDE68A,
+        107px -16px 0 1px #FDE68A, 130px -16px 0 1px #FDE68A,
+        202px -12px 0 1px #FDE68A, 208px -12px 0 1px #FDE68A,
+        253px -8px 0 1px #FDE68A, 342px -4px 0 1px #FDE68A,
+        182px -2px 0 1px #FDE68A, 260px -2px 0 1px #FDE68A;
+    }
+    .hz-toggle.night .hz-windows { opacity: 1; }
+    .hz-orb {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      left: 22px;
+      background: radial-gradient(circle at 40% 35%, #FFF7C2 0%, #FCD34D 35%, #F59E0B 70%, #D97706 100%);
+      box-shadow: 0 0 24px 8px rgba(252,211,77,0.35), 0 0 60px 16px rgba(252,211,77,0.12);
+      transition: left 0.7s cubic-bezier(0.4,0,0.2,1), background 0.7s ease, box-shadow 0.7s ease;
+      pointer-events: none;
+    }
+    .hz-toggle.night .hz-orb {
+      left: 262px;
+      background: radial-gradient(circle at 45% 40%, #E2E8F0 0%, #94A3B8 40%, #64748B 75%, #475569 100%);
+      box-shadow: 0 0 20px 6px rgba(148,163,184,0.2), 0 0 50px 12px rgba(148,163,184,0.08);
+    }
+    .hz-orb::after {
+      content: '';
+      position: absolute;
+      top: 8px; left: 15px;
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: transparent;
+      transition: background 0.7s ease;
+    }
+    .hz-toggle.night .hz-orb::after {
+      background: #0F172A;
+    }
+    @keyframes hz-sun-pulse {
+      0%, 100% { box-shadow: 0 0 24px 8px rgba(252,211,77,0.35), 0 0 60px 16px rgba(252,211,77,0.12); }
+      50% { box-shadow: 0 0 32px 12px rgba(252,211,77,0.45), 0 0 80px 24px rgba(252,211,77,0.18); }
+    }
+    .hz-sun-pulse { animation: hz-sun-pulse 4s ease-in-out infinite; }
+    .hz-toggle:not(.night) .hz-orb { animation: hz-sun-pulse 4s ease-in-out infinite; }
+    @keyframes hz-moon-glow {
+      0%, 100% { box-shadow: 0 0 20px 6px rgba(148,163,184,0.2), 0 0 50px 12px rgba(148,163,184,0.08); }
+      50% { box-shadow: 0 0 28px 10px rgba(148,163,184,0.3), 0 0 65px 18px rgba(148,163,184,0.12); }
+    }
+    .hz-toggle.night .hz-orb { animation: hz-moon-glow 5s ease-in-out infinite; }
+    @media (max-width: 420px) {
+      .hz-toggle { width: 300px; height: 98px; border-radius: 49px; }
+      .hz-orb { width: 76px; height: 76px; left: 14px; }
+      .hz-toggle.night .hz-orb { left: 202px; }
+      .hz-orb::after { width: 48px; height: 48px; top: 6px; left: 10px; }
+      .hz-skyline { height: 26px; }
+    }
+
+    /* ── Civic Controls (Seatbelt + Indicators + Phone) ── */
+    #civic-controls {
+      display: flex;
+      flex-direction: row;
+      gap: 6px;
+      align-items: center;
+    }
+    .civic-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(30,30,40,0.85);
+      backdrop-filter: blur(6px);
+      border: 2px solid #555;
+      border-radius: 22px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--ink, #e8e3d8);
+      transition: all 0.2s;
+      user-select: none;
+      -webkit-user-select: none;
+      min-height: 34px;
+    }
+    .civic-btn:active { transform: scale(0.92); }
+    .civic-btn:hover { border-color: #777; }
+
+    /* Seatbelt icon */
+    .sb-icon-wrap {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s, box-shadow 0.3s;
       flex-shrink: 0;
     }
-    #theme-toggle.dark {
-      background-color: #1a202c;
+    .sb-icon { width: 16px; height: 16px; transition: color 0.3s; }
+    .sb-icon-wrap.off {
+      background: rgba(255,59,48,0.2);
+      box-shadow: 0 0 0 0 rgba(255,59,48,0);
+      animation: sb-pulse 1.2s ease-in-out infinite;
+    }
+    .sb-icon-wrap.off .sb-icon { color: #ff3b30; }
+    .sb-icon-wrap.on {
+      background: rgba(39,174,96,0.25);
+    }
+    .sb-icon-wrap.on .sb-icon { color: #27ae60; animation: none; }
+    @keyframes sb-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,59,48,0.5); }
+      50%      { box-shadow: 0 0 0 6px rgba(255,59,48,0); }
     }
 
-    #theme-toggle .tg-sky {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      pointer-events: none;
+    /* Indicator arrows */
+    .civic-ind {
+      padding: 7px 10px;
+      min-width: 34px;
+      justify-content: center;
+    }
+    .ind-arrow { width: 18px; height: 18px; transition: all 0.15s; color: #666; }
+    .civic-ind.active .ind-arrow {
+      color: #f39c12;
+      filter: drop-shadow(0 0 5px rgba(243,156,18,0.7));
+    }
+    .civic-ind.active {
+      border-color: #f39c12;
+      background: rgba(243,156,18,0.15);
+    }
+    .civic-ind.active {
+      animation: ind-blink 0.5s ease-in-out infinite;
+    }
+    @keyframes ind-blink {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.35; }
     }
 
-    #theme-toggle .tg-clouds-back {
-      position: absolute;
-      top: 0; left: 0;
-      width: 369px;
-      height: 145px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='369' height='145' viewBox='0 0 369 145'%3E%3Cg id='clouds_back' style='filter:drop-shadow(0px 4px 4px rgba(0,0,0,0.05))'%3E%3Cpath d='M49.5 85.5C49.5 85.5 43 81.5 43 77C43 72.5 46.5 69.5 51 70C51 63.5 56.5 58.5 63.5 58.5C66.5 58.5 69 59.5 71 61C73.5 55 79.5 50.5 87 50.5C96 50.5 103.5 57 104.5 65.5C104.5 65.5 105 65.5 105.5 65.5C112.5 65.5 118.5 71 118.5 78C118.5 85 112.5 91 105.5 91L53 91C48.5 91 44 88 43 83.5' fill='white'/%3E%3Cpath d='M343.5 100C343.5 100 339 97 339 93.5C339 90 341.5 87.5 345 88C345 82.5 349 78.5 354 78.5C356.5 78.5 358.5 79.5 360 81C362 76 366.5 72.5 372.5 72.5C379.5 72.5 385.5 77.5 386.5 84C386.5 84 387 84 387.5 84C393 84 397.5 88.5 397.5 94C397.5 99.5 393 104 387.5 104L346 104C342.5 104 339 102 338 98.5' fill='white'/%3E%3C/g%3E%3C/svg%3E");
-      transition: transform 0.5s ease, opacity 0.5s ease;
-      pointer-events: none;
-    }
-    #theme-toggle.dark .tg-clouds-back {
-      transform: translateY(100%);
-    }
+    /* Phone icon */
+    .civic-icon { width: 16px; height: 16px; flex-shrink: 0; }
+    .civic-label { white-space: nowrap; line-height: 1; }
 
-    #theme-toggle .tg-clouds-front {
-      position: absolute;
-      top: 0; left: 0;
-      width: 362px;
-      height: 137px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='362' height='137' viewBox='0 0 362 137'%3E%3Cg id='clouds_front' style='filter:drop-shadow(0px 4px 4px rgba(0,0,0,0.05))'%3E%3Cpath d='M44.5 95.5C44.5 95.5 41 93 41 90C41 87 43 85 46 85.5C46 80.5 49.5 76.5 54 76.5C56 76.5 57.5 77 59 78.5C61 74 65 71 70 71C77 71 82.5 76 83 82C83 82 83.5 82 84 82C89 82 93 86 93 91C93 96 89 100 84 100L47.5 100C44 100 40 98 39.5 94.5' fill='white'/%3E%3Cpath d='M269 75C269 75 265.5 72.5 265.5 69.5C265.5 66.5 267.5 64.5 270.5 65C270.5 60 274 56 278.5 56C280.5 56 282 56.5 283.5 58C285.5 53.5 289.5 50.5 294.5 50.5C301.5 50.5 307 55.5 307.5 61.5C307.5 61.5 308 61.5 308.5 61.5C313.5 61.5 317.5 65.5 317.5 70.5C317.5 75.5 313.5 79.5 308.5 79.5L272.5 79.5C269 79.5 265 77.5 264.5 74' fill='white'/%3E%3C/g%3E%3C/svg%3E");
-      transition: transform 0.6s ease 0.1s, opacity 0.5s ease;
-      pointer-events: none;
-    }
-    #theme-toggle.dark .tg-clouds-front {
-      transform: translateY(100%);
-    }
+    /* Seatbelt label color states */
+    #btn-seatbelt .civic-label.off { color: #ff3b30; }
+    #btn-seatbelt .civic-label.on  { color: #27ae60; }
 
-    #theme-toggle .tg-handle {
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      width: 143px;
-      height: 137px;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='143' height='137' viewBox='0 0 143 137'%3E%3Cg id='Sun_and_Moon' data-name='Sun and Moon'%3E%3Cfilter id='inner_shadow' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeFlood flood-color='%23000'/%3E%3CfeComposite in2='SourceAlpha' operator='arithmetic' k2='-1' k3='1'/%3E%3CfeGaussianBlur stdDeviation='2.5'/%3E%3CfeComposite in2='SourceAlpha' operator='arithmetic' k2='0' k3='1' k1='0'/%3E%3CfeComposite in='SourceGraphic'/%3E%3C/filter%3E%3Cfilter id='shadow' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='1'/%3E%3C/filter%3E%3Ccircle id='Sun' cx='71.5' cy='68.5' r='56' fill='%23ECCD2D' filter='url(%23inner_shadow)'/%3E%3Cpath d='M113.84 31.43L116.68 38.18L124.33 37.07L118.45 42.09L121.29 48.84L113.84 45.37L106.39 48.84L109.23 42.09L103.35 37.07L111 38.18Z' fill='white' filter='url(%23shadow)' opacity='0.6'/%3E%3Ccircle cx='48.5' cy='62.5' r='20' fill='white' opacity='0.15'/%3E%3Ccircle cx='38.5' cy='82.5' r='10' fill='white' opacity='0.15'/%3E%3Ccircle cx='71.5' cy='45.5' r='5' fill='white' opacity='0.15'/%3E%3C/g%3E%3C/svg%3E");
-      background-size: contain;
-      background-repeat: no-repeat;
-      transition: transform 0.5s ease, filter 0.5s ease;
-      pointer-events: none;
-    }
-    #theme-toggle.dark .tg-handle {
-      transform: translateX(218px);
-      filter: grayscale(100%) brightness(75%);
-    }
-
-    @media (max-width: 420px) {
-      #theme-toggle {
-        width: 280px;
-        height: 110px;
-        border-radius: 55px;
+    /* ── Responsive: civic-controls ── */
+    @media (max-width: 600px) {
+      #civic-controls {
+        gap: 3px;
+        bottom: 10px;
+        right: 6px;
       }
-      #theme-toggle .tg-clouds-back { width: 280px; height: 110px; }
-      #theme-toggle .tg-clouds-front { width: 275px; height: 105px; }
-      #theme-toggle .tg-handle {
-        width: 108px;
-        height: 104px;
-      }
-      #theme-toggle.dark .tg-handle {
-        transform: translateX(166px);
-      }
+      .civic-btn { padding: 5px 8px; border-radius: 18px; font-size: 0.65rem; min-height: 28px; }
+      .sb-icon-wrap { width: 18px; height: 18px; }
+      .sb-icon { width: 13px; height: 13px; }
+      .ind-arrow { width: 14px; height: 14px; }
+      .civic-ind { padding: 5px 7px; min-width: 28px; }
+      .civic-label { font-size: 0.6rem; }
     }
   </style>
 
@@ -4309,17 +4467,32 @@
     <div id="task-list" style="display: flex; flex-direction: column; gap: 8px"></div>
   </div>
   <div id="civic-controls"
-    style="position: fixed; bottom: 16px; right: 20px; z-index: var(--z-controls); display: flex; flex-direction: row; gap: 6px">
-    <button id="btn-seatbelt"
-      style="background: #333; color: var(--ink); border: 2px solid #555; padding: 8px 12px; border-radius: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.8rem"
-      onclick="game.toggleSeatbelt(this)">
-      💺 Seatbelt OFF
-    </button>
-    <button id="btn-mobile"
-      style="background: #333; color: var(--ink); border: 2px solid #555; padding: 8px 12px; border-radius: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.8rem"
-      onclick="game.toggleMobile(this)">
-      📱 Phone
-    </button>
+    style="position: fixed; bottom: 16px; right: 20px; z-index: var(--z-controls); display: flex; flex-direction: row; gap: 6px; align-items: center">
+    <div id="btn-seatbelt" class="civic-btn" onclick="game.toggleSeatbelt(this)">
+      <div id="sb-icon-wrap" class="sb-icon-wrap">
+        <svg id="sb-icon" class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a4 4 0 0 0-4 4v2"/>
+          <path d="M16 6a4 4 0 0 0-4-4"/>
+          <circle cx="12" cy="16" r="5"/>
+          <path d="M12 11v3"/>
+          <path d="M10 14h4"/>
+        </svg>
+      </div>
+      <span id="sb-label" class="civic-label">Belt OFF</span>
+    </div>
+    <div id="btn-ind-left" class="civic-btn civic-ind" onclick="game.toggleTurnSignal(-1)">
+      <svg class="ind-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M15 4l-8 8 8 8V4z"/></svg>
+    </div>
+    <div id="btn-ind-right" class="civic-btn civic-ind" onclick="game.toggleTurnSignal(1)">
+      <svg class="ind-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M9 4l8 8-8 8V4z"/></svg>
+    </div>
+    <div id="btn-mobile" class="civic-btn" onclick="game.toggleMobile(this)">
+      <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+        <line x1="12" y1="18" x2="12.01" y2="18"/>
+      </svg>
+      <span class="civic-label">Phone</span>
+    </div>
   </div>
   <div id="sig-ind" style="
         position: fixed;
@@ -4776,11 +4949,11 @@
   <div id="ss" class="screen active">
     <div id="top-bar-container"
       style="position: absolute; top: 20px; right: 20px; z-index: var(--z-controls); display: flex; gap: 10px">
-      <div id="theme-toggle" onclick="toggleScenicTheme()">
-        <div class="tg-sky"></div>
-        <div class="tg-clouds-back"></div>
-        <div class="tg-clouds-front"></div>
-        <div class="tg-handle"></div>
+      <div class="hz-toggle" onclick="hzToggle()">
+        <div class="hz-stars"></div>
+        <div class="hz-skyline"></div>
+        <div class="hz-windows"></div>
+        <div class="hz-orb"></div>
       </div>
 
       <button class="nav-login-btn" onclick="
@@ -5902,29 +6075,25 @@
       }, 5000);
     })();
 
-    /* ── Scenic Theme Toggle ── */
-    function toggleScenicTheme() {
-      var el = document.getElementById('theme-toggle');
-      var isDark = el.classList.toggle('dark');
-      document.body.classList.toggle('lm', !isDark);
-      try {
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      } catch (e) {}
+    /* ── Horizon Toggle ── */
+    function hzInit() {
+      var t = localStorage.getItem('theme');
+      if (t === 'light') { document.body.classList.add('lm'); }
+      else { document.body.classList.remove('lm'); }
+      hzSync();
     }
-    (function initScenicToggle() {
-      try {
-        var saved = localStorage.getItem('theme');
-        var el = document.getElementById('theme-toggle');
-        if (!el) return;
-        if (saved === 'light') {
-          el.classList.remove('dark');
-          document.body.classList.add('lm');
-        } else {
-          el.classList.add('dark');
-          document.body.classList.remove('lm');
-        }
-      } catch (e) {}
-    })();
+    function hzSync() {
+      var el = document.querySelector('.hz-toggle');
+      if (!el) return;
+      if (document.body.classList.contains('lm')) { el.classList.remove('night'); }
+      else { el.classList.add('night'); }
+    }
+    function hzToggle() {
+      document.body.classList.toggle('lm');
+      localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
+      hzSync();
+    }
+    hzInit();
   </script>
 </body>
 
