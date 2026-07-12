@@ -1937,6 +1937,7 @@ class Game {
         }
         this.fs = Math.max(0, finalBase);
         if (window.confetti) { confetti.init(); confetti.burst(4000); }
+        else this._confettiThree();
         // ── LEVEL REWARD CALCULATION ──
         const _lvId = (ui.cur ? ui.cur.id : 1);
         const _rewards = [2000,2000,2500,2500,3000,3000,3000,3500,3500,4000,4000,4500,4500,5000,6000];
@@ -3916,63 +3917,134 @@ class Game {
         }
       }
       _spawnSplash(x, y, z) {
-        const count = 12;
+        const count = 20;
         const geo = new THREE.BufferGeometry();
         const pos = new Float32Array(count * 3);
         const vel = [];
+        const colors = new Float32Array(count * 3);
+        const palette = [
+          [0.612, 0.788, 1.0],  // bright blue
+          [0.500, 0.700, 0.950], // medium blue
+          [0.750, 0.880, 1.0],  // light blue
+          [0.400, 0.600, 0.900], // deeper blue
+          [0.850, 0.950, 1.0],  // near-white splash highlight
+        ];
         for (let i = 0; i < count; i++) {
-          pos[i * 3] = x; pos[i * 3 + 1] = y + 0.2; pos[i * 3 + 2] = z;
-          vel.push((Math.random() - 0.5) * 4, 3 + Math.random() * 4, (Math.random() - 0.5) * 4);
+          const spread = i < count * 0.6 ? 0.3 : 1.2; // 60% tight core, 40% wide ring
+          pos[i * 3] = x + (Math.random() - 0.5) * spread;
+          pos[i * 3 + 1] = y + 0.2 + Math.random() * 0.3;
+          pos[i * 3 + 2] = z + (Math.random() - 0.5) * spread;
+          const speed = i < count * 0.6 ? (3 + Math.random() * 3) : (1.5 + Math.random() * 2);
+          const angle = Math.random() * Math.PI * 2;
+          vel.push(Math.cos(angle) * speed, 2.5 + Math.random() * 4, Math.sin(angle) * speed);
+          const c = palette[i % palette.length];
+          colors[i * 3] = c[0]; colors[i * 3 + 1] = c[1]; colors[i * 3 + 2] = c[2];
         }
         geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-        const pts = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x9cc9ff, size: 0.15, transparent: true, opacity: 0.8 }));
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.18, transparent: true, opacity: 0.85, vertexColors: true }));
         this.scene.add(pts);
         let elapsed = 0;
+        const dur = 0.8;
         const animSplash = () => {
           elapsed += 0.016;
-          if (elapsed > 0.6) { this.scene.remove(pts); geo.dispose(); return; }
+          if (elapsed > dur) { this.scene.remove(pts); geo.dispose(); return; }
           const p = pts.geometry.attributes.position.array;
           for (let i = 0; i < count; i++) {
             p[i * 3] += vel[i * 3] * 0.016;
             p[i * 3 + 1] += vel[i * 3 + 1] * 0.016;
             p[i * 3 + 2] += vel[i * 3 + 2] * 0.016;
-            vel[i * 3 + 1] -= 12 * 0.016; // gravity
+            vel[i * 3 + 1] -= 14 * 0.016; // gravity
           }
           pts.geometry.attributes.position.needsUpdate = true;
-          pts.material.opacity = 0.8 * (1 - elapsed / 0.6);
+          pts.material.opacity = 0.85 * (1 - elapsed / dur);
+          pts.material.size = 0.18 + 0.06 * (elapsed / dur); // grow slightly as they spread
           requestAnimationFrame(animSplash);
         };
         animSplash();
       }
       _spawnDust(x, y, z) {
-        const count = 8;
+        const count = 14;
         const geo = new THREE.BufferGeometry();
         const pos = new Float32Array(count * 3);
         const vel = [];
+        const colors = new Float32Array(count * 3);
+        const palette = [
+          [0.760, 0.698, 0.502], // tan
+          [0.680, 0.620, 0.450], // darker brown
+          [0.820, 0.760, 0.560], // light sandy
+          [0.600, 0.550, 0.400], // deep dust
+        ];
         for (let i = 0; i < count; i++) {
-          pos[i * 3] = x + (Math.random() - 0.5) * 1.5; pos[i * 3 + 1] = y + 0.1; pos[i * 3 + 2] = z + (Math.random() - 0.5) * 1.5;
-          vel.push((Math.random() - 0.5) * 1.5, 1 + Math.random() * 2, (Math.random() - 0.5) * 1.5);
+          pos[i * 3] = x + (Math.random() - 0.5) * 1.8;
+          pos[i * 3 + 1] = y + 0.1 + Math.random() * 0.15;
+          pos[i * 3 + 2] = z + (Math.random() - 0.5) * 1.8;
+          vel.push((Math.random() - 0.5) * 2.0, 0.8 + Math.random() * 2.5, (Math.random() - 0.5) * 2.0);
+          const c = palette[i % palette.length];
+          colors[i * 3] = c[0]; colors[i * 3 + 1] = c[1]; colors[i * 3 + 2] = c[2];
         }
         geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-        const dustColor = 0xc2b280; // dust tan color
-        const pts = new THREE.Points(geo, new THREE.PointsMaterial({ color: dustColor, size: 0.2, transparent: true, opacity: 0.7 }));
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.22, transparent: true, opacity: 0.7, vertexColors: true }));
         this.scene.add(pts);
         let elapsed = 0;
+        const dur = 0.65;
         const animDust = () => {
           elapsed += 0.016;
-          if (elapsed > 0.5) { this.scene.remove(pts); geo.dispose(); return; }
+          if (elapsed > dur) { this.scene.remove(pts); geo.dispose(); return; }
           const p = pts.geometry.attributes.position.array;
           for (let i = 0; i < count; i++) {
             p[i * 3] += vel[i * 3] * 0.016;
             p[i * 3 + 1] += vel[i * 3 + 1] * 0.016;
             p[i * 3 + 2] += vel[i * 3 + 2] * 0.016;
-            vel[i * 3 + 1] -= 4 * 0.016; // gravity
+            vel[i * 3 + 1] -= 4 * 0.016; // gentle gravity for dust
+            vel[i * 3] *= 0.98; // drag horizontal
+            vel[i * 3 + 2] *= 0.98;
           }
           pts.geometry.attributes.position.needsUpdate = true;
-          pts.material.opacity = 0.7 * (1 - elapsed / 0.5);
+          pts.material.opacity = 0.7 * (1 - elapsed / dur);
+          pts.material.size = 0.22 + 0.12 * (elapsed / dur); // dust grows as it dissipates
           requestAnimationFrame(animDust);
         };
         animDust();
+      }
+      _confettiThree() {
+        const count = 80;
+        const colors = [0xff5252, 0xffd740, 0x69f0ae, 0x40c4ff, 0xb388ff, 0xff6e40];
+        const group = new THREE.Group();
+        const pieces = [];
+        for (let i = 0; i < count; i++) {
+          const col = colors[Math.floor(Math.random() * colors.length)];
+          const geo = new THREE.PlaneGeometry(0.15 + Math.random() * 0.15, 0.1 + Math.random() * 0.1);
+          const mat = new THREE.MeshBasicMaterial({ color: col, side: THREE.DoubleSide, transparent: true, opacity: 1 });
+          const m = new THREE.Mesh(geo, mat);
+          m.position.set((Math.random() - 0.5) * 12, 6 + Math.random() * 4, (Math.random() - 0.5) * 12);
+          m.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+          m.userData.vel = new THREE.Vector3((Math.random() - 0.5) * 3, -1 - Math.random() * 3, (Math.random() - 0.5) * 3);
+          m.userData.spin = new THREE.Vector3((Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6);
+          group.add(m);
+          pieces.push(m);
+        }
+        this.scene.add(group);
+        let elapsed = 0;
+        const dur = 3.5;
+        const animConf = () => {
+          elapsed += 0.016;
+          if (elapsed > dur) { this.scene.remove(group); pieces.forEach(p => { p.geometry.dispose(); p.material.dispose(); }); return; }
+          const fade = Math.max(0, 1 - (elapsed - dur * 0.6) / (dur * 0.4));
+          pieces.forEach(p => {
+            p.position.x += p.userData.vel.x * 0.016;
+            p.position.y += p.userData.vel.y * 0.016;
+            p.position.z += p.userData.vel.z * 0.016;
+            p.userData.vel.y -= 4 * 0.016;
+            p.rotation.x += p.userData.spin.x * 0.016;
+            p.rotation.y += p.userData.spin.y * 0.016;
+            p.rotation.z += p.userData.spin.z * 0.016;
+            p.material.opacity = fade;
+          });
+          requestAnimationFrame(animConf);
+        };
+        animConf();
       }
 
       _cp(x, z, col = 0x00c851) {
@@ -6342,6 +6414,14 @@ class Game {
         }
       }
       _ucam(dt) {
+        // ── Camera shake — shared by both modes ──
+        let shakeX = 0, shakeY = 0;
+        if (this._camShakeAmt > 0.001) {
+          shakeX = (Math.random() - 0.5) * this._camShakeAmt;
+          shakeY = (Math.random() - 0.5) * this._camShakeAmt;
+          this._camShakeAmt *= Math.pow(0.04, dt);
+        }
+
         if (this.isPointerLocked) {
           // First Person Mode
           const headHeight = this.isPedestrian ? 1.6 : 1.2;
@@ -6350,8 +6430,8 @@ class Game {
           const rotY = this.player.rotation.y;
           
           this.camera.position.set(
-            this.player.position.x + Math.sin(rotY) * forwardOffset, 
-            this.player.position.y + headHeight, 
+            this.player.position.x + Math.sin(rotY) * forwardOffset + shakeX * 0.4, 
+            this.player.position.y + headHeight + shakeY * 0.3, 
             this.player.position.z + Math.cos(rotY) * forwardOffset
           );
           
@@ -6392,14 +6472,6 @@ class Game {
           const camLerp = transT > 0 ? Math.min(1, dt * 3) : baseLerp; // slower during transition
           this.camera.position.lerp(this._camTarget, camLerp);
 
-          // Camera shake: decays exponentially
-          let shakeX = 0, shakeY = 0;
-          if (this._camShakeAmt > 0.001) {
-            shakeX = (Math.random() - 0.5) * this._camShakeAmt;
-            shakeY = (Math.random() - 0.5) * this._camShakeAmt;
-            this._camShakeAmt *= Math.pow(0.04, dt);
-          }
-
           const tiltRoll = this._camTilt || 0;
           this.camera.up.set(0, 1, 0);
           const lookAheadDist = this.isPedestrian ? 3 : 7;
@@ -6408,30 +6480,11 @@ class Game {
             1.5 - pitchOffset * 0.3 + shakeY,
             this.player.position.z + Math.cos(rotY) * lookAheadDist
           );
-          // Camera tilt DISABLED for debugging — pure lookAt, no roll
-          // if (tiltRoll !== 0) {
-          //   const _rollQ = new THREE.Quaternion();
-          //   _rollQ.setFromAxisAngle(new THREE.Vector3(0, 0, 1), tiltRoll);
-          //   this.camera.quaternion.multiply(_rollQ);
-          // }
-
-          // DEBUG: Log camera state if rotation looks unusual
-          this._e1.setFromQuaternion(this.camera.quaternion, 'YXZ');
-          if (Math.abs(this._e1.z) > 0.15) {
-            console.warn('[FLIP-DBG] Camera Euler (YXZ):', {
-              x: this._e1.x.toFixed(3),
-              y: this._e1.y.toFixed(3),
-              z: this._e1.z.toFixed(3)
-            }, 'pos:', {
-              x: this.camera.position.x.toFixed(1),
-              y: this.camera.position.y.toFixed(1),
-              z: this.camera.position.z.toFixed(1)
-            }, 'playerRot:', this.player.rotation.y.toFixed(3),
-            'playerPos:', {
-              x: this.player.position.x.toFixed(1),
-              y: this.player.position.y.toFixed(1),
-              z: this.player.position.z.toFixed(1)
-            });
+          // Camera tilt: subtle roll based on steering input
+          if (tiltRoll !== 0) {
+            const _rollQ = new THREE.Quaternion();
+            _rollQ.setFromAxisAngle(new THREE.Vector3(0, 0, 1), tiltRoll * 0.5);
+            this.camera.quaternion.multiply(_rollQ);
           }
 
           // ── Speed-based FOV ──
