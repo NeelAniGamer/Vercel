@@ -631,8 +631,8 @@
       <div class="glass-panel" style="padding: 20px">
         <div class="partner-label">Our Partners</div>
         <div class="partner-strip">
-          <img loading="lazy" src="mumbai-police-logo.webp" alt="Mumbai Police" onerror="this.style.display='none'" />
-          <img loading="lazy" src="sneh-logo.webp" alt="Sneh Asha Foundation" onerror="this.style.display='none'" />
+          <img loading="lazy" src="mumbai-police-logo.png" alt="Mumbai Police" onerror="this.style.display='none'" />
+          <img loading="lazy" src="sneh-logo.png" alt="Sneh Asha Foundation" onerror="this.style.display='none'" />
         </div>
       </div>
 
@@ -658,8 +658,8 @@
           <div class="crt" id="cert">
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%">
               <div style="display: flex; gap: 14px; align-items: center">
-                <img loading="lazy" src="mumbai-police-logo.webp" style="height: 65px; object-fit: contain" alt="Mumbai Police" onerror="this.style.display='none'" />
-                <img loading="lazy" src="sneh-logo.webp" style="height: 65px; object-fit: contain" alt="Sneh Asha" onerror="this.style.display='none'" />
+                <img loading="lazy" src="mumbai-police-logo.png" style="height: 65px; object-fit: contain" alt="Mumbai Police" onerror="this.style.display='none'" />
+                <img loading="lazy" src="sneh-logo.png" style="height: 65px; object-fit: contain" alt="Sneh Asha" onerror="this.style.display='none'" />
               </div>
             </div>
 
@@ -858,10 +858,41 @@
       // Share functions
       const certUrl = window.location.href
       const shareText = `I completed my Traffic Hero Certification! ${displayName} — ${completed}/52 modules done.`
-      function shareWhatsApp() {
+
+      // Renders the certificate DOM to an image file, so WhatsApp/Instagram get the actual
+      // certificate picture instead of a plain link (a link doesn't preview usefully in an
+      // Instagram story, and previously certUrl just pointed at this generic dashboard page,
+      // not at anything showing this specific person's certificate).
+      async function _certImageFile() {
+        if (typeof html2canvas === 'undefined') return null
+        const canvas = await html2canvas(document.getElementById('cert-wrapper'), { scale: 2, useCORS: true })
+        const blob = await new Promise((res) => canvas.toBlob(res, 'image/png', 0.95))
+        if (!blob) return null
+        return new File([blob], 'Traffic_Hero_Certificate.png', { type: 'image/png' })
+      }
+
+      async function shareWhatsApp() {
+        const file = await _certImageFile()
+        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], text: shareText })
+            return
+          } catch (e) {
+            /* user cancelled or share failed — fall through to link */
+          }
+        }
         window.open(`https://wa.me/?text=${encodeURIComponent(shareText + '\n' + certUrl)}`, '_blank')
       }
-      function shareInstagram() {
+      async function shareInstagram() {
+        const file = await _certImageFile()
+        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], text: shareText })
+            return
+          } catch (e) {
+            /* user cancelled or share failed — fall through to clipboard */
+          }
+        }
         navigator.clipboard.writeText(shareText + '\n' + certUrl).then(() => {
           alert('Copied! Open Instagram and paste in your story.')
         })

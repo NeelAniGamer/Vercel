@@ -931,7 +931,13 @@ class Game {
         this._initMobileCameraLook();
         this._initCameraJoystick();
         this._initSwipeTurn();
-        this._initMouseSteer();
+        // _initMouseSteer() disabled: it bound its own mousedown/mousemove on the same
+        // canvas as the camera-drag-orbit handler above, fighting it for every click —
+        // one system orbited the camera (relative drag), the other directly rotated the
+        // player using absolute cursor position. Same click, two systems, is why mouse
+        // look/steer felt broken. Re-enable only if you specifically want click-to-face
+        // steering for stationary/pedestrian mode, and give it its own input mode first.
+        // this._initMouseSteer();
         this._initMobileHudAutohide();
       }
       _initG() { document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); }); }
@@ -3366,7 +3372,7 @@ class Game {
             this.scene.add(saBldg);
             this.obstacles.push(saBldg);
             
-            new THREE.TextureLoader().load('sneh-logo.webp', tex => {
+            new THREE.TextureLoader().load('sneh-logo.png', tex => {
                 const logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
                 logoMesh.position.set(-24.9, 30, 0);
                 logoMesh.rotation.y = Math.PI / 2;
@@ -4471,27 +4477,6 @@ class Game {
         this.player.position.x += this.vx; this.player.position.z += this.vz;
         if (this.isPedestrian && Math.abs(this.speed) > 0.02) { const shift = this.keys['shift'] ? 18 : 10; this.player.position.y = Math.abs(Math.sin(this.timer * shift)) * (this.keys['shift'] ? 0.12 : 0.06); }
         else if (!this.isPedestrian && this.playerVehicle && !this._sbBounce) { this.playerVehicle.position.y = 0; }
-
-        // DEBUG: Check if vehicle has unwanted X/Z rotation
-        if (!this.isPedestrian && this.playerVehicle && (Math.abs(this.playerVehicle.rotation.x) > 0.01 || Math.abs(this.playerVehicle.rotation.z) > 0.01)) {
-          console.warn('[FLIP-DBG] Vehicle has X/Z rotation!', {
-            rx: this.playerVehicle.rotation.x.toFixed(4),
-            ry: this.playerVehicle.rotation.y.toFixed(4),
-            rz: this.playerVehicle.rotation.z.toFixed(4)
-          });
-        }
-
-        // DEBUG: Check if camera has unwanted roll
-        const camRx = this.camera.rotation.x;
-        const camRz = this.camera.rotation.z;
-        if (Math.abs(camRz) > 0.01) {
-          console.warn('[FLIP-DBG] Camera has X/Z rotation!', {
-            rx: camRx.toFixed(4),
-            rz: camRz.toFixed(4),
-            playerRy: this.player?.rotation?.y?.toFixed(4),
-            vehiclePos: {x: this.playerVehicle?.position?.x?.toFixed(2), z: this.playerVehicle?.position?.z?.toFixed(2)}
-          });
-        }
 
         // Hard world boundary clamp — prevents floating-point precision loss
         // Regular maps: roads extend to ~±1500, ground is 2000x2000 → clamp at ±1550

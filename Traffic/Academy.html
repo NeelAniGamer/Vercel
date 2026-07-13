@@ -176,6 +176,10 @@
         background: #f3f2eb !important;
       }
 
+      body.lm #loading-title {
+        color: #3d3a2e !important;
+      }
+
       body.lm #loading-bar {
         background: linear-gradient(90deg, #d97706, #0369a1) !important;
       }
@@ -3133,7 +3137,7 @@
       "
     >
       <div style="font-size: clamp(3rem, 6vw, 5rem); margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(52, 211, 153, 0.4))">🚦</div>
-      <div style="font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.5rem, 3vw, 2.2rem); color: #e8e3d8; letter-spacing: 0.15em; margin-bottom: 24px">TRAFFIC ACADEMY</div>
+      <div id="loading-title" style="font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.5rem, 3vw, 2.2rem); color: #e8e3d8; letter-spacing: 0.15em; margin-bottom: 24px">TRAFFIC ACADEMY</div>
       <div id="loading-bar-container" style="width: min(320px, 70vw); height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; margin-bottom: 12px">
         <div id="loading-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, #34d399, #0369a1); border-radius: 3px; transition: width 0.15s ease"></div>
       </div>
@@ -3316,12 +3320,12 @@
         <div class="brand-header" style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 40px; width: 100%; align-self: center">
           <div style="display: flex; gap: 32px; align-items: center; justify-content: center">
             <div style="display: flex; align-items: center; gap: 12px">
-              <img loading="lazy" id="cert-logo-3" src="mumbai-police-logo.webp" style="height: 60px; width: auto; object-fit: contain" alt="Mumbai Police" onerror="this.style.display = 'none'" />
+              <img loading="lazy" id="cert-logo-3" src="mumbai-police-logo.png" style="height: 60px; width: auto; object-fit: contain" alt="Mumbai Police" onerror="this.style.display = 'none'" />
               <div style="font-weight: 700; letter-spacing: 0.05em; color: var(--muted); text-align: left; line-height: 1.2">MUMBAI<br />TRAFFIC POLICE</div>
             </div>
             <div style="width: 2px; height: 50px; background: var(--border)"></div>
             <div style="display: flex; align-items: center; gap: 12px">
-              <img loading="lazy" id="cert-logo-4" src="sneh-logo.webp" style="height: 60px; width: auto; object-fit: contain" alt="Sneh Asha" onerror="this.style.display = 'none'" />
+              <img loading="lazy" id="cert-logo-4" src="sneh-logo.png" style="height: 60px; width: auto; object-fit: contain" alt="Sneh Asha" onerror="this.style.display = 'none'" />
               <div style="font-weight: 700; letter-spacing: 0.05em; color: var(--muted); text-align: left; line-height: 1.2">SNEH ASHA</div>
             </div>
           </div>
@@ -3330,11 +3334,11 @@
         <!-- Partner Badges - Prominent Display -->
         <div class="partner-badges" style="display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap">
           <div style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1a237e 0%, #283593 100%); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(26, 35, 126, 0.3)">
-            <img src="mumbai-police-logo.webp" style="height: 24px; width: auto" alt="Mumbai Police" onerror="this.style.display='none'" />
+            <img src="mumbai-police-logo.png" style="height: 24px; width: auto" alt="Mumbai Police" onerror="this.style.display='none'" />
             <span>Partnered with Mumbai Police</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3)">
-            <img src="sneh-logo.webp" style="height: 24px; width: auto" alt="Sneh Asha" onerror="this.style.display='none'" />
+            <img src="sneh-logo.png" style="height: 24px; width: auto" alt="Sneh Asha" onerror="this.style.display='none'" />
             <span>Sneh Asha Foundation</span>
           </div>
         </div>
@@ -3358,12 +3362,12 @@
         <div class="partner-heading">Our Trusted Partners</div>
         <div class="partner-logos">
           <div class="partner-item">
-            <img src="mumbai-police-logo.webp" alt="Mumbai Police" />
+            <img src="mumbai-police-logo.png" alt="Mumbai Police" />
             <span>Mumbai<br/>Police</span>
           </div>
           <div class="partner-divider"></div>
           <div class="partner-item">
-            <img src="sneh-logo.webp" alt="Sneh Asha Foundation" />
+            <img src="sneh-logo.png" alt="Sneh Asha Foundation" />
             <span>Sneh Asha<br/>Foundation</span>
           </div>
         </div>
@@ -3381,9 +3385,8 @@
         </button>
         <div style="display: flex; gap: 12px; align-items: center">
           <button
-            class="btn btn-g"
+            class="btn btn-g dynamic-auth-btn"
             onclick="window.location.href = 'TrafficSetup.html'"
-            class="dynamic-auth-btn"
             style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap"
           >
             Sign In
@@ -3424,9 +3427,8 @@
         <div style="font-weight: 700; font-size: 0.95rem; color: var(--text)" id="blt">Level 1</div>
         <div style="display: flex; gap: 12px; align-items: center">
           <button
-            class="btn btn-g"
+            class="btn btn-g dynamic-auth-btn"
             onclick="window.location.href = 'TrafficSetup.html'"
-            class="dynamic-auth-btn"
             style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
           >
             Sign In
@@ -3456,9 +3458,8 @@
           Abort
         </button>
         <button
-          class="btn btn-g"
+          class="btn btn-g dynamic-auth-btn"
           onclick="window.location.href = 'TrafficSetup.html'"
-          class="dynamic-auth-btn"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
         >
           Sign In
@@ -3480,7 +3481,7 @@
         <div class="rcard" id="rcard"></div>
         <div class="bdx" id="rbdg"></div>
         <div class="rbts">
-          <button class="btn btn-g" onclick="window.location.href = 'TrafficSetup.html'" class="dynamic-auth-btn">Sign In</button>
+          <button class="btn btn-g dynamic-auth-btn" onclick="window.location.href = 'TrafficSetup.html'">Sign In</button>
           <button class="btn btn-g" onclick="ui.showLevels()">Modules</button>
           <button class="btn btn-p" id="rnxt" onclick="ui.goNext()">Next Module →</button>
         </div>
@@ -3514,9 +3515,8 @@
         </button>
         <h2 style="font-size: 1.4rem; margin: 0">Driver Profile</h2>
         <button
-          class="btn btn-g"
+          class="btn btn-g dynamic-auth-btn"
           onclick="window.location.href = 'TrafficSetup.html'"
-          class="dynamic-auth-btn"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
         >
           Sign In
@@ -3540,9 +3540,8 @@
         <div style="color: var(--accent); font-weight: 600; font-size: 0.95rem" id="cstat"></div>
         <div style="display: flex; gap: 12px; align-items: center">
           <button
-            class="btn btn-g"
+            class="btn btn-g dynamic-auth-btn"
             onclick="window.location.href = 'TrafficSetup.html'"
-            class="dynamic-auth-btn"
             style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
           >
             Sign In
@@ -3559,8 +3558,8 @@
               <div style="text-align: right; margin-right: 4px">
                 <div style="font-size: 0.8rem; color: #7c7968; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase">Partnered With</div>
               </div>
-              <img loading="lazy" id="cert-logo-5" src="mumbai-police-logo.webp" style="height: 75px; object-fit: contain" alt="Logo 1" onerror="this.style.display = 'none'" />
-              <img loading="lazy" id="cert-logo-6" src="sneh-logo.webp" style="height: 75px; object-fit: contain" alt="Logo 2" onerror="this.style.display = 'none'" />
+              <img loading="lazy" id="cert-logo-5" src="mumbai-police-logo.png" style="height: 75px; object-fit: contain" alt="Logo 1" onerror="this.style.display = 'none'" />
+              <img loading="lazy" id="cert-logo-6" src="sneh-logo.png" style="height: 75px; object-fit: contain" alt="Logo 2" onerror="this.style.display = 'none'" />
             </div>
           </div>
 

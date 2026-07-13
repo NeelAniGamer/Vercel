@@ -1554,6 +1554,28 @@ const ui = {
       if (!S.comp[lv.id]) S.comp[lv.id] = {}
       if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
       S.comp[lv.id].modes[s.mode] = true
+      // A level only used to count as "complete" (isDone() / certificate progress) if a
+      // mode called 'final' had run its quiz — but nothing in the game ever set mode to
+      // 'final', so no level could ever be marked complete. Fix: once every mode this
+      // level requires has had its quiz passed, mark the level itself complete right here.
+      const requiredModes = lv.modes || [s.mode]
+      const allModesDone = requiredModes.every((m) => S.comp[lv.id].modes[m])
+      if (allModesDone && !S.comp[lv.id].finalQuiz) {
+        const finalScore = game?.fs || 100
+        const prevScore = S.comp[lv.id].score || 0
+        S.comp[lv.id].score = Math.max(finalScore, prevScore)
+        S.comp[lv.id].time = Date.now()
+        S.comp[lv.id].finalQuiz = true
+        S.total += finalScore
+        if (lv.badge && !S.badges.includes(lv.badge.id)) S.badges.push(lv.badge.id)
+        const completedCount = Object.keys(S.comp).length
+        if (completedCount >= 10 && !S.badges.includes('level_10')) S.badges.push('level_10')
+        if (completedCount >= 20 && !S.badges.includes('level_20')) S.badges.push('level_20')
+        if (completedCount >= 30 && !S.badges.includes('level_30')) S.badges.push('level_30')
+        if (completedCount >= 40 && !S.badges.includes('level_40')) S.badges.push('level_40')
+        if (completedCount >= 52 && !S.badges.includes('level_52')) S.badges.push('level_52')
+        if (completedCount >= 52 && !S.badges.includes('traffic_hero')) S.badges.push('traffic_hero')
+      }
       save()
       toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851')
       if (window.location.pathname.toLowerCase().includes('driving')) {
