@@ -4,8 +4,9 @@
 ;(function () {
   'use strict'
 
-  // Skip on mobile/touch devices for performance
+  // Skip on mobile/touch devices for performance, and respect reduced-motion preference
   if (window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 960) return
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
   // Wait for Three.js to load
   function waitForThree(cb) {
@@ -54,8 +55,16 @@
     renderer.setClearColor(0x000000, 0)
 
     var scene = new THREE.Scene()
+    // Fog gives distant particles/shapes a sense of depth instead of all rendering at full brightness
+    scene.fog = new THREE.FogExp2(0x070a14, 0.0055)
     var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000)
     camera.position.z = 50
+
+    // Pause rendering while the tab isn't visible to save battery/GPU
+    var isVisible = true
+    document.addEventListener('visibilitychange', function () {
+      isVisible = !document.hidden
+    })
 
     // Mouse tracking for parallax
     var mouseX = 0,
@@ -608,17 +617,29 @@
     var updateFn = sceneBuilder()
 
     // Fade in canvas
+    var hasFadedIn = false
     canvas.style.opacity = '0'
     canvas.style.transition = 'opacity 1.5s ease'
     setTimeout(function () {
-      canvas.style.opacity = '1'
+      hasFadedIn = true
+      syncThemeOpacity()
     }, 100)
     if (canvas.classList) canvas.classList.add('v')
+
+    // These scenes are tuned for the dark theme's neon palette — fade them down in light mode
+    // instead of letting them render at full brightness against a light background.
+    function syncThemeOpacity() {
+      if (!hasFadedIn) return
+      var isLight = document.body.classList.contains('lm')
+      canvas.style.opacity = isLight ? '0.12' : '1'
+    }
+    new MutationObserver(syncThemeOpacity).observe(document.body, { attributes: true, attributeFilter: ['class'] })
 
     // Animation loop
     var clock = new THREE.Clock()
     function animate() {
       requestAnimationFrame(animate)
+      if (!isVisible) return // skip rendering while tab is hidden to save battery/GPU
       var elapsed = clock.getElapsedTime()
       if (updateFn) updateFn(elapsed)
       renderer.render(scene, camera)

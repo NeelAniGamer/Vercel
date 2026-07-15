@@ -682,6 +682,11 @@
         text-transform: uppercase;
         letter-spacing: 0.1em;
       }
+      body.lm #ntip-inner {
+        background: rgba(255, 255, 255, 0.9) !important;
+        border-color: rgba(0, 0, 0, 0.12) !important;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
+      }
       #ntip-inner::after {
         content: '';
         position: absolute;
@@ -693,6 +698,9 @@
         border-color: rgba(255, 255, 255, 0.1) transparent transparent transparent;
         display: block;
         width: 0;
+      }
+      body.lm #ntip-inner::after {
+        border-color: rgba(255, 255, 255, 0.9) transparent transparent transparent;
       }
       #ntip-dot {
         width: 8px;
