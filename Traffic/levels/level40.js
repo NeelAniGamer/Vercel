@@ -3,7 +3,7 @@ window.LVS.push({
   id: 40,
   icon: '🏆',
   name: 'Lesson 40 - Grand Test!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#f1c40f',
   ds: 'The ultimate test! Apply everything you\'ve learned from 39 levels. Navigate a complex route with signals, pedestrians, speed limits, lane discipline, and emergency vehicles.',
   hps: ['Apply all traffic rules you\'ve learned so far.', 'Stay calm under pressure — multiple challenges at once.', 'This test covers all Tier 1-3 skills.'],

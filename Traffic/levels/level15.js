@@ -3,7 +3,7 @@ window.LVS.push({
   id: 15,
   icon: '🏘️',
   name: 'Lesson 15 - Residential Parking',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#3498db',
   ds: 'You are in a residential colony. A resident is blocking your path, pointing at your bumper — you are parked in front of their gate. Move your car to a visitor parking spot.',
   hps: [

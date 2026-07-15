@@ -3,7 +3,7 @@ window.LVS.push({
   id: 49,
   icon: '🌪️',
   name: 'Lesson 49 - Multi-Modal Chaos!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#e67e22',
   ds: 'Every type of vehicle on the road at once — buses, trucks, autos, bikes, cycles, and pedestrians. The ultimate chaos management test.',
   hps: ['Each vehicle type has different blind spots and turning patterns.', 'Buses stop suddenly — keep distance.', 'Autos and bikes weave unpredictably — expect sudden lane changes.'],

@@ -3,7 +3,7 @@ window.LVS.push({
   id: 36,
   icon: '🔶',
   name: 'Lesson 36 - Sign Recognition!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#f39c12',
   ds: 'A complex intersection presents three sign types simultaneously. Identify mandatory (blue), cautionary (red), and informational (green) signs and respond to each correctly.',
   hps: ['Blue = Mandatory — you MUST follow the instruction.', 'Red = Cautionary — slow down and be alert.', 'Green = Informational — helps with navigation.'],

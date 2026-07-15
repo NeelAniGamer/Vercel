@@ -590,15 +590,15 @@
           </div>
         </div>
         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
-          <button class="btn-edit" onclick="openEditModal()">✏️ Edit Profile</button>
+          <button class="btn-edit" id="btn-edit-profile" onclick="openEditModal()">✏️ Edit Profile</button>
           <button class="btn btn-outline" onclick="window.location.href = 'Academy.html'">← Back to Academy</button>
           <div class="hz-toggle" onclick="hzToggle()"><div class="hz-stars"></div><div class="hz-skyline"></div><div class="hz-windows"></div><div class="hz-orb"></div></div>
-          <button class="btn-edit" style="color: var(--red); border-color: var(--red);" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</button>
-          <button class="btn btn-outline" style="color: var(--red); border-color: var(--red); font-size: 0.85rem" onclick="logoutAndClear()">Sign Out</button>
+          <button class="btn-edit" id="btn-reset-progress" style="color: var(--red); border-color: var(--red);" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</button>
+          <button class="btn btn-outline" id="btn-sign-out" style="color: var(--red); border-color: var(--red); font-size: 0.85rem" onclick="logoutAndClear()">Sign Out</button>
         </div>
       </div>
 
-      <div class="glass-panel">
+      <div class="glass-panel" id="your-stats-panel">
         <h2 style="margin-top: 0; margin-bottom: 20px">Your Stats</h2>
         <div class="stats-grid">
           <div class="stat-card">
@@ -715,6 +715,67 @@
         if (raw) tUser = JSON.parse(raw)
       } catch (e) {}
 
+      // --- Shared certificate view (?cert=<id>) ---
+      // Someone opening a certificate link shared via WhatsApp/Instagram isn't signed in as
+      // that person and has no localStorage data for them — so if a `cert` param is present,
+      // we fetch that specific certificate from Supabase instead of reading local S/tUser,
+      // and hide the personal sections (Your Stats, Reset Progress, Sign Out) that don't make
+      // sense for a visitor viewing someone else's certificate.
+      const _certParam = new URLSearchParams(window.location.search).get('cert')
+      let _sharedCert = null
+      async function _initSupabase() {
+        if (window.supabaseClient) return window.supabaseClient
+        try {
+          const res = await fetch('config.json?t=' + Date.now())
+          const cfg = await res.json()
+          const auth = cfg.auth || cfg.supabase || {}
+          const url = auth.supabaseUrl || auth.url || ''
+          const key = auth.supabaseKey || auth.anonKey || auth.key || ''
+          if (url && key && window.supabase) {
+            window.supabaseClient = window.supabase.createClient(url, key)
+          }
+        } catch (e) {}
+        return window.supabaseClient || null
+      }
+      async function _loadSharedCertificate(id) {
+        const client = await _initSupabase()
+        if (!client) return null
+        const { data, error } = await client.from('certificates').select('*').eq('id', id).single()
+        if (error || !data) return null
+        return data
+      }
+      // Upserts (creates or updates) the signed-in user's own certificate row once their
+      // local progress shows all 52 modules complete, so there's something for a share link
+      // to actually point at. No-ops silently if the user isn't signed in or Supabase isn't
+      // configured — certificate PDF/download still works from local data either way.
+      async function _syncOwnCertificate(name, completedCount, scoreTotal) {
+        if (completedCount < 52) return null
+        const client = await _initSupabase()
+        if (!client || !window.colUser || !window.colUser.id) return null
+        try {
+          const { data, error } = await client
+            .from('certificates')
+            .upsert(
+              {
+                user_id: window.colUser.id,
+                display_name: name,
+                modules_completed: completedCount,
+                total_modules: 52,
+                score: scoreTotal,
+                updated_at: new Date().toISOString()
+              },
+              { onConflict: 'user_id' }
+            )
+            .select()
+            .single()
+          if (error) return null
+          try { localStorage.setItem('own_cert_id', data.id) } catch (e) {}
+          return data.id
+        } catch (e) {
+          return null
+        }
+      }
+
       const displayName = tUser.name || S.name || 'Driver'
       const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
@@ -744,7 +805,7 @@
       const ageBracket = ageVal <= 12 ? 'child' : ageVal <= 17 ? 'teen' : ageVal <= 25 ? 'young' : ageVal <= 50 ? 'adult' : 'senior'
       document.getElementById('s-age').innerText = ageLabels[ageBracket] || '18'
       document.getElementById('s-lang').innerText = (tUser.language || S.language || 'en') === 'hi' ? 'हिन्दी' : 'English'
-      document.getElementById('s-score').innerText = (S.score || 0).toLocaleString()
+      document.getElementById('s-score').innerText = (S.total || 0).toLocaleString()
 
       let completed = 0
       // FIXED: Use S.comp for completed levels (not S.lvl)
@@ -763,6 +824,16 @@
         document.getElementById('cert-progress-text').textContent = '🎉 Certificate Unlocked!'
         document.getElementById('cert-progress-sub').textContent = 'You can now download your certificate'
         document.getElementById('cert-progress-ring').style.background = 'rgba(52, 211, 153, 0.2)'
+        // Fire-and-forget: creates/updates this user's shareable certificate row so the
+        // share links below have something real to point at. certUrl() picks up
+        // _syncedCertId as soon as this resolves.
+        try {
+          const cachedId = localStorage.getItem('own_cert_id')
+          if (cachedId) _syncedCertId = cachedId
+          _syncOwnCertificate(displayName, completed, S.total || 0).then((id) => {
+            if (id) _syncedCertId = id
+          })
+        } catch (e) {}
       } else if (completed > 0) {
         document.getElementById('cert-progress-text').textContent = progressPct + '% to Certificate'
         document.getElementById('cert-progress-sub').textContent = `${completed} of 52 modules completed`
@@ -773,7 +844,7 @@
 
       // Populate Certificate
       document.getElementById('cert-name').innerText = displayName.toUpperCase()
-      document.getElementById('cert-score').innerText = S.score || 0
+      document.getElementById('cert-score').innerText = S.total || 0
 
       const d = new Date()
       document.getElementById('cert-date').innerText = d.toLocaleDateString()
@@ -856,7 +927,10 @@
       }
 
       // Share functions
-      const certUrl = window.location.href
+      let _syncedCertId = null
+      const certUrl = () => _syncedCertId
+        ? `${window.location.origin}${window.location.pathname}?cert=${_syncedCertId}`
+        : window.location.href
       const shareText = `I completed my Traffic Hero Certification! ${displayName} — ${completed}/52 modules done.`
 
       // Renders the certificate DOM to an image file, so WhatsApp/Instagram get the actual
@@ -881,7 +955,7 @@
             /* user cancelled or share failed — fall through to link */
           }
         }
-        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + '\n' + certUrl)}`, '_blank')
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + '\n' + certUrl())}`, '_blank')
       }
       async function shareInstagram() {
         const file = await _certImageFile()
@@ -893,12 +967,12 @@
             /* user cancelled or share failed — fall through to clipboard */
           }
         }
-        navigator.clipboard.writeText(shareText + '\n' + certUrl).then(() => {
+        navigator.clipboard.writeText(shareText + '\n' + certUrl()).then(() => {
           alert('Copied! Open Instagram and paste in your story.')
         })
       }
       function copyCertLink() {
-        navigator.clipboard.writeText(certUrl).then(() => {
+        navigator.clipboard.writeText(certUrl()).then(() => {
           alert('Certificate link copied!')
         })
       }
@@ -972,6 +1046,38 @@
       hzSync();
     }
     hzInit();
+
+    // If this page was opened via a shared certificate link (?cert=<id>), overwrite the
+    // just-populated local-data fields with the actual certificate that was shared, and
+    // hide the sections that only make sense for the certificate's own owner. Runs after
+    // the normal population above so it always wins when a cert param is present.
+    (async function () {
+      if (!_certParam) return
+      const cert = await _loadSharedCertificate(_certParam)
+      const yourStats = document.getElementById('your-stats-panel')
+      const editBtn = document.getElementById('btn-edit-profile')
+      const resetBtn = document.getElementById('btn-reset-progress')
+      const signOutBtn = document.getElementById('btn-sign-out')
+      const shareBar = document.getElementById('share-bar')
+      ;[yourStats, editBtn, resetBtn, signOutBtn, shareBar].forEach((el) => {
+        if (el) el.style.display = 'none'
+      })
+      if (!cert) {
+        const noCertMsg = document.getElementById('no-cert-msg')
+        if (noCertMsg) {
+          noCertMsg.style.display = 'block'
+          noCertMsg.querySelector('p').innerText = 'This certificate link is invalid or has expired.'
+        }
+        document.getElementById('cert-wrapper').style.filter = 'grayscale(1) blur(6px)'
+        document.getElementById('cert-wrapper').style.pointerEvents = 'none'
+        return
+      }
+      document.getElementById('d-name').innerText = cert.display_name
+      document.getElementById('cert-name').innerText = (cert.display_name || '').toUpperCase()
+      document.getElementById('cert-score').innerText = (cert.score || 0).toLocaleString()
+      document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
+      document.getElementById('cert-wrapper').classList.add('cert-unlocking')
+    })();
     </script>
   </body>
 </html>

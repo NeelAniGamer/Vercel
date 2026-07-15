@@ -879,14 +879,17 @@ class Game {
         window.gyroSteering = 0;
         this._gyroSupported = !!window.DeviceOrientationEvent;
         this._gyroNeedsPermission = this._gyroSupported && typeof DeviceOrientationEvent.requestPermission === 'function';
+        this._gyroSamples = [];
+        this._straightSince = null;
         this._startGyro = () => {
           if (this._gyroHandler) return;
           this._gyroHandler = (e) => {
             if (e.gamma !== null) this._lastGyroGamma = e.gamma;
-            if (e.gamma !== null && this.gyroOn && this.playing && !this.isPedestrian) {
+            if (e.gamma !== null && this._calibrating) this._gyroSamples.push(e.gamma);
+            if (e.gamma !== null && this.gyroOn && this.playing && !this.isPedestrian && !this._calibrating) {
               const raw = Math.max(-30, Math.min(30, e.gamma));
               window.gyroSteering = (raw - this.gyroBaseGamma) / 30;
-            } else {
+            } else if (!this._calibrating) {
               window.gyroSteering = 0;
             }
           };
@@ -899,15 +902,41 @@ class Game {
           }
           window.gyroSteering = 0;
         };
+        // Calibration used to grab a single instant reading 200ms after enabling gyro, with
+        // no feedback to the player — if they were still settling into their grip, or shift
+        // it at all later in the level, steering never truly centers on zero. Now: samples
+        // gamma continuously over a visible ~2.2s window (averaged, not a single snapshot),
+        // shown via #gyro-calibrate-overlay in Driving.html, and re-runs automatically
+        // whenever the car has been going dead straight for a couple of seconds — covering
+        // grip drift over a long session without needing a manual recalibrate control.
+        this._runCalibration = (onDone) => {
+          this._calibrating = true;
+          this._gyroSamples = [];
+          const overlay = document.getElementById('gyro-calibrate-overlay');
+          if (overlay) overlay.classList.add('on');
+          setTimeout(() => {
+            if (this._gyroSamples.length) {
+              const sum = this._gyroSamples.reduce((a, b) => a + b, 0);
+              this.gyroBaseGamma = sum / this._gyroSamples.length;
+            } else if (this._lastGyroGamma != null) {
+              this.gyroBaseGamma = this._lastGyroGamma;
+            }
+            this._calibrating = false;
+            this._gyroSamples = [];
+            if (overlay) overlay.classList.remove('on');
+            if (onDone) onDone();
+          }, 2200);
+        };
         this._autoGyro = () => {
           if (!this._gyroSupported || this.gyroOn) return;
           const doEnable = () => {
             this.gyroOn = true;
             this.gyroBaseGamma = 0;
             this._startGyro();
-            setTimeout(() => {
-              if (this.gyroOn && this._lastGyroGamma != null) this.gyroBaseGamma = this._lastGyroGamma;
-            }, 200);
+            this._runCalibration(() => {
+              const swC = document.getElementById('steer-wheel-container');
+              if (swC) swC.style.display = 'none';
+            });
           };
           if (this._gyroNeedsPermission) {
             DeviceOrientationEvent.requestPermission().then(state => {
@@ -917,6 +946,40 @@ class Game {
             doEnable();
           }
         };
+        // Auto-recalibration: if gyro is on and the car has gone dead straight (no turn
+        // input at all) for 2.5s, silently re-center the baseline on the current reading —
+        // covers the player's grip drifting over a long session without any manual control.
+        this._checkGyroAutoRecal = (turnInput) => {
+          if (!this.gyroOn || this._calibrating) return;
+          const now = Date.now();
+          if (Math.abs(turnInput || 0) > 0.03) {
+            this._straightSince = null;
+            return;
+          }
+          if (this._straightSince == null) {
+            this._straightSince = now;
+          } else if (now - this._straightSince > 2500 && this._lastGyroGamma != null) {
+            this.gyroBaseGamma = this._lastGyroGamma;
+            this._straightSince = now;
+          }
+        };
+
+        // Rotate-device overlay: driving needs landscape; block play and show a prompt
+        // otherwise, clearing automatically the moment the device is turned.
+        this._checkOrientation = () => {
+          const overlay = document.getElementById('rotate-device-overlay');
+          if (!overlay) return;
+          const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+          const isPortrait = window.innerHeight > window.innerWidth;
+          if (isTouch && isPortrait && this.playing) {
+            overlay.classList.add('on');
+          } else {
+            overlay.classList.remove('on');
+          }
+        };
+        window.addEventListener('resize', () => this._checkOrientation());
+        window.addEventListener('orientationchange', () => this._checkOrientation());
+
 
 
         const sb = (id, k) => {
@@ -1544,6 +1607,7 @@ class Game {
         
         if (mob()) document.getElementById('tc').classList.add('on');
         if (mob()) this._autoGyro();
+        if (this._checkOrientation) this._checkOrientation();
         document.getElementById('hlv').textContent = lv.id; document.getElementById('hobj').textContent = lv.tg; this._uh(); sfx.play('ok');
         if (this._hudShowBrief) this._hudShowBrief();
         
@@ -2044,6 +2108,7 @@ class Game {
       _pmesh(mode, vehType) {
         this.isPedestrian = false;
         const vt = vehType || 'car';
+        this.vehType = vt;
         
         let pStartX = -40 + 7, pStartZ = -80, pRot = 0;
         let vStartX = 5, vStartZ = 0, vRotY = 0;
@@ -4428,13 +4493,14 @@ class Game {
             const effTurn = this.turn * sf;
             if (lt) tAmt = 1;
             else if (rt) tAmt = -1;
+            else if (this.gyroOn) tAmt = -window.gyroSteering;
             else if (window.analogSteering) tAmt = -window.analogSteering;
-            else if (window.gyroSteering) tAmt = -window.gyroSteering;
             if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * Math.sign(this.speed) * dt * 60;
             // Normalize yaw to [-PI, PI] to prevent extreme accumulation
             while (this.player.rotation.y > Math.PI) this.player.rotation.y -= Math.PI * 2;
             while (this.player.rotation.y < -Math.PI) this.player.rotation.y += Math.PI * 2;
           }
+          if (this.gyroOn) this._checkGyroAutoRecal(tAmt);
           // Camera tilt: smooth follow of lateral input, scaled by speed
           const tiltTarget = -tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04);
           this._camTilt += (tiltTarget - this._camTilt) * Math.min(1, dt * 8);
@@ -4569,6 +4635,30 @@ class Game {
                     window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', '₹1,000', `Limit: ${this.mapCfg.speedLimit} km/h`);
                     this.player.userData.spdCooldown = 5;
                  }
+              }
+            }
+
+            // Two-wheeler-specific rule: bikes carry a lower safe-speed expectation than cars
+            // even where a zone doesn't post an explicit limit, and a one-time helmet reminder —
+            // genuine bike-specific content rather than just letting a bike drive through a
+            // car-authored scenario with identical rules.
+            if (this.vehType === 'bike' && !this.isPedestrian) {
+              if (!this._helmetReminderShown) {
+                this._helmetReminderShown = true;
+                if (Math.abs(this.speed) > 0.02 && typeof toast === 'function') {
+                  toast('🪖 Remember: helmet always on for two-wheelers', '#f59e0b');
+                }
+              }
+              const bikeSafeLimit = this.mapCfg && this.mapCfg.speedLimit ? Math.min(this.mapCfg.speedLimit, 50) : 50;
+              const currentBikeSpeedKmH = Math.round(Math.abs(this.speed) * 100);
+              const zoneAlreadyEnforced = this.mapCfg && this.mapCfg.speedLimit && currentBikeSpeedKmH > this.mapCfg.speedLimit;
+              if (!zoneAlreadyEnforced && currentBikeSpeedKmH > bikeSafeLimit) {
+                if (!this.player.userData.bikeSpdCooldown) this.player.userData.bikeSpdCooldown = 0;
+                this.player.userData.bikeSpdCooldown -= dt;
+                if (this.player.userData.bikeSpdCooldown <= 0 && window.ui && window.ui.issueChallan) {
+                  window.ui.issueChallan('Two-Wheeler Overspeeding', 'Sec 112 MV Act', '₹1,000', `Safe limit: ${bikeSafeLimit} km/h`);
+                  this.player.userData.bikeSpdCooldown = 5;
+                }
               }
             }
 

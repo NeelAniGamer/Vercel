@@ -3,7 +3,7 @@ window.LVS.push({
   id: 8,
   icon: '🚑',
   name: 'Lesson 8 - Narrow Street Ambulance',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#e67e22',
   ds: 'An ambulance is stuck behind you on a narrow single-lane street. There is no room to pull over. Find a gap between parked cars or a driveway to squeeze into.',
   hps: [

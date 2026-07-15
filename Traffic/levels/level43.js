@@ -3,7 +3,7 @@ window.LVS.push({
   id: 43,
   icon: '🛣️',
   name: 'Lesson 43 - Highway Merge Chaos!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#3498db',
   ds: 'Merge onto a busy highway with heavy truck and bus traffic. Match speed, find gaps, and merge smoothly without causing accidents.',
   hps: ['Match highway speed before merging — never merge slow.', 'Check mirrors AND blind spot before changing lanes.', 'Trucks have large blind spots — never linger beside them.'],

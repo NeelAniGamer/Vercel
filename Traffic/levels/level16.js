@@ -3,7 +3,7 @@ window.LVS.push({
   id: 16,
   icon: '🌙',
   name: 'Lesson 16 - Residential Night',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#2ecc71',
   ds: 'It is late at night in a residential colony. Your GPS is leading you through narrow lanes. A sleeping dog is lying in the middle of the road. Do not honk to wake it — slowly go around.',
   hps: ['Night honking in residential areas violates noise regulations.', 'A sleeping dog may wake startled and run under your wheels.', 'Use your horn only if there is an immediate safety threat.'],

@@ -3,7 +3,7 @@ window.LVS.push({
   id: 50,
   icon: '🏆',
   name: 'Lesson 50 - Grand Mastery!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#f1c40f',
   ds: 'THE ULTIMATE TEST. All weather conditions, all vehicle types, all road types, all traffic situations. Only a master driver can pass this.',
   hps: ['This test combines every skill from 49 levels.', 'Stay calm — panic is the real enemy.', 'Patience and observation beat speed every time.'],

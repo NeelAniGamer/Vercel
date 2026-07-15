@@ -3,7 +3,7 @@ window.LVS.push({
   id: 18,
   icon: '🎒',
   name: 'Lesson 18 - School Zone Puddles',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#9b59b6',
   ds: 'School children in uniforms are walking through puddles on their way home. They are in groups, chatting, and not paying attention to traffic. Slow down to a crawl.',
   hps: [

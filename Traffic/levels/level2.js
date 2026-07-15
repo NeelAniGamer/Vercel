@@ -3,7 +3,7 @@ window.LVS.push({
   id: 2,
   icon: '🅿️',
   name: 'Lesson 2 - Street Parking',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#e74c3c',
   ds: 'In busy Mumbai streets, finding legal parking is a challenge. NPCs routinely double-park and block footpaths.',
   hps: [

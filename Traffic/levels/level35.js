@@ -3,7 +3,7 @@ window.LVS.push({
   id: 35,
   icon: '➡️',
   name: 'Lesson 35 - One-Way Wonder!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#27ae60',
   ds: 'You approach a one-way street. Enter from the correct end, follow the flow of traffic, and exit at the intersection. Never go against traffic.',
   hps: ['One-way streets have a single direction of travel.', 'Entering from the wrong end is extremely dangerous.', 'Look for one-way signs (blue rectangular signs with arrow).'],

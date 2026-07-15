@@ -3,7 +3,7 @@ window.LVS.push({
   id: 17,
   icon: '🚑',
   name: 'Lesson 17 - Traffic Jam Ambulance',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#e67e22',
   ds: 'Complete gridlock. An ambulance is trapped in the jam behind you. NPC drivers are not moving. You must create a path by inching forward and pulling as far left as possible.',
   hps: ['Even in a jam, inch forward to create space ahead.', 'Pull as far left as possible — even onto the curb if safe.', 'Hazard lights on to warn traffic behind you.'],

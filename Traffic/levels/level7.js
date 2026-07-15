@@ -3,7 +3,7 @@ window.LVS.push({
   id: 7,
   icon: '🤫',
   name: 'Lesson 7 - Hospital Zone Silence',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#2ecc71',
   ds: "You are driving past a hospital. A 'Silence Zone' sign is visible. An NPC ahead is braking suddenly. Do not honk — slow down and maintain distance.",
   hps: [

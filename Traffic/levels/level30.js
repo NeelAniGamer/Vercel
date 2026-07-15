@@ -3,7 +3,7 @@ window.LVS.push({
   id: 30,
   icon: '💳',
   name: 'Lesson 30 - Toll Plaza!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#2ecc71',
   ds: 'You approach a highway toll plaza. Choose the correct lane (FASTag or cash), slow down, stop at the booth, and pay the toll.',
   hps: ['FASTag lanes are marked with blue signs — most vehicles use these.', 'Cash lanes are for vehicles without FASTag.', 'Always slow down when approaching a toll plaza.'],

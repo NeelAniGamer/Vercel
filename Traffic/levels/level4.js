@@ -3,7 +3,7 @@ window.LVS.push({
   id: 4,
   icon: '🌧️',
   name: 'Lesson 4 - Puddle on the Main Road',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#e74c3c',
   ds: 'After heavy rain, puddles form along footpath edges where pedestrians walk. Your speed determines the splash radius.',
   hps: [

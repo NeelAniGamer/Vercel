@@ -3,7 +3,7 @@ window.LVS.push({
   id: 24,
   icon: '🚶',
   name: 'Lesson 24 - Pedestrian Priority',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#2ecc71',
   ds: 'An elderly person is trying to cross the road at a zebra crossing. Traffic is flowing but you must stop and let them cross safely.',
   hps: ['Pedestrians always have right of way at zebra crossings.', 'Elderly and disabled pedestrians need extra patience.', 'Stopping for pedestrians saves lives — never rush them.'],

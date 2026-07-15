@@ -241,7 +241,7 @@ const ui = {
         const badgeText = done ? '✓ Completed' : started ? '● Started' : '○ Not Started'
         const badgeColor = done ? '#00f0cc' : started ? '#5ed4f5' : 'rgba(184,155,255,0.5)'
         const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')
-        div.innerHTML = `<div class="syl-ck"></div><div class="syl-top"><span class="syl-icon">${lv.icon}</span><span class="syl-num">Level ${lv.id}</span></div><div class="syl-info"><div class="syl-lbl">${cleanName}</div><div class="syl-sub">${lv.ds}</div><div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div></div>`
+        div.innerHTML = `<div class="syl-ck"></div><div class="syl-top"><span class="syl-icon">${lv.icon}</span><span class="syl-num">Lesson ${idx + 1}</span></div><div class="syl-info"><div class="syl-lbl">${cleanName}</div><div class="syl-sub">${lv.ds}</div><div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div></div>`
         div.style.animationDelay = `${idx * 0.08}s`
         div.onclick = () => ui.showBriefing(lv.id)
         frag.appendChild(div)
@@ -608,6 +608,14 @@ const ui = {
   showBriefing(lid) {
     const lv = LVS.find((l) => l.id === lid)
     this.cur = lv
+    // Honor the "Preferred Vehicle" choice from onboarding (S.vehicle: 'Car'/'Bike') when
+    // this level actually offers that mode — previously stored at signup but never used
+    // anywhere, so picking "Motorcycle" there had no real effect on what you drove.
+    const availModes = lv.modes || ['car']
+    const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
+      : S.vehicle === 'Car' && availModes.includes('car') ? 'car'
+      : null
+    this.curMode = preferred || availModes[0]
     if (!S.started) S.started = {}
     if (!S.started[lv.id]) {
       S.started[lv.id] = Date.now()
@@ -781,7 +789,7 @@ const ui = {
             </div>
           </div>
           <div style="flex:1; min-width:300px; display:flex; flex-direction:column; justify-content:center; gap:12px;">
-            <div style="font-size:0.8rem; color:var(--muted, #9CA3AF); text-transform:uppercase; font-weight:800; letter-spacing:0.05em;">Select Vehicle Mode</div>
+            <div style="font-size:0.8rem; color:var(--muted, #9CA3AF); text-transform:uppercase; font-weight:800; letter-spacing:0.05em;">📝 Practice First (quiz + 2D run-through)</div>
             <div style="display:flex; gap:10px;">${btnsHTML}</div>
           </div>
         </div>
@@ -791,7 +799,10 @@ const ui = {
       <!-- Launch -->
       <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(0,0,0,0.06); padding-top:20px;">
         <button class="btn btn-s" onclick="ui._selSyl('theory')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button>
-        ${finalBtn}
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+          <div style="font-size:0.7rem; color:var(--muted2, #6B7280);">Skip practice — go straight to the real test</div>
+          ${finalBtn}
+        </div>
       </div>`
     }
     c.appendChild(card)

@@ -3,7 +3,7 @@ window.LVS.push({
   id: 12,
   icon: '🚑',
   name: 'Lesson 12 - Highway Ambulance',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#e67e22',
   ds: 'You are on a multi-lane highway. An ambulance approaches at high speed from behind. Move to the leftmost lane and maintain speed — do not stop suddenly.',
   hps: ['On highways, do not stop suddenly — move to the left lane and maintain speed.', 'Use your indicator before changing lanes.', 'Stay in the left lane until the ambulance has fully passed.'],

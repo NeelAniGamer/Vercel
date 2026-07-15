@@ -3,7 +3,7 @@ window.LVS.push({
   id: 6,
   icon: '🏥',
   name: 'Lesson 6 - Hospital Zone Parking',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#3498db',
   ds: 'You are near a hospital entrance. NPC ambulances need clear access. Do not park within 100 meters of the hospital gate — find a spot further away.',
   hps: [

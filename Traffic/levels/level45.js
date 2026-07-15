@@ -3,7 +3,7 @@ window.LVS.push({
   id: 45,
   icon: '👻',
   name: 'Lesson 45 - Zero Visibility!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#2c3e50',
   ds: 'Dense fog at night with rain. You can barely see 10 meters ahead. Use fog lights, crawl at minimum speed, and trust your instincts.',
   hps: ['Fog lights are mandatory — use them, not headlights.', 'Reduce speed to minimum — you cannot see what is ahead.', 'Listen for other vehicles — sound travels further than sight in fog.'],

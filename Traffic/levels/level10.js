@@ -3,7 +3,7 @@ window.LVS.push({
   id: 10,
   icon: '🛒',
   name: 'Lesson 10 - Market Area Parking',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#3498db',
   ds: 'A crowded market area with vendors spilling onto the road. NPC auto-rickshaws are parked haphazardly. Navigate through carefully and find a designated parking zone.',
   hps: [

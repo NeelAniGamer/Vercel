@@ -3,7 +3,7 @@ window.LVS.push({
   id: 26,
   icon: '🐄',
   name: 'Lesson 26 - Cows on the Road!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#f39c12',
   ds: 'A cow is sitting right in the middle of the road. Cars behind you are honking. But cows are sacred in India — never honk at them, just wait patiently.',
   hps: ['Cows have right of way in India — legally and culturally.', 'Never honk at a cow — it may panic and cause an accident.', 'Wait patiently; cows usually move on their own within a minute.'],

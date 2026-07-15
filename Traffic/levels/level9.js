@@ -3,7 +3,7 @@ window.LVS.push({
   id: 9,
   icon: '⛈️',
   name: 'Lesson 9 - Puddle at a Bus Stop',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#9b59b6',
   ds: 'A bus stop is flooded. Commuters are huddled under the shelter, but some are wading through ankle-deep water to reach the road. You must not splash them.',
   hps: ['Bus stops concentrate pedestrians — be extra cautious.', 'Ankle-deep water means a large splash at even low speeds.', 'Wait for commuters to clear the road before passing.'],

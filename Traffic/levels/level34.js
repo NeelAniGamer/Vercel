@@ -3,7 +3,7 @@ window.LVS.push({
   id: 34,
   icon: '🚧',
   name: 'Lesson 34 - Construction Zone!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#e67e22',
   ds: 'A construction zone blocks part of the road. Follow the detour signs, obey the flagman, and slow down through the zone.',
   hps: ['Construction zones have strict speed limits — usually 20 km/h.', 'Temporary signs and flagmen override normal traffic rules.', 'Fines in construction zones are often doubled.'],

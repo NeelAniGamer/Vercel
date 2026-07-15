@@ -3,7 +3,7 @@ window.LVS.push({
   id: 28,
   icon: '🅿️',
   name: 'Lesson 28 - Parking Rules!',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#3498db',
   ds: 'You need to park near a shopping area. A fire hydrant is visible, a no-parking zone is marked, and a legal parking spot is further away. Choose wisely.',
   hps: ['Never park within 5 meters of a fire hydrant.', 'Blue "P" signs mark legal parking zones.', 'Illegal parking near hydrants can result in heavy fines.'],

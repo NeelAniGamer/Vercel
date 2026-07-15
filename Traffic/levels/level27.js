@@ -3,7 +3,7 @@ window.LVS.push({
   id: 27,
   icon: '🏘️',
   name: 'Lesson 27 - Narrow Street!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#9b59b6',
   ds: 'You enter a narrow residential street. An auto-rickshaw is coming from the opposite direction. There\'s barely room for both — crawl at walking pace and find a gap.',
   hps: ['Narrow streets require crawling speed — walking pace or slower.', 'Look for wider spots where you can yield.', 'Horn use is acceptable on blind narrow streets to warn oncoming traffic.'],

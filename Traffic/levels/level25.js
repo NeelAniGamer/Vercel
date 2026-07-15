@@ -3,7 +3,7 @@ window.LVS.push({
   id: 25,
   icon: '🔶',
   name: 'Lesson 25 - Know Your Signs!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#f39c12',
   ds: 'You encounter three types of road signs: blue mandatory signs, red cautionary signs, and green informational signs. Each requires a different response.',
   hps: ['Blue signs tell you what you MUST do.', 'Red signs warn you of dangers ahead.', 'Green signs provide information about distances and locations.'],

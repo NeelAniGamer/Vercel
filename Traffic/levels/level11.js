@@ -3,7 +3,7 @@ window.LVS.push({
   id: 11,
   icon: '📚',
   name: 'Lesson 11 - Library Zone',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#2ecc71',
   ds: 'You are passing a public library. Students are studying near open windows. An NPC is blocking the road ahead. Resist the urge to honk — wait patiently.',
   hps: [

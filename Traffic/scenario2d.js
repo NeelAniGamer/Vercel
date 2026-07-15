@@ -1889,6 +1889,28 @@ class ResultScene extends Phaser.Scene {
         this.scene.start('Game', { scenarioId: this.scenarioId + 1 })
       })
     }
+
+    // Continue into the real 3D driving test for this level, when this practice run was
+    // reached via a specific level's quiz (not generic scenario browsing) and was won.
+    // Previously the 2D practice and the actual 3D level were two completely disconnected
+    // experiences — passing practice just returned to the level list with no path into the
+    // real drive from here.
+    if (this.won && window.ui && window.ui.cur && window.ui._cur2D) {
+      const driveBg = this.add.rectangle(cx, btnY + (this.scenarioId < SCENARIOS.length ? 108 : 54), 220, 44, 0xd97706, 0.95)
+      driveBg.setStrokeStyle(2, 0xd97706)
+      driveBg.setInteractive({ useHandCursor: true })
+      this.add.text(cx, btnY + (this.scenarioId < SCENARIOS.length ? 108 : 54), '🚗 Start Driving Test', {
+        fontFamily: 'Inter, sans-serif', fontSize: '15px', fontStyle: 'bold',
+        color: '#ffffff'
+      }).setOrigin(0.5)
+      driveBg.on('pointerdown', () => {
+        const lv = window.ui.cur
+        const mode = window.ui.curMode || (lv.modes ? lv.modes[0] : 'car')
+        localStorage.setItem('traffic_lv', lv.id)
+        localStorage.setItem('traffic_mode', mode)
+        window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`
+      })
+    }
   }
 }
 

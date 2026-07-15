@@ -3,7 +3,7 @@ window.LVS.push({
   id: 5,
   icon: '🏫',
   name: 'Lesson 5 - School Zone Crossing',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#e74c3c',
   ds: 'You are approaching a school zone during dismissal time. Children in uniforms are crossing randomly between parked cars. Slow down and give them priority.',
   hps: [

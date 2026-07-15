@@ -3,7 +3,7 @@ window.LVS.push({
   id: 14,
   icon: '🌙',
   name: 'Lesson 14 - Night Crossing',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#e74c3c',
   ds: 'It is late at night. Visibility is poor. An elderly person with a walking stick is slowly crossing at an unmarked crossing point. NPCs are speeding past — do not follow them.',
   hps: [

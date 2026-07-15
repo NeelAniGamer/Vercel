@@ -3,7 +3,7 @@ window.LVS.push({
   id: 33,
   icon: '🚌',
   name: 'Lesson 33 - Bus Stop Yield!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#3498db',
   ds: 'A bus is stopped at a bus stop picking up passengers. You must wait behind the bus and never overtake near a bus stop — passengers may cross unexpectedly.',
   hps: ['Passengers may cross the road immediately after getting off a bus.', 'Never overtake a bus at or near a bus stop.', 'Wait until the bus moves and the road is clear.'],

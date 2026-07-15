@@ -3,7 +3,7 @@ window.LVS.push({
   id: 44,
   icon: '🚧',
   name: 'Lesson 44 - Construction Maze!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#f39c12',
   ds: 'Road construction blocks your lane. Follow diversion signs through narrow temporary paths while avoiding workers and equipment.',
   hps: ['Construction zones have 20 km/h speed limits.', 'Workers may step onto the road unexpectedly.', 'Follow diversion signs — they lead to alternate routes.'],

@@ -3,7 +3,7 @@ window.LVS.push({
   id: 42,
   icon: '⚠️',
   name: 'Lesson 42 - Wrong-Side Danger!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#e74c3c',
   ds: 'Other vehicles are driving on the wrong side! Navigate carefully, predict their movements, and reach the destination without collision.',
   hps: ['Wrong-side drivers are unpredictable — expect anything.', 'Stay in your lane and signal intentions clearly.', 'Use horn sparingly to alert wrong-side drivers.'],

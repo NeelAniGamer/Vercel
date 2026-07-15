@@ -3,7 +3,7 @@ window.LVS.push({
   id: 38,
   icon: '🎉',
   name: 'Lesson 38 - Festival Traffic!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#e74c3c',
   ds: 'A festival procession blocks part of the road. Diversion signs are placed. Expect unexpected crowds, music vehicles, and pedestrians everywhere.',
   hps: ['Festival traffic creates unusual road patterns.', 'Follow diversion signs — they lead to alternate routes.', 'Yield to festival processions — they have priority.'],

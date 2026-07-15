@@ -3,7 +3,7 @@ window.LVS.push({
   id: 41,
   icon: '⛈️',
   name: 'Lesson 41 - Night Monsoon Grid!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#1a1a3e',
   ds: 'Drive through heavy monsoon rain at night. Zero visibility, flooded roads, and complex intersections. Use headlights and extreme caution.',
   hps: ['Night rain reduces visibility to near zero — use headlights.', 'Flooded roads may hide deep potholes — crawl through.', 'Intersection navigation requires memorizing road layout ahead of time.'],

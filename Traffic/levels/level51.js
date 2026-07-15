@@ -3,7 +3,7 @@ window.LVS.push({
   id: 51,
   icon: '🛣️',
   name: 'Lesson 51 - Lane Discipline',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#2980b9',
   ds: 'A multi-lane highway with heavy truck and bus traffic. You must stay in your lane, overtake only from the right side (India drives left), and use indicators before changing lanes. Weaving between lanes is dangerous!',
   hps: ['India drives on the LEFT — overtake from the RIGHT.', 'Stay in your lane unless overtaking.', 'Use indicators before every lane change.', 'Never weave between lanes — pick one and stick to it.'],

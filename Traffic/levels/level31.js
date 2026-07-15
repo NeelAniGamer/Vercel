@@ -3,7 +3,7 @@ window.LVS.push({
   id: 31,
   icon: '👁️',
   name: 'Lesson 31 - Blind Corner!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#e74c3c',
   ds: 'You approach a blind corner where you cannot see oncoming traffic. Honk once to warn others, then crawl around the corner.',
   hps: ['Blind corners are one of the most dangerous road situations.', 'One short honk warns oncoming traffic of your presence.', 'Crawl around blind corners — never drive at full speed.'],

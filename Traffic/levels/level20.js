@@ -3,7 +3,7 @@ window.LVS.push({
   id: 20,
   icon: '🧘',
   name: 'Lesson 20 - Temple & Prayer Zone',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#2ecc71',
   ds: 'You are driving past a temple during evening aarti. Devotees are gathered outside. A cow is sitting in the road. This is the ultimate test of your patience — no honking, no rushing.',
   hps: ['Temples are declared quiet zones during prayer hours.', 'Cows have the right of way in India — literally and legally.', 'Honking near a place of worship is deeply disrespectful.'],

@@ -3,7 +3,7 @@ window.LVS.push({
   id: 37,
   icon: '🏥',
   name: 'Lesson 37 - Hospital Quiet Zone!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#3498db',
   ds: 'You\'re driving past a hospital. Absolutely no honking. Slow down, watch for ambulances entering/exiting, and leave the zone quietly.',
   hps: ['Hospital zones have zero tolerance for honking.', 'Ambulances may enter or exit at any moment.', 'Fines in hospital zones are among the highest.'],

@@ -3,7 +3,7 @@ window.LVS.push({
   id: 1,
   icon: '🚥',
   name: 'Lesson 1 - Red Light Patience',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#e74c3c',
   ds: 'You are stuck at a busy junction. NPC cars honk aggressively behind you. A family of four is crossing the road — wait for them to reach the other side before you move.',
   hps: [

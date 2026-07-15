@@ -3,7 +3,7 @@ window.LVS.push({
   id: 46,
   icon: '🪔',
   name: 'Lesson 46 - Festival Night Parade!',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#9b59b6',
   ds: 'Night-time festival procession with lights, music, and crowds spilling onto the road. Navigate through Diwali celebrations safely.',
   hps: ['Festival night = distracted pedestrians everywhere.', 'Procession has priority — find an alternate route if needed.', 'Decorative lights can be distracting — focus on the road.'],

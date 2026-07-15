@@ -3,7 +3,7 @@ window.LVS.push({
   id: 47,
   icon: '🏔️',
   name: 'Lesson 47 - Mountain Pass!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#27ae60',
   ds: 'Navigate a treacherous mountain road with hairpin turns, steep gradients, and falling rocks. Brake management and patience are key.',
   hps: ['Use lower gears on steep descents — brakes can overheat.', 'Honk at blind curves to warn oncoming traffic.', 'Stay away from the edge — landslides can happen without warning.'],

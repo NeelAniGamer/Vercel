@@ -3,7 +3,7 @@ window.LVS.push({
   id: 21,
   icon: '🚦',
   name: 'Lesson 21 - Signal Discipline',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#e74c3c',
   ds: 'You approach a busy intersection with multiple signals. A delivery truck jumps the red light ahead of you. Stay disciplined — follow the rules even when others don\'t.',
   hps: ['Never follow a vehicle that jumps a red light.', 'Always check all directions before proceeding on green.', 'Yellow means slow down and prepare to stop, not speed up.'],

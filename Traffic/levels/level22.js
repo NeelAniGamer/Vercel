@@ -3,7 +3,7 @@ window.LVS.push({
   id: 22,
   icon: '😡',
   name: 'Lesson 22 - Road Rage Control',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#e74c3c',
   ds: 'A taxi driver cut you off aggressively. You feel angry. But road rage never helps — stay calm, give space, and drive safely.',
   hps: ['Road rage leads to accidents and legal trouble.', 'Give aggressive drivers extra space to avoid confrontation.', 'Horn abuse and tailgating escalate situations.'],

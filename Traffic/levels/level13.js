@@ -3,7 +3,7 @@ window.LVS.push({
   id: 13,
   icon: '🌙',
   name: 'Lesson 13 - Night Rain Puddles',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#9b59b6',
   ds: 'It is raining at night. Puddles are hard to see in the dark. A pedestrian with a broken umbrella is walking on the road edge. You may not see the puddle until it is too late.',
   hps: [

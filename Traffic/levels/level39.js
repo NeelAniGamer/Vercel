@@ -3,7 +3,7 @@ window.LVS.push({
   id: 39,
   icon: '🚲',
   name: 'Lesson 39 - Cyclist Safety!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#2ecc71',
   ds: 'A cyclist is riding on the left side of the road. You need to pass safely with at least 1 meter of space. Never overtake near an intersection.',
   hps: ['Give cyclists at least 1 meter of space when passing.', 'Never overtake a cyclist near an intersection or turning.', 'Cyclists may swerve to avoid potholes — expect the unexpected.'],

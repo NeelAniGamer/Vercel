@@ -3,7 +3,7 @@ window.LVS.push({
   id: 32,
   icon: '⛰️',
   name: 'Lesson 32 - Hill Driving!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#8e44ad',
   ds: 'You\'re driving up a steep hill with hairpin bends. Use low gear uphill, honk at blind hairpin bends, and engine brake downhill.',
   hps: ['Low gear uphill gives more power and control.', 'Engine braking downhill prevents brake overheating.', 'Always honk at hairpin bends — you cannot see around them.'],

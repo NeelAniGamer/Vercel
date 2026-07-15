@@ -3,7 +3,7 @@ window.LVS.push({
   id: 23,
   icon: '🌧️',
   name: 'Lesson 23 - Heavy Rain Driving',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#3498db',
   ds: 'Heavy rain is falling. Visibility is poor, roads are flooded, and pedestrians are running for cover. Slow down and use your headlights.',
   hps: ['Use low beam headlights in rain — high beam reflects off water.', 'Increase following distance by 2x in wet conditions.', 'Puddles can hide deep potholes — never drive through fast.'],

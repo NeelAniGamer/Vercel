@@ -3,7 +3,7 @@ window.LVS.push({
   id: 48,
   icon: '🌾',
   name: 'Lesson 48 - Rural Kacha Road!',
-  modes: ['car'],
+  modes: ['car', 'bike'],
   col: '#8B7355',
   ds: 'A narrow unpaved village road with potholes, stray animals, and oncoming tractors. Patience and spatial awareness are everything.',
   hps: ['Kacha roads have hidden potholes — crawl at all times.', 'Cows and dogs may be sleeping on the road.', 'Tractors need wide turns — give them space.'],

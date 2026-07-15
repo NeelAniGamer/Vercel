@@ -3,7 +3,7 @@ window.LVS.push({
   id: 19,
   icon: '🎉',
   name: 'Lesson 19 - Festival Crowd',
-  modes: ['pedestrian', 'car'],
+  modes: ['pedestrian', 'car', 'bike'],
   col: '#e74c3c',
   ds: 'A festival procession has spilled onto the road. There are no traffic signals working — a police volunteer is directing traffic manually. Follow their signals exactly.',
   hps: [
