@@ -99,6 +99,11 @@ window.ASSET_MANIFEST = {}
 
   // Trees & greenery
   M.tree_small = glb(subKit + 'tree-small.glb'); M.tree_large = glb(subKit + 'tree-large.glb'); M.planter = glb(subKit + 'planter.glb')
+
+  // Animals (Kenney cube-pets) — stray cow/dog obstacles for animal-themed levels.
+  // Previously unused: no level's assets[] ever requested this pack.
+  const petsKit = 'Models/kenney_cube-pets_1.0/Models/GLB format/'
+  M.animal_cow = glb(petsKit + 'animal-cow.glb'); M.animal_dog = glb(petsKit + 'animal-dog.glb')
 })()
 
 // Logical groups — level configs reference these in their assets[] array
@@ -112,7 +117,8 @@ window.ASSET_GROUPS = {
   watercraft:['ship_cargo','boat_speed','wc_boat-speed-b','wc_boat-speed-c','wc_boat-fishing-small','wc_boat-tug-a','wc_ship-cargo-b','wc_ship-small'],
   trains:    ['train','metro','tk_train-diesel-a','tk_train-electric-bullet-a','tk_train-tram-modern','tk_train-carriage-box'],
   emergency: ['ambulance'],
-  construction:['barrier','cone','sign_highway']
+  construction:['barrier','cone','sign_highway'],
+  animals: ['animal_cow','animal_dog']
 }
 
 // Keys always loaded at startup (fast boot — 21 models instead of 109)

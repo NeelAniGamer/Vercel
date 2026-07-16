@@ -1,89 +1,76 @@
-# Fixes so far — 2026-07-13 through 07-15
+# Fixes so far — 2026-07-13 through 07-16
 
-Files changed: `Academy.html`, `Driving.html`, `TrafficDashboard.html`, `game_core.js`,
-`ui.js`, `scenario2d.js`, and 50 of the 52 files in `levels/`. `fixes_all.patch` (parent
-folder) is the same changes as one unified diff. Every JS file and every inline
-`<script>`/`<style>` block in the HTML files passes a Node syntax check and a CSS
-brace-balance check — but none of this has run in an actual browser, since I don't have one in
-this environment. Please test before deploying, especially items flagged
-"unverified"/"can't render to confirm" below.
+## ⚠️ Batch 7 regression — fixed, please verify
 
-## Batch 1 — core bugs
-1. Level completion never worked, at all (dead `finalQuiz` code path) — fixed.
-2. Camera-roll / console-flood debug spam — removed.
-3. Duplicate mouse-look systems fighting each other — disabled the conflicting one.
-4. 19 broken `.webp` image/texture references — repointed to the `.png`s that exist.
-5. Sign-in state not updating across screens (duplicate `class` attributes) — fixed.
-6. Light-mode loading-screen title was invisible — fixed.
-7. Certificate sharing now sends the actual certificate image, not a dead link.
-8. Level renumbering — syllabus shows position-within-category, not raw global id.
-9. `S.score` was never set — certificate/stats always showed "Score: 0" — fixed.
-10. Certificate sharing — unique per-user URL via a new `certificates` table. ⚠️ **Unverified,
-    needs your testing** — no network access here to test against your live Supabase project.
+Right after batch 7 (NPC AI research pass), vehicles stopped following the road. Root cause:
+the overtake and emergency-unstuck logic assigned lane targets as raw absolute world
+coordinates instead of positions relative to each NPC's own road (`baseCoord`). Fixed in all
+three places this appeared (overtake, unstuck, and a third pre-existing instance in the
+ambulance-yield code with the identical bug). **This still needs your visual confirmation** —
+batch 8 (below) touches the same NPC code again, so please check the batch-7 fix is solid
+before assuming batch 8 is too.
 
-## Batch 2 — mobile CSS audit (25 issues)
-Upgraded one from "flag for review" to an actual fix: the mobile "level map" that was supposed
-to replace the syllabus list at ≤768px was never populated — every phone was seeing empty
-space where all 52 levels should be. Fixed, plus the other 24 (safe-area padding, touch
-targets, overflow fixes, reduced-motion support, etc.) — see prior notes for detail if needed.
+Files changed overall: `Academy.html`, `Driving.html`, `TrafficDashboard.html`, `game_core.js`,
+`ui.js`, `scenario2d.js`, `start.js`, and 50 of the 52 files in `levels/`. `fixes_all.patch`
+(parent folder) is the same changes as one unified diff. Every JS file and every inline
+`<script>`/`<style>` block passes a Node syntax check and CSS brace-balance check — none of it
+has run in an actual browser, since I don't have one in this environment.
 
-## Batch 3 — driving HUD collision + gyro calibration/rotate overlays
-Fixed the `#task-tracker`/`#dn-clock` overlap (6 conflicting breakpoint rules). Built a real
-gyro calibration overlay (averaged sampling instead of one instant snapshot), auto-
-recalibration after 2.5s of straight driving, and a rotate-device overlay for portrait mode.
-**Can't render the HUD offsets to confirm they're visually perfect — please check on a small
-phone.**
+## Batches 1–6 (condensed)
+Core bugs: dead level-completion path, console-flood debug spam, duplicate mouse-look handlers,
+19 broken `.webp` refs, sign-in state sync, light-mode title contrast, certificate
+image-sharing, level renumbering, `S.score` bug, unique certificate URL via new `certificates`
+table (⚠️ unverified — no network access here to test against Supabase). Mobile CSS audit, 25
+issues, plus the mobile "level map" that was never populated (every phone saw empty space
+instead of levels) — fixed. Driving HUD `#task-tracker`/`#dn-clock` collision fixed (can't
+render to confirm visually — please check on a small phone); real gyro calibration + auto-
+recalibration + rotate-device overlay. Gyro fully overrides joystick steering; connected the
+previously-disconnected 2D-practice and 3D-drive flows. Playable bike mode across 50/52 levels,
+"Preferred Vehicle" onboarding now honored, real bike-specific rules — known gap: no
+bike-specific quiz content yet. Unused `cube-pets` models given a real purpose: Level 26
+("Cows on the Road") had zero actual cow or working task logic — built a real cow obstacle,
+fixed a bonus bug affecting 10 levels' "don't honk" tasks, fixed a dead `this.themeType`
+reference. Dark/light toggle got a clouds layer to match your reference image.
 
-## Batch 4 — gyro fully wins over the joystick, 2D-practice connected to the real 3D drive
-Gyro now overrides the joystick's steering axis entirely. Investigated the "2D practice
-before/after 3D level" question and found practice and the real level were two **entirely
-disconnected** experiences — fixed by adding a "Start Driving Test" button to a won 2D practice
-run, and relabeling the two competing start-buttons so the choice is explicit.
+## Batch 7 — NPC AI researched against GTA 5/6 (see regression note above)
+Added per-NPC personality/aggression (0.7–1.4x, bikes skew highest — matching the specific
+GTA6 trailer detail of bikers overtaking trucks), reaction distances that scale with the NPC's
+own speed (the documented community fix for GTA5's "sudden brake slam" complaint), and an
+emergency unstuck maneuver for vehicles genuinely stuck 7+ seconds.
 
-## Batch 5 — playable bike mode, across 50 of 52 levels
+## Batch 8 — Performance: the two items you asked for
 
-This was the very first thing asked for in this whole conversation — different rules/vehicles
-for bike vs. car — so worth explaining in full:
+**Spatial hash grid replaces O(n²) NPC proximity scans.** Found 6 separate places in the NPC
+update loop where each NPC scanned *every other NPC* to check obstacles ahead, lane-change
+safety, and collision spacing — with, say, 40 active NPCs, that's up to ~9,600 distance checks
+every single frame. All 6 checks only ever look within 25 units, so I built a simple spatial
+hash grid (bucket NPCs into 25-unit cells, rebuilt once per frame) and had all 6 checks query
+only the surrounding 3x3 neighborhood of cells instead of the full NPC list — same candidates
+found, far less work to find them. This is a mechanical, behavior-preserving swap (verified the
+neighborhood search radius covers every distance threshold the original checks used) — but
+given it touches the exact same NPC code as the batch-7 regression, **please treat this as
+needing the same verification** before assuming it's solid.
 
-- **Turns out the 3D vehicle-building code already fully supported a 'bike' type** —
-  `_buildVehicle()` in `ui.js` already had bike model lookup, scaling, and even a fallback if
-  the bike GLB isn't loaded. It was just never exposed as something you could actually pick,
-  because no level's `modes` array ever included `'bike'`.
-- **Enabled `'bike'` in 50 of 52 levels' `modes` arrays** (`levels/level*.js`) — left out
-  Level 29 ("Auto-Rickshaw Dance") and Level 52 ("Driving Instructor") since those are
-  thematically built around a specific non-bike vehicle/lesson, and shoehorning a bike into
-  them didn't make narrative sense. Everything else — parking, red lights, ambulance
-  yielding, puddles, festivals, toll plazas — a bike rider needs the same awareness, so those
-  are all open to it now.
-- **Wired up the "Preferred Vehicle" onboarding choice, which was stored but never used
-  anywhere** (`ui.js`, `showBriefing()`). Picking "Motorcycle" at signup now actually defaults
-  you into bike mode when starting a level that offers it, instead of silently doing nothing.
-- **Added genuine bike-specific rules** rather than just letting a bike drive through
-  car-authored content unchanged (`game_core.js`): a one-time helmet reminder toast the first
-  time a bike picks up speed, and a stricter safe-speed expectation for two-wheelers in zones
-  that don't post an explicit limit (capped so it never double-penalizes on top of an existing
-  posted zone limit).
-- **Known gap, flagged rather than faked:** the quiz system already supports per-mode question
-  sets (`quiz: { car: [...], bike: [...] }`) if a level defines them — but since no level ever
-  had bike enabled before, none of them have bike-specific quiz questions written yet, so bike
-  mode currently falls back to the car quiz content. Writing genuinely differentiated bike quiz
-  questions for 35+ levels is real content-authoring work, not a code fix — happy to start on
-  a batch of those if you want, but didn't want to generate 35 sets of quiz questions
-  unprompted without knowing if that's actually the next priority for you.
+**Building LOD is now continuous and player-relative, not one-time and origin-relative.** The
+existing "Mobile LOD" only ran once at level start, measured distance from world origin
+(0,0,0) rather than the player's actual position, and permanently deleted distant buildings
+(`scene.remove()`) rather than just hiding them — so a level where the player doesn't spawn
+near the origin would cull the wrong things, and once removed, a building could never
+reappear even if the player drove back toward it. Replaced with a system that re-evaluates a
+few times a second based on the player's current position and toggles visibility
+(non-destructive), so buildings correctly show/hide as the player actually moves around,
+instead of a single incorrect snapshot taken at level start.
 
 ## Status across the whole plan
 
-**Done:** Batches 1–5 above.
+**Done:** Batches 1–8 above.
 
-**Not started yet:**
-- Bike-specific quiz question content (see gap above)
-- Dark/light toggle visual redesign — overflow bug fixed in batch 2, redesign itself not done
-- World density / minimap+compass / more Kenney assets / greenery
-- Age-adaptive UI tiers (spec'd in the plan doc, not implemented)
-- Performance (LOD, spatial partitioning)
-- All of Phase 8 (living-city ambience, civic-score, landmark objectives, weather scenarios,
-  co-op/ghost mode, parent/teacher dashboard)
-- NPC driving AI quality pass
+**Not started yet, per your requested order:**
+1. All of Phase 8 (living-city ambience, civic-score, landmark objectives, weather scenarios,
+   co-op/ghost mode, parent/teacher dashboard) — next
+2. World density / minimap+compass / more Kenney assets / greenery
+3. Bike-specific quiz content, age-adaptive UI tiers — queued at my discretion after the above
 
-Real, tested-as-far-as-I-can-test progress each round — not a full pass over the bigger
-feature work yet.
+Please flag anything that doesn't actually work once you can run it — that feedback loop
+caught the batch-7 regression fast, and batch 8 is exactly the kind of change (behavior-
+preserving refactor, can't visually verify) where the same kind of check matters most.

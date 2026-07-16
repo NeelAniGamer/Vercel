@@ -2916,6 +2916,31 @@
           275px 58px 0 0px #fff, 320px 38px 0 0px #fff;
       }
       .hz-toggle.night .hz-stars { opacity: 1; }
+      /* Clouds — day-mode counterpart to the stars, fades out together with the sky
+         gradient when switching to night, matching the reference "sun+clouds /
+         moon+stars" toggle style while keeping this pack's skyline theme underneath. */
+      .hz-clouds {
+        position: absolute; inset: 0;
+        border-radius: inherit;
+        opacity: 1;
+        transition: opacity 0.7s ease;
+        pointer-events: none;
+      }
+      .hz-toggle.night .hz-clouds { opacity: 0; }
+      .hz-clouds::before, .hz-clouds::after {
+        content: '';
+        position: absolute;
+        top: 22px;
+        width: 46px; height: 18px;
+        background: rgba(255,255,255,0.85);
+        border-radius: 999px;
+        box-shadow:
+          16px -8px 0 -2px rgba(255,255,255,0.85),
+          -14px -4px 0 -3px rgba(255,255,255,0.75),
+          28px 2px 0 -4px rgba(255,255,255,0.7);
+      }
+      .hz-clouds::before { left: 40px; }
+      .hz-clouds::after { left: 230px; top: 46px; transform: scale(0.8); }
       @keyframes hz-twinkle {
         0%,100% { opacity: 1; }
         50% { opacity: 0.4; }
@@ -3022,6 +3047,7 @@
         .hz-toggle.night .hz-orb { left: 202px; }
         .hz-orb::after { width: 48px; height: 48px; top: 6px; left: 10px; }
         .hz-skyline { height: 26px; }
+        .hz-clouds { transform: scale(0.8); transform-origin: top left; }
       }
 
     </style>
@@ -3307,6 +3333,7 @@
     <div id="ss" class="screen active">
       <div id="top-bar-container" style="position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; align-items: center">
         <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-clouds"></div>
           <div class="hz-stars"></div>
           <div class="hz-skyline"></div>
           <div class="hz-windows"></div>

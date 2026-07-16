@@ -1833,10 +1833,10 @@ class Game {
         if (onRoad && spd > 0.01) this._reachedMainRoad = true;
 
         // Market zone: level theme is market OR deep in city (high checkpoint index)
-        if (this.themeType === 'market' || this.themeType === 'busy_market') this._reachedMarket = true;
+        if (this.mapCfg && (this.mapCfg.themeType === 'market' || this.mapCfg.themeType === 'busy_market')) this._reachedMarket = true;
 
         // Hospital: level theme
-        this._nearHospital = (this.themeType === 'hospital' || this.themeType === 'hospital_zone');
+        this._nearHospital = !!(this.mapCfg && (this.mapCfg.themeType === 'hospital' || this.mapCfg.themeType === 'hospital_zone'));
 
         // NPC proximity for guard/volunteer/gap
         this._reachedGuard = false;
@@ -1915,6 +1915,8 @@ class Game {
               else if (t.target === 'parking_zone' && Math.abs(this.speed) < 0.05) complete = true;
               else if (t.target === 'parking_spot' && Math.abs(this.speed) < 0.05) complete = true;
               else if (t.target === 'red_light' && Math.abs(this.speed) < 0.05) complete = true;
+              else if (t.target === 'cow' && this._animalObstacle && this._animalObstacle.everWaitedNear) complete = true;
+              else if (t.target === 'cow_moved' && this._animalObstacle && this._animalObstacle.moved) complete = true;
               break;
             case 'reach':
               if (t.target === 'destination' && this.cps && this.hits >= this.cps.length && this.cps.length > 0) complete = true;
@@ -1935,7 +1937,7 @@ class Game {
               else if (t.target === 'gap_spot' && this._reachedGap) complete = true;
               break;
             case 'avoid':
-              if (t.target === 'honk' && this._honkedThisFrame) { /* fail, not complete */ }
+              if (t.target === 'honk' && !this._honkedThisFrame) complete = true;
               else if (t.target === 'speed_zone' && Math.abs(this.speed) > 0.22) { /* fail */ }
               else if (t.target === 'speed_night' && Math.abs(this.speed) > 0.35) { /* fail */ }
               else if (t.target === 'speed_puddle' && Math.abs(this.speed) > 0.25) { /* fail */ }
@@ -2266,6 +2268,22 @@ class Game {
         this.roadSegments = cfg.roads;
         this.driveRoute = cfg.route;
         this._buildRoadZones(RW);
+
+        // Animal obstacle (e.g. "Cows on the Road") — previously this level's whole premise
+        // had no actual animal model or interaction logic anywhere in the engine; the task
+        // list existed as text but could never be completed. Spawn a real cow along the
+        // route and wire up proximity/honk/moved-on checks (see _uobs/_checkTasks).
+        this._animalObstacle = null;
+        if (cfg.themeType === 'animals' && cfg.route && cfg.route.length > 3 && window.PRELOADED_MODELS && window.PRELOADED_MODELS.animal_cow) {
+          const routeIdx = Math.floor(cfg.route.length * 0.4);
+          const rp = cfg.route[routeIdx];
+          const cowMesh = window.PRELOADED_MODELS.animal_cow.scene.clone();
+          cowMesh.scale.setScalar(2.2);
+          cowMesh.position.set(rp.x + 1.5, 0, rp.z);
+          cowMesh.traverse((n) => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; } });
+          this.scene.add(cowMesh);
+          this._animalObstacle = { mesh: cowMesh, x: rp.x + 1.5, z: rp.z, moved: false, movedAt: null, everHonkedNear: false };
+        }
 
         // Toon gradient map (3-step cel shading)
         if (!window._toonGrad) {
@@ -2657,16 +2675,9 @@ class Game {
           });
         }
 
-        // ── Mobile LOD: cull/simplify distant buildings ──
-        if (this._isMobile) {
-          this.scene.children.forEach(child => {
-            if (child.isMesh || child.isInstancedMesh) {
-              const d = child.position ? child.position.length() : 0;
-              if (d > 400) { this.scene.remove(child); }
-              else if (d > 200 && child.material) { child.material.fog = true; }
-            }
-          });
-        }
+        // Mobile building LOD now handled continuously in _updateDynamicLOD (see main tick),
+        // relative to the player's actual position rather than a one-time check from world
+        // origin at level start.
 
         // Player vehicle
 
@@ -4331,7 +4342,7 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain);
+        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD();
 
         // Update player character FBX animation mixer
         if (this.playerCharacter && this.playerCharacter.userData && this.playerCharacter.userData.isFBXAnimated && this.playerCharacter.userData.mixer) {
@@ -4979,7 +4990,57 @@ class Game {
           } else si.style.display = 'none';
         }
       }
+      // Continuous building LOD, relative to the player's current position — replaces the
+      // old one-time check that measured distance from world origin at level start (wrong
+      // for any level where the player doesn't spawn near 0,0, and never re-evaluated as the
+      // player actually drove around). Non-destructive (toggles .visible, doesn't
+      // scene.remove()) so buildings correctly reappear if the player drives back toward
+      // them, and only re-scans a slice of the scene every few frames rather than the whole
+      // thing every frame.
+      _updateDynamicLOD() {
+        if (!this._isMobile || !this.player) return;
+        this._lodFrame = (this._lodFrame || 0) + 1;
+        if (this._lodFrame % 20 !== 0) return; // ~3x/sec at 60fps, not every frame
+        const px = this.player.position.x, pz = this.player.position.z;
+        if (!this._lodChildren) this._lodChildren = this.scene.children.filter(c => c.isMesh || c.isInstancedMesh);
+        // Rebuild the candidate list occasionally too, in case new objects were added since
+        // (e.g. NPCs, obstacles) — cheap relative to the distance pass itself.
+        if (this._lodFrame % 300 === 0) this._lodChildren = this.scene.children.filter(c => c.isMesh || c.isInstancedMesh);
+        this._lodChildren.forEach(child => {
+          if (!child.position || child.userData.noLod) return;
+          const dx = child.position.x - px, dz = child.position.z - pz;
+          const d = Math.sqrt(dx * dx + dz * dz);
+          const shouldShow = d < 400;
+          if (child.visible !== shouldShow) child.visible = shouldShow;
+          if (child.material && 'fog' in child.material) child.material.fog = d < 200;
+        });
+      }
       _unpcs(dt) {
+        // Spatial hash grid, rebuilt once per frame — every one of the proximity/obstacle
+        // checks below only ever looks within 25 units, so bucketing NPCs into 25-unit cells
+        // and searching the surrounding 3x3 neighborhood finds the exact same candidates as
+        // scanning the full NPC list, just without checking every NPC against every other one.
+        const _gridCell = 25;
+        const _npcGrid = new Map();
+        const _cellKey = (x, z) => Math.floor(x / _gridCell) + ',' + Math.floor(z / _gridCell);
+        this.npcs.forEach(o => {
+          const k = _cellKey(o.position.x, o.position.z);
+          let bucket = _npcGrid.get(k);
+          if (!bucket) { bucket = []; _npcGrid.set(k, bucket); }
+          bucket.push(o);
+        });
+        const nearbyNpcs = (pos) => {
+          const cx = Math.floor(pos.x / _gridCell), cz = Math.floor(pos.z / _gridCell);
+          const out = [];
+          for (let dx = -1; dx <= 1; dx++) {
+            for (let dz = -1; dz <= 1; dz++) {
+              const bucket = _npcGrid.get((cx + dx) + ',' + (cz + dz));
+              if (bucket) out.push(...bucket);
+            }
+          }
+          return out;
+        };
+
         this.npcs.forEach(n => {
           if (n.userData.spd !== undefined) {
             if (n.userData.laneT === undefined) { 
@@ -4989,6 +5050,13 @@ class Game {
               n.userData.state = 'CRUISE';
               n.userData._stuckTimer = 0;
               n.userData._lastPos = n.position.clone();
+              // Personality/aggression — GTA's driving AI varies per-driver rather than every
+              // car reacting identically (Rockstar's own patent material describes a
+              // "personality_aggressiveness" weight feeding the decision model; GTA6 trailer
+              // footage specifically shows bikers overtaking trucks more assertively than
+              // cars do). 0.7 = cautious/patient, 1.3 = assertive/impatient.
+              n.userData.aggression = (n.userData.npcType === 'bike' || n.userData.npcType === 'cycle') ? (1.05 + Math.random() * 0.35)
+                : 0.7 + Math.random() * 0.6;
             }
 
             // Stuck detection — wait and honk instead of teleporting
@@ -5005,8 +5073,24 @@ class Game {
               if (Math.random() < 0.05 && window.sfx && window.sfx.play) {
                 window.sfx.play('horn');
               }
-              // Reset timer to avoid spamming
-              if (n.userData._stuckTimer > 7) n.userData._stuckTimer = 0;
+              // Genuinely stuck (not just briefly waiting at a light) for 7+ seconds —
+              // attempt one emergency lane nudge to route around whatever's blocking, rather
+              // than sitting there honking forever. Early GTA-era traffic AI had exactly this
+              // failure mode when blocked from the side; later entries gave stuck vehicles a
+              // way to reroute instead of freezing permanently.
+              if (n.userData._stuckTimer > 7) {
+                if (n.userData.moveAxis && !n.userData.useRoute) {
+                  const base = n.userData.baseCoord || 0;
+                  const laneOffsets = [-4.8, -2.4, 0, 2.4, 4.8];
+                  const curLane = n.userData.moveAxis === 'h' ? n.userData.txZ : n.userData.txX;
+                  const curOffset = curLane != null ? curLane - base : 0;
+                  const altOffset = laneOffsets.find(o => Math.abs(o - curOffset) > 0.5) ?? 0;
+                  const alt = base + altOffset;
+                  if (n.userData.moveAxis === 'h') n.userData.txZ = alt; else n.userData.txX = alt;
+                  n.userData.laneT = Math.random() * 2 + 1;
+                }
+                n.userData._stuckTimer = 0;
+              }
             }
 
             // Smooth route wrapping — lerp back to start over 1.2s instead of teleporting
@@ -5122,7 +5206,7 @@ class Game {
               // 2. Check Vehicles Ahead
               if (n.userData.moveAxis === 'h') {
                 // Horizontal NPCs: check along X-axis
-                this.npcs.forEach(other => {
+                nearbyNpcs(n.position).forEach(other => {
                   if (other !== n && other.userData.moveAxis === 'h') {
                     const dx = other.position.x - n.position.x;
                     const dz = Math.abs(other.position.z - n.position.z);
@@ -5146,7 +5230,7 @@ class Game {
                   }
                 }
               } else {
-              this.npcs.forEach(other => {
+              nearbyNpcs(n.position).forEach(other => {
                   if (other !== n && other.userData.moveAxis !== 'h') {
                     const dz = other.position.z - n.position.z;
                     const dx = Math.abs(other.position.x - n.position.x);
@@ -5186,15 +5270,21 @@ class Game {
                     if (ambDz < 0 && ambDz > -60) {
                       yieldingToAmbulance = true;
                       n.userData.state = 'YIELD_AMBULANCE';
-                      n.userData.txX = -4.8; // Move to leftmost lane
+                      n.userData.txX = (n.userData.baseCoord || 0) - 4.8; // Move to leftmost lane, relative to this NPC's own road
                     }
                   }
                 }
 
                 // State Transitions
-                // Enhanced: stop sooner when pedestrian is nearby (safety first)
-                const stopDist = fsm.nearPedestrian ? 15.0 : 11.0;  // Stop 15m away for pedestrians, 11m for vehicles
-                const followDist = fsm.nearPedestrian ? 35.0 : 30.0; // Start following from further for pedestrians
+                // Distances scale with the NPC's own speed (a driver going faster needs to
+                // start reacting sooner — GTA5's vanilla AI was widely criticized, including
+                // in community fixes, for using fixed react distances that caused sudden
+                // last-second braking) and with personality (cautious drivers keep more
+                // space; assertive ones tailgate closer and commit to overtakes sooner).
+                const agg = n.userData.aggression || 1.0;
+                const speedFactor = Math.abs(n.userData.spd) * 40; // extra lookahead at speed
+                const stopDist = (fsm.nearPedestrian ? 15.0 : 11.0) / agg + speedFactor;
+                const followDist = (fsm.nearPedestrian ? 35.0 : 30.0) / Math.sqrt(agg) + speedFactor;
                 if (!yieldingToAmbulance) {
                   if (fsm.approachingObstacle && fsm.obstacleDist < stopDist) {
                     n.userData.state = 'STOPPED';
@@ -5202,14 +5292,21 @@ class Game {
                     n.userData.state = 'SLOW_DOWN';
                   } else if (fsm.approachingObstacle && fsm.obstacleDist < followDist && !fsm.redLight) {
                     n.userData.state = 'FOLLOW';
-                    // Overtake Logic
-                    if (n.userData.laneT <= 0) {
-                      const lanes = n.userData.dir === 1 ? [-4.8, -2.4, 0, 2.4, 4.8] : [-4.8, -2.4, 0, 2.4, 4.8];
+                    // Overtake Logic — assertive drivers (higher aggression) commit to an
+                    // overtake attempt sooner instead of waiting the full patience window;
+                    // this is also what lets bikes specifically pull out and pass slower
+                    // traffic more readily, echoing the GTA6 trailer detail of bikers
+                    // overtaking trucks by pulling into the oncoming lane rather than
+                    // queueing behind them "on train tracks."
+                    if (n.userData.laneT <= 0 || (agg > 1.1 && n.userData.laneT < 1.5 && Math.random() < 0.15)) {
+                      const laneOffsets = [-4.8, -2.4, 0, 2.4, 4.8];
+                      const base = n.userData.baseCoord || 0;
+                      const lanes = laneOffsets.map(o => base + o);
                       let safeLanes = lanes.filter(l => Math.abs(l - myLane) <= 3.0 && l !== myLane);
                       
                       safeLanes = safeLanes.filter(l => {
                         let blocked = false;
-                        this.npcs.forEach(other => {
+                        nearbyNpcs(n.position).forEach(other => {
                           if (other !== n && Math.abs(other.position.x - l) < 2.5 && Math.abs(other.position.z - n.position.z) < 22 && (other.position.z - n.position.z)*n.userData.dir > -10) blocked = true;
                         });
                         // Check player blocking for lane changes - works in both vehicle and pedestrian mode
@@ -5238,24 +5335,25 @@ class Game {
                 const wasStopped = n.userData._prevState === 'STOPPED';
                 const greenBoost = wasStopped && n.userData.state === 'CRUISE';
 
-                // Apply State Behavior — realistic braking & acceleration curves
+                // Apply State Behavior — realistic braking & acceleration curves,
+                // individually paced by each driver's aggression (0.7-1.4x reaction speed)
                 switch(n.userData.state) {
                   case 'CRUISE':
                     // Boost acceleration if just cleared a red light
-                    n.userData.spd += (n.userData.baseSpd - n.userData.spd) * (greenBoost ? 0.25 : 0.12);
+                    n.userData.spd += (n.userData.baseSpd - n.userData.spd) * (greenBoost ? 0.25 : 0.12) * agg;
                     break;
                   case 'FOLLOW':
                     let tgtSpd = Math.max(0, fsm.obstacleSpeed - 0.2);
-                    n.userData.spd += (tgtSpd - n.userData.spd) * 0.15;
+                    n.userData.spd += (tgtSpd - n.userData.spd) * 0.15 * agg;
                     break;
                   case 'SLOW_DOWN':
-                    n.userData.spd += (n.userData.baseSpd * 0.35 - n.userData.spd) * 0.18;
+                    n.userData.spd += (n.userData.baseSpd * 0.35 - n.userData.spd) * 0.18 * agg;
                     break;
                   case 'STOPPED':
-                    n.userData.spd += (0 - n.userData.spd) * 0.2;
+                    n.userData.spd += (0 - n.userData.spd) * Math.min(0.4, 0.2 * agg);
                     break;
                   case 'OVERTAKE':
-                    n.userData.spd += (n.userData.baseSpd * 1.2 - n.userData.spd) * 0.05;
+                    n.userData.spd += (n.userData.baseSpd * 1.2 - n.userData.spd) * 0.05 * agg;
                     break;
                   case 'YIELD_AMBULANCE':
                     n.userData.spd += (n.userData.baseSpd * 0.5 - n.userData.spd) * 0.05;
@@ -5351,7 +5449,7 @@ class Game {
               });
 
               // Vehicles ahead
-              this.npcs.forEach(other => {
+              nearbyNpcs(n.position).forEach(other => {
                 if (other === n || other.userData.spd === undefined) return;
                 const adx = other.position.x - n.position.x;
                 const adz = other.position.z - n.position.z;
@@ -5466,7 +5564,7 @@ class Game {
             } else {
               if (n.userData.moveAxis === 'h') {
                 // Lateral repulsion for horizontal NPCs (push apart on z-axis)
-                this.npcs.forEach(other => {
+                nearbyNpcs(n.position).forEach(other => {
                   if (other !== n) {
                     const dLateral = Math.abs(other.position.z - n.position.z);
                     const dForward = Math.abs(other.position.x - n.position.x);
@@ -5506,7 +5604,7 @@ class Game {
                 }
               } else {
                 // Lateral repulsion — push NPCs apart if too close on cross-axis
-                this.npcs.forEach(other => {
+                nearbyNpcs(n.position).forEach(other => {
                   if (other !== n) {
                     const dLateral = Math.abs(other.position.x - n.position.x);
                     const dForward = Math.abs(other.position.z - n.position.z);
@@ -6166,6 +6264,48 @@ class Game {
       _uobs(dt) {
         const px = this.player.position.x, pz = this.player.position.z;
         const pR = 1.5; // player collision radius
+
+        // Animal obstacle: stop nearby → wait → it wanders off; honking at it while present
+        // is a real, logged violation instead of a no-op "Beep Beep!" toast.
+        if (this._animalObstacle && !this._animalObstacle.moved) {
+          const ao = this._animalObstacle;
+          const adx = px - ao.x, adz = pz - ao.z;
+          const distSq = adx * adx + adz * adz;
+          this._nearAnimal = distSq < 400; // within ~20 units
+          if (this._nearAnimal && Math.abs(this.speed) < 0.03) {
+            this._nearAnimalStoppedSince = this._nearAnimalStoppedSince || Date.now();
+            if (!ao.everWaitedNear && Date.now() - this._nearAnimalStoppedSince > 600) ao.everWaitedNear = true;
+            if (Date.now() - this._nearAnimalStoppedSince > 3000) {
+              ao.moved = true;
+              ao.movedAt = Date.now();
+              // Animate it ambling off to the roadside rather than just vanishing
+              const targetX = ao.x + (ao.x >= 0 ? 6 : -6);
+              const startPos = ao.mesh.position.clone();
+              const animMove = () => {
+                if (!ao.mesh) return;
+                ao.mesh.position.x += (targetX - ao.mesh.position.x) * 0.04;
+                ao.mesh.rotation.y = ao.x >= 0 ? -Math.PI / 2 : Math.PI / 2;
+                if (Math.abs(ao.mesh.position.x - targetX) > 0.1) requestAnimationFrame(animMove);
+              };
+              animMove();
+              toast('🐄 The cow has moved along', '#8bc34a');
+            }
+          } else {
+            this._nearAnimalStoppedSince = null;
+          }
+          if (this._nearAnimal && this._honkedThisFrame) {
+            ao.everHonkedNear = true;
+            if (!this._animalHonkPenalized) {
+              this._animalHonkPenalized = true;
+              this.vio++;
+              this.violationsLog.push('HONKED_AT_ANIMAL');
+              this.score -= 40;
+              this.fine += 1000;
+              ui.issueChallan('Honking at an animal on the road', 'Civic Sense', '₹1,000', 'Animals have the right of way — never honk at them');
+            }
+          }
+        }
+
         this.obstacles.forEach(o => {
           const dx = px - o.position.x, dz = pz - o.position.z;
           if (dx * dx + dz * dz > 400) return;

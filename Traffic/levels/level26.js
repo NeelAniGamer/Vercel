@@ -28,5 +28,5 @@ window.LVS.push({
     { id: 'no_honk', text: 'Do not honk at cow', type: 'avoid', target: 'honk', done: false },
     { id: 'wait_move', text: 'Wait for cow to move', type: 'stop', target: 'cow_moved', done: false }
   ],
-  assets: ['suburban', 'industrial']
+  assets: ['suburban', 'industrial', 'animals']
 })
