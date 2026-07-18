@@ -1,5 +1,5 @@
 const CACHE_NAME = 'col-cache-v2'
-const urlsToCache = ['/', '/home.html', '/col-ui.css', '/col-ui.js', '/col-router.js', '/col-auth.js', '/icon.webp']
+const urlsToCache = ['/', '/home.html', '/col-ui.css', '/col-ui.js', '/col-router.js', '/col-auth.js', '/Icon.png']
 
 self.addEventListener('install', (event) => {
   self.skipWaiting()
