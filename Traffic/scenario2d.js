@@ -1750,7 +1750,13 @@ class GameScene extends Phaser.Scene {
       s.scenario2d[`${key}_stars`] = Math.max(stars, s.scenario2d[`${key}_stars`] || 0)
       if (!prev) s.scenario2d.total = (s.scenario2d.total || 0) + 1
       localStorage.setItem('mth4', JSON.stringify(s))
-      if (window.supabaseClient && window.colUser) {
+      if (typeof S !== 'undefined') {
+        if (!S.scenario2d) S.scenario2d = {}
+        S.scenario2d[`${key}_done`] = true
+        S.scenario2d[`${key}_stars`] = s.scenario2d[`${key}_stars`]
+        S.scenario2d.total = s.scenario2d.total
+        if (typeof save === 'function') save()
+      } else if (window.supabaseClient && window.colUser) {
         window.supabaseClient.auth.updateUser({ data: { progress: s } }).catch(() => {})
       }
     } catch (e) {}

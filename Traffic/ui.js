@@ -91,6 +91,10 @@ const ui = {
       } catch (e) {}
       if (window.supabaseClient && window.colUser) {
         try {
+          const uid = window.colUser.id;
+          await window.supabaseClient.from('game_progress').delete().eq('user_id', uid);
+          await window.supabaseClient.from('badges').delete().eq('user_id', uid);
+          await window.supabaseClient.from('wallets').update({ balance: 50000 }).eq('user_id', uid);
           await window.supabaseClient.auth.updateUser({ data: { progress: null } })
         } catch (e) {}
       }
@@ -139,6 +143,47 @@ const ui = {
     if (hwalletEl) {
       hwalletEl.textContent = '₹' + (S.wallet || 50000).toLocaleString('en-IN')
     }
+    
+    // Supabase Realtime Presence
+    if (window.supabaseClient) {
+      const room = window.supabaseClient.channel('game_room', {
+        config: {
+          presence: {
+            key: window.colUser ? window.colUser.id : 'guest_' + Math.random().toString(36).substr(2, 9),
+          },
+        },
+      });
+
+      room
+        .on('presence', { event: 'sync' }, () => {
+          const newState = room.presenceState();
+          let count = 0;
+          for (let id in newState) {
+            count += newState[id].length;
+          }
+          let onlineEl = document.getElementById('honline');
+          if (onlineEl) {
+             onlineEl.textContent = count;
+          } else {
+             const hudbar = document.getElementById('hudbar');
+             if (hudbar) {
+                const div = document.createElement('div');
+                div.className = 'hb';
+                div.title = 'Players Online';
+                div.innerHTML = '🟢<span id="honline">' + count + '</span>';
+                hudbar.appendChild(div);
+             }
+          }
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            await room.track({
+              online_at: new Date().toISOString(),
+            });
+          }
+        });
+    }
+
     this._applyAgeTier()
   },
   show(id) {

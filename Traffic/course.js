@@ -26,17 +26,56 @@ try {
 } catch (e) {}
 if (!S.comp) S.comp = {}
 if (!S.badges) S.badges = []
-const save = () => {
+const save = async () => {
   try {
     localStorage.setItem('mth4', JSON.stringify(S))
   } catch (e) {}
   if (window.supabaseClient && window.colUser) {
-    window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch((err) => console.error('Cloud save failed', err))
+    try {
+      const uid = window.colUser.id;
+      for (const [levelId, data] of Object.entries(S.comp || {})) {
+        await window.supabaseClient.from('game_progress').upsert({
+          user_id: uid,
+          level_id: levelId,
+          completed: true,
+          score: data.score || 0,
+          time_seconds: data.time || 0,
+          completed_at: data.time ? new Date(data.time).toISOString() : new Date().toISOString()
+        }, { onConflict: 'user_id,level_id' });
+      }
+      if (S.scenario2d) {
+        for (const [k, v] of Object.entries(S.scenario2d)) {
+          if (k.endsWith('_done') && v === true) {
+            const baseId = k.replace('_done', '');
+            const stars = S.scenario2d[`${baseId}_stars`] || 0;
+            await window.supabaseClient.from('game_progress').upsert({
+              user_id: uid,
+              level_id: baseId,
+              completed: true,
+              stars: stars,
+              completed_at: new Date().toISOString()
+            }, { onConflict: 'user_id,level_id' });
+          }
+        }
+      }
+      for (const badgeId of (S.badges || [])) {
+        await window.supabaseClient.from('badges').upsert({
+          user_id: uid,
+          badge_type: badgeId
+        }, { onConflict: 'user_id,badge_type' });
+      }
+      await window.supabaseClient.from('wallets').upsert({
+        user_id: uid,
+        balance: S.wallet || 50000
+      }, { onConflict: 'user_id' });
+    } catch(err) {
+      console.error('Cloud save failed', err);
+    }
   }
 }
 
 // ☁️ CLOUD CONFLICT RESOLUTION ☁️
-window.addEventListener('col-auth-changed', (e) => {
+window.addEventListener('col-auth-changed', async (e) => {
   const customUser = e.detail && e.detail.user ? e.detail.user : window.colUser
   const user = customUser ? customUser.session.user : null
 
@@ -95,40 +134,82 @@ window.addEventListener('col-auth-changed', (e) => {
     if (acadProf) acadProf.style.display = 'none'
   }
 
-  if (user && user.user_metadata && user.user_metadata.progress) {
-    const cloudS = user.user_metadata.progress
+  if (user) {
+    let cloudS = null;
+    
+    // Attempt to load from tables first
+    if (window.supabaseClient) {
+      try {
+        const { data: progress } = await window.supabaseClient.from('game_progress').select('*').eq('user_id', user.id);
+        const { data: badges } = await window.supabaseClient.from('badges').select('badge_type').eq('user_id', user.id);
+        const { data: wallet } = await window.supabaseClient.from('wallets').select('balance').eq('user_id', user.id).maybeSingle();
+        
+        if (progress && progress.length > 0) {
+          const comp = {};
+          const scenario2d = { total: 0 };
+          
+          progress.forEach(p => {
+            if (p.level_id.startsWith('s') && !isNaN(parseInt(p.level_id.replace('s', '')))) {
+              scenario2d[`${p.level_id}_done`] = true;
+              scenario2d[`${p.level_id}_stars`] = p.stars || 0;
+              if (p.completed) scenario2d.total++;
+            } else {
+              comp[p.level_id] = { score: p.score, time: new Date(p.completed_at || Date.now()).getTime() };
+            }
+          });
+          
+          cloudS = {
+            comp,
+            scenario2d,
+            badges: badges ? badges.map(b => b.badge_type) : [],
+            total: Object.keys(comp).length,
+            wallet: wallet?.balance ?? 50000
+          };
+        }
+      } catch (err) {
+        console.error('Error loading from tables', err);
+      }
+    }
+    
+    // Fallback/migrate from user_metadata if tables are empty but metadata exists
+    if (!cloudS && user.user_metadata && user.user_metadata.progress) {
+      cloudS = user.user_metadata.progress;
+    }
+
     // Provide a minimal structure to S if undefined
     if (!S) S = { comp: {}, badges: [], total: 0, wallet: 50000 }
 
-    // Determine if they actually differ in a meaningful way
-    const isDifferent =
-      cloudS.total !== S.total || (cloudS.badges && S.badges && cloudS.badges.length !== S.badges.length) || Object.keys(cloudS.comp || {}).length !== Object.keys(S.comp || {}).length
+    if (cloudS) {
+      // Determine if they actually differ in a meaningful way
+      const isDifferent =
+        cloudS.total !== S.total || (cloudS.badges && S.badges && cloudS.badges.length !== S.badges.length) || Object.keys(cloudS.comp || {}).length !== Object.keys(S.comp || {}).length
 
-    if (isDifferent) {
-      // If local has no actual progress but cloud does, auto-restore
-      if (S.total === 0 && Object.keys(S.comp || {}).length === 0 && cloudS.total > 0) {
-        S = cloudS
-        try {
-          localStorage.setItem('mth4', JSON.stringify(S))
-        } catch (e) {}
-        toast('☁️ Cloud Data Auto-Restored!', '#5ED4F5')
-        if (window.ui && window.ui.init) ui.init()
+      if (isDifferent) {
+        // If local has no actual progress but cloud does, auto-restore
+        if (S.total === 0 && Object.keys(S.comp || {}).length === 0 && cloudS.total > 0) {
+          S = cloudS
+          try {
+            localStorage.setItem('mth4', JSON.stringify(S))
+          } catch (e) {}
+          toast('☁️ Cloud Data Auto-Restored!', '#5ED4F5')
+          if (window.ui && window.ui.init) ui.init()
+        }
+        // If cloud has no actual progress but local does, auto-upload
+        else if (cloudS.total === 0 && Object.keys(cloudS.comp || {}).length === 0 && S.total > 0) {
+          save()
+          toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
+        } else {
+          // Show conflict resolution if states differ and both have some progress
+          injectConflictModal(cloudS)
+          document.getElementById('conflictMo').style.display = 'flex'
+        }
       }
-      // If cloud has no actual progress but local does, auto-upload
-      else if (cloudS.total === 0 && Object.keys(cloudS.comp || {}).length === 0 && S.total > 0) {
-        window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch(() => {})
+    } else {
+      // Logged in but no cloud progress, upload local progress if any
+      if (S && S.total > 0) {
+        save()
         toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
-      } else {
-        // Show conflict resolution if states differ and both have some progress
-        injectConflictModal(cloudS)
-        document.getElementById('conflictMo').style.display = 'flex'
       }
-    }
-  } else if (user) {
-    // Logged in but no cloud progress, upload local progress if any
-    if (S && S.total > 0) {
-      window.supabaseClient.auth.updateUser({ data: { progress: S } }).catch(() => {})
-      toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
     }
   }
 })

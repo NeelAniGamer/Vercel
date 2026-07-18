@@ -649,6 +649,29 @@
         </div>
       </div>
 
+      <div class="glass-panel" id="leaderboard-panel" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px">
+          <h2 style="margin: 0">Global Leaderboard</h2>
+        </div>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; min-width: 500px;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <th style="padding: 12px; text-align: center; color: var(--muted); font-size: 0.85rem; text-transform: uppercase; width: 60px;">Rank</th>
+                <th style="padding: 12px; text-align: left; color: var(--muted); font-size: 0.85rem; text-transform: uppercase;">Driver</th>
+                <th style="padding: 12px; text-align: right; color: var(--muted); font-size: 0.85rem; text-transform: uppercase;">Total Score</th>
+                <th style="padding: 12px; text-align: right; color: var(--muted); font-size: 0.85rem; text-transform: uppercase;">Levels</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+              <tr>
+                <td colspan="4" style="padding: 20px; text-align: center; color: var(--muted);">Loading leaderboard...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="glass-panel" style="padding: 20px">
         <div class="partner-label">Our Partners</div>
         <div class="partner-strip">
@@ -845,17 +868,64 @@
         document.getElementById('cert-progress-text').textContent = '🎉 Certificate Unlocked!'
         document.getElementById('cert-progress-sub').textContent = 'You can now download your certificate'
         document.getElementById('cert-progress-ring').style.background = 'rgba(52, 211, 153, 0.2)'
-        // Fire-and-forget: creates/updates this user's shareable certificate row so the
         // share links below have something real to point at. certUrl() picks up
         // _syncedCertId as soon as this resolves.
+        _syncOwnCertificate(displayName, completed, S.total || 0).then(id => {
+          if (id) window._syncedCertId = id
+        })
+      }
+
+      async function loadLeaderboard() {
+        const client = await _initSupabase()
+        if (!client) return
+        
+        const lbPanel = document.getElementById('leaderboard-panel')
+        if (lbPanel) lbPanel.style.display = 'block'
+        
         try {
-          const cachedId = localStorage.getItem('own_cert_id')
-          if (cachedId) _syncedCertId = cachedId
-          _syncOwnCertificate(displayName, completed, S.total || 0).then((id) => {
-            if (id) _syncedCertId = id
+          const { data, error } = await client.rpc('get_leaderboard', { p_limit: 10 })
+          if (error || !data || data.length === 0) {
+            document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: var(--muted);">No data available yet</td></tr>'
+            return
+          }
+          
+          const tbody = document.getElementById('leaderboard-body')
+          tbody.innerHTML = ''
+          
+          data.forEach((row, i) => {
+            const tr = document.createElement('tr')
+            tr.style.borderBottom = '1px solid var(--border)'
+            
+            let color = 'var(--text)'
+            if (i === 0) color = '#f2b84b' // gold
+            else if (i === 1) color = '#c0c0c0' // silver
+            else if (i === 2) color = '#cd7f32' // bronze
+            
+            const initial = row.display_name ? row.display_name.charAt(0).toUpperCase() : 'D'
+            const avatarHtml = row.avatar_url 
+              ? `<img src="${row.avatar_url}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">`
+              : `<div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: 1px solid var(--border);">${initial}</div>`
+              
+            tr.innerHTML = `
+              <td style="padding: 14px; text-align: center; font-weight: bold; color: ${color}; font-size: ${i < 3 ? '1.2rem' : '1rem'}">${i < 3 ? ['🥇','🥈','🥉'][i] : row.rank}</td>
+              <td style="padding: 14px; display: flex; align-items: center; gap: 12px; font-weight: 500;">
+                ${avatarHtml}
+                <span>${row.display_name || 'Driver'}</span>
+              </td>
+              <td style="padding: 14px; text-align: right; color: var(--accent); font-weight: 700;">${(row.total_score || 0).toLocaleString()}</td>
+              <td style="padding: 14px; text-align: right; font-weight: 600;">${row.levels_completed}/52</td>
+            `
+            tbody.appendChild(tr)
           })
-        } catch (e) {}
-      } else if (completed > 0) {
+        } catch (e) {
+          console.error('Leaderboard error:', e)
+        }
+      }
+      
+      // Load leaderboard on startup if not a shared cert view
+      if (!_certParam) loadLeaderboard()
+
+      if (completed > 0) {
         document.getElementById('cert-progress-text').textContent = progressPct + '% to Certificate'
         document.getElementById('cert-progress-sub').textContent = `${completed} of 52 modules completed`
       } else {

@@ -1252,9 +1252,34 @@
             else l.textContent = 'Attach Screenshot (Optional)';
         }
 
-        function loadFb() {
-            var d = Storage.get('col_fbs');
+        async function loadFb() {
             var ls = document.getElementById('fbList');
+            if (window.supabaseClient && window.colUser) {
+                try {
+                    const { data, error } = await window.supabaseClient
+                        .from('feedback')
+                        .select('*')
+                        .eq('user_id', window.colUser.id)
+                        .order('created_at', { ascending: false });
+                    
+                    if (!error && data && data.length > 0) {
+                        ls.innerHTML = '';
+                        data.forEach(function (f) {
+                            var urgLabel = f.urgency == 3 ? '<span class="emr">Critical</span>' : (f.urgency == 2 ? 'Medium' : 'Low');
+                            var urgIcon = f.urgency == 3 ? '🔴' : (f.urgency == 2 ? '🟡' : '🟢');
+                            var ht = '<div class="fbi"><div class="fbi-hd"><span class="fbi-type">' + f.category + '</span><span class="fbi-date">' + new Date(f.created_at).toLocaleDateString() + '</span></div>';
+                            ht += '<div class="fbi-msg">' + f.message.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
+                            ht += '<div class="fbi-meta"><span>' + urgIcon + ' ' + urgLabel + ' Priority</span>';
+                            if (f.user_agent && f.user_agent.includes('contact:true')) ht += '<span>✉️ Contact OK</span>';
+                            ht += '</div></div>';
+                            ls.innerHTML += ht;
+                        });
+                        return;
+                    }
+                } catch (e) {}
+            }
+
+            var d = Storage.get('col_fbs');
             if (!d) { ls.innerHTML = '<p style="color:var(--dim);font-size:.9rem;font-style:italic">No feedback submitted yet.</p>'; return; }
             var p = JSON.parse(d);
             if (p.length === 0) { ls.innerHTML = '<p style="color:var(--dim);font-size:.9rem;font-style:italic">No feedback submitted yet.</p>'; return; }
@@ -1272,7 +1297,7 @@
             });
         }
 
-        function submitFeedback(e) {
+        async function submitFeedback(e) {
             e.preventDefault();
             var types = document.getElementsByName('fbType');
             var type = 'General';
@@ -1284,6 +1309,21 @@
             var hasFile = fileInp.files && fileInp.files.length > 0;
 
             if (!msg.trim()) return;
+
+            if (window.supabaseClient) {
+                try {
+                    await window.supabaseClient.from('feedback').insert([{
+                        user_id: window.colUser ? window.colUser.id : null,
+                        category: type,
+                        message: msg.substring(0, 500),
+                        urgency: parseInt(urg) || 1,
+                        user_agent: navigator.userAgent + (contact ? ' contact:true' : ''),
+                        email: window.colUser ? window.colUser.email : null
+                    }]);
+                } catch(err) {
+                    console.error(err);
+                }
+            }
 
             var nw = {
                 id: Date.now().toString(36),
