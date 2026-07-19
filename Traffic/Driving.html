@@ -7,7 +7,6 @@
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; connect-src 'self' https: wss:; font-src 'self' https: data:;" />
   <title>Mumbai Traffic Hero Academy - Simulation</title>
-    <link rel="icon" type="image/png" href="../Icon.png" />
 
   <!-- Cloud Auth & Sync Logic -->
   <script>
@@ -4358,9 +4357,7 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SSAOShader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"></script>
   <script src="vehicles.js"></script>
-    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
-      <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/Traffic/Driving" />
-  </head>
+</head>
 
 <body class="lm">
   <!-- Script entry points -->
@@ -4868,6 +4865,19 @@
     Boost Ready</div>
   <canvas id="mmc" width="160" height="160"
     style="position: fixed; top: 32px; right: 32px; border-radius: 50%; border: 4px solid var(--card); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); z-index: var(--z-effects); display: none"></canvas>
+
+  <div id="compass-strip" style="
+        position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+        z-index: var(--z-effects); display: none;
+        align-items: center; gap: 10px;
+        background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;
+        padding: 6px 16px; color: #fff; font-family: var(--sans, sans-serif);
+        font-size: 0.8rem; font-weight: 700; white-space: nowrap;">
+    <span id="compass-heading">N</span>
+    <span id="compass-arrow" style="display:inline-block; transition: transform 0.2s;">➤</span>
+    <span id="compass-dist" style="opacity: 0.7; font-weight: 600;"></span>
+  </div>
 
   <div id="challan-stack"></div>
   <div id="toast">

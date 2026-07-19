@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <title>Traffic Academy - Dashboard</title>
-    <link rel="icon" type="image/png" href="../Icon.png" />
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -600,8 +599,6 @@
         .hz-skyline { height: 14px; }
       }
     </style>
-      <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
-      <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/Traffic/TrafficDashboard" />
   </head>
   <body>
     <div class="dashboard-container">
@@ -616,6 +613,7 @@
         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
           <button class="btn-edit" id="btn-edit-profile" onclick="openEditModal()">✏️ Edit Profile</button>
           <button class="btn btn-outline" onclick="window.location.href = 'Academy.html'">← Back to Academy</button>
+          <button class="btn btn-outline" onclick="window.location.href = '?view=parent'" title="See a breakdown of common mistakes">👨‍👩‍👧 Parent View</button>
           <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-skyline"></div><div class="hz-windows"></div><div class="hz-orb"></div></div>
           <button class="btn-edit" id="btn-reset-progress" style="color: var(--red); border-color: var(--red);" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</button>
           <button class="btn btn-outline" id="btn-sign-out" style="color: var(--red); border-color: var(--red); font-size: 0.85rem" onclick="logoutAndClear()">Sign Out</button>
@@ -649,29 +647,10 @@
             <div class="stat-value" id="s-prog">0/52</div>
             <div class="stat-label">Modules Completed</div>
           </div>
-        </div>
-      </div>
-
-      <div class="glass-panel" id="leaderboard-panel" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px">
-          <h2 style="margin: 0">Global Leaderboard</h2>
-        </div>
-        <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; min-width: 500px;">
-            <thead>
-              <tr style="border-bottom: 1px solid var(--border);">
-                <th style="padding: 12px; text-align: center; color: var(--muted); font-size: 0.85rem; text-transform: uppercase; width: 60px;">Rank</th>
-                <th style="padding: 12px; text-align: left; color: var(--muted); font-size: 0.85rem; text-transform: uppercase;">Driver</th>
-                <th style="padding: 12px; text-align: right; color: var(--muted); font-size: 0.85rem; text-transform: uppercase;">Total Score</th>
-                <th style="padding: 12px; text-align: right; color: var(--muted); font-size: 0.85rem; text-transform: uppercase;">Levels</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboard-body">
-              <tr>
-                <td colspan="4" style="padding: 20px; text-align: center; color: var(--muted);">Loading leaderboard...</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="stat-card">
+            <div class="stat-value" id="s-civic">0 🏅</div>
+            <div class="stat-label" id="s-civic-tier">Civic Score</div>
+          </div>
         </div>
       </div>
 
@@ -769,6 +748,7 @@
       // and hide the personal sections (Your Stats, Reset Progress, Sign Out) that don't make
       // sense for a visitor viewing someone else's certificate.
       const _certParam = new URLSearchParams(window.location.search).get('cert')
+      const _isParentView = new URLSearchParams(window.location.search).get('view') === 'parent'
       let _sharedCert = null
       async function _initSupabase() {
         if (window.supabaseClient) return window.supabaseClient
@@ -853,6 +833,17 @@
       document.getElementById('s-age').innerText = ageLabels[ageBracket] || '18'
       document.getElementById('s-lang').innerText = (tUser.language || S.language || 'en') === 'hi' ? 'हिन्दी' : 'English'
       document.getElementById('s-score').innerText = (S.total || 0).toLocaleString()
+      const civicScore = S.civicScore || 0
+      const civicTiers = [
+        { at: 500, label: 'Platinum Citizen', emoji: '💎' },
+        { at: 250, label: 'Gold Citizen', emoji: '🥇' },
+        { at: 100, label: 'Silver Citizen', emoji: '🥈' },
+        { at: 25, label: 'Bronze Citizen', emoji: '🥉' },
+        { at: 0, label: 'Civic Score', emoji: '🏅' }
+      ]
+      const civicTier = civicTiers.find((t) => civicScore >= t.at)
+      document.getElementById('s-civic').innerText = `${civicScore} ${civicTier.emoji}`
+      document.getElementById('s-civic-tier').innerText = civicTier.label
 
       let completed = 0
       // FIXED: Use S.comp for completed levels (not S.lvl)
@@ -871,64 +862,17 @@
         document.getElementById('cert-progress-text').textContent = '🎉 Certificate Unlocked!'
         document.getElementById('cert-progress-sub').textContent = 'You can now download your certificate'
         document.getElementById('cert-progress-ring').style.background = 'rgba(52, 211, 153, 0.2)'
+        // Fire-and-forget: creates/updates this user's shareable certificate row so the
         // share links below have something real to point at. certUrl() picks up
         // _syncedCertId as soon as this resolves.
-        _syncOwnCertificate(displayName, completed, S.total || 0).then(id => {
-          if (id) window._syncedCertId = id
-        })
-      }
-
-      async function loadLeaderboard() {
-        const client = await _initSupabase()
-        if (!client) return
-        
-        const lbPanel = document.getElementById('leaderboard-panel')
-        if (lbPanel) lbPanel.style.display = 'block'
-        
         try {
-          const { data, error } = await client.rpc('get_leaderboard', { p_limit: 10 })
-          if (error || !data || data.length === 0) {
-            document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: var(--muted);">No data available yet</td></tr>'
-            return
-          }
-          
-          const tbody = document.getElementById('leaderboard-body')
-          tbody.innerHTML = ''
-          
-          data.forEach((row, i) => {
-            const tr = document.createElement('tr')
-            tr.style.borderBottom = '1px solid var(--border)'
-            
-            let color = 'var(--text)'
-            if (i === 0) color = '#f2b84b' // gold
-            else if (i === 1) color = '#c0c0c0' // silver
-            else if (i === 2) color = '#cd7f32' // bronze
-            
-            const initial = row.display_name ? row.display_name.charAt(0).toUpperCase() : 'D'
-            const avatarHtml = row.avatar_url 
-              ? `<img src="${row.avatar_url}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">`
-              : `<div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: 1px solid var(--border);">${initial}</div>`
-              
-            tr.innerHTML = `
-              <td style="padding: 14px; text-align: center; font-weight: bold; color: ${color}; font-size: ${i < 3 ? '1.2rem' : '1rem'}">${i < 3 ? ['🥇','🥈','🥉'][i] : row.rank}</td>
-              <td style="padding: 14px; display: flex; align-items: center; gap: 12px; font-weight: 500;">
-                ${avatarHtml}
-                <span>${row.display_name || 'Driver'}</span>
-              </td>
-              <td style="padding: 14px; text-align: right; color: var(--accent); font-weight: 700;">${(row.total_score || 0).toLocaleString()}</td>
-              <td style="padding: 14px; text-align: right; font-weight: 600;">${row.levels_completed}/52</td>
-            `
-            tbody.appendChild(tr)
+          const cachedId = localStorage.getItem('own_cert_id')
+          if (cachedId) _syncedCertId = cachedId
+          _syncOwnCertificate(displayName, completed, S.total || 0).then((id) => {
+            if (id) _syncedCertId = id
           })
-        } catch (e) {
-          console.error('Leaderboard error:', e)
-        }
-      }
-      
-      // Load leaderboard on startup if not a shared cert view
-      if (!_certParam) loadLeaderboard()
-
-      if (completed > 0) {
+        } catch (e) {}
+      } else if (completed > 0) {
         document.getElementById('cert-progress-text').textContent = progressPct + '% to Certificate'
         document.getElementById('cert-progress-sub').textContent = `${completed} of 52 modules completed`
       } else {
@@ -1171,6 +1115,56 @@
       document.getElementById('cert-score').innerText = (cert.score || 0).toLocaleString()
       document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
       document.getElementById('cert-wrapper').classList.add('cert-unlocking')
+    })();
+
+    // Parent/Teacher view (?view=parent) — a summary of which specific mistakes this child
+    // tends to make, rather than the kid-facing certificate/badges view. Reuses the same
+    // local S.violationHistory data the normal dashboard already has access to; this view
+    // just presents it differently. Note: this reads local data on the same device the child
+    // played on (no separate parent login/account system) — good enough for a parent
+    // checking their own kid's device, not a multi-child classroom roster.
+    (function () {
+      if (!_isParentView) return
+      const labels = {
+        NO_HONKING: 'Honking in no-honking zones (hospitals/schools)',
+        RED_LIGHT_VIOLATION: 'Running red lights',
+        NO_INDICATOR: 'Not signaling before turns/lane changes',
+        MOBILE_USE: 'Using phone while driving',
+        SAFETY_VIOLATION: 'General safety violations (seatbelt, speed, etc.)',
+        CHECKPOINT_EVASION: 'Skipping required checkpoints',
+        HONKED_AT_ANIMAL: 'Honking at animals on the road',
+        LITTER_HIT: 'Littering'
+      }
+      ;[
+        document.getElementById('your-stats-panel'),
+        document.getElementById('btn-edit-profile'),
+        document.getElementById('btn-reset-progress'),
+        document.getElementById('btn-sign-out'),
+        document.getElementById('share-bar'),
+        document.getElementById('cert-wrapper')
+      ].forEach((el) => { if (el) el.style.display = 'none' })
+
+      const hist = S.violationHistory || {}
+      const rows = Object.keys(hist)
+        .map((k) => ({ key: k, label: labels[k] || k, count: hist[k] }))
+        .sort((a, b) => b.count - a.count)
+
+      const panel = document.createElement('div')
+      panel.className = 'glass-panel'
+      panel.style.marginTop = '20px'
+      const rowsHtml = rows.length
+        ? rows.map((r) => `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border, rgba(0,0,0,0.08))"><span>${r.label}</span><span style="font-weight:700; color:var(--red, #dc2626)">${r.count}×</span></div>`).join('')
+        : '<p style="color:var(--muted2, #6B7280)">No violations recorded yet — clean record so far!</p>'
+      panel.innerHTML = `
+        <h2 style="margin-top:0">👨‍👩‍👧 Parent/Teacher View — ${displayName}</h2>
+        <p style="color:var(--muted2, #6B7280); margin-bottom:16px">Common mistakes across all completed modules, most frequent first. Use this to talk through specific patterns rather than just the pass/fail result.</p>
+        ${rowsHtml}
+        <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border, rgba(0,0,0,0.08)); display:flex; justify-content:space-between;">
+          <span>Civic score</span>
+          <span style="font-weight:700">${S.civicScore || 0}</span>
+        </div>
+      `
+      document.querySelector('.dashboard-container').appendChild(panel)
     })();
     </script>
   </body>

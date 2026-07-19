@@ -1614,7 +1614,7 @@ class Game {
         // Initialize tasks for this level
         this._initTasks(lv);
       }
-      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; }
+      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); const cmp = document.getElementById('compass-strip'); if (cmp) cmp.style.display = 'none'; if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; }
       toggleSeatbelt(btn) {
           this.seatbeltOn = !this.seatbeltOn;
           const isBike = (this.vehMode === 'bike' || this.vehMode === 'cycle');
@@ -2387,6 +2387,8 @@ class Game {
             gof.position.set(-50, 0, -60); // Place it in the background
             gof.rotation.y = Math.PI / 4;
             this.scene.add(gof);
+            if (!this._landmarks) this._landmarks = [];
+            this._landmarks.push({ name: 'Gateway of India', x: -50, z: -60, discovered: false });
 
             // Green park ground around monument
             const parkGround = new THREE.Mesh(new THREE.CircleGeometry(35, 32), new THREE.MeshToonMaterial({ color: 0x8B7355 }));
@@ -2670,6 +2672,44 @@ class Game {
                 tree.position.set(tx, 0, tz);
                 tree.rotation.y = Math.random() * Math.PI * 2;
                 this.scene.add(tree);
+              }
+            });
+          });
+        }
+
+        // ── Ambient stray dogs along sidewalks — living-city detail, very common on Indian
+        // streets. Deliberately static/decorative (no wandering AI) — this batch is about
+        // world density and reusing previously-unused assets, not adding more moving-object
+        // logic on top of the NPC systems that just needed a careful regression fix. ──
+        if (window.PRELOADED_MODELS && window.PRELOADED_MODELS.animal_dog) {
+          cfg.roads.forEach(r => {
+            const isV = r.type === 'v';
+            const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
+            const cx = isV ? r.x : (r.x1 + r.x2) / 2;
+            const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
+            const swW = cfg.isPedestrian ? 6 : 4;
+            const spacing = 45 + Math.random() * 20; // sparser than trees — an occasional detail, not a repeating pattern
+            const count = Math.max(0, Math.floor(len / spacing));
+            [-1, 1].forEach(side => {
+              const offset = RW / 2 + swW + 1.2;
+              for (let i = 0; i < count; i++) {
+                if (Math.random() > 0.2) continue;
+                const t = (i + 0.3 + Math.random() * 0.4) / Math.max(1, count);
+                let dx, dz;
+                if (isV) {
+                  dx = cx + side * offset;
+                  dz = (r.z1 < r.z2 ? r.z1 : r.z2) + t * len;
+                } else {
+                  dx = (r.x1 < r.x2 ? r.x1 : r.x2) + t * len;
+                  dz = cz + side * offset;
+                }
+                const dog = window.PRELOADED_MODELS.animal_dog.scene.clone();
+                const s = 1.6 + Math.random() * 0.4;
+                dog.scale.setScalar(s);
+                dog.position.set(dx, 0, dz);
+                dog.rotation.y = Math.random() * Math.PI * 2;
+                dog.traverse((n) => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; } });
+                this.scene.add(dog);
               }
             });
           });
@@ -3447,6 +3487,8 @@ class Game {
             saBldg.position.set(-30, 20, 0);
             this.scene.add(saBldg);
             this.obstacles.push(saBldg);
+            if (!this._landmarks) this._landmarks = [];
+            this._landmarks.push({ name: 'Sneh Asha', x: -30, z: 0, discovered: false });
             
             new THREE.TextureLoader().load('sneh-logo.png', tex => {
                 const logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
@@ -3479,6 +3521,8 @@ class Game {
             gwGroup.position.set(0, 0, -80);
             this.scene.add(gwGroup);
             this.obstacles.push(p1, p2, sp1, sp2);
+            if (!this._landmarks) this._landmarks = [];
+            this._landmarks.push({ name: 'Gateway of India', x: 0, z: -80, discovered: false });
         }
         
         // Gully / Narrow Road Elements
@@ -6983,6 +7027,49 @@ class Game {
       }
       _ummap() {
         const mc = this.dom['mmc']; if (!mc || !this.playing) return; mc.classList.add('on');
+
+        // Compass strip — heading plus distance/direction to the next checkpoint. The corner
+        // minimap already has a small heading line, but this is the dedicated top-of-screen
+        // indicator that was asked for early on and never built.
+        const compassEl = document.getElementById('compass-strip');
+        if (compassEl) {
+          compassEl.style.display = 'flex';
+          const headingSrc = this.isPedestrian ? this.player.rotation.y : (this.playerVehicle ? this.playerVehicle.rotation.y : this.player.rotation.y);
+          let deg = (headingSrc * 180 / Math.PI) % 360;
+          if (deg < 0) deg += 360;
+          const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+          const heading = dirs[Math.round(deg / 45) % 8];
+          const hEl = document.getElementById('compass-heading');
+          if (hEl) hEl.textContent = heading;
+          const arrowEl = document.getElementById('compass-arrow');
+          const distEl = document.getElementById('compass-dist');
+          if (this.cps && this.cps.length > 0 && this.cps[0]) {
+            const cp = this.cps[0];
+            const ddx = cp.position.x - this.player.position.x, ddz = cp.position.z - this.player.position.z;
+            const dist = Math.sqrt(ddx * ddx + ddz * ddz);
+            const targetAngle = Math.atan2(ddx, ddz);
+            const relAngle = targetAngle - headingSrc;
+            if (arrowEl) arrowEl.style.transform = `rotate(${relAngle}rad)`;
+            if (distEl) distEl.textContent = dist < 1000 ? `${Math.round(dist)}m` : `${(dist / 1000).toFixed(1)}km`;
+          } else if (distEl) {
+            distEl.textContent = '';
+          }
+        }
+
+        // Landmark discovery — a one-time "you've arrived somewhere real" moment for the
+        // monuments that already exist in the scene but were purely decorative background
+        // dressing until now.
+        if (this._landmarks && this._landmarks.length) {
+          this._landmarks.forEach((lm) => {
+            if (lm.discovered) return;
+            const ldx = lm.x - this.player.position.x, ldz = lm.z - this.player.position.z;
+            if (ldx * ldx + ldz * ldz < 2500) { // within 50 units
+              lm.discovered = true;
+              toast(`🏛️ You've reached ${lm.name}`, '#d97706');
+            }
+          });
+        }
+
         const ctx = mc.getContext('2d'); const W = 112, H = 112, cx = W / 2, cy = H / 2;
 
         ctx.fillStyle = '#090f16'; ctx.fillRect(0, 0, W, H);
@@ -7038,6 +7125,18 @@ class Game {
             this.peds.forEach(p => {
                 ctx.fillRect(p.position.x - 1.5, p.position.z - 1.5, 3, 3);
             });
+        }
+
+        // Landmark markers — small gold diamond, distinct from NPCs/checkpoints
+        if (this._landmarks && this._landmarks.length) {
+          ctx.fillStyle = '#d97706';
+          this._landmarks.forEach((lm) => {
+            ctx.save();
+            ctx.translate(lm.x, lm.z);
+            ctx.rotate(Math.PI / 4);
+            ctx.fillRect(-4, -4, 8, 8);
+            ctx.restore();
+          });
         }
 
         // Draw Player

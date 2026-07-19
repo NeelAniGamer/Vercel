@@ -91,10 +91,6 @@ const ui = {
       } catch (e) {}
       if (window.supabaseClient && window.colUser) {
         try {
-          const uid = window.colUser.id;
-          await window.supabaseClient.from('game_progress').delete().eq('user_id', uid);
-          await window.supabaseClient.from('badges').delete().eq('user_id', uid);
-          await window.supabaseClient.from('wallets').update({ balance: 50000 }).eq('user_id', uid);
           await window.supabaseClient.auth.updateUser({ data: { progress: null } })
         } catch (e) {}
       }
@@ -143,47 +139,6 @@ const ui = {
     if (hwalletEl) {
       hwalletEl.textContent = '₹' + (S.wallet || 50000).toLocaleString('en-IN')
     }
-    
-    // Supabase Realtime Presence
-    if (window.supabaseClient) {
-      const room = window.supabaseClient.channel('game_room', {
-        config: {
-          presence: {
-            key: window.colUser ? window.colUser.id : 'guest_' + Math.random().toString(36).substr(2, 9),
-          },
-        },
-      });
-
-      room
-        .on('presence', { event: 'sync' }, () => {
-          const newState = room.presenceState();
-          let count = 0;
-          for (let id in newState) {
-            count += newState[id].length;
-          }
-          let onlineEl = document.getElementById('honline');
-          if (onlineEl) {
-             onlineEl.textContent = count;
-          } else {
-             const hudbar = document.getElementById('hudbar');
-             if (hudbar) {
-                const div = document.createElement('div');
-                div.className = 'hb';
-                div.title = 'Players Online';
-                div.innerHTML = '🟢<span id="honline">' + count + '</span>';
-                hudbar.appendChild(div);
-             }
-          }
-        })
-        .subscribe(async (status) => {
-          if (status === 'SUBSCRIBED') {
-            await room.track({
-              online_at: new Date().toISOString(),
-            });
-          }
-        });
-    }
-
     this._applyAgeTier()
   },
   show(id) {
@@ -1631,6 +1586,33 @@ const ui = {
         if (completedCount >= 40 && !S.badges.includes('level_40')) S.badges.push('level_40')
         if (completedCount >= 52 && !S.badges.includes('level_52')) S.badges.push('level_52')
         if (completedCount >= 52 && !S.badges.includes('traffic_hero')) S.badges.push('traffic_hero')
+
+        // Civic score — a persistent reputation number separate from per-level score,
+        // rewarding clean driving over time rather than just "did you pass." Doesn't
+        // penalize mistakes (this is a learning tool for kids, not a punishment system) —
+        // clean runs just earn more than rough ones.
+        const vioCount = game?.fst?.vio || 0
+        const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
+        S.civicScore = (S.civicScore || 0) + civicGain
+        // Track which specific violation types occur, across levels, so a parent/teacher can
+        // see a real pattern ("keeps forgetting to signal") instead of just a raw count —
+        // this was previously discarded every level, nothing kept a history of it at all.
+        if (!S.violationHistory) S.violationHistory = {}
+        ;(game?.violationsLog || []).forEach((v) => {
+          S.violationHistory[v] = (S.violationHistory[v] || 0) + 1
+        })
+        const tiers = [
+          { at: 500, id: 'civic_platinum', label: 'Platinum Citizen' },
+          { at: 250, id: 'civic_gold', label: 'Gold Citizen' },
+          { at: 100, id: 'civic_silver', label: 'Silver Citizen' },
+          { at: 25, id: 'civic_bronze', label: 'Bronze Citizen' }
+        ]
+        tiers.forEach((t) => {
+          if (S.civicScore >= t.at && !S.badges.includes(t.id)) {
+            S.badges.push(t.id)
+            toast(`🏅 ${t.label} unlocked!`, '#a855f7')
+          }
+        })
       }
       save()
       toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851')
@@ -1656,6 +1638,25 @@ const ui = {
       prev = S.comp[lv.id]?.score || 0
     S.comp[lv.id] = { ...S.comp[lv.id], score: Math.max(score, prev), time: Date.now(), finalQuiz: true }
     S.total += score
+    const vioCount = stats?.vio || 0
+    const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
+    S.civicScore = (S.civicScore || 0) + civicGain
+    if (!S.violationHistory) S.violationHistory = {}
+    ;(stats?.violations || game?.violationsLog || []).forEach((v) => {
+      S.violationHistory[v] = (S.violationHistory[v] || 0) + 1
+    })
+    ;[
+      { at: 500, id: 'civic_platinum', label: 'Platinum Citizen' },
+      { at: 250, id: 'civic_gold', label: 'Gold Citizen' },
+      { at: 100, id: 'civic_silver', label: 'Silver Citizen' },
+      { at: 25, id: 'civic_bronze', label: 'Bronze Citizen' }
+    ].forEach((t) => {
+      if (S.civicScore >= t.at && !S.badges.includes(t.id)) {
+        S.badges.push(t.id)
+        toast(`🏅 ${t.label} unlocked!`, '#a855f7')
+      }
+    })
+    save()
     save()
     let be = null
     if (lv.badge && !S.badges.includes(lv.badge.id)) {
