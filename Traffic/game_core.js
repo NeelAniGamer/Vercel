@@ -583,6 +583,36 @@ function _getThemeRoads(themeType) {
   return templates[t] || templates.urban_grid;
 }
 
+class LODChunk {
+  constructor(x, z, size, scene) {
+    this.x = x; this.z = z; this.size = size; this.scene = scene;
+    this.activeBuildings = [];
+    this.bufferBuildings = [];
+    this.distantMesh = null;
+    this.state = 'distant'; // 'active', 'buffer', 'distant'
+  }
+
+  addBuilding(bldg, detailedMesh, simpleMesh) {
+    this.activeBuildings.push(detailedMesh);
+    this.bufferBuildings.push(simpleMesh);
+  }
+
+  update(playerPos) {
+    const d = Math.hypot(this.x - playerPos.x, this.z - playerPos.z);
+    const newState = d < 200 ? 'active' : (d < 1000 ? 'buffer' : 'distant');
+    if (newState !== this.state) {
+      this.state = newState;
+      this._applyState();
+    }
+  }
+
+  _applyState() {
+    this.activeBuildings.forEach(m => m.visible = (this.state === 'active'));
+    this.bufferBuildings.forEach(m => m.visible = (this.state === 'buffer'));
+    if (this.distantMesh) this.distantMesh.visible = (this.state === 'distant');
+  }
+}
+
 class Game {
       constructor() {
         this.renderCore = null; this.scene = null; this.camera = null; this.player = null;
@@ -593,6 +623,7 @@ class Game {
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.routeIdx = 0; this.retries = 0; this.hits = 0;
         this.violationsLog = [];
         this.kidModeActive = false;
+        this.lodChunks = [];
         this.gyroOn = false; this.gyroBaseGamma = 0; this._gyroHandler = null;
         this.camYaw = 0; this.camPitch = 0;
         this.targetCamYaw = 0; this.targetCamPitch = 0;
@@ -605,6 +636,7 @@ class Game {
         this._dayNightSpeed = 1 / 300; // full cycle in 5 minutes
         this._ambient = null; this._hemi = null; this._moon = null;
         this._streetLights = []; this._windowLights = [];
+        this._anchorNodes = []; // Living City Generator: Zoning seeds
         this._dnSkyA = new THREE.Color(); this._dnSkyB = new THREE.Color();
         this._dnFogA = new THREE.Color(); this._dnFogB = new THREE.Color();
         this._dnDawnSky = new THREE.Color(0xffaa66); this._dnDuskSky = new THREE.Color(0xdd6633);
@@ -2272,6 +2304,31 @@ class Game {
       }
 
       // 🚦 INDIAN STREET ENVIRONMENT ARCHITECTURE 🚦
+      _getZoneAt(x, z) {
+        if (!this._anchorNodes.length) return 'Residential';
+        let best = this._anchorNodes[0];
+        let minDist = Infinity;
+        for (let n of this._anchorNodes) {
+          const d = Math.hypot(x - n.x, z - n.z);
+          if (d < minDist) { minDist = d; best = n; }
+        }
+        return best.zone;
+      }
+
+      _generateAnchorNodes(cfg) {
+        this._anchorNodes = [];
+        const zones = ['Commercial', 'Industrial', 'Residential', 'Slums'];
+        const count = cfg.is50km ? 100 : 15;
+        const range = cfg.is50km ? 5000 : 800;
+        for (let i = 0; i < count; i++) {
+          this._anchorNodes.push({
+            x: (Math.random() - 0.5) * range * 2,
+            z: (Math.random() - 0.5) * range * 2,
+            zone: zones[Math.floor(Math.random() * zones.length)]
+          });
+        }
+      }
+
       _buildScene(mode) {
         if (typeof initGTex === 'function') initGTex();
         while (this.scene && this.scene.children.length) this.scene.remove(this.scene.children[0]);
@@ -2339,8 +2396,9 @@ class Game {
           this.timeOfDay = 0.4;
         }
 
+        this._generateAnchorNodes(cfg);
+
         const RW = cfg.isPedestrian ? 10 : 12;
-        this.roadSegments = cfg.roads;
         this.driveRoute = cfg.route;
         this._initBreadcrumbPath();
         this._buildRoadZones(RW);
@@ -2473,7 +2531,7 @@ class Game {
             this.scene.add(parkGround);
         }
 
-        // Advanced Procedural Cityscape
+        // Living City Generator: Road-Aware Parcel System
         const bMats = [
           new THREE.MeshToonMaterial({ color: 0xd9cfc4, gradientMap: tg }),
           new THREE.MeshToonMaterial({ color: 0xc4b8a8, gradientMap: tg }),
@@ -2490,7 +2548,11 @@ class Game {
           }
 
           if (bldgKeys.length > 0 && type !== 'school') {
-             const key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
+             let key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
+             if (type === 'skyscraper' && bldgKeys.some(k => k.includes('high'))) key = bldgKeys.find(k => k.includes('high'));
+             if (type === 'chawl' && bldgKeys.some(k => k.includes('suburban'))) key = bldgKeys.find(k => k.includes('suburban'));
+             if (type === 'industrial' && bldgKeys.some(k => k.includes('industrial'))) key = bldgKeys.find(k => k.includes('industrial'));
+
              if (!instancedBldgData[key]) instancedBldgData[key] = [];
               instancedBldgData[key].push({ x: bx, z: bz, r: rot, s: 10.5 });
           } else {
@@ -2501,18 +2563,16 @@ class Game {
              const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 14), mat);
              bMesh.position.y = bh / 2;
              g.add(bMesh);
-             // ── BUILDING WINDOWS (night mode, skip for 50km open world) ──
              if (cfg.isNight && !cfg.is50km) {
-               const winMat = new THREE.MeshBasicMaterial({ color: 0xffdd88 });
+               const lWinMat = new THREE.MeshBasicMaterial({ color: 0xffdd88 });
                const winRows = Math.floor(bh / 4);
                const winCols = Math.floor(bw / 3.5);
                for (let wr = 0; wr < winRows; wr++) {
                  for (let wc = 0; wc < winCols; wc++) {
-                   if (Math.random() > 0.55) continue; // ~45% windows lit
-                   const wMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.6), winMat);
+                   if (Math.random() > 0.55) continue;
+                   const wMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.6), lWinMat);
                    wMesh.position.set(-bw / 2 + 2 + wc * 3.5, 3 + wr * 4, 7.01);
                    g.add(wMesh);
-                   // back side
                    const wMesh2 = wMesh.clone();
                    wMesh2.position.z = -7.01;
                    wMesh2.rotation.y = Math.PI;
@@ -2526,69 +2586,50 @@ class Game {
           }
         };
 
-        // Spawn buildings near roads
-        if (cfg.is50km) {
-          // L15 (50km open world): road-following placement — iterate each road, place buildings along its edges
-          const buildSpacing = 280;
-          const buildOffset = RW / 2 + 6;
-          cfg.roads.forEach(r => {
-            const isV = r.type === 'v';
-            const cx = isV ? r.x : (r.x1 + r.x2) / 2;
-            const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
-            const roadStart = isV ? Math.min(r.z1, r.z2) : Math.min(r.x1, r.x2);
-            const roadEnd = isV ? Math.max(r.z1, r.z2) : Math.max(r.x1, r.x2);
-            for (let pos = roadStart + buildSpacing; pos < roadEnd; pos += buildSpacing) {
-              [-1, 1].forEach(side => {
-                if (Math.random() > 0.22) return;
-                const bx = isV ? cx + side * buildOffset : pos;
-                const bz = isV ? pos : cz + side * buildOffset;
-                // O(1) intersection proximity check via modular arithmetic (roads at 1000-unit intervals)
-                const modX = ((bx % 1000) + 1000) % 1000;
-                const modZ = ((bz % 1000) + 1000) % 1000;
-                if ((modX < 25 || modX > 975) && (modZ < 25 || modZ > 975)) return;
-                const rot = isV ? (side > 0 ? 0 : Math.PI) : (side > 0 ? Math.PI / 2 : -Math.PI / 2);
-                const rnd = Math.random();
-                let type = 'normal';
-                if (rnd > 0.98) type = 'police';
-                else if (rnd > 0.96) type = 'hospital';
-                else if (rnd > 0.94) type = 'bank';
-                else if (rnd > 0.92) type = 'temple';
-                else if (rnd > 0.70) type = 'shop';
-                else if (rnd > 0.55) type = 'chawl';
-                else if (rnd > 0.45) type = 'skyscraper';
-                drawBldg(bx, bz, type, rot);
-              });
-            }
-          });
-        } else {
-          // Standard levels: grid-based placement near roads
-          const bGrid = 30;
-          const bGridExtent = 600;
-          for (let gx = -bGridExtent; gx <= bGridExtent; gx += bGrid) {
-            for (let gz = -bGridExtent; gz <= bGridExtent; gz += bGrid) {
-              if (this._isOnRoad(gx, gz)) continue;
-              if (!this._isInBuildZone(gx, gz)) continue;
-              let nearInt = false;
-              (cfg.ints || []).forEach(([ix, iz]) => {
-                if (Math.abs(gx - ix) < 20 && Math.abs(gz - iz) < 20) nearInt = true;
-              });
-              if (nearInt) continue;
-              const rot = [0, Math.PI / 2, Math.PI, -Math.PI / 2][Math.floor(Math.random() * 4)];
-              const rnd = Math.random();
-              let type = 'normal';
-              if (rnd > 0.98) type = 'police';
-              else if (rnd > 0.96) type = 'hospital';
-              else if (rnd > 0.94) type = 'bank';
-              else if (rnd > 0.92) type = 'temple';
-              else if (rnd > 0.70) type = 'shop';
-              else if (rnd > 0.55) type = 'chawl';
-              else if (rnd > 0.45) type = 'skyscraper';
-              drawBldg(gx, gz, type, rot);
-            }
+        const getBldgType = (zone) => {
+          const rnd = Math.random();
+          if (zone === 'Commercial') {
+            if (rnd > 0.7) return 'skyscraper';
+            if (rnd > 0.4) return 'shop';
+            if (rnd > 0.2) return 'bank';
+            return 'hospital';
+          } else if (zone === 'Industrial') {
+            return 'industrial';
+          } else if (zone === 'Residential') {
+            return rnd > 0.6 ? 'normal' : 'chawl';
+          } else if (zone === 'Slums') {
+            return rnd > 0.3 ? 'chawl' : 'normal';
           }
-        }
+          return 'normal';
+        };
 
-        // Props along sidewalk edges (benches, trees, bus stops, stalls, lamps)
+        // Parcel Generation
+        const buildSpacing = cfg.is50km ? 280 : 60;
+        const buildOffset = RW / 2 + 6;
+        cfg.roads.forEach(r => {
+          const isV = r.type === 'v';
+          const cx = isV ? r.x : (r.x1 + r.x2) / 2;
+          const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
+          const start = isV ? Math.min(r.z1, r.z2) : Math.min(r.x1, r.x2);
+          const end = isV ? Math.max(r.z1, r.z2) : Math.max(r.x1, r.x2);
+
+          for (let pos = start + buildSpacing; pos < end; pos += buildSpacing) {
+            [-1, 1].forEach(side => {
+              if (Math.random() > 0.3) return;
+              const bx = isV ? cx + side * buildOffset : pos;
+              const bz = isV ? pos : cz + side * buildOffset;
+
+              if (this._isOnRoad(bx, bz)) return;
+
+              const rot = isV ? (side > 0 ? 0 : Math.PI) : (side > 0 ? Math.PI / 2 : -Math.PI / 2);
+              const zone = this._getZoneAt(bx, bz);
+              const type = getBldgType(zone);
+              drawBldg(bx, bz, type, rot);
+            });
+          }
+        });
+
+        // Props along sidewalk edges
         const propSpacing = cfg.is50km ? 180 : 60;
         const propDensity = cfg.is50km ? 0.25 : 0.5;
         cfg.roads.forEach(r => {
@@ -2631,7 +2672,7 @@ class Game {
                 table.position.y = 0.4; stall.add(table);
                 const umb = new THREE.Mesh(new THREE.ConeGeometry(1.2, 0.5, 8), new THREE.MeshToonMaterial({ color: Math.random() > 0.5 ? 0x3498db : 0xe74c3c }));
                 umb.position.y = 2.2; stall.add(umb);
-                const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.2), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+                const stick = new THREE.Mesh( new THREE.CylinderGeometry(0.05, 0.05, 2.2), new THREE.MeshBasicMaterial({ color: 0xffffff }));
                 stick.position.y = 1.1; stall.add(stick);
                 stall.position.set(lx, 0, lz);
                 this.scene.add(stall); this.obstacles.push(stall);
@@ -2641,8 +2682,7 @@ class Game {
                 const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.35, 0.9), new THREE.MeshBasicMaterial({ color: 0xffffee }));
                 lamp.position.set(lx + (isV ? -side * 0.4 : 0), 7, lz + (!isV ? -side * 0.4 : 0));
                 this.scene.add(lamp);
-                // ── STREETLIGHT PointLight (day/night cycle) ──
-                const sl = new THREE.Object3D(); // changed to Object3D to avoid shader uniform limit crash
+                const sl = new THREE.Object3D();
                 sl.position.set(lamp.position.x, 6.8, lamp.position.z);
                 sl.visible = false;
                 this.scene.add(sl);
@@ -4462,7 +4502,7 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(); this._updateBreadcrumbPath(dt);
+        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(); this._updateBreadcrumbPath(dt); this._updateLOD();
 
         // Update player character FBX animation mixer
         if (this.playerCharacter && this.playerCharacter.userData && this.playerCharacter.userData.isFBXAnimated && this.playerCharacter.userData.mixer) {

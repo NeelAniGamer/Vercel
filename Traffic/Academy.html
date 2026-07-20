@@ -4018,6 +4018,16 @@
 
       // Start onboarding from the Get Started button
       function showOnboardingFromStart() {
+        // If already signed in, skip onboarding and go straight to levels
+        if (typeof ui !== 'undefined' && ui && ui._user) {
+          toast('Welcome back! Loading your progress...', '#34d399');
+          setTimeout(function() {
+            if (ui.showLevels) ui.showLevels();
+            else window.location.href = 'Academy.html?screen=levels';
+          }, 800);
+          return;
+        }
+
         var ov = document.getElementById('onb-overlay')
         if (ov) {
           ov.classList.remove('hidden')
