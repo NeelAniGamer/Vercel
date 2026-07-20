@@ -466,28 +466,54 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="setup-container">
+      <!-- Wizard Stepper -->
+      <div class="wizard-stepper" id="wizard-stepper">
+        <div class="step-progress" id="step-progress" style="width: 0%"></div>
+        <div class="step-item" data-step="1">
+          <div class="step-circle">1</div>
+          <span class="step-label">Sign In</span>
+        </div>
+        <div class="step-item" data-step="2">
+          <div class="step-circle">2</div>
+          <span class="step-label">Profile</span>
+        </div>
+        <div class="step-item" data-step="3">
+          <div class="step-circle">3</div>
+          <span class="step-label">Vehicle</span>
+        </div>
+      </div>
+
       <h1>Welcome to the Academy</h1>
       <p class="subtitle" id="subtitle-text">Let's setup your driver profile to get started.</p>
 
-      <!-- Auth Area -->
-      <div id="authArea">
+      <!-- Progress Ring -->
+      <div class="setup-progress-ring">
+        <canvas id="setup-progress-ring" width="80" height="80" data-chart="progress-ring" data-value="0"></canvas>
+        <div class="progress-ring-info">
+          <div class="progress-ring-pct" id="progress-pct">0%</div>
+          <div class="progress-ring-label">Setup Complete</div>
+        </div>
+      </div>
+
+      <!-- Auth Area (Step 1) -->
+      <div id="authArea" class="wizard-step" data-step="1">
         <div style="display: flex; gap: 10px; margin-bottom: 20px">
           <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
           <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
         </div>
 
-        <div id="col-auth-err" style="color: #ef4444; font-size: 0.9rem; margin-bottom: 15px; font-weight: 600"></div>
+        <div id="col-auth-err" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600"></div>
 
         <div class="input-group">
           <label for="auth-email">Email Address</label>
-          <input type="email" id="auth-email" placeholder="you@example.com" />
+          <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
         </div>
         <div class="input-group">
           <label for="auth-pass">Password</label>
-          <input type="password" id="auth-pass" placeholder="••••••••" />
+          <input type="password" id="auth-pass" placeholder="••••••••" autocomplete="current-password" />
         </div>
 
-        <button class="btn-submit" id="auth-submit-btn" onclick="handleEmailAuth()" style="margin-bottom: 15px">Sign In with Email</button>
+        <button class="btn-submit" id="auth-submit-btn" onclick="handleEmailAuth()">Sign In with Email</button>
 
         <div style="display: flex; align-items: center; margin: 15px 0; color: var(--dim); font-size: 0.9rem">
           <div style="flex: 1; height: 1px; background: var(--line)"></div>
@@ -505,7 +531,7 @@
           Continue with Google
         </button>
 
-        <button type="button" class="btn-submit btn-outline" onclick="window.location.href = 'Academy.html'" style="margin-top: 25px">Skip Cloud & Play Locally</button>
+        <button type="button" class="btn-submit btn-outline" onclick="goToStep(2); updateWizardStep(2)">Skip Cloud & Play Locally</button>
         <button type="button" class="btn-submit btn-outline" onclick="window.location.href = 'Academy.html'" style="margin-top: 15px">Back to Academy</button>
         <button
           type="button"
@@ -518,43 +544,54 @@
         </button>
       </div>
 
-      <!-- Setup Form Area -->
-      <div id="setupFormArea" style="display: none">
+      <!-- Setup Form Area - Step 2: Personal Details -->
+      <div id="setupFormArea" class="wizard-step" data-step="2" style="display: none">
         <div id="cloud-status" style="margin-bottom: 20px; font-weight: 600; color: var(--em); display: none">✅ Cloud Account Connected</div>
         <form id="setupForm">
           <div class="input-group">
             <label for="prof-name">Full Name (For Certificate)</label>
-            <input type="text" id="prof-name" placeholder="E.g., John Doe" required />
+            <input type="text" id="prof-name" placeholder="E.g., John Doe" required autocomplete="name" />
           </div>
 
           <div class="input-group">
             <label for="prof-age">Your Age <span style="color:var(--dim);font-weight:400;font-size:0.8rem">(for best experience)</span></label>
-            <input type="number" id="prof-age" min="8" max="99" placeholder="E.g., 18" required />
+            <input type="number" id="prof-age" min="8" max="99" placeholder="E.g., 18" required autocomplete="off" />
           </div>
 
           <div class="input-group">
             <label for="prof-lang">Preferred Language</label>
-            <select id="prof-lang">
+            <select id="prof-lang" autocomplete="off">
               <option value="en">English</option>
               <option value="hi">हिन्दी (Hindi)</option>
             </select>
           </div>
 
+          <button type="button" class="btn-submit" onclick="goToStep(3); updateWizardStep(3)" style="margin-top: 10px">Next: Choose Vehicle &rarr;</button>
+          <button type="button" class="btn-submit btn-outline" onclick="goToStep(1); updateWizardStep(1)" style="margin-top: 15px">← Back</button>
+        </form>
+      </div>
+
+      <!-- Setup Form Area - Step 3: Vehicle Selection -->
+      <div id="vehicleStep" class="wizard-step" data-step="3" style="display: none">
+        <form id="vehicleForm">
           <div class="input-group">
             <label for="prof-veh">Preferred Vehicle</label>
-            <select id="prof-veh">
+            <select id="prof-veh" autocomplete="off">
               <option value="Car">Standard Car</option>
               <option value="Bike">Motorcycle</option>
+              <option value="Bus">Bus</option>
+              <option value="Truck">Truck</option>
+              <option value="Auto">Auto Rickshaw</option>
             </select>
           </div>
 
           <div class="input-group">
             <label for="prof-pin">Local Login PIN (Optional)</label>
-            <input type="password" id="prof-pin" placeholder="4-digit PIN (e.g. 1234)" />
+            <input type="password" id="prof-pin" placeholder="4-digit PIN (e.g. 1234)" autocomplete="off" />
           </div>
 
-          <button type="submit" class="btn-submit">Complete Setup &rarr;</button>
-          <button type="button" class="btn-submit btn-outline" onclick="window.location.href = 'Academy.html'" style="margin-top: 15px">Back to Academy</button>
+          <button type="submit" class="btn-submit" form="vehicleForm">Complete Setup &rarr;</button>
+          <button type="button" class="btn-submit btn-outline" onclick="goToStep(2); updateWizardStep(2)" style="margin-top: 15px">← Back</button>
           <button
             type="button"
             class="btn-submit btn-outline"
@@ -570,10 +607,81 @@
 
     <script>
       // --- THEME LOGIC ---
-      // Load theme from localStorage and apply class
       const currentTheme = localStorage.getItem('theme') || 'dark'
       if (currentTheme === 'light') {
         document.body.classList.add('lm')
+      }
+
+      // --- WIZARD LOGIC ---
+      let currentStep = 1
+      const totalSteps = 3
+      let setupProgressRing = null
+
+      function updateWizardStep(step) {
+        currentStep = Math.max(1, Math.min(step, totalSteps))
+
+        // Update stepper circles
+        document.querySelectorAll('.step-item').forEach((item, i) => {
+          const stepNum = i + 1
+          item.classList.remove('active', 'completed')
+          if (stepNum < currentStep) item.classList.add('completed')
+          else if (stepNum === currentStep) item.classList.add('active')
+        })
+
+        // Update progress bar
+        const progress = ((currentStep - 1) / (totalSteps - 1)) * 100
+        document.querySelector('.wizard-stepper .step-progress').style.width = `${progress}%`
+
+        // Update progress ring
+        if (setupProgressRing && window.TrafficCharts) {
+          const pct = Math.round(((currentStep - 1) / (totalSteps - 1)) * 100)
+          setupProgressRing.update(pct)
+        }
+
+        // Show/hide steps
+        document.querySelectorAll('.wizard-step').forEach(el => {
+          el.style.display = parseInt(el.dataset.step) === currentStep ? 'block' : 'none'
+        })
+
+        // Also handle auth area as step 1
+        const authArea = document.getElementById('authArea')
+        if (authArea) {
+          authArea.style.display = currentStep === 1 ? 'block' : 'none'
+        }
+      }
+
+      function goToStep(step) {
+        // Validate current step before moving forward
+        if (step > currentStep) {
+          if (currentStep === 1) {
+            // For step 1, we allow skip (local setup)
+          } else if (currentStep === 2) {
+            const name = document.getElementById('prof-name').value.trim()
+            const age = parseInt(document.getElementById('prof-age').value) || 0
+            if (name.length < 2) {
+              alert('Please enter a valid name (at least 2 characters).')
+              return
+            }
+            if (age < 8 || age > 99) {
+              alert('Please enter a valid age (8-99).')
+              return
+            }
+          }
+        }
+        updateWizardStep(step)
+      }
+
+      // Initialize progress ring
+      function initProgressRing() {
+        const canvas = document.getElementById('setup-progress-canvas')
+        if (canvas && window.TrafficCharts) {
+          setupProgressRing = window.TrafficCharts.createProgressRing(canvas, 0, { cutout: '70%' })
+          // Override update method
+          setupProgressRing.update = function(value) {
+            this.data.datasets[0].data = [value, 100 - value]
+            this.update('none')
+          }
+        }
       }
 
       // --- 3D BACKGROUND LOGIC ---
@@ -591,17 +699,15 @@
 
         const isLight = document.body.classList.contains('lm')
 
-        // Create particles
         const count = isLowEnd ? 800 : 3000
         const geometry = new THREE.BufferGeometry()
         const positions = new Float32Array(count * 3)
         const colors = new Float32Array(count * 3)
 
-        const color1 = new THREE.Color(isLight ? 0x0e72a0 : 0xf2b84b) // Theme primary
-        const color2 = new THREE.Color(isLight ? 0x34d399 : 0x00f0cc) // Accent teal/green
+        const color1 = new THREE.Color(isLight ? 0x0e72a0 : 0xf2b84b)
+        const color2 = new THREE.Color(isLight ? 0x34d399 : 0x00f0cc)
 
         for (let i = 0; i < count; i++) {
-          // Generate points in a wide galaxy/disc shape
           const radius = 2 + Math.random() * 15
           const theta = Math.random() * 2 * Math.PI
           const y = (Math.random() - 0.5) * 4 * (1 - radius / 18)
@@ -620,7 +726,6 @@
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
 
-        // Soft circular particle texture
         const texCanvas = document.createElement('canvas')
         texCanvas.width = 32
         texCanvas.height = 32
@@ -631,7 +736,7 @@
         gradient.addColorStop(1, 'rgba(0,0,0,0)')
         context.fillStyle = gradient
         context.fillRect(0, 0, 32, 32)
-        const texture = new THREE.CanvasTexture(canvas)
+        const texture = new THREE.CanvasTexture(texCanvas)
 
         const material = new THREE.PointsMaterial({
           size: 0.15,
@@ -644,11 +749,9 @@
         })
 
         particles = new THREE.Points(geometry, material)
-        // Tilt the galaxy a bit
         particles.rotation.x = 0.3
         scene.add(particles)
 
-        // Add a subtle grid floor
         const grid = new THREE.GridHelper(40, 40, isLight ? 0x0e72a0 : 0xf2b84b, isLight ? 0x0e72a0 : 0xf2b84b)
         grid.position.y = -3
         grid.material.opacity = 0.08
@@ -659,7 +762,6 @@
         camera.position.z = 8
         camera.position.y = 1
 
-        // Mouse interaction
         let mouseX = 0
         let mouseY = 0
         document.addEventListener('mousemove', (event) => {
@@ -674,7 +776,6 @@
 
           particles.rotation.y = time * 0.5
 
-          // Subtle breathing effect on particles
           if (!isLowEnd) {
             const positions = particles.geometry.attributes.position.array
             for (let i = 0; i < count; i++) {
@@ -684,10 +785,8 @@
             particles.geometry.attributes.position.needsUpdate = true
           }
 
-          // Moving grid effect
           grid.position.z = (time * 5) % 1
 
-          // Dynamic camera movement based on mouse
           camera.position.x += (mouseX * 2 - camera.position.x) * 0.05
           camera.position.y += (-mouseY * 1 - camera.position.y + 1) * 0.05
           camera.lookAt(scene.position)
@@ -704,11 +803,11 @@
         })
       }
 
-      // Wait for Three.js to be available
       window.addEventListener('load', () => {
         if (typeof THREE !== 'undefined') {
           init3D()
         }
+        initProgressRing()
       })
 
       // --- AUTH LOGIC ---
@@ -782,9 +881,7 @@
       }
 
       function showLocalSetup() {
-        document.getElementById('authArea').style.display = 'none'
-        document.getElementById('setupFormArea').style.display = 'block'
-        document.getElementById('subtitle-text').textContent = "Let's setup your driver profile to get started."
+        goToStep(2)
       }
 
       window.addEventListener('col-auth-changed', (e) => {
@@ -821,14 +918,17 @@
       if (S.age) document.getElementById('prof-age').value = S.age
       if (S.language) document.getElementById('prof-lang').value = S.language
 
+      // Update wizard state if already completed
       if (localStorage.getItem('trafficSetupComplete') === 'true' || S.name) {
         const authDashBtn = document.getElementById('auth-dashboard-btn')
         const setupDashBtn = document.getElementById('setup-dashboard-btn')
         if (authDashBtn) authDashBtn.style.display = 'inline-flex'
         if (setupDashBtn) setupDashBtn.style.display = 'inline-flex'
+        // Skip to dashboard button visible
+        updateWizardStep(totalSteps)
       }
 
-      document.getElementById('setupForm').addEventListener('submit', function (e) {
+      document.getElementById('vehicleForm').addEventListener('submit', function (e) {
         e.preventDefault()
 
         const name = document.getElementById('prof-name').value.trim()
@@ -861,8 +961,55 @@
         localStorage.setItem('th-save', JSON.stringify(L))
         localStorage.setItem('trafficSetupComplete', 'true')
 
-        window.location.href = 'Academy.html'
+        // Complete wizard
+        updateWizardStep(totalSteps)
+        
+        setTimeout(() => {
+          window.location.href = 'Academy.html'
+        }, 500)
       })
+
+      // --- WIZARD NAVIGATION ---
+      const totalSteps = 3
+
+      function goToStep(step) {
+        document.querySelectorAll('.wizard-step').forEach(el => el.style.display = 'none')
+        const target = step === 1 ? document.getElementById('authArea') : 
+                       step === 2 ? document.getElementById('setupFormArea') :
+                       document.getElementById('vehicleStep')
+        if (target) target.style.display = 'block'
+        updateWizardStep(step)
+      }
+
+      function updateWizardStep(step) {
+        // Update step circles
+        document.querySelectorAll('.step-item').forEach((item, i) => {
+          const stepNum = i + 1
+          item.classList.remove('active', 'completed')
+          if (stepNum < step) item.classList.add('completed')
+          else if (stepNum === step) item.classList.add('active')
+        })
+
+        // Update progress bar
+        const progressBar = document.querySelector('.wizard-stepper .step-progress')
+        if (progressBar) {
+          const pct = ((step - 1) / (totalSteps - 1)) * 100
+          progressBar.style.width = pct + '%'
+        }
+      }
+
+      // Initialize progress ring
+      const setupProgressCanvas = document.getElementById('setup-progress-ring')
+      if (setupProgressCanvas && window.TrafficCharts) {
+        window.TrafficCharts.createRadialProgress(setupProgressCanvas, 33, {
+          strokeWidth: 6,
+          subtitle: 'Setup Progress',
+          fontSize: 20
+        })
+      }
+
+      // Initialize on load
+      updateWizardStep(1)
     </script>
   </body>
 </html>
