@@ -768,20 +768,19 @@
       </div>
 
       <div class="glass-panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px">
           <h2 style="margin: 0">Certificates & Achievements</h2>
-          <!-- Progress Ring -->
-          <div class="cert-progress-ring" id="cert-progress-ring" style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px; padding: 16px; background: rgba(255,255,255,0.5); border-radius: 12px;">
-            <svg width="60" height="60" viewBox="0 0 60 60" style="transform: rotate(-90deg)">
-              <circle cx="30" cy="30" r="25" fill="none" stroke="#e5e7eb" stroke-width="6"/>
-              <circle cx="30" cy="30" r="25" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="157" id="cert-progress-circle"/>
-            </svg>
-            <div style="flex: 1">
-              <div style="font-weight: 700; font-size: 1.1rem;" id="cert-progress-text">0% to Certificate</div>
-              <div style="font-size: 0.85rem; color: var(--muted);" id="cert-progress-sub">Complete all 52 modules to unlock</div>
+          
+          <!-- Progress Ring using Chart.js -->
+          <div class="progress-ring-wrap" id="cert-progress-ring">
+            <canvas id="cert-progress-canvas" width="100" height="100" data-chart="progress-ring" data-value="0"></canvas>
+            <div class="progress-ring-info">
+              <div class="progress-ring-pct" id="cert-progress-pct">0%</div>
+              <div class="progress-ring-label" id="cert-progress-text">Start Learning!</div>
+              <div class="progress-ring-sub" id="cert-progress-sub">Complete modules to unlock</div>
             </div>
-            <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent);" id="cert-progress-pct">0%</div>
           </div>
+          
           <button class="btn" onclick="dlCert()">&#128190; Download PDF</button>
         </div>
 
@@ -827,7 +826,7 @@
 
         <div id="no-cert-msg" style="display: none; padding: 40px; text-align: center; background: rgba(255, 255, 255, 0.6); border-radius: 16px; margin-top: 20px">
           <h3 style="margin-top: 0; color: var(--muted)">Certificate Locked</h3>
-          <p>Complete all 15 modules to unlock your Traffic Hero Certification.</p>
+          <p>Complete all 52 modules to unlock your Traffic Hero Certification.</p>
         </div>
       </div>
     </div>
@@ -957,19 +956,27 @@
       }
       document.getElementById('s-prog').innerText = `${completed}/52`
 
-      // Update certificate progress ring
+      // Update certificate progress ring using Chart.js
       const progressPct = Math.round((completed / 52) * 100)
-      const circle = document.getElementById('cert-progress-circle')
-      const dashOffset = 157 - (157 * progressPct / 100)
-      circle.style.strokeDashoffset = dashOffset
-      document.getElementById('cert-progress-pct').textContent = progressPct + '%'
+      
+      // Initialize or update Chart.js progress ring
+      const certProgressCanvas = document.getElementById('cert-progress-canvas')
+      if (certProgressCanvas && window.TrafficCharts) {
+        window.TrafficCharts.createProgressRing(certProgressCanvas, progressPct, { cutout: '70%' })
+      }
+      
+      // Update progress text elements
+      const progressPctEl = document.getElementById('cert-progress-pct')
+      const progressTextEl = document.getElementById('cert-progress-text')
+      const progressSubEl = document.getElementById('cert-progress-sub')
+      const progressRingEl = document.getElementById('cert-progress-ring')
+      
+      if (progressPctEl) progressPctEl.textContent = progressPct + '%'
       if (completed >= 52) {
-        document.getElementById('cert-progress-text').textContent = '🎉 Certificate Unlocked!'
-        document.getElementById('cert-progress-sub').textContent = 'You can now download your certificate'
-        document.getElementById('cert-progress-ring').style.background = 'rgba(52, 211, 153, 0.2)'
-        // Fire-and-forget: creates/updates this user's shareable certificate row so the
-        // share links below have something real to point at. certUrl() picks up
-        // _syncedCertId as soon as this resolves.
+        if (progressTextEl) progressTextEl.textContent = '🎉 Certificate Unlocked!'
+        if (progressSubEl) progressSubEl.textContent = 'You can now download your certificate'
+        if (progressRingEl) progressRingEl.style.background = 'rgba(52, 211, 153, 0.2)'
+        // Fire-and-forget: creates/updates this user's shareable certificate row
         try {
           const cachedId = localStorage.getItem('own_cert_id')
           if (cachedId) _syncedCertId = cachedId
@@ -978,11 +985,37 @@
           })
         } catch (e) {}
       } else if (completed > 0) {
-        document.getElementById('cert-progress-text').textContent = progressPct + '% to Certificate'
-        document.getElementById('cert-progress-sub').textContent = `${completed} of 52 modules completed`
+        if (progressTextEl) progressTextEl.textContent = progressPct + '% to Certificate'
+        if (progressSubEl) progressSubEl.textContent = `${completed} of 52 modules completed`
       } else {
-        document.getElementById('cert-progress-text').textContent = 'Start Learning!'
-        document.getElementById('cert-progress-sub').textContent = 'Complete modules to unlock your certificate'
+        if (progressTextEl) progressTextEl.textContent = 'Start Learning!'
+        if (progressSubEl) progressSubEl.textContent = 'Complete modules to unlock your certificate'
+      }
+
+      // Initialize sparklines for stat cards
+      if (window.TrafficCharts) {
+        // Total Score sparkline (static example data)
+        const scoreSparkline = document.querySelector('canvas[data-chart="sparkline"][data-value]')
+        if (scoreSparkline) {
+          const data = JSON.parse(scoreSparkline.dataset.value || '[]')
+          window.TrafficCharts.createSparkline(scoreSparkline, data, { color: '#f2b84b', colorEnd: '#00f0cc', fill: true })
+        }
+        
+        // Modules sparkline - generate from completion data
+        const modulesSparkline = document.getElementById('modules-sparkline')
+        if (modulesSparkline && S.comp) {
+          const moduleScores = Object.values(S.comp).map(c => c?.score || 0).slice(-7)
+          while (moduleScores.length < 7) moduleScores.unshift(0)
+          window.TrafficCharts.createSparkline(modulesSparkline, moduleScores, { color: '#34d399', colorEnd: '#5ed4f5', fill: true })
+        }
+        
+        // Civic sparkline
+        const civicSparkline = document.getElementById('civic-sparkline')
+        if (civicSparkline && S.violationHistory) {
+          // Generate reverse - fewer violations is better
+          const civicData = [civicScore > 0 ? Math.min(100, civicScore/5) : 0]
+          window.TrafficCharts.createSparkline(civicSparkline, civicData, { color: '#b89bff', colorEnd: '#f2b84b', fill: true })
+        }
       }
 
       // Populate Certificate
