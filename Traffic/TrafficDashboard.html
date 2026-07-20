@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <title>Traffic Academy - Dashboard</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="traffic-charts.js"></script>
+    <link rel="stylesheet" href="traffic-charts.css" />
 
     <!-- Shared Auth/UI logic -->
     <script defer src="../col-router.js"></script>
@@ -25,8 +28,12 @@
         --muted: #8891aa;
         --muted2: #8891aa;
         --accent: #f2b84b;
+        --signal: #5ed4f5;
         --green: #34d399;
+        --teal: #00f0cc;
         --red: #ef4444;
+        --yellow: #f2b84b;    /* FIXED: was missing, used by .crtn */
+        --plasma: #b89bff;
         --r: 16px;
       }
 
@@ -40,8 +47,12 @@
         --muted: #64748b;
         --muted2: #94a3b8;
         --accent: #d97706;
+        --signal: #0369a1;
         --green: #34d399;
+        --teal: #00f0cc;
         --red: #ef4444;
+        --yellow: #d97706;
+        --plasma: #b89bff;
       }
 
       body {
@@ -98,26 +109,89 @@
       }
 
       .stat-card {
-        background: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.05);
         border: 1px solid var(--border);
         border-radius: 16px;
-        padding: 20px;
-        text-align: center;
+        padding: 24px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), var(--teal));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+        border-color: var(--border-strong);
+      }
+
+      .stat-card:hover::before {
+        opacity: 1;
+      }
+
+      .stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        background: linear-gradient(135deg, var(--accent), var(--teal));
+        color: #000;
+      }
+
+      .stat-trend {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 20px;
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--green);
       }
 
       .stat-value {
-        font-size: 2rem;
+        font-size: 2.2rem;
         font-weight: 700;
+        color: var(--text);
+        margin-bottom: 4px;
+        line-height: 1.2;
+      }
+
+      .stat-value.accent {
         color: var(--accent);
-        margin-bottom: 5px;
       }
 
       .stat-label {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         font-weight: 600;
         color: var(--muted);
         text-transform: uppercase;
         letter-spacing: 0.05em;
+      }
+
+      .stat-sparkline {
+        width: 100%;
+        height: 36px;
+        margin-top: 16px;
       }
 
       .btn {
@@ -624,32 +698,63 @@
         <h2 style="margin-top: 0; margin-bottom: 20px">Your Stats</h2>
         <div class="stats-grid">
           <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon">👤</div>
+              <span class="stat-trend">Profile</span>
+            </div>
             <div class="stat-value" id="s-name">-</div>
             <div class="stat-label">Driver Name</div>
           </div>
           <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon">🚗</div>
+              <span class="stat-trend">Active</span>
+            </div>
             <div class="stat-value" id="s-veh">-</div>
             <div class="stat-label">Vehicle</div>
           </div>
           <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon">🎂</div>
+              <span class="stat-trend">Demographic</span>
+            </div>
             <div class="stat-value" id="s-age">-</div>
             <div class="stat-label">Age Group</div>
           </div>
           <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon">🌐</div>
+              <span class="stat-trend">Locale</span>
+            </div>
             <div class="stat-value" id="s-lang">-</div>
             <div class="stat-label">Language</div>
           </div>
           <div class="stat-card">
-            <div class="stat-value" id="s-score">0</div>
+            <div class="stat-header">
+              <div class="stat-icon">⭐</div>
+              <span class="stat-trend">Total</span>
+            </div>
+            <div class="stat-value accent" id="s-score">0</div>
             <div class="stat-label">Total Score</div>
+            <canvas class="stat-sparkline" data-chart="sparkline" data-value='[12, 19, 15, 25, 22, 30, 28]' width="200" height="36"></canvas>
           </div>
           <div class="stat-card">
-            <div class="stat-value" id="s-prog">0/52</div>
+            <div class="stat-header">
+              <div class="stat-icon">📚</div>
+              <span class="stat-trend">Progress</span>
+            </div>
+            <div class="stat-value accent" id="s-prog">0/52</div>
             <div class="stat-label">Modules Completed</div>
+            <canvas class="stat-sparkline" id="modules-sparkline" data-chart="sparkline" width="200" height="36"></canvas>
           </div>
           <div class="stat-card">
-            <div class="stat-value" id="s-civic">0 🏅</div>
+            <div class="stat-header">
+              <div class="stat-icon">🏅</div>
+              <span class="stat-trend">Civic</span>
+            </div>
+            <div class="stat-value accent" id="s-civic">0</div>
             <div class="stat-label" id="s-civic-tier">Civic Score</div>
+            <canvas class="stat-sparkline" id="civic-sparkline" data-chart="sparkline" width="200" height="36"></canvas>
           </div>
         </div>
       </div>
