@@ -6,7 +6,7 @@
     <title>Traffic Academy - Setup</title>
     <link rel="icon" type="image/png" href="../Icon.png" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&display=swap" rel="stylesheet" />
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -30,8 +30,26 @@
     })();
   </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="traffic-charts.js"></script>
+    <link rel="stylesheet" href="traffic-charts.css" />
 
-    <style>
+<style>
+      :root {
+        /* Shared color tokens (mirrors col-ui.css) */
+        --void: #070a14;
+        --ink: #e8e3d8;
+        --line: rgba(255, 255, 255, 0.08);
+        --lineb: rgba(255, 255, 255, 0.16);
+        --signal: #f2b84b;    /* gold accent */
+        --em: #34d399;        /* green success */
+        --teal: #00f0cc;      /* teal */
+        --ion: #5ed4f5;       /* blue */
+        --plasma: #b89bff;    /* purple */
+        --red: #ef4444;       /* error */
+        --r: 16px;
+      }
+
       body {
         background: var(--void);
         color: var(--ink);
@@ -41,9 +59,6 @@
         padding-bottom: env(safe-area-inset-bottom, 0px);
         padding-left: env(safe-area-inset-left, 0px);
         padding-right: env(safe-area-inset-right, 0px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
         min-height: 100vh;
         min-height: 100dvh;
         overflow-y: auto;
@@ -51,7 +66,7 @@
       }
 
       #bg-canvas {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
@@ -74,7 +89,6 @@
         box-shadow:
           0 25px 60px rgba(0, 0, 0, 0.8),
           inset 0 1px 1px rgba(255, 255, 255, 0.1);
-        text-align: center;
         transition: all 0.4s ease;
       }
 
@@ -84,6 +98,99 @@
         box-shadow:
           0 25px 60px rgba(0, 0, 0, 0.1),
           inset 0 1px 1px rgba(255, 255, 255, 0.8);
+      }
+
+      /* === WIZARD STEPPER === */
+      .wizard-stepper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 32px;
+        position: relative;
+      }
+
+      .wizard-stepper::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: var(--line);
+        z-index: 0;
+        border-radius: 2px;
+      }
+
+      .wizard-stepper .step-progress {
+        position: absolute;
+        top: 20px;
+        left: 10%;
+        height: 2px;
+        background: linear-gradient(90deg, var(--signal), var(--em));
+        border-radius: 2px;
+        z-index: 1;
+        transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        position: relative;
+        z-index: 2;
+      }
+
+      .step-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        background: var(--void);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--muted);
+        transition: all 0.3s ease;
+      }
+
+      .step-item.active .step-circle {
+        border-color: var(--signal);
+        background: var(--signal);
+        color: #000;
+        box-shadow: 0 0 0 4px rgba(242, 184, 75, 0.2);
+      }
+
+      .step-item.completed .step-circle {
+        border-color: var(--em);
+        background: var(--em);
+        color: #fff;
+      }
+
+      .step-item.completed .step-circle::before {
+        content: '✓';
+        font-size: 1rem;
+      }
+
+      .step-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .step-item.active .step-label {
+        color: var(--signal);
+      }
+
+      .step-item.completed .step-label {
+        color: var(--em);
       }
 
       h1 {
@@ -100,6 +207,46 @@
         font-size: 1rem;
       }
 
+      /* === PROGRESS RING FOR SETUP COMPLETION === */
+      .setup-progress-ring {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin: 24px 0;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+
+      .setup-progress-ring canvas {
+        max-width: 80px;
+        max-height: 80px;
+      }
+
+      .progress-ring-info {
+        text-align: left;
+      }
+
+      .progress-ring-pct {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--signal);
+        line-height: 1;
+      }
+
+      .progress-ring-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 4px;
+      }
+
+      /* === INPUT GROUPS === */
       .input-group {
         margin-bottom: 24px;
         text-align: left;
@@ -116,6 +263,7 @@
       input[type='text'],
       input[type='password'],
       input[type='email'],
+      input[type='number'],
       select {
         width: 100%;
         padding: 14px 16px;
@@ -133,6 +281,7 @@
       body.lm input[type='text'],
       body.lm input[type='password'],
       body.lm input[type='email'],
+      body.lm input[type='number'],
       body.lm select {
         background: rgba(255, 255, 255, 0.6);
         border-color: rgba(0, 0, 0, 0.1);
@@ -151,6 +300,7 @@
         box-shadow: 0 0 0 3px rgba(14, 114, 160, 0.15);
       }
 
+      /* === BUTTONS === */
       .btn-submit {
         background: var(--signal);
         color: #000;
@@ -185,6 +335,12 @@
         background: var(--page-theme-light);
       }
 
+      .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
       .btn-outline {
         background: transparent;
         color: var(--ink);
@@ -209,11 +365,7 @@
         background: rgba(0, 0, 0, 0.05);
       }
 
-      #setupFormArea {
-        display: block;
-      }
-
-      /* Tabs */
+      /* === TABS === */
       .tab-btn {
         flex: 1;
         padding: 12px;
@@ -236,7 +388,7 @@
         border-color: var(--page-theme-light);
       }
 
-      /* ── Mobile responsive overrides ── */
+      /* === MOBILE RESPONSIVE === */
       @media (max-width: 600px) {
         .setup-container {
           padding: 24px 16px;
@@ -278,6 +430,28 @@
           font-size: max(1rem, 16px) !important;
           min-height: 48px !important;
           padding: 12px 14px !important;
+        }
+        /* Wizard stepper mobile */
+        .wizard-stepper::before {
+          top: 18px;
+        }
+        .wizard-stepper .step-progress {
+          top: 18px;
+        }
+        .step-circle {
+          width: 32px;
+          height: 32px;
+          font-size: 0.8rem;
+        }
+        .step-label {
+          font-size: 0.6rem;
+        }
+        .setup-progress-ring canvas {
+          max-width: 60px;
+          max-height: 60px;
+        }
+        .progress-ring-pct {
+          font-size: 1.4rem;
         }
         /* OR divider spacing */
         #authArea > div:nth-child(3) {

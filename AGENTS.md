@@ -10,7 +10,7 @@
 - **Primary deployment:** Static HTML — commit to repo → Vercel auto-deploys (no build step)
 - **React bundle (optional):** `npm run build` runs `build.js` → esbuild bundles `react-src/GamePage.tsx` → `dist/Traffic/simulator-bundle.js`. This is a secondary output, not the primary site.
 - **No lint, no tests, no type checker** enforced in CI
-- `package.json` dependencies: React 19, Three.js 0.185, esbuild, TypeScript 6, Prettier (optional)
+- `package.json` dependencies: React 19, Three.js 0.185, esbuild 0.28, TypeScript 6, Prettier 3.9.3 (optional)
 - No `tsconfig.json` at root — TypeScript is only used for the React bundle in `react-src/`
 
 ---
@@ -31,7 +31,7 @@
 ├── sw.js               # Service worker (cache-first for core assets)
 ├── version.json        # APK version info (v1.6, code 7)
 ├── cast-version.json   # Cast app version (v1.1, code 2)
-├── Traffic/            # 3D driving simulator sub-app (see Traffic/AGENTS.md)
+├── Traffic/            # 3D driving simulator sub-app (see Traffic/ section below)
 ├── react-src/          # React/TypeScript source for simulator bundle
 │   ├── GamePage.tsx    # Main entrypoint → bundled to dist/Traffic/
 │   ├── DrivingSimulator.tsx  # Top-level simulator component
@@ -147,12 +147,31 @@ Two layers control page status (200/503/404/500):
 
 ---
 
+## Vercel Config (`vercel.json`)
+
+- `cleanUrls: true` — serves pages without `.html` extension
+- Rewrite: `/` → `/home` (root serves home page)
+- Permanent redirects: `/index.html` → `/home`, `/index` → `/home`
+
+---
+
 ## PWA & APK System
 
 - **PWA:** `manifest.json` + `sw.js` for "Add to Home Screen" on Android
-- **Service worker:** caches core assets (`/`, `/home.html`, `/col-*.js`, `/col-ui.css`, `/icon.webp`)
-- **APK updater:** `version.json` checked by `col-ui.js` for in-app update prompts
+- **Service worker** (`sw.js`): cache name `col-cache-v2`, pre-caches 7 core assets: `/`, `/home.html`, `/col-ui.css`, `/col-ui.js`, `/col-router.js`, `/col-auth.js`, `/Icon.png`
+- **APK updater:** `version.json` checked by `col-ui.js` for in-app update prompts. Current version: v1.6 (versionCode 7). APK URL: `advancedlogiclabs.dpdns.org/COL.apk`
 - **Cast app:** `cast/` directory has its own mini-app (`CastFlow.html`) with separate manifest, plus root `CastFlow.html`
+
+---
+
+## Formatting (`.prettierrc`)
+
+- No semicolons
+- Single quotes
+- Tab width 2
+- Trailing commas: none
+- Print width: 200
+- Ignore list: `Traffic/Cyberpunk/`, `supabase.js`, `config.json`, `Traffic/config.json`, `dist/`, `*.glb`
 
 ---
 
@@ -209,4 +228,4 @@ Each HTML page follows this structure:
 
 ---
 
-_Last updated: July 8, 2026_
+_Last updated: July 21, 2026_
