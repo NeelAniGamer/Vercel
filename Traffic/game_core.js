@@ -592,6 +592,7 @@ class Game {
         this.playing = false; this.pause = false; this.lightningTimer = 0; this.thunderSfx = null; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0;
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.routeIdx = 0; this.retries = 0; this.hits = 0;
         this.violationsLog = [];
+        this.kidModeActive = false;
         this.gyroOn = false; this.gyroBaseGamma = 0; this._gyroHandler = null;
         this.camYaw = 0; this.camPitch = 0;
         this.targetCamYaw = 0; this.targetCamPitch = 0;
@@ -1855,6 +1856,19 @@ class Game {
           if (btn) btn.style.borderColor = '#34d399';
         }
       }
+
+      toggleKidMode(btn) {
+        this.kidModeActive = !this.kidModeActive;
+        if (btn) {
+          btn.style.borderColor = this.kidModeActive ? '#f2b84b' : '#555';
+        }
+        toast(this.kidModeActive ? '👶 Kid Mode Enabled: Assistance Active!' : '🧑 Pro Mode: Assistance Disabled', this.kidModeActive ? '#f2b84b' : '#666');
+
+        // If we have a path, update its visibility immediately
+        if (this._breadcrumbLine) {
+          this._breadcrumbLine.visible = this.kidModeActive;
+        }
+      }
       _uh() { const p = Math.max(0, this.hp); const f = this.dom['hfill']; if (f) f.style.width = p + '%'; if (p <= 0) this._go("Structural Failure"); }
       
       _initTasks(lv) {
@@ -2328,6 +2342,7 @@ class Game {
         const RW = cfg.isPedestrian ? 10 : 12;
         this.roadSegments = cfg.roads;
         this.driveRoute = cfg.route;
+        this._initBreadcrumbPath();
         this._buildRoadZones(RW);
 
         // Animal obstacle (e.g. "Cows on the Road") — previously this level's whole premise
@@ -4447,7 +4462,7 @@ class Game {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD();
+        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(); this._updateBreadcrumbPath(dt);
 
         // Update player character FBX animation mixer
         if (this.playerCharacter && this.playerCharacter.userData && this.playerCharacter.userData.isFBXAnimated && this.playerCharacter.userData.mixer) {
@@ -5133,6 +5148,57 @@ class Game {
           if (child.material && 'fog' in child.material) child.material.fog = d < 200;
         });
       }
+
+      _initBreadcrumbPath() {
+        if (!this.driveRoute || this.driveRoute.length < 2) return;
+        const points = this.driveRoute.map(p => new THREE.Vector3(p.x, 0.1, p.z));
+        this._breadcrumbCurve = new THREE.CatmullRomCurve3(points);
+        const resolution = 1000;
+        const curvePoints = this._breadcrumbCurve.getPoints(resolution);
+        const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
+        const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        this._breadcrumbPath = new THREE.Line(geometry, material);
+        this._breadcrumbPath.visible = false;
+        this.scene.add(this._breadcrumbPath);
+      }
+
+      _updateBreadcrumbPath(dt) {
+        if (!this._breadcrumbPath) return;
+        if (!this.kidModeActive || this.isPedestrian) {
+          this._breadcrumbPath.visible = false;
+          return;
+        }
+        const nextCP = this.cps.find(c => !c.userData.hit);
+        if (!nextCP) {
+          this._breadcrumbPath.visible = false;
+          return;
+        }
+        this._breadcrumbPath.visible = true;
+        const playerPos = this.player.position;
+        const cpPos = nextCP.position;
+        let startT = 0, minDist = Infinity;
+        const samples = 100;
+        for (let i = 0; i <= samples; i++) {
+          const t = i / samples;
+          const p = this._breadcrumbCurve.getPointAt(t);
+          const d = p.distanceTo(playerPos);
+          if (d < minDist) { minDist = d; startT = t; }
+        }
+        let endT = 1.0;
+        minDist = Infinity;
+        for (let i = 0; i <= samples; i++) {
+          const t = i / samples;
+          const p = this._breadcrumbCurve.getPointAt(t);
+          const d = p.distanceTo(cpPos);
+          if (d < minDist) { minDist = d; endT = t; }
+        }
+        const resolution = 1000;
+        const startIndex = Math.floor(startT * resolution);
+        const endIndex = Math.floor(endT * resolution);
+        const count = Math.max(0, endIndex - startIndex);
+        this._breadcrumbPath.geometry.setDrawRange(startIndex, count);
+      }
+
       _unpcs(dt) {
         // Spatial hash grid, rebuilt once per frame — every one of the proximity/obstacle
         // checks below only ever looks within 25 units, so bucketing NPCs into 25-unit cells
@@ -6447,7 +6513,7 @@ class Game {
               toast('🚧 Collided with Barricade bounds!', '#ff9500');
           }
         });
-        
+
         if (this.puddles) {
             this.puddles.forEach(p => {
                 if (this.player.position.distanceTo(p.position) < 2.5 && Math.abs(this.speed) > 0.15 && !p.userData.splashed) {
@@ -6468,7 +6534,7 @@ class Game {
             this.speedBreakers.forEach(sb => {
                 if (!sb.userData) sb.userData = { cd: 0 };
                 if (sb.userData.cd > 0) sb.userData.cd -= dt;
-                
+
                 if (!this.isPedestrian && sb.userData.cd <= 0 && this.player.position.distanceTo(sb.position) < 2.5) {
                     sb.userData.cd = 2.0;
                     if (Math.abs(this.speed) > 0.4) {
@@ -6488,6 +6554,41 @@ class Game {
                     }
                 }
             });
+        }
+      }
+
+      _checkBrakeZones(dt) {
+        if (!this.kidModeActive || this.isPedestrian) return;
+        if (this.speed <= 0) return;
+
+        const px = this.player.position.x, pz = this.player.position.z;
+        const yaw = this.player.rotation.y;
+        const forwardX = Math.sin(yaw), forwardZ = Math.cos(yaw);
+
+        let minDist = Infinity;
+
+        const checkObj = (o) => {
+          const dx = o.position.x - px, dz = o.position.z - pz;
+          const dist = Math.hypot(dx, dz);
+          if (dist === 0) return;
+          const dot = (dx / dist) * forwardX + (dz / dist) * forwardZ;
+          if (dot > 0.8) {
+            const forwardDist = dist * dot;
+            if (forwardDist < minDist) minDist = forwardDist;
+          }
+        };
+
+        this.obstacles.forEach(checkObj);
+        this.npcs.forEach(checkObj);
+
+        if (minDist < 10) {
+          if (minDist < 3) {
+            this._brake();
+          } else {
+            const brakeStrength = (10 - minDist) / 7;
+            this.speed -= brakeStrength * this.accel * 2 * dt * 60;
+            if (this.speed < 0) this.speed = 0;
+          }
         }
       }
       _utransit() {
