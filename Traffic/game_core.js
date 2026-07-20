@@ -585,7 +585,7 @@ function _getThemeRoads(themeType) {
 
 class Game {
       constructor() {
-        this.renderer = null; this.scene = null; this.camera = null; this.player = null;
+        this.renderCore = null; this.scene = null; this.camera = null; this.player = null;
         this.clock = new THREE.Clock(); this.keys = {}; this.speed = 0; this.maxSpd = 1.1; this.accel = .045; this.fric = .95; this.turn = .065; this.gear = 'N'; this.gcap = 0;
         this.boostFuel = 100; this.maxBoostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._camTarget = new THREE.Vector3(); this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
@@ -594,6 +594,7 @@ class Game {
         this.violationsLog = [];
         this.gyroOn = false; this.gyroBaseGamma = 0; this._gyroHandler = null;
         this.camYaw = 0; this.camPitch = 0;
+        this.targetCamYaw = 0; this.targetCamPitch = 0;
         this._isDraggingMobileLook = false; this._mobileLookTouchId = null;
         this._prevMobileLookX = 0; this._prevMobileLookY = 0;
         this.dom = {}; // Cached DOM elements
@@ -615,10 +616,62 @@ class Game {
         this._clockEl = null;
         // Phase 7: Object pools (initialized in _buildScene)
         this.npcPool = null; this.pedPool = null; this._brakeDustCd = false;
+        this.pools = {
+          vec3: new Pool(() => new THREE.Vector3()),
+          mat4: new Pool(() => new THREE.Matrix4()),
+          box3: new Pool(() => new THREE.Box3())
+        };
         this._initR(); this._initIn(); this._initG(); this._initVirtualJoystick(); this._loop();
         window.addEventListener('resize', () => this._rsz());
         document.addEventListener('fullscreenchange', () => this._rsz());
       }
+      _initGyro() {
+        if (!('DeviceOrientationEvent' in window)) return;
+        window.addEventListener('deviceorientation', (e) => {
+          if (!this.gyroOn || !this._gyroSensing) return;
+          // beta: -180 to 180 (tilt front/back), gamma: -90 to 90 (tilt left/right)
+          const b = e.beta;
+          const g = e.gamma;
+          if (b === null || g === null) return;
+
+          // Calibrate: use a small deadzone and offset
+          const deltaYaw = (g - this._gyroOffset.gamma) * 0.005;
+          const deltaPitch = (b - this._gyroOffset.beta) * 0.005;
+
+          this.targetCamYaw -= deltaYaw;
+          this.targetCamPitch -= deltaPitch;
+          this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
+        });
+      }
+
+      async requestGyroPermission() {
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+          try {
+            const permission = await DeviceOrientationEvent.requestPermission();
+            if (permission === 'granted') {
+              this.gyroOn = true;
+              this._gyroSensing = true;
+              // Calibration: assume current orientation is center
+              window.addEventListener('deviceorientation', (e) => {
+                this._gyroOffset.beta = e.beta;
+                this._gyroOffset.gamma = e.gamma;
+              }, { once: true });
+              toast('Gyroscope Active! 🧭', '#34d399');
+            } else {
+              toast('Gyroscope permission denied.', '#ef4444');
+            }
+          } catch (e) {
+            console.error("Gyro permission error:", e);
+            toast('Error requesting Gyro access.', '#ef4444');
+          }
+        } else {
+          // Non-iOS or older browser
+          this.gyroOn = true;
+          this._gyroSensing = true;
+          toast('Gyroscope Enabled!', '#34d399');
+        }
+      }
+
       _initR() {
         const cv = document.getElementById('3c');
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -632,47 +685,15 @@ class Game {
         if (h * dpr > maxH) dpr = maxH / h;
         this._dpr = dpr;
 
-        this.renderer = new THREE.WebGLRenderer({
-          canvas: cv,
-          antialias: !isMobile,
-          powerPreference: "high-performance"
-        });
-        // Auto-detect low-end GPU via WebGL debug info
-        let isLowGPU = false;
-        try {
-          const ext = this.renderer.getContext().getExtension('WEBGL_debug_renderer_info');
-          if (ext) {
-            const gpu = this.renderer.getContext().getParameter(ext.UNMASKED_RENDERER_WEBGL).toLowerCase();
-            isLowGPU = /intel|adreno 5|adreno 4|mali-4|mali-t6|swiftshader|llvmpipe/.test(gpu);
-          }
-        } catch(e) {}
-        this._isLowGPU = isLowGPU;
-        if (isLowGPU) { dpr = Math.min(dpr, 1.0); }
-        this.renderer.setSize(w * dpr, h * dpr, false);
-        if (this.renderer.domElement && this.renderer.domElement.style) {
-          this.renderer.domElement.style.width = w + 'px';
-          this.renderer.domElement.style.height = h + 'px';
-        }
-        this.renderer.setPixelRatio(1);
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
-        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.2;
-        this.renderer.shadowMap.enabled = true;
-
-        // PERFORMANCE: Reduce shadow quality on mobile or low-end GPU
-        if (isMobile || isLowGPU) {
-          this.renderer.shadowMap.type = THREE.BasicShadowMap;
-          if (this.renderer.shadowMap.mapSize) this.renderer.shadowMap.mapSize.set(512, 512);
-        } else {
-          this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-          if (this.renderer.shadowMap.mapSize) this.renderer.shadowMap.mapSize.set(1024, 1024);
-        }
+        this.rendererDom = cv;
+        this.renderCore = new RenderCore();
+        this.renderCore.init(this.rendererDom);
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
 
         // PERFORMANCE: Disable expensive bloom on mobile
         try {
-          if (THREE.EffectComposer && !isMobile && !isLowGPU) {
-            this.composer = new THREE.EffectComposer(this.renderer);
+          if (THREE.EffectComposer && !isMobile) {
+            this.composer = new THREE.EffectComposer(this.renderCore.renderer);
             this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
             const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.6, 0.6, 0.85);
             bloomPass.threshold = 0.82;
@@ -688,8 +709,27 @@ class Game {
         const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'da-dist', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn', 'dn-clock', 'dn-time', 'dn-icon', 'hsc'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
-      _rsz() { if (!this.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderer.setSize(w * dpr, h * dpr, false); if (this.renderer.domElement && this.renderer.domElement.style) { this.renderer.domElement.style.width = w + 'px'; this.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } }
+      _rsz() { if (!this.renderCore.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderCore.renderer.setSize(w * dpr, h * dpr, false); if (this.renderCore.renderer.domElement && this.renderCore.renderer.domElement.style) { this.renderCore.renderer.domElement.style.width = w + 'px'; this.renderCore.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } this._checkOrientation(); }
+
+      _checkOrientation() {
+        if (!this._isMobile) return;
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const overlay = document.getElementById('rotate-device-overlay');
+        if (isPortrait) {
+          if (overlay) overlay.classList.add('on');
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape-primary').catch(() => {});
+          }
+        } else {
+          if (overlay) overlay.classList.remove('on');
+        }
+      }
       _initIn() {
+        // ── GYRO CONTROLS ──
+        this._gyroSensing = false;
+        this._gyroOffset = { beta: 0, gamma: 0 };
+        this._initGyro();
+
         window.addEventListener('keydown', e => {
             this.keys[e.key.toLowerCase()] = true;
             this._lastInputTime = this.timer;
@@ -708,8 +748,8 @@ class Game {
 
         // Pointer Lock & Mouse Look
         this._lastPointerUnlock = 0;
-        if (this.renderer && this.renderer.domElement) {
-          this.renderer.domElement.addEventListener('click', () => {
+        if (this.renderCore.renderer && this.renderCore.renderer.domElement) {
+          this.renderCore.renderer.domElement.addEventListener('click', () => {
             if (this.playing && !this.pause && Date.now() - this._lastPointerUnlock > 500) {
               try { 
                 const p = document.body.requestPointerLock();
@@ -719,7 +759,7 @@ class Game {
           });
         }
         document.addEventListener('pointerlockchange', () => {
-          const locked = document.pointerLockElement === this.renderer.domElement;
+          const locked = document.pointerLockElement === this.renderCore.renderer.domElement;
           if (!locked && this.isPointerLocked) this._lastPointerUnlock = Date.now();
           this.isPointerLocked = locked;
           // Phase 7.4: Trigger smooth camera transition on mode switch
@@ -730,19 +770,19 @@ class Game {
             if (this.isPedestrian) {
               this.player.rotation.y -= e.movementX * 0.003;
             } else {
-              this.camYaw = (this.camYaw || 0) - e.movementX * 0.003;
+              this.targetCamYaw -= e.movementX * 0.003;
             }
-            this.camPitch = (this.camPitch || 0) - e.movementY * 0.003;
-            this.camPitch = Math.max(-1.5, Math.min(1.5, this.camPitch));
+            this.targetCamPitch -= e.movementY * 0.003;
+            this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
           } else if (this._isDraggingCamera) {
-            this.camYaw = (this.camYaw || 0) - e.movementX * 0.004;
-            this.camPitch = (this.camPitch || 0) - e.movementY * 0.004;
-            this.camPitch = Math.max(-1.0, Math.min(1.0, this.camPitch));
+            this.targetCamYaw -= e.movementX * 0.004;
+            this.targetCamPitch -= e.movementY * 0.004;
+            this.targetCamPitch = Math.max(-1.0, Math.min(1.0, this.targetCamPitch));
           }
         });
         // Left-click drag for third-person camera orbit (desktop only)
-        if (this.renderer && this.renderer.domElement) {
-          this.renderer.domElement.addEventListener('mousedown', (e) => {
+        if (this.renderCore.renderer && this.renderCore.renderer.domElement) {
+          this.renderCore.renderer.domElement.addEventListener('mousedown', (e) => {
             if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse') && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
               this._isDraggingCamera = true;
             }
@@ -1115,9 +1155,9 @@ class Game {
           camKnob.style.transform = `translate(${dx}px, ${dy}px)`;
           // Map joystick displacement to camYaw/camPitch changes
           const sensitivity = 0.04;
-          this.camYaw -= dx * sensitivity;
-          this.camPitch -= dy * sensitivity;
-          this.camPitch = Math.max(-1.2, Math.min(1.2, this.camPitch));
+          this.targetCamYaw -= dx * sensitivity;
+          this.targetCamPitch -= dy * sensitivity;
+          this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
         };
 
         const resetCamJoy = () => {
@@ -1239,9 +1279,9 @@ class Game {
                 const dy = e.touches[i].clientY - this._prevMobileLookY;
                 this._prevMobileLookX = e.touches[i].clientX;
                 this._prevMobileLookY = e.touches[i].clientY;
-                this.camYaw -= dx * 0.005;
-                this.camPitch -= dy * 0.005;
-                this.camPitch = Math.max(-1.2, Math.min(1.2, this.camPitch));
+                this.targetCamYaw -= dx * 0.005;
+                this.targetCamPitch -= dy * 0.005;
+                this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
                 e.preventDefault();
                 return;
               }
@@ -1452,6 +1492,16 @@ class Game {
           if (x >= rz.x1 && x <= rz.x2 && z >= rz.z1 && z <= rz.z2) return true;
         }
         return false;
+      }
+
+      _getLaneCenter(x, z) {
+        if (!this._roadZones) return null;
+        for (const rz of this._roadZones) {
+          if (x >= rz.x1 && x <= rz.x2 && z >= rz.z1 && z <= rz.z2) {
+            return rz.isV ? { x: (rz.x1 + rz.x2) / 2, z: null } : { x: null, z: (rz.z1 + rz.z2) / 2 };
+          }
+        }
+        return null;
       }
 
       _isInBuildZone(x, z) {
@@ -1793,6 +1843,17 @@ class Game {
               this._mobileMode = 0;
               toast('Phone Put Away', '#666');
           }
+      }
+
+      toggleGyro(btn) {
+        if (this.gyroOn) {
+          this.gyroOn = false;
+          if (btn) btn.style.borderColor = '#555';
+          toast('Gyroscope OFF', '#666');
+        } else {
+          this.requestGyroPermission();
+          if (btn) btn.style.borderColor = '#34d399';
+        }
       }
       _uh() { const p = Math.max(0, this.hp); const f = this.dom['hfill']; if (f) f.style.width = p + '%'; if (p <= 0) this._go("Structural Failure"); }
       
@@ -4382,7 +4443,7 @@ class Game {
         }
         this._lastFrame = now - (elapsed % frameInterval);
 
-        requestAnimationFrame(() => this._loop()); if (!this.playing || this.pause) { if (this.renderer && this.scene && this.camera) this.renderer.render(this.scene, this.camera); return; }
+        requestAnimationFrame(() => this._loop()); if (!this.playing || this.pause) { if (this.renderCore && this.scene && this.camera) this.renderCore.render(this.scene, this.camera); return; }
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
@@ -4395,7 +4456,7 @@ class Game {
 
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
-        if (this.composer) this.composer.render(); else this.renderer.render(this.scene, this.camera);
+        this.renderCore.render(this.scene, this.camera);
 
       }
       _input(dt) {
@@ -4596,6 +4657,17 @@ class Game {
         }
         
         this.player.position.x += this.vx; this.player.position.z += this.vz;
+
+        // ── KID-FIRST: MAGNETIC LANE ASSIST ──
+        if (!this.isPedestrian && this.kidModeActive) {
+          const center = this._getLaneCenter(this.player.position.x, this.player.position.z);
+          if (center) {
+            const assistS = 0.02;
+            if (center.x !== null) this.player.position.x += (center.x - this.player.position.x) * assistS;
+            if (center.z !== null) this.player.position.z += (center.z - this.player.position.z) * assistS;
+          }
+        }
+
         if (this.isPedestrian && Math.abs(this.speed) > 0.02) { const shift = this.keys['shift'] ? 18 : 10; this.player.position.y = Math.abs(Math.sin(this.timer * shift)) * (this.keys['shift'] ? 0.12 : 0.06); }
         else if (!this.isPedestrian && this.playerVehicle && !this._sbBounce) { this.playerVehicle.position.y = 0; }
 
@@ -4821,17 +4893,19 @@ class Game {
             if (!this.isPedestrian && this.turnSignal !== 0 && Math.abs(this.speed) > 0.3 && !this._overtakeCheckDone) {
               this._overtakeCheckDone = true;
               const pp = this.player.position;
-              const fwd = new THREE.Vector3(Math.sin(this.player.rotation.y), 0, Math.cos(this.player.rotation.y));
+              const fwd = this.pools.vec3.get().set(Math.sin(this.player.rotation.y), 0, Math.cos(this.player.rotation.y));
               let oncoming = false;
               for (const nv of this.npcs) {
                 if (!nv || !nv.position) continue;
-                const toNpc = new THREE.Vector3().subVectors(nv.position, pp);
+                const toNpc = this.pools.vec3.get().subVectors(nv.position, pp);
                 const dot = toNpc.dot(fwd);
+                this.pools.vec3.release(toNpc);
                 if (dot > 0 && dot < 20) {
                   const npcSpeed = nv.userData?.speed || 0;
                   if (npcSpeed < -0.05) { oncoming = true; break; }
                 }
               }
+              this.pools.vec3.release(fwd);
               if (oncoming) {
                 toast('⚠️ Oncoming traffic detected! Check before overtaking.', '#ef4444');
                 if (typeof sfx !== 'undefined' && sfx.play) sfx.play('error');
@@ -6548,11 +6622,12 @@ class Game {
             char.rotation.y = angle;
             this._animateCharacterWalk(char, 1.0, dt);
             if (t - this._lastStepTime > 0.3) { this._lastStepTime = t; sfx.play('step'); }
-            const camPos = new THREE.Vector3(
+            const camPos = this.pools.vec3.get().set(
               char.position.x - Math.sin(angle) * 3, 2.5,
               char.position.z - Math.cos(angle) * 3
             );
             this.camera.position.lerp(camPos, dt * 4);
+            this.pools.vec3.release(camPos);
             this.camera.lookAt(char.position.x, 1.0, char.position.z);
             if (p >= 1) { this._enterState = 'OPENING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
           } else if (s === 'OPENING_DOOR') {
@@ -6565,8 +6640,9 @@ class Game {
             const dur = 0.8;
             const p = Math.min(t / dur, 1);
             const ease = p * p * (3 - 2 * p);
-            const seatPos = new THREE.Vector3(0, 0.6, 0.2);
+            const seatPos = this.pools.vec3.get().set(0, 0.6, 0.2);
             char.position.lerpVectors(this._enterWalkEnd, seatPos, ease);
+            this.pools.vec3.release(seatPos);
             char.scale.setScalar(1 - ease * 0.45);
             const cp = ease;
             this.camera.position.set(
@@ -6614,7 +6690,9 @@ class Game {
             const ease = p * p * (3 - 2 * p);
             const standPos = this._enterWalkEnd.clone();
             standPos.y = 0;
-            char.position.lerpVectors(new THREE.Vector3(0, 0.6, 0.2), standPos, ease);
+            const seatPosC = this.pools.vec3.get().set(0, 0.6, 0.2);
+            char.position.lerpVectors(seatPosC, standPos, ease);
+            this.pools.vec3.release(seatPosC);
             char.position.y = ease * 0;
             char.scale.setScalar(0.55 + ease * 0.45);
             if (ease > 0.5 && t - this._lastStepTime > 0.3) { this._lastStepTime = t; sfx.play('step'); }
@@ -6673,6 +6751,11 @@ class Game {
         }
       }
       _ucam(dt) {
+        // ── SLING-LOOK SMOOTHING ──
+        const slingSmooth = 12; // Higher = snappier, Lower = more floaty
+        this.camYaw += (this.targetCamYaw - this.camYaw) * Math.min(1, dt * slingSmooth);
+        this.camPitch += (this.targetCamPitch - this.camPitch) * Math.min(1, dt * slingSmooth);
+
         // ── Camera shake — shared by both modes ──
         let shakeX = 0, shakeY = 0;
         if (this._camShakeAmt > 0.001) {
@@ -6840,7 +6923,7 @@ class Game {
         }
 
         // ── Tone mapping exposure ──
-        if (this.renderer) this.renderer.toneMappingExposure = this._dnLerp(0.6, 1.2, sunElev);
+        if (this.renderCore.renderer) this.renderCore.renderer.toneMappingExposure = this._dnLerp(0.6, 1.2, sunElev);
 
         // ── Street lights ──
         const slIntensity = sunElev < 0.3 ? this._dnLerp(0.8, 0, sunElev / 0.3) : 0;

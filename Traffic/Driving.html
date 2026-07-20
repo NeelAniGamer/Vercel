@@ -1620,6 +1620,32 @@
       display: block;
     }
 
+    #rotate-device-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: var(--z-modal);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      color: var(--text);
+    }
+    #rotate-device-overlay.on {
+      display: flex;
+    }
+    .rd-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      animation: rotatePhone 2s ease-in-out infinite;
+    }
+    @keyframes rotatePhone {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(90deg); }
+    }
+
     #da {
       color: #111827 !important;
       position: fixed;
@@ -4649,6 +4675,13 @@
       </svg>
       <span class="civic-label">Phone</span>
     </div>
+    <div id="btn-gyro" class="civic-btn" onclick="game.toggleGyro(this)">
+      <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 2v20M2 12h20"/>
+      </svg>
+      <span class="civic-label">Gyro</span>
+    </div>
   </div>
   <div id="sig-ind" style="
         position: fixed;
@@ -5532,10 +5565,12 @@
       }, 500);
     })();
   </script>
-  <script src="course.js"></script>
-  <script src="ui.js"></script>
-  <script src="game_core.js"></script>
   <script src="start.js"></script>
+  <script src="render_core.js"></script>
+  <script src="pool.js"></script>
+  <script src="game_core.js"></script>
+  <script src="ui.js"></script>
+  <script src="course.js"></script>
 
   <!-- KID MODE HTML OVERLAYS -->
   <div id="kid-steer"></div>
