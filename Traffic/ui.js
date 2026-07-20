@@ -583,20 +583,48 @@ const ui = {
         const un = idx === 0 || isDone(LVS[idx - 1].id)
         const cm = !!isDone(lv.id)
         const ip = !cm && un
+        
+        // Calculate progress for this level (0, 50, 100)
+        let levelProgress = 0
+        if (cm) levelProgress = 100
+        else if (ip && S.comp[lv.id]) {
+          // In progress - check which sub-modules are done
+          const subModules = ['intro', ...lv.hps.map((_, i) => 'rule' + i), 'law', 'theory', 'practical']
+          let doneSubs = 0
+          subModules.forEach(sm => {
+            if (S.comp[lv.id] && S.comp[lv.id][sm]) doneSubs++
+          })
+          levelProgress = Math.round((doneSubs / subModules.length) * 100)
+        }
+        
         const c = document.createElement('div')
         c.className = 'lcard' + (cm ? ' done' : '') + (un ? '' : ' lk')
+        c.style.setProperty('--level-progress', levelProgress + '%')
         c.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <div style="font-family:'Lora', serif; font-size:1.3rem; font-weight:600; color:#111827; margin-bottom:10px; line-height:1.2;">
-                        ${lv.icon || ''} Level ${lv.id}: ${lv.name}
-                    </div>
-                    <div style="width:22px; height:22px; border:2px solid ${cm ? '#34D399' : 'rgba(0,0,0,0.1)'}; border-radius:6px; display:flex; align-items:center; justify-content:center; background:${cm ? '#34D399' : 'transparent'}; flex-shrink:0; margin-left:12px;">
-                        ${cm ? '<span style="color:white; font-size:14px;">✔</span>' : ''}
-                    </div>
-                </div>
-                <div style="font-size:0.9rem; color:var(--muted, #475569); line-height:1.5;">${lv.ds || ''}</div>
-                <div style="margin-top:12px; font-size:0.8rem; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em;">${un ? (cm ? '✔ Completed' : '▶ Start Module') : '🔒 Locked'}</div>
-            `
+          <div class="lbar" style="background: ${levelProgress >= 100 ? 'linear-gradient(90deg, var(--green), var(--teal))' : (levelProgress > 0 ? 'linear-gradient(90deg, var(--signal), var(--green))' : 'var(--border)')}; width: ${levelProgress}%"></div>
+          <div class="lct">
+            <div class="lico" style="background: ${levelProgress >= 100 ? 'var(--green)' : (levelProgress > 0 ? 'var(--signal)' : 'var(--muted)')}">
+              ${lv.icon || '📚'}
+            </div>
+            <div class="lst" style="background: ${levelProgress >= 100 ? 'rgba(52, 211, 153, 0.15)' : (levelProgress > 0 ? 'rgba(242, 184, 75, 0.15)' : 'var(--hover)')}; color: ${levelProgress >= 100 ? 'var(--green)' : (levelProgress > 0 ? 'var(--signal)' : 'var(--muted)')}">
+              ${levelProgress >= 100 ? '✓' : (levelProgress > 0 ? '▶' : '🔒')}
+            </div>
+          </div>
+          <div class="lcard-body">
+            <div class="lcard-header">
+              <div class="lnum">Level ${lv.id}</div>
+              <div class="lnm">${lv.name}</div>
+            </div>
+            <div class="ltg">${lv.ds || ''}</div>
+            <div class="lcard-progress">
+              <canvas class="level-progress-ring" width="64" height="64" data-progress="${levelProgress}"></canvas>
+              <div class="lcard-status">
+                <div class="lcard-status-label">${levelProgress >= 100 ? 'Completed' : (levelProgress > 0 ? levelProgress + '% Complete' : 'Locked')}</div>
+                <div class="lcard-status-action">${un ? (cm ? '✔ Completed' : '▶ Start Module') : '🔒 Complete Previous'}</div>
+              </div>
+            </div>
+          </div>
+        `
         if (un) {
           c.onclick = () => this.showBriefing(lv.id)
         }
@@ -604,6 +632,20 @@ const ui = {
       })
       body.appendChild(tr)
     })
+    
+    // Initialize progress rings after DOM insertion
+    setTimeout(() => {
+      if (window.TrafficCharts) {
+        document.querySelectorAll('.level-progress-ring').forEach(canvas => {
+          const progress = parseFloat(canvas.dataset.progress) || 0
+          window.TrafficCharts.createRadialProgress(canvas, progress, {
+            strokeWidth: 4,
+            fontSize: 14,
+            subtitle: ''
+          })
+        })
+      }
+    }, 50)
   },
   showBriefing(lid) {
     const lv = LVS.find((l) => l.id === lid)
