@@ -1,36 +1,76 @@
 /**
  * RenderCore - Performance Engine Core
- * Handles WebGL renderer initialization and quality preset management.
- * Compatible with Three.js r128.
+ * Handles WebGL renderer initialization, quality preset management, DRS, and frame budget monitoring.
+ * Compatible with Three.js r128+.
  */
 
 const QUALITY_PRESETS = {
     LOW: {
         resScale: 0.5,
         shadowRes: 512,
+        shadowCascades: 1,
+        shadowBias: -0.0005,
+        shadowNormalBias: 0.02,
         bloom: false,
+        bloomThreshold: 1.0,
+        bloomStrength: 0,
+        bloomRadius: 0,
         fps: 30,
+        textureFilter: THREE.LinearFilter,
+        maxAnisotropy: 1,
+        lodMultiplier: 0.5,
+        maxParticles: 500,
         description: 'Performance mode'
     },
     MED: {
         resScale: 0.75,
         shadowRes: 1024,
+        shadowCascades: 2,
+        shadowBias: -0.0003,
+        shadowNormalBias: 0.015,
         bloom: true,
+        bloomThreshold: 0.85,
+        bloomStrength: 0.4,
+        bloomRadius: 0.6,
         fps: 60,
+        textureFilter: THREE.LinearMipmapLinearFilter,
+        maxAnisotropy: 4,
+        lodMultiplier: 0.75,
+        maxParticles: 2000,
         description: 'Balanced'
     },
     HIGH: {
         resScale: 1.0,
         shadowRes: 2048,
+        shadowCascades: 3,
+        shadowBias: -0.0001,
+        shadowNormalBias: 0.01,
         bloom: true,
+        bloomThreshold: 0.75,
+        bloomStrength: 0.7,
+        bloomRadius: 0.8,
         fps: 60,
+        textureFilter: THREE.LinearMipmapLinearFilter,
+        maxAnisotropy: 8,
+        lodMultiplier: 1.0,
+        maxParticles: 5000,
         description: 'High Quality'
     },
     ULTRA: {
         resScale: 1.5,
         shadowRes: 4096,
+        shadowCascades: 4,
+        shadowBias: -0.00005,
+        shadowNormalBias: 0.005,
         bloom: true,
+        bloomThreshold: 0.65,
+        bloomStrength: 1.0,
+        bloomRadius: 1.0,
         fps: 144,
+        textureFilter: THREE.LinearMipmapLinearFilter,
+        maxAnisotropy: 16,
+        lodMultiplier: 1.5,
+        maxParticles: 10000,
         description: 'Ultra Cinematic'
     }
 };
@@ -38,11 +78,18 @@ const QUALITY_PRESETS = {
 class RenderCore {
     constructor() {
         this.renderer = null;
+        this.canvas = null;
         this.currentPreset = 'MED';
         this.renderTarget = null;
         this.blitScene = null;
         this.blitCamera = null;
         this.blitMesh = null;
+        this.composer = null;
+        this.bloomPass = null;
+        this._frameTimeHistory = [];
+        this._frameBudgetFrames = 0;
+        this._autoQualityEnabled = true;
+        this._lastQualityCheck = 0;
     }
 
     /**
@@ -54,13 +101,23 @@ class RenderCore {
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
             antialias: true,
-            powerPreference: 'high-performance'
+            powerPreference: 'high-performance',
+            alpha: false,
+            depth: true,
+            stencil: false,
+            preserveDrawingBuffer: false
         });
 
-        // Three.js r128 Color Management
+        // Three.js r128+ Color Management
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 1.0;
+
+        // Shadow defaults
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.shadowMap.autoUpdate = true;
+        this.renderer.shadowMap.needsUpdate = true;
 
         // Auto-detect quality based on hardware
         this.autoDetectQuality();
@@ -74,12 +131,21 @@ class RenderCore {
      */
     setQuality(presetKey) {
         if (!QUALITY_PRESETS[presetKey]) {
-            console.error(`Invalid quality preset: ${presetKey}`);
+            console.error(`RenderCore: Invalid quality preset: ${presetKey}`);
             return;
         }
 
         this.currentPreset = presetKey;
         this._applyQualitySettings(QUALITY_PRESETS[presetKey]);
+        console.log(`RenderCore: Quality set to ${presetKey}`);
+    }
+
+    /**
+     * Enables/disables automatic quality adjustment based on frame budget.
+     * @param {boolean} enabled
+     */
+    setAutoQuality(enabled) {
+        this._autoQualityEnabled = enabled;
     }
 
     /**
@@ -97,42 +163,46 @@ class RenderCore {
             const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
             console.log(`RenderCore: Detected GPU: ${renderer}`);
 
-            const highEnd = /NVIDIA|RTX|Radeon|AMD/i;
-            const lowEnd = /Adreno|Mali|Intel|Apple GPU/i;
+            const highEnd = /NVIDIA|RTX|Radeon|AMD|GeForce GTX 1[6-9]|GeForce RTX|RX [56]?[0-9]{3}/i;
+            const lowEnd = /Adreno|Mali|Intel.*HD|Intel.*UHD|Apple GPU|PowerVR|VideoCore/i;
 
             if (highEnd.test(renderer)) {
                 score += 1; // Potential HIGH
-                if (/RTX|GTX 30|GTX 40/i.test(renderer)) score += 1; // Potential ULTRA
+                if (/RTX|GTX 30|GTX 40|RX 6[0-9]{3}|RX 7[0-9]{3}/i.test(renderer)) score += 1; // Potential ULTRA
             } else if (lowEnd.test(renderer)) {
                 score -= 1; // Potential LOW
             }
         }
 
-        // 2. Memory Analysis
-        if (navigator.deviceMemory) {
-            console.log(`RenderCore: Device Memory: ${navigator.deviceMemory}GB`);
-            if (navigator.deviceMemory < 4) {
-                score -= 1;
-            } else if (navigator.deviceMemory >= 16) {
-                score += 1;
-            }
+        // 2. Hardware Concurrency (CPU cores)
+        if (navigator.hardwareConcurrency) {
+            console.log(`RenderCore: CPU Cores: ${navigator.hardwareConcurrency}`);
+            if (navigator.hardwareConcurrency <= 2) score -= 1;
+            else if (if (navigator.hardwareConcurrency >= 8) score += 1;
         }
 
-        // 3. Burn-in FPS Test
+        // 3. Memory (deprecated but still useful)
+        if (navigator.deviceMemory) {
+            console.log(`RenderCore: Device Memory: ${navigator.deviceMemory}GB`);
+            if (navigator.deviceMemory < 4) score -= 1;
+            else if (navigator.deviceMemory >= 16) score += 1;
+        }
+
+        // 4. Burn-in FPS Test
         const msPerFrame = this._perfTest();
         console.log(`RenderCore: Burn-in test: ${msPerFrame.toFixed(2)}ms/frame`);
-        if (msPerFrame > 16.67) {
-            score -= 2; // Cannot hit 60FPS even on empty scene, strongly suggest LOW
-        }
+        if (msPerFrame > 16.67) score -= 2;
+        else if (msPerFrame > 10) score -= 1;
 
         // Map score to preset
         let finalPreset = 'MED';
-        if (score <= 1) finalPreset = 'LOW';
+        if (score <= 0) finalPreset = 'LOW';
+        else if (score === 1) finalPreset = 'LOW';
         else if (score === 2) finalPreset = 'MED';
         else if (score === 3) finalPreset = 'HIGH';
         else if (score >= 4) finalPreset = 'ULTRA';
 
-        // Absolute override for extremely poor performance
+        // Absolute override for very poor performance
         if (msPerFrame > 33) finalPreset = 'LOW';
 
         console.log(`RenderCore: Auto-detected quality: ${finalPreset} (score: ${score})`);
@@ -148,10 +218,11 @@ class RenderCore {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera();
         const start = performance.now();
-        for (let i = 0; i < 10; i++) {
+        const iterations = 20;
+        for (let i = 0; i < iterations; i++) {
             this.renderer.render(scene, camera);
         }
-        return (performance.now() - start) / 10;
+        return (performance.now() - start) / iterations;
     }
 
     /**
@@ -167,10 +238,16 @@ class RenderCore {
         const width = Math.floor(this.canvas.width * scale);
         const height = Math.floor(this.canvas.height * scale);
 
+        // Dispose old target
+        if (this.renderTarget) this.renderTarget.dispose();
+
         this.renderTarget = new THREE.WebGLRenderTarget(width, height, {
             minFilter: THREE.LinearFilter,
             magFilter: THREE.LinearFilter,
-            format: THREE.RGBAFormat
+            format: THREE.RGBAFormat,
+            encoding: THREE.sRGBEncoding,
+            depthBuffer: true,
+            stencilBuffer: false
         });
 
         // Setup Blit Scene for upscaling/downscaling
@@ -186,13 +263,12 @@ class RenderCore {
             this.blitScene.add(this.blitMesh);
         }
 
-        // Update the material texture to the current render target
         this.blitMesh.material.map = this.renderTarget.texture;
         this.blitMesh.material.needsUpdate = true;
     }
 
     /**
-     * Applies the numeric settings of a preset to the renderer.
+     * Applies the numeric settings of a preset to the renderer and effects.
      * @private
      */
     _applyQualitySettings(preset) {
@@ -200,10 +276,42 @@ class RenderCore {
 
         console.log(`RenderCore: Applying quality settings - ${preset.description}`);
 
+        // Dynamic Resolution Scaling
         if (preset.resScale !== 1.0) {
             this._setupRenderBypass();
         } else {
-            this.renderTarget = null;
+            if (this.renderTarget) {
+                this.renderTarget.dispose();
+                this.renderTarget = null;
+            }
+        }
+
+        // Shadow quality
+        if (this.renderer.shadowMap) {
+            // Note: shadowMap.size is per-light, but we set a default for new lights
+            this._defaultShadowRes = preset.shadowRes;
+            this._defaultShadowBias = preset.shadowBias;
+            this._defaultShadowNormalBias = preset.shadowNormalBias;
+        }
+
+        // Texture quality
+        this._defaultTextureFilter = preset.textureFilter;
+        this._defaultAnisotropy = preset.maxAnisotropy;
+
+        // LOD multiplier for LODChunk system
+        this._lodMultiplier = preset.lodMultiplier;
+
+        // Particle budget
+        this._maxParticles = preset.maxParticles;
+
+        // Bloom
+        if (this.composer && this.bloomPass) {
+            this.bloomPass.enabled = preset.bloom;
+            if (preset.bloom) {
+                this.bloomPass.threshold = preset.bloomThreshold;
+                this.bloomPass.strength = preset.bloomStrength;
+                this.bloomPass.radius = preset.bloomRadius;
+            }
         }
     }
 
@@ -223,9 +331,7 @@ class RenderCore {
             this.renderer.render(scene, camera);
         } else {
             // DRS: Render to target, then blit to canvas
-            if (!this.renderTarget) {
-                this._setupRenderBypass();
-            }
+            if (!this.renderTarget) this._setupRenderBypass();
 
             this.renderer.setRenderTarget(this.renderTarget);
             this.renderer.render(scene, camera);
@@ -233,13 +339,136 @@ class RenderCore {
             this.renderer.setRenderTarget(null);
             this.renderer.render(this.blitScene, this.blitCamera);
         }
+
+        // Frame budget monitoring
+        if (this._autoQualityEnabled) this._checkFrameBudget();
+    }
+
+    /**
+     * Monitors frame time and auto-adjusts quality if budget exceeded.
+     * @private
+     */
+    _checkFrameBudget() {
+        const now = performance.now();
+        if (!this._lastFrameTime) this._lastFrameTime = now;
+        
+        const dt = now - this._lastFrameTime;
+        this._lastFrameTime = now;
+        
+        this._frameTimeHistory.push(dt);
+        if (this._frameTimeHistory.length > 120) this._frameTimeHistory.shift();
+
+        this._frameBudgetFrames++;
+        
+        // Check every 60 frames (1 second at 60fps)
+        if (this._frameBudgetFrames >= 60) {
+            this._frameBudgetFrames = 0;
+            const avg = this._frameTimeHistory.reduce((a, b) => a + b, 0) / this._frameTimeHistory.length;
+            const preset = this.getPreset();
+            const budget = 1000 / preset.fps;
+            
+            if (avg > budget * 1.3 && this.currentPreset !== 'LOW') {
+                this._downgradePreset();
+            } else if (avg < budget * 0.6 && this.currentPreset !== 'ULTRA') {
+                this._upgradePreset();
+            }
+        }
+    }
+
+    _downgradePreset() {
+        const order = ['LOW', 'MED', 'HIGH', 'ULTRA'];
+        const idx = order.indexOf(this.currentPreset);
+        if (idx > 0) {
+            this.setQuality(order[idx - 1]);
+            console.log(`RenderCore: Auto-downgraded to ${this.currentPreset} (frame budget exceeded)`);
+        }
+    }
+
+    _upgradePreset() {
+        const order = ['LOW', 'MED', 'HIGH', 'ULTRA'];
+        const idx = order.indexOf(this.currentPreset);
+        if (idx < order.length - 1) {
+            this.setQuality(order[idx + 1]);
+            console.log(`RenderCore: Auto-upgraded to ${this.currentPreset} (frame budget healthy)`);
+        }
+    }
+
+    /**
+     * Creates/updates the EffectComposer with bloom for post-processing.
+     * Call after scene setup.
+     */
+    setupPostProcessing(width, height, isMobile) {
+        if (!THREE.EffectComposer || isMobile) {
+            this.composer = null;
+            return;
+        }
+
+        try {
+            this.composer = new THREE.EffectComposer(this.renderer);
+            this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
+
+            const preset = this.getPreset();
+            this.bloomPass = new THREE.UnrealBloomPass(
+                new THREE.Vector2(width, height),
+                preset.bloomStrength,
+                preset.bloomRadius,
+                preset.bloomThreshold
+            );
+            this.bloomPass.enabled = preset.bloom;
+            this.composer.addPass(this.bloomPass);
+
+            this.composer.setSize(width, height);
+        } catch (e) {
+            console.warn("Post processing setup failed:", e);
+            this.composer = null;
+        }
+    }
+
+    /**
+     * Updates post-processing resolution on resize.
+     */
+    resizePostProcessing(width, height) {
+        if (this.composer) {
+            this.composer.setSize(width, height);
+        }
+        if (this.renderTarget) {
+            this._setupRenderBypass();
+        }
     }
 
     getPreset() {
         return QUALITY_PRESETS[this.currentPreset];
     }
+
+    getLODMultiplier() {
+        return this._lodMultiplier || 1.0;
+    }
+
+    getMaxParticles() {
+        return this._maxParticles || 2000;
+    }
+
+    getDefaultShadowRes() {
+        return this._defaultShadowRes || 1024;
+    }
+
+    getDefaultShadowBias() {
+        return this._defaultShadowBias || -0.0003;
+    }
+
+    getDefaultShadowNormalBias() {
+        return this._defaultShadowNormalBias || 0.015;
+    }
+
+    getDefaultTextureFilter() {
+        return this._defaultTextureFilter || THREE.LinearMipmapLinearFilter;
+    }
+
+    getDefaultAnisotropy() {
+        return this._defaultAnisotropy || 4;
+    }
 }
 
-// Export for use in game_core.js
+// Export
 window.RenderCore = RenderCore;
 window.QUALITY_PRESETS = QUALITY_PRESETS;

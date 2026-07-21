@@ -143,7 +143,7 @@ Two layers control page status (200/503/404/500):
 - Traffic HTML pages (`Driving.html`, `Academy.html`, `TrafficDashboard.html`, `TrafficSetup.html`) DO load shared `../col-router.js`, `../col-ui.js`, `../col-auth.js` with `../` prefix
 - `Driving.html` and `Academy.html` **patch `fetch()`** to redirect `config.json` requests to `../config.json`
 - `Cyberpunk/` inside Traffic/ is an archive — never modify
-- For deep Traffic architecture, see `Traffic/AGENTS.md`
+- `Traffic/AGENTS.md` does not exist yet; Traffic/ does not have its own agent docs
 
 ---
 
@@ -180,7 +180,7 @@ Two layers control page status (200/503/404/500):
 Skills in `.agents/skills/` are registered in `skills-lock.json`:
 - `browser-use` — browser automation via CDP
 - `valyu-best-practices` — Valyu API toolkit
-- Plus 8 more in `.agents/skills/` (3d-game-builder, 3d-game-dev, humanizer, etc.)
+- 100+ additional skills in `.agents/skills/` (3d-game-builder, 3d-game-dev, humanizer, skill-creator, etc.)
 
 ---
 
