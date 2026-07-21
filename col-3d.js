@@ -1,4 +1,4 @@
-﻿// col-3d.js — Shared Procedural Three.js Backgrounds for Class Of Learners
+// col-3d.js — Shared Procedural Three.js Backgrounds for Class Of Learners
 // Desktop only. No external models. Each page gets a unique scene.
 
 ;(function () {
@@ -43,16 +43,19 @@
     // Map index to home
     if (path === '' || path === 'index' || path === 'home') path = 'home'
 
-    // Setup renderer
+    // Setup renderer — antialias off for perf (barely visible on canvas-over-scene)
     var renderer = new THREE.WebGLRenderer({
       canvas: canvas,
-      antialias: true,
+      antialias: false,
       alpha: true,
       powerPreference: 'high-performance'
     })
     renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    // Cap pixel ratio at 1.5 — above that provides diminishing returns at high GPU cost
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.setClearColor(0x000000, 0)
+    // Hint the browser that this canvas composites independently
+    canvas.style.willChange = 'transform'
 
     var scene = new THREE.Scene()
     // Fog gives distant particles/shapes a sense of depth instead of all rendering at full brightness
@@ -66,13 +69,16 @@
       isVisible = !document.hidden
     })
 
-    // Mouse tracking for parallax
+    // Mouse tracking for parallax — throttled to 1 update per rAF to avoid
+    // queueing heavy work on every pixel of mouse movement
     var mouseX = 0,
-      mouseY = 0
+      mouseY = 0,
+      _pendingMX = 0,
+      _pendingMY = 0
     document.addEventListener('mousemove', function (e) {
-      mouseX = (e.clientX / window.innerWidth) * 2 - 1
-      mouseY = -(e.clientY / window.innerHeight) * 2 + 1
-    })
+      _pendingMX = (e.clientX / window.innerWidth) * 2 - 1
+      _pendingMY = -(e.clientY / window.innerHeight) * 2 + 1
+    }, { passive: true })
 
     // Resize handler
     window.addEventListener('resize', function () {
@@ -208,6 +214,21 @@
 
         scene.add(group)
 
+        // Pre-allocate a pool of line geometries to avoid per-frame GC allocation.
+        // We create the max possible connections (n*(n-1)/2) and hide unused ones.
+        var maxLines = (nodeCount * (nodeCount - 1)) / 2
+        var linePool = []
+        for (var li = 0; li < maxLines; li++) {
+          var lposArr = new Float32Array(6) // 2 points * 3 components
+          var lgeo = new THREE.BufferGeometry()
+          lgeo.setAttribute('position', new THREE.BufferAttribute(lposArr, 3))
+          var lmesh = new THREE.Line(lgeo, lineMat)
+          lmesh.visible = false
+          lineGroup.add(lmesh)
+          linePool.push({ mesh: lmesh, pos: lposArr })
+        }
+
+        var _lineTick = 0
         return function (time) {
           // Move nodes
           nodes.forEach(function (n) {
@@ -217,19 +238,25 @@
             if (Math.abs(n.position.z) > 25) n.userData.vel.z *= -1
           })
 
-          // Rebuild connections every 30 frames
-          if (Math.floor(time * 60) % 30 === 0) {
-            while (lineGroup.children.length) lineGroup.remove(lineGroup.children[0])
+          // Update connections every 45 frames using pre-allocated pool (no GC)
+          _lineTick++
+          if (_lineTick % 45 === 0) {
+            var idx = 0
             for (var i = 0; i < nodes.length; i++) {
               for (var j = i + 1; j < nodes.length; j++) {
                 var dist = nodes[i].position.distanceTo(nodes[j].position)
-                if (dist < 20) {
-                  var pts = [nodes[i].position.clone(), nodes[j].position.clone()]
-                  var g = new THREE.BufferGeometry().setFromPoints(pts)
-                  lineGroup.add(new THREE.Line(g, lineMat))
+                if (dist < 20 && idx < linePool.length) {
+                  var entry = linePool[idx++]
+                  var pa = nodes[i].position, pb = nodes[j].position
+                  entry.pos[0] = pa.x; entry.pos[1] = pa.y; entry.pos[2] = pa.z
+                  entry.pos[3] = pb.x; entry.pos[4] = pb.y; entry.pos[5] = pb.z
+                  entry.mesh.geometry.attributes.position.needsUpdate = true
+                  entry.mesh.visible = true
                 }
               }
             }
+            // Hide unused pool entries
+            for (; idx < linePool.length; idx++) linePool[idx].mesh.visible = false
           }
 
           group.rotation.y += (mouseX * 0.15 - group.rotation.y) * 0.01
@@ -635,15 +662,26 @@
     }
     new MutationObserver(syncThemeOpacity).observe(document.body, { attributes: true, attributeFilter: ['class'] })
 
-    // Animation loop
+    // Animation loop — capped at 30fps to keep the main thread free for user input.
+    // 30fps is imperceptible for background ambient scenes; interaction latency
+    // (INP) is far more noticeable than frame rate for decorative canvases.
     var clock = new THREE.Clock()
-    function animate() {
+    var _TARGET_FPS = 30
+    var _FRAME_MS = 1000 / _TARGET_FPS
+    var _lastFrameTime = 0
+    function animate(now) {
       requestAnimationFrame(animate)
-      if (!isVisible) return // skip rendering while tab is hidden to save battery/GPU
-      var elapsed = clock.getElapsedTime()
-      if (updateFn) updateFn(elapsed)
+      if (!isVisible) return
+      var elapsed = now - _lastFrameTime
+      if (elapsed < _FRAME_MS) return // skip — too soon
+      _lastFrameTime = now - (elapsed % _FRAME_MS) // drift-correct
+      // Consume pending mouse coords once per frame (not per-event)
+      mouseX = _pendingMX
+      mouseY = _pendingMY
+      var t = clock.getElapsedTime()
+      if (updateFn) updateFn(t)
       renderer.render(scene, camera)
     }
-    animate()
+    animate(0)
   })
 })()

@@ -44,6 +44,9 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- dns-prefetch for Three.js CDN so DNS resolves before script is needed -->
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+    <!-- font-display=swap prevents FOIT (invisible text) during font load → better LCP -->
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <style>
       *,
@@ -203,7 +206,6 @@
         align-items: center;
         padding: 14px 32px;
         background: var(--nav);
-        backdrop-filter: blur(18px) saturate(1.4);
         border-bottom: 1px solid var(--line);
         flex-wrap: wrap;
         gap: 14px;
@@ -211,6 +213,20 @@
           background 0.5s var(--ease),
           border-color 0.5s,
           padding 0.4s var(--ease);
+        /* Promote to its own compositor layer so the blur doesn't repaint hero */
+        will-change: transform;
+        transform: translateZ(0);
+        isolation: isolate;
+      }
+      /* Put backdrop-filter on a pseudo-element so it composites independently */
+      .top-nav::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        backdrop-filter: blur(18px) saturate(1.4);
+        -webkit-backdrop-filter: blur(18px) saturate(1.4);
+        z-index: -1;
+        pointer-events: none;
       }
       .top-nav.s {
         padding: 10px 32px;
@@ -223,8 +239,11 @@
       }
       .brand-logo {
         height: 28px;
-        width: auto;
+        width: 28px;
         border-radius: 8px;
+        /* Explicit dimensions prevent layout recalc; filter runs on own layer */
+        will-change: filter;
+        transform: translateZ(0);
       }
       .brand-name {
         font-family: var(--mono);
@@ -491,6 +510,8 @@
         width: 100%;
         margin: 0 auto;
         padding: 160px 52px 80px;
+        /* Isolate layout so h1/p repaints don't bubble up to full page */
+        contain: layout style;
       }
       .hey {
         font-family: var(--mono);
@@ -2644,16 +2665,24 @@
         })
       })()
 
-      // 3D tilt on card hover
+      // 3D tilt on card hover — rAF-throttled so getBoundingClientRect and style
+      // mutations only run once per frame (max 60/s) instead of on every mouse event
       document.querySelectorAll('.pc').forEach(function (card) {
+        var _rafId = null, _ex = 0, _ey = 0
         card.addEventListener('mousemove', function (e) {
           if (innerWidth < 768) return
-          var r = card.getBoundingClientRect(),
-            x = (e.clientX - r.left) / r.width - 0.5,
-            y = (e.clientY - r.top) / r.height - 0.5
-          card.style.transform = 'translateY(-11px) perspective(900px) rotateX(' + -y * 5 + 'deg) rotateY(' + x * 5 + 'deg)'
-        })
+          _ex = e.clientX; _ey = e.clientY
+          if (_rafId) return
+          _rafId = requestAnimationFrame(function () {
+            _rafId = null
+            var r = card.getBoundingClientRect()
+            var x = (_ex - r.left) / r.width - 0.5
+            var y = (_ey - r.top) / r.height - 0.5
+            card.style.transform = 'translateY(-11px) perspective(900px) rotateX(' + (-y * 5) + 'deg) rotateY(' + (x * 5) + 'deg)'
+          })
+        }, { passive: true })
         card.addEventListener('mouseleave', function () {
+          if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null }
           card.style.transform = ''
         })
       })

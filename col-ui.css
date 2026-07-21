@@ -58,7 +58,6 @@ select {
   align-items: center;
   padding: 14px 32px;
   background: var(--nav-bg, rgba(2, 6, 23, 0.95));
-  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border-light, #1e293b);
   position: sticky;
   top: 0;
@@ -66,6 +65,20 @@ select {
   flex-wrap: wrap;
   gap: 15px;
   transition: 0.3s;
+  /* Compositor layer: isolates the nav so blur doesn't repaint page content */
+  will-change: transform;
+  transform: translateZ(0);
+  isolation: isolate;
+}
+/* Backdrop blur on its own layer to prevent INP spikes */
+.top-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+  pointer-events: none;
 }
 .nav-brand {
   display: flex;
@@ -79,8 +92,11 @@ select {
 }
 .brand-logo {
   height: 32px;
-  width: auto;
+  width: 32px;
   object-fit: contain;
+  /* will-change keeps filter on its own GPU layer */
+  will-change: filter;
+  transform: translateZ(0);
   /* Invert black logo to white for dark mode (default) */
   filter: invert(1) drop-shadow(0 0 8px var(--primary-glow, rgba(56, 189, 248, 0.4)));
 }
