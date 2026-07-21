@@ -88,100 +88,202 @@
       renderer.setSize(window.innerWidth, window.innerHeight)
     })
 
-    // Color palette from CoL design system
-    var COL = {
-      signal: 0xf2b84b,
-      ion: 0x5ed4f5,
-      teal: 0x00f0cc,
-      plasma: 0xb89bff,
-      em: 0x34d399,
-      dim: 0x8891aa,
-      void2: 0x0c1224
+    // Dual-theme colour palettes
+    var PALETTES = {
+      dark:  { signal:0xf2b84b, ion:0x5ed4f5, teal:0x00f0cc, plasma:0xb89bff, em:0x34d399, dim:0x8891aa },
+      light: { signal:0xd97706, ion:0x0077b6, teal:0x009b8d,  plasma:0x7c4ddb, em:0x0a7c55, dim:0x6b7399 }
     }
+    var COL = PALETTES.dark // keep COL reference for other scenes
+    function P() { return document.body.classList.contains('lm') ? PALETTES.light : PALETTES.dark }
 
     // ==================== SCENE BUILDERS ====================
 
     var scenes = {
-      // HOME — Orbital Orrery (rings of particles orbiting a glowing center)
+      // HOME — Multi-identity scene representing all 5 CoL apps:
+      //  Solar Engine   -> orbital particle rings + glowing star
+      //  ATI Typing     -> falling particle-rain columns
+      //  Gesture Ctrl   -> sine-wave ribbon
+      //  QR Editor      -> sparse luminous grid cells
+      //  RPG Engine     -> floating wireframe gem shards
       home: function () {
-        camera.position.set(0, 5, 60)
-        var group = new THREE.Group()
+        camera.position.set(0, 6, 65)
+        var allMats = [] // {mat, key} pairs for live theme recolour
+        var root = new THREE.Group()
+        scene.add(root)
 
-        // Central glow
-        var centerGeo = new THREE.SphereGeometry(1.2, 32, 32)
-        var centerMat = new THREE.MeshBasicMaterial({ color: COL.signal, transparent: true, opacity: 0.9 })
-        var center = new THREE.Mesh(centerGeo, centerMat)
-        group.add(center)
+        // ── LAYER 1: Solar Engine — star + 4 inclined orbital rings ─────────
+        var starGroup = new THREE.Group()
+        root.add(starGroup)
 
-        // Glow sprite
-        var glowCanvas = document.createElement('canvas')
-        glowCanvas.width = 128
-        glowCanvas.height = 128
-        var gCtx = glowCanvas.getContext('2d')
-        var grad = gCtx.createRadialGradient(64, 64, 0, 64, 64, 64)
-        grad.addColorStop(0, 'rgba(242, 184, 75, 0.6)')
-        grad.addColorStop(0.4, 'rgba(242, 184, 75, 0.15)')
-        grad.addColorStop(1, 'rgba(242, 184, 75, 0)')
-        gCtx.fillStyle = grad
-        gCtx.fillRect(0, 0, 128, 128)
-        var glowSprite = new THREE.Sprite(
-          new THREE.SpriteMaterial({
-            map: new THREE.CanvasTexture(glowCanvas),
-            transparent: true,
-            blending: THREE.AdditiveBlending
-          })
-        )
-        glowSprite.scale.set(12, 12, 1)
-        group.add(glowSprite)
+        var glowCvs = document.createElement('canvas')
+        glowCvs.width = 128; glowCvs.height = 128
+        var gCtx = glowCvs.getContext('2d')
+        var grd = gCtx.createRadialGradient(64,64,0,64,64,64)
+        grd.addColorStop(0,'rgba(242,184,75,0.85)')
+        grd.addColorStop(0.35,'rgba(242,184,75,0.3)')
+        grd.addColorStop(1,'rgba(242,184,75,0)')
+        gCtx.fillStyle = grd; gCtx.fillRect(0,0,128,128)
+        var glowMat = new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(glowCvs), transparent:true, blending:THREE.AdditiveBlending })
+        var glowSpr = new THREE.Sprite(glowMat)
+        glowSpr.scale.set(13,13,1); starGroup.add(glowSpr)
 
-        // Orbital rings of particles
-        var rings = [
-          { radius: 12, count: 60, color: COL.ion, size: 0.3, speed: 0.008 },
-          { radius: 20, count: 80, color: COL.teal, size: 0.25, speed: -0.005 },
-          { radius: 30, count: 100, color: COL.plasma, size: 0.2, speed: 0.003 },
-          { radius: 42, count: 120, color: COL.dim, size: 0.15, speed: -0.002 }
+        var starMat = new THREE.MeshBasicMaterial({ color:P().signal, transparent:true, opacity:0.88 })
+        allMats.push({ mat:starMat, key:'signal' })
+        var starSph = new THREE.Mesh(new THREE.SphereGeometry(1.4,24,24), starMat)
+        starGroup.add(starSph)
+
+        var orbDefs = [
+          { r:11,  n:55,  key:'ion',    sz:0.28, spd: 0.009, inc: 0.22 },
+          { r:19,  n:75,  key:'teal',   sz:0.22, spd:-0.006, inc:-0.18 },
+          { r:29,  n:95,  key:'plasma', sz:0.18, spd: 0.004, inc: 0.12 },
+          { r:41,  n:110, key:'dim',    sz:0.14, spd:-0.003, inc:-0.08 }
         ]
-
-        var ringGroups = []
-        rings.forEach(function (r) {
-          var positions = new Float32Array(r.count * 3)
-          for (var i = 0; i < r.count; i++) {
-            var angle = (i / r.count) * Math.PI * 2
-            var jitter = (Math.random() - 0.5) * 2
-            positions[i * 3] = Math.cos(angle) * (r.radius + jitter)
-            positions[i * 3 + 1] = (Math.random() - 0.5) * 3
-            positions[i * 3 + 2] = Math.sin(angle) * (r.radius + jitter)
+        var orbRings = []
+        orbDefs.forEach(function(d) {
+          var pos = new Float32Array(d.n*3)
+          for(var i=0;i<d.n;i++) {
+            var a=(i/d.n)*Math.PI*2, jit=(Math.random()-0.5)*2.5
+            pos[i*3]=Math.cos(a)*(d.r+jit); pos[i*3+1]=(Math.random()-0.5)*3.5; pos[i*3+2]=Math.sin(a)*(d.r+jit)
           }
-          var geo = new THREE.BufferGeometry()
-          geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-          var mat = new THREE.PointsMaterial({ color: r.color, size: r.size, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending })
-          var points = new THREE.Points(geo, mat)
-          group.add(points)
-          ringGroups.push({ points: points, speed: r.speed })
-        })
+          var geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.BufferAttribute(pos,3))
+          var mat=new THREE.PointsMaterial({ color:P()[d.key], size:d.sz, transparent:true, opacity:0.72, blending:THREE.AdditiveBlending, depthWrite:false })
+          allMats.push({ mat:mat, key:d.key })
+          var pts=new THREE.Points(geo,mat); pts.rotation.x=d.inc
+          starGroup.add(pts); orbRings.push({ pts:pts, spd:d.spd })
 
-        // Thin orbit lines
-        rings.forEach(function (r) {
-          var linePoints = []
-          for (var i = 0; i <= 128; i++) {
-            var angle = (i / 128) * Math.PI * 2
-            linePoints.push(new THREE.Vector3(Math.cos(angle) * r.radius, 0, Math.sin(angle) * r.radius))
+          var lp=[]; for(var j=0;j<=96;j++){var ag=(j/96)*Math.PI*2;lp.push(new THREE.Vector3(Math.cos(ag)*d.r,0,Math.sin(ag)*d.r))}
+          var lmat=new THREE.LineBasicMaterial({ color:P()[d.key], transparent:true, opacity:0.07 })
+          allMats.push({ mat:lmat, key:d.key })
+          starGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(lp),lmat))
+        })
+        starGroup.rotation.x = 0.52
+        starGroup.position.set(12,-2,0)
+
+        // ── LAYER 2: ATI Typing — vertical particle rain ──────────────────────
+        var rainGroup = new THREE.Group()
+        root.add(rainGroup)
+        rainGroup.position.set(-28,0,-15)
+        var rainCols = []
+        var rainKeys = ['em','teal','ion']
+        for(var c=0;c<18;c++) {
+          var rPos=new Float32Array(14*3)
+          for(var p=0;p<14;p++) {
+            rPos[p*3]=(c-9)*4.2+(Math.random()-0.5)*1.5
+            rPos[p*3+1]=(Math.random()-0.5)*55
+            rPos[p*3+2]=(Math.random()-0.5)*8
           }
-          var lineGeo = new THREE.BufferGeometry().setFromPoints(linePoints)
-          var lineMat = new THREE.LineBasicMaterial({ color: r.color, transparent: true, opacity: 0.08 })
-          group.add(new THREE.Line(lineGeo, lineMat))
-        })
+          var rGeo=new THREE.BufferGeometry(); rGeo.setAttribute('position',new THREE.BufferAttribute(rPos,3))
+          var rKey=rainKeys[c%3]
+          var rMat=new THREE.PointsMaterial({ color:P()[rKey], size:0.38, transparent:true, opacity:0.42, blending:THREE.AdditiveBlending, depthWrite:false })
+          allMats.push({ mat:rMat, key:rKey })
+          var rPts=new THREE.Points(rGeo,rMat); rPts.userData.speed=0.08+Math.random()*0.12
+          rainGroup.add(rPts); rainCols.push(rPts)
+        }
 
-        group.rotation.x = 0.5
-        scene.add(group)
+        // ── LAYER 3: Gesture Controller — sine-wave ribbons ───────────────────
+        var waveGroup = new THREE.Group()
+        root.add(waveGroup)
+        waveGroup.position.set(0,-16,-10)
+        var waveSegs=60, waveW=70
+        var waveRows = []
+        var waveKeys = ['teal','ion','em']
+        for(var row=0;row<3;row++) {
+          var wPos=new Float32Array((waveSegs+1)*3)
+          for(var s=0;s<=waveSegs;s++) {
+            wPos[s*3]=(s/waveSegs)*waveW-waveW/2; wPos[s*3+1]=row*3.5; wPos[s*3+2]=0
+          }
+          var wGeo=new THREE.BufferGeometry(); wGeo.setAttribute('position',new THREE.BufferAttribute(wPos,3))
+          var wKey=waveKeys[row]
+          var wMat=new THREE.LineBasicMaterial({ color:P()[wKey], transparent:true, opacity:0.28-row*0.05 })
+          allMats.push({ mat:wMat, key:wKey })
+          waveGroup.add(new THREE.Line(wGeo,wMat))
+          waveRows.push({ geo:wGeo, pos:wPos, row:row })
+        }
+
+        // ── LAYER 4: QR Editor — sparse glowing cell grid ────────────────────
+        var qrGroup = new THREE.Group()
+        root.add(qrGroup)
+        qrGroup.position.set(32,10,-20); qrGroup.rotation.y=-0.4
+        var qrCells=[]
+        var qrMat=new THREE.MeshBasicMaterial({ color:P().signal, transparent:true, opacity:0.18, wireframe:true })
+        allMats.push({ mat:qrMat, key:'signal' })
+        for(var qr=0;qr<64;qr++) {
+          if(Math.random()<0.45) continue
+          var qx=(qr%8)*3.2-11.2, qy=Math.floor(qr/8)*3.2-11.2
+          var cell=new THREE.Mesh(new THREE.BoxGeometry(2.6,2.6,0.3),qrMat)
+          cell.position.set(qx,qy,(Math.random()-0.5)*4)
+          cell.userData.pulseOff=Math.random()*Math.PI*2
+          qrGroup.add(cell); qrCells.push(cell)
+        }
+
+        // ── LAYER 5: RPG Engine — floating wireframe gem shards ───────────────
+        var rpgGroup = new THREE.Group()
+        root.add(rpgGroup)
+        rpgGroup.position.set(-18,14,-5)
+        var gemKeys=['plasma','signal','em','ion','teal']
+        var gems=[]
+        for(var g=0;g<22;g++) {
+          var gKey=gemKeys[g%gemKeys.length]
+          var gMat=new THREE.MeshBasicMaterial({ color:P()[gKey], transparent:true, opacity:0.52, wireframe:true })
+          allMats.push({ mat:gMat, key:gKey })
+          var gGeo=g%3===0?new THREE.OctahedronGeometry(1.2+Math.random()*0.8,0):g%3===1?new THREE.TetrahedronGeometry(0.9+Math.random()*0.7,0):new THREE.IcosahedronGeometry(0.8+Math.random()*0.6,0)
+          var gem=new THREE.Mesh(gGeo,gMat)
+          gem.position.set((Math.random()-0.5)*36,(Math.random()-0.5)*22,(Math.random()-0.5)*12)
+          gem.userData={ rotSpd:new THREE.Vector3((Math.random()-0.5)*0.018,(Math.random()-0.5)*0.015,0), floatOff:Math.random()*Math.PI*2, floatSpd:0.4+Math.random()*0.6 }
+          rpgGroup.add(gem); gems.push(gem)
+        }
+
+        // ── Live theme recolour + opacity/fog ────────────────────────────────
+        function applyTheme() {
+          var pal = P(), lm = document.body.classList.contains('lm')
+          allMats.forEach(function(e){ e.mat.color.setHex(pal[e.key]) })
+          scene.fog.color.setHex(lm ? 0xeef2ff : 0x070a14)
+          glowMat.opacity = lm ? 0.28 : 0.85
+          starMat.opacity = lm ? 0.65 : 0.88
+          canvas.style.opacity = lm ? '0.6' : '1'
+        }
+        applyTheme()
+        new MutationObserver(applyTheme).observe(document.body,{ attributes:true, attributeFilter:['class'] })
 
         return function (time) {
-          ringGroups.forEach(function (rg) {
-            rg.points.rotation.y += rg.speed
+          // Solar rings orbit
+          orbRings.forEach(function(r){ r.pts.rotation.y+=r.spd })
+          starSph.material.opacity = 0.7+Math.sin(time*2.2)*0.18
+          glowSpr.scale.set(12+Math.sin(time*1.8)*1.4,12+Math.sin(time*1.8)*1.4,1)
+          starGroup.rotation.y += (mouseX*0.3-starGroup.rotation.y)*0.018
+          starGroup.rotation.x = 0.52+(mouseY*0.15-(starGroup.rotation.x-0.52))*0.018
+
+          // ATI rain falls
+          rainCols.forEach(function(col){
+            var pos=col.geometry.attributes.position.array
+            for(var i=1;i<pos.length;i+=3){ pos[i]-=col.userData.speed; if(pos[i]<-28) pos[i]=28 }
+            col.geometry.attributes.position.needsUpdate=true
           })
-          center.material.opacity = 0.7 + Math.sin(time * 2) * 0.2
-          group.rotation.y += (mouseX * 0.3 - group.rotation.y) * 0.02
-          group.rotation.x = 0.5 + (mouseY * 0.15 - (group.rotation.x - 0.5)) * 0.02
+          rainGroup.rotation.y += (mouseX*0.05-rainGroup.rotation.y)*0.008
+
+          // Gesture waves undulate
+          waveRows.forEach(function(w){
+            for(var s=0;s<=waveSegs;s++) w.pos[s*3+1]=w.row*3.5+Math.sin(time*1.6+s*0.22+w.row*1.1)*3.5
+            w.geo.attributes.position.needsUpdate=true
+          })
+          waveGroup.rotation.y += (mouseX*0.08-waveGroup.rotation.y)*0.01
+
+          // QR cells pulse
+          qrCells.forEach(function(cell){
+            cell.material.opacity=0.1+Math.sin(time*1.2+cell.userData.pulseOff)*0.14
+            cell.rotation.z+=0.003
+          })
+          qrGroup.rotation.y+=0.0025
+          qrGroup.rotation.x+=(mouseY*0.04-qrGroup.rotation.x)*0.01
+
+          // RPG gems spin + float
+          gems.forEach(function(g){
+            g.rotation.x+=g.userData.rotSpd.x; g.rotation.y+=g.userData.rotSpd.y
+            g.position.y+=Math.sin(time*g.userData.floatSpd+g.userData.floatOff)*0.015
+          })
+          rpgGroup.rotation.y+=(mouseX*0.12-rpgGroup.rotation.y)*0.012
+
+          root.rotation.y+=mouseX*0.001
         }
       },
 
@@ -653,14 +755,17 @@
     }, 100)
     if (canvas.classList) canvas.classList.add('v')
 
-    // These scenes are tuned for the dark theme's neon palette — fade them down in light mode
-    // instead of letting them render at full brightness against a light background.
+    // Home page manages its own theme reactivity inside applyTheme().
+    // Other scenes dim gracefully in light mode.
     function syncThemeOpacity() {
       if (!hasFadedIn) return
+      if (path === 'home') return // home handles its own opacity
       var isLight = document.body.classList.contains('lm')
-      canvas.style.opacity = isLight ? '0.12' : '1'
+      canvas.style.opacity = isLight ? '0.18' : '1'
+      scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)
     }
     new MutationObserver(syncThemeOpacity).observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
 
     // Animation loop — capped at 30fps to keep the main thread free for user input.
     // 30fps is imperceptible for background ambient scenes; interaction latency
