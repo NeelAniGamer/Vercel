@@ -1054,7 +1054,6 @@ body.lm .nav-login-btn:hover {
   /* ── Downloads — secondary action ── */
   .mobile-dl {
     display: flex;
-    width: 100%;
     gap: 10px;
     text-align: center;
     margin-top: 12px;
@@ -1196,10 +1195,29 @@ body.ch .cr {
 }
 
 @media (max-width: 900px) {
-  .top-nav,
-  .top-nav.s {
-    padding: 14px 20px !important;
+  .top-nav {
+    padding: 14px 20px;
     flex-wrap: nowrap;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    top: 0;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+  .top-nav::before {
+    transition: border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: inherit;
+  }
+  .top-nav.s {
+    top: 10px;
+    width: calc(100% - 20px);
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    border-radius: 40px;
+    padding: 10px 20px;
+    border: 1px solid var(--lineb, rgba(255, 255, 255, 0.16));
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   }
 }
 
