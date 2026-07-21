@@ -111,126 +111,193 @@
         var root = new THREE.Group()
         scene.add(root)
 
-        // ── LAYER 1: Solar Engine — star + 4 inclined orbital rings ─────────
-        var starGroup = new THREE.Group()
-        root.add(starGroup)
+        // ── 1. The Core: D3-Inspired Network & Solar Rings ─────────
+        var coreGroup = new THREE.Group()
+        root.add(coreGroup)
+        coreGroup.position.set(0, 4, -5)
 
+        // Glow
         var glowCvs = document.createElement('canvas')
         glowCvs.width = 128; glowCvs.height = 128
         var gCtx = glowCvs.getContext('2d')
         var grd = gCtx.createRadialGradient(64,64,0,64,64,64)
-        grd.addColorStop(0,'rgba(242,184,75,0.85)')
-        grd.addColorStop(0.35,'rgba(242,184,75,0.3)')
+        grd.addColorStop(0,'rgba(242,184,75,0.95)')
+        grd.addColorStop(0.4,'rgba(242,184,75,0.35)')
         grd.addColorStop(1,'rgba(242,184,75,0)')
         gCtx.fillStyle = grd; gCtx.fillRect(0,0,128,128)
         var glowMat = new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(glowCvs), transparent:true, blending:THREE.AdditiveBlending })
         var glowSpr = new THREE.Sprite(glowMat)
-        glowSpr.scale.set(13,13,1); starGroup.add(glowSpr)
+        glowSpr.scale.set(16,16,1); coreGroup.add(glowSpr)
 
-        var starMat = new THREE.MeshBasicMaterial({ color:P().signal, transparent:true, opacity:0.88 })
+        var starMat = new THREE.MeshBasicMaterial({ color:P().signal, transparent:true, opacity:0.9 })
         allMats.push({ mat:starMat, key:'signal' })
-        var starSph = new THREE.Mesh(new THREE.SphereGeometry(1.4,24,24), starMat)
-        starGroup.add(starSph)
+        var starSph = new THREE.Mesh(new THREE.IcosahedronGeometry(2.5, 2), starMat)
+        coreGroup.add(starSph)
 
+        // Geometric Network around the star
+        var netNodeCount = 45
+        var netNodes = []
+        var netGeo = new THREE.BufferGeometry()
+        var netPos = new Float32Array(netNodeCount * 3)
+        var netMat = new THREE.PointsMaterial({ color:P().teal, size: 0.4, transparent:true, opacity:0.8, blending:THREE.AdditiveBlending })
+        allMats.push({ mat:netMat, key:'teal' })
+        
+        for (var i = 0; i < netNodeCount; i++) {
+          // distribute roughly on a sphere
+          var phi = Math.acos(-1 + (2 * i) / netNodeCount)
+          var theta = Math.sqrt(netNodeCount * Math.PI) * phi
+          var r = 4.5 + Math.random()*1.5
+          var vx = r * Math.cos(theta) * Math.sin(phi)
+          var vy = r * Math.sin(theta) * Math.sin(phi)
+          var vz = r * Math.cos(phi)
+          netPos[i*3]=vx; netPos[i*3+1]=vy; netPos[i*3+2]=vz
+          netNodes.push(new THREE.Vector3(vx,vy,vz))
+        }
+        netGeo.setAttribute('position', new THREE.BufferAttribute(netPos, 3))
+        var netPts = new THREE.Points(netGeo, netMat)
+        coreGroup.add(netPts)
+
+        // Connect nodes
+        var linesGeo = new THREE.BufferGeometry()
+        var linePos = []
+        for(var i=0; i<netNodeCount; i++) {
+          for(var j=i+1; j<netNodeCount; j++) {
+            if(netNodes[i].distanceTo(netNodes[j]) < 4.2) {
+              linePos.push(netNodes[i].x, netNodes[i].y, netNodes[i].z)
+              linePos.push(netNodes[j].x, netNodes[j].y, netNodes[j].z)
+            }
+          }
+        }
+        linesGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3))
+        var lineMat = new THREE.LineBasicMaterial({ color:P().ion, transparent:true, opacity:0.15 })
+        allMats.push({ mat:lineMat, key:'ion' })
+        var netLines = new THREE.LineSegments(linesGeo, lineMat)
+        coreGroup.add(netLines)
+
+        // Orbital Rings
         var orbDefs = [
-          { r:11,  n:55,  key:'ion',    sz:0.28, spd: 0.009, inc: 0.22 },
-          { r:19,  n:75,  key:'teal',   sz:0.22, spd:-0.006, inc:-0.18 },
-          { r:29,  n:95,  key:'plasma', sz:0.18, spd: 0.004, inc: 0.12 },
-          { r:41,  n:110, key:'dim',    sz:0.14, spd:-0.003, inc:-0.08 }
+          { r:14,  n:60,  key:'ion',    sz:0.25, spd: 0.007, inc: 0.25 },
+          { r:22,  n:80,  key:'teal',   sz:0.2,  spd:-0.005, inc:-0.2 },
+          { r:32,  n:100, key:'plasma', sz:0.16, spd: 0.003, inc: 0.15 },
+          { r:45,  n:120, key:'dim',    sz:0.12, spd:-0.002, inc:-0.1 }
         ]
         var orbRings = []
         orbDefs.forEach(function(d) {
           var pos = new Float32Array(d.n*3)
           for(var i=0;i<d.n;i++) {
-            var a=(i/d.n)*Math.PI*2, jit=(Math.random()-0.5)*2.5
-            pos[i*3]=Math.cos(a)*(d.r+jit); pos[i*3+1]=(Math.random()-0.5)*3.5; pos[i*3+2]=Math.sin(a)*(d.r+jit)
+            var a=(i/d.n)*Math.PI*2, jit=(Math.random()-0.5)*3.5
+            pos[i*3]=Math.cos(a)*(d.r+jit); pos[i*3+1]=(Math.random()-0.5)*4.5; pos[i*3+2]=Math.sin(a)*(d.r+jit)
           }
           var geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.BufferAttribute(pos,3))
-          var mat=new THREE.PointsMaterial({ color:P()[d.key], size:d.sz, transparent:true, opacity:0.72, blending:THREE.AdditiveBlending, depthWrite:false })
+          var mat=new THREE.PointsMaterial({ color:P()[d.key], size:d.sz, transparent:true, opacity:0.8, blending:THREE.AdditiveBlending, depthWrite:false })
           allMats.push({ mat:mat, key:d.key })
           var pts=new THREE.Points(geo,mat); pts.rotation.x=d.inc
-          starGroup.add(pts); orbRings.push({ pts:pts, spd:d.spd })
+          coreGroup.add(pts); orbRings.push({ pts:pts, spd:d.spd })
 
-          var lp=[]; for(var j=0;j<=96;j++){var ag=(j/96)*Math.PI*2;lp.push(new THREE.Vector3(Math.cos(ag)*d.r,0,Math.sin(ag)*d.r))}
-          var lmat=new THREE.LineBasicMaterial({ color:P()[d.key], transparent:true, opacity:0.07 })
+          var lp=[]; for(var j=0;j<=120;j++){var ag=(j/120)*Math.PI*2;lp.push(new THREE.Vector3(Math.cos(ag)*d.r,0,Math.sin(ag)*d.r))}
+          var lmat=new THREE.LineBasicMaterial({ color:P()[d.key], transparent:true, opacity:0.1 })
           allMats.push({ mat:lmat, key:d.key })
-          starGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(lp),lmat))
+          coreGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(lp),lmat))
         })
-        starGroup.rotation.x = 0.52
-        starGroup.position.set(12,-2,0)
+        coreGroup.rotation.x = 0.45
 
-        // ── LAYER 2: ATI Typing — vertical particle rain ──────────────────────
+        // ── 2. Matrix Rain: Vertical glowing trails ──────────────────────
         var rainGroup = new THREE.Group()
         root.add(rainGroup)
-        rainGroup.position.set(-28,0,-15)
-        var rainCols = []
+        // Spread evenly around the scene rather than clumped on left
+        var rainTrails = []
         var rainKeys = ['em','teal','ion']
-        for(var c=0;c<18;c++) {
-          var rPos=new Float32Array(14*3)
-          for(var p=0;p<14;p++) {
-            rPos[p*3]=(c-9)*4.2+(Math.random()-0.5)*1.5
-            rPos[p*3+1]=(Math.random()-0.5)*55
-            rPos[p*3+2]=(Math.random()-0.5)*8
-          }
-          var rGeo=new THREE.BufferGeometry(); rGeo.setAttribute('position',new THREE.BufferAttribute(rPos,3))
-          var rKey=rainKeys[c%3]
-          var rMat=new THREE.PointsMaterial({ color:P()[rKey], size:0.38, transparent:true, opacity:0.42, blending:THREE.AdditiveBlending, depthWrite:false })
+        for(var c=0;c<40;c++) {
+          var rx = (Math.random()-0.5)*100
+          var rz = (Math.random()-0.5)*40 - 15
+          if(Math.abs(rx)<15 && Math.abs(rz)<15) rx += 20 * Math.sign(rx) // Avoid dead center
+
+          var trPos = new Float32Array(6) // Line segment
+          var y = (Math.random()-0.5)*80
+          var len = 1.5 + Math.random()*3
+          trPos[0]=rx; trPos[1]=y; trPos[2]=rz
+          trPos[3]=rx; trPos[4]=y+len; trPos[5]=rz
+          
+          var trGeo = new THREE.BufferGeometry(); trGeo.setAttribute('position',new THREE.BufferAttribute(trPos,3))
+          var rKey = rainKeys[c%3]
+          var rMat = new THREE.LineBasicMaterial({ color:P()[rKey], transparent:true, opacity:0.4, blending:THREE.AdditiveBlending })
           allMats.push({ mat:rMat, key:rKey })
-          var rPts=new THREE.Points(rGeo,rMat); rPts.userData.speed=0.08+Math.random()*0.12
-          rainGroup.add(rPts); rainCols.push(rPts)
+          var rLine = new THREE.Line(trGeo,rMat); rLine.userData.speed=0.15+Math.random()*0.2; rLine.userData.len=len
+          rainGroup.add(rLine); rainTrails.push(rLine)
         }
 
-        // ── LAYER 3: Gesture Controller — sine-wave ribbons ───────────────────
+        // ── 3. Fluid Ribbon: Translucent Mesh Wave ───────────────────
         var waveGroup = new THREE.Group()
         root.add(waveGroup)
-        waveGroup.position.set(0,-16,-10)
-        var waveSegs=60, waveW=70
-        var waveRows = []
-        var waveKeys = ['teal','ion','em']
-        for(var row=0;row<3;row++) {
-          var wPos=new Float32Array((waveSegs+1)*3)
-          for(var s=0;s<=waveSegs;s++) {
-            wPos[s*3]=(s/waveSegs)*waveW-waveW/2; wPos[s*3+1]=row*3.5; wPos[s*3+2]=0
-          }
-          var wGeo=new THREE.BufferGeometry(); wGeo.setAttribute('position',new THREE.BufferAttribute(wPos,3))
-          var wKey=waveKeys[row]
-          var wMat=new THREE.LineBasicMaterial({ color:P()[wKey], transparent:true, opacity:0.28-row*0.05 })
-          allMats.push({ mat:wMat, key:wKey })
-          waveGroup.add(new THREE.Line(wGeo,wMat))
-          waveRows.push({ geo:wGeo, pos:wPos, row:row })
+        waveGroup.position.set(0,-18,-15)
+        var waveSegs=40, waveW=120
+        var wGeo = new THREE.PlaneGeometry(waveW, 16, waveSegs, 4)
+        // Displace points slightly
+        wGeo.rotateX(-Math.PI/2)
+        var origY = []
+        var posAtt = wGeo.attributes.position
+        for(var i=0; i<posAtt.count; i++) {
+          origY.push(posAtt.getY(i))
         }
+        var wMat = new THREE.MeshBasicMaterial({ color:P().ion, transparent:true, opacity:0.12, side:THREE.DoubleSide, blending:THREE.AdditiveBlending, wireframe:true })
+        allMats.push({ mat:wMat, key:'ion' })
+        var waveMesh = new THREE.Mesh(wGeo, wMat)
+        waveGroup.add(waveMesh)
 
-        // ── LAYER 4: QR Editor — sparse glowing cell grid ────────────────────
+        // ── 4. Floor Grid: Expansive pulsing grid ────────────────────
         var qrGroup = new THREE.Group()
         root.add(qrGroup)
-        qrGroup.position.set(32,10,-20); qrGroup.rotation.y=-0.4
+        qrGroup.position.set(0,-24,-25); qrGroup.rotation.x=Math.PI/2
         var qrCells=[]
-        var qrMat=new THREE.MeshBasicMaterial({ color:P().signal, transparent:true, opacity:0.18, wireframe:true })
+        var qrMat=new THREE.MeshBasicMaterial({ color:P().signal, transparent:true, opacity:0.1, wireframe:true })
         allMats.push({ mat:qrMat, key:'signal' })
-        for(var qr=0;qr<64;qr++) {
-          if(Math.random()<0.45) continue
-          var qx=(qr%8)*3.2-11.2, qy=Math.floor(qr/8)*3.2-11.2
-          var cell=new THREE.Mesh(new THREE.BoxGeometry(2.6,2.6,0.3),qrMat)
-          cell.position.set(qx,qy,(Math.random()-0.5)*4)
-          cell.userData.pulseOff=Math.random()*Math.PI*2
-          qrGroup.add(cell); qrCells.push(cell)
+        for(var qx=-6; qx<=6; qx++) {
+          for(var qy=-4; qy<=4; qy++) {
+            if(Math.random()<0.3) continue
+            var cell=new THREE.Mesh(new THREE.BoxGeometry(3.8,3.8,0.2),qrMat)
+            cell.position.set(qx*4.2, qy*4.2, (Math.random()-0.5)*1.5)
+            var dist = Math.sqrt(qx*qx + qy*qy)
+            cell.userData = { dist: dist, rot: (Math.random()-0.5)*0.005 }
+            qrGroup.add(cell); qrCells.push(cell)
+          }
         }
 
-        // ── LAYER 5: RPG Engine — floating wireframe gem shards ───────────────
+        // ── 5. Floating Cores: Inner cores with wireframe shells ───────────────
         var rpgGroup = new THREE.Group()
         root.add(rpgGroup)
-        rpgGroup.position.set(-18,14,-5)
         var gemKeys=['plasma','signal','em','ion','teal']
         var gems=[]
-        for(var g=0;g<22;g++) {
+        for(var g=0;g<16;g++) {
           var gKey=gemKeys[g%gemKeys.length]
-          var gMat=new THREE.MeshBasicMaterial({ color:P()[gKey], transparent:true, opacity:0.52, wireframe:true })
-          allMats.push({ mat:gMat, key:gKey })
-          var gGeo=g%3===0?new THREE.OctahedronGeometry(1.2+Math.random()*0.8,0):g%3===1?new THREE.TetrahedronGeometry(0.9+Math.random()*0.7,0):new THREE.IcosahedronGeometry(0.8+Math.random()*0.6,0)
-          var gem=new THREE.Mesh(gGeo,gMat)
-          gem.position.set((Math.random()-0.5)*36,(Math.random()-0.5)*22,(Math.random()-0.5)*12)
-          gem.userData={ rotSpd:new THREE.Vector3((Math.random()-0.5)*0.018,(Math.random()-0.5)*0.015,0), floatOff:Math.random()*Math.PI*2, floatSpd:0.4+Math.random()*0.6 }
-          rpgGroup.add(gem); gems.push(gem)
+          var gBaseGeo = g%2===0 ? new THREE.IcosahedronGeometry(1.2+Math.random()*0.5,0) : new THREE.OctahedronGeometry(1.0+Math.random()*0.6,0)
+          
+          // Inner solid core
+          var coreMat = new THREE.MeshBasicMaterial({ color:P()[gKey], transparent:true, opacity:0.4, blending:THREE.AdditiveBlending })
+          allMats.push({ mat:coreMat, key:gKey })
+          var gemCore = new THREE.Mesh(gBaseGeo, coreMat)
+          
+          // Outer wireframe
+          var wireMat = new THREE.MeshBasicMaterial({ color:P()[gKey], transparent:true, opacity:0.7, wireframe:true })
+          allMats.push({ mat:wireMat, key:gKey })
+          var gemWire = new THREE.Mesh(gBaseGeo, wireMat)
+          gemWire.scale.set(1.15,1.15,1.15)
+          
+          var gemObj = new THREE.Group()
+          gemObj.add(gemCore)
+          gemObj.add(gemWire)
+
+          // Scatter widely around the core
+          var rA = Math.random()*Math.PI*2, rR = 18 + Math.random()*25
+          gemObj.position.set(Math.cos(rA)*rR, (Math.random()-0.5)*30, Math.sin(rA)*rR)
+          gemObj.userData={ 
+            rotSpdX: (Math.random()-0.5)*0.02, 
+            rotSpdY: (Math.random()-0.5)*0.02,
+            orbitSpd: (Math.random()-0.5)*0.003,
+            floatOff: Math.random()*Math.PI*2, 
+            floatSpd: 0.5+Math.random()*0.8,
+            dist: rR, ang: rA
+          }
+          rpgGroup.add(gemObj); gems.push(gemObj)
         }
 
         // ── Live theme recolour + opacity/fog ────────────────────────────────
@@ -238,52 +305,66 @@
           var pal = P(), lm = document.body.classList.contains('lm')
           allMats.forEach(function(e){ e.mat.color.setHex(pal[e.key]) })
           scene.fog.color.setHex(lm ? 0xeef2ff : 0x070a14)
-          glowMat.opacity = lm ? 0.28 : 0.85
-          starMat.opacity = lm ? 0.65 : 0.88
-          canvas.style.opacity = lm ? '0.6' : '1'
+          glowMat.opacity = lm ? 0.35 : 0.95
+          starMat.opacity = lm ? 0.7 : 0.9
+          canvas.style.opacity = lm ? '0.65' : '1'
         }
         applyTheme()
         new MutationObserver(applyTheme).observe(document.body,{ attributes:true, attributeFilter:['class'] })
 
         return function (time) {
-          // Solar rings orbit
+          // Core & Network orbit
           orbRings.forEach(function(r){ r.pts.rotation.y+=r.spd })
-          starSph.material.opacity = 0.7+Math.sin(time*2.2)*0.18
-          glowSpr.scale.set(12+Math.sin(time*1.8)*1.4,12+Math.sin(time*1.8)*1.4,1)
-          starGroup.rotation.y += (mouseX*0.3-starGroup.rotation.y)*0.018
-          starGroup.rotation.x = 0.52+(mouseY*0.15-(starGroup.rotation.x-0.52))*0.018
+          starSph.material.opacity = 0.75+Math.sin(time*2.2)*0.15
+          glowSpr.scale.set(15+Math.sin(time*1.8)*2,15+Math.sin(time*1.8)*2,1)
+          netPts.rotation.y = time * 0.05
+          netPts.rotation.x = time * 0.03
+          netLines.rotation.y = time * 0.05
+          netLines.rotation.x = time * 0.03
+          coreGroup.rotation.y += (mouseX*0.25-coreGroup.rotation.y)*0.015
+          coreGroup.rotation.x = 0.45+(mouseY*0.15-(coreGroup.rotation.x-0.45))*0.015
 
-          // ATI rain falls
-          rainCols.forEach(function(col){
-            var pos=col.geometry.attributes.position.array
-            for(var i=1;i<pos.length;i+=3){ pos[i]-=col.userData.speed; if(pos[i]<-28) pos[i]=28 }
-            col.geometry.attributes.position.needsUpdate=true
+          // Rain trails fall
+          rainTrails.forEach(function(tr){
+            var pos = tr.geometry.attributes.position.array
+            pos[1] -= tr.userData.speed
+            pos[4] -= tr.userData.speed
+            if(pos[4] < -40) {
+              pos[1] = 40; pos[4] = 40 + tr.userData.len
+            }
+            tr.geometry.attributes.position.needsUpdate=true
           })
-          rainGroup.rotation.y += (mouseX*0.05-rainGroup.rotation.y)*0.008
+          rainGroup.rotation.y += (mouseX*0.06-rainGroup.rotation.y)*0.01
 
-          // Gesture waves undulate
-          waveRows.forEach(function(w){
-            for(var s=0;s<=waveSegs;s++) w.pos[s*3+1]=w.row*3.5+Math.sin(time*1.6+s*0.22+w.row*1.1)*3.5
-            w.geo.attributes.position.needsUpdate=true
-          })
-          waveGroup.rotation.y += (mouseX*0.08-waveGroup.rotation.y)*0.01
+          // Ribbon undulates
+          for(var i=0; i<posAtt.count; i++) {
+            var x = posAtt.getX(i), z = posAtt.getZ(i)
+            var yOff = Math.sin(time*1.5 + x*0.05 + z*0.1) * 3.5
+            posAtt.setY(i, origY[i] + yOff)
+          }
+          posAtt.needsUpdate = true
+          waveGroup.rotation.y += (mouseX*0.1-waveGroup.rotation.y)*0.01
 
-          // QR cells pulse
+          // QR cells pulse via distance wave
           qrCells.forEach(function(cell){
-            cell.material.opacity=0.1+Math.sin(time*1.2+cell.userData.pulseOff)*0.14
-            cell.rotation.z+=0.003
+            cell.material.opacity = 0.08 + Math.sin(time*2.5 - cell.userData.dist*0.2)*0.15
+            cell.rotation.z += cell.userData.rot
           })
-          qrGroup.rotation.y+=0.0025
-          qrGroup.rotation.x+=(mouseY*0.04-qrGroup.rotation.x)*0.01
+          qrGroup.rotation.z += (mouseX*0.05 - qrGroup.rotation.z)*0.01
 
-          // RPG gems spin + float
+          // Gems spin, float, and orbit
           gems.forEach(function(g){
-            g.rotation.x+=g.userData.rotSpd.x; g.rotation.y+=g.userData.rotSpd.y
-            g.position.y+=Math.sin(time*g.userData.floatSpd+g.userData.floatOff)*0.015
+            g.children[1].rotation.x += g.userData.rotSpdX
+            g.children[1].rotation.y += g.userData.rotSpdY
+            g.userData.ang += g.userData.orbitSpd
+            g.position.x = Math.cos(g.userData.ang) * g.userData.dist
+            g.position.z = Math.sin(g.userData.ang) * g.userData.dist
+            g.position.y += Math.sin(time*g.userData.floatSpd+g.userData.floatOff)*0.02
           })
-          rpgGroup.rotation.y+=(mouseX*0.12-rpgGroup.rotation.y)*0.012
+          rpgGroup.rotation.y+=(mouseX*0.15-rpgGroup.rotation.y)*0.015
 
-          root.rotation.y+=mouseX*0.001
+          root.rotation.y+=mouseX*0.002
+          root.rotation.x+=mouseY*0.001
         }
       },
 

@@ -1566,12 +1566,26 @@
         .hey {
           margin-bottom: 20px;
         }
+        .top-nav {
+          top: 15px;
+          left: 15px;
+          width: calc(100% - 30px);
+          border-radius: 30px;
+          padding: 10px 20px;
+          box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+          border: 1px solid var(--line);
+        }
+        .top-nav.s {
+          padding: 8px 20px;
+        }
         .desktop-dl {
           display: none;
         }
         .mobile-dl {
           display: inline-flex;
           justify-content: center;
+          width: auto !important;
+          flex: 0 1 auto;
         }
         .tw {
           border: none;
@@ -1602,10 +1616,13 @@
           flex-direction: row;
           flex-wrap: wrap;
           justify-content: center;
+          gap: 12px;
         }
         .btn-p,
         .btn-g {
           justify-content: center;
+          width: auto !important;
+          flex: 0 1 auto;
         }
       }
     </style>
