@@ -81,6 +81,11 @@ select {
   height: 32px;
   width: auto;
   object-fit: contain;
+  /* Invert black logo to white for dark mode (default) */
+  filter: invert(1) drop-shadow(0 0 8px var(--primary-glow, rgba(56, 189, 248, 0.4)));
+}
+body.lm .brand-logo {
+  /* Revert to black logo for light mode */
   filter: drop-shadow(0 0 8px var(--primary-glow, rgba(56, 189, 248, 0.4)));
 }
 .nav-links {
