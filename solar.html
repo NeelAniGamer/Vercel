@@ -1333,7 +1333,7 @@
     <div class="cr" id="cRing"></div>
 
     <nav class="top-nav">
-      <a href="home" class="nav-brand">
+      <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
       </a>
@@ -1345,7 +1345,7 @@
         </svg>
       </button>
       <div class="nav-links" id="navLinks">
-        <a href="home" class="nav-link">Home</a>
+        <a href="/" class="nav-link">Home</a>
         <a href="about" class="nav-link">About</a>
         <a href="school" class="nav-link">School</a>
         <a href="sneh-asha" class="nav-link">Sneh Asha</a>
@@ -1396,7 +1396,8 @@
 
     <div class="stars-bg"></div>
 
-    <header class="game-hero">
+    <header class="game-hero" style="position: relative;">
+      <canvas id="bgCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
       <div class="hero-badge anim-target">Orbital Physics Online</div>
 
       <h1><span id="typewriter-text"></span><span class="cursor-blink">_</span></h1>
@@ -1592,5 +1593,6 @@
         <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yashan.</div>
       </div>
     </footer>
+    <script defer src="col-3d.js"></script>
   </body>
 </html>

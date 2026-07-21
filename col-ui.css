@@ -43,6 +43,16 @@ body {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
+/* Enforce capitalization without performance-killing universal selectors */
+body {
+  text-transform: capitalize;
+}
+h1, h2, h3, h4, h5, h6, p, a, span, button, input, label, li, .nav-link, .btn {
+  text-transform: capitalize !important;
+}
+code, pre, .tech-tag, kbd, .brand, [style*="monospace"], .term-dot {
+  text-transform: none !important;
+}
 input,
 textarea,
 select {
@@ -690,7 +700,19 @@ body.lm .nav-login-btn:hover {
 }
 @media (max-width: 900px) {
   .top-nav {
-    padding: 15px 20px;
+    position: fixed !important;
+    top: 15px !important;
+    left: 15px !important;
+    right: 15px !important;
+    width: auto !important;
+    border-radius: 40px !important;
+    padding: 10px 18px !important;
+    background: var(--nav) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    border: 1px solid var(--line) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+    z-index: 1000 !important;
   }
   .desktop-dl {
     display: none;
@@ -700,8 +722,8 @@ body.lm .nav-login-btn:hover {
   .mobile-close {
     display: none;
     position: fixed;
-    top: 18px;
-    right: 20px;
+    top: 25px;
+    right: 25px;
     width: 40px;
     height: 40px;
     background: var(--panel);
@@ -724,46 +746,45 @@ body.lm .nav-login-btn:hover {
     stroke-width: 2.5;
   }
 
-  /* ── Hamburger (bottom bar) ── */
+  /* ── Hamburger moved inside the pill layout via fixed pos ── */
   .mmb {
     display: flex !important;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    z-index: 999;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 56px;
-    background: var(--void);
-    border-top: 1px solid var(--line);
-    padding: 6px 0 4px;
-    margin: 0;
-    border-radius: 0;
+    gap: 4px;
+    z-index: 1005 !important;
+    position: fixed !important;
+    top: 23px !important;
+    right: 30px !important;
+    width: 34px !important;
+    height: 34px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
   }
   .m-line {
-    width: 22px;
-    height: 2px;
-    background: var(--ink, #e8e3d8);
-    border-radius: 2px;
-    transition:
-      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 0.3s;
-    transform-origin: center;
-    display: block;
-    pointer-events: none;
+    width: 22px !important;
+    height: 2px !important;
+    background: var(--ink) !important;
+    border-radius: 2px !important;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s !important;
   }
   .mmb.active .m-line:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
+    transform: translateY(6px) rotate(45deg) !important;
   }
   .mmb.active .m-line:nth-child(2) {
-    opacity: 0;
+    opacity: 0 !important;
   }
   .mmb.active .m-line:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
+    transform: translateY(-6px) rotate(-45deg) !important;
+  }
+
+  /* Hide the old bottom bar visually since mmb is fixed at top */
+  .mobile-bottom-nav {
+    display: none !important;
   }
 
   /* ── Full-screen slide-in panel ── */
@@ -774,11 +795,11 @@ body.lm .nav-login-btn:hover {
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    background: var(--void);
+    background: var(--panel) !important;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    padding: calc(env(safe-area-inset-top, 0px) + 70px) 28px calc(56px + env(safe-area-inset-bottom, 0px) + 16px);
+    padding: calc(env(safe-area-inset-top, 0px) + 90px) 28px calc(env(safe-area-inset-bottom, 0px) + 20px);
     gap: 0;
     opacity: 0;
     visibility: hidden;
@@ -792,6 +813,10 @@ body.lm .nav-login-btn:hover {
     overflow-x: hidden;
     flex-wrap: nowrap;
   }
+  body.lm .nav-links {
+    background: var(--void) !important;
+  }
+  
   .nav-links.active {
     opacity: 1;
     visibility: visible;
@@ -808,30 +833,14 @@ body.lm .nav-login-btn:hover {
     opacity: 1;
     transform: translateX(0);
   }
-  .nav-links.active > :nth-child(1) {
-    transition-delay: 0.06s;
-  }
-  .nav-links.active > :nth-child(2) {
-    transition-delay: 0.1s;
-  }
-  .nav-links.active > :nth-child(3) {
-    transition-delay: 0.14s;
-  }
-  .nav-links.active > :nth-child(4) {
-    transition-delay: 0.18s;
-  }
-  .nav-links.active > :nth-child(5) {
-    transition-delay: 0.22s;
-  }
-  .nav-links.active > :nth-child(6) {
-    transition-delay: 0.26s;
-  }
-  .nav-links.active > :nth-child(7) {
-    transition-delay: 0.3s;
-  }
-  .nav-links.active > :nth-child(8) {
-    transition-delay: 0.34s;
-  }
+  .nav-links.active > :nth-child(1) { transition-delay: 0.06s; }
+  .nav-links.active > :nth-child(2) { transition-delay: 0.1s; }
+  .nav-links.active > :nth-child(3) { transition-delay: 0.14s; }
+  .nav-links.active > :nth-child(4) { transition-delay: 0.18s; }
+  .nav-links.active > :nth-child(5) { transition-delay: 0.22s; }
+  .nav-links.active > :nth-child(6) { transition-delay: 0.26s; }
+  .nav-links.active > :nth-child(7) { transition-delay: 0.3s; }
+  .nav-links.active > :nth-child(8) { transition-delay: 0.34s; }
 
   /* ── Nav links (icon + label row) ── */
   .nav-links .nav-link,
@@ -845,140 +854,86 @@ body.lm .nav-login-btn:hover {
     width: 100%;
     padding: 16px 14px;
     color: var(--ink);
-    margin: 0;
     border-bottom: 1px solid var(--line);
-    border-radius: 0;
-    font-weight: 500;
+    cursor: pointer;
   }
   .nav-link svg,
   .dropdown-btn svg {
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
     stroke: var(--dim);
-    transition: stroke 0.25s;
+    transition: 0.2s;
   }
   .nav-link:hover svg,
-  .dropdown.active .dropdown-btn svg {
+  .nav-link.act svg {
     stroke: var(--signal);
   }
-  .nav-link::after {
-    display: none;
-  }
-  .nav-link:hover {
-    color: var(--signal);
+  .nav-links > :last-child {
+    border-bottom: none;
   }
 
   /* ── Projects dropdown ── */
-  .dropdown-btn {
-    font-size: 1.1rem;
-    font-family: var(--sans);
-    font-style: normal;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 14px;
+  .nav-links .dropdown-btn {
     width: 100%;
-    color: var(--ink);
-    padding: 16px 14px;
-  }
-  .dropdown.active .dropdown-btn {
-    color: var(--signal);
-  }
-  .dropdown-btn span {
-    font-style: normal;
-    font-size: 0.75rem;
-    margin-left: auto;
-  }
-
-  .dropdown-content {
-    position: static !important;
-    transform: none !important;
-    min-width: 100%;
-    opacity: 1;
-    visibility: visible;
-    display: none;
-    margin-top: 0;
-    background: transparent;
-    box-shadow: none;
-    border: none;
-    pointer-events: auto;
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
-  .dropdown.active .dropdown-content {
-    display: flex !important;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .dropdown-content-inner {
-    border: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    align-items: flex-start;
-    width: 100%;
-    padding: 0 !important;
-    gap: 6px;
-  }
-
-  .dropdown-content a {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-family: var(--sans);
-    font-size: 0.82rem;
-    font-style: normal;
-    padding: 8px 12px;
-    color: var(--dim);
-    width: 100%;
-    text-align: left;
+    gap: 14px;
     background: transparent;
-    border-radius: 12px;
     border: none;
-    font-weight: 500;
-  }
-  .dropdown-content a svg {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-    stroke: var(--dim);
-    transition: stroke 0.25s;
-  }
-  .dropdown-content a:hover {
-    background: var(--panel) !important;
-    color: var(--signal);
-    border-color: var(--lineb);
-  }
-  .dropdown-content a:hover svg {
-    stroke: var(--signal);
-  }
-
-  /* ── Scenic toggle inside mobile nav ── */
-  .nav-links .hz-toggle {
-    width: 100%;
-    height: 48px;
-    border-radius: 14px;
-    margin: 12px 0 0;
+    color: var(--ink);
+    font-size: 1.1rem;
+    font-family: var(--sans);
     padding: 0;
   }
-  .nav-links .hz-orb {
-    width: 34px;
-    height: 34px;
-    top: 7px;
-    left: 8px;
+  .nav-links .dropdown-content {
+    position: static;
+    transform: none;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.3s ease;
+    margin-left: 34px;
+    padding: 0;
+    pointer-events: none;
+    visibility: hidden;
   }
-  .nav-links .hz-toggle.night .hz-orb {
-    left: calc(100% - 44px);
+  .nav-links .dropdown.active .dropdown-content {
+    opacity: 1;
+    max-height: 400px;
+    padding-top: 10px;
+    pointer-events: auto;
+    visibility: visible;
   }
-  .nav-links .hz-orb::after {
-    width: 30px;
-    height: 30px;
-    top: -3px;
-    left: 7px;
+  .nav-links .dropdown-content a {
+    color: var(--dim);
+    font-size: 0.95rem;
+    padding: 10px 0;
   }
-  .nav-links .hz-skyline { height: 14px; }
-  .nav-links .hz-windows { height: 14px; }
+  .nav-links .dropdown-content a:hover {
+    color: var(--primary);
+    background: transparent;
+  }
 
-  /* ── Settings group (theme + auth) ── */
+  /* Fix missing .nav-settings wrapper layout */
+  .nav-links > .hz-toggle {
+    margin-top: auto !important;
+    margin-bottom: 24px !important;
+    align-self: center !important;
+    transform: scale(1.2);
+  }
+  .nav-links > .nav-login-btn,
+  .nav-links > .nav-dl-btn,
+  .nav-links > .nav-user-profile {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .mobile-close {
+    display: none !important;
+  }
   .tw {
     margin-top: 20px;
     width: 100%;
@@ -1003,6 +958,7 @@ body.lm .nav-login-btn:hover {
   .nav-login-btn {
     margin-top: 12px;
     width: 100%;
+    display: flex;
     justify-content: center;
     gap: 10px;
     padding: 16px;

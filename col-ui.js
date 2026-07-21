@@ -164,7 +164,7 @@ window.addEventListener('col-apk-verified', function (e) {
     if (!e.detail || !e.detail.verified) return
     var badge = document.createElement('div')
     badge.id = 'colApkBadge'
-    badge.textContent = '✓ Verified APK'
+    badge.textContent = 'Verified APK'
     badge.style.cssText =
       'position:fixed;bottom:64px;left:50%;transform:translateX(-50%);background:var(--em,#34D399);color:#070A14;font-family:var(--sans,sans-serif);font-size:0.75rem;font-weight:600;padding:4px 12px;border-radius:20px;z-index:998;pointer-events:none;opacity:0;transition:opacity 0.3s;'
     document.body.appendChild(badge)

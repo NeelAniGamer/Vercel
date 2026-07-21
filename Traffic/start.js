@@ -85,9 +85,26 @@ window.ASSET_MANIFEST = {}
   ;['sample-house-a','sample-house-b','sample-house-c'].forEach(h => { M['mbuilding_'+h] = glb(mbKit + 'building-' + h + '.glb') })
   ;['sample-tower-a','sample-tower-b','sample-tower-c','sample-tower-d'].forEach(t => { M['mbuilding_'+t] = glb(mbKit + 'building-' + t + '.glb') })
 
-  // Building kit
-  ;['wall','wall-doorway-square','column','column-wide'].forEach(w => { M['bkit_'+w] = glb(bkKit + w + '.glb') })
-  ;['barricade-doorway-a','barricade-doorway-b'].forEach(b => { M['bkit_'+b] = glb(bkKit + b + '.glb') })
+  // Building kit (modular components for procedural buildings)
+  ;['wall','wall-doorway-square','wall-doorway-round','wall-doorway-wide-round','wall-doorway-wide-square',
+    'wall-window-square','wall-window-round','wall-window-round-detailed','wall-window-wide-square','wall-window-wide-round',
+    'wall-window-wide-round-detailed','wall-window-narrow','wall-window-tall','wall-window-wide',
+    'column','column-wide','column-thin',
+    'border','border-corner','border-corner-round','border-corner-diagonal','border-corner-small',
+    'border-high','border-high-corner','border-high-corner-round','border-high-corner-diagonal','border-high-corner-small',
+    'roof-flat','roof-flat-center','roof-flat-corner','roof-flat-corner-inner','roof-flat-corner-high',
+    'roof-flat-side','roof-flat-patch','roof-flat-patch-large','roof-flat-square','roof-flat-top','roof-flat-border-side','roof-flat-border-straight','roof-flat-detail-a','roof-flat-detail-b','roof-flat-detail-c','roof-flat-detail-d',
+    'roof-gable','roof-gable-end','roof-gable-corner',
+    'roof-slanted','roof-slanted-corner-a','roof-slanted-corner-b','roof-slanted-corner-c','roof-slanted-corner-inner','roof-slanted-flat','roof-slanted-window','roof-slanted-detail',
+    'floor','floor-half','floor-quarter','floor-corner','floor-corner-round','floor-corner-diagonal',
+    'stairs-center','stairs-center-short','stairs-closed','stairs-closed-short','stairs-open','stairs-open-short','stairs-sides','stairs-sides-short',
+    'gutter-vertical','gutter-vertical-top','gutter-vertical-bottom','gutter-vertical-short','gutter-vertical-wall',
+    'plating','plating-wide','plating-detailed','plating-detailed-wide',
+    'door-rotate-round-a','door-rotate-round-b','door-rotate-round-c','door-rotate-round-d',
+    'door-rotate-square-a','door-rotate-square-b','door-rotate-square-c','door-rotate-square-d',
+    'detail-pipe'
+  ].forEach(w => { M['bkit_'+w] = glb(bkKit + w + '.glb') })
+  ;['barricade-doorway-a','barricade-doorway-b','barricade-doorway-c','barricade-window-a','barricade-window-b','barricade-window-c'].forEach(b => { M['bkit_'+b] = glb(bkKit + b + '.glb') })
 
   // Watercraft
   M.ship_cargo = glb(wcKit + 'ship-cargo-a.glb'); M.boat_speed = glb(wcKit + 'boat-speed-a.glb')
@@ -113,7 +130,26 @@ window.ASSET_GROUPS = {
   cars:      ['car_hatchback-sports','car_suv','car_suv-luxury','car_race-future','car_sedan-sports','car_kart-oobi','car_kart-oodi','car_kart-ooli','car_kart-oopi','car_kart-oozi','car_tractor','car_tractor-police','car_tractor-shovel'],
   trucks:    ['truck_firetruck','truck_garbage-truck','truck_truck-flat'],
   modular:   ['mbuilding_sample-house-a','mbuilding_sample-house-b','mbuilding_sample-house-c','mbuilding_sample-tower-a','mbuilding_sample-tower-b','mbuilding_sample-tower-c','mbuilding_sample-tower-d'],
-  bkit:      ['bkit_wall','bkit_wall-doorway-square','bkit_column','bkit_column-wide','bkit_barricade-doorway-a','bkit_barricade-doorway-b'],
+  bkit:      ['bkit_wall','bkit_wall-doorway-square','bkit_wall-doorway-round','bkit_wall-doorway-wide-round','bkit_wall-doorway-wide-square',
+              'bkit_wall-window-square','bkit_wall-window-round','bkit_wall-window-round-detailed','bkit_wall-window-wide-square','bkit_wall-window-wide-round',
+              'bkit_wall-window-wide-round-detailed','bkit_wall-window-narrow','bkit_wall-window-tall','bkit_wall-window-wide',
+              'bkit_column','bkit_column-wide','bkit_column-thin',
+              'bkit_border','bkit_border-corner','bkit_border-corner-round','bkit_border-corner-diagonal','bkit_border-corner-small',
+              'bkit_border-high','bkit_border-high-corner','bkit_border-high-corner-round','bkit_border-high-corner-diagonal','bkit_border-high-corner-small',
+              'bkit_roof-flat','bkit_roof-flat-center','bkit_roof-flat-corner','bkit_roof-flat-corner-inner','bkit_roof-flat-corner-high',
+              'bkit_roof-flat-side','bkit_roof-flat-patch','bkit_roof-flat-patch-large','bkit_roof-flat-square','bkit_roof-flat-top',
+              'bkit_roof-flat-border-side','bkit_roof-flat-border-straight',
+              'bkit_roof-flat-detail-a','bkit_roof-flat-detail-b','bkit_roof-flat-detail-c','bkit_roof-flat-detail-d',
+              'bkit_roof-gable','bkit_roof-gable-end','bkit_roof-gable-corner',
+              'bkit_roof-slanted','bkit_roof-slanted-corner-a','bkit_roof-slanted-corner-b','bkit_roof-slanted-corner-c','bkit_roof-slanted-corner-inner','bkit_roof-slanted-flat','bkit_roof-slanted-window','bkit_roof-slanted-detail',
+              'bkit_floor','bkit_floor-half','bkit_floor-quarter','bkit_floor-corner','bkit_floor-corner-round','bkit_floor-corner-diagonal',
+              'bkit_stairs-center','bkit_stairs-center-short','bkit_stairs-closed','bkit_stairs-closed-short','bkit_stairs-open','bkit_stairs-open-short','bkit_stairs-sides','bkit_stairs-sides-short',
+              'bkit_gutter-vertical','bkit_gutter-vertical-top','bkit_gutter-vertical-bottom','bkit_gutter-vertical-short','bkit_gutter-vertical-wall',
+              'bkit_plating','bkit_plating-wide','bkit_plating-detailed','bkit_plating-detailed-wide',
+              'bkit_door-rotate-round-a','bkit_door-rotate-round-b','bkit_door-rotate-round-c','bkit_door-rotate-round-d',
+              'bkit_door-rotate-square-a','bkit_door-rotate-square-b','bkit_door-rotate-square-c','bkit_door-rotate-square-d',
+              'bkit_detail-pipe',
+              'bkit_barricade-doorway-a','bkit_barricade-doorway-b','bkit_barricade-doorway-c','bkit_barricade-window-a','bkit_barricade-window-b','bkit_barricade-window-c'],
   watercraft:['ship_cargo','boat_speed','wc_boat-speed-b','wc_boat-speed-c','wc_boat-fishing-small','wc_boat-tug-a','wc_ship-cargo-b','wc_ship-small'],
   trains:    ['train','metro','tk_train-diesel-a','tk_train-electric-bullet-a','tk_train-tram-modern','tk_train-carriage-box'],
   emergency: ['ambulance'],

@@ -178,7 +178,7 @@ class RenderCore {
         if (navigator.hardwareConcurrency) {
             console.log(`RenderCore: CPU Cores: ${navigator.hardwareConcurrency}`);
             if (navigator.hardwareConcurrency <= 2) score -= 1;
-            else if (if (navigator.hardwareConcurrency >= 8) score += 1;
+            else if (navigator.hardwareConcurrency >= 8) score += 1;
         }
 
         // 3. Memory (deprecated but still useful)

@@ -2541,66 +2541,104 @@ class Game {
         const winMat = new THREE.MeshBasicMaterial({ color: 0x304050 });
         const instancedBldgData = {};
 
-        const drawBldg = (bx, bz, type, rot) => {
+const drawBldg = (bx, bz, type, rot) => {
           let bldgKeys = [];
           if (window.PRELOADED_MODELS) {
-              bldgKeys = Object.keys(window.PRELOADED_MODELS).filter(k => k.startsWith('suburban_') || k.startsWith('industrial_'));
+              bldgKeys = Object.keys(window.PRELOADED_MODELS).filter(k => 
+                  k.startsWith('suburban_') || k.startsWith('industrial_') || k.startsWith('mbuilding_')
+              );
           }
 
-          if (bldgKeys.length > 0 && type !== 'school') {
-             let key = bldgKeys[Math.floor(Math.random() * bldgKeys.length)];
-             if (type === 'skyscraper' && bldgKeys.some(k => k.includes('high'))) key = bldgKeys.find(k => k.includes('high'));
-             if (type === 'chawl' && bldgKeys.some(k => k.includes('suburban'))) key = bldgKeys.find(k => k.includes('suburban'));
-             if (type === 'industrial' && bldgKeys.some(k => k.includes('industrial'))) key = bldgKeys.find(k => k.includes('industrial'));
+          const pickModel = (prefixes) => {
+              if (!bldgKeys.length) return null;
+              const candidates = bldgKeys.filter(k => prefixes.some(p => k.startsWith(p)));
+              return candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : null;
+          };
 
-             if (!instancedBldgData[key]) instancedBldgData[key] = [];
+          let key = null;
+          const distFromCenter = Math.hypot(bx, bz);
+          
+          // Map building types to model prefixes
+          const typeMap = {
+              'skyscraper': ['mbuilding_sample-tower', 'industrial_q', 'industrial_r', 'industrial_t'],
+              'tower': ['mbuilding_sample-tower', 'industrial_l', 'industrial_m', 'industrial_n'],
+              'apartment': ['mbuilding_sample-house', 'suburban_l', 'suburban_m', 'suburban_n', 'suburban_o', 'suburban_p'],
+              'shop': ['suburban_d', 'suburban_e', 'suburban_f', 'suburban_g', 'suburban_h'],
+              'bank': ['mbuilding_sample-house-a', 'mbuilding_sample-house-b', 'suburban_i', 'suburban_j'],
+              'hospital': ['mbuilding_sample-house-c', 'suburban_k', 'suburban_l'],
+              'school': ['mbuilding_sample-house-a', 'suburban_m', 'suburban_n'],
+              'police': ['suburban_p', 'suburban_q', 'suburban_r'],
+              'warehouse': ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_l'],
+              'factory': ['industrial_e', 'industrial_f', 'industrial_g', 'industrial_h', 'industrial_i', 'industrial_j'],
+              'industrial': ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_e'],
+              'house': ['suburban_a', 'suburban_b', 'suburban_c', 'suburban_d', 'suburban_e'],
+              'chawl': ['suburban_f', 'suburban_g', 'suburban_h', 'suburban_i', 'suburban_j'],
+              'shack': ['suburban_a', 'suburban_b']
+          };
+
+          const prefixes = typeMap[type] || typeMap['house'];
+          key = pickModel(prefixes);
+
+          if (key && bldgKeys.length > 0) {
+              if (!instancedBldgData[key]) instancedBldgData[key] = [];
               instancedBldgData[key].push({ x: bx, z: bz, r: rot, s: 10.5 });
           } else {
-             const g = new THREE.Group();
-             const mat = bMats[Math.floor(Math.random() * bMats.length)];
-             const bh = 16 + Math.random() * 16;
-             const bw = 10 + Math.random() * 10;
-             const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 14), mat);
-             bMesh.position.y = bh / 2;
-             g.add(bMesh);
-             if (cfg.isNight && !cfg.is50km) {
-               const lWinMat = new THREE.MeshBasicMaterial({ color: 0xffdd88 });
-               const winRows = Math.floor(bh / 4);
-               const winCols = Math.floor(bw / 3.5);
-               for (let wr = 0; wr < winRows; wr++) {
-                 for (let wc = 0; wc < winCols; wc++) {
-                   if (Math.random() > 0.55) continue;
-                   const wMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.6), lWinMat);
-                   wMesh.position.set(-bw / 2 + 2 + wc * 3.5, 3 + wr * 4, 7.01);
-                   g.add(wMesh);
-                   const wMesh2 = wMesh.clone();
-                   wMesh2.position.z = -7.01;
-                   wMesh2.rotation.y = Math.PI;
-                   g.add(wMesh2);
-                 }
-               }
-             }
-             g.position.set(bx, 0, bz); g.rotation.y = rot;
+              const g = new THREE.Group();
+              const mat = bMats[Math.floor(Math.random() * bMats.length)];
+              const bh = 16 + Math.random() * 16;
+              const bw = 10 + Math.random() * 10;
+              const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 14), mat);
+              bMesh.position.y = bh / 2;
+              g.add(bMesh);
+              if (cfg.isNight && !cfg.is50km) {
+                const lWinMat = new THREE.MeshBasicMaterial({ color: 0xffdd88 });
+                const winRows = Math.floor(bh / 4);
+                const winCols = Math.floor(bw / 3.5);
+                for (let wr = 0; wr < winRows; wr++) {
+                  for (let wc = 0; wc < winCols; wc++) {
+                    if (Math.random() > 0.55) continue;
+                    const wMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.6), lWinMat);
+                    wMesh.position.set(-bw / 2 + 2 + wc * 3.5, 3 + wr * 4, 7.01);
+                    g.add(wMesh);
+                    const wMesh2 = wMesh.clone();
+                    wMesh2.position.z = -7.01;
+                    wMesh2.rotation.y = Math.PI;
+                    g.add(wMesh2);
+                  }
+                }
+              }
+              g.position.set(bx, 0, bz); g.rotation.y = rot;
               g.userData = { isBuilding: true, halfW: bw / 2, halfD: 7 };
               this.scene.add(g); this.obstacles.push(g);
           }
         };
 
-        const getBldgType = (zone) => {
+        const getBldgType = (zone, distanceFromCenter = 0) => {
           const rnd = Math.random();
           if (zone === 'Commercial') {
+            if (distanceFromCenter < 200 && rnd > 0.8) return 'skyscraper';
+            if (distanceFromCenter < 400 && rnd > 0.6) return 'tower';
             if (rnd > 0.7) return 'skyscraper';
-            if (rnd > 0.4) return 'shop';
-            if (rnd > 0.2) return 'bank';
+            if (rnd > 0.45) return 'shop';
+            if (rnd > 0.25) return 'bank';
             return 'hospital';
           } else if (zone === 'Industrial') {
+            if (rnd > 0.8) return 'warehouse';
+            if (rnd > 0.5) return 'factory';
             return 'industrial';
           } else if (zone === 'Residential') {
-            return rnd > 0.6 ? 'normal' : 'chawl';
+            if (distanceFromCenter < 300 && rnd > 0.7) return 'apartment';
+            if (rnd > 0.7) return 'apartment';
+            if (rnd > 0.5) return 'house';
+            return 'chawl';
           } else if (zone === 'Slums') {
-            return rnd > 0.3 ? 'chawl' : 'normal';
+            return rnd > 0.2 ? 'chawl' : 'shack';
+          } else if (zone === 'Civic') {
+            if (rnd > 0.7) return 'school';
+            if (rnd > 0.4) return 'hospital';
+            return 'police';
           }
-          return 'normal';
+          return 'house';
         };
 
         // Parcel Generation
@@ -2623,7 +2661,8 @@ class Game {
 
               const rot = isV ? (side > 0 ? 0 : Math.PI) : (side > 0 ? Math.PI / 2 : -Math.PI / 2);
               const zone = this._getZoneAt(bx, bz);
-              const type = getBldgType(zone);
+              const distFromCenter = Math.hypot(bx, bz);
+              const type = getBldgType(zone, distFromCenter);
               drawBldg(bx, bz, type, rot);
             });
           }

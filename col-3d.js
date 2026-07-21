@@ -836,13 +836,15 @@
     }, 100)
     if (canvas.classList) canvas.classList.add('v')
 
-    // Home page manages its own theme reactivity inside applyTheme().
-    // Other scenes dim gracefully in light mode.
     function syncThemeOpacity() {
       if (!hasFadedIn) return
-      if (path === 'home') return // home handles its own opacity
       var isLight = document.body.classList.contains('lm')
-      canvas.style.opacity = isLight ? '0.18' : '1'
+      var nativeLight = ['home', 'ati', 'solar', 'qr', 'rpg', 'gesture', 'driving']
+      if (nativeLight.indexOf(path) >= 0) {
+        canvas.style.opacity = isLight ? '0.65' : '1'
+      } else {
+        canvas.style.opacity = isLight ? '0.18' : '1'
+      }
       scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)
     }
     new MutationObserver(syncThemeOpacity).observe(document.body, { attributes: true, attributeFilter: ['class'] })
