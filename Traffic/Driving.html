@@ -1240,6 +1240,31 @@
       line-height: 1.6;
     }
 
+    /* === Certificate Print Styles - Fixed Single Page === */
+    @media print {
+      body { background: white !important; }
+      #cert-wrapper {
+        display: block !important;
+      }
+      .crt {
+        width: 100% !important;
+        max-width: 700px !important;
+        margin: 0 auto !important;
+        padding: 20px !important;
+        border-width: 6px !important;
+        font-size: 12pt !important;
+        page-break-inside: avoid !important;
+        transform: scale(0.95) !important;
+        transform-origin: top center !important;
+        min-height: auto !important;
+        height: auto !important;
+      }
+      .crtn { font-size: 18pt !important; }
+      .crt-course { font-size: 24pt !important; }
+      .crt-body { font-size: 12pt !important; }
+      .crt-meta { font-size: 10pt !important; }
+    }
+
     /* Challan & In-game overlays */
     #cov {
       position: fixed;
