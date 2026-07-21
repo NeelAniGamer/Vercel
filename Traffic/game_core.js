@@ -647,13 +647,10 @@ class Game {
         this._v1 = new THREE.Vector3(); this._v2 = new THREE.Vector3();
         this._v3 = new THREE.Vector3(); this._e1 = new THREE.Euler();
         this._clockEl = null;
-        // Phase 7: Object pools (initialized in _buildScene)
-        this.npcPool = null; this.pedPool = null; this._brakeDustCd = false;
-        this.pools = {
-          vec3: new Pool(() => new THREE.Vector3()),
-          mat4: new Pool(() => new THREE.Matrix4()),
-          box3: new Pool(() => new THREE.Box3())
-        };
+        
+        // Initialize global Three.js object pools (zero-GC gameplay)
+        if (window.ThreePools) ThreePools.init(this);
+        
         this._initR(); this._initIn(); this._initG(); this._initVirtualJoystick(); this._loop();
         window.addEventListener('resize', () => this._rsz());
         document.addEventListener('fullscreenchange', () => this._rsz());
@@ -1696,8 +1693,38 @@ class Game {
         
         // Initialize tasks for this level
         this._initTasks(lv);
+
+        // Register HUD elements with SafeZoneGrid for responsive layout
+        if (window.SafeZoneGrid) {
+          const SZ = window.SafeZoneGrid;
+          SZ.register('speedometer', this.dom.gspd, 'TL', { order: 0, priority: 'high' });
+          SZ.register('gear', this.dom.garc, 'TL', { order: 1, priority: 'high' });
+          SZ.register('timer', this.dom.htmr, 'TL', { order: 2, priority: 'high' });
+          SZ.register('fine', this.dom.hfin, 'TL', { order: 3, priority: 'medium' });
+          SZ.register('fill', this.dom.hfill, 'TL', { order: 4, priority: 'medium' });
+          SZ.register('checkpoint', this.dom.hcp, 'TL', { order: 5, priority: 'high' });
+          SZ.register('objective', document.getElementById('objective-overlay'), 'TR', { order: 0, priority: 'high' });
+          SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
+          SZ.register('signal', this.dom['sig-ind'], 'BL', { order: 1, priority: 'high' });
+          SZ.register('boost', this.dom.boostgauge, 'BR', { order: 0, priority: 'high' });
+          SZ.register('violations', this.dom.ow, 'BR', { order: 1, priority: 'medium' });
+          SZ.register('clock', this.dom['dn-clock'], 'TC', { order: 0, priority: 'medium' });
+          SZ.register('direction', this.dom.da, 'BC', { order: 0, priority: 'high' });
+          if (this._isMobile) {
+            SZ.register('steer', document.getElementById('steer-wheel-container'), 'BL', { order: 10, priority: 'high' });
+            SZ.register('gas', document.getElementById('mc-gas'), 'BR', { order: 10, priority: 'high' });
+            SZ.register('brake', document.getElementById('mc-brake'), 'BR', { order: 11, priority: 'high' });
+          }
+        }
       }
-      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); const cmp = document.getElementById('compass-strip'); if (cmp) cmp.style.display = 'none'; if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; }
+      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); const cmp = document.getElementById('compass-strip'); if (cmp) cmp.style.display = 'none'; if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; 
+        
+        // Release all pooled objects to prevent memory leaks
+        if (window.ThreePools) ThreePools.releaseAll();
+        
+        // Clear road graph reference
+        this.roadGraph = null;
+      }
       toggleSeatbelt(btn) {
           this.seatbeltOn = !this.seatbeltOn;
           const isBike = (this.vehMode === 'bike' || this.vehMode === 'cycle');
@@ -2397,6 +2424,12 @@ class Game {
         }
 
         this._generateAnchorNodes(cfg);
+
+        // Build Road Graph from level config (spatial topology for NPC routing, building placement)
+        if (window.RoadGraph) {
+            this.roadGraph = RoadGraph.fromLevelConfig(cfg);
+            this.roadGraph.setAnchorNodes(this._anchorNodes);
+        }
 
         const RW = cfg.isPedestrian ? 10 : 12;
         this.driveRoute = cfg.route;
