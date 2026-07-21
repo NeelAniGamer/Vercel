@@ -2774,8 +2774,10 @@
     <script>
     function hzInit(){var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}hzSync()}
     function hzSync(){var el=document.querySelector('.hz-toggle');if(!el)return;if(document.body.classList.contains('lm')){el.classList.remove('night')}else{el.classList.add('night')}}
-    function hzToggle(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');hzSync()}
+    // rAF-deferred so the click event completes instantly (fixes 651ms INP on hz-toggle)
+    function hzToggle(){requestAnimationFrame(function(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');hzSync()})}
     hzInit()
+
     </script>
   </body>
 </html>

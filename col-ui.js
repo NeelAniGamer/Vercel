@@ -122,20 +122,24 @@
 })()
 
 window.toggleTheme = function (el) {
-  var tl = document.getElementById('tLabel')
-  if (el.checked) {
-    document.body.classList.add('lm')
-    try {
-      localStorage.setItem('theme', 'light')
-    } catch (e) {}
-    if (tl) tl.textContent = 'Light Mode'
-  } else {
-    document.body.classList.remove('lm')
-    try {
-      localStorage.setItem('theme', 'dark')
-    } catch (e) {}
-    if (tl) tl.textContent = 'Dark Mode'
-  }
+  // rAF-deferred so the checkbox click event completes instantly (fixes INP)
+  var isChecked = el.checked
+  requestAnimationFrame(function () {
+    var tl = document.getElementById('tLabel')
+    if (isChecked) {
+      document.body.classList.add('lm')
+      try {
+        localStorage.setItem('theme', 'light')
+      } catch (e) {}
+      if (tl) tl.textContent = 'Light Mode'
+    } else {
+      document.body.classList.remove('lm')
+      try {
+        localStorage.setItem('theme', 'dark')
+      } catch (e) {}
+      if (tl) tl.textContent = 'Dark Mode'
+    }
+  })
 }
 
 // Register Service Worker for PWA
