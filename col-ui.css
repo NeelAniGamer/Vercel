@@ -269,38 +269,38 @@ body.lm .tsb input:checked + .tst .tsth {
   color: #0f172a;
 }
 
-/* ── Horizon Scenic Day/Night Toggle ── */
+/* ── Horizon Scenic Day/Night Toggle (Nav-bar sized) ── */
 .hz-toggle {
   position: relative;
-  width: 400px;
+  width: 160px;
   max-width: 100%;
-  height: 130px;
-  border-radius: 65px;
+  height: 40px;
+  border-radius: 20px;
   cursor: pointer;
   overflow: hidden;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
-  margin-left: 10px;
+  margin-left: 6px;
   background: linear-gradient(180deg, #3B82F6 0%, #60A5FA 25%, #93C5FD 50%, #FDE68A 80%, #F59E0B 100%);
   transition: background 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -2px 8px rgba(0,0,0,0.1), 0 4px 20px rgba(0,0,0,0.3);
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.15), inset 0 -1px 4px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.2);
 }
 .hz-toggle.night {
   background: linear-gradient(180deg, #070B1A 0%, #0F172A 25%, #1E293B 50%, #334155 80%, #1E1B4B 100%);
 }
 .hz-stars {
   position: absolute;
-  top: 12px;
-  left: 25px;
-  width: 2px;
-  height: 2px;
+  top: 4px;
+  left: 8px;
+  width: 1px;
+  height: 1px;
   background: #fff;
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.8s ease 0.25s;
   z-index: 1;
-  box-shadow: 38px 10px 0 0 rgba(255,255,255,0.9), 95px 28px 0 0 rgba(255,255,255,0.7), 62px 52px 0 0 rgba(255,255,255,1), 148px 8px 0 0 rgba(255,255,255,0.6), 185px 42px 0 0 rgba(255,255,255,0.8), 228px 18px 0 0 rgba(255,255,255,0.9), 265px 55px 0 0 rgba(255,255,255,0.5), 310px 12px 0 0 rgba(255,255,255,0.8), 340px 48px 0 0 rgba(255,255,255,0.7), 120px 70px 0 0 rgba(255,255,255,0.6), 48px 85px 0 0 rgba(255,255,255,0.9), 195px 78px 0 0 rgba(255,255,255,0.5), 280px 68px 0 0 rgba(255,255,255,0.8), 355px 35px 0 0 rgba(255,255,255,0.7), 82px 40px 0 0 rgba(255,255,255,0.6), 160px 58px 0 0 rgba(255,255,255,0.9), 235px 82px 0 0 rgba(255,255,255,0.5), 320px 72px 0 0 rgba(255,255,255,0.7), 15px 60px 0 0 rgba(255,255,255,0.8), 370px 22px 0 0 rgba(255,255,255,0.6);
+  box-shadow: 15px 3px 0 0 rgba(255,255,255,0.9), 38px 9px 0 0 rgba(255,255,255,0.7), 25px 16px 0 0 rgba(255,255,255,1), 60px 3px 0 0 rgba(255,255,255,0.6), 74px 13px 0 0 rgba(255,255,255,0.8), 91px 6px 0 0 rgba(255,255,255,0.9), 106px 17px 0 0 rgba(255,255,255,0.5), 124px 4px 0 0 rgba(255,255,255,0.8), 136px 15px 0 0 rgba(255,255,255,0.7), 48px 22px 0 0 rgba(255,255,255,0.6), 85px 20px 0 0 rgba(255,255,255,0.9), 115px 10px 0 0 rgba(255,255,255,0.5), 142px 8px 0 0 rgba(255,255,255,0.8);
   animation: hz-twinkle 3s ease-in-out infinite alternate;
 }
 .hz-toggle.night .hz-stars {
@@ -316,7 +316,7 @@ body.lm .tsb input:checked + .tst .tsth {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 38px;
+  height: 12px;
   z-index: 2;
   transition: background 0.7s ease;
   background: #1E3A5F;
@@ -330,7 +330,7 @@ body.lm .tsb input:checked + .tst .tsth {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 38px;
+  height: 12px;
   z-index: 3;
   opacity: 0;
   transition: opacity 0.7s ease 0.3s;
@@ -342,33 +342,33 @@ body.lm .tsb input:checked + .tst .tsth {
 .hz-windows::before {
   content: '';
   position: absolute;
-  width: 2px;
-  height: 2px;
+  width: 1px;
+  height: 1px;
   background: #FDE68A;
   border-radius: 0.5px;
-  box-shadow: 34px -14px 0 0 rgba(253,230,138,0.9), 38px -14px 0 0 rgba(253,230,138,0.7), 42px -14px 0 0 rgba(253,230,138,0.5), 34px -10px 0 0 rgba(253,230,138,0.6), 42px -10px 0 0 rgba(253,230,138,0.8), 80px -22px 0 0 rgba(253,230,138,0.8), 84px -22px 0 0 rgba(253,230,138,0.6), 80px -18px 0 0 rgba(253,230,138,0.5), 84px -18px 0 0 rgba(253,230,138,0.9), 80px -14px 0 0 rgba(253,230,138,0.7), 175px -28px 0 0 rgba(253,230,138,0.9), 179px -28px 0 0 rgba(253,230,138,0.6), 175px -24px 0 0 rgba(253,230,138,0.5), 179px -24px 0 0 rgba(253,230,138,0.8), 175px -20px 0 0 rgba(253,230,138,0.7), 179px -20px 0 0 rgba(253,230,138,0.5), 175px -16px 0 0 rgba(253,230,138,0.9), 268px -16px 0 0 rgba(253,230,138,0.8), 272px -16px 0 0 rgba(253,230,138,0.6), 268px -12px 0 0 rgba(253,230,138,0.5), 276px -12px 0 0 rgba(253,230,138,0.7), 328px -20px 0 0 rgba(253,230,138,0.9), 332px -20px 0 0 rgba(253,230,138,0.6), 328px -16px 0 0 rgba(253,230,138,0.5), 332px -16px 0 0 rgba(253,230,138,0.8), 336px -16px 0 0 rgba(253,230,138,0.7);
+  box-shadow: 14px -4px 0 0 rgba(253,230,138,0.9), 16px -4px 0 0 rgba(253,230,138,0.7), 14px -2px 0 0 rgba(253,230,138,0.6), 32px -6px 0 0 rgba(253,230,138,0.8), 34px -6px 0 0 rgba(253,230,138,0.6), 32px -4px 0 0 rgba(253,230,138,0.5), 70px -8px 0 0 rgba(253,230,138,0.9), 72px -8px 0 0 rgba(253,230,138,0.6), 70px -6px 0 0 rgba(253,230,138,0.5), 107px -5px 0 0 rgba(253,230,138,0.8), 109px -5px 0 0 rgba(253,230,138,0.6), 107px -3px 0 0 rgba(253,230,138,0.5), 131px -6px 0 0 rgba(253,230,138,0.9), 133px -6px 0 0 rgba(253,230,138,0.6);
 }
 .hz-orb {
   position: absolute;
-  width: 110px;
-  height: 110px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  top: 10px;
-  left: 15px;
+  top: 5px;
+  left: 6px;
   z-index: 4;
   transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.7s ease, box-shadow 0.7s ease, filter 0.7s ease;
   background: radial-gradient(circle at 35% 35%, #FFF7AE 0%, #FFE066 25%, #FFB347 55%, #FF8C42 80%, #E85D04 100%);
-  box-shadow: 0 0 30px rgba(255, 179, 71, 0.5), 0 0 60px rgba(255, 140, 66, 0.3), 0 0 100px rgba(255, 140, 66, 0.15);
+  box-shadow: 0 0 10px rgba(255, 179, 71, 0.5), 0 0 20px rgba(255, 140, 66, 0.3);
 }
 .hz-orb::before {
   content: '';
   position: absolute;
-  top: -8px;
-  left: -8px;
-  right: -8px;
-  bottom: -8px;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 200, 100, 0.3);
+  border: 1px solid rgba(255, 200, 100, 0.3);
   animation: hz-sun-pulse 3s ease-in-out infinite;
 }
 @keyframes hz-sun-pulse {
@@ -378,10 +378,10 @@ body.lm .tsb input:checked + .tst .tsth {
 .hz-orb::after {
   content: '';
   position: absolute;
-  top: -12px;
-  left: 22px;
-  width: 96px;
-  height: 96px;
+  top: -4px;
+  left: 6px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: transparent;
   opacity: 0;
@@ -389,9 +389,9 @@ body.lm .tsb input:checked + .tst .tsth {
   pointer-events: none;
 }
 .hz-toggle.night .hz-orb {
-  left: 275px;
+  left: 124px;
   background: radial-gradient(circle at 35% 35%, #F8FAFC 0%, #E2E8F0 30%, #CBD5E1 60%, #94A3B8 100%);
-  box-shadow: 0 0 25px rgba(200, 215, 240, 0.4), 0 0 50px rgba(180, 200, 240, 0.2), 0 0 80px rgba(180, 200, 240, 0.1);
+  box-shadow: 0 0 8px rgba(200, 215, 240, 0.4), 0 0 16px rgba(180, 200, 240, 0.2);
 }
 .hz-toggle.night .hz-orb::after {
   background: #0F172A;
@@ -411,31 +411,31 @@ body.lm .tsb input:checked + .tst .tsth {
 }
 @media (max-width: 900px) {
   .hz-toggle {
-    width: 300px;
-    height: 98px;
-    border-radius: 49px;
+    width: 120px;
+    height: 34px;
+    border-radius: 17px;
   }
   .hz-orb {
-    width: 82px;
-    height: 82px;
-    top: 8px;
-    left: 12px;
+    width: 24px;
+    height: 24px;
+    top: 5px;
+    left: 5px;
   }
   .hz-toggle.night .hz-orb {
-    left: 206px;
+    left: 91px;
   }
   .hz-orb::after {
-    width: 72px;
-    height: 72px;
-    top: -8px;
-    left: 16px;
+    width: 22px;
+    height: 22px;
+    top: -3px;
+    left: 5px;
   }
-  .hz-skyline { height: 28px; }
-  .hz-windows { height: 28px; }
+  .hz-skyline { height: 10px; }
+  .hz-windows { height: 10px; }
   .hz-stars {
-    top: 8px;
-    left: 18px;
-    box-shadow: 28px 8px 0 0 rgba(255,255,255,0.9), 72px 22px 0 0 rgba(255,255,255,0.7), 48px 40px 0 0 rgba(255,255,255,1), 112px 6px 0 0 rgba(255,255,255,0.6), 140px 32px 0 0 rgba(255,255,255,0.8), 175px 14px 0 0 rgba(255,255,255,0.9), 200px 42px 0 0 rgba(255,255,255,0.5), 240px 10px 0 0 rgba(255,255,255,0.8), 260px 38px 0 0 rgba(255,255,255,0.7), 90px 52px 0 0 rgba(255,255,255,0.6);
+    top: 3px;
+    left: 6px;
+    box-shadow: 12px 3px 0 0 rgba(255,255,255,0.9), 30px 7px 0 0 rgba(255,255,255,0.7), 20px 13px 0 0 rgba(255,255,255,1), 46px 3px 0 0 rgba(255,255,255,0.6), 58px 11px 0 0 rgba(255,255,255,0.8), 72px 5px 0 0 rgba(255,255,255,0.9), 86px 14px 0 0 rgba(255,255,255,0.5), 100px 3px 0 0 rgba(255,255,255,0.8), 38px 18px 0 0 rgba(255,255,255,0.7), 68px 16px 0 0 rgba(255,255,255,0.6);
   }
 }
 
@@ -913,6 +913,32 @@ body.lm .nav-login-btn:hover {
   .dropdown-content a:hover svg {
     stroke: var(--signal);
   }
+
+  /* ── Scenic toggle inside mobile nav ── */
+  .nav-links .hz-toggle {
+    width: 100%;
+    height: 48px;
+    border-radius: 14px;
+    margin: 12px 0 0;
+    padding: 0;
+  }
+  .nav-links .hz-orb {
+    width: 34px;
+    height: 34px;
+    top: 7px;
+    left: 8px;
+  }
+  .nav-links .hz-toggle.night .hz-orb {
+    left: calc(100% - 44px);
+  }
+  .nav-links .hz-orb::after {
+    width: 30px;
+    height: 30px;
+    top: -3px;
+    left: 7px;
+  }
+  .nav-links .hz-skyline { height: 14px; }
+  .nav-links .hz-windows { height: 14px; }
 
   /* ── Settings group (theme + auth) ── */
   .tw {
