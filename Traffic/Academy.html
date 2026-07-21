@@ -633,6 +633,219 @@
         color: var(--muted);
       }
 
+      /* === Enhanced Level Card Styles (New Design) === */
+      .lcard {
+        background: var(--card);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 24px;
+        min-height: 160px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow:
+          0 4px 20px rgba(0, 0, 0, 0.03),
+          inset 0 1px 1px rgba(255, 255, 255, 0.05);
+      }
+
+      body.lm .lcard {
+        background: rgba(255, 255, 255, 0.7);
+        border-color: rgba(0, 0, 0, 0.08);
+        box-shadow:
+          0 4px 20px rgba(0, 0, 0, 0.05),
+          inset 0 1px 1px rgba(255, 255, 255, 0.9);
+      }
+
+      .lcard:hover:not(.lk) {
+        transform: translateY(-4px);
+        box-shadow:
+          0 12px 40px rgba(0, 0, 0, 0.1),
+          inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        border-color: var(--accent);
+      }
+
+      .lcard::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--level-progress-gradient, var(--border));
+        transition: background 0.3s ease;
+      }
+
+      .lcard.lk {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: var(--bg);
+        border-style: dashed;
+        border-color: var(--border);
+      }
+
+      .lcard.lk:hover {
+        transform: none;
+        box-shadow: none;
+        border-color: var(--border);
+      }
+
+      .lcard.lk::before {
+        background: var(--border);
+      }
+
+      .lcard-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 0;
+      }
+
+      .lcard-header {
+        margin-bottom: 12px;
+      }
+
+      .lcard-progress {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+      }
+
+      .level-progress-ring {
+        flex-shrink: 0;
+      }
+
+      .lcard-status {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .lcard-status-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--text);
+        margin-bottom: 2px;
+      }
+
+      .lcard-status-action {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .lcard.done .lcard-status-action {
+        color: var(--green);
+      }
+
+      .lcard:not(.done):not(.lk) .lcard-status-action {
+        color: var(--signal);
+      }
+
+      /* Dark mode adjustments for lcard in levels screen */
+      body:not(.lm) .lcard {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      body:not(.lm) .lcard:hover:not(.lk) {
+        border-color: var(--accent);
+        box-shadow:
+          0 12px 40px rgba(242, 184, 75, 0.1),
+          inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      }
+
+      /* Progress bar at top of lcard */
+      .lbar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--level-progress-gradient, var(--border));
+        border-radius: 20px 20px 0 0;
+        transition: background 0.3s ease, width 0.4s ease;
+      }
+
+      /* LCT (Level Card Top) */
+      .lct {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .lico {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: #fff;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .lst {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 16px;
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+
+      /* Badge variants for lcard */
+      .sdk {
+        background: rgba(52, 211, 153, 0.15);
+        color: var(--green);
+      }
+
+      .sip {
+        background: rgba(242, 184, 75, 0.15);
+        color: var(--accent);
+      }
+
+      .sns {
+        background: var(--hover);
+        color: var(--muted);
+      }
+
+      /* Level number and name */
+      .lnum {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+
+      .lnm {
+        font-size: 1.3rem;
+        font-family: 'Lora', serif;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.3;
+        margin-bottom: 8px;
+      }
+
+      .ltg {
+        font-size: 0.9rem;
+        color: var(--muted2);
+        line-height: 1.6;
+        flex-grow: 1;
+      }
+
       /* Briefing Screen */
       .br-w {
         display: flex;
