@@ -290,144 +290,161 @@ body.lm .tsb input:checked + .tst .tsth {
   color: #0f172a;
 }
 
-/* ── Horizon Scenic Day/Night Toggle (Nav-bar sized) ── */
+/* ── Figma-style Light/Dark Mode Scenic Toggle Button ── */
 .hz-toggle {
   position: relative;
-  width: 160px;
+  width: 72px;
   max-width: 100%;
-  height: 40px;
-  border-radius: 20px;
+  height: 34px;
+  border-radius: 17px;
   cursor: pointer;
   overflow: hidden;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
   margin-left: 6px;
-  background: linear-gradient(180deg, #3B82F6 0%, #60A5FA 25%, #93C5FD 50%, #FDE68A 80%, #F59E0B 100%);
-  transition: background 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: inset 0 1px 4px rgba(0,0,0,0.15), inset 0 -1px 4px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.2);
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+  transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.25), inset 0 -1px 2px rgba(255, 255, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
+
+/* Concentric background rings for Light Mode & Dark Mode */
+.hz-toggle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 56px 17px, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.2) 8px, transparent 9px, transparent 13px, rgba(255, 255, 255, 0.15) 14px, rgba(255, 255, 255, 0.15) 20px, transparent 21px);
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+  opacity: 1;
+}
+
 .hz-toggle.night {
-  background: linear-gradient(180deg, #070B1A 0%, #0F172A 25%, #1E293B 50%, #334155 80%, #1E1B4B 100%);
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 -1px 2px rgba(255, 255, 255, 0.05), 0 2px 8px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.08);
 }
+
+.hz-toggle.night::before {
+  background: radial-gradient(circle at 18px 17px, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 8px, transparent 9px, transparent 13px, rgba(255, 255, 255, 0.04) 14px, rgba(255, 255, 255, 0.04) 20px, transparent 21px);
+}
+
+/* 4-Point Diamond Sparkle Stars (Dark Mode) */
 .hz-stars {
   position: absolute;
-  top: 4px;
-  left: 8px;
-  width: 1px;
-  height: 1px;
-  background: #fff;
-  border-radius: 50%;
+  inset: 0;
+  pointer-events: none;
   opacity: 0;
-  transition: opacity 0.8s ease 0.25s;
+  transition: opacity 0.4s ease 0.1s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 24'%3E%3Cpath fill='%23ffffff' d='M10,3 L11.2,6.5 L14.7,7.7 L11.2,8.9 L10,12.4 L8.8,8.9 L5.3,7.7 L8.8,6.5 Z'/%3E%3Cpath fill='rgba(255,255,255,0.85)' d='M26,11 L26.8,13.2 L29,14 L26.8,14.8 L26,17 L25.2,14.8 L23,14 L25.2,13.2 Z'/%3E%3Cpath fill='rgba(255,255,255,0.7)' d='M8,16 L8.5,17.5 L10,18 L8.5,18.5 L8,20 L7.5,18.5 L6,18 L7.5,17.5 Z'/%3E%3Ccircle cx='18' cy='5' r='1' fill='%23ffffff'/%3E%3Ccircle cx='32' cy='18' r='1' fill='%23ffffff'/%3E%3C/svg%3E");
+  background-size: cover;
   z-index: 1;
-  box-shadow: 15px 3px 0 0 rgba(255,255,255,0.9), 38px 9px 0 0 rgba(255,255,255,0.7), 25px 16px 0 0 rgba(255,255,255,1), 60px 3px 0 0 rgba(255,255,255,0.6), 74px 13px 0 0 rgba(255,255,255,0.8), 91px 6px 0 0 rgba(255,255,255,0.9), 106px 17px 0 0 rgba(255,255,255,0.5), 124px 4px 0 0 rgba(255,255,255,0.8), 136px 15px 0 0 rgba(255,255,255,0.7), 48px 22px 0 0 rgba(255,255,255,0.6), 85px 20px 0 0 rgba(255,255,255,0.9), 115px 10px 0 0 rgba(255,255,255,0.5), 142px 8px 0 0 rgba(255,255,255,0.8);
-  animation: hz-twinkle 3s ease-in-out infinite alternate;
 }
+
 .hz-toggle.night .hz-stars {
   opacity: 1;
 }
-@keyframes hz-twinkle {
-  0% { opacity: 0.85; }
-  50% { opacity: 0.55; }
-  100% { opacity: 1; }
-}
-.hz-skyline {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  z-index: 2;
-  transition: background 0.7s ease;
-  background: #1E3A5F;
-  clip-path: polygon(0% 100%, 0% 72%, 3% 72%, 3% 48%, 6% 48%, 6% 72%, 8% 72%, 8% 38%, 11% 38%, 11% 72%, 13% 72%, 13% 58%, 15% 58%, 15% 42%, 17% 42%, 17% 72%, 19% 72%, 19% 32%, 21% 32%, 21% 28%, 23% 28%, 23% 32%, 25% 32%, 25% 72%, 27% 72%, 27% 55%, 29% 55%, 29% 72%, 31% 72%, 31% 42%, 33% 42%, 33% 35%, 35% 35%, 35% 42%, 37% 42%, 37% 72%, 39% 72%, 39% 62%, 41% 62%, 41% 72%, 43% 72%, 43% 25%, 45% 25%, 45% 22%, 47% 22%, 47% 25%, 49% 25%, 49% 72%, 51% 72%, 51% 52%, 53% 52%, 53% 72%, 55% 72%, 55% 38%, 57% 38%, 57% 32%, 59% 32%, 59% 38%, 61% 38%, 61% 72%, 63% 72%, 63% 55%, 65% 55%, 65% 72%, 67% 72%, 67% 45%, 69% 45%, 69% 28%, 71% 28%, 71% 45%, 73% 45%, 73% 72%, 75% 72%, 75% 62%, 77% 62%, 77% 72%, 79% 72%, 79% 42%, 81% 42%, 81% 35%, 83% 35%, 83% 42%, 85% 42%, 85% 72%, 87% 72%, 87% 55%, 89% 55%, 89% 72%, 91% 72%, 91% 48%, 93% 48%, 93% 38%, 95% 38%, 95% 48%, 97% 48%, 97% 72%, 100% 72%, 100% 100%);
-}
-.hz-toggle.night .hz-skyline {
-  background: #0B1120;
-}
-.hz-windows {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  z-index: 3;
-  opacity: 0;
-  transition: opacity 0.7s ease 0.3s;
-  pointer-events: none;
-}
-.hz-toggle.night .hz-windows {
-  opacity: 1;
-}
-.hz-windows::before {
+
+/* Layered Fluffy Clouds (Light Mode) */
+.hz-clouds,
+.hz-toggle:not(.night)::after {
   content: '';
   position: absolute;
-  width: 1px;
-  height: 1px;
-  background: #FDE68A;
-  border-radius: 0.5px;
-  box-shadow: 14px -4px 0 0 rgba(253,230,138,0.9), 16px -4px 0 0 rgba(253,230,138,0.7), 14px -2px 0 0 rgba(253,230,138,0.6), 32px -6px 0 0 rgba(253,230,138,0.8), 34px -6px 0 0 rgba(253,230,138,0.6), 32px -4px 0 0 rgba(253,230,138,0.5), 70px -8px 0 0 rgba(253,230,138,0.9), 72px -8px 0 0 rgba(253,230,138,0.6), 70px -6px 0 0 rgba(253,230,138,0.5), 107px -5px 0 0 rgba(253,230,138,0.8), 109px -5px 0 0 rgba(253,230,138,0.6), 107px -3px 0 0 rgba(253,230,138,0.5), 131px -6px 0 0 rgba(253,230,138,0.9), 133px -6px 0 0 rgba(253,230,138,0.6);
+  bottom: 0;
+  right: 0;
+  width: 48px;
+  height: 22px;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 24'%3E%3Cpath fill='rgba(255,255,255,0.45)' d='M22,24 A10,10 0 0,1 40,15 A8,8 0 0,1 50,24 Z'/%3E%3Cpath fill='rgba(255,255,255,0.75)' d='M16,24 A8,8 0 0,1 33,18 A7,7 0 0,1 45,24 Z'/%3E%3Cpath fill='%23ffffff' d='M26,24 A6,6 0 0,1 39,21 A5,5 0 0,1 48,24 Z'/%3E%3C/svg%3E");
+  background-size: cover;
+  z-index: 1;
 }
+
+.hz-toggle.night .hz-clouds,
+.hz-toggle.night::after {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* Legacy skyline/windows hidden gracefully */
+.hz-skyline,
+.hz-windows {
+  display: none;
+}
+
+/* Sun / Moon Orb Thumb */
 .hz-orb {
   position: absolute;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  top: 5px;
-  left: 6px;
-  z-index: 4;
-  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.7s ease, box-shadow 0.7s ease, filter 0.7s ease;
-  background: radial-gradient(circle at 35% 35%, #FFF7AE 0%, #FFE066 25%, #FFB347 55%, #FF8C42 80%, #E85D04 100%);
-  box-shadow: 0 0 10px rgba(255, 179, 71, 0.5), 0 0 20px rgba(255, 140, 66, 0.3);
-}
-.hz-orb::before {
-  content: '';
-  position: absolute;
-  top: -3px;
-  left: -3px;
-  right: -3px;
-  bottom: -3px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 200, 100, 0.3);
-  animation: hz-sun-pulse 3s ease-in-out infinite;
-}
-@keyframes hz-sun-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.4; }
-  50% { transform: scale(1.08); opacity: 0.15; }
-}
-.hz-orb::after {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: 6px;
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: transparent;
+  top: 3px;
+  left: 4px;
+  z-index: 4;
+  transition: left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.45s ease, box-shadow 0.45s ease, transform 0.45s ease;
+  background: radial-gradient(circle at 35% 35%, #fef08a 0%, #f59e0b 55%, #d97706 100%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* Sun Outer Glow Pulse */
+.hz-orb::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1px solid rgba(253, 224, 71, 0.4);
+  transition: opacity 0.3s ease;
+  animation: hz-sun-pulse 3s ease-in-out infinite;
+}
+
+@keyframes hz-sun-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.15; }
+}
+
+/* Moon Craters (Dark Mode) */
+.hz-orb::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 14px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #94a3b8;
+  box-shadow: inset 0.5px 0.5px 1px rgba(0, 0, 0, 0.4),
+              -7px 6px 0 -0.5px #94a3b8,
+              -5px 12px 0 0px #94a3b8;
   opacity: 0;
-  transition: opacity 0.5s ease 0.2s;
+  transition: opacity 0.35s ease 0.1s;
   pointer-events: none;
 }
+
 .hz-toggle.night .hz-orb {
-  left: 124px;
-  background: radial-gradient(circle at 35% 35%, #F8FAFC 0%, #E2E8F0 30%, #CBD5E1 60%, #94A3B8 100%);
-  box-shadow: 0 0 8px rgba(200, 215, 240, 0.4), 0 0 16px rgba(180, 200, 240, 0.2);
+  left: 40px;
+  background: radial-gradient(circle at 35% 35%, #f8fafc 0%, #cbd5e1 55%, #94a3b8 100%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.9);
 }
-.hz-toggle.night .hz-orb::after {
-  background: #0F172A;
-  opacity: 1;
-}
+
 .hz-toggle.night .hz-orb::before {
-  border-color: rgba(200, 215, 240, 0.2);
+  border-color: rgba(203, 213, 225, 0.3);
   animation: hz-moon-glow 4s ease-in-out infinite;
 }
-@keyframes hz-moon-glow {
-  0%, 100% { transform: scale(1); opacity: 0.3; }
-  50% { transform: scale(1.06); opacity: 0.1; }
+
+.hz-toggle.night .hz-orb::after {
+  opacity: 1;
 }
+
+@keyframes hz-moon-glow {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.08); opacity: 0.15; }
+}
+
 .hz-toggle:active {
-  transform: scale(0.97);
+  transform: scale(0.95);
   transition: transform 0.1s ease;
 }
 @media (max-width: 900px) {
@@ -1215,124 +1232,10 @@ body.lm .ms {
   color: #fff !important;
 }
 
-/* ── Mini Horizon Scenic Toggle ── */
+/* Mini Horizon Scenic Toggle override aligned with Figma design */
 .hz-toggle {
-  position: relative;
-  width: 64px;
-  height: 32px;
-  border-radius: 16px;
-  cursor: pointer;
-  overflow: hidden;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  flex-shrink: 0;
-  background: linear-gradient(180deg, #3B82F6 0%, #60A5FA 25%, #93C5FD 50%, #FDE68A 80%, #F59E0B 100%);
-  transition: background 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.12);
-  border: 1px solid rgba(255,255,255,0.1);
+  width: 72px;
+  height: 34px;
+  border-radius: 17px;
 }
-.hz-toggle.night {
-  background: linear-gradient(180deg, #070B1A 0%, #0F172A 25%, #1E293B 50%, #334155 80%, #1E1B4B 100%);
-}
-.hz-toggle:active { transform: scale(0.95); transition: transform 0.1s ease; }
-.hz-stars {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 1px;
-  height: 1px;
-  background: #fff;
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.8s ease 0.25s;
-  z-index: 1;
-  box-shadow:
-    8px 4px 0 0 #fff, 18px 10px 0 0 #fff,
-    12px 14px 0 0 #fff, 24px 6px 0 0 #fff,
-    30px 14px 0 0 #fff, 42px 8px 0 0 #fff,
-    52px 20px 0 0 #fff, 40px 2px 0 0 #fff;
-  animation: hz-twinkle 3s ease-in-out infinite alternate;
-}
-.hz-toggle.night .hz-stars { opacity: 1; }
-@keyframes hz-twinkle { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.3; } }
-.hz-skyline {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  z-index: 2;
-  transition: background 0.7s ease;
-  background: #1E3A5F;
-  clip-path: polygon(0% 100%, 0% 60%, 3% 60%, 3% 30%, 6% 30%, 6% 55%, 9% 55%, 9% 40%, 12% 40%, 12% 20%, 15% 20%, 15% 40%, 18% 40%, 18% 50%, 22% 50%, 22% 25%, 25% 25%, 25% 45%, 28% 45%, 28% 35%, 31% 35%, 31% 15%, 34% 15%, 34% 35%, 37% 35%, 37% 55%, 40% 55%, 40% 30%, 43% 30%, 43% 10%, 46% 10%, 46% 30%, 49% 30%, 49% 50%, 53% 50%, 53% 20%, 56% 20%, 56% 45%, 59% 45%, 59% 35%, 62% 35%, 62% 5%, 65% 5%, 65% 35%, 68% 35%, 68% 55%, 71% 55%, 71% 40%, 74% 40%, 74% 15%, 77% 15%, 77% 40%, 80% 40%, 80% 55%, 83% 55%, 83% 25%, 86% 25%, 86% 50%, 89% 50%, 89% 35%, 92% 35%, 92% 60%, 95% 60%, 95% 45%, 98% 45%, 98% 70%, 100% 70%, 100% 100%);
-}
-.hz-toggle.night .hz-skyline { background: #0B1120; }
-.hz-windows {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  z-index: 3;
-  opacity: 0;
-  transition: opacity 0.7s ease 0.3s;
-  pointer-events: none;
-}
-.hz-toggle.night .hz-windows { opacity: 1; }
-.hz-windows::before {
-  content: '';
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  background: #FDE68A;
-  box-shadow: 6px -4px 0 0 #FDE68A, 8px -4px 0 0 #FDE68A, 16px -8px 0 0 #FDE68A, 22px -4px 0 0 #FDE68A, 35px -6px 0 0 #FDE68A, 48px -4px 0 0 #FDE68A, 55px -2px 0 0 #FDE68A;
-}
-.hz-orb {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  top: 5px;
-  left: 5px;
-  z-index: 4;
-  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.7s ease, box-shadow 0.7s ease;
-  background: radial-gradient(circle at 35% 35%, #FFF7AE 0%, #FFE066 25%, #FFB347 55%, #FF8C42 80%, #E85D04 100%);
-  box-shadow: 0 0 12px rgba(255, 179, 71, 0.4), 0 0 20px rgba(255, 140, 66, 0.2);
-}
-.hz-orb::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 200, 100, 0.3);
-  animation: hz-sun-pulse 3s ease-in-out infinite;
-}
-@keyframes hz-sun-pulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.1); opacity: 0.1; } }
-.hz-orb::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: 4px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: transparent;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.2s;
-  pointer-events: none;
-}
-.hz-toggle.night .hz-orb {
-  left: 37px;
-  background: radial-gradient(circle at 35% 35%, #F8FAFC 0%, #E2E8F0 30%, #CBD5E1 60%, #94A3B8 100%);
-  box-shadow: 0 0 10px rgba(200, 215, 240, 0.3), 0 0 15px rgba(180, 200, 240, 0.15);
-}
-.hz-toggle.night .hz-orb::after {
-  background: #0F172A;
-  opacity: 1;
-}
-.hz-toggle.night .hz-orb::before {
-  border-color: rgba(200, 215, 240, 0.2);
-  animation: hz-moon-glow 4s ease-in-out infinite;
-}
-@keyframes hz-moon-glow { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.05); opacity: 0.1; } }
 
