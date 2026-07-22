@@ -418,7 +418,13 @@
       }
     });
   });
-  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  if (document.body) {
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.body) observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    });
+  }
 
   // ===== PUBLIC API =====
   window.TrafficCharts = {

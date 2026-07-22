@@ -19,13 +19,17 @@ const BADGES = [
 ]
 
 // 🚦 STATE MANAGEMENT 🚦
-let S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
+let S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null }
 try {
   const s = localStorage.getItem('mth4')
   if (s) S = Object.assign(S, JSON.parse(s))
 } catch (e) {}
 if (!S.comp) S.comp = {}
 if (!S.badges) S.badges = []
+if (!S.studentId) {
+  S.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+  try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
+}
 const save = async () => {
   try {
     localStorage.setItem('mth4', JSON.stringify(S))
@@ -33,6 +37,17 @@ const save = async () => {
   if (window.supabaseClient && window.colUser) {
     try {
       const uid = window.colUser.id;
+      // Sync user profile & unique student ID
+      await window.supabaseClient.from('user_profiles').upsert({
+        user_id: uid,
+        student_id: S.studentId,
+        full_name: S.name || 'Traffic Hero',
+        civic_score: S.civicScore || 0,
+        total_score: S.total || 0,
+        violation_history: S.violationHistory || {},
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' }).catch(() => {});
+
       for (const [levelId, data] of Object.entries(S.comp || {})) {
         await window.supabaseClient.from('game_progress').upsert({
           user_id: uid,

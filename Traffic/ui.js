@@ -241,7 +241,7 @@ const ui = {
         const badgeText = done ? '✓ Completed' : started ? '● Started' : '○ Not Started'
         const badgeColor = done ? '#00f0cc' : started ? '#5ed4f5' : 'rgba(184,155,255,0.5)'
         const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')
-        div.innerHTML = `<div class="syl-ck"></div><div class="syl-top"><span class="syl-icon">${lv.icon}</span><span class="syl-num">Lesson ${idx + 1}</span></div><div class="syl-info"><div class="syl-lbl">${cleanName}</div><div class="syl-sub">${lv.ds}</div><div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div></div>`
+        div.innerHTML = `<div class="syl-ck"></div><div class="syl-top"><span class="syl-icon">${lv.icon}</span><span class="syl-num">Lesson ${lv.id}</span></div><div class="syl-info"><div class="syl-lbl">${cleanName}</div><div class="syl-sub">${lv.ds}</div><div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div></div>`
         div.style.animationDelay = `${idx * 0.08}s`
         div.onclick = () => ui.showBriefing(lv.id)
         frag.appendChild(div)
@@ -657,11 +657,8 @@ const ui = {
     const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
       : S.vehicle === 'Car' && availModes.includes('car') ? 'car'
       : null
-    this.curMode = preferred || availModes[0]
-    if (!S.started) S.started = {}
-    if (!S.started[lv.id]) {
-      S.started[lv.id] = Date.now()
-      save()
+    if (history.replaceState) {
+      history.replaceState(null, '', `?screen=levels&lv=${lv.id}`)
     }
     document.getElementById('blt').textContent = 'Level ' + lv.id
     document.getElementById('bvh').textContent = lv.v
@@ -1272,6 +1269,11 @@ const ui = {
       <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
       <div style="position:absolute;bottom:48px;left:30%;font-size:1.8rem;animation:ba 6s infinite linear -2s;">🚕</div>`;
     A.signals = A.intersection;
+    A.raving = A.festival;
+    A.market = A.market_street;
+    A.school = A.driving_school;
+    A.hospital = A.hospital_quiet;
+    A.emergency = A.ambulance_priority;
 
     // DEFAULT — generic car driving across
     A._default = () => `
@@ -2475,12 +2477,13 @@ function updateTrafficAuthUI() {
   let user = localData ? JSON.parse(localData) : null
 
   // If not found locally, check for Supabase user (colUser)
-  if (!user && window.colUser && window.colUser.user) {
-    const meta = window.colUser.user.user_metadata || {}
+  if (!user && window.colUser) {
+    const uObj = window.colUser.user || window.colUser
+    const meta = uObj.user_metadata || {}
     user = {
       name: meta.full_name || meta.name || 'Driver',
-      email: window.colUser.user.email,
-      avatar: meta.avatar_url
+      email: uObj.email,
+      avatar: meta.avatar_url || meta.picture || meta.avatar
     }
   }
 
@@ -2494,6 +2497,12 @@ function updateTrafficAuthUI() {
     b.onclick = () => (window.location.href = user ? 'TrafficDashboard.html' : 'TrafficSetup.html')
   })
 
+  // Update Get Started button to Start Academy if logged in
+  const getStartedBtn = document.getElementById('enter-academy-btn')
+  if (getStartedBtn) {
+    getStartedBtn.innerHTML = user ? 'Start Academy <span class="btn-arrow">→</span>' : 'Get Started <span class="btn-arrow">→</span>'
+  }
+
   const navBtn = document.getElementById('academy-sign-in-btn')
   if (navBtn) navBtn.style.display = user ? 'none' : 'block'
 
@@ -2504,14 +2513,16 @@ function updateTrafficAuthUI() {
     }
 
     if (userName) userName.textContent = user.name || 'Driver'
-    if (initials && user.name) {
-      initials.textContent = user.name.charAt(0).toUpperCase()
-      initials.style.display = 'flex'
-    }
-    if (pfp && user.avatar) {
+    
+    // Avatar vs Anagram logic: show ONLY profile picture if available, hide initials completely
+    if (user.avatar && pfp) {
       pfp.src = user.avatar
-      pfp.style.display = 'block'
-      initials.style.display = 'none'
+      pfp.style.setProperty('display', 'block', 'important')
+      if (initials) initials.style.setProperty('display', 'none', 'important')
+    } else if (initials && user.name) {
+      initials.textContent = user.name.charAt(0).toUpperCase()
+      initials.style.setProperty('display', 'flex', 'important')
+      if (pfp) pfp.style.setProperty('display', 'none', 'important')
     }
   } else {
     if (profileDiv) profileDiv.style.display = 'none'

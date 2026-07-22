@@ -2442,27 +2442,6 @@ class Game {
             this._buildRoadsFromGraph(RW);
             this._buildBuildingsFromGraph();
         } else {
-            // Fallback to legacy system
-            this._buildRoadZones(RW);
-        }
-
-        // Animal obstacle (e.g. "Cows on the Road") — previously this level's whole premise
-        // had no actual animal model or interaction logic anywhere in the engine; the task
-        // list existed as text but could never be completed. Spawn a real cow along the
-        // route and wire up proximity/honk/moved-on checks (see _uobs/_checkTasks).
-        this._animalObstacle = null;
-        if (cfg.themeType === 'animals' && cfg.route && cfg.route.length > 3 && window.PRELOADED_MODELS && window.PRELOADED_MODELS.animal_cow) {
-          const routeIdx = Math.floor(cfg.route.length * 0.4);
-          const rp = cfg.route[routeIdx];
-          const cowMesh = window.PRELOADED_MODELS.animal_cow.scene.clone();
-          cowMesh.scale.setScalar(2.2);
-          cowMesh.position.set(rp.x + 1.5, 0, rp.z);
-          cowMesh.traverse((n) => { if (n.isMesh) { n.castShadow = true; n.receiveShadow = true; } });
-          this.scene.add(cowMesh);
-          this._animalObstacle = { mesh: cowMesh, x: rp.x + 1.5, z: rp.z, moved: false, movedAt: null, everHonkedNear: false };
-        }
-
-        // Toon gradient map (3-step cel shading)
         if (!window._toonGrad) {
           const gc = new Uint8Array([40, 130, 255]);
           window._toonGrad = new THREE.DataTexture(gc, 3, 1, THREE.RedFormat);
@@ -2879,7 +2858,7 @@ const drawBldg = (bx, bz, type, rot) => {
         // streets. Deliberately static/decorative (no wandering AI) — this batch is about
         // world density and reusing previously-unused assets, not adding more moving-object
         // logic on top of the NPC systems that just needed a careful regression fix. ──
-        if (window.PRELOADED_MODELS && window.PRELOADED_MODELS.animal_dog) {
+        if (window.PRELOADED_MODELS && window.PRELOADED_MODELS.animal_dog && window.PRELOADED_MODELS.animal_dog.scene) {
           cfg.roads.forEach(r => {
             const isV = r.type === 'v';
             const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
@@ -2901,7 +2880,8 @@ const drawBldg = (bx, bz, type, rot) => {
                   dx = (r.x1 < r.x2 ? r.x1 : r.x2) + t * len;
                   dz = cz + side * offset;
                 }
-                const dog = window.PRELOADED_MODELS.animal_dog.scene.clone();
+                const dog = window.PRELOADED_MODELS.animal_dog.scene ? window.PRELOADED_MODELS.animal_dog.scene.clone() : null;
+                if (!dog) continue;
                 const s = 1.6 + Math.random() * 0.4;
                 dog.scale.setScalar(s);
                 dog.position.set(dx, 0, dz);
@@ -3614,7 +3594,7 @@ const drawBldg = (bx, bz, type, rot) => {
         }
         
         if (cfg.hasEmergency || cfg.id === 8) {
-          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['ambulance']) {
+          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['ambulance'] && typeof window.PRELOADED_MODELS['ambulance'].clone === 'function') {
               this.ms.amb = window.PRELOADED_MODELS['ambulance'].clone();
               this.ms.amb.scale.set(1.5, 1.5, 1.5);
               this.ms.amb.traverse(c => { if(c.isMesh) { c.castShadow = true; c.receiveShadow = true; }});

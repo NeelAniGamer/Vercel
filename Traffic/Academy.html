@@ -862,13 +862,13 @@
 
       .br-r {
         flex: 1;
-        position: sticky;
-        top: 120px;
-        margin-top: 0px;
-        align-self: flex-start;
+        width: 100%;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
+        gap: 20px;
+        min-width: 0;
+        padding-bottom: 40px;
       }
 
       /* Tablet: shrink left sidebar */
@@ -2854,17 +2854,18 @@
       /* Section-based progress bar - moved down */
       .onb-prog {
         position: fixed;
-        top: 20px;
+        top: 36px;
         left: 50%;
         transform: translateX(-50%);
-        width: min(400px, 85vw);
+        width: min(340px, 85vw);
         height: 8px;
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255,255,255,0.1);
         border-radius: 10px;
         z-index: 10001;
         display: flex;
         gap: 4px;
-        padding: 4px;
+        padding: 2px;
         box-sizing: border-box;
       }
       .onb-prog-section {
@@ -2891,12 +2892,18 @@
       /* Progress percentage label */
       .onb-pct-label {
         position: fixed;
-        top: 38px;
+        top: 54px;
         left: 50%;
         transform: translateX(-50%);
         font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--text);
+        font-weight: 700;
+        color: #f2b84b;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(8px);
+        padding: 4px 14px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         z-index: 10001;
       }
       /* Full-page onboarding - like landing page */
@@ -2954,23 +2961,25 @@
       }
       .onb-btn {
         width: 100%;
-        min-height: 48px;
-        padding: 14px;
+        min-height: 52px;
+        padding: 14px 24px;
         border: none;
         border-radius: 12px;
-        background: var(--signal);
-        color: #fff;
-        font-size: 1rem;
-        font-weight: 600;
+        background: #f2b84b;
+        color: #0f172a;
+        font-size: 1.05rem;
+        font-weight: 800;
         cursor: pointer;
         transition: 0.2s;
         font-family: inherit;
+        box-shadow: 0 4px 16px rgba(242,184,75,0.3);
       }
-      .onb-btn:hover { opacity: 0.9; }
+      .onb-btn:hover { opacity: 0.9; transform: translateY(-1px); }
       .onb-btn:active { transform: scale(0.98); }
       .onb-btn:disabled {
         opacity: 0.45;
         cursor: not-allowed;
+        box-shadow: none;
       }
       .onb-skip {
         margin-top: 16px;
@@ -2992,22 +3001,22 @@
       .onb-chip {
         flex: 1;
         padding: 16px 12px;
-        border: 1.5px solid var(--border);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 14px;
-        background: rgba(255, 255, 255, 0.5);
+        background: #1e293b;
         cursor: pointer;
-        transition: 0.2s;
+        transition: all 0.2s ease;
         font-family: inherit;
         text-align: center;
-        color: var(--text);
-        min-height: 48px;
+        color: #f8fafc;
+        min-height: 52px;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 6px;
       }
-      .onb-chip:hover { border-color: var(--signal); background: rgba(3, 105, 161, 0.05); }
-      .onb-chip.selected { border-color: var(--signal); background: rgba(3, 105, 161, 0.1); }
+      .onb-chip:hover { border-color: #f2b84b; background: #334155; }
+      .onb-chip.selected { border-color: #f2b84b; background: rgba(242,184,75,0.2); box-shadow: 0 0 12px rgba(242,184,75,0.3); }
       .onb-chip-icon { font-size: 1.5rem; }
       .onb-chip-label { font-size: 0.85rem; font-weight: 600; }
       .onb-dots {
@@ -3019,18 +3028,19 @@
       }
       .onb-dot {
         min-height: 48px;
-        min-width: 48px;
-        padding: 10px 16px;
-        border: 1.5px solid var(--border);
+        padding: 10px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
         border-radius: 12px;
-        background: rgba(255, 255, 255, 0.5);
+        background: #1e293b;
         cursor: pointer;
-        transition: 0.2s;
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: var(--text);
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #f8fafc;
         font-family: inherit;
       }
+      .onb-dot:hover { border-color: #f2b84b; background: #334155; }
+      .onb-dot.selected { border-color: #f2b84b; background: rgba(242,184,75,0.2); color: #f2b84b; font-weight: 700; box-shadow: 0 0 12px rgba(242,184,75,0.3); }
       .onb-dot:hover { border-color: var(--signal); }
       .onb-dot.selected { border-color: var(--signal); background: rgba(3, 105, 161, 0.1); color: var(--signal); font-weight: 700; }
       .onb-skip-popup {
@@ -3220,43 +3230,17 @@
       .hz-orb {
         position: absolute;
         top: 50%;
-        transform: translateY(-50%);
-        width: 110px;
-        height: 110px;
+        top: 4px; left: 4px;
+        width: 28px; height: 28px;
         border-radius: 50%;
-        left: 22px;
-        background: radial-gradient(circle at 40% 35%, #FFF7C2 0%, #FCD34D 35%, #F59E0B 70%, #D97706 100%);
-        box-shadow: 0 0 24px 8px rgba(252,211,77,0.35), 0 0 60px 16px rgba(252,211,77,0.12);
-        transition: left 0.7s cubic-bezier(0.4,0,0.2,1), background 0.7s ease, box-shadow 0.7s ease;
+        background: radial-gradient(circle at 35% 35%, #FDE047 0%, #F59E0B 50%, #D97706 100%);
+        transition: left 0.4s cubic-bezier(0.4,0,0.2,1);
         pointer-events: none;
       }
       .hz-toggle.night .hz-orb {
-        left: 262px;
-        background: radial-gradient(circle at 45% 40%, #E2E8F0 0%, #94A3B8 40%, #64748B 75%, #475569 100%);
-        box-shadow: 0 0 20px 6px rgba(148,163,184,0.2), 0 0 50px 12px rgba(148,163,184,0.08);
+        left: 40px;
+        background: radial-gradient(circle at 45% 40%, #E2E8F0 0%, #94A3B8 50%, #64748B 100%);
       }
-      .hz-orb::after {
-        content: '';
-        position: absolute;
-        top: 8px; left: 15px;
-        width: 70px; height: 70px;
-        border-radius: 50%;
-        background: transparent;
-        transition: background 0.7s ease;
-      }
-      .hz-toggle.night .hz-orb::after {
-        background: #0F172A;
-      }
-      @keyframes hz-sun-pulse {
-        0%, 100% { box-shadow: 0 0 24px 8px rgba(252,211,77,0.35), 0 0 60px 16px rgba(252,211,77,0.12); }
-        50% { box-shadow: 0 0 32px 12px rgba(252,211,77,0.45), 0 0 80px 24px rgba(252,211,77,0.18); }
-      }
-      .hz-toggle:not(.night) .hz-orb { animation: hz-sun-pulse 4s ease-in-out infinite; }
-      @keyframes hz-moon-glow {
-        0%, 100% { box-shadow: 0 0 20px 6px rgba(148,163,184,0.2), 0 0 50px 12px rgba(148,163,184,0.08); }
-        50% { box-shadow: 0 0 28px 10px rgba(148,163,184,0.3), 0 0 65px 18px rgba(148,163,184,0.12); }
-      }
-      .hz-toggle.night .hz-orb { animation: hz-moon-glow 5s ease-in-out infinite; }
       @media (max-width: 420px) {
         .hz-toggle { width: 300px; height: 98px; border-radius: 49px; }
         .hz-orb { width: 76px; height: 76px; left: 14px; }
@@ -3547,14 +3531,19 @@
     <!-- SCREENS -->
 
     <div id="ss" class="screen active">
-      <div id="top-bar-container" style="position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; align-items: center">
-        <div class="hz-toggle" onclick="hzToggle()">
-          <div class="hz-clouds"></div>
-          <div class="hz-stars"></div>
-          <div class="hz-skyline"></div>
-          <div class="hz-windows"></div>
-          <div class="hz-orb"></div>
+      <div id="top-bar-container" style="position: absolute; top: 20px; left: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+        <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.location.href='Academy.html'">
+          <img src="../Icon.png" alt="Class Of Learners" style="height:36px; width:36px; border-radius:10px; object-fit:contain; box-shadow:0 2px 8px rgba(0,0,0,0.2);" onerror="this.src='Icon.png'" />
+          <span style="font-family:'Lora',serif; font-weight:700; font-size:1.2rem; color:var(--text); letter-spacing:-0.02em;">Traffic Academy</span>
         </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <div class="hz-toggle" onclick="hzToggle()">
+            <div class="hz-clouds"></div>
+            <div class="hz-stars"></div>
+            <div class="hz-skyline"></div>
+            <div class="hz-windows"></div>
+            <div class="hz-orb"></div>
+          </div>
 
         <button
           class=""
@@ -3618,6 +3607,7 @@
             >Profile</span
           >
         </div>
+      </div>
       </div>
       <div id="rl"></div>
       <div class="sc">
@@ -4232,15 +4222,16 @@
         }
       }
 
-      // Start onboarding from the Get Started button
+      // Start onboarding from the Get Started / Start Academy button
       function showOnboardingFromStart() {
-        // If already signed in, skip onboarding and go straight to levels
-        if (typeof ui !== 'undefined' && ui && ui._user) {
-          toast('Welcome back! Loading your progress...', '#34d399');
+        // If already signed in via Supabase or local user, skip onboarding and go straight to levels
+        const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user')
+        if (isLoggedIn) {
+          if (typeof toast !== 'undefined') toast('Welcome back! Loading your progress...', '#34d399');
           setTimeout(function() {
-            if (ui.showLevels) ui.showLevels();
+            if (typeof ui !== 'undefined' && ui.showLevels) ui.showLevels();
             else window.location.href = 'Academy.html?screen=levels';
-          }, 800);
+          }, 300);
           return;
         }
 
@@ -4397,47 +4388,16 @@
         const completed = S.comp || {}
         const totalLevels = window.LVS?.length || 52
 
-        // Calculate positions in a spiral/circular pattern
-        const centerX = 300
-        const centerY = 1000
-        const radiusX = 250
-        const radiusY = 800
-
-        // Generate nodes in a winding path pattern
+        // Generate nodes in a clean winding S-curve pattern (Duolingo style)
         const nodes = []
-        for (let i = 0; i < totalLevels; i++) {
-          // Winding path: go right, then down, then left, etc.
-          const row = Math.floor(i / 8)
-          const col = i % 8
-          const direction = row % 2 === 0 ? 1 : -1
+        const startY = 90
+        const stepY = 85
+        const centerX = 300
+        const ampX = 175
 
-          let x, y
-          if (i < 8) {
-            // First row: arc at top
-            const angle = (i / 7) * Math.PI
-            x = centerX + Math.cos(angle) * radiusX * 0.8
-            y = centerY - 600 + Math.sin(angle) * 150
-          } else if (i < 16) {
-            // Second row: arc on right
-            const angle = ((i - 8) / 7) * Math.PI
-            x = centerX + radiusX + Math.cos(angle + Math.PI/2) * 150
-            y = centerY - 400 + Math.sin(angle + Math.PI/2) * 300
-          } else if (i < 24) {
-            // Third row: arc at bottom
-            const angle = ((i - 16) / 7) * Math.PI
-            x = centerX + Math.cos(angle + Math.PI) * radiusX * 0.8
-            y = centerY + Math.sin(angle + Math.PI) * 200
-          } else if (i < 32) {
-            // Fourth row: arc on left
-            const angle = ((i - 24) / 7) * Math.PI
-            x = centerX - radiusX + Math.cos(angle + Math.PI*1.5) * 150
-            y = centerY - 200 + Math.sin(angle + Math.PI*1.5) * 300
-          } else {
-            // Remaining: zigzag down
-            const yOffset = 150 * (row - 3)
-            x = 100 + col * 60 + (row % 2) * 30
-            y = centerY + yOffset
-          }
+        for (let i = 0; i < totalLevels; i++) {
+          const x = centerX + Math.sin(i * 0.45) * ampX
+          const y = startY + i * stepY
           nodes.push({ id: i + 1, x, y })
         }
 
