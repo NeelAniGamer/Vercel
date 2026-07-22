@@ -718,6 +718,8 @@ class Game {
         this.rendererDom = cv;
         this.renderCore = new RenderCore();
         this.renderCore.init(this.rendererDom);
+        // Setup post-processing (bloom, etc.) based on quality preset
+        this.renderCore.setupPostProcessing(innerWidth, innerHeight, isMobile);
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
 
         // PERFORMANCE: Disable expensive bloom on mobile
@@ -739,7 +741,7 @@ class Game {
         const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'da-dist', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn', 'dn-clock', 'dn-time', 'dn-icon', 'hsc'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
       }
-      _rsz() { if (!this.renderCore.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderCore.renderer.setSize(w * dpr, h * dpr, false); if (this.renderCore.renderer.domElement && this.renderCore.renderer.domElement.style) { this.renderCore.renderer.domElement.style.width = w + 'px'; this.renderCore.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } this._checkOrientation(); }
+      _rsz() { if (!this.renderCore.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderCore.renderer.setSize(w * dpr, h * dpr, false); if (this.renderCore.renderer.domElement && this.renderCore.renderer.domElement.style) { this.renderCore.renderer.domElement.style.width = w + 'px'; this.renderCore.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } this.renderCore.resizePostProcessing(w, h); if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } this._checkOrientation(); }
 
       _checkOrientation() {
         if (!this._isMobile) return;
@@ -2434,7 +2436,15 @@ class Game {
         const RW = cfg.isPedestrian ? 10 : 12;
         this.driveRoute = cfg.route;
         this._initBreadcrumbPath();
-        this._buildRoadZones(RW);
+        
+        // NEW: Graph-based road and building generation
+        if (this.roadGraph) {
+            this._buildRoadsFromGraph(RW);
+            this._buildBuildingsFromGraph();
+        } else {
+            // Fallback to legacy system
+            this._buildRoadZones(RW);
+        }
 
         // Animal obstacle (e.g. "Cows on the Road") — previously this level's whole premise
         // had no actual animal model or interaction logic anywhere in the engine; the task
@@ -4098,6 +4108,313 @@ const drawBldg = (bx, bz, type, rot) => {
         }
       }
 
+      // ─── Graph-based road generation ───
+      // Builds visual road geometry (tiles, sidewalks, crosswalks) from RoadGraph edges
+      // Uses GLB road models when available, falls back to procedural geometry
+      _buildRoadsFromGraph(roadWidth) {
+        const graph = this.roadGraph;
+        const cfg = this.mapCfg;
+        const roadKey = window.PRELOADED_MODELS?.road_avenue ? 'road_avenue' : 'road_straight';
+        const roadModel = window.PRELOADED_MODELS?.[roadKey];
+        const isNight = cfg?.isNight;
+        const isPedestrian = cfg?.isPedestrian;
+
+        if (!roadModel) {
+          console.warn('[RoadGraph] No road model available, falling back to legacy _buildRoadZones');
+          this._buildRoadZones(roadWidth);
+          return;
+        }
+
+        // Road material (visible)
+        const roadMat = new THREE.MeshToonMaterial({ color: 0x3d3f45, gradientMap: window._toonGrad });
+        const paveMat = new THREE.MeshToonMaterial({ color: 0xb0b0a0, gradientMap: window._toonGrad });
+        const tactileMat = new THREE.MeshToonMaterial({ color: 0xd4a017, gradientMap: window._toonGrad });
+
+        graph.edges.forEach(edge => {
+          const isV = Math.abs(edge.direction.x) < 0.1;
+          const len = edge.length;
+          const n0 = edge.nodes[0];
+          const n1 = edge.nodes[1];
+          const cx = isV ? n0.position.x : (n0.position.x + n1.position.x) / 2;
+          const cz = isV ? (n0.position.z + n1.position.z) / 2 : n0.position.z;
+
+          // Logical road bed (collision)
+          const roadHb = new THREE.Mesh(
+            new THREE.PlaneGeometry(roadWidth, len),
+            new THREE.MeshBasicMaterial({ visible: false })
+          );
+          roadHb.rotation.set(-Math.PI / 2, 0, isV ? 0 : -Math.PI / 2);
+          roadHb.position.set(cx, 0.01, cz);
+          this.scene.add(roadHb);
+          this.world.push(roadHb);
+
+          // Visual road tiles using GLB model
+          const tileScale = roadWidth / 1000;
+          const tileLenScale = 3; // stretch 3x to reduce draw calls
+          const tileSize = 1500 * tileScale * tileLenScale;
+          const numTiles = Math.max(1, Math.floor(len / tileSize));
+          
+          // Center the tiles with even spacing at ends
+          const totalTileLen = numTiles * tileSize;
+          const extraSpace = len - totalTileLen;
+          const startOffset = extraSpace / 2;
+          
+          const startX = isV ? cx : Math.min(n0.position.x, n1.position.x) + tileSize / 2 + startOffset;
+          const startZ = isV ? Math.min(n0.position.z, n1.position.z) + tileSize / 2 + startOffset : cz;
+
+          for (let i = 0; i < numTiles; i++) {
+            const tile = roadModel.clone();
+            tile.scale.set(tileScale, tileScale, tileScale * tileLenScale);
+            tile.frustumCulled = true;
+            tile.traverse(c => { if (c.isMesh) { c.castShadow = false; c.receiveShadow = false; c.material = roadMat; } });
+            
+            if (isV) {
+              tile.position.set(cx, 0.08, startZ + i * tileSize);
+            } else {
+              tile.rotation.y = Math.PI / 2;
+              tile.position.set(startX + i * tileSize, 0.08, cz);
+            }
+            this.scene.add(tile);
+          }
+
+          // Sidewalks
+          const swW = isPedestrian ? 6 : 4;
+          [-1, 1].forEach(side => {
+            const pb = new THREE.Mesh(
+              isV ? new THREE.BoxGeometry(swW, 0.15, len) : new THREE.BoxGeometry(len, 0.15, swW),
+              paveMat
+            );
+            pb.position.set(
+              isV ? cx + side * (roadWidth / 2 + swW / 2) : cx,
+              0.07,
+              isV ? cz : cz + side * (roadWidth / 2 + swW / 2)
+            );
+            this.scene.add(pb);
+            this.world.push(pb);
+          });
+
+          // Crosswalks at intersections (nodes with degree >= 3)
+          const nodeA = edge.nodes[0];
+          const nodeB = edge.nodes[1];
+          [nodeA, nodeB].forEach(node => {
+            if (node.edges.length >= 3) {
+              // Zebra crossing on this edge near the intersection
+              const t = node === nodeA ? 0 : 1;
+              const crosswalkLen = 4;
+              const crosswalkW = roadWidth;
+              const crosswalkCount = 5;
+              for (let c = 0; c < crosswalkCount; c++) {
+                const offset = (c - (crosswalkCount - 1) / 2) * (crosswalkLen + 1);
+                const czOffset = isV ? offset : 0;
+                const cxOffset = isV ? 0 : offset;
+                const cw = new THREE.Mesh(
+                  isV ? new THREE.PlaneGeometry(crosswalkW, crosswalkLen) : new THREE.PlaneGeometry(crosswalkLen, crosswalkW),
+                  new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 })
+                );
+                cw.rotation.x = -Math.PI / 2;
+                const nodePos = node.position;
+                cw.position.set(
+                  nodePos.x + cxOffset,
+                  0.03,
+                  nodePos.z + czOffset
+                );
+                this.scene.add(cw);
+              }
+              // Tactile paving
+              [-1, 1].forEach(side => {
+                const tp = new THREE.Mesh(
+                  isV ? new THREE.BoxGeometry(2, 0.05, crosswalkW + 2) : new THREE.BoxGeometry(crosswalkW + 2, 0.05, 2),
+                  tactileMat
+                );
+                tp.position.set(
+                  isV ? nodePos.x + side * (roadWidth / 2 + 1) : nodePos.x,
+                  0.04,
+                  isV ? nodePos.z : nodePos.z + side * (roadWidth / 2 + 1)
+                );
+                this.scene.add(tp);
+              });
+            }
+          });
+        });
+      }
+
+      // ─── Graph-based building generation ───
+      // Places buildings using RoadGraph's buildingSlots (road-aware, zoned)
+      // Uses InstancedMesh for GLB models, falls back to procedural boxes
+      _buildBuildingsFromGraph() {
+        const graph = this.roadGraph;
+        const cfg = this.mapCfg;
+        if (!graph || !graph.buildingSlots?.length) return;
+
+        const bMats = [
+          new THREE.MeshToonMaterial({ color: 0xd9cfc4, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xc4b8a8, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xb0a898, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xd4c8b8, gradientMap: window._toonGrad })
+        ];
+        const winMat = new THREE.MeshBasicMaterial({ color: 0x304050 });
+
+        const instancedData = {};
+        const modelKeys = window.PRELOADED_MODELS 
+          ? Object.keys(window.PRELOADED_MODELS).filter(k => 
+              k.startsWith('suburban_') || k.startsWith('industrial_') || k.startsWith('mbuilding_')
+            )
+          : [];
+
+        // Building type selection based on zone
+        const getBldgType = (zone, distFromCenter) => {
+          const rnd = Math.random();
+          if (zone === 'Commercial') {
+            if (distFromCenter < 200 && rnd > 0.8) return 'skyscraper';
+            if (distFromCenter < 400 && rnd > 0.6) return 'tower';
+            if (rnd > 0.7) return 'skyscraper';
+            if (rnd > 0.45) return 'shop';
+            if (rnd > 0.25) return 'bank';
+            return 'hospital';
+          } else if (zone === 'Industrial') {
+            if (rnd > 0.8) return 'warehouse';
+            if (rnd > 0.5) return 'factory';
+            return 'industrial';
+          } else if (zone === 'Residential') {
+            if (distFromCenter < 300 && rnd > 0.7) return 'apartment';
+            if (rnd > 0.7) return 'apartment';
+            if (rnd > 0.5) return 'house';
+            return 'chawl';
+          } else if (zone === 'Slums') {
+            return rnd > 0.2 ? 'chawl' : 'shack';
+          } else if (zone === 'Civic') {
+            if (rnd > 0.7) return 'school';
+            if (rnd > 0.4) return 'hospital';
+            return 'police';
+          }
+          return 'house';
+        };
+
+        const typeMap = {
+          'skyscraper': ['mbuilding_sample-tower', 'industrial_q', 'industrial_r', 'industrial_t'],
+          'tower': ['mbuilding_sample-tower', 'industrial_l', 'industrial_m', 'industrial_n'],
+          'apartment': ['mbuilding_sample-house', 'suburban_l', 'suburban_m', 'suburban_n', 'suburban_o', 'suburban_p'],
+          'shop': ['suburban_d', 'suburban_e', 'suburban_f', 'suburban_g', 'suburban_h'],
+          'bank': ['mbuilding_sample-house-a', 'mbuilding_sample-house-b', 'suburban_i', 'suburban_j'],
+          'hospital': ['mbuilding_sample-house-c', 'suburban_k', 'suburban_l'],
+          'school': ['mbuilding_sample-house-a', 'suburban_m', 'suburban_n'],
+          'police': ['suburban_p', 'suburban_q', 'suburban_r'],
+          'warehouse': ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_l'],
+          'factory': ['industrial_e', 'industrial_f', 'industrial_g', 'industrial_h', 'industrial_i', 'industrial_j'],
+          'industrial': ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_e'],
+          'house': ['suburban_a', 'suburban_b', 'suburban_c', 'suburban_d', 'suburban_e'],
+          'chawl': ['suburban_f', 'suburban_g', 'suburban_h', 'suburban_i', 'suburban_j'],
+          'shack': ['suburban_a', 'suburban_b']
+        };
+
+        const pickModel = (prefixes) => {
+          if (!modelKeys.length) return null;
+          const candidates = modelKeys.filter(k => prefixes.some(p => k.startsWith(p)));
+          return candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : null;
+        };
+
+        graph.buildingSlots.forEach(slot => {
+          if (slot.occupied) return;
+          
+          const zone = slot.getZone();
+          const pos = slot.getWorldPosition();
+          const rot = slot.getRotation();
+          const distFromCenter = Math.hypot(pos.x, pos.z);
+          const type = getBldgType(zone, distFromCenter);
+          const prefixes = typeMap[type] || typeMap['house'];
+          const key = pickModel(prefixes);
+
+          if (key && modelKeys.length > 0) {
+            if (!instancedData[key]) instancedData[key] = [];
+            instancedData[key].push({ x: pos.x, z: pos.z, r: rot, s: 10.5 });
+            slot.occupied = true;
+            return;
+          }
+
+          // Fallback: procedural box building
+          const g = new THREE.Group();
+          const mat = bMats[Math.floor(Math.random() * bMats.length)];
+          const bh = 16 + Math.random() * 16;
+          const bw = 10 + Math.random() * 10;
+          const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 14), mat);
+          bMesh.position.y = bh / 2;
+          g.add(bMesh);
+
+          if (cfg.isNight && !cfg.is50km) {
+            const lWinMat = new THREE.MeshBasicMaterial({ color: 0xffdd88 });
+            const winRows = Math.floor(bh / 4);
+            const winCols = Math.floor(bw / 3.5);
+            for (let wr = 0; wr < winRows; wr++) {
+              for (let wc = 0; wc < winCols; wc++) {
+                if (Math.random() > 0.55) continue;
+                const wMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.6), lWinMat);
+                wMesh.position.set(-bw / 2 + 2 + wc * 3.5, 3 + wr * 4, 7.01);
+                g.add(wMesh);
+                const wMesh2 = wMesh.clone();
+                wMesh2.position.z = -7.01;
+                wMesh2.rotation.y = Math.PI;
+                g.add(wMesh2);
+              }
+            }
+          }
+          
+          g.position.set(pos.x, 0, pos.z);
+          g.rotation.y = rot;
+          g.userData = { isBuilding: true, halfW: bw / 2, halfD: 7 };
+          this.scene.add(g);
+          this.obstacles.push(g);
+          slot.occupied = true;
+        });
+
+        // Build InstancedMeshes for GLB models
+        if (window.PRELOADED_MODELS) {
+          Object.entries(instancedData).forEach(([key, instances]) => {
+            if (instances.length === 0) return;
+            
+            const baseModel = window.PRELOADED_MODELS[key];
+            if (!baseModel) return;
+            
+            baseModel.position.set(0, 0, 0);
+            baseModel.rotation.set(0, 0, 0);
+            baseModel.scale.set(1, 1, 1);
+            baseModel.updateMatrixWorld(true);
+            
+            const meshes = [];
+            baseModel.traverse(c => { if (c.isMesh) meshes.push(c); });
+            
+            meshes.forEach(mesh => {
+              const im = new THREE.InstancedMesh(mesh.geometry, mesh.material, instances.length);
+              im.castShadow = false;
+              im.receiveShadow = true;
+              im.frustumCulled = true;
+              
+              const dummy = new THREE.Object3D();
+              const finalMatrix = new THREE.Matrix4();
+              
+              instances.forEach((inst, i) => {
+                dummy.position.set(inst.x, 0, inst.z);
+                dummy.rotation.y = inst.r;
+                dummy.scale.set(inst.s, inst.s, inst.s);
+                dummy.updateMatrix();
+                finalMatrix.multiplyMatrices(dummy.matrix, mesh.matrixWorld);
+                im.setMatrixAt(i, finalMatrix);
+              });
+              
+              im.instanceMatrix.needsUpdate = true;
+              this.scene.add(im);
+            });
+            
+            // Add obstacle proxies for collision
+            instances.forEach(inst => {
+              const obs = new THREE.Object3D();
+              obs.position.set(inst.x, 0, inst.z);
+              obs.userData = { isBuilding: true, halfW: inst.s * 0.6, halfD: inst.s * 0.6 };
+              this.obstacles.push(obs);
+            });
+          });
+        }
+      }
+
       _makeTower(x, z, w = 10, d = 10) {
         if (!window.PRELOADED_MODELS) return;
         const bTypes = ['suburban_a', 'suburban_b', 'suburban_c', 'suburban_d', 'suburban_e', 'suburban_f', 'industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_e', 'industrial_f'];
@@ -4579,7 +4896,7 @@ const drawBldg = (bx, bz, type, rot) => {
         const lodMult = this.renderCore ? this.renderCore.getLODMultiplier() : 1.0;
         const maxParticles = this.renderCore ? this.renderCore.getMaxParticles() : 2000;
         
-        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt); this._updateLOD(lodMult);
+        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
 
         // Update player character FBX animation mixer
         if (this.playerCharacter && this.playerCharacter.userData && this.playerCharacter.userData.isFBXAnimated && this.playerCharacter.userData.mixer) {
@@ -5253,7 +5570,7 @@ const drawBldg = (bx, bz, type, rot) => {
       // scene.remove()) so buildings correctly reappear if the player drives back toward
       // them, and only re-scans a slice of the scene every few frames rather than the whole
       // thing every frame.
-      _updateDynamicLOD() {
+      _updateDynamicLOD(lodMult = 1) {
         if (!this._isMobile || !this.player) return;
         this._lodFrame = (this._lodFrame || 0) + 1;
         if (this._lodFrame % 20 !== 0) return; // ~3x/sec at 60fps, not every frame
@@ -5262,13 +5579,15 @@ const drawBldg = (bx, bz, type, rot) => {
         // Rebuild the candidate list occasionally too, in case new objects were added since
         // (e.g. NPCs, obstacles) — cheap relative to the distance pass itself.
         if (this._lodFrame % 300 === 0) this._lodChildren = this.scene.children.filter(c => c.isMesh || c.isInstancedMesh);
+        const visDist = 400 * lodMult;
+        const fogDist = 200 * lodMult;
         this._lodChildren.forEach(child => {
           if (!child.position || child.userData.noLod) return;
           const dx = child.position.x - px, dz = child.position.z - pz;
           const d = Math.sqrt(dx * dx + dz * dz);
-          const shouldShow = d < 400;
+          const shouldShow = d < visDist;
           if (child.visible !== shouldShow) child.visible = shouldShow;
-          if (child.material && 'fog' in child.material) child.material.fog = d < 200;
+          if (child.material && 'fog' in child.material) child.material.fog = d < fogDist;
         });
       }
 
