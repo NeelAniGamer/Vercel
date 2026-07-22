@@ -1,0 +1,618 @@
+# Task 5 Report: User Dashboard (Trophy Case & Leaderboard)
+
+## Status: DONE
+
+### Implementation Details:
+
+#### 1. Data Fetching (`col-achievements.js`)
+- Implemented `getUserProgress()`: Fetches user achievement records and joins with `achievement_definitions`.
+- Implemented `getGlobalLeaderboard()`: Fetches top 10 users from the `global_leaderboard` view.
+- Implemented `getCategoryLeaderboard(category)`: Calls the `get_category_leaderboard` RPC to fetch rankings for specific domains (Physics, Coding, etc.).
+- All methods are exposed on `window` for use in `dashboard.html`.
+
+#### 2. User Dashboard (`dashboard.html`)
+- **Layout**: Modern, responsive design using the project's design system (`--void`, `--signal`, `--ion`).
+- **Auth State**: 
+    - Implemented an `#auth-overlay` that appears if `window.colUser` is null, prompting the user to sign in via `openGlobalLogin()`.
+    - The dashboard UI (`#dashboard-ui`) is only displayed after successful authentication.
+- **Trophy Case**:
+    - Rendered as a grid of cards.
+    - **Completed State**: Cards have full color, `border-color: var(--signal)`, and a "Share" button.
+    - **Locked State**: Cards use `filter: grayscale(1)`, lower opacity, and a "Locked" button.
+- **Leaderboard**:
+    - Integrated a category dropdown (Global, Physics, Coding, Vision, Game Dev).
+    - Table updates dynamically when the category is changed.
+- **Sharing**:
+    - "Share" button generates a verification link: `window.location.origin + '/verify?cert=' + slug + '&token=' + token`.
+    - Uses the Web Share API if available, falling back to clipboard copy with a toast notification.
+
+### Verification:
+- [x] Logged-out state $\rightarrow$ Shows authentication overlay.
+- [x] Logged-in state $\rightarrow$ Loads user profile and achievements.
+- [x] Trophy Case $\rightarrow$ Correctly distinguishes between locked and unlocked achievements.
+- [x] Leaderboard $\rightarrow$ Correctly switches between Global and Category rankings.
+- [x] Share functionality $\rightarrow$ Correctly generates and copies verification links.
+
+### Final Files:
+- Modified: `col-achievements.js`
+- Created: `dashboard.html`
+\n--- col-achievements.js ---
+// Achievement Engine Global Helpers
+;(async function () {
+  if (window._colAchievementsRunning) return
+  window._colAchievementsRunning = true
+
+  /**
+   * Verifies a public achievement certificate using its slug and verification token.
+   * @param {string} slug - The unique identifier of the achievement definition.
+   * @param {string} token - The UUID verification token.
+   * @returns {Promise<{data: any, error: any}>}
+   */
+  async function verifyCertificate(slug, token) {
+    if (!window.supabaseClient) {
+      return { data: null, error: { message: 'Supabase client not initialized' } };
+    }
+
+    const { data, error } = await window.supabaseClient
+      .rpc('verify_certificate_token', {
+        token: token,
+        slug: slug
+      });
+
+    return { data: data?.[0], error: error || (!data ? { message: 'Certificate not found' } : null) };
+  }
+
+  /**
+   * Fetches the current user's achievement progress and definitions.
+   * @returns {Promise<{data: any, error: any}>}
+   */
+  async function getUserProgress() {
+    if (!window.supabaseClient) {
+      return { data: null, error: { message: 'Supabase client not initialized' } };
+    }
+
+    const { data, error } = await window.supabaseClient
+      .from('user_achievements')
+      .select('*, achievement_definitions(*)');
+
+    return { data, error };
+  }
+
+  /**
+   * Fetches the top 10 users globally.
+   * @returns {Promise<{data: any, error: any}>}
+   */
+  async function getGlobalLeaderboard() {
+    if (!window.supabaseClient) {
+      return { data: null, error: { message: 'Supabase client not initialized' } };
+    }
+
+    const { data, error } = await window.supabaseClient
+      .from('global_leaderboard')
+      .select('*')
+      .limit(10);
+
+    return { data, error };
+  }
+
+  /**
+   * Fetches the top users for a specific achievement category.
+   * @param {string} category - The category to filter by.
+   * @returns {Promise<{data: any, error: any}>}
+   */
+  async function getCategoryLeaderboard(category) {
+    if (!window.supabaseClient) {
+      return { data: null, error: { message: 'Supabase client not initialized' } };
+    }
+
+    const { data, error } = await window.supabaseClient
+      .rpc('get_category_leaderboard', {
+        category_name: category
+      });
+
+    return { data, error };
+  }
+
+  // Expose globally
+  window.verifyCertificate = verifyCertificate;
+  window.getUserProgress = getUserProgress;
+  window.getGlobalLeaderboard = getGlobalLeaderboard;
+  window.getCategoryLeaderboard = getCategoryLeaderboard;
+
+})();
+\n--- dashboard.html ---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Dashboard | Class Of Learners</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: var(--void, #070A14);
+        color: var(--ink, #E8E3D8);
+        font-family: var(--sans, 'Inter'), sans-serif;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .top-nav {
+        position: fixed;
+        top: 0; left: 0; width: 100%;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 32px;
+        background: var(--nav, rgba(7, 10, 20, 0.8));
+        backdrop-filter: blur(18px) saturate(1.4);
+        border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+      }
+      .nav-brand { display: flex; align-items: center; gap: 13px; text-decoration: none; }
+      .brand-logo { height: 28px; width: auto; border-radius: 8px; }
+      .brand-name { font-family: var(--mono, 'Space Mono'); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink); }
+      .nav-links { display: flex; gap: 18px; align-items: center; }
+      .nav-link { color: var(--dim, #8891AA); font-weight: 500; font-size: 0.82rem; text-decoration: none; transition: color 0.25s; }
+      .nav-link:hover, .nav-link.act { color: var(--ink); }
+
+      .dashboard-container {
+        max-width: 1200px;
+        margin: 100px auto 60px;
+        padding: 0 32px;
+      }
+      .user-header {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 60px;
+        padding: 32px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+        border-radius: 32px;
+        backdrop-filter: blur(10px);
+      }
+      .user-avatar {
+        width: 80px; height: 80px;
+        border-radius: 50%;
+        background: var(--signal, #F2B84B);
+        color: var(--void, #070A14);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        font-weight: 800;
+        overflow: hidden;
+        border: 3px solid var(--signal);
+      }
+      .user-info h1 {
+        font-family: var(--serif, 'Instrument Serif');
+        font-size: 2.4rem;
+        font-weight: 400;
+        margin-bottom: 4px;
+      }
+      .user-info p {
+        color: var(--dim, #8891AA);
+        font-family: var(--mono, 'Space Mono');
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+      }
+
+      .section-title {
+        font-family: var(--serif, 'Instrument Serif');
+        font-size: 2rem;
+        margin-bottom: 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .section-title span {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--signal);
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+      }
+
+      /* Trophy Case */
+      .trophy-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 24px;
+        margin-bottom: 80px;
+      }
+      .trophy-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+        border-radius: 24px;
+        padding: 32px;
+        text-align: center;
+        transition: 0.4s cubic-bezier(.16,1,.3,1);
+        position: relative;
+        overflow: hidden;
+      }
+      .trophy-card.locked {
+        filter: grayscale(1);
+        opacity: 0.6;
+      }
+      .trophy-card.unlocked {
+        border-color: var(--signal);
+        background: rgba(242, 184, 75, 0.03);
+      }
+      .trophy-card.unlocked:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(242, 184, 75, 0.1);
+        border-color: var(--signal);
+      }
+      .trophy-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+        display: block;
+      }
+      .trophy-name {
+        font-family: var(--serif);
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+      .trophy-desc {
+        color: var(--dim);
+        font-size: 0.85rem;
+        margin-bottom: 24px;
+        min-height: 2.5rem;
+      }
+      .btn-share {
+        background: var(--signal);
+        color: var(--void);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-share:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px var(--signal);
+      }
+      .btn-locked {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--dim);
+        border: 1px solid var(--line);
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        cursor: not-allowed;
+      }
+
+      /* Leaderboard */
+      .leaderboard-wrap {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+        border-radius: 32px;
+        padding: 32px;
+        backdrop-filter: blur(10px);
+      }
+      .lb-ctrl {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        gap: 16px;
+      }
+      .lb-select {
+        background: var(--void, #070A14);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        outline: none;
+        cursor: pointer;
+      }
+      .lb-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+      .lb-table th {
+        color: var(--dim);
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      .lb-table td {
+        padding: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        font-size: 0.9rem;
+      }
+      .lb-rank {
+        font-family: var(--mono);
+        font-weight: 700;
+        color: var(--signal);
+        width: 50px;
+      }
+      .lb-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .lb-avatar {
+        width: 24px; height: 24px;
+        border-radius: 50%;
+        background: var(--line);
+        overflow: hidden;
+      }
+      .lb-score {
+        text-align: right;
+        font-family: var(--mono);
+        font-weight: 700;
+        color: var(--ion);
+      }
+
+      /* Auth Overlay */
+      #auth-overlay {
+        position: fixed;
+        inset: 0;
+        background: var(--void);
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 32px;
+      }
+      .auth-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        padding: 48px;
+        border-radius: 32px;
+        max-width: 400px;
+      }
+      .auth-card h2 {
+        font-family: var(--serif);
+        font-size: 2rem;
+        margin-bottom: 16px;
+      }
+      .auth-card p {
+        color: var(--dim);
+        margin-bottom: 32px;
+      }
+
+      @media (max-width: 768px) {
+        .user-header { flex-direction: column; text-align: center; }
+        .trophy-grid { grid-template-columns: 1fr; }
+        .lb-ctrl { flex-direction: column; align-items: stretch; }
+      }
+    </style>
+    <script defer src="col-router.js"></script>
+    <link rel="stylesheet" href="col-ui.css" />
+    <script defer src="col-ui.js"></script>
+    <script defer src="col-auth.js"></script>
+    <script defer src="col-achievements.js"></script>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <a href="home" class="nav-brand">
+        <img src="Class.png" alt="Class Of Learners" class="brand-logo" />
+        <span class="brand-name">Class Of Learners</span>
+      </a>
+      <div class="nav-links">
+        <a href="home" class="nav-link">Home</a>
+        <a href="about" class="nav-link">About</a>
+        <a href="school" class="nav-link">School</a>
+        <div class="nav-user-profile" id="navUserProfile" onclick="openGlobalLogin()">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span class="nun" id="navUserName">User</span>
+        </div>
+      </div>
+    </nav>
+
+    <div id="auth-overlay" style="display: none;">
+      <div class="auth-card">
+        <h2 style="font-family: var(--serif);">Dashboard Locked</h2>
+        <p>Please authenticate your account to access your trophy case and leaderboards.</p>
+        <button class="btn-share" onclick="openGlobalLogin()">Sign In Now</button>
+      </div>
+    </div>
+
+    <div class="dashboard-container" id="dashboard-ui" style="display: none;">
+      <header class="user-header" id="user-header">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-info">
+          <h1 id="user-name">Loading...</h1>
+          <p id="user-email">...</p>
+        </div>
+      </header>
+
+      <section>
+        <h2 class="section-title"><span style="font-family: var(--mono);">01</span> Trophy Case</h2>
+        <div class="trophy-grid" id="trophy-grid">
+          <!-- Trophies injected here -->
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title"><span style="font-family: var(--mono);">02</span> Hall of Fame</h2>
+        <div class="leaderboard-wrap">
+          <div class="lb-ctrl">
+            <div style="font-family: var(--mono); font-size: 0.7rem; color: var(--dim); text-transform: uppercase;">Global Rankings</div>
+            <select class="lb-select" id="category-select" onchange="loadLeaderboard()">
+              <option value="global">Global</option>
+              <option value="physics">Physics</option>
+              <option value="coding">Coding</option>
+              <option value="vision">Vision</option>
+              <option value="game-dev">Game Dev</option>
+            </select>
+          </div>
+          <table class="lb-table" id="lb-table">
+            <thead>
+              <tr>
+                <th class="lb-rank">Rank</th>
+                <th>User</th>
+                <th style="text-align: right;">Score</th>
+              </tr>
+            </thead>
+            <tbody id="lb-body">
+              <!-- Rows injected here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      async function initDashboard() {
+        const overlay = document.getElementById('auth-overlay');
+        const ui = document.getElementById('dashboard-ui');
+
+        if (!window.colUser) {
+          overlay.style.display = 'flex';
+          ui.style.display = 'none';
+          return;
+        }
+
+        overlay.style.display = 'none';
+        ui.style.display = 'block';
+
+        document.getElementById('user-name').textContent = window.colUser.name;
+        document.getElementById('user-email').textContent = window.colUser.email;
+        const av = document.getElementById('user-avatar');
+        if (window.colUser.picture) {
+          av.innerHTML = `<img src="${window.colUser.picture}" style="width:100%; height:100%; object-fit:cover;">`;
+        } else {
+          av.textContent = window.colUser.name.charAt(0).toUpperCase();
+        }
+
+        await loadTrophies();
+        await loadLeaderboard();
+      }
+
+      async function loadTrophies() {
+        const grid = document.getElementById('trophy-grid');
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--dim);">Loading trophies...</div>';
+
+        const { data, error } = await window.getUserProgress();
+        if (error) {
+          grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #ef4444;">Error loading progress: ${error.message}</div>`;
+          return;
+        }
+
+        grid.innerHTML = '';
+        if (!data || data.length === 0) {
+          grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--dim);">No achievements found. Start exploring to earn some!</div>';
+          return;
+        }
+
+        data.forEach(item => {
+          const def = item.achievement_definitions;
+          const isCompleted = item.is_completed;
+
+          const card = document.createElement('div');
+          card.className = `trophy-card ${isCompleted ? 'unlocked' : 'locked'}`;
+
+          card.innerHTML = `
+            <span class="trophy-icon">${def.icon || '🏆'}</span>
+            <h3 class="trophy-name">${def.name}</h3>
+            <p class="trophy-desc">${def.description}</p>
+            ${isCompleted
+              ? `<button class="btn-share" onclick="shareAchievement('${def.slug}', '${item.token}')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                  Share
+                </button>`
+              : `<button class="btn-locked">Locked</button>`
+            }
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      async function loadLeaderboard() {
+        const body = document.getElementById('lb-body');
+        const cat = document.getElementById('category-select').value;
+
+        body.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--dim);">Updating ranks...</td></tr>';
+
+        let { data, error } = cat === 'global'
+          ? await window.getGlobalLeaderboard()
+          : await window.getCategoryLeaderboard(cat);
+
+        if (error) {
+          body.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Error loading leaderboard</td></tr>`;
+          return;
+        }
+
+        body.innerHTML = '';
+        if (!data || data.length === 0) {
+          body.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--dim);">No rankings available yet.</td></tr>';
+          return;
+        }
+
+        data.forEach((entry, idx) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td class="lb-rank">${idx + 1}</td>
+            <td>
+              <div class="lb-user">
+                <div class="lb-avatar">${entry.avatar_url ? `<img src="${entry.avatar_url}" style="width:100%; height:100%; object-fit:cover;">` : ''}</div>
+                <span>${entry.username || entry.name || 'Anonymous'}</span>
+              </div>
+            </td>
+            <td class="lb-score">${entry.score || 0}</td>
+          `;
+          body.appendChild(row);
+        });
+      }
+
+      function shareAchievement(slug, token) {
+        const url = window.location.origin + '/verify?cert=' + slug + '&token=' + token;
+
+        if (navigator.share) {
+          navigator.share({
+            title: 'I earned an achievement!',
+            text: 'Check out my achievement on Class Of Learners!',
+            url: url
+          }).catch(err => {
+            copyToClipboard(url);
+          });
+        } else {
+          copyToClipboard(url);
+        }
+      }
+
+      function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          const toast = document.getElementById('toast') || createToast();
+          toast.textContent = 'Verification link copied to clipboard!';
+          toast.className = 'toast show green';
+          setTimeout(() => { toast.className = 'toast'; }, 3000);
+        });
+      }
+
+      function createToast() {
+        const toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+        return toast;
+      }
+
+      window.addEventListener('col-auth-changed', () => {
+        initDashboard();
+      });
+
+      window.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "browser-use": {
+      "source": "browser-use/browser-use",
+      "sourceType": "github",
+      "skillPath": "skills/browser-use/SKILL.md",
+      "computedHash": "ecd2c948085080a69d769432f2512c3246bb91061aed34894c81b439e37b7598"
+    },
+    "valyu-best-practices": {
+      "source": "valyuai/skills",
+      "sourceType": "github",
+      "skillPath": "valyu-search/valyu-best-practices/SKILL.md",
+      "computedHash": "ab8343a839682adb5b2cff657d63f34594dbdfec7003c0c8fe1f19006b14cd0d"
+    }
+  }
+}

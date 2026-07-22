@@ -651,6 +651,22 @@ class Game {
         // Initialize global Three.js object pools (zero-GC gameplay)
         if (window.ThreePools) ThreePools.init(this);
         
+        // ─── WORLD STREAMING + FLOATING ORIGIN ───
+        this._streaming = {
+          chunkSize: 512,
+          loadRadius: 2,
+          unloadRadius: 4,
+          chunks: new Map(),
+          loadQueue: [],
+          maxLoadsPerFrame: 2,
+          anchor: new THREE.Vector3(),
+          lastAnchor: new THREE.Vector3(),
+          rebaseThreshold: 5000
+        };
+        
+        // Initialize global Three.js object pools (zero-GC gameplay)
+        if (window.ThreePools) ThreePools.init(this);
+        
         this._initR(); this._initIn(); this._initG(); this._initVirtualJoystick(); this._loop();
         window.addEventListener('resize', () => this._rsz());
         document.addEventListener('fullscreenchange', () => this._rsz());
@@ -2496,11 +2512,14 @@ class Game {
             this.scene.add(busStop);
             this.obstacles.push(busStop);
             
-            const bus = _getNpcTemplate('bus', 0xffffff).clone();
-            bus.position.set(4, 0, 30);
-            bus.userData = { spd: 0, npcType: 'bus', moveAxis: 'v', isStopped: true };
-            this.npcs.push(bus);
-            this.scene.add(bus);
+            const busTpl = _getNpcTemplate('bus', 0xffffff);
+            if (busTpl) {
+              const bus = busTpl.clone();
+              bus.position.set(4, 0, 30);
+              bus.userData = { spd: 0, npcType: 'bus', moveAxis: 'v', isStopped: true };
+              this.npcs.push(bus);
+              this.scene.add(bus);
+            }
             
             // Pedestrians waiting
             for (let i = 0; i < 3; i++) {
@@ -2585,15 +2604,19 @@ class Game {
         } else if (cfg.themeType === 'respectful_parking') {
             // Spawn haphazard parked cars
             for (let i = 0; i < 15; i++) {
-                const pc = _getNpcTemplate('car', 0x999999).clone();
+                const carTpl = _getNpcTemplate('car', 0x999999);
+                if (carTpl) {
+                  const pc = carTpl.clone();
                 pc.position.set((Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 4), 0, (Math.random() - 0.5) * 150);
                 pc.rotation.y = (Math.random() - 0.5) * 0.5;
                 pc.userData.spd = 0; pc.userData.isStopped = true; pc.userData.isParked = true;
                 this.npcs.push(pc); this.scene.add(pc);
             }
         } else if (cfg.themeType === 'ambulance_priority') {
-            if (!this.ms.amb) {
-              this.ms.amb = _getNpcTemplate('car', 0xffffff).clone();
+            const ambTpl = _getNpcTemplate('car', 0xffffff);
+            if (ambTpl) {
+              this.ms.amb = ambTpl.clone();
+            }
                 this.ms.amb.userData = { spd: 1.2, isAmb: true, npcType: 'ambulance', moveAxis: 'v' };
                 const flash = new THREE.PointLight(0xff0000, 2, 8); flash.position.y = 1.5; this.ms.amb.add(flash);
                 const flash2 = new THREE.PointLight(0x0000ff, 2, 8); flash2.position.set(.5, 1.5, 0); this.ms.amb.add(flash2);
@@ -2623,7 +2646,9 @@ class Game {
         } else if (cfg.themeType === 'no_honking') {
             cfg.isSilenceZone = true;
             for (let i = 0; i < 6; i++) {
-                const block = _getNpcTemplate('car', Math.random() * 0xffffff).clone();
+                const blockTpl = _getNpcTemplate('car', Math.random() * 0xffffff);
+                if (blockTpl) {
+                  const block = blockTpl.clone();
                 block.position.set(0, 0, -20 - i * 15);
                 block.userData.spd = 0; block.userData.isStopped = true;
                 this.npcs.push(block); this.scene.add(block);
@@ -2933,11 +2958,14 @@ class Game {
           for (let i = 0; i < 6; i++) {
             const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
             const types = ['car', 'auto', 'bike'];
-            const pc = _getNpcTemplate(types[i % 3], Math.random() * 0xffffff).clone();
-            if (seg.type === 'v') pc.position.set(seg.x + (Math.random() > .5 ? 5.5 : -5.5), 0, seg.z1 + Math.random() * (seg.z2 - seg.z1));
-            else pc.position.set(seg.x1 + Math.random() * (seg.x2 - seg.x1), 0, seg.z + (Math.random() > .5 ? 5.5 : -5.5));
-            pc.userData = { isParked: true, halfW: 2.5, halfD: 1.5 };
-            this.scene.add(pc); this.obstacles.push(pc);
+            const pcTpl = _getNpcTemplate(types[i % 3], Math.random() * 0xffffff);
+            if (pcTpl) {
+              const pc = pcTpl.clone();
+              if (seg.type === 'v') pc.position.set(seg.x + (Math.random() > .5 ? 5.5 : -5.5), 0, seg.z1 + Math.random() * (seg.z2 - seg.z1));
+              else pc.position.set(seg.x1 + Math.random() * (seg.x2 - seg.x1), 0, seg.z + (Math.random() > .5 ? 5.5 : -5.5));
+              pc.userData = { isParked: true, halfW: 2.5, halfD: 1.5 };
+              this.scene.add(pc); this.obstacles.push(pc);
+            }
           }
         }
       }
@@ -3729,6 +3757,10 @@ class Game {
         // Use RenderCore quality settings for dynamic budgets
         const lodMult = this.renderCore ? this.renderCore.getLODMultiplier() : 1.0;
         const maxParticles = this.renderCore ? this.renderCore.getMaxParticles() : 2000;
+        
+        // ─── WORLD STREAMING + FLOATING ORIGIN ───
+        this._updateStreaming();
+        this._checkFloatingOrigin();
         
         this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
 

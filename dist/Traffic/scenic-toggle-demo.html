@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horizon Toggle — Original Design</title>
+    <link rel="icon" type="image/png" href="../Icon.png" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    padding: 40px 20px;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #FFD700, #FF8C42, #E040FB, #4FC3F7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    color: #666;
+    text-align: center;
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  /* ──────────────────────────────────────────
+     HORIZON TOGGLE — THE DESIGN
+     ────────────────────────────────────────── */
+
+  .hz-toggle {
+    position: relative;
+    width: 400px;
+    height: 130px;
+    border-radius: 65px;
+    cursor: pointer;
+    overflow: hidden;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    /* Day sky gradient — warm sunset tones */
+    background: linear-gradient(180deg,
+      #3B82F6 0%,
+      #60A5FA 25%,
+      #93C5FD 50%,
+      #FDE68A 80%,
+      #F59E0B 100%
+    );
+    transition: background 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+      inset 0 2px 8px rgba(0,0,0,0.15),
+      inset 0 -2px 8px rgba(0,0,0,0.1),
+      0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .hz-toggle.night {
+    /* Night sky gradient — deep atmospheric navy */
+    background: linear-gradient(180deg,
+      #070B1A 0%,
+      #0F172A 25%,
+      #1E293B 50%,
+      #334155 80%,
+      #1E1B4B 100%
+    );
+  }
+
+  /* ── Stars ──────────────────────────────── */
+
+  .hz-stars {
+    position: absolute;
+    top: 12px;
+    left: 25px;
+    width: 2px;
+    height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.8s ease 0.25s;
+    z-index: 1;
+    box-shadow:
+      38px  10px 0 0 rgba(255,255,255,0.9),
+      95px  28px 0 0 rgba(255,255,255,0.7),
+      62px  52px 0 0 rgba(255,255,255,1),
+      148px  8px 0 0 rgba(255,255,255,0.6),
+      185px 42px 0 0 rgba(255,255,255,0.8),
+      228px 18px 0 0 rgba(255,255,255,0.9),
+      265px 55px 0 0 rgba(255,255,255,0.5),
+      310px 12px 0 0 rgba(255,255,255,0.8),
+      340px 48px 0 0 rgba(255,255,255,0.7),
+      120px 70px 0 0 rgba(255,255,255,0.6),
+      48px  85px 0 0 rgba(255,255,255,0.9),
+      195px 78px 0 0 rgba(255,255,255,0.5),
+      280px 68px 0 0 rgba(255,255,255,0.8),
+      355px 35px 0 0 rgba(255,255,255,0.7),
+      82px  40px 0 0 rgba(255,255,255,0.6),
+      160px 58px 0 0 rgba(255,255,255,0.9),
+      235px 82px 0 0 rgba(255,255,255,0.5),
+      320px 72px 0 0 rgba(255,255,255,0.7),
+      15px  60px 0 0 rgba(255,255,255,0.8),
+      370px 22px 0 0 rgba(255,255,255,0.6);
+    animation: twinkle 3s ease-in-out infinite alternate;
+  }
+
+  .hz-toggle.night .hz-stars {
+    opacity: 1;
+  }
+
+  @keyframes twinkle {
+    0%   { opacity: 0.85; }
+    50%  { opacity: 0.55; }
+    100% { opacity: 1; }
+  }
+
+  /* ── City Skyline Silhouette ────────────── */
+
+  .hz-skyline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 38px;
+    z-index: 2;
+    transition: background 0.7s ease;
+    background: #1E3A5F;
+    clip-path: polygon(
+      0% 100%,
+      0% 72%,
+      3% 72%, 3% 48%, 6% 48%, 6% 72%,
+      8% 72%, 8% 38%, 11% 38%, 11% 72%,
+      13% 72%, 13% 58%, 15% 58%, 15% 42%, 17% 42%, 17% 72%,
+      19% 72%, 19% 32%, 21% 32%, 21% 28%, 23% 28%, 23% 32%, 25% 32%, 25% 72%,
+      27% 72%, 27% 55%, 29% 55%, 29% 72%,
+      31% 72%, 31% 42%, 33% 42%, 33% 35%, 35% 35%, 35% 42%, 37% 42%, 37% 72%,
+      39% 72%, 39% 62%, 41% 62%, 41% 72%,
+      43% 72%, 43% 25%, 45% 25%, 45% 22%, 47% 22%, 47% 25%, 49% 25%, 49% 72%,
+      51% 72%, 51% 52%, 53% 52%, 53% 72%,
+      55% 72%, 55% 38%, 57% 38%, 57% 32%, 59% 32%, 59% 38%, 61% 38%, 61% 72%,
+      63% 72%, 63% 55%, 65% 55%, 65% 72%,
+      67% 72%, 67% 45%, 69% 45%, 69% 28%, 71% 28%, 71% 45%, 73% 45%, 73% 72%,
+      75% 72%, 75% 62%, 77% 62%, 77% 72%,
+      79% 72%, 79% 42%, 81% 42%, 81% 35%, 83% 35%, 83% 42%, 85% 42%, 85% 72%,
+      87% 72%, 87% 55%, 89% 55%, 89% 72%,
+      91% 72%, 91% 48%, 93% 48%, 93% 38%, 95% 38%, 95% 48%, 97% 48%, 97% 72%,
+      100% 72%,
+      100% 100%
+    );
+  }
+
+  .hz-toggle.night .hz-skyline {
+    background: #0B1120;
+  }
+
+  /* ── Window Lights (visible at night) ──── */
+
+  .hz-windows {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 38px;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.7s ease 0.3s;
+    pointer-events: none;
+  }
+
+  .hz-toggle.night .hz-windows {
+    opacity: 1;
+  }
+
+  .hz-windows::before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #FDE68A;
+    border-radius: 0.5px;
+    box-shadow:
+      /* building cluster 1 */
+      34px -14px 0 0 rgba(253,230,138,0.9),
+      38px -14px 0 0 rgba(253,230,138,0.7),
+      42px -14px 0 0 rgba(253,230,138,0.5),
+      34px -10px 0 0 rgba(253,230,138,0.6),
+      42px -10px 0 0 rgba(253,230,138,0.8),
+      /* building cluster 2 */
+      80px -22px 0 0 rgba(253,230,138,0.8),
+      84px -22px 0 0 rgba(253,230,138,0.6),
+      80px -18px 0 0 rgba(253,230,138,0.5),
+      84px -18px 0 0 rgba(253,230,138,0.9),
+      80px -14px 0 0 rgba(253,230,138,0.7),
+      /* tall building center */
+      175px -28px 0 0 rgba(253,230,138,0.9),
+      179px -28px 0 0 rgba(253,230,138,0.6),
+      175px -24px 0 0 rgba(253,230,138,0.5),
+      179px -24px 0 0 rgba(253,230,138,0.8),
+      175px -20px 0 0 rgba(253,230,138,0.7),
+      179px -20px 0 0 rgba(253,230,138,0.5),
+      175px -16px 0 0 rgba(253,230,138,0.9),
+      /* right cluster */
+      268px -16px 0 0 rgba(253,230,138,0.8),
+      272px -16px 0 0 rgba(253,230,138,0.6),
+      268px -12px 0 0 rgba(253,230,138,0.5),
+      276px -12px 0 0 rgba(253,230,138,0.7),
+      /* far right */
+      328px -20px 0 0 rgba(253,230,138,0.9),
+      332px -20px 0 0 rgba(253,230,138,0.6),
+      328px -16px 0 0 rgba(253,230,138,0.5),
+      332px -16px 0 0 rgba(253,230,138,0.8),
+      336px -16px 0 0 rgba(253,230,138,0.7);
+  }
+
+  /* ── Orb (Sun / Moon) ──────────────────── */
+
+  .hz-orb {
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    top: 10px;
+    left: 15px;
+    z-index: 4;
+    transition:
+      left 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      background 0.7s ease,
+      box-shadow 0.7s ease,
+      filter 0.7s ease;
+    /* Day: warm golden sun */
+    background: radial-gradient(circle at 35% 35%,
+      #FFF7AE 0%,
+      #FFE066 25%,
+      #FFB347 55%,
+      #FF8C42 80%,
+      #E85D04 100%
+    );
+    box-shadow:
+      0 0 30px rgba(255, 179, 71, 0.5),
+      0 0 60px rgba(255, 140, 66, 0.3),
+      0 0 100px rgba(255, 140, 66, 0.15);
+  }
+
+  /* Sun rays — subtle rotating ring */
+  .hz-orb::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 200, 100, 0.3);
+    animation: sun-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes sun-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50%      { transform: scale(1.08); opacity: 0.15; }
+  }
+
+  /* Crescent moon mask */
+  .hz-orb::after {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 22px;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: transparent;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.2s;
+    pointer-events: none;
+  }
+
+  .hz-toggle.night .hz-orb {
+    left: 275px;
+    /* Night: cool silver moon */
+    background: radial-gradient(circle at 35% 35%,
+      #F8FAFC 0%,
+      #E2E8F0 30%,
+      #CBD5E1 60%,
+      #94A3B8 100%
+    );
+    box-shadow:
+      0 0 25px rgba(200, 215, 240, 0.4),
+      0 0 50px rgba(180, 200, 240, 0.2),
+      0 0 80px rgba(180, 200, 240, 0.1);
+  }
+
+  .hz-toggle.night .hz-orb::after {
+    /* Crescent cutout — matches night sky top color */
+    background: #0F172A;
+    opacity: 1;
+  }
+
+  .hz-toggle.night .hz-orb::before {
+    /* Moon glow ring */
+    border-color: rgba(200, 215, 240, 0.2);
+    animation: moon-glow 4s ease-in-out infinite;
+  }
+
+  @keyframes moon-glow {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50%      { transform: scale(1.06); opacity: 0.1; }
+  }
+
+  /* ── Click Feedback ─────────────────────── */
+
+  .hz-toggle:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+
+  /* ── Responsive ─────────────────────────── */
+
+  @media (max-width: 420px) {
+    .hz-toggle {
+      width: 300px;
+      height: 98px;
+      border-radius: 49px;
+    }
+    .hz-orb {
+      width: 82px;
+      height: 82px;
+      top: 8px;
+      left: 12px;
+    }
+    .hz-toggle.night .hz-orb {
+      left: 206px;
+    }
+    .hz-orb::after {
+      width: 72px;
+      height: 72px;
+      top: -8px;
+      left: 16px;
+    }
+    .hz-skyline { height: 28px; }
+    .hz-windows { height: 28px; }
+    .hz-stars {
+      top: 8px;
+      left: 18px;
+      box-shadow:
+        28px 8px 0 0 rgba(255,255,255,0.9),
+        72px 22px 0 0 rgba(255,255,255,0.7),
+        48px 40px 0 0 rgba(255,255,255,1),
+        112px 6px 0 0 rgba(255,255,255,0.6),
+        140px 32px 0 0 rgba(255,255,255,0.8),
+        175px 14px 0 0 rgba(255,255,255,0.9),
+        200px 42px 0 0 rgba(255,255,255,0.5),
+        240px 10px 0 0 rgba(255,255,255,0.8),
+        260px 38px 0 0 rgba(255,255,255,0.7),
+        90px 52px 0 0 rgba(255,255,255,0.6);
+    }
+  }
+
+  /* ──────────────────────────────────────────
+     DEMO PAGE LAYOUT
+     ────────────────────────────────────────── */
+
+  .demo-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .demo-card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .demo-label {
+    font-size: 0.8rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .status-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    min-height: 1.4em;
+    transition: color 0.3s;
+  }
+
+  .code-block {
+    background: #0d0d0d;
+    border: 1px solid #1a1a1a;
+    border-radius: 10px;
+    padding: 20px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: #a0a0a0;
+    max-width: 600px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .code-block .kw { color: #E040FB; }
+  .code-block .str { color: #66BB6A; }
+  .code-block .prop { color: #4FC3F7; }
+  .code-block .val { color: #FFD54F; }
+  .code-block .cmt { color: #444; font-style: italic; }
+</style>
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+      <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/Traffic/scenic-toggle-demo" />
+  </head>
+<body>
+
+  <h1>Horizon Toggle</h1>
+  <p class="subtitle">
+    An original scenic day/night toggle — gradient sky, city skyline silhouette,
+    CSS stars, crescent moon, and warm atmospheric colors. Click to toggle.
+  </p>
+
+  <div class="demo-row">
+
+    <!-- ── LIVE TOGGLE ── -->
+    <div class="demo-card">
+      <div class="demo-label">Live Preview</div>
+      <div id="hz-toggle" class="hz-toggle" onclick="hzToggle()">
+        <div class="hz-stars"></div>
+        <div class="hz-skyline"></div>
+        <div class="hz-windows"></div>
+        <div class="hz-orb"></div>
+      </div>
+      <div id="status" class="status-text" style="color: #FFB347;">☀️ Day Mode</div>
+    </div>
+
+    <!-- ── STATIC STATES ── -->
+    <div class="demo-card">
+      <div class="demo-label">Day (static)</div>
+      <div class="hz-toggle" style="pointer-events:none;">
+        <div class="hz-stars"></div>
+        <div class="hz-skyline"></div>
+        <div class="hz-windows"></div>
+        <div class="hz-orb"></div>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="demo-label">Night (static)</div>
+      <div class="hz-toggle night" style="pointer-events:none;">
+        <div class="hz-stars"></div>
+        <div class="hz-skyline"></div>
+        <div class="hz-windows"></div>
+        <div class="hz-orb"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── INTEGRATION CODE ── -->
+  <div class="demo-card" style="max-width: 640px; width: 100%;">
+    <div class="demo-label">Integration Code</div>
+    <div class="code-block"><span class="cmt">&lt;!-- HTML: add inside any page --&gt;</span>
+<span class="kw">&lt;div</span> <span class="prop">id</span>=<span class="str">"hz-toggle"</span> <span class="prop">class</span>=<span class="str">"hz-toggle"</span> <span class="prop">onclick</span>=<span class="str">"hzToggle()"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;div</span> <span class="prop">class</span>=<span class="str">"hz-stars"</span><span class="kw">&gt;&lt;/div&gt;</span>
+  <span class="kw">&lt;div</span> <span class="prop">class</span>=<span class="str">"hz-skyline"</span><span class="kw">&gt;&lt;/div&gt;</span>
+  <span class="kw">&lt;div</span> <span class="prop">class</span>=<span class="str">"hz-windows"</span><span class="kw">&gt;&lt;/div&gt;</span>
+  <span class="kw">&lt;div</span> <span class="prop">class</span>=<span class="str">"hz-orb"</span><span class="kw">&gt;&lt;/div&gt;</span>
+<span class="kw">&lt;/div&gt;</span>
+
+<span class="cmt">&lt;!-- JS: before &lt;/body&gt; --&gt;</span>
+<span class="kw">&lt;script&gt;</span>
+<span class="kw">function</span> <span class="prop">hzToggle</span>() {
+  <span class="kw">var</span> el = document.getElementById(<span class="str">'hz-toggle'</span>);
+  <span class="kw">var</span> body = document.body;
+  el.classList.toggle(<span class="str">'night'</span>);
+  body.classList.toggle(<span class="str">'lm'</span>);
+  localStorage.setItem(<span class="str">'theme'</span>,
+    body.classList.contains(<span class="str">'lm'</span>) ? <span class="str">'light'</span> : <span class="str">'dark'</span>);
+}
+<span class="kw">function</span> <span class="prop">hzInit</span>() {
+  <span class="kw">var</span> t = localStorage.getItem(<span class="str">'theme'</span>);
+  <span class="kw">var</span> el = document.getElementById(<span class="str">'hz-toggle'</span>);
+  <span class="kw">if</span> (t === <span class="str">'light'</span>) {
+    document.body.classList.add(<span class="str">'lm'</span>);
+    <span class="kw">if</span> (el) el.classList.remove(<span class="str">'night'</span>);
+  } <span class="kw">else</span> {
+    document.body.classList.remove(<span class="str">'lm'</span>);
+    <span class="kw">if</span> (el) el.classList.add(<span class="str">'night'</span>);
+  }
+}
+hzInit();
+<span class="kw">&lt;/script&gt;</span></div>
+  </div>
+
+<script>
+function hzToggle() {
+  var el = document.getElementById('hz-toggle');
+  var body = document.body;
+  var status = document.getElementById('status');
+  el.classList.toggle('night');
+  body.classList.toggle('lm');
+  var isNight = el.classList.contains('night');
+  localStorage.setItem('theme', isNight ? 'dark' : 'light');
+  if (status) {
+    status.textContent = isNight ? '🌙 Night Mode' : '☀️ Day Mode';
+    status.style.color = isNight ? '#94A3B8' : '#FFB347';
+  }
+}
+
+function hzInit() {
+  var t = localStorage.getItem('theme');
+  var el = document.getElementById('hz-toggle');
+  var status = document.getElementById('status');
+  if (t === 'light') {
+    document.body.classList.add('lm');
+    if (el) el.classList.remove('night');
+  } else {
+    document.body.classList.remove('lm');
+    if (el) el.classList.add('night');
+  }
+  var isNight = el && el.classList.contains('night');
+  if (status) {
+    status.textContent = isNight ? '🌙 Night Mode' : '☀️ Day Mode';
+    status.style.color = isNight ? '#94A3B8' : '#FFB347';
+  }
+}
+hzInit();
+</script>
+</body>
+</html>

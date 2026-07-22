@@ -1,0 +1,1598 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta name="description" content="Class of Learners - Solar. An educational tool and resource." />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solar System Engine | Class Of Learners</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+      /* â”€â”€ FORCE DEEP SPACE THEME FOR SOLAR â”€â”€ */
+      :root,
+      body {
+        --bg-1: #050200;
+        --bg-2: #000000;
+        --primary: #ff9955;
+        --primary-dim: rgba(255, 153, 85, 0.15);
+        --primary-glow: rgba(255, 153, 85, 0.4);
+        --card-bg: #0a0502;
+        --text-main: #f8fafc;
+        --nav-bg: rgba(5, 2, 0, 0.95);
+        --border-light: #2a1508;
+        --text-muted: #cbd5e1;
+        --warning: #ff3333;
+        --google-blue: #2563eb;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+      }
+      body {
+        background-color: var(--bg-2);
+        color: var(--text-main);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        overflow-x: hidden;
+        background-image: radial-gradient(circle at top center, var(--bg-1) 0%, var(--bg-2) 100%);
+      }
+      code,
+      pre,
+      .tech-tag,
+      kbd,
+      .brand,
+      [style*='monospace'],
+      .term-dot {
+        text-transform: none;
+      }
+
+      /* â”€â”€ CUSTOM SCROLLBAR (SOLAR) â”€â”€ */
+      ::-webkit-scrollbar {
+        width: 12px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg-1);
+        border-left: 1px solid var(--border-light);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 153, 85, 0.2);
+        border-radius: 10px;
+        border: 3px solid var(--bg-1);
+        transition: 0.3s;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary);
+      }
+
+      /* â”€â”€ GLOBAL NAVBAR â”€â”€ */
+      .top-nav {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 50px;
+        background: var(--nav-bg);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--border-light);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        flex-wrap: wrap;
+        gap: 15px;
+        transition: 0.3s;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: var(--text-main);
+        font-weight: 800;
+        font-size: 1.2rem;
+        letter-spacing: -0.5px;
+        text-transform: none;
+      }
+      .brand-logo {
+        height: 36px;
+        width: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 0 8px var(--primary-glow));
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .nav-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: 0.2s;
+      }
+      .nav-link:hover {
+        color: var(--primary);
+      }
+
+      /* â”€â”€ PROJECTS DROPDOWN â”€â”€ */
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      .dropdown-btn {
+        color: var(--text-muted);
+        background: none;
+        border: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Inter', sans-serif;
+        transition: color 0.2s ease;
+        padding: 0;
+      }
+      .dropdown-btn:hover,
+      .dropdown.active .dropdown-btn,
+      .dropdown-btn.act {
+        color: var(--primary);
+      }
+      .dropdown-btn span {
+        font-size: 0.7rem;
+        transition: transform 0.3s ease;
+      }
+      .dropdown.active .dropdown-btn span {
+        transform: rotate(180deg);
+      }
+      .dropdown-content {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        background: transparent;
+        min-width: 220px;
+        z-index: 1001;
+        padding-top: 15px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease,
+          visibility 0s linear 0.5s;
+      }
+      .dropdown-content-inner {
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 0;
+      }
+      .dropdown.active .dropdown-content {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateX(-50%) translateY(0);
+        transition-delay: 0s;
+      }
+      .dropdown.active:not(:hover) .dropdown-content {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-50%) translateY(10px);
+        transition-delay: 0.5s;
+      }
+      .dropdown-content a {
+        color: var(--text-muted);
+        padding: 12px 20px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .dropdown-content a:hover {
+        background: rgba(255, 153, 85, 0.08);
+        color: var(--primary);
+        padding-left: 25px;
+      }
+
+      /* â”€â”€ UTILITY BUTTONS â”€â”€ */
+      .nav-dl-btn {
+        background: var(--primary);
+        color: #000;
+        padding: 10px 24px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 800;
+        transition: 0.2s;
+        box-shadow: 0 0 15px var(--primary-glow);
+        font-size: 0.9rem;
+      }
+      .nav-dl-btn:hover {
+        background: #fff;
+        box-shadow: 0 0 25px var(--primary);
+      }
+      .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-main);
+      }
+      .mobile-dl {
+        display: none;
+      }
+
+      /* â”€â”€ GLOBAL ACCOUNT UI â”€â”€ */
+      .nav-login-btn {
+        background: rgba(255, 153, 85, 0.1);
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+      }
+      body.dark-mode .nav-login-btn {
+        color: #34d399;
+        border-color: #34d399;
+      }
+      body.dark-mode .nav-login-btn:hover {
+        background: #34d399;
+        color: #000;
+        box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
+      }
+      .nav-login-btn:hover {
+        background: var(--primary);
+        color: #000;
+        box-shadow: 0 0 20px var(--primary-glow);
+      }
+      .nav-user-profile {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 15px 5px 5px;
+        background: transparent;
+        border: 1px solid var(--border-light);
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .nav-user-profile:hover {
+        border-color: var(--primary);
+      }
+      .nav-user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 800;
+        overflow: hidden;
+      }
+
+      /* â”€â”€ STARRY BACKGROUND â”€â”€ */
+      .stars-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        pointer-events: none;
+        /* Layer 1: Slower, smaller stars */
+        background: transparent
+          url('data:image/svg+xml;utf8,<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="45" r="1" fill="%23fff" opacity="0.6"/><circle cx="112" cy="88" r="1.5" fill="%23fff" opacity="0.4"/><circle cx="180" cy="21" r="1" fill="%23fff" opacity="0.8"/><circle cx="275" cy="220" r="2" fill="%23fff" opacity="0.3"/><circle cx="340" cy="90" r="1" fill="%23fff" opacity="0.7"/><circle cx="120" cy="320" r="1.5" fill="%23fff" opacity="0.5"/><circle cx="380" cy="350" r="1" fill="%23fff" opacity="0.8"/><circle cx="210" cy="180" r="1" fill="%23fff" opacity="0.9"/><circle cx="60" cy="270" r="1" fill="%23fff" opacity="0.6"/><circle cx="310" cy="280" r="1.5" fill="%23fff" opacity="0.5"/></svg>')
+          repeat;
+        animation: starDrift 100s linear infinite;
+        opacity: 0.8;
+      }
+      .stars-bg::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /* Layer 2: Faster, larger foreground stars */
+        background: transparent
+          url('data:image/svg+xml;utf8,<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="60" r="1.5" fill="%23fff" opacity="0.5"/><circle cx="150" cy="120" r="1" fill="%23fff" opacity="0.7"/><circle cx="220" cy="40" r="1" fill="%23fff" opacity="0.4"/><circle cx="90" cy="210" r="2" fill="%23fff" opacity="0.6"/><circle cx="260" cy="250" r="1" fill="%23fff" opacity="0.5"/></svg>')
+          repeat;
+        animation: starDrift 150s linear infinite reverse;
+      }
+      @keyframes starDrift {
+        from {
+          background-position: 0 0;
+        }
+        to {
+          background-position: -1000px 1000px;
+        }
+      }
+
+      /* â”€â”€ CENTERED HERO SECTION â”€â”€ */
+      .game-hero {
+        width: 100%;
+        padding: 160px 20px 80px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-bottom: 1px solid var(--border-light);
+        background: linear-gradient(180deg, transparent 0%, rgba(255, 153, 85, 0.05) 100%);
+        transition: 0.3s;
+      }
+      .hero-badge {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        background: rgba(255, 153, 85, 0.1);
+        border: 1px solid rgba(255, 153, 85, 0.3);
+        color: var(--primary);
+        font-weight: 800;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 20px;
+      }
+      .game-hero h1 {
+        font-size: 4.5rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 20px;
+        letter-spacing: -2px;
+        font-family: 'Space Mono', monospace;
+        text-transform: none;
+      }
+      .game-hero p {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        max-width: 800px;
+        line-height: 1.6;
+        margin-bottom: 35px;
+        text-transform: none;
+      }
+      .hero-cta {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn-download {
+        background: var(--primary);
+        color: #000;
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.3s;
+        box-shadow: 0 10px 30px var(--primary-glow);
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .btn-download:hover {
+        background: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px var(--primary-glow);
+      }
+      .btn-demo {
+        background: rgba(255, 153, 85, 0.05);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        backdrop-filter: blur(5px);
+      }
+      .btn-demo:hover {
+        background: var(--primary);
+        color: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px var(--primary-glow);
+      }
+
+      /* â”€â”€ UPGRADED SOLAR FEATURE CARDS WITH ANIMATIONS â”€â”€ */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        width: 90%;
+        max-width: 1200px;
+        margin: 150px auto 80px;
+        z-index: 10;
+        position: relative;
+      }
+      .feature-card {
+        background: linear-gradient(110deg, rgba(15, 7, 2, 0.7) 0%, rgba(15, 7, 2, 0.7) 40%, rgba(255, 153, 85, 0.12) 50%, rgba(15, 7, 2, 0.7) 60%, rgba(15, 7, 2, 0.7) 100%);
+        background-size: 250% 100%;
+        background-position: 100% 0;
+        border: 1px solid rgba(255, 153, 85, 0.15);
+        border-radius: 16px;
+        padding: 40px 30px;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        box-shadow:
+          inset 0 0 20px rgba(0, 0, 0, 0.5),
+          0 15px 30px rgba(0, 0, 0, 0.8);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition:
+          transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+          background-position 0.6s ease-out,
+          border-color 0.4s,
+          box-shadow 0.4s;
+      }
+      .feature-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(rgba(255, 153, 85, 0.05) 1px, transparent 1px);
+        background-size: 15px 15px;
+        z-index: 0;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+      }
+      .feature-card:hover {
+        transform: translateY(-12px) scale(1.02) !important;
+        border-color: rgba(255, 153, 85, 0.5);
+        box-shadow:
+          inset 0 0 30px rgba(255, 153, 85, 0.05),
+          0 20px 40px rgba(255, 153, 85, 0.2);
+        background-position: 0% 0;
+      }
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+      .feature-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .feature-card:hover::after {
+        opacity: 1;
+      }
+      .feature-content {
+        position: relative;
+        z-index: 2;
+      }
+
+      @keyframes solarPulse {
+        0% {
+          box-shadow: 0 0 10px rgba(255, 153, 85, 0.1);
+        }
+        50% {
+          box-shadow: 0 0 25px rgba(255, 153, 85, 0.4);
+        }
+        100% {
+          box-shadow: 0 0 10px rgba(255, 153, 85, 0.1);
+        }
+      }
+      .icon-wrapper {
+        width: 64px;
+        height: 64px;
+        background: rgba(255, 153, 85, 0.05);
+        border: 1px solid rgba(255, 153, 85, 0.3);
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.8rem;
+        color: var(--primary);
+        font-family: 'Consolas', monospace;
+        font-weight: bold;
+        margin-bottom: 25px;
+        position: relative;
+        animation: solarPulse 3s infinite ease-in-out;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .icon-wrapper::before,
+      .icon-wrapper::after {
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .icon-wrapper::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        width: 12px;
+        height: 12px;
+        border-top: 2px solid var(--primary);
+        border-left: 2px solid var(--primary);
+        border-top-left-radius: 4px;
+      }
+      .icon-wrapper::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        right: -3px;
+        width: 12px;
+        height: 12px;
+        border-bottom: 2px solid var(--primary);
+        border-right: 2px solid var(--primary);
+        border-bottom-right-radius: 4px;
+      }
+      .feature-card:hover .icon-wrapper {
+        background: rgba(255, 153, 85, 0.15);
+        box-shadow: 0 0 40px rgba(255, 153, 85, 0.5);
+        transform: scale(1.1);
+        animation: none;
+      }
+      .feature-card:hover .icon-wrapper::before {
+        top: -8px;
+        left: -8px;
+        transform: rotate(-180deg);
+        border-color: #fff;
+      }
+      .feature-card:hover .icon-wrapper::after {
+        bottom: -8px;
+        right: -8px;
+        transform: rotate(-180deg);
+        border-color: #fff;
+      }
+      .feature-card h3 {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+        color: var(--text-main);
+        letter-spacing: -0.5px;
+      }
+      .feature-card p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.7;
+        margin-bottom: 25px;
+        text-transform: none;
+      }
+
+      .tech-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 25px;
+      }
+      .tech-tag {
+        font-family: 'Consolas', monospace;
+        font-size: 0.7rem;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: rgba(255, 153, 85, 0.05);
+        color: var(--primary);
+        border: 1px solid rgba(255, 153, 85, 0.2);
+        transition: 0.2s;
+      }
+      .feature-card:hover .tech-tag {
+        background: rgba(255, 153, 85, 0.15);
+        box-shadow: 0 0 10px rgba(255, 153, 85, 0.2);
+        border-color: rgba(255, 153, 85, 0.5);
+      }
+
+      /* â”€â”€ SYSTEM SNAPSHOTS GALLERY â”€â”€ */
+      .gallery-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 60px 0 30px;
+        letter-spacing: -1px;
+        transition: 0.3s;
+        font-family: 'Space Mono', monospace;
+        text-transform: uppercase;
+      }
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 40px;
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto 80px;
+      }
+      .snapshot-card {
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(10, 5, 2, 0.6);
+        border: 1px solid rgba(255, 153, 85, 0.2);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        position: relative;
+        transition:
+          transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+          border-color 0.4s;
+      }
+      .snapshot-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        border-color: var(--primary);
+        box-shadow:
+          0 30px 60px rgba(0, 0, 0, 0.7),
+          0 0 30px rgba(255, 153, 85, 0.1);
+      }
+      .snapshot-card img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        opacity: 0.85;
+        transition: opacity 0.3s;
+      }
+      .snapshot-card:hover img {
+        opacity: 1;
+      }
+      .snapshot-overlay {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: rgba(0, 0, 0, 0.7);
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        font-family: 'Space Mono', monospace;
+        font-size: 0.75rem;
+        font-weight: bold;
+        padding: 6px 12px;
+        border-radius: 4px;
+        backdrop-filter: blur(5px);
+        z-index: 5;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      }
+
+      /* â”€â”€ UPGRADED ENGINE CONTAINER BOX (SOLAR) â”€â”€ */
+      .engine-container {
+        width: 95%;
+        max-width: 1600px;
+        height: 85vh;
+        min-height: 700px;
+        background: #020100;
+        margin-bottom: 100px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid rgba(255, 153, 85, 0.3);
+        border-radius: 16px;
+        box-shadow:
+          0 30px 60px rgba(0, 0, 0, 0.9),
+          0 0 40px rgba(255, 153, 85, 0.08);
+      }
+      .engine-hud-header {
+        padding: 12px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Space Mono', monospace;
+        text-transform: uppercase;
+        z-index: 20;
+        background: linear-gradient(90deg, rgba(10, 5, 2, 1) 0%, rgba(255, 153, 85, 0.05) 100%);
+        border-bottom: 1px solid rgba(255, 153, 85, 0.2);
+      }
+      .hud-title {
+        color: var(--text-main);
+        font-weight: 700;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      #engine-status-dot {
+        background: var(--warning);
+        box-shadow: 0 0 10px var(--warning);
+        transition: 0.5s;
+      }
+      .hud-warning {
+        background: rgba(255, 51, 51, 0.1);
+        color: var(--warning);
+        border: 1px solid rgba(255, 51, 51, 0.3);
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        animation: warningPulse 2s infinite alternate;
+      }
+      @keyframes warningPulse {
+        0% {
+          box-shadow: 0 0 5px rgba(255, 51, 51, 0.2);
+        }
+        100% {
+          box-shadow: 0 0 15px rgba(255, 51, 51, 0.6);
+        }
+      }
+
+      /* â”€â”€ UPGRADED ENGINE OVERLAY (SOLAR) â”€â”€ */
+      .engine-overlay {
+        position: absolute;
+        top: 41px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at center, rgba(15, 7, 2, 0.9) 0%, rgba(2, 1, 0, 0.98) 100%);
+        backdrop-filter: blur(8px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        cursor: pointer;
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+      }
+      .scan-line {
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        background: rgba(255, 153, 85, 0.3);
+        box-shadow: 0 0 20px rgba(255, 153, 85, 0.6);
+        top: 0;
+        left: 0;
+        animation: scan 3s linear infinite;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      @keyframes scan {
+        0% {
+          top: -10%;
+        }
+        100% {
+          top: 110%;
+        }
+      }
+
+      .overlay-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 2;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .engine-overlay:hover .overlay-content {
+        transform: scale(1.03);
+      }
+
+      .cyber-play-btn {
+        position: relative;
+        width: 90px;
+        height: 90px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 25px;
+        border-radius: 50%;
+        background: rgba(255, 153, 85, 0.05);
+        border: 1px solid rgba(255, 153, 85, 0.3);
+        box-shadow: 0 0 30px rgba(255, 153, 85, 0.1);
+        transition: all 0.3s ease;
+      }
+      .cyber-play-btn svg {
+        width: 36px;
+        height: 36px;
+        color: var(--primary);
+        transition: 0.3s;
+        filter: drop-shadow(0 0 5px var(--primary));
+        fill: rgba(255, 153, 85, 0.2);
+      }
+      .ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid var(--primary);
+        opacity: 0;
+      }
+      .ring-1 {
+        width: 100%;
+        height: 100%;
+        animation: radarPulse 2s infinite ease-out;
+      }
+      .ring-2 {
+        width: 100%;
+        height: 100%;
+        animation: radarPulse 2s infinite ease-out 1s;
+      }
+      @keyframes radarPulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.8;
+          border-width: 2px;
+        }
+        100% {
+          transform: scale(1.8);
+          opacity: 0;
+          border-width: 1px;
+        }
+      }
+
+      .engine-overlay:hover .cyber-play-btn {
+        background: rgba(255, 153, 85, 0.15);
+        box-shadow: 0 0 50px rgba(255, 153, 85, 0.3);
+        transform: scale(1.1);
+      }
+      .engine-overlay:hover .cyber-play-btn svg {
+        transform: scale(1.1);
+        fill: var(--primary);
+      }
+
+      .overlay-content h2 {
+        font-family: 'Space Mono', monospace;
+        color: var(--text-main);
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+        text-shadow: 0 0 15px rgba(255, 153, 85, 0.2);
+      }
+      .overlay-content p {
+        color: var(--text-muted);
+        font-size: 1rem;
+        margin-bottom: 35px;
+        max-width: 450px;
+        text-align: center;
+        text-transform: none;
+      }
+
+      .gesture-grid {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .gesture-card {
+        background: rgba(10, 5, 2, 0.6);
+        border: 1px solid var(--border-light);
+        padding: 12px 20px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        backdrop-filter: blur(5px);
+        transition: 0.3s;
+      }
+      .gesture-card:hover {
+        transform: translateY(-5px);
+        background: rgba(15, 7, 2, 0.8);
+        border-color: var(--primary);
+        box-shadow: 0 5px 15px rgba(255, 153, 85, 0.15);
+      }
+      .pan-cam {
+        border-left: 3px solid #facc15;
+      }
+      .zoom-cam {
+        border-left: 3px solid #c084fc;
+      }
+      .select-body {
+        border-left: 3px solid #38bdf8;
+      }
+      .pan-cam:hover {
+        box-shadow: 0 5px 15px rgba(250, 204, 21, 0.15);
+        border-color: #facc15;
+      }
+      .zoom-cam:hover {
+        box-shadow: 0 5px 15px rgba(192, 132, 252, 0.15);
+        border-color: #c084fc;
+      }
+      .select-body:hover {
+        box-shadow: 0 5px 15px rgba(56, 189, 248, 0.15);
+        border-color: #38bdf8;
+      }
+      .g-icon {
+        font-size: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 8px;
+      }
+      .g-text {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+      }
+      .g-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--text-main);
+        font-family: 'Space Mono', monospace;
+        letter-spacing: -0.5px;
+      }
+      .pan-cam .g-title {
+        color: #facc15;
+      }
+      .zoom-cam .g-title {
+        color: #c084fc;
+      }
+      .select-body .g-title {
+        color: #38bdf8;
+      }
+      .g-desc {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 2px;
+      }
+
+      .engine-frame {
+        width: 100%;
+        height: 100%;
+        flex-grow: 1;
+        border: none;
+        background: transparent;
+        display: none;
+        z-index: 5;
+        position: relative;
+      }
+
+      /* â”€â”€ ANIMATION TRIGGERS â”€â”€ */
+      .anim-target {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: 0.6s ease-out;
+      }
+      .animate-in {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+      }
+      .cursor-blink {
+        animation: blink 1s step-end infinite;
+        color: var(--primary);
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+      .hero-reveal {
+        opacity: 0;
+        transform: translateY(15px);
+        transition: 0.8s ease;
+      }
+      .hero-reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* â”€â”€ FOOTER â”€â”€ */
+      .site-footer {
+        width: 100%;
+        padding: 40px 20px 30px;
+        text-align: center;
+        border-top: 1px solid var(--border-light);
+        background: var(--nav-bg);
+        backdrop-filter: blur(10px);
+        margin-top: auto;
+      }
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .footer-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: 0.2s;
+        text-transform: none;
+      }
+      .footer-links a:hover {
+        color: var(--primary);
+      }
+      .footer-copy {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: none;
+      }
+
+      /* â”€â”€ UNIVERSAL AUTHENTICATION MODAL CSS (SOLAR THEME) â”€â”€ */
+      .mo {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(15px);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.4s ease;
+      }
+      .mo.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .md {
+        background: rgba(10, 5, 2, 0.85);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 153, 85, 0.3);
+        border-radius: 24px;
+        width: 90%;
+        max-width: 450px;
+        transform: translateY(30px) scale(0.95);
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow:
+          0 30px 60px rgba(0, 0, 0, 0.9),
+          0 0 40px rgba(255, 153, 85, 0.1);
+        color: #fff;
+        overflow: hidden;
+        text-transform: none;
+      }
+      .mo.open .md {
+        transform: translateY(0) scale(1);
+      }
+      .md-hd {
+        padding: 30px;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 153, 85, 0.15);
+        background: linear-gradient(180deg, rgba(255, 153, 85, 0.08) 0%, transparent 100%);
+      }
+      .md-hd h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin: 0;
+        font-family: 'Space Mono', monospace;
+        letter-spacing: -1px;
+        color: var(--text-main);
+        text-shadow: 0 0 10px rgba(255, 153, 85, 0.2);
+      }
+      .md-hd p {
+        font-size: 0.95rem;
+        color: #cbd5e1;
+        margin-top: 5px;
+      }
+      .md-body {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+      }
+      .ml {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #cbd5e1;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: block;
+        margin-bottom: 8px;
+      }
+      .mi {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        font-size: 1rem;
+        outline: none;
+        margin-bottom: 20px;
+        transition: 0.3s;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.5);
+      }
+      .mi:focus {
+        border-color: var(--primary);
+        box-shadow:
+          inset 0 0 10px rgba(255, 153, 85, 0.1),
+          0 0 15px rgba(255, 153, 85, 0.2);
+      }
+
+      .gbtn {
+        width: 100%;
+        padding: 12px;
+        background: #4285f4;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        transition: 0.2s;
+        font-family: 'Inter', sans-serif;
+      }
+
+      .ms {
+        width: 100%;
+        padding: 15px;
+        background: var(--primary);
+        border: none;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        color: #000;
+        transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 10px 20px rgba(255, 153, 85, 0.2);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+      }
+      .ms:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(255, 153, 85, 0.4);
+      }
+
+      .msk {
+        width: 100%;
+        padding: 15px;
+        background: none;
+        border: none;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #cbd5e1;
+        cursor: pointer;
+        margin-top: 5px;
+        transition: 0.3s;
+      }
+      .msk:hover {
+        color: #fff;
+      }
+
+      .msk-danger {
+        width: 100%;
+        padding: 15px;
+        background: transparent;
+        border: 1px solid #ef4444;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #ef4444;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-bottom: 10px;
+      }
+      .msk-danger:hover {
+        background: rgba(239, 68, 68, 0.1);
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-light);
+        color: var(--text-main);
+        padding: 15px 25px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 800;
+        z-index: 3000;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: 0.3s;
+        text-transform: none;
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .toast.green {
+        border-color: var(--primary);
+        color: var(--primary);
+        box-shadow: 0 0 15px rgba(255, 153, 85, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .desktop-dl {
+          display: none;
+        }
+        .mobile-dl {
+          display: block;
+          text-align: center;
+          width: 100%;
+          margin-top: 5px;
+        }
+        .top-nav {
+          width: 95%;
+          margin: 15px auto 0;
+          border-radius: 20px;
+          top: 15px;
+          padding: 10px 15px;
+          flex-direction: row;
+          justify-content: space-between;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+          border: 1px solid var(--border-light);
+        }
+        .mobile-menu-btn {
+          display: block;
+        }
+        .nav-brand {
+          gap: 8px;
+          font-size: 1.05rem;
+        }
+        .brand-logo {
+          height: 32px;
+        }
+        .nav-links {
+          display: none;
+          position: absolute;
+          top: 110%;
+          left: 0;
+          width: 100%;
+          background: var(--nav-bg);
+          backdrop-filter: blur(15px);
+          border-radius: 16px;
+          padding: 20px;
+          flex-direction: column;
+          gap: 15px;
+          border: 1px solid var(--border-light);
+        }
+        .nav-links.active {
+          display: flex;
+        }
+        .game-hero h1 {
+          font-size: 2.5rem;
+        }
+        .features-grid,
+        .gallery-grid {
+          grid-template-columns: 1fr;
+        }
+        .engine-container {
+          height: 60vh;
+          min-height: 400px;
+        }
+        .engine-hud-header {
+          flex-direction: column;
+          gap: 10px;
+          text-align: center;
+        }
+        .hud-warning {
+          font-size: 0.65rem;
+        }
+        .gesture-grid {
+          flex-direction: column;
+          width: 80%;
+        }
+        .gesture-card {
+          width: 100%;
+          justify-content: flex-start;
+        }
+        .cyber-play-btn {
+          width: 70px;
+          height: 70px;
+          margin-bottom: 20px;
+        }
+        .overlay-content h2 {
+          font-size: 1.4rem;
+        }
+      }
+    </style>
+
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/solar" />
+
+    <script defer src="col-router.js"></script>
+    <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+    <script defer src="col-ui.js"></script>
+    <script defer src="col-auth.js"></script>
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      <link rel="icon" type="image/png" href="Icon.png" />
+  </head>
+  <body>
+    <div class="cd" id="cDot"></div>
+    <div class="cr" id="cRing"></div>
+
+    <nav class="top-nav">
+      <a href="/" class="nav-brand">
+        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
+        <span class="brand-name">Class Of Learners</span>
+      </a>
+      <button class="mmb" id="mmb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="nav-link">Home</a>
+        <a href="about" class="nav-link">About</a>
+        <a href="school" class="nav-link">School</a>
+        <a href="sneh-asha" class="nav-link">Sneh Asha</a>
+        <div class="dropdown" onclick="this.classList.toggle('active')">
+          <button class="dropdown-btn act">Projects <span class="darr">▼</span></button>
+          <div class="dropdown-content">
+            <div class="dropdown-content-inner">
+              <a href="ati">Typing Instructor <span>⌨️</span></a>
+              <a href="solar">Solar Engine <span>🌍</span></a>
+              <a href="gesture">Gesture Control <span>🖐️</span></a>
+              <a href="rpg">RPG Game <span>⚔️</span></a>
+              <a href="qr">QR Generator <span>⬛</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="tw">
+          <span class="tl" id="tLabel">Light</span>
+          <label class="tsb">
+            <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)" />
+            <div class="tst"><div class="tsth"></div></div>
+          </label>
+        </div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download" class="nav-dl-btn mobile-dl">Download Hub</a>
+      </div>
+      <a href="download" class="nav-dl-btn desktop-dl">Download Hub</a>
+    </nav>
+
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode')
+          }
+        } catch (e) {}
+      })()
+    </script>
+
+    <div class="stars-bg"></div>
+
+    <header class="game-hero" style="position: relative;">
+      <canvas id="bgCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
+      <div class="hero-badge anim-target">Orbital Physics Online</div>
+
+      <h1><span id="typewriter-text"></span><span class="cursor-blink">_</span></h1>
+
+      <div class="hero-reveal" id="heroReveal">
+        <p>
+          A deep-space simulation utilizing accurate Keplerian orbital physics. Interact with the celestial bodies in the browser below, or download the compiled executable for maximum performance.
+        </p>
+        <div class="hero-cta">
+          <a href="download" class="btn-download">Initialize Download</a>
+          <a href="#engine-container" class="btn-demo">▶ Live Telemetry</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="features-grid">
+      <div class="feature-card anim-target">
+        <div class="feature-content">
+          <div class="icon-wrapper">
+            <span>🪐</span>
+          </div>
+          <h3>Orbital Mechanics</h3>
+          <p>Simulates gravity, velocity, and mass to create accurate, dynamic orbits for planets and celestial bodies.</p>
+          <div class="tech-tags">
+            <span class="tech-tag">Physics Engine</span>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card anim-target" style="transition-delay: 0.15s">
+        <div class="feature-content">
+          <div class="icon-wrapper">
+            <span>🚀</span>
+          </div>
+          <h3>Live Telemetry</h3>
+          <p>Interactive HUD displaying real-time distance, speed, and planetary data as you explore the solar system.</p>
+          <div class="tech-tags">
+            <span class="tech-tag">Dynamic UI</span>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card anim-target" style="transition-delay: 0.3s">
+        <div class="feature-content">
+          <div class="icon-wrapper">
+            <span>🌌</span>
+          </div>
+          <h3>WebGL Rendering</h3>
+          <p>High-fidelity 3D space environment with custom textures, lighting, and asteroid belt generation.</p>
+          <div class="tech-tags">
+            <span class="tech-tag">Three.js</span>
+            <span class="tech-tag">C++</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-title anim-target">System Snapshots</div>
+    <div class="gallery-grid">
+      <div class="snapshot-card anim-target">
+        <div class="snapshot-overlay">CAM_01: ORBITAL_VIEW</div>
+        <img src="solar.webp" alt="Solar Engine View 1" width="800" height="436" loading="lazy" />
+      </div>
+      <div class="snapshot-card anim-target" style="transition-delay: 0.15s">
+        <div class="snapshot-overlay">CAM_02: TELEMETRY_DATA</div>
+        <img src="solar 2.webp" alt="Solar Engine View 2" loading="lazy" />
+      </div>
+    </div>
+
+    <div class="engine-container anim-target" id="engine-container">
+      <div class="engine-hud-header">
+        <div class="hud-title">
+          <div id="engine-status-dot" class="status-dot"></div>
+          <span id="engine-status-text">SYSTEM OFFLINE: WAITING FOR START</span>
+        </div>
+        <div class="hud-warning">⚠️ WARNING: DEDICATED GPU RECOMMENDED</div>
+      </div>
+
+      <div class="engine-overlay" id="engine-overlay" onclick="startSimulation()">
+        <div class="scan-line"></div>
+
+        <div class="overlay-content">
+          <div class="cyber-play-btn">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </div>
+
+          <h2>INITIALIZE TELEMETRY</h2>
+          <p>Grant WebGL access to load the live 3D orbital simulation.</p>
+
+          <div class="gesture-grid">
+            <div class="gesture-card pan-cam">
+              <div class="g-icon">🖱️</div>
+              <div class="g-text">
+                <span class="g-title">Pan Camera</span>
+                <span class="g-desc">Left Click + Drag</span>
+              </div>
+            </div>
+            <div class="gesture-card zoom-cam">
+              <div class="g-icon">↕️</div>
+              <div class="g-text">
+                <span class="g-title">Zoom</span>
+                <span class="g-desc">Scroll Wheel</span>
+              </div>
+            </div>
+            <div class="gesture-card select-body">
+              <div class="g-icon">🎯</div>
+              <div class="g-text">
+                <span class="g-title">Focus Target</span>
+                <span class="g-desc">Double Click Body</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <iframe data-src="engine.html" class="engine-frame" id="engine-frame" title="Solar System Engine"></iframe>
+    </div>
+
+    <script defer src="global-gesture.js"></script>
+
+    <script>
+      function toggleMenu() {
+        document.querySelector('.nav-links').classList.toggle('active')
+      }
+
+      // --- EXACT JAVASCRIPT TYPEWRITER EFFECT ---
+      const textToType = '> SOLAR SYSTEM ENGINE_ /'
+      const typeTarget = document.getElementById('typewriter-text')
+      const revealTarget = document.getElementById('heroReveal')
+      let typeIndex = 0
+
+      function typeWriter() {
+        if (typeIndex < textToType.length) {
+          typeTarget.innerHTML += textToType.charAt(typeIndex)
+          typeIndex++
+          setTimeout(typeWriter, Math.floor(Math.random() * 50) + 40)
+        } else {
+          setTimeout(() => {
+            if (revealTarget) revealTarget.classList.add('visible')
+          }, 300)
+        }
+      }
+
+      function triggerAnimations() {
+        document.querySelectorAll('.anim-target').forEach((t) => t.classList.add('animate-in'))
+      }
+
+      window.onclick = function (e) {
+        if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) {
+          document.querySelectorAll('.dropdown').forEach((d) => d.classList.remove('active'))
+        }
+      }
+
+      // Interactive Telemetry Simulation
+      function startSimulation() {
+        const overlay = document.getElementById('engine-overlay')
+        const iframe = document.getElementById('engine-frame')
+        const statusDot = document.getElementById('engine-status-dot')
+        const statusText = document.getElementById('engine-status-text')
+
+        overlay.style.opacity = '0'
+
+        setTimeout(() => {
+          overlay.style.display = 'none'
+          iframe.style.display = 'block'
+          iframe.src = iframe.getAttribute('data-src')
+
+          statusDot.style.background = '#22c55e'
+          statusDot.style.boxShadow = '0 0 15px #22c55e'
+          statusDot.style.animation = 'none'
+          statusText.innerText = 'LIVE TELEMETRY FEED ACTIVE'
+          statusText.style.color = '#22c55e'
+        }, 500)
+      }
+
+      window.addEventListener('load', () => {
+        setTimeout(typeWriter, 400)
+        setTimeout(triggerAnimations, 100)
+      })
+    </script>
+
+    <footer class="sf">
+      <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+          <a href="privacy">Privacy</a>
+          <a href="terms">Terms</a>
+          <a href="feedback">Feedback</a>
+          <a href="download">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yashan.</div>
+      </div>
+    </footer>
+    <script defer src="col-3d.js"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "Class Of Learners",
+  "short_name": "CoL",
+  "description": "5 interactive projects built by students from Mumbai.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#070A14",
+  "theme_color": "#070A14",
+  "icons": [
+    {
+      "src": "Icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}

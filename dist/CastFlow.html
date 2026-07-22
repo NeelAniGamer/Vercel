@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CastFlow — Your Phone. Any Screen.</title>
+    <meta name="description" content="CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs on the receiver.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* ── Reset & Base ─────────────────────────────────────────── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text: #0a0a0a;
+            --text-muted: #6b6b6b;
+            --accent: #ff6b35;
+            --accent-hover: #e55a28;
+            --border: #e5e5e5;
+            --font: 'Space Grotesk', sans-serif;
+            --container: min(90%, 1200px);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font);
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img { max-width: 100%; height: auto; display: block; }
+        a { text-decoration: none; color: inherit; }
+
+        .container { width: var(--container); margin: 0 auto; }
+
+        /* ── Announcement Bar ─────────────────────────────────────── */
+        .announcement {
+            background: var(--accent);
+            color: var(--bg);
+            text-align: center;
+            padding: 8px 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* ── Header / Nav ──────────────────────────────────────────── */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 0 2rem;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+        }
+
+        nav a {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .nav-cta {
+            background: var(--accent);
+            color: var(--bg) !important;
+            border-radius: 4px;
+        }
+
+        .nav-cta:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover) !important;
+        }
+
+        /* ── Hero Section ─────────────────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(0, 0, 0, 0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 680px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.75rem, 7vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 .highlight {
+            display: block;
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            max-width: 460px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--accent);
+            color: var(--bg);
+            font-weight: 600;
+            font-size: 0.9375rem;
+            padding: 14px 28px;
+            border-radius: 6px;
+            transition: all 0.25s;
+        }
+
+        .hero-cta:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .hero-cta svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ── Features Grid ─────────────────────────────────────────── */
+        .features {
+            padding: 100px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .section-header {
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 500px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 32px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--bg);
+        }
+
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ── How It Works ─────────────────────────────────────────── */
+        .how-it-works {
+            padding: 100px 0;
+            background: var(--bg-secondary);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            opacity: 0.3;
+            margin-bottom: 16px;
+        }
+
+        .step h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .step p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* ── Download Section ───────────────────────────────────── */
+        .download {
+            padding: 100px 0;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .download h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+
+        .download p {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--accent);
+            color: var(--bg);
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.25s;
+        }
+
+        .download-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .download-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ── About Section ───────────────────────────────────────── */
+        .about {
+            padding: 100px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .about h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+        }
+
+        .about p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .about-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .stat h3 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat p {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* ── Newsletter ─────────────────────────────────────────── */
+        .newsletter {
+            padding: 80px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .newsletter-inner {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 60px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .newsletter h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .newsletter p {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 12px;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 14px 18px;
+            border-radius: 6px;
+            font-size: 0.9375rem;
+            font-family: var(--font);
+        }
+
+        .newsletter-form input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .newsletter-form input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .newsletter-form button {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .newsletter-form button:hover {
+            background: var(--accent-hover);
+        }
+
+        /* ── Footer ──────────────────────────────────────────────── */
+        footer {
+            padding: 60px 0 30px;
+            background: var(--text);
+            color: var(--bg);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+            max-width: 280px;
+            margin-top: 16px;
+        }
+
+        .footer-col h4 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col a {
+            font-size: 0.875rem;
+            color: var(--bg);
+            transition: opacity 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.8125rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-links a {
+            color: var(--bg);
+            transition: opacity 0.2s;
+        }
+
+        .social-links a:hover {
+            opacity: 0.7;
+        }
+
+        /* ── Responsive ─────────────────────────────────────────── */
+        @media (max-width: 768px) {
+            .header-inner {
+                padding: 0;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .footer-brand {
+                grid-column: 1 / -1;
+            }
+
+            .newsletter-inner {
+                padding: 40px 24px;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .about-stats {
+                gap: 24px;
+            }
+        }
+
+        /* ── Animations ─────────────────────────────────────────── */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s ease-out;
+        }
+    </style>
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+      <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/CastFlow" />
+      <link rel="icon" type="image/png" href="Icon.png" />
+  </head>
+<body>
+    <!-- Announcement Bar -->
+    <div class="announcement">
+        Open Source — No Tracking — No Ads
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-inner">
+            <a href="#" class="logo">CastFlow</a>
+            <nav>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#download" class="nav-cta">Download APK</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>
+                    Your Phone.
+                    <span class="highlight">Any Screen.</span>
+                </h1>
+                <p>
+                    CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs needed on the TV or PC.
+                </p>
+                <a href="#download" class="hero-cta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                    Download APK
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header fade-up">
+                <h2>What can CastFlow do?</h2>
+                <p>Powerful features that transform how you use your phone on any display.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card fade-up">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <h3>Screen Casting</h3>
+                    <p>Stream your phone's screen to any browser in real-time. Perfect for presentations, gaming, or sharing content on bigger screens.</p>
+                </div>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                    </div>
+                    <h3>File Sharing</h3>
+                    <p>Share any file instantly. Photos, videos, documents — anyone can download directly from their browser without installing anything.</p>
+                </div>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                            <rect x="8" y="7" width="8" height="6" rx="1"></rect>
+                        </svg>
+                    </div>
+                    <h3>Custom DeX</h3>
+                    <p>Turn your phone into a desktop computer. Browser, file manager, calculator — all accessible from any screen.</p>
+                </div>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 8v8"></path>
+                            <path d="M8 12h8"></path>
+                        </svg>
+                    </div>
+                    <h3>Remote Control</h3>
+                    <p>Control your phone from the browser. Touch gestures, keyboard input, and remote navigation — all supported.</p>
+                </div>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h3>Multi-Viewer</h3>
+                    <p>Multiple people can view the same screen simultaneously. Great for collaborative work or sharing with friends.</p>
+                </div>
+                <div class="feature-card fade-up">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="4" y1="9" x2="20" y2="9"></line>
+                            <line x1="4" y1="15" x2="20" y2="15"></line>
+                            <line x1="10" y1="3" x2="8" y2="21"></line>
+                            <line x1="16" y1="3" x2="14" y2="21"></line>
+                        </svg>
+                    </div>
+                    <h3>PDF Support</h3>
+                    <p>View PDFs with page navigation, zoom, and rotation. Perfect for documents on the big screen.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header" style="text-align: center;">
+                <h2>How it works</h2>
+                <p style="margin: 0 auto;">Three simple steps to cast your screen anywhere.</p>
+            </div>
+            <div class="steps">
+                <div class="step fade-up">
+                    <div class="step-number">01</div>
+                    <h3>Install CastFlow</h3>
+                    <p>Download the APK and install it on your Android device.</p>
+                </div>
+                <div class="step fade-up">
+                    <div class="step-number">02</div>
+                    <h3>Start the Server</h3>
+                    <p>Tap to start the web server. CastFlow shows you a URL to open in your browser.</p>
+                </div>
+                <div class="step fade-up">
+                    <div class="step-number">03</div>
+                    <h3>Cast Anywhere</h3>
+                    <p>Open the URL on any device with a browser. No installation needed on the receiver.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="fade-up">
+                    <h2>Built for the curious.</h2>
+                    <p>CastFlow was born from a simple idea: your phone is already powerful enough to be your desktop. Why buy extra hardware?</p>
+                    <p>We believe in software that respects your privacy. No accounts, no tracking, no ads. Just pure functionality.</p>
+                    <div class="about-stats">
+                        <div class="stat">
+                            <h3>100%</h3>
+                            <p>Free & Open Source</p>
+                        </div>
+                        <div class="stat">
+                            <h3>0</h3>
+                            <p>Trackers</p>
+                        </div>
+                        <div class="stat">
+                            <h3>∞</h3>
+                            <p>Possibilities</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="fade-up">
+                    <!-- Placeholder for image -->
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; height: 400px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.875rem;">
+                        [ CastFlow Preview Image ]
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section class="download" id="download">
+        <div class="container">
+            <h2 class="fade-up">Get CastFlow</h2>
+            <p class="fade-up">Free and open source. No subscriptions. No hidden fees.</p>
+            <div class="download-buttons fade-up">
+                <a href="#" class="download-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M5 20.5v-17c0-.59.34-1.11.85-1.41L13.69 12l-9.89 10.44a1.19 1.19 0 0 0-.8 1.41v.15z"/>
+                        <path d="M14.33 12l-4.33-4.36v3h8v1.36z"/>
+                    </svg>
+                    Download APK
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter" id="newsletter">
+        <div class="container">
+            <div class="newsletter-inner fade-up">
+                <h2>Join the experiment</h2>
+                <p>Get early access to new features and help shape the future of CastFlow.</p>
+                <form class="newsletter-form" onsubmit="return false;">
+                    <input type="email" placeholder="Enter your email" required>
+                    <button type="submit">Count me in</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo" style="color: var(--accent);">CastFlow</a>
+                    <p>Transform your phone into a powerful casting device. No cables. No limits.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#download">Download</a></li>
+                        <li><a href="#">Source Code</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Report Bug</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Community</h4>
+                    <ul>
+                        <li><a href="#">GitHub</a></li>
+                        <li><a href="#">Discord</a></li>
+                        <li><a href="#">Twitter</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2024 CastFlow. Open source.</span>
+                <div class="social-links">
+                    <a href="#">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="#">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                        </svg>
+                    </a>
+                    <a href="#">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Fade up elements
+        gsap.utils.toArray('.fade-up').forEach(el => {
+            gsap.to(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                ease: 'power2.out'
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.92)';
+            }
+        });
+    </script>
+</body>
+</html>

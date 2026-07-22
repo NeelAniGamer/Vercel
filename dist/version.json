@@ -1,0 +1,6 @@
+{
+  "versionCode": 7,
+  "versionName": "1.6",
+  "apkUrl": "https://advancedlogiclabs.dpdns.org/COL.apk",
+  "releaseNotes": "Redesigned mobile navigation with bottom bar hamburger, icon+label nav links, APK certificate verification with tiered access."
+}

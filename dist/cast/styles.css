@@ -1,0 +1,670 @@
+/* Custom Properties - Light Mode Glassmorphism */
+:root {
+    --bg-base: #F8FAFC;
+    --primary: #3B82F6;
+    --primary-glow: rgba(59, 130, 246, 0.3);
+    --secondary: #60A5FA;
+    --surface-glass: rgba(255, 255, 255, 0.75);
+    --surface-glass-border: rgba(255, 255, 255, 0.6);
+    --surface-glass-hover: rgba(255, 255, 255, 0.9);
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --font-heading: "Outfit", -apple-system, sans-serif;
+    --font-body: "Work Sans", -apple-system, sans-serif;
+    
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 32px;
+    --radius-full: 9999px;
+    
+    --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+    --shadow-strong: 0 20px 40px -15px rgba(59, 130, 246, 0.2);
+    
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--bg-base);
+    color: var(--text-primary);
+    overflow: hidden; /* Prevent scrolling, UI is absolute */
+}
+
+h1, h2, h3, h4, .logo {
+    font-family: var(--font-heading);
+}
+
+/* Animated Ambient Background */
+.ambient-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at top left, #F8FAFC, #EFF6FF);
+}
+
+/* Overlay System */
+#desktop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+}
+
+#desktop > * {
+    pointer-events: auto;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel, .glass-card, .glass-sidebar, .glass-element {
+    background: var(--surface-glass);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--surface-glass-border);
+    box-shadow: var(--shadow-soft);
+}
+
+/* Header */
+#top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    margin: 0 16px;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.logo-icon-svg {
+    color: var(--primary);
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+    display: flex;
+    gap: 8px;
+    background: rgba(255,255,255,0.5);
+    padding: 6px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(255,255,255,0.8);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 10px 24px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: var(--font-body);
+}
+
+.nav-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.4);
+}
+
+.nav-btn.active {
+    background: #FFFFFF;
+    color: var(--primary);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* Connection Module */
+.connection-module {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+#connection-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #EF4444; /* Red */
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+.status-connected .pulse-dot {
+    background: #10B981; /* Green */
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.controls {
+    display: flex;
+    gap: 12px;
+}
+
+.glass-input, .glass-btn {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    color: var(--text-primary);
+    padding: 10px 20px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    outline: none;
+    transition: var(--transition);
+}
+
+.glass-input:focus {
+    background: #FFFFFF;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.glass-btn {
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.glass-btn:hover {
+    background: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+}
+.glass-btn.primary {
+    background: var(--primary);
+    color: #FFFFFF;
+    border: none;
+}
+.glass-btn.primary:hover {
+    background: #2563EB;
+    box-shadow: var(--shadow-strong);
+}
+.glass-btn.secondary {
+    background: #FFFFFF;
+    color: var(--primary);
+}
+.glass-btn.big {
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    border-radius: var(--radius-full);
+}
+
+/* Main Content Area */
+#main-content {
+    flex: 1;
+    position: relative;
+    padding: 24px 32px 32px 32px;
+}
+
+.glass-panel {
+    position: absolute;
+    top: 24px;
+    left: 32px;
+    right: 32px;
+    bottom: 32px;
+    border-radius: var(--radius-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.98) translateY(10px);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.glass-panel.active {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1) translateY(0);
+}
+
+/* About Layout */
+.about-layout {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    padding: 0 64px;
+    gap: 64px;
+}
+
+.hero-content {
+    flex: 1;
+}
+
+.hero-content h1 {
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #0F172A, #3B82F6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-content p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 600px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 16px;
+}
+
+.hero-mockup {
+    width: 320px;
+    padding: 48px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: var(--shadow-strong);
+}
+
+.mockup-icon {
+    width: 64px;
+    height: 64px;
+    color: var(--primary);
+    margin-bottom: 16px;
+}
+
+.hero-mockup p {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    margin-bottom: 24px;
+}
+
+.qr-placeholder {
+    width: 200px;
+    height: 200px;
+    background: #FFFFFF;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.qr-placeholder img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 8px;
+}
+
+/* Cast Viewer Layout */
+.panel-layout {
+    display: flex;
+    height: 100%;
+}
+
+#screen-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px;
+    position: relative;
+    background: rgba(255,255,255,0.4);
+}
+
+#stream-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-strong);
+}
+
+#placeholder {
+    padding: 48px;
+    text-align: center;
+    border-radius: var(--radius-lg);
+    background: rgba(255,255,255,0.8);
+}
+.placeholder-icon {
+    width: 80px;
+    height: 80px;
+    color: var(--primary);
+    margin-bottom: 16px;
+    opacity: 0.8;
+}
+#placeholder h2 {
+    margin-bottom: 8px;
+}
+#placeholder p {
+    color: var(--text-secondary);
+}
+
+/* Remote Control Sidebar */
+#remote-control {
+    width: 320px;
+    border-left: 1px solid var(--surface-glass-border);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.6);
+}
+
+#remote-control h3 {
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 48px;
+}
+
+.d-pad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+.d-row {
+    display: flex;
+    gap: 16px;
+}
+.d-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.8);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: var(--shadow-soft);
+}
+.d-btn:hover {
+    background: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+.d-btn:active {
+    transform: scale(0.95);
+}
+.d-btn.ok {
+    background: var(--primary);
+    color: #FFFFFF;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1rem;
+    border: none;
+}
+.d-btn.ok:hover {
+    background: #2563EB;
+    box-shadow: var(--shadow-strong);
+}
+
+.d-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 48px;
+}
+.action-btn {
+    padding: 12px 24px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.6);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.action-btn:hover {
+    background: #FFFFFF;
+    box-shadow: var(--shadow-soft);
+}
+
+/* Share Panel Layout */
+.share-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    height: 100%;
+    padding: 32px;
+}
+
+.share-card {
+    background: rgba(255,255,255,0.8);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--surface-glass-border);
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Upload Zone */
+.upload-zone {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: var(--transition);
+    border: 2px dashed rgba(59, 130, 246, 0.4);
+}
+.upload-zone.dragover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--primary);
+    transform: scale(1.02);
+}
+.upload-icon {
+    width: 80px;
+    height: 80px;
+    color: var(--primary);
+    margin-bottom: 24px;
+}
+.upload-zone h2 {
+    margin-bottom: 8px;
+}
+.upload-zone p {
+    color: var(--text-secondary);
+}
+.or-divider {
+    margin: 24px 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
+
+/* Download List */
+.download-list h2 {
+    margin-bottom: 4px;
+}
+.download-list .subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+}
+
+.file-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 8px;
+}
+
+.file-list::-webkit-scrollbar {
+    width: 6px;
+}
+.file-list::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+}
+
+.empty-state {
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 64px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+.empty-state i {
+    width: 48px;
+    height: 48px;
+    opacity: 0.5;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+.file-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+}
+.file-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.file-name {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+.file-meta {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.download-btn {
+    background: #F8FAFC;
+    border: 1px solid rgba(0,0,0,0.05);
+    color: var(--primary);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.download-btn:hover {
+    background: var(--primary);
+    color: #FFFFFF;
+    box-shadow: var(--shadow-strong);
+    transform: translateY(-2px);
+}
+
+/* Focus states for accessibility */
+.focusable:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Fullscreen Clock Overlay - clockfaceonline.com style */
+#clock-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background-color: #D5D5B0; /* Warm beige/olive cream background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.clock-close-btn {
+    position: absolute;
+    top: 32px;
+    right: 32px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: #2F3E2F; /* Dark olive green */
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.clock-close-btn:hover {
+    background: rgba(47, 62, 47, 0.1);
+    transform: scale(1.1);
+}
+
+.clock-display {
+    color: #2F3E2F; /* Dark olive green */
+    font-family: "Georgia", "Times New Roman", serif; /* Elegant serif font */
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+}
+
+#clock-time {
+    font-size: clamp(6rem, 15vw, 15rem);
+    font-weight: normal;
+    letter-spacing: -2px;
+    line-height: 1;
+}
+
+#clock-period {
+    font-size: clamp(2rem, 5vw, 5rem);
+    font-weight: normal;
+    text-transform: lowercase;
+}

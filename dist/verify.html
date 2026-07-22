@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Certificate | Achievement Engine</title>
+    <link rel="stylesheet" href="col-ui.css">
+    <style>
+        :root {
+            --void: #070A14;
+            --signal: #F2B84B;
+            --ion: #B0C4E3;
+            --panel: rgba(255, 255, 255, 0.05);
+            --line: rgba(255, 255, 255, 0.1);
+            --ink: #E8E3D8;
+            --dim: #8891AA;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--void);
+            color: var(--ink);
+            font-family: var(--sans, 'Inter'), sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .cert-container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            padding: 60px 40px;
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--line);
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .cert-container.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cert-badge {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: var(--signal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(242, 184, 75, 0.3);
+            position: relative;
+        }
+
+        .cert-badge svg {
+            width: 50px;
+            height: 50px;
+            fill: var(--void);
+        }
+
+        .cert-header h1 {
+            font-family: var(--serif, 'Instrument Serif'), serif;
+            font-style: italic;
+            font-size: 3.5rem;
+            margin: 0;
+            color: var(--signal);
+            letter-spacing: -1px;
+        }
+
+        .cert-sub {
+            font-size: 1rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+
+        .cert-body {
+            margin-bottom: 50px;
+        }
+
+        .cert-body .label {
+            font-size: 0.85rem;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .cert-body .value {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .cert-body .achievement-name {
+            font-family: var(--serif, 'Instrument Serif'), serif;
+            font-size: 2.5rem;
+            color: var(--ion);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .cert-body .achievement-desc {
+            font-size: 1.1rem;
+            color: var(--dim);
+            max-width: 500px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-top: 1px solid var(--line);
+            padding-top: 30px;
+            font-size: 0.9rem;
+            color: var(--dim);
+        }
+
+        .footer-item .label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .footer-item .value {
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .verified-stamp {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            border: 3px solid var(--signal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(15deg);
+            font-weight: 800;
+            color: var(--signal);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .not-found {
+            text-align: center;
+            display: none;
+        }
+
+        .not-found h2 {
+            font-family: var(--serif, 'Instrument Serif'), serif;
+            font-size: 3rem;
+            font-style: italic;
+            color: var(--signal);
+        }
+
+        .not-found p {
+            color: var(--dim);
+            margin-bottom: 30px;
+        }
+
+        .btn-home {
+            padding: 12px 24px;
+            background: var(--signal);
+            color: var(--void);
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(242, 184, 75, 0.3);
+        }
+
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: var(--void);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+    <link rel="icon" type="image/png" href="Icon.png" />
+  </head>
+<body>
+
+    <div id="loading">
+        <div class="cert-badge" style="animation: pulse 2s infinite;">
+            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l5.59-5.59L18 9l-8 8z"/></svg>
+        </div>
+    </div>
+
+    <div id="certWrapper" class="cert-container">
+        <div class="verified-stamp">Verified<br>Authentic</div>
+        <div class="cert-badge">
+            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l5.59-5.59L18 9l-8 8z"/></svg>
+        </div>
+
+        <div class="cert-header">
+            <h1 id="certTitle">Certificate of Achievement</h1>
+            <div class="cert-sub">Official Verification</div>
+        </div>
+
+        <div class="cert-body">
+            <div class="label">Awarded To</div>
+            <div id="userName" class="value">Loading...</div>
+
+            <div class="label">Achievement</div>
+            <div id="achName" class="achievement-name">Loading...</div>
+            <div id="achDesc" class="achievement-desc">Loading...</div>
+        </div>
+
+        <div class="cert-footer">
+            <div class="footer-item">
+                <span class="label">Issue Date</span>
+                <span id="issueDate" class="value">-</span>
+            </div>
+            <div class="footer-item" style="text-align: right;">
+                <span class="label">Credential ID</span>
+                <span id="certId" class="value">-</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="notFound" class="not-found">
+        <h2 id="errorTitle">Certificate Not Found</h2>
+        <p id="errorMsg">The verification token provided is invalid or has expired.</p>
+        <a href="/" class="btn-home">Return Home</a>
+    </div>
+
+    <script src="col-router.js"></script>
+    <script src="col-ui.js"></script>
+    <script src="col-auth.js"></script>
+    <script src="col-achievements.js"></script>
+
+    <script>
+        async function init() {
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('cert');
+            const token = params.get('token');
+
+            if (!slug || !token) {
+                showNotFound('Missing Information', 'Verification requires both a certificate slug and a token.');
+                return;
+            }
+
+            try {
+                const { data, error } = await verifyCertificate(slug, token);
+
+                if (error || !data) {
+                    showNotFound();
+                    return;
+                }
+
+                const userName = data.user_display_name || 'Unknown User';
+                const achName = data.achievement_display_name;
+                const achDesc = data.achievement_description;
+                const createdAt = new Date(data.completed_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                document.getElementById('userName').textContent = userName;
+                document.getElementById('achName').textContent = achName;
+                document.getElementById('achDesc').textContent = achDesc;
+                document.getElementById('issueDate').textContent = createdAt;
+                document.getElementById('certId').textContent = token.substring(0, 8).toUpperCase() + '...';
+
+                document.getElementById('loading').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('certWrapper').classList.add('loaded');
+                }, 500);
+
+            } catch (e) {
+                console.error('Verification error:', e);
+                showNotFound();
+            }
+        }
+
+        function showNotFound(title, msg) {
+            if (title) document.getElementById('errorTitle').textContent = title;
+            if (msg) document.getElementById('errorMsg').textContent = msg;
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('certWrapper').style.display = 'none';
+            document.getElementById('notFound').style.display = 'block';
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
