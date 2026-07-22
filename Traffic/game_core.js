@@ -4574,7 +4574,12 @@ const drawBldg = (bx, bz, type, rot) => {
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
         this._collidedThisFrame = false;
-        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(); this._updateBreadcrumbPath(dt); this._updateLOD();
+        
+        // Use RenderCore quality settings for dynamic budgets
+        const lodMult = this.renderCore ? this.renderCore.getLODMultiplier() : 1.0;
+        const maxParticles = this.renderCore ? this.renderCore.getMaxParticles() : 2000;
+        
+        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt); this._updateLOD(lodMult);
 
         // Update player character FBX animation mixer
         if (this.playerCharacter && this.playerCharacter.userData && this.playerCharacter.userData.isFBXAnimated && this.playerCharacter.userData.mixer) {
@@ -4584,6 +4589,12 @@ const drawBldg = (bx, bz, type, rot) => {
         // Removed redundant WebGL minimap rendering pass.
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
         this.renderCore.render(this.scene, this.camera);
+
+        // Frame budget monitoring in RenderCore
+        if (this.renderCore && this.renderCore.checkFrameBudget) {
+          const frameTime = performance.now() - now;
+          this.renderCore.checkFrameBudget(frameTime);
+        }
 
       }
       _input(dt) {
