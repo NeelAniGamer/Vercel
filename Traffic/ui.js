@@ -771,75 +771,73 @@ const ui = {
       const btnsHTML = (lv.modes || ['car'])
         .map((m) => {
           const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚛', bus: '🚌', pedestrian: '🚶' }
-          return `<button class="btn" style="flex:1; min-width:0; text-transform:capitalize; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); color:var(--text, #111827); font-weight:700; padding:12px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:6px;" onclick="ui.showQuiz('${m}')"><span style="font-size:1.5rem;">${icons[m] || '🚗'}</span><span style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px;">${m}</span></button>`
+          return `<button class="btn" style="flex:1; min-width:80px; text-transform:capitalize; background:var(--panel, rgba(0,0,0,0.04)); border:1px solid var(--line, rgba(0,0,0,0.08)); color:var(--ink, #111827); font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='var(--line)'" onmouseout="this.style.background='var(--panel)'" onclick="ui.showQuiz('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}</span></button>`
         })
         .join('')
-      const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 32px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3);" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`
+      const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3); font-size:0.9rem;" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`
       card.innerHTML = `<div class="bc-ttl">🎯 Practical Execution</div>
-      <div style="display:flex; flex-direction:column; gap:32px; margin-bottom: 24px;">
+      <div style="display:flex; flex-direction:column; gap:16px; margin-bottom: 20px;">
         
-        <!-- Top: Visual Tutorial -->
-        <div style="position:relative; width:100%; border-radius:20px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.06); background:linear-gradient(135deg, rgba(243,242,235,0.95) 0%, rgba(255,255,255,0.85) 100%); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);">
+        <!-- Objective Banner -->
+        <div class="pract-banner" style="background:var(--panel, rgba(255,255,255,0.05)); padding:16px; border-radius:16px; border:1px solid var(--line, rgba(255,255,255,0.1)); display:flex; align-items:center; gap:16px;">
+          <div class="pract-icon-big" style="font-size:3rem;line-height:1;">${lv.icon}</div>
+          <div style="flex:1;">
+            <div style="font-size:1.4rem;font-family:var(--serif,'Instrument Serif'),serif;font-style:italic;font-weight:700; color:var(--accent, #D97706);">${lv.name}</div>
+            <div style="font-size:0.95rem;color:var(--ink, #111827);line-height:1.4;margin-top:4px;">${lv.pract}</div>
+          </div>
+        </div>
+
+        <!-- Visual Tutorial -->
+        <div style="position:relative; width:100%; border-radius:16px; overflow:hidden; border:1px solid var(--line, rgba(255,255,255,0.1)); background:var(--void2, rgba(0,0,0,0.2));">
           ${this._simAnim(lv)}
         </div>
         
-        <!-- Bottom: Controls & Objective (2 columns) -->
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+        <!-- Controls & Penalty Row -->
+        <div style="display:flex; flex-wrap:wrap; gap:16px;">
           
           <!-- Controls -->
-          <div style="background:rgba(255,255,255,0.6); backdrop-filter:blur(16px); border:1px solid rgba(0,0,0,0.06); padding:24px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.04);">
-            <div style="color:var(--text, #111827); font-size:1.1rem; font-weight:700; margin-bottom:20px; text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:10px;">🕹️ How to Play</div>
-            <div style="display:flex; flex-direction:column; gap:20px;">
-               <div style="display:flex; align-items:center; gap:16px;">
-                  <div style="display:flex; gap:6px;">
-                    <div style="width:36px; height:36px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:var(--text, #111827);">W</div>
-                    <div style="width:36px; height:36px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:var(--text, #111827);">A</div>
-                    <div style="width:36px; height:36px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:var(--text, #111827);">S</div>
-                    <div style="width:36px; height:36px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:var(--text, #111827);">D</div>
-                  </div>
-                  <div style="font-size:1rem; color:var(--muted2, #6B7280); font-weight:500;">Steer & Accelerate</div>
+          <div style="flex:1; min-width:240px; background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+            <div style="color:var(--dim, #6B7280); font-size:0.8rem; font-weight:700; text-transform:uppercase; margin-bottom:12px;">🕹️ Controls</div>
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+               <div style="display:flex; gap:4px;">
+                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">W</kbd>
+                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">A</kbd>
+                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">S</kbd>
+                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">D</kbd>
                </div>
-               <div style="display:flex; align-items:center; gap:16px;">
-                  <div style="width:auto; padding:0 20px; height:36px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; color:var(--text, #111827);">SPACE</div>
-                  <div style="font-size:1rem; color:var(--muted2, #6B7280); font-weight:500;">Handbrake</div>
-               </div>
+               <span style="font-size:0.85rem; color:var(--dim);">Drive</span>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SPACE</kbd>
+               <span style="font-size:0.85rem; color:var(--dim);">Brake</span>
             </div>
           </div>
           
-          <!-- Objective -->
-          <div class="pract-banner" style="background:linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(243,242,235,0.8) 100%); padding:28px; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.06); display:flex; flex-direction:column; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);">
-            <div class="pract-icon-big" style="font-size:4rem;line-height:1;margin-bottom:16px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.08));">${lv.icon}</div>
-            <div class="pv1" style="font-size:2rem;letter-spacing:0.02em;font-family:'Instrument Serif',serif;font-style:italic;font-weight:700; color:var(--accent, #D97706);margin-bottom:8px;">${lv.name}</div>
-            <div style="font-size:1.15rem;color:var(--text, #111827);line-height:1.6;border-top:1px solid rgba(0,0,0,0.06);padding-top:16px;">${lv.pract}</div>
-            <div style="font-size:0.95rem;color:var(--accent, #D97706);margin-top:auto;line-height:1.5;background:rgba(217,119,6,0.06);padding:12px;border-radius:12px; border-left:4px solid var(--accent, #D97706); margin-top: 24px;">📝 Note: A PERFECT drive (no violations/damage) is required to not get penalized on retry.</div>
-          </div>
-        </div>
-        
-        <!-- Penalty & Actions -->
-        <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:stretch;">
-          <div style="flex:1; min-width:300px; background:rgba(255,255,255,0.6); backdrop-filter:blur(12px); padding:20px 24px; border-radius:20px; border:1px solid rgba(0,0,0,0.06); display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 20px rgba(0,0,0,0.04);">
+          <!-- Penalty -->
+          <div style="flex:1; min-width:240px; background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px; display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <div style="font-size:0.8rem; color:var(--muted, #9CA3AF); text-transform:uppercase; font-weight:800; letter-spacing:0.05em; margin-bottom:8px;">Penalty Risk</div>
-              <div style="font-size:1.1rem; color:var(--text, #111827); font-weight:700;">${lv.law.off}</div>
+              <div style="font-size:0.75rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:4px;">Penalty Risk</div>
+              <div style="font-size:0.95rem; color:var(--ink, #111827); font-weight:600;">${lv.law.off}</div>
             </div>
-            <div style="text-align:right; border-left:1px solid rgba(0,0,0,0.06); padding-left:24px;">
-              <div style="font-size:0.8rem; color:var(--muted, #9CA3AF); text-transform:uppercase; font-weight:800; letter-spacing:0.05em; margin-bottom:8px;">Fine</div>
-              <div style="font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--red, #EF4444); line-height:1;">${lv.law.fine}</div>
+            <div style="text-align:right; border-left:1px solid var(--line, rgba(255,255,255,0.1)); padding-left:16px;">
+              <div style="font-size:0.75rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:4px;">Fine</div>
+              <div style="font-size:1.3rem; color:var(--red, #EF4444); font-weight:800; line-height:1;">${lv.law.fine}</div>
             </div>
-          </div>
-          <div style="flex:1; min-width:300px; display:flex; flex-direction:column; justify-content:center; gap:12px;">
-            <div style="font-size:0.8rem; color:var(--muted, #9CA3AF); text-transform:uppercase; font-weight:800; letter-spacing:0.05em;">📝 Practice First (quiz + 2D run-through)</div>
-            <div style="display:flex; gap:10px;">${btnsHTML}</div>
           </div>
         </div>
         
+        <!-- Practice Modes -->
+        <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px;">📝 Practice Run (2D Simulation)</div>
+           <div style="display:flex; gap:10px; flex-wrap:wrap;">${btnsHTML}</div>
+        </div>
+        
+        <div style="font-size:0.8rem;color:var(--accent, #D97706); background:rgba(217,119,6,0.1); padding:10px 16px; border-radius:8px; border-left:3px solid var(--accent, #D97706);">Note: A PERFECT drive (no violations/damage) is required to avoid penalty on retry.</div>
       </div>
       
       <!-- Launch -->
-      <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(0,0,0,0.06); padding-top:20px;">
-        <button class="btn btn-s" onclick="ui._selSyl('theory')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button>
-        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-          <div style="font-size:0.7rem; color:var(--muted2, #6B7280);">Skip practice — go straight to the real test</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line, rgba(0,0,0,0.1)); padding-top:16px;">
+        <button class="btn btn-s" onclick="ui._selSyl('theory')" style="padding:8px 16px; background:var(--panel); border:1px solid var(--line); color:var(--ink); border-radius:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Prev</button>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+          <div style="font-size:0.75rem; color:var(--dim, #6B7280);">Ready for the real test?</div>
           ${finalBtn}
         </div>
       </div>`

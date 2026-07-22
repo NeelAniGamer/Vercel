@@ -4222,6 +4222,17 @@
         }
       }
 
+      // Update button text based on auth state
+      function updateStartButton() {
+        const btn = document.getElementById('enter-academy-btn');
+        if (!btn) return;
+        const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
+        btn.textContent = isLoggedIn ? 'Start Academy' : 'Get Started';
+      }
+
+      window.addEventListener('col-auth-changed', updateStartButton);
+      window.addEventListener('DOMContentLoaded', updateStartButton);
+      
       // Start onboarding from the Get Started / Start Academy button
       function showOnboardingFromStart() {
         // If already signed in via Supabase or local user, skip onboarding and go straight to levels
@@ -4425,7 +4436,10 @@
           const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
           g.classList.add('level-node')
           g.classList.add(isDone ? 'completed' : isCurrent ? 'current' : 'locked')
-          g.setAttribute('transform', `translate(${n.x}, ${n.y})`)
+          // Use CSS translate so it doesn't conflict with CSS transform on hover
+          g.style.translate = `${n.x}px ${n.y}px`;
+          // Also set transform origin so hover scale is centered
+          g.style.transformOrigin = `0px 0px`;
           g.onclick = () => {
             if (typeof ui !== 'undefined' && ui.showBriefing) ui.showBriefing(lvlId)
           }

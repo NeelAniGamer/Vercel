@@ -413,18 +413,23 @@
   // Also listen for class changes on body
   const observer = new MutationObserver((mutations) => {
     mutations.forEach(m => {
-      if (m.attributeName === 'class' && m.target === document.body) {
+      if (m.attributeName === 'class' && (m.target === document.body || m.target === document.documentElement)) {
         updateChartsForTheme();
       }
     });
   });
-  if (document.body) {
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-  } else {
-    document.addEventListener('DOMContentLoaded', () => {
-      if (document.body) observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    });
+  
+  function setupObserver() {
+    if (document.documentElement) {
+      try { observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] }); } catch (e) {}
+    }
+    if (document.body) {
+      try { observer.observe(document.body, { attributes: true, attributeFilter: ['class'] }); } catch (e) {}
+    }
   }
+
+  setupObserver();
+  document.addEventListener('DOMContentLoaded', setupObserver);
 
   // ===== PUBLIC API =====
   window.TrafficCharts = {
