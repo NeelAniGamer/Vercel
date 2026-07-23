@@ -387,11 +387,14 @@ class SafeZoneGrid {
 
 // Auto-init
 if (typeof document !== 'undefined') {
+  const initGrid = () => {
+    window.safeZoneGridInstance = new SafeZoneGrid();
+    window.safeZoneGridInstance.init();
+  };
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => window.SafeZoneGrid.init());
+    document.addEventListener('DOMContentLoaded', initGrid);
   } else {
-    window.SafeZoneGrid = new SafeZoneGrid();
-    window.SafeZoneGrid.init();
+    initGrid();
   }
 }
 

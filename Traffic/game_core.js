@@ -4080,7 +4080,7 @@ class Game {
                  if (!this.player.userData.spdCooldown) this.player.userData.spdCooldown = 0;
                  this.player.userData.spdCooldown -= dt;
                  if (this.player.userData.spdCooldown <= 0 && window.ui && window.ui.issueChallan) {
-                    window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', '₹1,000', `Limit: ${this.mapCfg.speedLimit} km/h`);
+                    window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
                     this.player.userData.spdCooldown = 5;
                  }
               }
@@ -4094,7 +4094,7 @@ class Game {
               if (!this._helmetReminderShown) {
                 this._helmetReminderShown = true;
                 if (Math.abs(this.speed) > 0.02 && typeof toast === 'function') {
-                  toast('🪖 Remember: helmet always on for two-wheelers', '#f59e0b');
+                  toast('Remember: helmet always on for two-wheelers', '#f59e0b');
                 }
               }
               const bikeSafeLimit = this.mapCfg && this.mapCfg.speedLimit ? Math.min(this.mapCfg.speedLimit, 50) : 50;
@@ -4104,7 +4104,7 @@ class Game {
                 if (!this.player.userData.bikeSpdCooldown) this.player.userData.bikeSpdCooldown = 0;
                 this.player.userData.bikeSpdCooldown -= dt;
                 if (this.player.userData.bikeSpdCooldown <= 0 && window.ui && window.ui.issueChallan) {
-                  window.ui.issueChallan('Two-Wheeler Overspeeding', 'Sec 112 MV Act', '₹1,000', `Safe limit: ${bikeSafeLimit} km/h`);
+                  window.ui.issueChallan('Two-Wheeler Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Safe limit: ' + bikeSafeLimit + ' km/h');
                   this.player.userData.bikeSpdCooldown = 5;
                 }
               }
