@@ -798,10 +798,12 @@ const ui = {
           <div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${theoryContent}</div>
      <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`
     } else if (id === 'practical') {
+      const preferredMode = this.curMode
       const btnsHTML = (lv.modes || ['car'])
         .map((m) => {
           const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚛', bus: '🚌', pedestrian: '🚶' }
-          return `<button class="btn" style="flex:1; min-width:80px; text-transform:capitalize; background:var(--panel, rgba(0,0,0,0.04)); border:1px solid var(--line, rgba(0,0,0,0.08)); color:var(--ink, #111827); font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='var(--line)'" onmouseout="this.style.background='var(--panel)'" onclick="ui.showQuiz('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}</span></button>`
+          const isPreferred = m === preferredMode
+          return `<button class="btn" style="flex:1; min-width:80px; text-transform:capitalize; background:${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel, rgba(0,0,0,0.04)'}; border:1px solid ${isPreferred ? 'var(--accent, #D97706)' : 'var(--line, rgba(0,0,0,0.08)'}; color:${isPreferred ? '#fff' : 'var(--ink, #111827)'}; font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--line)'}'" onmouseout="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel)'}'" onclick="ui.showQuiz('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}${isPreferred ? ' ✓' : ''}</span></button>`
         })
         .join('')
       const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3); font-size:0.9rem;" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`
@@ -1543,7 +1545,14 @@ const ui = {
     this._bRenderer = renderer
   },
   dispatchStart(mode) {
-    mode = mode || this.curMode || 'car'
+    // Use preferred vehicle from setup if mode not explicitly passed
+    if (!mode) {
+      const lv = this.cur
+      const availModes = lv.modes || ['car']
+      mode = (S.vehicle === 'Bike' && availModes.includes('bike')) ? 'bike'
+        : (S.vehicle === 'Car' && availModes.includes('car')) ? 'car'
+        : this.curMode || availModes[0]
+    }
     const lv = this.cur
     localStorage.setItem('traffic_lv', lv.id)
     localStorage.setItem('traffic_mode', mode)
