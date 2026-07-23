@@ -91,7 +91,7 @@ const save = async () => {
 }
 
 // ☁️ CLOUD CONFLICT RESOLUTION ☁️
-93: window.addEventListener('col-auth-changed', async (e) => {
+window.addEventListener('col-auth-changed', async (e) => {
   const customUser = e.detail && e.detail.user ? e.detail.user : window.colUser
   const user = customUser ? customUser.session.user : null
 

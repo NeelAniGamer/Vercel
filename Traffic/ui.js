@@ -64,28 +64,6 @@ const CORRECTIVE_QUIZ = {
 };
 
 const ui = {
-  // Initialize S from localStorage (fallback if course.js hasn't loaded yet)
-  _initS() {
-    if (typeof S === 'undefined') {
-      try {
-        const raw = localStorage.getItem('mth4')
-        if (raw) S = JSON.parse(raw)
-      } catch (e) {}
-      if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null }
-      if (!S.comp) S.comp = {}
-      if (!S.badges) S.badges = []
-      if (!S.studentId) {
-        S.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
-        try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
-      }
-    }
-    // Fallback save if course.js hasn't loaded
-    if (typeof save === 'undefined') {
-      window.save = async () => {
-        try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
-      }
-    }
-  },
   cur: null,
   _sylLv: null,
   cq: [],
@@ -129,7 +107,26 @@ const ui = {
     }
   },
   init() {
-    this._initS()
+    // Ensure S is always initialized before any other code runs
+    if (typeof S === 'undefined') {
+      try {
+        const raw = localStorage.getItem('mth4')
+        if (raw) S = JSON.parse(raw)
+      } catch (e) {}
+      if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null }
+      if (!S.comp) S.comp = {}
+      if (!S.badges) S.badges = []
+      if (!S.studentId) {
+        S.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+        try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
+      }
+    }
+    // Fallback save if course.js hasn't loaded
+    if (typeof save === 'undefined') {
+      window.save = async () => {
+        try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
+      }
+    }
     try {
       if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
     } catch (e) {}
@@ -178,7 +175,16 @@ const ui = {
     }
   },
   _buildSylList() {
-    this._initS()
+    // S should already be initialized from init(), but ensure it exists
+    if (typeof S === 'undefined') {
+      try {
+        const raw = localStorage.getItem('mth4')
+        if (raw) S = JSON.parse(raw)
+      } catch (e) {}
+      if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
+      if (!S.comp) S.comp = {}
+      if (!S.badges) S.badges = []
+    }
     if (!S.comp) S.comp = {}
     const wrap = document.getElementById('lvbody')
     if (!wrap) return
