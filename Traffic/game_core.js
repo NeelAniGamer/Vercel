@@ -2607,22 +2607,22 @@ class Game {
                 const carTpl = _getNpcTemplate('car', 0x999999);
                 if (carTpl) {
                   const pc = carTpl.clone();
-                pc.position.set((Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 4), 0, (Math.random() - 0.5) * 150);
-                pc.rotation.y = (Math.random() - 0.5) * 0.5;
-                pc.userData.spd = 0; pc.userData.isStopped = true; pc.userData.isParked = true;
-                this.npcs.push(pc); this.scene.add(pc);
+                  pc.position.set((Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 4), 0, (Math.random() - 0.5) * 150);
+                  pc.rotation.y = (Math.random() - 0.5) * 0.5;
+                  pc.userData.spd = 0; pc.userData.isStopped = true; pc.userData.isParked = true;
+                  this.npcs.push(pc); this.scene.add(pc);
+                }
             }
         } else if (cfg.themeType === 'ambulance_priority') {
             const ambTpl = _getNpcTemplate('car', 0xffffff);
             if (ambTpl) {
-              this.ms.amb = ambTpl.clone();
-            }
+                this.ms.amb = ambTpl.clone();
                 this.ms.amb.userData = { spd: 1.2, isAmb: true, npcType: 'ambulance', moveAxis: 'v' };
                 const flash = new THREE.PointLight(0xff0000, 2, 8); flash.position.y = 1.5; this.ms.amb.add(flash);
                 const flash2 = new THREE.PointLight(0x0000ff, 2, 8); flash2.position.set(.5, 1.5, 0); this.ms.amb.add(flash2);
                 this.npcs.push(this.ms.amb); this.scene.add(this.ms.amb);
+                this.ms.amb.position.set(2, 0.5, 30); // Right behind player
             }
-            this.ms.amb.position.set(2, 0.5, 30); // Right behind player
         } else if (cfg.themeType === 'puddle_etiquette') {
             const puddleGeo = new THREE.PlaneGeometry(6, 6);
             const puddleMat = new THREE.MeshBasicMaterial({ color: 0x4a6a8a, transparent: true, opacity: 0.6 });
