@@ -1595,7 +1595,11 @@ class Game {
         if (cd) cd.classList.add('on');
         const gc = document.getElementById('gc');
         // Fullscreen is only allowed on user gesture.
-
+        if (gc && !document.fullscreenElement && gc.requestFullscreen) {
+          gc.requestFullscreen().catch(err => {
+            console.warn('Fullscreen denied: ', err.message);
+          });
+        }
         setTimeout(() => {
           if (cd) cd.classList.remove('on');
           this._actualStart(ui.cur);
@@ -1709,20 +1713,21 @@ class Game {
         this._initTasks(lv);
 
         // Register HUD elements with SafeZoneGrid for responsive layout
-        if (window.safeZoneGridInstance) {
-          // Register proper UI container elements to prevent layout breaking/overlap
-          const SZ = window.safeZoneGridInstance;
-          if (document.getElementById('hud')) SZ.register('hud', document.getElementById('hud'), 'TL', { order: 0, priority: 'high' });
-          if (document.getElementById('hudbar')) SZ.register('hudbar', document.getElementById('hudbar'), 'TL', { order: 1, priority: 'high' });
-          if (document.getElementById('hwrap')) SZ.register('hwrap', document.getElementById('hwrap'), 'TL', { order: 2, priority: 'medium' });
-          if (document.getElementById('objective-overlay')) SZ.register('objective', document.getElementById('objective-overlay'), 'TR', { order: 0, priority: 'high' });
-          if (this.dom.mmc) SZ.register('minimap', this.dom.mmc, 'TR', { order: 1, priority: 'high' });
-          if (this.dom['sig-ind']) SZ.register('signal', this.dom['sig-ind'], 'BL', { order: 0, priority: 'high' });
-          if (document.getElementById('spgauge')) SZ.register('speedometer', document.getElementById('spgauge'), 'BR', { order: 0, priority: 'high' });
-          if (this.dom.boostgauge) SZ.register('boost', this.dom.boostgauge, 'BR', { order: 1, priority: 'high' });
-          if (this.dom.ow) SZ.register('violations', this.dom.ow, 'BR', { order: 2, priority: 'medium' });
-          if (this.dom['dn-clock']) SZ.register('clock', this.dom['dn-clock'], 'TC', { order: 0, priority: 'medium' });
-          if (this.dom.da) SZ.register('direction', this.dom.da, 'BC', { order: 0, priority: 'high' });
+        if (window.SafeZoneGrid) {
+          const SZ = window.SafeZoneGrid;
+          SZ.register('speedometer', this.dom.gspd, 'TL', { order: 0, priority: 'high' });
+          SZ.register('gear', this.dom.garc, 'TL', { order: 1, priority: 'high' });
+          SZ.register('timer', this.dom.htmr, 'TL', { order: 2, priority: 'high' });
+          SZ.register('fine', this.dom.hfin, 'TL', { order: 3, priority: 'medium' });
+          SZ.register('fill', this.dom.hfill, 'TL', { order: 4, priority: 'medium' });
+          SZ.register('checkpoint', this.dom.hcp, 'TL', { order: 5, priority: 'high' });
+          SZ.register('objective', document.getElementById('objective-overlay'), 'TR', { order: 0, priority: 'high' });
+          SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
+          SZ.register('signal', this.dom['sig-ind'], 'BL', { order: 1, priority: 'high' });
+          SZ.register('boost', this.dom.boostgauge, 'BR', { order: 0, priority: 'high' });
+          SZ.register('violations', this.dom.ow, 'BR', { order: 1, priority: 'medium' });
+          SZ.register('clock', this.dom['dn-clock'], 'TC', { order: 0, priority: 'medium' });
+          SZ.register('direction', this.dom.da, 'BC', { order: 0, priority: 'high' });
           if (this._isMobile) {
             SZ.register('steer', document.getElementById('steer-wheel-container'), 'BL', { order: 10, priority: 'high' });
             SZ.register('gas', document.getElementById('mc-gas'), 'BR', { order: 10, priority: 'high' });
@@ -2449,6 +2454,10 @@ class Game {
         this._initBreadcrumbPath();
         
         // NEW: Graph-based road and building generation
+        if (this.roadGraph) {
+            this._buildRoadsFromGraph(RW);
+            this._buildBuildingsFromGraph();
+        } else {
         if (!window._toonGrad) {
           const gc = new Uint8Array([40, 130, 255]);
           window._toonGrad = new THREE.DataTexture(gc, 3, 1, THREE.RedFormat);
@@ -2456,11 +2465,6 @@ class Game {
           window._toonGrad.magFilter = THREE.NearestFilter;
           window._toonGrad.needsUpdate = true;
         }
-
-        if (this.roadGraph) {
-            this._buildRoadsFromGraph(RW);
-            this._buildBuildingsFromGraph();
-        } else {
         const tg = window._toonGrad;
 
         const mats = {
@@ -2491,12 +2495,10 @@ class Game {
           roadHb.position.set(cx, .01, cz);
           this.scene.add(roadHb);
           this.world.push(roadHb);
-        });
-      }
 
-      if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['metro']) {
-          const metro = window.PRELOADED_MODELS['metro'].clone();
-          metro.scale.set(6, 6, 6);
+          if (window.PRELOADED_MODELS && (window.PRELOADED_MODELS['road_avenue'] || window.PRELOADED_MODELS['road_straight'])) {
+              const roadKey = window.PRELOADED_MODELS['road_avenue'] ? 'road_avenue' : 'road_straight';
+            metro.scale.set(6, 6, 6);
             metro.position.set(100, 15, 0); // elevated
             metro.rotation.y = -Math.PI / 2;
             this.scene.add(metro);
@@ -2605,22 +2607,22 @@ class Game {
                 const carTpl = _getNpcTemplate('car', 0x999999);
                 if (carTpl) {
                   const pc = carTpl.clone();
-                  pc.position.set((Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 4), 0, (Math.random() - 0.5) * 150);
-                  pc.rotation.y = (Math.random() - 0.5) * 0.5;
-                  pc.userData.spd = 0; pc.userData.isStopped = true; pc.userData.isParked = true;
-                  this.npcs.push(pc); this.scene.add(pc);
-                }
+                pc.position.set((Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 4), 0, (Math.random() - 0.5) * 150);
+                pc.rotation.y = (Math.random() - 0.5) * 0.5;
+                pc.userData.spd = 0; pc.userData.isStopped = true; pc.userData.isParked = true;
+                this.npcs.push(pc); this.scene.add(pc);
             }
         } else if (cfg.themeType === 'ambulance_priority') {
             const ambTpl = _getNpcTemplate('car', 0xffffff);
             if (ambTpl) {
-                this.ms.amb = ambTpl.clone();
+              this.ms.amb = ambTpl.clone();
+            }
                 this.ms.amb.userData = { spd: 1.2, isAmb: true, npcType: 'ambulance', moveAxis: 'v' };
                 const flash = new THREE.PointLight(0xff0000, 2, 8); flash.position.y = 1.5; this.ms.amb.add(flash);
                 const flash2 = new THREE.PointLight(0x0000ff, 2, 8); flash2.position.set(.5, 1.5, 0); this.ms.amb.add(flash2);
                 this.npcs.push(this.ms.amb); this.scene.add(this.ms.amb);
-                this.ms.amb.position.set(2, 0.5, 30); // Right behind player
             }
+            this.ms.amb.position.set(2, 0.5, 30); // Right behind player
         } else if (cfg.themeType === 'puddle_etiquette') {
             const puddleGeo = new THREE.PlaneGeometry(6, 6);
             const puddleMat = new THREE.MeshBasicMaterial({ color: 0x4a6a8a, transparent: true, opacity: 0.6 });
@@ -2967,8 +2969,7 @@ class Game {
           }
         }
       }
-    }
-      
+
       // ─── Graph-based road generation ───
       // Builds visual road geometry (tiles, sidewalks, crosswalks) from RoadGraph edges
       // Uses GLB road models when available, falls back to procedural geometry
@@ -3758,8 +3759,8 @@ class Game {
         const maxParticles = this.renderCore ? this.renderCore.getMaxParticles() : 2000;
         
         // ─── WORLD STREAMING + FLOATING ORIGIN ───
-        // this._updateStreaming(); // Function undefined
-        // this._checkFloatingOrigin(); // Function undefined
+        this._updateStreaming();
+        this._checkFloatingOrigin();
         
         this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
 
@@ -3780,7 +3781,6 @@ class Game {
 
       }
       _input(dt) {
-        if (!this.player) return;
         if (!this.isPedestrian && Math.abs(this.speed) > 0.05) {
             if (!this.seatbeltOn && !this.challanFired.has('seatbelt')) {
                 this.challanFired.add('seatbelt');
@@ -4080,7 +4080,7 @@ class Game {
                  if (!this.player.userData.spdCooldown) this.player.userData.spdCooldown = 0;
                  this.player.userData.spdCooldown -= dt;
                  if (this.player.userData.spdCooldown <= 0 && window.ui && window.ui.issueChallan) {
-                    window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
+                    window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', '₹1,000', `Limit: ${this.mapCfg.speedLimit} km/h`);
                     this.player.userData.spdCooldown = 5;
                  }
               }
@@ -4094,7 +4094,7 @@ class Game {
               if (!this._helmetReminderShown) {
                 this._helmetReminderShown = true;
                 if (Math.abs(this.speed) > 0.02 && typeof toast === 'function') {
-                  toast('Remember: helmet always on for two-wheelers', '#f59e0b');
+                  toast('🪖 Remember: helmet always on for two-wheelers', '#f59e0b');
                 }
               }
               const bikeSafeLimit = this.mapCfg && this.mapCfg.speedLimit ? Math.min(this.mapCfg.speedLimit, 50) : 50;
@@ -4104,7 +4104,7 @@ class Game {
                 if (!this.player.userData.bikeSpdCooldown) this.player.userData.bikeSpdCooldown = 0;
                 this.player.userData.bikeSpdCooldown -= dt;
                 if (this.player.userData.bikeSpdCooldown <= 0 && window.ui && window.ui.issueChallan) {
-                  window.ui.issueChallan('Two-Wheeler Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Safe limit: ' + bikeSafeLimit + ' km/h');
+                  window.ui.issueChallan('Two-Wheeler Overspeeding', 'Sec 112 MV Act', '₹1,000', `Safe limit: ${bikeSafeLimit} km/h`);
                   this.player.userData.bikeSpdCooldown = 5;
                 }
               }

@@ -762,6 +762,70 @@
         return window.supabaseClient || null
       }
 
+      async function _loadCloudProgress(userId) {
+        const client = await _initSupabase()
+        if (!client) return null
+        try {
+          const { data: progress } = await client.from('game_progress').select('*').eq('user_id', userId)
+          const { data: badges } = await client.from('badges').select('badge_type').eq('user_id', userId)
+          const { data: wallet } = await client.from('wallets').select('balance').eq('user_id', userId).maybeSingle()
+          
+          if (progress && progress.length > 0) {
+            const comp = {}
+            const scenario2d = { total: 0 }
+            progress.forEach(p => {
+              if (p.level_id.startsWith('s') && !isNaN(parseInt(p.level_id.replace('s', '')))) {
+                scenario2d[`${p.level_id}_done`] = true
+                scenario2d[`${p.level_id}_stars`] = p.stars || 0
+                if (p.completed) scenario2d.total++
+              } else {
+                comp[p.level_id] = { score: p.score, time: new Date(p.completed_at || Date.now()).getTime() }
+              }
+            })
+            return {
+              comp,
+              scenario2d,
+              badges: badges ? badges.map(b => b.badge_type) : [],
+              total: Object.keys(comp).length,
+              wallet: wallet?.balance ?? 50000
+            }
+          }
+        } catch (err) {
+          console.warn('Cloud load failed:', err)
+        }
+        return null
+      }
+
+      async function _syncCloudToLocal(userId) {
+        const cloudS = await _loadCloudProgress(userId)
+        if (!cloudS) return false
+        
+        // Determine if cloud has meaningful data
+        const cloudHasData = cloudS.total > 0 || (cloudS.badges && cloudS.badges.length > 0) || cloudS.wallet !== 50000
+        const localHasData = S.total > 0 || (S.badges && S.badges.length > 0) || S.wallet !== 50000
+        
+        if (cloudHasData && !localHasData) {
+          // Cloud has data, local doesn't - auto restore
+          S = { ...S, ...cloudS }
+          try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
+          toast('☁️ Cloud Data Auto-Restored!', '#5ED4F5')
+          if (window.ui && window.ui.init) ui.init()
+          return true
+        } else if (cloudHasData && localHasData) {
+          // Both have data - check for differences
+          const isDifferent = cloudS.total !== S.total || 
+            (cloudS.badges && S.badges && cloudS.badges.length !== S.badges.length) ||
+            Object.keys(cloudS.comp || {}).length !== Object.keys(S.comp || {}).length
+          
+          if (isDifferent) {
+            injectConflictModal(cloudS)
+            document.getElementById('conflictMo').style.display = 'flex'
+            return true
+          }
+        }
+        return false
+      }
+
       async function _loadSharedCertificate(id) {
         const client = await _initSupabase()
         if (!client) return null
@@ -789,7 +853,7 @@
       const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
       // Populate avatars
-      [document.getElementById('avatar-sm'), document.getElementById('hero-avatar')].forEach(el => {
+      ;[document.getElementById('avatar-sm'), document.getElementById('hero-avatar')].forEach(el => {
         if (!el) return;
         let userPhoto = null
         try {
@@ -894,6 +958,81 @@
         dlBtn.style.display = 'none'
       }
 
+      // Cloud sync on auth change
+      window.addEventListener('col-auth-changed', async (e) => {
+        const customUser = e.detail && e.detail.user ? e.detail.user : window.colUser
+        const user = customUser ? customUser.session.user : null
+
+        // UPDATE NAV BAR PROFILE UI
+        if (user) {
+          const meta = user.user_metadata || {}
+          const name = meta.full_name || 'Driver'
+          const fName = name.split(' ')[0]
+
+          // Driving.html IDs
+          const navBtn = document.getElementById('nav-sign-in-btn')
+          const navProf = document.getElementById('navUserProfile')
+          if (navBtn && navProf) {
+            navBtn.style.display = 'none'
+            navProf.style.display = 'flex'
+            document.getElementById('navUserName').innerText = fName
+            const pfp = document.getElementById('navUserPfp')
+            const ini = document.getElementById('navUserInitials')
+            if (meta.avatar_url && pfp && ini) {
+              pfp.src = meta.avatar_url
+              pfp.style.display = 'block'
+              ini.style.display = 'none'
+            } else if (ini) {
+              ini.innerText = fName.charAt(0).toUpperCase()
+              ini.style.display = 'flex'
+              if (pfp) pfp.style.display = 'none'
+            }
+          }
+
+          // Academy.html IDs
+          const acadBtn = document.getElementById('academy-sign-in-btn')
+          const acadProf = document.getElementById('trafficUserProfile')
+          if (acadBtn) acadBtn.style.display = 'none'
+          if (acadProf) {
+            acadProf.style.display = 'flex'
+            acadProf.onclick = () => (window.location.href = 'TrafficDashboard.html')
+          }
+          const acadName = document.getElementById('trafficUserName')
+          if (acadName) acadName.textContent = fName
+          const acadPfp = document.getElementById('trafficUserPfp')
+          const acadIni = document.getElementById('trafficUserInitials')
+          if (meta.avatar_url && acadPfp && acadIni) {
+            acadPfp.src = meta.avatar_url
+            acadPfp.style.display = 'block'
+            acadIni.style.display = 'none'
+          } else if (acadIni) {
+            acadIni.textContent = fName.charAt(0).toUpperCase()
+            acadIni.style.display = 'flex'
+            if (acadPfp) acadPfp.style.display = 'none'
+          }
+
+          // Load cloud progress on sign-in
+          await _syncCloudToLocal(user.id)
+          // Refresh all displays after sync
+          window.location.reload()
+        } else {
+          // Signed out — hide profile, show sign-in on Academy.html
+          const acadBtn = document.getElementById('academy-sign-in-btn')
+          const acadProf = document.getElementById('trafficUserProfile')
+          if (acadBtn) acadBtn.style.display = 'block'
+          if (acadProf) acadProf.style.display = 'none'
+        }
+      })
+
+      // Also load cloud progress on initial page load if already logged in
+      (async () => {
+        if (window.colUser && window.colUser.id) {
+          await _syncCloudToLocal(window.colUser.id)
+          // Refresh displays after potential sync
+          if (window.S !== S) window.location.reload()
+        }
+      })()
+
       function toggleMenu() { document.getElementById('action-menu').classList.toggle('show') }
       window.onclick = (e) => {
         if (!e.target.closest('.menu-container')) {
@@ -910,7 +1049,7 @@
         document.getElementById('action-menu').classList.remove('show')
       }
       function closeEditModal() { document.getElementById('edit-modal').classList.remove('show') }
-      function saveEditModal() {
+function saveEditModal() {
         const name = document.getElementById('ed-name').value.trim()
         const age = parseInt(document.getElementById('ed-age').value) || 18
         const vehicle = document.getElementById('ed-vehicle').value
@@ -919,8 +1058,10 @@
           S.name = name; S.age = age; S.vehicle = vehicle
           localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
           localStorage.setItem('th-save', JSON.stringify(S))
+          if (window.save) window.save()
           window.location.reload()
         }
+      }
       }
 
       function dlCert() {
@@ -996,6 +1137,111 @@
         hzSync();
       }
       hzInit();
+
+      // Toast function
+      function toast(msg, color) {
+        const t = document.createElement('div');
+        t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:${color||'#34d399'};color:#000;padding:12px 24px;border-radius:30px;font-weight:700;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:toastIn 0.3s ease-out;`;
+        t.textContent = msg;
+        if (!document.getElementById('toast-style')) {
+          const s = document.createElement('style');
+          s.id = 'toast-style';
+          s.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
+          document.head.appendChild(s);
+        }
+        document.body.appendChild(t);
+        setTimeout(() => { t.style.animation = 'toastIn 0.3s ease-out reverse'; setTimeout(() => t.remove(), 300); }, 3000);
+      }
+
+      // Conflict modal
+      function injectConflictModal(cloudS) {
+        window.__pendingCloudS = cloudS
+        if (document.getElementById('conflictMo')) document.getElementById('conflictMo').remove()
+
+        const getStats = (state) => {
+          const lvls = Object.keys(state.comp || {}).length
+          const wlt = state.wallet || 0
+          const bdg = (state.badges || []).length
+          let latest = 0
+          if (state.comp) {
+            for (let k in state.comp) {
+              if (state.comp[k].time > latest) latest = state.comp[k].time
+            }
+          }
+          const dateStr = latest > 0 ? new Date(latest).toLocaleString() : 'Unknown'
+          return { lvls, wlt, bdg, dateStr }
+        }
+
+        const cSt = getStats(cloudS)
+        const lSt = getStats(S)
+
+        const mo = document.createElement('div')
+        mo.className = 'mo'
+        mo.id = 'conflictMo'
+        mo.style.display = 'flex'
+        mo.innerHTML = `
+            <div class="md" style="background:var(--card, #111827); color:var(--text, #E8E3D8); padding:30px; border-radius:16px; max-width:600px; width:90%; margin:auto; z-index: 10001; position: relative;">
+                <div class="md-hd" style="border-bottom: 1px solid var(--border, rgba(255,255,255,0.08)); margin-bottom: 20px; padding-bottom: 15px; text-align:center;">
+                    <h2 style="font-family:'Instrument Serif', serif; font-size:2.5rem; margin-bottom:10px;">Sync Conflict</h2>
+                    <p style="color:var(--muted, #8891AA); font-size:1rem;">We found existing cloud data that differs from your local device. Which save do you want to keep?</p>
+                </div>
+                <div class="md-body" style="display:flex; gap:20px; flex-wrap:wrap;">
+                    
+                    <!-- Cloud Save Card -->
+                    <div style="flex:1; min-width:220px; background:rgba(94, 212, 245, 0.05); border:1px solid rgba(94, 212, 245, 0.3); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:8px;">
+                        <div style="font-size:1.2rem; font-weight:700; color:#5ED4F5; margin-bottom:10px; display:flex; align-items:center; gap:8px;">☁️ Cloud Save</div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Levels Completed: <b style="color:var(--text);">${cSt.lvls}</b></div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Wallet: <b style="color:#F2B84B;">₹${cSt.wlt.toLocaleString()}</b></div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Badges: <b style="color:var(--text);">${cSt.bdg}</b></div>
+                        <div style="font-size:0.8rem; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">Last Played:<br/>${cSt.dateStr}</div>
+                        <button class="btn" onclick="resolveConflict('cloud')" style="margin-top:auto; background:#5ED4F5; color:#000; padding:12px; font-weight:bold; border-radius:8px; border:none; cursor:pointer; width:100%;">Download This</button>
+                    </div>
+
+                    <!-- Local Save Card -->
+                    <div style="flex:1; min-width:220px; background:rgba(242, 184, 75, 0.05); border:1px solid rgba(242, 184, 75, 0.3); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:8px;">
+                        <div style="font-size:1.2rem; font-weight:700; color:#F2B84B; margin-bottom:10px; display:flex; align-items:center; gap:8px;">📱 Local Save</div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Levels Completed: <b style="color:var(--text);">${lSt.lvls}</b></div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Wallet: <b style="color:#F2B84B;">₹${lSt.wlt.toLocaleString()}</b></div>
+                        <div style="font-size:0.9rem; color:var(--muted);">Badges: <b style="color:var(--text);">${lSt.bdg}</b></div>
+                        <div style="font-size:0.8rem; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">Last Played:<br/>${lSt.dateStr}</div>
+                        <button class="btn" onclick="resolveConflict('local')" style="margin-top:auto; background:#F2B84B; color:#000; padding:12px; font-weight:bold; border-radius:8px; border:none; cursor:pointer; width:100%;">Keep This (Overwrite Cloud)</button>
+                    </div>
+
+                </div>
+            </div>
+        `
+        if (!document.getElementById('col-ui-minimal')) {
+          const style = document.createElement('style')
+          style.id = 'col-ui-minimal'
+          style.innerHTML = `
+                .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: none; }
+                .md { box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+                .btn { transition: transform 0.2s, opacity 0.2s; }
+                .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+            `
+          document.head.appendChild(style)
+        }
+        document.body.appendChild(mo)
+      }
+
+      window.resolveConflict = function (choice) {
+        document.getElementById('conflictMo').style.display = 'none'
+        if (choice === 'cloud') {
+          const cloudS = window.__pendingCloudS
+          if (cloudS) {
+            S = cloudS
+            try {
+              localStorage.setItem('mth4', JSON.stringify(S))
+            } catch (e) {}
+            if (window.ui && window.ui.init) ui.init() // Refresh UI
+            toast('☁️ Cloud Data Restored!', '#5ED4F5')
+          }
+        } else {
+          // local wins
+          save()
+          toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
+        }
+      }
 
       (async function () {
         if (!_certParam) return

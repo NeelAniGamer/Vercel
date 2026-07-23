@@ -11,7 +11,7 @@ function toast(msg, col = '#ffd54a') {
 const mob = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
 // 🚦 SOUND FX 🚦 (Phase 7.5: audio categories)
-const sfx = {
+window.sfx = Object.assign(window.sfx || {}, {
   _c: null,
   vol: { sfx: 1, ui: 1, env: 1 }, // volume multipliers: car sounds, UI sounds, environmental
   _cat: { horn: 'sfx', brake: 'sfx', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
@@ -50,7 +50,7 @@ const sfx = {
       o.stop(this._c.currentTime + pp.d)
     } catch (e) {}
   }
-}
+});
 
 // 🚦 UI INTERACTION LOGIC LAYER 🚦
 const CORRECTIVE_QUIZ = {
@@ -63,7 +63,7 @@ const CORRECTIVE_QUIZ = {
   'RED_LIGHT_VIOLATION': { q: 'Corrective Check: What is the mandatory action when a signal turns red?', o: ['Stop completely before the stop line', 'Slow down and proceed cautiously', 'Stop only if cars are coming', 'Flash headlights and pass quickly'], a: 0 }
 };
 
-const ui = {
+window.ui = Object.assign(window.ui || {}, {
   cur: null,
   _sylLv: null,
   cq: [],
@@ -107,6 +107,26 @@ const ui = {
     }
   },
   init() {
+    // Ensure S is always initialized before any other code runs
+    if (typeof S === 'undefined') {
+      try {
+        const raw = localStorage.getItem('mth4')
+        if (raw) S = JSON.parse(raw)
+      } catch (e) {}
+      if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null }
+      if (!S.comp) S.comp = {}
+      if (!S.badges) S.badges = []
+      if (!S.studentId) {
+        S.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+        try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
+      }
+    }
+    // Fallback save if course.js hasn't loaded
+    if (typeof save === 'undefined') {
+      window.save = async () => {
+        try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
+      }
+    }
     try {
       if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
     } catch (e) {}
@@ -155,7 +175,16 @@ const ui = {
     }
   },
   _buildSylList() {
-    if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
+    // S should already be initialized from init(), but ensure it exists
+    if (typeof S === 'undefined') {
+      try {
+        const raw = localStorage.getItem('mth4')
+        if (raw) S = JSON.parse(raw)
+      } catch (e) {}
+      if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
+      if (!S.comp) S.comp = {}
+      if (!S.badges) S.badges = []
+    }
     if (!S.comp) S.comp = {}
     const wrap = document.getElementById('lvbody')
     if (!wrap) return
@@ -305,6 +334,21 @@ const ui = {
     if (gradeEl) S.grade = parseInt(gradeEl.value) || 5
     if (langEl) S.language = langEl.value
     save()
+    
+    // Also persist vehicle preference to localStorage for Execution tab default
+    const localUser = JSON.parse(localStorage.getItem('traffic_local_user') || '{}')
+    localUser.vehicle = v
+    localStorage.setItem('traffic_local_user', JSON.stringify(localUser))
+    
+    // Sync to Supabase if logged in
+    if (window.supabaseClient && window.colUser) {
+      window.supabaseClient.from('user_profiles').upsert({
+        user_id: window.colUser.id,
+        preferred_vehicle: v,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' }).catch(() => {})
+    }
+    
     this._applyAgeTier()
     document.getElementById('profile-dlg').style.display = 'none'
     toast('Profile Saved!', '#3b8c66')
@@ -656,7 +700,8 @@ const ui = {
     const availModes = lv.modes || ['car']
     const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
       : S.vehicle === 'Car' && availModes.includes('car') ? 'car'
-      : null
+      : availModes[0]
+    this.curMode = preferred
     if (history.replaceState) {
       history.replaceState(null, '', `?screen=levels&lv=${lv.id}`)
     }
@@ -768,10 +813,12 @@ const ui = {
           <div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${theoryContent}</div>
      <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`
     } else if (id === 'practical') {
+      const preferredMode = this.curMode
       const btnsHTML = (lv.modes || ['car'])
         .map((m) => {
           const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚛', bus: '🚌', pedestrian: '🚶' }
-          return `<button class="btn" style="flex:1; min-width:80px; text-transform:capitalize; background:var(--panel, rgba(0,0,0,0.04)); border:1px solid var(--line, rgba(0,0,0,0.08)); color:var(--ink, #111827); font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='var(--line)'" onmouseout="this.style.background='var(--panel)'" onclick="ui.showQuiz('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}</span></button>`
+          const isPreferred = m === preferredMode
+          return `<button class="btn" style="flex:1; min-width:80px; text-transform:capitalize; background:${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel, rgba(0,0,0,0.04))'}; border:1px solid ${isPreferred ? 'var(--accent, #D97706)' : 'var(--line, rgba(0,0,0,0.08))'}; color:${isPreferred ? '#fff' : 'var(--ink, #111827)'}; font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--line)'}'" onmouseout="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel)'}'" onclick="ui.showQuiz('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}${isPreferred ? ' ✓' : ''}</span></button>`
         })
         .join('')
       const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3); font-size:0.9rem;" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`
@@ -1513,7 +1560,14 @@ const ui = {
     this._bRenderer = renderer
   },
   dispatchStart(mode) {
-    mode = mode || this.curMode || 'car'
+    // Use preferred vehicle from setup if mode not explicitly passed
+    if (!mode) {
+      const lv = this.cur
+      const availModes = lv.modes || ['car']
+      mode = (S.vehicle === 'Bike' && availModes.includes('bike')) ? 'bike'
+        : (S.vehicle === 'Car' && availModes.includes('car')) ? 'car'
+        : this.curMode || availModes[0]
+    }
     const lv = this.cur
     localStorage.setItem('traffic_lv', lv.id)
     localStorage.setItem('traffic_mode', mode)
@@ -1852,7 +1906,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       }
     }, 100)
   }
-}
+});
 
 // 🚦 PROCEDURAL ENGINE AND SCENARIO ARRAYS 🚦
 // Texture Generator

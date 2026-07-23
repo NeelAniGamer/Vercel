@@ -5222,9 +5222,11 @@ class Game {
         });
       }
       _upeds(dt) {
+        if (!this.player || !this.player.position) return;
         if (!this.peds) this.peds = [];
         if (this._isMobile) {
           this.peds.forEach(p => {
+            if (!p || !p.position) return;
             if (p.position.distanceToSquared(this.player.position) > 62500) {
               p.visible = false;
               return;
@@ -5236,6 +5238,7 @@ class Game {
         // Count nearby pedestrians for task tracking
         this._nearbyPedCount = 0;
         this.peds.forEach(p => {
+          if (!p || !p.position) return;
           if (this.player.position.distanceTo(p.position) < 8) this._nearbyPedCount++;
         });
         
@@ -5244,6 +5247,10 @@ class Game {
         const isFest = this.mapCfg && (this.mapCfg.crowdFestival || this.mapCfg.themeType === 'festival');
         for (let i = this.peds.length - 1; i >= 0; i--) {
           const p = this.peds[i];
+          if (!p || !p.position) {
+            this.peds[i] = this.peds[this.peds.length - 1]; this.peds.pop();
+            continue;
+          }
           const despawnDist = isFest ? 200 : 100;
           if (p.position.distanceTo(this.player.position) > despawnDist) {
             this.scene.remove(p);

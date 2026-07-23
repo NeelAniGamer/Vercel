@@ -245,7 +245,7 @@
 
       .btn {
         background: var(--text);
-        color: #fff;
+        color: var(--bg);
         border: none;
         padding: clamp(12px, 1.5vw, 16px) clamp(20px, 2.5vw, 32px);
         border-radius: 30px;
@@ -4282,6 +4282,9 @@
       */
     </script>
     <script src="ui.js"></script>
+  <script src="npc-ai.js"></script>
+  <script src="traffic-manager.js"></script>
+  <script src="rule-breaker-profiles.js"></script>
     <script src="scenario2d.js"></script>
     <script>
       /* ===== ONBOARDING WIZARD JS ===== */
@@ -4390,9 +4393,23 @@
       // Start onboarding from the Get Started / Start Academy button
       function showOnboardingFromStart() {
         // If already signed in via Supabase or local user, skip onboarding and go straight to levels
-        const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user')
+        let userName = '';
+        try {
+          const localData = localStorage.getItem('traffic_local_user');
+          if (localData) {
+            const u = JSON.parse(localData);
+            if (u && u.name) userName = u.name;
+          }
+        } catch(e) {}
+        if (!userName && window.colUser) {
+          const uObj = window.colUser.user || window.colUser;
+          const meta = uObj.user_metadata || {};
+          userName = meta.full_name || meta.name || '';
+        }
+        const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
         if (isLoggedIn) {
-          if (typeof toast !== 'undefined') toast('Welcome back! Loading your progress...', '#34d399');
+          const msg = userName ? `Welcome back, ${userName}! Loading your progress...` : 'Welcome back! Loading your progress...';
+          if (typeof toast !== 'undefined') toast(msg, '#34d399');
           setTimeout(function() {
             if (typeof ui !== 'undefined' && ui.showLevels) ui.showLevels();
             else window.location.href = 'Academy.html?screen=levels';
