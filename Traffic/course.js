@@ -88,12 +88,19 @@ const save = async () => {
       console.warn('Cloud save failed, using localStorage only');
     }
   }
-}
+}; // Added semicolon here
 
 // ☁️ CLOUD CONFLICT RESOLUTION ☁️
-window.addEventListener('col-auth-changed', async (e) => {
-  const customUser = e.detail && e.detail.user ? e.detail.user : window.colUser
-  const user = customUser ? customUser.session.user : null
+window.addEventListener('col-auth-changed', async function(e) {
+  let customUser = window.colUser;
+  if (e && e.detail && e.detail.user) {
+    customUser = e.detail.user;
+  }
+  
+  let user = null;
+  if (customUser && customUser.session) {
+    user = customUser.session.user;
+  }
 
   // UPDATE NAV BAR PROFILE UI
   if (user) {
@@ -229,7 +236,7 @@ window.addEventListener('col-auth-changed', async (e) => {
       }
     }
   }
-})
+}); // Added semicolon here
 
 function injectConflictModal(cloudS) {
   window.__pendingCloudS = cloudS
