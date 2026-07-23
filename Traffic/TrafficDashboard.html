@@ -717,11 +717,11 @@
         <div class="field">
           <label>Vehicle</label>
           <select id="ed-vehicle">
-            <option value="Car">Car</option>
-            <option value="Bike">Bike</option>
-            <option value="Bus">Bus</option>
-            <option value="Truck">Truck</option>
-            <option value="Auto">Auto Rickshaw</option>
+            <option value="car">Car</option>
+            <option value="bike">Bike</option>
+            <option value="bus">Bus</option>
+            <option value="truck">Truck</option>
+            <option value="auto">Auto Rickshaw</option>
           </select>
         </div>
         <div class="modal-actions">
@@ -732,23 +732,22 @@
     </div>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        let S = {}
-        try {
-          const raw = localStorage.getItem('mth4')
-          if (raw) S = JSON.parse(raw)
-        } catch (e) {}
+      let S = {}
+      try {
+        const raw = localStorage.getItem('mth4')
+        if (raw) S = JSON.parse(raw)
+      } catch (e) {}
 
-        let tUser = {}
-        try {
-          const raw = localStorage.getItem('traffic_local_user')
-          if (raw) tUser = JSON.parse(raw)
-        } catch (e) {}
+      let tUser = {}
+      try {
+        const raw = localStorage.getItem('traffic_local_user')
+        if (raw) tUser = JSON.parse(raw)
+      } catch (e) {}
 
-        const _certParam = new URLSearchParams(window.location.search).get('cert')
-        let _syncedCertId = null
+      const _certParam = new URLSearchParams(window.location.search).get('cert')
+      let _syncedCertId = null
 
-        async function _initSupabase() {
+      async function _initSupabase() {
         if (window.supabaseClient) return window.supabaseClient
         try {
           const res = await fetch('config.json?t=' + Date.now())
@@ -1015,7 +1014,6 @@ function saveEditModal() {
         document.getElementById('cert-score').innerText = (cert.score || 0).toLocaleString()
         document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
       })();
-    });
-  </script>
+    </script>
   </body>
 </html>
