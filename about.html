@@ -61,23 +61,7 @@
       --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
       --r: 18px;
     }
-
-    body.lm {
-      --void: #f0ede4;
-      --void2: #e6e2d8;
-      --panel: #fff;
-      --line: rgba(0, 0, 0, 0.09);
-      --lineb: rgba(0, 0, 0, 0.18);
-      --ink: #15181f;
-      --dim: #5c6175;
-      --signal: #b8720a;
-      --ion: #0e72a0;
-      --teal: #0a8c7a;
-      --plasma: #6f4fe0;
-      --em: #1b9d66;
-      --nav: rgba(240, 237, 228, 0.75);
-    }
-
+    
     *,
     *::before,
     *::after {
@@ -768,12 +752,6 @@
       letter-spacing: 0.1em;
     }
 
-    body.lm #ntip-inner {
-      background: rgba(255, 255, 255, 0.9) !important;
-      border-color: rgba(0, 0, 0, 0.12) !important;
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
-    }
-
     #ntip-inner::after {
       content: '';
       position: absolute;
@@ -785,10 +763,6 @@
       border-color: rgba(255, 255, 255, 0.1) transparent transparent transparent;
       display: block;
       width: 0;
-    }
-
-    body.lm #ntip-inner::after {
-      border-color: rgba(255, 255, 255, 0.9) transparent transparent transparent;
     }
 
     #ntip-dot {
@@ -1449,12 +1423,6 @@
       font-family: var(--sans);
     }
 
-    body.lm .gbtn {
-      background: #4285f4;
-      border: none;
-      color: #fff;
-    }
-
     .ms {
       width: 100%;
       padding: 13px;
@@ -1647,7 +1615,7 @@
     </svg>
   </button>
   <nav class="top-nav" id="topNav">
-    <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><img src="../Traffic/mumbai-police-logo.png" alt="Mumbai Police" class="brand-logo" width="28" height="28" style="margin-left:8px;opacity:0.8;" onerror="this.style.display='none'" /><img src="../Traffic/sneh-logo.png" alt="Sneh Asha" class="brand-logo" width="28" height="28" style="margin-left:4px;opacity:0.8;" onerror="this.style.display='none'" /><span class="brand-name">Class Of Learners</span></a>
+    <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a>
     <div class="nav-links" id="navLinks">
       <a href="/" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
@@ -2001,9 +1969,12 @@
   </div>
   <div class="toast" id="toast"></div>
 
-  <!-- ==================== 3D CONSTELLATION BACKGROUND ==================== -->
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script defer src="col-3d.js"></script>
+  <!-- New modular 3D system -->
+  <script defer src="col-3d/loaders/LazyLoader.js"></script>
+  <script>
+    // LazyLoader will auto-initialize and load ConstellationMinds when #constellation enters viewport
+  </script>
+
   <script>
       // ============= CURSOR HOVER EFFECTS =============
       ; (function () {

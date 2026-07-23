@@ -694,13 +694,53 @@
 
         <button class="btn-reward" id="btn-dl-cert" onclick="dlCert()">🎓 Download Certificate</button>
 
-        <div id="share-bar" class="share-bar" style="display: none;">
+<div id="share-bar" class="share-bar" style="display: none;">
           <button class="share-btn share-wa" onclick="shareWhatsApp()">&#128172; WhatsApp</button>
           <button class="share-btn share-ig" onclick="shareInstagram()">&#128247; Instagram</button>
           <button class="share-btn share-copy" onclick="copyCertLink()">&#128279; Copy Link</button>
         </div>
       </div>
-    </div>
+
+      <!-- Certificate Gallery -->
+      <div class="dashboard-section" style="margin-top: 40px;">
+        <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">🏆 Certificate Gallery</h2>
+        <div id="cert-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px;">
+          <!-- Certificates will be rendered here -->
+        </div>
+        <div id="no-certs-msg" style="text-align: center; padding: 40px; color: var(--muted); display: none;">
+          <p>Complete all 4 modes of all 5 levels in a module to earn a certificate.</p>
+        </div>
+      </div>
+
+      <!-- Leaderboards -->
+      <div class="dashboard-section" style="margin-top: 40px;">
+        <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">📊 Leaderboards</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          <!-- Global XP Leaderboard -->
+          <div class="leaderboard-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--signal); display: flex; align-items: center; gap: 8px;">🌍 Global XP</h3>
+            <div id="leaderboard-xp" style="display: flex; flex-direction: column; gap: 10px;"></div>
+          </div>
+          
+          <!-- Module Completion Leaderboard -->
+          <div class="leaderboard-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--accent); display: flex; align-items: center; gap: 8px;">✅ Module Completion</h3>
+            <div id="leaderboard-modules" style="display: flex; flex-direction: column; gap: 10px;"></div>
+          </div>
+          
+          <!-- Streak Leaderboard -->
+          <div class="leaderboard-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--teal); display: flex; align-items: center; gap: 8px;">🔥 Longest Streaks</h3>
+            <div id="leaderboard-streaks" style="display: flex; flex-direction: column; gap: 10px;"></div>
+          </div>
+          
+          <!-- Perfect Runs Leaderboard -->
+          <div class="leaderboard-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--plasma); display: flex; align-items: center; gap: 8px;">💯 Perfect Runs</h3>
+            <div id="leaderboard-perfect" style="display: flex; flex-direction: column; gap: 10px;"></div>
+          </div>
+        </div>
+      </div>
 
     <!-- Edit Profile Modal -->
     <div class="modal-overlay" id="edit-modal">
@@ -1257,7 +1297,137 @@ function saveEditModal() {
         document.getElementById('cert-name').innerText = (cert.display_name || '').toUpperCase()
         document.getElementById('cert-score').innerText = (cert.score || 0).toLocaleString()
         document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
+      document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
       })();
+
+      // Certificate Gallery - Load all user certificates
+      async function loadCertificateGallery() {
+        if (!window.supabaseClient || !window.colUser?.id) return;
+        const gallery = document.getElementById('cert-gallery')
+        if (!gallery) return
+        
+        try {
+          const { data: certs } = await window.supabaseClient
+            .from('certificates')
+            .select('*')
+            .eq('user_id', window.colUser.id)
+            .order('issued_at', { ascending: false })
+          
+          if (certs && certs.length > 0) {
+            gallery.innerHTML = certs.map(c => `
+              <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;transition:all 0.2s;" 
+                   onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.3)'"
+                   onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                  <img src="mumbai-police-logo.png" style="height:40px;object-fit:contain" onerror="this.style.display='none'" alt="Mumbai Police">
+                  <img src="sneh-logo.png" style="height:40px;object-fit:contain" onerror="this.style.display='none'" alt="Sneh Asha">
+                </div>
+                <div style="font-weight:600;letter-spacing:0.1em;color:#7c7968;text-transform:uppercase;font-size:0.9rem;margin-bottom:8px;">Certificate of Completion</div>
+                <div style="font-family:'Lora',serif;font-size:1.5rem;font-weight:700;margin-bottom:16px;">${c.module_name || 'Traffic Hero'}</div>
+                <div style="color:var(--muted);margin-bottom:16px;font-size:0.9rem;">Issued: ${new Date(c.issued_at).toLocaleDateString()}</div>
+                <div style="font-size:0.85rem;color:var(--signal);font-weight:600;">Score: ${(c.score || 0).toLocaleString()}</div>
+                <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                  <div style="font-size:0.75rem;color:var(--muted);">Ref: ${c.id.slice(0,8).toUpperCase()}</div>
+                  <button class="btn" onclick="shareCertificate('${c.id}')" style="padding:8px 16px;font-size:0.8rem;background:var(--signal);color:#000;">Share</button>
+                </div>
+              </div>
+            `).join('')
+          } else {
+            gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">No certificates yet. Complete all 52 levels to earn your first!</div>'
+          }
+        } catch (e) {
+          gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">Unable to load certificates.</div>'
+        }
+      }
+
+      // Leaderboard - Load top scores for all 4 categories
+      async function loadLeaderboard() {
+        if (!window.supabaseClient) return
+        
+        try {
+          const { data: topUsers } = await window.supabaseClient
+            .from('user_profiles')
+            .select('full_name, avatar_url, total_score, civic_score')
+            .order('total_score', { ascending: false })
+            .limit(20)
+          
+          if (topUsers && topUsers.length > 0) {
+            // Global XP Leaderboard
+            const xpContainer = document.getElementById('leaderboard-xp')
+            if (xpContainer) {
+              xpContainer.innerHTML = topUsers.slice(0, 5).map((u, i) => `
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:0.75rem;">${i+1}</div>
+                  <div style="flex:1;">
+                    <div style="font-weight:600;font-size:0.85rem;">${u.full_name || 'Anonymous'}</div>
+                    <div style="font-size:0.65rem;color:var(--muted);">${(u.total_score || 0).toLocaleString()} XP</div>
+                  </div>
+                  ${i === 0 ? '<div style="font-size:1.2rem;">👑</div>' : ''}
+                </div>
+              `).join('')
+            }
+            
+            // Module Completion Leaderboard
+            const modContainer = document.getElementById('leaderboard-modules')
+            if (modContainer) {
+              const sortedByModules = [...topUsers].sort((a,b) => (b.civic_score || 0) - (a.civic_score || 0))
+              modContainer.innerHTML = sortedByModules.slice(0, 5).map((u, i) => `
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--yellow));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:0.75rem;">${i+1}</div>
+                  <div style="flex:1;">
+                    <div style="font-weight:600;font-size:0.85rem;">${u.full_name || 'Anonymous'}</div>
+                    <div style="font-size:0.65rem;color:var(--muted);">Civic Score: ${u.civic_score || 0}</div>
+                  </div>
+                  ${i === 0 ? '<div style="font-size:1.2rem;">🏆</div>' : ''}
+                </div>
+              `).join('')
+            }
+            
+            // Streak Leaderboard
+            const streakContainer = document.getElementById('leaderboard-streaks')
+            if (streakContainer) {
+              streakContainer.innerHTML = topUsers.slice(0, 5).map((u, i) => `
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--green));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:0.75rem;">${i+1}</div>
+                  <div style="flex:1;">
+                    <div style="font-weight:600;font-size:0.85rem;">${u.full_name || 'Anonymous'}</div>
+                    <div style="font-size:0.65rem;color:var(--muted);">Total: ${(u.total_score || 0).toLocaleString()}</div>
+                  </div>
+                  ${i === 0 ? '<div style="font-size:1.2rem;">🔥</div>' : ''}
+                </div>
+              `).join('')
+            }
+            
+            // Perfect Runs Leaderboard
+            const perfectContainer = document.getElementById('leaderboard-perfect')
+            if (perfectContainer) {
+              perfectContainer.innerHTML = topUsers.slice(0, 5).map((u, i) => `
+                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--plasma),var(--signal));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:0.75rem;">${i+1}</div>
+                  <div style="flex:1;">
+                    <div style="font-weight:600;font-size:0.85rem;">${u.full_name || 'Anonymous'}</div>
+                    <div style="font-size:0.65rem;color:var(--muted);">Score: ${(u.total_score || 0).toLocaleString()}</div>
+                  </div>
+                  ${i === 0 ? '<div style="font-size:1.2rem;">💯</div>' : ''}
+                </div>
+              `).join('')
+            }
+          }
+        } catch (e) {
+          console.warn('Leaderboard load failed:', e)
+        }
+      }
+
+      // Load gallery and leaderboard on page load
+      setTimeout(() => {
+        loadCertificateGallery()
+        loadLeaderboard()
+      }, 1000)
+
+      function shareCertificate(certId) {
+        const url = `${window.location.origin}${window.location.pathname}?cert=${certId}`
+        navigator.clipboard.writeText(url).then(() => toast('Link copied!', '#5ed4f5'))
+      }
     </script>
   </body>
 </html>

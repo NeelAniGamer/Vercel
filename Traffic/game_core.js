@@ -2965,10 +2965,20 @@ class Game {
               this.scene.add(pc); this.obstacles.push(pc);
             }
           }
+}
         }
       }
-    }
       
+      // Initialize TrafficManager and NPCAI for Mumbai-style traffic
+      if (!cfg.isPedestrian && window.TrafficManager && window.NPCAI) {
+        if (!this.trafficManager) {
+          this.trafficManager = new window.TrafficManager(this);
+          this.npcAI = new window.NPCAI(this);
+        }
+        this.trafficManager.init(cfg.npcTypes || []);
+        this.npcAI.init();
+      }
+       
       // ─── Graph-based road generation ───
       // Builds visual road geometry (tiles, sidewalks, crosswalks) from RoadGraph edges
       // Uses GLB road models when available, falls back to procedural geometry
@@ -4508,6 +4518,14 @@ class Game {
       }
 
       _unpcs(dt) {
+        // Delegate to TrafficManager and NPCAI for Mumbai-style traffic simulation
+        if (this.trafficManager && this.npcAI) {
+          this.trafficManager.update(dt, this);
+          this.npcAI.update(dt, this);
+          return;
+        }
+        
+        // Legacy NPC logic (fallback for pedestrian levels or if new system not loaded)
         // Spatial hash grid, rebuilt once per frame — every one of the proximity/obstacle
         // checks below only ever looks within 25 units, so bucketing NPCs into 25-unit cells
         // and searching the surrounding 3x3 neighborhood finds the exact same candidates as

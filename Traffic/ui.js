@@ -694,9 +694,6 @@ window.ui = Object.assign(window.ui || {}, {
   showBriefing(lid) {
     const lv = LVS.find((l) => l.id === lid)
     this.cur = lv
-    // Honor the "Preferred Vehicle" choice from onboarding (S.vehicle: 'Car'/'Bike') when
-    // this level actually offers that mode — previously stored at signup but never used
-    // anywhere, so picking "Motorcycle" there had no real effect on what you drove.
     const availModes = lv.modes || ['car']
     const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
       : S.vehicle === 'Car' && availModes.includes('car') ? 'car'
@@ -707,6 +704,31 @@ window.ui = Object.assign(window.ui || {}, {
     }
     document.getElementById('blt').textContent = 'Level ' + lv.id
     document.getElementById('bvh').textContent = lv.v
+    
+    // Initialize streak if not present
+    if (!S.streak) S.streak = { current: 0, best: 0, lastDate: null }
+    
+    // Update streak display with loss aversion framing
+    const streakEl = document.getElementById('br-streak')
+    if (streakEl) {
+      const isActive = S.streak.current > 0
+      streakEl.innerHTML = isActive 
+        ? `🔥 ${S.streak.current} Day Streak ${S.streak.current >= 3 ? '— Don\'t break it!' : ''}`
+        : '🔥 No active streak — Start today!'
+      streakEl.style.background = isActive 
+        ? 'linear-gradient(90deg, var(--signal), var(--accent))'
+        : 'linear-gradient(90deg, var(--muted), var(--muted2))'
+    }
+    
+    // Build mode tabs
+    this._initModeTabs(lv)
+    
+    // Build module progress checklist (Zeigarnik effect)
+    this._renderModuleChecklist(lv)
+    
+    // Build garage panel
+    if (window.showGarage) window.showGarage(lv.id)
+    
     const items = [
       { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
       ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
@@ -730,6 +752,165 @@ window.ui = Object.assign(window.ui || {}, {
     })
     this._selSyl('intro')
     this.show('screen-briefing')
+  },
+  _initModeTabs(lv) {
+    const tabs = document.querySelectorAll('#br-mode-tabs .mode-tab')
+    tabs.forEach(tab => {
+      tab.onclick = () => {
+        tabs.forEach(t => { t.classList.remove('active'); t.style.color = 'var(--muted)'; t.style.background = 'transparent' })
+        tab.classList.add('active')
+        tab.style.color = 'var(--text)'
+        tab.style.background = 'var(--panel)'
+        this._currentModeTab = tab.dataset.mode
+        this._updateBriefingForMode(lv, tab.dataset.mode)
+      }
+      // Set initial active state
+      if (tab.dataset.mode === 'learn') {
+        tab.classList.add('active')
+        tab.style.color = 'var(--text)'
+        tab.style.background = 'var(--panel)'
+      }
+    })
+    this._currentModeTab = 'learn'
+  },
+  _updateBriefingForMode(lv, mode) {
+    const config = window.COURSE?.getModeConfig?.(lv.id, mode.toUpperCase()) || {}
+    const contentEl = document.getElementById('br-content')
+    if (!contentEl) return
+    
+    // Update syllabus based on mode
+    const syllabusEl = document.getElementById('br-syllabus')
+    const items = this._getSyllabusForMode(lv, mode)
+    this._sylItems = items
+    this._sylViewed = new Set()
+    this._sylLv = lv
+    syllabusEl.innerHTML = ''
+    items.forEach((it) => {
+      const el = document.createElement('div')
+      el.className = 'syl-item'
+      el.id = 'syl-' + it.id
+      el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
+      el.onclick = () => this._selSyl(it.id)
+      syllabusEl.appendChild(el)
+    })
+    this._selSyl(items[0]?.id || 'intro')
+    
+    // Update rewards preview
+    this._renderRewardsPreview(lv, mode, config)
+  },
+  _getSyllabusForMode(lv, mode) {
+    const base = [
+      { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
+      ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
+    ]
+    if (mode === 'learn') {
+      return [...base, { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' }, { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' }]
+    } else if (mode === 'practice') {
+      return [...base, { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' }]
+    } else if (mode === 'exam') {
+      return [...base, { id: 'exam', icon: '📝', label: 'Assessment', sub: `${window.COURSE?.MODE_CONFIG?.EXAM?.mcqCount || 5} MCQ Questions` }]
+    } else if (mode === 'chaos') {
+      return [...base, { id: 'chaos', icon: '🌪️', label: 'Chaos Run', sub: 'Adaptive Stress Test' }]
+    }
+    return base
+  },
+  _renderModuleChecklist(lv) {
+    const moduleId = lv.module?.id || 1
+    const progress = window.COURSE?.getModuleProgress?.(S) || []
+    const mod = progress.find(p => p.module.id === moduleId)
+    const container = document.getElementById('br-module-checklist')
+    if (!container || !mod) return
+    
+    const modes = Object.keys(window.COURSE?.MODES || {})
+    let html = '<div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">MODULE ' + moduleId + ' PROGRESS</div>'
+    html += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">'
+    mod.module.levels.forEach(l => {
+      modes.forEach((mode, mi) => {
+        const key = `${l.id}-${mode.toLowerCase()}`
+        const done = S.comp?.[key] || false
+        const modeConfig = window.COURSE?.MODES?.[mode.toUpperCase()]
+        const color = modeConfig?.color || '--signal'
+        html += `<div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 4px;text-align:center;opacity:${done ? 1 : 0.4};transition:all 0.2s;" title="${modeConfig?.label || mode}: ${done ? 'Complete' : 'Incomplete'}">
+          <div style="font-size:0.6rem;color:${done ? 'var(--green)' : 'var(--muted)'};font-weight:700;">${done ? '✓' : (mi+1)}</div>
+          <div style="font-size:0.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.02em;">${modeConfig?.icon || ''}</div>
+        </div>`
+      })
+    })
+    html += '</div>'
+    // Add commitment pledge button
+    html += `<button class="btn" onclick="ui.showCommitmentPledge(${lv.id})" style="margin-top:12px;width:100%;background:linear-gradient(90deg,var(--signal),var(--accent));color:#000;font-size:0.7rem;padding:8px;border-radius:8px;">🤝 Commitment Pledge</button>`
+    container.innerHTML = html
+  },
+  _renderRewardsPreview(lv, mode, config) {
+    const contentEl = document.getElementById('br-content')
+    if (!contentEl) return
+    
+    const xp = config.xpBase || 0
+    const streakBonus = config.streakBonus || 0
+    const badge = config.badge
+    const mysteryChance = 0.15 // 15% variable reinforcement
+    
+    // Check if this is practical mode - inject rewards panel
+    const existingCard = contentEl.querySelector('.bc-card')
+    if (existingCard && mode === 'practice') {
+      const rewardsHtml = `
+        <div style="margin-top:20px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+          <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;display:flex;align-items:center;gap:8px;">🎁 REWARDS PREVIEW</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:120px;padding:12px;background:rgba(94,212,245,0.1);border:1px solid rgba(94,212,245,0.3);border-radius:8px;text-align:center;">
+              <div style="font-size:1.5rem;font-weight:800;color:var(--signal);font-family:'Lora',serif;">+${xp} XP</div>
+              <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;">Base Experience</div>
+            </div>
+            <div style="flex:1;min-width:120px;padding:12px;background:rgba(242,184,75,0.1);border:1px solid rgba(242,184,75,0.3);border-radius:8px;text-align:center;">
+              <div style="font-size:1.5rem;font-weight:800;color:var(--accent);font-family:'Lora',serif;">+${streakBonus}</div>
+              <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;">Streak Bonus</div>
+            </div>
+            ${badge ? `<div style="flex:1;min-width:120px;padding:12px;background:rgba(204,155,255,0.1);border:1px solid rgba(204,155,255,0.3);border-radius:8px;text-align:center;">
+              <div style="font-size:1.5rem;font-weight:800;color:var(--plasma);font-family:'Lora',serif;">🏅</div>
+              <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;">Badge: ${badge}</div>
+            </div>` : ''}
+          </div>
+          <div style="margin-top:12px;padding:10px;background:rgba(0,240,204,0.1);border:1px dashed rgba(0,240,204,0.3);border-radius:8px;font-size:0.7rem;color:var(--teal);text-align:center;">
+            🎲 Mystery Reward Chance: ${Math.round(mysteryChance * 100)}% — Complete perfectly for a surprise!
+          </div>
+        </div>
+      `
+      existingCard.insertAdjacentHTML('beforeend', rewardsHtml)
+    }
+  },
+  showCommitmentPledge(levelId) {
+    const lv = LVS.find(l => l.id === levelId)
+    if (!lv) return
+    
+    const modal = document.createElement('div')
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;'
+    modal.innerHTML = `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:400px;width:100%;">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:2.5rem;margin-bottom:8px;">🤝</div>
+          <h2 style="font-family:'Instrument Serif',serif;font-size:1.5rem;margin:0;">Commitment Pledge</h2>
+          <p style="color:var(--muted);font-size:0.9rem;margin-top:8px;">Implementation intention: Plan your if-then strategy</p>
+        </div>
+        <div style="background:var(--void);border-radius:12px;padding:16px;margin-bottom:16px;">
+          <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">If I encounter a red signal...</div>
+          <input type="text" id="pledge-if" value="I will stop completely and wait for green" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.9rem;margin-bottom:12px;">
+          <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Then I will...</div>
+          <input type="text" id="pledge-then" value="Not creep forward or rush through" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.9rem;">
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn" style="flex:1;background:var(--signal);color:#000;font-weight:700;" onclick="ui.savePledge(${levelId}, document.getElementById('pledge-if').value, document.getElementById('pledge-then').value); this.closest('.modal').remove()">Save Pledge</button>
+          <button class="btn btn-s" style="flex:1;" onclick="this.closest('.modal').remove()">Cancel</button>
+        </div>
+      </div>
+    `
+    modal.className = 'modal'
+    document.body.appendChild(modal)
+  },
+  savePledge(levelId, ifStatement, thenStatement) {
+    if (!S.pledges) S.pledges = {}
+    S.pledges[levelId] = { if: ifStatement, then: thenStatement, created: Date.now() }
+    save()
+    toast('🤝 Pledge saved! Your if-then plan is set.', '#5ED4F5')
   },
   _selSyl(id) {
     const lv = this._sylLv,
@@ -2552,7 +2733,7 @@ function updateTrafficAuthUI() {
   // Update Get Started button to Start Academy if logged in
   const getStartedBtn = document.getElementById('enter-academy-btn')
   if (getStartedBtn) {
-    getStartedBtn.innerHTML = user ? 'Start Academy <span class="btn-arrow">→</span>' : 'Get Started <span class="btn-arrow">→</span>'
+    getStartedBtn.innerHTML = user ? 'Start Academy' : 'Get Started'
   }
 
   const navBtn = document.getElementById('academy-sign-in-btn')
@@ -2592,3 +2773,177 @@ if (typeof window !== 'undefined') {
 updateTrafficAuthUI()
 // And on load
 window.addEventListener('DOMContentLoaded', updateTrafficAuthUI)
+
+// Garage panel functions
+function getVehicleIcon(v) {
+  const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚚', bus: '🚌', cycle: '🚲', ambulance: '🚑', police: '🚓', taxi: '🚕' }
+  return icons[v.id] || '🚗'
+}
+
+function getVehicleName(v) {
+  return v.name || v.id
+}
+
+function isVehicleRecommended(v, levelId) {
+  return v.recommended?.includes(levelId) || false
+}
+
+function showGarage(levelId) {
+  const container = document.getElementById('br-garage')
+  const list = document.getElementById('br-garage-list')
+  if (!container || !list) return
+  
+  const recommended = window.COURSE?.getRecommendedVehicle?.(levelId)
+  const vehicles = window.COURSE?.VEHICLES || []
+  
+  let html = ''
+  vehicles.forEach(v => {
+    const rec = isVehicleRecommended(v, levelId)
+    const isSelected = v.id === (S.vehicle?.toLowerCase() || '')
+    html += `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--card);border:1px solid ${rec ? 'var(--signal)' : (isSelected ? 'var(--accent)' : 'var(--border)')};border-radius:10px;transition:all 0.2s;" 
+           onmouseover="this.style.background='var(--hover)'" 
+           onmouseout="this.style.background='var(--card)'" 
+           onclick="selectVehicle('${v.id}')">
+        <div style="font-size:1.8rem;">${getVehicleIcon(v)}</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;color:var(--text);">${getVehicleName(v)}</div>
+          ${rec ? '<div style="font-size:0.65rem;color:var(--signal);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">✓ Recommended for this level</div>' : ''}
+          ${isSelected ? '<div style="font-size:0.65rem;color:var(--accent);font-weight:700;text-transform:uppercase;">Current Selection</div>' : ''}
+        </div>
+        <div style="font-size:0.7rem;color:var(--muted);">${v.id === 'car' ? 'Balanced' : v.id === 'bike' ? 'Agile' : v.id === 'auto' ? 'Compact' : v.id === 'bus' ? 'Heavy' : v.id === 'truck' ? 'Cargo' : 'Eco'}</div>
+      </div>
+    `
+  })
+  list.innerHTML = html
+  container.style.display = 'block'
+}
+
+function selectVehicle(vehicleId) {
+  S.vehicle = vehicleId.charAt(0).toUpperCase() + vehicleId.slice(1)
+  save()
+  toast(`✅ Vehicle set to ${vehicleId}`, '#34d399')
+  // Refresh garage to show selection
+  if (ui.cur) showGarage(ui.cur.id)
+}
+
+// Mystery reward system (variable reinforcement)
+const MYSTERY_REWARDS = [
+  { type: 'xp', amount: 500, label: '💎 Bonus XP', desc: '+500 XP injected!' },
+  { type: 'wallet', amount: 5000, label: '💰 Cash Bonus', desc: '₹5,000 added to wallet!' },
+  { type: 'streak', amount: 1, label: '🔥 Streak Shield', desc: 'Next miss won\'t break streak!' },
+  { type: 'badge', badgeId: 'lucky_driver', label: '🍀 Lucky Driver', desc: 'Rare badge unlocked!' },
+  { type: 'xp', amount: 1000, label: '⚡ Double XP', desc: 'Next level gives 2x XP!' }
+]
+
+function grantMysteryReward() {
+  const reward = MYSTERY_REWARDS[Math.floor(Math.random() * MYSTERY_REWARDS.length)]
+  if (reward.type === 'xp') {
+    S.total = (S.total || 0) + reward.amount
+  } else if (reward.type === 'wallet') {
+    S.wallet = (S.wallet || 50000) + reward.amount
+  } else if (reward.type === 'streak') {
+    S.streakShield = (S.streakShield || 0) + reward.amount
+  } else if (reward.type === 'badge') {
+    if (!S.badges) S.badges = []
+    if (!S.badges.includes(reward.badgeId)) S.badges.push(reward.badgeId)
+  }
+  save()
+  showMysteryRewardModal(reward)
+}
+
+function showMysteryRewardModal(reward) {
+  const modal = document.createElement('div')
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;'
+  modal.innerHTML = `
+    <div style="background:linear-gradient(135deg,var(--card),var(--void));border:2px solid var(--signal);border-radius:20px;padding:32px;max-width:360px;width:100%;text-align:center;position:relative;overflow:hidden;">
+      <div style="font-size:3rem;margin-bottom:16px;animation:bounce 0.6s ease;">🎁</div>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:1.8rem;margin:0 0 8px;">MYSTERY REWARD!</h2>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--signal);margin-bottom:8px;">${reward.label}</div>
+      <p style="color:var(--muted);margin-bottom:24px;">${reward.desc}</p>
+      <button class="btn" onclick="this.closest('.modal').remove()" style="background:var(--signal);color:#000;font-weight:700;padding:12px 32px;border-radius:10px;">Claim</button>
+    </div>
+  `
+  modal.className = 'modal'
+  document.body.appendChild(modal)
+  
+  // Add bounce animation
+  if (!document.getElementById('mystery-anim')) {
+    const style = document.createElement('style')
+    style.id = 'mystery-anim'
+    style.textContent = '@keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }'
+    document.head.appendChild(style)
+  }
+}
+
+// Mumbai consequence modal with real stats
+function showConsequenceModal(violationType, severity = 'normal') {
+  const stat = window.COURSE?.getMumbaiStat?.(violationType) || { stat: '—', unit: 'data unavailable', year: 2024, source: 'MTP' }
+  const violationNames = {
+    signal_jump: 'Signal Jump',
+    sidewalk_bike: 'Sidewalk Riding',
+    wrong_side: 'Wrong Side Driving',
+    no_helmet: 'No Helmet',
+    phone_driving: 'Phone While Driving',
+    drunk_driving: 'Drunk Driving',
+    zebra_violation: 'Zebra Crossing Violation',
+    high_beam: 'High Beam Misuse',
+    ambulance_block: 'Ambulance Blocking',
+    school_zone: 'School Zone Speeding'
+  }
+  const name = violationNames[violationType] || violationType
+  const fines = {
+    signal_jump: '₹1,000–5,000',
+    sidewalk_bike: '₹500–2,000',
+    wrong_side: '₹500–5,000',
+    no_helmet: '₹1,000 + license suspension',
+    phone_driving: '₹5,000',
+    drunk_driving: '₹10,000 + 6mo jail',
+    zebra_violation: '₹500–2,000',
+    high_beam: '₹500–2,000',
+    ambulance_block: '₹10,000',
+    school_zone: '₹2,000–10,000'
+  }
+  const fine = fines[violationType] || '₹500–10,000'
+  const isMobile = window.innerWidth <= 768
+  
+  const modal = document.createElement('div')
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;'
+  modal.innerHTML = `
+    <div class="modal" style="background:linear-gradient(135deg,var(--card),var(--void));border:2px solid ${severity === 'critical' ? 'var(--red)' : 'var(--signal)'};border-radius:16px;padding:${isMobile ? '20px' : '28px'};max-width:${isMobile ? '95%' : '480px'};width:100%;position:relative;animation:modalIn 0.3s ease;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="font-size:${isMobile ? '2rem' : '2.5rem'};flex-shrink:0;">${severity === 'critical' ? '🚨' : '⚠️'}</div>
+        <div style="flex:1;">
+          <h2 style="font-family:'Instrument Serif',serif;font-size:${isMobile ? '1.3rem' : '1.5rem'};margin:0 0 4px;">${name} Violation</h2>
+          <p style="color:var(--signal);font-weight:700;font-size:0.85rem;margin:0 0 12px;">Fine: ${fine}</p>
+        </div>
+      </div>
+      <div style="margin:16px 0;padding:12px;background:rgba(94,212,245,0.1);border:1px solid rgba(94,212,245,0.3);border-radius:8px;">
+        <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Mumbai Traffic Police Data (${stat.year})</div>
+        <div style="font-size:${isMobile ? '1.1rem' : '1.3rem'};font-weight:800;color:var(--signal);font-family:'Lora',serif;">${stat.stat}</div>
+        <div style="font-size:0.8rem;color:var(--muted);">${stat.unit}</div>
+        <div style="font-size:0.65rem;color:var(--muted);margin-top:4px;">Source: ${stat.source}</div>
+      </div>
+      ${severity === 'critical' ? `
+        <div style="padding:10px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);border-radius:8px;margin-bottom:16px;">
+          <div style="font-size:0.75rem;color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">⚠️ Critical Risk</div>
+          <div style="font-size:0.8rem;color:var(--text);margin-top:4px;">This violation causes ${stat.unit.includes('fatal') ? 'fatalities' : 'serious injuries'} in Mumbai every year.</div>
+        </div>
+      ` : ''}
+      <div style="display:flex;gap:8px;">
+        <button class="btn" onclick="this.closest('.modal').remove()" style="flex:1;background:var(--signal);color:#000;font-weight:700;padding:12px;border-radius:10px;">Understood</button>
+        <button class="btn btn-s" onclick="this.closest('.modal').remove(); if(typeof ui!=='undefined') ui.showQuiz('car')" style="flex:1;padding:12px;border-radius:10px;">Practice Safe</button>
+      </div>
+    </div>
+  `
+  modal.className = 'modal'
+  document.body.appendChild(modal)
+  
+  // Add modal animation
+  if (!document.getElementById('modal-anim')) {
+    const style = document.createElement('style')
+    style.id = 'modal-anim'
+    style.textContent = '@keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }'
+    document.head.appendChild(style)
+  }
+}
