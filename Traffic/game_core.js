@@ -1595,12 +1595,7 @@ class Game {
         if (cd) cd.classList.add('on');
         const gc = document.getElementById('gc');
         // Fullscreen is only allowed on user gesture.
-        if (gc && !document.fullscreenElement && gc.requestFullscreen) {
-          gc.requestFullscreen().catch(err => {
-            // Silently catch fullscreen denial during programmatic loads
-            // console.warn('Fullscreen denied: ', err.message);
-          });
-        }
+
         setTimeout(() => {
           if (cd) cd.classList.remove('on');
           this._actualStart(ui.cur);
@@ -1715,20 +1710,19 @@ class Game {
 
         // Register HUD elements with SafeZoneGrid for responsive layout
         if (window.safeZoneGridInstance) {
+          // Register proper UI container elements to prevent layout breaking/overlap
           const SZ = window.safeZoneGridInstance;
-          SZ.register('speedometer', this.dom.gspd, 'TL', { order: 0, priority: 'high' });
-          SZ.register('gear', this.dom.garc, 'TL', { order: 1, priority: 'high' });
-          SZ.register('timer', this.dom.htmr, 'TL', { order: 2, priority: 'high' });
-          SZ.register('fine', this.dom.hfin, 'TL', { order: 3, priority: 'medium' });
-          SZ.register('fill', this.dom.hfill, 'TL', { order: 4, priority: 'medium' });
-          SZ.register('checkpoint', this.dom.hcp, 'TL', { order: 5, priority: 'high' });
-          SZ.register('objective', document.getElementById('objective-overlay'), 'TR', { order: 0, priority: 'high' });
-          SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
-          SZ.register('signal', this.dom['sig-ind'], 'BL', { order: 1, priority: 'high' });
-          SZ.register('boost', this.dom.boostgauge, 'BR', { order: 0, priority: 'high' });
-          SZ.register('violations', this.dom.ow, 'BR', { order: 1, priority: 'medium' });
-          SZ.register('clock', this.dom['dn-clock'], 'TC', { order: 0, priority: 'medium' });
-          SZ.register('direction', this.dom.da, 'BC', { order: 0, priority: 'high' });
+          if (document.getElementById('hud')) SZ.register('hud', document.getElementById('hud'), 'TL', { order: 0, priority: 'high' });
+          if (document.getElementById('hudbar')) SZ.register('hudbar', document.getElementById('hudbar'), 'TL', { order: 1, priority: 'high' });
+          if (document.getElementById('hwrap')) SZ.register('hwrap', document.getElementById('hwrap'), 'TL', { order: 2, priority: 'medium' });
+          if (document.getElementById('objective-overlay')) SZ.register('objective', document.getElementById('objective-overlay'), 'TR', { order: 0, priority: 'high' });
+          if (this.dom.mmc) SZ.register('minimap', this.dom.mmc, 'TR', { order: 1, priority: 'high' });
+          if (this.dom['sig-ind']) SZ.register('signal', this.dom['sig-ind'], 'BL', { order: 0, priority: 'high' });
+          if (document.getElementById('spgauge')) SZ.register('speedometer', document.getElementById('spgauge'), 'BR', { order: 0, priority: 'high' });
+          if (this.dom.boostgauge) SZ.register('boost', this.dom.boostgauge, 'BR', { order: 1, priority: 'high' });
+          if (this.dom.ow) SZ.register('violations', this.dom.ow, 'BR', { order: 2, priority: 'medium' });
+          if (this.dom['dn-clock']) SZ.register('clock', this.dom['dn-clock'], 'TC', { order: 0, priority: 'medium' });
+          if (this.dom.da) SZ.register('direction', this.dom.da, 'BC', { order: 0, priority: 'high' });
           if (this._isMobile) {
             SZ.register('steer', document.getElementById('steer-wheel-container'), 'BL', { order: 10, priority: 'high' });
             SZ.register('gas', document.getElementById('mc-gas'), 'BR', { order: 10, priority: 'high' });
@@ -3786,6 +3780,7 @@ class Game {
 
       }
       _input(dt) {
+        if (!this.player) return;
         if (!this.isPedestrian && Math.abs(this.speed) > 0.05) {
             if (!this.seatbeltOn && !this.challanFired.has('seatbelt')) {
                 this.challanFired.add('seatbelt');

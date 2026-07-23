@@ -334,6 +334,21 @@ window.ui = Object.assign(window.ui || {}, {
     if (gradeEl) S.grade = parseInt(gradeEl.value) || 5
     if (langEl) S.language = langEl.value
     save()
+    
+    // Also persist vehicle preference to localStorage for Execution tab default
+    const localUser = JSON.parse(localStorage.getItem('traffic_local_user') || '{}')
+    localUser.vehicle = v
+    localStorage.setItem('traffic_local_user', JSON.stringify(localUser))
+    
+    // Sync to Supabase if logged in
+    if (window.supabaseClient && window.colUser) {
+      window.supabaseClient.from('user_profiles').upsert({
+        user_id: window.colUser.id,
+        preferred_vehicle: v,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' }).catch(() => {})
+    }
+    
     this._applyAgeTier()
     document.getElementById('profile-dlg').style.display = 'none'
     toast('Profile Saved!', '#3b8c66')

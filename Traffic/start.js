@@ -427,8 +427,8 @@ ui._addChallanCard = function (off, amt) {
   }
 }
 
-window.ui = typeof ui !== 'undefined' ? ui : window.ui || {}
-window.sfx = typeof sfx !== 'undefined' ? sfx : window.sfx || { play: () => {} }
+window.ui = window.ui || {}
+window.sfx = window.sfx || { play: () => {} }
 preloadModels(() => {
   ui.init()
   game = new Game()
