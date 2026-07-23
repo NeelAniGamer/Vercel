@@ -1,4 +1,5 @@
 let game = null
+window.ui = window.ui || {}
 
 window.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('cert-logo-1')) {
@@ -426,8 +427,8 @@ ui._addChallanCard = function (off, amt) {
   }
 }
 
-window.ui = ui
-window.sfx = sfx
+window.ui = typeof ui !== 'undefined' ? ui : window.ui || {}
+window.sfx = typeof sfx !== 'undefined' ? sfx : window.sfx || { play: () => {} }
 preloadModels(() => {
   ui.init()
   game = new Game()

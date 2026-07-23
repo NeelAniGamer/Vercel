@@ -11,7 +11,7 @@ function toast(msg, col = '#ffd54a') {
 const mob = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
 // 🚦 SOUND FX 🚦 (Phase 7.5: audio categories)
-const sfx = {
+window.sfx = Object.assign(window.sfx || {}, {
   _c: null,
   vol: { sfx: 1, ui: 1, env: 1 }, // volume multipliers: car sounds, UI sounds, environmental
   _cat: { horn: 'sfx', brake: 'sfx', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
@@ -50,7 +50,7 @@ const sfx = {
       o.stop(this._c.currentTime + pp.d)
     } catch (e) {}
   }
-}
+});
 
 // 🚦 UI INTERACTION LOGIC LAYER 🚦
 const CORRECTIVE_QUIZ = {
@@ -63,7 +63,7 @@ const CORRECTIVE_QUIZ = {
   'RED_LIGHT_VIOLATION': { q: 'Corrective Check: What is the mandatory action when a signal turns red?', o: ['Stop completely before the stop line', 'Slow down and proceed cautiously', 'Stop only if cars are coming', 'Flash headlights and pass quickly'], a: 0 }
 };
 
-const ui = {
+window.ui = Object.assign(window.ui || {}, {
   cur: null,
   _sylLv: null,
   cq: [],
@@ -1891,7 +1891,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       }
     }, 100)
   }
-}
+});
 
 // 🚦 PROCEDURAL ENGINE AND SCENARIO ARRAYS 🚦
 // Texture Generator

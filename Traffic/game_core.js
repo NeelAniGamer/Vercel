@@ -1597,7 +1597,8 @@ class Game {
         // Fullscreen is only allowed on user gesture.
         if (gc && !document.fullscreenElement && gc.requestFullscreen) {
           gc.requestFullscreen().catch(err => {
-            console.warn('Fullscreen denied: ', err.message);
+            // Silently catch fullscreen denial during programmatic loads
+            // console.warn('Fullscreen denied: ', err.message);
           });
         }
         setTimeout(() => {
@@ -1713,8 +1714,8 @@ class Game {
         this._initTasks(lv);
 
         // Register HUD elements with SafeZoneGrid for responsive layout
-        if (window.SafeZoneGrid) {
-          const SZ = window.SafeZoneGrid;
+        if (window.safeZoneGridInstance) {
+          const SZ = window.safeZoneGridInstance;
           SZ.register('speedometer', this.dom.gspd, 'TL', { order: 0, priority: 'high' });
           SZ.register('gear', this.dom.garc, 'TL', { order: 1, priority: 'high' });
           SZ.register('timer', this.dom.htmr, 'TL', { order: 2, priority: 'high' });
@@ -2454,10 +2455,6 @@ class Game {
         this._initBreadcrumbPath();
         
         // NEW: Graph-based road and building generation
-        if (this.roadGraph) {
-            this._buildRoadsFromGraph(RW);
-            this._buildBuildingsFromGraph();
-        } else {
         if (!window._toonGrad) {
           const gc = new Uint8Array([40, 130, 255]);
           window._toonGrad = new THREE.DataTexture(gc, 3, 1, THREE.RedFormat);
@@ -2465,6 +2462,11 @@ class Game {
           window._toonGrad.magFilter = THREE.NearestFilter;
           window._toonGrad.needsUpdate = true;
         }
+
+        if (this.roadGraph) {
+            this._buildRoadsFromGraph(RW);
+            this._buildBuildingsFromGraph();
+        } else {
         const tg = window._toonGrad;
 
         const mats = {
@@ -2495,10 +2497,12 @@ class Game {
           roadHb.position.set(cx, .01, cz);
           this.scene.add(roadHb);
           this.world.push(roadHb);
+        });
+      }
 
-          if (window.PRELOADED_MODELS && (window.PRELOADED_MODELS['road_avenue'] || window.PRELOADED_MODELS['road_straight'])) {
-              const roadKey = window.PRELOADED_MODELS['road_avenue'] ? 'road_avenue' : 'road_straight';
-            metro.scale.set(6, 6, 6);
+      if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['metro']) {
+          const metro = window.PRELOADED_MODELS['metro'].clone();
+          metro.scale.set(6, 6, 6);
             metro.position.set(100, 15, 0); // elevated
             metro.rotation.y = -Math.PI / 2;
             this.scene.add(metro);
@@ -2969,7 +2973,8 @@ class Game {
           }
         }
       }
-
+    }
+      
       // ─── Graph-based road generation ───
       // Builds visual road geometry (tiles, sidewalks, crosswalks) from RoadGraph edges
       // Uses GLB road models when available, falls back to procedural geometry
@@ -3759,7 +3764,7 @@ class Game {
         const maxParticles = this.renderCore ? this.renderCore.getMaxParticles() : 2000;
         
         // ─── WORLD STREAMING + FLOATING ORIGIN ───
-        this._updateStreaming();
+        // this._updateStreaming(); // Function undefined
         this._checkFloatingOrigin();
         
         this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
