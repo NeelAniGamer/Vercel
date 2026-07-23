@@ -20,7 +20,6 @@
 
     <style>
       :root {
-        /* Dark theme (default) — matches parent site dark mode */
         --bg: #070a14;
         --card: rgba(17, 24, 39, 0.85);
         --text: #e8e3d8;
@@ -33,13 +32,12 @@
         --green: #34d399;
         --teal: #00f0cc;
         --red: #ef4444;
-        --yellow: #f2b84b;    /* FIXED: was missing, used by .crtn */
+        --yellow: #f2b84b;
         --plasma: #b89bff;
         --r: 16px;
       }
 
       body.lm {
-        /* Light mode — toggled via scenic toggle */
         --bg: #f3f2eb;
         --card: rgba(255, 255, 255, 0.45);
         --text: #111827;
@@ -61,207 +59,389 @@
         color: var(--text);
         font-family: 'Inter', sans-serif;
         margin: 0;
-        padding-top: env(safe-area-inset-top, 0px);
-        padding-bottom: env(safe-area-inset-bottom, 0px);
-        padding-left: env(safe-area-inset-left, 0px);
-        padding-right: env(safe-area-inset-right, 0px);
         min-height: 100vh;
         min-height: 100dvh;
         background-image: radial-gradient(circle at 15% 50%, rgba(217, 119, 6, 0.1), transparent 25%), radial-gradient(circle at 85% 30%, rgba(52, 211, 153, 0.1), transparent 25%);
+        transition: background 0.3s ease;
       }
 
-      .dashboard-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 40px 20px;
+      /* ── Top Bar ── */
+      .top-bar {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(1100px, 95vw);
+        height: 64px;
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 1000;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
       }
 
-      .header {
+      .top-bar .brand {
+        font-family: 'Lora', serif;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+      }
+
+      .global-progress-wrap {
+        flex: 1;
+        max-width: 400px;
+        margin: 0 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .progress-track {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--teal));
+        width: 0%;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .progress-labels {
         display: flex;
         justify-content: space-between;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+
+      .top-bar-actions {
+        display: flex;
         align-items: center;
+        gap: 12px;
+      }
+
+      .profile-compact {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        cursor: default;
+      }
+
+      .avatar-sm {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.3);
+      }
+
+      .avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+
+      .profile-name-sm { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+
+      /* ── Action Menu Dropdown ── */
+      .menu-container { position: relative; }
+      .btn-menu {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .btn-menu:hover { background: var(--hover); }
+
+      .dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        width: 200px;
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 1100;
+      }
+      .dropdown.show { display: flex; }
+      .dropdown-item {
+        padding: 12px 16px;
+        color: var(--text);
+        text-decoration: none;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .dropdown-item:hover { background: var(--hover); }
+      .dropdown-item.danger { color: var(--red); }
+
+      /* ── Main Content ── */
+      .dashboard-container {
+        max-width: 1100px;
+        margin: 100px auto 40px;
+        padding: 0 20px;
+      }
+
+      /* ── Hero License ── */
+      .hero-license {
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 32px;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-license::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 300px; height: 300px;
+        background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+        opacity: 0.1;
+        pointer-events: none;
+      }
+
+      .license-left {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+      .hero-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 24px;
+        background: var(--accent);
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        overflow: hidden;
+        border: 4px solid var(--border);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      }
+      .hero-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+      .license-info h1 {
+        font-family: 'Lora', serif;
+        font-size: 2.5rem;
+        margin: 0;
+        color: var(--text);
+      }
+      .license-id {
+        font-family: 'Space Mono', monospace;
+        color: var(--signal);
+        font-weight: 700;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 4px;
+      }
+
+      .license-right {
+        text-align: right;
+      }
+      .license-score-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .license-score-val {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--accent);
+        line-height: 1;
+        display: block;
+        margin: 4px 0;
+      }
+      .license-tier {
+        background: rgba(184, 159, 255, 0.15);
+        color: var(--plasma);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border: 1px solid rgba(184, 159, 255, 0.3);
+      }
+
+      /* ── Bento Grid ── */
+      .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: minmax(160px, auto);
+        gap: 20px;
         margin-bottom: 40px;
       }
 
-      h1 {
-        font-family: 'Lora', serif;
-        font-size: 2.2rem;
-        color: var(--text);
-        margin: 0;
-      }
-
-      .glass-panel {
+      .bento-card {
         background: var(--card);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--border);
         border-radius: 24px;
-        padding: 30px;
-        box-shadow:
-          0 12px 40px rgba(0, 0, 0, 0.05),
-          inset 0 1px 1px rgba(255, 255, 255, 0.8);
-        margin-bottom: 30px;
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-      }
-
-      .stat-card {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--border);
-        border-radius: 16px;
         padding: 24px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .stat-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, var(--accent), var(--teal));
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-        border-color: var(--border-strong);
-      }
-
-      .stat-card:hover::before {
-        opacity: 1;
-      }
-
-      .stat-header {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-      }
-
-      .stat-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
+        flex-direction: column;
         justify-content: center;
-        font-size: 1.2rem;
-        background: linear-gradient(135deg, var(--accent), var(--teal));
-        color: #000;
+      }
+      .bento-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+        border-color: rgba(255,255,255,0.15);
       }
 
-      .stat-trend {
+      .bento-card.wide { grid-column: span 2; }
+      .bento-card.tall { grid-row: span 2; }
+
+      .bento-label {
         font-size: 0.75rem;
-        font-weight: 600;
-        padding: 4px 8px;
-        border-radius: 20px;
-        background: rgba(52, 211, 153, 0.15);
-        color: var(--green);
-      }
-
-      .stat-value {
-        font-size: 2.2rem;
         font-weight: 700;
-        color: var(--text);
-        margin-bottom: 4px;
-        line-height: 1.2;
-      }
-
-      .stat-value.accent {
-        color: var(--accent);
-      }
-
-      .stat-label {
-        font-size: 0.8rem;
-        font-weight: 600;
         color: var(--muted);
         text-transform: uppercase;
         letter-spacing: 0.05em;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-
-      .stat-sparkline {
+      .bento-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .bento-sparkline {
         width: 100%;
-        height: 36px;
-        margin-top: 16px;
+        height: 60px;
+        margin-top: 20px;
       }
 
-      .btn {
-        background: var(--text);
-        color: #fff;
+      /* ── Trophy Room ── */
+      .trophy-room {
+        text-align: center;
+        margin-top: 60px;
+      }
+      .trophy-title {
+        font-family: 'Lora', serif;
+        font-size: 2rem;
+        margin-bottom: 30px;
+        color: var(--text);
+      }
+
+      .cert-stage {
+        position: relative;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .btn-reward {
+        background: var(--accent);
+        color: #000;
         border: none;
-        padding: 12px 24px;
-        min-height: 48px;
+        padding: 14px 28px;
         border-radius: 30px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 1rem;
         cursor: pointer;
         transition: all 0.2s;
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        margin-top: 30px;
+        box-shadow: 0 8px 24px rgba(242, 184, 75, 0.3);
       }
+      .btn-reward:hover { transform: scale(1.05); box-shadow: 0 12px 32px rgba(242, 184, 75, 0.4); }
 
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      .share-bar {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 24px;
       }
-
-      .btn-outline {
-        background: transparent;
-        color: var(--text);
-        border: 1px solid var(--text);
+      .share-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 20px;
+        border-radius: 24px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border: none;
+        color: #fff;
+        transition: all 0.2s;
       }
+      .share-btn:hover { transform: translateY(-2px); }
+      .share-wa { background: #25d366; }
+      .share-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+      .share-copy { background: var(--text); color: #000; }
 
-      .btn-outline:hover {
-        background: rgba(0, 0, 0, 0.05);
-      }
-
-      /* Certificate Styles - Fixed layout */
+      /* ── Certificate Original Styles (Preserved for PDF) ── */
       .crt {
         background: #fbfbf9;
         background-image: radial-gradient(#e0dfd7 1px, transparent 0);
         background-size: 20px 20px;
         color: #2c2b25;
-        padding: 60px 60px 80px 60px; /* Increased bottom padding */
+        padding: 60px 60px 80px 60px;
         border-radius: 4px;
         border: 12px solid #2c2b25;
-        box-shadow:
-          0 20px 40px rgba(0, 0, 0, 0.1),
-          inset 0 0 0 4px #e0dfd7;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), inset 0 0 0 4px #e0dfd7;
         position: relative;
-        overflow: hidden;
         text-align: center;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-between; /* Space out content properly */
+        justify-content: space-between;
         aspect-ratio: 1.414 / 1;
+        width: 100%;
         max-width: 1000px;
         margin: 0 auto;
-        min-height: 756px; /* Ensure minimum height */
       }
-
-      .crt::before {
-        content: '';
-        position: absolute;
-        top: 24px;
-        left: 24px;
-        right: 24px;
-        bottom: 24px;
-        border: 2px solid #e0dfd7;
-        pointer-events: none;
-      }
-
       .crtn {
         font-family: 'Instrument Serif', serif;
         font-size: 4rem;
@@ -271,15 +451,7 @@
         line-height: 1.1;
         margin-bottom: 20px;
       }
-
-      .crt-body {
-        font-size: 1.2rem;
-        color: #525046;
-        max-width: 80%;
-        margin: 0 auto;
-        line-height: 1.6;
-      }
-
+      .crt-body { font-size: 1.2rem; color: #525046; max-width: 80%; margin: 0 auto; line-height: 1.6; }
       .crt-course {
         font-family: 'Space Mono', monospace;
         font-size: 1.8rem;
@@ -292,233 +464,14 @@
         display: inline-block;
       }
 
-      /* Light mode certificate */
-      body.lm .crt {
-        background: #fbfbf9;
-        background-image: radial-gradient(#e0dfd7 1px, transparent 0);
-        background-size: 20px 20px;
-        color: #2c2b25;
-      }
-      body.lm .crtn { color: var(--yellow); }
-      body.lm .crt-body { color: #525046; }
-      body.lm .crt-course { color: #2c2b25; background: #e0dfd7; }
-
-      @media (max-width: 768px) {
-        .crt {
-          padding: 40px 30px 60px 30px;
-          font-size: 0.8rem;
-          min-height: 500px;
-        }
-        .crtn {
-          font-size: 2.5rem;
-        }
-        .crt-course {
-          font-size: 1.2rem;
-        }
-      }
-
-      /* Light mode Stats Cards */
-      body.lm .stat-card {
-        background: rgba(255, 255, 255, 0.95);
-        border-color: rgba(0, 0, 0, 0.08);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1);
-      }
-      body.lm .stat-card:hover {
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
-        border-color: rgba(0, 0, 0, 0.15);
-      }
-      body.lm .stat-card:hover::before { opacity: 1; }
-      body.lm .stat-value { color: #111827; }
-      body.lm .stat-label { color: #64748b; }
-      body.lm .stat-icon { background: linear-gradient(135deg, #d97706, #0369a1); }
-      body.lm .stat-trend { background: rgba(16, 185, 129, 0.15); color: #059669; }
-      body.lm .stat-header { border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding-bottom: 8px; margin-bottom: 8px; }
-      body.lm .stat-sparkline { filter: brightness(1.1); }
-
-      /* ── Mobile responsive overrides ── */
-      @media (max-width: 600px) {
-        .dashboard-container {
-          padding: 16px;
-          max-width: 100%;
-        }
-        .header {
-          padding: 16px;
-          border-radius: 12px;
-        }
-        .header h1 {
-          font-size: clamp(1.2rem, 4vw, 1.6rem);
-        }
-        .stats-grid {
-          grid-template-columns: 1fr 1fr;
-          gap: 8px;
-        }
-        .stat-card {
-          padding: 12px;
-        }
-        .stat-value {
-          font-size: clamp(1.4rem, 4vw, 1.8rem);
-        }
-        .stat-label {
-          font-size: 0.8rem;
-        }
-        .header {
-          flex-wrap: wrap;
-          gap: 12px;
-        }
-        .header > div:last-child {
-          width: 100%;
-          flex-direction: column;
-          display: flex;
-          gap: 8px;
-        }
-        .btn {
-          min-height: 48px;
-          width: 100%;
-          justify-content: center;
-        }
-        .crt {
-          padding: 16px;
-          border-width: 6px;
-          aspect-ratio: auto;
-          border-radius: 8px;
-        }
-        .crtn {
-          font-size: 1.6rem;
-        }
-        .crt-body {
-          font-size: 0.9rem;
-        }
-        .crt-course {
-          font-size: 1rem;
-          padding: 6px 12px;
-          margin: 16px 0;
-        }
-      }
-      /* Avatar / Profile chip */
-      .profile-chip {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        cursor: default;
-      }
-      .avatar-circle {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        background: var(--accent);
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1.1rem;
-        flex-shrink: 0;
-        overflow: hidden;
-        border: 2px solid rgba(255,255,255,0.6);
-      }
-      .avatar-circle img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      .profile-info {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.3;
-      }
-      .profile-info .name { font-weight: 600; font-size: 0.95rem; color: var(--text); }
-      .profile-info .sub  { font-size: 0.8rem; color: var(--muted); }
-      .btn-edit {
-        background: transparent;
-        border: 1px solid var(--text);
-        color: var(--text);
-        padding: 6px 14px;
-        min-height: 36px;
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        white-space: nowrap;
-      }
-      .btn-edit:hover { background: rgba(0,0,0,0.05); }
-
-      /* Share buttons */
-      .share-bar {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        margin-top: 16px;
-        flex-wrap: wrap;
-      }
-      .share-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 16px;
-        min-height: 44px;
-        border-radius: 24px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        cursor: pointer;
-        border: none;
-        color: #fff;
-        transition: transform 0.15s, box-shadow 0.15s;
-      }
-      .share-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-      .share-wa { background: #25d366; }
-      .share-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-      .share-copy { background: var(--text); }
-
-      /* Certificate unlock animation */
-      .cert-unlocking {
-        animation: certUnlock 0.8s ease-out forwards;
-      }
-      @keyframes certUnlock {
-        0%   { filter: grayscale(1) blur(4px); opacity: 0.5; }
-        50%  { filter: grayscale(0.3) blur(1px); opacity: 0.8; }
-        100% { filter: grayscale(0) blur(0); opacity: 1; }
-      }
-      #cert-wrapper {
-        transition: filter 0.6s ease, opacity 0.6s ease;
-        padding-bottom: 120px; /* Extra space for share buttons and Authorized text */
-      }
-
-      /* Partner section */
-      .partner-strip {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 28px;
-        flex-wrap: wrap;
-        padding: 16px 0;
-      }
-      .partner-strip img {
-        height: 48px;
-        object-fit: contain;
-        opacity: 0.85;
-        transition: opacity 0.2s;
-      }
-      .partner-strip img:hover { opacity: 1; }
-      .partner-label {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        width: 100%;
-        text-align: center;
-        margin-bottom: 4px;
-      }
-
-      /* Edit profile modal */
+      /* ── Modals & Others ── */
       .modal-overlay {
         display: none;
         position: fixed;
         inset: 0;
         background: rgba(0,0,0,0.7);
         backdrop-filter: blur(8px);
-        z-index: 9999;
+        z-index: 2000;
         align-items: center;
         justify-content: center;
         padding: 20px;
@@ -528,354 +481,181 @@
         background: #0f172a;
         border: 1px solid rgba(255,255,255,0.15);
         color: #f8fafc;
-        border-radius: 20px;
-        padding: 28px 24px;
+        border-radius: 24px;
+        padding: 32px;
         width: min(420px, 90vw);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
       }
-      .modal-box h3 { margin: 0 0 16px; font-family: 'Lora', serif; color: #f2b84b; font-size: 1.4rem; }
-      .modal-box .field { margin-bottom: 16px; }
-      .modal-box .field label { display: block; font-size: 0.85rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+      .modal-box h3 { margin: 0 0 20px; font-family: 'Lora', serif; color: var(--accent); font-size: 1.5rem; }
+      .modal-box .field { margin-bottom: 20px; }
+      .modal-box .field label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; }
       .modal-box .field input, .modal-box .field select {
         width: 100%;
         box-sizing: border-box;
-        padding: 10px 14px;
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 10px;
-        font-size: 1rem;
-        min-height: 44px;
-        background: #1e293b;
-        color: #ffffff;
-      }
-      .modal-box .field select option {
-        background: #1e293b;
-        color: #ffffff;
-      }
-      .modal-actions { display: flex; gap: 12px; margin-top: 22px; }
-      .modal-actions .btn-save {
-        flex: 1;
-        background: #f2b84b;
-        color: #0f172a;
-        border: none;
         padding: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
         border-radius: 12px;
-        font-weight: 700;
         font-size: 1rem;
-        cursor: pointer;
+        background: #1e293b;
+        color: #fff;
       }
-      .modal-actions .btn-cancel {
-        flex: 1;
-        background: rgba(255,255,255,0.1);
-        color: #e2e8f0;
-        border: 1px solid rgba(255,255,255,0.2);
-        padding: 12px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-      }
+      .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+      .btn-save { flex: 1; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+      .btn-cancel { flex: 1; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--border); padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; }
 
       /* Light mode modal */
-      body.lm .modal-box {
-        background: #ffffff;
-        border: 1px solid rgba(0,0,0,0.1);
-        color: #1e293b;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-      }
-      body.lm .modal-box h3 { color: #d97706; }
-      body.lm .modal-box .field label { color: #64748b; }
-      body.lm .modal-box .field input, 
-      body.lm .modal-box .field select {
-        border: 1px solid rgba(0,0,0,0.1);
-        background: #f8fafc;
-        color: #1e293b;
-      }
-      body.lm .modal-box .field select option {
-        background: #ffffff;
-        color: #1e293b;
-      }
-      body.lm .modal-actions .btn-cancel {
-        background: rgba(0,0,0,0.05);
-        color: #475569;
-        border: 1px solid rgba(0,0,0,0.1);
-      }
-
-      @media (max-width: 600px) {
-        .header { flex-wrap: wrap; gap: 12px; }
-        .header > div:last-child { width: 100%; display: flex; gap: 8px; }
-        .profile-chip .name { font-size: 0.85rem; }
-        .partner-strip { gap: 16px; }
-        .partner-strip img { height: 36px; }
-        .share-bar { gap: 8px; }
-        .share-btn { padding: 8px 12px; font-size: 0.85rem; min-height: 44px; }
-      }
-    /* Certificate Print Styles - Fit on one page */
-      @media print {
-        body { background: white !important; }
-        .dashboard-container { max-width: 100%; padding: 10px; }
-        .glass-panel, .header { display: none !important; }
-        #cert-wrapper {
-          display: block !important;
-          filter: none !important;
-          opacity: 1 !important;
-          box-shadow: none !important;
-        }
-        .crt {
-          width: 100% !important;
-          max-width: 700px !important;
-          margin: 0 auto !important;
-          padding: 20px !important;
-          border-width: 6px !important;
-          font-size: 12pt !important;
-          page-break-inside: avoid;
-          transform: scale(0.95);
-          transform-origin: top center;
-        }
-        .crtn { font-size: 18pt !important; }
-        .crt-course { font-size: 24pt !important; }
-        .crt-body { font-size: 12pt !important; }
-        .cert-details { font-size: 10pt !important; }
-        /* Hide non-certificate elements */
-        .partner-strip, .btn, .cert-progress-ring, #no-cert-msg, #share-bar { display: none !important; }
-      }
+      body.lm .modal-box { background: #ffffff; color: #1e293b; border-color: rgba(0,0,0,0.1); }
+      body.lm .modal-box h3 { color: var(--accent); }
+      body.lm .modal-box .field label { color: var(--muted); }
+      body.lm .modal-box .field input, body.lm .modal-box .field select { background: #f8fafc; color: #1e293b; border-color: rgba(0,0,0,0.1); }
+      body.lm .modal-actions .btn-cancel { background: rgba(0,0,0,0.05); color: #475569; border-color: rgba(0,0,0,0.1); }
 
       /* ── Horizon Toggle ── */
       .hz-toggle {
-        width: 147px;
-        height: 58px;
-        border-radius: 29px;
+        width: 120px; height: 48px;
+        border-radius: 24px;
         cursor: pointer;
         overflow: hidden;
-        flex-shrink: 0;
-        background: linear-gradient(180deg, #3B82F6 0%, #60A5FA 25%, #93C5FD 50%, #FDE68A 80%, #F59E0B 100%);
-        transition: background 0.7s cubic-bezier(0.4,0,0.2,1);
-        box-shadow: inset 0 2px 6px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.12);
-      }
-      .hz-toggle.night {
-        background: linear-gradient(180deg, #070B1A 0%, #0F172A 25%, #1E293B 50%, #334155 80%, #1E1B4B 100%);
-      }
-      .hz-toggle:active { transform: scale(0.97); }
-      .hz-stars {
-        position: absolute; inset: 0;
-        border-radius: inherit;
-        opacity: 0;
-        transition: opacity 0.7s ease;
-        pointer-events: none;
-        box-shadow:
-          14px 7px 0 0.5px #fff, 28px 12px 0 0px #fff, 44px 5px 0 0px #fff,
-          56px 14px 0 0.5px #fff, 72px 8px 0 0px #fff, 86px 16px 0 0px #fff,
-          22px 22px 0 0px #fff, 48px 26px 0 0.5px #fff, 66px 20px 0 0px #fff;
-      }
-      .hz-toggle.night .hz-stars { opacity: 1; }
-      .hz-clouds {
-        position: absolute; inset: 0;
-        border-radius: inherit;
-        opacity: 1;
-        transition: opacity 0.7s ease;
-        pointer-events: none;
-      }
-      .hz-toggle.night .hz-clouds { opacity: 0; }
-      .hz-clouds::before, .hz-clouds::after {
-        content: '';
-        position: absolute;
-        top: 9px;
-        width: 18px; height: 7px;
-        background: rgba(255,255,255,0.85);
-        border-radius: 999px;
-        box-shadow:
-          6px -3px 0 -1px rgba(255,255,255,0.85),
-          -5px -1px 0 -1px rgba(255,255,255,0.75);
-      }
-      .hz-clouds::before { left: 16px; }
-      .hz-clouds::after { left: 92px; top: 19px; transform: scale(0.8); }
-      .hz-skyline {
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        height: 18px;
-        background: #1E3A5F;
-        clip-path: polygon(
-          0% 100%, 0% 60%, 8% 60%, 8% 30%, 16% 30%, 16% 50%,
-          24% 50%, 24% 15%, 32% 15%, 32% 40%, 40% 40%,
-          40% 25%, 48% 25%, 48% 55%, 56% 55%,
-          56% 10%, 64% 10%, 64% 35%, 72% 35%,
-          72% 50%, 80% 50%, 80% 20%, 88% 20%, 88% 60%, 100% 60%, 100% 100%
-        );
-        transition: background 0.7s cubic-bezier(0.4,0,0.2,1);
-      }
-      .hz-toggle.night .hz-skyline { background: #0B1120; }
-      .hz-windows {
-        position: absolute;
-        bottom: 2px; left: 0; right: 0;
-        height: 14px;
-        opacity: 0;
-        transition: opacity 0.7s ease;
-        pointer-events: none;
-        box-shadow:
-          12px -6px 0 0.5px #FDE68A, 16px -6px 0 0.5px #FDE68A,
-          40px -10px 0 0.5px #FDE68A, 44px -10px 0 0.5px #FDE68A,
-          68px -4px 0 0.5px #FDE68A, 76px -4px 0 0.5px #FDE68A;
-      }
-      .hz-toggle.night .hz-windows { opacity: 1; }
-      .hz-orb {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        left: 8px;
-        background: radial-gradient(circle at 40% 35%, #FFF7C2 0%, #FCD34D 35%, #F59E0B 70%, #D97706 100%);
-        box-shadow: 0 0 12px 4px rgba(252,211,77,0.35), 0 0 28px 8px rgba(252,211,77,0.12);
-        transition: left 0.7s cubic-bezier(0.4,0,0.2,1), background 0.7s ease, box-shadow 0.7s ease;
-        pointer-events: none;
-      }
-      .hz-toggle.night .hz-orb {
-        left: 94px;
-        background: radial-gradient(circle at 45% 40%, #E2E8F0 0%, #94A3B8 40%, #64748B 75%, #475569 100%);
-        box-shadow: 0 0 10px 3px rgba(148,163,184,0.2), 0 0 24px 6px rgba(148,163,184,0.08);
-      }
-      .hz-orb::after {
-        content: '';
-        position: absolute;
-        top: 4px; left: 6px;
-        width: 28px; height: 28px;
-        border-radius: 50%;
-        background: transparent;
+        position: relative;
+        background: linear-gradient(180deg, #3B82F6 0%, #F59E0B 100%);
         transition: background 0.7s ease;
       }
-      .hz-toggle.night .hz-orb::after {
-        background: #0F172A;
+      .hz-toggle.night { background: linear-gradient(180deg, #070B1A 0%, #1E1B4B 100%); }
+      .hz-orb {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        width: 36px; height: 36px; border-radius: 50%;
+        left: 6px; background: radial-gradient(circle, #FFF7C2, #F59E0B);
+        transition: left 0.7s cubic-bezier(0.4,0,0.2,1), background 0.7s ease;
       }
-      @keyframes hz-sun-pulse-sm {
-        0%, 100% { box-shadow: 0 0 12px 4px rgba(252,211,77,0.35), 0 0 28px 8px rgba(252,211,77,0.12); }
-        50% { box-shadow: 0 0 16px 6px rgba(252,211,77,0.45), 0 0 36px 12px rgba(252,211,77,0.18); }
+      .hz-toggle.night .hz-orb { left: 78px; background: radial-gradient(circle, #E2E8F0, #475569); }
+
+      @media (max-width: 768px) {
+        .top-bar { width: 92vw; padding: 0 12px; }
+        .global-progress-wrap { display: none; }
+        .hero-license { flex-direction: column; text-align: center; padding: 30px 20px; }
+        .license-left { flex-direction: column; text-align: center; }
+        .license-right { text-align: center; }
+        .bento-grid { grid-template-columns: 1fr; }
+        .bento-card.wide { grid-column: span 1; }
+        .crt { padding: 30px 20px; font-size: 0.8rem; aspect-ratio: auto; min-height: 500px; }
+        .crtn { font-size: 2rem; }
+        .crt-course { font-size: 1.2rem; }
       }
-      .hz-toggle:not(.night) .hz-orb { animation: hz-sun-pulse-sm 4s ease-in-out infinite; }
-      @media (max-width: 420px) {
-        .hz-toggle { width: 112px; height: 44px; border-radius: 22px; }
-        .hz-orb { width: 32px; height: 32px; left: 6px; }
-        .hz-toggle.night .hz-orb { left: 72px; }
-        .hz-orb::after { width: 20px; height: 20px; top: 3px; left: 5px; }
-        .hz-skyline { height: 14px; }
+
+      @media print {
+        body { background: white !important; }
+        .top-bar, .hero-license, .bento-grid, .trophy-title, .btn-reward, .share-bar { display: none !important; }
+        .cert-stage { display: block !important; }
+        .crt { width: 100% !important; max-width: 700px !important; margin: 0 auto !important; border-width: 6px !important; }
       }
     </style>
   </head>
   <body>
+    <div class="top-bar">
+      <div class="brand" onclick="window.location.href = 'Academy.html'">Traffic Academy</div>
+
+      <div class="global-progress-wrap">
+        <div class="progress-labels">
+          <span>Start</span>
+          <span id="global-pct">0%</span>
+          <span>Certified</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="global-fill"></div>
+        </div>
+      </div>
+
+      <div class="top-bar-actions">
+        <div class="profile-compact">
+          <div class="avatar-sm" id="avatar-sm"></div>
+          <span class="profile-name-sm" id="top-name">Driver</span>
+        </div>
+
+        <div class="menu-container">
+          <button class="btn-menu" onclick="toggleMenu()">☰</button>
+          <div class="dropdown" id="action-menu">
+            <div class="dropdown-item" onclick="openEditModal()">✏️ Edit Profile</div>
+            <div class="dropdown-item" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</div>
+            <div class="dropdown-item danger" onclick="logoutAndClear()">🚪 Sign Out</div>
+          </div>
+        </div>
+
+        <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-orb"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="dashboard-container">
-      <div class="header">
-        <div class="profile-chip">
-          <div class="avatar-circle" id="avatar"></div>
-          <div class="profile-info">
-            <span class="name" id="d-name">Driver</span>
-            <span class="sub" id="d-sub">Student</span>
-            <span class="sub" id="d-stu-id" style="font-family:'Space Mono',monospace; color:var(--signal); font-size:0.75rem; font-weight:700;">ID: STU-000000</span>
+      <!-- Hero License -->
+      <div class="hero-license">
+        <div class="license-left">
+          <div class="hero-avatar" id="hero-avatar"></div>
+          <div class="license-info">
+            <h1 id="h-name">Driver Name</h1>
+            <div class="license-id" id="h-id">ID: STU-000000</div>
           </div>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
-          <div style="display:flex; background:rgba(255,255,255,0.06); border:1px solid var(--border); padding:3px; border-radius:30px;">
-            <button class="btn btn-outline" id="tab-btn-student" style="border:none; padding:8px 14px; min-height:36px; font-size:0.85rem;" onclick="switchDashboardView('student')">👤 Student</button>
-            <button class="btn btn-outline" id="tab-btn-parent" style="border:none; padding:8px 14px; min-height:36px; font-size:0.85rem;" onclick="switchDashboardView('parent')">👨‍👩‍👧 Parent</button>
-            <button class="btn btn-outline" id="tab-btn-teacher" style="border:none; padding:8px 14px; min-height:36px; font-size:0.85rem;" onclick="switchDashboardView('teacher')">🏫 Teacher</button>
-          </div>
-          <button class="btn-edit" id="btn-edit-profile" onclick="openEditModal()">✏️ Edit</button>
-          <button class="btn btn-outline" onclick="window.location.href = 'Academy.html'">← Academy</button>
-          <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-skyline"></div><div class="hz-windows"></div><div class="hz-orb"></div></div>
-          <button class="btn-edit" id="btn-reset-progress" style="color: var(--red); border-color: var(--red);" onclick="resetProgressFromDashboard()">🗑️ Reset</button>
-          <button class="btn btn-outline" id="btn-sign-out" style="color: var(--red); border-color: var(--red); font-size: 0.85rem" onclick="logoutAndClear()">Sign Out</button>
+        <div class="license-right">
+          <div class="license-score-label">Total Experience</div>
+          <div class="license-score-val" id="h-score">0</div>
+          <div class="license-tier" id="h-tier">Civic Score</div>
         </div>
       </div>
 
-      <div class="glass-panel" id="your-stats-panel">
-        <h2 style="margin-top: 0; margin-bottom: 20px">Your Stats</h2>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-header">
-              <div class="stat-icon">👤</div>
-              <span class="stat-trend">Profile</span>
-            </div>
-            <div class="stat-value" id="s-name">-</div>
-            <div class="stat-label">Driver Name</div>
+      <!-- Bento Grid -->
+      <div class="bento-grid">
+        <div class="bento-card">
+          <div class="bento-label">🚗 Vehicle</div>
+          <div class="bento-value" id="s-veh">-</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-label">🎂 Age Group</div>
+          <div class="bento-value" id="s-age">-</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-label">🌐 Language</div>
+          <div class="bento-value" id="s-lang">-</div>
+        </div>
+        <div class="bento-card wide">
+          <div class="bento-label">📈 Performance Trends</div>
+          <div style="display: flex; gap: 20px; height: 60px;">
+             <div style="flex:1">
+               <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">Score Trend</div>
+               <canvas id="score-sparkline" class="bento-sparkline"></canvas>
+             </div>
+             <div style="flex:1">
+               <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">Civic Trend</div>
+               <canvas id="civic-sparkline" class="bento-sparkline"></canvas>
+             </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-header">
-              <div class="stat-icon">🚗</div>
-              <span class="stat-trend">Active</span>
+        </div>
+        <div class="bento-card tall">
+          <div class="bento-label">📚 Module Progress</div>
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
+            <div class="progress-ring-wrap" id="cert-progress-ring">
+              <canvas id="cert-progress-canvas" width="120" height="120" data-chart="progress-ring" data-value="0"></canvas>
+              <div class="progress-ring-info" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center;">
+                <div class="progress-ring-pct" id="cert-progress-pct" style="font-size:1.2rem; font-weight:800;">0%</div>
+                <div class="progress-ring-label" id="cert-progress-text" style="font-size:0.6rem; color:var(--muted);">Start!</div>
+              </div>
             </div>
-            <div class="stat-value" id="s-veh">-</div>
-            <div class="stat-label">Vehicle</div>
+            <div class="bento-value" id="s-prog" style="margin-top:20px;">0/52</div>
+            <div class="bento-label" style="margin-top:4px;">Completed</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-header">
-              <div class="stat-icon">🎂</div>
-              <span class="stat-trend">Demographic</span>
-            </div>
-            <div class="stat-value" id="s-age">-</div>
-            <div class="stat-label">Age Group</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header">
-              <div class="stat-icon">🌐</div>
-              <span class="stat-trend">Locale</span>
-            </div>
-            <div class="stat-value" id="s-lang">-</div>
-            <div class="stat-label">Language</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header">
-              <div class="stat-icon">⭐</div>
-              <span class="stat-trend">Total</span>
-            </div>
-            <div class="stat-value accent" id="s-score">0</div>
-            <div class="stat-label">Total Score</div>
-            <canvas class="stat-sparkline" data-chart="sparkline" data-value='[12, 19, 15, 25, 22, 30, 28]' width="200" height="36"></canvas>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header">
-              <div class="stat-icon">📚</div>
-              <span class="stat-trend">Progress</span>
-            </div>
-            <div class="stat-value accent" id="s-prog">0/52</div>
-            <div class="stat-label">Modules Completed</div>
-            <canvas class="stat-sparkline" id="modules-sparkline" data-chart="sparkline" width="200" height="36"></canvas>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header">
-              <div class="stat-icon">🏅</div>
-              <span class="stat-trend">Civic</span>
-            </div>
-            <div class="stat-value accent" id="s-civic">0</div>
-            <div class="stat-label" id="s-civic-tier">Civic Score</div>
-            <canvas class="stat-sparkline" id="civic-sparkline" data-chart="sparkline" width="200" height="36"></canvas>
+        </div>
+        <div class="bento-card wide">
+          <div class="bento-label">✨ Recent Achievements</div>
+          <div id="achievement-list" style="font-size:0.9rem; color:var(--text); line-height:1.6;">
+            No badges yet. Complete more modules to earn them!
           </div>
         </div>
       </div>
 
-      <div class="glass-panel" style="padding: 20px">
-        <div class="partner-label">Our Partners</div>
-        <div class="partner-strip">
-          <img loading="lazy" src="mumbai-police-logo.png" alt="Mumbai Police" onerror="this.style.display='none'" />
-          <img loading="lazy" src="sneh-logo.png" alt="Sneh Asha Foundation" onerror="this.style.display='none'" />
-        </div>
-      </div>
-
-      <div class="glass-panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px">
-          <h2 style="margin: 0">Certificates & Achievements</h2>
-          
-          <!-- Progress Ring using Chart.js -->
-          <div class="progress-ring-wrap" id="cert-progress-ring">
-            <canvas id="cert-progress-canvas" width="100" height="100" data-chart="progress-ring" data-value="0"></canvas>
-            <div class="progress-ring-info">
-              <div class="progress-ring-pct" id="cert-progress-pct">0%</div>
-              <div class="progress-ring-label" id="cert-progress-text">Start Learning!</div>
-              <div class="progress-ring-sub" id="cert-progress-sub">Complete modules to unlock</div>
-            </div>
-          </div>
-          
-          <button class="btn" onclick="dlCert()" style="background: #f2b84b; color: #0f172a; font-weight: 700; border: none; padding: 12px 22px; border-radius: 12px; font-size: 0.95rem; cursor: pointer; box-shadow: 0 4px 12px rgba(242,184,75,0.3); transition: transform 0.2s;">&#128190; Download PDF</button>
-        </div>
-
-        <div id="cert-wrapper">
+      <!-- Trophy Room -->
+      <div class="trophy-room">
+        <h2 class="trophy-title">The Trophy Room</h2>
+        <div class="cert-stage" id="cert-wrapper">
           <div class="crt" id="cert">
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%">
               <div style="display: flex; gap: 14px; align-items: center">
@@ -883,16 +663,13 @@
                 <img loading="lazy" src="sneh-logo.png" style="height: 65px; object-fit: contain" alt="Sneh Asha" onerror="this.style.display='none'" />
               </div>
             </div>
-
             <div style="font-weight: 600; letter-spacing: 0.1em; color: #7c7968; text-transform: uppercase; font-size: 1.2rem; margin-top: 20px">Certificate of Completion</div>
             <div class="crtn">Traffic Hero Certification</div>
-
             <div class="crt-body" style="margin-top: 32px">This document certifies that</div>
             <div class="crt-course" id="cert-name">DRIVER</div>
             <div class="crt-body" style="margin-bottom: 40px">
               has successfully completed the comprehensive traffic regulations and virtual operations training program, demonstrating mastery across 15 real-world compliance scenarios.
             </div>
-
             <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-top: auto; padding-top: 24px; border-top: 1px solid #e0dfd7; text-align: left">
               <div class="crt-meta" style="color: #2c2b25">
                 <div style="margin-bottom: 8px"><span style="font-weight: 600; width: 100px; display: inline-block">Date:</span><span id="cert-date">-</span></div>
@@ -910,360 +687,20 @@
           </div>
         </div>
 
-        <div id="share-bar" class="share-bar" style="display: none; margin-top: 24px; padding-bottom: 16px;">
+        <div id="no-cert-msg" style="display: none; padding: 40px; text-align: center; background: rgba(255, 255, 255, 0.1); border-radius: 24px; margin: 20px auto; max-width: 600px; border: 1px solid var(--border);">
+          <h3 style="margin-top: 0; color: var(--muted)">Certificate Locked</h3>
+          <p>Complete all 52 modules to unlock your Traffic Hero Certification.</p>
+        </div>
+
+        <button class="btn-reward" id="btn-dl-cert" onclick="dlCert()">🎓 Download Certificate</button>
+
+        <div id="share-bar" class="share-bar" style="display: none;">
           <button class="share-btn share-wa" onclick="shareWhatsApp()">&#128172; WhatsApp</button>
           <button class="share-btn share-ig" onclick="shareInstagram()">&#128247; Instagram</button>
           <button class="share-btn share-copy" onclick="copyCertLink()">&#128279; Copy Link</button>
         </div>
-
-        <div id="no-cert-msg" style="display: none; padding: 40px; text-align: center; background: rgba(255, 255, 255, 0.6); border-radius: 16px; margin-top: 20px">
-          <h3 style="margin-top: 0; color: var(--muted)">Certificate Locked</h3>
-          <p>Complete all 52 modules to unlock your Traffic Hero Certification.</p>
-        </div>
       </div>
     </div>
-
-    <script>
-      let S = {}
-      try {
-        // FIXED: Read from correct key 'mth4' instead of 'th-save'
-        const raw = localStorage.getItem('mth4')
-        if (raw) S = JSON.parse(raw)
-      } catch (e) {}
-
-      let tUser = {}
-      try {
-        const raw = localStorage.getItem('traffic_local_user')
-        if (raw) tUser = JSON.parse(raw)
-      } catch (e) {}
-
-      // --- Shared certificate view (?cert=<id>) ---
-      // Someone opening a certificate link shared via WhatsApp/Instagram isn't signed in as
-      // that person and has no localStorage data for them — so if a `cert` param is present,
-      // we fetch that specific certificate from Supabase instead of reading local S/tUser,
-      // and hide the personal sections (Your Stats, Reset Progress, Sign Out) that don't make
-      // sense for a visitor viewing someone else's certificate.
-      const _certParam = new URLSearchParams(window.location.search).get('cert')
-      const _isParentView = new URLSearchParams(window.location.search).get('view') === 'parent'
-      let _sharedCert = null
-      async function _initSupabase() {
-        if (window.supabaseClient) return window.supabaseClient
-        try {
-          const res = await fetch('config.json?t=' + Date.now())
-          const cfg = await res.json()
-          const auth = cfg.auth || cfg.supabase || {}
-          const url = auth.supabaseUrl || auth.url || ''
-          const key = auth.supabaseKey || auth.anonKey || auth.key || ''
-          if (url && key && window.supabase) {
-            window.supabaseClient = window.supabase.createClient(url, key)
-          }
-        } catch (e) {}
-        return window.supabaseClient || null
-      }
-      async function _loadSharedCertificate(id) {
-        const client = await _initSupabase()
-        if (!client) return null
-        const { data, error } = await client.from('certificates').select('*').eq('id', id).single()
-        if (error || !data) return null
-        return data
-      }
-      // Upserts (creates or updates) the signed-in user's own certificate row once their
-      // local progress shows all 52 modules complete, so there's something for a share link
-      // to actually point at. No-ops silently if the user isn't signed in or Supabase isn't
-      // configured — certificate PDF/download still works from local data either way.
-      async function _syncOwnCertificate(name, completedCount, scoreTotal) {
-        if (completedCount < 52) return null
-        const client = await _initSupabase()
-        if (!client || !window.colUser || !window.colUser.id) return null
-        try {
-          const { data, error } = await client
-            .from('certificates')
-            .upsert(
-              {
-                user_id: window.colUser.id,
-                display_name: name,
-                modules_completed: completedCount,
-                total_modules: 52,
-                score: scoreTotal,
-                updated_at: new Date().toISOString()
-              },
-              { onConflict: 'user_id' }
-            )
-            .select()
-            .single()
-          if (error) return null
-          try { localStorage.setItem('own_cert_id', data.id) } catch (e) {}
-          return data.id
-        } catch (e) {
-          return null
-        }
-      }
-
-      const displayName = tUser.name || S.name || 'Driver'
-      const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-
-      // Populate avatar
-      const avatarEl = document.getElementById('avatar')
-      let userPhoto = null
-      try {
-        const ls = localStorage.getItem('col_user')
-        if (ls) { const u = JSON.parse(ls); userPhoto = u.avatar || u.photo || null }
-      } catch (e) {}
-      if (userPhoto) {
-        avatarEl.innerHTML = '<img src="' + userPhoto + '" alt="avatar" />'
-      } else {
-        avatarEl.textContent = userInitials
-      }
-
-      // Populate header name + sub
-      document.getElementById('d-name').innerText = displayName
-      const role = (tUser.role || S.role || 'student')
-      document.getElementById('d-sub').innerText = role.charAt(0).toUpperCase() + role.slice(1)
-
-      // Populate Stats
-      document.getElementById('s-name').innerText = displayName
-      document.getElementById('s-veh').innerText = tUser.vehicle || S.vehicle || 'Car'
-      const ageVal = tUser.age || S.age || 18
-      const ageLabels = { child: '8-12 (Kids)', teen: '13-17 (Teens)', young: '18-25 (Young)', adult: '26-50 (Adult)', senior: '51+ (Senior)' }
-      const ageBracket = ageVal <= 12 ? 'child' : ageVal <= 17 ? 'teen' : ageVal <= 25 ? 'young' : ageVal <= 50 ? 'adult' : 'senior'
-      document.getElementById('s-age').innerText = ageLabels[ageBracket] || '18'
-      document.getElementById('s-lang').innerText = (tUser.language || S.language || 'en') === 'hi' ? 'हिन्दी' : 'English'
-      document.getElementById('s-score').innerText = (S.total || 0).toLocaleString()
-      const civicScore = S.civicScore || 0
-      const civicTiers = [
-        { at: 500, label: 'Platinum Citizen', emoji: '💎' },
-        { at: 250, label: 'Gold Citizen', emoji: '🥇' },
-        { at: 100, label: 'Silver Citizen', emoji: '🥈' },
-        { at: 25, label: 'Bronze Citizen', emoji: '🥉' },
-        { at: 0, label: 'Civic Score', emoji: '🏅' }
-      ]
-      const civicTier = civicTiers.find((t) => civicScore >= t.at)
-      document.getElementById('s-civic').innerText = `${civicScore} ${civicTier.emoji}`
-      document.getElementById('s-civic-tier').innerText = civicTier.label
-
-      let completed = 0
-      // FIXED: Use S.comp for completed levels (not S.lvl)
-      if (S.comp) {
-        completed = Object.keys(S.comp).filter((k) => S.comp[k] && S.comp[k].score > 0).length
-      }
-      document.getElementById('s-prog').innerText = `${completed}/52`
-
-      // Update certificate progress ring using Chart.js
-      const progressPct = Math.round((completed / 52) * 100)
-      
-      // Initialize or update Chart.js progress ring
-      const certProgressCanvas = document.getElementById('cert-progress-canvas')
-      if (certProgressCanvas && window.TrafficCharts) {
-        window.TrafficCharts.createProgressRing(certProgressCanvas, progressPct, { cutout: '70%' })
-      }
-      
-      // Update progress text elements
-      const progressPctEl = document.getElementById('cert-progress-pct')
-      const progressTextEl = document.getElementById('cert-progress-text')
-      const progressSubEl = document.getElementById('cert-progress-sub')
-      const progressRingEl = document.getElementById('cert-progress-ring')
-      
-      if (progressPctEl) progressPctEl.textContent = progressPct + '%'
-      if (completed >= 52) {
-        if (progressTextEl) progressTextEl.textContent = '🎉 Certificate Unlocked!'
-        if (progressSubEl) progressSubEl.textContent = 'You can now download your certificate'
-        if (progressRingEl) progressRingEl.style.background = 'rgba(52, 211, 153, 0.2)'
-        // Fire-and-forget: creates/updates this user's shareable certificate row
-        try {
-          const cachedId = localStorage.getItem('own_cert_id')
-          if (cachedId) _syncedCertId = cachedId
-          _syncOwnCertificate(displayName, completed, S.total || 0).then((id) => {
-            if (id) _syncedCertId = id
-          })
-        } catch (e) {}
-      } else if (completed > 0) {
-        if (progressTextEl) progressTextEl.textContent = progressPct + '% to Certificate'
-        if (progressSubEl) progressSubEl.textContent = `${completed} of 52 modules completed`
-      } else {
-        if (progressTextEl) progressTextEl.textContent = 'Start Learning!'
-        if (progressSubEl) progressSubEl.textContent = 'Complete modules to unlock your certificate'
-      }
-
-      // Initialize sparklines for stat cards
-      if (window.TrafficCharts) {
-        // Total Score sparkline (static example data)
-        const scoreSparkline = document.querySelector('canvas[data-chart="sparkline"][data-value]')
-        if (scoreSparkline) {
-          const data = JSON.parse(scoreSparkline.dataset.value || '[]')
-          window.TrafficCharts.createSparkline(scoreSparkline, data, { color: '#f2b84b', colorEnd: '#00f0cc', fill: true })
-        }
-        
-        // Modules sparkline - generate from completion data
-        const modulesSparkline = document.getElementById('modules-sparkline')
-        if (modulesSparkline && S.comp) {
-          const moduleScores = Object.values(S.comp).map(c => c?.score || 0).slice(-7)
-          while (moduleScores.length < 7) moduleScores.unshift(0)
-          window.TrafficCharts.createSparkline(modulesSparkline, moduleScores, { color: '#34d399', colorEnd: '#5ed4f5', fill: true })
-        }
-        
-        // Civic sparkline
-        const civicSparkline = document.getElementById('civic-sparkline')
-        if (civicSparkline && S.violationHistory) {
-          // Generate reverse - fewer violations is better
-          const civicData = [civicScore > 0 ? Math.min(100, civicScore/5) : 0]
-          window.TrafficCharts.createSparkline(civicSparkline, civicData, { color: '#b89bff', colorEnd: '#f2b84b', fill: true })
-        }
-      }
-
-      // Populate Certificate
-      document.getElementById('cert-name').innerText = displayName.toUpperCase()
-      document.getElementById('cert-score').innerText = S.total || 0
-
-      const d = new Date()
-      document.getElementById('cert-date').innerText = d.toLocaleDateString()
-      document.getElementById('cert-ref').innerText = 'TH-' + Math.random().toString(36).substr(2, 6).toUpperCase()
-
-      const certWrapper = document.getElementById('cert-wrapper')
-      const noCertMsg = document.getElementById('no-cert-msg')
-      const shareBar = document.getElementById('share-bar')
-      const dlCertBtn = document.querySelector('.glass-panel:last-of-type .btn')
-
-      if (completed >= 52) {
-        // Unlocked — animate
-        certWrapper.classList.add('cert-unlocking')
-        shareBar.style.display = 'flex'
-        noCertMsg.style.display = 'none'
-      } else if (completed > 0) {
-        // Partially complete — blur scales with progress
-        const blurPx = ((52 - completed) / 52 * 10).toFixed(1)
-        certWrapper.style.filter = `grayscale(1) blur(${blurPx}px)`
-        certWrapper.style.opacity = (0.3 + (completed / 52) * 0.5).toFixed(2)
-        certWrapper.style.pointerEvents = 'none'
-        noCertMsg.style.display = 'block'
-        noCertMsg.querySelector('p').innerText = `Complete all 52 modules to unlock your certificate. (${completed}/52 done)`
-        dlCertBtn.style.display = 'none'
-      } else {
-        certWrapper.style.filter = 'grayscale(1) blur(10px)'
-        certWrapper.style.opacity = '0.3'
-        certWrapper.style.pointerEvents = 'none'
-        noCertMsg.style.display = 'block'
-        noCertMsg.querySelector('p').innerText = 'Complete all 52 modules to unlock your certificate.'
-        dlCertBtn.style.display = 'none'
-      }
-
-      // Edit Profile Modal
-      function openEditModal() {
-        const m = document.getElementById('edit-modal')
-        document.getElementById('ed-name').value = tUser.name || S.name || ''
-        document.getElementById('ed-age').value = tUser.age || S.age || ''
-        document.getElementById('ed-vehicle').value = tUser.vehicle || S.vehicle || 'car'
-        m.classList.add('show')
-      }
-      function closeEditModal() { document.getElementById('edit-modal').classList.remove('show') }
-      function saveEditModal() {
-        const name = document.getElementById('ed-name').value.trim()
-        const age = parseInt(document.getElementById('ed-age').value) || 18
-        const vehicle = document.getElementById('ed-vehicle').value
-        if (name) {
-          tUser.name = name
-          tUser.age = age
-          tUser.vehicle = vehicle
-          S.name = name
-          S.age = age
-          S.vehicle = vehicle
-          localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
-          localStorage.setItem('th-save', JSON.stringify(S))
-          window.location.reload()
-        }
-      }
-
-      // Download certificate
-      function dlCert() {
-        if (completed < 52) {
-          alert('You must complete all 52 modules to download your certificate.')
-          return
-        }
-        if (typeof html2pdf !== 'undefined') {
-          html2pdf()
-            .set({
-              margin: 0,
-              filename: 'Traffic_Hero_Certificate.pdf',
-              image: { type: 'jpeg', quality: 0.98 },
-              html2canvas: { scale: 2, useCORS: true },
-              jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-            })
-            .from(document.getElementById('cert-wrapper'))
-            .save()
-        } else {
-          alert('PDF library not loaded.')
-        }
-      }
-
-      // Share functions
-      let _syncedCertId = null
-      const certUrl = () => _syncedCertId
-        ? `${window.location.origin}${window.location.pathname}?cert=${_syncedCertId}`
-        : window.location.href
-      const shareText = `I completed my Traffic Hero Certification! ${displayName} — ${completed}/52 modules done.`
-
-      // Renders the certificate DOM to an image file, so WhatsApp/Instagram get the actual
-      // certificate picture instead of a plain link (a link doesn't preview usefully in an
-      // Instagram story, and previously certUrl just pointed at this generic dashboard page,
-      // not at anything showing this specific person's certificate).
-      async function _certImageFile() {
-        if (typeof html2canvas === 'undefined') return null
-        const canvas = await html2canvas(document.getElementById('cert-wrapper'), { scale: 2, useCORS: true })
-        const blob = await new Promise((res) => canvas.toBlob(res, 'image/png', 0.95))
-        if (!blob) return null
-        return new File([blob], 'Traffic_Hero_Certificate.png', { type: 'image/png' })
-      }
-
-      async function shareWhatsApp() {
-        const file = await _certImageFile()
-        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({ files: [file], text: shareText })
-            return
-          } catch (e) {
-            /* user cancelled or share failed — fall through to link */
-          }
-        }
-        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + '\n' + certUrl())}`, '_blank')
-      }
-      async function shareInstagram() {
-        const file = await _certImageFile()
-        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({ files: [file], text: shareText })
-            return
-          } catch (e) {
-            /* user cancelled or share failed — fall through to clipboard */
-          }
-        }
-        navigator.clipboard.writeText(shareText + '\n' + certUrl()).then(() => {
-          alert('Copied! Open Instagram and paste in your story.')
-        })
-      }
-      function copyCertLink() {
-        navigator.clipboard.writeText(certUrl()).then(() => {
-          alert('Certificate link copied!')
-        })
-      }
-
-      function logoutAndClear() {
-        localStorage.removeItem('trafficSetupComplete')
-        localStorage.removeItem('traffic_local_user')
-        if (window.doLogout) window.doLogout()
-        window.location.href = 'Academy.html'
-      }
-
-      function resetProgressFromDashboard() {
-        if (confirm('⚠️ Are you sure you want to reset ALL your progress?\n\nThis will delete all your completed levels, scores, badges, and certificates. This cannot be undone!')) {
-          if (confirm('Double-check: This will PERMANENTLY delete your progress. Continue?')) {
-            localStorage.removeItem('traffic_local_user')
-            localStorage.removeItem('trafficSetupComplete')
-            localStorage.removeItem('col_user')
-            alert('Progress has been reset. You will be redirected to the Academy.')
-            window.location.href = 'Academy.html'
-          }
-        }
-      }
-    </script>
 
     <!-- Edit Profile Modal -->
     <div class="modal-overlay" id="edit-modal">
@@ -1295,199 +732,286 @@
     </div>
 
     <script>
-    /* ── Horizon Toggle ── */
-    function hzInit() {
-      var t = localStorage.getItem('theme');
-      if (t === 'light') { document.body.classList.add('lm'); }
-      else { document.body.classList.remove('lm'); }
-      hzSync();
-    }
-    function hzSync() {
-      var el = document.querySelector('.hz-toggle');
-      if (!el) return;
-      if (document.body.classList.contains('lm')) { el.classList.remove('night'); }
-      else { el.classList.add('night'); }
-    }
-    function hzToggle() {
-      document.body.classList.toggle('lm');
-      localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
-      hzSync();
-    }
-    hzInit();
+      let S = {}
+      try {
+        const raw = localStorage.getItem('mth4')
+        if (raw) S = JSON.parse(raw)
+      } catch (e) {}
 
-    // If this page was opened via a shared certificate link (?cert=<id>), overwrite the
-    // just-populated local-data fields with the actual certificate that was shared, and
-    // hide the sections that only make sense for the certificate's own owner. Runs after
-    // the normal population above so it always wins when a cert param is present.
-    (async function () {
-      if (!_certParam) return
-      const cert = await _loadSharedCertificate(_certParam)
-      const yourStats = document.getElementById('your-stats-panel')
-      const editBtn = document.getElementById('btn-edit-profile')
-      const resetBtn = document.getElementById('btn-reset-progress')
-      const signOutBtn = document.getElementById('btn-sign-out')
-      const shareBar = document.getElementById('share-bar')
-      ;[yourStats, editBtn, resetBtn, signOutBtn, shareBar].forEach((el) => {
-        if (el) el.style.display = 'none'
-      })
-      if (!cert) {
-        const noCertMsg = document.getElementById('no-cert-msg')
-        if (noCertMsg) {
-          noCertMsg.style.display = 'block'
-          noCertMsg.querySelector('p').innerText = 'This certificate link is invalid or has expired.'
-        }
-        document.getElementById('cert-wrapper').style.filter = 'grayscale(1) blur(6px)'
-        document.getElementById('cert-wrapper').style.pointerEvents = 'none'
-        return
-      }
-      document.getElementById('d-name').innerText = cert.display_name
-      document.getElementById('cert-name').innerText = (cert.display_name || '').toUpperCase()
-      document.getElementById('cert-score').innerText = (cert.score || 0).toLocaleString()
-      document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
-      // Populate Unique Student ID
-      const studentId = S.studentId || ('STU-' + Math.floor(100000 + Math.random() * 900000))
-      const stuIdEl = document.getElementById('d-stu-id')
-      if (stuIdEl) stuIdEl.textContent = 'ID: ' + studentId
+      let tUser = {}
+      try {
+        const raw = localStorage.getItem('traffic_local_user')
+        if (raw) tUser = JSON.parse(raw)
+      } catch (e) {}
 
-      window.switchDashboardView = function(view) {
-        const url = new URL(window.location.href)
-        url.searchParams.set('view', view)
-        url.searchParams.set('studentId', studentId)
-        window.location.href = url.toString()
-      }
+      const _certParam = new URLSearchParams(window.location.search).get('cert')
+      let _syncedCertId = null
 
-      // Highlight active tab
-      const currentView = new URLSearchParams(window.location.search).get('view') || 'student'
-      const activeTabBtn = document.getElementById('tab-btn-' + currentView)
-      if (activeTabBtn) {
-        activeTabBtn.style.background = 'var(--accent)'
-        activeTabBtn.style.color = '#000'
-        activeTabBtn.style.fontWeight = '700'
-      }
-    })();
-
-    // Parent/Teacher view (?view=parent or ?view=teacher)
-    (async function () {
-      const urlParams = new URLSearchParams(window.location.search)
-      const viewMode = urlParams.get('view')
-      const targetStudentId = urlParams.get('studentId')
-
-      if (viewMode !== 'parent' && viewMode !== 'teacher') return
-
-      // Hide student-specific edit & reset buttons
-      ;[
-        document.getElementById('your-stats-panel'),
-        document.getElementById('btn-edit-profile'),
-        document.getElementById('btn-reset-progress'),
-        document.getElementById('share-bar'),
-        document.getElementById('cert-wrapper')
-      ].forEach((el) => { if (el) el.style.display = 'none' })
-
-      // Fetch remote student profile from Supabase if studentId query param is provided
-      let displayStudent = displayName
-      let displayCivic = S.civicScore || 0
-      let displayHistory = S.violationHistory || {}
-      let displayCompleted = completed
-
-      if (targetStudentId && window.supabaseClient) {
+      async function _initSupabase() {
+        if (window.supabaseClient) return window.supabaseClient
         try {
-          const { data } = await window.supabaseClient.from('user_profiles').select('*').eq('student_id', targetStudentId).single()
-          if (data) {
-            displayStudent = data.full_name || displayStudent
-            displayCivic = data.civic_score || displayCivic
-            displayHistory = data.violation_history || displayHistory
+          const res = await fetch('config.json?t=' + Date.now())
+          const cfg = await res.json()
+          const auth = cfg.auth || cfg.supabase || {}
+          const url = auth.supabaseUrl || auth.url || ''
+          const key = auth.supabaseKey || auth.anonKey || auth.key || ''
+          if (url && key && window.supabase) {
+            window.supabaseClient = window.supabase.createClient(url, key)
           }
-        } catch(e) {}
+        } catch (e) {}
+        return window.supabaseClient || null
       }
 
-      const labels = {
-        NO_HONKING: 'Honking in silence zones (hospitals/schools)',
-        RED_LIGHT_VIOLATION: 'Jumping red signals',
-        NO_INDICATOR: 'Failing to use turn indicators',
-        MOBILE_USE: 'Using phone while driving',
-        SAFETY_VIOLATION: 'General safety violations (seatbelt/overspeed)',
-        CHECKPOINT_EVASION: 'Evading police checkpoints',
-        HONKED_AT_ANIMAL: 'Disturbing animals on road',
-        LITTER_HIT: 'Littering on public roads'
+      async function _loadSharedCertificate(id) {
+        const client = await _initSupabase()
+        if (!client) return null
+        const { data, error } = await client.from('certificates').select('*').eq('id', id).single()
+        if (error || !data) return null
+        return data
       }
 
-      const rows = Object.keys(displayHistory)
-        .map((k) => ({ key: k, label: labels[k] || k, count: displayHistory[k] }))
-        .sort((a, b) => b.count - a.count)
-
-      const container = document.querySelector('.dashboard-container')
-      const panel = document.createElement('div')
-      panel.className = 'glass-panel'
-      panel.style.marginTop = '20px'
-
-      if (viewMode === 'parent') {
-        const rowsHtml = rows.length
-          ? rows.map((r) => `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid var(--border); background:rgba(255,255,255,0.02); border-radius:8px; margin-bottom:8px;"><div><span style="font-weight:600;">${r.label}</span></div><span style="font-weight:700; color:var(--red); background:rgba(239,68,68,0.15); padding:4px 10px; border-radius:12px;">${r.count} violations</span></div>`).join('')
-          : '<div style="padding:20px; text-align:center; color:var(--green); font-weight:600;">🌟 Zero violations recorded — Excellent road safety habits!</div>'
-
-        const shareUrl = `${window.location.origin}${window.location.pathname}?view=parent&studentId=${targetStudentId || studentId}`
-
-        panel.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:20px;">
-            <div>
-              <h2 style="margin:0; font-family:'Lora',serif; color:var(--accent);">👨‍👩‍👧 Parent Monitoring View</h2>
-              <div style="color:var(--muted); font-size:0.9rem; margin-top:4px;">Student: <strong>${displayStudent}</strong> (ID: <code style="color:var(--signal);">${targetStudentId || studentId}</code>)</div>
-            </div>
-            <button class="btn btn-outline" onclick="navigator.clipboard.writeText('${shareUrl}').then(()=>alert('Parent link copied!'))">🔗 Copy Unique Parent Link</button>
-          </div>
-
-          <p style="color:var(--muted2); margin-bottom:20px; line-height:1.6;">Below is your child's real-time driving diagnostic summary. Review these patterns to guide discussions on safe road habits.</p>
-
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:28px;">
-            <div style="background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:20px; border-radius:16px;">
-              <div style="font-size:0.8rem; color:var(--muted); font-weight:700;">CIVIC REPUTATION</div>
-              <div style="font-size:2rem; font-weight:800; color:var(--accent); margin-top:6px;">${displayCivic} pts</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:20px; border-radius:16px;">
-              <div style="font-size:0.8rem; color:var(--muted); font-weight:700;">MODULES COMPLETED</div>
-              <div style="font-size:2rem; font-weight:800; color:var(--green); margin-top:6px;">${displayCompleted} / 52</div>
-            </div>
-          </div>
-
-          <h3 style="margin-bottom:16px;">⚠️ Driving Error Analysis</h3>
-          ${rowsHtml}
-        `
-      } else if (viewMode === 'teacher') {
-        const shareUrl = `${window.location.origin}${window.location.pathname}?view=teacher&studentId=${targetStudentId || studentId}`
-        panel.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:20px;">
-            <div>
-              <h2 style="margin:0; font-family:'Lora',serif; color:var(--teal);">🏫 Teacher Assessment & Academic Report</h2>
-              <div style="color:var(--muted); font-size:0.9rem; margin-top:4px;">Student Name: <strong>${displayStudent}</strong> | Student ID: <code style="color:var(--signal);">${targetStudentId || studentId}</code></div>
-            </div>
-            <div style="display:flex; gap:10px;">
-              <button class="btn btn-outline" onclick="window.print()">🖨️ Print School Report</button>
-              <button class="btn btn-outline" onclick="navigator.clipboard.writeText('${shareUrl}').then(()=>alert('Teacher link copied!'))">🔗 Copy Teacher Link</button>
-            </div>
-          </div>
-
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px;">
-            <div style="background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:16px; border-radius:12px;">
-              <div style="font-size:0.8rem; color:var(--muted);">Curriculum Status</div>
-              <div style="font-size:1.6rem; font-weight:700; color:var(--teal);">${Math.round((displayCompleted/52)*100)}% Complete</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:16px; border-radius:12px;">
-              <div style="font-size:0.8rem; color:var(--muted);">Total Score Earned</div>
-              <div style="font-size:1.6rem; font-weight:700; color:var(--accent);">${(S.total||0).toLocaleString()} XP</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:16px; border-radius:12px;">
-              <div style="font-size:0.8rem; color:var(--muted);">Badges Unlocked</div>
-              <div style="font-size:1.6rem; font-weight:700; color:var(--plasma);">${(S.badges||[]).length} Badges</div>
-            </div>
-          </div>
-
-          <h3>🎓 Student Competency Summary</h3>
-          <p style="color:var(--muted2);">This student has completed ${displayCompleted} out of 52 interactive modules covering traffic regulations, signal discipline, emergency vehicle priority, pedestrian courtesy, and weather safety.</p>
-        `
+      async function _syncOwnCertificate(name, completedCount, scoreTotal) {
+        if (completedCount < 52) return null
+        const client = await _initSupabase()
+        if (!client || !window.colUser || !window.colUser.id) return null
+        try {
+          const { data, error } = await client.from('certificates').upsert(
+            { user_id: window.colUser.id, display_name: name, modules_completed: completedCount, total_modules: 52, score: scoreTotal, updated_at: new Date().toISOString() },
+            { onConflict: 'user_id' }
+          ).select().single()
+          if (error) return null
+          localStorage.setItem('own_cert_id', data.id)
+          return data.id
+        } catch (e) { return null }
       }
 
-      container.appendChild(panel)
-    })();
+      const displayName = tUser.name || S.name || 'Driver'
+      const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+
+      // Populate avatars
+      [document.getElementById('avatar-sm'), document.getElementById('hero-avatar')].forEach(el => {
+        if (!el) return;
+        let userPhoto = null
+        try {
+          const ls = localStorage.getItem('col_user')
+          if (ls) { const u = JSON.parse(ls); userPhoto = u.avatar || u.photo || null }
+        } catch (e) {}
+        if (userPhoto) el.innerHTML = '<img src="' + userPhoto + '" alt="avatar" />'
+        else el.textContent = userInitials
+      })
+
+      document.getElementById('top-name').innerText = displayName
+      document.getElementById('h-name').innerText = displayName
+
+      const role = (tUser.role || S.role || 'student')
+      const studentId = S.studentId || ('STU-' + Math.floor(100000 + Math.random() * 900000))
+      document.getElementById('h-id').innerText = 'ID: ' + studentId
+
+      // Stats
+      document.getElementById('s-veh').innerText = tUser.vehicle || S.vehicle || 'Car'
+      const ageVal = tUser.age || S.age || 18
+      const ageLabels = { child: '8-12 (Kids)', teen: '13-17 (Teens)', young: '18-25 (Young)', adult: '26-50 (Adult)', senior: '51+ (Senior)' }
+      const ageBracket = ageVal <= 12 ? 'child' : ageVal <= 17 ? 'teen' : ageVal <= 25 ? 'young' : ageVal <= 50 ? 'adult' : 'senior'
+      document.getElementById('s-age').innerText = ageLabels[ageBracket] || '18'
+      document.getElementById('s-lang').innerText = (tUser.language || S.language || 'en') === 'hi' ? 'हिन्दी' : 'English'
+      document.getElementById('h-score').innerText = (S.total || 0).toLocaleString()
+
+      const civicScore = S.civicScore || 0
+      const civicTiers = [
+        { at: 500, label: 'Platinum Citizen', emoji: '💎' },
+        { at: 250, label: 'Gold Citizen', emoji: '🥇' },
+        { at: 100, label: 'Silver Citizen', emoji: '🥈' },
+        { at: 25, label: 'Bronze Citizen', emoji: '🥉' },
+        { at: 0, label: 'Civic Score', emoji: '🏅' }
+      ]
+      const civicTier = civicTiers.find((t) => civicScore >= t.at)
+      document.getElementById('h-tier').innerText = `${civicTier.emoji} ${civicTier.label}`
+
+      let completed = 0
+      if (S.comp) completed = Object.keys(S.comp).filter((k) => S.comp[k] && S.comp[k].score > 0).length
+      document.getElementById('s-prog').innerText = `${completed}/52`
+
+      // Global Progress
+      const progressPct = Math.round((completed / 52) * 100)
+      document.getElementById('global-fill').style.width = progressPct + '%'
+      document.getElementById('global-pct').innerText = progressPct + '%'
+
+      // Progress Ring
+      const certProgressCanvas = document.getElementById('cert-progress-canvas')
+      if (certProgressCanvas && window.TrafficCharts) {
+        window.TrafficCharts.createProgressRing(certProgressCanvas, progressPct, { cutout: '70%' })
+      }
+      document.getElementById('cert-progress-pct').textContent = progressPct + '%'
+      document.getElementById('cert-progress-text').textContent = completed >= 52 ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
+
+      // Sparklines
+      if (window.TrafficCharts) {
+        const scoreSpark = document.getElementById('score-sparkline')
+        if (scoreSpark) {
+          const data = [12, 19, 15, 25, 22, 30, 28] // Example static data
+          window.TrafficCharts.createSparkline(scoreSpark, data, { color: '#f2b84b', colorEnd: '#00f0cc', fill: true })
+        }
+        const civicSpark = document.getElementById('civic-sparkline')
+        if (civicSpark) {
+          const data = [civicScore > 0 ? Math.min(100, civicScore/5) : 0]
+          window.TrafficCharts.createSparkline(civicSpark, data, { color: '#b89bff', colorEnd: '#f2b84b', fill: true })
+        }
+      }
+
+      // Badges
+      const badgeList = document.getElementById('achievement-list')
+      if (S.badges && S.badges.length > 0) {
+        badgeList.innerHTML = S.badges.map(b => `<div>🏅 ${b}</div>`).join('')
+      }
+
+      // Certificate Population
+      document.getElementById('cert-name').innerText = displayName.toUpperCase()
+      document.getElementById('cert-score').innerText = S.total || 0
+      document.getElementById('cert-date').innerText = new Date().toLocaleDateString()
+      document.getElementById('cert-ref').innerText = 'TH-' + Math.random().toString(36).substr(2, 6).toUpperCase()
+
+      const certWrapper = document.getElementById('cert-wrapper')
+      const noCertMsg = document.getElementById('no-cert-msg')
+      const shareBar = document.getElementById('share-bar')
+      const dlBtn = document.getElementById('btn-dl-cert')
+
+      if (completed >= 52) {
+        certWrapper.style.filter = 'none'
+        certWrapper.style.opacity = '1'
+        shareBar.style.display = 'flex'
+        noCertMsg.style.display = 'none'
+        try {
+          const cachedId = localStorage.getItem('own_cert_id')
+          if (cachedId) _syncedCertId = cachedId
+          _syncOwnCertificate(displayName, completed, S.total || 0).then(id => { if (id) _syncedCertId = id })
+        } catch (e) {}
+      } else {
+        const blurPx = ((52 - completed) / 52 * 10).toFixed(1)
+        certWrapper.style.filter = `grayscale(1) blur(${blurPx}px)`
+        certWrapper.style.opacity = (0.3 + (completed / 52) * 0.5).toFixed(2)
+        noCertMsg.style.display = 'block'
+        noCertMsg.querySelector('p').innerText = `Complete all 52 modules to unlock your certificate. (${completed}/52 done)`
+        dlBtn.style.display = 'none'
+      }
+
+      function toggleMenu() { document.getElementById('action-menu').classList.toggle('show') }
+      window.onclick = (e) => {
+        if (!e.target.closest('.menu-container')) {
+          document.getElementById('action-menu').classList.remove('show')
+        }
+      }
+
+      function openEditModal() {
+        const m = document.getElementById('edit-modal')
+        document.getElementById('ed-name').value = tUser.name || S.name || ''
+        document.getElementById('ed-age').value = tUser.age || S.age || ''
+        document.getElementById('ed-vehicle').value = tUser.vehicle || S.vehicle || 'car'
+        m.classList.add('show')
+        document.getElementById('action-menu').classList.remove('show')
+      }
+      function closeEditModal() { document.getElementById('edit-modal').classList.remove('show') }
+      function saveEditModal() {
+        const name = document.getElementById('ed-name').value.trim()
+        const age = parseInt(document.getElementById('ed-age').value) || 18
+        const vehicle = document.getElementById('ed-vehicle').value
+        if (name) {
+          tUser.name = name; tUser.age = age; tUser.vehicle = vehicle
+          S.name = name; S.age = age; S.vehicle = vehicle
+          localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
+          localStorage.setItem('th-save', JSON.stringify(S))
+          window.location.reload()
+        }
+      }
+
+      function dlCert() {
+        if (completed < 52) return alert('Unlock your certificate first!')
+        if (typeof html2pdf !== 'undefined') {
+          html2pdf().set({
+            margin: 0, filename: 'Traffic_Hero_Certificate.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+          }).from(document.getElementById('cert-wrapper')).save()
+        }
+      }
+
+      const certUrl = () => _syncedCertId ? `${window.location.origin}${window.location.pathname}?cert=${_syncedCertId}` : window.location.href
+      const shareText = `I completed my Traffic Hero Certification! ${displayName} — ${completed}/52 modules done.`
+
+      async function _certImageFile() {
+        if (typeof html2canvas === 'undefined') return null
+        const canvas = await html2canvas(document.getElementById('cert-wrapper'), { scale: 2, useCORS: true })
+        const blob = await new Promise((res) => canvas.toBlob(res, 'image/png', 0.95))
+        return blob ? new File([blob], 'Traffic_Hero_Certificate.png', { type: 'image/png' }) : null
+      }
+
+      async function shareWhatsApp() {
+        const file = await _certImageFile()
+        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], text: shareText }); return } catch (e) {}
+        }
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + '\n' + certUrl())}`, '_blank')
+      }
+
+      async function shareInstagram() {
+        const file = await _certImageFile()
+        if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], text: shareText }); return } catch (e) {}
+        }
+        navigator.clipboard.writeText(shareText + '\n' + certUrl()).then(() => alert('Copied! Paste in your story.'))
+      }
+
+      function copyCertLink() {
+        navigator.clipboard.writeText(certUrl()).then(() => alert('Link copied!'))
+      }
+
+      function logoutAndClear() {
+        localStorage.removeItem('trafficSetupComplete'); localStorage.removeItem('traffic_local_user')
+        if (window.doLogout) window.doLogout()
+        window.location.href = 'Academy.html'
+      }
+
+      function resetProgressFromDashboard() {
+        if (confirm('⚠️ Reset ALL progress? This cannot be undone!')) {
+          localStorage.removeItem('traffic_local_user'); localStorage.removeItem('trafficSetupComplete'); localStorage.removeItem('col_user')
+          window.location.href = 'Academy.html'
+        }
+      }
+
+      function hzInit() {
+        var t = localStorage.getItem('theme');
+        if (t === 'light') { document.body.classList.add('lm'); }
+        else { document.body.classList.remove('lm'); }
+        hzSync();
+      }
+      function hzSync() {
+        var el = document.querySelector('.hz-toggle');
+        if (!el) return;
+        if (document.body.classList.contains('lm')) { el.classList.remove('night'); }
+        else { el.classList.add('night'); }
+      }
+      function hzToggle() {
+        document.body.classList.toggle('lm');
+        localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
+        hzSync();
+      }
+      hzInit();
+
+      (async function () {
+        if (!_certParam) return
+        const cert = await _loadSharedCertificate(_certParam)
+        ;[document.querySelector('.hero-license'), document.querySelector('.bento-grid'), document.getElementById('btn-dl-cert'), document.getElementById('share-bar')].forEach(el => { if (el) el.style.display = 'none' })
+        if (!cert) {
+          const noCertMsg = document.getElementById('no-cert-msg')
+          if (noCertMsg) { noCertMsg.style.display = 'block'; noCertMsg.querySelector('p').innerText = 'Invalid certificate link.' }
+          document.getElementById('cert-wrapper').style.filter = 'grayscale(1) blur(6px)'
+          return
+        }
+        document.getElementById('d-name').innerText = cert.display_name
+        document.getElementById('cert-name').innerText = (cert.display_name || '').toUpperCase()
+        document.getElementById('cert-score').innerText = (cert.score || 0).toLocaleString()
+        document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
+      })();
     </script>
   </body>
 </html>
