@@ -685,7 +685,8 @@ const ui = {
     const availModes = lv.modes || ['car']
     const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
       : S.vehicle === 'Car' && availModes.includes('car') ? 'car'
-      : null
+      : availModes[0]
+    this.curMode = preferred
     if (history.replaceState) {
       history.replaceState(null, '', `?screen=levels&lv=${lv.id}`)
     }
