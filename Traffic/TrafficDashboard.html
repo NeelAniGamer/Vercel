@@ -910,7 +910,7 @@
         document.getElementById('action-menu').classList.remove('show')
       }
       function closeEditModal() { document.getElementById('edit-modal').classList.remove('show') }
-      function saveEditModal() {
+function saveEditModal() {
         const name = document.getElementById('ed-name').value.trim()
         const age = parseInt(document.getElementById('ed-age').value) || 18
         const vehicle = document.getElementById('ed-vehicle').value
@@ -919,8 +919,10 @@
           S.name = name; S.age = age; S.vehicle = vehicle
           localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
           localStorage.setItem('th-save', JSON.stringify(S))
+          if (window.save) window.save()
           window.location.reload()
         }
+      }
       }
 
       function dlCert() {
