@@ -3776,6 +3776,11 @@
           <img src="../Icon.png" alt="Class Of Learners" style="height:36px; width:36px; border-radius:10px; object-fit:contain; box-shadow:0 2px 8px rgba(0,0,0,0.2);" onerror="this.src='Icon.png'" />
           <span style="font-family:'Lora',serif; font-weight:700; font-size:1.2rem; color:var(--text); letter-spacing:-0.02em;">Traffic Academy</span>
         </div>
+        
+        <div style="display: flex; gap: 12px; align-items: center; flex: 1; max-width: 400px; margin: 0 20px;">
+          <input type="text" id="global-level-search" placeholder="Search levels..." onkeydown="if(event.key === 'Enter'){ ui.showLevels(); setTimeout(() => { const ls = document.getElementById('level-search'); ls.value = this.value; ls.focus(); filterLevels(); }, 100); }" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; width: 100%; font-family: 'Inter', sans-serif;">
+        </div>
+        
         <div style="display:flex; gap:10px; align-items:center;">
           <div class="hz-toggle" onclick="hzToggle()">
             <div class="hz-clouds"></div>
@@ -3909,6 +3914,9 @@
           </div>
           <div class="pls" style="justify-content: center; margin-top: 40px; flex-wrap: wrap; gap: 12px;">
             <button class="btn btn-p pulse-btn" onclick="showOnboardingFromStart()" style="font-size: 1.25rem; padding: 16px 48px; min-width: 200px;" id="enter-academy-btn">Get Started</button>
+            <button class="btn btn-g" style="border-color: var(--ion); color: var(--ion); font-size: 1.25rem; padding: 16px 48px; min-width: 200px;" onclick="window.location.href = 'Driving.html?lv=custom&mode=car'">
+              🏙️ Free Roam
+            </button>
             <button class="btn btn-g mobile-dl" style="border-color: var(--signal); color: var(--signal); font-size: 1rem; padding: 12px 24px" onclick="window.location.href = '../COL.apk'">
               📱 Download App
             </button>

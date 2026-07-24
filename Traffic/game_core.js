@@ -2565,8 +2565,6 @@ class Game {
             this.playerVehicle.add(coneL); this.playerVehicle.add(coneR);
             this._headlightCones = [coneL, coneR];
           }
-          }
-
           let profileStr = localStorage.getItem('traffic_profile');
           let profile = profileStr ? JSON.parse(profileStr) : {};
           let username = profile.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || 'Anonymous';
@@ -2887,6 +2885,7 @@ class Game {
                 block.position.set(0, 0, -20 - i * 15);
                 block.userData.spd = 0; block.userData.isStopped = true;
                 this.npcs.push(block); this.scene.add(block);
+            }
             }
             // Hospital sign
             const hGeo = new THREE.BoxGeometry(10, 10, 10);
@@ -3217,10 +3216,8 @@ class Game {
       // ─── Graph-based road generation ───
       // Builds visual road geometry (tiles, sidewalks, crosswalks) from RoadGraph edges
       // Uses GLB road models when available, falls back to procedural geometry
-      }
 
       }
-
       _buildRoadsFromGraph(roadWidth) {
         const graph = this.roadGraph;
         const cfg = this.mapCfg;
