@@ -3165,7 +3165,7 @@ class Game {
         // Bollards and barricades
         const bCount = cfg.isPedestrian ? 2 : 6;
         for (let i = 0; i < bCount; i++) {
-          const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+          const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
           const bx = seg.type === 'v' ? seg.x + (Math.random() > .5 ? 10 : -10) : seg.x1 + Math.random() * (seg.x2 - seg.x1);
           const bz = seg.type === 'v' ? seg.z1 + Math.random() * (seg.z2 - seg.z1) : seg.z + (Math.random() > .5 ? 10 : -10);
           // Big red-white striped barricade
