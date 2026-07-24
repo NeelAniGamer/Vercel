@@ -1165,9 +1165,10 @@
           }
 
           // Load cloud progress on sign-in
+          const oldSStr2 = JSON.stringify(S)
           await _syncCloudToLocal(user.id)
           // Refresh all displays after sync
-          window.location.reload()
+          if (JSON.stringify(S) !== oldSStr2) window.location.reload()
         } else {
           // Signed out — hide profile, show sign-in on Academy.html
           const acadBtn = document.getElementById('academy-sign-in-btn')
