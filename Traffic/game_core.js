@@ -2708,13 +2708,19 @@ class Game {
           window._toonGrad.needsUpdate = true;
         }
 
+        const gs = cfg.is50km ? 8000 : 2000;
+        const gr = cfg.ground !== undefined ? cfg.ground : 0x444444;
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(gs, gs), new THREE.MeshLambertMaterial({ color: gr, depthWrite: false }));
+
+        ground.rotation.x = -Math.PI / 2; 
+        this.scene.add(ground);
+
         if (this.roadGraph) {
             this._buildRoadsFromGraph(RW);
             this._buildBuildingsFromGraph();
-        ground.rotation.x = -Math.PI / 2; this.scene.add(ground);
-
-        // Build roads using GLB tiles
-        cfg.roads.forEach(r => {
+        } else {
+            // Build roads using GLB tiles
+            cfg.roads.forEach(r => {
           const isV = r.type === 'v';
           const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
           const cx = isV ? r.x : (r.x1 + r.x2) / 2;
