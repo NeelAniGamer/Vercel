@@ -28,8 +28,9 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse
         })
-        .catch(() => {
+        .catch((err) => {
           // Fallback for offline if network fails
+          throw err;
         })
 
       return cachedResponse || fetchPromise

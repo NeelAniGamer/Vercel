@@ -907,6 +907,7 @@
         stroke-dasharray: 283;
         stroke-dashoffset: 283;
         transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
       /* ── Bottom Navigation ── */
       .dashboard-container {
         padding-bottom: 90px; /* Space for bottom nav */
@@ -1844,7 +1845,7 @@
             toast('☁️ Cloud Data Restored!', '#5ED4F5')
           }
         } else {
-          save()
+          try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
           toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
         }
       }

@@ -154,7 +154,7 @@ if (!window.closeMo) {
             .from('profiles')
             .select('*')
             .eq('id', userId)
-            .single();
+            .maybeSingle();
 
           if (error && error.code !== 'PGRST116') throw error;
 
@@ -209,15 +209,19 @@ if (!window.closeMo) {
     const body = document.getElementById('colAuthBody');
     if (!body) return;
 
+    const hd = document.querySelector('.col-auth-hd');
+    if (hd) hd.style.display = 'none';
+
     body.innerHTML = `
-      <div style="text-align:center; margin-bottom: 20px;">
-        <h3 style="font-family: var(--serif, 'Instrument Serif'); font-style: italic; font-size: 2rem; color: var(--signal, #F2B84B);">Welcome!</h3>
-        <p style="color: var(--dim, #8891AA); font-size: 0.9rem;">Please choose a unique username to complete your profile.</p>
+      <div style="text-align:center; margin-bottom: 24px; margin-top: 10px; position: relative;">
+        <button type="button" onclick="window.colDoLogout()" aria-label="Cancel" style="position: absolute; top: -10px; right: -10px; background: transparent; border: none; color: var(--dim, #8891AA); font-size: 1.5rem; cursor: pointer; padding: 4px;">&times;</button>
+        <h3 style="font-family: var(--serif, 'Instrument Serif'); font-style: italic; font-size: 2.5rem; color: var(--signal, #F2B84B); margin-bottom: 8px; margin-top: 10px;">Welcome!</h3>
+        <p style="color: var(--dim, #8891AA); font-size: 0.95rem; line-height: 1.4;">Please choose a unique username to complete your profile.</p>
       </div>
-      <div id="profileCreateError" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 10px; text-align: center; display: none;"></div>
-      <form onsubmit="window._handleProfileCreate(event)">
-        <input type="text" id="profileUsername" class="col-auth-inp" placeholder="Username" required maxlength="40">
-        <button type="submit" class="col-auth-btn" id="profileCreateBtn">Create Profile</button>
+      <div id="profileCreateError" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 12px; text-align: center; display: none;"></div>
+      <form onsubmit="window._handleProfileCreate(event)" style="display:flex; flex-direction:column; gap:12px;">
+        <input type="text" id="profileUsername" class="col-auth-inp" placeholder="@username" value="@" oninput="if(!this.value.startsWith('@')) this.value = '@' + this.value.replace(/@/g, '');" required maxlength="40" style="font-size: 1.1rem; text-align:center; padding: 14px;">
+        <button type="submit" class="col-auth-btn" id="profileCreateBtn" style="padding: 14px; font-size: 1.05rem;">Create Profile</button>
       </form>
     `;
     document.getElementById('colAuthModal').classList.add('open');
@@ -241,7 +245,7 @@ if (!window.closeMo) {
         .from('profiles')
         .select('id')
         .eq('id', window.colUser.id)
-        .single();
+        .maybeSingle();
 
       window.colUser.uid = profile.id;
       document.getElementById('colAuthModal').classList.remove('open');
