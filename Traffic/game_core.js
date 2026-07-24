@@ -2713,22 +2713,6 @@ class Game {
         if (this.roadGraph) {
             this._buildRoadsFromGraph(RW);
             this._buildBuildingsFromGraph();
-        } else {
-        const tg = window._toonGrad;
-
-        const mats = {
-          grass: new THREE.MeshToonMaterial({ color: cfg.ground || 0x8B7355, gradientMap: tg }),
-          road: new THREE.MeshToonMaterial({ color: 0x3d3f45, gradientMap: tg }),
-          // Sidewalk colors: concrete gray with slight warmth
-          pave: new THREE.MeshToonMaterial({ color: 0xb0b0a0, gradientMap: tg }),
-          // Tactile paving for crosswalks (yellow/orange dots)
-          tactile: new THREE.MeshToonMaterial({ color: 0xd4a017, gradientMap: tg }),
-          yellowLine: new THREE.MeshBasicMaterial({ color: 0xffcc00 }),
-          water: new THREE.MeshToonMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 }),
-          urban: new THREE.MeshToonMaterial({ color: 0x4a4a4f, gradientMap: tg })
-        };
-
-        const ground = new THREE.Mesh(new THREE.PlaneGeometry(cfg.is50km ? 100000 : 2000, cfg.is50km ? 100000 : 2000), cfg.isBridge ? mats.water : (cfg.is50km ? new THREE.MeshToonMaterial({ color: 0x444444 }) : mats.urban));
         ground.rotation.x = -Math.PI / 2; this.scene.add(ground);
 
         // Build roads using GLB tiles

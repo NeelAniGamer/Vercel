@@ -21,23 +21,23 @@
 
     <style>
       :root {
-        --bg: #070a14;
+        --bg: var(--void);
         --card: rgba(17, 24, 39, 0.85);
-        --text: #e8e3d8;
-        --border: rgba(255, 255, 255, 0.08);
+        --text: var(--ink);
+        --border: var(--line);
         --hover: rgba(255, 255, 255, 0.06);
         /* Two-tier muted text: --muted for secondary copy/labels, --muted2 one step quieter
            for tertiary metadata (timestamps, ref IDs). Both verified against --bg at their
            actual smallest-use-size threshold (WCAG AA, 4.5:1 normal text): --muted computes
            to 7.65:1, --muted2 to 4.60:1 — both clear the bar with a margin. */
-        --muted: #98a1b8;
+        --muted: var(--dim);
         --muted2: #727a8d;
         /* --accent (gold) is the ONE hero color — license card, score, certificate, primary CTA.
            --signal (cyan) is the ONE secondary accent — interactive/informational only.
            Everything else below is used sparingly, tied to one specific existing purpose,
            not sprinkled wherever a card needs "a color". */
-        --accent: #f2b84b;
-        --signal: #5ed4f5;
+        --accent: var(--signal);
+        --signal: var(--ion);
         --green: #34d399;   /* semantic success only */
         --red: #ef4444;     /* semantic error only */
         --teal: #00f0cc;    /* gradient partner to --accent (score glow, sparkline) only */
@@ -1321,7 +1321,7 @@
       async function _loadSharedCertificate(id) {
         const client = await _initSupabase()
         if (!client) return null
-        const { data, error } = await client.from('certificates').select('*').eq('id', id).single()
+        const { data, error } = await client.from('certificates').select('*').eq('id', id).maybeSingle()
         if (error || !data) return null
         return data
       }
@@ -1337,7 +1337,7 @@
           const { data, error } = await client.from('certificates').upsert(
             { user_id: window.colUser.id, display_name: name, modules_completed: completedCount, total_modules: 52, score: scoreTotal, updated_at: new Date().toISOString() },
             { onConflict: 'user_id' }
-          ).select().single()
+          ).select().maybeSingle()
           if (error) {
             console.error('Supabase Upsert Error for Certificate:', error)
             return null
@@ -1403,7 +1403,7 @@
         }
 
         const role = (tUser.role || S.role || 'student')
-        const studentId = S.studentId || ('STU-' + Math.floor(100000 + Math.random() * 900000))
+        const studentId = window.colUser?.uid || S.studentId || 'STU-UNKNOWN'
         document.getElementById('h-id').innerText = 'ID: ' + studentId
 
         document.getElementById('s-veh').innerText = tUser.vehicle || S.vehicle || 'Car'
@@ -1491,7 +1491,7 @@
         document.getElementById('cert-name').innerText = displayName.toUpperCase()
         document.getElementById('cert-score').innerText = S.total || 0
         document.getElementById('cert-date').innerText = new Date().toLocaleDateString()
-        document.getElementById('cert-ref').innerText = 'TH-' + Math.random().toString(36).substr(2, 6).toUpperCase()
+        document.getElementById('cert-ref').innerText = 'TH-' + (window.colUser?.uid || 'UNKNOWN').substring(0, 8).toUpperCase()
   
         const certWrapper = document.getElementById('cert-wrapper')
         const noCertMsg = document.getElementById('no-cert-msg')
@@ -1592,8 +1592,7 @@
           if (acadProf) acadProf.style.display = 'none'
         }
       });
-
-      (async () => {
+;(async () => {
         if (window.colUser && window.colUser.id) {
           const oldSStr = JSON.stringify(S)
           await _syncCloudToLocal(window.colUser.id)
@@ -1849,9 +1848,7 @@
           toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
         }
       }
-
-
-      (async function () {
+;(async function () {
         if (!_certParam) return
         const cert = await _loadSharedCertificate(_certParam)
         ;[document.querySelector('.hero-license'), document.querySelector('.bento-grid'), document.getElementById('btn-dl-cert'), document.getElementById('share-bar')].forEach(el => { if (el) el.style.display = 'none' })

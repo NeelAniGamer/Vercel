@@ -1314,6 +1314,14 @@
           if (user.user_metadata && user.user_metadata.full_name) {
             document.getElementById('prof-name').value = user.user_metadata.full_name
           }
+          if (window.supabaseClient) {
+            try {
+              const { data } = await window.supabaseClient.from('profiles').select('username').eq('id', user.id).maybeSingle()
+              if (data && data.username) {
+                document.getElementById('prof-username').value = data.username.startsWith('@') ? data.username : '@' + data.username
+              }
+            } catch (e) {}
+          }
         }
       })
 
@@ -1328,7 +1336,7 @@
           }
           if (window.supabaseClient) {
             try {
-              const { data } = await window.supabaseClient.from('profiles').select('username').eq('id', window.colUser.id).single()
+              const { data } = await window.supabaseClient.from('profiles').select('username').eq('id', window.colUser.id).maybeSingle()
               if (data && data.username && !document.getElementById('prof-username').value) {
                 document.getElementById('prof-username').value = data.username.startsWith('@') ? data.username : '@' + data.username
               }

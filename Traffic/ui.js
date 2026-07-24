@@ -117,7 +117,7 @@ window.ui = Object.assign(window.ui || {}, {
       if (!S.comp) S.comp = {}
       if (!S.badges) S.badges = []
       if (!S.studentId) {
-        S.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+        S.studentId = window.colUser?.uid || 'STU-' + Math.floor(100000 + Math.random() * 900000)
         try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
       }
     }
@@ -191,6 +191,7 @@ window.ui = Object.assign(window.ui || {}, {
     wrap.innerHTML = ''
 
     const catMap = {
+      free_roam: 'free_roam',
       pedestrian_courtesy: 'courtesy', pedestrian_priority: 'courtesy',
       respectful_parking: 'parking', street_parking: 'parking', parking_rules: 'parking',
       ambulance_priority: 'emergency',
@@ -205,6 +206,7 @@ window.ui = Object.assign(window.ui || {}, {
       grand_test: 'grand', multi_modal: 'grand'
     }
     const cats = {
+      free_roam:   { title: '🌍 Free Roam', levels: [] },
       courtesy:    { title: '🚶 Pedestrian Courtesy', levels: [] },
       parking:     { title: '🅿️ Parking Rules', levels: [] },
       emergency:   { title: '🚑 Emergency Priority', levels: [] },
@@ -436,7 +438,7 @@ window.ui = Object.assign(window.ui || {}, {
     const certNum = document.getElementById('cert-num')
     if (certNum) {
       if (!S.certId) {
-        S.certId = 'CERT-' + Math.floor(Math.random() * 1000000)
+        S.certId = 'CERT-' + (window.colUser?.uid || Math.floor(Math.random() * 1000000))
         save()
       }
     }

@@ -3942,7 +3942,8 @@
           </svg>
           Back
         </button>
-        <div style="display: flex; gap: 12px; align-items: center">
+        <div style="display: flex; gap: 12px; align-items: center; width: 100%; justify-content: flex-end;">
+          <input type="text" id="level-search" placeholder="Search levels..." onkeyup="filterLevels()" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; flex: 1; max-width: 300px; font-family: 'Inter', sans-serif;">
           <button
             class="btn btn-g dynamic-auth-btn"
             onclick="window.location.href = 'TrafficSetup.html'"
@@ -4402,6 +4403,7 @@
     <script src="levels/level50.js"></script>
     <script src="levels/level51.js"></script>
     <script src="levels/level52.js"></script>
+    <script src="levels/level_custom.js"></script>
 
     <script>
       // REMOVED: Auto-sorting code - levels now keep their original numbers (1, 5, 7, 4, etc.)
@@ -4431,6 +4433,25 @@
   <script src="rule-breaker-profiles.js"></script>
     <script src="scenario2d.js"></script>
     <script>
+      /* ===== SEARCH & FILTER ===== */
+      function filterLevels() {
+        const q = document.getElementById('level-search').value.toLowerCase();
+        const items = document.querySelectorAll('.syl-item');
+        items.forEach(item => {
+          const text = item.innerText.toLowerCase();
+          item.style.display = text.includes(q) ? 'flex' : 'none';
+        });
+        
+        // Hide categories that have no visible levels
+        document.querySelectorAll('.category-grid').forEach(grid => {
+          const hasVisible = Array.from(grid.children).some(c => c.style.display !== 'none');
+          if (grid.previousElementSibling && grid.previousElementSibling.classList.contains('category-header')) {
+            grid.previousElementSibling.style.display = hasVisible ? 'block' : 'none';
+          }
+          grid.style.display = hasVisible ? 'grid' : 'none';
+        });
+      }
+
       /* ===== ONBOARDING WIZARD JS ===== */
       let _onbCur = 0
       let _onbTotal = 4
