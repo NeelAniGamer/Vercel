@@ -548,6 +548,74 @@
         .cert-stage { display: block !important; }
         .crt { width: 100% !important; max-width: 700px !important; margin: 0 auto !important; border-width: 6px !important; }
       }
+      #welcome-back-popup {
+        position: fixed;
+        top: -100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(17, 24, 39, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 12px 20px;
+        border-radius: 100px;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+        transition: top 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+        opacity: 0;
+        overflow: hidden;
+      }
+      #welcome-back-popup.show {
+        top: 24px;
+        opacity: 1;
+      }
+      #welcome-back-popup .wb-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: linear-gradient(135deg, var(--plasma), var(--signal));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #000;
+        font-size: 0.9rem;
+      }
+      #welcome-back-popup .wb-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding-right: 8px;
+      }
+      #welcome-back-popup .wb-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+      }
+      #welcome-back-popup .wb-subtitle {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      .wb-timer-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: var(--signal);
+        width: 100%;
+        transform-origin: left;
+        animation: wb-timer 5s linear forwards;
+      }
+      @keyframes wb-timer {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(0); }
+      }
     </style>
   </head>
   <body>
@@ -1427,6 +1495,52 @@ function saveEditModal() {
         const url = `${window.location.origin}${window.location.pathname}?cert=${certId}`
         navigator.clipboard.writeText(url).then(() => toast('Link copied!', '#5ed4f5'))
       }
+
+      // --- Welcome Back Popup Logic ---
+      setTimeout(() => {
+        // Only show if the user has some progress
+        if (completed === 0) return;
+
+        const welcomePopup = document.createElement('div');
+        welcomePopup.id = 'welcome-back-popup';
+        
+        let avatarHTML = '';
+        try {
+          const ls = localStorage.getItem('col_user');
+          if (ls) {
+            const u = JSON.parse(ls);
+            if (u && u.user_metadata && u.user_metadata.avatar_url) {
+              avatarHTML = `<img src="${u.user_metadata.avatar_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+            }
+          }
+        } catch(e) {}
+        
+        if (!avatarHTML) {
+          avatarHTML = userInitials || 'DR';
+        }
+
+        const firstName = displayName.split(' ')[0] || 'Driver';
+
+        welcomePopup.innerHTML = `
+          <div class="wb-avatar">${avatarHTML}</div>
+          <div class="wb-content">
+            <h4 class="wb-title">Welcome back, ${firstName}! 👋</h4>
+            <p class="wb-subtitle">Continue from where you left.</p>
+          </div>
+          <div class="wb-timer-bar"></div>
+        `;
+        document.body.appendChild(welcomePopup);
+        
+        // Trigger slide down
+        setTimeout(() => welcomePopup.classList.add('show'), 100);
+
+        // Auto dismiss after 5 seconds
+        setTimeout(() => {
+          welcomePopup.classList.remove('show');
+          setTimeout(() => welcomePopup.remove(), 600);
+        }, 5000);
+
+      }, 800);
     </script>
   </body>
 </html>
