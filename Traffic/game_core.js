@@ -2565,6 +2565,15 @@ class Game {
             this.playerVehicle.add(coneL); this.playerVehicle.add(coneR);
             this._headlightCones = [coneL, coneR];
           }
+          }
+
+          let profileStr = localStorage.getItem('traffic_profile');
+          let profile = profileStr ? JSON.parse(profileStr) : {};
+          let username = profile.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || 'Anonymous';
+          
+          let usernameSpriteVeh = createNametagSprite(username);
+          usernameSpriteVeh.position.set(0, 3, 0);
+          this.playerVehicle.add(usernameSpriteVeh);
 
           this.scene.add(this.playerVehicle);
 
@@ -3209,9 +3218,7 @@ class Game {
               this.scene.add(pc); this.obstacles.push(pc);
             }
           }
-}
         }
-      }
       
       // Initialize TrafficManager and NPCAI for Mumbai-style traffic
       if (!cfg.isPedestrian && window.TrafficManager && window.NPCAI) {
@@ -3226,6 +3233,10 @@ class Game {
       // ─── Graph-based road generation ───
       // Builds visual road geometry (tiles, sidewalks, crosswalks) from RoadGraph edges
       // Uses GLB road models when available, falls back to procedural geometry
+      }
+
+      }
+
       _buildRoadsFromGraph(roadWidth) {
         const graph = this.roadGraph;
         const cfg = this.mapCfg;
@@ -4698,6 +4709,10 @@ class Game {
           });
         }
       }
+    }
+
+      }
+
       _usigs(dt) {
         let nearestSig = null, nearestDist = 9999;
         this.sigs.forEach(sg => {

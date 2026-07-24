@@ -1,0 +1,538 @@
+/* ============================================================
+   Traffic Welcome Back Popup Styles
+   ============================================================ */
+
+.welcome-back-popup {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: 
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.4s ease,
+    visibility 0.4s ease;
+  pointer-events: none;
+  max-width: calc(100vw - 32px);
+  width: 100%;
+}
+
+.welcome-back-popup.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.welcome-back-popup .wb-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.welcome-back-popup.show .wb-backdrop {
+  opacity: 1;
+}
+
+.welcome-back-popup .wb-panel {
+  background: var(--card, rgba(17, 24, 39, 0.9));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  animation: wbPanelIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes wbPanelIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.welcome-back-popup .wb-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.welcome-back-popup .wb-avatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--plasma, #b89bff), var(--signal, #5ed4f5));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  box-shadow: 0 8px 24px rgba(184, 155, 255, 0.3);
+}
+
+.welcome-back-popup .wb-title-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.welcome-back-popup .wb-title {
+  margin: 0 0 4px;
+  font-family: 'Lora', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text, #e8e3d8);
+  line-height: 1.3;
+}
+
+.welcome-back-popup .wb-subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted, #8891aa);
+  line-height: 1.4;
+}
+
+.welcome-back-popup .wb-subtitle strong {
+  color: var(--text, #e8e3d8);
+  font-weight: 600;
+}
+
+.welcome-back-popup .wb-close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  background: var(--bg, #070a14);
+  color: var(--muted, #8891aa);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.welcome-back-popup .wb-close:hover {
+  background: var(--hover, rgba(255, 255, 255, 0.08));
+  border-color: var(--muted, #8891aa);
+  color: var(--text, #e8e3d8);
+  transform: scale(1.05);
+}
+
+.welcome-back-popup .wb-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.welcome-back-popup .wb-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  min-height: 48px;
+}
+
+.welcome-back-popup .wb-btn-primary {
+  background: linear-gradient(135deg, var(--accent, #f2b84b), #f59e0b);
+  color: #1a1a1a;
+  box-shadow: 0 8px 24px rgba(242, 184, 75, 0.3);
+}
+
+.welcome-back-popup .wb-btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(242, 184, 75, 0.5);
+}
+
+.welcome-back-popup .wb-btn-secondary {
+  background: var(--bg, #070a14);
+  color: var(--text, #e8e3d8);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.welcome-back-popup .wb-btn-secondary:hover {
+  background: var(--hover, rgba(255, 255, 255, 0.08));
+  border-color: var(--muted, #8891aa);
+  transform: translateY(-1px);
+}
+
+.welcome-back-popup .wb-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: 0 0 20px 20px;
+  overflow: hidden;
+}
+
+.welcome-back-popup .wb-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--signal, #5ed4f5), var(--accent, #f2b84b));
+  border-radius: 0 0 20px 20px;
+  transform-origin: left;
+}
+
+/* Light mode adjustments */
+body.lm .welcome-back-popup .wb-panel {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.03) inset;
+}
+
+body.lm .welcome-back-popup .wb-close {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: var(--muted, #64748b);
+}
+
+body.lm .welcome-back-popup .wb-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--text, #1e293b);
+}
+
+body.lm .welcome-back-popup .wb-btn-secondary {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text, #1e293b);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.lm .welcome-back-popup .wb-btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 480px) {
+  .welcome-back-popup {
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    transform: translateX(0) translateY(120px);
+    max-width: none;
+  }
+  
+  .welcome-back-popup.show {
+    transform: translateX(0) translateY(0);
+  }
+  
+  .welcome-back-popup .wb-panel {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .welcome-back-popup .wb-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+  
+  .welcome-back-popup .wb-title {
+    font-size: 1rem;
+  }
+  
+  .welcome-back-popup .wb-subtitle {
+    font-size: 0.8rem;
+  }
+  
+  .welcome-back-popup .wb-btn {
+    padding: 14px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .welcome-back-popup,
+  .welcome-back-popup .wb-backdrop,
+  .welcome-back-popup .wb-panel,
+  .welcome-back-popup .wb-close,
+  .welcome-back-popup .wb-btn,
+  .welcome-back-popup .wb-progress-fill {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .welcome-back-popup.show {
+    transform: translateX(-50%) translateY(0);
+  }
+  
+  @media (max-width: 480px) {
+    .welcome-back-popup.show {
+      transform: translateX(0) translateY(0);
+    }
+  }
+}
+
+/* ============================================================
+   Mobile Responsive Utilities for Traffic Pages
+   ============================================================ */
+
+/* Touch target minimums (48x48px per WCAG) */
+@media (max-width: 768px) {
+  button, 
+  .btn, 
+  [role="button"], 
+  a.btn,
+  select,
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="search"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  /* Increase tap targets for interactive elements */
+  .lcard, .syl-item, .bcard, .stat-card, .qo {
+    min-height: 48px;
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  .screen, .sc, .lw, .br-w, .qw, .res-w, .dashboard-container {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+  
+  .top-bar, .hud, #mobile-controls {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+}
+
+/* Fluid typography scaling */
+@media (max-width: 768px) {
+  :root {
+    --ui-font-size: 0.95rem;
+    --heading-scale: 0.9;
+  }
+  
+  h1, .st, .rtit { font-size: clamp(1.8rem, 6vw, 2.5rem) !important; }
+  h2, .sec-hdr, .category-header { font-size: clamp(1.3rem, 4.5vw, 1.8rem) !important; }
+  h3, .lnm, .bn { font-size: clamp(1.1rem, 3.5vw, 1.4rem) !important; }
+  .su, .ltg, .bd, .syl-sub { font-size: clamp(0.9rem, 2.8vw, 1rem) !important; }
+  .btn, button { font-size: clamp(0.9rem, 2.5vw, 1rem) !important; }
+}
+
+/* Grid adjustments for mobile */
+@media (max-width: 768px) {
+  .lv-track, .bgrid, .stats-body, .category-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .bento-card.wide, .bento-card.tall {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+  
+  .br-w {
+    flex-direction: column !important;
+    gap: 20px !important;
+    padding: 0 16px !important;
+  }
+  
+  .br-l, .br-r {
+    flex: none !important;
+    width: 100% !important;
+  }
+  
+  .tb {
+    padding: 16px !important;
+  }
+  
+  .lw {
+    padding: 24px 16px !important;
+  }
+  
+  .bc-card {
+    padding: 24px 16px !important;
+    min-height: auto !important;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .lv-track {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .bgrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Form improvements for mobile */
+@media (max-width: 768px) {
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+  }
+  
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 48px;
+    padding: 12px 16px;
+  }
+  
+  .modal-box, .mgc, .nd-c, .cvc {
+    margin: 16px;
+    max-width: calc(100vw - 32px);
+    border-radius: 16px;
+  }
+  
+  .modal-overlay {
+    padding: 16px;
+    align-items: flex-end;
+  }
+  
+  .modal-box {
+    border-radius: 20px 20px 0 0;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+}
+
+/* Modal improvements */
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  
+  .modal-box, .mgc, .nd-c, .cvc {
+    margin: 0;
+    border-radius: 20px 20px 0 0;
+    max-width: 100vw;
+    min-height: 50vh;
+    max-height: 85vh;
+  }
+}
+
+/* HUD and game controls mobile */
+@media (max-width: 900px) {
+  #mobile-controls {
+    display: flex !important;
+  }
+  
+  .mc-btn {
+    width: 64px;
+    height: 64px;
+    font-size: 1.5rem;
+  }
+}
+
+/* Loading screen mobile */
+@media (max-width: 480px) {
+  #loading-screen h1 {
+    font-size: clamp(1.5rem, 5vw, 2.5rem) !important;
+  }
+  
+  #loading-bar-container {
+    width: 90vw !important;
+  }
+}
+
+/* Certificate mobile */
+@media (max-width: 768px) {
+  .crt {
+    transform: scale(0.6) !important;
+    transform-origin: top center !important;
+    width: 160vw !important;
+  }
+}
+
+/* Orientation warning */
+#rotate-device-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  #rotate-device-overlay {
+    display: flex !important;
+  }
+  
+  /* Hide game canvas in landscape on mobile if not ready */
+  body:not(.game-ready) #gc,
+  body:not(.game-ready) #hud,
+  body:not(.game-ready) #hudbar,
+  body:not(.game-ready) #mobile-controls {
+    display: none !important;
+  }
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--signal, #5ed4f5);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .welcome-back-popup .wb-panel {
+    border-width: 2px;
+  }
+  
+  .welcome-back-popup .wb-btn-primary {
+    border: 2px solid #000;
+  }
+  
+  .welcome-back-popup .wb-btn-secondary {
+    border-width: 2px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .welcome-back-popup,
+  #mobile-controls,
+  .top-bar,
+  .hud,
+  #hudbar,
+  .modal-overlay {
+    display: none !important;
+  }
+}

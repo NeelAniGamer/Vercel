@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="traffic-charts.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
+    <link rel="stylesheet" href="welcome-back.css" />
 
     <!-- Shared Auth/UI logic -->
     <script defer src="../col-router.js"></script>
@@ -25,16 +26,33 @@
         --text: #e8e3d8;
         --border: rgba(255, 255, 255, 0.08);
         --hover: rgba(255, 255, 255, 0.06);
-        --muted: #8891aa;
-        --muted2: #8891aa;
+        /* Two-tier muted text: --muted for secondary copy/labels, --muted2 one step quieter
+           for tertiary metadata (timestamps, ref IDs). Both verified against --bg at their
+           actual smallest-use-size threshold (WCAG AA, 4.5:1 normal text): --muted computes
+           to 7.65:1, --muted2 to 4.60:1 — both clear the bar with a margin. */
+        --muted: #98a1b8;
+        --muted2: #727a8d;
+        /* --accent (gold) is the ONE hero color — license card, score, certificate, primary CTA.
+           --signal (cyan) is the ONE secondary accent — interactive/informational only.
+           Everything else below is used sparingly, tied to one specific existing purpose,
+           not sprinkled wherever a card needs "a color". */
         --accent: #f2b84b;
         --signal: #5ed4f5;
-        --green: #34d399;
-        --teal: #00f0cc;
-        --red: #ef4444;
+        --green: #34d399;   /* semantic success only */
+        --red: #ef4444;     /* semantic error only */
+        --teal: #00f0cc;    /* gradient partner to --accent (score glow, sparkline) only */
         --yellow: #d97706;
-        --plasma: #b89bff;
+        --plasma: #b89bff;  /* civic-tier badge only */
         --r: 16px;
+        --r-sm: 12px;
+        --r-md: 20px;
+        --r-lg: 28px;
+        --space-1: 6px;
+        --space-2: 12px;
+        --space-3: 20px;
+        --space-4: 28px;
+        --space-5: 40px;
+        --space-6: 64px;
       }
 
       body.lm {
@@ -49,9 +67,17 @@
         --signal: #0369a1;
         --green: #34d399;
         --teal: #00f0cc;
-        --red: #ef4444;
         --yellow: #d97706;
         --plasma: #b89bff;
+      }
+
+      /* Visible keyboard focus — applied once, globally, rather than per-component.
+         Uses the secondary accent so it reads as "navigation", distinct from gold's
+         "reward/achievement" role. */
+      :focus-visible {
+        outline: 2px solid var(--signal);
+        outline-offset: 2px;
+        border-radius: 4px;
       }
 
       body {
@@ -66,6 +92,14 @@
         min-height: 100vh;
         min-height: 100dvh;
         transition: background 0.3s ease;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
       }
 
       /* ── Top Bar ── */
@@ -92,7 +126,9 @@
       .top-bar .brand {
         font-family: 'Lora', serif;
         font-weight: 600;
-        font-size: 1.1rem;
+        font-style: italic;
+        font-size: 1.05rem;
+        letter-spacing: 0.01em;
         cursor: pointer;
       }
 
@@ -238,6 +274,7 @@
         position: relative;
         overflow: hidden;
       }
+      /* Gold ambient glow, offset toward the left where the name/avatar sit */
       .hero-license::before {
         content: '';
         position: absolute;
@@ -252,6 +289,16 @@
         right: 0; bottom: 0;
         width: 300px; height: 300px;
         background: radial-gradient(circle at bottom right, rgba(94, 212, 245, 0.15) 0%, transparent 70%);
+        pointer-events: none;
+      }
+      /* Hologram-strip hairline along the top edge — a quiet nod to a real ID card's security
+         strip. A plain element rather than a third pseudo-element, since ::before/::after are
+         already spoken for above; no z-index or isolation needed, it simply sits in flow. */
+      .hero-license .hologram-strip {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(242, 184, 75, 0.6), rgba(0, 240, 204, 0.5), transparent);
         pointer-events: none;
       }
 
@@ -287,12 +334,14 @@
       }
       .license-id {
         font-family: 'Space Mono', monospace;
-        color: var(--teal);
+        /* Moved off bright teal to muted — reads as authentic small-print serial rather than
+           a bright accent competing with the name/score for attention right next to it. */
+        color: var(--muted);
         font-weight: 700;
-        font-size: 1rem;
-        opacity: 0.9;
+        font-size: 0.95rem;
+        opacity: 0.95;
         margin-top: 8px;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.1em;
       }
 
       .license-right {
@@ -500,6 +549,106 @@
         box-shadow: inset 0 1px 0 #fff;
       }
 
+      /* ── Certificate Gallery Card ── (rendered by loadCertificateGallery() in the script below) */
+      .cert-gallery-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        padding: var(--space-3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      /* :focus-within (not just :hover) so a keyboard user tabbing to the Share button inside
+         gets the same lift feedback a mouse user gets from hovering the card — the original
+         onmouseover/onmouseout wiring had no keyboard equivalent at all. */
+      .cert-gallery-card:hover,
+      .cert-gallery-card:focus-within {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      }
+      .cert-gallery-card .logos { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); }
+      .cert-gallery-card .logos img { height: 40px; object-fit: contain; }
+      .cert-gallery-card .kicker {
+        font-weight: 600; letter-spacing: 0.1em; color: #7c7968;
+        text-transform: uppercase; font-size: 0.9rem; margin-bottom: var(--space-2);
+      }
+      .cert-gallery-card .module-name { font-family: 'Lora', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-2); }
+      .cert-gallery-card .issued { color: var(--muted); margin-bottom: var(--space-2); font-size: 0.9rem; }
+      .cert-gallery-card .score { font-size: 0.85rem; color: var(--signal); font-weight: 600; }
+      .cert-gallery-card .footer {
+        margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px solid var(--border);
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .cert-gallery-card .ref { font-size: 0.75rem; color: var(--muted); }
+      .cert-gallery-card .btn-share {
+        padding: 8px 16px; font-size: 0.8rem; background: var(--signal); color: #000;
+        border: none; border-radius: var(--r-sm); font-weight: 600; cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+      .cert-gallery-card .btn-share:hover { opacity: 0.85; }
+
+      /* ── Leaderboard Row ── */
+      .leaderboard-row {
+        display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+        border-radius: var(--r-sm); transition: all 0.2s ease;
+      }
+      .leaderboard-row:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); }
+      .leaderboard-row .rank {
+        width: 30px; height: 30px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; color: #000; font-size: 0.75rem; flex-shrink: 0;
+      }
+      .leaderboard-row .who { flex: 1; min-width: 0; }
+      .leaderboard-row .name { font-weight: 600; font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .leaderboard-row .metric { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+      .leaderboard-row .crown { font-size: 1.1rem; flex-shrink: 0; }
+      [data-board="xp"] .rank { background: linear-gradient(135deg, var(--signal), var(--accent)); }
+      [data-board="modules"] .rank { background: linear-gradient(135deg, var(--accent), var(--yellow)); }
+      [data-board="civic"] .rank { background: linear-gradient(135deg, var(--teal), var(--green)); }
+      [data-board="badges"] .rank { background: linear-gradient(135deg, var(--plasma), var(--signal)); }
+      /* Top 3 rank pops */
+      .leaderboard-row:nth-child(1) .rank { width: 34px; height: 34px; font-size: 0.85rem; box-shadow: 0 0 12px rgba(242,184,75,0.4); }
+      .leaderboard-row:nth-child(2) .rank { width: 32px; height: 32px; }
+      /* You highlight */
+      .leaderboard-row.you { border-color: rgba(242,184,75,0.35); background: rgba(242,184,75,0.06); }
+      .leaderboard-row.you .name::after { content: ' · You'; color: var(--accent); font-size: 0.7rem; font-weight: 700; }
+
+      /* ── Leaderboard Tabs ── */
+      .lb-tabs {
+        display: flex; gap: 4px; margin-bottom: 18px;
+        background: rgba(255,255,255,0.04); padding: 4px; border-radius: 12px;
+      }
+      .lb-tab {
+        flex: 1; padding: 9px 4px; border: none; background: transparent;
+        color: var(--muted); font-size: 0.65rem; font-weight: 700;
+        letter-spacing: 0.04em; border-radius: 8px; cursor: pointer;
+        transition: all 0.2s; text-transform: uppercase; font-family: inherit;
+      }
+      .lb-tab.active { background: rgba(255,255,255,0.09); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+      .lb-tab:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.04); }
+
+      /* ── Loading Skeleton ── */
+      .lb-skeleton {
+        height: 50px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.03) 75%);
+        background-size: 200% 100%; animation: shimmer 1.5s infinite;
+        border-radius: var(--r-sm);
+      }
+      @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+      /* ── Bento Card Accents ── */
+      .bento-card.accent-cyan { border-color: rgba(94,212,245,0.18); }
+      .bento-card.accent-cyan:hover { border-color: rgba(94,212,245,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 24px rgba(94,212,245,0.1); }
+      .bento-card.accent-gold { border-color: rgba(242,184,75,0.18); }
+      .bento-card.accent-gold:hover { border-color: rgba(242,184,75,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 24px rgba(242,184,75,0.1); }
+      .bento-card.accent-green { border-color: rgba(52,211,153,0.18); }
+      .bento-card.accent-green:hover { border-color: rgba(52,211,153,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 24px rgba(52,211,153,0.1); }
+      .bento-card.accent-plasma { border-color: rgba(184,155,255,0.18); }
+      .bento-card.accent-plasma:hover { border-color: rgba(184,155,255,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 24px rgba(184,155,255,0.1); }
+      .bento-card.accent-teal { border-color: rgba(0,240,204,0.18); }
+      .bento-card.accent-teal:hover { border-color: rgba(0,240,204,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 24px rgba(0,240,204,0.1); }
+
+
       /* ── Modals & Others ── */
       .modal-overlay {
         display: none;
@@ -545,6 +694,51 @@
       body.lm .modal-box .field label { color: var(--muted); }
       body.lm .modal-box .field input, body.lm .modal-box .field select { background: #f8fafc; color: #1e293b; border-color: rgba(0,0,0,0.1); }
       body.lm .modal-actions .btn-cancel { background: rgba(0,0,0,0.05); color: #475569; border-color: rgba(0,0,0,0.1); }
+
+      /* ── Sync Conflict Modal ── (built in JS by injectConflictModal(), see script below).
+         Reuses the .modal-overlay backdrop, but needs a wider box for two side-by-side save
+         cards, so gets its own .modal-box.wide rather than overloading the 420px default.
+         Everything here reads from the shared token system — no hardcoded fallback colors —
+         so it can't silently drift from the rest of the theme the way the old inline-style
+         version (with var(--card, #111827) style fallbacks) could. */
+      .modal-box.wide { max-width: 640px; width: 90vw; }
+      .conflict-modal-head {
+        border-bottom: 1px solid var(--border);
+        margin-bottom: var(--space-3);
+        padding-bottom: var(--space-3);
+        text-align: center;
+      }
+      .conflict-modal-head h2 {
+        font-family: 'Lora', serif;
+        font-size: 2rem;
+        margin: 0 0 var(--space-2);
+        color: var(--accent);
+      }
+      .conflict-modal-head p { color: var(--muted); font-size: 1rem; margin: 0; }
+      .conflict-save-options { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+      .conflict-save-card {
+        flex: 1; min-width: 220px; border-radius: var(--r-sm);
+        padding: var(--space-3); display: flex; flex-direction: column; gap: 8px;
+      }
+      .conflict-save-card.cloud { background: rgba(94, 212, 245, 0.05); border: 1px solid rgba(94, 212, 245, 0.3); }
+      .conflict-save-card.local { background: rgba(242, 184, 75, 0.05); border: 1px solid rgba(242, 184, 75, 0.3); }
+      .conflict-save-card .title { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+      .conflict-save-card.cloud .title { color: var(--signal); }
+      .conflict-save-card.local .title { color: var(--accent); }
+      .conflict-save-card .stat { font-size: 0.9rem; color: var(--muted); }
+      .conflict-save-card .stat b { color: var(--text); }
+      .conflict-save-card .last-played {
+        font-size: 0.8rem; color: var(--muted); margin-top: 10px; padding-top: 10px;
+        border-top: 1px solid var(--border);
+      }
+      .conflict-save-card .btn-choose {
+        margin-top: auto; padding: 12px; font-weight: 700; border-radius: var(--r-sm);
+        border: none; cursor: pointer; width: 100%; transition: opacity 0.2s ease;
+      }
+      .conflict-save-card .btn-choose:hover { opacity: 0.88; }
+      .conflict-save-card.cloud .btn-choose { background: var(--signal); color: #000; }
+      .conflict-save-card.local .btn-choose { background: var(--accent); color: #000; }
+
 
       /* ── Horizon Toggle ── */
       .hz-toggle {
@@ -693,6 +887,7 @@
     <div class="dashboard-container">
       <!-- Hero License -->
       <div class="hero-license">
+        <div class="hologram-strip" aria-hidden="true"></div>
         <div class="license-left">
           <div class="hero-avatar" id="hero-avatar"></div>
           <div class="license-info">
@@ -709,33 +904,33 @@
 
       <!-- Bento Grid -->
       <div class="bento-grid">
-        <div class="bento-card">
-          <div class="bento-label">🚗 Vehicle</div>
+        <div class="bento-card accent-gold">
+          <div class="bento-label" style="color: var(--accent);"><span aria-hidden="true">🚗</span> Vehicle</div>
           <div class="bento-value" id="s-veh">-</div>
         </div>
-        <div class="bento-card">
-          <div class="bento-label">🎂 Age Group</div>
+        <div class="bento-card accent-plasma">
+          <div class="bento-label" style="color: var(--plasma);"><span aria-hidden="true">🎂</span> Age Group</div>
           <div class="bento-value" id="s-age">-</div>
         </div>
-        <div class="bento-card">
-          <div class="bento-label">🌐 Language</div>
+        <div class="bento-card accent-cyan">
+          <div class="bento-label" style="color: var(--signal);"><span aria-hidden="true">🌐</span> Language</div>
           <div class="bento-value" id="s-lang">-</div>
         </div>
-        <div class="bento-card wide">
-          <div class="bento-label">📈 Performance Trends</div>
+        <div class="bento-card wide accent-teal">
+          <div class="bento-label" style="color: var(--teal);"><span aria-hidden="true">📈</span> Performance Trends</div>
           <div style="display: flex; gap: 20px; height: 60px;">
              <div style="flex:1">
-               <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">Score Trend</div>
+               <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em;">Score Trend</div>
                <canvas id="score-sparkline" class="bento-sparkline"></canvas>
              </div>
              <div style="flex:1">
-               <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase;">Civic Trend</div>
+               <div style="font-size:0.6rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em;">Civic Trend</div>
                <canvas id="civic-sparkline" class="bento-sparkline"></canvas>
              </div>
           </div>
         </div>
-        <div class="bento-card tall">
-          <div class="bento-label">📚 Module Progress</div>
+        <div class="bento-card tall accent-green">
+          <div class="bento-label" style="color: var(--green);"><span aria-hidden="true">📚</span> Module Progress</div>
           <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
             <div class="progress-ring-wrap" id="cert-progress-ring">
               <canvas id="cert-progress-canvas" width="120" height="120" data-chart="progress-ring" data-value="0"></canvas>
@@ -748,8 +943,8 @@
             <div class="bento-label" style="margin-top:4px;">Completed</div>
           </div>
         </div>
-        <div class="bento-card wide">
-          <div class="bento-label">✨ Recent Achievements</div>
+        <div class="bento-card wide accent-plasma">
+          <div class="bento-label" style="color: var(--plasma);"><span aria-hidden="true">✨</span> Recent Achievements</div>
           <div id="achievement-list" style="font-size:0.9rem; color:var(--text); line-height:1.6;">
             No badges yet. Complete more modules to earn them!
           </div>
@@ -817,31 +1012,32 @@
       </div>
 
       <!-- Leaderboards -->
-      <div class="dashboard-section" style="margin-top: 40px;">
+      <div class="dashboard-section" style="margin-top: 48px;">
         <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">📊 Leaderboards</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-          <!-- Global XP Leaderboard -->
-          <div class="leaderboard-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
-            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--signal); display: flex; align-items: center; gap: 8px;">🌍 Global XP</h3>
-            <div id="leaderboard-xp" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+          <!-- Tab Nav -->
+          <div class="lb-tabs" role="tablist" aria-label="Leaderboard categories">
+            <button class="lb-tab active" id="lb-tab-xp" data-board="xp" role="tab" aria-selected="true" aria-controls="lb-panel-xp" onclick="switchLbTab('xp')">🌍 Global XP</button>
+            <button class="lb-tab" id="lb-tab-modules" data-board="modules" role="tab" aria-selected="false" aria-controls="lb-panel-modules" onclick="switchLbTab('modules')">✅ Modules</button>
+            <button class="lb-tab" id="lb-tab-civic" data-board="civic" role="tab" aria-selected="false" aria-controls="lb-panel-civic" onclick="switchLbTab('civic')">💰 Wallet</button>
+            <button class="lb-tab" id="lb-tab-badges" data-board="badges" role="tab" aria-selected="false" aria-controls="lb-panel-badges" onclick="switchLbTab('badges')">🎖️ Badges</button>
           </div>
-          
-          <!-- Module Completion Leaderboard -->
-          <div class="leaderboard-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
-            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--accent); display: flex; align-items: center; gap: 8px;">✅ Module Completion</h3>
-            <div id="leaderboard-modules" style="display: flex; flex-direction: column; gap: 10px;"></div>
+
+          <!-- XP Panel -->
+          <div id="lb-panel-xp" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-xp">
+            <div id="leaderboard-xp" data-board="xp" style="display: flex; flex-direction: column; gap: 8px;"></div>
           </div>
-          
-          <!-- Streak Leaderboard -->
-          <div class="leaderboard-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
-            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--teal); display: flex; align-items: center; gap: 8px;">🔥 Longest Streaks</h3>
-            <div id="leaderboard-streaks" style="display: flex; flex-direction: column; gap: 10px;"></div>
+          <!-- Modules Panel -->
+          <div id="lb-panel-modules" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-modules" style="display:none;">
+            <div id="leaderboard-modules" data-board="modules" style="display: flex; flex-direction: column; gap: 8px;"></div>
           </div>
-          
-          <!-- Perfect Runs Leaderboard -->
-          <div class="leaderboard-card" style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
-            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px; color: var(--plasma); display: flex; align-items: center; gap: 8px;">💯 Perfect Runs</h3>
-            <div id="leaderboard-perfect" style="display: flex; flex-direction: column; gap: 10px;"></div>
+          <!-- Civic Panel -->
+          <div id="lb-panel-civic" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-civic" style="display:none;">
+            <div id="leaderboard-civic" data-board="civic" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          </div>
+          <!-- Badges Panel -->
+          <div id="lb-panel-badges" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-badges" style="display:none;">
+            <div id="leaderboard-badges" data-board="badges" style="display: flex; flex-direction: column; gap: 8px;"></div>
           </div>
         </div>
       </div>
@@ -853,6 +1049,10 @@
         <div class="field">
           <label>Name</label>
           <input id="ed-name" type="text" placeholder="Your name" />
+        </div>
+        <div class="field">
+          <label>Username</label>
+          <input id="ed-username" type="text" placeholder="@username" />
         </div>
         <div class="field">
           <label>Age</label>
@@ -944,19 +1144,16 @@
         const cloudS = await _loadCloudProgress(userId)
         if (!cloudS) return false
         
-        // Determine if cloud has meaningful data
         const cloudHasData = cloudS.total > 0 || (cloudS.badges && cloudS.badges.length > 0) || cloudS.wallet !== 50000
         const localHasData = S.total > 0 || (S.badges && S.badges.length > 0) || S.wallet !== 50000
         
         if (cloudHasData && !localHasData) {
-          // Cloud has data, local doesn't - auto restore
           S = { ...S, ...cloudS }
           try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
           toast('☁️ Cloud Data Auto-Restored!', '#5ED4F5')
           if (window.ui && window.ui.init) ui.init()
           return true
         } else if (cloudHasData && localHasData) {
-          // Both have data - check for differences
           const isDifferent = cloudS.total !== S.total || 
             (cloudS.badges && S.badges && cloudS.badges.length !== S.badges.length) ||
             Object.keys(cloudS.comp || {}).length !== Object.keys(S.comp || {}).length
@@ -1005,7 +1202,6 @@
       const displayName = tUser.name || S.name || 'Driver'
       const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
-      // Populate avatars
       ;[document.getElementById('avatar-sm'), document.getElementById('hero-avatar')].forEach(el => {
         if (!el) return;
         let userPhoto = null
@@ -1024,7 +1220,6 @@
       const studentId = S.studentId || ('STU-' + Math.floor(100000 + Math.random() * 900000))
       document.getElementById('h-id').innerText = 'ID: ' + studentId
 
-      // Stats
       document.getElementById('s-veh').innerText = tUser.vehicle || S.vehicle || 'Car'
       const ageVal = tUser.age || S.age || 18
       const ageLabels = { child: '8-12 (Kids)', teen: '13-17 (Teens)', young: '18-25 (Young)', adult: '26-50 (Adult)', senior: '51+ (Senior)' }
@@ -1048,12 +1243,10 @@
       if (S.comp) completed = Object.keys(S.comp).filter((k) => S.comp[k] && S.comp[k].score > 0).length
       document.getElementById('s-prog').innerText = `${completed}/52`
 
-      // Global Progress
       const progressPct = Math.round((completed / 52) * 100)
       document.getElementById('global-fill').style.width = progressPct + '%'
       document.getElementById('global-pct').innerText = progressPct + '%'
 
-      // Progress Ring
       const certProgressCanvas = document.getElementById('cert-progress-canvas')
       if (certProgressCanvas && window.TrafficCharts) {
         window.TrafficCharts.createProgressRing(certProgressCanvas, progressPct, { cutout: '70%' })
@@ -1061,27 +1254,37 @@
       document.getElementById('cert-progress-pct').textContent = progressPct + '%'
       document.getElementById('cert-progress-text').textContent = completed >= 52 ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
 
-      // Sparklines
       if (window.TrafficCharts) {
+        const completions = S.comp
+          ? Object.values(S.comp)
+              .filter(c => c && typeof c.score === 'number' && c.score > 0)
+              .sort((a, b) => (a.time || 0) - (b.time || 0))
+          : []
+
         const scoreSpark = document.getElementById('score-sparkline')
         if (scoreSpark) {
-          const data = [12, 19, 15, 25, 22, 30, 28] // Example static data
-          window.TrafficCharts.createSparkline(scoreSpark, data, { color: '#f2b84b', colorEnd: '#00f0cc', fill: true })
+          let running = 0
+          const scoreData = completions.length > 0
+            ? completions.map(c => (running += c.score))
+            : [0, 0] 
+          window.TrafficCharts.createSparkline(scoreSpark, scoreData, { color: '#f2b84b', colorEnd: '#00f0cc', fill: true })
         }
+
         const civicSpark = document.getElementById('civic-sparkline')
         if (civicSpark) {
-          const data = [civicScore > 0 ? Math.min(100, civicScore/5) : 0]
-          window.TrafficCharts.createSparkline(civicSpark, data, { color: '#b89bff', colorEnd: '#f2b84b', fill: true })
+          const steps = Math.max(completions.length, 1)
+          const civicData = completions.length > 0
+            ? completions.map((_, i) => Math.round((civicScore / steps) * (i + 1)))
+            : [0, civicScore]
+          window.TrafficCharts.createSparkline(civicSpark, civicData, { color: '#b89bff', colorEnd: '#f2b84b', fill: true })
         }
       }
 
-      // Badges
       const badgeList = document.getElementById('achievement-list')
       if (S.badges && S.badges.length > 0) {
         badgeList.innerHTML = S.badges.map(b => `<div>🏅 ${b}</div>`).join('')
       }
 
-      // Certificate Population
       document.getElementById('cert-name').innerText = displayName.toUpperCase()
       document.getElementById('cert-score').innerText = S.total || 0
       document.getElementById('cert-date').innerText = new Date().toLocaleDateString()
@@ -1103,26 +1306,23 @@
           _syncOwnCertificate(displayName, completed, S.total || 0).then(id => { if (id) _syncedCertId = id })
         } catch (e) {}
       } else {
-        const blurPx = ((52 - completed) / 52 * 10).toFixed(1)
+        const blurPx = ((52 - completed) / 52 * 5).toFixed(1)
         certWrapper.style.filter = `grayscale(1) blur(${blurPx}px)`
-        certWrapper.style.opacity = (0.3 + (completed / 52) * 0.5).toFixed(2)
+        certWrapper.style.opacity = (0.55 + (completed / 52) * 0.45).toFixed(2)
         noCertMsg.style.display = 'block'
         noCertMsg.querySelector('p').innerText = `Complete all 52 modules to unlock your certificate. (${completed}/52 done)`
         dlBtn.style.display = 'none'
       }
 
-      // Cloud sync on auth change
       window.addEventListener('col-auth-changed', async (e) => {
         const customUser = e.detail && e.detail.user ? e.detail.user : window.colUser
         const user = customUser ? customUser.session.user : null
 
-        // UPDATE NAV BAR PROFILE UI
         if (user) {
           const meta = user.user_metadata || {}
           const name = meta.full_name || 'Driver'
           const fName = name.split(' ')[0]
 
-          // Driving.html IDs
           const navBtn = document.getElementById('nav-sign-in-btn')
           const navProf = document.getElementById('navUserProfile')
           if (navBtn && navProf) {
@@ -1142,7 +1342,6 @@
             }
           }
 
-          // Academy.html IDs
           const acadBtn = document.getElementById('academy-sign-in-btn')
           const acadProf = document.getElementById('trafficUserProfile')
           if (acadBtn) acadBtn.style.display = 'none'
@@ -1164,13 +1363,10 @@
             if (acadPfp) acadPfp.style.display = 'none'
           }
 
-          // Load cloud progress on sign-in
           const oldSStr2 = JSON.stringify(S)
           await _syncCloudToLocal(user.id)
-          // Refresh all displays after sync
           if (JSON.stringify(S) !== oldSStr2) window.location.reload()
         } else {
-          // Signed out — hide profile, show sign-in on Academy.html
           const acadBtn = document.getElementById('academy-sign-in-btn')
           const acadProf = document.getElementById('trafficUserProfile')
           if (acadBtn) acadBtn.style.display = 'block'
@@ -1178,12 +1374,10 @@
         }
       })
 
-      // Also load cloud progress on initial page load if already logged in
       (async () => {
         if (window.colUser && window.colUser.id) {
           const oldSStr = JSON.stringify(S)
           await _syncCloudToLocal(window.colUser.id)
-          // Refresh displays after potential sync
           if (JSON.stringify(S) !== oldSStr) window.location.reload()
         }
       })()
@@ -1198,23 +1392,38 @@
       function openEditModal() {
         const m = document.getElementById('edit-modal')
         document.getElementById('ed-name').value = tUser.name || S.name || ''
+        document.getElementById('ed-username').value = tUser.username || S.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || ''
         document.getElementById('ed-age').value = tUser.age || S.age || ''
         document.getElementById('ed-vehicle').value = tUser.vehicle || S.vehicle || 'car'
         m.classList.add('show')
         document.getElementById('action-menu').classList.remove('show')
       }
       function closeEditModal() { document.getElementById('edit-modal').classList.remove('show') }
-function saveEditModal() {
+      function saveEditModal() {
         const name = document.getElementById('ed-name').value.trim()
+        let usernameInput = document.getElementById('ed-username').value.trim()
         const age = parseInt(document.getElementById('ed-age').value) || 18
         const vehicle = document.getElementById('ed-vehicle').value
         if (name) {
           tUser.name = name; tUser.age = age; tUser.vehicle = vehicle
           S.name = name; S.age = age; S.vehicle = vehicle
+          
+          if (usernameInput) {
+            if (!usernameInput.startsWith('@')) usernameInput = '@' + usernameInput;
+            tUser.username = usernameInput;
+            S.username = usernameInput;
+            if (window.supabaseClient && window.colUser) {
+              window.supabaseClient.auth.updateUser({
+                data: { username: usernameInput }
+              }).catch(console.error);
+            }
+          }
+          
           localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
           localStorage.setItem('th-save', JSON.stringify(S))
           if (window.save) window.save()
-          window.location.reload()
+          
+          setTimeout(() => window.location.reload(), 300)
         }
       }
 
@@ -1312,7 +1521,6 @@ function saveEditModal() {
       }
       hzInit();
 
-      // Toast function
       function toast(msg, color) {
         const t = document.createElement('div');
         t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:${color||'#34d399'};color:#000;padding:12px 24px;border-radius:30px;font-weight:700;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:toastIn 0.3s ease-out;`;
@@ -1327,7 +1535,7 @@ function saveEditModal() {
         setTimeout(() => { t.style.animation = 'toastIn 0.3s ease-out reverse'; setTimeout(() => t.remove(), 300); }, 3000);
       }
 
-      // Conflict modal
+      let _conflictReturnFocus = null
       function injectConflictModal(cloudS) {
         window.__pendingCloudS = cloudS
         if (document.getElementById('conflictMo')) document.getElementById('conflictMo').remove()
@@ -1349,57 +1557,59 @@ function saveEditModal() {
         const cSt = getStats(cloudS)
         const lSt = getStats(S)
 
+        _conflictReturnFocus = document.activeElement
+
         const mo = document.createElement('div')
-        mo.className = 'mo'
+        mo.className = 'modal-overlay show'
         mo.id = 'conflictMo'
-        mo.style.display = 'flex'
+        mo.setAttribute('role', 'dialog')
+        mo.setAttribute('aria-modal', 'true')
+        mo.setAttribute('aria-labelledby', 'conflict-modal-title')
         mo.innerHTML = `
-            <div class="md" style="background:var(--card, #111827); color:var(--text, #E8E3D8); padding:30px; border-radius:16px; max-width:600px; width:90%; margin:auto; z-index: 10001; position: relative;">
-                <div class="md-hd" style="border-bottom: 1px solid var(--border, rgba(255,255,255,0.08)); margin-bottom: 20px; padding-bottom: 15px; text-align:center;">
-                    <h2 style="font-family:'Instrument Serif', serif; font-size:2.5rem; margin-bottom:10px;">Sync Conflict</h2>
-                    <p style="color:var(--muted, #8891AA); font-size:1rem;">We found existing cloud data that differs from your local device. Which save do you want to keep?</p>
-                </div>
-                <div class="md-body" style="display:flex; gap:20px; flex-wrap:wrap;">
-                    
-                    <!-- Cloud Save Card -->
-                    <div style="flex:1; min-width:220px; background:rgba(94, 212, 245, 0.05); border:1px solid rgba(94, 212, 245, 0.3); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:8px;">
-                        <div style="font-size:1.2rem; font-weight:700; color:#5ED4F5; margin-bottom:10px; display:flex; align-items:center; gap:8px;">☁️ Cloud Save</div>
-                        <div style="font-size:0.9rem; color:var(--muted);">Levels Completed: <b style="color:var(--text);">${cSt.lvls}</b></div>
-                        <div style="font-size:0.9rem; color:var(--muted);">Wallet: <b style="color:#F2B84B;">₹${cSt.wlt.toLocaleString()}</b></div>
-                        <div style="font-size:0.9rem; color:var(--muted);">Badges: <b style="color:var(--text);">${cSt.bdg}</b></div>
-                        <div style="font-size:0.8rem; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">Last Played:<br/>${cSt.dateStr}</div>
-                        <button class="btn" onclick="resolveConflict('cloud')" style="margin-top:auto; background:#5ED4F5; color:#000; padding:12px; font-weight:bold; border-radius:8px; border:none; cursor:pointer; width:100%;">Download This</button>
-                    </div>
-
-                    <!-- Local Save Card -->
-                    <div style="flex:1; min-width:220px; background:rgba(242, 184, 75, 0.05); border:1px solid rgba(242, 184, 75, 0.3); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:8px;">
-                        <div style="font-size:1.2rem; font-weight:700; color:#F2B84B; margin-bottom:10px; display:flex; align-items:center; gap:8px;">📱 Local Save</div>
-                        <div style="font-size:0.9rem; color:var(--muted);">Levels Completed: <b style="color:var(--text);">${lSt.lvls}</b></div>
-                        <div style="font-size:0.9rem; color:var(--muted);">Wallet: <b style="color:#F2B84B;">₹${lSt.wlt.toLocaleString()}</b></div>
-                        <div style="font-size:0.9rem; color:var(--muted);">Badges: <b style="color:var(--text);">${lSt.bdg}</b></div>
-                        <div style="font-size:0.8rem; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">Last Played:<br/>${lSt.dateStr}</div>
-                        <button class="btn" onclick="resolveConflict('local')" style="margin-top:auto; background:#F2B84B; color:#000; padding:12px; font-weight:bold; border-radius:8px; border:none; cursor:pointer; width:100%;">Keep This (Overwrite Cloud)</button>
-                    </div>
-
-                </div>
+          <div class="modal-box wide">
+            <div class="conflict-modal-head">
+              <h2 id="conflict-modal-title">Sync Conflict</h2>
+              <p>We found existing cloud data that differs from your local device. Which save do you want to keep?</p>
             </div>
+            <div class="conflict-save-options">
+              <div class="conflict-save-card cloud">
+                <div class="title"><span aria-hidden="true">☁️</span> Cloud Save</div>
+                <div class="stat">Levels Completed: <b>${cSt.lvls}</b></div>
+                <div class="stat">Wallet: <b>₹${cSt.wlt.toLocaleString()}</b></div>
+                <div class="stat">Badges: <b>${cSt.bdg}</b></div>
+                <div class="last-played">Last Played:<br/>${cSt.dateStr}</div>
+                <button class="btn-choose" onclick="resolveConflict('cloud')">Download This</button>
+              </div>
+              <div class="conflict-save-card local">
+                <div class="title"><span aria-hidden="true">📱</span> Local Save</div>
+                <div class="stat">Levels Completed: <b>${lSt.lvls}</b></div>
+                <div class="stat">Wallet: <b>₹${lSt.wlt.toLocaleString()}</b></div>
+                <div class="stat">Badges: <b>${lSt.bdg}</b></div>
+                <div class="last-played">Last Played:<br/>${lSt.dateStr}</div>
+                <button class="btn-choose" onclick="resolveConflict('local')">Keep This (Overwrite Cloud)</button>
+              </div>
+            </div>
+          </div>
         `
-        if (!document.getElementById('col-ui-minimal')) {
-          const style = document.createElement('style')
-          style.id = 'col-ui-minimal'
-          style.innerHTML = `
-                .mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: none; }
-                .md { box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
-                .btn { transition: transform 0.2s, opacity 0.2s; }
-                .btn:hover { opacity: 0.9; transform: translateY(-2px); }
-            `
-          document.head.appendChild(style)
-        }
         document.body.appendChild(mo)
+
+        const firstBtn = mo.querySelector('.btn-choose')
+        if (firstBtn) firstBtn.focus()
+
+        mo.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') resolveConflict('local')
+        })
       }
 
+
       window.resolveConflict = function (choice) {
-        document.getElementById('conflictMo').style.display = 'none'
+        const modal = document.getElementById('conflictMo')
+        if (modal) modal.remove()
+        if (_conflictReturnFocus && document.contains(_conflictReturnFocus)) {
+          _conflictReturnFocus.focus()
+        }
+        _conflictReturnFocus = null
+
         if (choice === 'cloud') {
           const cloudS = window.__pendingCloudS
           if (cloudS) {
@@ -1407,15 +1617,15 @@ function saveEditModal() {
             try {
               localStorage.setItem('mth4', JSON.stringify(S))
             } catch (e) {}
-            if (window.ui && window.ui.init) ui.init() // Refresh UI
+            if (window.ui && window.ui.init) ui.init()
             toast('☁️ Cloud Data Restored!', '#5ED4F5')
           }
         } else {
-          // local wins
           save()
           toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
         }
       }
+
 
       (async function () {
         if (!_certParam) return
@@ -1427,14 +1637,11 @@ function saveEditModal() {
           document.getElementById('cert-wrapper').style.filter = 'grayscale(1) blur(6px)'
           return
         }
-        document.getElementById('d-name').innerText = cert.display_name
         document.getElementById('cert-name').innerText = (cert.display_name || '').toUpperCase()
         document.getElementById('cert-score').innerText = (cert.score || 0).toLocaleString()
         document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
-      document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
       })();
 
-      // Certificate Gallery - Load all user certificates
       async function loadCertificateGallery() {
         if (!window.supabaseClient || !window.colUser?.id) return;
         const gallery = document.getElementById('cert-gallery')
@@ -1449,20 +1656,18 @@ function saveEditModal() {
           
           if (certs && certs.length > 0) {
             gallery.innerHTML = certs.map(c => `
-              <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;transition:all 0.2s;" 
-                   onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.3)'"
-                   onmouseout="this.style.transform='none';this.style.boxShadow='none'">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                  <img src="mumbai-police-logo.png" style="height:40px;object-fit:contain" onerror="this.style.display='none'" alt="Mumbai Police">
-                  <img src="sneh-logo.png" style="height:40px;object-fit:contain" onerror="this.style.display='none'" alt="Sneh Asha">
+              <div class="cert-gallery-card">
+                <div class="logos">
+                  <img loading="lazy" src="mumbai-police-logo.png" onerror="this.style.display='none'" alt="Mumbai Police">
+                  <img loading="lazy" src="sneh-logo.png" onerror="this.style.display='none'" alt="Sneh Asha">
                 </div>
-                <div style="font-weight:600;letter-spacing:0.1em;color:#7c7968;text-transform:uppercase;font-size:0.9rem;margin-bottom:8px;">Certificate of Completion</div>
-                <div style="font-family:'Lora',serif;font-size:1.5rem;font-weight:700;margin-bottom:16px;">${c.module_name || 'Traffic Hero'}</div>
-                <div style="color:var(--muted);margin-bottom:16px;font-size:0.9rem;">Issued: ${new Date(c.issued_at).toLocaleDateString()}</div>
-                <div style="font-size:0.85rem;color:var(--signal);font-weight:600;">Score: ${(c.score || 0).toLocaleString()}</div>
-                <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-                  <div style="font-size:0.75rem;color:var(--muted);">Ref: ${c.id.slice(0,8).toUpperCase()}</div>
-                  <button class="btn" onclick="shareCertificate('${c.id}')" style="padding:8px 16px;font-size:0.8rem;background:var(--signal);color:#000;">Share</button>
+                <div class="kicker">Certificate of Completion</div>
+                <div class="module-name">${c.module_name || 'Traffic Hero'}</div>
+                <div class="issued">Issued: ${new Date(c.issued_at).toLocaleDateString()}</div>
+                <div class="score">Score: ${(c.score || 0).toLocaleString()}</div>
+                <div class="footer">
+                  <div class="ref">Ref: ${c.id.slice(0,8).toUpperCase()}</div>
+                  <button class="btn-share" onclick="shareCertificate('${c.id}')" aria-label="Share this certificate">Share</button>
                 </div>
               </div>
             `).join('')
@@ -1474,82 +1679,110 @@ function saveEditModal() {
         }
       }
 
-      // Leaderboard - Load top scores for all 4 categories
+      function switchLbTab(board) {
+        document.querySelectorAll('.lb-tab').forEach(t => {
+          const active = t.dataset.board === board
+          t.classList.toggle('active', active)
+          t.setAttribute('aria-selected', active)
+        })
+        document.querySelectorAll('.lb-panel').forEach(p => p.style.display = 'none')
+        const panel = document.getElementById('lb-panel-' + board)
+        if (panel) panel.style.display = 'block'
+      }
+
       async function loadLeaderboard() {
-        if (!window.supabaseClient) return
-        
-        try {
-          const { data: topUsers } = await window.supabaseClient
-            .from('user_profiles')
-            .select('full_name, avatar_url, total_score, civic_score')
-            .order('total_score', { ascending: false })
-            .limit(20)
-          
-          if (topUsers && topUsers.length > 0) {
-            // Global XP Leaderboard
-            const xpContainer = document.getElementById('leaderboard-xp')
-            if (xpContainer) {
-              xpContainer.innerHTML = topUsers.slice(0, 5).map((u, i) => `
-                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;">
-                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:0.75rem;">${i+1}</div>
-                  <div style="flex:1;">
-                    <div style="font-weight:600;font-size:0.85rem;">${u.full_name || 'Anonymous'}</div>
-                    <div style="font-size:0.65rem;color:var(--muted);">${(u.total_score || 0).toLocaleString()} XP</div>
-                  </div>
-                  ${i === 0 ? '<div style="font-size:1.2rem;">👑</div>' : ''}
-                </div>
-              `).join('')
-            }
-            
-            // Module Completion Leaderboard
-            const modContainer = document.getElementById('leaderboard-modules')
-            if (modContainer) {
-              const sortedByModules = [...topUsers].sort((a,b) => (b.civic_score || 0) - (a.civic_score || 0))
-              modContainer.innerHTML = sortedByModules.slice(0, 5).map((u, i) => `
-                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;">
-                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--yellow));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:0.75rem;">${i+1}</div>
-                  <div style="flex:1;">
-                    <div style="font-weight:600;font-size:0.85rem;">${u.full_name || 'Anonymous'}</div>
-                    <div style="font-size:0.65rem;color:var(--muted);">Civic Score: ${u.civic_score || 0}</div>
-                  </div>
-                  ${i === 0 ? '<div style="font-size:1.2rem;">🏆</div>' : ''}
-                </div>
-              `).join('')
-            }
-            
-            // Streak Leaderboard
-            const streakContainer = document.getElementById('leaderboard-streaks')
-            if (streakContainer) {
-              streakContainer.innerHTML = topUsers.slice(0, 5).map((u, i) => `
-                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;">
-                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--green));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:0.75rem;">${i+1}</div>
-                  <div style="flex:1;">
-                    <div style="font-weight:600;font-size:0.85rem;">${u.full_name || 'Anonymous'}</div>
-                    <div style="font-size:0.65rem;color:var(--muted);">Total: ${(u.total_score || 0).toLocaleString()}</div>
-                  </div>
-                  ${i === 0 ? '<div style="font-size:1.2rem;">🔥</div>' : ''}
-                </div>
-              `).join('')
-            }
-            
-            // Perfect Runs Leaderboard
-            const perfectContainer = document.getElementById('leaderboard-perfect')
-            if (perfectContainer) {
-              perfectContainer.innerHTML = topUsers.slice(0, 5).map((u, i) => `
-                <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;">
-                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--plasma),var(--signal));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:0.75rem;">${i+1}</div>
-                  <div style="flex:1;">
-                    <div style="font-weight:600;font-size:0.85rem;">${u.full_name || 'Anonymous'}</div>
-                    <div style="font-size:0.65rem;color:var(--muted);">Score: ${(u.total_score || 0).toLocaleString()}</div>
-                  </div>
-                  ${i === 0 ? '<div style="font-size:1.2rem;">💯</div>' : ''}
-                </div>
-              `).join('')
-            }
-          }
-        } catch (e) {
-          console.warn('Leaderboard load failed:', e)
+        const boards = ['xp', 'modules', 'civic', 'badges']
+        const crowns = { xp: '👑', modules: '🏆', civic: '💰', badges: '🎖️' }
+        const currentUserId = (window.colUser && window.colUser.id) ? window.colUser.id : null
+
+        boards.forEach(board => {
+          const el = document.getElementById('leaderboard-' + board)
+          if (el) el.innerHTML = Array(5).fill('<div class="lb-skeleton" style="margin-bottom:8px;"></div>').join('')
+        })
+
+        let attempts = 0
+        while (!window.supabaseClient && attempts < 12) {
+          await new Promise(r => setTimeout(r, 500))
+          attempts++
         }
+
+        const EMPTY_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">No data yet — be the first! 🚀</div>'
+        const ERROR_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Unable to load. Check connection.</div>'
+        const AUTH_MSG  = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Sign in to view the leaderboard.</div>'
+
+        if (!window.supabaseClient) {
+          boards.forEach(b => { const el = document.getElementById('leaderboard-' + b); if (el) el.innerHTML = AUTH_MSG })
+          return
+        }
+
+        function renderBoard(containerId, board, users, metric) {
+          const container = document.getElementById(containerId)
+          if (!container) return
+          if (!users || users.length === 0) { container.innerHTML = EMPTY_MSG; return }
+          container.innerHTML = users.slice(0, 5).map((u, i) => {
+            const isYou = u.user_id && u.user_id === currentUserId
+            return `<div class="leaderboard-row${isYou ? ' you' : ''}">
+              <div class="rank">${i + 1}</div>
+              <div class="who">
+                <div class="name">${u.display_name || u.username || u.full_name || 'Anonymous'}</div>
+                <div class="metric">${metric(u)}</div>
+              </div>
+              ${i === 0 ? `<div class="crown">${crowns[board]}</div>` : ''}
+            </div>`
+          }).join('')
+        }
+
+        let certsByScore = null
+        try {
+          const { data } = await window.supabaseClient
+            .from('certificates')
+            .select('user_id, display_name, score, modules_completed')
+            .order('score', { ascending: false })
+            .limit(15)
+          certsByScore = data
+        } catch (e) { console.warn('Leaderboard XP fetch failed:', e) }
+
+        if (certsByScore && certsByScore.length > 0) {
+          renderBoard('leaderboard-xp', 'xp', certsByScore, u => `${(u.score || 0).toLocaleString()} XP`)
+          const byModules = [...certsByScore].sort((a, b) => (b.modules_completed || 0) - (a.modules_completed || 0))
+          renderBoard('leaderboard-modules', 'modules', byModules, u => `${u.modules_completed || 0} / 52 modules`)
+        } else {
+          ;['leaderboard-xp', 'leaderboard-modules'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = EMPTY_MSG })
+        }
+
+        try {
+          const { data: wallets } = await window.supabaseClient
+            .from('wallets')
+            .select('user_id, balance')
+            .order('balance', { ascending: false })
+            .limit(10)
+          if (wallets && wallets.length > 0) {
+            const certMap = {}
+            if (certsByScore) certsByScore.forEach(c => { certMap[c.user_id] = c.display_name })
+            const walletsNamed = wallets.map(w => ({ ...w, display_name: certMap[w.user_id] || 'Learner' }))
+            renderBoard('leaderboard-civic', 'civic', walletsNamed, u => `₹${(u.balance || 0).toLocaleString()}`)
+          } else {
+            const el = document.getElementById('leaderboard-civic'); if (el) el.innerHTML = EMPTY_MSG
+          }
+        } catch (e) { const el = document.getElementById('leaderboard-civic'); if (el) el.innerHTML = ERROR_MSG }
+
+        try {
+          const { data: allBadges } = await window.supabaseClient
+            .from('badges')
+            .select('user_id, badge_type')
+          if (allBadges && allBadges.length > 0) {
+            const badgeCount = {}
+            allBadges.forEach(b => { badgeCount[b.user_id] = (badgeCount[b.user_id] || 0) + 1 })
+            const certMap = {}
+            if (certsByScore) certsByScore.forEach(c => { certMap[c.user_id] = c.display_name })
+            const badgeUsers = Object.entries(badgeCount)
+              .sort((a, b) => b[1] - a[1]).slice(0, 5)
+              .map(([uid, count]) => ({ user_id: uid, display_name: certMap[uid] || 'Learner', badge_count: count }))
+            renderBoard('leaderboard-badges', 'badges', badgeUsers, u => `${u.badge_count} badge${u.badge_count !== 1 ? 's' : ''}`)
+          } else {
+            const el = document.getElementById('leaderboard-badges'); if (el) el.innerHTML = EMPTY_MSG
+          }
+        } catch (e) { const el = document.getElementById('leaderboard-badges'); if (el) el.innerHTML = ERROR_MSG }
       }
 
       // Load gallery and leaderboard on page load
@@ -1609,5 +1842,6 @@ function saveEditModal() {
 
       }, 800);
     </script>
-  </body>
+  <script src="welcome-back.js"></script>
+</body>
 </html>

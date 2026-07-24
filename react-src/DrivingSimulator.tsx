@@ -70,6 +70,28 @@ function isLowEndGPU(renderer: THREE.WebGLRenderer): boolean {
   return false;
 }
 
+function createNametagSprite(text: string): THREE.Sprite {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  if (context) {
+    canvas.width = 512;
+    canvas.height = 128;
+    context.font = "Bold 48px Arial";
+    context.fillStyle = "rgba(0, 0, 0, 0.5)";
+    context.roundRect(10, 10, 492, 108, 20);
+    context.fill();
+    context.fillStyle = "white";
+    context.textAlign = "center";
+    context.fillText(text, 256, 80);
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  const spriteMaterial = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true });
+  const sprite = new THREE.Sprite(spriteMaterial);
+  sprite.scale.set(4, 1, 1);
+  return sprite;
+}
+
 function createRoadMesh(r: RoadSegment, roadWidth: number): THREE.Mesh {
   const roadMat = new THREE.MeshToonMaterial({ color: 0x3d3f45 });
   let mesh: THREE.Mesh;
@@ -422,12 +444,26 @@ export default function DrivingSimulator({
 
       // Build player vehicles from GLB
       setStatus("Building scene…");
+      const profileStr = localStorage.getItem('traffic_profile');
+      const profile = profileStr ? JSON.parse(profileStr) : {};
+      const username = profile.username || ((window as any).colUser?.user_metadata?.username) || 'Anonymous';
+
       const playerVehicle = await getOrBuildVehicle('car', 0xe63946);
       playerVehicle.position.set(0, 0, -480);
+      
+      const usernameSpriteVeh = createNametagSprite(username);
+      usernameSpriteVeh.position.set(0, 3, 0);
+      playerVehicle.add(usernameSpriteVeh);
+      
       scene.add(playerVehicle);
 
       const playerCharacter = await getOrBuildHuman(true);
       playerCharacter.position.set(5, 0, -480);
+      
+      const usernameSpriteChar = createNametagSprite(username);
+      usernameSpriteChar.position.set(0, 2.5, 0);
+      playerCharacter.add(usernameSpriteChar);
+
       scene.add(playerCharacter);
 
       // NPCs — use GLB models if cached, else fall back to procedural

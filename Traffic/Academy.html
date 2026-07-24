@@ -36,6 +36,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="traffic-charts.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
+    <link rel="stylesheet" href="welcome-back.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
     <script src="course.js"></script>
     <style>
@@ -4416,22 +4417,28 @@
       
       // Start onboarding from the Get Started / Start Academy button
       function showOnboardingFromStart() {
-        // If already signed in via Supabase or local user, skip onboarding and go straight to levels
-        let userName = '';
-        try {
-          const localData = localStorage.getItem('traffic_local_user');
-          if (localData) {
-            const u = JSON.parse(localData);
-            if (u && u.name) userName = u.name;
-          }
-        } catch(e) {}
-        if (!userName && window.colUser) {
-          const uObj = window.colUser.user || window.colUser;
-          const meta = uObj.user_metadata || {};
-          userName = meta.full_name || meta.name || '';
-        }
         const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
         if (isLoggedIn) {
+          const role = window.colUser?.user_metadata?.role;
+          if (role === 'parent' || role === 'teacher' || role === 'parent_teacher') {
+             window.location.href = '../dashboard.html';
+             return;
+          }
+          
+          let userName = '';
+          try {
+            const localData = localStorage.getItem('traffic_local_user');
+            if (localData) {
+              const u = JSON.parse(localData);
+              if (u && u.name) userName = u.name;
+            }
+          } catch(e) {}
+          if (!userName && window.colUser) {
+            const uObj = window.colUser.user || window.colUser;
+            const meta = uObj.user_metadata || {};
+            userName = meta.full_name || meta.name || '';
+          }
+          
           const msg = userName ? `Welcome back, ${userName}! Loading your progress...` : 'Welcome back! Loading your progress...';
           if (typeof toast !== 'undefined') toast(msg, '#34d399');
           setTimeout(function() {
@@ -4441,12 +4448,7 @@
           return;
         }
 
-        var ov = document.getElementById('onb-overlay')
-        if (ov) {
-          ov.classList.remove('hidden')
-          ov.style.display = 'flex'
-        }
-        showOnboardingScreen(0)
+        window.location.href = 'TrafficSetup.html';
       }
 
       // Listen for auth changes - redirect to levels if logged in
@@ -4761,5 +4763,6 @@
     </script>
       <!-- Hidden dev unlock (click 5 times) -->
       <div style="position: fixed; bottom: 5px; right: 10px; font-size: 0.7rem; color: var(--muted2); opacity: 0.3; cursor: pointer; z-index: 9999" onclick="handleDevClick()" title="Dev options">v2.4.1</div>
+  <script src="welcome-back.js"></script>
   </body>
 </html>

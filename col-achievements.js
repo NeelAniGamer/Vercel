@@ -50,7 +50,8 @@
 
     const { data, error } = await window.supabaseClient
       .from('global_leaderboard')
-      .select('*')
+      .select('full_name, username, avatar_url, total_score, civic_score')
+      .order('total_score', { ascending: false })
       .limit(10);
 
     return { data, error };
