@@ -782,7 +782,9 @@ window.ui = Object.assign(window.ui || {}, {
     const syllabusEl = document.getElementById('br-syllabus')
     const items = this._getSyllabusForMode(lv, mode)
     this._sylItems = items
-    this._sylViewed = new Set()
+    
+    // Initialize from saved progress if available
+    this._sylViewed = new Set((S.sylViewed && S.sylViewed[lv.id]) ? S.sylViewed[lv.id] : [])
     this._sylLv = lv
     syllabusEl.innerHTML = ''
     items.forEach((it) => {
@@ -790,10 +792,16 @@ window.ui = Object.assign(window.ui || {}, {
       el.className = 'syl-item'
       el.id = 'syl-' + it.id
       el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
+      if (this._sylViewed.has(it.id)) {
+        el.classList.add('syl-done')
+      }
       el.onclick = () => this._selSyl(it.id)
       syllabusEl.appendChild(el)
     })
-    this._selSyl(items[0]?.id || 'intro')
+    
+    // Auto-select the first item that hasn't been viewed, or the first item if all viewed
+    let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
+    this._selSyl(firstUnviewed ? firstUnviewed.id : (items[0]?.id || 'intro'))
     
     // Update rewards preview
     this._renderRewardsPreview(lv, mode, config)
@@ -828,9 +836,9 @@ window.ui = Object.assign(window.ui || {}, {
     
     // Add commitment pledge button at the top
     if (hasPledge) {
-      html += `<button class="btn" style="margin-bottom:12px;width:100%;background:rgba(255,255,255,0.05);color:var(--green);font-size:0.7rem;padding:8px;border-radius:8px;border:1px solid var(--green);cursor:default;">✅ Pledge Completed</button>`
+      html += `<button class="btn" style="margin-bottom:12px;width:100%;background:rgba(255,255,255,0.05);color:var(--green);font-size:0.7rem;padding:8px;border-radius:8px;border:1px solid var(--green);cursor:default;">🤝 Pledge Completed</button>`
     } else {
-      html += `<button class="btn" onclick="ui.showCommitmentPledge(${lv.id})" style="margin-bottom:12px;width:100%;background:linear-gradient(90deg,var(--signal),var(--accent));color:#000;font-size:0.7rem;padding:8px;border-radius:8px;">🤝 Commitment Pledge</button>`
+      html += `<button class="btn pulse-btn" onclick="ui.showCommitmentPledge('${lv.id}')" style="margin-bottom:12px;width:100%;background:linear-gradient(90deg,var(--signal),var(--accent));color:#000;font-size:0.7rem;padding:8px;border-radius:8px;box-shadow: 0 4px 15px rgba(242,184,75,0.4);">🤝 Commitment Pledge</button>`
     }
     
     html += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">'
@@ -930,12 +938,25 @@ window.ui = Object.assign(window.ui || {}, {
     if (el) el.classList.add('syl-active')
     if (!this._sylViewed.has(id)) {
       this._sylViewed.add(id)
+      
+      // Persist syllabus progress to S
+      if (!S.sylViewed) S.sylViewed = {}
+      if (!S.sylViewed[lv.id]) S.sylViewed[lv.id] = []
+      if (!S.sylViewed[lv.id].includes(id)) {
+        S.sylViewed[lv.id].push(id)
+        if (typeof save === 'function') save()
+      }
+
       const sylEl = document.getElementById('syl-' + id)
       if (sylEl) sylEl.classList.add('syl-done')
-      const pct = Math.round((this._sylViewed.size / items.length) * 100)
-      document.getElementById('br-prog-fill').style.width = pct + '%'
-      document.getElementById('br-prog-label').textContent = pct + '%'
     }
+    
+    // Always update progress bar
+    const pct = Math.round((this._sylViewed.size / items.length) * 100)
+    const progFill = document.getElementById('br-prog-fill')
+    const progLabel = document.getElementById('br-prog-label')
+    if (progFill) progFill.style.width = pct + '%'
+    if (progLabel) progLabel.textContent = pct + '%'
     const rContainer = document.querySelector('.br-r')
     if (rContainer) {
       if (id === 'practical') {

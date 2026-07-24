@@ -7,17 +7,261 @@ const VEHICLE_STATS = {
   auto:      { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.072, grip: 0.40 },
 };
 
-// ── Phase 7: NPC/Vehicle Template Cache ──
-// Pre-builds one mesh per (type, color) combo; clones on spawn instead of rebuild.
-const _npcTplCache = new Map();
-function _npcTplKey(type, col) { return type + '_' + (col | 0).toString(16); }
-function _getNpcTemplate(type, col) {
-  const k = _npcTplKey(type, col);
-  if (_npcTplCache.has(k)) return _npcTplCache.get(k);
-  const m = _buildVehicle(type, col);
-  if (_npcTplCache.size < 120) _npcTplCache.set(k, m);
-  return m;
-}
+// ════════════════════════════════════════════════════════════════════════════════
+// PACEJKA MF 5.2 TIRE MODEL — Full implementation for realistic vehicle physics
+// Based on the Pacejka "Magic Formula" tire model (MF 5.2 / MF 6.1 concepts)
+// ═════════════════════════════════════════════════════════════════════════════════
+const PACEJKA = {
+  // ─── Tire coefficient sets per surface type ───
+  coefficients: {
+    // Dry asphalt (standard road)
+    dry_asphalt: {
+      // Pure lateral (Fy0)
+      pcy1: 1.3, pcy2: 0, pdy1: 1.1, pdy2: 0, pdy3: 0,
+      pey1: 0.9, pey2: 0.0, pey3: 0.0, pey4: 0.0, pey5: 0.0,
+      // Pure longitudinal (Fx0)
+      pex1: 0.2, pex2: 0.0, pex3: 0.0, pex4: 0.0,
+      pkx1: 22.0, pkx2: 0.0, pkx3: 0.0,
+      phx1: 0.0, phx2: 0.0,
+      pvx1: 0.0, pvx2: 0.0,
+      // Combined slip
+      rbx1: 0.0, rbx2: 0.0, rbx3: 0.0,
+      rcx1: 0.0,
+      rex1: 0.0, rex2: 0.0,
+      rby1: 0.0, rby2: 0.0, rby3: 0.0,
+      rcy1: 0.0,
+      rey1: 0.0, rey2: 0.0,
+      // Load dependency
+      pky1: -22.0, pky2: 0.0, pky3: 0.0,
+      pvy1: 0.0, pvy2: 0.0, pvy3: 0.0, pvy4: 0.0,
+      phy1: 0.0, phy2: 0.0, phy3: 0.0,
+    },
+    // Wet asphalt
+    wet_asphalt: {
+      pcy1: 1.2, pcy2: 0, pdy1: 0.9, pdy2: 0, pdy3: 0,
+      pey1: 0.8, pey2: 0.0, pey3: 0.0, pey4: 0.0, pey5: 0.0,
+      pex1: 0.15, pex2: 0.0, pex3: 0.0, pex4: 0.0,
+      pkx1: 18.0, pkx2: 0.0, pkx3: 0.0,
+      phx1: 0.0, phx2: 0.0,
+      pvx1: 0.0, pvx2: 0.0,
+      rbx1: 0.0, rbx2: 0.0, rbx3: 0.0,
+      rcx1: 0.0,
+      rex1: 0.0, rex2: 0.0,
+      rby1: 0.0, rby2: 0.0, rby3: 0.0,
+      rcy1: 0.0,
+      rey1: 0.0, rey2: 0.0,
+      pky1: -18.0, pky2: 0.0, pky3: 0.0,
+      pvy1: 0.0, pvy2: 0.0, pvy3: 0.0, pvy4: 0.0,
+      phy1: 0.0, phy2: 0.0, phy3: 0.0,
+    },
+    // Gravel/dirt
+    gravel: {
+      pcy1: 1.1, pcy2: 0, pdy1: 0.7, pdy2: 0, pdy3: 0,
+      pey1: 0.7, pey2: 0.0, pey3: 0.0, pey4: 0.0, pey5: 0.0,
+      pex1: 0.1, pex2: 0.0, pex3: 0.0, pex4: 0.0,
+      pkx1: 12.0, pkx2: 0.0, pkx3: 0.0,
+      phx1: 0.0, phx2: 0.0,
+      pvx1: 0.0, pvx2: 0.0,
+      rbx1: 0.0, rbx2: 0.0, rbx3: 0.0,
+      rcx1: 0.0,
+      rex1: 0.0, rex2: 0.0,
+      rby1: 0.0, rby2: 0.0, rby3: 0.0,
+      rcy1: 0.0,
+      rey1: 0.0, rey2: 0.0,
+      pky1: -12.0, pky2: 0.0, pky3: 0.0,
+      pvy1: 0.0, pvy2: 0.0, pvy3: 0.0, pvy4: 0.0,
+      phy1: 0.0, phy2: 0.0, phy3: 0.0,
+    }
+  },
+
+  // ─── Core Pacejka Magic Formula (MF 5.2) ───
+  // Fy = D * sin(C * arctan(B * alpha - E * (B * alpha - arctan(B * alpha)))) + Sv
+  // Fx = D * sin(C * arctan(B * kappa - E * (B * kappa - arctan(B * kappa)))) + Sv
+  computeLateralForce(alpha, Fz, camber, surfaceType = 'dry_asphalt') {
+    const c = this.coefficients[surfaceType] || this.coefficients.dry_asphalt;
+    const Fz0 = 3000; // Nominal load (N)
+
+    // Normalized load
+    const dfz = (Fz - Fz0) / Fz0;
+
+    // Shape factor
+    const C = c.pcy1;
+
+    // Peak factor D
+    const D = (c.pdy1 + c.pdy2 * dfz) * (1 - c.pdy3 * camber * camber) * Fz;
+
+    // Stiffness factor B
+    const BCD = c.pky1 * Fz0 * (1 + c.pky2 * dfz) * (1 + c.pky3 * camber);
+    const B = BCD / (C * D + 1e-6);
+
+    // Curvature factor E
+    const E = c.pey1 + c.pey2 * dfz + c.pey3 * camber + c.pey4 * camber * camber + c.pey5 * dfz * camber;
+
+    // Horizontal shift (camber effect)
+    const Sh = c.phy1 + c.phy2 * dfz + c.phy3 * camber;
+
+    // Vertical shift (camber force)
+    const Sv = (c.pvy1 + c.pvy2 * dfz + c.pvy3 * camber) * Fz;
+
+    const alpha_adj = alpha + Sh;
+    const t = B * alpha_adj;
+
+    const Fy = D * Math.sin(C * Math.atan(t - E * (t - Math.atan(t)))) + Sv;
+
+    return { Fy, mu: Math.abs(Fy) / (Fz + 1e-6) };
+  },
+
+  computeLongitudinalForce(kappa, Fz, camber, surfaceType = 'dry_asphalt') {
+    const c = this.coefficients[surfaceType] || this.coefficients.dry_asphalt;
+    const Fz0 = 3000;
+
+    const dfz = (Fz - Fz0) / Fz0;
+
+    // Pure longitudinal
+    const C = c.pex1;
+    const D = (c.pdx1 + c.pdx2 * dfz) * (1 - c.pdx3 * camber * camber) * Fz;
+    const BCD = c.pkx1 * Fz0 * (1 + c.pkx2 * dfz) * (1 - c.pkx3 * camber * camber);
+    const B = BCD / (C * D + 1e-6);
+    const E = c.pex1 + c.pex2 * dfz + c.pex3 * camber + c.pex4 * camber * camber;
+
+    const Sh = c.phx1 + c.phx2 * dfz;
+    const Sv = (c.pvx1 + c.pvx2 * dfz) * Fz;
+
+    const kappa_adj = kappa + Sh;
+    const t = B * kappa_adj;
+
+    const Fx = D * Math.sin(C * Math.atan(t - E * (t - Math.atan(t)))) + Sv;
+
+    return { Fx, mu: Math.abs(Fx) / (Fz + 1e-6) };
+  },
+
+  // Combined slip (Fx, Fy) using friction ellipse approximation
+  computeCombinedForce(alpha, kappa, Fz, camber, surfaceType = 'dry_asphalt') {
+    const lat = this.computeLateralForce(alpha, Fz, camber, surfaceType);
+    const lon = this.computeLongitudinalForce(kappa, Fz, camber, surfaceType);
+
+    // Friction ellipse: (Fx/Fx0)^2 + (Fy/Fy0)^2 <= 1
+    const Fy0 = lat.Fy;
+    const Fx0 = lon.Fx;
+    const Fy_max = lat.mu * Fz;
+    const Fx_max = lon.mu * Fz;
+
+    // Simple ellipse scaling
+    const ellipse = (Fx0 * Fx0) / (Fx_max * Fx_max) + (Fy0 * Fy0) / (Fy_max * Fy_max);
+    let scale = 1.0;
+    if (ellipse > 1.0) {
+      scale = 1.0 / Math.sqrt(ellipse);
+    }
+
+    return {
+      Fx: Fx0 * scale,
+      Fy: Fy0 * scale,
+      mu_x: lon.mu * scale,
+      mu_y: lat.mu * scale,
+      slip_ratio: kappa,
+      slip_angle: alpha
+    };
+  },
+
+  // Get surface type from material/zone
+  getSurfaceType(zone, isWet, hasPuddles) {
+    if (hasPuddles) return 'wet_asphalt';
+    if (isWet) return 'wet_asphalt';
+    if (zone === 'gravel' || zone === 'rural') return 'gravel';
+    return 'dry_asphalt';
+  }
+};
+
+// ─── Vehicle-specific Pacejka configs ───
+const VEHICLE_PACEJKA_CONFIG = {
+  car: {
+    mass: 1400,
+    wheelbase: 2.7,
+    track_width: 1.5,
+    cg_height: 0.55,
+    front_weight_dist: 0.60,
+    front_cornering_stiffness: 55000,
+    rear_cornering_stiffness: 55000,
+    front_longitudinal_stiffness: 60000,
+    rear_longitudinal_stiffness: 60000,
+    max_brake_force: 8000,
+    max_drive_force: 4000,
+    front_brake_bias: 0.7,
+    inertia_yaw: 2800,
+    front_track: 1.5,
+    rear_track: 1.5,
+  },
+  bike: {
+    mass: 200,
+    wheelbase: 1.4,
+    track_width: 0.3,
+    cg_height: 0.6,
+    front_weight_dist: 0.50,
+    front_cornering_stiffness: 15000,
+    rear_cornering_stiffness: 15000,
+    front_longitudinal_stiffness: 20000,
+    rear_longitudinal_stiffness: 20000,
+    max_brake_force: 3000,
+    max_drive_force: 2000,
+    front_brake_bias: 0.8,
+    inertia_yaw: 50,
+    front_track: 0.3,
+    rear_track: 0.3,
+  },
+  bus: {
+    mass: 12000,
+    wheelbase: 6.0,
+    track_width: 2.0,
+    cg_height: 1.8,
+    front_weight_dist: 0.55,
+    front_cornering_stiffness: 200000,
+    rear_cornering_stiffness: 200000,
+    front_longitudinal_stiffness: 150000,
+    rear_longitudinal_stiffness: 150000,
+    max_brake_force: 40000,
+    max_drive_force: 20000,
+    front_brake_bias: 0.65,
+    inertia_yaw: 80000,
+    front_track: 2.0,
+    rear_track: 2.0,
+  },
+  truck: {
+    mass: 18000,
+    wheelbase: 4.5,
+    track_width: 2.0,
+    cg_height: 2.0,
+    front_weight_dist: 0.50,
+    front_cornering_stiffness: 180000,
+    rear_cornering_stiffness: 220000,
+    front_longitudinal_stiffness: 200000,
+    rear_longitudinal_stiffness: 200000,
+    max_brake_force: 60000,
+    max_drive_force: 30000,
+    front_brake_bias: 0.60,
+    inertia_yaw: 120000,
+    front_track: 2.0,
+    rear_track: 2.0,
+  },
+  auto: {
+    mass: 400,
+    wheelbase: 2.0,
+    track_width: 1.2,
+    cg_height: 0.7,
+    front_weight_dist: 0.65,
+    front_cornering_stiffness: 12000,
+    rear_cornering_stiffness: 12000,
+    front_longitudinal_stiffness: 15000,
+    rear_longitudinal_stiffness: 15000,
+    max_brake_force: 2000,
+    max_drive_force: 1500,
+    front_brake_bias: 0.75,
+    inertia_yaw: 200,
+    front_track: 1.2,
+    rear_track: 1.2,
+  }
+};
+
+const PACEJKA_GLOBAL = PACEJKA;
 
 // ── Theme-based road templates for levels 16-50 ──
 // Generates road configs from themeType so we don't need 35 manual M entries.
@@ -3976,16 +4220,81 @@ class Game {
 
           const targetVx = Math.sin(this.player.rotation.y) * this.speed;
           const targetVz = Math.cos(this.player.rotation.y) * this.speed;
-          // ── Lateral grip model ──
-          // Per-vehicle base grip, reduced in rain, reduced at high speed for realistic drift feel
-          let grip = this._grip || 0.62;
-          if (this.mode === 'rain' || (this.mapCfg && this.mapCfg.hasRain)) grip *= 0.25;
-          grip *= Math.max(0.50, 1 - Math.abs(this.speed) * 0.22);
-          // Frame-rate independent grip lerp
-          const gripLerp = 1 - Math.pow(1 - grip, dt * 60);
-          this.vx += (targetVx - this.vx) * gripLerp;
-          this.vz += (targetVz - this.vz) * gripLerp;
-        }
+          // ── Pacejka Tire Model Integration ──
+          // Compute tire forces using Pacejka MF 5.2
+          if (!overrideMove && !this.isPedestrian) {
+            const pacejkaConfig = VEHICLE_PACEJKA_CONFIG[this.vehMode] || VEHICLE_PACEJKA_CONFIG.car;
+            const mass = pacejkaConfig.mass;
+            const frontWeightDist = pacejkaConfig.front_weight_dist;
+            const frontTrack = pacejkaConfig.front_track;
+            const rearTrack = pacejkaConfig.rear_track;
+            const wheelbase = pacejkaConfig.wheelbase;
+            const cgHeight = pacejkaConfig.cg_height;
+            
+            // Weight distribution
+            const Fz_front_total = mass * 9.81 * frontWeightDist;
+            const Fz_rear_total = mass * 9.81 * (1 - frontWeightDist);
+            const Fz_front_per_wheel = Fz_front_total / 2;
+            const Fz_rear_per_wheel = Fz_rear_total / 2;
+            
+            // Weight transfer (longitudinal)
+            const longAccel = (targetVx - this.vx) / (dt + 1e-6); // approximate
+            const weightTransfer = mass * longAccel * cgHeight / wheelbase;
+            const Fz_fl = Fz_front_per_wheel - weightTransfer / 2;
+            const Fz_fr = Fz_front_per_wheel - weightTransfer / 2;
+            const Fz_rl = Fz_rear_per_wheel + weightTransfer / 2;
+            const Fz_rr = Fz_rear_per_wheel + weightTransfer / 2;
+            
+            // Lateral acceleration
+            const latAccel = (targetVx - this.vx) / (dt + 1e-6);
+            const latWeightTransfer = mass * latAccel * cgHeight / (frontTrack + rearTrack);
+            const Fz_fl_lat = Fz_fl - latWeightTransfer / 2;
+            const Fz_fr_lat = Fz_fr + latWeightTransfer / 2;
+            const Fz_rl_lat = Fz_rl - latWeightTransfer / 2;
+            const Fz_rr_lat = Fz_rr + latWeightTransfer / 2;
+            
+            // Slip angle (from velocity vector vs heading)
+            const velocityAngle = Math.atan2(this.vx, this.vz);
+            const headingAngle = this.player.rotation.y;
+            const slipAngle = velocityAngle - headingAngle;
+            
+            // Slip ratio (simplified)
+            const wheelSpeed = Math.abs(this.speed);
+            const groundSpeed = Math.hypot(this.vx, this.vz);
+            const slipRatio = groundSpeed > 0.01 ? (wheelSpeed - groundSpeed) / Math.max(groundSpeed, 0.01) : 0;
+            
+            // Surface type
+            const surfaceType = (this.mode === 'rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 'wet_asphalt' : 'dry_asphalt';
+            
+            // Compute combined forces for each wheel using Pacejka
+            const frontLeft = PACEJKA.computeCombinedForce(slipAngle, slipRatio * 0.5, Fz_fl_lat, 0, 'dry_asphalt');
+            const frontRight = PACEJKA.computeCombinedForce(slipAngle, slipRatio * 0.5, Fz_fr_lat, 0, 'dry_asphalt');
+            const rearLeft = PACEJKA.computeCombinedForce(0, slipRatio, Fz_rl_lat, 0, 'dry_asphalt');
+            const rearRight = PACEJKA.computeCombinedForce(0, slipRatio, Fz_rr_lat, 0, 'dry_asphalt');
+            
+            // Sum forces
+            const totalFx = frontLeft.Fx + frontRight.Fx + rearLeft.Fx + rearRight.Fx;
+            const totalFy = frontLeft.Fy + frontRight.Fy + rearLeft.Fy + rearRight.Fy;
+            
+            // Apply forces to velocity
+            const Fx_local = totalFx * Math.cos(this.player.rotation.y) - totalFy * Math.sin(this.player.rotation.y);
+            const Fy_local = totalFx * Math.sin(this.player.rotation.y) + totalFy * Math.cos(this.player.rotation.y);
+            
+            const ax = Fx_local / mass;
+            const ay = Fy_local / mass;
+            
+            this.vx += ax * dt;
+            this.vz += ay * dt;
+            
+            // Update speed from velocity
+            this.speed = Math.hypot(this.vx, this.vz);
+            
+            // Yaw moment (simplified)
+            const yawMoment = (frontLeft.Fy + frontRight.Fy) * wheelbase / 2 * frontWeightDist - 
+                             (rearLeft.Fy + rearRight.Fy) * wheelbase / 2 * (1 - frontWeightDist);
+            const yawAccel = yawMoment / pacejkaConfig.inertia_yaw;
+            this.player.rotation.y += yawAccel * dt;
+          } else {
         
         this.player.position.x += this.vx; this.player.position.z += this.vz;
 

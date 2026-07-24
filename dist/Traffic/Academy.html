@@ -37,6 +37,7 @@
     <script src="traffic-charts.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <script src="course.js"></script>
     <style>
       :root {
         /* Dark theme (default) — matches parent site dark mode */
@@ -2880,12 +2881,14 @@
         background: linear-gradient(90deg, #00c851, #00e676);
       }
       .onb-prog-section.active {
-        background: linear-gradient(90deg, #f39c12, #f1c40f);
-        animation: pulse-section 1s infinite;
+        background: linear-gradient(90deg, #f39c12, #f1c40f, #f39c12);
+        background-size: 200% 200%;
+        animation: shimmer-active 2s ease infinite;
       }
-      @keyframes pulse-section {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
+      @keyframes shimmer-active {
+        0% { background-position: 0% 50%; box-shadow: 0 0 4px rgba(243, 156, 18, 0.4); }
+        50% { background-position: 100% 50%; box-shadow: 0 0 14px rgba(241, 196, 15, 0.8); }
+        100% { background-position: 0% 50%; box-shadow: 0 0 4px rgba(243, 156, 18, 0.4); }
       }
       /* Hide the old fill bar */
       .onb-prog-fill { display: none; }
@@ -3885,15 +3888,37 @@
         </div>
       </div>
       <div class="br-w">
-        <div class="br-l">
-          <h2 style="font-size: 1.8rem; margin-bottom: 8px">Course Overview</h2>
-          <div class="br-prog">
-            <div class="br-prog-fill" id="br-prog-fill"></div>
+        <div class="br-l" style="width: 320px; flex-shrink: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2 style="font-size: 1.4rem; margin: 0; color: var(--text)">Level <span id="br-level-num">1</span></h2>
+            <div id="br-streak" style="background: linear-gradient(90deg, var(--signal), var(--accent)); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em;">🔥 0 Day Streak</div>
           </div>
-          <div style="font-size: 0.85rem; color: var(--muted); text-align: right; margin-bottom: 24px" id="br-prog-label">0%</div>
-          <div id="br-syllabus"></div>
+          
+          <!-- Mode Tabs -->
+          <div class="mode-tabs" id="br-mode-tabs" style="display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 4px; margin-bottom: 20px;">
+            <button class="mode-tab active" data-mode="learn" style="flex: 1; padding: 8px 12px; border: none; background: transparent; color: var(--text); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;">📖 LEARN</button>
+            <button class="mode-tab" data-mode="practice" style="flex: 1; padding: 8px 12px; border: none; background: transparent; color: var(--muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;">🚗 PRACTICE</button>
+            <button class="mode-tab" data-mode="exam" style="flex: 1; padding: 8px 12px; border: none; background: transparent; color: var(--muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;">📝 EXAM</button>
+            <button class="mode-tab" data-mode="chaos" style="flex: 1; padding: 8px 12px; border: none; background: transparent; color: var(--muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;">🌪️ CHAOS</button>
+          </div>
+          
+          <div class="br-prog" style="height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
+            <div class="br-prog-fill" id="br-prog-fill" style="height: 100%; background: linear-gradient(90deg, var(--signal), var(--accent)); width: 0%; transition: width 0.3s;"></div>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--muted); text-align: right; margin-bottom: 16px" id="br-prog-label">0% Complete</div>
+          
+          <!-- Module Progress Checklist (Zeigarnik Effect) -->
+          <div id="br-module-checklist" style="margin-bottom: 20px;"></div>
+          
+          <div id="br-syllabus" style="max-height: 300px; overflow-y: auto;"></div>
+          
+          <!-- Garage Panel -->
+          <div id="br-garage" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); display: none;">
+            <div style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">🚗 GARAGE</div>
+            <div id="br-garage-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;"></div>
+          </div>
         </div>
-        <div class="br-r" id="br-content"></div>
+        <div class="br-r" id="br-content" style="flex: 1; min-width: 0;"></div>
       </div>
     </div>
 
@@ -4133,7 +4158,7 @@
             <span class="onb-chip-icon" style="font-size: 1.8rem;">📧</span>
             <span class="onb-chip-label" style="font-size: 1.1rem;">Sign Up / Login with Email</span>
           </button>
-          <button class="onb-chip" onclick="showOnboardingScreen(3)" style="padding: 16px 24px; background: rgba(255,255,255,0.3);">
+          <button class="onb-chip" onclick="showOnboardingScreen(3)" style="padding: 16px 24px;">
             <span class="onb-chip-icon" style="font-size: 1.5rem;">🎮</span>
             <span class="onb-chip-label" style="font-size: 1rem;">Continue as Guest</span>
           </button>
@@ -4258,7 +4283,6 @@
     <script src="levels/level51.js"></script>
     <script src="levels/level52.js"></script>
 
-    <script src="course.js"></script>
     <script>
       // REMOVED: Auto-sorting code - levels now keep their original numbers (1, 5, 7, 4, etc.)
       // If you need to re-enable sorting, uncomment the code below:

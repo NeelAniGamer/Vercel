@@ -608,6 +608,17 @@
         setTimeout(() => {
           hp.style.display = 'none'
         }, 900)
+        
+        // Hide top nav if embedded in an iframe (like solar.html)
+        if (window.self !== window.top) {
+          const nav = document.querySelector('.top-nav')
+          if (nav) nav.style.display = 'none'
+        }
+      }
+
+      // Auto-start if framed
+      if (window.self !== window.top) {
+        setTimeout(enterApp, 100)
       }
 
       // Homepage canvas star animation

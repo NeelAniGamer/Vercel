@@ -1661,7 +1661,7 @@
       <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" /></svg>
     </button>
     <nav class="top-nav" id="topNav">
-      <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><img src="Traffic/mumbai-police-logo.png" alt="Mumbai Police" class="brand-logo" width="28" height="28" style="margin-left:8px;opacity:0.8;" onerror="this.style.display='none'" /><img src="Traffic/sneh-logo.png" alt="Sneh Asha" class="brand-logo" width="28" height="28" style="margin-left:4px;opacity:0.8;" onerror="this.style.display='none'" /><span class="brand-name">Class Of Learners</span></a>
+      <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a>
       <div class="nav-links" id="navLinks">
         <a href="/" class="nav-link act"
           ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2608,18 +2608,22 @@
       </div>
     </section>
 
-    <footer class="sf">
+<footer class="sf">
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl"><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yashan.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, Aarush & Yashan.</div>
       </div>
     </footer>
 
     <div class="toast" id="toast"></div>
 
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script defer src="col-3d.js"></script>
+    <!-- New modular 3D system -->
+    <script defer src="col-3d/loaders/LazyLoader.js"></script>
+    <script>
+      // LazyLoader will auto-initialize and load StudioOrrery when #orrery enters viewport
+    </script>
+
     <script>
       // ============= CURSOR HOVER EFFECTS =============
       ;(function () {

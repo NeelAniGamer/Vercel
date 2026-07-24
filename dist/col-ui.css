@@ -22,12 +22,18 @@
 }
 body.lm {
   --void: #f3f2eb !important;
-  --ink: #111827 !important;
-  --nav: rgba(243, 242, 235, 0.85) !important;
-  --line: rgba(0, 0, 0, 0.08) !important;
-  --lineb: rgba(0, 0, 0, 0.15) !important;
-  --dim: #64748b !important;
+  --void2: #e6e2d8 !important;
   --panel: #ffffff !important;
+  --line: rgba(0, 0, 0, 0.08) !important;
+  --lineb: rgba(0, 0, 0, 0.16) !important;
+  --ink: #111827 !important;
+  --dim: #64748b !important;
+  --signal: #b8720a !important;
+  --ion: #0e72a0 !important;
+  --teal: #0a8c7a !important;
+  --plasma: #6f4fe0 !important;
+  --em: #1b9d66 !important;
+  --nav: rgba(243, 242, 235, 0.85) !important;
   background: var(--void);
   color: var(--ink);
 }
@@ -101,17 +107,18 @@ select {
   font-family: 'Inter', sans-serif;
 }
 .brand-logo {
-  height: 32px;
-  width: 32px;
-  object-fit: contain;
-  /* will-change keeps filter on its own GPU layer */
-  will-change: filter;
-  transform: translateZ(0);
-  /* Invert black logo to white for dark mode (default) */
-  filter: invert(1) drop-shadow(0 0 8px var(--primary-glow, rgba(56, 189, 248, 0.4)));
+  height: 38px;
+  width: auto;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: var(--signal, #f2b84b);
+  border-radius: 50%;
+  padding: 2px;
+  /* Add a subtle glow so it stands out */
+  box-shadow: 0 0 10px rgba(242, 184, 75, 0.5);
 }
 body.lm .brand-logo {
-  /* Revert to black logo for light mode */
+  background-color: transparent;
+  box-shadow: none;
   filter: drop-shadow(0 0 8px var(--primary-glow, rgba(56, 189, 248, 0.4)));
 }
 .nav-links {

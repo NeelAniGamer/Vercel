@@ -28,9 +28,22 @@ const PLATOON_SIZE = 3;
 const PLATOON_GAP = 8;
 const BASE_NPC_COUNT = 16;
 const MAX_NPC_COUNT = 48;
+const MOBILE_NPC_COUNT = 16; // Reduced for mobile performance
 const DENSITY_INCREASE_PER_MIN = 0.05;
 const SIGNAL_ACCUMULATION_RATE = 5;
 const MAX_SIGNAL_ACCUMULATION = 12;
+
+function isMobile() {
+  return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth <= 768;
+}
+
+function getMaxNPCCount() {
+  return isMobile() ? MOBILE_NPC_COUNT : MAX_NPC_COUNT;
+}
+
+function getBaseNPCCount() {
+  return isMobile() ? MOBILE_NPC_COUNT : BASE_NPC_COUNT;
+}
 
 class TrafficManager {
   constructor(game) {
@@ -69,7 +82,7 @@ class TrafficManager {
     this.lastDensityUpdate += dt;
     if (this.lastDensityUpdate >= 60) {
       this.lastDensityUpdate = 0;
-      const targetDensity = Math.min(BASE_NPC_COUNT * (1 + this.densityMultiplier * 2), MAX_NPC_COUNT);
+      const targetDensity = Math.min(getBaseNPCCount() * (1 + this.densityMultiplier * 2), getMaxNPCCount());
       const currentCount = this.vehicles.filter(v => v.active).length;
       
       if (currentCount < targetDensity * 0.8) {

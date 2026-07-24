@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Privacy Policy for Class Of Learners ï¿½ How we handle your data, Google API compliance, analytics cookies, and your rights. All processing is local-first." />
+    <meta name="description" content="Privacy Policy for Class Of Learners — How we handle your data, Google API compliance, analytics cookies, and your rights. All processing is local-first." />
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
     <title>Privacy Policy | Class Of Learners</title>
-    <link rel="icon" type="image/png" href="Icon.png" />
+    <link rel="icon" type="image/webp" href="icon.webp" />
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/privacy" />
     <script>
       ;(function () {
@@ -24,7 +24,7 @@
             }
             if (s === '404') {
               document.write(
-                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="/" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'
+                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="home" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'
               )
               window.stop()
             }
@@ -390,7 +390,7 @@
         align-items: center;
         gap: 10px;
         padding-left: 18px;
-        
+        border-left: 1px solid var(--lineb);
       }
       .tl {
         font-size: 0.7rem;
@@ -1055,17 +1055,15 @@
     <div class="cr" id="cRing"></div>
 
     <nav class="top-nav" id="topNav">
-      <a href="/" class="nav-brand">
-        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
-        <img src="Traffic/mumbai-police-logo.png" alt="Mumbai Police" class="brand-logo" width="28" height="28" style="margin-left:8px;opacity:0.8;" onerror="this.style.display='none'" />
-        <img src="Traffic/sneh-logo.png" alt="Sneh Asha" class="brand-logo" width="28" height="28" style="margin-left:4px;opacity:0.8;" onerror="this.style.display='none'" />
+      <a href="home" class="nav-brand">
+        <img src="class.webp" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
       </a>
       <button class="mmb" id="mmb" aria-label="Toggle menu">
         <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" stroke="currentColor" /></svg>
       </button>
       <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link">Home</a>
+        <a href="home" class="nav-link">Home</a>
         <a href="about" class="nav-link">About</a>
         <a href="school" class="nav-link">School</a>
         <a href="sneh-asha" class="nav-link">Sneh Asha</a>
@@ -1081,7 +1079,13 @@
             </div>
           </div>
         </div>
-        <div class="hz-toggle" onclick="hzToggle()"><div class="hz-stars"></div><div class="hz-skyline"></div><div class="hz-windows"></div><div class="hz-orb"></div></div>
+        <div class="tw">
+          <span class="tl" id="tLabel">Light</span>
+          <label class="tsb" for="tsck">
+            <input type="checkbox" id="tsck" aria-label="Toggle light mode" onchange="window.toggleTheme ? window.toggleTheme(this) : null" />
+            <div class="tst"><div class="tsth">??</div></div>
+          </label>
+        </div>
         <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z" /></svg
@@ -1192,7 +1196,7 @@
             Contact Us
           </div>
           <p>
-            Developed and maintained by Neel, Ansh, Aarush and Yashar as a student software initiative. If you have any concerns regarding your privacy or wish to request data deletion, please reach out to us
+            Developed and maintained by Neel, Ansh and Aarush as a student software initiative. If you have any concerns regarding your privacy or wish to request data deletion, please reach out to us
             directly through the <a href="feedback" style="color: var(--ion); text-decoration: underline">feedback portal</a>.
           </p>
         </div>
@@ -1208,7 +1212,7 @@
           <a href="feedback">Feedback</a>
           <a href="download">Downloads</a>
         </div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yashan.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh &amp; Aarush.</div>
       </div>
     </footer>
 
@@ -1302,12 +1306,6 @@
           io.observe(el)
         })
       })()
-    </script>
-    <script>
-    function hzInit(){var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}hzSync()}
-    function hzSync(){var el=document.querySelector('.hz-toggle');if(!el)return;if(document.body.classList.contains('lm')){el.classList.remove('night')}else{el.classList.add('night')}}
-    function hzToggle(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');hzSync()}
-    hzInit()
     </script>
   </body>
 </html>
