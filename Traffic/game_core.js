@@ -3196,7 +3196,7 @@ class Game {
         // Parked vehicles
         if (!cfg.isPedestrian) {
           for (let i = 0; i < 6; i++) {
-            const seg = allRoads[Math.floor(Math.random() * allRoads.length)];
+            const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
             const types = ['car', 'auto', 'bike'];
             const pcTpl = _getNpcTemplate(types[i % 3], Math.random() * 0xffffff);
             if (pcTpl) {
