@@ -44,7 +44,7 @@
         display: flex;
         align-items: center;
         gap: 24px;
-        margin-bottom: 60px;
+        margin-bottom: 24px;
         padding: 32px;
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
@@ -75,6 +75,47 @@
         font-family: var(--mono, 'Space Mono');
         font-size: 0.8rem;
         letter-spacing: 0.1em;
+      }
+      .user-role-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        margin-top: 8px;
+        background: rgba(242, 184, 75, 0.15);
+        color: var(--signal);
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-family: var(--mono);
+      }
+
+      .dash-tabs {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 40px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 12px;
+      }
+      .dash-tab {
+        background: transparent;
+        color: var(--dim);
+        border: none;
+        padding: 8px 16px;
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: 0.3s;
+      }
+      .dash-tab:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink);
+      }
+      .dash-tab.active {
+        background: var(--line);
+        color: var(--ink);
       }
 
       .section-title {
@@ -167,6 +208,17 @@
         font-size: 0.8rem;
         cursor: not-allowed;
       }
+      .btn-danger {
+        background: #ef4444;
+        color: #fff;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.7rem;
+        cursor: pointer;
+        margin-left: auto;
+      }
 
       /* Leaderboard */
       .leaderboard-wrap {
@@ -237,6 +289,36 @@
         color: var(--ion);
       }
 
+      /* Parent Controls */
+      .parent-controls {
+        margin-bottom: 40px;
+        padding: 24px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+      }
+      .student-tab {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid transparent;
+        padding: 12px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: 0.2s;
+        font-family: var(--mono);
+        font-size: 0.85rem;
+      }
+      .student-tab.active {
+        background: rgba(242, 184, 75, 0.1);
+        border-color: var(--signal);
+        color: var(--signal);
+      }
+      .student-tab:hover {
+        background: rgba(255,255,255,0.1);
+      }
+
       /* Auth Overlay */
       #auth-overlay {
         position: fixed;
@@ -278,7 +360,7 @@
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <script defer src="col-achievements.js"></script>
-      <link rel="icon" type="image/png" href="Icon.png" />
+    <link rel="icon" type="image/png" href="Icon.png" />
   </head>
   <body>
     <nav class="top-nav">
@@ -300,8 +382,8 @@
     <div id="auth-overlay" style="display: none;">
       <div class="auth-card">
         <h2 style="font-family: var(--serif);">Dashboard Locked</h2>
-        <p>Please authenticate your account to access your trophy case and leaderboards.</p>
-        <button class="btn-share" onclick="openGlobalLogin()">Sign In Now</button>
+        <p>Please authenticate your account to access your dashboard.</p>
+        <button class="btn-share" onclick="window.location.href='/Traffic/TrafficSetup.html'">Sign In Now</button>
       </div>
     </div>
 
@@ -311,46 +393,81 @@
         <div class="user-info">
           <h1 id="user-name">Loading...</h1>
           <p id="user-email">...</p>
+          <div class="user-role-badge" id="user-role-badge">Student</div>
         </div>
       </header>
 
-      <section>
-        <h2 class="section-title"><span style="font-family: var(--mono);">01</span> Trophy Case</h2>
-        <div class="trophy-grid" id="trophy-grid">
-          <!-- Trophies injected here -->
-        </div>
-      </section>
+      <div class="dash-tabs">
+        <button class="dash-tab active" id="tab-btn-profile" onclick="switchTab('profile')">Profile</button>
+        <button class="dash-tab" id="tab-btn-leaderboard" onclick="switchTab('leaderboard')">Leaderboard</button>
+      </div>
 
-      <section>
-        <h2 class="section-title"><span style="font-family: var(--mono);">02</span> Hall of Fame</h2>
-        <div class="leaderboard-wrap">
-          <div class="lb-ctrl">
-            <div style="font-family: var(--mono); font-size: 0.7rem; color: var(--dim); text-transform: uppercase;">Global Rankings</div>
-            <select class="lb-select" id="category-select" onchange="loadLeaderboard()">
-              <option value="global">Global</option>
-              <option value="physics">Physics</option>
-              <option value="coding">Coding</option>
-              <option value="vision">Vision</option>
-              <option value="game-dev">Game Dev</option>
-            </select>
+      <div id="view-profile">
+        
+        <!-- Parent/Teacher Controls -->
+        <div class="parent-controls" id="parent-controls" style="display:none;">
+          <h3 style="font-family: var(--serif); font-size: 1.5rem; margin-bottom: 16px;">Linked Students</h3>
+          
+          <div id="student-list" style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+            <!-- Student tabs injected here -->
           </div>
-          <table class="lb-table" id="lb-table">
-            <thead>
-              <tr>
-                <th class="lb-rank">Rank</th>
-                <th>User</th>
-                <th style="text-align: right;">Score</th>
-              </tr>
-            </thead>
-            <tbody id="lb-body">
-              <!-- Rows injected here -->
-            </tbody>
-          </table>
+
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <input type="text" id="new-student-uid" placeholder="Enter Student UID" style="padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--void); color: var(--ink); font-family: var(--mono); font-size: 0.8rem; min-width: 250px;">
+            <button class="btn-share" onclick="linkStudent()">Add Student</button>
+          </div>
         </div>
-      </section>
+
+        <section id="profile-trophy-section">
+          <h2 class="section-title"><span style="font-family: var(--mono);">01</span> Trophy Case</h2>
+          <div class="trophy-grid" id="trophy-grid">
+            <!-- Trophies injected here -->
+          </div>
+        </section>
+      </div>
+
+      <div id="view-leaderboard" style="display: none;">
+        <section>
+          <h2 class="section-title"><span style="font-family: var(--mono);">02</span> Hall of Fame</h2>
+          <div class="leaderboard-wrap">
+            <div class="lb-ctrl">
+              <div style="font-family: var(--mono); font-size: 0.7rem; color: var(--dim); text-transform: uppercase;">Global Rankings</div>
+              <select class="lb-select" id="category-select" onchange="loadLeaderboard()">
+                <option value="global">Global</option>
+                <option value="physics">Physics</option>
+                <option value="coding">Coding</option>
+                <option value="vision">Vision</option>
+                <option value="game-dev">Game Dev</option>
+              </select>
+            </div>
+            <table class="lb-table" id="lb-table">
+              <thead>
+                <tr>
+                  <th class="lb-rank">Rank</th>
+                  <th>User</th>
+                  <th style="text-align: right;">Score</th>
+                </tr>
+              </thead>
+              <tbody id="lb-body">
+                <!-- Rows injected here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
     </div>
 
     <script>
+      let currentSelectedStudent = null;
+
+      function switchTab(tabId) {
+        document.getElementById('view-profile').style.display = tabId === 'profile' ? 'block' : 'none';
+        document.getElementById('view-leaderboard').style.display = tabId === 'leaderboard' ? 'block' : 'none';
+        
+        document.getElementById('tab-btn-profile').classList.toggle('active', tabId === 'profile');
+        document.getElementById('tab-btn-leaderboard').classList.toggle('active', tabId === 'leaderboard');
+      }
+
       async function initDashboard() {
         const overlay = document.getElementById('auth-overlay');
         const ui = document.getElementById('dashboard-ui');
@@ -364,24 +481,139 @@
         overlay.style.display = 'none';
         ui.style.display = 'block';
 
-        document.getElementById('user-name').textContent = window.colUser.name;
-        document.getElementById('user-email').textContent = window.colUser.email;
+        document.getElementById('user-name').textContent = window.colUser.name || 'User';
+        document.getElementById('user-email').textContent = window.colUser.email || '';
+        
+        const role = window.colUser.user_metadata?.role || 'student';
+        const roleBadge = document.getElementById('user-role-badge');
+        roleBadge.textContent = role === 'parent_teacher' ? 'Parent / Teacher' : role.charAt(0).toUpperCase() + role.slice(1);
+        
         const av = document.getElementById('user-avatar');
         if (window.colUser.picture) {
           av.innerHTML = `<img src="${window.colUser.picture}" style="width:100%; height:100%; object-fit:cover;">`;
         } else {
-          av.textContent = window.colUser.name.charAt(0).toUpperCase();
+          av.textContent = (window.colUser.name || 'U').charAt(0).toUpperCase();
         }
 
-        await loadTrophies();
+        if (role === 'parent' || role === 'teacher' || role === 'parent_teacher') {
+          document.getElementById('parent-controls').style.display = 'block';
+          await renderLinkedStudents();
+        } else {
+          document.getElementById('parent-controls').style.display = 'none';
+          await loadTrophiesForCurrentUser();
+        }
+
         await loadLeaderboard();
       }
 
-      async function loadTrophies() {
+      async function renderLinkedStudents() {
+        const list = document.getElementById('student-list');
+        const linked = window.colUser.user_metadata?.linked_students || [];
+        
+        list.innerHTML = '';
+        
+        if (linked.length === 0) {
+          list.innerHTML = '<span style="color:var(--dim); font-size:0.9rem;">No students linked yet. Enter a UID below to link one.</span>';
+          document.getElementById('trophy-grid').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--dim);">Add a student to view their progress.</div>';
+          return;
+        }
+
+        if (!currentSelectedStudent || !linked.includes(currentSelectedStudent)) {
+          currentSelectedStudent = linked[0];
+        }
+
+        linked.forEach(uid => {
+          const btn = document.createElement('div');
+          btn.className = `student-tab ${uid === currentSelectedStudent ? 'active' : ''}`;
+          btn.innerHTML = `
+            <span>UID: ${uid.substring(0, 8)}...</span>
+            <button class="btn-danger" onclick="removeStudent('${uid}'); event.stopPropagation();">Remove</button>
+          `;
+          btn.onclick = () => {
+            currentSelectedStudent = uid;
+            renderLinkedStudents();
+          };
+          list.appendChild(btn);
+        });
+
+        await loadTrophiesForStudent(currentSelectedStudent);
+      }
+
+      async function linkStudent() {
+        const uid = document.getElementById('new-student-uid').value.trim();
+        if (!uid) return;
+
+        // Basic UUID format validation
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(uid)) {
+          alert('Please enter a valid Student UID (UUID format).');
+          return;
+        }
+
+        let linked = window.colUser.user_metadata?.linked_students || [];
+        if (linked.includes(uid)) {
+          alert('Student is already linked.');
+          return;
+        }
+
+        linked.push(uid);
+
+        const { data, error } = await window.supabaseClient.auth.updateUser({
+          data: { linked_students: linked }
+        });
+
+        if (error) {
+          alert('Error linking student: ' + error.message);
+        } else {
+          window.colUser = data.user;
+          document.getElementById('new-student-uid').value = '';
+          currentSelectedStudent = uid;
+          await renderLinkedStudents();
+        }
+      }
+
+      async function removeStudent(uid) {
+        if (!confirm('Are you sure you want to remove this student?')) return;
+
+        let linked = window.colUser.user_metadata?.linked_students || [];
+        linked = linked.filter(id => id !== uid);
+
+        const { data, error } = await window.supabaseClient.auth.updateUser({
+          data: { linked_students: linked }
+        });
+
+        if (error) {
+          alert('Error removing student: ' + error.message);
+        } else {
+          window.colUser = data.user;
+          await renderLinkedStudents();
+        }
+      }
+
+      async function loadTrophiesForCurrentUser() {
         const grid = document.getElementById('trophy-grid');
         grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--dim);">Loading trophies...</div>';
 
         const { data, error } = await window.getUserProgress();
+        renderTrophies(data, error, grid);
+      }
+
+      async function loadTrophiesForStudent(uid) {
+        const grid = document.getElementById('trophy-grid');
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--dim);">Loading student trophies...</div>';
+
+        if (!uid) return;
+
+        // Uses the RPC function added in Supabase to fetch achievements for the linked student UUID
+        // We chain the select to also get the achievement definitions
+        const { data, error } = await window.supabaseClient
+          .rpc('get_linked_student_achievements', { student_uids: [uid] })
+          .select('*, achievement_definitions(*)');
+
+        renderTrophies(data, error, grid);
+      }
+
+      function renderTrophies(data, error, grid) {
         if (error) {
           grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #ef4444;">Error loading progress: ${error.message}</div>`;
           return;
@@ -389,12 +621,13 @@
 
         grid.innerHTML = '';
         if (!data || data.length === 0) {
-          grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--dim);">No achievements found. Start exploring to earn some!</div>';
+          grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--dim);">No achievements found.</div>';
           return;
         }
 
         data.forEach(item => {
           const def = item.achievement_definitions;
+          if (!def) return; // safety check
           const isCompleted = item.is_completed;
 
           const card = document.createElement('div');
@@ -427,7 +660,7 @@
           : await window.getCategoryLeaderboard(cat);
 
         if (error) {
-          body.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Error loading leaderboard</td></tr>`;
+          body.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Error loading leaderboard: ${error.message}</td></tr>`;
           return;
         }
 
@@ -444,10 +677,10 @@
             <td>
               <div class="lb-user">
                 <div class="lb-avatar">${entry.avatar_url ? `<img src="${entry.avatar_url}" style="width:100%; height:100%; object-fit:cover;">` : ''}</div>
-                <span>${entry.username || entry.name || 'Anonymous'}</span>
+                <span>${entry.username || entry.name || entry.full_name || 'Anonymous'}</span>
               </div>
             </td>
-            <td class="lb-score">${entry.score || 0}</td>
+            <td class="lb-score">${entry.score || entry.total_score || 0}</td>
           `;
           body.appendChild(row);
         });
@@ -490,7 +723,12 @@
         initDashboard();
       });
 
-      window.addEventListener('DOMContentLoaded', initDashboard);
+      window.addEventListener('DOMContentLoaded', () => {
+        // Only init if supabaseClient is ready, otherwise wait for event
+        if (window.supabaseClient && window.colUser) {
+          initDashboard();
+        }
+      });
     </script>
   </body>
 </html>

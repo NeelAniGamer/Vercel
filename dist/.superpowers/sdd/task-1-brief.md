@@ -1,57 +1,46 @@
 ### Task 1: Database Schema Setup
 
 **Files:**
-- Modify: Supabase Dashboard / SQL Editor (via `execute_sql`)
+- SQL: Execute in Supabase SQL Editor
 
 **Interfaces:**
-- Produces: `achievement_definitions` table, `user_achievements` table.
+- Produces: `public.profiles` table, `public.dashboard_links` table, and RLS policies.
 
-- [ ] **Step 1: Create `achievement_definitions` table**
+- [ ] **Step 1: Run the SQL to create the `profiles` table**
 ```sql
-CREATE TYPE achievement_type AS ENUM ('score', 'milestone');
+CREATE TABLE public.profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    username TEXT UNIQUE NOT NULL,
+    full_name TEXT,
+    email TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
+);
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public profiles are viewable by everyone" ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Users can update their own profiles" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+```
 
-CREATE TABLE achievement_definitions (
+- [ ] **Step 2: Run the SQL to create the `dashboard_links` table**
+```sql
+CREATE TABLE public.dashboard_links (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    slug TEXT UNIQUE NOT NULL,
-    type achievement_type NOT NULL,
-    category TEXT NOT NULL,
-    display_name TEXT NOT NULL,
-    description TEXT,
-    is_certificate BOOLEAN DEFAULT false,
-    created_at TIMESTAMPTZ DEFAULT now()
+    parent_teacher_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    student_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+    status TEXT CHECK (status IN ('pending', 'verified')) DEFAULT 'pending',
+    verification_code TEXT,
+    linked_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()),
+    UNIQUE(parent_teacher_id, student_id)
 );
+ALTER TABLE public.dashboard_links ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Adults can view their own links" ON public.dashboard_links FOR SELECT USING (auth.uid() = parent_teacher_id);
+CREATE POLICY "Adults can create link requests" ON public.dashboard_links FOR INSERT WITH CHECK (auth.uid() = parent_teacher_id);
+CREATE POLICY "Adults can update their own link status" ON public.dashboard_links FOR UPDATE USING (auth.uid() = parent_teacher_id);
 ```
 
-- [ ] **Step 2: Create `user_achievements` table**
-```sql
-CREATE TABLE user_achievements (
-    user_id UUID REFERENCES auth.users(id) NOT NULL,
-    achievement_id UUID REFERENCES achievement_definitions(id) NOT NULL,
-    current_value NUMERIC DEFAULT 0,
-    is_completed BOOLEAN DEFAULT false,
-    completed_at TIMESTAMPTZ,
-    verification_token UUID DEFAULT gen_random_uuid(),
-    PRIMARY KEY (user_id, achievement_id)
-);
-```
+- [ ] **Step 3: Commit schema changes to a migration file in the repo for tracking**
+`git add docs/db/migrations/2026-07-24-identity-setup.sql`
+`git commit -m "db: add profiles and dashboard_links tables"`
 
-- [ ] **Step 3: Enable RLS and set policies**
-```sql
-ALTER TABLE achievement_definitions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public achievements are viewable by everyone" 
-ON achievement_definitions FOR SELECT TO anon, authenticated USING (true);
-
-ALTER TABLE user_achievements ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users can view their own achievements" 
-ON user_achievements FOR SELECT TO authenticated 
-USING (auth.uid() = user_id);
-
-CREATE POLICY "Public verification of certificates" 
-ON user_achievements FOR SELECT TO anon 
-USING (is_completed = true);
-```
-
-- [ ] **Step 4: Commit and verify schema**
-Run: `SELECT * FROM achievement_definitions;`
-Expected: Empty table, no errors.
+---
 

@@ -15,7 +15,7 @@
     { id: 'neel', name: 'Neel', role: 'Lead Developer', colorKey: 'ion', size: 1.8, satellites: 8 },
     { id: 'ansh', name: 'Ansh', role: 'Co-Developer & QA', colorKey: 'signal', size: 1.6, satellites: 6 },
     { id: 'aarush', name: 'Aarush', role: 'UI/UX & Physics', colorKey: 'plasma', size: 1.7, satellites: 7 },
-    { id: 'yashan', name: 'Yashan', role: 'QA & Idea Dev', colorKey: 'teal', size: 1.5, satellites: 5 }
+    { id: 'yashan', name: 'Yash Raj', role: 'QA & Idea Dev', colorKey: 'teal', size: 1.5, satellites: 5 }
   ]
 
   function createStarSystem(member, center) {
@@ -174,7 +174,7 @@
       new THREE.Vector3(-25, 15, -10),   // Neel
       new THREE.Vector3(25, -10, -10),   // Ansh
       new THREE.Vector3(-15, -20, 15),   // Aarush
-      new THREE.Vector3(20, 10, 20)      // Yashan
+      new THREE.Vector3(20, 10, 20)      // Yash Raj
     ]
 
     MEMBERS.forEach((m, i) => {

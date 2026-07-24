@@ -570,6 +570,29 @@ window.ui = Object.assign(window.ui || {}, {
     }
     this.show('ss')
     this._rain()
+    
+    // Update Get Started button if user has already made progress
+    let hasStarted = false;
+    if (S.completed && S.completed.length > 0) hasStarted = true;
+    if (S.started && Object.keys(S.started).length > 0) hasStarted = true;
+    
+    const enterBtn = document.getElementById('enter-academy-btn');
+    if (enterBtn) {
+      if (hasStarted) {
+        enterBtn.textContent = 'Continue Learning';
+        enterBtn.onclick = () => ui.showLevels();
+      } else {
+        enterBtn.textContent = 'Get Started';
+        enterBtn.onclick = () => {
+          if (typeof showOnboardingFromStart === 'function') {
+            showOnboardingFromStart();
+          } else {
+            ui.showLevels();
+          }
+        };
+      }
+    }
+
     if (!S.name || S.name === 'Traffic Hero') {
       setTimeout(() => this.showNamePrompt(), 1000)
     }

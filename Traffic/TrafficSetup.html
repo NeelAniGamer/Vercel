@@ -749,6 +749,11 @@
           </div>
 
           <div class="input-group">
+            <label for="prof-username">Username (Public on Leaderboard)</label>
+            <input type="text" id="prof-username" placeholder="@your_username" required autocomplete="username" oninput="if(this.value && !this.value.startsWith('@')) this.value = '@' + this.value;" />
+          </div>
+
+          <div class="input-group">
             <label for="prof-age">Your Age <span style="color:var(--dim);font-weight:400;font-size:0.8rem">(for best experience)</span></label>
             <input type="number" id="prof-age" min="8" max="99" placeholder="E.g., 18" required autocomplete="off" />
           </div>
@@ -803,10 +808,20 @@
 
     <script>
       // --- THEME LOGIC ---
-      const currentTheme = localStorage.getItem('theme') || 'dark'
-      if (currentTheme === 'light') {
-        document.body.classList.add('lm')
+      function applyTheme() {
+        const currentTheme = localStorage.getItem('theme') || 'dark'
+        if (currentTheme === 'light') {
+          document.body.classList.add('lm')
+        } else {
+          document.body.classList.remove('lm')
+        }
       }
+      applyTheme()
+      
+      // Listen for theme changes from other tabs/frames
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'theme') applyTheme()
+      })
 
       // --- WIZARD LOGIC ---
       let currentStep = 1
@@ -1192,7 +1207,7 @@
         }
       })
 
-      setTimeout(() => {
+      setTimeout(async () => {
         if (window.colUser) {
           showLocalSetup()
           document.getElementById('cloud-status').style.display = 'block'
@@ -1200,6 +1215,14 @@
             if (!document.getElementById('prof-name').value) {
               document.getElementById('prof-name').value = window.colUser.user_metadata.full_name
             }
+          }
+          if (window.supabaseClient) {
+            try {
+              const { data } = await window.supabaseClient.from('profiles').select('username').eq('id', window.colUser.id).single()
+              if (data && data.username && !document.getElementById('prof-username').value) {
+                document.getElementById('prof-username').value = data.username.startsWith('@') ? data.username : '@' + data.username
+              }
+            } catch (e) {}
           }
         }
       }, 500)
@@ -1211,6 +1234,7 @@
       } catch (e) {}
 
       if (S.name) document.getElementById('prof-name').value = S.name
+      if (S.username) document.getElementById('prof-username').value = S.username
       if (S.vehicle) document.getElementById('prof-veh').value = S.vehicle
       if (S.age) document.getElementById('prof-age').value = S.age
       if (S.language) document.getElementById('prof-lang').value = S.language
@@ -1225,7 +1249,7 @@
         updateWizardStep(totalSteps)
       }
 
-      document.getElementById('vehicleForm').addEventListener('submit', function (e) {
+      document.getElementById('vehicleForm').addEventListener('submit', async function (e) {
         e.preventDefault()
 
         const name = document.getElementById('prof-name').value.trim()
@@ -1233,6 +1257,7 @@
         const pin = document.getElementById('prof-pin').value.trim()
         const age = parseInt(document.getElementById('prof-age').value) || 18
         const language = document.getElementById('prof-lang').value
+        let username = document.getElementById('prof-username').value.trim()
 
         if (name.length < 2) {
           alert('Please enter a valid name.')
@@ -1244,7 +1269,38 @@
           return
         }
 
-        const tUser = { name, vehicle: veh, pin, age, language, createdAt: new Date().toISOString() }
+        if (username) {
+          if (!username.startsWith('@')) username = '@' + username
+          if (username.length < 3) {
+            alert('Username must be at least 2 characters long.')
+            return
+          }
+          if (window.supabaseClient && window.colUser) {
+            try {
+              // Check if username is already taken
+              const { data: existing, error: err } = await window.supabaseClient
+                .from('profiles')
+                .select('id')
+                .eq('username', username)
+                .neq('id', window.colUser.id)
+                .maybeSingle()
+              
+              if (existing) {
+                alert('That username is already taken. Please choose another.')
+                return
+              }
+
+              // Update profile
+              await window.supabaseClient
+                .from('profiles')
+                .upsert({ id: window.colUser.id, username: username, full_name: name, avatar_url: '' })
+            } catch (err) {
+              console.warn('Error saving username to cloud', err)
+            }
+          }
+        }
+
+        const tUser = { name, username, vehicle: veh, pin, age, language, createdAt: new Date().toISOString() }
         localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
 
         let L = {}
@@ -1262,7 +1318,13 @@
         updateWizardStep(totalSteps)
         
         setTimeout(() => {
-          window.location.href = 'Academy.html'
+          const urlParams = new URLSearchParams(window.location.search);
+          const returnTo = urlParams.get('returnTo');
+          if (returnTo && /^[a-zA-Z0-9_-]+\.html$/.test(returnTo)) {
+            window.location.href = returnTo;
+          } else {
+            window.location.href = 'Academy.html';
+          }
         }, 500)
       })
 

@@ -1,0 +1,1 @@
+class Game { method1() { method2() {} } }

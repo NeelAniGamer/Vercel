@@ -33,6 +33,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="traffic-charts.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
+    <link rel="stylesheet" href="welcome-back.css" />
 
 <style>
       :root {
@@ -63,6 +64,24 @@
         min-height: 100dvh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      body.lm {
+        --void: #f3f2eb;
+        --ink: #111827;
+        --line: rgba(0, 0, 0, 0.08);
+        --lineb: rgba(0, 0, 0, 0.16);
+        --signal: #b8720a;
+        --em: #1b9d66;
+        --teal: #0a8c7a;
+        --ion: #0e72a0;
+        --plasma: #6f4fe0;
+        --red: #dc2626;
+        background: var(--void);
+        color: var(--ink);
       }
 
       #bg-canvas {
@@ -78,18 +97,99 @@
       .setup-container {
         position: relative;
         z-index: 10;
-        background: rgba(11, 16, 26, 0.6);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--lineb);
+        background: rgba(11, 16, 26, 0.65);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 24px;
-        padding: 40px;
-        width: 100%;
-        max-width: 480px;
+        width: 98%;
+        max-width: 1500px;
+        min-height: 600px;
+        display: flex;
+        overflow: hidden;
         box-shadow:
-          0 25px 60px rgba(0, 0, 0, 0.8),
-          inset 0 1px 1px rgba(255, 255, 255, 0.1);
+          0 40px 80px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(255, 255, 255, 0.05) inset;
         transition: all 0.4s ease;
+        margin: auto;
+      }
+
+      
+
+      .setup-left-pane {
+        width: 40%;
+        background: linear-gradient(135deg, rgba(7, 10, 20, 0.7) 0%, rgba(12, 18, 36, 0.7) 100%);
+        border-right: 1px solid var(--lineb);
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+      
+      body.lm .setup-left-pane {
+        background: linear-gradient(135deg, rgba(240, 244, 255, 0.7) 0%, rgba(220, 230, 255, 0.7) 100%);
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      
+      .setup-right-pane {
+        width: 60%;
+        padding: 60px 80px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .auth-slider-wrapper {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      .auth-slider {
+        display: flex;
+        width: 200%;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        align-self: flex-start;
+      }
+      
+      .auth-slide {
+        width: 50%;
+        flex-shrink: 0;
+        padding-right: 10px;
+        transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      .slide-login #login-panel { opacity: 1; transform: scale(1); pointer-events: auto; }
+      .slide-login #signup-panel { opacity: 0; transform: scale(0.95); pointer-events: none; }
+      .slide-signup #signup-panel { opacity: 1; transform: scale(1); pointer-events: auto; }
+      .slide-signup #login-panel { opacity: 0; transform: scale(0.95); pointer-events: none; }
+
+      .slide-login .auth-slider {
+        transform: translateX(0);
+      }
+      
+      .slide-signup .auth-slider {
+        transform: translateX(-50%);
+      }
+
+      @media (max-width: 768px) {
+        .setup-container {
+          flex-direction: column;
+          max-width: 480px;
+        }
+        .setup-left-pane {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--lineb);
+          padding: 30px;
+        }
+        .setup-right-pane {
+          width: 100%;
+          padding: 30px;
+        }
       }
 
       body.lm .setup-container {
@@ -461,165 +561,196 @@
     </style>
       <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
       <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/Traffic/TrafficSetup" />
-  </head>
+  <style>
+      .tab-btn:hover:not(.active) { color: var(--ink) !important; background: rgba(255,255,255,0.05) !important; }
+      .tab-btn.active { background: rgba(255,255,255,0.05) !important; color: var(--signal) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+      .btn-submit { font-family: var(--sans, 'Inter'), sans-serif; }
+    </style>
+<style>
+      .remote-auth-panel { background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; margin: 0 auto; width: 100%; max-width: 520px; display: flex; flex-direction: column; justify-content: center; min-height: 100%; }
+      .remote-auth-title { font-size: 1.8rem; color: var(--ink); font-weight: 700; margin-bottom: 8px; font-family: var(--sans, 'Inter'), sans-serif; text-align: center; }
+      .remote-auth-subtitle { font-size: 0.95rem; color: var(--dim); margin-bottom: 30px; text-align: center; }
+      .remote-auth-subtitle a { color: var(--ion); text-decoration: none; font-weight: 600; cursor: pointer; transition: color 0.2s; }
+      .remote-auth-subtitle a:hover { color: #fff; text-decoration: underline; }
+      .remote-input-group { margin-bottom: 16px; position: relative; }
+      .remote-input { width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; color: var(--ink); font-size: 0.95rem; outline: none; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); font-family: var(--sans, 'Inter'), sans-serif; }
+      .remote-input:-webkit-autofill,
+      .remote-input:-webkit-autofill:hover,
+      .remote-input:-webkit-autofill:focus,
+      .remote-input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #1a2333 inset !important;
+        -webkit-text-fill-color: var(--ink) !important;
+        transition: background-color 5000s ease-in-out 0s;
+        border-radius: 12px;
+      }
+      .remote-input:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255,255,255,0.2); }
+      .remote-input:focus { background: rgba(255, 255, 255, 0.1); border-color: var(--ion); box-shadow: 0 0 0 3px rgba(94, 212, 245, 0.15); }
+      .remote-btn-primary { position: relative; overflow: hidden; width: 100%; background: var(--ion); color: var(--void); border: none; border-radius: 24px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 10px; font-family: var(--sans, 'Inter'), sans-serif; }
+      .remote-btn-primary::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent); transform: skewX(-20deg); transition: all 0.6s ease; }
+      .remote-btn-primary:hover::after { left: 150%; }
+      .remote-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(94, 212, 245, 0.35); }
+      .remote-divider { display: flex; align-items: center; text-align: center; color: var(--dim); font-size: 0.8rem; margin: 25px 0; font-weight: 600; letter-spacing: 1px; }
+      .remote-divider::before, .remote-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--line); }
+      .remote-divider:not(:empty)::before { margin-right: 15px; }
+      .remote-divider:not(:empty)::after { margin-left: 15px; }
+      .remote-btn-google { width: 100%; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 24px; padding: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--sans, 'Inter'), sans-serif; }
+      .remote-btn-google:hover { background: var(--line); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+      .remote-role-group { display: flex; gap: 10px; margin-bottom: 20px; }
+      .remote-role-btn { flex: 1; background: var(--void); border: 1px solid var(--line); border-radius: 12px; padding: 12px; color: var(--dim); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+      .remote-role-btn.active { background: rgba(94, 212, 245, 0.1); border-color: var(--ion); color: var(--ion); }
+      .remote-role-btn:hover:not(.active) { border-color: var(--lineb); color: var(--ink); }
+      .remote-bottom-links { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; align-items: center; }
+      .remote-bottom-link { background: none; border: none; color: var(--dim); font-size: 0.9rem; cursor: pointer; padding: 5px; transition: color 0.2s; }
+      .remote-bottom-link:hover { color: var(--ink); text-decoration: underline; }
+    </style>
+</head>
   <body>
     <canvas id="bg-canvas"></canvas>
 
     <div class="setup-container">
-      <!-- Logo Branding Header -->
-      <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:24px; cursor:pointer;" onclick="window.location.href='Academy.html'">
-        <img src="../Icon.png" alt="Class Of Learners" style="height:44px; width:44px; border-radius:12px; object-fit:contain; box-shadow:0 4px 14px rgba(0,0,0,0.3);" onerror="this.src='Icon.png'" />
-        <span style="font-family:'Lora',serif; font-weight:700; font-size:1.4rem; color:var(--ink); letter-spacing:-0.02em;">Traffic Academy</span>
-      </div>
-
-      <!-- Wizard Stepper -->
-      <div class="wizard-stepper" id="wizard-stepper">
-        <div class="step-progress" id="step-progress" style="width: 0%"></div>
-        <div class="step-item" data-step="1">
-          <div class="step-circle">1</div>
-          <span class="step-label">Sign In</span>
+      <!-- Left Pane: Branding & Progress -->
+      <div class="setup-left-pane">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:16px; margin-bottom:24px; cursor:pointer;" onclick="window.location.href='Academy.html'">
+          <img src="../Icon.png" alt="Class Of Learners" style="height:72px; width:72px; border-radius:16px; object-fit:contain; box-shadow:0 8px 24px rgba(0,0,0,0.4);" onerror="this.src='Icon.png'" />
+          <span style="font-family:'Lora',serif; font-weight:700; font-size:1.8rem; color:var(--ink); letter-spacing:-0.02em;">Traffic Academy</span>
         </div>
-        <div class="step-item" data-step="2">
-          <div class="step-circle">2</div>
-          <span class="step-label">Profile</span>
-        </div>
-        <div class="step-item" data-step="3">
-          <div class="step-circle">3</div>
-          <span class="step-label">Vehicle</span>
+        <p class="subtitle" style="font-size: 0.95rem; opacity: 0.85; line-height: 1.5; margin-bottom: 24px;">The ultimate driving simulator.<br>Master the roads, rules, and reality.</p>
+        
+        <!-- Progress Ring -->
+        <div class="setup-progress-ring" style="border:none; background:transparent; padding:0; margin-top:16px;">
+          <canvas id="setup-progress-ring" width="80" height="80" data-chart="progress-ring" data-value="0"></canvas>
+          <div class="progress-ring-info">
+            <div class="progress-ring-pct" id="progress-pct">0%</div>
+            <div class="progress-ring-label">Setup Complete</div>
+          </div>
         </div>
       </div>
 
-      <h1>Welcome to the Academy</h1>
-      <p class="subtitle" id="subtitle-text">Let's setup your driver profile to get started.</p>
-
-      <!-- Progress Ring -->
-      <div class="setup-progress-ring">
-        <canvas id="setup-progress-ring" width="80" height="80" data-chart="progress-ring" data-value="0"></canvas>
-        <div class="progress-ring-info">
-          <div class="progress-ring-pct" id="progress-pct">0%</div>
-          <div class="progress-ring-label">Setup Complete</div>
+      <!-- Right Pane: Form Steps -->
+      <div class="setup-right-pane">
+        <!-- Wizard Stepper -->
+        <div class="wizard-stepper" id="wizard-stepper">
+          <div class="step-progress" id="step-progress" style="width: 0%"></div>
+          <div class="step-item" data-step="1">
+            <div class="step-circle">1</div>
+            <span class="step-label">Sign In</span>
+          </div>
+          <div class="step-item" data-step="2">
+            <div class="step-circle">2</div>
+            <span class="step-label">Profile</span>
+          </div>
+          <div class="step-item" data-step="3">
+            <div class="step-circle">3</div>
+            <span class="step-label">Vehicle</span>
+          </div>
         </div>
-      </div>
 
-      <!-- Auth Area (Step 1) -->
+        <h1 id="step-title-h1" style="font-size: 2rem;">Welcome</h1>
+        <p class="subtitle" id="subtitle-text">Let's setup your driver profile to get started.</p>
+
+            <!-- Auth Area (Step 1) - Remote Style -->
       <div id="authArea" class="wizard-step" data-step="1">
-        <div style="display: flex; gap: 10px; margin-bottom: 20px">
-          <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
-          <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+        <div class="remote-auth-panel auth-slider-wrapper slide-login" id="auth-slider-container" style="flex: 1; display: flex; align-items: center;">
+          <div class="auth-slider">
+            <!-- Login Tab -->
+            <div id="login-panel" class="auth-slide">
+              <div id="col-auth-err" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; text-align: left;"></div>
+              
+              <div class="remote-input-group">
+                <input type="email" id="auth-email" class="remote-input" placeholder="Email address" autocomplete="email" />
+              </div>
+              <div class="remote-input-group">
+                <input type="password" id="auth-pass" class="remote-input" placeholder="Password" autocomplete="current-password" />
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 0.85rem; color: var(--dim);">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <input type="checkbox" style="accent-color: var(--ion); cursor: pointer;" checked> Remember me
+                </label>
+                <a href="#" style="color: var(--ion); text-decoration: none;">Forgot password?</a>
+              </div>
+
+              <button class="remote-btn-primary" id="auth-submit-btn" onclick="handleEmailAuth()">Log in</button>
+
+              <div class="remote-divider">OR</div>
+
+              <button class="remote-btn-google" onclick="handleGoogleAuth()">
+                <svg width="18" height="18" viewBox="0 0 48 48">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Log In With Google
+              </button>
+              
+              <p class="remote-auth-subtitle" style="margin-top: 24px;">Don't have an account yet? <a onclick="switchTab('signup')" style="cursor:pointer; color:var(--signal);">Sign up now</a></p>
+              
+              <button class="remote-btn-primary" id="auth-dashboard-btn" style="display: none; margin-top: 15px; background: transparent; border: 1px solid var(--em); color: var(--em)" onclick="window.location.href = 'TrafficDashboard.html'">Go to Dashboard &rarr;</button>
+            </div>
+
+            <!-- Signup Tab -->
+            <div id="signup-panel" class="auth-slide">
+              <div id="col-auth-err-signup" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; text-align: left;"></div>
+
+              <div class="remote-role-group">
+                <button type="button" class="remote-role-btn active" id="btn-signup-student" onclick="selectRole('student', 'signup')">
+                  <span style="font-size: 1.1rem;">🎓</span> Student
+                </button>
+                <button type="button" class="remote-role-btn" id="btn-signup-parent" onclick="selectRole('parent_teacher', 'signup')">
+                  <span style="font-size: 1.1rem;">👨‍👩‍👧‍👦</span> Parent/Teacher
+                </button>
+              </div>
+              
+              <input type="hidden" id="signup-role" value="student" />
+
+              <div class="remote-input-group">
+                <input type="email" id="signup-email" class="remote-input" placeholder="Email address" autocomplete="email" />
+              </div>
+              <div class="remote-input-group">
+                <input type="password" id="signup-pass" class="remote-input" placeholder="Password" autocomplete="new-password" />
+              </div>
+              <div class="remote-input-group">
+                <input type="password" id="signup-pass-confirm" class="remote-input" placeholder="Confirm Password" autocomplete="new-password" />
+              </div>
+
+              <button class="remote-btn-primary" id="signup-submit-btn" onclick="handleEmailAuth()">Create Account</button>
+
+              <div class="remote-divider">OR</div>
+
+              <button class="remote-btn-google" onclick="handleGoogleAuth()">
+                <svg width="18" height="18" viewBox="0 0 48 48">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Log In With Google
+              </button>
+              
+              <p class="remote-auth-subtitle" style="margin-top: 24px;">Already have an account? <a onclick="switchTab('login')" style="cursor:pointer; color:var(--signal);">Log in</a></p>
+            </div>
+          </div>
+
+          <div class="remote-bottom-links" style="margin-top: 24px;">
+            <button type="button" class="remote-bottom-link" onclick="goToStep(2); updateWizardStep(2)">Skip Cloud & Play Locally</button>
+            <button type="button" class="remote-bottom-link" onclick="window.location.href = 'Academy.html'">Back to Academy</button>
+          </div>
         </div>
+      </div>
 
-        <div id="col-auth-err" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600"></div>
-
-        <!-- Login Tab -->
-        <div id="login-panel" style="display: block">
-          <div class="input-group">
-            <label for="auth-email">Email Address</label>
-            <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
-          </div>
-          <div class="input-group">
-            <label for="auth-pass">Password</label>
-            <input type="password" id="auth-pass" placeholder="••••••••" autocomplete="current-password" />
-          </div>
-
-          <button class="btn-submit" id="auth-submit-btn" onclick="handleEmailAuth()">Sign In with Email</button>
-
-          <div style="display: flex; align-items: center; margin: 15px 0; color: var(--dim); font-size: 0.9rem">
-            <div style="flex: 1; height: 1px; background: var(--line)"></div>
-            <div style="padding: 0 10px">OR</div>
-            <div style="flex: 1; height: 1px; background: var(--line)"></div>
-          </div>
-
-          <button class="btn-submit btn-outline" onclick="handleGoogleAuth()" style="background: rgba(255, 255, 255, 0.05); color: var(--ink)">
-            <svg width="18" height="18" viewBox="0 0 24 24" style="margin-right: 8px">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-            </svg>
-            Continue with Google
-          </button>
-
-          <button type="button" class="btn-submit btn-outline" onclick="goToStep(2); updateWizardStep(2)">Skip Cloud & Play Locally</button>
-          <button type="button" class="btn-submit btn-outline" onclick="window.location.href = 'Academy.html'" style="margin-top: 15px">Back to Academy</button>
-          <button
-            type="button"
-            class="btn-submit btn-outline"
-            id="auth-dashboard-btn"
-            style="display: none; margin-top: 15px; border-color: var(--em); color: var(--em)"
-            onclick="window.location.href = 'TrafficDashboard.html'"
-          >
-            Go to Dashboard &rarr;
-          </button>
-        </div>
-
-        <!-- Signup Tab -->
-        <div id="signup-panel" style="display: none">
-          <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 16px; text-align: center">Choose your role to continue</p>
-          
-          <div class="role-selector" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px">
-            <button class="role-btn" onclick="selectRole('student')" style="display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--void); border: 2px solid var(--line); border-radius: 12px; color: var(--ink); font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s;">
-              <span style="font-size: 1.5rem;">🎓</span>
-              <span>Sign Up as <strong>Student</strong></span>
-              <span style="margin-left: auto; font-size: 0.75rem; color: var(--muted);">Earn certificates, track progress</span>
-            </button>
-            <button class="role-btn" onclick="selectRole('parent')" style="display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--void); border: 2px solid var(--line); border-radius: 12px; color: var(--ink); font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s;">
-              <span style="font-size: 1.5rem;">👨‍👩‍👧</span>
-              <span>Sign Up as <strong>Parent</strong></span>
-              <span style="margin-left: auto; font-size: 0.75rem; color: var(--muted);">Monitor child's progress</span>
-            </button>
-            <button class="role-btn" onclick="selectRole('teacher')" style="display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--void); border: 2px solid var(--line); border-radius: 12px; color: var(--ink); font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s;">
-              <span style="font-size: 1.5rem;">🏫</span>
-              <span>Sign Up as <strong>Teacher</strong></span>
-              <span style="margin-left: auto; font-size: 0.75rem; color: var(--muted);">Manage class & students</span>
-            </button>
-          </div>
-
-          <div id="col-auth-err-signup" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600"></div>
-
-          <div class="input-group">
-            <label for="signup-email">Email Address</label>
-            <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email" />
-          </div>
-          <div class="input-group">
-            <label for="signup-pass">Password</label>
-            <input type="password" id="signup-pass" placeholder="••••••••" autocomplete="new-password" />
-          </div>
-          <div class="input-group">
-            <label for="signup-pass-confirm">Confirm Password</label>
-            <input type="password" id="signup-pass-confirm" placeholder="••••••••" autocomplete="new-password" />
-          </div>
-
-          <input type="hidden" id="signup-role" value="student" />
-          
-          <button class="btn-submit" id="signup-submit-btn" onclick="handleEmailAuth()">Create Account</button>
-
-          <div style="display: flex; align-items: center; margin: 15px 0; color: var(--dim); font-size: 0.9rem">
-            <div style="flex: 1; height: 1px; background: var(--line)"></div>
-            <div style="padding: 0 10px">OR</div>
-            <div style="flex: 1; height: 1px; background: var(--line)"></div>
-          </div>
-
-          <button class="btn-submit btn-outline" onclick="handleGoogleAuth()" style="background: rgba(255, 255, 255, 0.05); color: var(--ink)">
-            <svg width="18" height="18" viewBox="0 0 24 24" style="margin-right: 8px">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-            </svg>
-            Continue with Google
-          </button>
-
-          <button type="button" class="btn-submit btn-outline" onclick="goToStep(2); updateWizardStep(2)">Skip Cloud & Play Locally</button>
-          <button type="button" class="btn-submit btn-outline" onclick="window.location.href = 'Academy.html'" style="margin-top: 15px">Back to Academy</button>
-        </div>
-
-      <!-- Setup Form Area - Step 2: Personal Details -->
+        <!-- Setup Form Area - Step 2: Personal Details -->
       <div id="setupFormArea" class="wizard-step" data-step="2" style="display: none">
         <div id="cloud-status" style="margin-bottom: 20px; font-weight: 600; color: var(--em); display: none">✅ Cloud Account Connected</div>
         <form id="setupForm">
           <div class="input-group">
             <label for="prof-name">Full Name (For Certificate)</label>
             <input type="text" id="prof-name" placeholder="E.g., John Doe" required autocomplete="name" />
+          </div>
+
+          <div class="input-group">
+            <label for="prof-username">Username (Public on Leaderboard)</label>
+            <input type="text" id="prof-username" placeholder="@your_username" required autocomplete="username" oninput="if(this.value && !this.value.startsWith('@')) this.value = '@' + this.value;" />
           </div>
 
           <div class="input-group">
@@ -672,14 +803,25 @@
           </button>
         </form>
       </div>
+      </div> <!-- End right pane -->
     </div>
 
     <script>
       // --- THEME LOGIC ---
-      const currentTheme = localStorage.getItem('theme') || 'dark'
-      if (currentTheme === 'light') {
-        document.body.classList.add('lm')
+      function applyTheme() {
+        const currentTheme = localStorage.getItem('theme') || 'dark'
+        if (currentTheme === 'light') {
+          document.body.classList.add('lm')
+        } else {
+          document.body.classList.remove('lm')
+        }
       }
+      applyTheme()
+      
+      // Listen for theme changes from other tabs/frames
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'theme') applyTheme()
+      })
 
       // --- WIZARD LOGIC ---
       let currentStep = 1
@@ -883,47 +1025,59 @@
       let authMode = 'login'
       let selectedRole = 'student'
 
-      function selectRole(role) {
+      function selectRole(role, mode) {
         selectedRole = role
-        document.getElementById('signup-role').value = role
-        document.querySelectorAll('.role-btn').forEach(btn => {
-          btn.classList.remove('selected')
-          btn.style.borderColor = 'var(--line)'
-        })
-        event.currentTarget.classList.add('selected')
-        event.currentTarget.style.borderColor = 'var(--signal)'
+        if (mode === 'signup') {
+          document.getElementById('signup-role').value = role
+          document.querySelectorAll('.role-btn-signup').forEach(btn => {
+            btn.classList.remove('active')
+            btn.style.borderColor = 'var(--line)'
+            btn.style.background = 'var(--void)'
+            btn.style.color = 'var(--ink)'
+          })
+          const btnId = role === 'student' ? 'btn-signup-student' : 'btn-signup-parent'
+          const btn = document.getElementById(btnId)
+          if(btn) {
+            btn.classList.add('active')
+            btn.style.borderColor = 'var(--signal)'
+            btn.style.background = 'rgba(242, 184, 75, 0.1)'
+            btn.style.color = 'var(--signal)'
+          }
+        } else {
+          document.querySelectorAll('.role-btn-login').forEach(btn => {
+            btn.classList.remove('active')
+            btn.style.borderColor = 'var(--line)'
+            btn.style.background = 'var(--void)'
+            btn.style.color = 'var(--ink)'
+          })
+          const btnId = role === 'student' ? 'btn-login-student' : 'btn-login-parent'
+          const btn = document.getElementById(btnId)
+          if(btn) {
+            btn.classList.add('active')
+            btn.style.borderColor = 'var(--signal)'
+            btn.style.background = 'rgba(242, 184, 75, 0.1)'
+            btn.style.color = 'var(--signal)'
+          }
+        }
       }
 
       function switchTab(mode) {
         authMode = mode
-        const btnLogin = document.getElementById('tab-login')
-        const btnSignup = document.getElementById('tab-signup')
-        const loginPanel = document.getElementById('login-panel')
-        const signupPanel = document.getElementById('signup-panel')
-        const submitBtn = document.getElementById('auth-submit-btn')
-
+        const container = document.getElementById('auth-slider-container')
+        const stepTitle = document.getElementById('step-title-h1')
+        
         if (mode === 'login') {
-          btnLogin.classList.add('active')
-          btnSignup.classList.remove('active')
-          loginPanel.style.display = 'block'
-          signupPanel.style.display = 'none'
-          submitBtn.innerHTML = 'Sign In with Email'
+          container.classList.remove('slide-signup')
+          container.classList.add('slide-login')
+          if (stepTitle) stepTitle.textContent = "Welcome back!"
         } else {
-          btnSignup.classList.add('active')
-          btnLogin.classList.remove('active')
-          loginPanel.style.display = 'none'
-          signupPanel.style.display = 'block'
-          submitBtn.innerHTML = 'Create Account'
+          container.classList.remove('slide-login')
+          container.classList.add('slide-signup')
+          if (stepTitle) stepTitle.textContent = "Create an account"
         }
       }
 
-      function selectRole(role) {
-        document.getElementById('signup-role').value = role
-        document.querySelectorAll('.role-btn').forEach(btn => {
-          btn.classList.remove('selected')
-        })
-        event.currentTarget.classList.add('selected')
-      }
+
 
       async function handleEmailAuth() {
         if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
@@ -1006,12 +1160,18 @@
       }
 
       async function handleGoogleAuth() {
-        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
         try {
-          await window.supabaseClient.auth.signInWithOAuth({
+          var allowedOrigin = 'https://advancedlogiclabs.dpdns.org';
+          var currentOrigin = window.location.origin;
+          var redirectUrl = currentOrigin === allowedOrigin ? window.location.href : currentOrigin + window.location.pathname;
+          
+          let res = await window.supabaseClient.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: window.location.origin + window.location.pathname }
+            options: {
+              redirectTo: redirectUrl,
+            },
           })
+          if (res.error) throw res.error
         } catch (err) {
           alert('Google Sign-In failed: ' + err.message)
         }
@@ -1021,9 +1181,24 @@
         goToStep(2)
       }
 
-      window.addEventListener('col-auth-changed', (e) => {
+      window.addEventListener('col-auth-changed', async (e) => {
         const user = e.detail && e.detail.user ? e.detail.user : window.colUser
         if (user) {
+          // Check if we need to apply a pending role from a Google OAuth signin
+          const pendingRole = localStorage.getItem('pending_role');
+          if (pendingRole && (!user.user_metadata || !user.user_metadata.role)) {
+            try {
+              await window.supabaseClient.auth.updateUser({
+                data: { role: pendingRole }
+              });
+              user.user_metadata = user.user_metadata || {};
+              user.user_metadata.role = pendingRole;
+            } catch(err) {
+              console.error("Failed to update role:", err);
+            }
+            localStorage.removeItem('pending_role');
+          }
+
           showLocalSetup()
           document.getElementById('cloud-status').style.display = 'block'
           if (user.user_metadata && user.user_metadata.full_name) {
@@ -1032,7 +1207,7 @@
         }
       })
 
-      setTimeout(() => {
+      setTimeout(async () => {
         if (window.colUser) {
           showLocalSetup()
           document.getElementById('cloud-status').style.display = 'block'
@@ -1040,6 +1215,14 @@
             if (!document.getElementById('prof-name').value) {
               document.getElementById('prof-name').value = window.colUser.user_metadata.full_name
             }
+          }
+          if (window.supabaseClient) {
+            try {
+              const { data } = await window.supabaseClient.from('profiles').select('username').eq('id', window.colUser.id).single()
+              if (data && data.username && !document.getElementById('prof-username').value) {
+                document.getElementById('prof-username').value = data.username.startsWith('@') ? data.username : '@' + data.username
+              }
+            } catch (e) {}
           }
         }
       }, 500)
@@ -1051,6 +1234,7 @@
       } catch (e) {}
 
       if (S.name) document.getElementById('prof-name').value = S.name
+      if (S.username) document.getElementById('prof-username').value = S.username
       if (S.vehicle) document.getElementById('prof-veh').value = S.vehicle
       if (S.age) document.getElementById('prof-age').value = S.age
       if (S.language) document.getElementById('prof-lang').value = S.language
@@ -1065,7 +1249,7 @@
         updateWizardStep(totalSteps)
       }
 
-      document.getElementById('vehicleForm').addEventListener('submit', function (e) {
+      document.getElementById('vehicleForm').addEventListener('submit', async function (e) {
         e.preventDefault()
 
         const name = document.getElementById('prof-name').value.trim()
@@ -1073,6 +1257,7 @@
         const pin = document.getElementById('prof-pin').value.trim()
         const age = parseInt(document.getElementById('prof-age').value) || 18
         const language = document.getElementById('prof-lang').value
+        let username = document.getElementById('prof-username').value.trim()
 
         if (name.length < 2) {
           alert('Please enter a valid name.')
@@ -1084,7 +1269,38 @@
           return
         }
 
-        const tUser = { name, vehicle: veh, pin, age, language, createdAt: new Date().toISOString() }
+        if (username) {
+          if (!username.startsWith('@')) username = '@' + username
+          if (username.length < 3) {
+            alert('Username must be at least 2 characters long.')
+            return
+          }
+          if (window.supabaseClient && window.colUser) {
+            try {
+              // Check if username is already taken
+              const { data: existing, error: err } = await window.supabaseClient
+                .from('profiles')
+                .select('id')
+                .eq('username', username)
+                .neq('id', window.colUser.id)
+                .maybeSingle()
+              
+              if (existing) {
+                alert('That username is already taken. Please choose another.')
+                return
+              }
+
+              // Update profile
+              await window.supabaseClient
+                .from('profiles')
+                .upsert({ id: window.colUser.id, username: username, full_name: name, avatar_url: '' })
+            } catch (err) {
+              console.warn('Error saving username to cloud', err)
+            }
+          }
+        }
+
+        const tUser = { name, username, vehicle: veh, pin, age, language, createdAt: new Date().toISOString() }
         localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
 
         let L = {}
@@ -1102,38 +1318,15 @@
         updateWizardStep(totalSteps)
         
         setTimeout(() => {
-          window.location.href = 'Academy.html'
+          const urlParams = new URLSearchParams(window.location.search);
+          const returnTo = urlParams.get('returnTo');
+          if (returnTo && /^[a-zA-Z0-9_-]+\.html$/.test(returnTo)) {
+            window.location.href = returnTo;
+          } else {
+            window.location.href = 'Academy.html';
+          }
         }, 500)
       })
-
-      // --- WIZARD NAVIGATION ---
-      const totalSteps = 3
-
-      function goToStep(step) {
-        document.querySelectorAll('.wizard-step').forEach(el => el.style.display = 'none')
-        const target = step === 1 ? document.getElementById('authArea') : 
-                       step === 2 ? document.getElementById('setupFormArea') :
-                       document.getElementById('vehicleStep')
-        if (target) target.style.display = 'block'
-        updateWizardStep(step)
-      }
-
-      function updateWizardStep(step) {
-        // Update step circles
-        document.querySelectorAll('.step-item').forEach((item, i) => {
-          const stepNum = i + 1
-          item.classList.remove('active', 'completed')
-          if (stepNum < step) item.classList.add('completed')
-          else if (stepNum === step) item.classList.add('active')
-        })
-
-        // Update progress bar
-        const progressBar = document.querySelector('.wizard-stepper .step-progress')
-        if (progressBar) {
-          const pct = ((step - 1) / (totalSteps - 1)) * 100
-          progressBar.style.width = pct + '%'
-        }
-      }
 
       // Initialize progress ring
       const setupProgressCanvas = document.getElementById('setup-progress-ring')
@@ -1148,5 +1341,6 @@
       // Initialize on load
       updateWizardStep(1)
     </script>
-  </body>
+  <script src="welcome-back.js"></script>
+</body>
 </html>

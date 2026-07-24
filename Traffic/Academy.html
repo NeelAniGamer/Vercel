@@ -190,13 +190,53 @@
         background: linear-gradient(90deg, #d97706, #0369a1) !important;
       }
 
-      .mobile-dl {
-        display: none !important;
-      }
       @media (max-width: 768px) {
         .mobile-dl {
           display: inline-flex !important;
         }
+        .mobile-bottom-nav {
+          display: flex !important;
+        }
+        /* Add padding to body to prevent content from hiding behind the nav bar */
+        body {
+          padding-bottom: 70px !important;
+        }
+      }
+
+      /* Mobile Bottom Navigation */
+      .mobile-bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--bg);
+        border-top: 1px solid var(--border);
+        z-index: 10000;
+        justify-content: space-around;
+        padding: 10px 0;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .mobile-bottom-nav .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.7rem;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+      .mobile-bottom-nav .nav-item:hover,
+      .mobile-bottom-nav .nav-item.active {
+        color: var(--signal);
+      }
+      .mobile-bottom-nav .nav-item svg {
+        width: 22px;
+        height: 22px;
       }
 
       * {
@@ -880,6 +920,24 @@
           flex: 0 0 320px;
         }
       }
+      
+      /* Mobile: Stack layout, stick CTA to bottom */
+      @media (max-width: 768px) {
+        .br-w {
+          flex-direction: column;
+          padding: 0 20px;
+          margin: 20px auto;
+          gap: 24px;
+        }
+        .br-l {
+          flex: 1;
+          width: 100%;
+          order: 2; /* Content first, syllabus second */
+        }
+        .br-r {
+          order: 1;
+        }
+      }
 
       .br-prog {
         background: var(--hover);
@@ -901,6 +959,30 @@
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
         gap: 24px;
         margin-bottom: 60px;
+      }
+      
+      @media (max-width: 768px) {
+        .category-grid {
+          display: flex;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          padding-bottom: 24px;
+          margin-left: -24px;
+          margin-right: -24px;
+          padding-left: 24px;
+          padding-right: 24px;
+          gap: 16px;
+          /* hide scrollbar */
+          scrollbar-width: none;
+        }
+        .category-grid::-webkit-scrollbar {
+          display: none;
+        }
+        .category-grid > * {
+          scroll-snap-align: center;
+          flex: 0 0 85%;
+        }
       }
 
       /* Map Toggle Button */
@@ -3705,6 +3787,31 @@
 
         <button
           class=""
+          id="academy-compare-btn"
+          onclick="openCompareModal()"
+          style="
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 12px 24px;
+            min-height: 48px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-size: 0.95rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          "
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          Compare Drivers
+        </button>
+
+        <button
+          class=""
           id="academy-sign-in-btn"
           onclick="window.location.href = 'TrafficSetup.html'"
           style="
@@ -4137,12 +4244,24 @@
 
       <!-- Screen 1: Name -->
       <div class="onb-box" style="display:none">
-        <h2 class="onb-h">What should we call you?</h2>
-        <p class="onb-sub">This will appear on your certificate.</p>
-        <input class="onb-input" type="text" id="onb-name-input" placeholder="Enter your name"
-          oninput="document.getElementById('onb-proceed-name').disabled=!this.value.trim()">
+        <h2 class="onb-h">Get your name for the certificate.</h2>
+        <p class="onb-sub">This will appear on your official certificate.</p>
+        <input class="onb-input" type="text" id="onb-name-input" placeholder="Full Name"
+          oninput="_onbGenerateUsernameSuggestions()">
+        
+        <div style="margin-top: 20px; text-align: left; width: 100%; max-width: 320px; margin-left: auto; margin-right: auto;">
+          <label style="font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 8px; display: block;">Choose a Username</label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <input class="onb-input" type="text" id="onb-username-input" placeholder="@username" 
+              style="padding-left: 12px; margin: 0; width: 100%;" oninput="_onbHandleUsernameInput()">
+          </div>
+          <div id="username-suggestions" style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;"></div>
+          <p id="username-status-msg" style="font-size: 0.8rem; margin-top: 8px; min-height: 16px;"></p>
+          <p style="font-size: 0.75rem; color: var(--red); font-weight: 600; margin-top: 12px;">⚠️ This username cannot be changed later.</p>
+        </div>
+
         <div style="height:16px"></div>
-        <button class="onb-btn" id="onb-proceed-name" disabled onclick="_onbSaveName();showOnboardingScreen(2)">Continue</button>
+        <button class="onb-btn" id="onb-proceed-name" disabled onclick="_onbSaveNameAndUsername();showOnboardingScreen(2)">Continue</button>
         <button class="onb-skip" onclick="skipOnboarding()">Skip & Continue</button>
       </div>
 
@@ -4471,33 +4590,34 @@
         }
       });
 
-      // Handle Google Login - show login modal
+      // Handle Google Login - redirect to Setup
       function handleGoogleLogin() {
-        if (typeof ui !== 'undefined' && ui.openLogin) {
-          ui.openLogin()
-          // After login is successful, continue to next step
-          // The login modal should handle this
-          setTimeout(function() {
-            showOnboardingScreen(3)
-          }, 1000)
-        } else if (typeof window.openLogin === 'function') {
-          window.openLogin()
-          setTimeout(function() {
-            showOnboardingScreen(3)
-          }, 1000)
-        } else {
-          // Fallback - just continue
-          showOnboardingScreen(3)
-        }
+        window.location.href = 'TrafficSetup.html?returnTo=Academy.html';
       }
 
       // Handle Email Login
       function handleEmailLogin() {
         if (typeof ui !== 'undefined' && ui.openLogin) {
           ui.openLogin()
-          setTimeout(function() {
-            showOnboardingScreen(3)
-          }, 1000)
+          // Wait for col-auth-changed event to proceed
+          const onAuth = (e) => {
+            const user = e.detail && e.detail.user ? e.detail.user : window.colUser;
+            if (user) {
+              window.removeEventListener('col-auth-changed', onAuth);
+              showOnboardingScreen(3);
+            }
+          };
+          window.addEventListener('col-auth-changed', onAuth);
+        } else if (typeof window.openLogin === 'function') {
+          window.openLogin()
+          const onAuth = (e) => {
+            const user = e.detail && e.detail.user ? e.detail.user : window.colUser;
+            if (user) {
+              window.removeEventListener('col-auth-changed', onAuth);
+              showOnboardingScreen(3);
+            }
+          };
+          window.addEventListener('col-auth-changed', onAuth);
         } else {
           showOnboardingScreen(3)
         }
@@ -4533,16 +4653,133 @@
         }
       }
 
-      function _onbSaveName() {
+      function _onbSaveNameAndUsername() {
         var nm = document.getElementById('onb-name-input') || document.getElementById('prompt-name')
-        if (nm) {
+        var un = document.getElementById('onb-username-input')
+        if (nm && un) {
           var val = nm.value.trim()
-          if (val.length > 0) {
-            if (typeof ui !== 'undefined' && ui) { ui.name = val; if (ui.save) ui.save() }
+          var uval = un.value.trim()
+          if (val.length > 0 && uval.length > 1) {
+            if (!uval.startsWith('@')) uval = '@' + uval
+            
+            // Save locally
+            let localUser = {};
+            try { localUser = JSON.parse(localStorage.getItem('traffic_local_user')) || {}; } catch(e) {}
+            localUser.name = val;
+            localUser.username = uval;
+            localStorage.setItem('traffic_local_user', JSON.stringify(localUser));
+
+            // Also save to Traffic Save state (S) if it exists
+            let localS = {};
+            try { localS = JSON.parse(localStorage.getItem('traffic_save')) || {}; } catch(e) {}
+            localS.name = val;
+            localS.username = uval;
+            localStorage.setItem('traffic_save', JSON.stringify(localS));
+
+            if (typeof ui !== 'undefined' && ui) { 
+              ui.name = val; 
+              if (ui.save) ui.save() 
+            }
             var cn = document.getElementById('cname')
             if (cn) cn.textContent = val.toUpperCase()
           }
         }
+      }
+
+      let _usernameCheckTimeout;
+      function _onbHandleUsernameInput() {
+        const input = document.getElementById('onb-username-input');
+        const proceedBtn = document.getElementById('onb-proceed-name');
+        const statusMsg = document.getElementById('username-status-msg');
+        let val = input.value;
+        
+        // Auto-write @ symbol
+        if (val && !val.startsWith('@')) {
+          val = '@' + val.replace(/@/g, '');
+          input.value = val;
+        }
+        
+        proceedBtn.disabled = true; // Disable until validated
+        
+        if (val.length <= 1) {
+          statusMsg.textContent = '';
+          return;
+        }
+
+        statusMsg.textContent = 'Checking availability...';
+        statusMsg.style.color = 'var(--muted)';
+        
+        clearTimeout(_usernameCheckTimeout);
+        _usernameCheckTimeout = setTimeout(async () => {
+          if (!window.supabaseClient) {
+            statusMsg.textContent = 'Available';
+            statusMsg.style.color = 'var(--em)';
+            proceedBtn.disabled = false;
+            return;
+          }
+          
+          try {
+            // Uniqueness check (simplistic view, real check depends on RLS, but we'll try profiles/traffic_users)
+            const { data } = await window.supabaseClient.from('profiles').select('username').eq('username', val).limit(1);
+            if (data && data.length > 0) {
+              statusMsg.textContent = '❌ Username is already taken.';
+              statusMsg.style.color = 'var(--red)';
+              proceedBtn.disabled = true;
+            } else {
+              statusMsg.textContent = '✅ Username is available.';
+              statusMsg.style.color = 'var(--em)';
+              const nameInput = document.getElementById('onb-name-input').value.trim();
+              if (nameInput.length > 0) proceedBtn.disabled = false;
+            }
+          } catch(e) {
+            statusMsg.textContent = 'Available';
+            statusMsg.style.color = 'var(--em)';
+            proceedBtn.disabled = false;
+          }
+        }, 600);
+      }
+
+      function _onbGenerateUsernameSuggestions() {
+        const nameInput = document.getElementById('onb-name-input').value.trim();
+        const suggBox = document.getElementById('username-suggestions');
+        const proceedBtn = document.getElementById('onb-proceed-name');
+        const usernameInput = document.getElementById('onb-username-input');
+        
+        if (!nameInput) {
+          suggBox.innerHTML = '';
+          proceedBtn.disabled = true;
+          return;
+        }
+        
+        if (usernameInput.value.length > 1 && document.activeElement === usernameInput) return;
+        
+        const base = nameInput.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (!base) return;
+        
+        const suggestions = [
+          `@${base}`,
+          `@${base}${Math.floor(Math.random() * 999)}`,
+          `@${base}_driver`
+        ];
+        
+        suggBox.innerHTML = '';
+        suggestions.forEach(s => {
+          const btn = document.createElement('button');
+          btn.textContent = s;
+          btn.style.cssText = 'background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 12px; padding: 4px 10px; font-size: 0.75rem; color: var(--text); cursor: pointer;';
+          btn.onclick = () => {
+            usernameInput.value = s;
+            _onbHandleUsernameInput();
+          };
+          suggBox.appendChild(btn);
+        });
+        
+        _onbHandleUsernameInput();
+      }
+
+      function _onbSaveName() {
+        // Kept for backward compatibility if called elsewhere
+        _onbSaveNameAndUsername();
       }
 
       function _onbComplete() {
@@ -4761,8 +4998,183 @@
       }
       hzInit();
     </script>
+
+      <!-- COMPARE MODAL -->
+      <div class="modal-overlay" id="compare-modal" style="z-index: 10000; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);">
+        <div class="modal-box" style="max-width: 600px; width: 90%; padding: 32px; border-radius: 24px; text-align: left; background: var(--card); border: 1px solid var(--border);">
+          <h3 style="margin-top: 0; font-size: 1.8rem; font-weight: 800; font-family: var(--sans);">Driver Search</h3>
+          <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 24px; line-height: 1.5;">Search by @username to view and compare stats.</p>
+          
+          <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+            <div style="position: relative; flex: 1;">
+              <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600;">@</span>
+              <input type="text" id="compare-search-input" placeholder="username" onkeypress="if(event.key === 'Enter') searchPlayer()" style="width: 100%; padding: 14px 16px 14px 36px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1.1rem; font-family: var(--sans); outline: none; transition: border-color 0.2s;">
+            </div>
+            <button onclick="searchPlayer()" style="background: linear-gradient(90deg, var(--signal), var(--accent)); color: #000; border: none; border-radius: 12px; padding: 0 24px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              Search
+            </button>
+          </div>
+
+          <div id="compare-error" style="color: #ef4444; font-size: 0.95rem; margin-bottom: 24px; display: none; background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2);">Player not found.</div>
+          
+          <div id="compare-loading" style="display: none; justify-content: center; align-items: center; padding: 40px 0; gap: 12px;">
+            <div style="width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--signal); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <span style="color: var(--muted); font-weight: 600; font-size: 1.1rem;">Searching database...</span>
+          </div>
+          <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+          <div id="compare-results" style="display: none;">
+            <div style="display: flex; align-items: stretch; gap: 16px; margin-bottom: 24px;">
+              <!-- My Stats -->
+              <div style="flex: 1; background: var(--bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border); text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--signal);"></div>
+                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.1em; font-weight: 700;">You</div>
+                <h4 id="compare-my-name" style="margin: 0 0 4px 0; font-size: 1.2rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</h4>
+                <div id="compare-my-username" style="color: var(--signal); font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</div>
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 12px;">
+                  <div style="font-size: 2.2rem; font-weight: 800; font-family: var(--sans); line-height: 1;" id="compare-my-score">0</div>
+                  <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; margin-top: 4px;">Points</div>
+                </div>
+                <div style="font-size: 1rem; font-weight: 700; color: var(--text);" id="compare-my-progress">0/52</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">Modules Complete</div>
+              </div>
+
+              <!-- VS Badge -->
+              <div style="display: flex; align-items: center; justify-content: center; padding: 0 8px;">
+                <div style="width: 40px; height: 40px; background: var(--card); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-style: italic; color: var(--muted); font-size: 1.1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">VS</div>
+              </div>
+
+              <!-- Their Stats -->
+              <div style="flex: 1; background: var(--bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border); text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--ion);"></div>
+                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.1em; font-weight: 700;">Player</div>
+                <h4 id="compare-their-name" style="margin: 0 0 4px 0; font-size: 1.2rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</h4>
+                <div id="compare-their-username" style="color: var(--ion); font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</div>
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 12px;">
+                  <div style="font-size: 2.2rem; font-weight: 800; font-family: var(--sans); line-height: 1;" id="compare-their-score">0</div>
+                  <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; margin-top: 4px;">Points</div>
+                </div>
+                <div style="font-size: 1rem; font-weight: 700; color: var(--text);" id="compare-their-progress">0/52</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">Modules Complete</div>
+              </div>
+            </div>
+          </div>
+          
+          <div style="text-align: right; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 10px;">
+            <button onclick="closeCompareModal()" style="background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 12px 24px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function openCompareModal() {
+          document.getElementById('compare-modal').classList.add('show');
+          document.getElementById('compare-search-input').focus();
+        }
+        function closeCompareModal() {
+          document.getElementById('compare-modal').classList.remove('show');
+          document.getElementById('compare-results').style.display = 'none';
+          document.getElementById('compare-error').style.display = 'none';
+          document.getElementById('compare-search-input').value = '';
+        }
+        async function searchPlayer() {
+          let q = document.getElementById('compare-search-input').value.trim();
+          if(!q) return;
+          q = q.replace(/^@/, '');
+          const username = '@' + q;
+          
+          document.getElementById('compare-error').style.display = 'none';
+          document.getElementById('compare-results').style.display = 'none';
+          document.getElementById('compare-loading').style.display = 'flex';
+          
+          try {
+            if (!window.supabaseClient) throw new Error("Cloud database not connected.");
+            
+            const { data, error } = await window.supabaseClient.from('profiles').select('id, raw_user_meta_data').eq('raw_user_meta_data->>username', username).maybeSingle();
+            
+            document.getElementById('compare-loading').style.display = 'none';
+            
+            if (error || !data) {
+              document.getElementById('compare-error').style.display = 'block';
+              document.getElementById('compare-error').textContent = 'Player not found.';
+              return;
+            }
+            
+            const meta = data.raw_user_meta_data || {};
+            
+            // Try to log the search
+            try {
+              let myUid = null;
+              if (window.colUser) myUid = window.colUser.id;
+              window.supabaseClient.from('search_logs').insert([{ 
+                search_query: username, 
+                found_uid: data.id,
+                searcher_uid: myUid
+              }]).then();
+            } catch(e) {}
+
+            // Calculate their stats
+            let theirScore = 0;
+            let theirProgressCount = 0;
+            if (meta.traffic_save) {
+              const S = typeof meta.traffic_save === 'string' ? JSON.parse(meta.traffic_save) : meta.traffic_save;
+              theirScore = S.total || 0;
+              theirProgressCount = (S.completed && S.completed.length) ? S.completed.length : 0;
+            }
+
+            document.getElementById('compare-their-name').textContent = meta.full_name || 'Driver';
+            document.getElementById('compare-their-username').textContent = meta.username || username;
+            document.getElementById('compare-their-score').textContent = theirScore;
+            document.getElementById('compare-their-progress').textContent = theirProgressCount + '/52';
+
+            // Populate "My" side
+            let myName = 'Guest Driver', myUsername = 'Not Signed In', myScore = 0, myProgressCount = 0;
+            try {
+              const sRaw = localStorage.getItem('traffic_save');
+              if (sRaw) {
+                const S = JSON.parse(sRaw);
+                myName = S.name || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.full_name) || myName;
+                myUsername = S.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || myUsername;
+                if(myUsername !== 'Not Signed In' && !myUsername.startsWith('@')) myUsername = '@' + myUsername;
+                myScore = S.total || 0;
+                myProgressCount = S.completed ? S.completed.length : 0;
+              }
+            } catch(e) {}
+            
+            document.getElementById('compare-my-name').textContent = myName;
+            document.getElementById('compare-my-username').textContent = myUsername;
+            document.getElementById('compare-my-score').textContent = myScore;
+            document.getElementById('compare-my-progress').textContent = myProgressCount + '/52';
+
+            document.getElementById('compare-results').style.display = 'block';
+          } catch(e) {
+            document.getElementById('compare-loading').style.display = 'none';
+            document.getElementById('compare-error').style.display = 'block';
+            document.getElementById('compare-error').textContent = e.message;
+          }
+        }
+      </script>
+
       <!-- Hidden dev unlock (click 5 times) -->
       <div style="position: fixed; bottom: 5px; right: 10px; font-size: 0.7rem; color: var(--muted2); opacity: 0.3; cursor: pointer; z-index: 9999" onclick="handleDevClick()" title="Dev options">v2.4.1</div>
+      
+      <!-- Mobile Bottom Navigation -->
+      <nav class="mobile-bottom-nav">
+        <a href="Academy.html" class="nav-item active">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Learn</span>
+        </a>
+        <a href="TrafficDashboard.html" class="nav-item">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <span>Leaderboard</span>
+        </a>
+        <a href="TrafficDashboard.html" class="nav-item" onclick="setTimeout(() => window.location.hash = '#profile', 100)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>Profile</span>
+        </a>
+      </nav>
+
   <script src="welcome-back.js"></script>
   </body>
 </html>
