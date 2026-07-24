@@ -822,12 +822,21 @@ window.ui = Object.assign(window.ui || {}, {
     if (!container || !mod) return
     
     const modes = Object.keys(window.COURSE?.MODES || {})
+    const hasPledge = S.pledges && S.pledges[lv.id]
+    
     let html = '<div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">MODULE ' + moduleId + ' PROGRESS</div>'
+    
+    // Add commitment pledge button at the top
+    if (hasPledge) {
+      html += `<button class="btn" style="margin-bottom:12px;width:100%;background:rgba(255,255,255,0.05);color:var(--green);font-size:0.7rem;padding:8px;border-radius:8px;border:1px solid var(--green);cursor:default;">✅ Pledge Completed</button>`
+    } else {
+      html += `<button class="btn" onclick="ui.showCommitmentPledge(${lv.id})" style="margin-bottom:12px;width:100%;background:linear-gradient(90deg,var(--signal),var(--accent));color:#000;font-size:0.7rem;padding:8px;border-radius:8px;">🤝 Commitment Pledge</button>`
+    }
+    
     html += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">'
     mod.module.levels.forEach(l => {
       modes.forEach((mode, mi) => {
-        const key = `${l.id}-${mode.toLowerCase()}`
-        const done = S.comp?.[key] || false
+        const done = S.comp?.[l.id]?.modes?.[mode.toLowerCase()] || false
         const modeConfig = window.COURSE?.MODES?.[mode.toUpperCase()]
         const color = modeConfig?.color || '--signal'
         html += `<div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 4px;text-align:center;opacity:${done ? 1 : 0.4};transition:all 0.2s;" title="${modeConfig?.label || mode}: ${done ? 'Complete' : 'Incomplete'}">
@@ -837,8 +846,6 @@ window.ui = Object.assign(window.ui || {}, {
       })
     })
     html += '</div>'
-    // Add commitment pledge button
-    html += `<button class="btn" onclick="ui.showCommitmentPledge(${lv.id})" style="margin-top:12px;width:100%;background:linear-gradient(90deg,var(--signal),var(--accent));color:#000;font-size:0.7rem;padding:8px;border-radius:8px;">🤝 Commitment Pledge</button>`
     container.innerHTML = html
   },
   _renderRewardsPreview(lv, mode, config) {
