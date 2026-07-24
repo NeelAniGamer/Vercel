@@ -192,7 +192,69 @@ if (!window.closeMo) {
     window.dispatchEvent(event)
   }
 
-  // --- UI INJECTION ---
+  async function createProfile(username) {
+    const { data, error } = await supabaseClient
+      .from('profiles')
+      .insert([{
+        id: window.colUser.id,
+        username: username,
+        email: window.colUser.email
+      }]);
+    if (error) throw error;
+    return data;
+  }
+
+  function promptForUsername() {
+    if (!document.getElementById('colAuthModal')) injectAuthUI();
+    const body = document.getElementById('colAuthBody');
+    if (!body) return;
+
+    body.innerHTML = `
+      <div style="text-align:center; margin-bottom: 20px;">
+        <h3 style="font-family: var(--serif, 'Instrument Serif'); font-style: italic; font-size: 2rem; color: var(--signal, #F2B84B);">Welcome!</h3>
+        <p style="color: var(--dim, #8891AA); font-size: 0.9rem;">Please choose a unique username to complete your profile.</p>
+      </div>
+      <div id="profileCreateError" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 10px; text-align: center; display: none;"></div>
+      <form onsubmit="window._handleProfileCreate(event)">
+        <input type="text" id="profileUsername" class="col-auth-inp" placeholder="Username" required maxlength="40">
+        <button type="submit" class="col-auth-btn" id="profileCreateBtn">Create Profile</button>
+      </form>
+    `;
+    document.getElementById('colAuthModal').classList.add('open');
+  }
+
+  window._handleProfileCreate = async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('profileUsername').value;
+    const btn = document.getElementById('profileCreateBtn');
+    const errDiv = document.getElementById('profileCreateError');
+
+    btn.textContent = 'Creating...';
+    btn.disabled = true;
+    errDiv.style.display = 'none';
+
+    try {
+      await createProfile(username);
+
+      // Update colUser.uid and close modal
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('id', window.colUser.id)
+        .single();
+
+      window.colUser.uid = profile.id;
+      document.getElementById('colAuthModal').classList.remove('open');
+      dispatchAuthEvent();
+    } catch (error) {
+      errDiv.textContent = error.message;
+      errDiv.style.display = 'block';
+    } finally {
+      btn.textContent = 'Create Profile';
+      btn.disabled = false;
+    }
+  };
+
   function injectAuthStyles() {
     if (document.getElementById('col-auth-styles')) return
     const style = document.createElement('style')
