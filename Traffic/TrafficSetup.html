@@ -671,6 +671,14 @@
               </div>
 
               <button class="remote-btn-primary" id="auth-submit-btn" onclick="handleEmailAuth()">Log in</button>
+              <button class="remote-btn-primary" id="auth-otp-btn" onclick="sendLoginOtp()" style="margin-top: 10px; background: transparent; border: 1px solid var(--ion); color: var(--ion);">Log in with Email Code</button>
+              
+              <div id="login-otp-section" style="display: none; margin-top: 15px;">
+                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter the 6-digit code sent to your email:</p>
+                <input type="text" id="login-otp-input" class="remote-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-family: 'Space Mono', monospace;" />
+                <button class="remote-btn-primary" onclick="verifyLoginOtp()" style="margin-top: 10px; background: var(--signal); color: var(--void);">Verify Code</button>
+                <button type="button" onclick="cancelLoginOtp()" style="margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--line); color: var(--dim); border-radius: 24px; padding: 12px; cursor: pointer;">Cancel</button>
+              </div>
 
               <div class="remote-divider">OR</div>
 
@@ -715,6 +723,11 @@
               </div>
 
               <button class="remote-btn-primary" id="signup-submit-btn" onclick="handleEmailAuth()">Create Account</button>
+              <div id="signup-otp-section" style="display: none; margin-top: 15px;">
+                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter the 6-digit code sent to your email to confirm:</p>
+                <input type="text" id="signup-otp-input" class="remote-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-family: 'Space Mono', monospace;" />
+                <button class="remote-btn-primary" onclick="verifySignupOtp()" style="margin-top: 10px; background: var(--signal); color: var(--void);">Verify Code</button>
+              </div>
 
               <div class="remote-divider">OR</div>
 
@@ -1078,6 +1091,103 @@
       }
 
 
+
+      
+      async function sendLoginOtp() {
+        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
+        const email = document.getElementById('auth-email').value.trim()
+        const errDiv = document.getElementById('col-auth-err')
+        if (!email) {
+          errDiv.textContent = 'Please enter an email address.'
+          return
+        }
+
+        document.getElementById('auth-otp-btn').textContent = 'Sending...'
+        document.getElementById('auth-otp-btn').disabled = true
+
+        try {
+          const res = await window.supabaseClient.auth.signInWithOtp({ email })
+          if (res.error) throw res.error
+          
+          document.getElementById('col-auth-err').textContent = ''
+          document.getElementById('auth-pass').parentElement.style.display = 'none'
+          document.getElementById('auth-submit-btn').style.display = 'none'
+          document.getElementById('auth-otp-btn').style.display = 'none'
+          document.getElementById('login-otp-section').style.display = 'block'
+        } catch (err) {
+          errDiv.textContent = err.message || 'Error sending code'
+          document.getElementById('auth-otp-btn').textContent = 'Log in with Email Code'
+          document.getElementById('auth-otp-btn').disabled = false
+        }
+      }
+
+      function cancelLoginOtp() {
+        document.getElementById('auth-pass').parentElement.style.display = 'block'
+        document.getElementById('auth-submit-btn').style.display = 'block'
+        document.getElementById('auth-otp-btn').style.display = 'block'
+        document.getElementById('login-otp-section').style.display = 'none'
+        document.getElementById('auth-otp-btn').textContent = 'Log in with Email Code'
+        document.getElementById('auth-otp-btn').disabled = false
+      }
+
+      async function verifyLoginOtp() {
+        const email = document.getElementById('auth-email').value.trim()
+        const token = document.getElementById('login-otp-input').value.trim()
+        const errDiv = document.getElementById('col-auth-err')
+
+        if (!token) {
+          errDiv.textContent = 'Please enter the code.'
+          return
+        }
+
+        try {
+          const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'email' })
+          if (res.error) throw res.error
+
+          if (res.data.session) {
+            window.colUser = res.data.session.user
+            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+            document.getElementById('cloud-status').style.display = 'block'
+            
+            // Check if profile exists
+            const p = await window.supabaseClient.from('profiles').select('*').eq('id', window.colUser.id).maybeSingle()
+            if (p.data) {
+              window.colUser.uid = p.data.id;
+              document.getElementById('auth-dashboard-btn').style.display = 'block'
+              goToStep(2); updateWizardStep(2);
+            } else {
+              goToStep(2); updateWizardStep(2);
+            }
+          }
+        } catch (err) {
+          errDiv.textContent = err.message || 'Invalid code'
+        }
+      }
+
+      async function verifySignupOtp() {
+        const email = document.getElementById('signup-email').value.trim()
+        const token = document.getElementById('signup-otp-input').value.trim()
+        const errDiv = document.getElementById('col-auth-err-signup')
+
+        if (!token) {
+          errDiv.textContent = 'Please enter the code.'
+          return
+        }
+
+        try {
+          const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'signup' })
+          if (res.error) throw res.error
+
+          if (res.data.session) {
+            window.colUser = res.data.session.user
+            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+            document.getElementById('cloud-status').style.display = 'block'
+            goToStep(2); updateWizardStep(2);
+          }
+        } catch (err) {
+          errDiv.textContent = err.message || 'Invalid code'
+        }
+      }
 
       async function handleEmailAuth() {
         if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')

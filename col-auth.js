@@ -470,9 +470,49 @@ if (!window.closeMo) {
     document.getElementById('colAuthModal').classList.remove('open')
   }
 
-  // --- APK Certificate Verification ---
-  window.colApkVerified = false
-  window.colApkFingerprint = null
+  // --- Secure Profile Linking (Verification Code Flow) ---
+  window.colAuthGenerateCode = async () => {
+    if (!window.supabaseClient || !window.colUser) {
+      toast('Please log in to generate a linking code', '#ef4444');
+      return null;
+    }
+    try {
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      const { error } = await window.supabaseClient
+        .from('profiles')
+        .update({ verification_code: code })
+        .eq('id', window.colUser.id);
+      if (error) throw error;
+      return code;
+    } catch (e) {
+      console.error('[col-auth] Code generation failed:', e);
+      return null;
+    }
+  };
+
+  window.colAuthVerifyCode = async (code) => {
+    if (!window.supabaseClient) return { success: false, error: 'Auth system unavailable' };
+    try {
+      const { data, error } = await window.supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('verification_code', code)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return { success: false, error: 'Invalid or expired code' };
+
+      // Clear code after successful verification
+      await window.supabaseClient
+        .from('profiles')
+        .update({ verification_code: null })
+        .eq('id', data.id);
+
+      return { success: true, userId: data.id };
+    } catch (e) {
+      console.error('[col-auth] Code verification failed:', e);
+      return { success: false, error: e.message };
+    }
+  };
 
   async function verifyApkCertificate() {
     if (!window.AndroidBridge) {
