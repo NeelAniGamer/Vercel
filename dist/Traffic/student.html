@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+  <title>Student Dashboard - Mumbai Traffic Hero Academy</title>
+  <link rel="icon" type="image/png" href="../Icon.png" />
+  <meta name="description" content="Student dashboard for Mumbai Traffic Hero Academy - track progress, levels, and certificates" />
+  <meta property="og:title" content="Student Dashboard - Mumbai Traffic Hero Academy" />
+  <meta property="og:description" content="Track your driving progress and achievements" />
+  <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+  <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/student" />
+  
+  <!-- Cloud Auth & Sync Logic -->
+  <script>
+    const _oldFetch = window.fetch
+    window.fetch = function () {
+      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
+        arguments[0] = '../' + arguments[0]
+      }
+      return _oldFetch.apply(this, arguments)
+    }
+
+    // Silence GLTFLoader spam for KHR_texture_transform
+    const _oldWarn = console.warn
+    console.warn = function (...args) {
+      if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported')))
+        return
+      _oldWarn.apply(console, args)
+    }
+  </script>
+  
+  <script defer src="../col-router.js"></script>
+  <link rel="stylesheet" href="../col-ui.css" />
+  <script defer src="../col-ui.js"></script>
+  <script defer src="../col-auth.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/4.1.0/phaser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="traffic-charts.js"></script>
+  <link rel="stylesheet" href="traffic-charts.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <script src="course.js"></script>
+  <script src="../ui.js"></script>
+  
+  <style>
+    :root {
+      --bg: #070a14;
+      --card: rgba(17, 24, 39, 0.85);
+      --text: #e8e3d8;
+      --ink: #e8e3d8;
+      --border: rgba(255, 255, 255, 0.08);
+      --hover: rgba(255, 255, 255, 0.06);
+      --muted: #8891aa;
+      --muted2: #8891aa;
+      --accent: #f2b84b;
+      --green: #34d399;
+      --red: #ef4444;
+      --yellow: #f2b84b;
+      --signal: #5ed4f5;
+      --r: 16px;
+    }
+
+    body.lm {
+      --bg: #f3f2eb;
+      --card: rgba(255, 255, 255, 0.45);
+      --text: #111827;
+      --ink: #1e293b;
+      --border: rgba(255, 255, 255, 0.4);
+      --hover: rgba(255, 255, 255, 0.6);
+      --muted: #64748b;
+      --muted2: #94a3b8;
+      --accent: #d97706;
+      --green: #34d399;
+      --red: #ef4444;
+      --yellow: #d97706;
+      --signal: #0369a1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .student-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: 2.2rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .glass-panel {
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.05),
+        inset 0 1px 1px rgba(255, 255, 255, 0.8);
+      margin-bottom: 30px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--signal));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+      border-color: var(--border);
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--accent), var(--signal));
+      color: #000;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .stat-value.accent {
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn {
+      background: var(--text);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      min-height: 48px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .progress-ring-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .progress-ring-info {
+      text-align: center;
+    }
+
+    .progress-ring-pct {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .progress-ring-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    .level-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .level-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      transform: translateY(-2px);
+    }
+
+    .level-card.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: var(--bg);
+      border-style: dashed;
+    }
+
+    .level-card.locked:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: var(--border);
+    }
+
+    .level-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .level-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #fff;
+    }
+
+    .level-status {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .status-completed {
+      background: rgba(59, 140, 102, 0.1);
+      color: var(--green);
+    }
+
+    .status-in-progress {
+      background: rgba(217, 119, 87, 0.1);
+      color: var(--accent);
+    }
+
+    .status-locked {
+      background: var(--hover);
+      color: var(--muted);
+    }
+
+    .level-number {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .level-name {
+      font-size: 1.4rem;
+      font-family: 'Lora', serif;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .level-description {
+      font-size: 0.95rem;
+      color: var(--muted2);
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+
+    .level-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--hover);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    @media (max-width: 768px) {
+      .student-container {
+        padding: 20px 16px;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .stat-card {
+        padding: 16px;
+      }
+      .stat-value {
+        font-size: 1.8rem;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      .header {
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="student-container">
+    <div class="header">
+      <div class="profile-chip">
+        <div class="avatar-circle" id="avatar"></div>
+        <div class="profile-info">
+          <span class="name" id="student-name">Student</span>
+          <span class="sub" id="student-id">ID: STU-000000</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+        <button class="btn btn-secondary" onclick="window.location.href = 'Academy.html'">← Academy</button>
+        <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-clouds"></div>
+          <div class="hz-stars"></div>
+          <div class="hz-skyline"></div>
+          <div class="hz-windows"></div>
+          <div class="hz-orb"></div>
+        </div>
+        <button class="btn btn-secondary" id="btn-sign-out" style="color: var(--red); border-color: var(--red); font-size: 0.85rem" onclick="logoutAndClear()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="glass-panel" id="your-stats-panel">
+      <h2 style="margin-top: 0; margin-bottom: 20px">Your Progress</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">👤</div>
+            <span class="stat-trend">Profile</span>
+          </div>
+          <div class="stat-value" id="s-name">-</div>
+          <div class="stat-label">Student Name</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">📚</div>
+            <span class="stat-trend">Progress</span>
+          </div>
+          <div class="stat-value accent" id="s-prog">0/52</div>
+          <div class="stat-label">Levels Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">⭐</div>
+            <span class="stat-trend">Score</span>
+          </div>
+          <div class="stat-value accent" id="s-score">0</div>
+          <div class="stat-label">Total Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">🏅</div>
+            <span class="stat-trend">Civic</span>
+          </div>
+          <div class="stat-value accent" id="s-civic">0</div>
+          <div class="stat-label" id="s-civic-tier">Civic Score</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-panel">
+      <h2 style="margin-top: 0; margin-bottom: 20px">Your Levels</h2>
+      <div class="level-grid" id="level-grid"></div>
+    </div>
+
+    <div class="glass-panel" style="padding: 20px; text-align: center">
+      <div class="partner-label">Our Partners</div>
+      <div class="partner-strip">
+        <img loading="lazy" src="mumbai-police-logo.png" alt="Mumbai Police" onerror="this.style.display='none'" style="height: 48px; object-fit: contain" />
+        <img loading="lazy" src="sneh-logo.png" alt="Sneh Asha Foundation" onerror="this.style.display='none'" style="height: 48px; object-fit: contain" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const studentId = urlParams.get('studentId') || localStorage.getItem('currentStudentId') || 'STU-' + Math.floor(100000 + Math.random() * 900000);
+    
+    // Store for cross-page navigation
+    localStorage.setItem('currentStudentId', studentId);
+    
+    let S = {}
+    try {
+      const raw = localStorage.getItem('mth4')
+      if (raw) S = JSON.parse(raw)
+    } catch (e) {}
+
+    let tUser = {}
+    try {
+      const raw = localStorage.getItem('traffic_local_user')
+      if (raw) tUser = JSON.parse(raw)
+    } catch (e) {}
+
+    const displayName = tUser.name || S.name || 'Student'
+    const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+
+    // Populate avatar
+    const avatarEl = document.getElementById('avatar')
+    let userPhoto = null
+    try {
+      const ls = localStorage.getItem('col_user')
+      if (ls) { const u = JSON.parse(ls); userPhoto = u.avatar || u.photo || null }
+    } catch (e) {}
+    if (userPhoto) {
+      avatarEl.innerHTML = '<img src="' + userPhoto + '" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'
+    } else {
+      avatarEl.textContent = userInitials
+    }
+
+    // Populate header
+    document.getElementById('student-name').textContent = displayName
+    document.getElementById('student-id').textContent = 'ID: ' + studentId
+
+    // Populate Stats
+    document.getElementById('s-name').textContent = displayName
+    const completed = S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
+    document.getElementById('s-prog').textContent = completed + '/52'
+    document.getElementById('s-score').textContent = (S.total || 0).toLocaleString()
+    
+    const civicScore = S.civicScore || 0
+    const civicTiers = [
+      { at: 500, label: 'Platinum Citizen', emoji: '💎' },
+      { at: 250, label: 'Gold Citizen', emoji: '🥇' },
+      { at: 100, label: 'Silver Citizen', emoji: '🥈' },
+      { at: 25, label: 'Bronze Citizen', emoji: '🥉' },
+      { at: 0, label: 'Civic Score', emoji: '🏅' }
+    ]
+    const civicTier = civicTiers.find(t => civicScore >= t.at)
+    document.getElementById('s-civic').textContent = civicScore + ' ' + civicTier.emoji
+    document.getElementById('s-civic-tier').textContent = civicTier.label
+
+    // Build Level Grid
+    const levelGrid = document.getElementById('level-grid')
+    if (window.LVS && levelGrid) {
+      LVS.forEach(lv => {
+        const done = S.comp && S.comp[lv.id] && S.comp[lv.id].score > 0
+        const started = S.started && S.started[lv.id]
+        const isLocked = lv.id > 1 && (!S.comp || !S.comp[lv.id - 1] || !S.comp[lv.id - 1].score > 0)
+        
+        const card = document.createElement('div')
+        card.className = 'level-card' + (done ? '' : started ? '' : isLocked ? ' locked' : '')
+        if (isLocked) card.style.opacity = '0.6'
+        
+        const statusClass = done ? 'status-completed' : started ? 'status-in-progress' : 'status-locked'
+        const statusText = done ? '✅ Completed' : started ? '🔄 In Progress' : '🔒 Locked'
+        
+        card.innerHTML = `
+          <div class="level-header">
+            <span class="level-icon" style="background: ${lv.col || '#e74c3c'}">${lv.icon}</span>
+            <span class="level-status ${statusClass}">${statusText}</span>
+          </div>
+          <div class="level-number">Level ${lv.id}</div>
+          <div class="level-name">${lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')}</div>
+          <div class="level-description">${lv.ds || ''}</div>
+          <div class="level-meta">
+            <span>${lv.law || ''}</span>
+            <span>${lv.modes ? lv.modes.join(', ') : ''}</span>
+          </div>
+        `
+        
+        if (!isLocked) {
+          card.style.cursor = 'pointer'
+          card.onclick = () => {
+            localStorage.setItem('traffic_lv', lv.id)
+            localStorage.setItem('traffic_mode', 'car')
+            window.location.href = 'Driving.html?lv=' + lv.id + '&mode=car'
+          }
+        }
+        
+        levelGrid.appendChild(card)
+      })
+    }
+
+    // Horizon Toggle
+    function hzInit() {
+      const t = localStorage.getItem('theme')
+      if (t === 'light') document.body.classList.add('lm')
+      else document.body.classList.remove('lm')
+      hzSync()
+    }
+    function hzSync() {
+      const el = document.querySelector('.hz-toggle')
+      if (!el) return
+      if (document.body.classList.contains('lm')) el.classList.remove('night')
+      else el.classList.add('night')
+    }
+    function hzToggle() {
+      document.body.classList.toggle('lm')
+      localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark')
+      hzSync()
+    }
+    hzInit()
+
+    // Logout
+    function logoutAndClear() {
+      localStorage.removeItem('trafficSetupComplete')
+      localStorage.removeItem('traffic_local_user')
+      localStorage.removeItem('currentStudentId')
+      if (window.doLogout) window.doLogout()
+      window.location.href = 'Academy.html'
+    }
+  </script>
+</body>
+</html>

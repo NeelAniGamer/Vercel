@@ -1,0 +1,1186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+  <title>Teacher Dashboard - Mumbai Traffic Hero Academy</title>
+  <link rel="icon" type="image/png" href="../Icon.png" />
+  <meta name="description" content="Teacher dashboard for Mumbai Traffic Hero Academy - manage classes and student progress" />
+  <meta property="og:title" content="Teacher Dashboard - Mumbai Traffic Hero Academy" />
+  <meta property="og:description" content="Manage your class and track student driving progress" />
+  <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+  <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/teacher" />
+  
+  <!-- Cloud Auth & Sync Logic -->
+  <script>
+    const _oldFetch = window.fetch
+    window.fetch = function () {
+      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
+        arguments[0] = '../' + arguments[0]
+      }
+      return _oldFetch.apply(this, arguments)
+    }
+
+    const _oldWarn = console.warn
+    console.warn = function (...args) {
+      if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported')))
+        return
+      _oldWarn.apply(console, args)
+    }
+  </script>
+  
+  <script defer src="../col-router.js"></script>
+  <link rel="stylesheet" href="../col-ui.css" />
+  <script defer src="../col-ui.js"></script>
+  <script defer src="../col-auth.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/4.1.0/phaser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="traffic-charts.js"></script>
+  <link rel="stylesheet" href="traffic-charts.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <script src="course.js"></script>
+  <script src="../ui.js"></script>
+  
+  <style>
+    :root {
+      --bg: #070a14;
+      --card: rgba(17, 24, 39, 0.85);
+      --text: #e8e3d8;
+      --ink: #e8e3d8;
+      --border: rgba(255, 255, 255, 0.08);
+      --hover: rgba(255, 255, 255, 0.06);
+      --muted: #8891aa;
+      --muted2: #8891aa;
+      --accent: #f2b84b;
+      --green: #34d399;
+      --red: #ef4444;
+      --yellow: #f2b84b;
+      --signal: #5ed4f5;
+      --r: 16px;
+    }
+
+    body.lm {
+      --bg: #f3f2eb;
+      --card: rgba(255, 255, 255, 0.45);
+      --text: #111827;
+      --ink: #1e293b;
+      --border: rgba(255, 255, 255, 0.4);
+      --hover: rgba(255, 255, 255, 0.6);
+      --muted: #64748b;
+      --muted2: #94a3b8;
+      --accent: #d97706;
+      --green: #34d399;
+      --red: #ef4444;
+      --yellow: #d97706;
+      --signal: #0369a1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .teacher-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: 2.2rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--accent), var(--signal));
+      color: #000;
+    }
+
+    .glass-panel {
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.05),
+        inset 0 1px 1px rgba(255, 255, 255, 0.8);
+      margin-bottom: 30px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--signal));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+      border-color: var(--border);
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--accent), var(--signal));
+      color: #000;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .stat-value.accent {
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .class-info-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .class-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--signal));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #000;
+      flex-shrink: 0;
+    }
+
+    .class-details h2 {
+      font-family: 'Lora', serif;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    .class-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: var(--hover);
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .student-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .student-table th,
+    .student-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--hover);
+    }
+
+    .student-table th {
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .student-table td {
+      color: var(--text);
+    }
+
+    .student-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .student-table tr:hover td {
+      background: var(--hover);
+    }
+
+    .student-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .student-avatar-small {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--signal));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #000;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .student-avatar-small img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .student-name-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .student-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .student-id {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .progress-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 150px;
+    }
+
+    .progress-bar-small {
+      flex: 1;
+      height: 8px;
+      background: var(--hover);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill-small {
+      height: 100%;
+      background: linear-gradient(90deg, var(--signal), var(--accent));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .progress-text {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 50px;
+      text-align: right;
+    }
+
+    .score-cell {
+      font-weight: 600;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .civic-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .civic-score {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .civic-tier {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .violations-cell {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    .action-cell {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      min-height: 36px;
+      border-radius: 20px;
+    }
+
+    .btn-view {
+      background: var(--signal);
+      color: #000;
+    }
+
+    .btn-view:hover {
+      background: #fff;
+    }
+
+    .btn-cert {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-cert:hover {
+      background: #fff;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 0.9rem;
+      min-width: 180px;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .teacher-container {
+        padding: 20px 16px;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .stat-card {
+        padding: 16px;
+      }
+      .stat-value {
+        font-size: 1.8rem;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      .header {
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .student-table {
+        font-size: 0.8rem;
+      }
+      .student-table th,
+      .student-table td {
+        padding: 8px 12px;
+      }
+      .tabs {
+        overflow-x: auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .student-table th:nth-child(5),
+      .student-table td:nth-child(5),
+      .student-table th:nth-child(6),
+      .student-table td:nth-child(6) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="teacher-container">
+    <div class="header">
+      <div>
+        <h1>🏫 Teacher Dashboard</h1>
+        <span class="role-badge">🏫 Teacher View</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+        <button class="btn btn-secondary" onclick="window.location.href = 'Academy.html'">← Academy</button>
+        <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-clouds"></div>
+          <div class="hz-stars"></div>
+          <div class="hz-skyline"></div>
+          <div class="hz-windows"></div>
+          <div class="hz-orb"></div>
+        </div>
+        <button class="btn btn-secondary" id="btn-sign-out" style="color: var(--red); border-color: var(--red); font-size: 0.85rem" onclick="logoutAndClear()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="glass-panel" id="class-info-panel">
+      <div class="class-info-card">
+        <div class="class-avatar">🏫</div>
+        <div class="class-details">
+          <h2 id="class-name">Class 10-A</h2>
+          <div class="class-meta">
+            <span class="meta-item">
+              <span>👨‍🏫</span>
+              <span id="teacher-name">Teacher Name</span>
+            </span>
+            <span class="meta-item">
+              <span>👥</span>
+              <span id="student-count">0 Students</span>
+            </span>
+            <span class="meta-item">
+              <span>🆔</span>
+              <span id="class-id">Class ID: CLS-000000</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+    <div class="glass-panel">
+      <h2 style="margin-top: 0; margin-bottom: 20px">Class Overview</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">👥</div>
+            <span class="stat-trend">Students</span>
+          </div>
+          <div class="stat-value accent" id="t-total-students">0</div>
+          <div class="stat-label">Enrolled</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">📚</div>
+            <span class="stat-trend">Avg Progress</span>
+          </div>
+          <div class="stat-value accent" id="t-avg-progress">0%</div>
+          <div class="stat-label">Completion Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">⭐</div>
+            <span class="stat-trend">Avg Score</span>
+          </div>
+          <div class="stat-value accent" id="t-avg-score">0</div>
+          <div class="stat-label">Class Average</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">🏅</div>
+            <span class="stat-trend">Civic Avg</span>
+          </div>
+          <div class="stat-value accent" id="t-avg-civic">0</div>
+          <div class="stat-label">Civic Score</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-panel">
+      <h2 style="margin-top: 0; margin-bottom: 20px">Class Management</h2>
+      <div class="tabs" id="tabs">
+        <button class="tab-btn active" onclick="switchTab('students')">👥 Students</button>
+        <button class="tab-btn" onclick="switchTab('progress')">📈 Progress</button>
+        <button class="tab-btn" onclick="switchTab('violations')">🚨 Violations</button>
+        <button class="tab-btn" onclick="switchTab('certificates')">📜 Certificates</button>
+      </div>
+
+      <div class="tab-content active" id="tab-students">
+        <div class="filter-bar">
+          <input type="text" class="search-input" id="student-search" placeholder="🔍 Search students..." oninput="filterStudents()">
+          <select class="filter-select" id="progress-filter" onchange="filterStudents()">
+            <option value="">All Progress</option>
+            <option value="completed">Completed (52/52)</option>
+            <option value="in-progress">In Progress</option>
+            <option value="not-started">Not Started</option>
+          </select>
+          <select class="filter-select" id="sort-select" onchange="filterStudents()">
+            <option value="name">Sort by Name</option>
+            <option value="progress">Sort by Progress</option>
+            <option value="score">Sort by Score</option>
+            <option value="civic">Sort by Civic Score</option>
+          </select>
+        </div>
+        <div class="table-wrapper" style="overflow-x: auto;">
+          <table class="student-table" id="students-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Progress</th>
+                <th>Score</th>
+                <th>Civic Score</th>
+                <th>Violations</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody">
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">👥</div>
+                    <p>No students enrolled yet. Share your Class ID with students to get started.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-progress">
+        <div class="filter-bar">
+          <select class="filter-select" id="progress-level-filter" onchange="renderProgressView()">
+            <option value="">All Levels</option>
+            <option value="1-10">Levels 1-10 (Basic)</option>
+            <option value="11-20">Levels 11-20 (Intermediate)</option>
+            <option value="21-30">Levels 21-30 (Advanced)</option>
+            <option value="31-40">Levels 31-40 (Expert)</option>
+            <option value="41-52">Levels 41-52 (Master)</option>
+          </select>
+        </div>
+        <div class="table-wrapper" style="overflow-x: auto;">
+          <table class="student-table" id="progress-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Levels Completed</th>
+                <th>Total Score</th>
+                <th>Avg Score</th>
+                <th>Time Spent</th>
+                <th>Last Active</th>
+              </tr>
+            </thead>
+            <tbody id="progress-tbody">
+              <tr>
+                <td colspan="6">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">📈</div>
+                    <p>No progress data available yet.</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-violations">
+        <div class="filter-bar">
+          <select class="filter-select" id="violation-filter" onchange="renderViolationsView()">
+            <option value="">All Violations</option>
+            <option value="signal_jump">Signal Jump</option>
+            <option value="speeding">Speeding</option>
+            <option value="no_helmet">No Helmet</option>
+            <option value="no_seatbelt">No Seatbelt</option>
+            <option value="wrong_side">Wrong Side</option>
+            <option value="no_horn">No Honking</option>
+            <option value="pedestrian">Pedestrian Violation</option>
+          </select>
+          <select class="filter-select" id="violation-student-filter" onchange="renderViolationsView()">
+            <option value="">All Students</option>
+          </select>
+        </div>
+        <div class="table-wrapper" style="overflow-x: auto;">
+          <table class="student-table" id="violations-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Violation Type</th>
+                <th>Count</th>
+                <th>Total Fine</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="violations-tbody">
+              <tr>
+                <td colspan="5">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">🛡️</div>
+                    <p>No violations recorded for this class.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-certificates">
+        <div class="filter-bar">
+          <select class="filter-select" id="cert-filter" onchange="renderCertificatesView()">
+            <option value="">All Status</option>
+            <option value="unlocked">Unlocked</option>
+            <option value="locked">Locked</option>
+          </select>
+        </div>
+        <div class="table-wrapper" style="overflow-x: auto;">
+          <table class="student-table" id="certificates-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Certificate</th>
+                <th>Issue Date</th>
+                <th>Score</th>
+                <th>Ref ID</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="certificates-tbody">
+              <tr>
+                <td colspan="7">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">📜</div>
+                    <p>No certificates issued yet. Students unlock certificates by completing all 52 levels.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-panel" style="padding: 20px; text-align: center">
+      <div class="partner-label">Our Partners</div>
+      <div class="partner-strip">
+        <img loading="lazy" src="mumbai-police-logo.png" alt="Mumbai Police" onerror="this.style.display='none'" style="height: 48px; object-fit: contain" />
+        <img loading="lazy" src="sneh-logo.png" alt="Sneh Asha Foundation" onerror="this.style.display='none'" style="height: 48px; object-fit: contain" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const teacherId = urlParams.get('teacherId') || localStorage.getItem('currentTeacherId') || 'TEA-' + Math.floor(100000 + Math.random() * 900000)
+    const classId = urlParams.get('classId') || localStorage.getItem('currentClassId') || 'CLS-' + Math.floor(100000 + Math.random() * 900000)
+    
+    localStorage.setItem('currentTeacherId', teacherId)
+    localStorage.setItem('currentClassId', classId)
+
+    // Mock student data for demonstration
+    const mockStudents = [
+      { id: 'STU-123456', name: 'Aarav Sharma', avatar: null, progress: 85, score: 4250, civic: 320, violations: 2, lastActive: '2026-01-15', levelsDone: 44 },
+      { id: 'STU-234567', name: 'Priya Patel', avatar: null, progress: 92, score: 4890, civic: 410, violations: 0, lastActive: '2026-01-14', levelsDone: 48 },
+      { id: 'STU-345678', name: 'Rohan Gupta', avatar: null, progress: 67, score: 3120, civic: 180, violations: 5, lastActive: '2026-01-10', levelsDone: 35 },
+      { id: 'STU-456789', name: 'Ananya Singh', avatar: null, progress: 100, score: 5200, civic: 500, violations: 0, lastActive: '2026-01-16', levelsDone: 52 },
+      { id: 'STU-567890', name: 'Kabir Mehta', avatar: null, progress: 45, score: 2100, civic: 90, violations: 3, lastActive: '2026-01-08', levelsDone: 23 },
+      { id: 'STU-678901', name: 'Sanya Reddy', avatar: null, progress: 78, score: 3890, civic: 280, violations: 1, lastActive: '2026-01-12', levelsDone: 41 },
+    ]
+
+    const violationTypes = {
+      'signal_jump': { name: 'Signal Jump', fine: 1500 },
+      'speeding': { name: 'Speeding', fine: 1200 },
+      'no_helmet': { name: 'No Helmet', fine: 1000 },
+      'no_seatbelt': { name: 'No Seatbelt', fine: 1000 },
+      'wrong_side': { name: 'Wrong Side Driving', fine: 1500 },
+      'no_horn': { name: 'Unnecessary Honking', fine: 2000 },
+      'pedestrian': { name: 'Pedestrian Violation', fine: 800 },
+    }
+
+    const mockViolations = [
+      { studentId: 'STU-123456', type: 'signal_jump', count: 1, date: '2026-01-10' },
+      { studentId: 'STU-123456', type: 'speeding', count: 1, date: '2026-01-12' },
+      { studentId: 'STU-345678', type: 'no_helmet', count: 2, date: '2026-01-08' },
+      { studentId: 'STU-345678', type: 'wrong_side', count: 1, date: '2026-01-09' },
+      { studentId: 'STU-345678', type: 'no_seatbelt', count: 2, date: '2026-01-10' },
+      { studentId: 'STU-567890', type: 'no_horn', count: 1, date: '2026-01-11' },
+    ]
+
+    // Teacher info
+    const teacherName = 'Mr. Rajesh Kumar'
+    const teacherInitials = 'RK'
+
+    // Initialize UI
+    document.getElementById('teacher-name').textContent = teacherName
+    document.getElementById('class-id').textContent = 'Class ID: ' + classId
+    document.getElementById('student-count').textContent = mockStudents.length + ' Students'
+
+    // Stats
+    const totalStudents = mockStudents.length
+    const avgProgress = Math.round(mockStudents.reduce((sum, s) => sum + s.progress, 0) / totalStudents)
+    const avgScore = Math.round(mockStudents.reduce((sum, s) => sum + s.score, 0) / totalStudents)
+    const avgCivic = Math.round(mockStudents.reduce((sum, s) => sum + s.civic, 0) / totalStudents)
+
+    document.getElementById('t-total-students').textContent = totalStudents
+    document.getElementById('t-avg-progress').textContent = avgProgress + '%'
+    document.getElementById('t-avg-score').textContent = avgScore.toLocaleString()
+    document.getElementById('t-avg-civic').textContent = avgCivic
+
+    // Render students table
+    function renderStudentsTable(students = mockStudents) {
+      const tbody = document.getElementById('students-tbody')
+      if (students.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6">
+              <div class="empty-state">
+                <div class="empty-state-icon">👥</div>
+                <p>No students found matching your criteria.</p>
+              </div>
+            </td>
+          </tr>
+        `
+        return
+      }
+
+      tbody.innerHTML = students.map(student => {
+        const initials = student.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+        const progressBar = student.progress
+        const civicTier = getCivicTier(student.civic)
+        
+        return `
+          <tr>
+            <td>
+              <div class="student-cell">
+                <div class="student-avatar-small">${student.avatar ? '<img src="' + student.avatar + '" alt="">' : student.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}</div>
+                <div class="student-name-cell">
+                  <span class="student-name">${student.name}</span>
+                  <span class="student-id">${student.id}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="progress-cell">
+                <div class="progress-bar-small">
+                  <div class="progress-fill-small" style="width: ${student.progress}%"></div>
+                </div>
+                <span class="progress-text">${student.progress}%</span>
+              </div>
+            </td>
+            <td class="score-cell">${student.score.toLocaleString()}</td>
+            <td>
+              <div class="civic-cell">
+                <span class="civic-score">${student.civic} ${getCivicTier(student.civic).emoji}</span>
+                <span class="civic-tier">${getCivicTier(student.civic).label}</span>
+              </div>
+            </td>
+            <td class="violations-cell">${student.violations} ${student.violations > 0 ? '⚠️' : '✅'}</td>
+            <td>
+              <div class="action-cell">
+                <button class="btn btn-small btn-view" onclick="viewStudent('${student.id}')">View</button>
+                <button class="btn btn-small btn-cert" onclick="viewCertificate('${student.id}')">Cert</button>
+              </div>
+            </td>
+          </tr>
+        `
+      }).join('')
+    }
+
+    function getCivicTier(score) {
+      const tiers = [
+        { at: 500, label: 'Platinum Citizen', emoji: '💎' },
+        { at: 250, label: 'Gold Citizen', emoji: '🥇' },
+        { at: 100, label: 'Silver Citizen', emoji: '🥈' },
+        { at: 25, label: 'Bronze Citizen', emoji: '🥉' },
+        { at: 0, label: 'Civic Score', emoji: '🏅' }
+      ]
+      return tiers.find(t => score >= t.at)
+    }
+
+    function filterStudents() {
+      const search = document.getElementById('student-search').value.toLowerCase()
+      const progressFilter = document.getElementById('progress-filter').value
+      const sortBy = document.getElementById('sort-select').value
+
+      let filtered = mockStudents.filter(s => 
+        s.name.toLowerCase().includes(search) || s.id.toLowerCase().includes(search)
+      )
+
+      if (progressFilter) {
+        filtered = filtered.filter(s => {
+          if (progressFilter === 'completed') return s.progress === 100
+          if (progressFilter === 'in-progress') return s.progress > 0 && s.progress < 100
+          if (progressFilter === 'not-started') return s.progress === 0
+          return true
+        })
+      }
+
+      filtered.sort((a, b) => {
+        if (sortBy === 'name') return a.name.localeCompare(b.name)
+        if (sortBy === 'progress') return b.progress - a.progress
+        if (sortBy === 'score') return b.score - a.score
+        if (sortBy === 'civic') return b.civic - a.civic
+        return 0
+      })
+
+      renderStudentsTable(filtered)
+    }
+
+    // Tab switching
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'))
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'))
+      
+      event.target.classList.add('active')
+      document.getElementById('tab-' + tabName).classList.add('active')
+
+      if (tabName === 'students') renderStudentsTable()
+      else if (tabName === 'progress') renderProgressView()
+      else if (tabName === 'violations') renderViolationsView()
+      else if (tabName === 'certificates') renderCertificatesView()
+    }
+
+    // Progress view
+    function renderProgressView() {
+      const levelFilter = document.getElementById('progress-level-filter').value
+      const tbody = document.getElementById('progress-tbody')
+      
+      tbody.innerHTML = mockStudents.map(student => {
+        const levelsDone = student.levelsDone
+        const totalScore = student.score
+        const avgScore = student.levelsDone > 0 ? Math.round(student.score / student.levelsDone) : 0
+        const timeSpent = Math.round(student.levelsDone * 15) // approx 15 min per level
+        const lastActive = student.lastActive
+        
+        return `
+          <tr>
+            <td>
+              <div class="student-cell">
+                <div class="student-avatar-small">${student.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}</div>
+                <div class="student-name-cell">
+                  <span class="student-name">${student.name}</span>
+                  <span class="student-id">${student.id}</span>
+                </div>
+              </div>
+            </td>
+            <td>${levelsDone}/52</td>
+            <td class="score-cell">${totalScore.toLocaleString()}</td>
+            <td class="score-cell">${avgScore}</td>
+            <td>${timeSpent} min</td>
+            <td>${lastActive}</td>
+          </tr>
+        `
+      }).join('')
+    }
+
+    function renderViolationsView() {
+      const violationFilter = document.getElementById('violation-filter').value
+      const studentFilter = document.getElementById('violation-student-filter').value
+      const tbody = document.getElementById('violations-tbody')
+      
+      // Populate student filter
+      const studentSelect = document.getElementById('violation-student-filter')
+      if (studentSelect.options.length <= 1) {
+        mockStudents.forEach(s => {
+          const opt = document.createElement('option')
+          opt.value = s.id
+          opt.textContent = s.name + ' (' + s.id + ')'
+          studentSelect.appendChild(opt)
+        })
+      }
+
+      let filtered = mockViolations
+      if (violationFilter) filtered = filtered.filter(v => v.type === violationFilter)
+      if (studentFilter) filtered = filtered.filter(v => v.studentId === studentFilter)
+
+      if (filtered.length === 0) {
+        document.getElementById('violations-tbody').innerHTML = `
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="empty-state-icon">🛡️</div>
+                <p>No violations matching your filters.</p>
+              </div>
+            </td>
+          </tr>
+        `
+        return
+      }
+
+      document.getElementById('violations-tbody').innerHTML = filtered.map(v => {
+        const student = mockStudents.find(s => s.id === v.studentId)
+        const vType = violationTypes[v.type] || { name: v.type, fine: 500 }
+        const totalFine = vType.fine * v.count
+        
+        return `
+          <tr>
+            <td>
+              <div class="student-cell">
+                <div class="student-avatar-small">${student?.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?'}</div>
+                <div class="student-name-cell">
+                  <span class="student-name">${student?.name || 'Unknown'}</span>
+                  <span class="student-id">${v.studentId}</span>
+                </div>
+              </div>
+            </td>
+            <td>${vType.name}</td>
+            <td>${v.count}</td>
+            <td class="violations-cell">₹${totalFine.toLocaleString()}</td>
+            <td>${v.date}</td>
+          </tr>
+        `
+      }).join('')
+    }
+
+    function renderCertificatesView() {
+      const certFilter = document.getElementById('cert-filter').value
+      const tbody = document.getElementById('certificates-tbody')
+      
+      const certifiedStudents = mockStudents.filter(s => s.levelsDone === 52)
+      let filtered = certifiedStudents
+      if (certFilter === 'unlocked') filtered = certifiedStudents
+      else if (certFilter === 'locked') filtered = mockStudents.filter(s => s.levelsDone < 52)
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7">
+              <div class="empty-state">
+                <div class="empty-state-icon">📜</div>
+                <p>No certificates matching your filter.</p>
+              </div>
+            </td>
+          </tr>
+        `
+        return
+      }
+
+      tbody.innerHTML = filtered.map(student => {
+        const isUnlocked = student.levelsDone === 52
+        const certDate = isUnlocked ? '2026-01-15' : '-'
+        const certScore = isUnlocked ? student.score : '-'
+        const certRef = isUnlocked ? 'CERT-' + student.id.slice(-6).toUpperCase() : '-'
+        const status = isUnlocked ? '<span style="color:var(--green)">✅ Issued</span>' : '<span style="color:var(--muted)">🔒 Locked</span>'
+        
+        return `
+          <tr>
+            <td>
+              <div class="student-cell">
+                <div class="student-avatar-small">${student.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}</div>
+                <div class="student-name-cell">
+                  <span class="student-name">${student.name}</span>
+                  <span class="student-id">${student.id}</span>
+                </div>
+              </div>
+            </td>
+            <td>Traffic Hero Certification</td>
+            <td>${certDate}</td>
+            <td class="score-cell">${certScore}</td>
+            <td>${certRef}</td>
+            <td>${status}</td>
+            <td>
+              <div class="action-cell">
+                ${isUnlocked ? `<button class="btn btn-small btn-view" onclick="downloadCertificate('${student.id}')">Download</button>` : ''}
+                <button class="btn btn-small btn-cert" onclick="viewStudent('${student.id}')">View</button>
+              </div>
+            </td>
+          </tr>
+        `
+      }).join('')
+    }
+
+    // Actions
+    function viewStudent(studentId) {
+      window.location.href = 'student.html?studentId=' + studentId
+    }
+
+    function viewCertificate(studentId) {
+      window.location.href = 'student.html?studentId=' + studentId + '&view=certificate'
+    }
+
+    function downloadCertificate(studentId) {
+      toast('📄 Generating certificate PDF...', '#34d399')
+      // Would trigger PDF generation
+    }
+
+    // Horizon Toggle
+    function hzInit() {
+      const t = localStorage.getItem('theme')
+      if (t === 'light') document.body.classList.add('lm')
+      else document.body.classList.remove('lm')
+      hzSync()
+    }
+    function hzSync() {
+      const el = document.querySelector('.hz-toggle')
+      if (!el) return
+      if (document.body.classList.contains('lm')) el.classList.remove('night')
+      else el.classList.add('night')
+    }
+    function hzToggle() {
+      document.body.classList.toggle('lm')
+      localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark')
+      hzSync()
+    }
+    hzInit()
+
+    // Logout
+    function logoutAndClear() {
+      localStorage.removeItem('trafficSetupComplete')
+      localStorage.removeItem('traffic_local_user')
+      localStorage.removeItem('currentTeacherId')
+      localStorage.removeItem('currentClassId')
+      if (window.doLogout) window.doLogout()
+      window.location.href = 'Academy.html'
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      renderStudentsTable()
+    })
+  </script>
+</body>
+</html>

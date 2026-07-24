@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+  <title>Parent View - Mumbai Traffic Hero Academy</title>
+  <link rel="icon" type="image/png" href="../Icon.png" />
+  <meta name="description" content="Parent view for Mumbai Traffic Hero Academy - monitor your child's driving progress" />
+  <meta property="og:title" content="Parent View - Mumbai Traffic Hero Academy" />
+  <meta property="og:description" content="Monitor your child's driving progress and safety" />
+  <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+  <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/parent" />
+  
+  <!-- Cloud Auth & Sync Logic -->
+  <script>
+    const _oldFetch = window.fetch
+    window.fetch = function () {
+      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
+        arguments[0] = '../' + arguments[0]
+      }
+      return _oldFetch.apply(this, arguments)
+    }
+
+    const _oldWarn = console.warn
+    console.warn = function (...args) {
+      if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported')))
+        return
+      _oldWarn.apply(console, args)
+    }
+  </script>
+  
+  <script defer src="../col-router.js"></script>
+  <link rel="stylesheet" href="../col-ui.css" />
+  <script defer src="../col-ui.js"></script>
+  <script defer src="../col-auth.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/4.1.0/phaser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="traffic-charts.js"></script>
+  <link rel="stylesheet" href="traffic-charts.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <script src="course.js"></script>
+  <script src="../ui.js"></script>
+  
+  <style>
+    :root {
+      --bg: #070a14;
+      --card: rgba(17, 24, 39, 0.85);
+      --text: #e8e3d8;
+      --ink: #e8e3d8;
+      --border: rgba(255, 255, 255, 0.08);
+      --hover: rgba(255, 255, 255, 0.06);
+      --muted: #8891aa;
+      --muted2: #8891aa;
+      --accent: #f2b84b;
+      --green: #34d399;
+      --red: #ef4444;
+      --yellow: #f2b84b;
+      --signal: #5ed4f5;
+      --r: 16px;
+    }
+
+    body.lm {
+      --bg: #f3f2eb;
+      --card: rgba(255, 255, 255, 0.45);
+      --text: #111827;
+      --ink: #1e293b;
+      --border: rgba(255, 255, 255, 0.4);
+      --hover: rgba(255, 255, 255, 0.6);
+      --muted: #64748b;
+      --muted2: #94a3b8;
+      --accent: #d97706;
+      --green: #34d399;
+      --red: #ef4444;
+      --yellow: #d97706;
+      --signal: #0369a1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .parent-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: 2.2rem;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--signal), var(--accent));
+      color: #000;
+    }
+
+    .glass-panel {
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.05),
+        inset 0 1px 1px rgba(255, 255, 255, 0.8);
+      margin-bottom: 30px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--signal), var(--accent));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+      border-color: var(--border);
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--signal), var(--accent));
+      color: #000;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .stat-value.accent {
+      color: var(--signal);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .student-info-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .student-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--signal), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #000;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .student-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .student-details h2 {
+      font-family: 'Lora', serif;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    .student-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-section {
+      margin-top: 24px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .progress-bar {
+      height: 12px;
+      background: var(--hover);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--signal), var(--accent));
+      border-radius: 6px;
+      transition: width 0.5s ease;
+    }
+
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .level-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .level-card:hover {
+      border-color: var(--signal);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      transform: translateY(-2px);
+    }
+
+    .level-card.locked {
+      opacity: 0.5;
+      background: var(--bg);
+      border-style: dashed;
+    }
+
+    .level-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .level-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: #fff;
+    }
+
+    .level-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 16px;
+    }
+
+    .status-completed {
+      background: rgba(59, 140, 102, 0.1);
+      color: var(--green);
+    }
+
+    .status-in-progress {
+      background: rgba(94, 212, 245, 0.1);
+      color: var(--signal);
+    }
+
+    .status-locked {
+      background: var(--hover);
+      color: var(--muted);
+    }
+
+    .level-number {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .level-name {
+      font-size: 1.2rem;
+      font-family: 'Lora', serif;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .level-description {
+      font-size: 0.85rem;
+      color: var(--muted2);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .level-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--hover);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .btn {
+      background: var(--text);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      min-height: 48px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--hover);
+      color: var(--text);
+    }
+
+    .violation-list {
+      list-style: none;
+    }
+
+    .violation-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--hover);
+    }
+
+    .violation-item:last-child {
+      border-bottom: none;
+    }
+
+    .violation-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .violation-type {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .violation-details {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .violation-penalty {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+
+    .violation-fine {
+      font-weight: 700;
+      color: var(--red);
+    }
+
+    .violation-points {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+      .parent-container {
+        padding: 20px 16px;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .stat-card {
+        padding: 16px;
+      }
+      .stat-value {
+        font-size: 1.8rem;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      .header {
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .level-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .student-info-card {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="parent-container">
+    <div class="header">
+      <div>
+        <h1>👨‍👩‍👧 Parent Dashboard</h1>
+        <span class="role-badge">👨‍👩‍👧 Parent View</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+        <button class="btn btn-secondary" onclick="window.location.href = 'Academy.html'">← Academy</button>
+        <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-clouds"></div>
+          <div class="hz-stars"></div>
+          <div class="hz-skyline"></div>
+          <div class="hz-windows"></div>
+          <div class="hz-orb"></div>
+        </div>
+        <button class="btn btn-secondary" id="btn-sign-out" style="color: var(--red); border-color: var(--red); font-size: 0.85rem" onclick="logoutAndClear()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="glass-panel" id="student-info-panel">
+      <div class="student-info-card">
+        <div class="student-avatar" id="student-avatar"></div>
+        <div class="student-details">
+          <h2 id="student-name">Loading...</h2>
+          <div class="student-meta">
+            <span class="meta-item">
+              <span>🆔</span>
+              <span id="student-id-display">ID: STU-000000</span>
+            </span>
+            <span class="meta-item">
+              <span>📅</span>
+              <span id="student-grade">Grade: -</span>
+            </span>
+            <span class="meta-item">
+              <span>🚗</span>
+              <span id="student-vehicle">Vehicle: -</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+    <div class="glass-panel">
+      <h2 style="margin-top: 0; margin-bottom: 20px">Student Progress Overview</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">📚</div>
+            <span class="stat-trend">Progress</span>
+          </div>
+          <div class="stat-value accent" id="p-prog">0/52</div>
+          <div class="stat-label">Levels Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">⭐</div>
+            <span class="stat-trend">Score</span>
+          </div>
+          <div class="stat-value accent" id="p-score">0</div>
+          <div class="stat-label">Total Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">🏅</div>
+            <span class="stat-trend">Civic</span>
+          </div>
+          <div class="stat-value accent" id="p-civic">0</div>
+          <div class="stat-label" id="p-civic-tier">Civic Score</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon">🚨</div>
+            <span class="stat-trend">Violations</span>
+          </div>
+          <div class="stat-value" id="p-violations">0</div>
+          <div class="stat-label">Total Violations</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-panel">
+      <div class="progress-header">
+        <h2 style="margin: 0">Level Progress</h2>
+        <div class="progress-ring-wrap" id="parent-progress-ring">
+          <canvas id="parent-progress-canvas" width="100" height="100" data-chart="progress-ring" data-value="0"></canvas>
+          <div class="progress-ring-info">
+            <div class="progress-ring-pct" id="parent-progress-pct">0%</div>
+            <div class="progress-ring-label" id="parent-progress-text">Start Learning!</div>
+            <div class="progress-ring-sub" id="parent-progress-sub">Complete levels to unlock</div>
+          </div>
+        </div>
+      </div>
+      <div class="progress-bar" style="margin-top: 16px; max-width: 400px; margin-left: auto; margin-right: auto;">
+        <div class="progress-fill" id="parent-progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <div class="glass-panel">
+      <h2 style="margin-top: 0; margin-bottom: 20px">Recent Violations</h2>
+      <ul class="violation-list" id="violations-list">
+        <li class="empty-state">
+          <div class="empty-state-icon">🛡️</div>
+          <p>No violations recorded. Great job!</p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="glass-panel">
+      <h2 style="margin-top: 0; margin-bottom: 20px">Level Progress</h2>
+      <div class="level-grid" id="parent-level-grid"></div>
+    </div>
+
+    <div class="glass-panel" style="padding: 20px; text-align: center">
+      <div class="partner-label">Our Partners</div>
+      <div class="partner-strip">
+        <img loading="lazy" src="mumbai-police-logo.png" alt="Mumbai Police" onerror="this.style.display='none'" style="height: 48px; object-fit: contain" />
+        <img loading="lazy" src="sneh-logo.png" alt="Sneh Asha Foundation" onerror="this.style.display='none'" style="height: 48px; object-fit: contain" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const studentId = urlParams.get('studentId') || localStorage.getItem('currentStudentId') || 'STU-' + Math.floor(100000 + Math.random() * 900000);
+    
+    // Store for cross-page navigation
+    localStorage.setItem('currentStudentId', studentId)
+    
+    let S = {}
+    try {
+      const raw = localStorage.getItem('mth4')
+      if (raw) S = JSON.parse(raw)
+    } catch (e) {}
+
+    let tUser = {}
+    try {
+      const raw = localStorage.getItem('traffic_local_user')
+      if (raw) tUser = JSON.parse(raw)
+    } catch (e) {}
+
+    const displayName = tUser.name || S.name || 'Student'
+    const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+
+    // Student avatar
+    const avatarEl = document.getElementById('student-avatar')
+    let userPhoto = null
+    try {
+      const ls = localStorage.getItem('col_user')
+      if (ls) { const u = JSON.parse(ls); userPhoto = u.avatar || u.photo || null }
+    } catch (e) {}
+    if (userPhoto) {
+      avatarEl.innerHTML = '<img src="' + userPhoto + '" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'
+    } else {
+      avatarEl.textContent = userInitials
+    }
+
+    // Header info
+    document.getElementById('student-name').textContent = displayName
+    document.getElementById('student-id-display').textContent = 'ID: ' + studentId
+    document.getElementById('student-grade').textContent = 'Grade: ' + (tUser.grade || 'Not set')
+    document.getElementById('student-vehicle').textContent = 'Vehicle: ' + (tUser.vehicle || 'Not set')
+
+    // Stats
+    const completed = S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
+    document.getElementById('p-prog').textContent = completed + '/52'
+    document.getElementById('p-score').textContent = (S.total || 0).toLocaleString()
+    
+    const civicScore = S.civicScore || 0
+    const civicTiers = [
+      { at: 500, label: 'Platinum Citizen', emoji: '💎' },
+      { at: 250, label: 'Gold Citizen', emoji: '🥇' },
+      { at: 100, label: 'Silver Citizen', emoji: '🥈' },
+      { at: 25, label: 'Bronze Citizen', emoji: '🥉' },
+      { at: 0, label: 'Civic Score', emoji: '🏅' }
+    ]
+    const civicTier = civicTiers.find(t => civicScore >= t.at)
+    document.getElementById('p-civic').textContent = civicScore + ' ' + civicTier.emoji
+    document.getElementById('p-civic-tier').textContent = civicTier.label
+
+    // Violations count
+    const violationCount = S.violationHistory ? Object.keys(S.violationHistory).length : 0
+    document.getElementById('p-violations').textContent = violationCount
+
+    // Progress ring
+    const progressPct = Math.round((completed / 52) * 100)
+    const progressCanvas = document.getElementById('parent-progress-canvas')
+    if (progressCanvas && window.TrafficCharts) {
+      window.TrafficCharts.createProgressRing(progressCanvas, progressPct, { cutout: '70%' })
+    }
+    document.getElementById('parent-progress-pct').textContent = progressPct + '%'
+    document.getElementById('parent-progress-fill').style.width = progressPct + '%'
+    
+    if (completed >= 52) {
+      document.getElementById('parent-progress-text').textContent = '🎉 All Levels Complete!'
+      document.getElementById('parent-progress-sub').textContent = 'Certificate unlocked!'
+    } else if (completed > 0) {
+      document.getElementById('parent-progress-text').textContent = progressPct + '% Complete'
+      document.getElementById('parent-progress-sub').textContent = completed + ' of 52 levels completed'
+    } else {
+      document.getElementById('parent-progress-text').textContent = 'Start Learning!'
+      document.getElementById('parent-progress-sub').textContent = 'Complete levels to unlock certificate'
+    }
+
+    // Violations list
+    const violationsList = document.getElementById('violations-list')
+    if (violationCount > 0 && S.violationHistory) {
+      violationsList.innerHTML = ''
+      Object.entries(S.violationHistory).forEach(([type, count]) => {
+        const li = document.createElement('li')
+        li.className = 'violation-item'
+        const fineAmounts = {
+          'signal_jump': '₹500-2000',
+          'speeding': '₹1000-2000',
+          'no_helmet': '₹1000',
+          'no_seatbelt': '₹1000',
+          'wrong_side': '₹500-2000',
+          'no_horn': '₹1000-5000',
+          'pedestrian': '₹500-1000'
+        }
+        const fine = fineAmounts[type] || '₹500-5000'
+        li.innerHTML = `
+          <div class="violation-info">
+            <span class="violation-type">${type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+            <span class="violation-details">${count} occurrence${count > 1 ? 's' : ''}</span>
+          </div>
+          <div class="violation-penalty">
+            <span class="violation-fine">${fine}</span>
+            <span class="violation-points">${count * 5} pts</span>
+          </div>
+        `
+        violationsList.appendChild(li)
+      })
+    } else {
+      violationsList.innerHTML = `
+        <li class="empty-state">
+          <div class="empty-state-icon">🛡️</div>
+          <p>No violations recorded. Great job!</p>
+        </li>
+      `
+    }
+
+    // Level grid
+    const levelGrid = document.getElementById('parent-level-grid')
+    if (window.LVS && levelGrid) {
+      LVS.forEach(lv => {
+        const done = S.comp && S.comp[lv.id] && S.comp[lv.id].score > 0
+        const started = S.started && S.started[lv.id]
+        const isLocked = lv.id > 1 && (!S.comp || !S.comp[lv.id - 1] || !S.comp[lv.id - 1].score > 0)
+        
+        const card = document.createElement('div')
+        card.className = 'level-card' + (done ? '' : started ? '' : isLocked ? ' locked' : '')
+        if (isLocked) card.style.opacity = '0.6'
+        
+        const statusClass = done ? 'status-completed' : started ? 'status-in-progress' : 'status-locked'
+        const statusText = done ? '✅ Completed' : started ? '🔄 In Progress' : '🔒 Locked'
+        
+        card.innerHTML = `
+          <div class="level-header">
+            <span class="level-icon" style="background: ${lv.col || '#e74c3c'}">${lv.icon}</span>
+            <span class="level-status ${statusClass}">${statusText}</span>
+          </div>
+          <div class="level-number">Level ${lv.id}</div>
+          <div class="level-name">${lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')}</div>
+          <div class="level-description">${lv.ds || ''}</div>
+          <div class="level-meta">
+            <span>${lv.law || ''}</span>
+            <span>${lv.modes ? lv.modes.join(', ') : ''}</span>
+          </div>
+        `
+        
+        if (!isLocked) {
+          card.style.cursor = 'pointer'
+          card.onclick = () => {
+            localStorage.setItem('traffic_lv', lv.id)
+            localStorage.setItem('traffic_mode', 'car')
+            window.location.href = 'Driving.html?lv=' + lv.id + '&mode=car'
+          }
+        }
+        
+        levelGrid.appendChild(card)
+      })
+    }
+
+    // Horizon Toggle
+    function hzInit() {
+      const t = localStorage.getItem('theme')
+      if (t === 'light') document.body.classList.add('lm')
+      else document.body.classList.remove('lm')
+      hzSync()
+    }
+    function hzSync() {
+      const el = document.querySelector('.hz-toggle')
+      if (!el) return
+      if (document.body.classList.contains('lm')) el.classList.remove('night')
+      else el.classList.add('night')
+    }
+    function hzToggle() {
+      document.body.classList.toggle('lm')
+      localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark')
+      hzSync()
+    }
+    hzInit()
+
+    // Logout
+    function logoutAndClear() {
+      localStorage.removeItem('trafficSetupComplete')
+      localStorage.removeItem('traffic_local_user')
+      localStorage.removeItem('currentStudentId')
+      if (window.doLogout) window.doLogout()
+      window.location.href = 'Academy.html'
+    }
+  </script>
+</body>
+</html>
