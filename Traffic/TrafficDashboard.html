@@ -1031,16 +1031,25 @@
       async function _syncOwnCertificate(name, completedCount, scoreTotal) {
         if (completedCount < 52) return null
         const client = await _initSupabase()
-        if (!client || !window.colUser || !window.colUser.id) return null
+        if (!client || !window.colUser || !window.colUser.id) {
+          console.warn('Certificate Sync failed: User not logged in or Supabase client missing.')
+          return null
+        }
         try {
           const { data, error } = await client.from('certificates').upsert(
             { user_id: window.colUser.id, display_name: name, modules_completed: completedCount, total_modules: 52, score: scoreTotal, updated_at: new Date().toISOString() },
             { onConflict: 'user_id' }
           ).select().single()
-          if (error) return null
+          if (error) {
+            console.error('Supabase Upsert Error for Certificate:', error)
+            return null
+          }
           localStorage.setItem('own_cert_id', data.id)
           return data.id
-        } catch (e) { return null }
+        } catch (e) {
+          console.error('Certificate Sync Exception:', e)
+          return null 
+        }
       }
 
       const displayName = tUser.name || S.name || 'Driver'
@@ -1221,9 +1230,10 @@
       // Also load cloud progress on initial page load if already logged in
       (async () => {
         if (window.colUser && window.colUser.id) {
+          const oldSStr = JSON.stringify(S)
           await _syncCloudToLocal(window.colUser.id)
           // Refresh displays after potential sync
-          if (window.S !== S) window.location.reload()
+          if (JSON.stringify(S) !== oldSStr) window.location.reload()
         }
       })()
 
@@ -1272,11 +1282,14 @@ function saveEditModal() {
       async function getCertUrl() {
         let cid = _syncedCertId || localStorage.getItem('own_cert_id')
         if (!cid && completed >= 52) {
-          const displayName = (window.colUser && window.colUser.name) || S.name || 'Driver'
+          const displayName = (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.full_name) || S.name || 'Driver'
           cid = await _syncOwnCertificate(displayName, completed, S.total || 0)
           if (cid) _syncedCertId = cid
         }
-        return cid ? `${window.location.origin}${window.location.pathname}?cert=${cid}` : window.location.href
+        if (!cid) {
+          return null;
+        }
+        return `${window.location.origin}${window.location.pathname}?cert=${cid}`
       }
       const shareText = `I completed my Traffic Hero Certification! ${displayName} — ${completed}/52 modules done.`
 
@@ -1291,6 +1304,7 @@ function saveEditModal() {
       async function shareWhatsApp() {
         const file = await _certImageFile()
         const url = await getCertUrl()
+        if (!url) { toast('Complete 52 modules or check connection!', '#ff4444'); return }
         const textToShare = shareText + '\n' + url
         if (file && navigator.canShare && navigator.canShare({ files: [file], text: textToShare })) {
           try { await navigator.share({ files: [file], text: textToShare }); return } catch (e) {}
@@ -1301,16 +1315,18 @@ function saveEditModal() {
       async function shareInstagram() {
         const file = await _certImageFile()
         const url = await getCertUrl()
+        if (!url) { toast('Complete 52 modules or check connection!', '#ff4444'); return }
         const textToShare = shareText + '\n' + url
         if (file && navigator.canShare && navigator.canShare({ files: [file], text: textToShare })) {
           try { await navigator.share({ files: [file], text: textToShare }); return } catch (e) {}
         }
-        navigator.clipboard.writeText(textToShare).then(() => alert('Copied! Paste in your story.'))
+        navigator.clipboard.writeText(textToShare).then(() => toast('Copied! Paste in your story.', '#5ed4f5'))
       }
 
       async function copyCertLink() {
         const url = await getCertUrl()
-        navigator.clipboard.writeText(url).then(() => alert('Link copied!'))
+        if (!url) { toast('Complete 52 modules or check connection!', '#ff4444'); return }
+        navigator.clipboard.writeText(url).then(() => toast('Link copied!', '#5ed4f5'))
       }
 
       function logoutAndClear() {
