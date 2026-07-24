@@ -134,15 +134,37 @@ if (!window.closeMo) {
     window.supabaseClient = supabaseClient
 
     // Listen for Auth changes
-    supabaseClient.auth.onAuthStateChange((event, session) => {
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
       if (session && session.user) {
         const meta = session.user.user_metadata || {}
+        const userId = session.user.id;
+        const email = session.user.email;
+
         window.colUser = {
-          id: session.user.id,
-          email: session.user.email,
-          name: meta.full_name || meta.name || session.user.email.split('@')[0],
+          id: userId,
+          email: email,
+          name: meta.full_name || meta.name || email.split('@')[0],
           picture: meta.avatar_url || meta.picture || null,
-          session: session
+          session: session,
+          uid: null // Default until profile is fetched
+        }
+
+        try {
+          const { data: profile, error } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
+
+          if (error && error.code !== 'PGRST116') throw error;
+
+          if (profile) {
+            window.colUser.uid = profile.id;
+          } else {
+            promptForUsername();
+          }
+        } catch (e) {
+          console.error('[col-auth] Profile sync error:', e);
         }
       } else {
         window.colUser = null
