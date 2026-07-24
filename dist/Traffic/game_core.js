@@ -2565,6 +2565,15 @@ class Game {
             this.playerVehicle.add(coneL); this.playerVehicle.add(coneR);
             this._headlightCones = [coneL, coneR];
           }
+          }
+
+          let profileStr = localStorage.getItem('traffic_profile');
+          let profile = profileStr ? JSON.parse(profileStr) : {};
+          let username = profile.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || 'Anonymous';
+          
+          let usernameSpriteVeh = createNametagSprite(username);
+          usernameSpriteVeh.position.set(0, 3, 0);
+          this.playerVehicle.add(usernameSpriteVeh);
 
           this.scene.add(this.playerVehicle);
 
@@ -3209,9 +3218,7 @@ class Game {
               this.scene.add(pc); this.obstacles.push(pc);
             }
           }
-}
         }
-      }
       
       // Initialize TrafficManager and NPCAI for Mumbai-style traffic
       if (!cfg.isPedestrian && window.TrafficManager && window.NPCAI) {
@@ -3226,6 +3233,10 @@ class Game {
       // ─── Graph-based road generation ───
       // Builds visual road geometry (tiles, sidewalks, crosswalks) from RoadGraph edges
       // Uses GLB road models when available, falls back to procedural geometry
+      }
+
+      }
+
       _buildRoadsFromGraph(roadWidth) {
         const graph = this.roadGraph;
         const cfg = this.mapCfg;
@@ -4698,6 +4709,10 @@ class Game {
           });
         }
       }
+    }
+
+      }
+
       _usigs(dt) {
         let nearestSig = null, nearestDist = 9999;
         this.sigs.forEach(sg => {
@@ -4827,6 +4842,7 @@ class Game {
       }
 
       _unpcs(dt) {
+        if (!this.player || !this.player.position) return;
         // Delegate to TrafficManager and NPCAI for Mumbai-style traffic simulation
         if (this.trafficManager && this.npcAI) {
           this.trafficManager.update(dt, this);
@@ -6494,6 +6510,7 @@ class Game {
         }
       }
       _ucam(dt) {
+        if (!this.player || !this.player.position) return;
         // ── SLING-LOOK SMOOTHING ──
         const slingSmooth = 12; // Higher = snappier, Lower = more floaty
         this.camYaw += (this.targetCamYaw - this.camYaw) * Math.min(1, dt * slingSmooth);
@@ -6584,6 +6601,7 @@ class Game {
         }
       }
       _usun(dt) {
+        if (!this.player || !this.player.position) return;
         if (!this._sun || !this.player) return;
         // Dynamic shadow quality: rolling-average FPS → adjust shadow map
         if (!this._fpsBuf) { this._fpsBuf = []; this._fpsIdx = 0; this._fpsSum = 0; }
@@ -6622,6 +6640,7 @@ class Game {
         this._sun.shadow.needsUpdate = true;
       }
       _updateDayNight(dt) {
+        if (!this.player || !this.player.position) return;
         if (!this.dayNightCycle || !this.mapCfg) return;
         const CYCLE = 300;
         this.timeOfDay = (this.timeOfDay + dt / CYCLE) % 1;
@@ -6852,6 +6871,7 @@ class Game {
         }
       }
       _ummap() {
+        if (!this.player || !this.player.position) return;
         const mc = this.dom['mmc']; if (!mc || !this.playing) return; mc.classList.add('on');
 
         // Compass strip — heading plus distance/direction to the next checkpoint. The corner

@@ -4842,6 +4842,7 @@ class Game {
       }
 
       _unpcs(dt) {
+        if (!this.player || !this.player.position) return;
         // Delegate to TrafficManager and NPCAI for Mumbai-style traffic simulation
         if (this.trafficManager && this.npcAI) {
           this.trafficManager.update(dt, this);
@@ -6509,6 +6510,7 @@ class Game {
         }
       }
       _ucam(dt) {
+        if (!this.player || !this.player.position) return;
         // ── SLING-LOOK SMOOTHING ──
         const slingSmooth = 12; // Higher = snappier, Lower = more floaty
         this.camYaw += (this.targetCamYaw - this.camYaw) * Math.min(1, dt * slingSmooth);
@@ -6599,6 +6601,7 @@ class Game {
         }
       }
       _usun(dt) {
+        if (!this.player || !this.player.position) return;
         if (!this._sun || !this.player) return;
         // Dynamic shadow quality: rolling-average FPS → adjust shadow map
         if (!this._fpsBuf) { this._fpsBuf = []; this._fpsIdx = 0; this._fpsSum = 0; }
@@ -6637,6 +6640,7 @@ class Game {
         this._sun.shadow.needsUpdate = true;
       }
       _updateDayNight(dt) {
+        if (!this.player || !this.player.position) return;
         if (!this.dayNightCycle || !this.mapCfg) return;
         const CYCLE = 300;
         this.timeOfDay = (this.timeOfDay + dt / CYCLE) % 1;
@@ -6867,6 +6871,7 @@ class Game {
         }
       }
       _ummap() {
+        if (!this.player || !this.player.position) return;
         const mc = this.dom['mmc']; if (!mc || !this.playing) return; mc.classList.add('on');
 
         // Compass strip — heading plus distance/direction to the next checkpoint. The corner
