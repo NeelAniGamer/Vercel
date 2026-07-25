@@ -1828,6 +1828,7 @@ class Game {
               this.score -= 50;
               this.fine += 2000;
               ui.issueChallan('Honking in No-Honking Zone', 'Sec 190(2) MV Act', '₹2,000', 'Silence Zone Violation');
+            toast('💡 TIP: Silence zones near schools/hospitals require zero honking. Use hand signals instead.', '#ffd54a');
           } else {
               toast('📢 Beep Beep!', '#ffd54a'); 
               sfx.play('horn'); 
@@ -4431,6 +4432,7 @@ class Game {
                  this.player.userData.spdCooldown -= dt;
                  if (this.player.userData.spdCooldown <= 0 && window.ui && window.ui.issueChallan) {
                     window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
+            toast('💡 TIP: Over-speeding is the #1 cause of road accidents in India. Stay within limits!', '#ff9500');
                     this.player.userData.spdCooldown = 5;
                  }
               }
@@ -6819,8 +6821,16 @@ class Game {
         const gspdEl = this.dom['gspd'];
         if (gspdEl) {
           gspdEl.textContent = k;
-          // Colour by speed zone
-          const spCol = k > 70 ? '#ff3b30' : k > 45 ? '#ff9500' : k > 20 ? '#ffd54a' : '#00c851';
+          // Colour by speed zone — respect level speedLimit if set
+          const speedLimitKmh = this.mapCfg && this.mapCfg.speedLimit ? this.mapCfg.speedLimit : 80;
+          const speedLimit = speedLimitKmh / 3.6;
+          let spCol = '#00c851';
+          if (k > speedLimit * 1.2) spCol = '#ff3b30'; // Red: 20%+ over limit
+          else if (k > speedLimit) spCol = '#ff9500'; // Orange: over limit
+          else if (k > speedLimit * 0.8) spCol = '#ffd54a'; // Yellow: approaching limit
+          gspdEl.style.fill = spCol;
+          // Flash when over speed limit
+          if (k > speedLimit && Math.floor(Date.now() / 400) % 2 === 0) spCol = '#ff3b30';
           gspdEl.style.fill = spCol;
         }
         const arc = this.dom['garc'];
