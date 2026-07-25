@@ -380,9 +380,9 @@
       /* ── Bento Grid ── */
       .bento-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        grid-auto-rows: minmax(180px, auto);
-        gap: 24px;
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: minmax(200px, auto);
+        gap: 20px;
         margin-bottom: 48px;
       }
 
@@ -398,6 +398,8 @@
         flex-direction: column;
         justify-content: center;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.2);
+        min-height: 0;
+        overflow: hidden;
       }
       .bento-card:hover {
         transform: translateY(-6px) scale(1.01);
@@ -408,6 +410,7 @@
 
       .bento-card.wide { grid-column: span 2; }
       .bento-card.tall { grid-row: span 2; }
+      .bento-card.full { grid-column: 1 / -1; }
 
       .bento-label {
         font-size: 0.75rem;
@@ -1015,6 +1018,9 @@
           <div class="license-score-label">Total Experience</div>
           <div class="license-score-val" id="h-score">0</div>
           <div class="license-tier" id="h-tier">Civic Score</div>
+          <button class="share-btn share-copy" id="btn-share-profile" onclick="shareProfile()" style="margin-top:16px;padding:8px 16px;font-size:0.8rem;border-radius:20px;">
+            &#128279; Share Profile
+          </button>
         </div>
       </div>
 
@@ -1159,6 +1165,20 @@
       <!-- Leaderboards -->
       <div class="dashboard-section" style="margin-top: 48px;">
         <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">📊 Leaderboards</h2>
+
+        <!-- Player & Level Search -->
+        <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+          <div style="position: relative; flex: 1; min-width: 250px;">
+            <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1.1rem;">🔍</span>
+            <input type="text" id="lb-player-search" placeholder="Search players by username..." onkeypress="if(event.key==='Enter') searchPlayerLb()" style="width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
+          </div>
+          <div style="position: relative; flex: 1; min-width: 250px;">
+            <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1.1rem;">📚</span>
+            <input type="text" id="lb-level-search" placeholder="Search levels..." oninput="searchLevels()" style="width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
+          </div>
+        </div>
+        <div id="lb-search-results" style="display: none; margin-bottom: 20px;"></div>
+
         <div style="background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
           <!-- Tab Nav -->
           <div class="lb-tabs" role="tablist" aria-label="Leaderboard categories">
@@ -1210,7 +1230,8 @@
         </div>
         <div class="field">
           <label>Username</label>
-          <input id="ed-username" type="text" placeholder="@username" />
+          <input id="ed-username" type="text" placeholder="@username" oninput="if(this.value && !this.value.startsWith('@')) this.value = '@' + this.value; checkUsernameAvail(this.value);" />
+          <div id="ed-username-status" style="font-size: 0.75rem; margin-top: 4px; min-height: 14px; font-weight: 600;"></div>
         </div>
         <div class="field">
           <label>Age</label>
@@ -1229,8 +1250,12 @@
     </div>
 
     <script>
-      const _uidParam = new URLSearchParams(window.location.search).get('uid')
-      let _isReadOnlyMode = !!_uidParam
+      const _urlParams = new URLSearchParams(window.location.search)
+      const _uidParam = _urlParams.get('uid')
+      const _studentIdParam = _urlParams.get('studentId')
+      const _userParam = _urlParams.get('user')
+      let _isReadOnlyMode = !!(_uidParam || _studentIdParam || _userParam)
+      let _resolvedUserId = _uidParam // will be set by profile resolution for studentId/user params
 
       let S = {}
       try {
@@ -1244,7 +1269,7 @@
         if (raw) tUser = JSON.parse(raw)
       } catch (e) {}
 
-      const _certParam = new URLSearchParams(window.location.search).get('cert')
+      const _certParam = _urlParams.get('cert')
       let _syncedCertId = null
 
       async function _initSupabase() {
@@ -1355,23 +1380,81 @@
         }
       }
 
+      // Sync all dashboard data to Supabase user_profiles on every load
+      async function _syncDashboardProgress() {
+        const client = await _initSupabase()
+        if (!client || !window.colUser || !window.colUser.id) return
+        try {
+          const completedCount = S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
+          const badgeCount = S.badges ? S.badges.length : 0
+          await client.from('user_profiles').upsert({
+            user_id: window.colUser.id,
+            display_name: tUser.name || S.name || null,
+            username: tUser.username || S.username || null,
+            total_score: S.total || 0,
+            modules_completed: completedCount,
+            badges_count: badgeCount,
+            preferred_vehicle: tUser.vehicle || S.vehicle || null,
+            ...(S.studentId ? { student_id: S.studentId } : {}),
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'user_id' }).catch(() => {})
+        } catch (e) { console.warn('Dashboard sync exception:', e) }
+      }
+
+      // Resolve ?studentId=XXX or ?user=@username to a Supabase user_id
+      async function _resolveProfileUrl() {
+        if (_resolvedUserId) return _resolvedUserId
+        const client = await _initSupabase()
+        if (!client) return null
+        try {
+          if (_studentIdParam) {
+            const { data } = await client.from('user_profiles').select('user_id').eq('student_id', _studentIdParam).maybeSingle()
+            if (data && data.user_id) { _resolvedUserId = data.user_id; return data.user_id }
+          }
+          if (_userParam) {
+            const uname = _userParam.startsWith('@') ? _userParam : '@' + _userParam
+            const { data } = await client.from('user_profiles').select('user_id').eq('username', uname).maybeSingle()
+            if (data && data.user_id) { _resolvedUserId = data.user_id; return data.user_id }
+            // Also try profiles table username field
+            const { data: pdata } = await client.from('profiles').select('id').eq('username', uname).maybeSingle()
+            if (pdata && pdata.id) { _resolvedUserId = pdata.id; return pdata.id }
+          }
+        } catch (e) { console.warn('Profile URL resolve failed:', e) }
+        return null
+      }
+
       async function renderDashboardUI() {
         if (_isReadOnlyMode) {
+            // Resolve ?studentId=XXX or ?user=@username to a real user_id
+            const resolvedId = await _resolveProfileUrl()
+            const targetId = resolvedId || _uidParam
             const client = await _initSupabase();
-            if (client) {
-              const { data } = await client.from('profiles').select('id, raw_user_meta_data').eq('id', _uidParam).maybeSingle();
+            if (client && targetId) {
+              // Try user_profiles first (has richer data we sync), fallback to profiles
+              const { data: upData } = await client.from('user_profiles').select('*').eq('user_id', targetId).maybeSingle()
+              if (upData) {
+                tUser.name = upData.display_name || 'Driver';
+                tUser.username = upData.username || '';
+                tUser.vehicle = upData.preferred_vehicle || 'Car';
+                tUser.age = upData.age || 18;
+                tUser.language = upData.language || 'en';
+                S.total = upData.total_score || 0
+                S.studentId = upData.student_id || null
+              }
+              const { data } = await client.from('profiles').select('id, raw_user_meta_data').eq('id', targetId).maybeSingle();
               if (data && data.raw_user_meta_data) {
                  const meta = data.raw_user_meta_data;
-                 tUser.name = meta.full_name || 'Driver';
-                 tUser.username = meta.username || '';
-                 tUser.vehicle = meta.vehicle || 'Car';
-                 tUser.age = meta.age || 18;
-                 tUser.language = meta.language || 'en';
-                 if (meta.traffic_save) {
+                 if (!tUser.name || tUser.name === 'Driver') tUser.name = meta.full_name || 'Driver';
+                 if (!tUser.username) tUser.username = meta.username || '';
+                 if (!tUser.vehicle || tUser.vehicle === 'Car') tUser.vehicle = meta.vehicle || 'Car';
+                 tUser.age = tUser.age || meta.age || 18;
+                 tUser.language = tUser.language || meta.language || 'en';
+                 if (meta.traffic_save && (!S.total || S.total === 0)) {
                     S = typeof meta.traffic_save === 'string' ? JSON.parse(meta.traffic_save) : meta.traffic_save;
                  }
               }
             }
+            // Hide edit controls in read-only mode
             const menuContainer = document.querySelector('.menu-container');
             if (menuContainer) menuContainer.style.display = 'none';
             const topActions = document.querySelector('.top-bar-actions');
@@ -1379,6 +1462,15 @@
               topActions.insertAdjacentHTML('afterbegin', '<div id="ro-badge" style="background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; color: var(--muted); margin-right: 12px; border: 1px solid var(--border);">Read-Only Mode</div>');
             }
             document.title = (tUser.name || 'Driver') + "'s Profile | Traffic Hero";
+        } else {
+          // Sync own dashboard data to Supabase on every load
+          _syncDashboardProgress()
+        }
+
+        // Hide Share Profile button in read-only mode (viewing someone else's profile)
+        if (_isReadOnlyMode) {
+          const shareBtn = document.getElementById('btn-share-profile')
+          if (shareBtn) shareBtn.style.display = 'none'
         }
 
         const displayName = tUser.name || S.name || 'Driver'
@@ -1410,6 +1502,24 @@
         const role = (tUser.role || S.role || 'student')
         const studentId = window.colUser?.uid || S.studentId || 'STU-UNKNOWN'
         document.getElementById('h-id').innerText = 'ID: ' + studentId
+
+        // Profile view counter — increment when others view this profile
+        if (_isReadOnlyMode && _resolvedUserId) {
+          try {
+            const client = await _initSupabase()
+            if (client) {
+              await client.rpc('increment_profile_views', { target_user_id: _resolvedUserId }).catch(() => {})
+              // Fetch and display view count
+              const { data: vp } = await client.from('user_profiles').select('profile_views').eq('user_id', _resolvedUserId).maybeSingle()
+              if (vp && vp.profile_views) {
+                const viewBadge = document.createElement('div')
+                viewBadge.style.cssText = 'margin-top:8px;font-size:0.8rem;color:var(--muted);font-weight:600;'
+                viewBadge.textContent = '👁️ ' + vp.profile_views + ' profile view' + (vp.profile_views !== 1 ? 's' : '')
+                document.getElementById('h-id').after(viewBadge)
+              }
+            }
+          } catch (e) {}
+        }
 
         document.getElementById('s-veh').innerText = tUser.vehicle || S.vehicle || 'Car'
         const ageVal = tUser.age || S.age || 18
@@ -1610,6 +1720,163 @@
         if (!e.target.closest('.menu-container')) {
           document.getElementById('action-menu').classList.remove('show')
         }
+      }
+
+      // --- PLAYER SEARCH (leaderboard) ---
+      async function searchPlayerLb() {
+        const q = document.getElementById('lb-player-search').value.trim()
+        const resultsEl = document.getElementById('lb-search-results')
+        if (!q) { resultsEl.style.display = 'none'; return }
+        const uname = q.startsWith('@') ? q : '@' + q
+        resultsEl.style.display = 'block'
+        resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);">Searching...</div>'
+        try {
+          if (!window.supabaseClient) throw new Error('Not connected')
+          const { data } = await window.supabaseClient
+            .from('user_profiles')
+            .select('user_id, display_name, username, total_score, modules_completed, badges_count, profile_views')
+            .ilike('username', uname)
+            .maybeSingle()
+          if (!data) {
+            // Fallback to profiles table
+            const { data: pData } = await window.supabaseClient
+              .from('profiles')
+              .select('id, raw_user_meta_data')
+              .eq('raw_user_meta_data->>username', uname)
+              .maybeSingle()
+            if (!pData) {
+              resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">Player not found. Try a different username.</div>'
+              return
+            }
+            const meta = pData.raw_user_meta_data || {}
+            resultsEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;" onclick="window.open('TrafficDashboard.html?uid=${pData.id}','_blank')">
+              <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;">${(meta.full_name||'U')[0]}</div>
+              <div style="flex:1;"><div style="font-weight:700;">${meta.full_name||'Unknown'}</div><div style="color:var(--signal);font-size:0.85rem;">${uname}</div></div>
+              <div style="text-align:right;"><div style="font-size:0.85rem;font-weight:600;color:var(--dim);">Profile</div><div style="font-size:0.7rem;color:var(--muted);">VIEW &rarr;</div></div>
+            </div>`
+            return
+          }
+          const baseUrl = 'TrafficDashboard.html?user=' + encodeURIComponent(uname)
+          resultsEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;" onclick="window.open('${baseUrl}','_blank')" onmouseover="this.style.borderColor='rgba(94,212,245,0.4)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:1.2rem;">${(data.display_name||'U')[0]}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${data.display_name||'Unknown'}</div>
+              <div style="color:var(--signal);font-size:0.85rem;">${uname}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:1.2rem;font-weight:800;">${(data.total_score||0).toLocaleString()} XP</div>
+              <div style="font-size:0.7rem;color:var(--muted);">${data.modules_completed||0}/52 modules · ${data.badges_count||0} badges</div>
+            </div>
+          </div>`
+        } catch (e) {
+          resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">Connection issue. Make sure you are signed in.</div>'
+        }
+      }
+
+      // --- LEVEL SEARCH ---
+      // Static level names for dashboard search (LVS not loaded here)
+      // NOTE: Keep in sync with level1.js–level20.js
+      const _LEVEL_NAMES = [
+        { id: 1, name: 'Free Roam', desc: 'Explore the open city', icon: '🌍' },
+        { id: 2, name: 'Pedestrian Courtesy', desc: 'Pedestrian priority rules', icon: '🚶' },
+        { id: 3, name: 'Parking Rules', desc: 'Street parking etiquette', icon: '🅿️' },
+        { id: 4, name: 'Emergency Priority', desc: 'Ambulance & fire truck yielding', icon: '🚑' },
+        { id: 5, name: 'Rain Driving', desc: 'Wet road handling', icon: '🌧️' },
+        { id: 6, name: 'Silence Zone', desc: 'No honking areas', icon: '🔇' },
+        { id: 7, name: 'Traffic Signs', desc: 'Road sign recognition', icon: '🚦' },
+        { id: 8, name: 'One Way', desc: 'One-way street navigation', icon: '➡️' },
+        { id: 9, name: 'Road Discipline', desc: 'Lane discipline & patience', icon: '😡' },
+        { id: 10, name: 'Signal Jump', desc: 'Red light running consequences', icon: '🔴' },
+        { id: 11, name: 'Cyclist Safety', desc: 'Cyclist awareness on roads', icon: '🚴' },
+        { id: 12, name: 'Narrow Streets', desc: 'Tight space navigation', icon: '🏘️' },
+        { id: 13, name: 'Rain Puddles', desc: 'Puddle splash avoidance', icon: '💦' },
+        { id: 14, name: 'Auto Rickshaw', desc: 'Auto rickshaw etiquette', icon: '🛺' },
+        { id: 15, name: 'Night Monsoon', desc: 'Night driving in rain', icon: '🌙' },
+        { id: 16, name: 'Hospital Quiet', desc: 'Hospital zone silence', icon: '🏥' },
+        { id: 17, name: 'Wildlife Crossing', desc: 'Animal crossing awareness', icon: '🐄' },
+        { id: 18, name: 'Toll Plaza', desc: 'Toll booth navigation', icon: '💰' },
+        { id: 19, name: 'Hill Driving', desc: 'Mountain road skills', icon: '⛰️' },
+        { id: 20, name: 'Highway Merge', desc: 'Highway entry & merge', icon: '🛣️' }
+      ]
+      function searchLevels() {
+        const q = document.getElementById('lb-level-search').value.trim().toLowerCase()
+        const resultsEl = document.getElementById('lb-search-results')
+        if (!q) { resultsEl.style.display = 'none'; return }
+        resultsEl.style.display = 'block'
+        try {
+          const matches = _LEVEL_NAMES.filter(lv => {
+            const searchStr = (lv.name + ' ' + lv.desc).toLowerCase()
+            return searchStr.includes(q)
+          })
+          if (matches.length === 0) {
+            resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">No levels match that search.</div>'
+            return
+          }
+          resultsEl.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;">' + matches.map(lv => {
+            const isDone = S.comp && S.comp[lv.id] && S.comp[lv.id].score > 0
+            return `<div style="background:var(--card);border:1px solid ${isDone?'rgba(52,211,153,0.3)':'var(--border)'};border-radius:12px;padding:14px;cursor:pointer;transition:all 0.2s;" onclick="window.location.href='Academy.html?screen=levels&lv=${lv.id}'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <span style="font-size:1.3rem;">${lv.icon}</span>
+                <span style="font-size:0.7rem;padding:2px 8px;border-radius:20px;background:${isDone?'rgba(52,211,153,0.15);color:var(--green)':'rgba(255,255,255,0.06);color:var(--muted)'};font-weight:700;">${isDone?'\u2713 Done':'Level '+lv.id}</span>
+              </div>
+              <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">${lv.name}</div>
+              <div style="font-size:0.75rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${lv.desc}</div>
+            </div>`
+          }).join('') + '</div>'
+        } catch (e) {
+          resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);">Search error.</div>'
+        }
+      }
+
+      // --- USERNAME AVAILABILITY CHECK (dashboard edit modal) ---
+      let _edUsernameCheckTimeout = null
+      async function checkUsernameAvail(username) {
+        const statusEl = document.getElementById('ed-username-status')
+        if (!statusEl) return
+        username = username.trim()
+        if (!username || username.length < 3) {
+          statusEl.textContent = ''
+          return
+        }
+        if (!username.startsWith('@')) username = '@' + username
+        statusEl.textContent = 'Checking...'
+        statusEl.style.color = 'var(--muted)'
+        clearTimeout(_edUsernameCheckTimeout)
+        _edUsernameCheckTimeout = setTimeout(async () => {
+          try {
+            if (!window.supabaseClient) {
+              statusEl.textContent = '✓ Accepted (offline)'
+              statusEl.style.color = 'var(--green)'
+              return
+            }
+            const uname = username.startsWith('@') ? username : '@' + username
+            const { data: upData } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id')
+              .ilike('username', uname)
+              .maybeSingle()
+            if (upData && window.colUser && upData.user_id !== window.colUser.id) {
+              statusEl.textContent = '✕ Already taken'
+              statusEl.style.color = 'var(--red)'
+              return
+            }
+            const { data: pData } = await window.supabaseClient
+              .from('profiles')
+              .select('id')
+              .eq('username', uname)
+              .maybeSingle()
+            if (pData && window.colUser && pData.id !== window.colUser.id) {
+              statusEl.textContent = '✕ Already taken'
+              statusEl.style.color = 'var(--red)'
+              return
+            }
+            statusEl.textContent = '✓ Available!'
+            statusEl.style.color = 'var(--green)'
+          } catch (e) {
+            statusEl.textContent = '✓ Accepted'
+            statusEl.style.color = 'var(--green)'
+          }
+        }, 500)
       }
 
       function openEditModal() {
@@ -2002,6 +2269,26 @@
           if (data) data.forEach(d => allUserIds.add(d.user_id))
         } catch (e) { console.warn('Leaderboard XP fetch failed:', e) }
 
+        // Fallback: if certificates table is empty, pull from user_profiles
+        if (!certsByScore || certsByScore.length === 0) {
+          try {
+            const { data: upData } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id, display_name, username, total_score, modules_completed')
+              .order('total_score', { ascending: false })
+              .limit(500)
+            if (upData && upData.length > 0) {
+              certsByScore = upData.map(u => ({
+                user_id: u.user_id,
+                display_name: u.display_name || u.username || 'Learner',
+                score: u.total_score || 0,
+                modules_completed: u.modules_completed || 0
+              }))
+              certsByScore.forEach(d => allUserIds.add(d.user_id))
+            }
+          } catch (e) { console.warn('Leaderboard user_profiles fallback failed:', e) }
+        }
+
         try {
           const { data: wData } = await window.supabaseClient
             .from('wallets')
@@ -2020,17 +2307,33 @@
           if (bData) bData.forEach(d => allUserIds.add(d.user_id))
         } catch (e) { console.warn('Leaderboard badges fetch failed:', e) }
 
-        // Fetch usernames
+        // Fetch usernames from user_profiles first, then profiles as fallback
         if (allUserIds.size > 0) {
           try {
-            const { data: profiles } = await window.supabaseClient
-              .from('profiles')
-              .select('id, username')
-              .in('id', Array.from(allUserIds))
-            if (profiles) {
-              profiles.forEach(p => {
-                if (p.username) profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
+            const { data: upProfiles } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id, display_name, username')
+              .in('user_id', Array.from(allUserIds))
+            if (upProfiles) {
+              upProfiles.forEach(p => {
+                const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
+                if (name) profileMap[p.user_id] = name
               })
+            }
+          } catch (e) {}
+          // Fallback: profiles table
+          try {
+            const missingIds = Array.from(allUserIds).filter(id => !profileMap[id])
+            if (missingIds.length > 0) {
+              const { data: profiles } = await window.supabaseClient
+                .from('profiles')
+                .select('id, username')
+                .in('id', missingIds)
+              if (profiles) {
+                profiles.forEach(p => {
+                  if (p.username) profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
+                })
+              }
             }
           } catch (e) { console.warn('Leaderboard profiles fetch failed:', e) }
         }
@@ -2044,9 +2347,7 @@
         }
 
         if (wallets && wallets.length > 0) {
-          const certMap = {}
-          if (certsByScore) certsByScore.forEach(c => { certMap[c.user_id] = c.display_name })
-          const walletsNamed = wallets.map(w => ({ ...w, display_name: certMap[w.user_id] || 'Learner' }))
+          const walletsNamed = wallets.map(w => ({ ...w, display_name: profileMap[w.user_id] || 'Learner' }))
           renderBoard('leaderboard-civic', 'civic', walletsNamed, u => `₹${(u.balance || 0).toLocaleString()}`)
         } else {
           const el = document.getElementById('leaderboard-civic'); if (el) el.innerHTML = EMPTY_MSG
@@ -2055,11 +2356,9 @@
         if (allBadges && allBadges.length > 0) {
           const badgeCount = {}
           allBadges.forEach(b => { badgeCount[b.user_id] = (badgeCount[b.user_id] || 0) + 1 })
-          const certMap = {}
-          if (certsByScore) certsByScore.forEach(c => { certMap[c.user_id] = c.display_name })
           const badgeUsers = Object.entries(badgeCount)
             .sort((a, b) => b[1] - a[1])
-            .map(([uid, count]) => ({ user_id: uid, display_name: certMap[uid] || 'Learner', badge_count: count }))
+            .map(([uid, count]) => ({ user_id: uid, display_name: profileMap[uid] || 'Learner', badge_count: count }))
           renderBoard('leaderboard-badges', 'badges', badgeUsers, u => `${u.badge_count} badge${u.badge_count !== 1 ? 's' : ''}`)
         } else {
           const el = document.getElementById('leaderboard-badges'); if (el) el.innerHTML = EMPTY_MSG
@@ -2075,6 +2374,26 @@
       function shareCertificate(certId) {
         const url = `${window.location.origin}${window.location.pathname}?cert=${certId}`
         navigator.clipboard.writeText(url).then(() => toast('Link copied!', '#5ed4f5'))
+      }
+
+      function shareProfile() {
+        const baseUrl = window.location.origin + window.location.pathname
+        // Prefer username-based URL, then studentId, then uid
+        const username = tUser.username || S.username || null
+        const studentId = S.studentId || window.colUser?.uid || null
+        let url
+        if (username) {
+          const uname = username.startsWith('@') ? username : '@' + username
+          url = baseUrl + '?user=' + encodeURIComponent(uname)
+        } else if (studentId) {
+          url = baseUrl + '?studentId=' + encodeURIComponent(studentId)
+        } else if (window.colUser && window.colUser.id) {
+          url = baseUrl + '?uid=' + window.colUser.id
+        } else {
+          toast('Sign in to share your profile!', '#ff4444')
+          return
+        }
+        navigator.clipboard.writeText(url).then(() => toast('Profile link copied! 🎉', '#5ed4f5'))
       }
 
       // --- Welcome Back Popup Logic ---

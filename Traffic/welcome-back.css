@@ -1,26 +1,26 @@
 /* ============================================================
-   Traffic Welcome Back Popup Styles
+   Traffic Welcome Back Popup — Card-Style Redesign
    ============================================================ */
 
 .welcome-back-popup {
   position: fixed;
-  bottom: 24px;
+  bottom: 32px;
   left: 50%;
-  transform: translateX(-50%) translateY(120px);
+  transform: translateX(-50%) translateY(140px) scale(0.95);
   z-index: 10000;
   opacity: 0;
   visibility: hidden;
   transition: 
-    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.4s ease,
-    visibility 0.4s ease;
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.5s ease,
+    visibility 0.5s ease;
   pointer-events: none;
-  max-width: calc(100vw - 32px);
-  width: 100%;
+  max-width: calc(100vw - 48px);
+  width: 520px;
 }
 
 .welcome-back-popup.show {
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(-50%) translateY(0) scale(1);
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -29,12 +29,12 @@
 .welcome-back-popup .wb-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: -1;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
 }
 
 .welcome-back-popup.show .wb-backdrop {
@@ -42,22 +42,35 @@
 }
 
 .welcome-back-popup .wb-panel {
-  background: var(--card, rgba(17, 24, 39, 0.9));
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-  border-radius: 20px;
-  padding: 20px;
+  background: var(--card, rgba(17, 24, 39, 0.92));
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 0;
   box-shadow: 
-    0 20px 50px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-  animation: wbPanelIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    0 24px 64px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 0 80px rgba(94, 212, 245, 0.06);
+  overflow: hidden;
+  position: relative;
+}
+
+.welcome-back-popup .wb-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--plasma, #b89bff), var(--signal, #5ed4f5), var(--accent, #f2b84b));
+  opacity: 0.8;
 }
 
 @keyframes wbPanelIn {
   0% {
     opacity: 0;
-    transform: scale(0.95) translateY(10px);
+    transform: scale(0.92) translateY(16px);
   }
   100% {
     opacity: 1;
@@ -67,22 +80,28 @@
 
 .welcome-back-popup .wb-header {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 16px;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 28px 16px;
 }
 
 .welcome-back-popup .wb-avatar {
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
   background: linear-gradient(135deg, var(--plasma, #b89bff), var(--signal, #5ed4f5));
   display: flex;
   align-items: center;
   justify-content: center;
   color: #000;
-  box-shadow: 0 8px 24px rgba(184, 155, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(184, 155, 255, 0.35);
+  animation: wbAvatarPulse 3s ease-in-out infinite;
+}
+
+@keyframes wbAvatarPulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(184, 155, 255, 0.35); }
+  50% { box-shadow: 0 8px 32px rgba(184, 155, 255, 0.55); }
 }
 
 .welcome-back-popup .wb-title-wrap {
@@ -93,7 +112,7 @@
 .welcome-back-popup .wb-title {
   margin: 0 0 4px;
   font-family: 'Lora', serif;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: var(--text, #e8e3d8);
   line-height: 1.3;
@@ -101,7 +120,7 @@
 
 .welcome-back-popup .wb-subtitle {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: var(--muted, #8891aa);
   line-height: 1.4;
 }
@@ -133,9 +152,43 @@
   transform: scale(1.05);
 }
 
+/* Context info row */
+.welcome-back-popup .wb-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 28px 16px;
+}
+
+.welcome-back-popup .wb-context-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted, #8891aa);
+  transition: all 0.2s ease;
+}
+
+.welcome-back-popup .wb-context-chip svg {
+  flex-shrink: 0;
+}
+
+.welcome-back-popup .wb-time-chip {
+  color: var(--signal, #5ed4f5);
+  border-color: rgba(94, 212, 245, 0.2);
+  background: rgba(94, 212, 245, 0.06);
+}
+
+/* Actions row */
 .welcome-back-popup .wb-actions {
   display: flex;
   gap: 10px;
+  padding: 0 28px 24px;
 }
 
 .welcome-back-popup .wb-btn {
@@ -144,64 +197,82 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   border: none;
-  min-height: 48px;
+  min-height: 50px;
 }
 
 .welcome-back-popup .wb-btn-primary {
   background: linear-gradient(135deg, var(--accent, #f2b84b), #f59e0b);
   color: #1a1a1a;
   box-shadow: 0 8px 24px rgba(242, 184, 75, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-back-popup .wb-btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+
+.welcome-back-popup .wb-btn-primary:hover::after {
+  left: 150%;
 }
 
 .welcome-back-popup .wb-btn-primary:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 12px 32px rgba(242, 184, 75, 0.5);
+  box-shadow: 0 12px 36px rgba(242, 184, 75, 0.5);
 }
 
 .welcome-back-popup .wb-btn-secondary {
-  background: var(--bg, #070a14);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text, #e8e3d8);
   border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
 }
 
 .welcome-back-popup .wb-btn-secondary:hover {
-  background: var(--hover, rgba(255, 255, 255, 0.08));
+  background: rgba(255, 255, 255, 0.1);
   border-color: var(--muted, #8891aa);
   transform: translateY(-1px);
 }
 
+/* Progress bar at bottom */
 .welcome-back-popup .wb-progress-bar {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--border, rgba(255, 255, 255, 0.1));
-  border-radius: 0 0 20px 20px;
+  background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
 
 .welcome-back-popup .wb-progress-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--signal, #5ed4f5), var(--accent, #f2b84b));
-  border-radius: 0 0 20px 20px;
+  background: linear-gradient(90deg, var(--plasma, #b89bff), var(--signal, #5ed4f5), var(--accent, #f2b84b));
+  border-radius: 0 0 24px 24px;
   transform-origin: left;
 }
 
 /* Light mode adjustments */
 body.lm .welcome-back-popup .wb-panel {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   border-color: rgba(0, 0, 0, 0.08);
   box-shadow: 
-    0 20px 50px rgba(0, 0, 0, 0.1),
+    0 24px 64px rgba(0, 0, 0, 0.12),
     0 0 0 1px rgba(0, 0, 0, 0.03) inset;
 }
 
@@ -218,52 +289,73 @@ body.lm .welcome-back-popup .wb-close:hover {
 }
 
 body.lm .welcome-back-popup .wb-btn-secondary {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.04);
   color: var(--text, #1e293b);
-  border-color: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 body.lm .welcome-back-popup .wb-btn-secondary:hover {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
-/* Mobile responsive adjustments */
-@media (max-width: 480px) {
+body.lm .welcome-back-popup .wb-context-chip {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.lm .welcome-back-popup .wb-btn-primary {
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(14, 114, 160, 0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 580px) {
   .welcome-back-popup {
     bottom: 16px;
     left: 16px;
     right: 16px;
-    transform: translateX(0) translateY(120px);
-    max-width: none;
+    transform: translateX(0) translateY(140px) scale(0.95);
+    width: auto;
   }
   
   .welcome-back-popup.show {
-    transform: translateX(0) translateY(0);
+    transform: translateX(0) translateY(0) scale(1);
   }
   
-  .welcome-back-popup .wb-panel {
-    padding: 16px;
-    border-radius: 16px;
+  .welcome-back-popup .wb-header {
+    padding: 20px 20px 12px;
+    gap: 12px;
   }
   
   .welcome-back-popup .wb-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
   }
   
   .welcome-back-popup .wb-title {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
   .welcome-back-popup .wb-subtitle {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
+  }
+  
+  .welcome-back-popup .wb-context {
+    padding: 0 20px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .welcome-back-popup .wb-actions {
+    padding: 0 20px 20px;
+    flex-direction: column;
   }
   
   .welcome-back-popup .wb-btn {
-    padding: 14px 12px;
-    font-size: 0.85rem;
+    padding: 14px 16px;
+    min-height: 48px;
   }
 }
 
@@ -276,16 +368,16 @@ body.lm .welcome-back-popup .wb-btn-secondary:hover {
   .welcome-back-popup .wb-btn,
   .welcome-back-popup .wb-progress-fill {
     animation: none !important;
-    transition: none !important;
+    transition-duration: 0.01ms !important;
   }
   
   .welcome-back-popup.show {
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0) scale(1);
   }
   
-  @media (max-width: 480px) {
+  @media (max-width: 580px) {
     .welcome-back-popup.show {
-      transform: translateX(0) translateY(0);
+      transform: translateX(0) translateY(0) scale(1);
     }
   }
 }
@@ -311,7 +403,6 @@ body.lm .welcome-back-popup .wb-btn-secondary:hover {
     min-width: 48px;
   }
   
-  /* Increase tap targets for interactive elements */
   .lcard, .syl-item, .bcard, .stat-card, .qo {
     min-height: 48px;
   }
@@ -413,7 +504,7 @@ body.lm .welcome-back-popup .wb-btn-secondary:hover {
   }
   
   input, select, textarea {
-    font-size: 16px !important; /* Prevents zoom on iOS */
+    font-size: 16px !important;
     min-height: 48px;
     padding: 12px 16px;
   }
@@ -495,7 +586,6 @@ body.lm .welcome-back-popup .wb-btn-secondary:hover {
     display: flex !important;
   }
   
-  /* Hide game canvas in landscape on mobile if not ready */
   body:not(.game-ready) #gc,
   body:not(.game-ready) #hud,
   body:not(.game-ready) #hudbar,

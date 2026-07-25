@@ -69,6 +69,40 @@
         justify-content: center;
       }
 
+      /* === ENTRY ANIMATIONS === */
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeSlideRight {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.92); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      @keyframes shimmerPulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      .setup-container { animation: scaleIn 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+      .setup-left-pane > * { animation: fadeSlideRight 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+      .setup-left-pane > *:nth-child(1) { animation-delay: 0.15s; }
+      .setup-left-pane > *:nth-child(2) { animation-delay: 0.25s; }
+      .setup-left-pane > *:nth-child(3) { animation-delay: 0.35s; }
+      .wizard-step, #authArea { animation: fadeSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+      .wizard-step:not([style*="display: none"]), #authArea:not([style*="display: none"]) { animation: fadeSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+
+      /* === STEP TRANSITION === */
+      .wizard-step {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      .wizard-step[style*="display: none"] {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
       body.lm {
         --void: #f3f2eb;
         --ink: #111827;
@@ -763,7 +797,8 @@
 
           <div class="input-group">
             <label for="prof-username">Username (Public on Leaderboard)</label>
-            <input type="text" id="prof-username" placeholder="@your_username" required autocomplete="username" oninput="if(this.value && !this.value.startsWith('@')) this.value = '@' + this.value;" />
+            <input type="text" id="prof-username" placeholder="@your_username" required autocomplete="username" oninput="if(this.value && !this.value.startsWith('@')) this.value = '@' + this.value; checkUsernameAvailability(this.value);" style="padding-right: 40px;" />
+            <div id="username-status" style="font-size: 0.8rem; margin-top: 6px; min-height: 18px; font-weight: 600;"></div>
           </div>
 
           <div class="input-group">
@@ -1270,15 +1305,14 @@
       }
 
       async function handleGoogleAuth() {
+        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
         try {
-          var allowedOrigin = 'https://advancedlogiclabs.dpdns.org';
-          var currentOrigin = window.location.origin;
-          var redirectUrl = currentOrigin === allowedOrigin ? window.location.href : currentOrigin + window.location.pathname;
+          var redirectTo = new URL('TrafficSetup.html', window.location.href).href
           
           let res = await window.supabaseClient.auth.signInWithOAuth({
             provider: 'google',
             options: {
-              redirectTo: redirectUrl,
+              redirectTo: redirectTo,
             },
           })
           if (res.error) throw res.error
@@ -1345,6 +1379,76 @@
         }
       }, 500)
 
+      // --- USERNAME AVAILABILITY CHECK ---
+      let _usernameCheckTimeout = null
+      async function checkUsernameAvailability(username) {
+        const statusEl = document.getElementById('username-status')
+        if (!statusEl) return
+        username = username.trim()
+        if (!username || username.length < 3) {
+          statusEl.textContent = ''
+          statusEl.style.color = ''
+          return
+        }
+        if (!username.startsWith('@')) username = '@' + username
+        if (username.length < 3) {
+          statusEl.textContent = 'Username must be at least 2 characters after @'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        statusEl.textContent = 'Checking...'
+        statusEl.style.color = 'var(--dim)'
+        clearTimeout(_usernameCheckTimeout)
+        _usernameCheckTimeout = setTimeout(async () => {
+          try {
+            if (!window.supabaseClient) {
+              statusEl.textContent = '✓ Username accepted (offline)'
+              statusEl.style.color = 'var(--em)'
+              return
+            }
+            // Check both user_profiles and profiles tables
+            const uname = username.startsWith('@') ? username : '@' + username
+            const { data: upData } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id')
+              .ilike('username', uname)
+              .maybeSingle()
+            if (upData) {
+              // If it's the current user, it's fine
+              if (window.colUser && upData.user_id === window.colUser.id) {
+                statusEl.textContent = '✓ This is your current username'
+                statusEl.style.color = 'var(--em)'
+              } else {
+                statusEl.textContent = '✕ Username already taken'
+                statusEl.style.color = 'var(--red)'
+              }
+              return
+            }
+            // Also check profiles table
+            const { data: pData } = await window.supabaseClient
+              .from('profiles')
+              .select('id')
+              .eq('username', uname)
+              .maybeSingle()
+            if (pData) {
+              if (window.colUser && pData.id === window.colUser.id) {
+                statusEl.textContent = '✓ This is your current username'
+                statusEl.style.color = 'var(--em)'
+              } else {
+                statusEl.textContent = '✕ Username already taken'
+                statusEl.style.color = 'var(--red)'
+              }
+              return
+            }
+            statusEl.textContent = '✓ Username available!'
+            statusEl.style.color = 'var(--em)'
+          } catch (e) {
+            statusEl.textContent = '✓ Username accepted'
+            statusEl.style.color = 'var(--em)'
+          }
+        }, 500)
+      }
+
       let S = {}
       try {
         const raw = localStorage.getItem('traffic_local_user')
@@ -1408,12 +1512,40 @@
                 return
               }
 
-              // Update profile
+              // Also check user_profiles table
+              const { data: upExisting } = await window.supabaseClient
+                .from('user_profiles')
+                .select('user_id')
+                .ilike('username', username)
+                .neq('user_id', window.colUser.id)
+                .maybeSingle()
+              if (upExisting) {
+                alert('That username is already taken. Please choose another.')
+                return
+              }
+
+              // Update profiles table
               await window.supabaseClient
                 .from('profiles')
                 .upsert({ id: window.colUser.id, username: username, full_name: name, avatar_url: '' })
+
+              // Also sync to user_profiles
+              const studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+              await window.supabaseClient
+                .from('user_profiles')
+                .upsert({
+                  user_id: window.colUser.id,
+                  display_name: name,
+                  username: username,
+                  student_id: studentId,
+                  preferred_vehicle: veh,
+                  age: age,
+                  language: language,
+                  role: document.getElementById('signup-role')?.value || 'student',
+                  updated_at: new Date().toISOString()
+                }, { onConflict: 'user_id' })
             } catch (err) {
-              console.warn('Error saving username to cloud', err)
+              console.warn('Error saving profile to cloud', err)
             }
           }
         }

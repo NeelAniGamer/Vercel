@@ -185,7 +185,7 @@
           </div>
           <div class="wb-title-wrap">
             <h3 id="wb-title" class="wb-title">Welcome Back, ${getUserName()}!</h3>
-            <p class="wb-subtitle">You were at <strong>${data.screenLabel}</strong> ${data.timeLabel}</p>
+            <p class="wb-subtitle">Ready to pick up where you left off?</p>
           </div>
           <button class="wb-close" aria-label="Dismiss welcome back" type="button">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -193,6 +193,24 @@
               <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
+        </div>
+        <div class="wb-context">
+          <span class="wb-context-chip">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            ${data.screenLabel}
+          </span>
+          <span class="wb-context-chip wb-time-chip">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            ${data.timeLabel}
+          </span>
         </div>
         <div class="wb-actions">
           <button class="wb-btn wb-btn-secondary" type="button" data-action="dismiss">
@@ -203,7 +221,7 @@
             <span>Not Now</span>
           </button>
           <button class="wb-btn wb-btn-primary" type="button" data-action="continue" aria-label="${actionAriaLabel}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="9 18 15 12 9 6"/>
             </svg>
             <span>${actionText}</span>
