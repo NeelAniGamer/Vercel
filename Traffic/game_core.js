@@ -2721,21 +2721,172 @@ class Game {
             this._buildRoadsFromGraph(RW);
             this._buildBuildingsFromGraph();
         } else {
-            // Build roads using GLB tiles
-            cfg.roads.forEach(r => {
-          const isV = r.type === 'v';
-          const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
-          const cx = isV ? r.x : (r.x1 + r.x2) / 2;
-          const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
+            // ── Kenney GLB Road Tiles + Sidewalks + Props + Buildings ──
+            const _roadKey = window.PRELOADED_MODELS?.road_avenue ? 'road_avenue' : 'road_straight';
+            const _roadModel = window.PRELOADED_MODELS?.[_roadKey];
+            const _intModel = window.PRELOADED_MODELS?.road_intersect;
+            const _isPed = cfg.isPedestrian;
+            const _swW = _isPed ? 6 : 4;
+            const _roadMat = new THREE.MeshToonMaterial({ color: 0x3d3f45, gradientMap: window._toonGrad || null });
+            const _paveMat = new THREE.MeshToonMaterial({ color: 0xb0b0a0, gradientMap: window._toonGrad || null });
 
-          // Logical road bed (invisible, used for raycasting/interactions)
-          const roadHb = new THREE.Mesh(new THREE.PlaneGeometry(RW, len), new THREE.MeshBasicMaterial({ visible: false }));
-          roadHb.rotation.set(-Math.PI / 2, 0, isV ? 0 : -Math.PI / 2);
-          roadHb.position.set(cx, .01, cz);
-          this.scene.add(roadHb);
-          this.world.push(roadHb);
-        });
-      }
+            cfg.roads.forEach(r => {
+              const isV = r.type === 'v';
+              const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
+              const cx = isV ? r.x : (r.x1 + r.x2) / 2;
+              const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
+
+              // Logical road bed (collision)
+              const roadHb = new THREE.Mesh(
+                new THREE.PlaneGeometry(RW, len),
+                new THREE.MeshBasicMaterial({ visible: false })
+              );
+              roadHb.rotation.set(-Math.PI / 2, 0, isV ? 0 : -Math.PI / 2);
+              roadHb.position.set(cx, 0.01, cz);
+              this.scene.add(roadHb);
+              this.world.push(roadHb);
+
+              // Visual road tiles using Kenney GLB
+              if (_roadModel) {
+                const tileScale = RW / 1000;
+                const tileLenScale = 3;
+                const tileSize = 1500 * tileScale * tileLenScale;
+                const numTiles = Math.max(1, Math.floor(len / tileSize));
+                const totalTileLen = numTiles * tileSize;
+                const startOffset = (len - totalTileLen) / 2;
+                const startX = isV ? cx : Math.min(r.x1, r.x2) + tileSize / 2 + startOffset;
+                const startZ = isV ? Math.min(r.z1, r.z2) + tileSize / 2 + startOffset : cz;
+
+                for (let i = 0; i < numTiles; i++) {
+                  const tile = _roadModel.clone();
+                  tile.scale.set(tileScale, tileScale, tileScale * tileLenScale);
+                  tile.frustumCulled = true;
+                  tile.traverse(c => { if (c.isMesh) { c.castShadow = false; c.receiveShadow = false; c.material = _roadMat; } });
+                  if (isV) {
+                    tile.position.set(cx, 0.08, startZ + i * tileSize);
+                  } else {
+                    tile.rotation.y = Math.PI / 2;
+                    tile.position.set(startX + i * tileSize, 0.08, cz);
+                  }
+                  this.scene.add(tile);
+                }
+              }
+
+              // Sidewalks along road edges
+              [-1, 1].forEach(side => {
+                const pb = new THREE.Mesh(
+                  isV ? new THREE.BoxGeometry(_swW, 0.15, len) : new THREE.BoxGeometry(len, 0.15, _swW),
+                  _paveMat
+                );
+                pb.position.set(
+                  isV ? cx + side * (RW / 2 + _swW / 2) : cx,
+                  0.07,
+                  isV ? cz : cz + side * (RW / 2 + _swW / 2)
+                );
+                pb.receiveShadow = true;
+                this.scene.add(pb);
+                this.world.push(pb);
+              });
+
+              // Streetlights along the road (sparse for performance)
+              const _lightSpacing = 80;
+              const _rStart = Math.min(isV ? r.z1 : r.x1, isV ? r.z2 : r.x2);
+              const _rEnd = Math.max(isV ? r.z1 : r.x1, isV ? r.z2 : r.x2);
+              for (let p = _rStart + _lightSpacing; p < _rEnd; p += _lightSpacing) {
+                if (Math.random() > 0.5) continue;
+                const side = Math.random() > 0.5 ? 1 : -1;
+                const lx = isV ? cx + side * (RW / 2 + 1.5) : p;
+                const lz = isV ? p : cz + side * (RW / 2 + 1.5);
+                const pole = new THREE.Mesh(
+                  new THREE.CylinderGeometry(0.08, 0.08, 5, 6),
+                  new THREE.MeshToonMaterial({ color: 0x666666, gradientMap: window._toonGrad || null })
+                );
+                pole.position.set(lx, 2.5, lz); pole.castShadow = false; pole.receiveShadow = false;
+                this.scene.add(pole);
+                const fixture = new THREE.Mesh(
+                  new THREE.BoxGeometry(0.6, 0.15, 0.3),
+                  new THREE.MeshBasicMaterial({ color: 0xffee88 })
+                );
+                fixture.position.set(lx, 5.1, lz); this.scene.add(fixture);
+              }
+            });
+
+            // ── Intersection tiles ──
+            if (_intModel && cfg.ints) {
+              const _intScale = RW / 1000;
+              cfg.ints.forEach(([ix, iz]) => {
+                const intTile = _intModel.clone();
+                intTile.scale.set(_intScale, _intScale, _intScale);
+                intTile.frustumCulled = true;
+                intTile.traverse(c => {
+                  if (c.isMesh) { c.castShadow = false; c.receiveShadow = false; c.material = _roadMat; }
+                });
+                intTile.position.set(ix, 0.1, iz);
+                this.scene.add(intTile);
+              });
+            }
+
+            // ── Buildings along roads ──
+            const _bldgModels = [];
+            if (window.PRELOADED_MODELS) {
+              Object.keys(window.PRELOADED_MODELS).forEach(k => {
+                if (k.startsWith('industrial_') || k.startsWith('suburban_') || k.startsWith('mbuilding_')) _bldgModels.push(window.PRELOADED_MODELS[k]);
+              });
+            }
+            const _bMats = [
+              new THREE.MeshToonMaterial({ color: 0xd9cfc4, gradientMap: window._toonGrad || null }),
+              new THREE.MeshToonMaterial({ color: 0xc4b8a8, gradientMap: window._toonGrad || null }),
+              new THREE.MeshToonMaterial({ color: 0xb0a898, gradientMap: window._toonGrad || null }),
+              new THREE.MeshToonMaterial({ color: 0xd4c8b8, gradientMap: window._toonGrad || null })
+            ];
+            // Building model list (re-scanned each load for freshness)
+            const _useBldgModels = _bldgModels;
+
+            const _drawBldg = (bx, bz, type, rot) => {
+              let g;
+              if (_useBldgModels.length > 0) {
+                const model = _useBldgModels[Math.floor(Math.random() * _useBldgModels.length)];
+                g = model.clone();
+                g.traverse(c => { if (c.isMesh) { c.castShadow = false; c.receiveShadow = true; c.frustumCulled = true; } });
+              } else {
+                g = new THREE.Group();
+                const mat = _bMats[Math.floor(Math.random() * _bMats.length)];
+                const bh = 8 + Math.random() * 8;
+                const bw = 5 + Math.random() * 5;
+                const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 7), mat);
+                bMesh.position.y = bh / 2;
+                g.add(bMesh);
+              }
+              g.position.set(bx, 0, bz); g.rotation.y = rot;
+              this.scene.add(g); this.obstacles.push(g);
+            };
+
+            // Fallback visible road surface (when no GLB models loaded)
+            if (!_roadModel) {
+              cfg.roads.forEach(r => {
+                const isV = r.type === 'v';
+                const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
+                const cx = isV ? r.x : (r.x1 + r.x2) / 2;
+                const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
+                const visRoad = new THREE.Mesh(
+                  new THREE.PlaneGeometry(RW, len),
+                  new THREE.MeshToonMaterial({ color: 0x3d3f45, gradientMap: window._toonGrad || null })
+                );
+                visRoad.rotation.set(-Math.PI / 2, 0, isV ? 0 : -Math.PI / 2);
+                visRoad.position.set(cx, 0.02, cz);
+                this.scene.add(visRoad);
+              });
+            }
+
+            if (cfg.bldg && cfg.bldg.length) {
+              cfg.bldg.forEach(b => {
+                const bz = (b.z1 + b.z2) / 2;
+                // Face outward from road center (simple: alternate 0 / PI based on x position)
+                const bRot = b.x > 0 ? Math.PI / 2 : -Math.PI / 2;
+                _drawBldg(b.x, bz, 'normal', bRot);
+              });
+            }
+          }
 
       if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['metro']) {
           const metro = window.PRELOADED_MODELS['metro'].clone();
@@ -4241,6 +4392,7 @@ class Game {
             if (this._turnAccum > 1.5 && this.turnSignal === 0 && !this.challanFired.has('no_indicator')) {
               this.challanFired.add('no_indicator');
               ui.issueChallan('Turning without Indicator', 'Sec 125 MV Act', '₹500', 'Signal Violation');
+            toast('💡 TIP: Always use indicators 30 meters before turning. It prevents 40% of lane-change accidents.', '#ffd54a');
               this.vio++; this.violationsLog.push('NO_INDICATOR'); this.score -= 30; this.fine += 500;
               toast('⚠️ Use turn signals! ₹500 fine', '#ff9500');
               sfx.play('error');
@@ -6774,7 +6926,8 @@ class Game {
         cfg.isNight = nightOn;
       }
       _dnLerp(a, b, t) { return a + (b - a) * Math.min(1, Math.max(0, t)); }
-      _uhud() {
+        _uhud() {
+        if (!this.player) return;
         const k = Math.round(Math.abs(this.speed) * 100);
         
         if (!this.warnEl) {
@@ -6817,22 +6970,20 @@ class Game {
               if (mcEnterHide) mcEnterHide.style.display = 'none';
             }
             this.warnEl.classList.remove('flash');
-        }
-        const gspdEl = this.dom['gspd'];
-        if (gspdEl) {
-          gspdEl.textContent = k;
-          // Colour by speed zone — respect level speedLimit if set
-          const speedLimitKmh = this.mapCfg && this.mapCfg.speedLimit ? this.mapCfg.speedLimit : 80;
-          const speedLimit = speedLimitKmh / 3.6;
-          let spCol = '#00c851';
-          if (k > speedLimit * 1.2) spCol = '#ff3b30'; // Red: 20%+ over limit
-          else if (k > speedLimit) spCol = '#ff9500'; // Orange: over limit
-          else if (k > speedLimit * 0.8) spCol = '#ffd54a'; // Yellow: approaching limit
-          gspdEl.style.fill = spCol;
-          // Flash when over speed limit
-          if (k > speedLimit && Math.floor(Date.now() / 400) % 2 === 0) spCol = '#ff3b30';
-          gspdEl.style.fill = spCol;
-        }
+        }          const gspdEl = this.dom['gspd'];
+          if (gspdEl) {
+            gspdEl.textContent = k;
+            // Colour by speed zone — respect level speedLimit if set
+            const speedLimitKmh = this.mapCfg && this.mapCfg.speedLimit ? this.mapCfg.speedLimit : 80;
+            const speedLimit = speedLimitKmh / 3.6;
+            let spCol = '#00c851';
+            if (k > speedLimit * 1.2) spCol = '#ff3b30'; // Red: 20%+ over limit
+            else if (k > speedLimit) spCol = '#ff9500'; // Orange: over limit
+            else if (k > speedLimit * 0.8) spCol = '#ffd54a'; // Yellow: approaching limit
+            // Flash red when over speed limit (alternates every 400ms)
+            if (k > speedLimit && Math.floor(Date.now() / 400) % 2 === 0) spCol = '#ff3b30';
+            gspdEl.style.fill = spCol;
+          }
         const arc = this.dom['garc'];
         if (arc) {
           const sw = Math.min(k / 90, 1) * 240; const sa = -220 * Math.PI / 180; const ea = sa + sw * Math.PI / 180;
