@@ -3069,6 +3069,18 @@ class Game {
           // School sign
           const sign = new THREE.Mesh(new THREE.BoxGeometry(3, 1.5, .1), new THREE.MeshToonMaterial({ color: 0xffff00 }));
           sign.position.set(0, 2.5, -60); this.scene.add(sign);
+          // School children pedestrians with PedestrianAI (child profile)
+          for (let i = 0; i < 6; i++) {
+            const child = _buildHuman();
+            child.position.set(-40 + (Math.random() - 0.5) * 20, 0, -60 + (Math.random() - 0.5) * 10);
+            child.userData = { spd: 0, state: 'waiting', t: Math.random() * 5, isV: false, dir: 1, side: 1 };
+            this.scene.add(child); this.peds.push(child);
+            if (typeof PedestrianAI !== 'undefined') {
+              const childAI = new PedestrianAI(child, this.trafficManager);
+              childAI.profileKey = 'child'; childAI.profile = PED_PROFILES.child;
+              this.pedestrianAIs.push(childAI); child._pedAI = childAI;
+            }
+          }
         }
         if (cfg.hasOcean) {
           const ocean = new THREE.Mesh(new THREE.PlaneGeometry(600, 1200), mats.water);
