@@ -3249,7 +3249,6 @@ class Game {
           this.trafficManager = new window.TrafficManager(this);
           this.npcAI = new window.NPCAI(this, this.roadGraph, this.trafficManager);
         }
-        this.trafficManager.init(cfg.npcTypes || []);
         this.npcAI.init();
       }
        
@@ -5709,6 +5708,15 @@ class Game {
             ped.frustumCulled = true;
             this.scene.add(ped);
             this.peds.push(ped);
+            // Attach PedestrianAI for all dynamically spawned pedestrians
+            if (typeof PedestrianAI !== 'undefined' && !ped._pedAI) {
+              const pedAI = new PedestrianAI(ped, this.trafficManager);
+              // Use appropriate profile based on theme
+              if (isFestCrowd) { pedAI.profileKey = 'rusher'; pedAI.profile = PED_PROFILES.rusher; }
+              else if (cfg.hasRain) { pedAI.profileKey = 'cautious'; pedAI.profile = PED_PROFILES.cautious; }
+              else if (cfg.hasSchool) { pedAI.profileKey = 'child'; pedAI.profile = PED_PROFILES.child; }
+              this.pedestrianAIs.push(pedAI); ped._pedAI = pedAI;
+            }
           }
         }
 
