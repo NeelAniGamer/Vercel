@@ -181,6 +181,8 @@ class NPCAI {
     this.rageLevel = 0; // 0-100, triggers ROAD_RAGE at 100
   }
 
+  init() {}
+
   setRoute(route) {
     this.route = route || [];
     this.routeIndex = 0;

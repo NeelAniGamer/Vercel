@@ -2765,8 +2765,13 @@ class Game {
             for (let i = 0; i < 3; i++) {
                 const ped = _buildHuman();
                 ped.position.set(7 + i, 0, 30 + Math.random()*2);
-                ped.userData.vx = 0; ped.userData.vz = 0;
-            }
+    ped.userData.vx = 0; ped.userData.vz = 0;
+    this.scene.add(ped); this.peds.push(ped);
+    if (typeof PedestrianAI !== 'undefined') {
+      const pedAI = new PedestrianAI(ped, this.trafficManager);
+      this.pedestrianAIs.push(pedAI); ped._pedAI = pedAI;
+    }
+}
         }
         
         // Custom Monuments and Sneh Asha
@@ -3158,6 +3163,10 @@ class Game {
             flag.position.set(0.7, 2.8, 0); flagman.add(flag);
             this.scene.add(flagman);
             this.peds.push(flagman);
+            if (typeof PedestrianAI !== 'undefined') {
+              const flagAI = new PedestrianAI(flagman, this.trafficManager);
+              this.pedestrianAIs.push(flagAI); flagman._pedAI = flagAI;
+            }
           }
         }
 
@@ -3226,7 +3235,7 @@ class Game {
       if (!cfg.isPedestrian && window.TrafficManager && window.NPCAI) {
         if (!this.trafficManager) {
           this.trafficManager = new window.TrafficManager(this);
-          this.npcAI = new window.NPCAI(this);
+          this.npcAI = new window.NPCAI(this, this.roadGraph, this.trafficManager);
         }
         this.trafficManager.init(cfg.npcTypes || []);
         this.npcAI.init();
@@ -5567,6 +5576,7 @@ class Game {
       _upeds(dt) {
         if (!this.player || !this.player.position) return;
         if (!this.peds) this.peds = [];
+        if (!this.pedestrianAIs) this.pedestrianAIs = [];
         if (this._isMobile) {
           this.peds.forEach(p => {
             if (!p || !p.position) return;
@@ -5576,6 +5586,14 @@ class Game {
             }
             p.visible = true;
           });
+        }
+        // Update PedestrianAI instances for intelligent behavior
+        if (typeof PedestrianAI !== 'undefined') {
+          for (let i = this.pedestrianAIs.length - 1; i >= 0; i--) {
+            const ai = this.pedestrianAIs[i];
+            if (!ai || !ai.ped || !ai.ped.visible) continue;
+            ai.update(dt, this.npcs, this.playerVehicle || this.player);
+          }
         }
         
         // Count nearby pedestrians for task tracking
@@ -5599,6 +5617,12 @@ class Game {
             this.scene.remove(p);
             this.peds[i] = this.peds[this.peds.length - 1]; this.peds.pop();
             p.visible = false;
+            // Clean up PedestrianAI instance if attached
+            if (p._pedAI) {
+              const aiIdx = this.pedestrianAIs.indexOf(p._pedAI);
+              if (aiIdx !== -1) this.pedestrianAIs.splice(aiIdx, 1);
+              p._pedAI = null;
+            }
             this._pedFree.push(p);
           }
         }
