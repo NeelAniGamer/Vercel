@@ -142,8 +142,8 @@ class NPCAI {
     this.vehicle = vehicle;
     this.roadGraph = roadGraph;
     this.trafficManager = trafficManager;
-    this.profileKey = vehicle.profileKey || pickRandomProfile();
-    this.profile = NPC_PROFILES[this.profileKey];
+    this.profileKey = (vehicle.profileKey && NPC_PROFILES[vehicle.profileKey]) ? vehicle.profileKey : pickRandomProfile();
+    this.profile = NPC_PROFILES[this.profileKey] || NPC_PROFILES.normal;
     this.state = NPC_STATE.IDLE;
     this.targetNode = null;
     this.currentEdge = null;
@@ -167,10 +167,11 @@ class NPCAI {
     this.reactionDelay = 0.1 + Math.random() * 0.3;
     this.reactionTimer = 0;
     this.isRuleBreaker = ['reckless_bike', 'rulebreaker', 'aggressive'].includes(this.profileKey);
+    const p = this.profile || NPC_PROFILES.normal;
     this.behaviorModifiers = {
-      hornFrequency: this.profile.aggression * 0.5,
-      lightFlashFrequency: this.profile.aggression * 0.3,
-      tailgateDistance: (1 - this.profile.patience) * 10 + 5
+      hornFrequency: p.aggression * 0.5,
+      lightFlashFrequency: p.aggression * 0.3,
+      tailgateDistance: (1 - p.patience) * 10 + 5
     };
     // Distracted driving: some NPCs check phones periodically (~1-5% chance per second at 60fps)
     this.distractTimer = 0;

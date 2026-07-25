@@ -864,7 +864,7 @@ class Game {
         this.boostFuel = 100; this.maxBoostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._camTarget = new THREE.Vector3(); this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
         this.playing = false; this.pause = false; this.lightningTimer = 0; this.thunderSfx = null; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0;
-        this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.routeIdx = 0; this.retries = 0; this.hits = 0;
+        this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.pedestrianAIs = []; this.routeIdx = 0; this.retries = 0; this.hits = 0;
         this.violationsLog = [];
         this.kidModeActive = false;
         this.lodChunks = [];
@@ -2623,7 +2623,7 @@ class Game {
       _buildScene(mode) {
         if (typeof initGTex === 'function') initGTex();
         while (this.scene && this.scene.children.length) this.scene.remove(this.scene.children[0]);
-        this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.speedBreakers = [];
+        this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.pedestrianAIs = []; this.speedBreakers = [];
         // Phase 7: Recycle existing NPC groups into free pool before clearing scene
         if (!this._npcFree) this._npcFree = [];
         if (!this._pedFree) this._pedFree = [];
@@ -2838,10 +2838,16 @@ class Game {
                     isV: true, dir: Math.sign(vx), startZ: ped.position.z, roadC: ped.position.x,
                     state: 'crossing', side: 1, targetDist: 20
                 };
-                this.scene.add(ped);
-                this.peds.push(ped);
-            }
-        } else if (cfg.themeType === 'respectful_parking') {
+        this.scene.add(ped);
+        this.peds.push(ped);
+        // Attach PedestrianAI for intelligent behavior
+        if (typeof PedestrianAI !== 'undefined') {
+          const pedAI = new PedestrianAI(ped, this.trafficManager);
+          this.pedestrianAIs.push(pedAI);
+          ped._pedAI = pedAI;
+        }
+    }
+} else if (cfg.themeType === 'respectful_parking') {
             // Spawn haphazard parked cars
             for (let i = 0; i < 15; i++) {
                 const carTpl = this._makeNPC('car', 0x999999);
@@ -2880,10 +2886,16 @@ class Game {
                     isV: true, dir: 1, startZ: ped.position.z, roadC: ped.position.x,
                     state: 'idle', side: 1, targetDist: 0
                 };
-                this.scene.add(ped);
-                this.peds.push(ped);
-            }
-        } else if (cfg.themeType === 'no_honking') {
+        this.scene.add(ped);
+        this.peds.push(ped);
+        // Attach PedestrianAI for intelligent behavior
+        if (typeof PedestrianAI !== 'undefined') {
+          const pedAI = new PedestrianAI(ped, this.trafficManager);
+          this.pedestrianAIs.push(pedAI);
+          ped._pedAI = pedAI;
+        }
+    }
+} else if (cfg.themeType === 'no_honking') {
             cfg.isSilenceZone = true;
             for (let i = 0; i < 6; i++) {
                 const blockTpl = this._makeNPC('car', Math.random() * 0xffffff);
