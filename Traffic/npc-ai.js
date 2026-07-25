@@ -73,6 +73,54 @@ const NPC_PROFILES = {
     overtakeThreshold: 0.85,
     sidewalkProbability: 0.0,
     parkingSkill: 0.95
+  },    // ── New personalities based on Mumbai traffic research ──
+  teen: {
+    name: 'Teen Driver',
+    weight: 6,
+    aggression: 0.7,
+    patience: 0.2,
+    signalCompliance: 0.4,
+    laneDiscipline: 0.35,
+    speedVariance: 0.45,
+    overtakeThreshold: 0.2,
+    sidewalkProbability: 0.15,
+    parkingSkill: 0.3
+  },
+  elderly: {
+    name: 'Elderly Driver',
+    weight: 5,
+    aggression: 0.05,
+    patience: 0.95,
+    signalCompliance: 0.98,
+    laneDiscipline: 0.85,
+    speedVariance: 0.1,
+    overtakeThreshold: 0.95,
+    sidewalkProbability: 0.0,
+    parkingSkill: 0.7
+  },
+  delivery: {
+    name: 'Delivery Driver',
+    weight: 6,
+    aggression: 0.75,
+    patience: 0.15,
+    signalCompliance: 0.35,
+    laneDiscipline: 0.3,
+    speedVariance: 0.3,
+    overtakeThreshold: 0.15,
+    sidewalkProbability: 0.2,
+    parkingSkill: 0.4
+  },
+  tourist: {
+    name: 'Tourist Driver',
+    weight: 4,
+    aggression: 0.2,
+    patience: 0.6,
+    signalCompliance: 0.85,
+    laneDiscipline: 0.5,
+    speedVariance: 0.2,
+    overtakeThreshold: 0.7,
+    sidewalkProbability: 0.0,
+    parkingSkill: 0.3
   }
 };
 
@@ -757,7 +805,6 @@ class NPCAI {
       const toPlayer = new THREE.Vector3().subVectors(player.position, this.vehicle.position);
       const proj = toPlayer.dot(forward);
       if (proj > 0 && proj < 10) {
-        // Player is ahead and close — slow down
         this.desiredSpeed = Math.min(this.desiredSpeed, this.currentSpeed * 0.5);
       }
     }
@@ -771,7 +818,6 @@ class NPCAI {
       const toPlayer = new THREE.Vector3().subVectors(player.position, this.vehicle.position);
       const lateral = right.dot(toPlayer);
       if (Math.abs(lateral) < 3 && Math.random() < 0.005) {
-        // Nudge away from player
         this.vehicle.rotation.y += (lateral > 0 ? -1 : 1) * 0.02;
       }
     }
@@ -779,6 +825,33 @@ class NPCAI {
     // Cautious NPCs brake early when player approaches
     if (aggression < 0.2 && dist < 25 && Math.random() < 0.01) {
       this.desiredSpeed *= 0.8;
+    }
+
+    // ── Trait-specific behaviors ──
+    // Teen: extra distracted — double distractChance
+    if (this.profileKey === 'teen' && this.state === NPC_STATE.FOLLOW_LANE) {
+      if (Math.random() < this.distractChance * 2) {
+        this.state = NPC_STATE.DISTRACTED;
+        this.distractTimer = 0;
+      }
+    }
+    // Elderly: slower reaction — only set once per reaction cycle
+    if (this.profileKey === 'elderly' && this.reactionTimer <= 0) {
+      this.reactionTimer = 0.3 + Math.random() * 0.6;
+    }
+    // Delivery: double-park near destinations — stop in road briefly
+    if (this.profileKey === 'delivery' && this.routeIndex >= this.route.length - 1) {
+      if (this.state === NPC_STATE.FOLLOW_LANE && Math.random() < 0.005) {
+        this.desiredSpeed = 0;
+        this.currentSpeed *= 0.9;
+        this._honk();
+      }
+    }
+    // Tourist: erratic lane changes — swerve randomly
+    if (this.profileKey === 'tourist' && this.state === NPC_STATE.FOLLOW_LANE) {
+      if (Math.random() < 0.002) {
+        this.vehicle.rotation.y += (Math.random() - 0.5) * 0.08;
+      }
     }
   }
 
@@ -843,7 +916,258 @@ class NPCAI {
   }
 }
 
+// ── Pedestrian AI System ──
+const PED_STATE = {
+  WAITING: 'WAITING',
+  CROSSING: 'CROSSING',
+  WALKING: 'WALKING',
+  JAYWALKING: 'JAYWALKING',
+  FLEEING: 'FLEEING',
+  FROZEN: 'FROZEN'
+};
+
+const PED_PROFILES = {
+  normal: { speed: 2.5, jaywalkChance: 0.15, waitPatience: 0.8, groupBehavior: 0.3 },
+  rusher: { speed: 4.0, jaywalkChance: 0.5, waitPatience: 0.2, groupBehavior: 0.1 },
+  cautious: { speed: 1.8, jaywalkChance: 0.02, waitPatience: 0.95, groupBehavior: 0.5 },
+  child: { speed: 2.0, jaywalkChance: 0.3, waitPatience: 0.4, groupBehavior: 0.7 },
+  elderly_ped: { speed: 1.2, jaywalkChance: 0.05, waitPatience: 0.9, groupBehavior: 0.4 },
+  phone_user: { speed: 1.5, jaywalkChance: 0.35, waitPatience: 0.3, groupBehavior: 0.1 }
+};
+
+const PED_PROFILE_KEYS = Object.keys(PED_PROFILES);
+
+function pickRandomPedProfile() {
+  return PED_PROFILE_KEYS[Math.floor(Math.random() * PED_PROFILE_KEYS.length)];
+}
+
+class PedestrianAI {
+  constructor(pedMesh, trafficManager) {
+    this.ped = pedMesh;
+    this.tm = trafficManager;
+    this.profileKey = pedMesh.profileKey || pickRandomPedProfile();
+    this.profile = PED_PROFILES[this.profileKey];
+    this.state = PED_STATE.WALKING;
+    this.target = null;
+    this.waitTimer = 0;
+    this.crossingTimer = 0;
+    this.fleeTimer = 0;
+    this.stuckTimer = 0;
+    this.facing = Math.random() * Math.PI * 2;
+    this.lookTimer = 0;
+    this.onCrosswalk = false;
+  }
+
+  update(dt, npcs, playerVehicle) {
+    this.lookTimer += dt;
+
+    switch (this.state) {
+      case PED_STATE.WALKING:
+        this._updateWalking(dt);
+        break;
+      case PED_STATE.WAITING:
+        this._updateWaiting(dt, npcs);
+        break;
+      case PED_STATE.CROSSING:
+        this._updateCrossing(dt, npcs, playerVehicle);
+        break;
+      case PED_STATE.JAYWALKING:
+        this._updateJaywalking(dt, npcs, playerVehicle);
+        break;
+      case PED_STATE.FLEEING:
+        this._updateFleeing(dt);
+        break;
+      case PED_STATE.FROZEN:
+        break;
+    }
+
+    this._checkVehicleProximity(playerVehicle, npcs);
+    this._keepOnGround();
+  }
+
+  _updateWalking(dt) {
+    if (this.target) {
+      const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
+      toTarget.y = 0;
+      const dist = toTarget.length();
+      if (dist < 1.5) {
+        this.state = PED_STATE.WAITING;
+        this.waitTimer = 0;
+        this.target = null;
+        return;
+      }
+      const dir = toTarget.normalize();
+      this.ped.position.x += dir.x * this.profile.speed * dt;
+      this.ped.position.z += dir.z * this.profile.speed * dt;
+      this.facing = Math.atan2(dir.x, dir.z);
+      this.ped.rotation.y = this.facing;
+    } else {
+      // Pick a random nearby target on sidewalk
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 8 + Math.random() * 15;
+      this.target = new THREE.Vector3(
+        this.ped.position.x + Math.sin(angle) * dist,
+        0,
+        this.ped.position.z + Math.cos(angle) * dist
+      );
+    }
+  }
+
+  _updateWaiting(dt, npcs) {
+    this.waitTimer += dt;
+    // Look left and right while waiting
+    if (this.lookTimer > 1.5) {
+      this.lookTimer = 0;
+      this.facing += (Math.random() - 0.5) * 1.5;
+      this.ped.rotation.y = this.facing;
+    }
+    // Decide to cross after waiting
+    if (!this._waitThreshold) this._waitThreshold = 2 + Math.random() * 4;
+    if (this.waitTimer > this._waitThreshold) {
+      if (this.profile.jaywalkChance > Math.random()) {
+        this.state = PED_STATE.JAYWALKING;
+        this.crossingTimer = 0;
+        this._pickCrossingTarget();
+      } else {
+        // Check if road is clear to cross properly
+        if (this._isRoadClear(npcs)) {
+          this.state = PED_STATE.CROSSING;
+          this.crossingTimer = 0;
+          this._pickCrossingTarget();
+        }
+      }
+    }
+  }
+
+  _updateCrossing(dt, npcs, playerVehicle) {
+    this.crossingTimer += dt;
+    // Walk across the road
+    if (this.target) {
+      const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
+      toTarget.y = 0;
+      const dist = toTarget.length();
+      if (dist < 1.5 || this.crossingTimer > 10) {
+        this.state = PED_STATE.WALKING;
+        this.target = null;
+        return;
+      }
+      const dir = toTarget.normalize();
+      this.ped.position.x += dir.x * this.profile.speed * dt;
+      this.ped.position.z += dir.z * this.profile.speed * dt;
+      this.facing = Math.atan2(dir.x, dir.z);
+      this.ped.rotation.y = this.facing;
+    }
+  }
+
+  _updateJaywalking(dt, npcs, playerVehicle) {
+    this.crossingTimer += dt;
+    // Faster pace when jaywalking (rushing across)
+    const jaywalkSpeed = this.profile.speed * 1.3;
+    if (this.target) {
+      const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
+      toTarget.y = 0;
+      const dist = toTarget.length();
+      if (dist < 1.5 || this.crossingTimer > 8) {
+        this.state = PED_STATE.WALKING;
+        this.target = null;
+        return;
+      }
+      const dir = toTarget.normalize();
+      this.ped.position.x += dir.x * jaywalkSpeed * dt;
+      this.ped.position.z += dir.z * jaywalkSpeed * dt;
+      this.facing = Math.atan2(dir.x, dir.z);
+      this.ped.rotation.y = this.facing;
+    }
+  }
+
+  _updateFleeing(dt) {
+    this.fleeTimer += dt;
+    // Run away from danger
+    if (this.target) {
+      const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
+      toTarget.y = 0;
+      const dist = toTarget.length();
+      if (dist < 1.5 || this.fleeTimer > 3) {
+        this.state = PED_STATE.WALKING;
+        this.target = null;
+        return;
+      }
+      const dir = toTarget.normalize();
+      this.ped.position.x += dir.x * 5 * dt;
+      this.ped.position.z += dir.z * 5 * dt;
+      this.facing = Math.atan2(dir.x, dir.z);
+      this.ped.rotation.y = this.facing;
+    }
+  }
+
+  _checkVehicleProximity(playerVehicle, npcs) {
+    if (this.state === PED_STATE.FLEEING || this.state === PED_STATE.FROZEN) return;
+    const myPos = this.ped.position;
+    // Check player vehicle
+    if (playerVehicle) {
+      const dist = myPos.distanceTo(playerVehicle.position);
+      if (dist < 8) {
+        this.state = PED_STATE.FLEEING;
+        this.fleeTimer = 0;
+        // Flee perpendicular to vehicle direction
+        const away = new THREE.Vector3().subVectors(myPos, playerVehicle.position).normalize();
+        away.y = 0;
+        this.target = myPos.clone().addScaledVector(away, 10);
+        return;
+      }
+    }
+    // Check NPC vehicles
+    if (npcs) {
+      for (const npc of npcs) {
+        if (!npc.position) continue;
+        const dist = myPos.distanceTo(npc.position);
+        if (dist < 6) {
+          this.state = PED_STATE.FLEEING;
+          this.fleeTimer = 0;
+          const away = new THREE.Vector3().subVectors(myPos, npc.position).normalize();
+          away.y = 0;
+          this.target = myPos.clone().addScaledVector(away, 8);
+          return;
+        }
+      }
+    }
+  }
+
+  _isRoadClear(npcs) {
+    // Simple check: no vehicles within 10 units ahead
+    if (!npcs) return true;
+    const myPos = this.ped.position;
+    for (const npc of npcs) {
+      if (!npc.position) continue;
+      const dist = myPos.distanceTo(npc.position);
+      if (dist < 10) return false;
+    }
+    return true;
+  }
+
+  _pickCrossingTarget() {
+    // Pick a point across the road
+    const crossAngle = this.facing + Math.PI / 2 + (Math.random() - 0.5) * 0.5;
+    const crossDist = 12 + Math.random() * 8;
+    this.target = new THREE.Vector3(
+      this.ped.position.x + Math.sin(crossAngle) * crossDist,
+      0,
+      this.ped.position.z + Math.cos(crossAngle) * crossDist
+    );
+  }
+
+  _keepOnGround() {
+    // Respect model's natural height offset (player at y=0.5, peds at y=0)
+    if (!this._groundY) this._groundY = this.ped.position.y > 0.1 ? 0.5 : 0;
+    this.ped.position.y = this._groundY;
+  }
+}
+
 window.NPC_STATE = NPC_STATE;
 window.NPC_PROFILES = NPC_PROFILES;
 window.NPCAI = NPCAI;
 window.pickRandomProfile = pickRandomProfile;
+window.PED_STATE = PED_STATE;
+window.PED_PROFILES = PED_PROFILES;
+window.PedestrianAI = PedestrianAI;
+window.pickRandomPedProfile = pickRandomPedProfile;

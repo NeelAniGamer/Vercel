@@ -108,7 +108,7 @@
         top: 24px;
         left: 50%;
         transform: translateX(-50%);
-        width: min(1100px, 92vw);
+        width: min(1440px, 94vw);
         height: 64px;
         background: rgba(17, 24, 39, 0.6);
         backdrop-filter: blur(24px);
@@ -251,9 +251,9 @@
 
       /* ── Main Content ── */
       .dashboard-container {
-        max-width: 1100px;
+        max-width: 1440px;
         margin: 100px auto 40px;
-        padding: 0 20px;
+        padding: 0 24px;
       }
 
       /* ── Hero License ── */
@@ -614,6 +614,11 @@
       .leaderboard-row.you .name::after { content: ' · You'; color: var(--accent); font-size: 0.7rem; font-weight: 700; }
 
       /* ── Leaderboard Tabs ── */
+      .lb-panel { max-height: 60vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+      .lb-panel::-webkit-scrollbar { width: 6px; }
+      .lb-panel::-webkit-scrollbar-track { background: transparent; }
+      .lb-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+      .lb-panel::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
       .lb-tabs {
         display: flex; gap: 4px; margin-bottom: 18px;
         background: rgba(255,255,255,0.04); padding: 4px; border-radius: 12px;
@@ -760,7 +765,7 @@
       .hz-toggle.night .hz-orb { left: 78px; background: radial-gradient(circle, #E2E8F0, #475569); }
 
       @media (max-width: 768px) {
-        .top-bar { width: 92vw; padding: 0 12px; }
+        .top-bar { width: 94vw; padding: 0 12px; }
         .global-progress-wrap { display: none; }
         .hero-license { flex-direction: column; text-align: center; padding: 30px 20px; }
         .license-left { flex-direction: column; text-align: center; }
@@ -1968,7 +1973,7 @@
           const container = document.getElementById(containerId)
           if (!container) return
           if (!users || users.length === 0) { container.innerHTML = EMPTY_MSG; return }
-          container.innerHTML = users.slice(0, 5).map((u, i) => {
+          container.innerHTML = users.map((u, i) => {
             const isYou = u.user_id && u.user_id === currentUserId
             const displayUsername = profileMap[u.user_id] || u.display_name || u.username || u.full_name || 'Anonymous'
             return `<div class="leaderboard-row${isYou ? ' you' : ''}">
@@ -1992,7 +1997,7 @@
             .from('certificates')
             .select('user_id, display_name, score, modules_completed')
             .order('score', { ascending: false })
-            .limit(15)
+            .limit(500)
           certsByScore = data
           if (data) data.forEach(d => allUserIds.add(d.user_id))
         } catch (e) { console.warn('Leaderboard XP fetch failed:', e) }
@@ -2002,7 +2007,7 @@
             .from('wallets')
             .select('user_id, balance')
             .order('balance', { ascending: false })
-            .limit(10)
+            .limit(500)
           wallets = wData
           if (wData) wData.forEach(d => allUserIds.add(d.user_id))
         } catch (e) { console.warn('Leaderboard wallets fetch failed:', e) }
@@ -2053,7 +2058,7 @@
           const certMap = {}
           if (certsByScore) certsByScore.forEach(c => { certMap[c.user_id] = c.display_name })
           const badgeUsers = Object.entries(badgeCount)
-            .sort((a, b) => b[1] - a[1]).slice(0, 5)
+            .sort((a, b) => b[1] - a[1])
             .map(([uid, count]) => ({ user_id: uid, display_name: certMap[uid] || 'Learner', badge_count: count }))
           renderBoard('leaderboard-badges', 'badges', badgeUsers, u => `${u.badge_count} badge${u.badge_count !== 1 ? 's' : ''}`)
         } else {
