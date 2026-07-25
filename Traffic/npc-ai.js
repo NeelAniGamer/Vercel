@@ -1027,12 +1027,14 @@ class PedestrianAI {
       if (this.profile.jaywalkChance > Math.random()) {
         this.state = PED_STATE.JAYWALKING;
         this.crossingTimer = 0;
+        this._waitThreshold = null;
         this._pickCrossingTarget();
       } else {
         // Check if road is clear to cross properly
         if (this._isRoadClear(npcs)) {
           this.state = PED_STATE.CROSSING;
           this.crossingTimer = 0;
+          this._waitThreshold = null;
           this._pickCrossingTarget();
         }
       }
