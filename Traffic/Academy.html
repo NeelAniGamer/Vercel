@@ -2884,37 +2884,85 @@
 
       /* ── Mobile touch-target & responsive overrides ── */
       @media (max-width: 600px) {
+        /* Brand header: stack vertically, reduce size & spacing */
+        .brand-header {
+          flex-direction: column !important;
+          gap: 6px !important;
+          margin-bottom: 16px !important;
+          padding: 0 8px !important;
+          width: 100% !important;
+          align-items: center !important;
+        }
         .brand-header img,
         .brand-header [id^="cert-logo"] {
-          height: clamp(36px, 8vw, 60px) !important;
+          height: clamp(28px, 7vw, 44px) !important;
         }
         .brand-header > div:first-child {
-          gap: clamp(12px, 3vw, 24px) !important;
+          gap: 8px !important;
+          flex-wrap: wrap !important;
+          justify-content: center !important;
         }
+        /* Hide redundant partner-badges on mobile (brand-header already shows them) */
+        .partner-badges {
+          display: none !important;
+        }
+        /* Scale down large decorative text */
         .sc > div[style*="font-size: 6rem"],
         .sc .st {
-          font-size: clamp(2.2rem, 5.5vw, 3.5rem) !important;
+          font-size: clamp(1.8rem, 5vw, 3rem) !important;
+          margin-bottom: 12px !important;
         }
         .sc > div:first-of-type > div[style*="6rem"] {
-          font-size: clamp(2.5rem, 7vw, 4rem) !important;
+          font-size: clamp(1.8rem, 5vw, 3rem) !important;
+        }
+        /* Reduce start screen padding */
+        .sc {
+          padding: clamp(20px, 4vw, 40px) 16px !important;
+          padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+        }
+        /* Reduce subtitle text */
+        .su {
+          font-size: clamp(0.85rem, 2.2vw, 1rem) !important;
+          margin-bottom: 20px !important;
+          padding: 0 4px !important;
+          line-height: 1.5 !important;
+        }
+        /* Button spacing */
+        .pls {
+          gap: 10px !important;
+          margin-bottom: 16px !important;
         }
         .sc .btn,
         .sc .btn-p {
-          min-height: 48px;
-          padding: 12px 28px;
+          min-height: 44px;
+          padding: 10px 22px;
+          font-size: 0.85rem;
         }
         .back-btn,
         .btn-g,
         .btn-danger {
-          min-height: 48px;
+          min-height: 44px;
         }
         #academy-sign-in-btn {
           padding: 12px 24px !important;
-          min-height: 48px !important;
+          min-height: 44px !important;
         }
         .nav-user-profile {
           padding: 8px 16px 8px 8px !important;
-          min-height: 48px !important;
+          min-height: 44px !important;
+        }
+        /* Shrink mobile controls on start screen */
+        #steer-wheel-container {
+          width: 90px !important;
+          height: 90px !important;
+        }
+        #steer-wheel {
+          width: 90px !important;
+          height: 90px !important;
+        }
+        .mc-btn {
+          width: 56px !important;
+          height: 56px !important;
         }
       }
 

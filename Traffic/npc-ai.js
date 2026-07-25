@@ -6,7 +6,11 @@ const NPC_STATE = {
   SIDEWALK_DETOUR: 'SIDEWALK_DETOUR',
   PARK: 'PARK',
   COMPLETE: 'COMPLETE',
-  CRASH: 'CRASH'
+  CRASH: 'CRASH',
+  PULL_OVER: 'PULL_OVER',
+  EMERGENCY_BRAKE: 'EMERGENCY_BRAKE',
+  DISTRACTED: 'DISTRACTED',
+  ROAD_RAGE: 'ROAD_RAGE'
 };
 
 const NPC_PROFILES = {
@@ -120,6 +124,12 @@ class NPCAI {
       lightFlashFrequency: this.profile.aggression * 0.3,
       tailgateDistance: (1 - this.profile.patience) * 10 + 5
     };
+    // Distracted driving: some NPCs check phones periodically (~1-5% chance per second at 60fps)
+    this.distractTimer = 0;
+    this.distractChance = this.profileKey === 'normal' ? 0.0003 : this.profileKey === 'cautious' ? 0.0001 : this.profileKey === 'aggressive' ? 0.0008 : 0.0005;
+    // Road rage: aggressive NPCs get angry when blocked
+    this.rageTimer = 0;
+    this.rageLevel = 0; // 0-100, triggers ROAD_RAGE at 100
   }
 
   setRoute(route) {
@@ -178,10 +188,23 @@ class NPCAI {
       case NPC_STATE.CRASH:
         this._updateCrash(dt);
         break;
+      case NPC_STATE.PULL_OVER:
+        this._updatePullOver(dt);
+        break;
+      case NPC_STATE.EMERGENCY_BRAKE:
+        this._updateEmergencyBrake(dt);
+        break;
+      case NPC_STATE.DISTRACTED:
+        this._updateDistracted(dt);
+        break;
+      case NPC_STATE.ROAD_RAGE:
+        this._updateRoadRage(dt);
+        break;
     }
 
     this._applyPhysics(dt);
     this._checkTransitions(playerVehicle, signals);
+    this._checkEmergencyAvoidance(playerVehicle);
   }
 
   _updateIdle(dt) {
@@ -365,8 +388,42 @@ class NPCAI {
       }
     }
 
+    // Emergency vehicle response: pull over for ambulances (throttled to every 0.5s)
+    this._ambCheckTimer = (this._ambCheckTimer || 0) + dt;
+    if (this.state === NPC_STATE.FOLLOW_LANE && this._ambCheckTimer > 0.5) {
+      this._ambCheckTimer = 0;
+      if (this._isAmbulanceNearby()) {
+        this.state = NPC_STATE.PULL_OVER;
+        this.pullOverTimer = 0;
+        return;
+      }
+    }
+
     if (playerVehicle && this._isNearPlayer(playerVehicle)) {
       this._reactToPlayer(playerVehicle);
+    }
+
+    // Distracted driving: some NPCs check phones, drift, slow suddenly
+    if (this.state === NPC_STATE.FOLLOW_LANE && Math.random() < this.distractChance) {
+      this.state = NPC_STATE.DISTRACTED;
+      this.distractTimer = 0;
+    }
+
+    // Road rage: aggressive NPCs get angry when blocked behind slow vehicles
+    if (this.state === NPC_STATE.FOLLOW_LANE && this.profile.aggression > 0.5) {
+      const ahead = this._getVehicleAhead();
+      if (ahead) {
+        const dist = this.vehicle.position.distanceTo(ahead.position);
+        if (dist < this.followDistance * 0.6 && this.currentSpeed < this.desiredSpeed * 0.5) {
+          this.rageLevel = Math.min(100, this.rageLevel + dt * 35);
+          if (this.rageLevel >= 100) {
+            this.state = NPC_STATE.ROAD_RAGE;
+            this.rageTimer = 0;
+          }
+        } else {
+          this.rageLevel = Math.max(0, this.rageLevel - dt * 10);
+        }
+      }
     }
   }
 
@@ -411,11 +468,7 @@ class NPCAI {
     return this.vehicle.position.distanceTo(signal.position);
   }
 
-  _getTargetSpeed() {
-    const baseSpeed = this.currentEdge ? this.currentEdge.speedLimit / 3.6 : 10;
-    const variance = (Math.random() - 0.5) * 2 * this.profile.speedVariance * baseSpeed;
-    return Math.max(2, baseSpeed + variance);
-  }
+
 
   _steerTowardsTarget(dt) {
     if (!this.targetNode) return;
@@ -543,15 +596,6 @@ class NPCAI {
     return this.vehicle.position.distanceTo(player.position) < 30;
   }
 
-  _reactToPlayer(player) {
-    if (this.profile.aggression > 0.7 && Math.random() < 0.01) {
-      this._honk();
-    }
-    if (this.profile.aggression > 0.5 && Math.random() < 0.005) {
-      this._flashLights();
-    }
-  }
-
   _honk() {
     if (this.trafficManager.audio && this.vehicle.hornSound) {
       this.trafficManager.audio.playHorn(this.vehicle.hornSound, this.vehicle.position);
@@ -561,6 +605,198 @@ class NPCAI {
   _flashLights() {
     this.vehicle.flashHighBeams = true;
     setTimeout(() => { this.vehicle.flashHighBeams = false; }, 200);
+  }
+
+  // ── Emergency Vehicle Response: Pull Over for ambulances ──
+  _updatePullOver(dt) {
+    this.pullOverTimer = (this.pullOverTimer || 0) + dt;
+    // Steer toward the curb (right side of the road)
+    if (this.currentEdge) {
+      const curbPos = this.currentEdge.getLaneCenter(0, this.vehicle.routeProgress);
+      const right = new THREE.Vector3().crossVectors(
+        new THREE.Vector3(0, 1, 0),
+        new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y))
+      );
+      const targetPos = curbPos.clone().addScaledVector(right, -3);
+      const toTarget = new THREE.Vector3().subVectors(targetPos, this.vehicle.position);
+      toTarget.y = 0;
+      if (toTarget.length() > 0.5) {
+        const desiredDir = toTarget.normalize();
+        const currentDir = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+        const angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
+        this.vehicle.rotation.y += THREE.MathUtils.clamp(angle, -this.vehicle.stats.turn * dt * 60 * 0.5, this.vehicle.stats.turn * dt * 60 * 0.5);
+      }
+    }
+    this.desiredSpeed = 0;
+    this.currentSpeed *= 0.92;
+    // Resume after ambulance passes or 8 seconds
+    if (this.pullOverTimer > 8 || !this._isAmbulanceNearby()) {
+      this.state = NPC_STATE.FOLLOW_LANE;
+      this.pullOverTimer = 0;
+      this.desiredSpeed = this._getTargetSpeed();
+    }
+  }
+
+  // ── Distracted Driving: Some NPCs check phones, drift, slow suddenly ──
+  _updateDistracted(dt) {
+    this.distractTimer += dt;
+    // Drift slightly while distracted
+    this.vehicle.rotation.y += (Math.random() - 0.5) * 0.003;
+    // Slow down significantly
+    this.desiredSpeed *= 0.5;
+    this.currentSpeed *= 0.97;
+    // Resume after 2-5 seconds
+    if (this.distractTimer > 2 + Math.random() * 3) {
+      this.state = NPC_STATE.FOLLOW_LANE;
+      this.distractTimer = 0;
+      this.desiredSpeed = this._getTargetSpeed();
+    }
+  }
+
+  // ── Road Rage: Aggressive NPCs tailgate, honk, flash lights ──
+  _updateRoadRage(dt) {
+    this.rageTimer += dt;
+    // Aggressive acceleration toward target
+    this.desiredSpeed = this._getTargetSpeed() * 1.2;
+    // Honk frequently
+    if (this.rageTimer % 1.5 < dt) this._honk();
+    // Flash lights
+    if (this.rageTimer % 2 < dt) this._flashLights();
+    // Tailgate closely
+    this.followDistance = 5;
+    // Calm down after 6 seconds
+    if (this.rageTimer > 6) {
+      this.state = NPC_STATE.FOLLOW_LANE;
+      this.rageTimer = 0;
+      this.rageLevel = 0;
+      this.followDistance = 15 + Math.random() * 10;
+      this.desiredSpeed = this._getTargetSpeed();
+    }
+  }
+
+  _isAmbulanceNearby() {
+    if (!this.trafficManager || !this.trafficManager.vehicles) return false;
+    const myPos = this.vehicle.position;
+    for (const v of this.trafficManager.vehicles) {
+      if (v === this.vehicle) continue;
+      if (v.userData && v.userData.isAmb && v.position.distanceTo(myPos) < 80) {
+        // Check if ambulance is behind us (coming toward us)
+        const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+        const toAmb = new THREE.Vector3().subVectors(v.position, myPos);
+        if (toAmb.dot(forward) < 0) return true; // Ambulance is behind us
+      }
+    }
+    return false;
+  }
+
+  // ── Emergency Brake: React to sudden obstacles ──
+  _updateEmergencyBrake(dt) {
+    this.emergencyBrakeTimer = (this.emergencyBrakeTimer || 0) + dt;
+    this.currentSpeed *= 0.85; // Hard deceleration
+    this.desiredSpeed = 0;
+    if (this.vehicle.brakeLights) this.vehicle.brakeLights.intensity = 3;
+    // Resume after stopping or 3 seconds
+    if (this.currentSpeed < 0.5 || this.emergencyBrakeTimer > 3) {
+      this.state = NPC_STATE.FOLLOW_LANE;
+      this.emergencyBrakeTimer = 0;
+      this.desiredSpeed = this._getTargetSpeed();
+    }
+  }
+
+  // ── Emergency Avoidance: Check for imminent collisions ──
+  _checkEmergencyAvoidance(playerVehicle) {
+    if (this.state === NPC_STATE.CRASH || this.state === NPC_STATE.EMERGENCY_BRAKE) return;
+    if (this.currentSpeed < 3) return; // Only check at meaningful speed
+    const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+    const myPos = this.vehicle.position;
+    const checkRadius = 12;
+    if (playerVehicle) {
+      const toPlayer = new THREE.Vector3().subVectors(playerVehicle.position, myPos);
+      const dist = toPlayer.length();
+      if (dist < checkRadius) {
+        const proj = toPlayer.dot(forward);
+        const lateralOffset = Math.abs(toPlayer.x * forward.z - toPlayer.z * forward.x);
+        if (proj > 0 && proj < 10 && dist < 8 && lateralOffset < 2.5) {
+          this.state = NPC_STATE.EMERGENCY_BRAKE;
+          this.emergencyBrakeTimer = 0;
+          return;
+        }
+      }
+    }
+    // Check NPC vehicles — only iterate if any are within checkRadius
+    if (this.trafficManager && this.trafficManager.vehicles) {
+      for (const v of this.trafficManager.vehicles) {
+        if (v === this.vehicle) continue;
+        const toV = new THREE.Vector3().subVectors(v.position, myPos);
+        const dist = toV.length();
+        if (dist > checkRadius) continue; // Early exit for distant vehicles
+        const proj = toV.dot(forward);
+        if (proj > 0 && proj < 8 && dist < 6 && Math.abs(toV.x * forward.z - toV.z * forward.x) < 2) {
+          this.state = NPC_STATE.EMERGENCY_BRAKE;
+          this.emergencyBrakeTimer = 0;
+          this._honk();
+          return;
+        }
+      }
+    }
+  }
+
+  // ── Enhanced Player Interaction: Swerve, honk, brake ──
+  _reactToPlayer(player) {
+    const dist = this.vehicle.position.distanceTo(player.position);
+    const aggression = this.profile.aggression;
+
+    // Aggressive NPCs honk when player is too close
+    if (aggression > 0.5 && dist < 15 && Math.random() < 0.02) {
+      this._honk();
+    }
+
+    // All NPCs brake when player cuts them off
+    if (dist < 12 && this.currentSpeed > 2) {
+      const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+      const toPlayer = new THREE.Vector3().subVectors(player.position, this.vehicle.position);
+      const proj = toPlayer.dot(forward);
+      if (proj > 0 && proj < 10) {
+        // Player is ahead and close — slow down
+        this.desiredSpeed = Math.min(this.desiredSpeed, this.currentSpeed * 0.5);
+      }
+    }
+
+    // Aggressive NPCs swerve around slow players
+    if (aggression > 0.6 && dist < 20 && this.currentSpeed > 3) {
+      const right = new THREE.Vector3().crossVectors(
+        new THREE.Vector3(0, 1, 0),
+        new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y))
+      );
+      const toPlayer = new THREE.Vector3().subVectors(player.position, this.vehicle.position);
+      const lateral = right.dot(toPlayer);
+      if (Math.abs(lateral) < 3 && Math.random() < 0.005) {
+        // Nudge away from player
+        this.vehicle.rotation.y += (lateral > 0 ? -1 : 1) * 0.02;
+      }
+    }
+
+    // Cautious NPCs brake early when player approaches
+    if (aggression < 0.2 && dist < 25 && Math.random() < 0.01) {
+      this.desiredSpeed *= 0.8;
+    }
+  }
+
+  // ── Weather-Affected Driving: Slow down in rain ──
+  _getTargetSpeed() {
+    const baseSpeed = this.currentEdge ? this.currentEdge.speedLimit / 3.6 : 10;
+    const variance = (Math.random() - 0.5) * 2 * this.profile.speedVariance * baseSpeed;
+    let speed = Math.max(2, baseSpeed + variance);
+    // Rain/night penalties via trafficManager reference (avoids fragile gameRef chain)
+    const tm = this.trafficManager;
+    if (tm && tm.game) {
+      const cfg = tm.game.mapCfg;
+      if (cfg) {
+        if (cfg.hasRain || cfg.hasPuddles) speed *= (0.65 + Math.random() * 0.15);
+        if (cfg.isNight) speed *= 0.85;
+      }
+    }
+    return speed;
   }
 
   _applyPhysics(dt) {

@@ -2706,13 +2706,14 @@ class Game {
           window._toonGrad.minFilter = THREE.NearestFilter;
           window._toonGrad.magFilter = THREE.NearestFilter;
           window._toonGrad.needsUpdate = true;
-        }
-
+        }        const tg = window._toonGrad;
         const gs = cfg.is50km ? 8000 : 2000;
-        const gr = cfg.ground !== undefined ? cfg.ground : 0x444444;
-        const ground = new THREE.Mesh(new THREE.PlaneGeometry(gs, gs), new THREE.MeshLambertMaterial({ color: gr, depthWrite: false }));
-
-        ground.rotation.x = -Math.PI / 2; 
+        const groundColor = cfg.ground !== undefined ? cfg.ground : 0x4a4a4f;
+        const groundMat = cfg.isBridge
+          ? new THREE.MeshToonMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7, gradientMap: tg })
+          : (cfg.is50km ? new THREE.MeshToonMaterial({ color: 0x444444, gradientMap: tg }) : new THREE.MeshToonMaterial({ color: groundColor, gradientMap: tg }));
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(gs, gs), groundMat);
+        ground.rotation.x = -Math.PI / 2;
         this.scene.add(ground);
 
         if (this.roadGraph) {
@@ -2751,7 +2752,7 @@ class Game {
             this.scene.add(busStop);
             this.obstacles.push(busStop);
             
-            const busTpl = _getNpcTemplate('bus', 0xffffff);
+            const busTpl = this._makeNPC('bus', 0xffffff);
             if (busTpl) {
               const bus = busTpl.clone();
               bus.position.set(4, 0, 30);
@@ -2843,7 +2844,7 @@ class Game {
         } else if (cfg.themeType === 'respectful_parking') {
             // Spawn haphazard parked cars
             for (let i = 0; i < 15; i++) {
-                const carTpl = _getNpcTemplate('car', 0x999999);
+                const carTpl = this._makeNPC('car', 0x999999);
                 if (carTpl) {
                   const pc = carTpl.clone();
                   pc.position.set((Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 4), 0, (Math.random() - 0.5) * 150);
@@ -2853,7 +2854,7 @@ class Game {
                 }
             }
         } else if (cfg.themeType === 'ambulance_priority') {
-            const ambTpl = _getNpcTemplate('car', 0xffffff);
+            const ambTpl = this._makeNPC('car', 0xffffff);
             if (ambTpl) {
                 this.ms.amb = ambTpl.clone();
                 this.ms.amb.userData = { spd: 1.2, isAmb: true, npcType: 'ambulance', moveAxis: 'v' };
@@ -2885,7 +2886,7 @@ class Game {
         } else if (cfg.themeType === 'no_honking') {
             cfg.isSilenceZone = true;
             for (let i = 0; i < 6; i++) {
-                const blockTpl = _getNpcTemplate('car', Math.random() * 0xffffff);
+                const blockTpl = this._makeNPC('car', Math.random() * 0xffffff);
                 if (blockTpl) {
                   const block = blockTpl.clone();
                 block.position.set(0, 0, -20 - i * 15);
@@ -3198,7 +3199,7 @@ class Game {
           for (let i = 0; i < 6; i++) {
             const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
             const types = ['car', 'auto', 'bike'];
-            const pcTpl = _getNpcTemplate(types[i % 3], Math.random() * 0xffffff);
+            const pcTpl = this._makeNPC(types[i % 3], Math.random() * 0xffffff);
             if (pcTpl) {
               const pc = pcTpl.clone();
               if (seg.type === 'v') pc.position.set(seg.x + (Math.random() > .5 ? 5.5 : -5.5), 0, seg.z1 + Math.random() * (seg.z2 - seg.z1));
