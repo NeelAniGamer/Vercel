@@ -6148,6 +6148,7 @@ class Game {
         });
       }
       _uobs(dt) {
+        if (!this.player) return;
         const px = this.player.position.x, pz = this.player.position.z;
         const pR = 1.5; // player collision radius
 
@@ -6262,6 +6263,7 @@ class Game {
       _checkBrakeZones(dt) {
         if (!this.kidModeActive || this.isPedestrian) return;
         if (this.speed <= 0) return;
+        if (!this.player) return;
 
         const px = this.player.position.x, pz = this.player.position.z;
         const yaw = this.player.rotation.y;
