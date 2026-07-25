@@ -2805,11 +2805,31 @@ class Game {
                 this.scene.add(pole);
                 const fixture = new THREE.Mesh(
                   new THREE.BoxGeometry(0.6, 0.15, 0.3),
-                  new THREE.MeshBasicMaterial({ color: 0xffee88 })
+                  new THREE.MeshBasicMaterial({ color: cfg.isNight ? 0xffdd66 : 0xffee88 })
                 );
                 fixture.position.set(lx, 5.1, lz); this.scene.add(fixture);
+
+                // Night-mode: add point light glow under each active streetlight (capped at 40 for perf)
+                if (cfg.isNight) {
+                  if (!this._nightLightCount) this._nightLightCount = 0;
+                  if (this._nightLightCount >= 40) { /* skip extra lights for GPU perf */ } else {
+                  this._nightLightCount++;
+                  const glow = new THREE.PointLight(0xffdd66, 1.0, 35, 2);
+                  glow.position.set(lx, 4.8, lz);
+                  glow.castShadow = false;
+                  this.scene.add(glow);
+                  // Larger translucent glow disc for volumetric effect
+                  const glowDisc = new THREE.Mesh(
+                    new THREE.SphereGeometry(1.2, 8, 8),
+                    new THREE.MeshBasicMaterial({ color: 0xffdd66, transparent: true, opacity: 0.15 })
+                  );
+                  glowDisc.position.set(lx, 5.0, lz);
+                  this.scene.add(glowDisc);
+                  } // end nightLightCount cap
+                }
               }
             });
+            if (cfg.isNight) this._nightLightCount = 0; // reset for next level
 
             // ── Intersection tiles ──
             if (_intModel && cfg.ints) {
@@ -2823,6 +2843,27 @@ class Game {
                 });
                 intTile.position.set(ix, 0.1, iz);
                 this.scene.add(intTile);
+
+                // Crosswalk markings: white striped plates across the intersection
+                const _cwLen = RW * 0.4;
+                const _cwMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 });
+                // 4 stripes across intersection (alternating directions for crosswalk look)
+                [-1, 0, 1].forEach(off => {
+                  // Horizontal stripe
+                  const cwH = new THREE.Mesh(
+                    new THREE.BoxGeometry(_cwLen, 0.02, 1.2),
+                    _cwMat
+                  );
+                  cwH.position.set(ix + off * 3, 0.12, iz);
+                  this.scene.add(cwH);
+                  // Vertical stripe
+                  const cwV = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.2, 0.02, _cwLen),
+                    _cwMat
+                  );
+                  cwV.position.set(ix, 0.12, iz + off * 3);
+                  this.scene.add(cwV);
+                });
               });
             }
 
