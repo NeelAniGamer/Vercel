@@ -549,17 +549,61 @@ window.ui = Object.assign(window.ui || {}, {
   },
   dlCert() {
     if (typeof html2pdf !== 'undefined') {
-      const el = document.getElementById('cert-wrapper')
+      const wrapper = document.getElementById('cert-wrapper')
+      const crt = document.getElementById('cert')
+      // Temporarily remove CSS transform so html2pdf captures at true size (avoids blank second page)
+      const prevWrapperOverflow = wrapper.style.overflow
+      const prevWrapperJustify = wrapper.style.justifyContent
+      const prevWrapperMargin = wrapper.style.margin
+      const prevCrtTransform = crt.style.transform
+      const prevCrtTransformOrigin = crt.style.transformOrigin
+      const prevCrtWidth = crt.style.width
+      const prevCrtPageBreak = crt.style.pageBreakInside
+      const prevCrtBreakInside = crt.style.breakInside
+      // Helper to restore all overridden styles
+      const restoreStyles = () => {
+        wrapper.style.overflow = prevWrapperOverflow
+        wrapper.style.justifyContent = prevWrapperJustify
+        wrapper.style.margin = prevWrapperMargin
+        crt.style.transform = prevCrtTransform
+        crt.style.transformOrigin = prevCrtTransformOrigin
+        crt.style.width = prevCrtWidth
+        crt.style.pageBreakInside = prevCrtPageBreak
+        crt.style.breakInside = prevCrtBreakInside
+      }
+      wrapper.style.overflow = 'visible'
+      wrapper.style.justifyContent = 'center'
+      wrapper.style.margin = '0'
+      crt.style.transform = 'none'
+      crt.style.transformOrigin = 'top center'
+      crt.style.width = '1056px'
+      crt.style.pageBreakInside = 'avoid'
+      crt.style.breakInside = 'avoid'
       html2pdf()
         .set({
-          margin: 0,
+          margin: [0, 0, 0, 0],
           filename: 'Traffic_Hero_Certificate.pdf',
           image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            width: 1056,
+            windowWidth: 1100,
+            allowTaint: true
+          },
+          jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'landscape',
+            hotfixes: ['px_scaling']
+          },
+          pagebreak: { mode: ['avoid-all'] }
         })
-        .from(el)
+        .from(crt)
         .save()
+        .then(restoreStyles)
+        .catch(restoreStyles)
     } else {
       alert('PDF library not loaded. Please ensure you have internet access.')
     }
@@ -2730,6 +2774,7 @@ const _buildHuman = (isPlayer = false) => {
   })
 
   // ── Eyes (white + iris + pupil + eyelids) ──
+  const _eyeLids = []
   ;[-1, 1].forEach(s => {
     // Eye white
     const ew = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 10, 8), EYE_W)
@@ -2754,6 +2799,7 @@ const _buildHuman = (isPlayer = false) => {
     lid.scale.set(1, 0.7, 0.7)
     lid.rotation.x = -0.2
     headGroup.add(lid)
+    _eyeLids.push(lid)
   })
 
   // ── Eyebrows ──
@@ -3053,33 +3099,93 @@ const _buildHuman = (isPlayer = false) => {
     fwdAr.rotation.x = Math.PI / 2
     g.add(fwdAr)
 
-    // ── Nametag sprite ──
+    // ── Nametag sprite (enhanced: rank icon, name, rank title, XP bar, animated glow) ──
     const nameTxt = (typeof S !== 'undefined' && S?.name) || 'Player'
+    const _nametagRankTiers = [
+      { min: 0, name: 'Rookie', icon: '🔰', color: '#94a3b8' },
+      { min: 5000, name: 'Bronze', icon: '🥉', color: '#cd7f32' },
+      { min: 15000, name: 'Silver', icon: '🥈', color: '#c0c0c0' },
+      { min: 30000, name: 'Gold', icon: '🥇', color: '#ffd54a' },
+      { min: 50000, name: 'Platinum', icon: '💎', color: '#b89bff' },
+      { min: 100000, name: 'Hero', icon: '🏆', color: '#34d399' }
+    ]
+    const _getNametagRank = (score) => {
+      let rank = _nametagRankTiers[0]
+      for (const r of _nametagRankTiers) { if (score >= r.min) rank = r }
+      return rank
+    }
+    const _playerScore = (typeof S !== 'undefined' && S?.total) || 0
+    const _rank = _getNametagRank(_playerScore)
+    const _nextRank = _nametagRankTiers.find(r => r.min > _playerScore)
+    const _xpPct = _nextRank ? Math.min(1, (_playerScore - _rank.min) / (_nextRank.min - _rank.min)) : 1
+    // Canvas: wider for rank info + progress bar
     const canvas = document.createElement('canvas')
-    canvas.width = 512; canvas.height = 96
+    canvas.width = 512; canvas.height = 140
     const ctx = canvas.getContext('2d')
-    // Rounded background
-    ctx.fillStyle = 'rgba(0, 20, 10, 0.7)'
-    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 88, 16); ctx.fill() } else { ctx.fillRect(4, 4, 504, 88) }
-    // Gradient accent line at top
-    const grad = ctx.createLinearGradient(0, 0, 512, 0)
-    grad.addColorStop(0, '#00ff88')
-    grad.addColorStop(1, '#5ed4f5')
-    ctx.strokeStyle = grad
-    ctx.lineWidth = 3
-    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 88, 16); ctx.stroke() }
-    // Name text
-    ctx.fillStyle = '#00ff88'
-    ctx.font = 'bold 42px Inter, sans-serif'
-    ctx.textAlign = 'center'
+    // Rounded background with rank-colored border
+    ctx.fillStyle = 'rgba(0, 15, 10, 0.75)'
+    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 132, 14); ctx.fill() } else { ctx.fillRect(4, 4, 504, 132) }
+    // Rank-colored accent border
+    ctx.strokeStyle = _rank.color + '88'
+    ctx.lineWidth = 2.5
+    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 132, 14); ctx.stroke() }
+    // Rank icon (emoji)
+    ctx.font = '28px serif'
+    ctx.textAlign = 'left'
     ctx.textBaseline = 'middle'
-    ctx.fillText(nameTxt, 256, 50)
+    ctx.fillText(_rank.icon, 20, 38)
+    // Rank name + title
+    ctx.fillStyle = _rank.color
+    ctx.font = 'bold 11px Inter, sans-serif'
+    ctx.textAlign = 'left'
+    ctx.fillText(_rank.name.toUpperCase(), 52, 28)
+    // Player name
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 30px Inter, sans-serif'
+    ctx.fillText(nameTxt, 52, 55)
+    // XP progress bar
+    const barX = 20, barY = 78, barW = 472, barH = 10
+    // Bar background
+    ctx.fillStyle = 'rgba(255,255,255,0.08)'
+    if (ctx.roundRect) { ctx.roundRect(barX, barY, barW, barH, 5); ctx.fill() } else { ctx.fillRect(barX, barY, barW, barH) }
+    // Bar fill with rank color gradient
+    if (_xpPct > 0) {
+      const barGrad = ctx.createLinearGradient(barX, 0, barX + barW * _xpPct, 0)
+      barGrad.addColorStop(0, _rank.color)
+      barGrad.addColorStop(1, _nextRank ? _nextRank.color : _rank.color)
+      ctx.fillStyle = barGrad
+      if (ctx.roundRect) { ctx.roundRect(barX, barY, Math.max(4, barW * _xpPct), barH, 5); ctx.fill() } else { ctx.fillRect(barX, barY, Math.max(4, barW * _xpPct), barH) }
+    }
+    // XP label
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'
+    ctx.font = '10px Inter, sans-serif'
+    ctx.textAlign = 'left'
+    ctx.fillText(_playerScore.toLocaleString() + ' XP', barX, barY + 24)
+    ctx.textAlign = 'right'
+    ctx.fillText(_nextRank ? (_nextRank.min - _playerScore).toLocaleString() + ' to ' + _nextRank.name : 'MAX RANK', barX + barW, barY + 24)
     const tex = new THREE.CanvasTexture(canvas)
     tex.minFilter = THREE.LinearFilter
     nametag = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }))
-    nametag.position.set(0, 2.35 * sk, 0)
-    nametag.scale.set(1.2, 0.22, 1)
+    nametag.position.set(0, 2.45 * sk, 0)
+    nametag.scale.set(1.4, 0.38, 1)
     g.add(nametag)
+    // ── Animated glow ring under nametag (pulses with rank color) ──
+    const _rankColorObj = new THREE.Color(_rank.color)
+    const nametagGlow = new THREE.Mesh(
+      new THREE.RingGeometry(0.25 * sk, 0.30 * sk, 24),
+      new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthTest: false })
+    )
+    nametagGlow.position.set(0, 2.45 * sk, -0.01)
+    nametagGlow.rotation.x = -Math.PI / 2
+    g.add(nametagGlow)
+    // Outer glow ring
+    const nametagGlowOuter = new THREE.Mesh(
+      new THREE.RingGeometry(0.32 * sk, 0.35 * sk, 24),
+      new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthTest: false })
+    )
+    nametagGlowOuter.position.set(0, 2.45 * sk, -0.015)
+    nametagGlowOuter.rotation.x = -Math.PI / 2
+    g.add(nametagGlowOuter)
 
     // ── Outline glow mesh (adds depth) ──
     const glowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.04, side: THREE.BackSide })
@@ -3126,8 +3232,11 @@ const _buildHuman = (isPlayer = false) => {
     rArm: rArmP,
     headGroup,
     torsoGroup,
+    eyeLids: _eyeLids,
     ring,
     nametag,
+    nametagGlow,
+    nametagGlowOuter,
     shadowBlob,
     isPlayer,
     _sk: sk,
@@ -3137,7 +3246,7 @@ const _buildHuman = (isPlayer = false) => {
     startZ: 0,
     // For idle animation variation
     idlePhase: Math.random() * Math.PI * 2,
-    blinkTimer: Math.random() * 5
+    blinkTimer: Math.random() * 4 + Math.random() * 3
   }
   return g
 }

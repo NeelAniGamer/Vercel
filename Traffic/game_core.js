@@ -1926,6 +1926,7 @@ class Game {
         this._bodyRoll += (targetRoll - this._bodyRoll) * Math.min(1, dt * 8);
         this._bodyRoll = Math.max(-0.12, Math.min(0.12, this._bodyRoll));
         // Body pitch: braking = nose dive, accel = nose lift
+        const speed = Math.abs(this.speed);
         const accel = this.keys['w'] || this.keys['arrowup'];
         const brake = this.keys['s'] || this.keys['arrowdown'];
         let targetPitch = 0;
@@ -1938,7 +1939,6 @@ class Game {
           this.playerVehicle.rotation.z = this._bodyRoll;
           this.playerVehicle.rotation.x = this._bodyPitch;
           // Suspension vertical bounce
-          const speed = Math.abs(this.speed);
           const bounceFreq = 2.5 + speed * 3;
           const bounceAmp = 0.008 * Math.min(speed, 1);
           this._suspensionY = Math.sin(this.timer * bounceFreq) * bounceAmp;
@@ -2227,15 +2227,19 @@ class Game {
             setTimeout(() => toast('Press ESC to exit fullscreen', '#ffffff', 3000), 1500);
           } catch(e) {}
         }
-        const cd = document.getElementById('cdown');
-        if (cd) cd.classList.add('on');
-        const gc = document.getElementById('gc');
-        // Fullscreen is only allowed on user gesture.
-
-        setTimeout(() => {
-          if (cd) cd.classList.remove('on');
-          this._actualStart(ui.cur);
-        }, 1500);
+        // ── 2D Scenario Intro (cinematic canvas animation before gameplay) ──
+        if (window.Scenario2D && ui.cur && ui.cur.id) {
+          window.Scenario2D.play(ui.cur.id, () => {
+            this._actualStart(ui.cur);
+          });
+        } else {
+          const cd = document.getElementById('cdown');
+          if (cd) cd.classList.add('on');
+          setTimeout(() => {
+            if (cd) cd.classList.remove('on');
+            this._actualStart(ui.cur);
+          }, 1500);
+        }
       }
       async _actualStart(lv) {
         // Show loading screen with level name
@@ -7648,33 +7652,120 @@ class Game {
         const t = (ud.t || 0) + dt * 8
         ud.t = t
         const walkW = Math.min(Math.abs(speed) * 4, 1)
+        const isIdle = walkW < 0.05
         const swing = Math.sin(t) * 0.45 * walkW
-        // Leg swing with natural knee bend
-        if (ud.lLeg) ud.lLeg.rotation.x = swing
-        if (ud.rLeg) ud.rLeg.rotation.x = -swing
-        // Arm swing (opposite to legs, natural walking motion)
-        if (ud.lArm) ud.lArm.rotation.x = -swing * 0.5
-        if (ud.rArm) ud.rArm.rotation.x = swing * 0.5
-        // Head bob (subtle nod forward/back)
-        if (ud.headGroup) {
-          ud.headGroup.rotation.x = Math.sin(t * 2) * 0.02 * walkW
+        // ── IDLE ANIMATIONS (NPCs standing still) ──
+        if (isIdle && !ud.isPlayer) {
+          const ip = ud.idlePhase || 0
+          // Breathing: slow torso rise/fall
+          if (ud.torsoGroup) {
+            const breathe = Math.sin(t * 0.4 + ip) * 0.006
+            ud.torsoGroup.position.y = 1.23 * (ud._sk || 1) + breathe
+            // Subtle shoulder sway
+            ud.torsoGroup.rotation.z = Math.sin(t * 0.3 + ip) * 0.008
+          }
+          // Head turning: slow look-around + occasional glance at player
+          if (ud.headGroup) {
+            const lookCycle = Math.sin(t * 0.25 + ip * 2) * 0.06
+            const lookCycleY = Math.cos(t * 0.18 + ip * 3) * 0.08
+            // Every ~4 seconds, glance toward player direction
+            const glancePhase = (t * 0.25 + ip) % (Math.PI * 2)
+            const glance = glancePhase < 0.4 ? Math.sin(glancePhase / 0.4 * Math.PI) * 0.1 : 0
+            ud.headGroup.rotation.x = lookCycle
+            ud.headGroup.rotation.y = lookCycleY + glance * (ud.dir || 1)
+          }
+          // Weight shift: alternating subtle leg pressure
+          if (ud.lLeg) ud.lLeg.rotation.x = Math.sin(t * 0.3 + ip) * 0.015
+          if (ud.rLeg) ud.rLeg.rotation.x = Math.sin(t * 0.3 + ip + Math.PI) * 0.015
+          // Arms: subtle sway or cross-body rest
+          if (ud.lArm) ud.lArm.rotation.x = Math.sin(t * 0.2 + ip) * 0.02
+          if (ud.rArm) ud.rArm.rotation.x = Math.sin(t * 0.2 + ip + Math.PI * 0.7) * 0.02
+          // Occasional fidget: every ~6-8 seconds, brief arm/shoulder twitch
+          const fidgetCycle = (t * 0.15 + ip * 5) % (Math.PI * 2)
+          if (fidgetCycle < 0.3) {
+            const fidgetAmt = Math.sin(fidgetCycle / 0.3 * Math.PI) * 0.06
+            if (ud.lArm) ud.lArm.rotation.x += fidgetAmt
+          }
+          // ── BLINKING ──
+          // Countdown timer; each blink is a quick close-open cycle (~0.15s)
+          if (ud.eyeLids && ud.eyeLids.length > 0) {
+            if (ud.blinkTimer === undefined) ud.blinkTimer = Math.random() * 4
+            ud.blinkTimer -= dt
+            if (ud.blinkTimer <= 0) {
+              // Start a new blink — schedule next blink in 2-6 seconds
+              ud.blinkTimer = 2 + Math.random() * 4
+              ud._blinkPhase = 0.15 // blink duration in seconds
+            }
+            if (ud._blinkPhase > 0) {
+              ud._blinkPhase -= dt
+              // Smooth close-open using a cosine bell: 0→1→0 over _blinkPhase
+              const blinkProg = 1 - (ud._blinkPhase / 0.15)
+              const blinkAmt = Math.sin(blinkProg * Math.PI) // peaks at 1.0 halfway
+              ud.eyeLids.forEach(lid => {
+                // Default open position y=0.065, closed would be ~0.03 (covering eye)
+                lid.position.y = (0.065 - blinkAmt * 0.035) * (ud._sk || 1)
+                lid.scale.y = 0.7 + blinkAmt * 0.6 // scale up when closing
+              })
+            } else {
+              // Eyes open — reset lids to default
+              ud.eyeLids.forEach(lid => {
+                lid.position.y = 0.065 * (ud._sk || 1)
+                lid.scale.y = 0.7
+              })
+            }
+          }
+          // Shadow blob: breathing pulse
+          if (ud.shadowBlob) {
+            const bs = 1 + Math.sin(t * 0.4 + ip) * 0.03
+            ud.shadowBlob.scale.set(bs, 1, bs)
+            ud.shadowBlob.material.opacity = 0.15
+          }
+        } else {
+          // ── WALK ANIMATIONS ──
+          // Leg swing with natural knee bend
+          if (ud.lLeg) ud.lLeg.rotation.x = swing
+          if (ud.rLeg) ud.rLeg.rotation.x = -swing
+          // Arm swing (opposite to legs, natural walking motion)
+          if (ud.lArm) ud.lArm.rotation.x = -swing * 0.5
+          if (ud.rArm) ud.rArm.rotation.x = swing * 0.5
+          // Head bob (subtle nod forward/back)
+          if (ud.headGroup) {
+            ud.headGroup.rotation.x = Math.sin(t * 2) * 0.02 * walkW
+            ud.headGroup.rotation.y = 0
+          }
+          // Reset torso sway when walking
+          if (ud.torsoGroup) {
+            ud.torsoGroup.rotation.z = 0
+          }
+          // Full body bob via torsoGroup (natural up-down)
+          if (ud.torsoGroup) {
+            ud.torsoGroup.position.y = 1.23 * (ud._sk || 1) + Math.abs(Math.sin(t * 2)) * 0.03 * walkW
+          } else if (character.children[0]) {
+            // Fallback for models without torsoGroup
+            character.children[0].position.y = Math.abs(Math.sin(t)) * 0.04 * walkW
+          }
+          // Shadow blob pulse (breathe effect)
+          if (ud.shadowBlob) {
+            const s = 1 + Math.sin(t * 2) * 0.05 * walkW
+            ud.shadowBlob.scale.set(s, 1, s)
+            ud.shadowBlob.material.opacity = 0.15 + walkW * 0.08
+          }
         }
-        // Full body bob via torsoGroup (natural up-down)
-        if (ud.torsoGroup) {
-          ud.torsoGroup.position.y = 1.23 * (character.userData._sk || 1) + Math.abs(Math.sin(t * 2)) * 0.03 * walkW
-        } else if (character.children[0]) {
-          // Fallback for models without torsoGroup
-          character.children[0].position.y = Math.abs(Math.sin(t)) * 0.04 * walkW
-        }
+        // ── PLAYER EFFECTS (always active) ──
         // Player glow ring pulse
         if (ud.ring && ud.isPlayer) {
           ud.ring.material.opacity = 0.2 + Math.sin(t * 0.5) * 0.15
         }
-        // Shadow blob pulse (breathe effect)
-        if (ud.shadowBlob) {
-          const s = 1 + Math.sin(t * 2) * 0.05 * walkW
-          ud.shadowBlob.scale.set(s, 1, s)
-          ud.shadowBlob.material.opacity = 0.15 + walkW * 0.08
+        // Nametag glow ring pulse (rank-colored breathing)
+        if (ud.nametagGlow && ud.isPlayer) {
+          ud.nametagGlow.material.opacity = 0.25 + Math.sin(t * 1.2) * 0.15
+          const gs = 1 + Math.sin(t * 1.2) * 0.08
+          ud.nametagGlow.scale.set(gs, gs, 1)
+        }
+        if (ud.nametagGlowOuter && ud.isPlayer) {
+          ud.nametagGlowOuter.material.opacity = 0.1 + Math.sin(t * 1.2 + 0.5) * 0.08
+          const gso = 1 + Math.sin(t * 1.2 + 0.5) * 0.06
+          ud.nametagGlowOuter.scale.set(gso, gso, 1)
         }
       }
       _ucam(dt) {

@@ -1,2135 +1,1878 @@
-/* ═══════════════════════════════════════════════════════════════════
-   scenario2d.js — 2D Traffic Scenario Engine (Phaser 4)
-   15 Indian traffic scenarios with top-down view, tap controls
-   ═══════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════════
+   scenario2d.js — 2D Scenario Intro Engine for Traffic Driving Simulator
+   ══════════════════════════════════════════════════════════════════════════
+   Renders animated Canvas-based cinematic intros before each level starts.
+   Each themeType gets a unique 2D scene with parallax layers, particles,
+   character sprites, weather effects, view bobbing, and smooth transitions.
+   ══════════════════════════════════════════════════════════════════════════ */
 
-// ─── SCENARIO CONFIGURATIONS ───
-const SCENARIOS = [
-  // ── Tier 1: Basic Rules ──
-  {
-    id: 1, levelRef: 1, icon: '🚦', name: 'Red Light Patience',
-    desc: 'Stop at signals, let pedestrians cross, move only on green.',
-    tier: 1, timeLimit: 45,
-    road: { type: 'straight', lanes: 3, length: 1200 },
-    obstacles: [
-      { type: 'traffic_light', x: 240, y: 200, phases: ['red', 'green'], cycle: [5000, 3000] },
-      { type: 'zebra', x: 240, y: 220 }
-    ],
-    npcs: [
-      { type: 'pedestrian', lane: 1, speed: 0.4, y: 200, crosses: true },
-      { type: 'pedestrian', lane: 2, speed: 0.35, y: 210, crosses: true, delay: 800 }
-    ],
-    tasks: [
-      { id: 'wait_red', text: 'Stop at red light', type: 'stop', check: 'redLight' },
-      { id: 'let_cross', text: 'Let pedestrians cross', type: 'avoid', check: 'pedestriansSafe' },
-      { id: 'move_green', text: 'Go on green only', type: 'reach', check: 'crossedIntersection' }
-    ],
-    law: 'MV Act §119 — Jumping Red Signal — ₹500–₹2000'
-  },
-  {
-    id: 2, levelRef: 2, icon: '🅿️', name: 'Street Parking',
-    desc: 'Find a legal parking spot and park correctly.',
-    tier: 1, timeLimit: 40,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [
-      { type: 'no_parking_zone', x: 200, y: 300, w: 60, h: 120 },
-      { type: 'parking_spot', x: 360, y: 450, w: 55, h: 100 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 1.2, direction: -1 },
-      { type: 'car', lane: 1, speed: 1.0, direction: -1, delay: 1500 }
-    ],
-    tasks: [
-      { id: 'find_spot', text: 'Find legal parking', type: 'reach', check: 'nearParking' },
-      { id: 'park_legal', text: 'Park in designated zone', type: 'stop', check: 'parkedLegal' },
-      { id: 'walk_dest', text: 'Walk to destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §122 — Obstructing Traffic — ₹100–₹500'
-  },
-  {
-    id: 3, levelRef: 3, icon: '🚑', name: 'Ambulance Priority',
-    desc: 'Pull over and let the ambulance pass safely.',
-    tier: 1, timeLimit: 35,
-    road: { type: 'straight', lanes: 2, length: 800 },
-    obstacles: [],
-    npcs: [
-      { type: 'ambulance', lane: 0.5, speed: 2.5, y: -100, yEnd: 900 }
-    ],
-    tasks: [
-      { id: 'pull_over', text: 'Pull over left', type: 'reach', check: 'pulledOver' },
-      { id: 'stop_complete', text: 'Stop completely', type: 'stop', check: 'isStopped' },
-      { id: 'wait_pass', text: 'Wait for ambulance', type: 'avoid', check: 'ambulancePassed' }
-    ],
-    law: 'MV Act §119(2) — Not yielding to emergency vehicles — ₹1000–₹5000'
-  },
-  {
-    id: 4, levelRef: 4, icon: '🌧️', name: 'Puddle Etiquette',
-    desc: 'Slow down for puddles — don\'t splash pedestrians!',
-    tier: 1, timeLimit: 40,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [
-      { type: 'puddle', x: 220, y: 350, w: 80, h: 40 },
-      { type: 'puddle', x: 300, y: 550, w: 60, h: 35 }
-    ],
-    npcs: [
-      { type: 'pedestrian', lane: 0.3, speed: 0, y: 360, stationary: true },
-      { type: 'pedestrian', lane: 1.5, speed: 0, y: 555, stationary: true }
-    ],
-    tasks: [
-      { id: 'slow_puddle', text: 'Slow down for puddle', type: 'avoid', check: 'slowSpeed' },
-      { id: 'no_splash', text: 'Don\'t splash pedestrians', type: 'avoid', check: 'noSplash' },
-      { id: 'crawl_past', text: 'Crawl past slowly', type: 'stop', check: 'crawledPast' }
-    ],
-    law: 'MV Act §184 — Dangerous Driving — ₹1000–₹5000'
-  },
-  {
-    id: 5, levelRef: 5, icon: '🏫', name: 'School Zone',
-    desc: 'Slow to 20 km/h, watch for children crossing.',
-    tier: 1, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [
-      { type: 'school_zone', x: 240, y: 300, w: 200, h: 200 }
-    ],
-    npcs: [
-      { type: 'pedestrian', lane: 0.5, speed: 0.3, y: 380, crosses: true },
-      { type: 'pedestrian', lane: 1.5, speed: 0.25, y: 400, crosses: true, delay: 600 }
-    ],
-    tasks: [
-      { id: 'slow_zone', text: 'Slow to 20 km/h', type: 'avoid', check: 'schoolSpeed' },
-      { id: 'watch_kids', text: 'Watch for children', type: 'avoid', check: 'noChildHit' },
-      { id: 'follow_guard', text: 'Follow guard signals', type: 'reach', check: 'passedSchool' }
-    ],
-    law: 'MV Act §196 — School Zone Violation — ₹2000–₹5000'
-  },
-  // ── Tier 2: Intermediate Rules ──
-  {
-    id: 6, levelRef: 6, icon: '🏥', name: 'Hospital Zone Parking',
-    desc: 'Don\'t park near hospitals — find a spot 100m+ away.',
-    tier: 2, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [
-      { type: 'hospital_zone', x: 240, y: 300, w: 200, h: 150 },
-      { type: 'parking_spot', x: 360, y: 600, w: 55, h: 100 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 1.0, direction: -1 }
-    ],
-    tasks: [
-      { id: 'avoid_hospital', text: 'Don\'t park near hospital', type: 'avoid', check: 'notInHospitalZone' },
-      { id: 'find_legal', text: 'Find parking 100m+ away', type: 'reach', check: 'nearParking' },
-      { id: 'walk_back', text: 'Walk to hospital', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §122 — Hospital Zone Parking — ₹2000–₹5000'
-  },
-  {
-    id: 7, levelRef: 7, icon: '🤫', name: 'No Honking Zone',
-    desc: 'Hospital silence zone — drive quietly, no horns!',
-    tier: 2, timeLimit: 40,
-    road: { type: 'straight', lanes: 2, length: 800 },
-    obstacles: [
-      { type: 'silence_zone', x: 240, y: 250, w: 200, h: 200 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.8, direction: -1 },
-      { type: 'car', lane: 1, speed: 0.6, direction: -1, delay: 2000 }
-    ],
-    tasks: [
-      { id: 'no_honk', text: 'No honking!', type: 'avoid', check: 'noHonk' },
-      { id: 'slow_down', text: 'Slow down near hospital', type: 'avoid', check: 'slowSpeed' },
-      { id: 'maintain_dist', text: 'Keep safe distance', type: 'avoid', check: 'safeDistance' }
-    ],
-    law: 'MV Act §190 — Noise Pollution — ₹1000–₹5000'
-  },
-  {
-    id: 8, levelRef: 8, icon: '🚑', name: 'Narrow Street Ambulance',
-    desc: 'Navigate parked cars, signal, and let ambulance through.',
-    tier: 2, timeLimit: 40,
-    road: { type: 'straight', lanes: 1, length: 800 },
-    obstacles: [
-      { type: 'parked_car', x: 180, y: 300, w: 40, h: 70 },
-      { type: 'parked_car', x: 300, y: 450, w: 40, h: 70 }
-    ],
-    npcs: [
-      { type: 'ambulance', lane: 0, speed: 2.0, y: -100, yEnd: 900 }
-    ],
-    tasks: [
-      { id: 'find_gap', text: 'Find gap between cars', type: 'reach', check: 'foundGap' },
-      { id: 'signal', text: 'Use indicator', type: 'toggle', check: 'usedIndicator' },
-      { id: 'let_pass', text: 'Let ambulance pass', type: 'avoid', check: 'ambulancePassed' }
-    ],
-    law: 'MV Act §119(2) — Emergency vehicle priority — ₹1000–₹5000'
-  },
-  {
-    id: 9, levelRef: 9, icon: '⛈️', name: 'Night Rain Puddles',
-    desc: 'Use headlights, crawl through dark puddles carefully.',
-    tier: 2, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 900, night: true },
-    obstacles: [
-      { type: 'puddle', x: 200, y: 300, w: 70, h: 35 },
-      { type: 'puddle', x: 320, y: 500, w: 80, h: 40 }
-    ],
-    npcs: [
-      { type: 'pedestrian', lane: 0.3, speed: 0, y: 310, stationary: true },
-      { type: 'pedestrian', lane: 1.7, speed: 0, y: 510, stationary: true }
-    ],
-    tasks: [
-      { id: 'use_headlights', text: 'Turn on headlights', type: 'toggle', check: 'headlightsOn' },
-      { id: 'slow_night', text: 'Drive slowly in dark', type: 'avoid', check: 'slowSpeed' },
-      { id: 'wide_berth', text: 'Give wide berth', type: 'avoid', check: 'noSplash' }
-    ],
-    law: 'MV Act §194B — Driving without lights at night — ₹500–₹2000'
-  },
-  {
-    id: 10, levelRef: 10, icon: '🛒', name: 'Market Navigation',
-    desc: 'Navigate through crowded market, find parking.',
-    tier: 2, timeLimit: 50,
-    road: { type: 'straight', lanes: 2, length: 1000 },
-    obstacles: [
-      { type: 'market_zone', x: 240, y: 300, w: 200, h: 180 },
-      { type: 'parking_spot', x: 360, y: 580, w: 55, h: 100 }
-    ],
-    npcs: [
-      { type: 'pedestrian', lane: 0.3, speed: 0.2, y: 350, crosses: true },
-      { type: 'pedestrian', lane: 1.7, speed: 0.15, y: 400, crosses: true, delay: 400 },
-      { type: 'car', lane: 0, speed: 0.5, direction: -1 }
-    ],
-    tasks: [
-      { id: 'navigate_market', text: 'Navigate through market', type: 'reach', check: 'passedMarket' },
-      { id: 'find_zone', text: 'Find parking zone', type: 'reach', check: 'nearParking' },
-      { id: 'park_spot', text: 'Park in spot', type: 'stop', check: 'parkedLegal' }
-    ],
-    law: 'MV Act §122 — Obstructing free movement — ₹100–₹500'
-  },
-  {
-    id: 11, levelRef: 11, icon: '📚', name: 'Library Silence',
-    desc: 'No honking near the library — pass quietly!',
-    tier: 2, timeLimit: 35,
-    road: { type: 'straight', lanes: 2, length: 700 },
-    obstacles: [
-      { type: 'silence_zone', x: 240, y: 250, w: 180, h: 160 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.6, direction: -1 }
-    ],
-    tasks: [
-      { id: 'no_honk', text: 'No honking!', type: 'avoid', check: 'noHonk' },
-      { id: 'wait_npc', text: 'Wait for NPC car', type: 'stop', check: 'waitedForNPC' },
-      { id: 'pass_quiet', text: 'Pass quietly', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §190 — Noise in silence zone — ₹1000–₹5000'
-  },
-  // ── Tier 3: Advanced Rules ──
-  {
-    id: 12, levelRef: 12, icon: '🛣️', name: 'Highway Ambulance',
-    desc: 'Indicate, merge left, maintain speed — let ambulance through.',
-    tier: 3, timeLimit: 35,
-    road: { type: 'straight', lanes: 3, length: 800 },
-    obstacles: [],
-    npcs: [
-      { type: 'car', lane: 1.5, speed: 2.0, direction: -1 },
-      { type: 'car', lane: 2.5, speed: 1.8, direction: -1, delay: 1000 },
-      { type: 'ambulance', lane: 1, speed: 3.0, y: -100, yEnd: 900 }
-    ],
-    tasks: [
-      { id: 'indicate_left', text: 'Indicate left', type: 'toggle', check: 'usedIndicator' },
-      { id: 'merge_left', text: 'Merge to left lane', type: 'reach', check: 'mergedLeft' },
-      { id: 'maintain_speed', text: 'Maintain speed', type: 'avoid', check: 'maintainedSpeed' }
-    ],
-    law: 'MV Act §119(2) — Emergency priority on highway — ₹2000–₹5000'
-  },
-  {
-    id: 13, levelRef: 13, icon: '🌙', name: 'Night Crossing',
-    desc: 'Dip headlights, yield to elderly, no speeding at night.',
-    tier: 3, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 900, night: true },
-    obstacles: [
-      { type: 'zebra', x: 240, y: 350 }
-    ],
-    npcs: [
-      { type: 'pedestrian', lane: 0.5, speed: 0.2, y: 350, crosses: true },
-      { type: 'car', lane: 0, speed: 1.2, direction: -1 }
-    ],
-    tasks: [
-      { id: 'dip_headlights', text: 'Dip headlights', type: 'toggle', check: 'headlightsDipped' },
-      { id: 'yield_elderly', text: 'Yield to elderly', type: 'stop', check: 'isStopped' },
-      { id: 'no_speed', text: 'Don\'t speed at night', type: 'avoid', check: 'nightSpeedLimit' }
-    ],
-    law: 'MV Act §194A — Dangerous night driving — ₹1000–₹5000'
-  },
-  {
-    id: 14, levelRef: 14, icon: '🏘️', name: 'Residential Parking',
-    desc: 'Find visitor parking, don\'t block residents.',
-    tier: 3, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [
-      { type: 'gate', x: 200, y: 350, w: 40, h: 30 },
-      { type: 'parking_spot', x: 360, y: 500, w: 55, h: 100 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.8, direction: -1 }
-    ],
-    tasks: [
-      { id: 'move_gate', text: 'Move from gate', type: 'reach', check: 'awayFromGate' },
-      { id: 'find_visitor', text: 'Find visitor parking', type: 'reach', check: 'nearParking' },
-      { id: 'walk_dest', text: 'Walk to destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §122 — Blocking residential access — ₹500–₹2000'
-  },
-  // ── Tier 4: Expert Rules ──
-  {
-    id: 15, levelRef: 17, icon: '🚨', name: 'Traffic Jam Ambulance',
-    desc: 'Hazards on, inch forward, pull left — make room!',
-    tier: 4, timeLimit: 40,
-    road: { type: 'straight', lanes: 2, length: 800 },
-    obstacles: [
-      { type: 'traffic_jam', x: 240, y: 350, w: 160, h: 120 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0, y: 380, stationary: true },
-      { type: 'car', lane: 1, speed: 0, y: 360, stationary: true },
-      { type: 'ambulance', lane: 0.5, speed: 1.5, y: -100, yEnd: 900 }
-    ],
-    tasks: [
-      { id: 'hazards_on', text: 'Turn on hazards', type: 'toggle', check: 'hazardsOn' },
-      { id: 'inch_forward', text: 'Inch forward', type: 'reach', check: 'inchedForward' },
-      { id: 'pull_left', text: 'Pull far left', type: 'reach', check: 'pulledOver' }
-    ],
-    law: 'MV Act §119(2) — Blocking emergency access — ₹2000–₹10000'
-  },
-  // ── Tier 4: Signal & Discipline ──
-  {
-    id: 16, levelRef: 21, icon: '🚦', name: 'Signal Discipline',
-    desc: 'Stay at red even when others jump. Discipline over herd mentality.',
-    tier: 4, timeLimit: 45,
-    road: { type: 'intersection', lanes: 3, length: 900 },
-    obstacles: [
-      { type: 'traffic_light', x: 240, y: 200, phases: ['red', 'green'], cycle: [5000, 4000] },
-      { type: 'zebra', x: 240, y: 230 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 1.8, direction: -1, jumpsRed: true },
-      { type: 'pedestrian', lane: 1, speed: 0.3, y: 210, crosses: true }
-    ],
-    tasks: [
-      { id: 'stay_red', text: 'Wait at red light', type: 'stop', check: 'stayedAtRed' },
-      { id: 'ignore_jumper', text: 'Don\'t follow the signal jumper', type: 'avoid', check: 'ignoredJumper' },
-      { id: 'go_green', text: 'Proceed on green', type: 'reach', check: 'crossedIntersection' }
-    ],
-    law: 'MV Act §119 — Jumping Red Signal — ₹500–₹2000'
-  },
-  {
-    id: 17, levelRef: 22, icon: '😡', name: 'Road Rage Control',
-    desc: 'Another driver cuts you off. Don\'t react aggressively.',
-    tier: 4, timeLimit: 40,
-    road: { type: 'straight', lanes: 3, length: 1000 },
-    obstacles: [
-      { type: 'signal', x: 400, y: 300, phases: ['green', 'yellow', 'red'], cycle: [4000, 1500, 3000] }
-    ],
-    npcs: [
-      { type: 'car', lane: 1, speed: 2.0, direction: -1, cutsOff: true, cutAt: 350 }
-    ],
-    tasks: [
-      { id: 'no_honk_rage', text: 'Don\'t honk aggressively', type: 'avoid', check: 'noHonk' },
-      { id: 'no_swerve', text: 'Don\'t swerve', type: 'avoid', check: 'noSwerve' },
-      { id: 'stay_calm', text: 'Reach destination calmly', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Dangerous driving — ₹1000–₹5000'
-  },
-  {
-    id: 18, levelRef: 23, icon: '🌧️', name: 'Rain Driving',
-    desc: 'Monsoon rain reduces visibility. Slow down, maintain distance.',
-    tier: 4, timeLimit: 50,
-    road: { type: 'straight', lanes: 2, length: 1000 },
-    obstacles: [
-      { type: 'puddle', x: 240, y: 300, w: 80, h: 40 },
-      { type: 'puddle', x: 260, y: 550, w: 70, h: 35 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.6, direction: -1 },
-      { type: 'car', lane: 1, speed: 0.5, direction: -1, delay: 2000 }
-    ],
-    tasks: [
-      { id: 'slow_rain', text: 'Reduce speed in rain', type: 'avoid', check: 'underSpeed' },
-      { id: 'avoid_puddle', text: 'Avoid puddles', type: 'avoid', check: 'noPuddleHit' },
-      { id: 'reach_dest', text: 'Reach destination safely', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Dangerous driving in rain — ₹1000–₹5000'
-  },
-  {
-    id: 19, levelRef: 24, icon: '🚶', name: 'Pedestrian Priority',
-    desc: 'Pedestrians have right of way at crossings. Always yield.',
-    tier: 4, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 800 },
-    obstacles: [
-      { type: 'zebra', x: 240, y: 300 },
-      { type: 'zebra', x: 240, y: 550 }
-    ],
-    npcs: [
-      { type: 'pedestrian', lane: 0, speed: 0.3, y: 280, crosses: true },
-      { type: 'pedestrian', lane: 1, speed: 0.25, y: 530, crosses: true, delay: 1000 },
-      { type: 'car', lane: 0, speed: 1.0, direction: -1 }
-    ],
-    tasks: [
-      { id: 'yield_ped1', text: 'Yield to first pedestrian', type: 'stop', check: 'yieldedPed' },
-      { id: 'yield_ped2', text: 'Yield to second pedestrian', type: 'stop', check: 'yieldedPed2' },
-      { id: 'cross_safe', text: 'Cross safely after', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §134 — Duty to accident victims — ₹500–₹1000'
-  },
-  {
-    id: 20, levelRef: 25, icon: '🪧', name: 'Sign Recognition',
-    desc: 'Follow all mandatory, cautionary, and informational signs.',
-    tier: 4, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [
-      { type: 'sign', x: 200, y: 200, kind: 'speed_limit_40' },
-      { type: 'sign', x: 280, y: 400, kind: 'no_horn' },
-      { type: 'sign', x: 200, y: 600, kind: 'speed_breaker' }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.8, direction: -1 }
-    ],
-    tasks: [
-      { id: 'obey_speed', text: 'Follow speed limit', type: 'avoid', check: 'underSpeed' },
-      { id: 'no_honk_sign', text: 'No honking zone', type: 'avoid', check: 'noHonk' },
-      { id: 'cross_speed', text: 'Cross speed breaker', type: 'reach', check: 'crossedBreaker' }
-    ],
-    law: 'MV Act §118 — Obeying traffic signs — ₹200–₹1000'
-  },
-  // ── Tier 5: Animals & Narrow ──
-  {
-    id: 21, levelRef: 26, icon: '🐄', name: 'Animal Crossing',
-    desc: 'Cattle on the road! Slow down and pass carefully.',
-    tier: 5, timeLimit: 50,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [
-      { type: 'animal', x: 240, y: 350, kind: 'cow', w: 60, h: 40 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.5, direction: -1 }
-    ],
-    tasks: [
-      { id: 'slow_animal', text: 'Slow down for animal', type: 'avoid', check: 'underSpeed' },
-      { id: 'pass_safe', text: 'Pass without hitting', type: 'avoid', check: 'noCollision' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §186 — Obstructing public way — ₹100–₹500'
-  },
-  {
-    id: 22, levelRef: 27, icon: '🏗️', name: 'Narrow Street',
-    desc: 'Tight lane — yield to oncoming traffic, use horn sparingly.',
-    tier: 5, timeLimit: 45,
-    road: { type: 'straight', lanes: 1, length: 800 },
-    obstacles: [
-      { type: 'construction', x: 240, y: 350, w: 40, h: 120 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.6, direction: 1 }
-    ],
-    tasks: [
-      { id: 'yield_narrow', text: 'Yield to oncoming car', type: 'stop', check: 'yieldedOncoming' },
-      { id: 'pass_construction', text: 'Pass construction', type: 'reach', check: 'passedConstruction' },
-      { id: 'reach_end', text: 'Reach end of street', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Dangerous driving in narrow lane — ₹1000–₹5000'
-  },
-  {
-    id: 23, levelRef: 28, icon: '🅿️', name: 'Parking Rules',
-    desc: 'Park only in designated zones. No blocking fire hydrants.',
-    tier: 5, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [
-      { type: 'no_parking_zone', x: 200, y: 250, w: 50, h: 100 },
-      { type: 'fire_hydrant', x: 280, y: 400 },
-      { type: 'parking_spot', x: 240, y: 550, w: 55, h: 100 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.8, direction: -1 }
-    ],
-    tasks: [
-      { id: 'find_legal', text: 'Find legal parking', type: 'reach', check: 'nearParking' },
-      { id: 'no_hydrant', text: 'Don\'t block hydrant', type: 'avoid', check: 'noHydrantBlock' },
-      { id: 'park_ok', text: 'Park correctly', type: 'stop', check: 'parkedLegal' }
-    ],
-    law: 'MV Act §122 — Obstructing traffic — ₹100–₹500'
-  },
-  {
-    id: 24, levelRef: 29, icon: '🛺', name: 'Auto Dance',
-    desc: 'Autos everywhere! Navigate through chaotic auto-rickshaw traffic.',
-    tier: 5, timeLimit: 50,
-    road: { type: 'intersection', lanes: 3, length: 1000 },
-    obstacles: [
-      { type: 'traffic_light', x: 240, y: 200, phases: ['red', 'green'], cycle: [4000, 3000] }
-    ],
-    npcs: [
-      { type: 'auto', lane: 0, speed: 1.0, direction: -1 },
-      { type: 'auto', lane: 1, speed: 1.2, direction: -1, delay: 800 },
-      { type: 'auto', lane: 2, speed: 0.9, direction: -1, delay: 1500 },
-      { type: 'car', lane: 1, speed: 0.7, direction: -1, delay: 2000 }
-    ],
-    tasks: [
-      { id: 'avoid_auto1', text: 'Don\'t hit autos', type: 'avoid', check: 'noCollision' },
-      { id: 'obey_signal', text: 'Obey traffic signals', type: 'stop', check: 'stayedAtRed' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Driving without care — ₹1000–₹5000'
-  },
-  {
-    id: 25, levelRef: 30, icon: '💸', name: 'Highway Toll',
-    desc: 'Stop at toll plaza, pay exact fare, exit smoothly.',
-    tier: 5, timeLimit: 40,
-    road: { type: 'highway', lanes: 3, length: 1200 },
-    obstacles: [
-      { type: 'toll_plaza', x: 240, y: 400, lanes: 3 }
-    ],
-    npcs: [
-      { type: 'truck', lane: 0, speed: 0.4, direction: -1 },
-      { type: 'bus', lane: 2, speed: 0.5, direction: -1, delay: 1000 }
-    ],
-    tasks: [
-      { id: 'slow_toll', text: 'Slow for toll', type: 'avoid', check: 'underSpeed' },
-      { id: 'pay_toll', text: 'Stop at toll booth', type: 'stop', check: 'paidToll' },
-      { id: 'exit_smooth', text: 'Exit smoothly', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'NHAI Act — Toll evasion — ₹500 penalty'
-  },
-  // ── Tier 6: Complex Scenarios ──
-  {
-    id: 26, levelRef: 31, icon: '↪️', name: 'Blind Corner',
-    desc: 'Low visibility at a sharp turn. Use horn, stay left.',
-    tier: 6, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 800 },
-    obstacles: [
-      { type: 'blind_turn', x: 240, y: 350 }
-    ],
-    npcs: [
-      { type: 'truck', lane: 0, speed: 0.8, direction: 1 }
-    ],
-    tasks: [
-      { id: 'use_horn', text: 'Sound horn before turn', type: 'toggle', check: 'usedHorn' },
-      { id: 'stay_left', text: 'Stay left', type: 'avoid', check: 'stayedLeft' },
-      { id: 'cross_corner', text: 'Cross safely', type: 'reach', check: 'passedCorner' }
-    ],
-    law: 'MV Act §112 — Speed at turns — ₹200–₹1000'
-  },
-  {
-    id: 27, levelRef: 32, icon: '⛰️', name: 'Hill Driving',
-    desc: 'Steep gradient — use gears, never coast, use handbrake on slopes.',
-    tier: 6, timeLimit: 55,
-    road: { type: 'straight', lanes: 2, length: 1000 },
-    obstacles: [
-      { type: 'slope', x: 240, y: 300, gradient: 15 }
-    ],
-    npcs: [
-      { type: 'truck', lane: 0, speed: 0.3, direction: -1 },
-      { type: 'car', lane: 1, speed: 0.5, direction: 1, delay: 1500 }
-    ],
-    tasks: [
-      { id: 'use_gear', text: 'Use low gear uphill', type: 'toggle', check: 'lowGear' },
-      { id: 'no_coast', text: 'Don\'t coast downhill', type: 'avoid', check: 'noCoasting' },
-      { id: 'reach_top', text: 'Reach the top', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Dangerous driving on hills — ₹1000–₹5000'
-  },
-  {
-    id: 28, levelRef: 33, icon: '🚌', name: 'Bus Stop Etiquette',
-    desc: 'Yield to buses at stops, don\'t overtake near bus stops.',
-    tier: 6, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [
-      { type: 'bus_stop', x: 200, y: 350 }
-    ],
-    npcs: [
-      { type: 'bus', lane: 0, speed: 0, y: 350, stationary: true },
-      { type: 'pedestrian', lane: 0, speed: 0.3, y: 340, crosses: true, delay: 500 }
-    ],
-    tasks: [
-      { id: 'yield_bus', text: 'Yield to bus', type: 'stop', check: 'yieldedBus' },
-      { id: 'no_overtake', text: 'Don\'t overtake bus', type: 'avoid', check: 'noOvertake' },
-      { id: 'pass_bus', text: 'Pass safely after bus moves', type: 'reach', check: 'passedBus' }
-    ],
-    law: 'MV Act §118(2) — Overtaking near bus stop — ₹500–₹2000'
-  },
-  {
-    id: 29, levelRef: 34, icon: '🚧', name: 'Construction Zone',
-    desc: 'Road work ahead! Follow detour signs, reduce speed.',
-    tier: 6, timeLimit: 50,
-    road: { type: 'straight', lanes: 3, length: 1100 },
-    obstacles: [
-      { type: 'construction_zone', x: 240, y: 350, w: 200, h: 150 },
-      { type: 'detour_sign', x: 300, y: 280 }
-    ],
-    npcs: [
-      { type: 'truck', lane: 0, speed: 0.4, direction: -1 },
-      { type: 'worker', lane: 1, speed: 0, y: 380, stationary: true }
-    ],
-    tasks: [
-      { id: 'slow_construction', text: 'Reduce speed', type: 'avoid', check: 'underSpeed' },
-      { id: 'follow_detour', text: 'Follow detour', type: 'reach', check: 'followedDetour' },
-      { id: 'pass_construction', text: 'Pass construction zone', type: 'reach', check: 'passedConstruction' }
-    ],
-    law: 'MV Act §184 — Speeding in construction zone — ₹2000–₹5000'
-  },
-  {
-    id: 30, levelRef: 35, icon: '↔️', name: 'One-Way Street',
-    desc: 'Enter one-way from correct direction. Wrong way = instant fail.',
-    tier: 6, timeLimit: 40,
-    road: { type: 'straight', lanes: 2, length: 800 },
-    obstacles: [
-      { type: 'one_way_sign', x: 240, y: 250, direction: 'up' },
-      { type: 'wrong_way_car', x: 260, y: 400, direction: -1 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 1.2, direction: -1 }
-    ],
-    tasks: [
-      { id: 'correct_dir', text: 'Enter from correct side', type: 'avoid', check: 'correctDirection' },
-      { id: 'obey_one_way', text: 'Follow one-way', type: 'avoid', check: 'obeyedOneWay' },
-      { id: 'reach_end', text: 'Reach end', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §119 — Driving against one-way — ₹500–₹2000'
-  },
-  // ── Tier 7: Emergency & Signs ──
-  {
-    id: 31, levelRef: 36, icon: '🪧', name: 'Sign Mastery',
-    desc: 'All sign types — mandatory, cautionary, informational. Know them all.',
-    tier: 7, timeLimit: 50,
-    road: { type: 'straight', lanes: 2, length: 1000 },
-    obstacles: [
-      { type: 'sign', x: 200, y: 200, kind: 'mandatory_left' },
-      { type: 'sign', x: 280, y: 350, kind: 'cautionary_zone' },
-      { type: 'sign', x: 200, y: 500, kind: 'info_hospital_2km' },
-      { type: 'sign', x: 280, y: 650, kind: 'mandatory_stop' }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.8, direction: -1 }
-    ],
-    tasks: [
-      { id: 'obey_mandatory', text: 'Follow mandatory signs', type: 'avoid', check: 'obeyedMandatory' },
-      { id: 'caution_sign', text: 'Slow at caution sign', type: 'avoid', check: 'underSpeed' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §118 — Disobeying mandatory sign — ₹200–₹1000'
-  },
-  {
-    id: 32, levelRef: 37, icon: '🏥', name: 'Hospital Quiet Zone',
-    desc: 'No honking near hospital. Reduce speed, be patient.',
-    tier: 7, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 800 },
-    obstacles: [
-      { type: 'hospital_zone', x: 240, y: 350, w: 200, h: 200 }
-    ],
-    npcs: [
-      { type: 'ambulance', lane: 0.5, speed: 1.5, y: -100, yEnd: 900 }
-    ],
-    tasks: [
-      { id: 'no_honk_hosp', text: 'No honking', type: 'avoid', check: 'noHonk' },
-      { id: 'slow_hosp', text: 'Slow in hospital zone', type: 'avoid', check: 'underSpeed' },
-      { id: 'yield_ambulance', text: 'Yield to ambulance', type: 'stop', check: 'yieldedAmbulance' }
-    ],
-    law: 'MV Act §190 — Noise in hospital zone — ₹2000–₹5000'
-  },
-  {
-    id: 33, levelRef: 38, icon: '🎪', name: 'Festival Traffic',
-    desc: 'Festival crowds! Extra pedestrians, decorations blocking lanes.',
-    tier: 7, timeLimit: 55,
-    road: { type: 'straight', lanes: 2, length: 1000 },
-    obstacles: [
-      { type: 'festival_crowd', x: 240, y: 350, w: 200, h: 100 },
-      { type: 'decoration', x: 200, y: 500 }
-    ],
-    npcs: [
-      { type: 'pedestrian', lane: 0, speed: 0.2, y: 300, crosses: true },
-      { type: 'pedestrian', lane: 1, speed: 0.15, y: 320, crosses: true, delay: 500 },
-      { type: 'pedestrian', lane: 0, speed: 0.25, y: 500, crosses: true, delay: 1000 },
-      { type: 'car', lane: 1, speed: 0.4, direction: -1, delay: 2000 }
-    ],
-    tasks: [
-      { id: 'patience', text: 'Be patient in crowd', type: 'avoid', check: 'noHonk' },
-      { id: 'avoid_ped', text: 'Don\'t hit pedestrians', type: 'avoid', check: 'noCollision' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Dangerous driving near festival — ₹1000–₹5000'
-  },
-  {
-    id: 34, levelRef: 39, icon: '🚴', name: 'Cyclist Safety',
-    desc: 'Cyclists share the road. Give 1m space, never overtake on left.',
-    tier: 7, timeLimit: 45,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [],
-    npcs: [
-      { type: 'cyclist', lane: 0, speed: 0.5, direction: -1 },
-      { type: 'cyclist', lane: 0, speed: 0.4, direction: -1, delay: 1500 }
-    ],
-    tasks: [
-      { id: 'give_space', text: 'Give 1m space', type: 'avoid', check: 'gaveSpace' },
-      { id: 'no_left_pass', text: 'Don\'t pass on left', type: 'avoid', check: 'noLeftPass' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Unsafe overtaking — ₹1000–₹5000'
-  },
-  {
-    id: 35, levelRef: 40, icon: '🏆', name: 'Grand Test',
-    desc: 'Final test! Signals, pedestrians, speed, lanes, emergency — all at once.',
-    tier: 7, timeLimit: 90,
-    road: { type: 'intersection', lanes: 3, length: 1200 },
-    obstacles: [
-      { type: 'traffic_light', x: 240, y: 200, phases: ['red', 'green'], cycle: [4000, 3000] },
-      { type: 'zebra', x: 240, y: 230 },
-      { type: 'sign', x: 200, y: 400, kind: 'speed_limit_40' },
-      { type: 'puddle', x: 260, y: 550, w: 60, h: 30 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 1.5, direction: -1, jumpsRed: true },
-      { type: 'pedestrian', lane: 1, speed: 0.3, y: 220, crosses: true },
-      { type: 'ambulance', lane: 0.5, speed: 1.5, y: -100, yEnd: 900, delay: 5000 }
-    ],
-    tasks: [
-      { id: 'obey_signal', text: 'Obey signals', type: 'stop', check: 'stayedAtRed' },
-      { id: 'yield_ped', text: 'Yield to pedestrians', type: 'stop', check: 'yieldedPed' },
-      { id: 'speed_check', text: 'Maintain speed limit', type: 'avoid', check: 'underSpeed' },
-      { id: 'yield_amb', text: 'Yield to ambulance', type: 'stop', check: 'yieldedAmbulance' },
-      { id: 'finish', text: 'Complete the route', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act — All sections — ₹500–₹10000'
-  },
-  // ── Tier 8: Advanced Night & Weather ──
-  {
-    id: 36, levelRef: 41, icon: '🌙', name: 'Night Monsoon',
-    desc: 'Night + rain + low visibility. Headlights on, hazards if stopped.',
-    tier: 8, timeLimit: 60,
-    road: { type: 'straight', lanes: 2, length: 1000 },
-    obstacles: [
-      { type: 'puddle', x: 240, y: 300, w: 80, h: 40 },
-      { type: 'puddle', x: 260, y: 600, w: 70, h: 35 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.5, direction: -1 },
-      { type: 'car', lane: 1, speed: 0.4, direction: -1, delay: 2000 }
-    ],
-    tasks: [
-      { id: 'headlights', text: 'Turn on headlights', type: 'toggle', check: 'headlightsOn' },
-      { id: 'slow_night', text: 'Reduce speed', type: 'avoid', check: 'underSpeed' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Driving without lights at night — ₹2000–₹5000'
-  },
-  {
-    id: 37, levelRef: 42, icon: '⚠️', name: 'Wrong Side Escape',
-    desc: 'A car is coming on the wrong side! React quickly.',
-    tier: 8, timeLimit: 40,
-    road: { type: 'straight', lanes: 2, length: 900 },
-    obstacles: [],
-    npcs: [
-      { type: 'car', lane: 0, speed: 2.0, direction: 1, wrongSide: true }
-    ],
-    tasks: [
-      { id: 'dodge_wrong', text: 'Dodge wrong-side car', type: 'avoid', check: 'noCollision' },
-      { id: 'slow_down', text: 'Slow down', type: 'avoid', check: 'underSpeed' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §119 — Driving on wrong side — ₹500–₹2000'
-  },
-  {
-    id: 38, levelRef: 43, icon: '🛣️', name: 'Highway Merge',
-    desc: 'Merge onto highway from on-ramp. Match speed, indicate, merge.',
-    tier: 8, timeLimit: 50,
-    road: { type: 'highway', lanes: 3, length: 1200 },
-    obstacles: [],
-    npcs: [
-      { type: 'car', lane: 0, speed: 1.5, direction: -1 },
-      { type: 'truck', lane: 1, speed: 1.0, direction: -1, delay: 1000 },
-      { type: 'car', lane: 2, speed: 1.8, direction: -1, delay: 2000 }
-    ],
-    tasks: [
-      { id: 'match_speed', text: 'Match highway speed', type: 'avoid', check: 'speedMatched' },
-      { id: 'indicate', text: 'Use indicator', type: 'toggle', check: 'indicatorOn' },
-      { id: 'merge_safe', text: 'Merge safely', type: 'reach', check: 'merged' }
-    ],
-    law: 'MV Act §184 — Unsafe merging — ₹1000–₹5000'
-  },
-  {
-    id: 39, levelRef: 44, icon: '🚧', name: 'Night Construction',
-    desc: 'Road work at night. Dim lights, follow detour carefully.',
-    tier: 8, timeLimit: 55,
-    road: { type: 'straight', lanes: 2, length: 1000 },
-    obstacles: [
-      { type: 'construction_zone', x: 240, y: 350, w: 160, h: 120 },
-      { type: 'detour_sign', x: 300, y: 280 }
-    ],
-    npcs: [
-      { type: 'truck', lane: 0, speed: 0.3, direction: -1 },
-      { type: 'worker', lane: 1, speed: 0, y: 380, stationary: true }
-    ],
-    tasks: [
-      { id: 'dim_lights', text: 'Dim headlights', type: 'toggle', check: 'dimmedLights' },
-      { id: 'follow_detour', text: 'Follow detour', type: 'reach', check: 'followedDetour' },
-      { id: 'pass_safe', text: 'Pass construction', type: 'reach', check: 'passedConstruction' }
-    ],
-    law: 'MV Act §184 — Speeding in construction zone — ₹2000–₹5000'
-  },
-  {
-    id: 40, levelRef: 45, icon: '🌫️', name: 'Zero Visibility',
-    desc: 'Dense fog. Horn at intervals, hazard lights on, crawl forward.',
-    tier: 8, timeLimit: 60,
-    road: { type: 'straight', lanes: 2, length: 800 },
-    obstacles: [
-      { type: 'fog', x: 240, y: 350, w: 200, h: 200 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 0.3, direction: -1 }
-    ],
-    tasks: [
-      { id: 'hazard_on', text: 'Turn on hazards', type: 'toggle', check: 'hazardsOn' },
-      { id: 'horn_int', text: 'Honk at intervals', type: 'toggle', check: 'usedHorn' },
-      { id: 'crawl_dest', text: 'Crawl to destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Driving without visibility — ₹1000–₹5000'
-  },
-  // ── Tier 9: Grand Challenge ──
-  {
-    id: 41, levelRef: 46, icon: '🎪', name: 'Night Festival',
-    desc: 'Festival at night — crowds, lights, noise, zero patience.',
-    tier: 9, timeLimit: 60,
-    road: { type: 'straight', lanes: 2, length: 1000 },
-    obstacles: [
-      { type: 'festival_crowd', x: 240, y: 350, w: 180, h: 80 },
-      { type: 'decoration', x: 200, y: 500 }
-    ],
-    npcs: [
-      { type: 'pedestrian', lane: 0, speed: 0.2, y: 300, crosses: true },
-      { type: 'pedestrian', lane: 1, speed: 0.15, y: 320, crosses: true, delay: 500 },
-      { type: 'car', lane: 1, speed: 0.4, direction: -1, delay: 2000 }
-    ],
-    tasks: [
-      { id: 'lights_on', text: 'Headlights on', type: 'toggle', check: 'headlightsOn' },
-      { id: 'no_honk_fest', text: 'No honking', type: 'avoid', check: 'noHonk' },
-      { id: 'patience', text: 'Be patient', type: 'avoid', check: 'noCollision' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184/190 — Dangerous driving + noise — ₹1000–₹10000'
-  },
-  {
-    id: 42, levelRef: 47, icon: '🏔️', name: 'Mountain Night',
-    desc: 'Hill driving at night — no street lights, tight turns, steep drops.',
-    tier: 9, timeLimit: 60,
-    road: { type: 'straight', lanes: 1, length: 1000 },
-    obstacles: [
-      { type: 'blind_turn', x: 240, y: 300 },
-      { type: 'slope', x: 240, y: 550, gradient: 15 }
-    ],
-    npcs: [
-      { type: 'truck', lane: 0, speed: 0.4, direction: 1 }
-    ],
-    tasks: [
-      { id: 'high_beam', text: 'Use high beam', type: 'toggle', check: 'highBeam' },
-      { id: 'low_beam_turn', text: 'Low beam at turn', type: 'toggle', check: 'lowBeamAtTurn' },
-      { id: 'use_gear', text: 'Use low gear', type: 'toggle', check: 'lowGear' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Dangerous mountain driving — ₹2000–₹5000'
-  },
-  {
-    id: 43, levelRef: 48, icon: '🌾', name: 'Rural Gauntlet',
-    desc: 'Rural road — tractors, animals, unpaved sections, no markings.',
-    tier: 9, timeLimit: 55,
-    road: { type: 'straight', lanes: 1, length: 1000 },
-    obstacles: [
-      { type: 'animal', x: 240, y: 400, kind: 'cow', w: 60, h: 40 },
-      { type: 'unpaved', x: 240, y: 600, w: 100, h: 80 }
-    ],
-    npcs: [
-      { type: 'truck', lane: 0, speed: 0.4, direction: -1 }
-    ],
-    tasks: [
-      { id: 'avoid_cow', text: 'Avoid cow', type: 'avoid', check: 'noCollision' },
-      { id: 'slow_unpaved', text: 'Slow on unpaved', type: 'avoid', check: 'underSpeed' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act §184 — Careless driving — ₹1000–₹5000'
-  },
-  {
-    id: 44, levelRef: 49, icon: '🚌', name: 'Multi-Modal Chaos',
-    desc: 'Bus, auto, bike, pedestrian, cyclist — all in one road!',
-    tier: 9, timeLimit: 60,
-    road: { type: 'intersection', lanes: 3, length: 1100 },
-    obstacles: [
-      { type: 'traffic_light', x: 240, y: 200, phases: ['red', 'green'], cycle: [4000, 3000] },
-      { type: 'zebra', x: 240, y: 230 }
-    ],
-    npcs: [
-      { type: 'bus', lane: 0, speed: 0.6, direction: -1 },
-      { type: 'auto', lane: 1, speed: 0.9, direction: -1, delay: 500 },
-      { type: 'cyclist', lane: 2, speed: 0.4, direction: -1, delay: 1000 },
-      { type: 'pedestrian', lane: 1, speed: 0.25, y: 220, crosses: true, delay: 1500 },
-      { type: 'car', lane: 0, speed: 1.0, direction: -1, delay: 2000 }
-    ],
-    tasks: [
-      { id: 'obey_signal', text: 'Obey signal', type: 'stop', check: 'stayedAtRed' },
-      { id: 'yield_ped', text: 'Yield to pedestrians', type: 'stop', check: 'yieldedPed' },
-      { id: 'no_collision', text: 'No collision', type: 'avoid', check: 'noCollision' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act — All sections — ₹500–₹10000'
-  },
-  {
-    id: 45, levelRef: 50, icon: '🏆', name: 'Ultimate Grand Test',
-    desc: 'Night + rain + hill + festival + animals. Everything at once. Good luck.',
-    tier: 9, timeLimit: 120,
-    road: { type: 'intersection', lanes: 3, length: 1400 },
-    obstacles: [
-      { type: 'traffic_light', x: 240, y: 200, phases: ['red', 'green'], cycle: [3500, 3000] },
-      { type: 'zebra', x: 240, y: 230 },
-      { type: 'puddle', x: 260, y: 400, w: 70, h: 35 },
-      { type: 'animal', x: 240, y: 550, kind: 'cow', w: 60, h: 40 },
-      { type: 'sign', x: 200, y: 700, kind: 'speed_limit_40' },
-      { type: 'festival_crowd', x: 240, y: 850, w: 160, h: 60 }
-    ],
-    npcs: [
-      { type: 'car', lane: 0, speed: 1.5, direction: -1, jumpsRed: true },
-      { type: 'pedestrian', lane: 1, speed: 0.3, y: 220, crosses: true },
-      { type: 'ambulance', lane: 0.5, speed: 1.5, y: -100, yEnd: 1200, delay: 5000 },
-      { type: 'cyclist', lane: 2, speed: 0.4, direction: -1, delay: 3000 },
-      { type: 'auto', lane: 1, speed: 0.8, direction: -1, delay: 4000 }
-    ],
-    tasks: [
-      { id: 'headlights', text: 'Headlights on', type: 'toggle', check: 'headlightsOn' },
-      { id: 'obey_signal', text: 'Obey signals', type: 'stop', check: 'stayedAtRed' },
-      { id: 'yield_ped', text: 'Yield to pedestrians', type: 'stop', check: 'yieldedPed' },
-      { id: 'avoid_puddle', text: 'Avoid puddles', type: 'avoid', check: 'noPuddleHit' },
-      { id: 'avoid_cow', text: 'Avoid animal', type: 'avoid', check: 'noCollision' },
-      { id: 'yield_amb', text: 'Yield to ambulance', type: 'stop', check: 'yieldedAmbulance' },
-      { id: 'reach_dest', text: 'Reach destination', type: 'reach', check: 'reachedDest' }
-    ],
-    law: 'MV Act — All sections — ₹500–₹10000'
-  }
-]
+;(function () {
+  'use strict'
 
-// ─── GAME CONSTANTS ───
-const W = 480, H = 800
-const ROAD_LW = 60          // lane width
-const ROAD_LEFT = (W - ROAD_LW * 3) / 2   // left edge of road
-const PLAYER_W = 34, PLAYER_H = 60
-const CAR_W = 34, CAR_H = 60
-const PED_SIZE = 14
-const COLORS = {
-  bg: 0x4a7c59,           // grass green
-  road: 0x555555,         // asphalt
-  roadLine: 0xffffff,     // lane markings
-  roadEdge: 0xffd700,     // yellow edge lines
-  player: 0x2196F3,       // blue
-  npcCar: 0xe74c3c,       // red
-  npcCar2: 0xf39c12,      // orange
-  ambulance: 0xffffff,    // white
-  ambulanceFlash: 0xff0000,
-  pedestrian: 0x8B4513,   // brown skin
-  pedestrianClothes: 0x3498db,
-  puddle: 0x3498db,
-  zebra: 0xffffff,
-  schoolZone: 0xf1c40f,
-  hospitalZone: 0xe74c3c,
-  silenceZone: 0x9b59b6,
-  parkingSpot: 0x2ecc71,
-  noParking: 0xe74c3c,
-  marketZone: 0xe67e22,
-  gate: 0x8B4513,
-  trafficJam: 0x7f8c8d,
-  lightRed: 0xff0000,
-  lightGreen: 0x00ff00,
-  lightYellow: 0xffff00,
-  nightBg: 0x1a1a2e,
-  nightRoad: 0x333333
-}
-
-// ─── HELPER: lane center X ───
-function laneX(lane, lanes) {
-  const totalW = lanes * ROAD_LW
-  const startX = (W - totalW) / 2
-  return startX + lane * ROAD_LW + ROAD_LW / 2
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// SCENE 1: Boot — create procedural textures
-// ═══════════════════════════════════════════════════════════════════
-class BootScene extends Phaser.Scene {
-  constructor() { super('Boot') }
-
-  create() {
-    // Car texture (simple rectangle with windows)
-    const carG = this.make.graphics({ x: 0, y: 0, add: false })
-    carG.fillStyle(COLORS.player, 1)
-    carG.fillRoundedRect(0, 0, PLAYER_W, PLAYER_H, 6)
-    carG.fillStyle(0x87CEEB, 0.7) // window
-    carG.fillRect(4, 4, PLAYER_W - 8, 14)
-    carG.fillRect(4, PLAYER_H - 18, PLAYER_W - 8, 10)
-    carG.fillStyle(0xff4444, 1) // tail lights
-    carG.fillRect(2, PLAYER_H - 4, 6, 4)
-    carG.fillRect(PLAYER_W - 8, PLAYER_H - 4, 6, 4)
-    carG.fillStyle(0xffff88, 1) // headlights
-    carG.fillRect(2, 0, 6, 4)
-    carG.fillRect(PLAYER_W - 8, 0, 6, 4)
-    carG.generateTexture('player', PLAYER_W, PLAYER_H)
-    carG.destroy()
-
-    // NPC car
-    const npcG = this.make.graphics({ x: 0, y: 0, add: false })
-    npcG.fillStyle(COLORS.npcCar, 1)
-    npcG.fillRoundedRect(0, 0, CAR_W, CAR_H, 6)
-    npcG.fillStyle(0x87CEEB, 0.6)
-    npcG.fillRect(4, 4, CAR_W - 8, 12)
-    npcG.fillRect(4, CAR_H - 16, CAR_W - 8, 8)
-    npcG.fillStyle(0xffff88, 1)
-    npcG.fillRect(2, 0, 6, 4)
-    npcG.fillRect(CAR_W - 8, 0, 6, 4)
-    npcG.generateTexture('npc_car', CAR_W, CAR_H)
-    npcG.destroy()
-
-    // Orange NPC car
-    const npc2G = this.make.graphics({ x: 0, y: 0, add: false })
-    npc2G.fillStyle(COLORS.npcCar2, 1)
-    npc2G.fillRoundedRect(0, 0, CAR_W, CAR_H, 6)
-    npc2G.fillStyle(0x87CEEB, 0.6)
-    npc2G.fillRect(4, 4, CAR_W - 8, 12)
-    npc2G.fillRect(4, CAR_H - 16, CAR_W - 8, 8)
-    npc2G.fillStyle(0xffff88, 1)
-    npc2G.fillRect(2, 0, 6, 4)
-    npc2G.fillRect(CAR_W - 8, 0, 6, 4)
-    npc2G.generateTexture('npc_car2', CAR_W, CAR_H)
-    npc2G.destroy()
-
-    // Ambulance
-    const ambG = this.make.graphics({ x: 0, y: 0, add: false })
-    ambG.fillStyle(COLORS.ambulance, 1)
-    ambG.fillRoundedRect(0, 0, 38, 70, 6)
-    ambG.fillStyle(0xff0000, 1)
-    ambG.fillRect(10, 2, 18, 6) // red cross bar
-    ambG.fillRect(16, 0, 6, 10)
-    ambG.fillStyle(0x87CEEB, 0.6)
-    ambG.fillRect(4, 12, 30, 12)
-    ambG.fillStyle(0x0066ff, 1)
-    ambG.fillRect(4, 2, 6, 6)   // blue light left
-    ambG.fillRect(28, 2, 6, 6)  // blue light right
-    ambG.generateTexture('ambulance', 38, 70)
-    ambG.destroy()
-
-    // Pedestrian (small circle body)
-    const pedG = this.make.graphics({ x: 0, y: 0, add: false })
-    pedG.fillStyle(COLORS.pedestrian, 1)
-    pedG.fillCircle(PED_SIZE / 2, PED_SIZE / 2, PED_SIZE / 2)
-    pedG.fillStyle(COLORS.pedestrianClothes, 1)
-    pedG.fillRect(3, PED_SIZE / 2, PED_SIZE - 6, PED_SIZE / 2)
-    pedG.generateTexture('pedestrian', PED_SIZE, PED_SIZE)
-    pedG.destroy()
-
-    // Puddle
-    const pudG = this.make.graphics({ x: 0, y: 0, add: false })
-    pudG.fillStyle(COLORS.puddle, 0.6)
-    pudG.fillEllipse(40, 20, 80, 40)
-    pudG.generateTexture('puddle', 80, 40)
-    pudG.destroy()
-
-    // Parking spot marker
-    const parkG = this.make.graphics({ x: 0, y: 0, add: false })
-    parkG.lineStyle(3, COLORS.parkingSpot, 1)
-    parkG.strokeRect(0, 0, 55, 100)
-    parkG.fillStyle(COLORS.parkingSpot, 0.15)
-    parkG.fillRect(0, 0, 55, 100)
-    // P letter
-    parkG.fillStyle(COLORS.parkingSpot, 1)
-    parkG.fillRect(18, 20, 4, 40)
-    parkG.fillCircle(32, 24, 12)
-    parkG.fillStyle(0x4a7c59, 1)
-    parkG.fillCircle(32, 24, 8)
-    parkG.generateTexture('parking_spot', 55, 100)
-    parkG.destroy()
-
-    this.scene.start('Menu')
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// SCENE 2: Menu — scenario selection grid
-// ═══════════════════════════════════════════════════════════════════
-class MenuScene extends Phaser.Scene {
-  constructor() { super('Menu') }
-
-  create() {
-    const isNight = false
-
-    // If a specific scenario was requested (from Academy), skip menu and go directly to game
-    if (window._s2d_pendingId) {
-      const pid = window._s2d_pendingId
-      window._s2d_pendingId = null
-      this.scene.start('Game', { scenarioId: pid })
-      return
-    }
-
-    this.cameras.main.setBackgroundColor(isNight ? COLORS.nightBg : COLORS.bg)
-
-    // Title
-    this.add.text(W / 2, 40, '🚦 Traffic Scenarios', {
-      fontFamily: 'Inter, sans-serif', fontSize: '22px', fontStyle: 'bold',
-      color: '#ffffff', stroke: '#000000', strokeThickness: 3
-    }).setOrigin(0.5)
-
-    // Tier labels and cards
-    const progress = this._loadProgress()
-    let yPos = 80
-
-    const tiers = [
-      { label: '⭐ Tier 1 — Basic Rules', ids: [1,2,3,4,5] },
-      { label: '⭐⭐ Tier 2 — Intermediate', ids: [6,7,8,9,10,11] },
-      { label: '⭐⭐⭐ Tier 3 — Advanced', ids: [12,13,14] },
-      { label: '⭐⭐⭐⭐ Tier 4 — Expert', ids: [15] }
-    ]
-
-    tiers.forEach(tier => {
-      // Tier header
-      this.add.text(20, yPos, tier.label, {
-        fontFamily: 'Inter, sans-serif', fontSize: '14px', fontStyle: 'bold',
-        color: '#ffd54a'
-      })
-      yPos += 28
-
-      // Scenario cards in a row
-      tier.ids.forEach((sid, i) => {
-        const sc = SCENARIOS.find(s => s.id === sid)
-        if (!sc) return
-        const col = i % 5
-        const row = Math.floor(i / 5)
-        const cx = 24 + col * 92
-        const cy = yPos + row * 100
-        const unlocked = sid === 1 || progress[`s${sid - 1}_done`]
-
-        this._drawCard(cx, cy, sc, unlocked, progress)
-      })
-      yPos += Math.ceil(tier.ids.length / 5) * 100 + 12
-    })
-
-    // Scrollable content if needed
-    this.cameras.main.setBounds(0, 0, W, Math.max(yPos + 40, H))
-    this._scrollY = 0
-    this.input.on('wheel', (pointer, gameObjects, dx, dy) => {
-      this._scrollY = Phaser.Math.Clamp(this._scrollY + dy * 0.5, 0, Math.max(yPos + 40 - H, 0))
-      this.cameras.main.scrollY = this._scrollY
-    })
-
-    // Touch drag scroll
-    let dragStartY = 0, scrollStartY = 0
-    this.input.on('pointerdown', (p) => { dragStartY = p.y; scrollStartY = this._scrollY })
-    this.input.on('pointermove', (p) => {
-      if (p.isDown) {
-        const dy = dragStartY - p.y
-        this._scrollY = Phaser.Math.Clamp(scrollStartY + dy, 0, Math.max(yPos + 40 - H, 0))
-        this.cameras.main.scrollY = this._scrollY
-      }
-    })
+  /* ── EASING FUNCTIONS ── */
+  const Ease = {
+    linear: (t) => t,
+    easeInQuad: (t) => t * t,
+    easeOutQuad: (t) => t * (2 - t),
+    easeInOutQuad: (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
+    easeOutCubic: (t) => --t * t * t + 1,
+    easeInOutCubic: (t) => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1),
+    easeOutBack: (t) => { const c1 = 1.70158; const c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2) },
+    easeOutElastic: (t) => { if (t === 0 || t === 1) return t; return Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * ((2 * Math.PI) / 3)) + 1 },
+    easeInExpo: (t) => (t === 0 ? 0 : Math.pow(2, 10 * t - 10))
   }
 
-  _drawCard(x, y, sc, unlocked, progress) {
-    const w = 84, h = 90
-    const g = this.add.graphics()
-    g.fillStyle(unlocked ? 0x1a1a2e : 0x333333, 0.85)
-    g.fillRoundedRect(x, y, w, h, 8)
-    g.lineStyle(2, unlocked ? 0xffd54a : 0x555555, 0.6)
-    g.strokeRoundedRect(x, y, w, h, 8)
-
-    // Icon
-    this.add.text(x + w/2, y + 22, sc.icon, {
-      fontFamily: 'sans-serif', fontSize: '26px'
-    }).setOrigin(0.5)
-
-    // Name (truncated)
-    const shortName = sc.name.length > 12 ? sc.name.substring(0, 11) + '…' : sc.name
-    this.add.text(x + w/2, y + 50, shortName, {
-      fontFamily: 'Inter, sans-serif', fontSize: '10px',
-      color: unlocked ? '#ffffff' : '#888888', align: 'center',
-      wordWrap: { width: w - 8 }
-    }).setOrigin(0.5)
-
-    // Stars
-    const stars = progress[`s${sc.id}_done`] ? (progress[`s${sc.id}_stars`] || 1) : 0
-    const starStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars)
-    this.add.text(x + w/2, y + 72, starStr, {
-      fontFamily: 'sans-serif', fontSize: '12px'
-    }).setOrigin(0.5)
-
-    // Click zone
-    if (unlocked) {
-      const hitArea = this.add.rectangle(x + w/2, y + h/2, w, h, 0xffffff, 0)
-      hitArea.setInteractive({ useHandCursor: true })
-      hitArea.on('pointerdown', () => {
-        this.scene.start('Game', { scenarioId: sc.id })
-      })
-      hitArea.on('pointerover', () => {
-        g.clear()
-        g.fillStyle(0x2a2a4e, 0.95)
-        g.fillRoundedRect(x, y, w, h, 8)
-        g.lineStyle(2, 0xffd54a, 1)
-        g.strokeRoundedRect(x, y, w, h, 8)
-      })
-      hitArea.on('pointerout', () => {
-        g.clear()
-        g.fillStyle(0x1a1a2e, 0.85)
-        g.fillRoundedRect(x, y, w, h, 8)
-        g.lineStyle(2, 0xffd54a, 0.6)
-        g.strokeRoundedRect(x, y, w, h, 8)
-      })
-    }
+  /* ── COLOR UTILITIES ── */
+  const hexToRgb = (hex) => {
+    const h = hex.replace('#', '')
+    return { r: parseInt(h.substring(0, 2), 16), g: parseInt(h.substring(2, 4), 16), b: parseInt(h.substring(4, 6), 16) }
+  }
+  const rgbStr = (r, g, b, a = 1) => `rgba(${r},${g},${b},${a})`
+  const lerpColor = (c1, c2, t) => {
+    const a = hexToRgb(c1), b = hexToRgb(c2)
+    return rgbStr(Math.round(a.r + (b.r - a.r) * t), Math.round(a.g + (b.g - a.g) * t), Math.round(a.b + (b.b - a.b) * t))
   }
 
-  _loadProgress() {
-    try {
-      const s = JSON.parse(localStorage.getItem('mth4') || '{}')
-      return s.scenario2d || {}
-    } catch { return {} }
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// SCENE 3: Game — main gameplay
-// ═══════════════════════════════════════════════════════════════════
-class GameScene extends Phaser.Scene {
-  constructor() { super('Game') }
-
-  init(data) {
-    this.scenarioId = data.scenarioId || 1
-    this.cfg = SCENARIOS.find(s => s.id === this.scenarioId) || SCENARIOS[0]
-  }
-
-  create() {
-    const c = this.cfg
-    const isNight = c.road && c.road.night
-
-    // ── Background ──
-    this.cameras.main.setBackgroundColor(isNight ? COLORS.nightBg : COLORS.bg)
-
-    // ── Road ──
-    const roadLanes = c.road.lanes
-    const roadW = roadLanes * ROAD_LW
-    const roadX = (W - roadW) / 2
-    this.roadG = this.add.graphics()
-    this.roadG.fillStyle(isNight ? COLORS.nightRoad : COLORS.road, 1)
-    this.roadG.fillRect(roadX, 0, roadW, c.road.length)
-
-    // Lane markings
-    for (let i = 1; i < roadLanes; i++) {
-      const lx = roadX + i * ROAD_LW
-      this.roadG.lineStyle(2, COLORS.roadLine, 0.5)
-      for (let y = 0; y < c.road.length; y += 30) {
-        this.roadG.lineBetween(lx, y, lx, y + 15)
-      }
-    }
-    // Edge lines (solid yellow)
-    this.roadG.lineStyle(3, COLORS.roadEdge, 0.8)
-    this.roadG.lineBetween(roadX, 0, roadX, c.road.length)
-    this.roadG.lineBetween(roadX + roadW, 0, roadX + roadW, c.road.length)
-
-    // ── Obstacles ──
-    this.obstacleSprites = []
-    this.trafficLight = null
-    this.lightPhase = 'red'
-    this.lightTimer = 0
-    this.lightCycleIdx = 0
-
-    if (c.obstacles) {
-      c.obstacles.forEach(ob => {
-        if (ob.type === 'traffic_light') {
-          this._createTrafficLight(ob)
-        } else if (ob.type === 'puddle') {
-          const p = this.add.image(ob.x, ob.y, 'puddle')
-          p.setDisplaySize(ob.w || 80, ob.h || 40)
-          p.type = 'puddle'
-          this.obstacleSprites.push(p)
-        } else if (ob.type === 'zebra') {
-          this._createZebra(ob.x, ob.y)
-        } else if (ob.type === 'parking_spot') {
-          const ps = this.add.image(ob.x, ob.y, 'parking_spot')
-          ps.type = 'parking_spot'
-          ps.obData = ob
-          this.obstacleSprites.push(ps)
-        } else if (ob.type === 'school_zone') {
-          this._createZone(ob.x, ob.y, ob.w, ob.h, COLORS.schoolZone, '🏫 School Zone')
-        } else if (ob.type === 'hospital_zone') {
-          this._createZone(ob.x, ob.y, ob.w, ob.h, COLORS.hospitalZone, '🏥 Hospital')
-        } else if (ob.type === 'silence_zone') {
-          this._createZone(ob.x, ob.y, ob.w, ob.h, COLORS.silenceZone, '🤫 Silence Zone')
-        } else if (ob.type === 'market_zone') {
-          this._createZone(ob.x, ob.y, ob.w, ob.h, COLORS.marketZone, '🛒 Market')
-        } else if (ob.type === 'no_parking_zone') {
-          this._createZone(ob.x, ob.y, ob.w, ob.h, COLORS.noParking, '🚫 No Parking')
-        } else if (ob.type === 'parked_car') {
-          const pc = this.add.image(ob.x, ob.y, 'npc_car')
-          pc.setDisplaySize(ob.w || 40, ob.h || 70)
-          pc.type = 'parked_car'
-          this.obstacleSprites.push(pc)
-        } else if (ob.type === 'gate') {
-          const gt = this.add.graphics()
-          gt.fillStyle(COLORS.gate, 1)
-          gt.fillRect(ob.x - ob.w/2, ob.y - ob.h/2, ob.w, ob.h)
-          gt.type = 'gate'
-          gt.obData = ob
-          this.obstacleSprites.push(gt)
-        } else if (ob.type === 'traffic_jam') {
-          this._createZone(ob.x, ob.y, ob.w, ob.h, COLORS.trafficJam, '🚗 Jam')
-        }
-      })
-    }
-
-    // ── NPCs ──
-    this.npcSprites = []
-    if (c.npcs) {
-      c.npcs.forEach(n => {
-        const nx = laneX(n.lane, roadLanes)
-        const ny = n.y !== undefined ? n.y : -50
-        let spr
-        if (n.type === 'ambulance') {
-          spr = this.add.image(nx, ny, 'ambulance')
-          spr.setDisplaySize(38, 70)
-          spr.type = 'ambulance'
-          // Flash effect
-          this.tweens.add({
-            targets: spr, alpha: { from: 1, to: 0.4 },
-            duration: 300, yoyo: true, repeat: -1
-          })
-        } else if (n.type === 'pedestrian') {
-          spr = this.add.image(nx, ny, 'pedestrian')
-          spr.type = 'pedestrian'
-        } else {
-          const tex = Math.random() > 0.5 ? 'npc_car' : 'npc_car2'
-          spr = this.add.image(nx, ny, tex)
-          spr.setDisplaySize(CAR_W, CAR_H)
-          spr.type = 'car'
-          if (n.direction === -1) spr.setAngle(180)
-        }
-        spr.npcData = { ...n, baseX: nx, startX: ny }
-        this.npcSprites.push(spr)
-      })
-    }
-
-    // ── Player ──
-    const playerX = laneX(roadLanes > 1 ? 1 : 0, roadLanes)
-    const playerY = c.road.length - 100
-    this.player = this.add.image(playerX, playerY, 'player')
-    this.player.setDisplaySize(PLAYER_W, PLAYER_H)
-
-    // Camera follow (scroll up the road)
-    this.cameras.main.setBounds(0, 0, W, c.road.length)
-    this.cameras.main.startFollow(this.player, true, 1, 0.1)
-    this.cameras.main.setFollowOffset(-W/2, H/2 - 100)
-
-    // ── Player state ──
-    this.playerSpeed = 0
-    this.playerMaxSpeed = 2.5
-    this.playerAccel = 0.08
-    this.playerBrake = 0.15
-    this.playerFriction = 0.02
-    this.isMoving = false
-    this.isStopped = false
-    this.honked = false
-    this.headlightsOn = false
-    this.headlightsDipped = false
-    this.hazardsOn = false
-    this.indicatorOn = false
-
-    // ── Task state ──
-    this.taskState = {}
-    c.tasks.forEach(t => { this.taskState[t.id] = false })
-
-    // ── Timer ──
-    this.timeLeft = c.timeLimit
-    this.gameOver = false
-    this.violations = 0
-
-    // ── Controls ──
-    this.cursors = this.input.keyboard.createCursorKeys()
-    this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-    this.hKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H)
-    this.iKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I)
-
-    // Touch controls
-    this.touchAccel = false
-    this.input.on('pointerdown', () => { this.touchAccel = true })
-    this.input.on('pointerup', () => { this.touchAccel = false })
-
-    // ── HUD ──
-    this._createHUD()
-
-    // ── Timer event ──
-    this.time.addEvent({
-      delay: 1000, repeat: c.timeLimit - 1,
-      callback: () => {
-        this.timeLeft--
-        if (this.hudTimer) this.hudTimer.setText('⏱ ' + this.timeLeft + 's')
-        if (this.timeLeft <= 0 && !this.gameOver) {
-          this._endGame(false, 'Time\'s up!')
-        }
-      }
-    })
-  }
-
-  update(time, delta) {
-    if (this.gameOver) return
-    const c = this.cfg
-    const roadLanes = c.road.lanes
-    const dt = delta / 16.67 // normalize to ~60fps
-
-    // ── Player movement ──
-    const accel = this.cursors.up.isDown || this.spaceKey.isDown || this.touchAccel
-    const brake = this.cursors.down.isDown
-
-    if (accel) {
-      this.playerSpeed = Math.min(this.playerSpeed + this.playerAccel * dt, this.playerMaxSpeed)
-      this.isMoving = true
-    } else if (brake) {
-      this.playerSpeed = Math.max(this.playerSpeed - this.playerBrake * dt, 0)
-      this.isMoving = false
-    } else {
-      this.playerSpeed = Math.max(this.playerSpeed - this.playerFriction * dt, 0)
-      if (this.playerSpeed < 0.05) { this.playerSpeed = 0; this.isMoving = false }
-    }
-
-    this.isStopped = this.playerSpeed < 0.05
-    this.player.y -= this.playerSpeed * dt
-
-    // Keep player on road
-    const roadX = (W - roadLanes * ROAD_LW) / 2
-    this.player.x = Phaser.Math.Clamp(this.player.x, roadX + PLAYER_W/2, roadX + roadLanes * ROAD_LW - PLAYER_W/2)
-
-    // ── Honk (H key or double-tap) ──
-    if (Phaser.Input.Keyboard.JustDown(this.hKey)) {
-      this.honked = true
-      if (typeof sfx !== 'undefined') sfx.play('horn')
-    }
-
-    // ── Indicator toggle (I key) ──
-    if (Phaser.Input.Keyboard.JustDown(this.iKey)) {
-      this.indicatorOn = !this.indicatorOn
-    }
-
-    // ── Headlights toggle (auto for night scenarios) ──
-    if (c.road && c.road.night) {
-      this.headlightsOn = true
-      this.headlightsDipped = true
-    }
-
-    // ── Traffic light update ──
-    if (this.trafficLight) {
-      this.lightTimer += delta
-      const phases = this.cfg.obstacles.find(o => o.type === 'traffic_light').phases
-      const cycle = this.cfg.obstacles.find(o => o.type === 'traffic_light').cycle
-      if (this.lightTimer >= cycle[this.lightCycleIdx]) {
-        this.lightTimer = 0
-        this.lightCycleIdx = (this.lightCycleIdx + 1) % phases.length
-        this.lightPhase = phases[this.lightCycleIdx]
-        this._updateTrafficLight()
-      }
-    }
-
-    // ── NPC movement ──
-    this.npcSprites.forEach(spr => {
-      const nd = spr.npcData
-      if (nd.crosses && !nd.crossed) {
-        // Pedestrian crossing
-        if (!nd._startTimer) nd._startTimer = 0
-        nd._startTimer += delta
-        const delay = nd.delay || 0
-        if (nd._startTimer > delay) {
-          const roadX2 = (W - roadLanes * ROAD_LW) / 2
-          const targetX = nd.lane < roadLanes / 2
-            ? roadX2 + roadLanes * ROAD_LW + 30
-            : roadX2 - 30
-          spr.x += (targetX < spr.x ? -1 : 1) * nd.speed * dt
-          if (Math.abs(spr.x - targetX) < 5) nd.crossed = true
-        }
-      } else if (nd.stationary) {
-        // Don't move
-      } else if (nd.speed) {
-        spr.y += nd.speed * (nd.direction || 1) * dt
-        // Ambulance going off-screen
-        if (spr.type === 'ambulance' && spr.y > (nd.yEnd || 900)) {
-          nd.passed = true
-          spr.setAlpha(0.3)
-        }
-      }
-    })
-
-    // ── Collision checks ──
-    this._checkCollisions()
-
-    // ── Task checks ──
-    this._checkTasks()
-
-    // ── Update task HUD ──
-    this._updateTaskHUD()
-
-    // ── Check win condition ──
-    const allDone = c.tasks.every(t => this.taskState[t.id])
-    if (allDone && !this.gameOver) {
-      this._endGame(true, 'All tasks complete!')
-    }
-  }
-
-  // ── COLLISION DETECTION ──
-  _checkCollisions() {
-    const px = this.player.x, py = this.player.y
-    const pw = PLAYER_W / 2, ph = PLAYER_H / 2
-
-    this.obstacleSprites.forEach(ob => {
-      if (!ob.active) return
-      let ox, oy, ow, oh
-
-      if (ob.type === 'puddle') {
-        ox = ob.x; oy = ob.y
-        ow = (ob.displayWidth || 80) / 2
-        oh = (ob.displayHeight || 40) / 2
-        if (Math.abs(px - ox) < pw + ow && Math.abs(py - oy) < ph + oh) {
-          if (this.playerSpeed > 0.5) {
-            this.taskState['noSplash'] = false
-            this.violations++
-          }
-        }
-      } else if (ob.type === 'parking_spot') {
-        ox = ob.x; oy = ob.y
-        ow = 28; oh = 50
-        if (Math.abs(px - ox) < pw + ow && Math.abs(py - oy) < ph + oh) {
-          this.taskState['nearParking'] = true
-          if (this.isStopped) this.taskState['parkedLegal'] = true
-        }
-      } else if (ob.type === 'parked_car') {
-        ox = ob.x; oy = ob.y
-        ow = 20; oh = 35
-        if (Math.abs(px - ox) < pw + ow && Math.abs(py - oy) < ph + oh) {
-          this._endGame(false, 'Hit a parked car!')
-        }
-      }
-    })
-
-    this.npcSprites.forEach(spr => {
-      if (!spr.active) return
-      const dist = Phaser.Math.Distance.Between(px, py, spr.x, spr.y)
-      if (spr.type === 'pedestrian' && dist < 20) {
-        this._endGame(false, 'Hit a pedestrian!')
-      } else if (spr.type === 'car' && dist < 30) {
-        this._endGame(false, 'Collided with another car!')
-      } else if (spr.type === 'ambulance' && dist < 25) {
-        this._endGame(false, 'Hit the ambulance!')
-      }
-    })
-  }
-
-  // ── TASK CHECKS ──
-  _checkTasks() {
-    const py = this.player.y
-    const px = this.player.x
-    const c = this.cfg
-
-    c.tasks.forEach(task => {
-      if (this.taskState[task.id]) return // already done
-
-      switch (task.check) {
-        case 'redLight':
-          this.taskState[task.id] = this.lightPhase === 'red' && this.isStopped
-          break
-        case 'pedestriansSafe':
-          this.taskState[task.id] = this.npcSprites
-            .filter(s => s.type === 'pedestrian' && s.npcData.crosses)
-            .every(s => s.npcData.crossed)
-          break
-        case 'crossedIntersection':
-          this.taskState[task.id] = this.lightPhase === 'green' && py < 180
-          break
-        case 'nearParking':
-          // handled in collision
-          break
-        case 'parkedLegal':
-          // handled in collision
-          break
-        case 'reachedDest':
-          this.taskState[task.id] = py < 120
-          break
-        case 'pulledOver':
-          this.taskState[task.id] = this.player.x < (W / 2 - ROAD_LW)
-          break
-        case 'isStopped':
-          this.taskState[task.id] = this.isStopped
-          break
-        case 'ambulancePassed':
-          this.taskState[task.id] = this.npcSprites
-            .filter(s => s.type === 'ambulance')
-            .every(s => s.npcData.passed)
-          break
-        case 'slowSpeed':
-          this.taskState[task.id] = this.playerSpeed < 0.8
-          break
-        case 'noSplash':
-          this.taskState[task.id] = this.violations === 0
-          break
-        case 'crawledPast':
-          this.taskState[task.id] = py < 300 && this.playerSpeed < 0.5
-          break
-        case 'schoolSpeed':
-          this.taskState[task.id] = this.playerSpeed < 0.5
-          break
-        case 'noChildHit':
-          this.taskState[task.id] = this.violations === 0
-          break
-        case 'passedSchool':
-          this.taskState[task.id] = py < 200
-          break
-        case 'notInHospitalZone':
-          this.taskState[task.id] = true // always true unless in zone
-          break
-        case 'noHonk':
-          this.taskState[task.id] = !this.honked
-          break
-        case 'safeDistance':
-          this.taskState[task.id] = this.npcSprites
-            .filter(s => s.type === 'car')
-            .every(s => Phaser.Math.Distance.Between(px, py, s.x, s.y) > 60)
-          break
-        case 'foundGap':
-          this.taskState[task.id] = py < 400
-          break
-        case 'usedIndicator':
-          this.taskState[task.id] = this.indicatorOn
-          break
-        case 'headlightsOn':
-          this.taskState[task.id] = this.headlightsOn
-          break
-        case 'headlightsDipped':
-          this.taskState[task.id] = this.headlightsDipped
-          break
-        case 'nightSpeedLimit':
-          this.taskState[task.id] = this.playerSpeed < 1.0
-          break
-        case 'passedMarket':
-          this.taskState[task.id] = py < 300
-          break
-        case 'waitedForNPC':
-          this.taskState[task.id] = this.isStopped && py < 400
-          break
-        case 'mergedLeft':
-          this.taskState[task.id] = this.player.x < laneX(0, 3)
-          break
-        case 'maintainedSpeed':
-          this.taskState[task.id] = this.playerSpeed > 1.0
-          break
-        case 'awayFromGate':
-          this.taskState[task.id] = py < 300
-          break
-        case 'hazardsOn':
-          this.taskState[task.id] = this.hazardsOn
-          break
-        case 'inchedForward':
-          this.taskState[task.id] = py < 350
-          break
-      }
-    })
-
-    // Auto-toggle hazards with H key for scenario 15
-    if (this.cfg.id === 15 && Phaser.Input.Keyboard.JustDown(this.hKey)) {
-      this.hazardsOn = true
-    }
-  }
-
-  // ── CREATE OBJECTS ──
-  _createTrafficLight(ob) {
-    const g = this.add.graphics()
-    // Post
-    g.fillStyle(0x333333, 1)
-    g.fillRect(ob.x - 4, ob.y - 50, 8, 50)
-    // Housing
-    g.fillStyle(0x222222, 1)
-    g.fillRoundedRect(ob.x - 12, ob.y - 55, 24, 55, 4)
-    // Lights
-    this.lightRed = this.add.circle(ob.x, ob.y - 42, 8, COLORS.lightRed, 0.3)
-    this.lightYellow = this.add.circle(ob.x, ob.y - 28, 8, COLORS.lightYellow, 0.3)
-    this.lightGreen = this.add.circle(ob.x, ob.y - 14, 8, COLORS.lightGreen, 0.3)
-    this.trafficLight = true
-    this._updateTrafficLight()
-  }
-
-  _updateTrafficLight() {
-    if (!this.lightRed) return
-    this.lightRed.setFillStyle(COLORS.lightRed, this.lightPhase === 'red' ? 1 : 0.2)
-    this.lightYellow.setFillStyle(COLORS.lightYellow, this.lightPhase === 'yellow' ? 1 : 0.2)
-    this.lightGreen.setFillStyle(COLORS.lightGreen, this.lightPhase === 'green' ? 1 : 0.2)
-  }
-
-  _createZebra(x, y) {
-    const g = this.add.graphics()
-    g.fillStyle(COLORS.zebra, 0.8)
-    for (let i = -3; i <= 3; i++) {
-      g.fillRect(x - 45, y + i * 8 - 2, 90, 5)
-    }
-  }
-
-  _createZone(x, y, w, h, color, label) {
-    const g = this.add.graphics()
-    g.fillStyle(color, 0.2)
-    g.fillRect(x - w/2, y - h/2, w, h)
-    g.lineStyle(2, color, 0.6)
-    g.strokeRect(x - w/2, y - h/2, w, h)
-    this.add.text(x, y - h/2 - 12, label, {
-      fontFamily: 'Inter, sans-serif', fontSize: '12px', fontStyle: 'bold',
-      color: '#' + color.toString(16).padStart(6, '0')
-    }).setOrigin(0.5)
-  }
-
-  // ── HUD ──
-  _createHUD() {
-    const hudBg = this.add.rectangle(W/2, 22, W - 16, 36, 0x000000, 0.6)
-    hudBg.setScrollFactor(0).setDepth(100)
-
-    this.hudTimer = this.add.text(W/2, 22, '⏱ ' + this.timeLeft + 's', {
-      fontFamily: 'Inter, sans-serif', fontSize: '16px', fontStyle: 'bold',
-      color: '#ffd54a'
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(101)
-
-    this.hudIcon = this.add.text(16, 22, this.cfg.icon, {
-      fontSize: '18px'
-    }).setOrigin(0, 0.5).setScrollFactor(0).setDepth(101)
-
-    // Task list on right side
-    this.taskTexts = []
-    const startY = 70
-    this.cfg.tasks.forEach((task, i) => {
-      const t = this.add.text(W - 16, startY + i * 22, '○ ' + task.text, {
-        fontFamily: 'Inter, sans-serif', fontSize: '11px',
-        color: '#aaaaaa', align: 'right',
-        wordWrap: { width: 180 }
-      }).setOrigin(1, 0).setScrollFactor(0).setDepth(101)
-      this.taskTexts.push({ text: t, task })
-    })
-
-    // Controls hint
-    this.add.text(W/2, H - 20, '↑/SPACE = Accelerate  ↓ = Brake  H = Honk  I = Indicator', {
-      fontFamily: 'Inter, sans-serif', fontSize: '10px',
-      color: '#888888'
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(101)
-  }
-
-  _updateTaskHUD() {
-    this.taskTexts.forEach(({ text, task }) => {
-      const done = this.taskState[task.id]
-      text.setText((done ? '✅ ' : '○ ') + task.text)
-      text.setColor(done ? '#34d399' : '#aaaaaa')
-    })
-  }
-
-  // ── END GAME ──
-  _endGame(won, msg) {
-    if (this.gameOver) return
-    this.gameOver = true
-
-    const stars = won ? (this.violations === 0 ? 3 : this.timeLeft > this.cfg.timeLimit * 0.3 ? 2 : 1) : 0
-
-    // Save progress
-    this._saveProgress(stars)
-
-    // Transition to results
-    this.time.delayedCall(500, () => {
-      this.scene.start('Result', {
-        scenarioId: this.cfg.id,
-        won, msg, stars,
-        violations: this.violations,
-        timeUsed: this.cfg.timeLimit - this.timeLeft,
-        tasks: this.cfg.tasks.map(t => ({ ...t, done: this.taskState[t.id] }))
-      })
-    })
-  }
-
-  _saveProgress(stars) {
-    try {
-      const s = JSON.parse(localStorage.getItem('mth4') || '{}')
-      if (!s.scenario2d) s.scenario2d = {}
-      const key = `s${this.cfg.id}`
-      const prev = s.scenario2d[`${key}_done`]
-      s.scenario2d[`${key}_done`] = true
-      s.scenario2d[`${key}_stars`] = Math.max(stars, s.scenario2d[`${key}_stars`] || 0)
-      if (!prev) s.scenario2d.total = (s.scenario2d.total || 0) + 1
-      localStorage.setItem('mth4', JSON.stringify(s))
-      if (window.supabaseClient && window.colUser) {
-        window.supabaseClient.auth.updateUser({ data: { progress: s } }).catch(() => {})
-      }
-    } catch (e) {}
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// SCENE 4: Result — score screen
-// ═══════════════════════════════════════════════════════════════════
-class ResultScene extends Phaser.Scene {
-  constructor() { super('Result') }
-
-  init(data) {
-    this.scenarioId = data.scenarioId
-    this.won = data.won
-    this.msg = data.msg
-    this.stars = data.stars
-    this.violations = data.violations
-    this.timeUsed = data.timeUsed
-    this.tasks = data.tasks
-    this.cfg = SCENARIOS.find(s => s.id === this.scenarioId) || SCENARIOS[0]
-  }
-
-  create() {
-    this.cameras.main.setBackgroundColor(0x0a0a1a)
-
-    const cx = W / 2
-
-    // Result header
-    const emoji = this.won ? '🎉' : '💥'
-    this.add.text(cx, 80, emoji, { fontSize: '48px' }).setOrigin(0.5)
-    this.add.text(cx, 130, this.won ? 'Scenario Complete!' : 'Failed!', {
-      fontFamily: 'Inter, sans-serif', fontSize: '26px', fontStyle: 'bold',
-      color: this.won ? '#34d399' : '#ef4444'
-    }).setOrigin(0.5)
-
-    this.add.text(cx, 165, this.msg, {
-      fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#888888'
-    }).setOrigin(0.5)
-
-    // Stars
-    const starY = 210
-    for (let i = 0; i < 3; i++) {
-      const filled = i < this.stars
-      this.add.text(cx - 40 + i * 40, starY, filled ? '⭐' : '☆', {
-        fontSize: '32px'
-      }).setOrigin(0.5)
-      if (filled) {
-        this.tweens.add({
-          targets: this.children.list[this.children.list.length - 1],
-          scale: { from: 0, to: 1 }, duration: 300,
-          delay: i * 200, ease: 'Back.easeOut'
-        })
-      }
-    }
-
-    // Stats
-    const statsY = 270
-    this.add.text(cx, statsY, `${this.cfg.icon} ${this.cfg.name}`, {
-      fontFamily: 'Inter, sans-serif', fontSize: '18px', fontStyle: 'bold',
-      color: '#ffffff'
-    }).setOrigin(0.5)
-
-    this.add.text(cx, statsY + 30, `Time: ${this.timeUsed}s / ${this.cfg.timeLimit}s`, {
-      fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#aaaacc'
-    }).setOrigin(0.5)
-
-    this.add.text(cx, statsY + 52, `Violations: ${this.violations}`, {
-      fontFamily: 'Inter, sans-serif', fontSize: '14px',
-      color: this.violations > 0 ? '#ef4444' : '#34d399'
-    }).setOrigin(0.5)
-
-    // Task breakdown
-    const taskY = statsY + 90
-    this.add.text(cx, taskY, '— Tasks —', {
-      fontFamily: 'Inter, sans-serif', fontSize: '13px', fontStyle: 'bold',
-      color: '#ffd54a'
-    }).setOrigin(0.5)
-
-    this.tasks.forEach((task, i) => {
-      const icon = task.done ? '✅' : '❌'
-      this.add.text(cx, taskY + 24 + i * 22, `${icon} ${task.text}`, {
-        fontFamily: 'Inter, sans-serif', fontSize: '12px',
-        color: task.done ? '#34d399' : '#ef4444'
-      }).setOrigin(0.5)
-    })
-
-    // Law reference
-    const lawY = taskY + 24 + this.tasks.length * 22 + 16
-    this.add.text(cx, lawY, '⚖️ ' + this.cfg.law, {
-      fontFamily: 'Inter, sans-serif', fontSize: '11px',
-      color: '#ffd54a', wordWrap: { width: W - 40 }, align: 'center'
-    }).setOrigin(0.5)
-
-    // Buttons
-    const btnY = H - 100
-
-    // Retry button
-    const retryBg = this.add.rectangle(cx - 80, btnY, 130, 44, 0x1a1a2e, 0.9)
-    retryBg.setStrokeStyle(2, 0xffd54a)
-    retryBg.setInteractive({ useHandCursor: true })
-    this.add.text(cx - 80, btnY, '🔄 Retry', {
-      fontFamily: 'Inter, sans-serif', fontSize: '15px', fontStyle: 'bold',
-      color: '#ffd54a'
-    }).setOrigin(0.5)
-    retryBg.on('pointerdown', () => {
-      this.scene.start('Game', { scenarioId: this.scenarioId })
-    })
-
-    // Menu button
-    const menuBg = this.add.rectangle(cx + 80, btnY, 130, 44, 0x1a1a2e, 0.9)
-    menuBg.setStrokeStyle(2, 0x5ed4f5)
-    menuBg.setInteractive({ useHandCursor: true })
-    this.add.text(cx + 80, btnY, '📋 Menu', {
-      fontFamily: 'Inter, sans-serif', fontSize: '15px', fontStyle: 'bold',
-      color: '#5ed4f5'
-    }).setOrigin(0.5)
-    menuBg.on('pointerdown', () => {
-      if (window.ui && window.ui._cur2D) {
-        window.ui.exit2D()
-      } else {
-        this.scene.start('Menu')
-      }
-    })
-
-    // Next scenario button (only if won and not last)
-    if (this.won && this.scenarioId < SCENARIOS.length) {
-      const nextBg = this.add.rectangle(cx, btnY + 54, 180, 44, 0x2ecc71, 0.9)
-      nextBg.setStrokeStyle(2, 0x2ecc71)
-      nextBg.setInteractive({ useHandCursor: true })
-      this.add.text(cx, btnY + 54, '➡️ Next Scenario', {
-        fontFamily: 'Inter, sans-serif', fontSize: '15px', fontStyle: 'bold',
-        color: '#ffffff'
-      }).setOrigin(0.5)
-      nextBg.on('pointerdown', () => {
-        this.scene.start('Game', { scenarioId: this.scenarioId + 1 })
-      })
-    }
-
-    // Continue into the real 3D driving test for this level, when this practice run was
-    // reached via a specific level's quiz (not generic scenario browsing) and was won.
-    // Previously the 2D practice and the actual 3D level were two completely disconnected
-    // experiences — passing practice just returned to the level list with no path into the
-    // real drive from here.
-    if (this.won && window.ui && window.ui.cur && window.ui._cur2D) {
-      const driveBg = this.add.rectangle(cx, btnY + (this.scenarioId < SCENARIOS.length ? 108 : 54), 220, 44, 0xd97706, 0.95)
-      driveBg.setStrokeStyle(2, 0xd97706)
-      driveBg.setInteractive({ useHandCursor: true })
-      this.add.text(cx, btnY + (this.scenarioId < SCENARIOS.length ? 108 : 54), '🚗 Start Driving Test', {
-        fontFamily: 'Inter, sans-serif', fontSize: '15px', fontStyle: 'bold',
-        color: '#ffffff'
-      }).setOrigin(0.5)
-      driveBg.on('pointerdown', () => {
-        const lv = window.ui.cur
-        const mode = window.ui.curMode || (lv.modes ? lv.modes[0] : 'car')
-        localStorage.setItem('traffic_lv', lv.id)
-        localStorage.setItem('traffic_mode', mode)
-        window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`
-      })
-    }
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// 2D DEMO MODE - Shows correct behavior before playing
-// ═══════════════════════════════════════════════════════════════════
-
-// Show a demo of the level - auto-plays with perfect behavior
-function showScenario2DDemo(scenarioId, onComplete) {
-  const cfg = SCENARIOS.find(s => s.id === scenarioId);
-  if (!cfg) { if (onComplete) onComplete(); return; }
-
-  const container = document.getElementById('scenario2d-container');
-  if (!container) { if (onComplete) onComplete(); return; }
-
-  // Create demo overlay
-  const overlay = document.createElement('div');
-  overlay.id = 's2d-demo-overlay';
-  overlay.innerHTML = `
-    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;color:white;font-family:Inter,sans-serif;">
-      <div style="font-size:48px;margin-bottom:16px;">${cfg.icon}</div>
-      <div style="font-size:24px;font-weight:bold;margin-bottom:8px;">${cfg.name}</div>
-      <div style="font-size:14px;color:#aaa;margin-bottom:24px;max-width:300px;text-align:center;">${cfg.desc}</div>
-      <div style="font-size:18px;color:#ffd54a;margin-bottom:24px;">🎬 Watching Demo...</div>
-      <div id="demo-status" style="font-size:13px;color:#888;">Preparing demonstration...</div>
-    </div>
-  `;
-  container.appendChild(overlay);
-
-  // Start a simpler Phaser game for demo
-  const demo = new Phaser.Game({
-    type: Phaser.AUTO,
-    width: W,
-    height: H,
-    parent: container,
-    backgroundColor: '#4a7c59',
-    scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-    physics: { default: false },
-    scene: [DemoScene]
-  });
-
-  // Store for cleanup
-  window._demoGame = demo;
-  window._demoOverlay = overlay;
-  window._demoOnComplete = onComplete;
-}
-
-// Demo scene that auto-plays the scenario
-class DemoScene extends Phaser.Scene {
-  constructor() { super('Demo'); }
-
-  init() {
-    this.scenarioId = window._s2d_pendingId || 1;
-    this.cfg = SCENARIOS.find(s => s.id === this.scenarioId) || SCENARIOS[0];
-    this.stepIndex = 0;
-    this.stepTimer = 0;
-    this.demoComplete = false;
-  }
-
-  create() {
-    const c = this.cfg;
-    const isNight = c.road && c.road.night;
-    this.cameras.main.setBackgroundColor(isNight ? COLORS.nightBg : COLORS.bg);
-
-    // Draw road
-    const roadLanes = c.road.lanes;
-    const roadW = roadLanes * ROAD_LW;
-    const roadX = (W - roadW) / 2;
-    const roadG = this.add.graphics();
-    roadG.fillStyle(isNight ? COLORS.nightRoad : COLORS.road, 1);
-    roadG.fillRect(roadX, 0, roadW, c.road.length);
-
-    // Lane markings
-    for (let i = 1; i < roadLanes; i++) {
-      const lx = roadX + i * ROAD_LW;
-      roadG.lineStyle(2, COLORS.roadLine, 0.5);
-      for (let y = 0; y < c.road.length; y += 30) {
-        roadG.lineBetween(lx, y, lx, y + 15);
-      }
-    }
-    roadG.lineStyle(3, COLORS.roadEdge, 0.8);
-    roadG.lineBetween(roadX, 0, roadX, c.road.length);
-    roadG.lineBetween(roadX + roadW, 0, roadX + roadW, c.road.length);
-
-    // Create player car
-    const playerX = laneX(roadLanes > 1 ? 1 : 0, roadLanes);
-    const playerY = c.road.length - 100;
-    this.player = this.add.image(playerX, playerY, 'player');
-    this.player.setDisplaySize(PLAYER_W, PLAYER_H);
-
-    // Camera
-    this.cameras.main.setBounds(0, 0, W, c.road.length);
-    this.cameras.main.startFollow(this.player, true, 1, 0.1);
-    this.cameras.main.setFollowOffset(-W/2, H/2 - 100);
-
-    // Update status
-    this.updateStatus('Starting demonstration...');
-
-    // Demo steps - simulate correct behavior
-    this.demoSteps = [
-      { text: 'Waiting for signal...', delay: 2000, action: 'wait' },
-      { text: 'Green light! Moving carefully...', delay: 1500, action: 'go' },
-      { text: 'Checking for pedestrians...', delay: 1000, action: 'check' },
-      { text: 'All clear - proceeding!', delay: 1500, action: 'proceed' },
-      { text: 'Approaching destination...', delay: 2000, action: 'finish' },
-    ];
-  }
-
-  update(time, delta) {
-    if (this.demoComplete) return;
-
-    this.stepTimer += delta;
-
-    const step = this.demoSteps[this.stepIndex];
-    if (!step) {
-      this.completeDemo();
-      return;
-    }
-
-    if (this.stepTimer >= step.delay) {
-      // Execute step action
-      if (step.action === 'go') {
-        this.player.y -= 0.5;
-      } else if (step.action === 'proceed') {
-        this.player.y -= 1;
-      } else if (step.action === 'finish') {
-        this.player.y -= 0.8;
-      }
-
-      this.updateStatus(step.text);
-      this.stepTimer = 0;
-      this.stepIndex++;
-
-      if (this.stepIndex >= this.demoSteps.length) {
-        this.completeDemo();
-      }
-    }
-  }
-
-  updateStatus(text) {
-    const el = document.getElementById('demo-status');
-    if (el) el.textContent = text;
-  }
-
-  completeDemo() {
-    if (this.demoComplete) return;
-    this.demoComplete = true;
-
-    // Show "Your Turn" button
-    const overlay = document.getElementById('s2d-demo-overlay');
-    if (overlay) {
-      overlay.innerHTML = `
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;">
-          <div style="font-size:48px;margin-bottom:16px;">🎉</div>
-          <div style="font-size:20px;color:#34d399;margin-bottom:16px;">Demo Complete!</div>
-          <div style="font-size:14px;color:#888;margin-bottom:24px;">Now you try it!</div>
-          <button id="try-s2d-btn" style="padding:16px 32px;font-size:18px;background:#ffd54a;border:none;border-radius:8px;cursor:pointer;font-weight:bold;color:#000;">
-            ▶️ Play Now
-          </button>
-        </div>
-      `;
-      document.getElementById('try-s2d-btn').onclick = () => {
-        this.startRealGame();
-      };
-    }
-  }
-
-  startRealGame() {
-    // Clean up demo and start real game
-    if (window._demoGame) {
-      window._demoGame.destroy(true);
-      window._demoGame = null;
-    }
-    const overlay = document.getElementById('s2d-demo-overlay');
-    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-
-    // Initialize the actual 2D game
-    initScenario2D('scenario2d-container', this.scenarioId);
-
-    // Callback
-    if (window._demoOnComplete) window._demoOnComplete();
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// PHASER GAME INSTANCE
-// ═══════════════════════════════════════════════════════════════════
-window._scenario2dGame = null
-window._s2d_pendingId = null
-
-function initScenario2D(containerId, startId) {
-  if (window._scenario2dGame) {
-    window._scenario2dGame.destroy(true)
-    window._scenario2dGame = null
-  }
-  // If a specific scenario is requested, skip the menu
-  window._s2d_pendingId = startId || null
-
-  const container = document.getElementById(containerId)
-  if (!container) return
-
-  window._scenario2dGame = new Phaser.Game({
-    type: Phaser.AUTO,
-    width: W,
-    height: H,
-    parent: containerId,
-    backgroundColor: '#4a7c59',
-    scale: {
-      mode: Phaser.Scale.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH
+  /* ── MATH UTILITIES ── */
+  const rand = (min, max) => Math.random() * (max - min) + min
+  const randInt = (min, max) => Math.floor(rand(min, max + 1))
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
+  const lerp = (a, b, t) => a + (b - a) * t
+
+  /* ════════════════════════════════════════════════════════════════════════
+     SCENARIO DATA — Detailed scene descriptors for all 52 levels
+     ════════════════════════════════════════════════════════════════════════ */
+  const SCENARIOS = {
+    signal_jump: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A', '#6B7B8B'], count: 12, minH: 80, maxH: 200 },
+      road: { y: 0.72, lanes: 3, color: '#555', lineColor: '#fff', dashLen: 30, dashGap: 20 },
+      pedestrians: { count: 4, colors: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6'], walkSpeed: 0.6 },
+      vehicles: [
+        { x: 0.15, y: 0.68, w: 60, h: 28, color: '#3498db', type: 'car', dir: 1, speed: 0 },
+        { x: 0.8, y: 0.68, w: 55, h: 26, color: '#e74c3c', type: 'car', dir: -1, speed: 0 },
+        { x: 0.4, y: 0.74, w: 50, h: 24, color: '#f39c12', type: 'auto', dir: 1, speed: 0 }
+      ],
+      trafficLight: { x: 0.5, y: 0.55, states: ['red', 'red', 'green'] },
+      focus: { x: 0.5, y: 0.65, zoom: 1.0 },
+      headline: 'RED LIGHT PATIENCE',
+      subline: 'Wait for the signal. Let them cross.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
     },
-    physics: { default: false },
-    scene: [BootScene, MenuScene, GameScene, ResultScene]
-  })
-}
-
-function destroyScenario2D() {
-  if (window._scenario2dGame) {
-    window._scenario2dGame.destroy(true)
-    window._scenario2dGame = null
+    street_parking: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A', '#6B7B8B'], count: 14, minH: 60, maxH: 160 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      parkedCars: [
+        { x: 0.1, y: 0.7, w: 50, h: 24, color: '#888' },
+        { x: 0.3, y: 0.7, w: 45, h: 22, color: '#666' },
+        { x: 0.6, y: 0.7, w: 48, h: 23, color: '#999' }
+      ],
+      vehicles: [
+        { x: 0.45, y: 0.68, w: 58, h: 27, color: '#2980b9', type: 'car', dir: 1, speed: 0.3 }
+      ],
+      focus: { x: 0.45, y: 0.65, zoom: 1.0 },
+      headline: 'STREET PARKING',
+      subline: 'Find legal parking. Don\'t double-park.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    ambulance_priority: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A'], count: 10, minH: 90, maxH: 220 },
+      road: { y: 0.72, lanes: 3, color: '#555', lineColor: '#fff', dashLen: 30, dashGap: 20 },
+      vehicles: [
+        { x: 0.1, y: 0.68, w: 55, h: 26, color: '#555', type: 'car', dir: 1, speed: 0.4 },
+        { x: 0.7, y: 0.68, w: 65, h: 30, color: '#fff', type: 'ambulance', dir: -1, speed: 1.2, siren: true }
+      ],
+      ambulance: { active: true, flashTimer: 0 },
+      focus: { x: 0.6, y: 0.65, zoom: 1.05 },
+      headline: 'AMBULANCE PRIORITY',
+      subline: 'Pull over. Clear the way. Save lives.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    puddle_etiquette: {
+      sky: ['#4a5568', '#2d3748'],
+      buildings: { colors: ['#5a6577', '#6b7b8d', '#4a5a6a', '#7a8a9a'], count: 10, minH: 70, maxH: 180 },
+      road: { y: 0.72, lanes: 2, color: '#444', lineColor: '#888', dashLen: 25, dashGap: 18 },
+      puddles: [
+        { x: 0.2, y: 0.74, w: 70, h: 12 },
+        { x: 0.6, y: 0.75, w: 55, h: 10 },
+        { x: 0.85, y: 0.73, w: 45, h: 9 }
+      ],
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 55, h: 26, color: '#3366cc', type: 'car', dir: 1, speed: 0.3 }
+      ],
+      focus: { x: 0.35, y: 0.68, zoom: 1.0 },
+      headline: 'PUDDLE ETIQUETTE',
+      subline: 'Slow down. Don\'t splash pedestrians.',
+      particles: null,
+      rain: true,
+      night: false,
+      wind: 0.3
+    },
+    pedestrian_courtesy: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#A0926B', '#8B7355', '#9B8B7A', '#7A8B6E'], count: 8, minH: 60, maxH: 140 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      school: true,
+      pedestrians: { count: 6, colors: ['#fff', '#fff', '#fff', '#2980b9', '#2980b9', '#2980b9'], walkSpeed: 0.5 },
+      vehicles: [
+        { x: 0.15, y: 0.68, w: 55, h: 26, color: '#27ae60', type: 'car', dir: 1, speed: 0 }
+      ],
+      focus: { x: 0.5, y: 0.62, zoom: 1.0 },
+      headline: 'SCHOOL ZONE',
+      subline: 'Children crossing. Slow down.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    respectful_parking: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#A0926B', '#8B7355', '#9B8B7A', '#7A8B6E', '#B0A080'], count: 8, minH: 80, maxH: 150 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      vehicles: [
+        { x: 0.35, y: 0.68, w: 58, h: 27, color: '#c0392b', type: 'car', dir: 1, speed: 0 }
+      ],
+      focus: { x: 0.4, y: 0.65, zoom: 1.0 },
+      headline: 'RESPECTFUL PARKING',
+      subline: 'Don\'t block gates. Move to visitor parking.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    silent_zone: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#E8E0D0', '#D0C8B8'], count: 8, minH: 90, maxH: 180 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      noHonk: true,
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 55, h: 26, color: '#2c3e50', type: 'car', dir: 1, speed: 0.2 }
+      ],
+      focus: { x: 0.4, y: 0.65, zoom: 1.0 },
+      headline: 'SILENT ZONE',
+      subline: 'No honking. Hospital nearby.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    market_street: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A', '#6B7B8B', '#C0A882'], count: 14, minH: 50, maxH: 140 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      vendors: [
+        { x: 0.15, color: '#e74c3c' },
+        { x: 0.35, color: '#f39c12' },
+        { x: 0.65, color: '#2ecc71' }
+      ],
+      vehicles: [
+        { x: 0.4, y: 0.68, w: 45, h: 22, color: '#ff8800', type: 'auto', dir: 1, speed: 0.2 }
+      ],
+      pedestrians: { count: 6, colors: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#e67e22'], walkSpeed: 0.5 },
+      focus: { x: 0.45, y: 0.6, zoom: 1.05 },
+      headline: 'MARKET AREA',
+      subline: 'Navigate carefully. Park in designated zone.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    no_honking: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#E8E0D0', '#D0C8B8', '#C8C0B0', '#F0E8D8'], count: 6, minH: 100, maxH: 200 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      noHonk: true,
+      temple: true,
+      vehicles: [
+        { x: 0.4, y: 0.68, w: 55, h: 26, color: '#555', type: 'car', dir: 1, speed: 0.15 }
+      ],
+      focus: { x: 0.45, y: 0.6, zoom: 1.0 },
+      headline: 'NO HONKING',
+      subline: 'Temple zone. Maintain silence.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    road_rage: {
+      sky: ['#9ec5d9', '#6a9ab5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A'], count: 10, minH: 80, maxH: 200 },
+      road: { y: 0.72, lanes: 3, color: '#555', lineColor: '#fff', dashLen: 30, dashGap: 20 },
+      vehicles: [
+        { x: 0.1, y: 0.68, w: 60, h: 28, color: '#c0392b', type: 'car', dir: 1, speed: 0.7, aggressive: true },
+        { x: 0.6, y: 0.68, w: 55, h: 26, color: '#2c3e50', type: 'car', dir: 1, speed: 0.4 }
+      ],
+      focus: { x: 0.35, y: 0.65, zoom: 1.0 },
+      headline: 'ROAD RAGE CONTROL',
+      subline: 'Stay calm. Don\'t react to aggression.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    rain_driving: {
+      sky: ['#2d3748', '#1a202c'],
+      buildings: { colors: ['#4a5568', '#5a6577', '#3d4a5c', '#6b7b8d'], count: 10, minH: 70, maxH: 180 },
+      road: { y: 0.72, lanes: 2, color: '#3a3a3a', lineColor: '#666', dashLen: 25, dashGap: 18 },
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 55, h: 26, color: '#3366cc', type: 'car', dir: 1, speed: 0.3, headlights: true }
+      ],
+      focus: { x: 0.35, y: 0.65, zoom: 1.0 },
+      headline: 'HEAVY RAIN',
+      subline: 'Reduce speed. Increase following distance.',
+      particles: null,
+      rain: true,
+      night: false,
+      wind: 0.5
+    },
+    signs: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E'], count: 6, minH: 60, maxH: 120 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      roadSigns: [
+        { x: 0.25, type: 'mandatory', color: '#0066cc', symbol: '→' },
+        { x: 0.5, type: 'cautionary', color: '#cc0000', symbol: '!' },
+        { x: 0.75, type: 'informational', color: '#00aa44', symbol: 'i' }
+      ],
+      vehicles: [
+        { x: 0.4, y: 0.68, w: 55, h: 26, color: '#2980b9', type: 'car', dir: 1, speed: 0.4 }
+      ],
+      focus: { x: 0.5, y: 0.55, zoom: 1.1 },
+      headline: 'KNOW YOUR SIGNS',
+      subline: 'Blue = Mandatory. Red = Caution. Green = Info.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    animals: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B'], count: 4, minH: 50, maxH: 100 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      animals: [
+        { x: 0.45, y: 0.7, type: 'cow', color: '#8B4513' }
+      ],
+      vehicles: [
+        { x: 0.15, y: 0.68, w: 55, h: 26, color: '#2980b9', type: 'car', dir: 1, speed: 0 }
+      ],
+      focus: { x: 0.45, y: 0.65, zoom: 1.0 },
+      headline: 'COWS ON THE ROAD!',
+      subline: 'Stop and wait. Animals have right of way.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    narrow_street: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A', '#6B7B8B', '#C0A882'], count: 16, minH: 80, maxH: 220 },
+      road: { y: 0.72, lanes: 1, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      vehicles: [
+        { x: 0.4, y: 0.68, w: 45, h: 22, color: '#ff8800', type: 'auto', dir: 1, speed: 0.3 },
+        { x: 0.6, y: 0.68, w: 40, h: 20, color: '#00cc44', type: 'bike', dir: -1, speed: 0.4 }
+      ],
+      focus: { x: 0.5, y: 0.65, zoom: 1.15 },
+      headline: 'NARROW STREET',
+      subline: 'Tight space. Watch for oncoming traffic.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    parking_rules: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B'], count: 4, minH: 50, maxH: 100 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      parkingZones: [
+        { x: 0.2, w: 80, color: '#0066cc', label: 'P' },
+        { x: 0.5, w: 60, color: '#cc0000', label: 'X' },
+        { x: 0.75, w: 70, color: '#0066cc', label: 'P' }
+      ],
+      vehicles: [
+        { x: 0.35, y: 0.68, w: 55, h: 26, color: '#2266cc', type: 'car', dir: 1, speed: 0 }
+      ],
+      focus: { x: 0.5, y: 0.6, zoom: 1.0 },
+      headline: 'PARKING RULES',
+      subline: 'Blue = Park. Red = No parking. Follow signs.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    auto_dance: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A'], count: 10, minH: 60, maxH: 150 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      vehicles: [
+        { x: 0.15, y: 0.68, w: 45, h: 22, color: '#ff6600', type: 'auto', dir: 1, speed: 0.5, weaving: true },
+        { x: 0.4, y: 0.7, w: 45, h: 22, color: '#ff8800', type: 'auto', dir: -1, speed: 0.6, weaving: true },
+        { x: 0.65, y: 0.68, w: 45, h: 22, color: '#ffaa00', type: 'auto', dir: 1, speed: 0.4, weaving: true }
+      ],
+      focus: { x: 0.45, y: 0.65, zoom: 1.0 },
+      headline: 'AUTO-RICKSHAW DANCE',
+      subline: 'Unpredictable autos everywhere. Stay alert.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    toll: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B'], count: 2, minH: 40, maxH: 80 },
+      road: { y: 0.72, lanes: 4, color: '#555', lineColor: '#fff', dashLen: 30, dashGap: 20 },
+      tollPlaza: true,
+      vehicles: [
+        { x: 0.1, y: 0.68, w: 65, h: 30, color: '#884400', type: 'truck', dir: 1, speed: 0.2 },
+        { x: 0.5, y: 0.7, w: 60, h: 28, color: '#0044aa', type: 'bus', dir: 1, speed: 0.15 },
+        { x: 0.8, y: 0.68, w: 55, h: 26, color: '#555', type: 'car', dir: 1, speed: 0.25 }
+      ],
+      focus: { x: 0.5, y: 0.55, zoom: 1.0 },
+      headline: 'TOLL PLAZA',
+      subline: 'Slow down. Pay toll. Follow lane markers.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    blind_corner: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A'], count: 10, minH: 70, maxH: 160 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18, curve: true },
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 55, h: 26, color: '#2980b9', type: 'car', dir: 1, speed: 0.3 }
+      ],
+      focus: { x: 0.5, y: 0.65, zoom: 1.05 },
+      headline: 'BLIND CORNER',
+      subline: 'Slow down. Honk at blind turns.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    hill_driving: {
+      sky: ['#7ab8e0', '#4a9cc5'],
+      mountains: true,
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18, slope: true },
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 55, h: 26, color: '#2980b9', type: 'car', dir: 1, speed: 0.25 },
+        { x: 0.65, y: 0.68, w: 65, h: 30, color: '#0044aa', type: 'bus', dir: -1, speed: 0.2 }
+      ],
+      focus: { x: 0.45, y: 0.5, zoom: 0.95 },
+      headline: 'HILL DRIVING',
+      subline: 'Use low gear. Watch for steep gradients.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    bus_stop: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E'], count: 8, minH: 70, maxH: 160 },
+      road: { y: 0.72, lanes: 3, color: '#555', lineColor: '#fff', dashLen: 30, dashGap: 20 },
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 75, h: 32, color: '#0066cc', type: 'bus', dir: 1, speed: 0, atStop: true },
+        { x: 0.1, y: 0.68, w: 55, h: 26, color: '#888', type: 'car', dir: 1, speed: 0 }
+      ],
+      pedestrians: { count: 3, colors: ['#e74c3c', '#3498db', '#2ecc71'], walkSpeed: 0.4 },
+      focus: { x: 0.35, y: 0.6, zoom: 1.0 },
+      headline: 'BUS STOP YIELD',
+      subline: 'Let passengers board. Don\'t overtake at stops.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    construction: {
+      sky: ['#9aa8b8', '#7a8898'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E'], count: 6, minH: 60, maxH: 140 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      construction: { barriers: true, cones: true },
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 55, h: 26, color: '#4477aa', type: 'car', dir: 1, speed: 0.2 },
+        { x: 0.6, y: 0.68, w: 65, h: 30, color: '#885533', type: 'truck', dir: -1, speed: 0.15 }
+      ],
+      focus: { x: 0.5, y: 0.65, zoom: 1.0 },
+      headline: 'CONSTRUCTION ZONE',
+      subline: 'Follow diversion signs. Reduce speed.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    one_way: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A'], count: 10, minH: 70, maxH: 180 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      oneWay: true,
+      vehicles: [
+        { x: 0.15, y: 0.68, w: 50, h: 24, color: '#ffcc00', type: 'taxi', dir: 1, speed: 0.5 },
+        { x: 0.5, y: 0.7, w: 50, h: 24, color: '#ffcc00', type: 'taxi', dir: 1, speed: 0.5 },
+        { x: 0.8, y: 0.68, w: 55, h: 26, color: '#445566', type: 'car', dir: 1, speed: 0.4 }
+      ],
+      focus: { x: 0.5, y: 0.6, zoom: 1.0 },
+      headline: 'ONE-WAY STREETS',
+      subline: 'Follow the arrows. Never go against traffic.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    hospital_quiet: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#E8E0D0', '#F0E8D8', '#FFFFFF', '#D0C8B8'], count: 6, minH: 100, maxH: 200 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      noHonk: true,
+      vehicles: [
+        { x: 0.35, y: 0.68, w: 55, h: 26, color: '#445566', type: 'car', dir: 1, speed: 0.15 }
+      ],
+      focus: { x: 0.45, y: 0.5, zoom: 1.0 },
+      headline: 'HOSPITAL QUIET ZONE',
+      subline: 'No honking. Reduced speed. Lives at stake.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    festival: {
+      sky: ['#f5a623', '#e8941a'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A'], count: 10, minH: 60, maxH: 150 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      decorations: true,
+      pedestrians: { count: 8, colors: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#e67e22', '#1abc9c', '#e74c3c'], walkSpeed: 0.4 },
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 45, h: 22, color: '#ff6600', type: 'auto', dir: 1, speed: 0.2 }
+      ],
+      focus: { x: 0.5, y: 0.6, zoom: 1.0 },
+      headline: 'FESTIVAL TRAFFIC',
+      subline: 'Crowds, decorations, chaos. Drive extra careful.',
+      particles: 'confetti',
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    cyclist: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E'], count: 6, minH: 60, maxH: 130 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18, cycleLane: true },
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 40, h: 20, color: '#00cc66', type: 'bike', dir: 1, speed: 0.4 },
+        { x: 0.5, y: 0.68, w: 55, h: 26, color: '#667788', type: 'car', dir: 1, speed: 0.3 }
+      ],
+      focus: { x: 0.4, y: 0.65, zoom: 1.0 },
+      headline: 'CYCLIST SAFETY',
+      subline: 'Respect cycle lanes. Give cyclists space.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    grand_test: {
+      sky: ['#0a0a12', '#050508'],
+      buildings: { colors: ['#1a1a2a', '#222233', '#1a2030', '#2a2a3a'], count: 14, minH: 80, maxH: 240 },
+      road: { y: 0.72, lanes: 3, color: '#333', lineColor: '#666', dashLen: 30, dashGap: 20 },
+      vehicles: [
+        { x: 0.1, y: 0.68, w: 55, h: 26, color: '#ffcc00', type: 'taxi', dir: 1, speed: 0.5, headlights: true },
+        { x: 0.4, y: 0.68, w: 55, h: 26, color: '#445566', type: 'car', dir: 1, speed: 0.4, headlights: true },
+        { x: 0.7, y: 0.68, w: 65, h: 30, color: '#0044aa', type: 'bus', dir: -1, speed: 0.3, headlights: true }
+      ],
+      focus: { x: 0.5, y: 0.6, zoom: 1.0 },
+      headline: 'THE GRAND TEST',
+      subline: 'Night. Rain. All hazards. Show what you\'ve learned.',
+      particles: null,
+      rain: true,
+      night: true,
+      wind: 0.6
+    },
+    night_monsoon: {
+      sky: ['#0a0a12', '#050508'],
+      buildings: { colors: ['#1a1a2a', '#222233', '#1a2030'], count: 8, minH: 70, maxH: 180 },
+      road: { y: 0.72, lanes: 2, color: '#2a2a2a', lineColor: '#555', dashLen: 25, dashGap: 18 },
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 55, h: 26, color: '#223355', type: 'car', dir: 1, speed: 0.3, headlights: true }
+      ],
+      focus: { x: 0.4, y: 0.65, zoom: 1.0 },
+      headline: 'NIGHT MONSOON',
+      subline: 'Rain at night. Maximum caution required.',
+      particles: null,
+      rain: true,
+      night: true,
+      wind: 0.5
+    },
+    wrong_side: {
+      sky: ['#9ec5d9', '#6a9ab5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A'], count: 10, minH: 80, maxH: 200 },
+      road: { y: 0.72, lanes: 3, color: '#555', lineColor: '#fff', dashLen: 30, dashGap: 20 },
+      vehicles: [
+        { x: 0.2, y: 0.68, w: 55, h: 26, color: '#334455', type: 'car', dir: 1, speed: 0.5 },
+        { x: 0.6, y: 0.7, w: 65, h: 30, color: '#0044aa', type: 'bus', dir: -1, speed: 0.4 }
+      ],
+      wrongSideNPC: true,
+      focus: { x: 0.4, y: 0.65, zoom: 1.0 },
+      headline: 'WRONG-SIDE DANGER',
+      subline: 'NPCs drive against traffic. Stay in your lane.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    highway_merge: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: null,
+      road: { y: 0.72, lanes: 4, color: '#555', lineColor: '#fff', dashLen: 30, dashGap: 20, highway: true },
+      vehicles: [
+        { x: 0.1, y: 0.68, w: 55, h: 26, color: '#445566', type: 'car', dir: 1, speed: 0.8 },
+        { x: 0.5, y: 0.68, w: 65, h: 30, color: '#884400', type: 'truck', dir: 1, speed: 0.6 },
+        { x: 0.3, y: 0.74, w: 55, h: 26, color: '#336699', type: 'car', dir: 1, speed: 0.4, merging: true }
+      ],
+      focus: { x: 0.35, y: 0.65, zoom: 0.95 },
+      headline: 'HIGHWAY MERGE',
+      subline: 'Check mirrors. Signal. Merge at speed.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    zero_visibility: {
+      sky: ['#0a0a0a', '#050505'],
+      buildings: { colors: ['#111', '#1a1a1a', '#0a0a0a'], count: 6, minH: 60, maxH: 140 },
+      road: { y: 0.72, lanes: 2, color: '#222', lineColor: '#444', dashLen: 25, dashGap: 18 },
+      fog: true,
+      vehicles: [
+        { x: 0.35, y: 0.68, w: 55, h: 26, color: '#223355', type: 'car', dir: 1, speed: 0.15, headlights: true }
+      ],
+      focus: { x: 0.4, y: 0.65, zoom: 1.0 },
+      headline: 'ZERO VISIBILITY',
+      subline: 'Dense fog. Fog lights on. Crawl forward.',
+      particles: null,
+      rain: false,
+      night: true,
+      wind: 0
+    },
+    mountain: {
+      sky: ['#7ab8e0', '#4a9cc5'],
+      mountains: true,
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18, slope: true, curves: true },
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 65, h: 30, color: '#556633', type: 'truck', dir: 1, speed: 0.2 },
+        { x: 0.7, y: 0.68, w: 55, h: 26, color: '#4477aa', type: 'car', dir: -1, speed: 0.25 }
+      ],
+      focus: { x: 0.5, y: 0.45, zoom: 0.9 },
+      headline: 'MOUNTAIN PASS',
+      subline: 'Hairpin turns. Steep drops. Use low gear.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0.2
+    },
+    rural: {
+      sky: ['#a8d4e8', '#7ab8d0'],
+      rural: true,
+      road: { y: 0.72, lanes: 1, color: '#8B7355', lineColor: '#A0926B', dashLen: 20, dashGap: 15, kacha: true },
+      vehicles: [
+        { x: 0.3, y: 0.68, w: 55, h: 26, color: '#336699', type: 'car', dir: 1, speed: 0.3 },
+        { x: 0.6, y: 0.68, w: 65, h: 30, color: '#884400', type: 'truck', dir: -1, speed: 0.2 }
+      ],
+      animals: [
+        { x: 0.5, y: 0.7, type: 'chicken', color: '#cc8833' }
+      ],
+      focus: { x: 0.45, y: 0.65, zoom: 1.0 },
+      headline: 'RURAL KACHA ROAD',
+      subline: 'Unpaved. Narrow. Watch for animals.',
+      particles: 'dust',
+      rain: false,
+      night: false,
+      wind: 0.1
+    },
+    multi_modal: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A', '#6B7B8B'], count: 12, minH: 70, maxH: 180 },
+      road: { y: 0.72, lanes: 3, color: '#555', lineColor: '#fff', dashLen: 30, dashGap: 20 },
+      vehicles: [
+        { x: 0.1, y: 0.68, w: 55, h: 26, color: '#2288ff', type: 'car', dir: 1, speed: 0.4 },
+        { x: 0.3, y: 0.7, w: 75, h: 32, color: '#0066cc', type: 'bus', dir: 1, speed: 0.3 },
+        { x: 0.55, y: 0.68, w: 40, h: 20, color: '#00cc66', type: 'bike', dir: -1, speed: 0.5 },
+        { x: 0.75, y: 0.68, w: 45, h: 22, color: '#ff8800', type: 'auto', dir: 1, speed: 0.35, weaving: true }
+      ],
+      pedestrians: { count: 4, colors: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'], walkSpeed: 0.5 },
+      focus: { x: 0.45, y: 0.6, zoom: 1.0 },
+      headline: 'MULTI-MODAL CHAOS',
+      subline: 'Cars, buses, bikes, autos, pedestrians. All at once.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    lane_discipline: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E'], count: 6, minH: 60, maxH: 120 },
+      road: { y: 0.72, lanes: 3, color: '#555', lineColor: '#fff', dashLen: 30, dashGap: 20 },
+      vehicles: [
+        { x: 0.2, y: 0.68, w: 55, h: 26, color: '#2980b9', type: 'car', dir: 1, speed: 0.5 },
+        { x: 0.5, y: 0.68, w: 55, h: 26, color: '#27ae60', type: 'car', dir: 1, speed: 0.4 },
+        { x: 0.8, y: 0.68, w: 55, h: 26, color: '#8e44ad', type: 'car', dir: 1, speed: 0.6 }
+      ],
+      focus: { x: 0.5, y: 0.6, zoom: 0.95 },
+      headline: 'LANE DISCIPLINE',
+      subline: 'Stay in your lane. Signal before lane change.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    },
+    driving_school: {
+      sky: ['#87b6d8', '#5a9cc5'],
+      buildings: { colors: ['#8B7355', '#A0926B', '#7A8B6E', '#9B8B7A'], count: 8, minH: 70, maxH: 160 },
+      road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 25, dashGap: 18 },
+      vehicles: [
+        { x: 0.35, y: 0.68, w: 55, h: 26, color: '#f1c40f', type: 'car', dir: 1, speed: 0.3, learner: true }
+      ],
+      focus: { x: 0.4, y: 0.65, zoom: 1.0 },
+      headline: 'DRIVING INSTRUCTOR',
+      subline: 'Lane changes with indicators. Follow instructions.',
+      particles: null,
+      rain: false,
+      night: false,
+      wind: 0
+    }
   }
-}
+
+  /* ════════════════════════════════════════════════════════════════════════
+     PARTICLE SYSTEMS
+     ════════════════════════════════════════════════════════════════════════ */
+  class ParticleSystem {
+    constructor (type, w, h) {
+      this.type = type
+      this.w = w
+      this.h = h
+      this.particles = []
+      this.init()
+    }
+
+    init () {
+      const count = this.type === 'rain' ? 200 : this.type === 'confetti' ? 60 : this.type === 'dust' ? 40 : 80
+      for (let i = 0; i < count; i++) {
+        this.particles.push(this.createParticle(true))
+      }
+    }
+
+    createParticle (randomY = false) {
+      const w = this.w, h = this.h
+      if (this.type === 'rain') {
+        return { x: rand(0, w), y: randomY ? rand(-h, h) : rand(-20, 0), speed: rand(8, 16), len: rand(8, 20), opacity: rand(0.15, 0.4), wind: 0 }
+      } else if (this.type === 'confetti') {
+        return { x: rand(0, w), y: randomY ? rand(-h, h * 0.3) : rand(-30, 0), speed: rand(1, 3), size: rand(4, 10), color: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#e67e22'][randInt(0, 5)], rotation: rand(0, Math.PI * 2), rotSpeed: rand(-0.1, 0.1), wobble: rand(0, Math.PI * 2), wobbleSpeed: rand(0.02, 0.06) }
+      } else if (this.type === 'dust') {
+        return { x: rand(0, w), y: randomY ? rand(0, h) : rand(h * 0.6, h), speed: rand(0.3, 1.2), size: rand(1, 4), opacity: rand(0.1, 0.3), drift: rand(-0.5, 0.5) }
+      } else {
+        return { x: rand(0, w), y: randomY ? rand(0, h) : 0, speed: rand(0.2, 0.8), size: rand(1, 3), opacity: rand(0.05, 0.15) }
+      }
+    }
+
+    update (dt, wind = 0) {
+      for (let i = 0; i < this.particles.length; i++) {
+        const p = this.particles[i]
+        if (this.type === 'rain') {
+          p.y += p.speed * dt * 60
+          p.x += wind * dt * 60
+          if (p.y > this.h + 20) { this.particles[i] = this.createParticle(false); this.particles[i].x = rand(0, this.w) }
+        } else if (this.type === 'confetti') {
+          p.y += p.speed * dt * 60
+          p.wobble += p.wobbleSpeed
+          p.x += Math.sin(p.wobble) * 0.8
+          p.rotation += p.rotSpeed
+          if (p.y > this.h + 20) { this.particles[i] = this.createParticle(false) }
+        } else if (this.type === 'dust') {
+          p.x += (p.drift + wind * 0.3) * dt * 60
+          p.y -= p.speed * dt * 60
+          p.opacity -= 0.001 * dt * 60
+          if (p.y < -10 || p.opacity <= 0) { this.particles[i] = this.createParticle(false) }
+        }
+      }
+    }
+
+    draw (ctx) {
+      for (const p of this.particles) {
+        if (this.type === 'rain') {
+          ctx.strokeStyle = `rgba(180,200,220,${p.opacity})`
+          ctx.lineWidth = 1
+          ctx.beginPath()
+          ctx.moveTo(p.x, p.y)
+          ctx.lineTo(p.x + p.wind * 0.5, p.y + p.len)
+          ctx.stroke()
+        } else if (this.type === 'confetti') {
+          ctx.save()
+          ctx.translate(p.x, p.y)
+          ctx.rotate(p.rotation)
+          ctx.fillStyle = p.color
+          ctx.globalAlpha = 0.8
+          ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2)
+          ctx.restore()
+        } else if (this.type === 'dust') {
+          ctx.fillStyle = `rgba(180,160,120,${p.opacity})`
+          ctx.beginPath()
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
+    }
+  }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     DRAWING PRIMITIVES
+     ════════════════════════════════════════════════════════════════════════ */
+
+  function drawSky (ctx, w, h, colors, t) {
+    const grad = ctx.createLinearGradient(0, 0, 0, h * 0.7)
+    grad.addColorStop(0, colors[0])
+    grad.addColorStop(1, colors[1])
+    ctx.fillStyle = grad
+    ctx.fillRect(0, 0, w, h)
+  }
+
+  function drawSun (ctx, w, h, t) {
+    const x = w * 0.8 + Math.sin(t * 0.1) * 20
+    const y = h * 0.15 + Math.cos(t * 0.08) * 10
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, 50)
+    grad.addColorStop(0, 'rgba(255,240,180,0.9)')
+    grad.addColorStop(0.3, 'rgba(255,220,100,0.4)')
+    grad.addColorStop(1, 'rgba(255,200,50,0)')
+    ctx.fillStyle = grad
+    ctx.beginPath()
+    ctx.arc(x, y, 50, 0, Math.PI * 2)
+    ctx.fill()
+    // Core
+    ctx.fillStyle = 'rgba(255,250,220,0.95)'
+    ctx.beginPath()
+    ctx.arc(x, y, 15, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  function drawMoon (ctx, w, h, t) {
+    const x = w * 0.75 + Math.sin(t * 0.05) * 15
+    const y = h * 0.12
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, 40)
+    grad.addColorStop(0, 'rgba(220,230,255,0.9)')
+    grad.addColorStop(0.4, 'rgba(180,200,240,0.3)')
+    grad.addColorStop(1, 'rgba(100,120,180,0)')
+    ctx.fillStyle = grad
+    ctx.beginPath()
+    ctx.arc(x, y, 40, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.fillStyle = 'rgba(220,230,255,0.95)'
+    ctx.beginPath()
+    ctx.arc(x, y, 12, 0, Math.PI * 2)
+    ctx.fill()
+    // Crescent shadow
+    ctx.fillStyle = 'rgba(10,10,20,0.6)'
+    ctx.beginPath()
+    ctx.arc(x + 5, y - 2, 10, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  function drawStars (ctx, w, h, t, count = 50) {
+    for (let i = 0; i < count; i++) {
+      const seed = i * 7919
+      const x = (seed * 13) % w
+      const y = (seed * 17) % (h * 0.4)
+      const twinkle = Math.sin(t * 2 + seed) * 0.3 + 0.7
+      ctx.fillStyle = `rgba(255,255,255,${twinkle * 0.8})`
+      ctx.beginPath()
+      ctx.arc(x, y, 1 + (i % 3 === 0 ? 0.5 : 0), 0, Math.PI * 2)
+      ctx.fill()
+    }
+  }
+
+  function drawMountains (ctx, w, h, t) {
+    const roadY = h * 0.65
+    // Far mountains
+    ctx.fillStyle = '#4a6a5a'
+    ctx.beginPath()
+    ctx.moveTo(0, roadY)
+    for (let x = 0; x <= w; x += 4) {
+      const y = roadY - 60 - Math.sin(x * 0.008 + 1) * 40 - Math.sin(x * 0.003) * 60
+      ctx.lineTo(x, y)
+    }
+    ctx.lineTo(w, roadY)
+    ctx.closePath()
+    ctx.fill()
+    // Near mountains
+    ctx.fillStyle = '#3a5a3a'
+    ctx.beginPath()
+    ctx.moveTo(0, roadY)
+    for (let x = 0; x <= w; x += 4) {
+      const y = roadY - 30 - Math.sin(x * 0.012 + 2) * 25 - Math.sin(x * 0.005 + 1) * 35
+      ctx.lineTo(x, y)
+    }
+    ctx.lineTo(w, roadY)
+    ctx.closePath()
+    ctx.fill()
+  }
+
+  function drawBuildings (ctx, w, h, config, t, parallax) {
+    if (!config) return
+    const roadY = h * 0.65
+    const px = parallax || 0
+    for (let i = 0; i < config.count; i++) {
+      const bw = w / config.count
+      const bx = i * bw + px * (0.2 + i * 0.02)
+      const bh = config.minH + (Math.sin(i * 2.7) * 0.5 + 0.5) * (config.maxH - config.minH)
+      const by = roadY - bh
+      const color = config.colors[i % config.colors.length]
+      // Building body
+      ctx.fillStyle = color
+      ctx.fillRect(bx + 2, by, bw - 4, bh)
+      // Windows
+      ctx.fillStyle = 'rgba(255,255,200,0.3)'
+      for (let wy = by + 10; wy < roadY - 15; wy += 18) {
+        for (let wx = bx + 8; wx < bx + bw - 12; wx += 14) {
+          const lit = Math.sin(wx * 0.1 + wy * 0.2 + t * 0.5) > 0.3
+          ctx.fillStyle = lit ? 'rgba(255,240,150,0.7)' : 'rgba(100,120,150,0.3)'
+          ctx.fillRect(wx, wy, 6, 8)
+        }
+      }
+    }
+  }
+
+  function drawRoad (ctx, w, h, config, t, parallax) {
+    if (!config) return
+    const roadY = h * config.y
+    const roadH = 80
+    // Road surface
+    ctx.fillStyle = config.color
+    ctx.fillRect(0, roadY, w, roadH)
+    // Lane markings
+    if (config.lanes > 1) {
+      ctx.strokeStyle = config.lineColor
+      ctx.lineWidth = 2
+      ctx.setLineDash([config.dashLen, config.dashGap])
+      for (let lane = 1; lane < config.lanes; lane++) {
+        const ly = roadY + (roadH / config.lanes) * lane
+        ctx.beginPath()
+        const offset = (parallax || 0) * 20 % (config.dashLen + config.dashGap)
+        ctx.moveTo(-offset, ly)
+        ctx.lineTo(w + config.dashLen, ly)
+        ctx.stroke()
+      }
+      ctx.setLineDash([])
+    }
+    // Road edges
+    ctx.strokeStyle = config.lineColor
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(0, roadY)
+    ctx.lineTo(w, roadY)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(0, roadY + roadH)
+    ctx.lineTo(w, roadY + roadH)
+    ctx.stroke()
+    // Cycle lane
+    if (config.cycleLane) {
+      ctx.strokeStyle = '#00cc66'
+      ctx.lineWidth = 2
+      ctx.setLineDash([10, 5])
+      ctx.beginPath()
+      ctx.moveTo(0, roadY + roadH + 5)
+      ctx.lineTo(w, roadY + roadH + 5)
+      ctx.stroke()
+      ctx.setLineDash([])
+    }
+  }
+
+  function drawVehicle (ctx, v, w, h, t) {
+    const roadY = h * 0.65
+    const vx = v.x * w
+    const vy = v.y * h
+    const vw = v.w
+    const vh = v.h
+
+    ctx.save()
+
+    // Headlights glow for night
+    if (v.headlights) {
+      const grad = ctx.createRadialGradient(vx + (v.dir > 0 ? vw : 0), vy + vh / 2, 0, vx + (v.dir > 0 ? vw : 0), vy + vh / 2, 80)
+      grad.addColorStop(0, 'rgba(255,240,180,0.4)')
+      grad.addColorStop(1, 'rgba(255,240,180,0)')
+      ctx.fillStyle = grad
+      ctx.beginPath()
+      ctx.arc(vx + (v.dir > 0 ? vw : 0), vy + vh / 2, 80, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    if (v.type === 'auto') {
+      // Auto-rickshaw body
+      ctx.fillStyle = v.color
+      ctx.beginPath()
+      ctx.moveTo(vx, vy)
+      ctx.lineTo(vx + vw, vy)
+      ctx.lineTo(vx + vw, vy + vh * 0.5)
+      ctx.lineTo(vx + vw * 0.6, vy + vh)
+      ctx.lineTo(vx, vy + vh)
+      ctx.closePath()
+      ctx.fill()
+      // Roof
+      ctx.fillStyle = '#222'
+      ctx.fillRect(vx + vw * 0.1, vy - 5, vw * 0.5, 6)
+      // Wheels
+      ctx.fillStyle = '#111'
+      ctx.beginPath()
+      ctx.arc(vx + vw * 0.2, vy + vh + 2, 5, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.arc(vx + vw * 0.8, vy + vh + 2, 5, 0, Math.PI * 2)
+      ctx.fill()
+    } else if (v.type === 'bike') {
+      // Bike body
+      ctx.fillStyle = v.color
+      ctx.fillRect(vx + vw * 0.3, vy + 2, vw * 0.4, vh * 0.6)
+      // Handlebar
+      ctx.strokeStyle = '#333'
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.moveTo(vx + vw * 0.1, vy)
+      ctx.lineTo(vx + vw * 0.3, vy + vh * 0.3)
+      ctx.stroke()
+      // Wheels
+      ctx.fillStyle = '#111'
+      ctx.beginPath()
+      ctx.arc(vx + vw * 0.15, vy + vh + 2, 6, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.arc(vx + vw * 0.85, vy + vh + 2, 6, 0, Math.PI * 2)
+      ctx.fill()
+    } else if (v.type === 'bus') {
+      // Bus body
+      ctx.fillStyle = v.color
+      roundRect(ctx, vx, vy, vw, vh, 4)
+      ctx.fill()
+      // Windows
+      ctx.fillStyle = 'rgba(180,220,255,0.5)'
+      for (let wx = vx + 8; wx < vx + vw - 10; wx += 14) {
+        ctx.fillRect(wx, vy + 4, 10, vh * 0.35)
+      }
+      // Wheels
+      ctx.fillStyle = '#111'
+      ctx.beginPath()
+      ctx.arc(vx + 12, vy + vh + 2, 6, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.arc(vx + vw - 12, vy + vh + 2, 6, 0, Math.PI * 2)
+      ctx.fill()
+    } else if (v.type === 'truck') {
+      // Truck cab
+      ctx.fillStyle = v.color
+      roundRect(ctx, vx, vy, vw * 0.35, vh, 3)
+      ctx.fill()
+      // Truck bed
+      ctx.fillStyle = darkenColor(v.color, 0.7)
+      roundRect(ctx, vx + vw * 0.35, vy + 2, vw * 0.65, vh - 4, 2)
+      ctx.fill()
+      // Wheels
+      ctx.fillStyle = '#111'
+      ctx.beginPath()
+      ctx.arc(vx + 10, vy + vh + 2, 7, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.arc(vx + vw - 10, vy + vh + 2, 7, 0, Math.PI * 2)
+      ctx.fill()
+    } else if (v.type === 'ambulance') {
+      // Ambulance body
+      ctx.fillStyle = '#fff'
+      roundRect(ctx, vx, vy, vw, vh, 4)
+      ctx.fill()
+      // Red cross
+      ctx.fillStyle = '#e74c3c'
+      ctx.fillRect(vx + vw * 0.4, vy + 2, vw * 0.2, vh * 0.6)
+      ctx.fillRect(vx + vw * 0.35, vy + vh * 0.15, vw * 0.3, vh * 0.3)
+      // Siren flash
+      if (v.siren) {
+        const flash = Math.sin(t * 8) > 0
+        ctx.fillStyle = flash ? 'rgba(255,0,0,0.8)' : 'rgba(0,100,255,0.8)'
+        ctx.beginPath()
+        ctx.arc(vx + vw * 0.5, vy - 5, 6, 0, Math.PI * 2)
+        ctx.fill()
+        // Glow
+        ctx.fillStyle = flash ? 'rgba(255,0,0,0.2)' : 'rgba(0,100,255,0.2)'
+        ctx.beginPath()
+        ctx.arc(vx + vw * 0.5, vy - 5, 20, 0, Math.PI * 2)
+        ctx.fill()
+      }
+      // Wheels
+      ctx.fillStyle = '#111'
+      ctx.beginPath()
+      ctx.arc(vx + 12, vy + vh + 2, 5, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.arc(vx + vw - 12, vy + vh + 2, 5, 0, Math.PI * 2)
+      ctx.fill()
+    } else {
+      // Default car
+      ctx.fillStyle = v.color
+      roundRect(ctx, vx, vy, vw, vh, 6)
+      ctx.fill()
+      // Windshield
+      ctx.fillStyle = 'rgba(150,200,255,0.4)'
+      const wsX = v.dir > 0 ? vx + vw * 0.6 : vx + vw * 0.1
+      roundRect(ctx, wsX, vy + 3, vw * 0.25, vh * 0.5, 3)
+      ctx.fill()
+      // Headlights
+      ctx.fillStyle = 'rgba(255,255,200,0.9)'
+      const hlX = v.dir > 0 ? vx + vw - 3 : vx + 3
+      ctx.fillRect(hlX - 2, vy + 4, 4, 4)
+      ctx.fillRect(hlX - 2, vy + vh - 8, 4, 4)
+      // Taillights
+      ctx.fillStyle = 'rgba(255,30,30,0.8)'
+      const tlX = v.dir > 0 ? vx + 3 : vx + vw - 3
+      ctx.fillRect(tlX - 2, vy + 4, 4, 4)
+      ctx.fillRect(tlX - 2, vy + vh - 8, 4, 4)
+      // Wheels
+      ctx.fillStyle = '#111'
+      ctx.beginPath()
+      ctx.arc(vx + vw * 0.2, vy + vh + 2, 5, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.arc(vx + vw * 0.8, vy + vh + 2, 5, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    ctx.restore()
+  }
+
+  function drawPedestrian (ctx, p, w, h, t) {
+    const px = p.x * w
+    const py = p.y * h
+    const bobY = Math.sin(t * 3 + p.seed) * 2
+    const legSwing = Math.sin(t * 4 + p.seed) * 0.3
+
+    ctx.save()
+    ctx.translate(px, py + bobY)
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.15)'
+    ctx.beginPath()
+    ctx.ellipse(0, 18, 6, 2, 0, 0, Math.PI * 2)
+    ctx.fill()
+
+    // Legs
+    ctx.strokeStyle = '#2c3e50'
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(-2, 6)
+    ctx.lineTo(-2 + Math.sin(legSwing) * 4, 16)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(2, 6)
+    ctx.lineTo(2 - Math.sin(legSwing) * 4, 16)
+    ctx.stroke()
+
+    // Body
+    ctx.fillStyle = p.color
+    ctx.fillRect(-4, -4, 8, 12)
+
+    // Head
+    ctx.fillStyle = '#f1c27d'
+    ctx.beginPath()
+    ctx.arc(0, -8, 5, 0, Math.PI * 2)
+    ctx.fill()
+
+    // Hair
+    ctx.fillStyle = '#2c1810'
+    ctx.beginPath()
+    ctx.arc(0, -10, 5, Math.PI, 0)
+    ctx.fill()
+
+    ctx.restore()
+  }
+
+  function drawAnimal (ctx, a, w, h, t) {
+    const ax = a.x * w
+    const ay = a.y * h
+    ctx.save()
+    ctx.translate(ax, ay)
+
+    if (a.type === 'cow') {
+      // Cow body
+      ctx.fillStyle = a.color || '#8B4513'
+      ctx.beginPath()
+      ctx.ellipse(0, 0, 25, 12, 0, 0, Math.PI * 2)
+      ctx.fill()
+      // Head
+      ctx.fillStyle = a.color || '#8B4513'
+      ctx.beginPath()
+      ctx.ellipse(28, -5, 10, 8, 0, 0, Math.PI * 2)
+      ctx.fill()
+      // Horns
+      ctx.strokeStyle = '#ddd'
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.moveTo(30, -12)
+      ctx.lineTo(35, -18)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(26, -12)
+      ctx.lineTo(21, -18)
+      ctx.stroke()
+      // Eye
+      ctx.fillStyle = '#111'
+      ctx.beginPath()
+      ctx.arc(32, -6, 2, 0, Math.PI * 2)
+      ctx.fill()
+      // Legs
+      ctx.strokeStyle = a.color || '#6B3410'
+      ctx.lineWidth = 3
+      for (const lx of [-15, -5, 8, 18]) {
+        ctx.beginPath()
+        ctx.moveTo(lx, 10)
+        ctx.lineTo(lx, 18)
+        ctx.stroke()
+      }
+      // Tail
+      ctx.strokeStyle = a.color || '#6B3410'
+      ctx.lineWidth = 1.5
+      ctx.beginPath()
+      ctx.moveTo(-25, -2)
+      ctx.quadraticCurveTo(-35, -8 + Math.sin(t * 2) * 5, -38, -4)
+      ctx.stroke()
+    } else {
+      // Chicken
+      ctx.fillStyle = a.color || '#cc8833'
+      ctx.beginPath()
+      ctx.ellipse(0, 0, 8, 6, 0, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.fillStyle = '#cc3333'
+      ctx.beginPath()
+      ctx.arc(2, -7, 3, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.fillStyle = '#cc8833'
+      ctx.beginPath()
+      ctx.arc(7, -5, 3, 0, Math.PI * 2)
+      ctx.fill()
+      // Beak
+      ctx.fillStyle = '#ff9900'
+      ctx.beginPath()
+      ctx.moveTo(8, -6)
+      ctx.lineTo(12, -5)
+      ctx.lineTo(8, -4)
+      ctx.closePath()
+      ctx.fill()
+      // Legs
+      ctx.strokeStyle = '#cc8833'
+      ctx.lineWidth = 1.5
+      ctx.beginPath()
+      ctx.moveTo(-2, 5)
+      ctx.lineTo(-2, 10)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(2, 5)
+      ctx.lineTo(2, 10)
+      ctx.stroke()
+    }
+    ctx.restore()
+  }
+
+  function drawTrafficLight (ctx, config, w, h, t) {
+    if (!config) return
+    const x = config.x * w
+    const y = config.y * h
+    const stateIdx = Math.floor(t * 0.5) % config.states.length
+    const state = config.states[stateIdx]
+
+    ctx.save()
+    // Pole
+    ctx.fillStyle = '#333'
+    ctx.fillRect(x - 2, y, 4, h * 0.3)
+    // Housing
+    ctx.fillStyle = '#222'
+    roundRect(ctx, x - 12, y - 50, 24, 55, 5)
+    ctx.fill()
+    // Lights
+    const lights = [
+      { color: '#ff0000', on: state === 'red', yOff: -42 },
+      { color: '#ffaa00', on: state === 'yellow', yOff: -25 },
+      { color: '#00cc00', on: state === 'green', yOff: -8 }
+    ]
+    for (const l of lights) {
+      ctx.fillStyle = l.on ? l.color : 'rgba(50,50,50,0.5)'
+      ctx.beginPath()
+      ctx.arc(x, y + l.yOff, 7, 0, Math.PI * 2)
+      ctx.fill()
+      if (l.on) {
+        ctx.fillStyle = l.color.replace(')', ',0.3)').replace('rgb', 'rgba')
+        const glow = ctx.createRadialGradient(x, y + l.yOff, 0, x, y + l.yOff, 20)
+        glow.addColorStop(0, l.color + '66')
+        glow.addColorStop(1, l.color + '00')
+        ctx.fillStyle = glow
+        ctx.beginPath()
+        ctx.arc(x, y + l.yOff, 20, 0, Math.PI * 2)
+        ctx.fill()
+      }
+    }
+    ctx.restore()
+  }
+
+  function drawRoadSign (ctx, sign, w, h, t) {
+    const x = sign.x * w
+    const y = h * 0.5
+    ctx.save()
+    // Pole
+    ctx.fillStyle = '#888'
+    ctx.fillRect(x - 1.5, y, 3, h * 0.2)
+    // Sign shape
+    if (sign.type === 'mandatory') {
+      ctx.fillStyle = sign.color
+      ctx.beginPath()
+      ctx.arc(x, y - 10, 18, 0, Math.PI * 2)
+      ctx.fill()
+    } else if (sign.type === 'cautionary') {
+      ctx.fillStyle = sign.color
+      ctx.beginPath()
+      ctx.moveTo(x, y - 35)
+      ctx.lineTo(x + 20, y)
+      ctx.lineTo(x - 20, y)
+      ctx.closePath()
+      ctx.fill()
+    } else {
+      ctx.fillStyle = sign.color
+      roundRect(ctx, x - 18, y - 25, 36, 25, 3)
+      ctx.fill()
+    }
+    // Symbol
+    ctx.fillStyle = '#fff'
+    ctx.font = 'bold 14px Inter, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(sign.symbol, x, y - 12)
+    ctx.restore()
+  }
+
+  function drawPuddle (ctx, p, w, h, t) {
+    const px = p.x * w
+    const py = p.y * h
+    const shimmer = Math.sin(t * 2 + p.x * 5) * 0.1 + 0.2
+    ctx.fillStyle = `rgba(100,150,200,${shimmer})`
+    ctx.beginPath()
+    ctx.ellipse(px, py, p.w / 2, p.h / 2, 0, 0, Math.PI * 2)
+    ctx.fill()
+    // Reflection highlight
+    ctx.fillStyle = `rgba(200,230,255,${shimmer * 0.5})`
+    ctx.beginPath()
+    ctx.ellipse(px - p.w * 0.15, py - 2, p.w * 0.2, p.h * 0.2, -0.3, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  function drawFog (ctx, w, h, t, intensity) {
+    for (let i = 0; i < 5; i++) {
+      const fogY = h * (0.3 + i * 0.1)
+      const fogH = h * 0.15
+      const grad = ctx.createLinearGradient(0, fogY, 0, fogY + fogH)
+      const alpha = (intensity || 0.15) * (1 - Math.sin(t * 0.3 + i) * 0.2)
+      grad.addColorStop(0, `rgba(180,190,200,0)`)
+      grad.addColorStop(0.5, `rgba(180,190,200,${alpha})`)
+      grad.addColorStop(1, `rgba(180,190,200,0)`)
+      ctx.fillStyle = grad
+      ctx.fillRect(0, fogY, w, fogH)
+    }
+  }
+
+  function drawDecorations (ctx, w, h, t) {
+    // Bunting / festive lights across the road
+    const roadY = h * 0.65
+    const startY = roadY - 40
+    ctx.strokeStyle = '#f39c12'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(0, startY + Math.sin(t * 0.5) * 3)
+    for (let x = 0; x <= w; x += 5) {
+      ctx.lineTo(x, startY + Math.sin(x * 0.02 + t * 0.5) * 8)
+    }
+    ctx.stroke()
+    // Light bulbs
+    for (let x = 20; x < w; x += 40) {
+      const by = startY + Math.sin(x * 0.02 + t * 0.5) * 8 + 5
+      const colors = ['#e74c3c', '#f39c12', '#2ecc71', '#3498db', '#9b59b6']
+      ctx.fillStyle = colors[Math.floor(x / 40) % colors.length]
+      ctx.beginPath()
+      ctx.arc(x, by, 4, 0, Math.PI * 2)
+      ctx.fill()
+    }
+  }
+
+  function drawConstruction (ctx, w, h, t) {
+    const roadY = h * 0.65
+    // Barriers
+    for (let i = 0; i < 5; i++) {
+      const bx = w * 0.3 + i * 30
+      ctx.fillStyle = '#ff6600'
+      ctx.fillRect(bx, roadY - 15, 8, 15)
+      ctx.fillStyle = '#fff'
+      ctx.fillRect(bx + 1, roadY - 13, 6, 3)
+      ctx.fillRect(bx + 1, roadY - 8, 6, 3)
+    }
+    // Cones
+    for (let i = 0; i < 3; i++) {
+      const cx = w * 0.6 + i * 25
+      ctx.fillStyle = '#ff6600'
+      ctx.beginPath()
+      ctx.moveTo(cx, roadY - 20)
+      ctx.lineTo(cx + 8, roadY)
+      ctx.lineTo(cx - 8, roadY)
+      ctx.closePath()
+      ctx.fill()
+      ctx.fillStyle = '#fff'
+      ctx.fillRect(cx - 5, roadY - 14, 10, 3)
+    }
+  }
+
+  function drawTollPlaza (ctx, w, h, t) {
+    const roadY = h * 0.65
+    const plazaY = roadY - 60
+    // Structure
+    ctx.fillStyle = '#8B7355'
+    ctx.fillRect(w * 0.3, plazaY, w * 0.4, 70)
+    ctx.fillStyle = '#A0926B'
+    ctx.fillRect(w * 0.28, plazaY - 8, w * 0.44, 12)
+    // Booths
+    for (let i = 0; i < 4; i++) {
+      const bx = w * 0.33 + i * (w * 0.09)
+      ctx.fillStyle = '#555'
+      ctx.fillRect(bx, plazaY + 15, 20, 45)
+      // Barrier arm
+      const armUp = i === 2
+      ctx.strokeStyle = '#e74c3c'
+      ctx.lineWidth = 3
+      ctx.beginPath()
+      ctx.moveTo(bx + 20, plazaY + 30)
+      const armAngle = armUp ? -0.5 : 0
+      ctx.lineTo(bx + 20 + Math.cos(armAngle) * 30, plazaY + 30 + Math.sin(armAngle) * 30)
+      ctx.stroke()
+    }
+  }
+
+  function drawSchool (ctx, w, h, t) {
+    // School sign
+    const sx = w * 0.15
+    const sy = h * 0.55
+    ctx.fillStyle = '#f1c40f'
+    roundRect(ctx, sx - 30, sy - 20, 60, 25, 5)
+    ctx.fill()
+    ctx.fillStyle = '#000'
+    ctx.font = 'bold 10px Inter, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('SCHOOL', sx, sy - 8)
+    // Zebra crossing
+    const roadY = h * 0.65
+    ctx.fillStyle = '#fff'
+    for (let i = 0; i < 8; i++) {
+      ctx.fillRect(w * 0.35 + i * 12, roadY + 10, 6, 55)
+    }
+  }
+
+  function drawTemple (ctx, w, h, t) {
+    const tx = w * 0.8
+    const ty = h * 0.45
+    // Temple dome
+    ctx.fillStyle = '#c0a060'
+    ctx.beginPath()
+    ctx.arc(tx, ty, 25, Math.PI, 0)
+    ctx.fill()
+    // Spire
+    ctx.fillStyle = '#d4af37'
+    ctx.beginPath()
+    ctx.moveTo(tx, ty - 40)
+    ctx.lineTo(tx + 8, ty - 20)
+    ctx.lineTo(tx - 8, ty - 20)
+    ctx.closePath()
+    ctx.fill()
+    // Base
+    ctx.fillStyle = '#c0a060'
+    ctx.fillRect(tx - 30, ty, 60, 40)
+    // Entrance
+    ctx.fillStyle = '#8B4513'
+    ctx.beginPath()
+    ctx.arc(tx, ty + 20, 12, Math.PI, 0)
+    ctx.fill()
+    ctx.fillRect(tx - 12, ty + 20, 24, 20)
+    // Flag
+    ctx.strokeStyle = '#ff6600'
+    ctx.lineWidth = 1.5
+    ctx.beginPath()
+    ctx.moveTo(tx, ty - 40)
+    ctx.lineTo(tx, ty - 55)
+    ctx.stroke()
+    ctx.fillStyle = '#ff6600'
+    ctx.beginPath()
+    ctx.moveTo(tx, ty - 55)
+    ctx.lineTo(tx + 12 + Math.sin(t * 3) * 2, ty - 50)
+    ctx.lineTo(tx, ty - 45)
+    ctx.closePath()
+    ctx.fill()
+  }
+
+  function drawNoHonkSign (ctx, w, h, t) {
+    const nx = w * 0.85
+    const ny = h * 0.5
+    // Circle
+    ctx.strokeStyle = '#cc0000'
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.arc(nx, ny, 20, 0, Math.PI * 2)
+    ctx.stroke()
+    // Horn icon
+    ctx.fillStyle = '#cc0000'
+    ctx.font = '16px serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('📯', nx, ny - 2)
+    // Slash
+    ctx.strokeStyle = '#cc0000'
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(nx - 15, ny + 15)
+    ctx.lineTo(nx + 15, ny - 15)
+    ctx.stroke()
+  }
+
+  /* ── UTILITY DRAWING ── */
+  function roundRect (ctx, x, y, w, h, r) {
+    ctx.beginPath()
+    ctx.moveTo(x + r, y)
+    ctx.lineTo(x + w - r, y)
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+    ctx.lineTo(x + w, y + h - r)
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+    ctx.lineTo(x + r, y + h)
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+    ctx.lineTo(x, y + r)
+    ctx.quadraticCurveTo(x, y, x + r, y)
+    ctx.closePath()
+  }
+
+  function darkenColor (hex, factor) {
+    const r = hexToRgb(hex)
+    return rgbStr(Math.round(r.r * factor), Math.round(r.g * factor), Math.round(r.b * factor))
+  }
+
+  /* ════════════════════════════════════════════════════════════════════════
+     MAIN SCENARIO ENGINE
+     ════════════════════════════════════════════════════════════════════════ */
+  class Scenario2D {
+    constructor () {
+      this.canvas = null
+      this.ctx = null
+      this.running = false
+      this.particles = null
+      this.animFrame = null
+      this.startTime = 0
+      this.duration = 5000 // 5 second intro
+      this.onComplete = null
+      this.headlineAlpha = 0
+      this.sublineAlpha = 0
+      this.textTyped = ''
+      this.textTimer = 0
+      this.camX = 0
+      this.camY = 0
+      this.camZoom = 1
+      this.targetCamX = 0
+      this.targetCamY = 0
+      this.targetCamZoom = 1
+      this.skipRequested = false
+    }
+
+    /**
+     * Play a 2D scenario intro for a given level.
+     * @param {number} levelId - The level ID (1-52)
+     * @param {Function} onComplete - Called when intro finishes or is skipped
+     */
+    play (levelId, onComplete) {
+      // Find the scenario data
+      const lv = window.LVS ? window.LVS.find(l => l.id === levelId) : null
+      const themeType = lv ? (lv.themeType || 'signal_jump') : 'signal_jump'
+      const scenario = SCENARIOS[themeType] || SCENARIOS.signal_jump
+
+      this.onComplete = onComplete
+      this.skipRequested = false
+
+      // Create canvas
+      this.canvas = document.createElement('canvas')
+      this.canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;cursor:pointer;'
+      this.canvas.width = window.innerWidth * (window.devicePixelRatio || 1)
+      this.canvas.height = window.innerHeight * (window.devicePixelRatio || 1)
+      this.ctx = this.canvas.getContext('2d')
+      document.body.appendChild(this.canvas)
+
+      // Handle skip
+      const skipHandler = (e) => {
+        e.preventDefault()
+        this.skip()
+        this.canvas.removeEventListener('click', skipHandler)
+        this.canvas.removeEventListener('touchstart', skipHandler)
+        this.canvas.removeEventListener('keydown', skipHandler)
+      }
+      this.canvas.addEventListener('click', skipHandler)
+      this.canvas.addEventListener('touchstart', skipHandler, { passive: false })
+      this.canvas.addEventListener('keydown', skipHandler)
+
+      // Init particles
+      if (scenario.rain) {
+        this.particles = new ParticleSystem('rain', this.canvas.width, this.canvas.height)
+      } else if (scenario.particles === 'confetti') {
+        this.particles = new ParticleSystem('confetti', this.canvas.width, this.canvas.height)
+      } else if (scenario.particles === 'dust') {
+        this.particles = new ParticleSystem('dust', this.canvas.width, this.canvas.height)
+      }
+
+      // Init pedestrian positions
+      if (scenario.pedestrians) {
+        scenario._pedInstances = []
+        for (let i = 0; i < scenario.pedestrians.count; i++) {
+          scenario._pedInstances.push({
+            x: rand(0.15, 0.85),
+            y: scenario.road.y + 0.01,
+            color: scenario.pedestrians.colors[i % scenario.pedestrians.colors.length],
+            seed: rand(0, Math.PI * 2),
+            dir: Math.random() > 0.5 ? 1 : -1,
+            speed: scenario.pedestrians.walkSpeed * rand(0.7, 1.3)
+          })
+        }
+      }
+
+      // Camera setup
+      const focus = scenario.focus || { x: 0.5, y: 0.65, zoom: 1 }
+      this.targetCamX = (focus.x - 0.5) * 30
+      this.targetCamY = (focus.y - 0.5) * 20
+      this.targetCamZoom = focus.zoom
+      this.camX = 0
+      this.camY = -20
+      this.camZoom = 1.3
+
+      this.startTime = performance.now()
+      this.running = true
+      this.headlineAlpha = 0
+      this.sublineAlpha = 0
+      this.textTyped = ''
+      this.textTimer = 0
+
+      this._animate(scenario)
+    }
+
+    _animate (scenario) {
+      if (!this.running) return
+
+      const now = performance.now()
+      const elapsed = now - this.startTime
+      const t = elapsed / 1000
+      const dt = 1 / 60
+      const progress = clamp(elapsed / this.duration, 0, 1)
+
+      const w = this.canvas.width
+      const h = this.canvas.height
+
+      // Skip fade
+      if (this.skipRequested) {
+        const skipProgress = clamp((elapsed - (this.duration - 500)) / 500, 0, 1)
+        if (skipProgress >= 1) {
+          this.destroy()
+          return
+        }
+      }
+
+      // Camera animation — smooth zoom in from wide to focus
+      const camProgress = Ease.easeInOutCubic(clamp(elapsed / 2500, 0, 1))
+      this.camX = lerp(0, this.targetCamX, camProgress)
+      this.camY = lerp(-20, this.targetCamY, camProgress)
+      this.camZoom = lerp(1.3, this.targetCamZoom, camProgress)
+
+      // View bobbing
+      const bobX = Math.sin(t * 1.2) * 2 * (1 - progress)
+      const bobY = Math.cos(t * 0.8) * 1.5 * (1 - progress)
+
+      // Clear
+      ctx.clearRect(0, 0, w, h)
+
+      // Apply camera transform
+      ctx.save()
+      ctx.translate(w / 2, h / 2)
+      ctx.scale(this.camZoom, this.camZoom)
+      ctx.translate(-w / 2 + this.camX + bobX, -h / 2 + this.camY + bobY)
+
+      // Draw scene layers (back to front)
+      drawSky(ctx, w, h, scenario.sky, t)
+
+      if (scenario.night) {
+        drawStars(ctx, w, h, t)
+        drawMoon(ctx, w, h, t)
+      } else {
+        drawSun(ctx, w, h, t)
+      }
+
+      if (scenario.mountains) {
+        drawMountains(ctx, w, h, t)
+      }
+
+      if (scenario.buildings) {
+        drawBuildings(ctx, w, h, scenario.buildings, t, this.camX)
+      }
+
+      // Scene-specific elements
+      if (scenario.school) drawSchool(ctx, w, h, t)
+      if (scenario.temple) drawTemple(ctx, w, h, t)
+      if (scenario.noHonk) drawNoHonkSign(ctx, w, h, t)
+      if (scenario.construction) drawConstruction(ctx, w, h, t)
+      if (scenario.tollPlaza) drawTollPlaza(ctx, w, h, t)
+      if (scenario.decorations) drawDecorations(ctx, w, h, t)
+
+      // Road signs
+      if (scenario.roadSigns) {
+        for (const sign of scenario.roadSigns) drawRoadSign(ctx, sign, w, h, t)
+      }
+
+      // Traffic light
+      if (scenario.trafficLight) drawTrafficLight(ctx, scenario.trafficLight, w, h, t)
+
+      // Road
+      drawRoad(ctx, w, h, scenario.road, t, this.camX)
+
+      // Puddles
+      if (scenario.puddles) {
+        for (const p of scenario.puddles) drawPuddle(ctx, p, w, h, t)
+      }
+
+      // Parked cars
+      if (scenario.parkedCars) {
+        for (const pc of scenario.parkedCars) drawVehicle(ctx, { ...pc, dir: 1, type: 'car' }, w, h, t)
+      }
+
+      // Animals
+      if (scenario.animals) {
+        for (const a of scenario.animals) drawAnimal(ctx, a, w, h, t)
+      }
+
+      // Vehicles — animate movement
+      if (scenario.vehicles) {
+        for (const v of scenario.vehicles) {
+          const vv = { ...v }
+          if (v.speed > 0) {
+            vv.x = (v.x + (v.dir || 1) * v.speed * t * 0.03) % 1.2
+            if (vv.x < -0.1) vv.x = 1.1
+          }
+          if (v.weaving) {
+            vv.y = v.y + Math.sin(t * 3 + v.x * 10) * 0.008
+          }
+          drawVehicle(ctx, vv, w, h, t)
+        }
+      }
+
+      // Pedestrians
+      if (scenario._pedInstances) {
+        for (const p of scenario._pedInstances) {
+          const pp = { ...p }
+          pp.x = (p.x + p.dir * p.speed * t * 0.02) % 1.1
+          if (pp.x < -0.05) pp.x = 1.05
+          if (pp.x > 1.05) pp.x = -0.05
+          drawPedestrian(ctx, pp, w, h, t)
+        }
+      }
+
+      // Fog
+      if (scenario.fog) {
+        drawFog(ctx, w, h, t, 0.25)
+      } else if (scenario.night) {
+        drawFog(ctx, w, h, t, 0.08)
+      }
+
+      // Particles
+      if (this.particles) {
+        this.particles.update(dt, scenario.wind || 0)
+        this.particles.draw(ctx)
+      }
+
+      ctx.restore()
+
+      // ── UI OVERLAY ──
+      // Dark vignette
+      const vignette = ctx.createRadialGradient(w / 2, h / 2, w * 0.2, w / 2, h / 2, w * 0.7)
+      vignette.addColorStop(0, 'rgba(0,0,0,0)')
+      vignette.addColorStop(1, 'rgba(0,0,0,0.5)')
+      ctx.fillStyle = vignette
+      ctx.fillRect(0, 0, w, h)
+
+      // Level badge
+      const badgeAlpha = Ease.easeOutBack(clamp((elapsed - 300) / 600, 0, 1))
+      if (badgeAlpha > 0) {
+        ctx.globalAlpha = badgeAlpha
+        const bx = w / 2
+        const by = h * 0.32
+        // Badge background
+        ctx.fillStyle = 'rgba(0,0,0,0.4)'
+        roundRect(ctx, bx - 140, by - 18, 280, 36, 18)
+        ctx.fill()
+        ctx.fillStyle = '#fff'
+        ctx.font = `bold ${Math.round(14 * (w / 800))}px Inter, sans-serif`
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        const levelNum = lv ? lv.id : 1
+        const levelIcon = lv ? lv.icon : '🚦'
+        ctx.fillText(`${levelIcon}  Level ${levelNum}  ${levelIcon}`, bx, by)
+        ctx.globalAlpha = 1
+      }
+
+      // Headline — typewriter effect
+      const headlineDelay = 800
+      const headlineAlpha = Ease.easeOutCubic(clamp((elapsed - headlineDelay) / 500, 0, 1))
+      if (headlineAlpha > 0) {
+        ctx.globalAlpha = headlineAlpha
+        const hx = w / 2
+        const hy = h * 0.48
+        // Background bar
+        ctx.fillStyle = 'rgba(0,0,0,0.5)'
+        const hw = Math.min(w * 0.85, 600)
+        roundRect(ctx, hx - hw / 2, hy - 28, hw, 56, 12)
+        ctx.fill()
+        // Accent line
+        const accentGrad = ctx.createLinearGradient(hx - hw / 2, 0, hx + hw / 2, 0)
+        accentGrad.addColorStop(0, '#00ff88')
+        accentGrad.addColorStop(0.5, '#5ed4f5')
+        accentGrad.addColorStop(1, '#b89bff')
+        ctx.fillStyle = accentGrad
+        roundRect(ctx, hx - hw / 2, hy - 28, hw, 3, 1.5)
+        ctx.fill()
+        // Text
+        const headline = scenario.headline || 'SCENARIO'
+        const charIdx = Math.floor(clamp((elapsed - headlineDelay) / 30, 0, headline.length))
+        const displayHeadline = headline.substring(0, charIdx)
+        ctx.fillStyle = '#fff'
+        ctx.font = `800 ${Math.round(28 * (w / 800))}px 'Bebas Neue', 'Inter', sans-serif`
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(displayHeadline, hx, hy)
+        // Cursor blink
+        if (charIdx < headline.length && Math.floor(t * 3) % 2 === 0) {
+          const metrics = ctx.measureText(displayHeadline)
+          ctx.fillStyle = '#00ff88'
+          ctx.fillRect(hx + metrics.width / 2 + 3, hy - 12, 2, 24)
+        }
+        ctx.globalAlpha = 1
+      }
+
+      // Subline — fade in after headline types out
+      const sublineDelay = headlineDelay + 500 + (scenario.headline || '').length * 30
+      const sublineAlpha = Ease.easeOutCubic(clamp((elapsed - sublineDelay) / 400, 0, 1))
+      if (sublineAlpha > 0) {
+        ctx.globalAlpha = sublineAlpha
+        const sx = w / 2
+        const sy = h * 0.56
+        ctx.fillStyle = 'rgba(255,255,255,0.7)'
+        ctx.font = `500 ${Math.round(15 * (w / 800))}px Inter, sans-serif`
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(scenario.subline || '', sx, sy)
+        ctx.globalAlpha = 1
+      }
+
+      // "Tap to skip" hint
+      if (elapsed > 1500) {
+        const skipAlpha = Ease.easeOutCubic(clamp((elapsed - 1500) / 300, 0, 0.4))
+        ctx.globalAlpha = skipAlpha * (0.3 + Math.sin(t * 2) * 0.1)
+        ctx.fillStyle = '#fff'
+        ctx.font = `400 ${Math.round(11 * (w / 800))}px Inter, sans-serif`
+        ctx.textAlign = 'center'
+        ctx.fillText('Tap anywhere to skip', w / 2, h * 0.88)
+        ctx.globalAlpha = 1
+      }
+
+      // Law hint (bottom)
+      if (lv && lv.law && elapsed > 2000) {
+        const lawAlpha = Ease.easeOutCubic(clamp((elapsed - 2000) / 500, 0, 0.6))
+        ctx.globalAlpha = lawAlpha
+        const lawY = h * 0.92
+        ctx.fillStyle = 'rgba(255,100,100,0.15)'
+        roundRect(ctx, w / 2 - 180, lawY - 12, 360, 24, 6)
+        ctx.fill()
+        ctx.fillStyle = 'rgba(255,180,180,0.7)'
+        ctx.font = `500 ${Math.round(10 * (w / 800))}px Inter, sans-serif`
+        ctx.textAlign = 'center'
+        ctx.fillText(`⚖️ ${lv.law.off} — Fine: ${lv.law.fine}`, w / 2, lawY)
+        ctx.globalAlpha = 1
+      }
+
+      // Progress bar
+      const barW = 120
+      const barH = 3
+      const barX = w / 2 - barW / 2
+      const barY = h * 0.95
+      ctx.fillStyle = 'rgba(255,255,255,0.1)'
+      roundRect(ctx, barX, barY, barW, barH, 1.5)
+      ctx.fill()
+      const barGrad = ctx.createLinearGradient(barX, 0, barX + barW, 0)
+      barGrad.addColorStop(0, '#00ff88')
+      barGrad.addColorStop(1, '#5ed4f5')
+      ctx.fillStyle = barGrad
+      roundRect(ctx, barX, barY, barW * progress, barH, 1.5)
+      ctx.fill()
+
+      // Auto-complete at duration
+      if (elapsed >= this.duration) {
+        this.destroy()
+        return
+      }
+
+      this.animFrame = requestAnimationFrame(() => this._animate(scenario))
+    }
+
+    skip () {
+      if (!this.running) return
+      this.skipRequested = true
+      // Quick fade out
+      const fadeStart = performance.now()
+      const fadeOut = () => {
+        const elapsed = performance.now() - fadeStart
+        const alpha = clamp(elapsed / 400, 0, 1)
+        if (this.canvas) {
+          this.ctx.fillStyle = `rgba(0,0,0,${alpha})`
+          this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+        }
+        if (alpha < 1) {
+          requestAnimationFrame(fadeOut)
+        } else {
+          this.destroy()
+        }
+      }
+      requestAnimationFrame(fadeOut)
+    }
+
+    destroy () {
+      this.running = false
+      if (this.animFrame) cancelAnimationFrame(this.animFrame)
+      if (this.canvas && this.canvas.parentNode) {
+        this.canvas.style.transition = 'opacity 0.3s ease'
+        this.canvas.style.opacity = '0'
+        setTimeout(() => {
+          if (this.canvas && this.canvas.parentNode) this.canvas.remove()
+          this.canvas = null
+          this.ctx = null
+          if (this.onComplete) this.onComplete()
+        }, 300)
+      } else {
+        if (this.onComplete) this.onComplete()
+      }
+    }
+  }
+
+  /* ── Expose globally ── */
+  window.Scenario2D = new Scenario2D()
+  window.Scenario2DData = SCENARIOS
+
+  console.log('[Scenario2D] Engine loaded — 35 theme scenarios, parallax, particles, typewriter text, view bobbing')
+})()
