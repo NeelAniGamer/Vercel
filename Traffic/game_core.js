@@ -2554,13 +2554,12 @@ class Game {
             vStartX = p1.x - nz * 5;
             vStartZ = p1.z + nx * 5;
             vRotY = Math.atan2(nx, nz);
-
-            // Sidewalk offset is roughly perpendicular to direction
-            pStartX = p1.x + nx * 5 - nz * 7;
-            pStartZ = p1.z + nz * 5 + nx * 7;
-            pRot = Math.atan2(nx, nz);
           }
         }
+        // Always position human RIGHT NEXT to the vehicle so F-to-enter works immediately
+        pStartX = vStartX - 2.5;
+        pStartZ = vStartZ;
+        pRot = vRotY;
 
         if (vt === 'pedestrian') {
           this.isPedestrian = true;
@@ -2620,14 +2619,89 @@ class Game {
           
           this.player = this.playerCharacter; // Start as pedestrian
           this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
+
+          // ── VEHICLE BEACON — floating arrow pillar above the car ──
+          this._createVehicleBeacon();
+
           setTimeout(() => {
-              toast('🚶 Click to aim! WASD to walk, F to enter/exit your vehicle!', '#3498db', 8000);
+              toast('🚶 WASD to walk, F to enter your vehicle!', '#3498db', 6000);
           }, 500);
         }
       }
 
       _makeNPC(type, col) {
         return _buildVehicle(type, col);
+      }
+
+      // ── VEHICLE BEACON — scene-level glowing pillar + floating arrow above the player's car ──
+      _createVehicleBeacon() {
+        // Clean up any previous beacon first
+        this._destroyVehicleBeacon();
+        if (!this.playerVehicle || !this.scene) return;
+        const beacon = new THREE.Group();
+        // Glowing vertical pillar
+        const pillarGeo = new THREE.CylinderGeometry(0.15, 0.15, 8, 8);
+        const pillarMat = new THREE.MeshBasicMaterial({ color: 0x5ed4f5, transparent: true, opacity: 0.6, depthWrite: false });
+        const pillar = new THREE.Mesh(pillarGeo, pillarMat);
+        pillar.position.set(0, 4, 0);
+        beacon.add(pillar);
+        // Floating diamond arrow above
+        const arrowGeo = new THREE.OctahedronGeometry(0.6, 0);
+        const arrowMat = new THREE.MeshBasicMaterial({ color: 0xf1c40f, transparent: true, opacity: 0.85, depthWrite: false });
+        const arrow = new THREE.Mesh(arrowGeo, arrowMat);
+        arrow.position.set(0, 9, 0);
+        arrow.scale.set(1, 1.5, 1);
+        beacon.add(arrow);
+        // Ring at base
+        const ringGeo = new THREE.RingGeometry(1.5, 2.0, 32);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x5ed4f5, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.set(0, 0.1, 0);
+        beacon.add(ring);
+        beacon.userData = { pillar, arrow, ring };
+        // Add to scene (not playerVehicle) to avoid frustum-culling conflicts
+        this.scene.add(beacon);
+        this._vehicleBeacon = beacon;
+      }
+
+      _destroyVehicleBeacon() {
+        if (this._vehicleBeacon) {
+          this._vehicleBeacon.traverse(child => {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) child.material.dispose();
+          });
+          if (this._vehicleBeacon.parent) this._vehicleBeacon.parent.remove(this._vehicleBeacon);
+          this._vehicleBeacon = null;
+        }
+      }
+
+      _updateVehicleBeacon(dt) {
+        if (!this._vehicleBeacon || !this.playerVehicle) return;
+        const b = this._vehicleBeacon.userData;
+        if (!b) return;
+        const t = this.timer || 0;
+        // Position beacon at vehicle's world position each frame
+        this._vehicleBeacon.position.copy(this.playerVehicle.position);
+        // Pulse the pillar opacity
+        if (b.pillar && b.pillar.material) {
+          b.pillar.material.opacity = 0.3 + 0.3 * Math.sin(t * 3);
+        }
+        // Spin and bob the arrow
+        if (b.arrow) {
+          b.arrow.rotation.y = t * 2;
+          b.arrow.position.y = 9 + Math.sin(t * 2) * 0.8;
+          if (b.arrow.material) b.arrow.material.opacity = 0.6 + 0.3 * Math.sin(t * 4);
+        }
+        // Expand/contract ring
+        if (b.ring) {
+          const s = 1 + 0.15 * Math.sin(t * 2.5);
+          b.ring.scale.set(s, s, 1);
+          if (b.ring.material) b.ring.material.opacity = 0.2 + 0.2 * Math.sin(t * 3);
+        }
+        // Show beacon only when player is on foot (pedestrian mode)
+        const showBeacon = this.isPedestrian && this.playerVehicle;
+        this._vehicleBeacon.visible = !!showBeacon;
       }
 
       // 🚦 INDIAN STREET ENVIRONMENT ARCHITECTURE 🚦
@@ -4274,7 +4348,7 @@ class Game {
         // this._updateStreaming(); // Function undefined
         // this._checkFloatingOrigin(); // Function undefined
         
-        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
+        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
 
         // Update player character FBX animation mixer
         if (this.playerCharacter && this.playerCharacter.userData && this.playerCharacter.userData.isFBXAnimated && this.playerCharacter.userData.mixer) {

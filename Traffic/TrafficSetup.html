@@ -1563,6 +1563,35 @@
         localStorage.setItem('th-save', JSON.stringify(L))
         localStorage.setItem('trafficSetupComplete', 'true')
 
+        // Initialize wallet with starting balance based on level spending research
+        // Real driving lessons cost ₹500-2000/session, sim gives ₹50000 starting balance
+        const walletKey = 'mth4'
+        let saveData = {}
+        try {
+          const raw = localStorage.getItem(walletKey)
+          if (raw) saveData = JSON.parse(raw)
+        } catch(e) {}
+        if (!saveData.wallet) saveData.wallet = 50000
+        if (!saveData.name) saveData.name = name
+        if (!saveData.vehicle) saveData.vehicle = veh
+        if (!saveData.comp) saveData.comp = {}
+        if (!saveData.badges) saveData.badges = []
+        if (!saveData.studentId) saveData.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+        localStorage.setItem(walletKey, JSON.stringify(saveData))
+
+        // Also save wallet to Supabase if logged in
+        if (window.supabaseClient && window.colUser) {
+          try {
+            await window.supabaseClient.from('user_profiles').upsert({
+              user_id: window.colUser.id,
+              civic_balance: 50000,
+              display_name: name,
+              preferred_vehicle: veh,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id' })
+          } catch(err) { console.warn('Could not sync wallet to cloud', err) }
+        }
+
         // Complete wizard
         updateWizardStep(totalSteps)
         

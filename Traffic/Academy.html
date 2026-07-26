@@ -197,6 +197,35 @@
         .mobile-bottom-nav {
           display: flex !important;
         }
+        /* Hide desktop-only buttons on mobile */
+        #academy-compare-btn, #academy-sign-in-btn {
+          display: none !important;
+        }
+        .partner-badges {
+          display: none !important;
+        }
+        .brand-header {
+          gap: 8px !important;
+          margin-bottom: 20px !important;
+        }
+        .brand-header > div:first-child {
+          gap: 12px !important;
+        }
+        .brand-header img {
+          height: 32px !important;
+        }
+        .brand-header > div:first-child > div:last-child {
+          height: 28px !important;
+        }
+        /* Fix top bar on mobile */
+        #top-bar-container {
+          flex-wrap: wrap !important;
+          gap: 8px !important;
+          padding: 8px !important;
+        }
+        #top-bar-container > div:last-child {
+          gap: 6px !important;
+        }
         /* Add padding to body to prevent content from hiding behind the nav bar */
         body {
           padding-bottom: 70px !important;
@@ -3860,7 +3889,7 @@
         </div>
         
         <div style="display:flex; gap:10px; align-items:center;">
-          <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-toggle" onclick="hzToggle()" title="Toggle light/dark mode">
             <div class="hz-clouds"></div>
             <div class="hz-stars"></div>
             <div class="hz-skyline"></div>
@@ -3913,6 +3942,33 @@
         >
           Sign In
         </button>
+
+        <!-- Hide sign-in button when user is already signed in -->
+        <script>
+        (function() {
+          function checkAuthState() {
+            var signInBtn = document.getElementById('academy-sign-in-btn');
+            if (!signInBtn) return;
+            if (window.colUser || localStorage.getItem('trafficSetupComplete')) {
+              signInBtn.style.display = 'none';
+            } else {
+              signInBtn.style.display = '';
+            }
+          }
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+              checkAuthState();
+              window.addEventListener('col-auth-changed', checkAuthState);
+            });
+          } else {
+            checkAuthState();
+            window.addEventListener('col-auth-changed', checkAuthState);
+          }
+          setTimeout(checkAuthState, 1000);
+          setTimeout(checkAuthState, 3000);
+        })();
+        </script>
+
         <div
           class="nav-user-profile"
           id="trafficUserProfile"
@@ -4950,7 +5006,7 @@
       }
 
         // Build Duolingo-style level map
-      function buildLevelMap() {
+        function buildLevelMap() {
         const svg = document.getElementById('level-path-svg')
         svg.innerHTML = ''
 
@@ -5077,7 +5133,6 @@
             scrollArea.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' })
           }
         }, 500)
-      }
       }
 
       function _onbSelectDot(el, group) {
