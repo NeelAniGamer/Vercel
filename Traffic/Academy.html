@@ -1004,20 +1004,27 @@
         transform: scale(1.05);
       }
 
-      /* Duolingo-style Level Map */
+      /* Duolingo-style Level Map — Premium */
       .level-map-container {
         position: relative;
-        height: calc(100vh - 200px);
+        height: calc(100vh - 160px);
         min-height: 400px;
         overflow: hidden;
-        padding: 20px;
+        padding: 16px;
+        background: radial-gradient(ellipse at 50% 0%, rgba(94,212,245,0.06) 0%, transparent 60%);
       }
       .map-scroll-area {
         width: 100%;
         height: 100%;
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
         position: relative;
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.15) transparent;
       }
+      .map-scroll-area::-webkit-scrollbar { width: 6px; }
+      .map-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
       .level-path-svg {
         width: 100%;
         min-height: 2000px;
@@ -1025,18 +1032,41 @@
       }
       .level-node {
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), filter 0.2s;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
       }
       .level-node:hover {
-        transform: scale(1.15);
+        transform: scale(1.2);
+        filter: drop-shadow(0 8px 20px rgba(242,184,75,0.4));
       }
-      .level-node.completed circle { fill: #00c851; }
-      .level-node.current circle { fill: #f39c12; }
-      .level-node.locked circle { fill: #6b7280; }
+      .level-node.locked:hover {
+        transform: scale(1.08);
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      }
+      .level-node.completed circle {
+        fill: url(#gradDone);
+        filter: drop-shadow(0 0 12px rgba(52,211,153,0.5));
+      }
+      .level-node.current circle {
+        fill: url(#gradCurrent);
+        filter: drop-shadow(0 0 16px rgba(242,184,75,0.6));
+        animation: nodePulse 2s ease-in-out infinite;
+      }
+      .level-node.locked circle { fill: #374151; opacity: 0.5; }
+      @keyframes nodePulse {
+        0%,100% { filter: drop-shadow(0 0 12px rgba(242,184,75,0.5)); }
+        50% { filter: drop-shadow(0 0 24px rgba(242,184,75,0.8)); }
+      }
       .level-node-label {
-        font-size: 12px;
+        font-size: 13px;
         fill: white;
-        font-weight: 700;
+        font-weight: 800;
+        text-anchor: middle;
+        dominant-baseline: middle;
+        pointer-events: none;
+      }
+      .level-node-icon {
+        font-size: 18px;
         text-anchor: middle;
         dominant-baseline: middle;
         pointer-events: none;
@@ -4919,7 +4949,7 @@
         }
       }
 
-      // Build Duolingo-style level map
+        // Build Duolingo-style level map
       function buildLevelMap() {
         const svg = document.getElementById('level-path-svg')
         svg.innerHTML = ''
@@ -4930,12 +4960,22 @@
         const completed = S.comp || {}
         const totalLevels = window.LVS?.length || 52
 
-        // Generate nodes in a clean winding S-curve pattern (Duolingo style)
+        // SVG gradient definitions for premium look
+        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
+        defs.innerHTML = `
+          <linearGradient id="gradDone" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+          <linearGradient id="gradCurrent" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient>
+          <linearGradient id="gradPath" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(94,212,245,0.3)"/><stop offset="100%" stop-color="rgba(242,184,75,0.15)"/></linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        `
+        svg.appendChild(defs)
+
+        // Generate nodes in a winding S-curve (Duolingo style)
         const nodes = []
         const startY = 90
-        const stepY = 85
+        const stepY = 95
         const centerX = 300
-        const ampX = 175
+        const ampX = 180
 
         for (let i = 0; i < totalLevels; i++) {
           const x = centerX + Math.sin(i * 0.45) * ampX
@@ -4943,7 +4983,7 @@
           nodes.push({ id: i + 1, x, y })
         }
 
-        // Draw path lines
+        // Draw path with gradient stroke
         let pathD = ''
         nodes.forEach((n, i) => {
           if (i === 0) pathD = `M ${n.x} ${n.y}`
@@ -4953,46 +4993,91 @@
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
         path.setAttribute('d', pathD)
         path.setAttribute('fill', 'none')
-        path.setAttribute('stroke', 'rgba(255,255,255,0.2)')
+        path.setAttribute('stroke', 'url(#gradPath)')
         path.setAttribute('stroke-width', '4')
         path.setAttribute('stroke-linecap', 'round')
+        path.setAttribute('stroke-dasharray', '8,6')
         svg.appendChild(path)
 
-        // Draw nodes
+        // Draw nodes with staggered entrance animation
         nodes.forEach((n, i) => {
           const lvlId = n.id
           const isDone = completed[lvlId] && completed[lvlId].score > 0
-          const isCurrent = !isDone && (i === 0 || completed[nodes[i-1].id])
+          const isCurrent = !isDone && (lvlId === 1 || completed[lvlId - 1])
+          const isLocked = !isDone && !isCurrent
 
           const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
           g.classList.add('level-node')
           g.classList.add(isDone ? 'completed' : isCurrent ? 'current' : 'locked')
-          // Use CSS translate so it doesn't conflict with CSS transform on hover
-          g.style.translate = `${n.x}px ${n.y}px`;
-          // Also set transform origin so hover scale is centered
-          g.style.transformOrigin = `0px 0px`;
+          g.setAttribute('transform', `translate(${n.x}, ${n.y})`)
+          g.style.opacity = '0'
+          g.style.animation = `nodeFadeIn 0.4s ${i * 0.03}s ease-out forwards`
           g.onclick = () => {
             if (typeof ui !== 'undefined' && ui.showBriefing) ui.showBriefing(lvlId)
           }
 
           const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-          circle.setAttribute('r', '22')
-          circle.setAttribute('fill', isDone ? '#00c851' : isCurrent ? '#f39c12' : '#6b7280')
-          circle.setAttribute('stroke', 'white')
+          circle.setAttribute('r', isCurrent ? '26' : '22')
+          circle.setAttribute('fill', isDone ? 'url(#gradDone)' : isCurrent ? 'url(#gradCurrent)' : '#374151')
+          circle.setAttribute('stroke', isDone ? '#34d399' : isCurrent ? '#fbbf24' : '#4b5563')
           circle.setAttribute('stroke-width', '3')
 
           const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
           label.classList.add('level-node-label')
-          label.textContent = lvlId
+          label.setAttribute('y', '1')
+          if (isDone) {
+            // Checkmark for completed
+            const ck = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+            ck.setAttribute('d', 'M-6,0 L-2,4 L6,-4')
+            ck.setAttribute('stroke', 'white')
+            ck.setAttribute('stroke-width', '3')
+            ck.setAttribute('fill', 'none')
+            ck.setAttribute('stroke-linecap', 'round')
+            ck.setAttribute('stroke-linejoin', 'round')
+            g.appendChild(circle)
+            g.appendChild(ck)
+          } else {
+            label.textContent = lvlId
+            g.appendChild(circle)
+            g.appendChild(label)
+          }
 
-          g.appendChild(circle)
-          g.appendChild(label)
+          // Current level indicator ring
+          if (isCurrent) {
+            const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+            ring.setAttribute('r', '32')
+            ring.setAttribute('fill', 'none')
+            ring.setAttribute('stroke', 'rgba(242,184,75,0.3)')
+            ring.setAttribute('stroke-width', '2')
+            ring.setAttribute('stroke-dasharray', '4,4')
+            g.insertBefore(ring, circle)
+          }
+
           svg.appendChild(g)
         })
 
+        // Add nodeFadeIn keyframes if not already added (opacity-only to avoid SVG transform conflicts)
+        if (!document.getElementById('map-animations')) {
+          const style = document.createElement('style')
+          style.id = 'map-animations'
+          style.textContent = '@keyframes nodeFadeIn { from { opacity:0; } to { opacity:1; } }'
+          document.head.appendChild(style)
+        }
+
         // Set SVG height based on nodes
-        const maxY = Math.max(...nodes.map(n => n.y)) + 100
+        const maxY = Math.max(...nodes.map(n => n.y)) + 150
         svg.style.minHeight = maxY + 'px'
+
+        // Scroll to current level
+        setTimeout(() => {
+          const currentIdx = nodes.findIndex(n => !completed[n.id] && (n.id === 1 || completed[n.id-1]))
+          if (currentIdx >= 0) {
+            const scrollArea = document.getElementById('map-scroll')
+            const targetY = nodes[currentIdx].y - 200
+            scrollArea.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' })
+          }
+        }, 500)
+      }
       }
 
       function _onbSelectDot(el, group) {

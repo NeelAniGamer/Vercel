@@ -439,15 +439,33 @@ preloadModels(() => {
   let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode')
 
   if (window.location.pathname.toLowerCase().includes('driving')) {
+    // Driving.html: hide ALL Academy-style duplicate screens immediately
+    // so that if game.startLevel() fails, users see a blank canvas, not a copy of Academy
+    document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+
     if (lvId) {
       const levelObj = window.LVS.find((l) => l.id == lvId)
       if (levelObj) {
         ui.cur = levelObj
         ui.curMode = mode || 'car'
         ui.cur.vehMode = ui.curMode
-        document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+        // Safety net: if game fails to start within 2s, redirect to Academy
+        const _drivingTimeout = setTimeout(() => {
+          const gc = document.getElementById('gc')
+          if (!gc || !gc.classList.contains('on')) {
+            console.warn('Driving: game canvas not active after 2s, redirecting to Academy')
+            window.location.href = 'Academy.html?screen=levels'
+          }
+        }, 2000)
         setTimeout(() => {
-          game.startLevel()
+          try {
+            game.startLevel()
+            clearTimeout(_drivingTimeout)
+          } catch (err) {
+            console.error('game.startLevel() failed:', err)
+            clearTimeout(_drivingTimeout)
+            window.location.href = 'Academy.html?screen=levels'
+          }
         }, 300)
       } else {
         window.location.href = 'Academy.html?screen=levels'

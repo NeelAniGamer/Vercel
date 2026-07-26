@@ -1052,7 +1052,7 @@ window.ui = Object.assign(window.ui || {}, {
         .map((m) => {
           const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚛', bus: '🚌', pedestrian: '🚶' }
           const isPreferred = m === preferredMode
-          return `<button class="btn" style="flex:1; min-width:80px; text-transform:capitalize; background:${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel, rgba(0,0,0,0.04))'}; border:1px solid ${isPreferred ? 'var(--accent, #D97706)' : 'var(--line, rgba(0,0,0,0.08))'}; color:${isPreferred ? '#fff' : 'var(--ink, #111827)'}; font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--line)'}'" onmouseout="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel)'}'" onclick="ui.showQuiz('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}${isPreferred ? ' ✓' : ''}</span></button>`
+          return `<button class="btn" data-mode="${m}" style="flex:1; min-width:80px; text-transform:capitalize; background:${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel, rgba(0,0,0,0.04))'}; border:1px solid ${isPreferred ? 'var(--accent, #D97706)' : 'var(--line, rgba(0,0,0,0.08))'}; color:${isPreferred ? '#fff' : 'var(--ink, #111827)'}; font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--line)'}'" onmouseout="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel)'}'" onclick="ui.selectMode('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}${isPreferred ? ' ✓' : ''}</span></button>`
         })
         .join('')
       const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3); font-size:0.9rem;" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`
@@ -1792,6 +1792,24 @@ window.ui = Object.assign(window.ui || {}, {
     this._bScene = scene
     this._bCamera = cam
     this._bRenderer = renderer
+  },
+  selectMode(mode) {
+    // Just select the mode — don't open quiz yet
+    this.curMode = mode
+    // Update the mode buttons visual state using data-mode attribute
+    const practBtns = document.querySelectorAll('#br-content .btn[data-mode]')
+    practBtns.forEach(btn => {
+      const btnMode = btn.dataset.mode
+      if (btnMode === mode) {
+        btn.style.background = 'var(--accent, #D97706)'
+        btn.style.color = '#fff'
+        btn.style.borderColor = 'var(--accent, #D97706)'
+      } else {
+        btn.style.background = 'var(--panel, rgba(0,0,0,0.04))'
+        btn.style.color = 'var(--ink, #111827)'
+        btn.style.borderColor = 'var(--line, rgba(0,0,0,0.08))'
+      }
+    })
   },
   dispatchStart(mode) {
     // Use preferred vehicle from setup if mode not explicitly passed

@@ -106,6 +106,23 @@
     });
   }
 
+  function formatTimeAgo(timestamp) {
+    const timeAgo = Date.now() - timestamp;
+    const seconds = Math.floor(timeAgo / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+
+    if (seconds < 30) return 'just now';
+    if (minutes < 1) return `${seconds}s ago`;
+    if (minutes < 60) return `${minutes}m ${seconds % 60}s ago`;
+    if (hours < 24) return `${hours}h ${minutes % 60}m ago`;
+    if (days === 1) return 'yesterday';
+    if (days < 7) return `${days}d ago`;
+    return `${weeks}w ago`;
+  }
+
   function getWelcomeBackData() {
     const session = loadSessionState();
     if (!session) return null;
@@ -120,17 +137,7 @@
     const currentPage = getCurrentPageKey();
     if (currentPage === session.page) return null;
 
-    const timeAgo = Date.now() - session.timestamp;
-    const hoursAgo = Math.floor(timeAgo / (1000 * 60 * 60));
-    const daysAgo = Math.floor(hoursAgo / 24);
-
-    let timeLabel = 'just now';
-    if (hoursAgo < 1) timeLabel = 'a few minutes ago';
-    else if (hoursAgo < 24) timeLabel = `${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
-    else if (daysAgo === 1) timeLabel = 'yesterday';
-    else if (daysAgo < 7) timeLabel = `${daysAgo} days ago`;
-    else timeLabel = `${daysAgo} days ago`;
-
+    const timeLabel = formatTimeAgo(session.timestamp);
     const screenLabel = session.screen ? SCREEN_LABELS[session.screen] : SCREEN_LABELS[session.page] || 'the app';
 
     return {
@@ -209,7 +216,7 @@
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
-            ${data.timeLabel}
+            <span class="wb-time-text">${data.timeLabel}</span>
           </span>
         </div>
         <div class="wb-actions">
@@ -241,6 +248,21 @@
     });
 
     bindPopupEvents(popup, data);
+
+    // Real-time countdown timer — updates the time chip every second
+    const timeChip = popup.querySelector('.wb-time-chip');
+    if (timeChip && data.session && data.session.timestamp) {
+      const timerInterval = setInterval(() => {
+        if (!document.getElementById('traffic-welcome-back')) {
+          clearInterval(timerInterval);
+          return;
+        }
+        const timeText = popup.querySelector('.wb-time-text');
+        if (timeText) timeText.textContent = formatTimeAgo(data.session.timestamp);
+      }, 1000);
+      popup._timerInterval = timerInterval;
+    }
+
     return popup;
   }
 
@@ -261,6 +283,7 @@
     const backdrop = popup.querySelector('.wb-backdrop');
 
     const hide = () => {
+      if (popup._timerInterval) clearInterval(popup._timerInterval);
       popup.classList.remove('show');
       setTimeout(() => popup.remove(), 300);
     };

@@ -644,15 +644,29 @@
 
       /* ── Bento Card Accents ── */
       .bento-card.accent-cyan { border-color: rgba(94,212,245,0.18); }
-      .bento-card.accent-cyan:hover { border-color: rgba(94,212,245,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 24px rgba(94,212,245,0.1); }
+      .bento-card.accent-cyan:hover { border-color: rgba(94,212,245,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(94,212,245,0.15); }
       .bento-card.accent-gold { border-color: rgba(242,184,75,0.18); }
-      .bento-card.accent-gold:hover { border-color: rgba(242,184,75,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 24px rgba(242,184,75,0.1); }
+      .bento-card.accent-gold:hover { border-color: rgba(242,184,75,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(242,184,75,0.15); }
       .bento-card.accent-green { border-color: rgba(52,211,153,0.18); }
-      .bento-card.accent-green:hover { border-color: rgba(52,211,153,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 24px rgba(52,211,153,0.1); }
+      .bento-card.accent-green:hover { border-color: rgba(52,211,153,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(52,211,153,0.15); }
       .bento-card.accent-plasma { border-color: rgba(184,155,255,0.18); }
-      .bento-card.accent-plasma:hover { border-color: rgba(184,155,255,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 24px rgba(184,155,255,0.1); }
+      .bento-card.accent-plasma:hover { border-color: rgba(184,155,255,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(184,155,255,0.15); }
       .bento-card.accent-teal { border-color: rgba(0,240,204,0.18); }
-      .bento-card.accent-teal:hover { border-color: rgba(0,240,204,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 24px rgba(0,240,204,0.1); }
+      .bento-card.accent-teal:hover { border-color: rgba(0,240,204,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(0,240,204,0.15); }
+
+      /* ── Bento Label Hover Glow ── */
+      .bento-label span {
+        transition: transform 0.3s ease;
+        display: inline-block;
+      }
+      .bento-card:hover .bento-label span {
+        transform: scale(1.15);
+      }
+
+      /* ── Achievement Card Glow Ring ── */
+      .bento-card.accent-plasma:hover .achievements-grid .badge-card {
+        border-color: rgba(184,155,255,0.25);
+      }
 
 
       /* ── Modals & Others ── */
@@ -766,8 +780,13 @@
       .hz-toggle.night .hz-orb { left: 78px; background: radial-gradient(circle, #E2E8F0, #475569); }
 
       @media (max-width: 768px) {
-        .top-bar { width: 94vw; padding: 0 12px; }
+        .top-bar { width: 94vw; padding: 0 12px; height: 52px; }
         .global-progress-wrap { display: none; }
+        .profile-name-sm { display: none; }
+        .profile-compact { padding: 4px; }
+        .hz-toggle { width: 44px; height: 28px; border-radius: 14px; }
+        .hz-orb { width: 22px; height: 22px; }
+        .hz-toggle.night .hz-orb { left: 18px; }
         .hero-license { flex-direction: column; text-align: center; padding: 30px 20px; }
         .license-left { flex-direction: column; text-align: center; }
         .license-right { text-align: center; }
@@ -776,6 +795,10 @@
         .crt { padding: 30px 20px; font-size: 0.8rem; aspect-ratio: auto; min-height: 500px; }
         .crtn { font-size: 2rem; }
         .crt-course { font-size: 1.2rem; }
+        .share-bar { flex-wrap: wrap; gap: 8px; }
+        .share-btn { padding: 10px 16px; font-size: 0.85rem; }
+        .bottom-nav { bottom: 12px; padding: 6px; gap: 4px; }
+        .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
       }
 
       @media print {
@@ -783,6 +806,12 @@
         .top-bar, .hero-license, .bento-grid, .trophy-title, .btn-reward, .share-bar { display: none !important; }
         .cert-stage { display: block !important; }
         .crt { width: 100% !important; max-width: 700px !important; margin: 0 auto !important; border-width: 6px !important; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bento-card:hover, .badge-card:hover, .badge-card:hover .badge-icon, .svg-progress {
+          transform: none !important;
+          transition-duration: 0.01ms !important;
+        }
       }
       #welcome-back-popup {
         position: fixed;
@@ -891,28 +920,89 @@
         gap: 8px;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: default;
+        position: relative;
+      }
+      .badge-card::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, rgba(184,155,255,0.0), rgba(0,240,204,0.0));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
       }
       .badge-card:hover {
         background: rgba(255,255,255,0.06);
         border-color: rgba(184, 155, 255, 0.5);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 20px rgba(184, 155, 255, 0.15);
+        transform: translateY(-3px) scale(1.04);
+        box-shadow: 0 4px 20px rgba(184, 155, 255, 0.15), 0 0 24px rgba(184, 155, 255, 0.08);
       }
-      .badge-icon { font-size: 1.8rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4)); }
-      .badge-name { font-size: 0.75rem; font-weight: 600; color: var(--text); line-height: 1.2; text-transform: capitalize; }
+      .badge-card:hover::before {
+        opacity: 1;
+        background: linear-gradient(135deg, rgba(184,155,255,0.2), rgba(0,240,204,0.15));
+      }
+      .badge-icon {
+        font-size: 1.8rem;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+      }
+      .badge-card:hover .badge-icon {
+        transform: scale(1.2) rotate(-5deg);
+        filter: drop-shadow(0 4px 12px rgba(184,155,255,0.4)) drop-shadow(0 0 8px rgba(0,240,204,0.3));
+      }
+      .badge-name { font-size: 0.75rem; font-weight: 600; color: var(--text); line-height: 1.2; text-transform: capitalize; transition: color 0.2s ease; }
+      .badge-card:hover .badge-name { color: #fff; }
       .badge-empty { padding: 32px 20px; text-align: center; border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; color: var(--muted); font-size: 0.9rem; }
+
+      /* ── Bento Value Micro-interactions ── */
+      .bento-value {
+        transition: text-shadow 0.3s ease, transform 0.3s ease;
+      }
+      .bento-card:hover .bento-value {
+        text-shadow: 0 0 20px rgba(255,255,255,0.15);
+        transform: scale(1.02);
+      }
+      .bento-card.accent-gold:hover .bento-value { text-shadow: 0 0 24px rgba(242,184,75,0.35); }
+      .bento-card.accent-plasma:hover .bento-value { text-shadow: 0 0 24px rgba(184,155,255,0.35); }
+      .bento-card.accent-cyan:hover .bento-value { text-shadow: 0 0 24px rgba(94,212,245,0.35); }
+      .bento-card.accent-teal:hover .bento-value { text-shadow: 0 0 24px rgba(0,240,204,0.35); }
+
+      /* ── Trend Chart Glow on Hover ── */
+      .trend-val {
+        transition: text-shadow 0.3s ease;
+      }
+      .bento-card.accent-teal:hover .trend-val {
+        text-shadow: 0 0 28px rgba(0, 240, 204, 0.6);
+      }
+      .bento-card.accent-teal:hover .civic-val {
+        text-shadow: 0 0 28px rgba(242, 184, 75, 0.6);
+      }
+
+      /* ── Performance Card Sparkline Pulse ── */
+      .bento-card.accent-teal:hover .trend-chart-container {
+        background: linear-gradient(180deg, rgba(0,240,204,0.04) 0%, transparent 100%);
+      }
 
       /* ── Module Progress SVG ── */
       .svg-progress {
         transform: rotate(-90deg);
         filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.4));
+        transition: filter 0.4s ease, transform 0.4s ease;
+      }
+      .bento-card.accent-green:hover .svg-progress {
+        filter: drop-shadow(0 0 16px rgba(52, 211, 153, 0.7)) drop-shadow(0 0 32px rgba(52, 211, 153, 0.3));
+        transform: rotate(-90deg) scale(1.06);
       }
       .svg-progress-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
       .svg-progress-bar {
         fill: none; stroke: var(--green); stroke-width: 8; stroke-linecap: round;
         stroke-dasharray: 283;
         stroke-dashoffset: 283;
-        transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.4s ease;
+      }
+      .bento-card.accent-green:hover .svg-progress-bar {
+        stroke: #4ade80;
       }
       /* ── Bottom Navigation ── */
       .dashboard-container {
@@ -1009,7 +1099,7 @@
           <div class="license-info">
             <h1 id="h-name">Driver Name</h1>
             <div id="h-username" style="display:none; color:var(--signal); font-size:0.95rem; font-weight:600; margin-top:-4px; margin-bottom:4px;"></div>
-            <div class="license-id" id="h-id">ID: STU-000000</div>
+            <div class="license-id" id="h-id">ID: Loading...</div>
           </div>
         </div>
         <div class="license-right">
@@ -1168,7 +1258,7 @@
         <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
           <div style="position: relative; flex: 1; min-width: 250px;">
             <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1.1rem;">🔍</span>
-            <input type="text" id="lb-player-search" placeholder="Search players by username..." onkeypress="if(event.key==='Enter') searchPlayerLb()" style="width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
+            <input type="text" id="lb-player-search" placeholder="Search players by username..." oninput="_debouncedSearch()" style="width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
           </div>
           <div style="position: relative; flex: 1; min-width: 250px;">
             <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1.1rem;">📚</span>
@@ -1219,16 +1309,15 @@
     </nav>
 
     <!-- Edit Profile Modal -->
-    <div class="modal-overlay" id="edit-modal">
-      <div class="modal-box">
+    <div class="modal-overlay" id="edit-modal">          <div class="modal-box">
         <h3>Edit Profile</h3>
         <div class="field">
           <label>Name</label>
           <input id="ed-name" type="text" placeholder="Your name" />
         </div>
-        <div class="field">
-          <label>Username</label>
-          <input id="ed-username" type="text" placeholder="@username" oninput="if(this.value && !this.value.startsWith('@')) this.value = '@' + this.value; checkUsernameAvail(this.value);" />
+        <div class="field" id="ed-username-field">
+          <label>Username <span style="font-size:0.65rem;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400;">(locked after setup)</span></label>
+          <input id="ed-username" type="text" placeholder="@username" readonly style="opacity:0.6;cursor:not-allowed;" />
           <div id="ed-username-status" style="font-size: 0.75rem; margin-top: 4px; min-height: 14px; font-weight: 600;"></div>
         </div>
         <div class="field">
@@ -1240,6 +1329,8 @@
           <select id="ed-vehicle">
             <option value="car">Car</option>
             <option value="bike">Bike</option>
+          </select>
+        </div>
         <div class="modal-actions">
           <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
           <button class="btn-save" onclick="saveEditModal()">Save Changes</button>
@@ -1396,6 +1487,24 @@
             ...(S.studentId ? { student_id: S.studentId } : {}),
             updated_at: new Date().toISOString()
           }, { onConflict: 'user_id' }).catch(() => {})
+          // Sync badges to badges table (one row per badge_type)
+          if (S.badges && S.badges.length > 0) {
+            try {
+              const { data: existing } = await client.from('badges').select('badge_type').eq('user_id', window.colUser.id)
+              const existingTypes = new Set((existing || []).map(b => b.badge_type))
+              const newBadges = S.badges.filter(b => !existingTypes.has(b))
+              if (newBadges.length > 0) {
+                await client.from('badges').insert(newBadges.map(b => ({ user_id: window.colUser.id, badge_type: b }))).catch(() => {})
+              }
+            } catch (e) { console.warn('Badge sync failed:', e) }
+          }
+          // Sync wallet to wallets table
+          const walletBal = S.wallet || 0
+          if (walletBal > 0) {
+            try {
+              await client.from('wallets').upsert({ user_id: window.colUser.id, balance: walletBal }, { onConflict: 'user_id' }).catch(() => {})
+            } catch (e) { console.warn('Wallet sync failed:', e) }
+          }
         } catch (e) { console.warn('Dashboard sync exception:', e) }
       }
 
@@ -1498,8 +1607,8 @@
         }
 
         const role = (tUser.role || S.role || 'student')
-        const studentId = window.colUser?.uid || S.studentId || 'STU-UNKNOWN'
-        document.getElementById('h-id').innerText = 'ID: ' + studentId
+        const rawId = S.studentId || (window.colUser?.id ? window.colUser.id.substring(0, 8).toUpperCase() : '') || 'NEW'
+        document.getElementById('h-id').innerText = 'ID: STU-' + rawId.replace('STU-', '')
 
         // Profile view counter — increment when others view this profile
         if (_isReadOnlyMode && _resolvedUserId) {
@@ -1604,14 +1713,16 @@
         document.getElementById('cert-name').innerText = displayName.toUpperCase()
         document.getElementById('cert-score').innerText = S.total || 0
         document.getElementById('cert-date').innerText = new Date().toLocaleDateString()
-        document.getElementById('cert-ref').innerText = 'TH-' + (window.colUser?.uid || 'UNKNOWN').substring(0, 8).toUpperCase()
+        const _certRefId = S.studentId || (window.colUser?.id || '').substring(0, 8).toUpperCase() || 'UNKNOWN'
+        document.getElementById('cert-ref').innerText = 'TH-' + _certRefId.replace('STU-', '')
   
         const certWrapper = document.getElementById('cert-wrapper')
         const noCertMsg = document.getElementById('no-cert-msg')
         const shareBar = document.getElementById('share-bar')
         const dlBtn = document.getElementById('btn-dl-cert')
+        const _done = _getCompleted()
   
-        if (completed >= 52) {
+        if (_done >= 52) {
           certWrapper.style.filter = 'none'
           certWrapper.style.opacity = '1'
           shareBar.style.display = 'flex'
@@ -1619,14 +1730,14 @@
           try {
             const cachedId = localStorage.getItem('own_cert_id')
             if (cachedId) _syncedCertId = cachedId
-            _syncOwnCertificate(displayName, completed, S.total || 0).then(id => { if (id) _syncedCertId = id })
+            _syncOwnCertificate(displayName, _done, S.total || 0).then(id => { if (id) _syncedCertId = id })
           } catch (e) {}
         } else {
-          const blurPx = ((52 - completed) / 52 * 5).toFixed(1)
+          const blurPx = ((52 - _done) / 52 * 5).toFixed(1)
           certWrapper.style.filter = `grayscale(1) blur(${blurPx}px)`
-          certWrapper.style.opacity = (0.55 + (completed / 52) * 0.45).toFixed(2)
+          certWrapper.style.opacity = (0.55 + (_done / 52) * 0.45).toFixed(2)
           noCertMsg.style.display = 'block'
-          noCertMsg.querySelector('p').innerText = `Complete all 52 modules to unlock your certificate. (${completed}/52 done)`
+          noCertMsg.querySelector('p').innerText = `Complete all 52 modules to unlock your certificate. (${_done}/52 done)`
           dlBtn.style.display = 'none'
         }
       }
@@ -1721,20 +1832,25 @@
       }
 
       // --- PLAYER SEARCH (leaderboard) ---
+      let _searchDebounce = null
+      function _debouncedSearch() { clearTimeout(_searchDebounce); _searchDebounce = setTimeout(searchPlayerLb, 300) }
       async function searchPlayerLb() {
         const q = document.getElementById('lb-player-search').value.trim()
         const resultsEl = document.getElementById('lb-search-results')
-        if (!q) { resultsEl.style.display = 'none'; return }
+        if (!q || q.length < 2) { resultsEl.style.display = 'none'; return }
         const uname = q.startsWith('@') ? q : '@' + q
         resultsEl.style.display = 'block'
         resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);">Searching...</div>'
         try {
           if (!window.supabaseClient) throw new Error('Not connected')
+          // Fuzzy search: ilike with wildcards on both sides for real-time results
+          const searchPattern = '%' + uname + '%'
           const { data } = await window.supabaseClient
             .from('user_profiles')
             .select('user_id, display_name, username, total_score, modules_completed, badges_count, profile_views')
-            .ilike('username', uname)
-            .maybeSingle()
+            .ilike('username', searchPattern)
+            .order('total_score', { ascending: false })
+            .limit(20)
           if (!data) {
             // Fallback to profiles table
             const { data: pData } = await window.supabaseClient
@@ -1915,8 +2031,14 @@
         }
       }
 
+      // Helper: count completed modules (avoid computing 3 times)
+      function _getCompleted() {
+        return S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
+      }
+
       function dlCert() {
-        if (completed < 52) return alert('Unlock your certificate first!')
+        const _done = _getCompleted()
+        if (_done < 52) return alert('Unlock your certificate first!')
         if (typeof html2pdf !== 'undefined') {
           html2pdf().set({
             margin: 0, filename: 'Traffic_Hero_Certificate.pdf',
@@ -1929,9 +2051,10 @@
 
       async function getCertUrl() {
         let cid = _syncedCertId || localStorage.getItem('own_cert_id')
-        if (!cid && completed >= 52) {
+        const _done = _getCompleted()
+        if (!cid && _done >= 52) {
           const displayName = (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.full_name) || S.name || 'Driver'
-          cid = await _syncOwnCertificate(displayName, completed, S.total || 0)
+          cid = await _syncOwnCertificate(displayName, _done, S.total || 0)
           if (cid) _syncedCertId = cid
         }
         if (!cid) {
@@ -2172,6 +2295,9 @@
       }
 
       function switchMainTab(tabId) {
+        // Clear leaderboard search results when leaving leaderboard tab
+        const searchResults = document.getElementById('lb-search-results');
+        if (searchResults && tabId !== 'leaderboards') searchResults.style.display = 'none';
         // Update nav buttons
         document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
         const activeBtn = document.getElementById('nav-btn-' + tabId);
@@ -2197,6 +2323,9 @@
       }
 
       function switchLbTab(board) {
+        // Clear search results when switching leaderboard tabs
+        const sr = document.getElementById('lb-search-results')
+        if (sr) sr.style.display = 'none'
         document.querySelectorAll('.lb-tab').forEach(t => {
           const active = t.dataset.board === board
           t.classList.toggle('active', active)
@@ -2394,51 +2523,7 @@
         navigator.clipboard.writeText(url).then(() => toast('Profile link copied! 🎉', '#5ed4f5'))
       }
 
-      // --- Welcome Back Popup Logic ---
-      setTimeout(() => {
-        // Only show if the user has some progress
-        if (completed === 0) return;
-
-        const welcomePopup = document.createElement('div');
-        welcomePopup.id = 'welcome-back-popup';
-        
-        let avatarHTML = '';
-        try {
-          const ls = localStorage.getItem('col_user');
-          if (ls) {
-            const u = JSON.parse(ls);
-            if (u && u.user_metadata && u.user_metadata.avatar_url) {
-              avatarHTML = `<img src="${u.user_metadata.avatar_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
-            }
-          }
-        } catch(e) {}
-        
-        if (!avatarHTML) {
-          avatarHTML = userInitials || 'DR';
-        }
-
-        const firstName = displayName.split(' ')[0] || 'Driver';
-
-        welcomePopup.innerHTML = `
-          <div class="wb-avatar">${avatarHTML}</div>
-          <div class="wb-content">
-            <h4 class="wb-title">Welcome back, ${firstName}! 👋</h4>
-            <p class="wb-subtitle">Continue from where you left.</p>
-          </div>
-          <div class="wb-timer-bar"></div>
-        `;
-        document.body.appendChild(welcomePopup);
-        
-        // Trigger slide down
-        setTimeout(() => welcomePopup.classList.add('show'), 100);
-
-        // Auto dismiss after 5 seconds
-        setTimeout(() => {
-          welcomePopup.classList.remove('show');
-          setTimeout(() => welcomePopup.remove(), 600);
-        }, 5000);
-
-      }, 800);
+      // Welcome back popup is handled by welcome-back.js module (no inline duplicate needed).
     </script>
   <script src="welcome-back.js"></script>
 </body>

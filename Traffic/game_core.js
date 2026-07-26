@@ -268,6 +268,32 @@ const PACEJKA_GLOBAL = PACEJKA;
 function _getThemeRoads(themeType) {
   const t = themeType || 'urban_grid';
   const templates = {
+    free_roam: {
+      name: 'Free Roam City', sky: 0x87b6d8, fog: 800, ground: 0x4a7c59, amb: 0.85, veh: 'car',
+      npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car'],
+      timeLimit: 0,
+      noTimer: true,
+      noScore: true,
+      noObjective: true,
+      tasks: [],
+      roads: [
+        { type:'v', x:-360, z1:-480, z2:480 }, { type:'v', x:-240, z1:-480, z2:480 },
+        { type:'v', x:-120, z1:-480, z2:480 }, { type:'v', x:0,    z1:-480, z2:480 },
+        { type:'v', x:120,  z1:-480, z2:480 }, { type:'v', x:240,  z1:-480, z2:480 },
+        { type:'v', x:360,  z1:-480, z2:480 },
+        { type:'h', z:-480, x1:-360, x2:360 }, { type:'h', z:-360, x1:-360, x2:360 },
+        { type:'h', z:-240, x1:-360, x2:360 }, { type:'h', z:-120, x1:-360, x2:360 },
+        { type:'h', z:0,    x1:-360, x2:360 }, { type:'h', z:120,  x1:-360, x2:360 },
+        { type:'h', z:240,  x1:-360, x2:360 }, { type:'h', z:360,  x1:-360, x2:360 },
+        { type:'h', z:480,  x1:-360, x2:360 }
+      ],
+      route: [{ x:0,z:-480 },{ x:0,z:0 },{ x:360,z:0 },{ x:360,z:480 },{ x:0,z:480 },{ x:-360,z:480 },{ x:-360,z:0 },{ x:0,z:0 }],
+      npcs: [
+        { type:'taxi', color:0xffcc00, route:[[-360,-480],[-360,0],[-360,480],[0,480],[360,480]] },
+        { type:'auto', color:0xff8800, route:[[0,480],[0,0],[0,-480]] },
+        { type:'car', color:0x2288ff, route:[[360,-480],[360,0],[360,480]] }
+      ]
+    },
     urban_grid: {
       name: 'Urban Grid', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
       npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car'],
@@ -1836,6 +1862,14 @@ class Game {
       }
       _brake() { this.speed *= .35; sfx.play('brake'); toast('🛑 Hard Deceleration Active', '#fff'); }
       startLevel() {
+        // Auto fullscreen on desktop
+        if (!this._isMobile && document.documentElement.requestFullscreen && !document.fullscreenElement) {
+          try {
+            document.documentElement.requestFullscreen().catch(() => {});
+            // Show ESC hint after entering fullscreen
+            setTimeout(() => toast('Press ESC to exit fullscreen', '#ffffff', 3000), 1500);
+          } catch(e) {}
+        }
         const cd = document.getElementById('cdown');
         if (cd) cd.classList.add('on');
         const gc = document.getElementById('gc');
@@ -2479,7 +2513,8 @@ class Game {
         let base = M[lvId] || _getThemeRoads(lv ? lv.themeType : null);
         let cfg = Object.assign({}, base);
         if (lv) Object.assign(cfg, lv);
-        cfg.startOutside = true;
+        // Free roam and pedestrian levels start inside the vehicle; others start outside
+        cfg.startOutside = lv && (lv.themeType === 'free_roam' || lv.isPedestrian) ? false : true;
         // Auto-generate intersection points from road data if not defined
         if (!cfg.ints && cfg.roads) {
           const vRoads = cfg.roads.filter(r => r.type === 'v');
