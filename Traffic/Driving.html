@@ -6575,6 +6575,53 @@
     })();
 hzInit();
     </script>
+
+  <!-- ═══ CHARACTER CUSTOMIZATION MODAL ═══ -->
+  <div id="customize-modal" style="display:none; position:fixed; inset:0; z-index:10001; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--card,#1e293b); border:1px solid var(--border,rgba(255,255,255,0.08)); border-radius:20px; max-width:440px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.5);">
+      <div style="padding:24px 24px 0; display:flex; align-items:center; justify-content:space-between;">
+        <h2 style="font-family:'Lora',serif; font-size:1.4rem; color:var(--text); margin:0;">Customize Character</h2>
+        <button onclick="document.getElementById('customize-modal').style.display='none'" style="width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--hover); color:var(--text); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+      </div>
+      <div style="padding:20px 24px 24px;">
+        <!-- Live Preview -->
+        <div style="text-align:center; margin-bottom:20px;">
+          <canvas id="customize-preview" width="200" height="280" style="border-radius:16px; background:rgba(0,0,0,0.2); border:1px solid var(--border);"></canvas>
+          <div style="font-size:0.75rem; color:var(--muted); margin-top:6px;">Live Preview</div>
+        </div>
+        <!-- Skin Tone -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Skin Tone</div>
+          <div id="skin-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Hair Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hair Color</div>
+          <div id="hair-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Shirt Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shirt Color</div>
+          <div id="shirt-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Pants Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Pants Color</div>
+          <div id="pants-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Accessories -->
+        <div style="margin-bottom:20px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Accessories</div>
+          <div id="accessory-options" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn" style="flex:1; background:var(--signal); color:#000; font-weight:700;" onclick="window._saveCustomize()">Save & Spawn</button>
+          <button class="btn" style="flex:1; background:var(--panel); color:var(--text);" onclick="window._randomizeCustomize()">🎲 Random</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="welcome-back.js"></script>
 </body>
 

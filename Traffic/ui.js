@@ -798,6 +798,19 @@ window.ui = Object.assign(window.ui || {}, {
     // Build garage panel
     if (window.showGarage) window.showGarage(lv.id)
     
+    // Character customize button
+    const garageEl = document.getElementById('br-garage')
+    if (garageEl && !garageEl.querySelector('.customize-btn')) {
+      const cBtn = document.createElement('button')
+      cBtn.className = 'customize-btn'
+      cBtn.style.cssText = 'width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--hover); color:var(--text); font-size:0.85rem; font-weight:600; cursor:pointer; margin-top:8px; transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:8px;'
+      cBtn.innerHTML = '🎨 Customize Character'
+      cBtn.onclick = () => window.openCustomize && window.openCustomize()
+      cBtn.onmouseenter = () => { cBtn.style.background = 'var(--panel)'; cBtn.style.borderColor = 'var(--teal)' }
+      cBtn.onmouseleave = () => { cBtn.style.background = 'var(--hover)'; cBtn.style.borderColor = 'var(--border)' }
+      garageEl.appendChild(cBtn)
+    }
+    
     const items = [
       { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
       ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
@@ -2682,7 +2695,7 @@ const _buildVehicle = (type, col) => {
   return g
 }
 
-const _buildHuman = (isPlayer = false) => {
+const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
   const sk = isPlayer ? 1.0 : 0.92
 
@@ -2693,13 +2706,20 @@ const _buildHuman = (isPlayer = false) => {
   const npcPants = [0x555555, 0x2c3e50, 0x444444, 0x3d3d3d, 0x2d2d2d]
   const npcHairs = [0x1a1a1a, 0x3d2b1f, 0x654321, 0x8B4513, 0x2c1810, 0xb5651d]
 
-  // Pick random variation for NPCs, fixed for player
-  const skinColor = isPlayer ? 0xd4a574 : npcSkins[Math.floor(Math.random() * npcSkins.length)]
-  const shirtColor = isPlayer ? 0xe74c3c : npcShirts[Math.floor(Math.random() * npcShirts.length)]
+  // Load saved player appearance or use defaults
+  let savedAppear = null
+  if (isPlayer) {
+    try { savedAppear = JSON.parse(localStorage.getItem('traffic_appearance')) } catch (e) {}
+  }
+  const app = (isPlayer && savedAppear) || appearance || {}
+
+  // Pick random variation for NPCs, use saved/customized for player
+  const skinColor = isPlayer ? (app.skin || 0xd4a574) : npcSkins[Math.floor(Math.random() * npcSkins.length)]
+  const shirtColor = isPlayer ? (app.shirt || 0xe74c3c) : npcShirts[Math.floor(Math.random() * npcShirts.length)]
   const shirtDk = new THREE.Color(shirtColor).multiplyScalar(0.8).getHex()
-  const pantsColor = isPlayer ? 0x2c3e50 : npcPants[Math.floor(Math.random() * npcPants.length)]
+  const pantsColor = isPlayer ? (app.pants || 0x2c3e50) : npcPants[Math.floor(Math.random() * npcPants.length)]
   const pantsDk = new THREE.Color(pantsColor).multiplyScalar(0.8).getHex()
-  const hairColor = isPlayer ? 0x1a1a1a : npcHairs[Math.floor(Math.random() * npcHairs.length)]
+  const hairColor = isPlayer ? (app.hair || 0x1a1a1a) : npcHairs[Math.floor(Math.random() * npcHairs.length)]
 
   // ── Materials ──
   const SKIN = new THREE.MeshToonMaterial({ color: skinColor })
@@ -3494,3 +3514,178 @@ function showConsequenceModal(violationType, severity = 'normal') {
     document.head.appendChild(style)
   }
 }
+
+// ═══ CHARACTER CUSTOMIZATION SYSTEM ═══
+(function() {
+  const SKINS = [
+    { hex: 0xfce4c7, name: 'Light' }, { hex: 0xf1c27d, name: 'Fair' },
+    { hex: 0xd4a574, name: 'Medium' }, { hex: 0xc68642, name: 'Tan' },
+    { hex: 0x8d5524, name: 'Brown' }, { hex: 0x5c3317, name: 'Dark' }
+  ]
+  const HAIRS = [
+    { hex: 0x0a0a0a, name: 'Black' }, { hex: 0x3d2b1f, name: 'Dark Brown' },
+    { hex: 0x654321, name: 'Brown' }, { hex: 0x8B4513, name: 'Chestnut' },
+    { hex: 0xb5651d, name: 'Auburn' }, { hex: 0xd4a017, name: 'Dark Blonde' },
+    { hex: 0xe8c872, name: 'Blonde' }, { hex: 0xc0c0c0, name: 'Silver' },
+    { hex: 0xd32f2f, name: 'Red' }, { hex: 0x7b1fa2, name: 'Purple' }
+  ]
+  const SHIRTS = [
+    { hex: 0xe74c3c, name: 'Red' }, { hex: 0x3498db, name: 'Blue' },
+    { hex: 0x2ecc71, name: 'Green' }, { hex: 0xf39c12, name: 'Orange' },
+    { hex: 0x9b59b6, name: 'Purple' }, { hex: 0x1abc9c, name: 'Teal' },
+    { hex: 0xe67e22, name: 'Amber' }, { hex: 0x34495e, name: 'Navy' },
+    { hex: 0xecf0f1, name: 'White' }, { hex: 0x2c3e50, name: 'Dark' },
+    { hex: 0xff69b4, name: 'Pink' }, { hex: 0x00bcd4, name: 'Cyan' }
+  ]
+  const PANTS = [
+    { hex: 0x2c3e50, name: 'Dark' }, { hex: 0x555555, name: 'Gray' },
+    { hex: 0x1a237e, name: 'Navy' }, { hex: 0x333333, name: 'Charcoal' },
+    { hex: 0x5d4037, name: 'Brown' }, { hex: 0x006064, name: 'Teal' }
+  ]
+  const ACCESSORIES = [
+    { id: 'cap', name: '🧢 Cap', on: true },
+    { id: 'backpack', name: '🎒 Backpack', on: true },
+    { id: 'glasses', name: '🕶️ Glasses', on: false },
+    { id: 'scarf', name: '🧣 Scarf', on: false }
+  ]
+
+  let _current = { skin: 0xd4a574, hair: 0x1a1a1a, shirt: 0xe74c3c, pants: 0x2c3e50, accessories: { cap: true, backpack: true, glasses: false, scarf: false } }
+  let _previewScene, _previewCamera, _previewRenderer, _previewChar, _previewRAF
+
+  function _loadSaved() {
+    try {
+      const s = JSON.parse(localStorage.getItem('traffic_appearance'))
+      if (s) {
+        _current.skin = s.skin || _current.skin
+        _current.hair = s.hair || _current.hair
+        _current.shirt = s.shirt || _current.shirt
+        _current.pants = s.pants || _current.pants
+        if (s.accessories) _current.accessories = s.accessories
+      }
+    } catch (e) {}
+  }
+
+  function _swatchHTML(items, selected, group) {
+    return items.map(it => {
+      const sel = it.hex === selected ? 'border:2px solid #fff; transform:scale(1.2);' : 'border:2px solid transparent;'
+      const css = new THREE.Color(it.hex).getStyle()
+      return `<div title="${it.name}" onclick="window._pickSwatch('${group}',${it.hex})" style="width:36px; height:36px; border-radius:10px; background:${css}; cursor:pointer; transition:all 0.15s; ${sel}"></div>`
+    }).join('')
+  }
+
+  function _accessoryHTML() {
+    return ACCESSORIES.map(a => {
+      const on = _current.accessories[a.id]
+      return `<button onclick="window._toggleAccessory('${a.id}')" style="padding:8px 14px; border-radius:10px; border:1px solid ${on ? 'var(--teal)' : 'var(--border)'}; background:${on ? 'rgba(0,240,204,0.1)' : 'var(--hover)'}; color:${on ? 'var(--teal)' : 'var(--muted)'}; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.15s;">${a.name}</button>`
+    }).join('')
+  }
+
+  function _refreshSwatches() {
+    const ss = document.getElementById('skin-swatches')
+    const hs = document.getElementById('hair-swatches')
+    const shs = document.getElementById('shirt-swatches')
+    const ps = document.getElementById('pants-swatches')
+    const ao = document.getElementById('accessory-options')
+    if (ss) ss.innerHTML = _swatchHTML(SKINS, _current.skin, 'skin')
+    if (hs) hs.innerHTML = _swatchHTML(HAIRS, _current.hair, 'hair')
+    if (shs) shs.innerHTML = _swatchHTML(SHIRTS, _current.shirt, 'shirt')
+    if (ps) ps.innerHTML = _swatchHTML(PANTS, _current.pants, 'pants')
+    if (ao) ao.innerHTML = _accessoryHTML()
+  }
+
+  function _initPreview() {
+    const canvas = document.getElementById('customize-preview')
+    if (!canvas || !window.THREE) return
+    if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose() }
+    _previewScene = new THREE.Scene()
+    _previewCamera = new THREE.PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 100)
+    _previewCamera.position.set(0, 1.8, 5)
+    _previewCamera.lookAt(0, 1.2, 0)
+    _previewRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
+    _previewRenderer.setSize(canvas.width, canvas.height)
+    _previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    // Lighting
+    const amb = new THREE.AmbientLight(0xffffff, 0.7)
+    _previewScene.add(amb)
+    const dir = new THREE.DirectionalLight(0xffffff, 0.9)
+    dir.position.set(3, 5, 4)
+    _previewScene.add(dir)
+    const rim = new THREE.DirectionalLight(0x88aaff, 0.3)
+    rim.position.set(-2, 3, -3)
+    _previewScene.add(rim)
+    _updatePreviewModel()
+  }
+
+  function _updatePreviewModel() {
+    if (!_previewScene) return
+    if (_previewChar) _previewScene.remove(_previewChar)
+    _previewChar = _buildHuman(true, _current)
+    _previewChar.position.set(0, 0, 0)
+    _previewScene.add(_previewChar)
+  }
+
+  function _animatePreview() {
+    if (!_previewRenderer) return
+    _previewRAF = requestAnimationFrame(_animatePreview)
+    if (_previewChar) _previewChar.rotation.y += 0.008
+    _previewRenderer.render(_previewScene, _previewCamera)
+  }
+
+  window._pickSwatch = function(group, hex) {
+    _current[group] = hex
+    _refreshSwatches()
+    _updatePreviewModel()
+  }
+
+  window._toggleAccessory = function(id) {
+    _current.accessories[id] = !_current.accessories[id]
+    _refreshSwatches()
+  }
+
+  window._randomizeCustomize = function() {
+    _current.skin = SKINS[Math.floor(Math.random() * SKINS.length)].hex
+    _current.hair = HAIRS[Math.floor(Math.random() * HAIRS.length)].hex
+    _current.shirt = SHIRTS[Math.floor(Math.random() * SHIRTS.length)].hex
+    _current.pants = PANTS[Math.floor(Math.random() * PANTS.length)].hex
+    _current.accessories.cap = Math.random() > 0.3
+    _current.accessories.backpack = Math.random() > 0.3
+    _current.accessories.glasses = Math.random() > 0.7
+    _current.accessories.scarf = Math.random() > 0.8
+    _refreshSwatches()
+    _updatePreviewModel()
+  }
+
+  window._saveCustomize = function() {
+    localStorage.setItem('traffic_appearance', JSON.stringify(_current))
+    const modal = document.getElementById('customize-modal')
+    if (modal) modal.style.display = 'none'
+    if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose(); _previewRenderer = null }
+    // If in-game, respawn player with new appearance
+    if (window.game && window.game.player && window.game.playerCharacter) {
+      const pos = window.game.playerCharacter.position.clone()
+      const rot = window.game.playerCharacter.rotation.y
+      window.game.scene.remove(window.game.playerCharacter)
+      window.game.playerCharacter = _buildHuman(true)
+      window.game.playerCharacter.position.copy(pos)
+      window.game.playerCharacter.rotation.y = rot
+      window.game.scene.add(window.game.playerCharacter)
+      window.game.player = window.game.playerCharacter
+      toast('✨ Character updated!', '#34d399')
+    } else {
+      toast('✨ Appearance saved!', '#34d399')
+    }
+  }
+
+  window.openCustomize = function() {
+    _loadSaved()
+    const modal = document.getElementById('customize-modal')
+    if (modal) {
+      modal.style.display = 'flex'
+      _refreshSwatches()
+      _initPreview()
+      _animatePreview()
+    }
+  }
+
+  window._buildHuman = _buildHuman
+})()

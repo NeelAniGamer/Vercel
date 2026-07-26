@@ -7520,55 +7520,134 @@ class Game {
         if (!char || !veh) { this._enterState = 'IDLE'; return; }
         const doorPivot = this._enterDoorSide === 'L' ? veh.userData.doorPivotL : veh.userData.doorPivotR;
 
+        // ── Helper: animate character body pose during enter/exit ──
+        const _animPose = (char, ud, type, p) => {
+          if (!ud) return
+          const ease = p * p * (3 - 2 * p)
+          const sk = ud._sk || 1
+          if (type === 'reach_handle') {
+            // Reaching for door handle — right arm extends forward
+            if (ud.rArm) ud.rArm.rotation.x = -ease * 0.8
+            if (ud.lArm) ud.lArm.rotation.x = ease * 0.15
+            if (ud.torsoGroup) ud.torsoGroup.rotation.x = ease * 0.08
+            if (ud.headGroup) ud.headGroup.rotation.x = ease * 0.12
+          } else if (type === 'sit_lean') {
+            // Leaning forward and down into seat
+            if (ud.torsoGroup) ud.torsoGroup.rotation.x = ease * 0.35
+            if (ud.headGroup) ud.headGroup.rotation.x = ease * 0.2
+            if (ud.rArm) ud.rArm.rotation.x = -0.8 + ease * 0.5
+            if (ud.lArm) ud.lArm.rotation.x = 0.15 - ease * 0.15
+            if (ud.lLeg) ud.lLeg.rotation.x = ease * 0.4
+            if (ud.rLeg) ud.rLeg.rotation.x = ease * 0.3
+          } else if (type === 'sit_settle') {
+            // Settling into seat — lean back, relax
+            if (ud.torsoGroup) ud.torsoGroup.rotation.x = 0.35 - ease * 0.25
+            if (ud.headGroup) ud.headGroup.rotation.x = 0.2 - ease * 0.15
+            if (ud.rArm) ud.rArm.rotation.x = -0.3 + ease * 0.2
+            if (ud.lArm) ud.lArm.rotation.x = 0 + ease * 0.1
+            if (ud.lLeg) ud.lLeg.rotation.x = 0.4 - ease * 0.1
+            if (ud.rLeg) ud.rLeg.rotation.x = 0.3 - ease * 0.05
+          } else if (type === 'stand_up') {
+            // Rising from seat — push up with legs
+            if (ud.torsoGroup) ud.torsoGroup.rotation.x = 0.1 * (1 - ease)
+            if (ud.headGroup) ud.headGroup.rotation.x = 0.05 * (1 - ease)
+            if (ud.rArm) ud.rArm.rotation.x = 0.2 * (1 - ease)
+            if (ud.lArm) ud.lArm.rotation.x = 0.1 * (1 - ease)
+            if (ud.lLeg) ud.lLeg.rotation.x = 0.3 * (1 - ease)
+            if (ud.rLeg) ud.rLeg.rotation.x = 0.25 * (1 - ease)
+          } else if (type === 'reset') {
+            // Reset all pose to idle
+            if (ud.torsoGroup) ud.torsoGroup.rotation.x = 0
+            if (ud.headGroup) { ud.headGroup.rotation.x = 0; ud.headGroup.rotation.y = 0 }
+            if (ud.rArm) ud.rArm.rotation.x = 0
+            if (ud.lArm) ud.lArm.rotation.x = 0
+            if (ud.lLeg) ud.lLeg.rotation.x = 0
+            if (ud.rLeg) ud.rLeg.rotation.x = 0
+          }
+        }
+        // ── Helper: vehicle suspension bounce (compress one side) ──
+        const _vehBounce = (veh, side, amt) => {
+          if (!veh) return
+          // Subtle vertical displacement based on which side the character is on
+          veh.position.y = (this._suspensionY || 0) + amt * 0.03
+        }
+        // ── Helper: cinematic camera orbit ──
+        const _camOrbit = (center, radius, height, angle, lookY) => {
+          this.camera.position.set(
+            center.x + Math.sin(angle) * radius,
+            height,
+            center.z + Math.cos(angle) * radius
+          )
+          this.camera.lookAt(center.x, lookY || 1.0, center.z)
+        }
+
         if (this._enterDir === 1) {
           // ══════ ENTERING VEHICLE ══════
           if (s === 'WALKING_TO_DOOR') {
             const dur = 1.2;
             const p = Math.min(t / dur, 1);
-            char.position.lerpVectors(this._enterWalkStart, this._enterWalkEnd, p);
+            // Smooth approach with deceleration at the end
+            const approachEase = p < 0.7 ? p / 0.7 : 1 - Math.pow(1 - (p - 0.7) / 0.3, 2) * 0.08
+            char.position.lerpVectors(this._enterWalkStart, this._enterWalkEnd, Math.min(approachEase, 1));
             char.position.y = 0;
             const angle = Math.atan2(veh.position.x - char.position.x, veh.position.z - char.position.z);
             char.rotation.y = angle;
-            this._animateCharacterWalk(char, 1.0, dt);
+            this._animateCharacterWalk(char, p < 0.85 ? 1.0 : 0.3, dt);
             if (t - this._lastStepTime > 0.3) { this._lastStepTime = t; sfx.play('step'); }
-            const camPos = this.pools.vec3.get().set(
-              char.position.x - Math.sin(angle) * 3, 2.5,
-              char.position.z - Math.cos(angle) * 3
-            );
-            this.camera.position.lerp(camPos, dt * 4);
-            this.pools.vec3.release(camPos);
-            this.camera.lookAt(char.position.x, 1.0, char.position.z);
+            // Camera follows character with slight orbit
+            const camAngle = angle + Math.PI + Math.sin(p * Math.PI) * 0.15
+            _camOrbit(char.position, 3.5, 2.5 + Math.sin(p * Math.PI) * 0.2, camAngle, 1.0)
             if (p >= 1) { this._enterState = 'OPENING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
           } else if (s === 'OPENING_DOOR') {
             const dur = 0.5;
             const p = Math.min(t / dur, 1);
-            if (doorPivot) doorPivot.rotation.y = p * (Math.PI * 0.45);
-            this._animateCharacterWalk(char, 0, dt);
+            const doorEase = p * p * (3 - 2 * p) // smoothstep
+            if (doorPivot) doorPivot.rotation.y = doorEase * (Math.PI * 0.45)
+            _animPose(char, char.userData, 'reach_handle', doorEase)
+            // Vehicle dips slightly as door opens
+            _vehBounce(veh, this._enterDoorSide, doorEase * 0.5)
+            // Camera stays focused on character
+            const angle = Math.atan2(veh.position.x - char.position.x, veh.position.z - char.position.z)
+            _camOrbit(char.position, 3.0, 2.2, angle + Math.PI, 1.2)
             if (p >= 1) { this._enterState = 'SITTING_DOWN'; this._enterTimer = 0; }
           } else if (s === 'SITTING_DOWN') {
             const dur = 0.8;
             const p = Math.min(t / dur, 1);
-            const ease = p * p * (3 - 2 * p);
-            const seatPos = this.pools.vec3.get().set(0, 0.6, 0.2);
-            char.position.lerpVectors(this._enterWalkEnd, seatPos, ease);
-            this.pools.vec3.release(seatPos);
-            char.scale.setScalar(1 - ease * 0.45);
-            const cp = ease;
+            const ease = p * p * (3 - 2 * p)
+            const seatPos = this.pools.vec3.get().set(0, 0.6, 0.2)
+            char.position.lerpVectors(this._enterWalkEnd, seatPos, ease)
+            this.pools.vec3.release(seatPos)
+            char.scale.setScalar(1 - ease * 0.45)
+            // Body pose: lean forward then settle into seat
+            if (p < 0.5) {
+              _animPose(char, char.userData, 'sit_lean', p * 2)
+            } else {
+              _animPose(char, char.userData, 'sit_settle', (p - 0.5) * 2)
+            }
+            // Vehicle suspension responds to weight
+            _vehBounce(veh, this._enterDoorSide, ease * 1.0)
+            // Camera smoothly transitions to vehicle chase view
+            const cp = ease
+            const camAngle = veh.rotation.y + Math.PI * 0.3
             this.camera.position.set(
-              veh.position.x * (1 - cp) + this.camera.position.x * cp,
-              2.5 * (1 - cp) + 1.3 * cp,
-              veh.position.z * (1 - cp) + this.camera.position.z * cp
-            );
-            this.camera.lookAt(veh.position.x, 1.0, veh.position.z);
+              veh.position.x * (1 - cp) + this.camera.position.x * cp + Math.sin(camAngle) * 3.5 * (1 - cp * 0.5),
+              2.5 * (1 - cp) + 1.8 * cp,
+              veh.position.z * (1 - cp) + this.camera.position.z * cp + Math.cos(camAngle) * 3.5 * (1 - cp * 0.5)
+            )
+            this.camera.lookAt(veh.position.x, 1.0, veh.position.z)
             if (p >= 1) { this._enterState = 'CLOSING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
           } else if (s === 'CLOSING_DOOR') {
             const dur = 0.4;
             const p = Math.min(t / dur, 1);
-            if (doorPivot) doorPivot.rotation.y = (1 - p) * (Math.PI * 0.45);
+            const doorEase = p * p * (3 - 2 * p)
+            if (doorPivot) doorPivot.rotation.y = (1 - doorEase) * (Math.PI * 0.45)
+            // Vehicle settles back to neutral
+            _vehBounce(veh, this._enterDoorSide, (1 - p) * 1.0)
             if (p >= 1) {
               this.isPedestrian = false;
               char.position.set(0, 0.6, 0.2);
               char.scale.set(0.55, 0.55, 0.55);
+              _animPose(char, char.userData, 'reset', 1)
               veh.add(char);
               this.player = veh;
               this._camSnapped = false;
@@ -7591,38 +7670,55 @@ class Game {
           if (s === 'OPENING_DOOR') {
             const dur = 0.5;
             const p = Math.min(t / dur, 1);
-            if (doorPivot) doorPivot.rotation.y = p * (Math.PI * 0.45);
+            const doorEase = p * p * (3 - 2 * p)
+            if (doorPivot) doorPivot.rotation.y = doorEase * (Math.PI * 0.45)
+            // Vehicle tilts as door opens
+            _vehBounce(veh, this._enterDoorSide, doorEase * 0.8)
+            // Camera shifts to see the door
+            const camAngle = veh.rotation.y + Math.PI * 0.8
+            _camOrbit(veh.position, 4.0, 2.0, camAngle, 1.5)
             if (p >= 1) { this._enterState = 'WALKING_OUT'; this._enterTimer = 0; sfx.play('door'); }
           } else if (s === 'WALKING_OUT') {
             const dur = 0.6;
             const p = Math.min(t / dur, 1);
-            const ease = p * p * (3 - 2 * p);
-            const standPos = this._enterWalkEnd.clone();
-            standPos.y = 0;
-            const seatPosC = this.pools.vec3.get().set(0, 0.6, 0.2);
-            char.position.lerpVectors(seatPosC, standPos, ease);
-            this.pools.vec3.release(seatPosC);
-            char.position.y = ease * 0;
-            char.scale.setScalar(0.55 + ease * 0.45);
+            const ease = p * p * (3 - 2 * p)
+            const standPos = this._enterWalkEnd.clone()
+            standPos.y = 0
+            const seatPosC = this.pools.vec3.get().set(0, 0.6, 0.2)
+            char.position.lerpVectors(seatPosC, standPos, ease)
+            this.pools.vec3.release(seatPosC)
+            char.position.y = ease * 0
+            char.scale.setScalar(0.55 + ease * 0.45)
+            // Body pose: stand up animation
+            _animPose(char, char.userData, 'stand_up', ease)
+            // Vehicle suspension lifts as weight leaves
+            _vehBounce(veh, this._enterDoorSide, (1 - ease) * 1.2)
             if (ease > 0.5 && t - this._lastStepTime > 0.3) { this._lastStepTime = t; sfx.play('step'); }
+            // Camera follows character rising
+            const camAngle = Math.atan2(standPos.x - veh.position.x, standPos.z - veh.position.z) + Math.PI
             this.camera.position.set(
-              veh.position.x + (standPos.x - veh.position.x) * ease * 0.5,
+              veh.position.x + (standPos.x - veh.position.x) * ease * 0.5 + Math.sin(camAngle) * 3.5 * (1 - ease * 0.3),
               1.3 + ease * 1.2,
-              veh.position.z + (standPos.z - veh.position.z) * ease * 0.5
-            );
-            this.camera.lookAt(char.position.x, 1.0, char.position.z);
+              veh.position.z + (standPos.z - veh.position.z) * ease * 0.5 + Math.cos(camAngle) * 3.5 * (1 - ease * 0.3)
+            )
+            this.camera.lookAt(char.position.x, 1.0, char.position.z)
             if (p >= 1) { this._enterState = 'CLOSING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
           } else if (s === 'CLOSING_DOOR') {
             const dur = 0.4;
             const p = Math.min(t / dur, 1);
-            if (doorPivot) doorPivot.rotation.y = (1 - p) * (Math.PI * 0.45);
-            this._animateCharacterWalk(char, 0, dt);
+            const doorEase = p * p * (3 - 2 * p)
+            if (doorPivot) doorPivot.rotation.y = (1 - doorEase) * (Math.PI * 0.45)
+            // Vehicle settles back
+            _vehBounce(veh, this._enterDoorSide, (1 - p) * 1.2)
+            _animPose(char, char.userData, 'reset', doorEase)
+            this._animateCharacterWalk(char, 0, dt)
             if (p >= 1) {
               this.isPedestrian = true;
               veh.remove(char);
               char.scale.set(1, 1, 1);
               char.position.copy(this._enterWalkEnd);
               char.position.y = 0;
+              _animPose(char, char.userData, 'reset', 1)
               this.scene.add(char);
               this.player = char;
               this._camSnapped = false;
