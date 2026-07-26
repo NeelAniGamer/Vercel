@@ -1033,14 +1033,20 @@
         transform: scale(1.05);
       }
 
-      /* Duolingo-style Level Map — Premium */
+      /* ═══════════════════════════════════════════════════════
+         Duolingo-style Level Map — Premium Immersive
+         ═══════════════════════════════════════════════════════ */
       .level-map-container {
         position: relative;
         height: calc(100vh - 160px);
         min-height: 400px;
         overflow: hidden;
-        padding: 16px;
-        background: radial-gradient(ellipse at 50% 0%, rgba(94,212,245,0.06) 0%, transparent 60%);
+        padding: 0;
+        background:
+          radial-gradient(ellipse at 30% 20%, rgba(94,212,245,0.08) 0%, transparent 50%),
+          radial-gradient(ellipse at 70% 80%, rgba(242,184,75,0.06) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 50%, rgba(52,211,153,0.04) 0%, transparent 60%),
+          var(--bg);
       }
       .map-scroll-area {
         width: 100%;
@@ -1050,67 +1056,220 @@
         position: relative;
         scroll-behavior: smooth;
         scrollbar-width: thin;
-        scrollbar-color: rgba(255,255,255,0.15) transparent;
+        scrollbar-color: rgba(255,255,255,0.12) transparent;
+        padding-bottom: 120px;
       }
-      .map-scroll-area::-webkit-scrollbar { width: 6px; }
-      .map-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+      .map-scroll-area::-webkit-scrollbar { width: 5px; }
+      .map-scroll-area::-webkit-scrollbar-track { background: transparent; }
+      .map-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
       .level-path-svg {
         width: 100%;
         min-height: 2000px;
         display: block;
+        overflow: visible;
       }
+
+      /* ── Node Base ── */
       .level-node {
         cursor: pointer;
-        transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), filter 0.2s;
-        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        transition: filter 0.3s ease;
       }
-      .level-node:hover {
-        transform: scale(1.2);
-        filter: drop-shadow(0 8px 20px rgba(242,184,75,0.4));
+      .level-node:hover { filter: brightness(1.15); }
+      .level-node.locked { cursor: not-allowed; opacity: 0.7; }
+      .level-node.locked:hover { filter: none; }
+
+      /* ── Completed Node ── */
+      .level-node.completed .node-outer {
+        filter: drop-shadow(0 0 14px rgba(52,211,153,0.5)) drop-shadow(0 4px 10px rgba(0,0,0,0.25));
+        transition: filter 0.3s ease;
       }
-      .level-node.locked:hover {
-        transform: scale(1.08);
-        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      .level-node.completed:hover .node-outer {
+        filter: drop-shadow(0 0 20px rgba(52,211,153,0.7)) drop-shadow(0 4px 12px rgba(0,0,0,0.3));
       }
-      .level-node.completed circle {
-        fill: url(#gradDone);
-        filter: drop-shadow(0 0 12px rgba(52,211,153,0.5));
+
+      /* ── Current Node — Animated Pulse ── */
+      .level-node.current .node-outer {
+        filter: drop-shadow(0 0 18px rgba(242,184,75,0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+        animation: currentPulse 2.2s ease-in-out infinite;
       }
-      .level-node.current circle {
-        fill: url(#gradCurrent);
-        filter: drop-shadow(0 0 16px rgba(242,184,75,0.6));
-        animation: nodePulse 2s ease-in-out infinite;
+      @keyframes currentPulse {
+        0%,100% { filter: drop-shadow(0 0 14px rgba(242,184,75,0.5)) drop-shadow(0 4px 10px rgba(0,0,0,0.25)); }
+        50% { filter: drop-shadow(0 0 28px rgba(242,184,75,0.85)) drop-shadow(0 4px 16px rgba(0,0,0,0.35)); }
       }
-      .level-node.locked circle { fill: #374151; opacity: 0.5; }
-      @keyframes nodePulse {
-        0%,100% { filter: drop-shadow(0 0 12px rgba(242,184,75,0.5)); }
-        50% { filter: drop-shadow(0 0 24px rgba(242,184,75,0.8)); }
+      .level-node.current .node-ring {
+        animation: ringRotate 6s linear infinite;
+        transform-origin: center;
       }
+      @keyframes ringRotate { to { transform: rotate(360deg); } }
+
+      /* ── Node Inner Text ── */
       .level-node-label {
-        font-size: 13px;
+        font-size: 14px;
         fill: white;
-        font-weight: 800;
+        font-weight: 900;
+        font-family: 'Inter', sans-serif;
         text-anchor: middle;
-        dominant-baseline: middle;
+        dominant-baseline: central;
         pointer-events: none;
       }
       .level-node-icon {
-        font-size: 18px;
+        font-size: 20px;
         text-anchor: middle;
-        dominant-baseline: middle;
+        dominant-baseline: central;
         pointer-events: none;
       }
 
-      /* Mobile Map View - Show by default on mobile */
+      /* ── Category Trophy Markers ── */
+      .category-marker {
+        pointer-events: none;
+      }
+      .category-marker text {
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        fill: var(--accent);
+      }
+      .category-marker .cat-emoji {
+        font-size: 28px;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+
+      /* ── Sparkle Particles ── */
+      @keyframes sparkleFloat {
+        0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+        20% { opacity: 1; }
+        100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+      }
+      .sparkle-particle {
+        animation: sparkleFloat var(--dur, 1.2s) var(--delay, 0s) ease-out forwards;
+      }
+
+      /* ── Node Fade-In Stagger ── */
+      @keyframes mapNodeIn {
+        0% { opacity: 0; transform: scale(0.4); }
+        60% { opacity: 1; transform: scale(1.1); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+
+      /* ── Map Progress Bar ── */
+      .map-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: linear-gradient(180deg, var(--bg) 60%, transparent);
+        pointer-events: none;
+      }
+      .map-progress-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        white-space: nowrap;
+        font-family: 'Inter', sans-serif;
+      }
+      .map-progress-track {
+        flex: 1;
+        height: 6px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 3px;
+        overflow: hidden;
+        position: relative;
+      }
+      .map-progress-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #34d399, #5ed4f5);
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 8px rgba(52,211,153,0.4);
+      }
+      .map-progress-count {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: var(--green);
+        white-space: nowrap;
+        font-family: 'Inter', sans-serif;
+      }
       @media (max-width: 768px) {
-        /* NOTE: this used to force .level-map-container visible and .lw hidden here —
-           but checkMobileAndShowMap() (the only function that would have populated the
-           map) is never actually called anywhere, and the map div's own inline
-           style="display:none" beats this class rule's specificity anyway. Net result
-           was an empty screen on every phone: no level list, no populated map either.
-           Falling back to the reliable list view until the map path is wired up and
-           tested — the toggle button (toggleLevelView()) still lets someone opt into
-           the map manually. */
+        .map-progress { padding: 8px 14px; }
+        .map-progress-label { font-size: 0.6rem; }
+      }
+
+      /* ── Locked Node Shake ── */
+      @keyframes lockedShake {
+        0%, 100% { transform: translateX(0); }
+        10% { transform: translateX(-6px) rotate(-2deg); }
+        20% { transform: translateX(5px) rotate(1.5deg); }
+        30% { transform: translateX(-4px) rotate(-1deg); }
+        40% { transform: translateX(3px) rotate(0.5deg); }
+        50% { transform: translateX(-2px); }
+        60% { transform: translateX(1px); }
+      }
+      .level-node.shake {
+        animation: lockedShake 0.5s ease-in-out;
+      }
+      /* ── Locked Toast ── */
+      .locked-toast {
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: rgba(31, 41, 55, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      }
+      .locked-toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* ── Path Drawing Animation ── */
+      @keyframes pathDraw {
+        to { stroke-dashoffset: 0; }
+      }
+
+      /* ── Floating Decorations ── */
+      @keyframes floatSlow {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      .map-deco {
+        pointer-events: none;
+        opacity: 0.15;
+      }
+      .map-deco.cloud {
+        animation: floatSlow 8s ease-in-out infinite;
+      }
+      .map-deco.tree {
+        opacity: 0.12;
+      }
+
+      /* ── Mobile Map ── */
+      @media (max-width: 768px) {
+        .level-map-container { height: calc(100vh - 200px); min-height: 350px; }
+        .level-node-label { font-size: 12px; }
+        .level-node-icon { font-size: 16px; }
         .lw { padding: 30px 24px; }
       }
 
@@ -4110,6 +4269,13 @@
 
       <!-- Duolingo-style Level Map (hidden by default) -->
       <div class="level-map-container" id="level-map" style="display: none;">
+        <div class="map-progress" id="map-progress-bar">
+          <span class="map-progress-label">Progress</span>
+          <div class="map-progress-track">
+            <div class="map-progress-fill" id="map-progress-fill" style="width: 0%"></div>
+          </div>
+          <span class="map-progress-count" id="map-progress-count">0/52</span>
+        </div>
         <div class="map-scroll-area" id="map-scroll">
           <svg class="level-path-svg" id="level-path-svg"></svg>
         </div>
@@ -5005,134 +5171,382 @@
         }
       }
 
-        // Build Duolingo-style level map
+        // ═══════════════════════════════════════════════════════
+        // Build Duolingo-style Level Map — Premium Immersive
+        // ═══════════════════════════════════════════════════════
         function buildLevelMap() {
-        const svg = document.getElementById('level-path-svg')
-        svg.innerHTML = ''
+          const svg = document.getElementById('level-path-svg')
+          svg.innerHTML = ''
 
-        // Get completed levels from storage
-        let S = {}
-        try { S = JSON.parse(localStorage.getItem('mth4') || '{}') } catch(e) {}
-        const completed = S.comp || {}
-        const totalLevels = window.LVS?.length || 52
+          // ── State ──
+          let S = {}
+          try { S = JSON.parse(localStorage.getItem('mth4') || '{}') } catch(e) {}
+          const completed = S.comp || {}
+          const totalLevels = window.LVS?.length || 52
 
-        // SVG gradient definitions for premium look
-        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
-        defs.innerHTML = `
-          <linearGradient id="gradDone" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#059669"/></linearGradient>
-          <linearGradient id="gradCurrent" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient>
-          <linearGradient id="gradPath" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(94,212,245,0.3)"/><stop offset="100%" stop-color="rgba(242,184,75,0.15)"/></linearGradient>
-          <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        `
-        svg.appendChild(defs)
+          // ── Update mini progress bar ──
+          const doneCount = Object.keys(completed).filter(k => completed[k] && completed[k].score > 0).length // uses same logic as _getCompleted()
+          const pct = Math.round((doneCount / totalLevels) * 100)
+          const fillEl = document.getElementById('map-progress-fill')
+          const countEl = document.getElementById('map-progress-count')
+          if (fillEl) fillEl.style.width = pct + '%'
+          if (countEl) countEl.textContent = `${doneCount}/${totalLevels}`
 
-        // Generate nodes in a winding S-curve (Duolingo style)
-        const nodes = []
-        const startY = 90
-        const stepY = 95
-        const centerX = 300
-        const ampX = 180
+          // ── Derive categories dynamically from window.LVS level names ──
+          // Keyword-to-category mapping: first match wins
+          const _catRules = [
+            { kw: ['red light', 'signal', 'green light', 'patience'],           name: 'Traffic Signals',     emoji: '🚦', color: '#f59e0b' },
+            { kw: ['intersection', 'junction', 'cross', 'crossing'],             name: 'Intersections',       emoji: '🔀', color: '#3b82f6' },
+            { kw: ['parking', 'street parking', 'toll', 'stop'],                 name: 'Parking & Stopping',   emoji: '🅿️', color: '#ef4444' },
+            { kw: ['ambulance', 'emergency', 'fire', 'hospital'],                 name: 'Emergency Vehicles',  emoji: '🚑', color: '#ec4899' },
+            { kw: ['night', 'dark', 'visibility'],                                name: 'Night Driving',       emoji: '🌙', color: '#6366f1' },
+            { kw: ['rain', 'puddle', 'monsoon', 'weather', 'flood'],             name: 'Weather Conditions',  emoji: '🌧️', color: '#14b8a6' },
+            { kw: ['pedestrian', 'sidewalk', 'walk', 'school zone'],             name: 'Pedestrian Safety',   emoji: '🚶', color: '#10b981' },
+            { kw: ['highway', 'merge', 'speed', 'expressway'],                    name: 'Highway Rules',       emoji: '🛣️', color: '#8b5cf6' },
+            { kw: ['construction', 'road work', 'barrier'],                       name: 'Construction Zones',  emoji: '🚧', color: '#f97316' },
+            { kw: ['sign', 'lane', 'one-way', 'turn', 'blind', 'hill'],          name: 'Advanced Maneuvers',  emoji: '🏁', color: '#d97706' },
+            { kw: ['cow', 'animal', 'narrow', 'temple', 'festival', 'crowd'],    name: 'Special Scenarios',   emoji: '🎭', color: '#8b5cf6' },
+            { kw: ['cyclist', 'bike', 'auto', 'rickshaw'],                       name: 'Two-Wheeler Rules',   emoji: '🏍️', color: '#06b6d4' },
+            { kw: ['grand test', 'final', 'master', 'exam'],                     name: 'Master Driver',       emoji: '👑', color: '#eab308' }
+          ]
 
-        for (let i = 0; i < totalLevels; i++) {
-          const x = centerX + Math.sin(i * 0.45) * ampX
-          const y = startY + i * stepY
-          nodes.push({ id: i + 1, x, y })
-        }
-
-        // Draw path with gradient stroke
-        let pathD = ''
-        nodes.forEach((n, i) => {
-          if (i === 0) pathD = `M ${n.x} ${n.y}`
-          else pathD += ` L ${n.x} ${n.y}`
-        })
-
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-        path.setAttribute('d', pathD)
-        path.setAttribute('fill', 'none')
-        path.setAttribute('stroke', 'url(#gradPath)')
-        path.setAttribute('stroke-width', '4')
-        path.setAttribute('stroke-linecap', 'round')
-        path.setAttribute('stroke-dasharray', '8,6')
-        svg.appendChild(path)
-
-        // Draw nodes with staggered entrance animation
-        nodes.forEach((n, i) => {
-          const lvlId = n.id
-          const isDone = completed[lvlId] && completed[lvlId].score > 0
-          const isCurrent = !isDone && (lvlId === 1 || completed[lvlId - 1])
-          const isLocked = !isDone && !isCurrent
-
-          const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-          g.classList.add('level-node')
-          g.classList.add(isDone ? 'completed' : isCurrent ? 'current' : 'locked')
-          g.setAttribute('transform', `translate(${n.x}, ${n.y})`)
-          g.style.opacity = '0'
-          g.style.animation = `nodeFadeIn 0.4s ${i * 0.03}s ease-out forwards`
-          g.onclick = () => {
-            if (typeof ui !== 'undefined' && ui.showBriefing) ui.showBriefing(lvlId)
+          function _deriveCategories(lvs) {
+            if (!lvs || !lvs.length) return []
+            const sorted = [...lvs].sort((a, b) => (a.id || 0) - (b.id || 0))
+            const catMap = new Map() // categoryName -> { name, emoji, color, startLevel }
+            sorted.forEach(lv => {
+              const name = (lv.name || '').toLowerCase()
+              let matched = _catRules.find(r => r.kw.some(k => name.includes(k)))
+              if (!matched) matched = { name: 'General', emoji: '📘', color: '#6b7280' }
+              const key = matched.name
+              if (!catMap.has(key)) {
+                catMap.set(key, { name: matched.name, emoji: matched.emoji, start: lv.id, color: matched.color })
+              }
+            })
+            // Sort categories by the start level of their first member
+            return Array.from(catMap.values()).sort((a, b) => a.start - b.start)
           }
 
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-          circle.setAttribute('r', isCurrent ? '26' : '22')
-          circle.setAttribute('fill', isDone ? 'url(#gradDone)' : isCurrent ? 'url(#gradCurrent)' : '#374151')
-          circle.setAttribute('stroke', isDone ? '#34d399' : isCurrent ? '#fbbf24' : '#4b5563')
-          circle.setAttribute('stroke-width', '3')
+          const categories = _deriveCategories(window.LVS || [])
 
-          const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-          label.classList.add('level-node-label')
-          label.setAttribute('y', '1')
-          if (isDone) {
-            // Checkmark for completed
-            const ck = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-            ck.setAttribute('d', 'M-6,0 L-2,4 L6,-4')
-            ck.setAttribute('stroke', 'white')
-            ck.setAttribute('stroke-width', '3')
-            ck.setAttribute('fill', 'none')
-            ck.setAttribute('stroke-linecap', 'round')
-            ck.setAttribute('stroke-linejoin', 'round')
-            g.appendChild(circle)
-            g.appendChild(ck)
-          } else {
-            label.textContent = lvlId
-            g.appendChild(circle)
-            g.appendChild(label)
+          // ── SVG Defs — Gradients, Filters, Patterns ──
+          const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
+          defs.innerHTML = `
+            <!-- Node Gradients -->
+            <radialGradient id="gradDone" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#059669"/></radialGradient>
+            <radialGradient id="gradCurrent" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#d97706"/></radialGradient>
+            <radialGradient id="gradLocked" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#4b5563"/><stop offset="100%" stop-color="#1f2937"/></radialGradient>
+            <!-- Path Gradient -->
+            <linearGradient id="gradPathDone" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#34d399" stop-opacity="0.6"/><stop offset="100%" stop-color="#059669" stop-opacity="0.4"/></linearGradient>
+            <linearGradient id="gradPathCurrent" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fbbf24" stop-opacity="0.5"/><stop offset="100%" stop-color="#f59e0b" stop-opacity="0.3"/></linearGradient>
+            <linearGradient id="gradPathFull" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(94,212,245,0.35)"/><stop offset="50%" stop-color="rgba(52,211,153,0.25)"/><stop offset="100%" stop-color="rgba(242,184,75,0.12)"/></linearGradient>
+            <!-- Glow Filters -->
+            <filter id="glowDone" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="blur"/><feFlood flood-color="#34d399" flood-opacity="0.5" result="color"/><feComposite in="color" in2="blur" operator="in" result="glow"/><feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="glowCurrent" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="blur"/><feFlood flood-color="#fbbf24" flood-opacity="0.6" result="color"/><feComposite in="color" in2="blur" operator="in" result="glow"/><feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="shadowNode" x="-30%" y="-20%" width="160%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.35)"/></filter>
+            <!-- Star shape -->
+            <polygon id="star5" points="0,-8 2.4,-3.2 7.6,-2.4 3.8,1.6 4.8,6.8 0,4 -4.8,6.8 -3.8,1.6 -7.6,-2.4 -2.4,-3.2" fill="white" opacity="0.9"/>
+          `
+          svg.appendChild(defs)
+
+          // ── Generate Winding S-Curve Nodes ──
+          const nodes = []
+          const svgWidth = Math.min(svg.parentElement.clientWidth || 600, 600)
+          const centerX = svgWidth / 2
+          const startY = 100
+          const stepY = 100
+          const ampX = Math.min(170, svgWidth * 0.28)
+
+          for (let i = 0; i < totalLevels; i++) {
+            const x = centerX + Math.sin(i * 0.52) * ampX
+            const y = startY + i * stepY
+            nodes.push({ id: i + 1, x, y })
           }
 
-          // Current level indicator ring
-          if (isCurrent) {
-            const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-            ring.setAttribute('r', '32')
-            ring.setAttribute('fill', 'none')
-            ring.setAttribute('stroke', 'rgba(242,184,75,0.3)')
-            ring.setAttribute('stroke-width', '2')
-            ring.setAttribute('stroke-dasharray', '4,4')
-            g.insertBefore(ring, circle)
+          // ── Add Floating Decorations (clouds, trees) ──
+          const decoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+          decoGroup.classList.add('map-decos')
+          const decoSymbols = [
+            { emoji: '☁️', scale: 1.2, opacity: 0.08 },
+            { emoji: '🌳', scale: 0.8, opacity: 0.07 },
+            { emoji: '☁️', scale: 0.9, opacity: 0.06 },
+            { emoji: '🌿', scale: 0.7, opacity: 0.06 },
+            { emoji: '☁️', scale: 1.0, opacity: 0.05 }
+          ]
+          for (let i = 0; i < nodes.length; i += 8) {
+            const d = decoSymbols[i % decoSymbols.length]
+            const offsetX = (Math.sin(i * 1.3) * ampX * 0.8)
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            text.setAttribute('x', centerX + offsetX + (Math.sin(i) * 40))
+            text.setAttribute('y', startY + i * stepY - 40)
+            text.setAttribute('font-size', 28 * d.scale)
+            text.setAttribute('opacity', d.opacity)
+            text.textContent = d.emoji
+            text.style.pointerEvents = 'none'
+            decoGroup.appendChild(text)
+          }
+          svg.appendChild(decoGroup)
+
+          // ── Add Category Trophies at section starts ──
+          const catMarkers = []
+          categories.forEach(cat => {
+            if (cat.start > totalLevels) return
+            const idx = cat.start - 1
+            const n = nodes[idx]
+            if (!n) return
+            catMarkers.push({ ...n, ...cat })
+          })
+
+          catMarkers.forEach(cm => {
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            g.classList.add('category-marker')
+            g.setAttribute('transform', `translate(${cm.x}, ${cm.y - 42})`)
+            // Trophy emoji
+            const emoji = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            emoji.classList.add('cat-emoji')
+            emoji.setAttribute('y', '0')
+            emoji.textContent = cm.emoji
+            g.appendChild(emoji)
+            // Category name pill
+            const pill = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            pill.setAttribute('transform', 'translate(0, 22)')
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            label.setAttribute('text-anchor', 'middle')
+            label.setAttribute('y', '0')
+            label.setAttribute('font-size', '9')
+            label.setAttribute('font-weight', '700')
+            label.setAttribute('fill', cm.color)
+            label.setAttribute('opacity', '0.7')
+            label.setAttribute('letter-spacing', '0.06em')
+            label.textContent = cm.name.toUpperCase()
+            pill.appendChild(label)
+            g.appendChild(pill)
+            svg.appendChild(g)
+          })
+
+          // ── Draw Smooth Bezier Path ──
+          // Build smooth cubic bezier path through all nodes
+          let pathD = `M ${nodes[0].x} ${nodes[0].y}`
+          for (let i = 1; i < nodes.length; i++) {
+            const prev = nodes[i - 1]
+            const curr = nodes[i]
+            const midY = (prev.y + curr.y) / 2
+            // Control points create smooth S-curves between nodes
+            pathD += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`
           }
 
-          svg.appendChild(g)
-        })
+          // Background path (full trail — dim)
+          const bgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+          bgPath.setAttribute('d', pathD)
+          bgPath.setAttribute('fill', 'none')
+          bgPath.setAttribute('stroke', 'rgba(255,255,255,0.06)')
+          bgPath.setAttribute('stroke-width', '8')
+          bgPath.setAttribute('stroke-linecap', 'round')
+          bgPath.setAttribute('stroke-linejoin', 'round')
+          svg.appendChild(bgPath)
 
-        // Add nodeFadeIn keyframes if not already added (opacity-only to avoid SVG transform conflicts)
-        if (!document.getElementById('map-animations')) {
-          const style = document.createElement('style')
-          style.id = 'map-animations'
-          style.textContent = '@keyframes nodeFadeIn { from { opacity:0; } to { opacity:1; } }'
-          document.head.appendChild(style)
-        }
+          // Main gradient path
+          const mainPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+          mainPath.setAttribute('d', pathD)
+          mainPath.setAttribute('fill', 'none')
+          mainPath.setAttribute('stroke', 'url(#gradPathFull)')
+          mainPath.setAttribute('stroke-width', '5')
+          mainPath.setAttribute('stroke-linecap', 'round')
+          mainPath.setAttribute('stroke-linejoin', 'round')
+          svg.appendChild(mainPath)
 
-        // Set SVG height based on nodes
-        const maxY = Math.max(...nodes.map(n => n.y)) + 150
-        svg.style.minHeight = maxY + 'px'
+          // Find current level index for path progress
+          let currentIdx = 0
+          for (let i = 0; i < nodes.length; i++) {
+            const lid = nodes[i].id
+            if (completed[lid] && completed[lid].score > 0) currentIdx = i + 1
+          }
 
-        // Scroll to current level
+          // Completed portion of the path (bright green)
+          if (currentIdx > 0 && currentIdx < nodes.length) {
+            const segPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+            segPath.setAttribute('d', pathD)
+            segPath.setAttribute('fill', 'none')
+            segPath.setAttribute('stroke', 'url(#gradPathDone)')
+            segPath.setAttribute('stroke-width', '5')
+            segPath.setAttribute('stroke-linecap', 'round')
+            segPath.setAttribute('stroke-linejoin', 'round')
+            // Animate with dash
+            const totalLen = mainPath.getTotalLength() || 9999
+            segPath.setAttribute('stroke-dasharray', `${totalLen}`)
+            segPath.setAttribute('stroke-dashoffset', `${totalLen}`)
+            segPath.style.animation = `pathDraw 1.5s 0.3s ease-out forwards`
+            svg.appendChild(segPath)
+          }
+
+          // ── Draw Nodes with Staggered Entrance ──
+          nodes.forEach((n, i) => {
+            const lvlId = n.id
+            const isDone = completed[lvlId] && completed[lvlId].score > 0
+            const isCurrent = !isDone && (lvlId === 1 || (completed[lvlId - 1] && completed[lvlId - 1].score > 0))
+            const isLocked = !isDone && !isCurrent
+            const r = isCurrent ? 28 : isDone ? 24 : 21
+
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            g.classList.add('level-node', isDone ? 'completed' : isCurrent ? 'current' : 'locked')
+            g.setAttribute('transform', `translate(${n.x}, ${n.y})`)
+            g.style.opacity = '0'
+            g.style.animation = `mapNodeIn 0.5s ${i * 0.025}s cubic-bezier(0.34,1.56,0.64,1) forwards`
+            g.onclick = () => {
+              if (isLocked) {
+                // Haptic feedback (mobile vibration API)
+                if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+                // Screen shake animation on the node
+                g.classList.remove('shake');
+                void g.offsetWidth; // force reflow to restart animation
+                g.classList.add('shake');
+                g.addEventListener('animationend', () => g.classList.remove('shake'), { once: true });
+                // Show locked toast
+                _showLockedToast(lvlId);
+                return;
+              }
+              if (typeof ui !== 'undefined' && ui.showBriefing) ui.showBriefing(lvlId)
+            }
+
+            const outerG = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            outerG.classList.add('node-outer')
+
+            if (isCurrent) {
+              // Outer animated dashed ring
+              const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+              ring.classList.add('node-ring')
+              ring.setAttribute('r', r + 8)
+              ring.setAttribute('fill', 'none')
+              ring.setAttribute('stroke', 'rgba(251,191,36,0.25)')
+              ring.setAttribute('stroke-width', '2.5')
+              ring.setAttribute('stroke-dasharray', '6,4')
+              outerG.appendChild(ring)
+              // Glow ring
+              const glowRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+              glowRing.setAttribute('r', r + 4)
+              glowRing.setAttribute('fill', 'none')
+              glowRing.setAttribute('stroke', 'rgba(251,191,36,0.12)')
+              glowRing.setAttribute('stroke-width', '3')
+              outerG.appendChild(glowRing)
+            }
+
+            // Main circle
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+            circle.setAttribute('r', r)
+            circle.setAttribute('fill', isDone ? 'url(#gradDone)' : isCurrent ? 'url(#gradCurrent)' : 'url(#gradLocked)')
+            circle.setAttribute('stroke', isDone ? '#6ee7b7' : isCurrent ? '#fde68a' : '#374151')
+            circle.setAttribute('stroke-width', isDone ? '2.5' : isCurrent ? '3' : '2')
+            if (isDone) circle.setAttribute('filter', 'url(#glowDone)')
+            else if (isCurrent) circle.setAttribute('filter', 'url(#glowCurrent)')
+            else circle.setAttribute('filter', 'url(#shadowNode)')
+            outerG.appendChild(circle)
+
+            // Inner content
+            if (isDone) {
+              // Checkmark
+              const ck = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+              ck.setAttribute('d', `M${-r*0.28},${r*0.05} L${-r*0.05},${r*0.32} L${r*0.32},${-r*0.28}`)
+              ck.setAttribute('stroke', 'white')
+              ck.setAttribute('stroke-width', '3.5')
+              ck.setAttribute('fill', 'none')
+              ck.setAttribute('stroke-linecap', 'round')
+              ck.setAttribute('stroke-linejoin', 'round')
+              outerG.appendChild(ck)
+            } else if (isCurrent) {
+              // Level number
+              const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+              label.classList.add('level-node-label')
+              label.textContent = lvlId
+              outerG.appendChild(label)
+              // Star indicator above
+              const star = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+              star.setAttribute('points', '0,-40 3.6,-32 10.4,-30 5.4,-24 6.4,-16 0,-20 -6.4,-16 -5.4,-24 -10.4,-30 -3.6,-32')
+              star.setAttribute('fill', '#fbbf24')
+              star.setAttribute('opacity', '0.8')
+              star.style.animation = 'floatSlow 3s ease-in-out infinite'
+              outerG.appendChild(star)
+            } else {
+              // Level number
+              const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+              label.classList.add('level-node-label')
+              label.setAttribute('fill', isLocked ? '#6b7280' : 'white')
+              label.setAttribute('opacity', isLocked ? '0.7' : '1')
+              label.textContent = lvlId
+              outerG.appendChild(label)
+              // Lock icon for locked
+              if (isLocked) {
+                const lock = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+                lock.setAttribute('y', -r - 8)
+                lock.setAttribute('text-anchor', 'middle')
+                lock.setAttribute('font-size', '12')
+                lock.setAttribute('opacity', '0.35')
+                lock.textContent = '🔒'
+                outerG.appendChild(lock)
+              }
+            }
+
+            g.appendChild(outerG)
+            svg.appendChild(g)
+
+            // ── Sparkle particles on completed nodes ──
+            if (isDone && i < 20) {
+              for (let s = 0; s < 3; s++) {
+                const spark = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+                const angle = (s / 3) * Math.PI * 2 + Math.random() * 0.5
+                const dist = 16 + Math.random() * 10
+                spark.setAttribute('cx', Math.cos(angle) * dist)
+                spark.setAttribute('cy', Math.sin(angle) * dist)
+                spark.setAttribute('r', 1.5 + Math.random() * 1.5)
+                spark.setAttribute('fill', ['#34d399', '#6ee7b7', '#a7f3d0'][s % 3])
+                spark.classList.add('sparkle-particle')
+                spark.style.setProperty('--dx', `${Math.cos(angle) * 20}px`)
+                spark.style.setProperty('--dy', `${Math.sin(angle) * 20}px`)
+                spark.style.setProperty('--dur', `${0.8 + Math.random() * 0.8}s`)
+                spark.style.setProperty('--delay', `${i * 0.03 + s * 0.2}s`)
+                g.appendChild(spark)
+              }
+            }
+          })
+
+          // ── Set SVG height ──
+          const maxY = Math.max(...nodes.map(n => n.y)) + 180
+          svg.style.minHeight = maxY + 'px'        // ── Scroll to Current Level ──
         setTimeout(() => {
-          const currentIdx = nodes.findIndex(n => !completed[n.id] && (n.id === 1 || completed[n.id-1]))
-          if (currentIdx >= 0) {
-            const scrollArea = document.getElementById('map-scroll')
-            const targetY = nodes[currentIdx].y - 200
+          const scrollArea = document.getElementById('map-scroll')
+          if (!scrollArea) return
+          const targetIdx = currentIdx < nodes.length ? currentIdx : 0
+          if (targetIdx >= 0 && nodes[targetIdx]) {
+            const targetY = nodes[targetIdx].y - scrollArea.clientHeight / 2
             scrollArea.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' })
           }
-        }, 500)
+        }, 600)
+      }
+
+      // ── Locked Node Toast (reusable, auto-dismiss) ──
+      let _lockedToastEl = null
+      let _lockedToastTimer = null
+      function _showLockedToast(lvlId) {
+        // Remove existing toast immediately
+        if (_lockedToastEl) { _lockedToastEl.remove(); clearTimeout(_lockedToastTimer) }
+        // Also do a brief viewport shake on mobile
+        if (window.innerWidth <= 768 && navigator.vibrate) {
+          const scroller = document.getElementById('map-scroll')
+          if (scroller) {
+            scroller.style.animation = 'lockedShake 0.4s ease-in-out'
+            scroller.addEventListener('animationend', () => scroller.style.animation = '', { once: true })
+          }
+        }
+        // Create toast
+        _lockedToastEl = document.createElement('div')
+        _lockedToastEl.className = 'locked-toast'
+        _lockedToastEl.innerHTML = `🔒 Complete Level ${Math.max(1, lvlId - 1)} first`
+        document.body.appendChild(_lockedToastEl)
+        // Animate in
+        requestAnimationFrame(() => requestAnimationFrame(() => _lockedToastEl.classList.add('show')))
+        // Auto-dismiss after 2s
+        _lockedToastTimer = setTimeout(() => {
+          if (_lockedToastEl) { _lockedToastEl.classList.remove('show'); setTimeout(() => _lockedToastEl?.remove(), 400) }
+        }, 2000)
       }
 
       function _onbSelectDot(el, group) {
