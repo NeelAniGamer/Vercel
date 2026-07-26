@@ -551,6 +551,10 @@ window.ui = Object.assign(window.ui || {}, {
     if (typeof html2pdf !== 'undefined') {
       const wrapper = document.getElementById('cert-wrapper')
       const crt = document.getElementById('cert')
+      if (!crt || !crt.parentNode) {
+        toast('Certificate not ready. Please wait a moment.', '#ff9500')
+        return
+      }
       // Temporarily remove CSS transform so html2pdf captures at true size (avoids blank second page)
       const prevWrapperOverflow = wrapper.style.overflow
       const prevWrapperJustify = wrapper.style.justifyContent

@@ -1111,7 +1111,7 @@ class Game {
         document.addEventListener('mousemove', (e) => {
           if (this.isPointerLocked) {
             if (this.isPedestrian) {
-              this.player.rotation.y -= e.movementX * 0.003;
+              if (this.player) this.player.rotation.y -= e.movementX * 0.003;
             } else {
               this.targetCamYaw -= e.movementX * 0.003;
             }
@@ -1718,6 +1718,7 @@ class Game {
 
               // Smoothly rotate player toward swipe direction
               const targetRot = angle;
+              if (!this.player) return
               const currentRot = this.player.rotation.y;
 
               // Shortest rotation path
@@ -1758,7 +1759,7 @@ class Game {
         let mouseActive = false;
 
         canvas.addEventListener('mousedown', (e) => {
-          if (e.button === 0 && this.playing && !this.pause) {
+          if (e.button === 0 && this.playing && !this.pause && this.player) {
             // Enable mouse steering when clicking on canvas in pedestrian mode or stationary
             if (this.isPedestrian || Math.abs(this.speed) < 0.1) {
               mouseActive = true;
@@ -1782,6 +1783,7 @@ class Game {
 
           // Only steer if mouse is away from center
           if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
+            if (!this.player) return
             const targetAngle = Math.atan2(dx, -dy);
 
             let diff = targetAngle - this.player.rotation.y;
@@ -2106,6 +2108,7 @@ class Game {
         const intensity = Math.min(Math.abs(impactSpeed) / 1.0, 1.0); // 0-1 scale
 
         // ── Directional bounce (reflect velocity off collision normal) ──
+        if (!this.player) return
         const dx = this.player.position.x - npcPos.x;
         const dz = this.player.position.z - npcPos.z;
         const dist = Math.hypot(dx, dz) || 1;
@@ -2186,14 +2189,13 @@ class Game {
           setTimeout(() => { if(crack) crack.style.opacity = '0'; }, 2000);
         }
 
-        // ── Spawn VFX at collision point ──
-        this._spawnSparks(this.player.position.x, this.player.position.z, intensity);
-        if (intensity > 0.3) {
+        // ── Spawn VFX at collision point ──              if (this.player) this._spawnSparks(this.player.position.x, this.player.position.z, intensity);
+        if (intensity > 0.3 && this.player) {
           this._spawnDebris(this.player.position.x, this.player.position.z, intensity, 0x666666);
         }
 
         // ── Skid marks if sliding ──
-        if (intensity > 0.2 && Math.abs(this.speed) > 0.1) {
+        if (intensity > 0.2 && this.player && Math.abs(this.speed) > 0.1) {
           this._spawnSkidMark(this.player.position.x, this.player.position.z, this.player.rotation.y, 1 + intensity * 2);
         }
 
@@ -2261,6 +2263,7 @@ class Game {
         this._enterWalkStart = null;
         this._enterWalkEnd = null;
         this._camOverride = false;
+        this._camSnapped = false;
         this._lastStepTime = 0;
         this.boostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
@@ -4880,7 +4883,7 @@ class Game {
           const nextCP = this.cps.find(c => !c.userData.hit);
           const nextIdx = nextCP ? this.cps.indexOf(nextCP) : this.cps.length;
           const pulse = 0.55 + 0.25 * Math.sin(this.timer * 4);
-          const onRoad = this.isPedestrian && this._isOnRoad(this.player.position.x, this.player.position.z);
+          const onRoad = this.isPedestrian && this.player && this._isOnRoad(this.player.position.x, this.player.position.z);
           this._arrows.forEach(a => {
               const visible = a.userData.seg < nextIdx && !(onRoad && a.userData.ped);
               a.visible = visible;
@@ -4897,7 +4900,8 @@ class Game {
         const lights = [...(this._streetLights || []), ...(this._windowLights || [])];
         if (!lights.length) return;
 
-        const pPos = this.player.position;
+        const pPos = this.player ? this.player.position : null;
+        if (!pPos) return
         const candidates = lights.map(l => ({
           l,
           distSq: pPos.distanceToSquared(l.position)
@@ -5001,8 +5005,8 @@ class Game {
                 const vehRot = this.playerVehicle.rotation.y;
                 const doorLocal = new THREE.Vector3(1.2, 0, 0.4);
                 doorLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
-                this._enterWalkStart = this.player.position.clone();
-                this._enterWalkEnd = vehPos.clone().add(doorLocal);
+              this._enterWalkStart = this.player.position.clone();
+              this._enterWalkEnd = vehPos.clone().add(doorLocal);
                 this._enterWalkEnd.y = 0;
                 toast('Walking to vehicle...', '#f39c12');
               } else {
@@ -6635,7 +6639,7 @@ class Game {
               // Directional bounce + sparks + debris + hitstop
               this._applyCrashImpact(n.position, impactSpeed);
               if(window.sfx) window.sfx.play('error');
-              this._spawnSkidMark(this.player.position.x, this.player.position.z, this.player.rotation.y, impactSpeed * 3);
+              if (this.player) this._spawnSkidMark(this.player.position.x, this.player.position.z, this.player.rotation.y, impactSpeed * 3);
               toast('💥 Collision! ' + (impactSpeed > 0.6 ? 'SEVERE' : 'Minor') + ' Impact', '#ff3b30');
               this._collidedThisFrame = true;
               if (window.GameplayRecorder) GameplayRecorder.record('COLLISION', { speed: Math.round(impactSpeed * 100), npcType: n.userData.npcType, score: this.score, hp: Math.round(this.hp), impactIntensity: Math.round(impactSpeed * 100) });
@@ -7507,7 +7511,7 @@ class Game {
             }
           });
         }
-        if (this.mode === 'silentzone' && this.ms) this.ms.inSz = this.player.position.z > -60 && this.player.position.z < 20;
+        if (this.mode === 'silentzone' && this.ms && this.player) this.ms.inSz = this.player.position.z > -60 && this.player.position.z < 20;
       }
       // ── GTA-style enter/exit state machine ──
       _tickEnterExit(dt) {
