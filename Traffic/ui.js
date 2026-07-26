@@ -2640,138 +2640,505 @@ const _buildVehicle = (type, col) => {
 
 const _buildHuman = (isPlayer = false) => {
   const g = new THREE.Group()
+  const sk = isPlayer ? 1.0 : 0.92
 
-  // Pool: GLB mini-characters + animated FBX characters (when loaded)
-  const glbChars = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c']
-  const fbxChars = ['anim_survivors', 'anim_retro', 'anim_protagonists'].filter(k => window.PRELOADED_MODELS && window.PRELOADED_MODELS[k])
-  const allChars = glbChars.concat(fbxChars)
-  const charKey = allChars[Math.floor(Math.random() * allChars.length)]
+  // ═══ NPC VARIATION ═══
+  // Random skin tones, shirt colors, and hair for NPCs to make them look distinct
+  const npcSkins = [0xd4a574, 0xc68642, 0x8d5524, 0xf1c27d, 0xffdbac, 0xe0ac69]
+  const npcShirts = [0x3498db, 0x2ecc71, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xe74c3c, 0x34495e]
+  const npcPants = [0x555555, 0x2c3e50, 0x444444, 0x3d3d3d, 0x2d2d2d]
+  const npcHairs = [0x1a1a1a, 0x3d2b1f, 0x654321, 0x8B4513, 0x2c1810, 0xb5651d]
 
-  // Debug: Check if character models are loaded
-  const charLoaded = window.PRELOADED_MODELS && window.PRELOADED_MODELS[charKey];
-  if (!charLoaded) {
-    console.log('[DEBUG] Character model not loaded:', charKey, 'Available:', Object.keys(window.PRELOADED_MODELS || {}).filter(k => k.startsWith('char') || k.startsWith('anim')).join(', '));
+  // Pick random variation for NPCs, fixed for player
+  const skinColor = isPlayer ? 0xd4a574 : npcSkins[Math.floor(Math.random() * npcSkins.length)]
+  const shirtColor = isPlayer ? 0xe74c3c : npcShirts[Math.floor(Math.random() * npcShirts.length)]
+  const shirtDk = new THREE.Color(shirtColor).multiplyScalar(0.8).getHex()
+  const pantsColor = isPlayer ? 0x2c3e50 : npcPants[Math.floor(Math.random() * npcPants.length)]
+  const pantsDk = new THREE.Color(pantsColor).multiplyScalar(0.8).getHex()
+  const hairColor = isPlayer ? 0x1a1a1a : npcHairs[Math.floor(Math.random() * npcHairs.length)]
+
+  // ── Materials ──
+  const SKIN = new THREE.MeshToonMaterial({ color: skinColor })
+  const SKIN2 = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.92).getHex() })
+  const HAIR = new THREE.MeshToonMaterial({ color: hairColor })
+  const SHIRT = new THREE.MeshToonMaterial({ color: shirtColor })
+  const SHIRT_DK = new THREE.MeshToonMaterial({ color: shirtDk })
+  const PANTS = new THREE.MeshToonMaterial({ color: pantsColor })
+  const PANTS_DK = new THREE.MeshToonMaterial({ color: pantsDk })
+  const SHOES = new THREE.MeshToonMaterial({ color: isPlayer ? 0x1a1a1a : 0x222222 })
+  const SHOE_SOLE = new THREE.MeshToonMaterial({ color: 0x333333 })
+  const EYE_W = new THREE.MeshToonMaterial({ color: 0xffffff })
+  const EYE_P = new THREE.MeshToonMaterial({ color: 0x2c1810 })
+  const EYE_IRIS = new THREE.MeshToonMaterial({ color: isPlayer ? 0x4a90d9 : 0x3d2b1f })
+  const MOUTH = new THREE.MeshToonMaterial({ color: 0x8b4513 })
+  const NOSE_M = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.95).getHex() })
+  const EAR_INNER = new THREE.MeshToonMaterial({ color: 0xc4956a })
+  const BELT = new THREE.MeshToonMaterial({ color: 0x3d2b1f })
+  const BELT_BUCKLE = new THREE.MeshToonMaterial({ color: 0xc0c0c0, emissive: 0xc0c0c0, emissiveIntensity: 0.1 })
+  const BAG = new THREE.MeshToonMaterial({ color: isPlayer ? 0xf39c12 : 0x8e44ad, emissive: isPlayer ? 0xf39c12 : 0x8e44ad, emissiveIntensity: 0.05 })
+  const BAG_DK = new THREE.MeshToonMaterial({ color: isPlayer ? 0xe67e22 : 0x7d3c98 })
+  const BAG_STRAP = new THREE.MeshToonMaterial({ color: 0x555555 })
+  const JOINT = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.88).getHex() })
+  const WRIST = new THREE.MeshToonMaterial({ color: 0xdddddd })
+  const LIP_COLOR = new THREE.MeshToonMaterial({ color: 0xb5651d })
+  const CAP = new THREE.MeshToonMaterial({ color: isPlayer ? 0xe74c3c : shirtColor })
+  const CAP_BRIM = new THREE.MeshToonMaterial({ color: isPlayer ? 0xc0392b : shirtDk })
+
+  function limb(rT, rB, h, mat, segs) {
+    return new THREE.Mesh(new THREE.CylinderGeometry(rT, rB, h, segs || 10, 1), mat)
   }
 
-  if (charLoaded) {
-    const hModel = window.PRELOADED_MODELS[charKey].clone()
-    const isFBX = charKey.startsWith('anim_')
-
-    if (isFBX) {
-      // FBX models stored at 1x (already ~180 units). Scale to visible pedestrian size.
-      const targetH = isPlayer ? 1.8 : 1.5
-      hModel.scale.setScalar(targetH / 180)
-      hModel.position.y = 0
-    } else {
-      // GLB characters loaded at 4.5x, scale down to visible size
-      const loadScale = 4.5;
-      const targetScale = isPlayer ? 1.5 : 1.2;
-      hModel.scale.set(targetScale / loadScale, targetScale / loadScale, targetScale / loadScale);
-      hModel.position.y = 0;
-    }
-
-    // Ensure all meshes in cloned model render properly
-    hModel.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = !isPlayer;
-        child.receiveShadow = true;
-        child.frustumCulled = false;
-        // Ensure material is visible
-        if (child.material) {
-          child.material.opacity = 1;
-          child.material.transparent = false;
-        }
-      }
-    });
-
-    // Add invisible hitbox for collisions
-    const hbGeo = new THREE.BoxGeometry(0.8, 2.0, 0.8)
-    const hbMat = new THREE.MeshBasicMaterial({ visible: false })
-    const hb = new THREE.Mesh(hbGeo, hbMat)
-    hb.position.y = 1.0
-
-    g.add(hModel)
-    g.add(hb)
-
-    // Find legs in the model for animation - look for child groups with leg-like names
-    let lLeg = null, rLeg = null;
-    hModel.traverse((child) => {
-      if (child.isGroup) {
-        const name = child.name.toLowerCase();
-        if (name.includes('leg') || name.includes('left')) lLeg = child;
-        if (name.includes('leg') || name.includes('right')) rLeg = child;
-      }
-    });
-
-    // GLB model already has full body — no procedural legs needed
-    // Walk animation uses lLeg/rLeg userData if found
-    g.userData = { lLeg: lLeg, rLeg: rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
-
-    // FBX animated characters: set up AnimationMixer for idle/run clips
-    if (isFBX && hModel.animations && hModel.animations.length > 0) {
-      const mixer = new THREE.AnimationMixer(hModel)
-      // Prefer 'idle' or first clip
-      const idleClip = hModel.animations.find(c => c.name.toLowerCase().includes('idle')) || hModel.animations[0]
-      const runClip = hModel.animations.find(c => c.name.toLowerCase().includes('run') || c.name.toLowerCase().includes('walk'))
-      const idleAction = mixer.clipAction(idleClip)
-      idleAction.play()
-      let runAction = null
-      if (runClip) { runAction = mixer.clipAction(runClip); runAction.setEffectiveWeight(0); runAction.play() }
-      g.userData.mixer = mixer
-      g.userData.idleAction = idleAction
-      g.userData.runAction = runAction
-      g.userData.isFBXAnimated = true
-    }
-
-    return g
+  function jointSphere(r, mat) {
+    return new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), mat)
   }
 
-  // Fallback
-  const skins = [0xe0ac69, 0x8d5524, 0xc68642, 0xf1c27d, 0xffdbac]
-  const sColor = isPlayer ? 0xc68642 : skins[Math.floor(Math.random() * skins.length)]
-  const shColor = isPlayer ? 0xe74c3c : Math.random() * 0xffffff
-  const pColor = isPlayer ? 0x2980b9 : [0x333333, 0x111111, 0x555555, 0x4a2311][Math.floor(Math.random() * 4)]
+  // ═══ HEAD ═══
+  const headGroup = new THREE.Group()
+  headGroup.position.y = 1.72 * sk
 
-  const scale = isPlayer ? 1.1 : 1.0
+  // Skull — slightly ovoid
+  const skull = new THREE.Mesh(new THREE.SphereGeometry(0.28 * sk, 16, 12), SKIN)
+  skull.scale.set(1, 1.05, 0.95)
+  headGroup.add(skull)
 
-  const skin = new THREE.MeshToonMaterial({ color: sColor })
-  const shirt = new THREE.MeshToonMaterial({ color: shColor })
-  const pants = new THREE.MeshToonMaterial({ color: pColor })
+  // Jaw / chin
+  const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.20 * sk, 12, 8), SKIN2)
+  jaw.position.set(0, -0.18 * sk, 0.10 * sk)
+  jaw.scale.set(0.85, 0.55, 0.75)
+  headGroup.add(jaw)
 
-  const head = new THREE.Mesh(new THREE.BoxGeometry(0.4 * scale, 0.4 * scale, 0.4 * scale), skin)
-  head.position.y = 1.8 * scale
-  g.add(head)
+  // Chin bump
+  const chin = new THREE.Mesh(new THREE.SphereGeometry(0.04 * sk, 8, 6), SKIN)
+  chin.position.set(0, -0.24 * sk, 0.16 * sk)
+  headGroup.add(chin)
 
-  const hair = new THREE.Mesh(new THREE.BoxGeometry(0.42 * scale, 0.1 * scale, 0.42 * scale), new THREE.MeshToonMaterial({ color: 0x111111 }))
-  hair.position.y = 2.0 * scale
-  g.add(hair)
+  // ── Hair (layered for volume) ──
+  const hairBack = new THREE.Mesh(new THREE.SphereGeometry(0.30 * sk, 12, 10), HAIR)
+  hairBack.position.set(0, 0.05 * sk, -0.04 * sk)
+  hairBack.scale.set(0.98, 0.55, 0.98)
+  headGroup.add(hairBack)
+  const hairTop = new THREE.Mesh(new THREE.SphereGeometry(0.26 * sk, 10, 8), HAIR)
+  hairTop.position.set(0, 0.14 * sk, -0.01 * sk)
+  hairTop.scale.set(0.88, 0.38, 0.92)
+  headGroup.add(hairTop)
+  // Side hair tufts
+  ;[-1, 1].forEach(s => {
+    const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.08 * sk, 8, 6), HAIR)
+    tuft.position.set(s * 0.22 * sk, 0.0 * sk, -0.06 * sk)
+    tuft.scale.set(0.5, 0.7, 0.6)
+    headGroup.add(tuft)
+  })
 
-  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.6 * scale, 0.7 * scale, 0.3 * scale), shirt)
-  torso.position.y = 1.25 * scale
-  g.add(torso)
+  // ── Eyes (white + iris + pupil + eyelids) ──
+  ;[-1, 1].forEach(s => {
+    // Eye white
+    const ew = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 10, 8), EYE_W)
+    ew.position.set(s * 0.105 * sk, 0.04 * sk, 0.23 * sk)
+    ew.scale.set(1, 0.85, 0.6)
+    headGroup.add(ew)
+    // Iris
+    const iris = new THREE.Mesh(new THREE.SphereGeometry(0.028 * sk, 8, 6), EYE_IRIS)
+    iris.position.set(s * 0.105 * sk, 0.035 * sk, 0.255 * sk)
+    headGroup.add(iris)
+    // Pupil
+    const ep = new THREE.Mesh(new THREE.SphereGeometry(0.015 * sk, 6, 4), EYE_P)
+    ep.position.set(s * 0.105 * sk, 0.035 * sk, 0.268 * sk)
+    headGroup.add(ep)
+    // Eye highlight (tiny white dot for liveliness)
+    const hl = new THREE.Mesh(new THREE.SphereGeometry(0.006 * sk, 4, 3), EYE_W)
+    hl.position.set(s * 0.095 * sk, 0.045 * sk, 0.27 * sk)
+    headGroup.add(hl)
+    // Upper eyelid
+    const lid = new THREE.Mesh(new THREE.SphereGeometry(0.052 * sk, 8, 4, 0, Math.PI * 2, 0, Math.PI * 0.4), SKIN)
+    lid.position.set(s * 0.105 * sk, 0.065 * sk, 0.235 * sk)
+    lid.scale.set(1, 0.7, 0.7)
+    lid.rotation.x = -0.2
+    headGroup.add(lid)
+  })
 
+  // ── Eyebrows ──
+  ;[-1, 1].forEach(s => {
+    const brow = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.018 * sk, 0.025 * sk), HAIR)
+    brow.position.set(s * 0.105 * sk, 0.11 * sk, 0.23 * sk)
+    brow.rotation.z = s * 0.1
+    headGroup.add(brow)
+  })
+
+  // ── Nose ──
+  const nose = new THREE.Mesh(new THREE.CylinderGeometry(0.018 * sk, 0.025 * sk, 0.08 * sk, 8), NOSE_M)
+  nose.position.set(0, -0.03 * sk, 0.26 * sk)
+  nose.rotation.x = Math.PI / 2 + 0.15
+  headGroup.add(nose)
+  // Nose tip
+  const noseTip = new THREE.Mesh(new THREE.SphereGeometry(0.022 * sk, 8, 6), NOSE_M)
+  noseTip.position.set(0, -0.06 * sk, 0.275 * sk)
+  headGroup.add(noseTip)
+
+  // ── Mouth ──
+  const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.07 * sk, 0.012 * sk, 0.018 * sk), MOUTH)
+  mouth.position.set(0, -0.11 * sk, 0.25 * sk)
+  headGroup.add(mouth)
+  // Lower lip (slight fullness)
+  const lip = new THREE.Mesh(new THREE.SphereGeometry(0.025 * sk, 8, 4), LIP_COLOR)
+  lip.position.set(0, -0.125 * sk, 0.245 * sk)
+  lip.scale.set(1.2, 0.4, 0.5)
+  headGroup.add(lip)
+
+  // ── Ears ──
+  ;[-1, 1].forEach(s => {
+    const ear = new THREE.Mesh(new THREE.SphereGeometry(0.04 * sk, 8, 6), SKIN2)
+    ear.position.set(s * 0.27 * sk, 0.02 * sk, 0.0)
+    ear.scale.set(0.6, 0.8, 0.4)
+    headGroup.add(ear)
+    // Inner ear
+    const earIn = new THREE.Mesh(new THREE.SphereGeometry(0.02 * sk, 6, 4), EAR_INNER)
+    earIn.position.set(s * 0.275 * sk, 0.02 * sk, 0.005 * sk)
+    earIn.scale.set(0.5, 0.7, 0.3)
+    headGroup.add(earIn)
+  })
+
+  // ── Player cap ──
   if (isPlayer) {
-    const bag = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.2), new THREE.MeshToonMaterial({ color: 0xf39c12 }))
-    bag.position.set(0, 1.25 * scale, -0.2)
-    g.add(bag)
+    const capTop = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), CAP)
+    capTop.position.set(0, 0.12 * sk, -0.01 * sk)
+    capTop.scale.set(1.02, 0.5, 1.02)
+    headGroup.add(capTop)
+    // Brim
+    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.28 * sk, 0.30 * sk, 0.02 * sk, 12), CAP_BRIM)
+    brim.position.set(0, 0.10 * sk, 0.12 * sk)
+    brim.scale.set(1, 1, 0.6)
+    headGroup.add(brim)
   }
 
-  const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.25 * scale, 0.9 * scale, 0.25 * scale), pants)
-  lLeg.position.set(-0.15 * scale, 0.45 * scale, 0)
-  g.add(lLeg)
-  const rLeg = new THREE.Mesh(new THREE.BoxGeometry(0.25 * scale, 0.9 * scale, 0.25 * scale), pants)
-  rLeg.position.set(0.15 * scale, 0.45 * scale, 0)
-  g.add(rLeg)
+  // ═══ NECK ═══
+  const neck = limb(0.08 * sk, 0.10 * sk, 0.14 * sk, SKIN, 8)
+  const neckGroup = new THREE.Group()
+  neckGroup.position.y = 1.56 * sk
+  neck.position.y = 0
+  neckGroup.add(neck)
+  g.add(neckGroup)
 
-  const shoeM = new THREE.MeshToonMaterial({ color: 0x111111 })
-  const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26 * scale, 0.1 * scale, 0.3 * scale), shoeM)
-  lShoe.position.set(-0.15 * scale, 0.05 * scale, 0.05)
-  g.add(lShoe)
-  const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26 * scale, 0.1 * scale, 0.3 * scale), shoeM)
-  rShoe.position.set(0.15 * scale, 0.05 * scale, 0.05)
-  g.add(rShoe)
+  g.add(headGroup)
 
-  g.userData = { lLeg, rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
+  // ═══ TORSO ═══
+  const tH = 0.65 * sk
+  const torsoGroup = new THREE.Group()
+  torsoGroup.position.y = 1.23 * sk
+
+  // Chest (upper torso)
+  const chest = limb(0.34 * sk, 0.30 * sk, tH * 0.52, SHIRT, 10)
+  chest.position.y = tH * 0.15
+  torsoGroup.add(chest)
+
+  // Shirt pocket (left chest)
+  const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.07 * sk, 0.015 * sk), SHIRT_DK)
+  pocket.position.set(-0.12 * sk, tH * 0.2, 0.28 * sk)
+  torsoGroup.add(pocket)
+  // Pocket flap
+  const flap = new THREE.Mesh(new THREE.BoxGeometry(0.085 * sk, 0.015 * sk, 0.02 * sk), SHIRT_DK)
+  flap.position.set(-0.12 * sk, tH * 0.24, 0.29 * sk)
+  torsoGroup.add(flap)
+
+  // Shirt buttons
+  for (let i = 0; i < 3; i++) {
+    const btn = new THREE.Mesh(new THREE.SphereGeometry(0.008 * sk, 6, 4), EYE_W)
+    btn.position.set(0, tH * 0.15 - i * 0.08 * sk, 0.31 * sk)
+    torsoGroup.add(btn)
+  }
+
+  // Waist (lower torso)
+  const waist = limb(0.30 * sk, 0.26 * sk, tH * 0.48, SHIRT_DK, 10)
+  waist.position.y = -tH * 0.18
+  torsoGroup.add(waist)
+
+  // Belt
+  const belt = new THREE.Mesh(new THREE.TorusGeometry(0.28 * sk, 0.025 * sk, 6, 16), BELT)
+  belt.position.y = -tH * 0.40
+  belt.rotation.x = Math.PI / 2
+  torsoGroup.add(belt)
+  // Belt buckle
+  const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.02 * sk), BELT_BUCKLE)
+  buckle.position.set(0, -tH * 0.40, 0.28 * sk)
+  torsoGroup.add(buckle)
+
+  g.add(torsoGroup)
+
+  // ═══ SHOULDERS (joint spheres) ═══
+  const lShoulder = jointSphere(0.08 * sk, SHIRT)
+  lShoulder.position.set(-0.37 * sk, 1.42 * sk, 0)
+  g.add(lShoulder)
+  const rShoulder = jointSphere(0.08 * sk, SHIRT)
+  rShoulder.position.set(0.37 * sk, 1.42 * sk, 0)
+  g.add(rShoulder)
+
+  // ═══ ARMS (articulated groups) ═══
+  const lArmP = new THREE.Group()
+  lArmP.position.set(-0.38 * sk, 1.38 * sk, 0)
+  // Upper arm
+  const lUA = limb(0.085 * sk, 0.075 * sk, 0.32 * sk, SHIRT, 10)
+  lUA.position.y = -0.16 * sk
+  lArmP.add(lUA)
+  // Elbow joint
+  const lElbow = jointSphere(0.055 * sk, JOINT)
+  lElbow.position.set(0, -0.33 * sk, 0)
+  lArmP.add(lElbow)
+  // Forearm
+  const lFore = limb(0.07 * sk, 0.055 * sk, 0.28 * sk, SKIN, 10)
+  lFore.position.set(0, -0.48 * sk, 0)
+  lArmP.add(lFore)
+  // Wrist
+  const lWrist = jointSphere(0.038 * sk, WRIST)
+  lWrist.position.set(0, -0.63 * sk, 0)
+  lArmP.add(lWrist)
+  // Hand
+  const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 8, 6), SKIN2)
+  lHand.position.set(0, -0.68 * sk, 0)
+  lHand.scale.set(0.9, 1, 0.7)
+  lArmP.add(lHand)
+  // Fingers (simplified — 3 bumps)
+  ;[-0.015, 0, 0.015].forEach((fx, fi) => {
+    const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.008 * sk, 0.006 * sk, 0.06 * sk, 4), SKIN2)
+    finger.position.set(fx * sk, -0.74 * sk, 0)
+    lArmP.add(finger)
+  })
+  g.add(lArmP)
+
+  const rArmP = new THREE.Group()
+  rArmP.position.set(0.38 * sk, 1.38 * sk, 0)
+  const rUA = limb(0.085 * sk, 0.075 * sk, 0.32 * sk, SHIRT, 10)
+  rUA.position.y = -0.16 * sk
+  rArmP.add(rUA)
+  const rElbow = jointSphere(0.055 * sk, JOINT)
+  rElbow.position.set(0, -0.33 * sk, 0)
+  rArmP.add(rElbow)
+  const rFore = limb(0.07 * sk, 0.055 * sk, 0.28 * sk, SKIN, 10)
+  rFore.position.set(0, -0.48 * sk, 0)
+  rArmP.add(rFore)
+  const rWrist = jointSphere(0.038 * sk, WRIST)
+  rWrist.position.set(0, -0.63 * sk, 0)
+  rArmP.add(rWrist)
+  const rHand = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 8, 6), SKIN2)
+  rHand.position.set(0, -0.68 * sk, 0)
+  rHand.scale.set(0.9, 1, 0.7)
+  rArmP.add(rHand)
+  ;[-0.015, 0, 0.015].forEach((fx) => {
+    const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.008 * sk, 0.006 * sk, 0.06 * sk, 4), SKIN2)
+    finger.position.set(fx * sk, -0.74 * sk, 0)
+    rArmP.add(finger)
+  })
+  g.add(rArmP)
+
+  // ═══ LEGS (articulated groups) ═══
+  const lLegP = new THREE.Group()
+  lLegP.position.set(-0.14 * sk, 0.82 * sk, 0)
+  // Upper leg (thigh)
+  const lUL = limb(0.11 * sk, 0.095 * sk, 0.42 * sk, PANTS, 10)
+  lUL.position.y = -0.21 * sk
+  lLegP.add(lUL)
+  // Knee joint
+  const lKnee = jointSphere(0.065 * sk, PANTS_DK)
+  lKnee.position.set(0, -0.43 * sk, 0)
+  lLegP.add(lKnee)
+  // Lower leg (shin)
+  const lLL = limb(0.09 * sk, 0.075 * sk, 0.38 * sk, PANTS_DK, 10)
+  lLL.position.set(0, -0.62 * sk, 0)
+  lLegP.add(lLL)
+  // Ankle
+  const lAnkle = jointSphere(0.04 * sk, SHOES)
+  lAnkle.position.set(0, -0.82 * sk, 0)
+  lLegP.add(lAnkle)
+  // Shoe (with sole detail)
+  const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.07 * sk, 0.20 * sk), SHOES)
+  lShoe.position.set(0.01 * sk, -0.87 * sk, 0.04 * sk)
+  lLegP.add(lShoe)
+  const lSole = new THREE.Mesh(new THREE.BoxGeometry(0.115 * sk, 0.02 * sk, 0.21 * sk), SHOE_SOLE)
+  lSole.position.set(0.01 * sk, -0.91 * sk, 0.04 * sk)
+  lLegP.add(lSole)
+  // Shoe tongue
+  const lTongue = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.015 * sk), SHIRT_DK)
+  lTongue.position.set(0.01 * sk, -0.83 * sk, 0.14 * sk)
+  lTongue.rotation.x = -0.3
+  lLegP.add(lTongue)
+  g.add(lLegP)
+
+  const rLegP = new THREE.Group()
+  rLegP.position.set(0.14 * sk, 0.82 * sk, 0)
+  const rUL = limb(0.11 * sk, 0.095 * sk, 0.42 * sk, PANTS, 10)
+  rUL.position.y = -0.21 * sk
+  rLegP.add(rUL)
+  const rKnee = jointSphere(0.065 * sk, PANTS_DK)
+  rKnee.position.set(0, -0.43 * sk, 0)
+  rLegP.add(rKnee)
+  const rLL = limb(0.09 * sk, 0.075 * sk, 0.38 * sk, PANTS_DK, 10)
+  rLL.position.set(0, -0.62 * sk, 0)
+  rLegP.add(rLL)
+  const rAnkle = jointSphere(0.04 * sk, SHOES)
+  rAnkle.position.set(0, -0.82 * sk, 0)
+  rLegP.add(rAnkle)
+  const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.07 * sk, 0.20 * sk), SHOES)
+  rShoe.position.set(-0.01 * sk, -0.87 * sk, 0.04 * sk)
+  rLegP.add(rShoe)
+  const rSole = new THREE.Mesh(new THREE.BoxGeometry(0.115 * sk, 0.02 * sk, 0.21 * sk), SHOE_SOLE)
+  rSole.position.set(-0.01 * sk, -0.91 * sk, 0.04 * sk)
+  rLegP.add(rSole)
+  const rTongue = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.015 * sk), SHIRT_DK)
+  rTongue.position.set(-0.01 * sk, -0.83 * sk, 0.14 * sk)
+  rTongue.rotation.x = -0.3
+  rLegP.add(rTongue)
+  g.add(rLegP)
+
+  // ═══ GROUND SHADOW (soft blob) ═══
+  const shadowGeo = new THREE.CircleGeometry(0.3 * sk, 16)
+  const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.2, depthWrite: false })
+  const shadowBlob = new THREE.Mesh(shadowGeo, shadowMat)
+  shadowBlob.rotation.x = -Math.PI / 2
+  shadowBlob.position.y = 0.01
+  g.add(shadowBlob)
+
+  // ═══ PLAYER-SPECIFIC ACCESSORIES ═══
+  let ring = null, nametag = null
+  if (isPlayer) {
+    // ── Backpack (detailed with straps and pocket) ──
+    const bagMain = new THREE.Mesh(new THREE.BoxGeometry(0.30 * sk, 0.40 * sk, 0.16 * sk), BAG)
+    bagMain.position.set(0, 1.28 * sk, -0.24 * sk)
+    g.add(bagMain)
+    // Bag front pocket
+    const bagPocket = new THREE.Mesh(new THREE.BoxGeometry(0.24 * sk, 0.12 * sk, 0.04 * sk), BAG_DK)
+    bagPocket.position.set(0, 1.20 * sk, -0.33 * sk)
+    g.add(bagPocket)
+    // Bag zipper
+    const zipper = new THREE.Mesh(new THREE.BoxGeometry(0.22 * sk, 0.008 * sk, 0.005 * sk), BELT_BUCKLE)
+    zipper.position.set(0, 1.27 * sk, -0.325 * sk)
+    g.add(zipper)
+    // Bag flap
+    const bagFlap = new THREE.Mesh(new THREE.BoxGeometry(0.28 * sk, 0.06 * sk, 0.03 * sk), BAG_DK)
+    bagFlap.position.set(0, 1.48 * sk, -0.30 * sk)
+    g.add(bagFlap)
+    // Shoulder straps
+    ;[-1, 1].forEach(s => {
+      const strap = new THREE.Mesh(new THREE.BoxGeometry(0.04 * sk, 0.5 * sk, 0.02 * sk), BAG_STRAP)
+      strap.position.set(s * 0.12 * sk, 1.35 * sk, -0.12 * sk)
+      strap.rotation.x = 0.15
+      g.add(strap)
+    })
+
+    // ── Glow ring ──
+    ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.32 * sk, 0.018, 10, 24),
+      new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.4 })
+    )
+    ring.position.set(0, 0.01, 0)
+    ring.rotation.x = Math.PI / 2
+    g.add(ring)
+    // Outer ring glow
+    const ringOuter = new THREE.Mesh(
+      new THREE.TorusGeometry(0.36 * sk, 0.008, 8, 20),
+      new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.2 })
+    )
+    ringOuter.position.set(0, 0.01, 0)
+    ringOuter.rotation.x = Math.PI / 2
+    g.add(ringOuter)
+
+    // ── Direction arrows (3D chevrons) ──
+    const arrowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.35 })
+    ;[-1, 1].forEach(s => {
+      const ar = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.09, 4), arrowMat)
+      ar.position.set(s * 0.52 * sk, 0.1 * sk, 0)
+      ar.rotation.z = s * Math.PI / 2
+      g.add(ar)
+    })
+    // Forward arrow
+    const fwdAr = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.08, 4), arrowMat)
+    fwdAr.position.set(0, 0.08 * sk, 0.5 * sk)
+    fwdAr.rotation.x = Math.PI / 2
+    g.add(fwdAr)
+
+    // ── Nametag sprite ──
+    const nameTxt = (typeof S !== 'undefined' && S?.name) || 'Player'
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 96
+    const ctx = canvas.getContext('2d')
+    // Rounded background
+    ctx.fillStyle = 'rgba(0, 20, 10, 0.7)'
+    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 88, 16); ctx.fill() } else { ctx.fillRect(4, 4, 504, 88) }
+    // Gradient accent line at top
+    const grad = ctx.createLinearGradient(0, 0, 512, 0)
+    grad.addColorStop(0, '#00ff88')
+    grad.addColorStop(1, '#5ed4f5')
+    ctx.strokeStyle = grad
+    ctx.lineWidth = 3
+    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 88, 16); ctx.stroke() }
+    // Name text
+    ctx.fillStyle = '#00ff88'
+    ctx.font = 'bold 42px Inter, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(nameTxt, 256, 50)
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.minFilter = THREE.LinearFilter
+    nametag = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }))
+    nametag.position.set(0, 2.35 * sk, 0)
+    nametag.scale.set(1.2, 0.22, 1)
+    g.add(nametag)
+
+    // ── Outline glow mesh (adds depth) ──
+    const glowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.04, side: THREE.BackSide })
+    const glowBody = new THREE.Mesh(new THREE.CylinderGeometry(0.38 * sk, 0.32 * sk, 1.6 * sk, 12), glowMat)
+    glowBody.position.y = 0.9 * sk
+    g.add(glowBody)
+  }
+
+  // ═══ NPC BACKPACK (simpler) ═══
+  if (!isPlayer) {
+    const npcBag = new THREE.Mesh(new THREE.BoxGeometry(0.22 * sk, 0.30 * sk, 0.12 * sk), BAG)
+    npcBag.position.set(0, 1.28 * sk, -0.22 * sk)
+    g.add(npcBag)
+    // NPC bag strap
+    ;[-0.08, 0.08].forEach(x => {
+      const s = new THREE.Mesh(new THREE.BoxGeometry(0.025 * sk, 0.35 * sk, 0.015 * sk), BAG_STRAP)
+      s.position.set(x * sk, 1.32 * sk, -0.10 * sk)
+      g.add(s)
+    })
+  }
+
+  // ═══ SHADOWS ═══
+  g.traverse(c => {
+    if (c.isMesh) {
+      c.castShadow = !isPlayer
+      c.receiveShadow = true
+      c.frustumCulled = false
+    }
+  })
+
+  // ═══ HITBOX ═══
+  const hb = new THREE.Mesh(
+    new THREE.BoxGeometry(0.6 * sk, 1.8 * sk, 0.6 * sk),
+    new THREE.MeshBasicMaterial({ visible: false })
+  )
+  hb.position.y = 0.9 * sk
+  g.add(hb)
+
+  // ═══ USERDATA (animation refs + NPC behavior) ═══
+  g.userData = {
+    lLeg: lLegP,
+    rLeg: rLegP,
+    lArm: lArmP,
+    rArm: rArmP,
+    headGroup,
+    torsoGroup,
+    ring,
+    nametag,
+    shadowBlob,
+    isPlayer,
+    _sk: sk,
+    t: Math.random() * 10,
+    spd: 1.5 + Math.random() * 1.5,
+    dir: Math.random() > 0.5 ? 1 : -1,
+    startZ: 0,
+    // For idle animation variation
+    idlePhase: Math.random() * Math.PI * 2,
+    blinkTimer: Math.random() * 5
+  }
   return g
 }
 

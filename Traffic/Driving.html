@@ -36,6 +36,7 @@
   <script src="traffic-charts.js"></script>
   <link rel="stylesheet" href="traffic-charts.css" />
   <link rel="stylesheet" href="welcome-back.css" />
+  <link rel="stylesheet" href="animations.css" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
     rel="stylesheet" />
@@ -78,6 +79,37 @@
       .lw {
         padding: 30px 24px;
       }
+      /* Hide desktop-only settings/difficulty/weather buttons on mobile */
+      #btn-diff, .nav-login-btn[onclick*="gameWeather"], .nav-login-btn[onclick*="Difficulty"] {
+        display: none !important;
+      }
+      #top-bar-container {
+        gap: 8px !important;
+      }
+      .back-btn {
+        min-height: 48px;
+        min-width: 48px;
+        padding: 12px 16px;
+      }
+      .mc-btn {
+        min-width: 56px;
+        min-height: 56px;
+      }
+      .qo {
+        padding: 14px 20px;
+        min-height: 48px;
+      }
+      .btn {
+        min-height: 48px;
+        padding: 14px 24px;
+      }
+      .btn-g {
+        min-height: 48px;
+      }
+      .db {
+        width: 56px;
+        height: 56px;
+      }
     }
 
     * {
@@ -112,15 +144,15 @@
       inset: 0;
       background: #070a14;
       z-index: var(--z-loading);
-      display: flex;
+      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       color: #34d399;
       font-family: 'Space Mono', monospace;
       transition:
-        opacity 0.8s ease,
-        transform 0.8s ease;
+        opacity 0.6s ease,
+        transform 0.6s ease;
     }
 
     #loading-screen h1 {
@@ -2636,6 +2668,44 @@
       display: flex !important;
     }
 
+    /* Pause menu tabs */
+    .pause-tab.active {
+      background: rgba(255,255,255,0.2) !important;
+      color: #fff !important;
+    }
+    .pause-panel {
+      animation: pauseFadeIn 0.25s ease-out;
+    }
+    @keyframes pauseFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Quality button active state */
+    .qbtn.active {
+      background: rgba(52,152,219,0.8) !important;
+      color: #fff !important;
+      box-shadow: 0 2px 8px rgba(52,152,219,0.4);
+    }
+    /* Range slider thumb styling */
+    #pause-volume::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    #pause-volume::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
     @media (min-width: 400px) and (max-width: 768px) {
       #task-tracker {
         top: calc(24px + 48px);
@@ -4622,15 +4692,27 @@
   </div>
 
   <!-- Dedicated Pre-Loader Screen -->
-  <div id="loading-screen">
+  <div id="loading-screen" style="display:none;">
+    <div style="margin-bottom:24px;">
+      <div style="width:clamp(40px,8vw,60px); height:clamp(40px,8vw,60px); border:3px solid rgba(255,255,255,0.1); border-top-color:#34d399; border-radius:50%; animation:loadSpin 0.8s linear infinite; margin:0 auto 16px;"></div>
+    </div>
     <h1>Traffic Academy</h1>
-    <div style="font-size: 1.2rem; margin-bottom: 10px">Loading 3D Open World...</div>
+    <div id="loading-level-name" style="font-size:1.4rem; font-weight:600; color:#f2b84b; margin-bottom:6px;">Loading...</div>
+    <div id="loading-subtitle" style="font-size:0.95rem; color:#8891aa; margin-bottom:20px;">Preparing your driving experience</div>
     <div id="loading-bar-container">
       <div id="loading-bar"></div>
     </div>
-    <div id="loading-pct">0%</div>
-    <div id="loading-status">Initializing assets...</div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+      <div id="loading-status">Initializing assets...</div>
+      <div id="loading-pct" style="font-family:'Space Mono',monospace; font-size:1rem; font-weight:700;">0%</div>
+    </div>
+    <div id="loading-tips" style="margin-top:32px; max-width:400px; text-align:center; font-size:0.8rem; color:rgba(255,255,255,0.35); font-style:italic;"></div>
   </div>
+  <style>
+    @keyframes loadSpin { to { transform: rotate(360deg); } }
+    #loading-screen { transition: opacity 0.6s ease, transform 0.6s ease; }
+    #loading-screen.fade-out { opacity: 0; transform: scale(1.05); pointer-events: none; }
+  </style>
 
   <div id="gc"><canvas id="3c" style="touch-action:none;"></canvas></div>
   <div id="swipe-look-hint"
@@ -4667,18 +4749,77 @@
 
   <div id="pause-overlay"
     style="display:none; position:fixed; inset:0; z-index:100000; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); flex-direction:column; align-items:center; justify-content:center; gap:18px; pointer-events:auto;">
-    <div
-      style="font-family:'Bebas Neue',sans-serif; font-size:3rem; color:#fff; text-shadow:0 4px 12px rgba(0,0,0,0.5);">
-      PAUSED</div>
-    <button id="pause-resume"
-      style="font-family:'Inter',sans-serif; font-size:1.1rem; font-weight:600; padding:12px 36px; border:none; border-radius:12px; background:rgba(52,152,219,0.85); color:#fff; cursor:pointer; transition:background 0.2s;">Resume
-      (Esc)</button>
-    <button id="pause-restart"
-      style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(255,149,0,0.8); color:#fff; cursor:pointer;">Restart
-      Level</button>
-    <button id="pause-quit"
-      style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(231,76,60,0.8); color:#fff; cursor:pointer;">Quit
-      to Menu</button>
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:3rem; color:#fff; text-shadow:0 4px 12px rgba(0,0,0,0.5);">PAUSED</div>
+    
+    <!-- Tab Navigation -->
+    <div id="pause-tabs" style="display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:12px; padding:4px;">
+      <button class="pause-tab active" data-tab="main" onclick="pauseTab('main')" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:rgba(255,255,255,0.2); color:#fff; cursor:pointer; transition:all 0.2s;">Resume</button>
+      <button class="pause-tab" data-tab="settings" onclick="pauseTab('settings')" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Settings</button>
+      <button class="pause-tab" data-tab="controls" onclick="pauseTab('controls')" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Controls</button>
+    </div>
+    
+    <!-- Main Tab -->
+    <div id="pause-tab-main" class="pause-panel" style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+      <button id="pause-resume"
+        style="font-family:'Inter',sans-serif; font-size:1.1rem; font-weight:600; padding:12px 36px; border:none; border-radius:12px; background:rgba(52,152,219,0.85); color:#fff; cursor:pointer; transition:all 0.2s; min-height:48px;">Resume (Esc)</button>
+      <button id="pause-restart"
+        style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(255,149,0,0.8); color:#fff; cursor:pointer; min-height:48px;">Restart Level</button>
+      <button id="pause-quit"
+        style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(231,76,60,0.8); color:#fff; cursor:pointer; min-height:48px;">Quit to Menu</button>
+    </div>
+    
+    <!-- Settings Tab -->
+    <div id="pause-tab-settings" class="pause-panel" style="display:none; flex-direction:column; gap:16px; width:90%; max-width:320px;">
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🔊 Master Volume</label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <input type="range" id="pause-volume" min="0" max="100" value="70" oninput="pauseSetVolume(this.value)" style="flex:1; height:6px; border-radius:3px; background:rgba(255,255,255,0.2); outline:none; -webkit-appearance:none; cursor:pointer;">
+          <span id="pause-volume-val" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:700; color:#fff; min-width:36px; text-align:right;">70%</span>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🖥️ Graphics Quality</label>
+        <div id="pause-quality-btns" style="display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:8px; padding:4px;">
+          <button class="qbtn" data-q="LOW" onclick="pauseSetQuality('LOW')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Low</button>
+          <button class="qbtn" data-q="MED" onclick="pauseSetQuality('MED')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Med</button>
+          <button class="qbtn" data-q="HIGH" onclick="pauseSetQuality('HIGH')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">High</button>
+          <button class="qbtn" data-q="ULTRA" onclick="pauseSetQuality('ULTRA')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Ultra</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🌙 Night Mode</label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button id="pause-night-toggle" onclick="pauseToggleNight()" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); cursor:pointer; min-height:40px; transition:all 0.2s;">Off</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Controls Tab -->
+    <div id="pause-tab-controls" class="pause-panel" style="display:none; flex-direction:column; gap:12px; width:90%; max-width:400px; max-height:50vh; overflow-y:auto;">
+      <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.5); margin-bottom:4px;">Desktop Controls</div>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-family:'Inter',sans-serif; font-size:0.85rem;">
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">W / ↑</kbd><span style="color:rgba(255,255,255,0.8);">Accelerate</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">S / ↓</kbd><span style="color:rgba(255,255,255,0.8);">Brake / Reverse</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">A / ←</kbd><span style="color:rgba(255,255,255,0.8);">Steer Left</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">D / →</kbd><span style="color:rgba(255,255,255,0.8);">Steer Right</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">Q</kbd><span style="color:rgba(255,255,255,0.8);">Turn Signal Left</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">E</kbd><span style="color:rgba(255,255,255,0.8);">Turn Signal Right</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">H</kbd><span style="color:rgba(255,255,255,0.8);">High Beam</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">B</kbd><span style="color:rgba(255,255,255,0.8);">Seatbelt</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">F</kbd><span style="color:rgba(255,255,255,0.8);">Enter / Exit Vehicle</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">M</kbd><span style="color:rgba(255,255,255,0.8);">Toggle GPS</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">V</kbd><span style="color:rgba(255,255,255,0.8);">Mobile Phone</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">Esc</kbd><span style="color:rgba(255,255,255,0.8);">Pause / Resume</span>
+      </div>
+      <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.5); margin-top:8px; margin-bottom:4px;">Mobile Controls</div>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-family:'Inter',sans-serif; font-size:0.85rem;">
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">🛞</span><span style="color:rgba(255,255,255,0.8);">Steering Wheel — Drag to steer</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">🟢</span><span style="color:rgba(255,255,255,0.8);">Gas Pedal — Hold to accelerate</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">🔴</span><span style="color:rgba(255,255,255,0.8);">Brake Pedal — Hold to brake</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">👆</span><span style="color:rgba(255,255,255,0.8);">Screen Drag — Camera look</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">📱</span><span style="color:rgba(255,255,255,0.8);">Shake — Gyro steering</span>
+      </div>
+    </div>
   </div>
 
   <div id="task-tracker">
@@ -5617,6 +5758,7 @@
   <script src="road-graph.js"></script>
   <script src="render_core.js"></script>
   <script src="safezone-ui.js"></script>
+  <script src="gameplay-recorder.js"></script>
   <script src="game_core.js?v=11"></script>
   <script src="npc-ai.js"></script>
   <script src="traffic-manager.js"></script>
@@ -6350,6 +6492,86 @@
       localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
       hzSync();
     }
+
+    // ── Pause Menu: Tab Switching ──
+    function pauseTab(tab) {
+      document.querySelectorAll('.pause-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+      document.querySelectorAll('.pause-panel').forEach(p => p.style.display = 'none');
+      const panel = document.getElementById('pause-tab-' + tab);
+      if (panel) panel.style.display = 'flex';
+      // Reset to main when resuming
+      if (tab === 'main') document.getElementById('pause-resume')?.focus();
+    }
+
+    // ── Pause Menu: Volume Control ──
+    function pauseSetVolume(val) {
+      const v = parseInt(val);
+      document.getElementById('pause-volume-val').textContent = v + '%';
+      // Apply to game audio if available — try common sfx property patterns
+      const normalised = v / 100;
+      try {
+        if (window.sfx) {
+          // Try direct setter first
+          if (typeof window.sfx.setVolume === 'function') { window.sfx.setVolume(normalised); }
+          // Try _masterGain or _g gain node
+          const gain = window.sfx._masterGain || window.sfx._g;
+          if (gain && gain.gain) gain.gain.value = normalised;
+          // Try _c (AudioContext) destination gain
+          if (window.sfx._c && window.sfx._c.destination) {
+            const dest = window.sfx._c.destination;
+            if (dest.gain) dest.gain.value = normalised;
+          }
+        }
+      } catch(e) {}
+      localStorage.setItem('traffic_volume', v);
+    }
+
+    // ── Pause Menu: Graphics Quality ──
+    function pauseSetQuality(preset) {
+      document.querySelectorAll('.qbtn').forEach(b => b.classList.toggle('active', b.dataset.q === preset));
+      if (window.game && window.game.renderCore) {
+        window.game.renderCore.setQuality(preset);
+      }
+      localStorage.setItem('traffic_quality', preset);
+    }
+
+    // ── Pause Menu: Night Mode Toggle ──
+    let _pauseNightOn = false;
+    function pauseToggleNight() {
+      _pauseNightOn = !_pauseNightOn;
+      const btn = document.getElementById('pause-night-toggle');
+      if (btn) {
+        btn.textContent = _pauseNightOn ? 'On' : 'Off';
+        btn.style.background = _pauseNightOn ? 'rgba(52,152,219,0.6)' : 'rgba(255,255,255,0.1)';
+        btn.style.color = _pauseNightOn ? '#fff' : 'rgba(255,255,255,0.7)';
+      }
+      // Apply night mode to scene if game is active
+      if (window.game && window.game.scene) {
+        const fog = window.game.scene.fog;
+        const amb = window.game.scene.children.find(c => c.isAmbientLight);
+        if (_pauseNightOn) {
+          if (fog) { fog.color.set(0x0a0a1a); fog.near = 5; fog.far = 120; }
+          if (amb) { amb.intensity = 0.15; }
+          window.game.scene.background = new THREE.Color(0x0a0a1a);
+        } else {
+          if (fog) { fog.color.set(0xc8d6e5); fog.near = 50; fog.far = 350; }
+          if (amb) { amb.intensity = 0.6; }
+          window.game.scene.background = new THREE.Color(0xc8d6e5);
+        }
+      }
+    }
+
+    // Initialize pause settings from localStorage
+    (function() {
+      const savedVol = localStorage.getItem('traffic_volume');
+      if (savedVol !== null) {
+        pauseSetVolume(savedVol);
+        const el = document.getElementById('pause-volume');
+        if (el) el.value = savedVol;
+      }
+      const savedQ = localStorage.getItem('traffic_quality') || 'HIGH';
+      pauseSetQuality(savedQ);
+    })();
 hzInit();
     </script>
   <script src="welcome-back.js"></script>

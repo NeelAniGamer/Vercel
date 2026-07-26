@@ -610,27 +610,43 @@ function _getThemeRoads(themeType) {
       ]
     },
     grand_test: {
-      name: 'Grand Test', sky: 0x87b6d8, fog: 600, ground: 0x33691e, amb: 0.85, veh: 'car',
-      npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car','truck','car'],
+      name: 'Grand Test — Final Exam', sky: 0x1a2a3a, fog: 350, ground: 0x2a3a2a, amb: 0.45, veh: 'car',
+      npcTypes: ['car','car','truck','bus','bike','auto','taxi','car','truck','bike','car','auto','bus','truck','car','bike','car','auto','car','truck','taxi','bus','bike','car'],
+      hasRain: true, hasPuddles: true, isNight: true, speedLimit: 40,
       roads: [
-        { type:'v', x:-360, z1:-480, z2:480 }, { type:'v', x:-240, z1:-480, z2:480 },
-        { type:'v', x:-120, z1:-480, z2:480 }, { type:'v', x:0,    z1:-480, z2:480 },
-        { type:'v', x:120,  z1:-480, z2:480 }, { type:'v', x:240,  z1:-480, z2:480 },
-        { type:'v', x:360,  z1:-480, z2:480 },
-        { type:'h', z:-480, x1:-360, x2:360 }, { type:'h', z:-240, x1:-360, x2:360 },
-        { type:'h', z:0,    x1:-360, x2:360 }, { type:'h', z:240,  x1:-360, x2:360 },
-        { type:'h', z:480,  x1:-360, x2:360 }
+        { type:'v', x:-480, z1:-600, z2:600 }, { type:'v', x:-360, z1:-600, z2:600 },
+        { type:'v', x:-240, z1:-600, z2:600 }, { type:'v', x:-120, z1:-600, z2:600 },
+        { type:'v', x:0,    z1:-600, z2:600 }, { type:'v', x:120,  z1:-600, z2:600 },
+        { type:'v', x:240,  z1:-600, z2:600 }, { type:'v', x:360,  z1:-600, z2:600 },
+        { type:'v', x:480,  z1:-600, z2:600 },
+        { type:'h', z:-600, x1:-480, x2:480 }, { type:'h', z:-480, x1:-480, x2:480 },
+        { type:'h', z:-360, x1:-480, x2:480 }, { type:'h', z:-240, x1:-480, x2:480 },
+        { type:'h', z:-120, x1:-480, x2:480 }, { type:'h', z:0,    x1:-480, x2:480 },
+        { type:'h', z:120,  x1:-480, x2:480 }, { type:'h', z:240,  x1:-480, x2:480 },
+        { type:'h', z:360,  x1:-480, x2:480 }, { type:'h', z:480,  x1:-480, x2:480 },
+        { type:'h', z:600,  x1:-480, x2:480 }
       ],
-      route: [{ x:0,z:-480 },{ x:0,z:-240 },{ x:0,z:0 },{ x:0,z:240 },{ x:0,z:480 },
-              { x:120,z:480 },{ x:240,z:480 },{ x:360,z:480 },{ x:360,z:240 },{ x:360,z:0 },
-              { x:360,z:-240 },{ x:360,z:-480 },{ x:240,z:-480 },{ x:120,z:-480 },
-              { x:-120,z:-480 },{ x:-240,z:-480 },{ x:-360,z:-480 },{ x:-360,z:-240 },
-              { x:-360,z:0 },{ x:-360,z:240 },{ x:-360,z:480 }],
+      route: [
+        { x:0,z:-600 },{ x:0,z:-360 },{ x:0,z:-120 },{ x:0,z:120 },{ x:0,z:360 },{ x:0,z:600 },
+        { x:240,z:600 },{ x:240,z:360 },{ x:240,z:120 },{ x:240,z:-120 },{ x:240,z:-360 },{ x:240,z:-600 },
+        { x:-240,z:-600 },{ x:-240,z:-360 },{ x:-240,z:-120 },{ x:-240,z:120 },{ x:-240,z:360 },{ x:-240,z:600 },
+        { x:480,z:600 },{ x:480,z:240 },{ x:480,z:-120 },{ x:480,z:-480 },
+        { x:240,z:-480 },{ x:0,z:-480 },{ x:-240,z:-480 },{ x:-480,z:-480 },
+        { x:-480,z:-120 },{ x:-480,z:240 },{ x:-480,z:600 }
+      ],
       npcs: [
-        { type:'taxi', color:0xffcc00, route:[[0,-480],[0,0],[0,480]] },
-        { type:'bus', color:0x0044aa, route:[[240,-480],[240,0],[240,480]] },
-        { type:'truck', color:0x884400, route:[[-240,480],[-240,0],[-240,-480]] },
-        { type:'auto', color:0xff6600, route:[[360,-480],[360,0],[360,480]] }
+        { type:'taxi', color:0xffcc00, route:[[0,-600],[0,0],[0,600],[240,600],[240,0],[240,-600]] },
+        { type:'bus', color:0x0044aa, route:[[240,600],[240,0],[240,-600],[0,-600],[0,0],[0,600]] },
+        { type:'truck', color:0x884400, route:[[-240,-600],[-240,0],[-240,600],[-480,600],[-480,0],[-480,-600]] },
+        { type:'car', color:0xff3333, route:[[480,-480],[480,240],[240,240],[0,240],[-240,240],[-480,240]] },
+        { type:'bike', color:0x00cc66, route:[[360,-600],[360,-120],[120,-120],[-120,-120],[-360,-120]] },
+        { type:'auto', color:0xff6600, route:[[-360,600],[-360,120],[-120,120],[120,120],[360,120],[360,600]] },
+        { type:'truck', color:0x664422, route:[[480,600],[480,-120],[240,-120],[0,-120],[-240,-120],[-480,-120]] },
+        { type:'car', color:0x445566, route:[[0,-600],[-240,-600],[-480,-600],[-480,-360],[-240,-360],[0,-360]] },
+        { type:'taxi', color:0xddcc00, route:[[-480,600],[-480,0],[-480,-480],[-240,-480],[0,-480],[240,-480]] },
+        { type:'bus', color:0x0066cc, route:[[480,600],[240,600],[0,600],[-240,600],[-480,600],[-480,360]] },
+        { type:'bike', color:0xff8800, route:[[-120,-600],[-120,-360],[120,-360],[120,-120],[-120,-120],[-120,120]] },
+        { type:'car', color:0x2233aa, route:[[360,600],[360,360],[120,360],[-120,360],[-360,360],[-360,600]] }
       ]
     },
     night_monsoon: {
@@ -889,6 +905,15 @@ class Game {
         this.clock = new THREE.Clock(); this.keys = {}; this.speed = 0; this.maxSpd = 1.1; this.accel = .045; this.fric = .95; this.turn = .065; this.gear = 'N'; this.gcap = 0;
         this.boostFuel = 100; this.maxBoostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._camTarget = new THREE.Vector3(); this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
+        // ── Enhanced Physics State ──
+        this._bodyRoll = 0; this._bodyPitch = 0; this._suspensionY = 0;
+        this._brakeHeat = 0; this._tireWear = 0; this._aeroDrag = 0;
+        this._collisionImpulse = new THREE.Vector3(); this._lastCollisionTime = 0;
+        this._skidMarks = []; this._sparks = []; this._debris = [];
+        this._hitstopTimer = 0; this._damageOverlayOpacity = 0;
+        this._crackOverlay = null; this._speedLinesIntensity = 0;
+        this._wheelSpin = 0; this._exhaustSmoke = [];
+        this._lateralAccel = 0; this._downforceCoeff = 0; this._brakeFadeFactor = 1.0;
         this.playing = false; this.pause = false; this.lightningTimer = 0; this.thunderSfx = null; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0;
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.pedestrianAIs = []; this.routeIdx = 0; this.retries = 0; this.hits = 0;
         this.violationsLog = [];
@@ -1853,6 +1878,7 @@ class Game {
               this.violationsLog.push('NO_HONKING');
               this.score -= 50;
               this.fine += 2000;
+              if (window.GameplayRecorder) GameplayRecorder.record('NO_HONKING', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
               ui.issueChallan('Honking in No-Honking Zone', 'Sec 190(2) MV Act', '₹2,000', 'Silence Zone Violation');
             toast('💡 TIP: Silence zones near schools/hospitals require zero honking. Use hand signals instead.', '#ffd54a');
           } else {
@@ -1860,7 +1886,338 @@ class Game {
               sfx.play('horn'); 
           } 
       }
-      _brake() { this.speed *= .35; sfx.play('brake'); toast('🛑 Hard Deceleration Active', '#fff'); }
+      _brake() {
+        // Apply brake fade factor — reduced braking when brakes are overheated
+        const fadeFactor = this._brakeFadeFactor || 1.0;
+        const brakePower = 0.35 * fadeFactor;
+        this.speed *= brakePower;
+        sfx.play('brake');
+        if (fadeFactor < 0.8) {
+          toast('⚠️ Brake fade! Brakes overheating — reduced stopping power', '#ff9500');
+        } else {
+          toast('🛑 Hard Deceleration Active', '#fff');
+        }
+      }
+
+      // ══════════════════════════════════════════════════════════════════════
+      // ENHANCED PHYSICS: Aerodynamics, Suspension, Brake Heat, Skid Marks
+      // ══════════════════════════════════════════════════════════════════════
+      _computeAeroForces(dt) {
+        const speed = Math.abs(this.speed);
+        const speedMs = speed * 30; // game-units to approx m/s
+        const cfg = VEHICLE_PACEJKA_CONFIG[this.vehMode] || VEHICLE_PACEJKA_CONFIG.car;
+        const frontalArea = (cfg.track_width || 1.5) * 1.2; // approx m^2
+        const Cd = 0.35; // drag coefficient
+        const Cl = 0.15; // lift coefficient (positive = lift, negative = downforce)
+        const airDensity = 1.225; // kg/m^3
+        // Aerodynamic drag force (opposes motion)
+        const dragForce = 0.5 * airDensity * Cd * frontalArea * speedMs * speedMs;
+        this._aeroDrag = dragForce * 0.0001; // scale to game units
+        // Downforce (presses car down, increases grip at speed)
+        const downforce = 0.5 * airDensity * Cl * frontalArea * speedMs * speedMs;
+        this._downforceCoeff = Math.min(downforce / (cfg.mass * 9.81), 0.3); // max 30% extra grip
+      }
+
+      _updateSuspension(dt) {
+        const cfg = VEHICLE_PACEJKA_CONFIG[this.vehMode] || VEHICLE_PACEJKA_CONFIG.car;
+        // Body roll: caused by lateral acceleration (steering)
+        const lateralAccel = this._lateralAccel || 0;
+        const targetRoll = -lateralAccel * 0.03 * (cfg.cg_height || 0.55);
+        this._bodyRoll += (targetRoll - this._bodyRoll) * Math.min(1, dt * 8);
+        this._bodyRoll = Math.max(-0.12, Math.min(0.12, this._bodyRoll));
+        // Body pitch: braking = nose dive, accel = nose lift
+        const accel = this.keys['w'] || this.keys['arrowup'];
+        const brake = this.keys['s'] || this.keys['arrowdown'];
+        let targetPitch = 0;
+        if (brake && speed > 0.1) targetPitch = 0.06; // nose dive
+        else if (accel && speed < cfg.maxSpeed) targetPitch = -0.03; // nose lift
+        this._bodyPitch += (targetPitch - this._bodyPitch) * Math.min(1, dt * 6);
+        this._bodyPitch = Math.max(-0.08, Math.min(0.08, this._bodyPitch));
+        // Apply to vehicle mesh
+        if (this.playerVehicle) {
+          this.playerVehicle.rotation.z = this._bodyRoll;
+          this.playerVehicle.rotation.x = this._bodyPitch;
+          // Suspension vertical bounce
+          const speed = Math.abs(this.speed);
+          const bounceFreq = 2.5 + speed * 3;
+          const bounceAmp = 0.008 * Math.min(speed, 1);
+          this._suspensionY = Math.sin(this.timer * bounceFreq) * bounceAmp;
+          this.playerVehicle.position.y = this._suspensionY + (this._enterState === 'IDLE' && this.isPedestrian ? 0 : 0.2);
+        }
+      }
+
+      _updateBrakeHeat(dt) {
+        if (!this._brakeHeat) this._brakeHeat = 0;
+        const braking = this.keys['s'] || this.keys['arrowdown'];
+        const speed = Math.abs(this.speed);
+        if (braking && speed > 0.3) {
+          this._brakeHeat = Math.min(100, this._brakeHeat + dt * 15 * (speed / 1.1));
+        } else {
+          this._brakeHeat = Math.max(0, this._brakeHeat - dt * 8);
+        }
+        // Brake fade: at high heat, braking efficiency drops
+        if (this._brakeHeat > 70) {
+          const fadeFactor = 1 - (this._brakeHeat - 70) * 0.015;
+          this._brakeFadeFactor = Math.max(0.5, fadeFactor);
+        } else {
+          this._brakeFadeFactor = 1.0;
+        }
+      }
+
+      // ══════════════════════════════════════════════════════════════════════
+      // CRASH IMPACT SYSTEM: Sparks, Debris, Skid Marks, Hitstop, Damage FX
+      // ══════════════════════════════════════════════════════════════════════
+      _spawnSparks(x, z, intensity) {
+        const count = Math.min(Math.floor(intensity * 20), 30);
+        const positions = new Float32Array(count * 3);
+        const velocities = [];
+        const colors = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+          positions[i*3] = x + (Math.random()-0.5)*0.5;
+          positions[i*3+1] = 0.3 + Math.random()*0.5;
+          positions[i*3+2] = z + (Math.random()-0.5)*0.5;
+          const angle = Math.random()*Math.PI*2;
+          const speed = 2 + Math.random()*5 * intensity;
+          velocities.push({ vx: Math.cos(angle)*speed, vy: 3+Math.random()*4, vz: Math.sin(angle)*speed, life: 0.3+Math.random()*0.4 });
+          // Spark colors: yellow → orange → white
+          const t = Math.random();
+          colors[i*3] = 1; colors[i*3+1] = 0.7+t*0.3; colors[i*3+2] = t*0.3;
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        const mat = new THREE.PointsMaterial({ size: 0.15, transparent: true, opacity: 1, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false });
+        const pts = new THREE.Points(geo, mat);
+        this.scene.add(pts);
+        this._sparks.push({ points: pts, velocities, life: 0.6, age: 0 });
+      }
+
+      _spawnDebris(x, z, intensity, color) {
+        const count = Math.min(Math.floor(intensity * 8), 12);
+        const group = new THREE.Group();
+        const pieces = [];
+        const baseColor = color || 0x888888;
+        for (let i = 0; i < count; i++) {
+          const size = 0.05 + Math.random()*0.15;
+          const geo = new THREE.BoxGeometry(size, size, size);
+          const mat = new THREE.MeshBasicMaterial({ color: baseColor, transparent: true, opacity: 1 });
+          const mesh = new THREE.Mesh(geo, mat);
+          mesh.position.set(x + (Math.random()-0.5)*1, 0.5+Math.random()*0.5, z + (Math.random()-0.5)*1);
+          const angle = Math.random()*Math.PI*2;
+          const spd = 1+Math.random()*4*intensity;
+          mesh.userData.vel = { x: Math.cos(angle)*spd, y: 3+Math.random()*5, z: Math.sin(angle)*spd };
+          mesh.userData.rotVel = { x: (Math.random()-0.5)*10, y: (Math.random()-0.5)*10, z: (Math.random()-0.5)*10 };
+          group.add(mesh);
+          pieces.push(mesh);
+        }
+        this.scene.add(group);
+        this._debris.push({ group, pieces, life: 1.2, age: 0 });
+      }
+
+      _spawnSkidMark(x, z, rotY, length) {
+        if (this._skidMarks.length > 100) return; // cap
+        const geo = new THREE.PlaneGeometry(0.4, length || 2);
+        const mat = new THREE.MeshBasicMaterial({ color: 0x1a1a1a, transparent: true, opacity: 0.6, side: THREE.DoubleSide });
+        const mark = new THREE.Mesh(geo, mat);
+        mark.rotation.set(-Math.PI/2, 0, rotY);
+        mark.position.set(x, 0.02, z);
+        this.scene.add(mark);
+        this._skidMarks.push({ mesh: mark, age: 0, maxAge: 15 });
+      }
+
+      _updateCrashFX(dt) {
+        // Update sparks
+        for (let i = this._sparks.length - 1; i >= 0; i--) {
+          const s = this._sparks[i];
+          s.age += dt;
+          if (s.age >= s.life) {
+            this.scene.remove(s.points);
+            s.points.geometry.dispose();
+            s.points.material.dispose();
+            this._sparks.splice(i, 1);
+            continue;
+          }
+          const pos = s.points.geometry.attributes.position.array;
+          for (let j = 0; j < s.velocities.length; j++) {
+            const v = s.velocities[j];
+            v.vy -= 12 * dt; // gravity
+            pos[j*3] += v.vx * dt;
+            pos[j*3+1] += v.vy * dt;
+            pos[j*3+2] += v.vz * dt;
+            if (pos[j*3+1] < 0) pos[j*3+1] = 0;
+          }
+          s.points.geometry.attributes.position.needsUpdate = true;
+          s.points.material.opacity = 1 - (s.age / s.life);
+        }
+        // Update debris
+        for (let i = this._debris.length - 1; i >= 0; i--) {
+          const d = this._debris[i];
+          d.age += dt;
+          if (d.age >= d.life) {
+            this.scene.remove(d.group);
+            d.pieces.forEach(p => { p.geometry.dispose(); p.material.dispose(); });
+            this._debris.splice(i, 1);
+            continue;
+          }
+          d.pieces.forEach(p => {
+            const v = p.userData.vel;
+            v.y -= 10 * dt;
+            p.position.x += v.x * dt;
+            p.position.y += v.y * dt;
+            p.position.z += v.z * dt;
+            if (p.position.y < 0.05) { p.position.y = 0.05; v.y *= -0.3; v.x *= 0.8; v.z *= 0.8; }
+            const rv = p.userData.rotVel;
+            p.rotation.x += rv.x * dt;
+            p.rotation.y += rv.y * dt;
+            p.rotation.z += rv.z * dt;
+            p.material.opacity = 1 - (d.age / d.life);
+          });
+        }
+        // Update skid marks (fade over time)
+        for (let i = this._skidMarks.length - 1; i >= 0; i--) {
+          const m = this._skidMarks[i];
+          m.age += dt;
+          if (m.age >= m.maxAge) {
+            this.scene.remove(m.mesh);
+            m.mesh.geometry.dispose();
+            m.mesh.material.dispose();
+            this._skidMarks.splice(i, 1);
+            continue;
+          }
+          m.mesh.material.opacity = 0.6 * (1 - m.age / m.maxAge);
+        }
+        // Hitstop (time slowdown on hard impact)
+        if (this._hitstopTimer > 0) {
+          this._hitstopTimer -= dt;
+        }
+        // Damage overlay fade
+        if (this._damageOverlayOpacity > 0) {
+          this._damageOverlayOpacity = Math.max(0, this._damageOverlayOpacity - dt * 1.5);
+          const overlay = document.getElementById('damage-overlay');
+          if (overlay) overlay.style.opacity = this._damageOverlayOpacity;
+        }
+      }
+
+      _applyCrashImpact(npcPos, impactSpeed) {
+        const now = this.timer;
+        if (now - this._lastCollisionTime < 0.3) return; // debounce
+        this._lastCollisionTime = now;
+
+        const intensity = Math.min(Math.abs(impactSpeed) / 1.0, 1.0); // 0-1 scale
+
+        // ── Directional bounce (reflect velocity off collision normal) ──
+        const dx = this.player.position.x - npcPos.x;
+        const dz = this.player.position.z - npcPos.z;
+        const dist = Math.hypot(dx, dz) || 1;
+        const nx = dx / dist, nz = dz / dist;
+        // Reflect and dampen
+        const dot = this.vx * nx + this.vz * nz;
+        this.vx -= 2 * dot * nx * 0.6;
+        this.vz -= 2 * dot * nz * 0.6;
+        // Additional speed reversal
+        this.speed = Math.max(-0.5, Math.min(0.5, this.speed * -(0.15 + 0.15 * intensity)));
+
+        // ── Camera shake scaled by speed ──
+        this._camShakeAmt = Math.max(this._camShakeAmt, 0.2 + intensity * 0.6);
+
+        // ── Hitstop (freeze frame) for hard impacts ──
+        if (intensity > 0.5) {
+          this._hitstopTimer = 0.05 + intensity * 0.12;
+        }
+
+        // ── Screen flash ──
+        if (intensity > 0.3) {
+          const flash = document.getElementById('speed-flash');
+          if (flash) {
+            flash.style.background = 'rgba(255, 60, 40, ' + (intensity * 0.35) + ')';
+            flash.style.display = 'block';
+            setTimeout(() => flash.style.display = 'none', 100 + intensity * 100);
+          }
+        }
+
+        // ── Damage overlay ──
+        this._damageOverlayOpacity = Math.min(0.6, intensity * 0.6);
+        let dmgOverlay = document.getElementById('damage-overlay');
+        if (!dmgOverlay) {
+          dmgOverlay = document.createElement('div');
+          dmgOverlay.id = 'damage-overlay';
+          dmgOverlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:80;background:radial-gradient(ellipse at center, transparent 40%, rgba(180,20,20,0.5) 100%);opacity:0;transition:opacity 0.3s;';
+          document.body.appendChild(dmgOverlay);
+        }
+        dmgOverlay.style.opacity = this._damageOverlayOpacity;
+
+        // ── Windshield crack overlay for high-speed impacts ──
+        if (intensity > 0.7) {
+          let crack = document.getElementById('crack-overlay');
+          if (!crack) {
+            crack = document.createElement('div');
+            crack.id = 'crack-overlay';
+            crack.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:81;opacity:0;transition:opacity 0.2s;';
+            // Draw crack lines on canvas
+            const c = document.createElement('canvas');
+            c.width = window.innerWidth; c.height = window.innerHeight;
+            crack.appendChild(c);
+            const ctx = c.getContext('2d');
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            ctx.lineWidth = 1.5;
+            const cx = c.width/2, cy = c.height/3;
+            for (let i = 0; i < 8; i++) {
+              const angle = (Math.PI*2/8)*i + (Math.random()-0.5)*0.5;
+              const len = 40 + Math.random()*80;
+              ctx.beginPath();
+              ctx.moveTo(cx, cy);
+              ctx.lineTo(cx + Math.cos(angle)*len, cy + Math.sin(angle)*len);
+              ctx.stroke();
+              // Branch
+              if (Math.random() > 0.4) {
+                const bx = cx + Math.cos(angle)*len*0.6;
+                const by = cy + Math.sin(angle)*len*0.6;
+                const ba = angle + (Math.random()-0.5)*1.2;
+                const bl = 15 + Math.random()*30;
+                ctx.beginPath();
+                ctx.moveTo(bx, by);
+                ctx.lineTo(bx + Math.cos(ba)*bl, by + Math.sin(ba)*bl);
+                ctx.stroke();
+              }
+            }
+            document.body.appendChild(crack);
+          }
+          crack.style.opacity = Math.min(0.8, intensity * 0.9);
+          setTimeout(() => { if(crack) crack.style.opacity = '0'; }, 2000);
+        }
+
+        // ── Spawn VFX at collision point ──
+        this._spawnSparks(this.player.position.x, this.player.position.z, intensity);
+        if (intensity > 0.3) {
+          this._spawnDebris(this.player.position.x, this.player.position.z, intensity, 0x666666);
+        }
+
+        // ── Skid marks if sliding ──
+        if (intensity > 0.2 && Math.abs(this.speed) > 0.1) {
+          this._spawnSkidMark(this.player.position.x, this.player.position.z, this.player.rotation.y, 1 + intensity * 2);
+        }
+
+        // ── Vehicle mesh damage: tilt panels ──
+        if (this.playerVehicle && intensity > 0.4) {
+          const dmg = Math.min(intensity, 1);
+          // Hood tilt forward
+          const hood = this.playerVehicle.getObjectByName('hood');
+          if (hood) hood.rotation.x = -dmg * 0.15;
+          // Random panel offset
+          this.playerVehicle.children.forEach(child => {
+            if (child.userData && child.userData.isPanel) {
+              child.position.y += (Math.random()-0.5) * dmg * 0.05;
+              child.rotation.z += (Math.random()-0.5) * dmg * 0.05;
+            }
+          });
+        }
+
+        // ── FOV punch ──
+        this._camFovTarget = 60 + intensity * 12;
+
+        // ── Speed lines intensity ──
+        this._speedLinesIntensity = Math.min(1, intensity * 1.5);
+      }
       startLevel() {
         // Auto fullscreen on desktop
         if (!this._isMobile && document.documentElement.requestFullscreen && !document.fullscreenElement) {
@@ -1881,7 +2238,12 @@ class Game {
         }, 1500);
       }
       async _actualStart(lv) {
+        // Show loading screen with level name
+        this._showLoading(lv.name || 'Level ' + lv.id);
+        this._updateLoading(5, 'Resetting game state...');
         this.mode = lv.mode; this.vehMode = lv.vehMode; this.lvId = lv.id; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0; this.speed = 0; this.routeIdx = 0; this.retries = 0; this.vx = 0; this.vz = 0;
+        // Start gameplay recording
+        if (window.GameplayRecorder) GameplayRecorder.start(lv.id, lv.name || '');
         this.ms = { inSz: false, passed: false, amb: null };
         this.challanFired = new Set();
         this.seatbeltOn = false;
@@ -1898,6 +2260,12 @@ class Game {
         this._lastStepTime = 0;
         this.boostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
+        // ── Reset Enhanced Physics ──
+        this._bodyRoll = 0; this._bodyPitch = 0; this._suspensionY = 0;
+        this._brakeHeat = 0; this._tireWear = 0;
+        this._collisionImpulse.set(0,0,0); this._lastCollisionTime = 0;
+        this._hitstopTimer = 0; this._damageOverlayOpacity = 0;
+        this._wheelSpin = 0;
         this.highBeamOn = false;
         this.turnSignal = 0;
         this.turnTimer = 0;
@@ -1941,15 +2309,45 @@ class Game {
         if (ui.cq) ui.cq = [];
         ui.cbusy = false;
         this.setGear('N');
+        this._updateLoading(20, 'Loading vehicle models...');
         // Lazy-load level-specific models before building scene
         if (typeof window.loadLevelAssets === 'function') {
           await new Promise(resolve => window.loadLevelAssets(lv.assets, resolve));
         }
-        this._buildScene(lv.mode); this.playing = true; this.pause = false; ui.show(null);         const baseTime = this.mapCfg ? this.mapCfg.timeLimit || 120 : 120;
+        this._updateLoading(50, 'Building city environment...');
+        await new Promise(r => requestAnimationFrame(r));
+        this._buildScene(lv.mode);
+        this._updateLoading(80, 'Spawning traffic & pedestrians...');
+        await new Promise(r => requestAnimationFrame(r));
+        this._updateLoading(100, 'Ready!');
+        await new Promise(r => setTimeout(r, 300)); // brief pause so player sees 100%
+        this._hideLoading();
+        this.playing = true; this.pause = false; ui.show(null);         const baseTime = this.mapCfg ? this.mapCfg.timeLimit || 120 : 120;
         const ageTimeScale = (typeof ui !== 'undefined' && ui.getAgeScale) ? ui.getAgeScale() : 1.0;
         this.timeLimit = Math.round(baseTime / ageTimeScale);
         const cfg = this.mapCfg || {};
         ['gc', 'hud', 'hudbar', 'hwrap', 'mobile-controls', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
+        // ── HUD Entrance Animations ──
+        if (typeof IntersectionObserver === 'undefined' || true) {
+          const hudAnims = [
+            { id: 'hwrap', cls: 'hud-enter-left' },
+            { id: 'hcp', cls: 'hud-enter-top' },
+            { id: 'htmr', cls: 'hud-enter-top' },
+            { id: 'mmc', cls: 'hud-enter-right' },
+            { id: 'gspd', cls: 'hud-enter-right' },
+            { id: 'da', cls: 'hud-enter-bottom' },
+            { id: 'objective-overlay', cls: 'hud-enter-right' },
+            { id: 'sig-ind', cls: 'hud-enter-bottom' }
+          ];
+          hudAnims.forEach((a, i) => {
+            const el = document.getElementById(a.id);
+            if (el) {
+              el.style.animation = 'none';
+              el.offsetHeight; // force reflow
+              el.style.animation = `${a.cls.includes('scale') ? 'hudScaleIn' : a.cls.includes('left') ? 'hudSlideInLeft' : a.cls.includes('right') ? 'hudSlideInRight' : a.cls.includes('bottom') ? 'hudSlideInBottom' : 'hudSlideInTop'} 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${i * 0.04}s both`;
+            }
+          });
+        }
         if (this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'flex';
         
         // Show objective
@@ -2013,7 +2411,24 @@ class Game {
         
         // Release all pooled objects to prevent memory leaks
         if (window.ThreePools) ThreePools.releaseAll();
+        // Cleanup crash VFX
+        this._cleanupCrashFX();
         
+        // Clean up GPS navigation elements
+        if (this._gpsFlowChevrons) {
+          this._gpsFlowChevrons.forEach(c => { this.scene.remove(c); c.children.forEach(ch => { ch.geometry?.dispose(); ch.material?.dispose(); }); });
+          this._gpsFlowChevrons = [];
+        }
+        if (this._gpsTurnLabels) {
+          this._gpsTurnLabels.forEach(l => { this.scene.remove(l); l.material?.map?.dispose(); l.material?.dispose(); });
+          this._gpsTurnLabels = [];
+        }
+        if (this._gpsTurnSprites) {
+          Object.values(this._gpsTurnSprites).forEach(s => { this.scene.remove(s); s.material?.map?.dispose(); s.material?.dispose(); });
+          this._gpsTurnSprites = {};
+        }
+        if (this._breadcrumbPath) { this.scene.remove(this._breadcrumbPath); this._breadcrumbPath = null; }
+
         // Clear road graph reference
         this.roadGraph = null;
       }
@@ -2053,23 +2468,98 @@ class Game {
           }
           toast(this.highBeamOn ? 'High Beam ON' : 'Low Beam ON', '#3498db');
       }
+      // ── Loading Screen Helpers ──
+      _showLoading(levelName) {
+        const ls = document.getElementById('loading-screen');
+        if (!ls) return;
+        const nameEl = document.getElementById('loading-level-name');
+        if (nameEl) nameEl.textContent = levelName || 'Loading...';
+        const bar = document.getElementById('loading-bar');
+        if (bar) bar.style.width = '0%';
+        const pct = document.getElementById('loading-pct');
+        if (pct) pct.textContent = '0%';
+        const status = document.getElementById('loading-status');
+        if (status) status.textContent = 'Initializing...';
+        // Rotate through driving tips
+        const tips = [
+          '💡 Always wear your seatbelt — it saves lives!',
+          '💡 Use turn signals before every lane change.',
+          '💡 Maintain at least 2 seconds of following distance.',
+          '💡 Reduce speed in school zones and residential areas.',
+          '💡 Never use your phone while driving.',
+          '💡 Yield to pedestrians at crosswalks.',
+          '💡 Check mirrors before braking or turning.',
+          '💡 Headlights are required in rain and fog.',
+          '💡 Honking in silence zones carries a ₹2,000 fine.',
+          '💡 Parallel parking requires patience and practice.',
+        ];
+        const tipsEl = document.getElementById('loading-tips');
+        if (tipsEl) tipsEl.textContent = tips[Math.floor(Math.random() * tips.length)];
+        ls.classList.remove('fade-out');
+        ls.style.display = 'flex';
+      }
+      _updateLoading(pctVal, statusText) {
+        const bar = document.getElementById('loading-bar');
+        if (bar) bar.style.width = pctVal + '%';
+        const pctEl = document.getElementById('loading-pct');
+        if (pctEl) pctEl.textContent = pctVal + '%';
+        const statusEl = document.getElementById('loading-status');
+        if (statusEl && statusText) statusEl.textContent = statusText;
+      }
+      _hideLoading() {
+        const ls = document.getElementById('loading-screen');
+        if (!ls) return;
+        if (this._hideLoadingTimer) clearTimeout(this._hideLoadingTimer);
+        ls.classList.add('fade-out');
+        this._hideLoadingTimer = setTimeout(() => { ls.style.display = 'none'; ls.classList.remove('fade-out'); this._hideLoadingTimer = null; }, 600);
+      }
       togglePause() {
           if (!this.playing) return;
           this.pause = !this.pause;
           const overlay = document.getElementById('pause-overlay');
           if (overlay) {
             overlay.classList.toggle('on', this.pause);
-            if (this.pause && !this._pauseWired) {
-              this._pauseWired = true;
-              document.getElementById('pause-resume')?.addEventListener('click', () => this.togglePause());
-              document.getElementById('pause-restart')?.addEventListener('click', () => { this.pause = false; location.reload(); });
-              document.getElementById('pause-quit')?.addEventListener('click', () => {
-                this.pause = false;
-                this.playing = false;
-                const o = document.getElementById('pause-overlay');
-                if (o) o.classList.remove('on');
-                document.getElementById('game-over')?.classList.add('on');
+            // ── Smooth pause menu animation ──
+            if (this.pause) {
+              if (this._pauseAnimating) return; // guard against rapid toggle
+              this._pauseAnimating = true;
+              overlay.style.animation = 'pauseOverlayIn 0.25s ease-out';
+              const panel = overlay.querySelector('[style*="font-family"]');
+              if (panel) {
+                panel.style.animation = 'pausePanelIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both';
+              }
+              // Stagger-animate pause buttons
+              const btns = overlay.querySelectorAll('button, .pause-tab');
+              btns.forEach((b, i) => {
+                b.style.opacity = '0';
+                b.style.transform = 'translateY(10px)';
+                b.style.transition = `opacity 0.3s ${i * 0.04}s, transform 0.3s ${i * 0.04}s cubic-bezier(0.16, 1, 0.3, 1)`;
+                requestAnimationFrame(() => { b.style.opacity = '1'; b.style.transform = 'translateY(0)'; });
               });
+              setTimeout(() => { this._pauseAnimating = false; }, 350);
+              // Reset to main tab when pausing
+              if (typeof pauseTab === 'function') pauseTab('main');
+              if (!this._pauseWired) {
+                this._pauseWired = true;
+                document.getElementById('pause-resume')?.addEventListener('click', () => this.togglePause());
+                document.getElementById('pause-restart')?.addEventListener('click', () => { this.pause = false; location.reload(); });
+                document.getElementById('pause-quit')?.addEventListener('click', () => {
+                  this.pause = false;
+                  this.playing = false;
+                  const o = document.getElementById('pause-overlay');
+                  if (o) {
+                    o.style.animation = 'pausePanelOut 0.2s ease-in both';
+                    setTimeout(() => { o.classList.remove('on'); o.style.animation = ''; }, 200);
+                  }
+                  document.getElementById('game-over')?.classList.add('on');
+                });
+              }
+            } else {
+              // Smooth close
+              if (this._pauseAnimating) return;
+              this._pauseAnimating = true;
+              overlay.style.animation = 'pausePanelOut 0.2s ease-in both';
+              setTimeout(() => { overlay.style.animation = ''; this._pauseAnimating = false; }, 250);
             }
           }
       }
@@ -2178,6 +2668,7 @@ class Game {
                       this.challanFired.add('mobile_drive');
                       ui.issueChallan('Using Mobile while Driving', 'Sec 184 MV Act', '₹5,000', 'Dangerous Driving');
                       this.vio++; this.violationsLog.push('MOBILE_USE'); this.score -= 50; this.fine += 5000;
+                      if (window.GameplayRecorder) GameplayRecorder.record('MOBILE_USE', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
                       this.hp -= 10; this._uh();
                   }
               } else {
@@ -2443,6 +2934,12 @@ class Game {
         const _noViolBonus = this.vio === 0 ? 800 : this.vio <= 2 ? 300 : 0;
         const _reward = _baseRew + _noViolBonus;
         S.wallet += _reward;
+        if (window.WalletHistory) WalletHistory.earn('level_reward', _reward, { levelId: _lvId, levelName: (ui.cur ? ui.cur.name : ''), violations: this.vio });
+        // Deduct fines from wallet
+        if (this.fine > 0) {
+          S.wallet = Math.max(0, S.wallet - this.fine);
+          if (window.WalletHistory) WalletHistory.deduct('fine', this.fine, { levelId: _lvId, levelName: (ui.cur ? ui.cur.name : ''), violations: this.vio });
+        }
         save();
         const _hw = document.getElementById('hwallet');
         if (_hw) _hw.textContent = '₹' + S.wallet.toLocaleString('en-IN');
@@ -2451,10 +2948,96 @@ class Game {
         toast('🏁 Run Evaluated!', '#00c851');
         // Show Mission Complete overlay first
         const _mco = document.createElement('div');
-        _mco.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(8px);animation:fadeIn 0.3s ease;';
-        _mco.innerHTML = '<div style="text-align:center;animation:cdownPulse 0.5s ease;"><div style="font-size:4rem;margin-bottom:16px;">🏆</div><h1 style="color:#ffd54a;font-size:2.5rem;font-family:Bebas Neue,sans-serif;letter-spacing:0.05em;margin-bottom:8px;text-shadow:0 4px 20px rgba(255,213,74,0.4);">MISSION COMPLETE!</h1><div style="color:white;font-size:1.5rem;font-weight:700;margin-bottom:12px;">Score: ' + game.fs + '</div><div style="color:rgba(255,255,255,0.6);font-size:0.95rem;">Proceeding to quiz...</div></div>';
+        _mco.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(8px);animation:missionCompleteBg 0.4s ease-out;';
+        _mco.innerHTML = '<div style="text-align:center;animation:missionCompleteCard 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;"><div style="font-size:4rem;margin-bottom:16px;animation:missionCompleteStar 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;">🏆</div><h1 style="color:#ffd54a;font-size:2.5rem;font-family:Bebas Neue,sans-serif;letter-spacing:0.05em;margin-bottom:8px;text-shadow:0 4px 20px rgba(255,213,74,0.4);animation:scoreCountUp 0.4s ease-out 0.4s both;">MISSION COMPLETE!</h1><div style="color:white;font-size:1.5rem;font-weight:700;margin-bottom:12px;animation:scoreCountUp 0.4s ease-out 0.5s both;">Score: ' + game.fs + '</div><div style="color:rgba(255,255,255,0.6);font-size:0.95rem;animation:scoreCountUp 0.4s ease-out 0.6s both;">Proceeding to quiz...</div></div>';
         document.body.appendChild(_mco);
-        setTimeout(() => { _mco.remove(); ui.showQuiz(ui.curMode || 'car', { violations: this.violationsLog }); }, 3000);
+
+        // ── Rank Notification After Level Complete ──
+        try {
+          // Score hasn't been added to S.total yet (that happens in ui.js after quiz)
+          const _prevTotal = S.total || 0;
+          const _newTotal = _prevTotal + this.fs;
+          // Rank thresholds: Bronze (5000), Silver (15000), Gold (30000), Platinum (50000)
+          const _rankTiers = [
+            { min: 0, name: 'Rookie', icon: '🔰', color: '#94a3b8' },
+            { min: 5000, name: 'Bronze', icon: '🥉', color: '#cd7f32' },
+            { min: 15000, name: 'Silver', icon: '🥈', color: '#c0c0c0' },
+            { min: 30000, name: 'Gold', icon: '🥇', color: '#ffd54a' },
+            { min: 50000, name: 'Platinum', icon: '💎', color: '#b89bff' },
+            { min: 100000, name: 'Hero', icon: '🏆', color: '#34d399' }
+          ];
+          const _getRank = (score) => {
+            let rank = _rankTiers[0];
+            for (const r of _rankTiers) { if (score >= r.min) rank = r; }
+            return rank;
+          };
+          const _prevRank = _getRank(_prevTotal);
+          const _newRank = _getRank(_newTotal);
+          if (_newRank.name !== _prevRank.name) {
+            // Rank changed! Show celebration toast (not full-screen to avoid occluding mission complete)
+            setTimeout(() => {
+              const _rn = document.createElement('div');
+              _rn.style.cssText = 'position:fixed;top:8%;left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(17,24,39,0.95);border:2px solid ' + _newRank.color + ';border-radius:20px;padding:20px 32px;z-index:9999;display:flex;flex-direction:column;align-items:center;gap:8px;animation:rankToastIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;backdrop-filter:blur(12px);box-shadow:0 12px 40px rgba(0,0,0,0.5), 0 0 20px ' + _newRank.color + '33;max-width:90vw;text-align:center;';
+              _rn.innerHTML = `
+                <div style="font-size:clamp(2.5rem, 8vw, 5rem);animation:missionCompleteStar 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;">${_newRank.icon}</div>
+                <div style="color:rgba(255,255,255,0.5);font-size:clamp(0.6rem, 2vw, 0.85rem);font-weight:700;text-transform:uppercase;letter-spacing:0.15em;">Rank Up!</div>
+                <div style="color:${_newRank.color};font-size:clamp(1.5rem, 5vw, 2.5rem);font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em;text-shadow:0 4px 16px ${_newRank.color}44;">${_newRank.name}</div>
+                <div style="color:rgba(255,255,255,0.6);font-size:clamp(0.65rem, 2vw, 0.85rem);">Total Score: ${_prevTotal.toLocaleString()}</div>
+              `;
+              document.body.appendChild(_rn);
+              // Fade out before removal
+              setTimeout(() => {
+                if (!_rn.parentNode) return;
+                _rn.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                _rn.style.opacity = '0';
+                _rn.style.transform = 'translateX(-50%) translateY(-10px)';
+                setTimeout(() => { if (_rn.parentNode) _rn.remove(); }, 450);
+              }, 2000);
+            }, 1800);
+          } else {
+            // Same rank — show a subtle rank progress bar
+            const _nextRank = _rankTiers.find(r => r.min > _newTotal);
+            if (_nextRank) {
+              const _progress = Math.min(100, Math.max(0, Math.round(((_prevTotal - _newRank.min) / (_nextRank.min - _newRank.min)) * 100)));
+              setTimeout(() => {
+                const _rp = document.createElement('div');
+                _rp.style.cssText = 'position:fixed;bottom:15%;left:50%;transform:translateX(-50%);background:rgba(17,24,39,0.9);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:14px 24px;z-index:9999;display:flex;align-items:center;gap:14px;animation:rankToastIn 0.4s ease-out both;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);max-width:90vw;';
+                _rp.innerHTML = `
+                  <span style="font-size:1.5rem;">${_newRank.icon}</span>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">${_newRank.name}</div>
+                    <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);margin-top:2px;">${(_nextRank.min - _newTotal).toLocaleString()} pts to ${_nextRank.name}</div>
+                    <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:6px;overflow:hidden;">
+                      <div class="rank-bar-fill" style="height:100%;width:0%;background:${_newRank.color};border-radius:2px;"></div>
+                    </div>
+                  </div>
+                `;
+                document.body.appendChild(_rp);
+                // Animate the bar fill after a frame so transition triggers
+                requestAnimationFrame(() => {
+                  const bar = _rp.querySelector('.rank-bar-fill');
+                  if (bar) {
+                    bar.style.transition = 'width 0.8s cubic-bezier(0.22, 1, 0.36, 1)';
+                    bar.style.width = _progress + '%';
+                  }
+                });
+                setTimeout(() => _rp.remove(), 2500);
+              }, 1800);
+            }
+          }
+        } catch(e) { console.warn('Rank notification error:', e); }
+
+        setTimeout(() => {
+          _mco.remove();
+          // Show driving review before quiz
+          if (window.GameplayRecorder) {
+            GameplayRecorder.showReview(() => {
+              ui.showQuiz(ui.curMode || 'car', { violations: this.violationsLog });
+            });
+          } else {
+            ui.showQuiz(ui.curMode || 'car', { violations: this.violationsLog });
+          }
+        }, 3500);
       }
 
       // 🚦 MAP CONFIGURATIONS FOR ALL MUMBAI LEVELS 🚦
@@ -4338,6 +4921,8 @@ class Game {
         requestAnimationFrame(() => this._loop()); if (!this.playing || this.pause) { if (this.renderCore && this.scene && this.camera) this.renderCore.render(this.scene, this.camera); return; }
         const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
         this._honkedThisFrame = false;
+        // ── Hitstop: freeze physics on hard impact ──
+        if (this._hitstopTimer > 0) { this._hitstopTimer -= dt; if (this.renderCore && this.scene && this.camera) this.renderCore.render(this.scene, this.camera); return; }
         this._collidedThisFrame = false;
         
         // Use RenderCore quality settings for dynamic budgets
@@ -4348,11 +4933,31 @@ class Game {
         // this._updateStreaming(); // Function undefined
         // this._checkFloatingOrigin(); // Function undefined
         
+        // ── Enhanced Physics Systems (computed BEFORE input for frame-accurate values) ──
+        if (!this.isPedestrian) {
+          this._computeAeroForces(dt);
+          this._updateBrakeHeat(dt);
+        }
         this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
+        // ── Suspension (after input, needs steering data) ──
+        if (!this.isPedestrian) {
+          this._updateSuspension(dt);
+        }
+        this._updateCrashFX(dt);
 
-        // Update player character FBX animation mixer
-        if (this.playerCharacter && this.playerCharacter.userData && this.playerCharacter.userData.isFBXAnimated && this.playerCharacter.userData.mixer) {
-          this.playerCharacter.userData.mixer.update(dt);
+        // ── Player character animation ──
+        const playerChar = this.playerCharacter || (this.isPedestrian ? this.player : null)
+        if (playerChar && playerChar.userData) {
+          if (playerChar.userData.isFBXAnimated && playerChar.userData.mixer) {
+            // FBX animated character
+            const walkW = Math.min(Math.abs(this.speed) * 3, 1)
+            if (playerChar.userData.idleAction) playerChar.userData.idleAction.setEffectiveWeight(1 - walkW)
+            if (playerChar.userData.runAction) playerChar.userData.runAction.setEffectiveWeight(walkW)
+            playerChar.userData.mixer.update(dt)
+          } else if (this.isPedestrian) {
+            // Procedural or GLB character: swing limbs
+            this._animateCharacterWalk(playerChar, Math.abs(this.speed), dt)
+          }
         }
 
         // Removed redundant WebGL minimap rendering pass.
@@ -4373,6 +4978,7 @@ class Game {
                 this.challanFired.add('seatbelt');
                 ui.issueChallan((this.vehMode === 'bike' || this.vehMode === 'cycle') ? 'Riding without Helmet' : 'Driving without Seatbelt', 'Sec 194D MV Act', '₹1,000', 'Safety Violation');
                 this.vio++; this.violationsLog.push('SAFETY_VIOLATION'); this.score -= 20; this.fine += 1000;
+                if (window.GameplayRecorder) GameplayRecorder.record('SAFETY_VIOLATION', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
             }
         }
 
@@ -4464,13 +5070,30 @@ class Game {
             this.speed += this.accel * mult * dt * 60 * (isRev ? -1 : 1);
           }
           if (dn) {
-            if (this.speed > 0) this.speed -= this.accel * 1.4 * dt * 60;
-            else if (isRev && this.speed < -0.02) this.speed += this.accel * 1.4 * dt * 60;
+            const _bf = this._brakeFadeFactor || 1.0;
+            if (this.speed > 0) this.speed -= this.accel * 1.4 * _bf * dt * 60;
+            else if (isRev && this.speed < -0.02) this.speed += this.accel * 1.4 * _bf * dt * 60;
           }
           // Clamp to gear cap
           if (isRev) { this.speed = Math.max(this.speed, -cap); } else { this.speed = Math.min(this.speed, cap); }
           // Frame-rate independent friction: pow(fric, dt*60) makes 0.945 feel identical at 30fps and 120fps
           this.speed *= Math.pow(this.fric, dt * 60);
+
+          // ── AERODYNAMIC DRAG (computed by _computeAeroForces) ──
+          // _aeroDrag already includes speed², so we only apply it as a deceleration force
+          if (this._aeroDrag > 0 && Math.abs(this.speed) > 0.1) {
+            const dragDecel = this._aeroDrag * dt * 60; // _aeroDrag has speed² baked in
+            if (this.speed > 0) this.speed = Math.max(0, this.speed - dragDecel);
+            else this.speed = Math.min(0, this.speed + dragDecel);
+          }
+
+          // ── DOWNFORCE GRIP BONUS (computed by _computeAeroForces) ──
+          // At high speed, downforce increases effective grip by up to 30%
+          if (this._downforceCoeff > 0.01) {
+            const gripMult = 1.0 + this._downforceCoeff; // multiplicative, not replacement
+            const rainPenalty = (this.mode === 'rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 0.3 : 1.0;
+            this._grip = Math.min(0.95, (VEHICLE_STATS[this.vehMode] || VEHICLE_STATS.car).grip * rainPenalty * gripMult);
+          }
 
           // ── TAILLIGHT BRAKE GLOW (night mode) ──
           if (this._playerTaillights) {
@@ -4524,6 +5147,9 @@ class Game {
             while (this.player.rotation.y > Math.PI) this.player.rotation.y -= Math.PI * 2;
             while (this.player.rotation.y < -Math.PI) this.player.rotation.y += Math.PI * 2;
           }
+          // ── Lateral acceleration for suspension body roll (smoothed) ──
+          const targetLateral = tAmt * Math.abs(this.speed) * 0.8;
+          this._lateralAccel = (this._lateralAccel || 0) + (targetLateral - (this._lateralAccel || 0)) * Math.min(1, dt * 10);
           if (this.gyroOn) this._checkGyroAutoRecal(tAmt);
           // Camera tilt: smooth follow of lateral input, scaled by speed
           const tiltTarget = -tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04);
@@ -4541,6 +5167,7 @@ class Game {
             }
             if (this._turnAccum > 1.5 && this.turnSignal === 0 && !this.challanFired.has('no_indicator')) {
               this.challanFired.add('no_indicator');
+              if (window.GameplayRecorder) GameplayRecorder.record('NO_INDICATOR', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score });
               ui.issueChallan('Turning without Indicator', 'Sec 125 MV Act', '₹500', 'Signal Violation');
             toast('💡 TIP: Always use indicators 30 meters before turning. It prevents 40% of lane-change accidents.', '#ffd54a');
               this.vio++; this.violationsLog.push('NO_INDICATOR'); this.score -= 30; this.fine += 500;
@@ -4629,6 +5256,13 @@ class Game {
             const yawAccel = yawMoment / pacejkaConfig.inertia_yaw;
             this.player.rotation.y += yawAccel * dt;
           } else {
+        // ── PEDESTRIAN VELOCITY: apply target velocity from inputs ──
+        if (this.isPedestrian) {
+          // targetVx/Vz were computed above from speed + rotation;
+          // assign them to actual velocity with smoothing so pedestrians aren't frozen
+          this.vx = targetVx;
+          this.vz = targetVz;
+        }
         
         this.player.position.x += this.vx; this.player.position.z += this.vz;
 
@@ -4689,7 +5323,8 @@ class Game {
                 this.player.userData.fpCooldown = 3;
             }
             
-            if (this.hp <= 0) this._go("Drove off-road"); else this._uh(); 
+            if (this.hp <= 0) this._go("Drove off-road"); else this._uh();
+            if (window.GameplayRecorder) GameplayRecorder.record('OFF_ROAD', { hp: Math.round(this.hp), score: this.score });
           } else { 
             if (owEl) owEl.classList.remove('on'); 
             
@@ -4731,12 +5366,12 @@ class Game {
               const currentSpeedKmH = Math.round(Math.abs(this.speed) * 100);
               if (currentSpeedKmH > this.mapCfg.speedLimit) {
                  if (!this.player.userData.spdCooldown) this.player.userData.spdCooldown = 0;
-                 this.player.userData.spdCooldown -= dt;
-                 if (this.player.userData.spdCooldown <= 0 && window.ui && window.ui.issueChallan) {
-                    window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
+                 this.player.userData.spdCooldown -= dt;                  if (this.player.userData.spdCooldown <= 0 && window.ui && window.ui.issueChallan) {
+                     window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
             toast('💡 TIP: Over-speeding is the #1 cause of road accidents in India. Stay within limits!', '#ff9500');
+                    if (window.GameplayRecorder) GameplayRecorder.record('SPEED_VIOLATION', { speed: Math.round(currentSpeedKmH), limit: this.mapCfg.speedLimit, score: this.score, fine: this.fine });
                     this.player.userData.spdCooldown = 5;
-                 }
+                  }
               }
             }
 
@@ -4808,6 +5443,7 @@ class Game {
                   if (window.ui && window.ui.issueChallan) {
                     window.ui.issueChallan('Distracted Driving - Phone', 'Sec 184 MV Act', '₹1,000', 'Mobile Use');
                     this.score -= 25; this.fine += 1000; this.vio++; this.violationsLog.push('MOBILE_USE');
+                    if (window.GameplayRecorder) GameplayRecorder.record('MOBILE_USE', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
                   }
                   toast('📱 Phone use while driving! ₹1,000 fine', '#ef4444');
                 });
@@ -4971,6 +5607,7 @@ class Game {
               this.vio++; this.violationsLog.push('LITTER_HIT'); this.score -= 15;
               toast(`🗑️ Litter hit! -15 pts (${this._litterHits} total)`, '#ff9500');
               if (typeof sfx !== 'undefined' && sfx.play) sfx.play('error');
+              if (window.GameplayRecorder) GameplayRecorder.record('LITTER_HIT', { score: this.score });
             }
           });
         }
@@ -5028,6 +5665,7 @@ class Game {
                   this.score -= 50; this.fine += 2000; this.vio++; this.violationsLog.push('CHECKPOINT_EVASION');
                 }
                 toast('🚨 You fled the checkpoint! ₹2,000 fine!', '#ef4444');
+                if (window.GameplayRecorder) GameplayRecorder.record('CHECKPOINT_EVASION', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
               }
             }
           });
@@ -5115,28 +5753,137 @@ class Game {
         });
       }
 
+      // ── Google Maps-style animated GPS navigation path ──
+      // Dashed animated line on the ground with flowing chevrons
       _initBreadcrumbPath() {
+        // Clean up any previous GPS elements
+        if (this._gpsFlowChevrons) {
+          this._gpsFlowChevrons.forEach(c => { this.scene.remove(c); c.children.forEach(ch => { ch.geometry?.dispose(); ch.material?.dispose(); }); });
+        }
+        if (this._gpsTurnLabels) {
+          this._gpsTurnLabels.forEach(l => { this.scene.remove(l); l.material?.map?.dispose(); l.material?.dispose(); });
+        }
+        this._gpsFlowChevrons = [];
+        this._gpsTurnLabels = [];
+        this._gpsTurnSprites = {};
+
         if (!this.driveRoute || this.driveRoute.length < 2) return;
-        const points = this.driveRoute.map(p => new THREE.Vector3(p.x, 0.1, p.z));
-        this._breadcrumbCurve = new THREE.CatmullRomCurve3(points);
-        const resolution = 1000;
+        const points = this.driveRoute.map(p => new THREE.Vector3(p.x, 0.12, p.z));
+        // Pedestrian mode: offset path to sidewalk (left side of road) — same logic as _buildArrows
+        const cfg = this.mapCfg;
+        const RW = cfg && cfg.isPedestrian ? 10 : 12;
+        const swW = cfg && cfg.isPedestrian ? 6 : 4;
+        const pedOffset = this.isPedestrian ? -(RW / 2 + swW / 2) : 0;
+        const pointsOffset = points.map(p => new THREE.Vector3(p.x + pedOffset, p.y, p.z));
+        // Interpolate long segments with intermediate waypoints for tight corners
+        const interpolated = [points[0]];
+        for (let i = 1; i < points.length; i++) {
+          const a = points[i - 1], b = points[i];
+          const segLen = a.distanceTo(b);
+          const steps = Math.max(1, Math.floor(segLen / 120));
+          for (let s = 1; s <= steps; s++) interpolated.push(new THREE.Vector3().lerpVectors(a, b, s / steps));
+        }
+        // Interpolate long segments for tighter corners (pedestrian offset path)
+        const interpolatedOffset = [pointsOffset[0]];
+        for (let i = 1; i < pointsOffset.length; i++) {
+          const a = pointsOffset[i - 1], b = pointsOffset[i];
+          const segLen = a.distanceTo(b);
+          const steps = Math.max(1, Math.floor(segLen / 120));
+          for (let s = 1; s <= steps; s++) interpolatedOffset.push(new THREE.Vector3().lerpVectors(a, b, s / steps));
+        }
+        this._breadcrumbCurve = new THREE.CatmullRomCurve3(this.isPedestrian ? interpolatedOffset : interpolated, false, 'catmullrom', 0.1);
+        const resolution = 2000;
         const curvePoints = this._breadcrumbCurve.getPoints(resolution);
         const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
-        const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        // Google Maps-style blue dashed line
+        const material = new THREE.LineBasicMaterial({
+          color: 0x4285f4,
+          transparent: true,
+          opacity: 0.7,
+          linewidth: 2
+        });
         this._breadcrumbPath = new THREE.Line(geometry, material);
         this._breadcrumbPath.visible = false;
         this.scene.add(this._breadcrumbPath);
+
+        // Create animated flow chevrons along the path
+        const chevronCount = Math.min(40, Math.floor(points.length * 3));
+        const chevMat = new THREE.MeshBasicMaterial({
+          color: 0xffffff, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false
+        });
+        for (let i = 0; i < chevronCount; i++) {
+          const g = new THREE.Group();
+          const wing1 = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(0, 0, -1.0), new THREE.Vector3(-0.6, 0, 0.3), new THREE.Vector3(0, 0, -0.1)
+          ]), chevMat.clone());
+          const wing2 = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(0, 0, -1.0), new THREE.Vector3(0.6, 0, 0.3), new THREE.Vector3(0, 0, -0.1)
+          ]), chevMat.clone());
+          g.add(wing1, wing2);
+          g.rotation.x = -Math.PI / 2;
+          g.scale.setScalar(0.8);
+          g.visible = false;
+          const tVal = i / chevronCount;
+          const bp = this._breadcrumbCurve.getPointAt(tVal);
+          // Compute rotation from direction of travel at this point
+          const nextT = Math.min(tVal + 0.01, 1.0);
+          const prevT2 = Math.max(tVal - 0.01, 0.0);
+          let pA = this._breadcrumbCurve.getPointAt(prevT2);
+          let pB = this._breadcrumbCurve.getPointAt(nextT);
+          // Guard against degenerate case at curve start where prevT2 === nextT
+          if (pA.distanceTo(pB) < 0.001) { pB = this._breadcrumbCurve.getPointAt(Math.min(tVal + 0.02, 1.0)); }
+          const rotY = Math.atan2(pA.x - pB.x, pA.z - pB.z);
+          g.userData = { t: tVal, basePos: { x: bp.x, z: bp.z }, baseRotY: rotY };
+          g.rotation.y = rotY;
+          this.scene.add(g);
+          this._gpsFlowChevrons.push(g);
+        }
+
+        // Pre-build turn indicator sprites for each corner (avoid per-frame allocation)
+        const route = this.mapCfg.route;
+        for (let i = 1; i < route.length - 1; i++) {
+          const prev = route[i - 1], curr = route[i], next = route[i + 1];
+          const d1x = curr.x - prev.x, d1z = curr.z - prev.z;
+          const d2x = next.x - curr.x, d2z = next.z - curr.z;
+          const cross = d1x * d2z - d1z * d2x;
+          if (Math.abs(cross) < 100) continue;
+          // Determine turn direction based on cross product
+          const turnDir = cross > 0 ? '→ TURN RIGHT' : '← TURN LEFT';
+          const canvas = document.createElement('canvas');
+          canvas.width = 256; canvas.height = 64;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = 'rgba(0,0,0,0.7)';
+          ctx.fillRect(0, 0, 256, 64);
+          ctx.fillStyle = '#4285f4';
+          ctx.font = 'bold 28px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(turnDir, 128, 42);
+          const tex = new THREE.CanvasTexture(canvas);
+          const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0 });
+          const sprite = new THREE.Sprite(spriteMat);
+          sprite.position.set(curr.x, 3.5, curr.z);
+          sprite.scale.set(6, 1.5, 1);
+          sprite.visible = false;
+          this.scene.add(sprite);
+          this._gpsTurnLabels.push(sprite);
+          this._gpsTurnSprites[i] = sprite;
+        }
       }
 
       _updateBreadcrumbPath(dt) {
         if (!this._breadcrumbPath) return;
-        if (!this.kidModeActive || this.isPedestrian) {
+        // Show GPS path when playing (works for both vehicle AND pedestrian modes)
+        if (!this.playing || this.pause) {
           this._breadcrumbPath.visible = false;
+          if (this._gpsFlowChevrons) this._gpsFlowChevrons.forEach(c => c.visible = false);
+          if (this._gpsTurnLabels) this._gpsTurnLabels.forEach(l => { l.visible = false; l.material.opacity = 0; });
           return;
         }
         const nextCP = this.cps.find(c => !c.userData.hit);
         if (!nextCP) {
           this._breadcrumbPath.visible = false;
+          if (this._gpsFlowChevrons) this._gpsFlowChevrons.forEach(c => c.visible = false);
+          if (this._gpsTurnLabels) this._gpsTurnLabels.forEach(l => { l.visible = false; l.material.opacity = 0; });
           return;
         }
         this._breadcrumbPath.visible = true;
@@ -5158,11 +5905,52 @@ class Game {
           const d = p.distanceTo(cpPos);
           if (d < minDist) { minDist = d; endT = t; }
         }
-        const resolution = 1000;
+        const resolution = 2000;
         const startIndex = Math.floor(startT * resolution);
         const endIndex = Math.floor(endT * resolution);
         const count = Math.max(0, endIndex - startIndex);
         this._breadcrumbPath.geometry.setDrawRange(startIndex, count);
+
+        // Animate flow chevrons moving along the path
+        if (this._gpsFlowChevrons) {
+          this._gpsFlowChevrons.forEach((ch, i) => {
+            // Flow animation: chevrons move along path within visible range
+            const visRange = Math.max(0.001, endT - startT);
+            const flowOffset = ((this.timer * 0.08 + i * 0.025) % visRange);
+            const animT = startT + flowOffset;
+            if (animT < startT || animT > endT) { ch.visible = false; return; }
+            ch.visible = true;
+            // Position on curve at animated position
+            const pos = this._breadcrumbCurve.getPointAt(animT);
+            ch.position.copy(pos);
+            ch.position.y = 0.18 + 0.04 * Math.sin(this.timer * 5 + i * 0.3);
+            // Rotation from precomputed direction
+            if (ch.userData.baseRotY != null) ch.rotation.y = ch.userData.baseRotY;
+            // Pulsing opacity for flowing effect
+            const pulse = 0.6 + 0.3 * Math.sin(this.timer * 6 + i * 0.5);
+            const dist = Math.hypot(pos.x - playerPos.x, pos.z - playerPos.z);
+            const fade = dist < 10 ? 0.25 : dist < 40 ? pulse : 0.3;
+            ch.children.forEach(c => { if (c.material) c.material.opacity = fade; });
+          });
+        }
+
+        // Show/hide pre-built turn sprites based on player proximity (no per-frame allocation)
+        if (this._gpsTurnSprites) {
+          const route = this.mapCfg.route;
+          Object.keys(this._gpsTurnSprites).forEach(idx => {
+            const sprite = this._gpsTurnSprites[idx];
+            const corner = route[parseInt(idx)];
+            const dist = Math.hypot(playerPos.x - corner.x, playerPos.z - corner.z);
+            if (dist < 50) {
+              sprite.visible = true;
+              sprite.material.opacity = dist < 15 ? 0.95 : 0.5;
+            } else {
+              sprite.visible = false;
+            }
+          });
+        }
+
+        // Note: direction arrow HUD (da, da-arrow, dal, da-dist) is owned by _ucps — don't duplicate here
       }
 
       _unpcs(dt) {
@@ -5833,14 +6621,20 @@ class Game {
               this._go('Hit by ' + (n.userData.npcType || 'Vehicle'));
               toast('🚨 HIT BY VEHICLE!', '#ff3b30');
             } else {
-              // Vehicle collision
-              this.hp -= this.seatbeltOn ? 9.6 : 12;
+              // Vehicle collision — enhanced crash impact system
+              const impactSpeed = Math.abs(this.speed);
+              const seatbeltReduction = this.seatbeltOn ? 0.6 : 1.0;
+              const speedDamage = Math.min(impactSpeed * 30, 25) * seatbeltReduction;
+              this.hp -= 5 + speedDamage;
               if (this.hp <= 0) this._go('Collided with ' + (n.userData.npcType || 'Vehicle'));
               else this._uh();
-              this.speed *= -.22;
-              this._camShakeAmt = Math.max(this._camShakeAmt, 0.40);
+              // Directional bounce + sparks + debris + hitstop
+              this._applyCrashImpact(n.position, impactSpeed);
               if(window.sfx) window.sfx.play('error');
-              toast('💥 Collision!', '#ff3b30');
+              this._spawnSkidMark(this.player.position.x, this.player.position.z, this.player.rotation.y, impactSpeed * 3);
+              toast('💥 Collision! ' + (impactSpeed > 0.6 ? 'SEVERE' : 'Minor') + ' Impact', '#ff3b30');
+              this._collidedThisFrame = true;
+              if (window.GameplayRecorder) GameplayRecorder.record('COLLISION', { speed: Math.round(impactSpeed * 100), npcType: n.userData.npcType, score: this.score, hp: Math.round(this.hp), impactIntensity: Math.round(impactSpeed * 100) });
 
               // ── J. Road-rage NPC reaction ──
               if (!this._roadRageCD || this._roadRageCD <= 0) {
@@ -6518,6 +7312,7 @@ class Game {
                 this.player.position.z += (dz > 0 ? overlapZ : -overlapZ);
               }
               toast('🚧 Collided with Barricade bounds!', '#ff9500');
+              if (window.GameplayRecorder) GameplayRecorder.record('BARRICADE_HIT', { hp: Math.round(this.hp), score: this.score });
           }
         });
 
@@ -6528,8 +7323,9 @@ class Game {
                     this.score -= 50;
                     this.fine += 500;
                     ui.issueChallan('Splashed water on pedestrians', 'Sec 184 MV Act', '₹500', 'Reckless Driving');
-                    toast('💦 Splashed Water! Too Fast!', '#ff3b30');
-                    sfx.play('error');
+            toast('💦 Splashed Water! Too Fast!', '#ff3b30');
+            sfx.play('error');
+            if (window.GameplayRecorder) GameplayRecorder.record('SPLASH', { score: this.score, fine: this.fine });
                     // Splash particle burst
                     this._spawnSplash(p.position.x, p.position.y, p.position.z);
                     // Reset splashed flag after cooldown
@@ -6848,15 +7644,37 @@ class Game {
           ud.mixer.update(dt)
           return
         }
-        // GLB / procedural characters: swing legs + body bob
+        // GLB / procedural characters: swing legs + arms + body bob
         const t = (ud.t || 0) + dt * 8
         ud.t = t
-        const swing = Math.sin(t) * 0.4 * Math.min(Math.abs(speed) * 4, 1)
+        const walkW = Math.min(Math.abs(speed) * 4, 1)
+        const swing = Math.sin(t) * 0.45 * walkW
+        // Leg swing with natural knee bend
         if (ud.lLeg) ud.lLeg.rotation.x = swing
         if (ud.rLeg) ud.rLeg.rotation.x = -swing
-        // Subtle body bob
-        if (character.children[0]) {
-          character.children[0].position.y = Math.abs(Math.sin(t)) * 0.04 * Math.min(Math.abs(speed) * 4, 1)
+        // Arm swing (opposite to legs, natural walking motion)
+        if (ud.lArm) ud.lArm.rotation.x = -swing * 0.5
+        if (ud.rArm) ud.rArm.rotation.x = swing * 0.5
+        // Head bob (subtle nod forward/back)
+        if (ud.headGroup) {
+          ud.headGroup.rotation.x = Math.sin(t * 2) * 0.02 * walkW
+        }
+        // Full body bob via torsoGroup (natural up-down)
+        if (ud.torsoGroup) {
+          ud.torsoGroup.position.y = 1.23 * (character.userData._sk || 1) + Math.abs(Math.sin(t * 2)) * 0.03 * walkW
+        } else if (character.children[0]) {
+          // Fallback for models without torsoGroup
+          character.children[0].position.y = Math.abs(Math.sin(t)) * 0.04 * walkW
+        }
+        // Player glow ring pulse
+        if (ud.ring && ud.isPlayer) {
+          ud.ring.material.opacity = 0.2 + Math.sin(t * 0.5) * 0.15
+        }
+        // Shadow blob pulse (breathe effect)
+        if (ud.shadowBlob) {
+          const s = 1 + Math.sin(t * 2) * 0.05 * walkW
+          ud.shadowBlob.scale.set(s, 1, s)
+          ud.shadowBlob.material.opacity = 0.15 + walkW * 0.08
         }
       }
       _ucam(dt) {

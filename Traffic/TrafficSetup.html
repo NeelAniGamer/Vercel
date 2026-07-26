@@ -168,7 +168,7 @@
       
       .setup-right-pane {
         width: 60%;
-        padding: 60px 80px;
+        padding: 40px 48px;
         position: relative;
         overflow: hidden;
         display: flex;
@@ -632,9 +632,168 @@
       .remote-role-btn { flex: 1; background: var(--void); border: 1px solid var(--line); border-radius: 12px; padding: 12px; color: var(--dim); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
       .remote-role-btn.active { background: rgba(94, 212, 245, 0.1); border-color: var(--ion); color: var(--ion); }
       .remote-role-btn:hover:not(.active) { border-color: var(--lineb); color: var(--ink); }
-      .remote-bottom-links { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; align-items: center; }
-      .remote-bottom-link { background: none; border: none; color: var(--dim); font-size: 0.9rem; cursor: pointer; padding: 5px; transition: color 0.2s; }
-      .remote-bottom-link:hover { color: var(--ink); text-decoration: underline; }
+      body.lm .remote-role-btn { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); color: var(--dim); }
+      body.lm .remote-role-btn.active { background: rgba(14, 114, 160, 0.1); border-color: var(--ion); color: var(--ion); }
+      body.lm .remote-role-btn:hover:not(.active) { border-color: rgba(0,0,0,0.2); color: var(--ink); }
+      .remote-bottom-links { display: flex; flex-direction: row; gap: 12px; margin-top: 24px; align-items: center; justify-content: center; }
+      .remote-bottom-link {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        color: var(--dim);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 10px 20px;
+        transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        justify-content: center;
+        min-height: 44px;
+        font-family: var(--sans, 'Inter'), sans-serif;
+      }
+      .remote-bottom-link:hover {
+        background: rgba(255,255,255,0.08);
+        border-color: var(--lineb);
+        color: var(--ink);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      .remote-bottom-link:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+      .remote-bottom-link.primary {
+        border-color: var(--signal);
+        color: var(--signal);
+        background: rgba(242,184,75,0.08);
+      }
+      .remote-bottom-link.primary:hover {
+        background: rgba(242,184,75,0.15);
+        box-shadow: 0 4px 12px rgba(242,184,75,0.15);
+      }
+      body.lm .remote-bottom-link {
+        background: rgba(0,0,0,0.03);
+        border-color: rgba(0,0,0,0.1);
+      }
+      body.lm .remote-bottom-link:hover {
+        background: rgba(0,0,0,0.06);
+      }
+
+      /* === CUSTOM SELECT DROPDOWN (Resend-style smooth) === */
+      .custom-select-wrapper {
+        position: relative;
+        width: 100%;
+        z-index: 50;
+      }
+      .custom-select-trigger {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 14px 16px;
+        min-height: 48px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        font-size: max(1rem, 16px);
+        font-family: 'Inter', sans-serif;
+        color: var(--ink);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        outline: none;
+        user-select: none;
+      }
+      .custom-select-trigger:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255,255,255,0.2);
+      }
+      .custom-select-wrapper.open .custom-select-trigger {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: var(--signal);
+        box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.15);
+      }
+      body.lm .custom-select-trigger {
+        background: rgba(255, 255, 255, 0.6);
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+      body.lm .custom-select-wrapper.open .custom-select-trigger {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 0 3px rgba(14, 114, 160, 0.15);
+      }
+      .custom-select-icon { font-size: 1.2rem; flex-shrink: 0; }
+      .custom-select-text { flex: 1; font-weight: 500; }
+      .custom-select-arrow {
+        flex-shrink: 0;
+        color: var(--dim);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        pointer-events: none;
+      }
+      .custom-select-wrapper.open .custom-select-arrow {
+        transform: rotate(180deg);
+      }
+      .custom-select-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: rgba(17, 24, 39, 0.97);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 6px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        max-height: 280px;
+        overflow-y: auto;
+      }
+      .custom-select-wrapper.open .custom-select-dropdown {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+      body.lm .custom-select-dropdown {
+        background: rgba(255, 255, 255, 0.97);
+        border-color: rgba(0, 0, 0, 0.08);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+      }
+      .custom-select-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        min-height: 44px;
+      }
+      .custom-select-option:hover { background: rgba(255, 255, 255, 0.07); }
+      body.lm .custom-select-option:hover { background: rgba(0, 0, 0, 0.04); }
+      .custom-select-option:active { transform: scale(0.98); }
+      .custom-select-option.selected { background: rgba(242, 184, 75, 0.12); }
+      body.lm .custom-select-option.selected { background: rgba(14, 114, 160, 0.1); }
+      .option-icon { font-size: 1.3rem; flex-shrink: 0; width: 28px; text-align: center; }
+      .option-label { flex: 1; font-size: 0.95rem; font-weight: 500; color: var(--ink); }
+      body.lm .option-label { color: #1e293b; }
+      .option-check {
+        flex-shrink: 0;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: var(--signal);
+      }
+      body.lm .option-check { color: var(--ion); }
+      .custom-select-option.selected .option-check {
+        opacity: 1;
+        transform: scale(1);
+      }
     </style>
 </head>
   <body>
@@ -779,8 +938,8 @@
           </div>
 
           <div class="remote-bottom-links" style="margin-top: 24px;">
-            <button type="button" class="remote-bottom-link" onclick="goToStep(2); updateWizardStep(2)">Skip Cloud & Play Locally</button>
-            <button type="button" class="remote-bottom-link" onclick="window.location.href = 'Academy.html'">Back to Academy</button>
+            <button type="button" class="remote-bottom-link primary" onclick="goToStep(2); updateWizardStep(2)">🎮 Skip & Play Locally</button>
+            <button type="button" class="remote-bottom-link" onclick="window.location.href = 'Academy.html'">← Back to Academy</button>
           </div>
         </div>
       </div>
@@ -823,13 +982,41 @@
         <form id="vehicleForm">
           <div class="input-group">
             <label for="prof-veh">Preferred Vehicle</label>
-            <select id="prof-veh" autocomplete="off">
-              <option value="Car">Standard Car</option>
-              <option value="Bike">Motorcycle</option>
-              <option value="Bus">Bus</option>
-              <option value="Truck">Truck</option>
-              <option value="Auto">Auto Rickshaw</option>
-            </select>
+            <div class="custom-select-wrapper" id="veh-select-wrapper">
+              <div class="custom-select-trigger" id="veh-select-trigger" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-label="Preferred Vehicle" tabindex="0" onclick="toggleCustomSelect('veh')" onkeydown="handleSelectKeydown(event, 'veh')">
+                <span class="custom-select-icon" aria-hidden="true">🚗</span>
+                <span class="custom-select-text" id="veh-select-text">Standard Car</span>
+                <svg class="custom-select-arrow" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="custom-select-dropdown" id="veh-select-dropdown" role="listbox" aria-label="Vehicle options">
+                <div class="custom-select-option selected" data-value="Car" data-icon="🚗" role="option" aria-selected="true" tabindex="-1" onclick="selectCustomOption('veh', 'Car', '🚗', 'Standard Car')">
+                  <span class="option-icon" aria-hidden="true">🚗</span>
+                  <span class="option-label">Standard Car</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Bike" data-icon="🏍️" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Bike', '🏍️', 'Motorcycle')">
+                  <span class="option-icon" aria-hidden="true">🏍️</span>
+                  <span class="option-label">Motorcycle</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Bus" data-icon="🚌" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Bus', '🚌', 'Bus')">
+                  <span class="option-icon" aria-hidden="true">🚌</span>
+                  <span class="option-label">Bus</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Truck" data-icon="🚛" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Truck', '🚛', 'Truck')">
+                  <span class="option-icon" aria-hidden="true">🚛</span>
+                  <span class="option-label">Truck</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Auto" data-icon="🛺" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Auto', '🛺', 'Auto Rickshaw')">
+                  <span class="option-icon" aria-hidden="true">🛺</span>
+                  <span class="option-label">Auto Rickshaw</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="prof-veh" value="Car" />
           </div>
 
           <div class="input-group">
@@ -894,6 +1081,11 @@
         if (setupProgressRing && window.TrafficCharts) {
           const pct = Math.round(((currentStep - 1) / (totalSteps - 1)) * 100)
           setupProgressRing.update(pct)
+          // Sync the text percentage with the ring
+          const pctEl = document.getElementById('progress-pct')
+          if (pctEl) {
+            pctEl.textContent = pct + '%'
+          }
         }
 
         // Show/hide steps
@@ -931,7 +1123,7 @@
 
       // Initialize progress ring
       function initProgressRing() {
-        const canvas = document.getElementById('setup-progress-canvas')
+        const canvas = document.getElementById('setup-progress-ring')
         if (canvas && window.TrafficCharts) {
           setupProgressRing = window.TrafficCharts.createProgressRing(canvas, 0, { cutout: '70%' })
           // Override update method
@@ -939,6 +1131,9 @@
             this.data.datasets[0].data = [value, 100 - value]
             this.update('none')
           }
+          // Sync the text percentage with the ring
+          const pctEl = document.getElementById('progress-pct')
+          if (pctEl) pctEl.textContent = '0%'
         }
       }
 
@@ -1065,7 +1260,9 @@
         if (typeof THREE !== 'undefined') {
           init3D()
         }
+        // Init progress ring here so TrafficCharts is guaranteed loaded
         initProgressRing()
+        updateWizardStep(1)
       })
 
       // --- AUTH LOGIC ---
@@ -1076,34 +1273,30 @@
         selectedRole = role
         if (mode === 'signup') {
           document.getElementById('signup-role').value = role
-          document.querySelectorAll('.role-btn-signup').forEach(btn => {
+          // Reset ALL remote-role-btn elements in signup panel
+          document.querySelectorAll('#signup-panel .remote-role-btn').forEach(btn => {
             btn.classList.remove('active')
-            btn.style.borderColor = 'var(--line)'
-            btn.style.background = 'var(--void)'
-            btn.style.color = 'var(--ink)'
+            btn.style.borderColor = ''
+            btn.style.background = ''
+            btn.style.color = ''
           })
           const btnId = role === 'student' ? 'btn-signup-student' : 'btn-signup-parent'
           const btn = document.getElementById(btnId)
           if(btn) {
             btn.classList.add('active')
-            btn.style.borderColor = 'var(--signal)'
-            btn.style.background = 'rgba(242, 184, 75, 0.1)'
-            btn.style.color = 'var(--signal)'
           }
         } else {
-          document.querySelectorAll('.role-btn-login').forEach(btn => {
+          // Reset ALL remote-role-btn elements in login panel
+          document.querySelectorAll('#login-panel .remote-role-btn').forEach(btn => {
             btn.classList.remove('active')
-            btn.style.borderColor = 'var(--line)'
-            btn.style.background = 'var(--void)'
-            btn.style.color = 'var(--ink)'
+            btn.style.borderColor = ''
+            btn.style.background = ''
+            btn.style.color = ''
           })
           const btnId = role === 'student' ? 'btn-login-student' : 'btn-login-parent'
           const btn = document.getElementById(btnId)
           if(btn) {
             btn.classList.add('active')
-            btn.style.borderColor = 'var(--signal)'
-            btn.style.background = 'rgba(242, 184, 75, 0.1)'
-            btn.style.color = 'var(--signal)'
           }
         }
       }
@@ -1183,10 +1376,10 @@
             window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
             document.getElementById('cloud-status').style.display = 'block'
             
-            // Check if profile exists
-            const p = await window.supabaseClient.from('profiles').select('*').eq('id', window.colUser.id).maybeSingle()
+            // Check if profile exists in user_profiles
+            const p = await window.supabaseClient.from('user_profiles').select('*').eq('user_id', window.colUser.id).maybeSingle()
             if (p.data) {
-              window.colUser.uid = p.data.id;
+              window.colUser.uid = p.data.user_id;
               document.getElementById('auth-dashboard-btn').style.display = 'block'
               goToStep(2); updateWizardStep(2);
             } else {
@@ -1349,7 +1542,7 @@
           }
           if (window.supabaseClient) {
             try {
-              const { data } = await window.supabaseClient.from('profiles').select('username').eq('id', user.id).maybeSingle()
+              const { data } = await window.supabaseClient.from('user_profiles').select('username').eq('user_id', user.id).maybeSingle()
               if (data && data.username) {
                 document.getElementById('prof-username').value = data.username.startsWith('@') ? data.username : '@' + data.username
               }
@@ -1369,7 +1562,7 @@
           }
           if (window.supabaseClient) {
             try {
-              const { data } = await window.supabaseClient.from('profiles').select('username').eq('id', window.colUser.id).maybeSingle()
+              const { data } = await window.supabaseClient.from('user_profiles').select('username').eq('user_id', window.colUser.id).maybeSingle()
               if (data && data.username && !document.getElementById('prof-username').value) {
                 document.getElementById('prof-username').value = data.username.startsWith('@') ? data.username : '@' + data.username
               }
@@ -1423,22 +1616,7 @@
               }
               return
             }
-            // Also check profiles table
-            const { data: pData } = await window.supabaseClient
-              .from('profiles')
-              .select('id')
-              .eq('username', uname)
-              .maybeSingle()
-            if (pData) {
-              if (window.colUser && pData.id === window.colUser.id) {
-                statusEl.textContent = '✓ This is your current username'
-                statusEl.style.color = 'var(--em)'
-              } else {
-                statusEl.textContent = '✕ Username already taken'
-                statusEl.style.color = 'var(--red)'
-              }
-              return
-            }
+            // Username is available
             statusEl.textContent = '✓ Username available!'
             statusEl.style.color = 'var(--em)'
           } catch (e) {
@@ -1470,6 +1648,131 @@
         updateWizardStep(totalSteps)
       }
 
+      // === CUSTOM SELECT DROPDOWN LOGIC ===
+      function toggleCustomSelect(prefix) {
+        const wrapper = document.getElementById(prefix + '-select-wrapper')
+        const trigger = document.getElementById(prefix + '-select-trigger')
+        const isOpen = wrapper.classList.contains('open')
+        // Close all other open dropdowns
+        document.querySelectorAll('.custom-select-wrapper.open').forEach(el => {
+          el.classList.remove('open')
+          const t = el.querySelector('.custom-select-trigger')
+          if (t) t.setAttribute('aria-expanded', 'false')
+        })
+        if (!isOpen) {
+          wrapper.classList.add('open')
+          trigger.setAttribute('aria-expanded', 'true')
+          // Focus the currently selected option
+          const selected = wrapper.querySelector('.custom-select-option.selected')
+          if (selected) selected.focus()
+        } else {
+          trigger.setAttribute('aria-expanded', 'false')
+        }
+      }
+
+      function selectCustomOption(prefix, value, icon, label) {
+        const wrapper = document.getElementById(prefix + '-select-wrapper')
+        const trigger = document.getElementById(prefix + '-select-trigger')
+        const hidden = document.getElementById('prof-' + prefix)
+        const textEl = document.getElementById(prefix + '-select-text')
+        const iconEl = trigger.querySelector('.custom-select-icon')
+
+        // Update hidden input and dispatch change event
+        if (hidden) {
+          hidden.value = value
+          hidden.dispatchEvent(new Event('change', { bubbles: true }))
+        }
+        // Update trigger display
+        if (textEl) textEl.textContent = label
+        if (iconEl) iconEl.textContent = icon
+
+        // Update ARIA states
+        trigger.setAttribute('aria-expanded', 'false')
+
+        // Update selected state on options
+        wrapper.querySelectorAll('.custom-select-option').forEach(opt => {
+          const isSelected = opt.dataset.value === value
+          opt.classList.toggle('selected', isSelected)
+          opt.setAttribute('aria-selected', isSelected ? 'true' : 'false')
+        })
+
+        // Close dropdown
+        wrapper.classList.remove('open')
+        trigger.focus()
+      }
+
+      // Keyboard navigation for custom select
+      function handleSelectKeydown(e, prefix) {
+        const wrapper = document.getElementById(prefix + '-select-wrapper')
+        const options = Array.from(wrapper.querySelectorAll('.custom-select-option'))
+        const currentIdx = options.findIndex(opt => opt.classList.contains('selected'))
+
+        switch (e.key) {
+          case 'Enter':
+          case ' ':
+            e.preventDefault()
+            if (wrapper.classList.contains('open') && currentIdx >= 0) {
+              const opt = options[currentIdx]
+              selectCustomOption(prefix, opt.dataset.value, opt.dataset.icon, opt.querySelector('.option-label').textContent)
+            } else {
+              toggleCustomSelect(prefix)
+            }
+            break
+          case 'ArrowDown':
+            e.preventDefault()
+            if (!wrapper.classList.contains('open')) {
+              toggleCustomSelect(prefix)
+            } else {
+              const nextIdx = Math.min(currentIdx + 1, options.length - 1)
+              options[nextIdx].focus()
+            }
+            break
+          case 'ArrowUp':
+            e.preventDefault()
+            if (!wrapper.classList.contains('open')) {
+              toggleCustomSelect(prefix)
+            } else {
+              const prevIdx = Math.max(currentIdx - 1, 0)
+              options[prevIdx].focus()
+            }
+            break
+          case 'Escape':
+            wrapper.classList.remove('open')
+            break
+        }
+      }
+
+      // Focus management for dropdown options
+      document.querySelectorAll('.custom-select-option').forEach(opt => {
+        opt.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            this.click()
+          } else if (e.key === 'Escape') {
+            const wrapper = this.closest('.custom-select-wrapper')
+            if (wrapper) {
+              wrapper.classList.remove('open')
+              wrapper.querySelector('.custom-select-trigger').focus()
+            }
+          } else if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            const next = this.nextElementSibling
+            if (next && next.classList.contains('custom-select-option')) next.focus()
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            const prev = this.previousElementSibling
+            if (prev && prev.classList.contains('custom-select-option')) prev.focus()
+          }
+        })
+      })
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-select-wrapper')) {
+          document.querySelectorAll('.custom-select-wrapper.open').forEach(el => el.classList.remove('open'))
+        }
+      })
+
       document.getElementById('vehicleForm').addEventListener('submit', async function (e) {
         e.preventDefault()
 
@@ -1498,20 +1801,7 @@
           }
           if (window.supabaseClient && window.colUser) {
             try {
-              // Check if username is already taken
-              const { data: existing, error: err } = await window.supabaseClient
-                .from('profiles')
-                .select('id')
-                .eq('username', username)
-                .neq('id', window.colUser.id)
-                .maybeSingle()
-              
-              if (existing) {
-                alert('That username is already taken. Please choose another.')
-                return
-              }
-
-              // Also check user_profiles table
+              // Check if username is already taken in user_profiles
               const { data: upExisting } = await window.supabaseClient
                 .from('user_profiles')
                 .select('user_id')
@@ -1523,12 +1813,7 @@
                 return
               }
 
-              // Update profiles table
-              await window.supabaseClient
-                .from('profiles')
-                .upsert({ id: window.colUser.id, username: username, full_name: name, avatar_url: '' })
-
-              // Also sync to user_profiles
+              // Upsert profile to user_profiles
               const studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
               await window.supabaseClient
                 .from('user_profiles')
@@ -1606,18 +1891,9 @@
         }, 500)
       })
 
-      // Initialize progress ring
-      const setupProgressCanvas = document.getElementById('setup-progress-ring')
-      if (setupProgressCanvas && window.TrafficCharts) {
-        window.TrafficCharts.createRadialProgress(setupProgressCanvas, 33, {
-          strokeWidth: 6,
-          subtitle: 'Setup Progress',
-          fontSize: 20
-        })
-      }
+      // Second init attempt removed — initProgressRing() above already handles this correctly
 
-      // Initialize on load
-      updateWizardStep(1)
+      // initProgressRing() + updateWizardStep(1) moved to window.load handler above
     </script>
   <script src="welcome-back.js"></script>
 </body>

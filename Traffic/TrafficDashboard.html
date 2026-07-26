@@ -591,28 +591,142 @@
       .leaderboard-row {
         display: flex; align-items: center; gap: 12px; padding: 12px 14px;
         background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-        border-radius: var(--r-sm); transition: all 0.2s ease;
+        border-radius: var(--r-sm); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative; overflow: hidden;
       }
-      .leaderboard-row:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); }
+      .leaderboard-row::before {
+        content: '';
+        position: absolute; left: 0; top: 0; bottom: 0;
+        width: 3px; background: transparent;
+        transition: background 0.25s ease;
+      }
+      .leaderboard-row:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); transform: translateX(2px); }
       .leaderboard-row .rank {
-        width: 30px; height: 30px; border-radius: 50%;
+        width: 32px; height: 32px; border-radius: 10px;
         display: flex; align-items: center; justify-content: center;
         font-weight: 800; color: #000; font-size: 0.75rem; flex-shrink: 0;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
+      .leaderboard-row:hover .rank { transform: scale(1.1); }
       .leaderboard-row .who { flex: 1; min-width: 0; }
-      .leaderboard-row .name { font-weight: 600; font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .leaderboard-row .name { font-weight: 600; font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
       .leaderboard-row .metric { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
       .leaderboard-row .crown { font-size: 1.1rem; flex-shrink: 0; }
+      .leaderboard-row .rank-change {
+        font-size: 0.7rem; font-weight: 800; flex-shrink: 0; min-width: 20px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 6px; padding: 2px 4px; line-height: 1;
+        transition: all 0.3s ease;
+      }
+      .rank-change.up { color: #34d399; background: rgba(52,211,153,0.12); }
+      .rank-change.down { color: #ef4444; background: rgba(239,68,68,0.12); }
+      .rank-change.same { color: var(--muted, #64748b); background: rgba(255,255,255,0.04); }
+      .rank-change.new-entry { color: var(--signal, #0ea5e9); background: rgba(14,165,233,0.12); font-size: 0.6rem; }
       [data-board="xp"] .rank { background: linear-gradient(135deg, var(--signal), var(--accent)); }
       [data-board="modules"] .rank { background: linear-gradient(135deg, var(--accent), var(--yellow)); }
       [data-board="civic"] .rank { background: linear-gradient(135deg, var(--teal), var(--green)); }
       [data-board="badges"] .rank { background: linear-gradient(135deg, var(--plasma), var(--signal)); }
       /* Top 3 rank pops */
-      .leaderboard-row:nth-child(1) .rank { width: 34px; height: 34px; font-size: 0.85rem; box-shadow: 0 0 12px rgba(242,184,75,0.4); }
-      .leaderboard-row:nth-child(2) .rank { width: 32px; height: 32px; }
+      .leaderboard-row:nth-child(1) .rank { width: 36px; height: 36px; font-size: 0.85rem; box-shadow: 0 0 12px rgba(242,184,75,0.4); border-radius: 12px; }
+      .leaderboard-row:nth-child(2) .rank { width: 34px; height: 34px; border-radius: 11px; }
+      .leaderboard-row:nth-child(3) .rank { width: 33px; height: 33px; border-radius: 10px; }
       /* You highlight */
       .leaderboard-row.you { border-color: rgba(242,184,75,0.35); background: rgba(242,184,75,0.06); }
+      .leaderboard-row.you::before { background: linear-gradient(180deg, var(--accent), var(--teal)); }
       .leaderboard-row.you .name::after { content: ' · You'; color: var(--accent); font-size: 0.7rem; font-weight: 700; }
+
+      /* ── Tier Badges ── */
+      .tier-badge {
+        display: inline-flex; align-items: center; gap: 3px;
+        font-size: 0.55rem; font-weight: 800; text-transform: uppercase;
+        letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px;
+        flex-shrink: 0; line-height: 1;
+      }
+      .tier-badge.gold { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.08)); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+      .tier-badge.silver { background: linear-gradient(135deg, rgba(148,163,184,0.2), rgba(148,163,184,0.08)); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+      .tier-badge.bronze { background: linear-gradient(135deg, rgba(180,83,9,0.2), rgba(180,83,9,0.08)); color: #d97706; border: 1px solid rgba(180,83,9,0.3); }
+
+      /* ── Podium ── */
+      .lb-podium {
+        display: flex; align-items: flex-end; justify-content: center;
+        gap: 8px; padding: 20px 0 16px; margin-bottom: 8px;
+      }
+      .podium-spot {
+        display: flex; flex-direction: column; align-items: center;
+        gap: 6px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .podium-spot:hover { transform: translateY(-4px); }
+      .podium-avatar {
+        width: 52px; height: 52px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; color: #000; font-size: 1.1rem;
+        overflow: hidden; border: 3px solid rgba(255,255,255,0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .podium-spot:hover .podium-avatar { transform: scale(1.08); }
+      .podium-avatar img { width: 100%; height: 100%; object-fit: cover; }
+      .podium-name { font-size: 0.72rem; font-weight: 600; color: var(--text); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+      .podium-score { font-size: 0.65rem; color: var(--muted); font-weight: 700; }
+      .podium-base {
+        width: 80px; border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: center;
+        font-weight: 800; color: #000; font-size: 0.85rem;
+        transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      /* 1st place — center, tallest */
+      .podium-spot.first .podium-avatar { width: 64px; height: 64px; border-radius: 18px; border-color: rgba(245,158,11,0.5); box-shadow: 0 0 20px rgba(245,158,11,0.3); }
+      .podium-spot.first .podium-base { width: 90px; height: 60px; background: linear-gradient(180deg, rgba(245,158,11,0.25), rgba(245,158,11,0.08)); border: 1px solid rgba(245,158,11,0.3); color: var(--text); }
+      /* 2nd place */
+      .podium-spot.second .podium-avatar { border-color: rgba(148,163,184,0.4); }
+      .podium-spot.second .podium-base { width: 76px; height: 44px; background: linear-gradient(180deg, rgba(148,163,184,0.2), rgba(148,163,184,0.06)); border: 1px solid rgba(148,163,184,0.25); color: var(--text); }
+      /* 3rd place */
+      .podium-spot.third .podium-avatar { border-color: rgba(180,83,9,0.4); }
+      .podium-spot.third .podium-base { width: 70px; height: 34px; background: linear-gradient(180deg, rgba(180,83,9,0.18), rgba(180,83,9,0.06)); border: 1px solid rgba(180,83,9,0.25); color: var(--text); }
+
+      /* ── Your Rank Card ── */
+      .lb-your-rank {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 16px; margin-bottom: 12px;
+        background: linear-gradient(135deg, rgba(242,184,75,0.08), rgba(242,184,75,0.02));
+        border: 1px solid rgba(242,184,75,0.2);
+        border-radius: var(--r-sm); position: relative; overflow: hidden;
+      }
+      .lb-your-rank::before {
+        content: '';
+        position: absolute; top: -50%; right: -20%;
+        width: 120px; height: 120px;
+        background: radial-gradient(circle, rgba(242,184,75,0.15), transparent 70%);
+        pointer-events: none;
+      }
+      .lb-your-rank .your-rank-num {
+        width: 42px; height: 42px; border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), #f59e0b);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; color: #000; font-size: 1.1rem;
+        box-shadow: 0 4px 12px rgba(245,158,11,0.3); flex-shrink: 0;
+      }
+      .lb-your-rank .your-rank-info { flex: 1; min-width: 0; }
+      .lb-your-rank .your-rank-label { font-size: 0.7rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+      .lb-your-rank .your-rank-detail { font-size: 0.85rem; color: var(--text); font-weight: 600; margin-top: 2px; }
+      .lb-your-rank .your-rank-percentile {
+        font-size: 0.75rem; color: var(--accent); font-weight: 700;
+        background: rgba(242,184,75,0.1); padding: 4px 10px; border-radius: 20px;
+        flex-shrink: 0;
+      }
+
+      /* ── Leaderboard Stats Header ── */
+      .lb-stats-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 14px; margin-bottom: 8px;
+        font-size: 0.72rem; color: var(--muted); font-weight: 600;
+      }
+      .lb-stats-header .total-players {
+        display: flex; align-items: center; gap: 6px;
+      }
+      .lb-stats-header .total-players .dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--green); animation: pulse-dot 2s ease-in-out infinite;
+      }
+      @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
       /* ── Leaderboard Tabs ── */
       .lb-panel { max-height: 60vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
@@ -641,6 +755,115 @@
         border-radius: var(--r-sm);
       }
       @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+      /* ── Leaderboard Rank Animation ── */
+      .leaderboard-row {
+        opacity: 0;
+        transform: translateX(-16px);
+        animation: lbRowSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .leaderboard-row:nth-child(1) { animation-delay: 0.05s; }
+      .leaderboard-row:nth-child(2) { animation-delay: 0.10s; }
+      .leaderboard-row:nth-child(3) { animation-delay: 0.15s; }
+      .leaderboard-row:nth-child(4) { animation-delay: 0.20s; }
+      .leaderboard-row:nth-child(5) { animation-delay: 0.25s; }
+      .leaderboard-row:nth-child(6) { animation-delay: 0.30s; }
+      .leaderboard-row:nth-child(7) { animation-delay: 0.35s; }
+      .leaderboard-row:nth-child(8) { animation-delay: 0.40s; }
+      .leaderboard-row:nth-child(9) { animation-delay: 0.45s; }
+      .leaderboard-row:nth-child(10) { animation-delay: 0.50s; }
+      @keyframes lbRowSlideIn {
+        from { opacity: 0; transform: translateX(-16px); }
+        to   { opacity: 1; transform: translateX(0); }
+      }
+
+      /* Rank number count-up effect */
+      .rank .rank-num {
+        display: inline-block;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .rank .rank-num.counting {
+        animation: rankCountPulse 0.15s ease-in-out;
+      }
+      @keyframes rankCountPulse {
+        0%   { transform: scale(1); }
+        50%  { transform: scale(1.3); }
+        100% { transform: scale(1); }
+      }
+
+      /* Rank-change celebration: gold glow + bounce */
+      .leaderboard-row.rank-up {
+        animation: lbRowSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, rankUpCelebrate 0.6s 0.4s ease-out;
+      }
+      @keyframes rankUpCelebrate {
+        0%   { box-shadow: inset 0 0 0 0 rgba(52, 211, 153, 0); }
+        30%  { box-shadow: inset 0 0 20px 2px rgba(52, 211, 153, 0.25), 0 0 16px rgba(52, 211, 153, 0.15); }
+        100% { box-shadow: inset 0 0 0 0 rgba(52, 211, 153, 0); }
+      }
+      .leaderboard-row.rank-down {
+        animation: lbRowSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, rankDownFade 0.5s 0.4s ease-out;
+      }
+      @keyframes rankDownFade {
+        0%   { box-shadow: inset 0 0 0 0 rgba(239, 68, 68, 0); }
+        30%  { box-shadow: inset 0 0 16px 2px rgba(239, 68, 68, 0.15); }
+        100% { box-shadow: inset 0 0 0 0 rgba(239, 68, 68, 0); }
+      }
+
+      /* New entry sparkle */
+      .leaderboard-row.new-entry-row {
+        animation: lbRowSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, newEntryGlow 0.8s 0.4s ease-out;
+      }
+      @keyframes newEntryGlow {
+        0%   { box-shadow: inset 0 0 0 0 rgba(94, 212, 245, 0); }
+        30%  { box-shadow: inset 0 0 20px 2px rgba(94, 212, 245, 0.2), 0 0 12px rgba(94, 212, 245, 0.1); }
+        100% { box-shadow: inset 0 0 0 0 rgba(94, 212, 245, 0); }
+      }
+
+      /* Rank change badge bounce-in */
+      .rank-change {
+        opacity: 0;
+        transform: scale(0.5);
+        animation: rankBadgePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+      }
+      @keyframes rankBadgePop {
+        from { opacity: 0; transform: scale(0.5); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+
+      /* Top-3 rank special entrance */
+      .leaderboard-row:nth-child(1) .rank {
+        animation: topRankEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+      }
+      .leaderboard-row:nth-child(2) .rank {
+        animation: topRankEntrance 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
+      }
+      .leaderboard-row:nth-child(3) .rank {
+        animation: topRankEntrance 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+      }
+      @keyframes topRankEntrance {
+        from { opacity: 0; transform: scale(0.3) rotate(-20deg); }
+        to   { opacity: 1; transform: scale(1) rotate(0deg); }
+      }
+
+      /* Your-rank highlight pulse */
+      .leaderboard-row.you .rank {
+        animation: yourRankPulse 2s ease-in-out 1s infinite;
+      }
+      @keyframes yourRankPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(242, 184, 75, 0.3); }
+        50%      { box-shadow: 0 0 0 6px rgba(242, 184, 75, 0); }
+      }
+
+      /* Reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .leaderboard-row, .rank .rank-num, .rank-change, .leaderboard-row .rank {
+          animation: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      }
+
+
 
       /* ── Bento Card Accents ── */
       .bento-card.accent-cyan { border-color: rgba(94,212,245,0.18); }
@@ -799,6 +1022,7 @@
         .share-btn { padding: 10px 16px; font-size: 0.85rem; }
         .bottom-nav { bottom: 12px; padding: 6px; gap: 4px; }
         .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+        .leaderboard-row .rank-change { font-size: 0.6rem; padding: 2px 3px; min-width: 16px; }
       }
 
       @media print {
@@ -1274,6 +1498,24 @@
             <button class="lb-tab" id="lb-tab-modules" data-board="modules" role="tab" aria-selected="false" aria-controls="lb-panel-modules" onclick="switchLbTab('modules')">✅ Modules</button>
             <button class="lb-tab" id="lb-tab-civic" data-board="civic" role="tab" aria-selected="false" aria-controls="lb-panel-civic" onclick="switchLbTab('civic')">💰 Wallet</button>
             <button class="lb-tab" id="lb-tab-badges" data-board="badges" role="tab" aria-selected="false" aria-controls="lb-panel-badges" onclick="switchLbTab('badges')">🎖️ Badges</button>
+          </div>
+
+          <!-- Podium (shown for top 3) -->
+          <div id="lb-podium-xp" class="lb-podium" style="display:none;"></div>
+          <div id="lb-podium-modules" class="lb-podium" style="display:none;"></div>
+          <div id="lb-podium-civic" class="lb-podium" style="display:none;"></div>
+          <div id="lb-podium-badges" class="lb-podium" style="display:none;"></div>
+
+          <!-- Your Rank Card -->
+          <div id="lb-your-rank-xp" class="lb-your-rank" style="display:none;"></div>
+          <div id="lb-your-rank-modules" class="lb-your-rank" style="display:none;"></div>
+          <div id="lb-your-rank-civic" class="lb-your-rank" style="display:none;"></div>
+          <div id="lb-your-rank-badges" class="lb-your-rank" style="display:none;"></div>
+
+          <!-- Stats Header -->
+          <div class="lb-stats-header">
+            <div class="total-players"><span class="dot"></span> <span id="lb-total-count">Loading...</span></div>
+            <div>Top performers</div>
           </div>
 
           <!-- XP Panel -->
@@ -1845,12 +2087,13 @@
           if (!window.supabaseClient) throw new Error('Not connected')
           // Fuzzy search: ilike with wildcards on both sides for real-time results
           const searchPattern = '%' + uname + '%'
-          const { data } = await window.supabaseClient
+          const { data, error: searchErr } = await window.supabaseClient
             .from('user_profiles')
-            .select('user_id, display_name, username, total_score, modules_completed, badges_count, profile_views')
+            .select('user_id, display_name, username, total_score, modules_completed')
             .ilike('username', searchPattern)
             .order('total_score', { ascending: false })
             .limit(20)
+          if (searchErr) console.warn('Player search error:', searchErr)
           if (!data) {
             // Fallback to profiles table
             const { data: pData } = await window.supabaseClient
@@ -2040,12 +2283,16 @@
         const _done = _getCompleted()
         if (_done < 52) return alert('Unlock your certificate first!')
         if (typeof html2pdf !== 'undefined') {
+          const el = document.getElementById('cert-wrapper')
+          if (!el) { alert('Certificate not rendered. Please refresh and try again.'); return; }
           html2pdf().set({
             margin: 0, filename: 'Traffic_Hero_Certificate.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-          }).from(document.getElementById('cert-wrapper')).save()
+          }).from(el).save()
+        } else {
+          alert('PDF library not loaded. Please ensure you have internet access.')
         }
       }
 
@@ -2331,9 +2578,18 @@
           t.classList.toggle('active', active)
           t.setAttribute('aria-selected', active)
         })
+        // Hide all panels
         document.querySelectorAll('.lb-panel').forEach(p => p.style.display = 'none')
         const panel = document.getElementById('lb-panel-' + board)
         if (panel) panel.style.display = 'block'
+        // Toggle podium visibility per board
+        document.querySelectorAll('.lb-podium').forEach(p => p.style.display = 'none')
+        const podium = document.getElementById('lb-podium-' + board)
+        if (podium && podium.children.length > 0) podium.style.display = 'flex'
+        // Toggle your-rank visibility per board
+        document.querySelectorAll('.lb-your-rank').forEach(p => p.style.display = 'none')
+        const yr = document.getElementById('lb-your-rank-' + board)
+        if (yr && yr.innerHTML.trim()) yr.style.display = 'flex'
       }
 
       async function loadLeaderboard() {
@@ -2367,19 +2623,164 @@
           const container = document.getElementById(containerId)
           if (!container) return
           if (!users || users.length === 0) { container.innerHTML = EMPTY_MSG; return }
-          container.innerHTML = users.map((u, i) => {
+
+          // ── Podium ──
+          const podiumEl = document.getElementById('lb-podium-' + board)
+          if (podiumEl) {
+            if (users.length >= 1) {
+              const podiumOrder = []
+              const podiumClasses = []
+              const podiumMedals = []
+              if (users.length >= 2) { podiumOrder.push(users[1]); podiumClasses.push('second'); podiumMedals.push('🥈') }
+              if (users.length >= 1) { podiumOrder.push(users[0]); podiumClasses.push('first'); podiumMedals.push('🥇') }
+              if (users.length >= 3) { podiumOrder.push(users[2]); podiumClasses.push('third'); podiumMedals.push('🥉') }
+              podiumEl.innerHTML = podiumOrder.map((u, idx) => {
+                const name = profileMap[u.user_id] || u.display_name || u.username || 'Anon'
+                const score = u.score || u.badge_count || u.modules_completed || 0
+                const initial = name.charAt(0).toUpperCase()
+                return `<div class="podium-spot ${podiumClasses[idx]}">
+                  <div class="podium-avatar" style="background: linear-gradient(135deg, ${idx===1?'#fbbf24':idx===0?'#94a3b8':'#d97706'}, ${idx===1?'#f59e0b':idx===0?'#64748b':'#b45309'})">
+                    ${initial}
+                  </div>
+                  <div class="podium-name">${name}</div>
+                  <div class="podium-score">${score.toLocaleString()}</div>
+                  <div class="podium-base">${podiumMedals[idx]}</div>
+                </div>`
+              }).join('')
+              podiumEl.style.display = 'flex'
+            } else {
+              podiumEl.style.display = 'none'
+            }
+          }
+
+          // ── Your Rank Card ──
+          const yourRankEl = document.getElementById('lb-your-rank-' + board)
+          if (yourRankEl && currentUserId) {
+            const youIdx = users.findIndex(u => u.user_id === currentUserId)
+            if (youIdx >= 0) {
+              const you = users[youIdx]
+              const yourRank = youIdx + 1
+              const totalPlayers = users.length
+              const percentile = totalPlayers > 1 ? Math.round(((totalPlayers - yourRank) / (totalPlayers - 1)) * 100) : 100
+              const name = profileMap[you.user_id] || you.display_name || 'You'
+              yourRankEl.innerHTML = `
+                <div class="your-rank-num">#${yourRank}</div>
+                <div class="your-rank-info">
+                  <div class="your-rank-label">Your Rank</div>
+                  <div class="your-rank-detail">${name} · ${metric(you)}</div>
+                </div>
+                <div class="your-rank-percentile">Top ${100 - percentile}%</div>
+              `
+              yourRankEl.style.display = 'flex'
+            } else {
+              yourRankEl.style.display = 'none'
+            }
+          } else if (yourRankEl) {
+            yourRankEl.style.display = 'none'
+          }
+
+          // ── Stats Header ──
+          const totalEl = document.getElementById('lb-total-count')
+          if (totalEl) totalEl.textContent = users.length + ' players'
+
+          // Per-user localStorage key so different accounts don't collide
+          const storageKey = 'lb_ranks_' + (currentUserId || 'anon') + '_' + board
+          let prevRanks = {}
+          let hasPrevData = false
+          try {
+            const stored = localStorage.getItem(storageKey)
+            if (stored) { prevRanks = JSON.parse(stored); hasPrevData = true }
+          } catch(e) {}
+          // Save current rankings for next comparison
+          const currentRanks = {}
+          users.forEach((u, i) => { if (u.user_id) currentRanks[u.user_id] = i + 1 })
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(currentRanks))
+          } catch(e) {}
+
+          // Tier badge helper
+          function tierBadge(rank) {
+            if (rank === 1) return '<span class="tier-badge gold">👑 GOLD</span>'
+            if (rank === 2) return '<span class="tier-badge silver">🥈 SILVER</span>'
+            if (rank === 3) return '<span class="tier-badge bronze">🥉 BRONZE</span>'
+            return ''
+          }
+
+          // Show all rows but starting rank from 1 (podium + rows both show same players)
+          const rows = users.slice(0).map((u, i) => {
             const isYou = u.user_id && u.user_id === currentUserId
             const displayUsername = profileMap[u.user_id] || u.display_name || u.username || u.full_name || 'Anonymous'
-            return `<div class="leaderboard-row${isYou ? ' you' : ''}">
-              <div class="rank">${i + 1}</div>
+            const curRank = i + 1
+            const prevRank = u.user_id ? prevRanks[u.user_id] : null
+            let rankChangeHtml = ''
+            let rowClass = isYou ? ' you' : ''
+            if (prevRank != null) {
+              const delta = prevRank - curRank // positive = moved up
+              if (delta > 0) {
+                rowClass += ' rank-up'
+                const displayNum = delta > 9 ? '+9' : delta
+                rankChangeHtml = `<div class="rank-change up" title="Up ${delta} place${delta > 1 ? 's' : ''}">▲${displayNum !== delta ? displayNum : (delta > 1 ? delta : '')}</div>`
+              } else if (delta < 0) {
+                rowClass += ' rank-down'
+                const absDelta = Math.abs(delta)
+                const displayNum = absDelta > 9 ? '+9' : absDelta
+                rankChangeHtml = `<div class="rank-change down" title="Down ${absDelta} place${absDelta > 1 ? 's' : ''}">▼${displayNum !== absDelta ? displayNum : (absDelta > 1 ? absDelta : '')}</div>`
+              } else {
+                rankChangeHtml = `<div class="rank-change same" title="No change">●</div>`
+              }
+            } else if (hasPrevData && curRank <= 20) {
+              rowClass += ' new-entry-row'
+              rankChangeHtml = `<div class="rank-change new-entry" title="New to leaderboard">NEW</div>`
+            }
+            return `<div class="leaderboard-row${rowClass}" data-rank="${curRank}" data-user-id="${u.user_id || ''}">
+              <div class="rank"><span class="rank-num" data-target="${curRank}">${curRank}</span></div>
+              ${rankChangeHtml}
               <div class="who">
-                <div class="name">${displayUsername}</div>
+                <div class="name">${displayUsername} ${tierBadge(curRank)}</div>
                 <div class="metric">${metric(u)}</div>
               </div>
-              ${i === 0 ? `<div class="crown">${crowns[board]}</div>` : ''}
+              ${curRank <= 3 ? `<div class="crown">${crowns[board]}</div>` : ''}
             </div>`
           }).join('')
+          container.innerHTML = rows
+          // Animate rank numbers: count from 1 to actual rank
+          _animateRanks(container)
         }
+
+        // ── Rank Count-Up Animation ──
+        // Track active intervals for cleanup on re-render
+        const _activeRankIntervals = []
+        function _animateRanks(container) {
+          // Clear any previous rank intervals to prevent leaks
+          _activeRankIntervals.forEach(id => clearInterval(id))
+          _activeRankIntervals.length = 0
+          const nums = container.querySelectorAll('.rank-num')
+          nums.forEach((el, idx) => {
+            const target = parseInt(el.getAttribute('data-target')) || (idx + 1)
+            const delay = 120 + idx * 80 // stagger each row
+            el.textContent = '—'
+            setTimeout(() => {
+              if (!el.isConnected) return // bail if DOM was re-rendered
+              el.classList.add('counting')
+              let current = 0
+              const step = Math.max(1, Math.floor(target / 6))
+              const interval = setInterval(() => {
+                if (!el.isConnected) { clearInterval(interval); return } // cleanup detached nodes
+                current += step
+                if (current >= target) {
+                  current = target
+                  clearInterval(interval)
+                  el.classList.remove('counting')
+                }
+                el.textContent = current
+              }, 40)
+              _activeRankIntervals.push(interval)
+            }, delay)
+          })
+        }
+
+        // ── Expose for post-level-completion rank animation ──
+        window._animateLeaderboardRanks = _animateRanks
 
         let certsByScore = null
         let wallets = null
@@ -2417,22 +2818,22 @@
         }
 
         try {
-          const { data: wData } = await window.supabaseClient
+          const { data: wData, error: wErr } = await window.supabaseClient
             .from('wallets')
             .select('user_id, balance')
             .order('balance', { ascending: false })
             .limit(500)
-          wallets = wData
-          if (wData) wData.forEach(d => allUserIds.add(d.user_id))
-        } catch (e) { console.warn('Leaderboard wallets fetch failed:', e) }
+          if (wErr) { console.warn('Leaderboard wallets query error:', wErr); wallets = [] }
+          else { wallets = wData; if (wData) wData.forEach(d => allUserIds.add(d.user_id)) }
+        } catch (e) { console.warn('Leaderboard wallets fetch failed:', e); wallets = [] }
 
         try {
-          const { data: bData } = await window.supabaseClient
+          const { data: bData, error: bErr } = await window.supabaseClient
             .from('badges')
             .select('user_id, badge_type')
-          allBadges = bData
-          if (bData) bData.forEach(d => allUserIds.add(d.user_id))
-        } catch (e) { console.warn('Leaderboard badges fetch failed:', e) }
+          if (bErr) { console.warn('Leaderboard badges query error:', bErr); allBadges = [] }
+          else { allBadges = bData; if (bData) bData.forEach(d => allUserIds.add(d.user_id)) }
+        } catch (e) { console.warn('Leaderboard badges fetch failed:', e); allBadges = [] }
 
         // Fetch usernames from user_profiles first, then profiles as fallback
         if (allUserIds.size > 0) {
