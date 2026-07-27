@@ -3371,7 +3371,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   g.add(shadowBlob)
 
   // ═══ PLAYER-SPECIFIC ACCESSORIES ═══
-  let ring = null, nametag = null
+  let ring = null, nametag = null, nametagGlow = null, nametagGlowOuter = null
   if (isPlayer) {
     // ── Backpack (detailed with straps and pocket) ──
     const bagMain = new THREE.Mesh(new THREE.BoxGeometry(0.30 * sk, 0.40 * sk, 0.16 * sk), BAG)
@@ -3500,7 +3500,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     g.add(nametag)
     // ── Animated glow ring under nametag (pulses with rank color) ──
     const _rankColorObj = new THREE.Color(_rank.color)
-    const nametagGlow = new THREE.Mesh(
+    nametagGlow = new THREE.Mesh(
       new THREE.RingGeometry(0.25 * sk, 0.30 * sk, 24),
       new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthTest: false })
     )
@@ -3508,7 +3508,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     nametagGlow.rotation.x = -Math.PI / 2
     g.add(nametagGlow)
     // Outer glow ring
-    const nametagGlowOuter = new THREE.Mesh(
+    nametagGlowOuter = new THREE.Mesh(
       new THREE.RingGeometry(0.32 * sk, 0.35 * sk, 24),
       new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthTest: false })
     )
@@ -3907,21 +3907,55 @@ function showConsequenceModal(violationType, severity = 'normal') {
     if (!canvas || !window.THREE) return
     if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose() }
     _previewScene = new THREE.Scene()
+    _previewScene.background = new THREE.Color(0x0a0e1a)
     _previewCamera = new THREE.PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 100)
     _previewCamera.position.set(0, 1.8, 5)
     _previewCamera.lookAt(0, 1.2, 0)
     _previewRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
     _previewRenderer.setSize(canvas.width, canvas.height)
     _previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    // Lighting
-    const amb = new THREE.AmbientLight(0xffffff, 0.7)
+    _previewRenderer.toneMapping = THREE.ACESFilmicToneMapping
+    _previewRenderer.toneMappingExposure = 1.0
+    // ── Cinematic 3-point lighting ──
+    const amb = new THREE.AmbientLight(0x8888ff, 0.25)
     _previewScene.add(amb)
-    const dir = new THREE.DirectionalLight(0xffffff, 0.9)
-    dir.position.set(3, 5, 4)
-    _previewScene.add(dir)
-    const rim = new THREE.DirectionalLight(0x88aaff, 0.3)
-    rim.position.set(-2, 3, -3)
+    // Key light (warm, from front-right)
+    const key = new THREE.DirectionalLight(0xffeedd, 1.1)
+    key.position.set(3, 4, 4)
+    _previewScene.add(key)
+    // Fill light (cool, from front-left, softer)
+    const fill = new THREE.DirectionalLight(0x8899ff, 0.35)
+    fill.position.set(-2.5, 1.5, 3)
+    _previewScene.add(fill)
+    // Rim/Hair light from behind
+    const rim = new THREE.DirectionalLight(0x88ddff, 0.5)
+    rim.position.set(-1, 3, -5)
     _previewScene.add(rim)
+    // Soft bottom bounce
+    const bounce = new THREE.DirectionalLight(0x4466aa, 0.2)
+    bounce.position.set(0, -3, 2)
+    _previewScene.add(bounce)
+    // ── Subtle ground reflection ──
+    const groundGeo = new THREE.CircleGeometry(2.5, 24)
+    const groundMat = new THREE.MeshBasicMaterial({
+      color: 0x111622,
+      transparent: true,
+      opacity: 0.6,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    })
+    const ground = new THREE.Mesh(groundGeo, groundMat)
+    ground.rotation.x = -Math.PI / 2
+    ground.position.y = -0.02
+    _previewScene.add(ground)
+    // Gradient ring accent
+    const ringAcc = new THREE.Mesh(
+      new THREE.RingGeometry(0.6, 0.65, 48),
+      new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false })
+    )
+    ringAcc.rotation.x = -Math.PI / 2
+    ringAcc.position.y = -0.01
+    _previewScene.add(ringAcc)
     _updatePreviewModel()
   }
 
@@ -3936,7 +3970,28 @@ function showConsequenceModal(violationType, severity = 'normal') {
   function _animatePreview() {
     if (!_previewRenderer) return
     _previewRAF = requestAnimationFrame(_animatePreview)
-    if (_previewChar) _previewChar.rotation.y += 0.008
+    if (_previewChar) {
+      _previewChar.rotation.y += 0.006
+      // Subtle idle breathing — torso rises slightly
+      if (_previewChar.userData) {
+        const t = Date.now() * 0.002
+        const breathe = Math.sin(t) * 0.004
+        if (_previewChar.userData.torsoGroup) {
+          _previewChar.userData.torsoGroup.position.y = 1.23 + breathe * 0.5
+        }
+        // Slight head sway
+        if (_previewChar.userData.headGroup) {
+          _previewChar.userData.headGroup.rotation.z = Math.sin(t * 0.7) * 0.004
+        }
+        // Blink timer
+        if (_previewChar.userData.eyeLids) {
+          const blinkPhase = Math.sin(t * 0.5) * 0.5 + 0.5
+          _previewChar.userData.eyeLids.forEach(lid => {
+            lid.scale.y = blinkPhase > 0.98 ? 0.2 : 0.7
+          })
+        }
+      }
+    }
     _previewRenderer.render(_previewScene, _previewCamera)
   }
 

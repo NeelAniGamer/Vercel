@@ -2095,6 +2095,11 @@
       }
     }
 
+    @keyframes camJoyPulse {
+      0%, 100% { border-color: rgba(100, 200, 255, 0.3); box-shadow: 0 0 0 0 rgba(100, 200, 255, 0); }
+      50% { border-color: rgba(100, 200, 255, 0.6); box-shadow: 0 0 12px 4px rgba(100, 200, 255, 0.15); }
+    }
+
     .da-arrow-icon {
       width: 44px;
       height: 44px;
@@ -4895,6 +4900,7 @@
         touch-action: none;
         z-index: 10000;
         backdrop-filter: blur(4px);
+        animation: camJoyPulse 2s ease-in-out infinite;
       ">
     <div id="camera-joystick-knob" style="
           width: 44px;
@@ -5101,6 +5107,10 @@
   <div id="swipe-look-hint"
     style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:20px; font-size:0.85rem; pointer-events:none; z-index:var(--z-hud); display:none; font-family:Inter,sans-serif; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.5s;">
     👆 Swipe empty area to look around
+  </div>
+  <div id="desktop-camera-hint"
+    style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:20px; font-size:0.85rem; pointer-events:none; z-index:var(--z-hud); display:none; font-family:Inter,sans-serif; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.5s;">
+    🖱️ Right-click + drag to look around  •  Click canvas to enter first person
   </div>
   <div id="hud">
     <div class="hp">Lv<span class="hv" id="hlv">1</span></div>
@@ -6120,18 +6130,30 @@
         window.addEventListener('orientationchange', function () { setTimeout(update, 150); });
         setInterval(update, 500);
       })();
-    // Show swipe-to-look hint on mobile for 3 seconds after game starts
+    // Show camera control hints after game starts (mobile + desktop)
     (function () {
-      const hint = document.getElementById('swipe-look-hint');
-      if (!hint) return;
-      let shown = false;
+      const mobileHint = document.getElementById('swipe-look-hint');
+      const desktopHint = document.getElementById('desktop-camera-hint');
+      let mobileShown = false, desktopShown = false;
       setInterval(function () {
-        if (typeof game === 'undefined' || !game || !game.playing || shown) return;
-        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-          hint.style.display = 'block';
-          shown = true;
-          setTimeout(function () { hint.style.opacity = '0'; }, 2000);
-          setTimeout(function () { hint.style.display = 'none'; }, 2500);
+        if (typeof game === 'undefined' || !game || !game.playing) return;
+        // Mobile hint
+        if (!mobileShown && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          if (mobileHint) {
+            mobileHint.style.display = 'block';
+            mobileShown = true;
+            setTimeout(function () { mobileHint.style.opacity = '0'; }, 2000);
+            setTimeout(function () { mobileHint.style.display = 'none'; }, 2500);
+          }
+        }
+        // Desktop hint
+        if (!desktopShown && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+          if (desktopHint) {
+            desktopHint.style.display = 'block';
+            desktopShown = true;
+            setTimeout(function () { desktopHint.style.opacity = '0'; }, 3000);
+            setTimeout(function () { desktopHint.style.display = 'none'; }, 3500);
+          }
         }
       }, 500);
     })();

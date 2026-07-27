@@ -198,10 +198,7 @@
         .mobile-bottom-nav {
           display: flex !important;
         }
-        /* Hide desktop-only buttons on mobile */
-        #academy-compare-btn, #academy-sign-in-btn {
-          display: none !important;
-        }
+        /* Removed: compare and sign-in buttons */
         .partner-badges {
           display: none !important;
         }
@@ -4655,15 +4652,6 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <div class="mobile-hamburger-dropdown" id="hamburger-dropdown" role="menu" aria-label="Menu">
-          <button role="menuitem" onclick="hzToggle(); toggleHamburger();">
-            <span aria-hidden="true">🌓</span> Toggle Theme
-          </button>
-          <button role="menuitem" onclick="openCompareModal(); toggleHamburger();">
-            <span aria-hidden="true">👥</span> Compare Players
-          </button>
-          <button role="menuitem" id="hamburger-signin" onclick="window.location.href='TrafficSetup.html';">
-            <span aria-hidden="true">🔑</span> Sign In
-          </button>
         </div>
         <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.location.href='Academy.html'">
           <img src="../Icon.png" alt="Class Of Learners" style="height:36px; width:36px; border-radius:10px; object-fit:contain; box-shadow:0 2px 8px rgba(0,0,0,0.2);" onerror="this.src='Icon.png'" />
@@ -4675,74 +4663,6 @@
         </div>
         
         <div style="display:flex; gap:10px; align-items:center;">
-          <div class="hz-toggle" onclick="hzToggle()" title="Toggle light/dark mode">
-            <div class="hz-clouds"></div>
-            <div class="hz-stars"></div>
-            <div class="hz-skyline"></div>
-            <div class="hz-windows"></div>
-            <div class="hz-orb"></div>
-          </div>
-
-        <button
-          class=""
-          id="academy-compare-btn"
-          onclick="openCompareModal()"
-          style="
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 12px 24px;
-            min-height: 48px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            font-size: 0.95rem;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-          "
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          Compare Drivers
-        </button>
-
-        <button
-          class=""
-          id="academy-sign-in-btn"
-          onclick="window.location.href = 'TrafficSetup.html'"
-          style="
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 12px 24px;
-            min-height: 48px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            font-size: 0.95rem;
-            transition: 0.3s;
-          "
-        >
-          Sign In
-        </button>
-
-        <!-- Hide sign-in button when user is already signed in -->
-        <script>
-        (function() {
-          function checkAuthState() {
-            var signInBtn = document.getElementById('academy-sign-in-btn');
-            if (!signInBtn) return;
-            if (window.colUser || localStorage.getItem('trafficSetupComplete')) {
-              signInBtn.style.display = 'none';
-            } else {
-              signInBtn.style.display = '';
-            }
-          }
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
               checkAuthState();
               window.addEventListener('col-auth-changed', checkAuthState);
             });
@@ -4875,13 +4795,6 @@
         </button>
         <div style="display: flex; gap: 12px; align-items: center; width: 100%; justify-content: flex-end;">
           <input type="text" id="level-search" placeholder="Search levels..." onkeyup="filterLevels()" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; flex: 1; max-width: 300px; font-family: 'Inter', sans-serif;">
-          <button
-            class="btn btn-g dynamic-auth-btn"
-            onclick="window.location.href = 'TrafficSetup.html'"
-            style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap"
-          >
-            Sign In
-          </button>
           <div
             id="pchip"
             class="btn btn-g"
@@ -4928,13 +4841,6 @@
         </button>
         <div style="font-weight: 700; font-size: 0.95rem; color: var(--text)" id="blt">Level 1</div>
         <div style="display: flex; gap: 12px; align-items: center">
-          <button
-            class="btn btn-g dynamic-auth-btn"
-            onclick="window.location.href = 'TrafficSetup.html'"
-            style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
-          >
-            Sign In
-          </button>
           <div class="btn" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px" id="bvh"></div>
         </div>
       </div>
@@ -4981,13 +4887,6 @@
           </svg>
           Abort
         </button>
-        <button
-          class="btn btn-g dynamic-auth-btn"
-          onclick="window.location.href = 'TrafficSetup.html'"
-          style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
-        >
-          Sign In
-        </button>
       </div>
       <div class="qw">
         <h2 style="text-align: center; font-size: 2rem; margin-bottom: 24px">Compliance Check</h2>
@@ -5005,7 +4904,6 @@
         <div class="rcard" id="rcard"></div>
         <div class="bdx" id="rbdg"></div>
         <div class="rbts">
-          <button class="btn btn-g dynamic-auth-btn" onclick="window.location.href = 'TrafficSetup.html'">Sign In</button>
           <button class="btn btn-g" onclick="ui.showLevels()">Modules</button>
           <button class="btn btn-p" id="rnxt" onclick="ui.goNext()">Next Module →</button>
         </div>
@@ -5037,16 +4935,8 @@
           </svg>
           Back
         </button>
-        <h2 style="font-size: 1.4rem; margin: 0">Driver Profile</h2>
-        <button
-          class="btn btn-g dynamic-auth-btn"
-          onclick="window.location.href = 'TrafficSetup.html'"
-          style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
-        >
-          Sign In
-        </button>
-      </div>
-      <div class="lw">
+        <h2 style="font-size: 1.4rem; margin: 0">Driver Profile</h2>        </div>
+        <div class="lw">
         <div class="stats-body" id="stats-body"></div>
         <h3 style="margin-top: 40px; font-size: 1.5rem">Achievements</h3>
         <div class="bgrid" id="bgrid"></div>
@@ -5063,13 +4953,6 @@
         </button>
         <div style="color: var(--accent); font-weight: 600; font-size: 0.95rem" id="cstat"></div>
         <div style="display: flex; gap: 12px; align-items: center">
-          <button
-            class="btn btn-g dynamic-auth-btn"
-            onclick="window.location.href = 'TrafficSetup.html'"
-            style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
-          >
-            Sign In
-          </button>
           <button class="btn btn-p" id="cdownload" onclick="ui.dlCert()" style="padding: 8px 20px; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 6px">
             📥 Download PDF
           </button>
@@ -6299,24 +6182,6 @@
       })()
 
       /* ── Horizon Toggle ── */
-      function hzInit() {
-        var t = localStorage.getItem('theme');
-        if (t === 'light') { document.body.classList.add('lm'); }
-        else { document.body.classList.remove('lm'); }
-        hzSync();
-      }
-      function hzSync() {
-        var el = document.querySelector('.hz-toggle');
-        if (!el) return;
-        if (document.body.classList.contains('lm')) { el.classList.remove('night'); }
-        else { el.classList.add('night'); }
-      }
-      function hzToggle() {
-        document.body.classList.toggle('lm');
-        localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
-        hzSync();
-      }
-
       // ── Hamburger Menu (mobile) ──
       (function() {
         const btn = document.getElementById('hamburger-btn');
@@ -6342,8 +6207,6 @@
           }
         });
       })();
-
-      hzInit();
 
       // ── Ripple Touch Feedback for Mobile ──
       if ('ontouchstart' in window) {
@@ -6375,201 +6238,7 @@
       };
     </script>
 
-      <!-- COMPARE MODAL -->
-      <div class="modal-overlay" id="compare-modal" style="z-index: 10000; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);">
-        <div class="modal-box" style="max-width: 600px; width: 90%; padding: 32px; border-radius: 24px; text-align: left; background: var(--card); border: 1px solid var(--border);">
-          <h3 style="margin-top: 0; font-size: 1.8rem; font-weight: 800; font-family: var(--sans);">Driver Search</h3>
-          <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 24px; line-height: 1.5;">Search by @username to view and compare stats.</p>
-          
-          <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-            <div style="position: relative; flex: 1;">
-              <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600;">@</span>
-              <input type="text" id="compare-search-input" placeholder="username" onkeypress="if(event.key === 'Enter') searchPlayer()" style="width: 100%; padding: 14px 16px 14px 36px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1.1rem; font-family: var(--sans); outline: none; transition: border-color 0.2s;">
-            </div>
-            <button onclick="searchPlayer()" style="background: linear-gradient(90deg, var(--signal), var(--accent)); color: #000; border: none; border-radius: 12px; padding: 0 24px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              Search
-            </button>
-          </div>
 
-          <div id="compare-error" style="color: #ef4444; font-size: 0.95rem; margin-bottom: 24px; display: none; background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2);">Player not found.</div>
-          
-          <div id="compare-loading" style="display: none; justify-content: center; align-items: center; padding: 40px 0; gap: 12px;">
-            <div style="width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--signal); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <span style="color: var(--muted); font-weight: 600; font-size: 1.1rem;">Searching database...</span>
-          </div>
-          <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-
-          <div id="compare-results" style="display: none;">
-            <div style="display: flex; align-items: stretch; gap: 16px; margin-bottom: 24px;">
-              <!-- My Stats -->
-              <div style="flex: 1; background: var(--bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border); text-align: center; position: relative; overflow: hidden;">
-                <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--signal);"></div>
-                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.1em; font-weight: 700;">You</div>
-                <h4 id="compare-my-name" style="margin: 0 0 4px 0; font-size: 1.2rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</h4>
-                <div id="compare-my-username" style="color: var(--signal); font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</div>
-                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 12px;">
-                  <div style="font-size: 2.2rem; font-weight: 800; font-family: var(--sans); line-height: 1;" id="compare-my-score">0</div>
-                  <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; margin-top: 4px;">Points</div>
-                </div>
-                <div style="font-size: 1rem; font-weight: 700; color: var(--text);" id="compare-my-progress">0/52</div>
-                <div style="font-size: 0.75rem; color: var(--muted);">Modules Complete</div>
-              </div>
-
-              <!-- VS Badge -->
-              <div style="display: flex; align-items: center; justify-content: center; padding: 0 8px;">
-                <div style="width: 40px; height: 40px; background: var(--card); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-style: italic; color: var(--muted); font-size: 1.1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">VS</div>
-              </div>
-
-              <!-- Their Stats -->
-              <div style="flex: 1; background: var(--bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border); text-align: center; position: relative; overflow: hidden;">
-                <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--ion);"></div>
-                <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.1em; font-weight: 700;">Player</div>
-                <h4 id="compare-their-name" style="margin: 0 0 4px 0; font-size: 1.2rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</h4>
-                <div id="compare-their-username" style="color: var(--ion); font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</div>
-                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 12px;">
-                  <div style="font-size: 2.2rem; font-weight: 800; font-family: var(--sans); line-height: 1;" id="compare-their-score">0</div>
-                  <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; margin-top: 4px;">Points</div>
-                </div>
-                <div style="font-size: 1rem; font-weight: 700; color: var(--text);" id="compare-their-progress">0/52</div>
-                <div style="font-size: 0.75rem; color: var(--muted);">Modules Complete</div>
-              </div>
-            </div>
-          </div>
-          
-          <div style="text-align: right; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 10px;">
-            <button onclick="closeCompareModal()" style="background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 12px 24px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">Close</button>
-          </div>
-        </div>
-      </div>
-
-      <script>
-        function openCompareModal() {
-          document.getElementById('compare-modal').classList.add('show');
-          document.getElementById('compare-search-input').focus();
-        }
-        function closeCompareModal() {
-          document.getElementById('compare-modal').classList.remove('show');
-          document.getElementById('compare-results').style.display = 'none';
-          document.getElementById('compare-error').style.display = 'none';
-          document.getElementById('compare-search-input').value = '';
-        }
-        async function searchPlayer() {
-          let q = document.getElementById('compare-search-input').value.trim();
-          if(!q) return;
-          q = q.replace(/^@/, '');
-          const username = '@' + q;
-          
-          document.getElementById('compare-error').style.display = 'none';
-          document.getElementById('compare-results').style.display = 'none';
-          document.getElementById('compare-loading').style.display = 'flex';
-          
-          try {
-            if (!window.supabaseClient) throw new Error("Cloud database not connected.");
-            
-            // Search user_profiles table (where usernames are stored)
-            const { data, error } = await window.supabaseClient
-              .from('user_profiles')
-              .select('user_id, display_name, username, total_score, modules_completed, preferred_vehicle, civic_balance')
-              .ilike('username', username)
-              .maybeSingle();
-            
-            if (error || !data) {
-              // Fallback: search by display_name
-              const { data: nameData } = await window.supabaseClient
-                .from('user_profiles')
-                .select('user_id, display_name, username, total_score, modules_completed, preferred_vehicle, civic_balance')
-                .ilike('display_name', '%' + q + '%')
-                .limit(1)
-                .maybeSingle();
-              
-              document.getElementById('compare-loading').style.display = 'none';
-              
-              if (!nameData) {
-                document.getElementById('compare-error').style.display = 'block';
-                document.getElementById('compare-error').textContent = 'Player not found. Try searching by @username or display name.';
-                return;
-              }
-              // Use the name search result
-              return await _showSearchResult(nameData, username);
-            }
-            
-            document.getElementById('compare-loading').style.display = 'none';
-            await _showSearchResult(data, username);
-          } catch(e) {
-            document.getElementById('compare-loading').style.display = 'none';
-            document.getElementById('compare-error').style.display = 'block';
-            document.getElementById('compare-error').textContent = e.message;
-          }
-        }
-
-        async function _showSearchResult(profile, searchUsername) {
-          try {
-            let myUid = null;
-            if (window.colUser) myUid = window.colUser.id;
-            window.supabaseClient.from('search_logs').insert([{ 
-              search_query: searchUsername, 
-              found_uid: profile.user_id,
-              searcher_uid: myUid
-            }]).then();
-          } catch(e) {}
-
-          // Calculate their stats from local save data or profile
-          let theirScore = profile.total_score || 0;
-          let theirProgressCount = profile.modules_completed || 0;
-
-          // Also check localStorage for more accurate progress
-          try {
-            const sRaw = localStorage.getItem('traffic_save');
-            if (sRaw) {
-              const S = JSON.parse(sRaw);
-              if (S.total) theirScore = Math.max(theirScore, S.total);
-              if (S.completed) theirProgressCount = Math.max(theirProgressCount, S.completed.length);
-            }
-          } catch(e) {}
-
-          document.getElementById('compare-their-name').textContent = profile.display_name || 'Driver';
-          document.getElementById('compare-their-username').textContent = profile.username || searchUsername;
-          document.getElementById('compare-their-score').textContent = theirScore;
-          document.getElementById('compare-their-progress').textContent = theirProgressCount + '/52';
-
-          // Populate "My" side
-          let myName = 'Guest Driver', myUsername = 'Not Signed In', myScore = 0, myProgressCount = 0;
-          try {
-            // First check user_profiles for current user's data
-            if (window.colUser && window.supabaseClient) {
-              const { data: myProfile } = await window.supabaseClient
-                .from('user_profiles')
-                .select('display_name, username, total_score, modules_completed')
-                .eq('user_id', window.colUser.id)
-                .maybeSingle();
-              if (myProfile) {
-                myName = myProfile.display_name || window.colUser.user_metadata?.full_name || myName;
-                myUsername = myProfile.username || window.colUser.user_metadata?.username || myUsername;
-                myScore = myProfile.total_score || 0;
-                myProgressCount = myProfile.modules_completed || 0;
-              }
-            }
-            // Fallback to local storage
-            const sRaw = localStorage.getItem('traffic_save');
-            if (sRaw) {
-              const S = JSON.parse(sRaw);
-              if (!myName || myName === 'Guest Driver') myName = S.name || myName;
-              if (!myUsername || myUsername === 'Not Signed In') myUsername = S.username || myUsername;
-              if (myScore === 0) myScore = S.total || 0;
-              if (myProgressCount === 0) myProgressCount = S.completed ? S.completed.length : 0;
-            }
-            if(myUsername !== 'Not Signed In' && !myUsername.startsWith('@')) myUsername = '@' + myUsername;
-          } catch(e) {}
-          
-          document.getElementById('compare-my-name').textContent = myName;
-          document.getElementById('compare-my-username').textContent = myUsername;
-          document.getElementById('compare-my-score').textContent = myScore;
-          document.getElementById('compare-my-progress').textContent = myProgressCount + '/52';
-
-          document.getElementById('compare-results').style.display = 'block';
-        }
-      </script>
 
       <!-- Hidden dev unlock (click 5 times) -->
       <div style="position: fixed; bottom: 5px; right: 10px; font-size: 0.7rem; color: var(--muted2); opacity: 0.3; cursor: pointer; z-index: 9999" onclick="handleDevClick()" title="Dev options">v2.4.1</div>

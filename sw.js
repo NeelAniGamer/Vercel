@@ -1,9 +1,30 @@
-const CACHE_NAME = 'col-cache-v2'
+const CACHE_NAME = 'col-cache-v3'
 const urlsToCache = ['/', '/col-ui.css', '/col-ui.js', '/col-router.js', '/col-auth.js', '/Icon.png']
+
+async function cacheResources() {
+  const cache = await caches.open(CACHE_NAME)
+  const results = await Promise.allSettled(
+    urlsToCache.map(async (url) => {
+      try {
+        const response = await fetch(url, { cache: 'no-cache' })
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`)
+        await cache.put(url, response)
+        return { url, success: true }
+      } catch (err) {
+        console.warn('[SW] Failed to cache ' + url + ': ' + err.message)
+        return { url, success: false, error: err.message }
+      }
+    })
+  )
+  const failed = results.filter((r) => r.status === 'fulfilled' && !r.value.success)
+  if (failed.length > 0) {
+    console.warn('[SW] ' + failed.length + ' resource(s) failed to cache (SW still activates)')
+  }
+}
 
 self.addEventListener('install', (event) => {
   self.skipWaiting()
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache)))
+  event.waitUntil(cacheResources())
 })
 
 self.addEventListener('activate', (event) => {

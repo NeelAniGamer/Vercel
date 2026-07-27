@@ -923,6 +923,7 @@ class Game {
         this.camYaw = 0; this.camPitch = 0;
         this.targetCamYaw = 0; this.targetCamPitch = 0;
         this._isDraggingMobileLook = false; this._mobileLookTouchId = null;
+        this._isDraggingLeft = false; this._isDraggingRight = false;
         this._prevMobileLookX = 0; this._prevMobileLookY = 0;
         this.dom = {}; // Cached DOM elements
         // Day/Night cycle state
@@ -1131,15 +1132,21 @@ class Game {
         if (this.renderCore.renderer && this.renderCore.renderer.domElement) {
           this.renderCore.renderer.domElement.addEventListener('mousedown', (e) => {
             if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse') && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+              this._isDraggingLeft = true;
               this._isDraggingCamera = true;
             }
             // Right-click also enables camera drag (more intuitive for desktop users)
             if (e.button === 2 && this.playing && !this.pause && !this.isPointerLocked) {
+              this._isDraggingRight = true;
               this._isDraggingCamera = true;
             }
           });
           window.addEventListener('mouseup', (e) => {
-            if (e.button === 0 || e.button === 2) this._isDraggingCamera = false;
+            if (e.button === 0 || e.button === 2) {
+              if (e.button === 0) this._isDraggingLeft = false;
+              if (e.button === 2) this._isDraggingRight = false;
+              if (!this._isDraggingLeft && !this._isDraggingRight) this._isDraggingCamera = false;
+            }
           });
         }
 
