@@ -1104,21 +1104,8 @@ window.ui = Object.assign(window.ui || {}, {
     // Build module progress checklist (Zeigarnik effect)
     this._renderModuleChecklist(lv)
     
-    // Build garage panel
-    if (window.showGarage) window.showGarage(lv.id)
-    
-    // Character customize button
-    const garageEl = document.getElementById('br-garage')
-    if (garageEl && !garageEl.querySelector('.customize-btn')) {
-      const cBtn = document.createElement('button')
-      cBtn.className = 'customize-btn'
-      cBtn.style.cssText = 'width:100%; padding:10px; border-radius:10px; border:1px solid var(--border); background:var(--hover); color:var(--text); font-size:0.85rem; font-weight:600; cursor:pointer; margin-top:8px; transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:8px;'
-      cBtn.innerHTML = '🎨 Customize Character'
-      cBtn.onclick = () => window.openCustomize && window.openCustomize()
-      cBtn.onmouseenter = () => { cBtn.style.background = 'var(--panel)'; cBtn.style.borderColor = 'var(--teal)' }
-      cBtn.onmouseleave = () => { cBtn.style.background = 'var(--hover)'; cBtn.style.borderColor = 'var(--border)' }
-      garageEl.appendChild(cBtn)
-    }
+    // Render pledge card into right panel
+    this._renderPledgeCard(lv)
     
     const items = [
       { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
@@ -1221,16 +1208,8 @@ window.ui = Object.assign(window.ui || {}, {
     if (!container || !mod) return
     
     const modes = Object.keys(window.COURSE?.MODES || {})
-    const hasPledge = S.pledges && S.pledges[lv.id]
     
     let html = '<div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">MODULE ' + moduleId + ' PROGRESS</div>'
-    
-    // Add commitment pledge button at the top
-    if (hasPledge) {
-      html += `<button class="btn" style="margin-bottom:12px;width:100%;background:rgba(255,255,255,0.05);color:var(--green);font-size:0.7rem;padding:8px;border-radius:8px;border:1px solid var(--green);cursor:default;">🤝 Pledge Completed</button>`
-    } else {
-      html += `<button class="btn pulse-btn" onclick="ui.showCommitmentPledge('${lv.id}')" style="margin-bottom:12px;width:100%;background:linear-gradient(90deg,var(--signal),var(--accent));color:#000;font-size:0.7rem;padding:8px;border-radius:8px;box-shadow: 0 4px 15px rgba(242,184,75,0.4);">🤝 Commitment Pledge</button>`
-    }
     
     html += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">'
     mod.module.levels.forEach(l => {
@@ -1317,6 +1296,37 @@ window.ui = Object.assign(window.ui || {}, {
     S.pledges[levelId] = { if: ifStatement, then: thenStatement, created: Date.now() }
     save()
     toast('🤝 Pledge saved! Your if-then plan is set.', '#5ED4F5')
+    // Refresh the pledge card to show completed state
+    const lv = LVS.find(l => l.id === levelId)
+    if (lv) this._renderPledgeCard(lv)
+  },
+  _renderPledgeCard(lv) {
+    const container = document.getElementById('br-pledge')
+    if (!container) return
+    const hasPledge = S.pledges && S.pledges[lv.id]
+    container.style.display = 'block'
+    if (hasPledge) {
+      const pledge = S.pledges[lv.id]
+      container.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);border-radius:12px;">
+          <div style="font-size:1.5rem;">🤝</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.8rem;font-weight:700;color:var(--green);">Pledge Active</div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-top:2px;">If ${pledge.if || 'red signal'} → Then ${pledge.then || 'stop'}</div>
+          </div>
+          <button class="btn btn-s" style="padding:6px 14px;font-size:0.7rem;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:8px;cursor:pointer;flex-shrink:0;" onclick="ui.showCommitmentPledge('${lv.id}')">Edit</button>
+        </div>`
+    } else {
+      container.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(135deg,rgba(94,212,245,0.08),rgba(242,184,75,0.08));border:1px solid rgba(242,184,75,0.2);border-radius:12px;">
+          <div style="font-size:1.5rem;">🤝</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.85rem;font-weight:700;color:var(--text);">Commitment Pledge</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Set an if-then plan to drive smarter</div>
+          </div>
+          <button class="btn pulse-btn" style="padding:8px 18px;font-size:0.75rem;background:linear-gradient(90deg,var(--signal),var(--accent));color:#000;font-weight:700;border:none;border-radius:8px;cursor:pointer;flex-shrink:0;white-space:nowrap;box-shadow:0 4px 15px rgba(242,184,75,0.3);" onclick="ui.showCommitmentPledge('${lv.id}')">+ Make Pledge</button>
+        </div>`
+    }
   },
   _selSyl(id) {
     const lv = this._sylLv,
@@ -1469,6 +1479,25 @@ window.ui = Object.assign(window.ui || {}, {
               <div style="font-size:1.3rem; color:var(--red, #EF4444); font-weight:800; line-height:1;">${lv.law.fine}</div>
             </div>
           </div>
+        </div>
+        
+        <!-- Vehicle Selection -->
+        <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">🚗 Vehicle</div>
+           <div id="br-vehicle-list" style="display:flex; gap:8px; flex-wrap:wrap;">
+             ${(window.COURSE?.VEHICLES || []).map(v => {
+               const sel = v.id === (S.vehicle?.toLowerCase() || '')
+               const rec = window.COURSE?.getRecommendedVehicle?.(lv.id) === v.id
+               return `<div style="flex:1;min-width:100px;padding:12px;background:${sel ? 'rgba(242,184,75,0.15)' : 'var(--card)'};border:2px solid ${sel ? 'var(--accent)' : (rec ? 'var(--signal)' : 'var(--border)')};border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s;"
+                    onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='${sel ? 'rgba(242,184,75,0.15)' : 'var(--card)'}'"
+                    onclick="ui._selectVehicle('${v.id}')">
+                 <div style="font-size:1.6rem;line-height:1;">${v.icon || '🚗'}</div>
+                 <div style="font-size:0.8rem;font-weight:700;color:var(--text);margin-top:4px;">${v.name || v.id}</div>
+                 ${rec ? '<div style="font-size:0.6rem;color:var(--signal);font-weight:700;margin-top:2px;">✓ Recommended</div>' : ''}
+                 ${sel ? '<div style="font-size:0.6rem;color:var(--accent);font-weight:700;margin-top:2px;">Selected</div>' : ''}
+               </div>`
+             }).join('')}
+           </div>
         </div>
         
         <!-- Practice Modes -->
@@ -2158,6 +2187,14 @@ window.ui = Object.assign(window.ui || {}, {
     this._bScene = scene
     this._bCamera = cam
     this._bRenderer = renderer
+  },
+  _selectVehicle(vehicleId) {
+    S.vehicle = vehicleId.charAt(0).toUpperCase() + vehicleId.slice(1)
+    save()
+    toast(`✅ Vehicle set to ${vehicleId}`, '#34d399')
+    // Re-render the practical section to show updated selection
+    const lv = this.cur
+    if (lv) this._selSyl('practical')
   },
   selectMode(mode) {
     // Just select the mode — don't open quiz yet
@@ -3796,56 +3833,15 @@ updateTrafficAuthUI()
 window.addEventListener('DOMContentLoaded', updateTrafficAuthUI)
 
 // Garage panel functions
-function getVehicleIcon(v) {
-  const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚚', bus: '🚌', cycle: '🚲', ambulance: '🚑', police: '🚓', taxi: '🚕' }
-  return icons[v.id] || '🚗'
-}
-
-function getVehicleName(v) {
-  return v.name || v.id
-}
-
-function isVehicleRecommended(v, levelId) {
-  return v.recommended?.includes(levelId) || false
-}
-
-function showGarage(levelId) {
-  const container = document.getElementById('br-garage')
-  const list = document.getElementById('br-garage-list')
-  if (!container || !list) return
-  
-  const recommended = window.COURSE?.getRecommendedVehicle?.(levelId)
-  const vehicles = window.COURSE?.VEHICLES || []
-  
-  let html = ''
-  vehicles.forEach(v => {
-    const rec = isVehicleRecommended(v, levelId)
-    const isSelected = v.id === (S.vehicle?.toLowerCase() || '')
-    html += `
-      <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--card);border:1px solid ${rec ? 'var(--signal)' : (isSelected ? 'var(--accent)' : 'var(--border)')};border-radius:10px;transition:all 0.2s;" 
-           onmouseover="this.style.background='var(--hover)'" 
-           onmouseout="this.style.background='var(--card)'" 
-           onclick="selectVehicle('${v.id}')">
-        <div style="font-size:1.8rem;">${getVehicleIcon(v)}</div>
-        <div style="flex:1;">
-          <div style="font-weight:700;color:var(--text);">${getVehicleName(v)}</div>
-          ${rec ? '<div style="font-size:0.65rem;color:var(--signal);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">✓ Recommended for this level</div>' : ''}
-          ${isSelected ? '<div style="font-size:0.65rem;color:var(--accent);font-weight:700;text-transform:uppercase;">Current Selection</div>' : ''}
-        </div>
-        <div style="font-size:0.7rem;color:var(--muted);">${v.id === 'car' ? 'Balanced' : v.id === 'bike' ? 'Agile' : v.id === 'auto' ? 'Compact' : v.id === 'bus' ? 'Heavy' : v.id === 'truck' ? 'Cargo' : 'Eco'}</div>
-      </div>
-    `
-  })
-  list.innerHTML = html
-  container.style.display = 'block'
-}
-
+// Legacy fallback — used by old onclick handlers
 function selectVehicle(vehicleId) {
-  S.vehicle = vehicleId.charAt(0).toUpperCase() + vehicleId.slice(1)
-  save()
-  toast(`✅ Vehicle set to ${vehicleId}`, '#34d399')
-  // Refresh garage to show selection
-  if (ui.cur) showGarage(ui.cur.id)
+  if (ui && typeof ui._selectVehicle === 'function') {
+    ui._selectVehicle(vehicleId)
+  } else {
+    S.vehicle = vehicleId.charAt(0).toUpperCase() + vehicleId.slice(1)
+    save()
+    toast(`✅ Vehicle set to ${vehicleId}`, '#34d399')
+  }
 }
 
 // Mystery reward system (variable reinforcement)
