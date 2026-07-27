@@ -3173,43 +3173,110 @@ const _buildHuman = (isPlayer = false, appearance) => {
   })
 
   // ── Player cap (togglable) ──
-  if (isPlayer && app.accessories?.cap !== false) {
+  if (isPlayer && app.accessories?.cap !== false && !app.accessories?.beanie && !app.accessories?.helmet) {
     const capTop = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), CAP)
     capTop.position.set(0, 0.12 * sk, -0.01 * sk)
     capTop.scale.set(1.02, 0.5, 1.02)
     headGroup.add(capTop)
-    // Brim
+    // Brim — curved arc for baseball-cap shape
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.28 * sk, 0.30 * sk, 0.02 * sk, 12), CAP_BRIM)
     brim.position.set(0, 0.10 * sk, 0.12 * sk)
     brim.scale.set(1, 1, 0.6)
     headGroup.add(brim)
+    // Button on top
+    const btn = new THREE.Mesh(new THREE.SphereGeometry(0.025 * sk, 6, 4), CAP_BRIM)
+    btn.position.set(0, 0.22 * sk, -0.01 * sk)
+    headGroup.add(btn)
+  }
+
+  // ── Beanie (knit winter hat) ──
+  if (isPlayer && app.accessories?.beanie) {
+    const BEANIE = new THREE.MeshToonMaterial({ color: app.beanieColor || 0x3498db })
+    const BEANIE_RIBBON = new THREE.MeshToonMaterial({ color: app.beanieColor ? new THREE.Color(app.beanieColor).multiplyScalar(0.7).getHex() : 0x2980b9 })
+    // Main dome
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.31 * sk, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), BEANIE)
+    dome.position.set(0, 0.10 * sk, -0.02 * sk)
+    dome.scale.set(1.02, 0.55, 1.02)
+    headGroup.add(dome)
+    // Folded brim/ribbon
+    const ribbon = new THREE.Mesh(new THREE.TorusGeometry(0.28 * sk, 0.035 * sk, 8, 14), BEANIE_RIBBON)
+    ribbon.position.set(0, 0.04 * sk, -0.01 * sk)
+    ribbon.rotation.x = Math.PI / 2 + 0.15
+    ribbon.scale.set(1, 1, 0.7)
+    headGroup.add(ribbon)
+    // Pom-pom on top
+    const pompom = new THREE.Mesh(new THREE.SphereGeometry(0.055 * sk, 8, 6), BEANIE_RIBBON)
+    pompom.position.set(0.01 * sk, 0.23 * sk, -0.02 * sk)
+    headGroup.add(pompom)
+  }
+
+  // ── Helmet (bike/safety helmet) ──
+  if (isPlayer && app.accessories?.helmet) {
+    const HELMET_OUTER = new THREE.MeshToonMaterial({ color: 0xf5f5f5 })
+    const HELMET_STRIPE = new THREE.MeshToonMaterial({ color: 0x2980b9 })
+    const HELMET_PAD = new THREE.MeshToonMaterial({ color: 0x555555 })
+    const HELMET_VISOR = new THREE.MeshToonMaterial({ color: 0x1a1a2e, transparent: true, opacity: 0.5 })
+    // Main dome
+    const hDome = new THREE.Mesh(new THREE.SphereGeometry(0.33 * sk, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), HELMET_OUTER)
+    hDome.position.set(0, 0.10 * sk, -0.02 * sk)
+    hDome.scale.set(1.04, 0.6, 1.06)
+    headGroup.add(hDome)
+    // Center stripe
+    const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.015 * sk, 0.12 * sk, 0.25 * sk), HELMET_STRIPE)
+    stripe.position.set(0, 0.13 * sk, -0.02 * sk)
+    stripe.rotation.x = 0.15
+    headGroup.add(stripe)
+    // Visor
+    const visor = new THREE.Mesh(new THREE.SphereGeometry(0.27 * sk, 8, 6, 0, Math.PI * 1.2, 0, Math.PI * 0.4), HELMET_VISOR)
+    visor.position.set(0, 0.07 * sk, 0.05 * sk)
+    visor.scale.set(1.1, 0.5, 0.9)
+    headGroup.add(visor)
+    // Padding rim
+    const pad = new THREE.Mesh(new THREE.TorusGeometry(0.30 * sk, 0.025 * sk, 6, 14), HELMET_PAD)
+    pad.position.set(0, 0.03 * sk, -0.01 * sk)
+    pad.rotation.x = Math.PI / 2 + 0.15
+    pad.scale.set(1, 0.9, 0.7)
+    headGroup.add(pad)
   }
 
   // ── Sunglasses (togglable) ──
   if (isPlayer && app.accessories?.glasses) {
-    const GLASS_FRAME = new THREE.MeshToonMaterial({ color: 0x1a1a1a })
-    const GLASS_LENS = new THREE.MeshToonMaterial({ color: 0x1a1a2e, transparent: true, opacity: 0.4 })
-    ;[-1, 1].forEach(s => {
-      // Lens
-      const lens = new THREE.Mesh(new THREE.SphereGeometry(0.07 * sk, 8, 6), GLASS_LENS)
-      lens.position.set(s * 0.12 * sk, 0.01 * sk, 0.24 * sk)
-      lens.scale.set(1, 0.8, 0.3)
-      headGroup.add(lens)
-      // Frame ring
-      const frame = new THREE.Mesh(new THREE.TorusGeometry(0.065 * sk, 0.012 * sk, 6, 12), GLASS_FRAME)
-      frame.position.set(s * 0.12 * sk, 0.01 * sk, 0.24 * sk)
-      frame.scale.set(1, 0.85, 0.35)
-      headGroup.add(frame)
+    const GLASS_FRAME = new THREE.MeshToonMaterial({ color: app.glassesFrame || 0x1a1a1a })
+    const GLASS_LENS = new THREE.MeshToonMaterial({
+      color: app.glassesTint || 0x1a1a2e,
+      transparent: true,
+      opacity: 0.45
     })
-    // Bridge
-    const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.015 * sk, 0.015 * sk), GLASS_FRAME)
+    const GLASS_HIGHLIGHT = new THREE.MeshToonMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 })
+    ;[-1, 1].forEach(s => {
+      // Larger lens with slight aviator curve
+      const lens = new THREE.Mesh(new THREE.SphereGeometry(0.075 * sk, 10, 8), GLASS_LENS)
+      lens.position.set(s * 0.13 * sk, 0.01 * sk, 0.24 * sk)
+      lens.scale.set(1, 0.75, 0.25)
+      headGroup.add(lens)
+      // Thicker frame ring
+      const frame = new THREE.Mesh(new THREE.TorusGeometry(0.072 * sk, 0.015 * sk, 8, 14), GLASS_FRAME)
+      frame.position.set(s * 0.13 * sk, 0.01 * sk, 0.24 * sk)
+      frame.scale.set(1, 0.85, 0.3)
+      headGroup.add(frame)
+      // Subtle lens highlight (reflection)
+      const hl = new THREE.Mesh(new THREE.SphereGeometry(0.035 * sk, 6, 4), GLASS_HIGHLIGHT)
+      hl.position.set(s * 0.10 * sk, 0.035 * sk, 0.265 * sk)
+      headGroup.add(hl)
+    })
+    // Bridge (wider, more prominent)
+    const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.02 * sk), GLASS_FRAME)
     bridge.position.set(0, 0.01 * sk, 0.24 * sk)
     headGroup.add(bridge)
     // Temples (arms)
     ;[-1, 1].forEach(s => {
-      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.12 * sk, 0.01 * sk, 0.01 * sk), GLASS_FRAME)
-      arm.position.set(s * 0.18 * sk, 0.01 * sk, 0.14 * sk)
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.14 * sk, 0.012 * sk, 0.012 * sk), GLASS_FRAME)
+      arm.position.set(s * 0.19 * sk, 0.01 * sk, 0.12 * sk)
       headGroup.add(arm)
+      // Temple tip (curved end)
+      const tip = new THREE.Mesh(new THREE.SphereGeometry(0.012 * sk, 4, 3), GLASS_FRAME)
+      tip.position.set(s * 0.26 * sk, 0.01 * sk, 0.12 * sk)
+      headGroup.add(tip)
     })
   }
 
@@ -3413,28 +3480,67 @@ const _buildHuman = (isPlayer = false, appearance) => {
   let ring = null, nametag = null, nametagGlow = null, nametagGlowOuter = null
   if (isPlayer) {
     // ── Backpack (detailed with straps and pocket) ──
-    const bagMain = new THREE.Mesh(new THREE.BoxGeometry(0.30 * sk, 0.40 * sk, 0.16 * sk), BAG)
-    bagMain.position.set(0, 1.28 * sk, -0.24 * sk)
-    g.add(bagMain)
-    // Bag front pocket
-    const bagPocket = new THREE.Mesh(new THREE.BoxGeometry(0.24 * sk, 0.12 * sk, 0.04 * sk), BAG_DK)
-    bagPocket.position.set(0, 1.20 * sk, -0.33 * sk)
-    g.add(bagPocket)
-    // Bag zipper
-    const zipper = new THREE.Mesh(new THREE.BoxGeometry(0.22 * sk, 0.008 * sk, 0.005 * sk), BELT_BUCKLE)
-    zipper.position.set(0, 1.27 * sk, -0.325 * sk)
-    g.add(zipper)
-    // Bag flap
-    const bagFlap = new THREE.Mesh(new THREE.BoxGeometry(0.28 * sk, 0.06 * sk, 0.03 * sk), BAG_DK)
-    bagFlap.position.set(0, 1.48 * sk, -0.30 * sk)
-    g.add(bagFlap)
-    // Shoulder straps
-    ;[-1, 1].forEach(s => {
-      const strap = new THREE.Mesh(new THREE.BoxGeometry(0.04 * sk, 0.5 * sk, 0.02 * sk), BAG_STRAP)
-      strap.position.set(s * 0.12 * sk, 1.35 * sk, -0.12 * sk)
-      strap.rotation.x = 0.15
-      g.add(strap)
-    })
+    if (app.accessories?.backpack !== false) {
+      const bagMain = new THREE.Mesh(new THREE.BoxGeometry(0.30 * sk, 0.40 * sk, 0.16 * sk), BAG)
+      bagMain.position.set(0, 1.28 * sk, -0.24 * sk)
+      g.add(bagMain)
+      // Bag front pocket
+      const bagPocket = new THREE.Mesh(new THREE.BoxGeometry(0.24 * sk, 0.12 * sk, 0.04 * sk), BAG_DK)
+      bagPocket.position.set(0, 1.20 * sk, -0.33 * sk)
+      g.add(bagPocket)
+      // Bag zipper
+      const zipper = new THREE.Mesh(new THREE.BoxGeometry(0.22 * sk, 0.008 * sk, 0.005 * sk), BELT_BUCKLE)
+      zipper.position.set(0, 1.27 * sk, -0.325 * sk)
+      g.add(zipper)
+      // Bag flap
+      const bagFlap = new THREE.Mesh(new THREE.BoxGeometry(0.28 * sk, 0.06 * sk, 0.03 * sk), BAG_DK)
+      bagFlap.position.set(0, 1.48 * sk, -0.30 * sk)
+      g.add(bagFlap)
+      // Shoulder straps
+      ;[-1, 1].forEach(s => {
+        const strap = new THREE.Mesh(new THREE.BoxGeometry(0.04 * sk, 0.5 * sk, 0.02 * sk), BAG_STRAP)
+        strap.position.set(s * 0.12 * sk, 1.35 * sk, -0.12 * sk)
+        strap.rotation.x = 0.15
+        g.add(strap)
+      })
+    }
+
+    // ── Scarf (3D draped geometry) ──
+    if (app.accessories?.scarf) {
+      const SCARF = new THREE.MeshToonMaterial({ color: 0xe74c3c })
+      const SCARF_STRIPE = new THREE.MeshToonMaterial({ color: 0xd4a017 })
+      // Main wrap around neck
+      const wrap = new THREE.Mesh(new THREE.TorusGeometry(0.16 * sk, 0.03 * sk, 8, 16), SCARF)
+      wrap.position.set(0, 1.54 * sk, -0.02 * sk)
+      wrap.rotation.x = Math.PI / 2 + 0.2
+      wrap.scale.set(1.2, 1, 0.8)
+      g.add(wrap)
+      // Draped front left segment
+      const segL = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.28 * sk, 0.03 * sk), SCARF)
+      segL.position.set(-0.10 * sk, 1.38 * sk, 0.07 * sk)
+      segL.rotation.x = 0.2
+      segL.rotation.z = 0.1
+      g.add(segL)
+      // Draped front right segment
+      const segR = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.28 * sk, 0.03 * sk), SCARF)
+      segR.position.set(0.10 * sk, 1.38 * sk, 0.07 * sk)
+      segR.rotation.x = 0.2
+      segR.rotation.z = -0.1
+      g.add(segR)
+      // Stripe on left segment
+      const stripeL = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.035 * sk), SCARF_STRIPE)
+      stripeL.position.set(-0.10 * sk, 1.34 * sk, 0.075 * sk)
+      g.add(stripeL)
+      // Stripe on right segment
+      const stripeR = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.035 * sk), SCARF_STRIPE)
+      stripeR.position.set(0.10 * sk, 1.34 * sk, 0.075 * sk)
+      g.add(stripeR)
+      // Draped back 
+      const segBack = new THREE.Mesh(new THREE.BoxGeometry(0.20 * sk, 0.16 * sk, 0.025 * sk), SCARF)
+      segBack.position.set(0, 1.38 * sk, -0.14 * sk)
+      segBack.rotation.x = -0.15
+      g.add(segBack)
+    }
 
     // ── Glow ring ──
     ring = new THREE.Mesh(
@@ -3892,12 +3998,14 @@ function showConsequenceModal(violationType, severity = 'normal') {
   ]
   const ACCESSORIES = [
     { id: 'cap', name: '🧢 Cap', on: true },
+    { id: 'beanie', name: '🧶 Beanie', on: false },
+    { id: 'helmet', name: '⛑️ Helmet', on: false },
     { id: 'backpack', name: '🎒 Backpack', on: true },
     { id: 'glasses', name: '🕶️ Glasses', on: false },
     { id: 'scarf', name: '🧣 Scarf', on: false }
   ]
 
-  let _current = { skin: 0xd4a574, hair: 0x1a1a1a, shirt: 0xe74c3c, pants: 0x2c3e50, accessories: { cap: true, backpack: true, glasses: false, scarf: false } }
+  let _current = { skin: 0xd4a574, hair: 0x1a1a1a, shirt: 0xe74c3c, pants: 0x2c3e50, accessories: { cap: true, beanie: false, helmet: false, backpack: true, glasses: false, scarf: false } }
   let _previewScene, _previewCamera, _previewRenderer, _previewChar, _previewRAF
 
   function _loadSaved() {
@@ -3911,6 +4019,52 @@ function showConsequenceModal(violationType, severity = 'normal') {
         if (s.accessories) _current.accessories = s.accessories
       }
     } catch (e) {}
+  }
+
+  // ── Sync appearance from Supabase to localStorage (fire-and-forget) ──
+  async function _syncAppearanceFromCloud() {
+    if (!window.supabaseClient || !window.colUser?.id) return
+    try {
+      const { data, error } = await window.supabaseClient
+        .from('user_profiles')
+        .select('appearance, appearance_updated_at')
+        .eq('user_id', window.colUser.id)
+        .maybeSingle()
+      if (error || !data || !data.appearance) return
+      // Only overwrite local if cloud version is newer or local doesn't exist
+      const localRaw = localStorage.getItem('traffic_appearance')
+      if (localRaw) {
+        try {
+          const local = JSON.parse(localRaw)
+          const cloudTime = data.appearance_updated_at ? new Date(data.appearance_updated_at).getTime() : 0
+          const localTime = local._updated || 0
+          if (cloudTime <= localTime) return // local is newer or equal
+        } catch (e) {}
+      }
+      localStorage.setItem('traffic_appearance', JSON.stringify(data.appearance))
+      // Reload into _current and refresh preview if modal is open
+      _loadSaved()
+      _refreshSwatches()
+      _updatePreviewModel()
+    } catch (e) {
+      console.warn('[customize] Cloud sync error:', e)
+    }
+  }
+
+  // ── Sync appearance from localStorage to Supabase (fire-and-forget) ──
+  async function _syncAppearanceToCloud() {
+    if (!window.supabaseClient || !window.colUser?.id) return
+    try {
+      await window.supabaseClient
+        .from('user_profiles')
+        .upsert({
+          user_id: window.colUser.id,
+          appearance: { ..._current, _updated: Date.now() },
+          appearance_updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' })
+    } catch (e) {
+      console.warn('[customize] Cloud save error:', e)
+    }
   }
 
   function _swatchHTML(items, selected, group) {
@@ -4042,6 +4196,17 @@ function showConsequenceModal(violationType, severity = 'normal') {
 
   window._toggleAccessory = function(id) {
     _current.accessories[id] = !_current.accessories[id]
+    // Mutual exclusion for headwear — only one at a time
+    if (id === 'cap' && _current.accessories.cap) {
+      _current.accessories.beanie = false
+      _current.accessories.helmet = false
+    } else if (id === 'beanie' && _current.accessories.beanie) {
+      _current.accessories.cap = false
+      _current.accessories.helmet = false
+    } else if (id === 'helmet' && _current.accessories.helmet) {
+      _current.accessories.cap = false
+      _current.accessories.beanie = false
+    }
     _refreshSwatches()
   }
 
@@ -4050,7 +4215,11 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _current.hair = HAIRS[Math.floor(Math.random() * HAIRS.length)].hex
     _current.shirt = SHIRTS[Math.floor(Math.random() * SHIRTS.length)].hex
     _current.pants = PANTS[Math.floor(Math.random() * PANTS.length)].hex
-    _current.accessories.cap = Math.random() > 0.3
+    // Randomize headwear first (mutually exclusive)
+    _current.accessories.beanie = Math.random() > 0.8
+    _current.accessories.helmet = !_current.accessories.beanie && Math.random() > 0.85
+    // Cap if neither beanie nor helmet active
+    _current.accessories.cap = !_current.accessories.beanie && !_current.accessories.helmet && Math.random() > 0.3
     _current.accessories.backpack = Math.random() > 0.3
     _current.accessories.glasses = Math.random() > 0.7
     _current.accessories.scarf = Math.random() > 0.8
@@ -4059,7 +4228,10 @@ function showConsequenceModal(violationType, severity = 'normal') {
   }
 
   window._saveCustomize = function() {
+    _current._updated = Date.now()
     localStorage.setItem('traffic_appearance', JSON.stringify(_current))
+    // Sync to Supabase in background
+    _syncAppearanceToCloud()
     const modal = document.getElementById('customize-modal')
     if (modal) modal.style.display = 'none'
     if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose(); _previewRenderer = null }
@@ -4081,6 +4253,8 @@ function showConsequenceModal(violationType, severity = 'normal') {
 
   window.openCustomize = function() {
     _loadSaved()
+    // Try loading cloud appearance (fires in background — local is immediate)
+    _syncAppearanceFromCloud()
     const modal = document.getElementById('customize-modal')
     if (modal) {
       modal.style.display = 'flex'
@@ -4089,6 +4263,11 @@ function showConsequenceModal(violationType, severity = 'normal') {
       _animatePreview()
     }
   }
+
+  // ── Sync appearance on auth change (login/logout) ──
+  window.addEventListener('col-auth-changed', () => {
+    _syncAppearanceFromCloud()
+  })
 
   window._buildHuman = _buildHuman
 })()

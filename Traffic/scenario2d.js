@@ -1570,6 +1570,9 @@
     _animate (scenario) {
       if (!this.running) return
 
+      const ctx = this.ctx
+      if (!ctx) return
+
       const now = performance.now()
       const elapsed = now - this.startTime
       const t = elapsed / 1000
