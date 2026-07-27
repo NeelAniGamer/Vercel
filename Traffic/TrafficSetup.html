@@ -8,22 +8,33 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&display=swap" rel="stylesheet" />
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>    <script>
     (async function() {
       try {
+        if (window.supabaseClient) return;
         var res = await fetch('config.json?t=' + Date.now());
         var cfg = await res.json();
         var auth = (cfg.auth || cfg.supabase || {});
         var url = auth.supabaseUrl || auth.url || '';
         var key = auth.supabaseKey || auth.anonKey || auth.key || '';
         if (url && key && window.supabase) {
-          window.supabaseClient = window.supabase.createClient(url, key);
-          var session = await window.supabaseClient.auth.getSession();
-          var user = session && session.data && session.data.session && session.data.session.user;
-          if (user) {
-            window.colUser = user;
-            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: user } }));
+          window.supabaseClient = window.supabase.createClient(url, key, {
+            auth: { persistSession: true, detectSessionInUrl: false }
+          });
+          try {
+            var session = await Promise.race([
+              window.supabaseClient.auth.getSession(),
+              new Promise(function(_, reject) { setTimeout(function() { reject(new Error('timeout')); }, 10000); })
+            ]);
+            var user = session && session.data && session.data.session && session.data.session.user;
+            if (user) {
+              window.colUser = user;
+              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: user } }));
+            }
+          } catch(sessionErr) {
+            if (sessionErr.message !== 'timeout') {
+              window.supabaseClient.auth.signOut().catch(function() {});
+            }
           }
         }
       } catch(e) {}
@@ -1320,6 +1331,19 @@
 
 
       
+      function friendlyAuthError(err) {
+        var msg = (err.message || '').toLowerCase();
+        if (msg.includes('rate limit') || msg.includes('too many')) return 'Too many attempts. Please wait a few minutes and try again.';
+        if (msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch') || msg.includes('networkerror')) return 'Network error — check your connection and try again.';
+        if (msg.includes('invalid login credentials') || msg.includes('invalid email') || msg.includes('invalid grant')) return 'No account found with this email. Please sign up first.';
+        if (msg.includes('email not confirmed')) return 'Please confirm your email address before logging in.';
+        if (msg.includes('signup disabled') || msg.includes('signups not allowed')) return 'New signups are currently disabled. Please contact support.';
+        if (msg.includes('token has expired') || msg.includes('invalid token') || msg.includes('invalid otp')) return 'Code is invalid or expired. Please request a new one.';
+        if (msg.includes('email rate limit exceeded')) return 'Too many emails sent. Please wait a few minutes.';
+        if (msg.includes('email address invalid')) return 'Please enter a valid email address.';
+        return err.message || 'Something went wrong. Please try again.';
+      }
+
       async function sendLoginOtp() {
         if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
         const email = document.getElementById('auth-email').value.trim()
@@ -1331,18 +1355,19 @@
 
         document.getElementById('auth-otp-btn').textContent = 'Sending...'
         document.getElementById('auth-otp-btn').disabled = true
+        errDiv.textContent = ''
 
         try {
           const res = await window.supabaseClient.auth.signInWithOtp({ email })
           if (res.error) throw res.error
           
-          document.getElementById('col-auth-err').textContent = ''
           document.getElementById('auth-pass').parentElement.style.display = 'none'
           document.getElementById('auth-submit-btn').style.display = 'none'
           document.getElementById('auth-otp-btn').style.display = 'none'
           document.getElementById('login-otp-section').style.display = 'block'
+          errDiv.innerHTML = '<span style="color:var(--em)">✓ Code sent to ' + email + '</span>'
         } catch (err) {
-          errDiv.textContent = err.message || 'Error sending code'
+          errDiv.textContent = friendlyAuthError(err)
           document.getElementById('auth-otp-btn').textContent = 'Log in with Email Code'
           document.getElementById('auth-otp-btn').disabled = false
         }
@@ -1361,11 +1386,19 @@
         const email = document.getElementById('auth-email').value.trim()
         const token = document.getElementById('login-otp-input').value.trim()
         const errDiv = document.getElementById('col-auth-err')
+        const verifyBtn = document.querySelector('#login-otp-section .remote-btn-primary')
 
         if (!token) {
-          errDiv.textContent = 'Please enter the code.'
+          errDiv.textContent = 'Please enter the 6-digit code.'
           return
         }
+        if (token.length < 6) {
+          errDiv.textContent = 'Code must be 6 digits.'
+          return
+        }
+
+        errDiv.textContent = ''
+        if (verifyBtn) { verifyBtn.textContent = 'Verifying...'; verifyBtn.disabled = true; }
 
         try {
           const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'email' })
@@ -1376,18 +1409,19 @@
             window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
             document.getElementById('cloud-status').style.display = 'block'
             
-            // Check if profile exists in user_profiles
             const p = await window.supabaseClient.from('user_profiles').select('*').eq('user_id', window.colUser.id).maybeSingle()
             if (p.data) {
               window.colUser.uid = p.data.user_id;
               document.getElementById('auth-dashboard-btn').style.display = 'block'
-              goToStep(2); updateWizardStep(2);
-            } else {
-              goToStep(2); updateWizardStep(2);
             }
+            goToStep(2); updateWizardStep(2);
+          } else {
+            errDiv.textContent = 'Verification succeeded but no session was created. Please try again.'
           }
         } catch (err) {
-          errDiv.textContent = err.message || 'Invalid code'
+          errDiv.textContent = friendlyAuthError(err)
+        } finally {
+          if (verifyBtn) { verifyBtn.textContent = 'Verify Code'; verifyBtn.disabled = false; }
         }
       }
 
@@ -1395,11 +1429,19 @@
         const email = document.getElementById('signup-email').value.trim()
         const token = document.getElementById('signup-otp-input').value.trim()
         const errDiv = document.getElementById('col-auth-err-signup')
+        const verifyBtn = document.querySelector('#signup-otp-section .remote-btn-primary')
 
         if (!token) {
-          errDiv.textContent = 'Please enter the code.'
+          errDiv.textContent = 'Please enter the 6-digit code.'
           return
         }
+        if (token.length < 6) {
+          errDiv.textContent = 'Code must be 6 digits.'
+          return
+        }
+
+        errDiv.textContent = ''
+        if (verifyBtn) { verifyBtn.textContent = 'Verifying...'; verifyBtn.disabled = true; }
 
         try {
           const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'signup' })
@@ -1410,9 +1452,13 @@
             window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
             document.getElementById('cloud-status').style.display = 'block'
             goToStep(2); updateWizardStep(2);
+          } else {
+            errDiv.textContent = 'Verification succeeded but no session was created. Please try again.'
           }
         } catch (err) {
-          errDiv.textContent = err.message || 'Invalid code'
+          errDiv.textContent = friendlyAuthError(err)
+        } finally {
+          if (verifyBtn) { verifyBtn.textContent = 'Verify Code'; verifyBtn.disabled = false; }
         }
       }
 

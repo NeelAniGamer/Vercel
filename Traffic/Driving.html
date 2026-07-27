@@ -138,56 +138,319 @@
       padding-right: env(safe-area-inset-right, 0px);
     }
 
-    /* New Dedicated Loading Screen */
+    /* Premium Loading Screen */
     #loading-screen {
       position: fixed;
       inset: 0;
-      background: #070a14;
+      background: linear-gradient(135deg, #070a14 0%, #0d1117 40%, #111827 100%);
       z-index: var(--z-loading);
       display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: #34d399;
-      font-family: 'Space Mono', monospace;
-      transition:
-        opacity 0.6s ease,
-        transform 0.6s ease;
+      color: #e8e3d8;
+      font-family: 'Inter', sans-serif;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+    #loading-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(242,184,75,0.08) 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 40% at 80% 100%, rgba(52,211,153,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    #loading-screen::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 200%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(242,184,75,0.3), transparent);
+      animation: loadScanline 3s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes loadScanline { to { transform: translateX(100%); } }
+    #loading-screen.fade-out { opacity: 0; transform: scale(1.05); pointer-events: none; }
+    #loading-screen * { position: relative; z-index: 1; }
+
+    .ls-logo {
+      font-family: 'Lora', serif;
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      font-weight: 600;
+      color: rgba(242,184,75,0.6);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
     }
 
     #loading-screen h1 {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-size: clamp(2rem, 5vw, 4rem);
+      font-family: 'Lora', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
       color: #f2b84b;
-      margin-bottom: 20px;
+      margin-bottom: 4px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f2b84b 0%, #fbbf24 50%, #f2b84b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .ls-level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 32px;
+      background: rgba(242,184,75,0.1);
+      border: 1px solid rgba(242,184,75,0.2);
+      color: #f2b84b;
+      animation: fadeSlideUp 0.6s ease-out 0.2s both;
+    }
+
+    .ls-progress-wrap {
+      width: clamp(280px, 55vw, 480px);
+      animation: fadeSlideUp 0.6s ease-out 0.3s both;
+    }
+
+    .ls-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    #loading-status {
+      font-size: 0.8rem;
+      color: #8891aa;
+      font-weight: 500;
+    }
+    #loading-pct {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #34d399;
+      font-family: 'Space Mono', monospace;
     }
 
     #loading-bar-container {
-      width: clamp(250px, 50vw, 400px);
-      height: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
       overflow: hidden;
-      margin-bottom: 15px;
+      position: relative;
     }
+    #loading-bar-container::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      animation: shimmer 2s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%,100% { transform: translateX(-100%); } 50% { transform: translateX(100%); } }
 
     #loading-bar {
       width: 0%;
       height: 100%;
+      background: linear-gradient(90deg, #34d399, #5ed4f5);
+      border-radius: 3px;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .ls-tips {
+      margin-top: 40px;
+      max-width: 420px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.5;
+      animation: fadeSlideUp 0.6s ease-out 0.5s both;
+    }
+    .ls-tips span { color: rgba(242,184,75,0.5); }
+
+    .ls-dots {
+      display: flex;
+      gap: 6px;
+      margin-top: 24px;
+      animation: fadeSlideUp 0.6s ease-out 0.6s both;
+    }
+    .ls-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .ls-dot.active {
       background: #34d399;
-      transition: width 0.1s linear;
+      transform: scale(1.3);
     }
 
-    #loading-pct {
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Level Preview Modal ── */
+    #level-preview-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: calc(var(--z-loading) - 1);
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    #level-preview-overlay.show { display: flex; opacity: 1; }
+
+    .lp-card {
+      background: linear-gradient(160deg, rgba(17,24,39,0.95) 0%, rgba(15,23,42,0.98) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 0;
+      max-width: 520px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      animation: lpSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    @keyframes lpSlideUp {
+      from { opacity: 0; transform: translateY(40px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .lp-hero {
+      height: 180px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .lp-hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 60px;
+      background: linear-gradient(transparent, rgba(15,23,42,0.95));
+    }
+    .lp-hero-icon {
+      font-size: 4rem;
+      z-index: 1;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    }
+    .lp-hero-level {
+      position: absolute;
+      top: 16px; left: 16px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: rgba(0,0,0,0.5);
+      color: #f2b84b;
+      backdrop-filter: blur(8px);
+    }
+    .lp-hero-diff {
+      position: absolute;
+      top: 16px; right: 16px;
+      display: flex;
+      gap: 3px;
+    }
+    .lp-diff-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .lp-diff-dot.filled { background: #f2b84b; border-color: #f2b84b; box-shadow: 0 0 8px rgba(242,184,75,0.4); }
+
+    .lp-body { padding: 24px 28px 28px; }
+
+    .lp-name {
+      font-family: 'Lora', serif;
       font-size: 1.5rem;
-      font-weight: bold;
+      font-weight: 700;
+      color: #e8e3d8;
+      margin-bottom: 8px;
     }
-
-    #loading-status {
-      margin-top: 10px;
+    .lp-desc {
       font-size: 0.9rem;
       color: #8891aa;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .lp-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .lp-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+    .lp-stat-val {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #e8e3d8;
+    }
+    .lp-stat-lbl {
+      font-size: 0.65rem;
+      color: #8891aa;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    .lp-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .lp-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .lp-btn-start {
+      background: linear-gradient(135deg, #f2b84b 0%, #f59e0b 100%);
+      color: #1a1a2e;
+    }
+    .lp-btn-start:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(242,184,75,0.3); }
+    .lp-btn-back {
+      background: rgba(255,255,255,0.06);
+      color: #8891aa;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .lp-btn-back:hover { background: rgba(255,255,255,0.1); color: #e8e3d8; }
+
+    @media (max-width: 480px) {
+      .lp-card { border-radius: 16px; margin: 0 8px; }
+      .lp-hero { height: 140px; }
+      .lp-body { padding: 20px; }
+      .lp-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .lp-stat { padding: 8px; }
+      .lp-actions { flex-direction: column; }
     }
 
     .screen {
@@ -202,6 +465,11 @@
 
     .screen.active {
       display: flex;
+      animation: pageTransitionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes pageTransitionIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h1,
@@ -221,16 +489,43 @@
       font-weight: 600;
       font-size: clamp(0.95rem, 1.2vw, 1.1rem);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.3s ease,
+                  background 0.2s ease;
       display: inline-flex;
       align-items: center;
       gap: 8px;
       justify-content: center;
+      will-change: transform;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.4s ease, height 0.4s ease;
+      pointer-events: none;
+    }
+
+    .btn:active::after {
+      width: 200px; height: 200px;
     }
 
     .btn:hover {
       background: var(--muted2);
-      transform: translateY(-1px);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.98);
+      transition-duration: 0.1s;
     }
 
     .btn-g {
@@ -238,10 +533,21 @@
       color: var(--text);
       border: 1px solid var(--border);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  background 0.2s ease,
+                  border-color 0.2s ease,
+                  box-shadow 0.3s ease;
     }
 
     .btn-g:hover {
       background: var(--hover);
+      border-color: rgba(255,255,255,0.15);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .btn-g:active {
+      transform: translateY(0) scale(0.97);
+      transition-duration: 0.1s;
     }
 
     .btn-danger {
@@ -423,14 +729,24 @@
       gap: 8px;
       font-size: 0.95rem;
       padding: 8px 20px;
-      transition: all 0.2s ease;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  background 0.2s ease,
+                  border-color 0.2s ease,
+                  box-shadow 0.3s ease;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      will-change: transform;
     }
 
     .back-btn:hover {
       background: var(--hover);
       border-color: var(--muted);
-      transform: translateY(-1px);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    }
+
+    .back-btn:active {
+      transform: translateY(0) scale(0.97);
+      transition-duration: 0.1s;
     }
 
     .lw {
@@ -460,17 +776,25 @@
       border-radius: 12px;
       padding: 24px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.3s ease,
+                  border-color 0.3s ease;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      will-change: transform;
     }
 
     .lcard:hover {
       border-color: var(--muted);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+      transform: translateY(-4px) scale(1.02);
+    }
+
+    .lcard:active {
+      transform: translateY(-1px) scale(0.99);
+      transition-duration: 0.1s;
     }
 
     .lcard.lk {
@@ -628,12 +952,22 @@
       display: flex;
       gap: 16px;
       align-items: flex-start;
-      transition: all 0.2s ease;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.3s ease,
+                  border-color 0.3s ease,
+                  background 0.2s ease;
+      will-change: transform;
     }
 
     .syl-item:hover {
       border-color: var(--muted);
-      transform: translateX(2px);
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .syl-item:active {
+      transform: translateY(-1px) scale(0.99);
+      transition-duration: 0.1s;
     }
 
     .syl-item.syl-active {
@@ -954,13 +1288,23 @@
       font-size: 1rem;
       color: var(--text);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  background 0.2s ease,
+                  border-color 0.2s ease,
+                  box-shadow 0.3s ease;
       font-weight: 500;
+      will-change: transform;
     }
 
     .qo:hover:not(:disabled) {
       background: var(--hover);
       border-color: var(--muted);
+      transform: translateX(4px) scale(1.01);
+    }
+
+    .qo:active:not(:disabled) {
+      transform: translateX(1px) scale(0.98);
+      transition-duration: 0.1s;
     }
 
     .qo.selected {
@@ -1151,6 +1495,11 @@
       transform: translateY(-8px) scale(1.02);
       box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
       border-color: #ddd;
+    }
+
+    .bcard:not(.lk):active {
+      transform: translateY(-4px) scale(1.0);
+      transition-duration: 0.1s;
     }
 
     .bgi {
@@ -4691,28 +5040,62 @@
     </div>
   </div>
 
-  <!-- Dedicated Pre-Loader Screen -->
+  <!-- Premium Loading Screen -->
   <div id="loading-screen" style="display:none;">
-    <div style="margin-bottom:24px;">
-      <div style="width:clamp(40px,8vw,60px); height:clamp(40px,8vw,60px); border:3px solid rgba(255,255,255,0.1); border-top-color:#34d399; border-radius:50%; animation:loadSpin 0.8s linear infinite; margin:0 auto 16px;"></div>
+    <div class="ls-logo">Mumbai Traffic Hero</div>
+    <h1 id="loading-level-name">Loading...</h1>
+    <div class="ls-level-badge" id="loading-level-badge">🏁 Driving Level</div>
+    <div class="ls-progress-wrap">
+      <div class="ls-progress-header">
+        <div id="loading-status">Initializing assets...</div>
+        <div id="loading-pct">0%</div>
+      </div>
+      <div id="loading-bar-container">
+        <div id="loading-bar"></div>
+      </div>
     </div>
-    <h1>Traffic Academy</h1>
-    <div id="loading-level-name" style="font-size:1.4rem; font-weight:600; color:#f2b84b; margin-bottom:6px;">Loading...</div>
-    <div id="loading-subtitle" style="font-size:0.95rem; color:#8891aa; margin-bottom:20px;">Preparing your driving experience</div>
-    <div id="loading-bar-container">
-      <div id="loading-bar"></div>
+    <div class="ls-tips" id="loading-tips"></div>
+    <div class="ls-dots">
+      <div class="ls-dot active"></div>
+      <div class="ls-dot"></div>
+      <div class="ls-dot"></div>
+      <div class="ls-dot"></div>
+      <div class="ls-dot"></div>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-      <div id="loading-status">Initializing assets...</div>
-      <div id="loading-pct" style="font-family:'Space Mono',monospace; font-size:1rem; font-weight:700;">0%</div>
-    </div>
-    <div id="loading-tips" style="margin-top:32px; max-width:400px; text-align:center; font-size:0.8rem; color:rgba(255,255,255,0.35); font-style:italic;"></div>
   </div>
-  <style>
-    @keyframes loadSpin { to { transform: rotate(360deg); } }
-    #loading-screen { transition: opacity 0.6s ease, transform 0.6s ease; }
-    #loading-screen.fade-out { opacity: 0; transform: scale(1.05); pointer-events: none; }
-  </style>
+
+  <!-- Level Preview Modal -->
+  <div id="level-preview-overlay">
+    <div class="lp-card">
+      <div class="lp-hero">
+        <div class="lp-hero-level" id="lp-level-num">Level 1</div>
+        <div class="lp-hero-diff" id="lp-diff-dots"></div>
+        <div class="lp-hero-icon" id="lp-icon">🚗</div>
+      </div>
+      <div class="lp-body">
+        <div class="lp-name" id="lp-name">Level Name</div>
+        <div class="lp-desc" id="lp-desc">Level description goes here...</div>
+        <div class="lp-stats">
+          <div class="lp-stat">
+            <div class="lp-stat-val" id="lp-time">2:00</div>
+            <div class="lp-stat-lbl">Time Limit</div>
+          </div>
+          <div class="lp-stat">
+            <div class="lp-stat-val" id="lp-best">—</div>
+            <div class="lp-stat-lbl">Best Score</div>
+          </div>
+          <div class="lp-stat">
+            <div class="lp-stat-val" id="lp-reward">₹5K</div>
+            <div class="lp-stat-lbl">Reward</div>
+          </div>
+        </div>
+        <div class="lp-actions">
+          <button class="lp-btn lp-btn-back" id="lp-back">← Back</button>
+          <button class="lp-btn lp-btn-start" id="lp-start">▶ Start Level</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div id="gc"><canvas id="3c" style="touch-action:none;"></canvas></div>
   <div id="swipe-look-hint"

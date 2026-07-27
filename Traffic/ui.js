@@ -70,6 +70,7 @@ window.ui = Object.assign(window.ui || {}, {
   cbusy: false,
   qst: null,
   _ccb: null,
+  _miInited: false,
   adminUnlock() {
 
     LVS.forEach((l) => {
@@ -101,8 +102,7 @@ window.ui = Object.assign(window.ui || {}, {
       }
       if (this.showStart) this.showStart()
       else {
-        document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
-        document.getElementById('ss').classList.add('active')
+        this.show('ss', { instant: true })
       }
     }
   },
@@ -138,7 +138,7 @@ window.ui = Object.assign(window.ui || {}, {
     } else if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
       document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
     } else {
-      this.show('ss')
+      this.show('ss', { instant: true })
     }
 
     window.addEventListener('col-auth-changed', (e) => {
@@ -160,19 +160,314 @@ window.ui = Object.assign(window.ui || {}, {
       hwalletEl.textContent = '₹' + (S.wallet || 50000).toLocaleString('en-IN')
     }
     this._applyAgeTier()
+    
+    // Initialize micro-interactions (ripples, magnetic hover, tactile press)
+    this.initMicroInteractions();
+    
+    // Listen for reduced-motion changes while page is open
+    if (window.matchMedia) {
+      const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+      mq.addEventListener('change', (e) => { this._prefersReducedMotion = e.matches })
+    }
   },
-  show(id) {
+  // ── Smooth Screen Transition System ──
+  _transitioning: false,
+  _transitionTimer: null,
+  _lastScreen: null,
+  
+  // Screen depth map: deeper screens slide up from below, shallower slide up
+  _screenDepth: { 'ss': 0, 'screen-levels': 1, 'screen-briefing': 2, 'screen-quiz': 3, 'screen-badges': 2, 'screen-certificate': 2, 'screen-2d': 4 },
+  
+  // Screen navigation history for back detection
+  _screenHistory: [],
+  // Pending target queue: if user clicks during transition, queue it
+  _pendingTarget: null,
+  // Detect prefers-reduced-motion for instant transitions
+  _prefersReducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false,
+  // Micro-interaction observer for dynamically added elements
+  _miObserver: null,
+
+  // ════════════════════════════════════════════════════════════════
+  // 🎛️ CENTRALIZED MICRO-INTERACTION SYSTEM
+  // Ripple clicks, magnetic hovers, tactile press, card tilt
+  // ════════════════════════════════════════════════════════════════
+
+  /** Initialize all micro-interactions. Called once from init(). */
+  initMicroInteractions() {
+    if (this._miInited) return;
+    this._miInited = true;
+    const isMobile = mob();
+
+    // Skip all animations under reduced-motion
+    const reducedMotion = this._prefersReducedMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) return;
+
+    // ── Inject ripple keyframe if not already in stylesheet ──
+    if (!document.getElementById('mi-keyframes')) {
+      const style = document.createElement('style');
+      style.id = 'mi-keyframes';
+      style.textContent = `
+        @keyframes miRipple {
+          from { transform: scale(0); opacity: 0.6; }
+          to   { transform: scale(1); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // ── 1. Ripple Click Effect ──
+    const rippleSelector = '.btn, .back-btn, .syl-item, .lcard:not(.lk), .mode-tab';
+    document.addEventListener('pointerdown', (e) => {
+      const target = e.target.closest(rippleSelector);
+      if (!target || target.disabled) return;
+      const rect = target.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      const size = Math.max(rect.width, rect.height) * 2;
+      ripple.style.cssText = `
+        position:absolute;border-radius:50%;pointer-events:none;
+        width:${size}px;height:${size}px;
+        left:${e.clientX - rect.left - size / 2}px;
+        top:${e.clientY - rect.top - size / 2}px;
+        background:radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 70%);
+        transform:scale(0);opacity:1;
+        animation:miRipple 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+        z-index:10;
+      `;
+      if (getComputedStyle(target).position === 'static') {
+        target.style.position = 'relative';
+      }
+      target.style.overflow = 'hidden';
+      target.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 550);
+    }, { passive: true });
+
+    // ── 2. Tactile Press Feedback (desktop only) ──
+    if (!isMobile) {
+      document.addEventListener('pointerdown', (e) => {
+        const el = e.target.closest('.btn, .back-btn');
+        if (!el || el.disabled) return;
+        el.style.transition = 'transform 0.08s ease';
+        el.style.transform = 'scale(0.95) translateY(1px)';
+      }, { passive: true });
+      document.addEventListener('pointerup', (e) => {
+        const el = e.target.closest('.btn, .back-btn');
+        if (!el) return;
+        el.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        el.style.transform = '';
+        setTimeout(() => { el.style.transition = ''; }, 300);
+      }, { passive: true });
+    }
+
+    // ── 3. Card Tilt on Hover (desktop only, event delegation) ──
+    if (!isMobile) {
+      let _tiltCard = null;
+      const tiltSelector = '.lcard:not(.lk), .wh-card, .lp-card';
+      document.addEventListener('pointermove', (e) => {
+        const card = e.target.closest(tiltSelector);
+        if (card !== _tiltCard) {
+          // Leaving previous card
+          if (_tiltCard) {
+            _tiltCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            _tiltCard.style.transform = '';
+            setTimeout(() => { if (_tiltCard) _tiltCard.style.transition = ''; }, 400);
+          }
+          _tiltCard = card;
+        }
+        if (!card || card.classList.contains('lk')) return;
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transition = 'transform 0.12s ease-out';
+        card.style.transform = `perspective(800px) rotateX(${y * -6}deg) rotateY(${x * 6}deg) translateY(-4px) scale(1.02)`;
+      }, { passive: true });
+      document.addEventListener('pointerleave', () => {
+        if (_tiltCard) {
+          _tiltCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          _tiltCard.style.transform = '';
+          setTimeout(() => { if (_tiltCard) _tiltCard.style.transition = ''; }, 400);
+          _tiltCard = null;
+        }
+      }, { passive: true });
+    }
+
+    // ── 4. Syllabus Item Active Glow ──
+    document.addEventListener('pointerdown', (e) => {
+      const item = e.target.closest('.syl-item');
+      if (!item) return;
+      item.style.transition = 'box-shadow 0.15s ease';
+      item.style.boxShadow = '0 0 20px rgba(242,184,75,0.15), inset 0 0 0 1px rgba(242,184,75,0.2)';
+    }, { passive: true });
+    document.addEventListener('pointerup', (e) => {
+      const item = e.target.closest('.syl-item');
+      if (!item) return;
+      setTimeout(() => {
+        item.style.transition = 'box-shadow 0.4s ease';
+        item.style.boxShadow = '';
+        setTimeout(() => { item.style.transition = ''; }, 400);
+      }, 100);
+    }, { passive: true });
+
+    // ── 5. Tab Switch Bounce ──
+    document.addEventListener('pointerdown', (e) => {
+      const tab = e.target.closest('.mode-tab');
+      if (!tab) return;
+      tab.style.transition = 'transform 0.1s ease';
+      tab.style.transform = 'scale(0.92)';
+    }, { passive: true });
+    document.addEventListener('pointerup', (e) => {
+      const tab = e.target.closest('.mode-tab');
+      if (!tab) return;
+      tab.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      tab.style.transform = '';
+      setTimeout(() => { tab.style.transition = ''; }, 350);
+    }, { passive: true });
+  },
+
+  /**
+   * Smooth screen transition with crossfade.
+   * @param {string} id - Target screen element id
+   * @param {object} opts - { instant: bool, direction: 'forward'|'back'|'up'|'scale' }
+   */
+  show(id, opts = {}) {
+    if (this._transitioning && !opts.instant) {
+      this._pendingTarget = { id, opts };
+      return;
+    }
+    
+    const target = id ? document.getElementById(id) : null;
+    const currentActive = document.querySelector('.screen.active:not(.screen-exiting)');
+    
+    // Same screen? No-op
+    if (currentActive && currentActive.id === id && !opts.instant) return;
+    
+    // If reduced motion is preferred, force instant
+    if (this._prefersReducedMotion && !opts.instant) opts.instant = true;
+    
     if (id && id !== null && document.fullscreenElement) {
       document.exitFullscreen().catch(() => {})
     }
     if (id !== 'screen-briefing') {
       this._disposeBriefingScene()
     }
-    document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
-    if (id) {
-      const el = document.getElementById(id)
-      if (el) el.classList.add('active')
+    
+    // Determine transition direction
+    let direction = opts.direction;
+    if (!direction && currentActive && id) {
+      const fromDepth = this._screenDepth[currentActive.id] ?? 1;
+      const toDepth = this._screenDepth[id] ?? 1;
+      direction = toDepth > fromDepth ? 'forward' : toDepth < fromDepth ? 'back' : 'up';
     }
+    direction = direction || 'fade';
+    
+    // Instant transition: skip animation entirely
+    if (opts.instant) {
+      document.querySelectorAll('.screen').forEach((s) => {
+        s.classList.remove('active', 'screen-exiting', 'screen-entering',
+          'screen-entering-forward', 'screen-entering-back', 'screen-entering-up',
+          'screen-entering-scale', 'screen-exiting-up', 'screen-exiting-backward');
+        s.style.opacity = '';
+        s.style.transform = '';
+        s.style.pointerEvents = '';
+      });
+      if (target) {
+        target.classList.add('active');
+        target.style.opacity = '';
+        target.style.transform = '';
+      }
+      return;
+    }
+    
+    // Track history for back detection
+    this._screenHistory.push(currentActive?.id || null);
+    if (this._screenHistory.length > 10) this._screenHistory.shift();
+    
+    // Set transitioning state
+    this._transitioning = true;
+    clearTimeout(this._transitionTimer);
+    
+    // If there's a current screen, animate it out
+    if (currentActive && currentActive.id !== id) {
+      const exitClass = 'screen-exiting';
+      const exitVariant = {
+        'forward': 'screen-exiting-up',
+        'back': 'screen-exiting-backward',
+        'up': 'screen-exiting-up',
+        'scale': 'screen-exiting-scale',
+        'fade': ''
+      }[direction] || '';
+      
+      // Apply exit animation
+      currentActive.classList.add(exitClass);
+      if (exitVariant) currentActive.classList.add(exitVariant);
+      
+      // After exit animation completes, clean up and show new screen
+      const exitDuration = 250; // matches CSS 0.25s
+      setTimeout(() => {
+        currentActive.classList.remove('active', exitClass, exitVariant);
+        currentActive.style.opacity = '';
+        currentActive.style.transform = '';
+        currentActive.style.pointerEvents = '';
+        
+        // Now show the new screen
+        if (target) {
+          const enterClass = {
+            'forward': 'screen-entering-forward',
+            'back': 'screen-entering-back',
+            'up': 'screen-entering-up',
+            'scale': 'screen-entering-scale',
+            'fade': 'screen-entering'
+          }[direction] || 'screen-entering';
+          
+          target.classList.add('active', enterClass);
+          
+          // Clean up entering class after animation completes
+          const enterDuration = 400; // matches CSS 0.4s
+          this._transitionTimer = setTimeout(() => {
+            target.classList.remove(enterClass);
+            this._transitioning = false;
+            // Process pending target if any
+            if (this._pendingTarget) {
+              const pending = this._pendingTarget;
+              this._pendingTarget = null;
+              this.show(pending.id, pending.opts);
+            }
+          }, enterDuration);
+        } else {
+          this._transitioning = false;
+        }
+      }, exitDuration);
+    } else {
+      // No current screen - just enter
+      if (target) {
+        const enterClass = {
+          'forward': 'screen-entering-forward',
+          'back': 'screen-entering-back',
+          'up': 'screen-entering-up',
+          'scale': 'screen-entering-scale',
+          'fade': 'screen-entering'
+        }[direction] || 'screen-entering';
+        
+        target.classList.add('active', enterClass);
+        this._transitionTimer = setTimeout(() => {
+          target.classList.remove(enterClass);
+          this._transitioning = false;
+          // Process pending target if any
+          if (this._pendingTarget) {
+            const pending = this._pendingTarget;
+            this._pendingTarget = null;
+            this.show(pending.id, pending.opts);
+          }
+        }, 400);
+      } else {
+        this._transitioning = false;
+      }
+    }
+  },
+  
+  /** Show screen going backward (back button) */
+  showBack(id) {
+    this._screenHistory.pop(); // remove current from history
+    this.show(id, { direction: 'back' });
   },
   _buildSylList() {
     // S should already be initialized from init(), but ensure it exists
@@ -287,7 +582,9 @@ window.ui = Object.assign(window.ui || {}, {
       window.location.href = 'Academy.html?screen=levels'
       return
     }
-    this.show('screen-levels')
+    const currentActive = document.querySelector('.screen.active:not(.screen-exiting)')
+    const direction = (currentActive?.id === 'ss') ? 'forward' : 'fade'
+    this.show('screen-levels', { direction })
     requestAnimationFrame(() => this._buildSylList())
   },
   showNamePrompt() {
@@ -430,7 +727,7 @@ window.ui = Object.assign(window.ui || {}, {
     }
   },
   showCert(badgeId = null) {
-    this.show('screen-certificate')
+    this.show('screen-certificate', { direction: 'forward' })
 
     const cname = document.getElementById('cname')
     if (cname) cname.innerText = (S.name || 'DRIVER').toUpperCase()
@@ -505,7 +802,7 @@ window.ui = Object.assign(window.ui || {}, {
     if (certNum) certNum.innerText = completedLevels >= totalLevels ? S.certId : '---'
   },
   showBadges() {
-    this.show('screen-badges')
+    this.show('screen-badges', { direction: 'forward' })
 
     const statsBody = document.getElementById('stats-body')
     if (statsBody) {
@@ -618,7 +915,7 @@ window.ui = Object.assign(window.ui || {}, {
       window.location.href = 'Academy.html'
       return
     }
-    this.show('ss')
+    this.show('ss', { direction: 'back' })
     this._rain()
     
     // Update Get Started button if user has already made progress
@@ -669,7 +966,7 @@ window.ui = Object.assign(window.ui || {}, {
     }
   },
   showLevels_old() {
-    this.show('screen-levels')
+    this.show('screen-levels', { direction: 'forward' })
     this._bldLvs()
   },
   _bldLvs() {
@@ -743,7 +1040,15 @@ window.ui = Object.assign(window.ui || {}, {
           </div>
         `
         if (un) {
-          c.onclick = () => this.showBriefing(lv.id)
+          c.onclick = async () => {
+            // Show premium level preview before briefing
+            if (window.game && window.game._showLevelPreview) {
+              const proceed = await window.game._showLevelPreview(lv);
+              if (proceed) this.showBriefing(lv.id);
+            } else {
+              this.showBriefing(lv.id);
+            }
+          }
         }
         tr.appendChild(c)
       })
@@ -837,7 +1142,7 @@ window.ui = Object.assign(window.ui || {}, {
       list.appendChild(el)
     })
     this._selSyl('intro')
-    this.show('screen-briefing')
+    this.show('screen-briefing', { direction: 'forward' })
   },
   _initModeTabs(lv) {
     const tabs = document.querySelectorAll('#br-mode-tabs .mode-tab')
@@ -1923,7 +2228,7 @@ window.ui = Object.assign(window.ui || {}, {
       return
     }
     this._rq()
-    this.show('screen-quiz')
+    this.show('screen-quiz', { direction: 'forward' })
   },
   _rq() {
     const s = this.qst,

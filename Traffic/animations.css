@@ -5,7 +5,17 @@
    Loaded via <link rel="stylesheet" href="animations.css">
    ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── 1. Screen Transitions ── */
+/* ── 1. Screen Transitions (Smooth Crossfade System) ── */
+
+/* Base screen: hidden by default, positioned for overlay */
+.screen {
+  will-change: opacity, transform;
+}
+.screen.active {
+  z-index: 2;
+}
+
+/* ── Enter Animations ── */
 @keyframes screenFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -22,9 +32,87 @@
   from { opacity: 0; transform: scale(0.92); }
   to   { opacity: 1; transform: scale(1); }
 }
+@keyframes screenSlideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes screenSlideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 
-/* Applied to .screen.active */
-.screen.active {
+/* ── Exit Animations ── */
+@keyframes screenFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes screenSlideOutUp {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-20px); }
+}
+@keyframes screenSlideOutDown {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(20px); }
+}
+@keyframes screenSlideOutLeft {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-30px); }
+}
+@keyframes screenSlideOutRight {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(30px); }
+}
+@keyframes screenScaleOut {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.95); }
+}
+
+/* ── Transition State Classes ── */
+.screen.screen-exiting {
+  pointer-events: none;
+  animation: screenFadeOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+  z-index: 1;
+}
+.screen.screen-entering {
+  animation: screenFadeIn 0.35s cubic-bezier(0, 0, 0.2, 1) 0.1s both;
+}
+.screen.screen-entering-forward {
+  animation: screenSlideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+.screen.screen-entering-back {
+  animation: screenSlideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+.screen.screen-entering-up {
+  animation: screenSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+.screen.screen-entering-scale {
+  animation: screenScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+/* Exit variants */
+.screen.screen-exiting-up {
+  animation: screenSlideOutUp 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+.screen.screen-exiting-down {
+  animation: screenSlideOutDown 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+.screen.screen-exiting-left {
+  animation: screenSlideOutLeft 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+.screen.screen-exiting-right {
+  animation: screenSlideOutRight 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+.screen.screen-exiting-scale {
+  animation: screenScaleOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* ── Backward variant: exit slides right, enter slides left ── */
+.screen.screen-exiting-backward {
+  animation: screenSlideOutRight 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* Applied to .screen.active (fallback for no-JS) */
+.screen.active:not(.screen-exiting):not(.screen-entering) {
   animation: screenFadeIn 0.35s ease-out;
 }
 /* Inner content gets a staggered slide */
@@ -320,6 +408,358 @@
   to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   🎨 PREMIUM MICRO-INTERACTIONS & SMOOTHNESS ENHANCEMENTS
+   GPU-accelerated animations using transform/opacity only
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── 27. Magnetic Hover Effect (Buttons & Cards) ── */
+.magnetic-hover {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease;
+  will-change: transform;
+}
+.magnetic-hover:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+.magnetic-hover:active {
+  transform: translateY(0) scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* ── 28. Directional Hover-Aware Button ── */
+.dir-hover-btn {
+  position: relative;
+  overflow: hidden;
+}
+.dir-hover-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.dir-hover-btn:hover::before {
+  opacity: 1;
+}
+
+/* ── 29. Spring-Based Transitions ── */
+.spring-transition {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.4s ease;
+}
+.spring-bounce {
+  transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ── 30. Parallax Tilt Effect (3D Cards) ── */
+.tilt-card {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+.tilt-card-inner {
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+.tilt-card:hover .tilt-card-inner {
+  transform: rotateY(5deg) rotateX(5deg);
+}
+
+/* ── 31. Spotlight Border Effect ── */
+.spotlight-border {
+  position: relative;
+}
+.spotlight-border::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, 
+    rgba(242,184,75,0.3) 0%, 
+    rgba(94,212,245,0.3) 50%, 
+    rgba(52,211,153,0.3) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  will-change: opacity;
+}
+.spotlight-border:hover::after {
+  opacity: 1;
+}
+
+/* ── 32. Glassmorphism Hover Glow ── */
+.glass-hover {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: all 0.3s ease;
+}
+.glass-hover:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+/* ── 33. Smooth Counter Animation ── */
+.counter-animate {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.counter-animate.bump {
+  transform: scale(1.1);
+}
+
+/* ── 34. Staggered Grid Reveal ── */
+.stagger-grid > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: staggerReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--stagger-i, 0) * 0.05s + 0.05s);
+}
+@keyframes staggerReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Fallback for elements without --stagger-i set */
+.stagger-grid > *:nth-child(1) { --stagger-i: 1; }
+.stagger-grid > *:nth-child(2) { --stagger-i: 2; }
+.stagger-grid > *:nth-child(3) { --stagger-i: 3; }
+.stagger-grid > *:nth-child(4) { --stagger-i: 4; }
+.stagger-grid > *:nth-child(5) { --stagger-i: 5; }
+.stagger-grid > *:nth-child(6) { --stagger-i: 6; }
+.stagger-grid > *:nth-child(7) { --stagger-i: 7; }
+.stagger-grid > *:nth-child(8) { --stagger-i: 8; }
+
+/* ── 35. Smooth Scroll Reveal ── */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── 36. Interactive Button States ── */
+.btn-interactive {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.btn-interactive::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 0; height: 0;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+}
+.btn-interactive:active::after {
+  width: 200px; height: 200px;
+}
+
+/* ── 37. Floating Action Button Animation ── */
+@keyframes fabPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(242,184,75,0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(242,184,75,0); }
+}
+.fab-animated {
+  animation: fabPulse 2s infinite;
+}
+
+/* ── 38. Smooth Modal Transitions ── */
+.modal-smooth {
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.modal-smooth.entering {
+  opacity: 1;
+  transform: scale(1);
+}
+.modal-smooth.leaving {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+/* ── 39. Card Lift Effect (Merged with magnetic-hover) ── */
+/* Use .card-lift for cards, .magnetic-hover for buttons */
+.card-lift {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease;
+  will-change: transform;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+/* ── 40. Progress Bar Glow ── */
+.progress-glow {
+  position: relative;
+}
+.progress-glow::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: inherit;
+  filter: blur(8px);
+  opacity: 0.5;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+.progress-glow:hover::after {
+  opacity: 0.8;
+}
+
+/* ── 41. Text Shimmer Effect ── */
+.text-shimmer {
+  background: linear-gradient(90deg, 
+    var(--text-color, #e8e3d8) 0%, 
+    var(--accent, #f2b84b) 50%, 
+    var(--text-color, #e8e3d8) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerText 3s linear infinite;
+}
+@keyframes shimmerText {
+  from { background-position: 200% center; }
+  to { background-position: -200% center; }
+}
+
+/* ── 42. Smooth Icon Rotation ── */
+.icon-rotate {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.icon-rotate:hover {
+  transform: rotate(15deg);
+}
+
+/* ── 43. Loading Skeleton Pulse ── */
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+.skeleton-pulse {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  will-change: opacity;
+}
+
+/* ── 44. Smooth Tab Indicator ── */
+.tab-indicator {
+  position: relative;
+}
+.tab-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tab-indicator.active::after {
+  transform: scaleX(1);
+}
+
+/* ── 45. Notification Badge Bounce ── */
+@keyframes badgeBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+.badge-bounce {
+  animation: badgeBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── 46. Smooth Background Gradient (GPU-accelerated) ── */
+.gradient-animate {
+  position: relative;
+  overflow: hidden;
+}
+.gradient-animate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(242,184,75,0.1) 0%, 
+    rgba(94,212,245,0.1) 50%, 
+    rgba(52,211,153,0.1) 100%);
+  background-size: 200% 200%;
+  animation: gradientShiftGPU 8s ease infinite;
+  will-change: transform;
+  pointer-events: none;
+}
+@keyframes gradientShiftGPU {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(-25%, -25%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ── 47. Interactive Hover Scale ── */
+/* Deprecated: Use .magnetic-hover for buttons or .card-lift for cards */
+.hover-scale {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+.hover-scale:active {
+  transform: scale(0.95);
+  transition-duration: 0.1s;
+}
+
+/* ── 48. Smooth Focus Ring ── */
+.focus-smooth:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  transition: outline-offset 0.2s ease;
+}
+
+/* ── 49. Loading Spinner Enhanced ── */
+@keyframes spinnerRotate {
+  to { transform: rotate(360deg); }
+}
+@keyframes spinnerDash {
+  0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+  50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+}
+.spinner-enhanced {
+  animation: spinnerRotate 1.4s linear infinite;
+}
+.spinner-enhanced circle {
+  animation: spinnerDash 1.4s ease-in-out infinite;
+  stroke-linecap: round;
+}
+
+/* ── 50. Smooth Page Transitions ── */
+.page-transition {
+  animation: pageSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ── Reduced Motion Support ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -344,5 +784,15 @@
     opacity: 1 !important;
     transform: none !important;
     animation: none !important;
+  }
+  /* Disable backdrop-filter effects under reduced motion */
+  .glass-hover {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* Ensure all reveal-on-scroll elements are visible */
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

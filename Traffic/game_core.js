@@ -1133,9 +1133,13 @@ class Game {
             if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse') && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
               this._isDraggingCamera = true;
             }
+            // Right-click also enables camera drag (more intuitive for desktop users)
+            if (e.button === 2 && this.playing && !this.pause && !this.isPointerLocked) {
+              this._isDraggingCamera = true;
+            }
           });
           window.addEventListener('mouseup', (e) => {
-            if (e.button === 0) this._isDraggingCamera = false;
+            if (e.button === 0 || e.button === 2) this._isDraggingCamera = false;
           });
         }
 
@@ -1770,6 +1774,8 @@ class Game {
             }
           }
         });
+        // Prevent context menu on canvas so right-click drag works for camera
+        canvas.addEventListener('contextmenu', (e) => { if (this.playing) e.preventDefault(); });
 
         window.addEventListener('mouseup', () => {
           mouseActive = false;
@@ -1804,7 +1810,8 @@ class Game {
         if (this._camJoyActive) return;
         if (this.isPointerLocked || this._isDraggingCamera) return;
         // After camera joystick use, use very slow decay so angle is preserved
-        const decayRate = this._camJoyEverUsed ? 0.3 : 4;
+        // Reduced from 4 to 0.8 so camera angles persist longer before resetting
+        const decayRate = this._camJoyEverUsed ? 0.15 : 0.8;
         const threshold = 0.005;
         if (Math.abs(this.camYaw) > threshold || Math.abs(this.camPitch) > threshold) {
           const factor = Math.max(0, 1 - decayRate * dt);
@@ -2490,7 +2497,14 @@ class Game {
         const pct = document.getElementById('loading-pct');
         if (pct) pct.textContent = '0%';
         const status = document.getElementById('loading-status');
-        if (status) status.textContent = 'Initializing...';
+        if (status) status.textContent = 'Initializing assets...';
+        // Level badge
+        const badge = document.getElementById('loading-level-badge');
+        const lvId = this.lvId || 1;
+        const isPed = this.isPedestrian;
+        if (badge) {
+          badge.textContent = isPed ? '🚶 Pedestrian Level' : '🏁 Driving Level';
+        }
         // Rotate through driving tips
         const tips = [
           '💡 Always wear your seatbelt — it saves lives!',
@@ -2505,9 +2519,15 @@ class Game {
           '💡 Parallel parking requires patience and practice.',
         ];
         const tipsEl = document.getElementById('loading-tips');
-        if (tipsEl) tipsEl.textContent = tips[Math.floor(Math.random() * tips.length)];
+        if (tipsEl) tipsEl.innerHTML = '<span>Pro tip:</span> ' + tips[Math.floor(Math.random() * tips.length)];
+        // Reset dots
+        const dots = ls.querySelectorAll('.ls-dot');
+        dots.forEach((d, i) => d.classList.toggle('active', i === 0));
         ls.classList.remove('fade-out');
         ls.style.display = 'flex';
+        // Force reflow for entry animation
+        ls.offsetHeight;
+        ls.style.opacity = '1';
       }
       _updateLoading(pctVal, statusText) {
         const bar = document.getElementById('loading-bar');
@@ -2516,13 +2536,73 @@ class Game {
         if (pctEl) pctEl.textContent = pctVal + '%';
         const statusEl = document.getElementById('loading-status');
         if (statusEl && statusText) statusEl.textContent = statusText;
+        // Animate progress dots
+        const ls = document.getElementById('loading-screen');
+        if (ls) {
+          const dots = ls.querySelectorAll('.ls-dot');
+          const activeDot = Math.min(Math.floor(pctVal / 22), dots.length - 1);
+          dots.forEach((d, i) => d.classList.toggle('active', i <= activeDot));
+        }
       }
       _hideLoading() {
         const ls = document.getElementById('loading-screen');
         if (!ls) return;
         if (this._hideLoadingTimer) clearTimeout(this._hideLoadingTimer);
         ls.classList.add('fade-out');
-        this._hideLoadingTimer = setTimeout(() => { ls.style.display = 'none'; ls.classList.remove('fade-out'); this._hideLoadingTimer = null; }, 600);
+        this._hideLoadingTimer = setTimeout(() => { ls.style.display = 'none'; ls.classList.remove('fade-out'); ls.style.opacity = ''; this._hideLoadingTimer = null; }, 800);
+      }
+
+      // ── Level Preview Modal ──
+      _showLevelPreview(lv) {
+        return new Promise((resolve) => {
+          const overlay = document.getElementById('level-preview-overlay');
+          if (!overlay) { resolve(true); return; }
+          // Populate preview data
+          const numEl = document.getElementById('lp-level-num');
+          if (numEl) numEl.textContent = 'Level ' + (lv.id || 1);
+          const nameEl = document.getElementById('lp-name');
+          if (nameEl) nameEl.textContent = lv.name || 'Level ' + lv.id;
+          const descEl = document.getElementById('lp-desc');
+          if (descEl) descEl.textContent = lv.ds || 'Complete the driving mission to earn rewards and unlock the next level.';
+          const iconEl = document.getElementById('lp-icon');
+          if (iconEl) iconEl.textContent = lv.icon || '🚗';
+          const timeEl = document.getElementById('lp-time');
+          if (timeEl) { const t = lv.timeLimit || 120; const m = Math.floor(t/60); const s = t%60; timeEl.textContent = m + ':' + String(s).padStart(2,'0'); }
+          const bestEl = document.getElementById('lp-best');
+          if (bestEl) {
+            const saved = JSON.parse(localStorage.getItem('mth4') || '{}');
+            const completed = saved.completed || {};
+            const lvData = completed[String(lv.id)];
+            bestEl.textContent = (lvData && lvData.score > 0) ? lvData.score.toLocaleString() : '—';
+          }
+          const rewEl = document.getElementById('lp-reward');
+          if (rewEl) { const rewards = [2000,2000,2500,2500,3000,3000,3000,3500,3500,4000,4000,4500,4500,5000,6000]; rewEl.textContent = '₹' + (rewards[Math.min((lv.id||1)-1, 14)]/1000).toFixed(1) + 'K'; }
+          // Difficulty dots (1-5 based on level)
+          const diffEl = document.getElementById('lp-diff-dots');
+          if (diffEl) {
+            const diff = Math.min(5, Math.max(1, Math.ceil((lv.id || 1) / 11)));
+            diffEl.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+              const dot = document.createElement('div');
+              dot.className = 'lp-diff-dot' + (i <= diff ? ' filled' : '');
+              diffEl.appendChild(dot);
+            }
+          }
+          // Show overlay
+          overlay.style.display = 'flex';
+          requestAnimationFrame(() => overlay.classList.add('show'));
+          // Wire buttons
+          const startBtn = document.getElementById('lp-start');
+          const backBtn = document.getElementById('lp-back');
+          const cleanup = () => {
+            overlay.classList.remove('show');
+            setTimeout(() => { overlay.style.display = 'none'; }, 400);
+            if (startBtn) startBtn.onclick = null;
+            if (backBtn) backBtn.onclick = null;
+          };
+          if (startBtn) startBtn.onclick = () => { cleanup(); resolve(true); };
+          if (backBtn) backBtn.onclick = () => { cleanup(); resolve(false); };
+        });
       }
       togglePause() {
           if (!this.playing) return;
