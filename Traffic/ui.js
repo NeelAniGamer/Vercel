@@ -3172,8 +3172,8 @@ const _buildHuman = (isPlayer = false, appearance) => {
     headGroup.add(earIn)
   })
 
-  // ── Player cap ──
-  if (isPlayer) {
+  // ── Player cap (togglable) ──
+  if (isPlayer && app.accessories?.cap !== false) {
     const capTop = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), CAP)
     capTop.position.set(0, 0.12 * sk, -0.01 * sk)
     capTop.scale.set(1.02, 0.5, 1.02)
@@ -3183,6 +3183,45 @@ const _buildHuman = (isPlayer = false, appearance) => {
     brim.position.set(0, 0.10 * sk, 0.12 * sk)
     brim.scale.set(1, 1, 0.6)
     headGroup.add(brim)
+  }
+
+  // ── Sunglasses (togglable) ──
+  if (isPlayer && app.accessories?.glasses) {
+    const GLASS_FRAME = new THREE.MeshToonMaterial({ color: 0x1a1a1a })
+    const GLASS_LENS = new THREE.MeshToonMaterial({ color: 0x1a1a2e, transparent: true, opacity: 0.4 })
+    ;[-1, 1].forEach(s => {
+      // Lens
+      const lens = new THREE.Mesh(new THREE.SphereGeometry(0.07 * sk, 8, 6), GLASS_LENS)
+      lens.position.set(s * 0.12 * sk, 0.01 * sk, 0.24 * sk)
+      lens.scale.set(1, 0.8, 0.3)
+      headGroup.add(lens)
+      // Frame ring
+      const frame = new THREE.Mesh(new THREE.TorusGeometry(0.065 * sk, 0.012 * sk, 6, 12), GLASS_FRAME)
+      frame.position.set(s * 0.12 * sk, 0.01 * sk, 0.24 * sk)
+      frame.scale.set(1, 0.85, 0.35)
+      headGroup.add(frame)
+    })
+    // Bridge
+    const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.015 * sk, 0.015 * sk), GLASS_FRAME)
+    bridge.position.set(0, 0.01 * sk, 0.24 * sk)
+    headGroup.add(bridge)
+    // Temples (arms)
+    ;[-1, 1].forEach(s => {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.12 * sk, 0.01 * sk, 0.01 * sk), GLASS_FRAME)
+      arm.position.set(s * 0.18 * sk, 0.01 * sk, 0.14 * sk)
+      headGroup.add(arm)
+    })
+  }
+
+  // ── Cheek blush (subtle, player only) ──
+  if (isPlayer) {
+    const BLUSH = new THREE.MeshToonMaterial({ color: 0xff9999, transparent: true, opacity: 0.12 })
+    ;[-1, 1].forEach(s => {
+      const cheek = new THREE.Mesh(new THREE.SphereGeometry(0.045 * sk, 6, 4), BLUSH)
+      cheek.position.set(s * 0.12 * sk, -0.04 * sk, 0.20 * sk)
+      cheek.scale.set(1, 0.5, 0.6)
+      headGroup.add(cheek)
+    })
   }
 
   // ═══ NECK ═══
