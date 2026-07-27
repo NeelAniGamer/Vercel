@@ -494,7 +494,11 @@ preloadModels(() => {
       window.location.href = 'Academy.html?screen=levels'
     }
   } else {
-    if (ui.showStart) ui.showStart()
+    // Don't override if init() already showed a specific screen (e.g. ?screen=levels)
+    const alreadyActive = document.querySelector('.screen.active')
+    if (!alreadyActive || alreadyActive.id === 'ss') {
+      if (ui.showStart) ui.showStart()
+    }
   }
 })
 
