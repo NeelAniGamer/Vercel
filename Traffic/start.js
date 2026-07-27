@@ -430,6 +430,12 @@ ui._addChallanCard = function (off, amt) {
 window.ui = window.ui || {}
 window.sfx = window.sfx || { play: () => {} }
 preloadModels(() => {
+  // ── Driving.html: Suppress ALL Academy-style screens before any code acts on them ──
+  const _isDriving = window.location.pathname.toLowerCase().includes('driving')
+  if (_isDriving) {
+    document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+  }
+
   ui.init()
   game = new Game()
   window.game = game
@@ -438,9 +444,8 @@ preloadModels(() => {
   let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv')
   let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode')
 
-  if (window.location.pathname.toLowerCase().includes('driving')) {
-    // Driving.html: hide ALL Academy-style duplicate screens immediately
-    // so that if game.startLevel() fails, users see a blank canvas, not a copy of Academy
+  if (_isDriving) {
+    // Re-hide screens (ui.init may have shown one for non-lv-param driving pages)
     document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
 
     if (lvId) {
