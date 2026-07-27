@@ -454,22 +454,37 @@ preloadModels(() => {
         ui.cur = levelObj
         ui.curMode = mode || 'car'
         ui.cur.vehMode = ui.curMode
-        // Safety net: if game fails to start within 2s, redirect to Academy
+        // Guard flag to prevent multiple redirects
+        let _drivingRedirected = false
+        function _redirectToAcademy() {
+          if (_drivingRedirected) return
+          _drivingRedirected = true
+          window.location.href = 'Academy.html?screen=levels'
+        }
+        // Safety net: if game canvas hasn't started within 3s, redirect to Academy
         const _drivingTimeout = setTimeout(() => {
           const gc = document.getElementById('gc')
           if (!gc || !gc.classList.contains('on')) {
-            console.warn('Driving: game canvas not active after 2s, redirecting to Academy')
-            window.location.href = 'Academy.html?screen=levels'
+            _redirectToAcademy()
           }
-        }, 2000)
+        }, 3000)
         setTimeout(() => {
           try {
             game.startLevel()
-            clearTimeout(_drivingTimeout)
+            // Even if startLevel succeeds, wait for the canvas to become active
+            const _checkCanvas = setInterval(() => {
+              const gc = document.getElementById('gc')
+              if (gc && gc.classList.contains('on')) {
+                clearInterval(_checkCanvas)
+                clearTimeout(_drivingTimeout)
+              }
+            }, 200)
+            // Stop checking after 2s
+            setTimeout(() => clearInterval(_checkCanvas), 2000)
           } catch (err) {
             console.error('game.startLevel() failed:', err)
             clearTimeout(_drivingTimeout)
-            window.location.href = 'Academy.html?screen=levels'
+            _redirectToAcademy()
           }
         }, 300)
       } else {
