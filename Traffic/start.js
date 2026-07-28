@@ -461,26 +461,38 @@ preloadModels(() => {
           _drivingRedirected = true
           window.location.href = 'Academy.html?screen=levels'
         }
-        // Safety net: if game canvas hasn't started within 3s, redirect to Academy
-        const _drivingTimeout = setTimeout(() => {
+        // Safety net: if game canvas hasn't started within 15s, redirect to Academy
+        const _startTime = Date.now()
+        const _drivingTimeout = setTimeout(function _checkCanvasTimeout() {
           const gc = document.getElementById('gc')
           if (!gc || !gc.classList.contains('on')) {
-            _redirectToAcademy()
+            // Canvas still not active — check again every 500ms up to 15s total
+            if (Date.now() - _startTime < 15000) {
+              setTimeout(_checkCanvasTimeout, 500)
+            } else {
+              console.warn('[Driving] Canvas did not activate within 15s, redirecting to Academy')
+              _redirectToAcademy()
+            }
           }
         }, 3000)
-        setTimeout(() => {
+        // Short delay before starting the level (ensures DOM is settled)
+        setTimeout(function _startLevel() {
           try {
             game.startLevel()
-            // Even if startLevel succeeds, wait for the canvas to become active
-            const _checkCanvas = setInterval(() => {
+            // After startLevel runs, watch for canvas to become active
+            // Checks every 300ms until timeout fires or GC is ready
+            const _startCheck = Date.now()
+            ;(function _watchCanvas() {
               const gc = document.getElementById('gc')
               if (gc && gc.classList.contains('on')) {
-                clearInterval(_checkCanvas)
                 clearTimeout(_drivingTimeout)
+                return
               }
-            }, 200)
-            // Stop checking after 2s
-            setTimeout(() => clearInterval(_checkCanvas), 2000)
+              // Keep watching until timeout naturally fires
+              if (Date.now() - _startCheck < 18000) {
+                setTimeout(_watchCanvas, 300)
+              }
+            })()
           } catch (err) {
             console.error('game.startLevel() failed:', err)
             clearTimeout(_drivingTimeout)
