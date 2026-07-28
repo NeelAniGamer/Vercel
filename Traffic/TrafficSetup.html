@@ -813,8 +813,49 @@
         transform: scale(1);
       }
     </style>
+    <style>
+      /* === TOAST NOTIFICATION === */
+      @keyframes toastSlideIn {
+        from { opacity: 0; transform: translateY(-24px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes toastSlideOut {
+        from { opacity: 1; transform: translateY(0) scale(1); }
+        to { opacity: 0; transform: translateY(-24px) scale(0.95); }
+      }
+      .auth-toast {
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 99999;
+        background: rgba(5, 150, 105, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        color: #fff;
+        padding: 16px 32px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 12px 40px rgba(5, 150, 105, 0.35), 0 0 0 1px rgba(255,255,255,0.08);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: toastSlideIn 0.45s cubic-bezier(0.16,1,0.3,1) both;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .auth-toast.out {
+        animation: toastSlideOut 0.35s cubic-bezier(0.16,1,0.3,1) both;
+      }
+      body.lm .auth-toast {
+        background: rgba(5, 150, 105, 0.92);
+        color: #fff;
+      }
+    </style>
 </head>
   <body>
+    <div id="auth-toast" class="auth-toast" style="display:none;">✅ You're signed in!</div>
     <canvas id="bg-canvas"></canvas>
 
     <div class="setup-container">
@@ -1583,7 +1624,23 @@
       }
 
       function showLocalSetup() {
-        goToStep(2)
+        var toast = document.getElementById('auth-toast')
+        if (toast && toast.dataset.advancing === '1') return // prevent re-entry
+        if (toast) {
+          toast.dataset.advancing = '1'
+          toast.style.display = 'flex'
+          toast.classList.remove('out')
+          setTimeout(function() {
+            toast.classList.add('out')
+            setTimeout(function() {
+              toast.style.display = 'none'
+              toast.classList.remove('out')
+            }, 400)
+            goToStep(2)
+          }, 1800)
+        } else {
+          goToStep(2)
+        }
       }
 
       window.addEventListener('col-auth-changed', async (e) => {
