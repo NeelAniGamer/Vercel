@@ -6,8 +6,19 @@ async function cacheResources() {
   const results = await Promise.allSettled(
     urlsToCache.map(async (url) => {
       try {
-        const response = await fetch(url, { cache: 'no-cache' })
-        if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`)
+        // Use no-cors for cross-origin resources that may fail opaque fetch
+        const fetchOpts = { cache: 'no-cache' }
+        if (url.startsWith('http')) fetchOpts.mode = 'no-cors'
+        const response = await fetch(url, fetchOpts).catch(function(err) {
+          // fetch() itself rejected (network error, not HTTP error)
+          return { url: url, success: false, error: err.message, _fetchFailed: true }
+        })
+        // If fetch rejected above, skip
+        if (response._fetchFailed) {
+          console.warn('[SW] Network error caching ' + url + ': ' + response.error)
+          return response
+        }
+        if (!response.ok) throw new Error('HTTP ' + response.status + ': ' + url)
         await cache.put(url, response)
         return { url, success: true }
       } catch (err) {
@@ -49,9 +60,9 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse
         })
-        .catch((err) => {
-          // Fallback for offline if network fails
-          throw err;
+        .catch(() => {
+          // Network failed — fallback to cached response or offline page
+          return caches.match('/')
         })
 
       return cachedResponse || fetchPromise

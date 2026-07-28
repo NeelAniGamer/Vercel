@@ -1598,13 +1598,12 @@
 
             errDiv.textContent = 'Success!'
             errDiv.style.color = 'var(--em)'
-            showLocalSetup()
-          } catch (err) {
-            errDiv.textContent = err.message || 'Authentication failed.'
-            errDiv.style.color = '#ef4444'
+            showLocalSetup()            } catch (err) {
+              errDiv.textContent = friendlyAuthError(err)
+              errDiv.style.color = '#ef4444'
+            }
           }
         }
-      }
 
       async function handleGoogleAuth() {
         if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')

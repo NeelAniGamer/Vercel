@@ -209,7 +209,13 @@
 
     // Destroy existing chart if any
     if (canvas._chart) canvas._chart.destroy();
-    canvas._chart = new Chart(ctx, config);
+    try {
+      canvas._chart = new Chart(ctx, config);
+    } catch (e) {
+      console.warn('[TrafficCharts] Failed to create progress ring:', e.message);
+      // Fallback: draw a simple progress arc via canvas directly
+      createRadialProgress(canvas, value, { subtitle: '' });
+    }
     return canvas._chart;
   }
 
@@ -269,7 +275,11 @@
     };
 
     if (canvas._chart) canvas._chart.destroy();
-    canvas._chart = new Chart(ctx, config);
+    try {
+      canvas._chart = new Chart(ctx, config);
+    } catch (e) {
+      console.warn('[TrafficCharts] Failed to create horizontal bar chart:', e.message);
+    }
     return canvas._chart;
   }
 
