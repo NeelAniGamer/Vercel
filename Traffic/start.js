@@ -527,8 +527,8 @@ preloadModels(() => {
         window.location.href = 'Academy.html?screen=levels'
       }
     } else {
-      _drivingRedirected = true
-      window.location.href = 'Academy.html?screen=levels'
+      // On levels screen - just show the levels screen
+      if (ui.showLevels) ui.showLevels()
     }
   } else {
     // Don't override if init() already showed a specific screen (e.g. ?screen=levels)

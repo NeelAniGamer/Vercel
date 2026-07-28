@@ -8079,8 +8079,8 @@ class Game {
           // Speed-based look-ahead: camera leads in the direction of travel
           const lookAhead = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) * 5, _vcam.lookAhead);
           const pitchOffset = (this.camPitch || 0) * 2;
-          // Clamp camera Y so it never goes below ground level
-          const camY = Math.max(1.0, camHeight - pitchOffset);
+          // Clamp camera Y so it never goes below ground level - FIXED: ensure min height is reasonable
+          const camY = Math.max(2.0, camHeight - pitchOffset);
           this._camTarget.set(
               this.player.position.x - Math.sin(rotY) * camDist + Math.sin(rotY) * lookAhead,
               camY,
