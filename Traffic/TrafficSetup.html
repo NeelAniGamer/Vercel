@@ -1079,8 +1079,9 @@
           </div>
 
           <div class="input-group">
-            <label for="prof-pin">Local Login PIN (Optional)</label>
-            <input type="password" id="prof-pin" placeholder="4-digit PIN (e.g. 1234)" autocomplete="off" />
+            <label for="prof-pin">Local Login PIN <span style="color:var(--dim);font-weight:400;font-size:0.8rem">(Optional — keeps local saves secure)</span></label>
+            <input type="password" id="prof-pin" placeholder="4-8 digit PIN (no repeated/sequential)" autocomplete="off" maxlength="8" oninput="validatePinStrength(this.value)" />
+            <div id="pin-status" style="font-size:0.8rem;margin-top:6px;min-height:18px;font-weight:600;"></div>
           </div>
 
           <button type="submit" class="btn-submit" form="vehicleForm">Complete Setup &rarr;</button>
@@ -1752,6 +1753,68 @@
 
       // --- USERNAME AVAILABILITY CHECK ---
       let _usernameCheckTimeout = null
+
+      // --- PIN STRENGTH VALIDATOR ---
+      function validatePinStrength(pin) {
+        const statusEl = document.getElementById('pin-status')
+        if (!statusEl) return
+        if (!pin) {
+          statusEl.textContent = ''
+          statusEl.style.color = ''
+          return
+        }
+        // Check if all digits
+        if (!/^\d+$/.test(pin)) {
+          statusEl.textContent = '✕ PIN must be numbers only'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        if (pin.length < 4) {
+          statusEl.textContent = '✕ PIN must be at least 4 digits'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        // Check for repeated digits (1111, 2222)
+        if (/^(\d)\1+$/.test(pin)) {
+          statusEl.textContent = '✕ Avoid repeated digits (e.g. 1111)'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        // Check for sequential digits (1234, 5678)
+        let isSequential = true
+        for (let i = 1; i < pin.length; i++) {
+          if (parseInt(pin[i]) !== parseInt(pin[i-1]) + 1 &&
+              parseInt(pin[i]) !== parseInt(pin[i-1]) - 1) {
+            isSequential = false
+            break
+          }
+        }
+        if (isSequential) {
+          statusEl.textContent = '✕ Avoid sequential digits (e.g. 1234)'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        // Check common PINs
+        const commonPins = ['0852','1212','1998','2000','2001','2580','6969']
+        if (commonPins.includes(pin)) {
+          statusEl.textContent = '✕ This PIN is too common — choose something harder'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        // Determine strength
+        const uniqueDigits = new Set(pin.split('')).size
+        if (pin.length >= 6 && uniqueDigits >= 4) {
+          statusEl.textContent = '✓ Strong PIN'
+          statusEl.style.color = 'var(--em)'
+        } else        if (pin.length >= 4 && uniqueDigits >= 3 && pin.length <= 8) {
+          statusEl.textContent = '✓ Acceptable PIN'
+          statusEl.style.color = 'var(--signal)'
+        } else {
+          statusEl.textContent = '⚠ Weak PIN — try using more unique digits'
+          statusEl.style.color = 'var(--red)'
+        }
+      }
+
       async function checkUsernameAvailability(username) {
         const statusEl = document.getElementById('username-status')
         if (!statusEl) return
@@ -2016,6 +2079,41 @@
               console.warn('Error saving profile to cloud', err)
             }
           }
+        }
+
+        // Validate PIN strength before saving
+        if (pin && !/^\d+$/.test(pin)) {
+          alert('PIN must contain only numbers.')
+          return
+        }
+        if (pin && pin.length < 4) {
+          alert('PIN must be at least 4 digits.')
+          return
+        }
+        if (pin && /^(\d)\1+$/.test(pin)) {
+          alert('Avoid repeated digits like 1111 in your PIN.')
+          return
+        }
+        // Check for sequential digits (1234, 5678)
+        if (pin && pin.length >= 4) {
+          let isSeq = true
+          for (let i = 1; i < pin.length; i++) {
+            if (parseInt(pin[i]) !== parseInt(pin[i-1]) + 1 &&
+                parseInt(pin[i]) !== parseInt(pin[i-1]) - 1) {
+              isSeq = false
+              break
+            }
+          }
+          if (isSeq) {
+            alert('Avoid sequential digits like 1234 in your PIN.')
+            return
+          }
+        }
+        // Check against common weak PINs (non-repeated, non-sequential)
+        const weakPins = ['0852','1212','1998','2000','2001','2580','6969']
+        if (pin && weakPins.includes(pin)) {
+          alert('This PIN is too common. Please choose a harder one.')
+          return
         }
 
         const tUser = { name, username, vehicle: veh, pin, age, language, createdAt: new Date().toISOString() }
