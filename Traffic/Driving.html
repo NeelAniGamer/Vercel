@@ -6146,8 +6146,8 @@
             setTimeout(function () { mobileHint.style.display = 'none'; }, 2500);
           }
         }
-        // Desktop hint
-        if (!desktopShown && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+        // Desktop hint — show if game exists and device is a real desktop (not mobile userAgent)
+        if (!desktopShown && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && (!window.game || !window.game._hasTouched)) {
           if (desktopHint) {
             desktopHint.style.display = 'block';
             desktopShown = true;

@@ -1039,6 +1039,24 @@ class Game {
         const cv = document.getElementById('3c');
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         this._isMobile = isMobile;
+        this._hasTouched = false; // Set to true on first detected touch event
+        // One-time listener: if a real touch event fires on a non-mobile device,
+        // treat it as a touch device for the rest of the session
+        document.addEventListener('touchstart', () => {
+          if (!this._hasTouched) {
+            this._hasTouched = true;
+            // For non-mobile devices (e.g. touchscreen laptop), lazy-init controls on first touch
+            if (!this._isMobile) {
+              this._initVirtualJoystick()
+              this._initCameraJoystick()
+              this._initMobileCameraLook()
+              const mc = document.getElementById('mobile-controls')
+              if (mc && this.playing) mc.classList.add('on')
+              const cj = document.getElementById('camera-joystick')
+              if (cj) cj.style.display = 'flex'
+            }
+          }
+        }, { once: true })
 
         // PERFORMANCE: Cap pixel ratio lower on mobile to reduce render cost
         let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2);
@@ -1152,7 +1170,7 @@ class Game {
         // Left-click drag for third-person camera orbit (desktop only)
         if (this.renderCore.renderer && this.renderCore.renderer.domElement) {
           this.renderCore.renderer.domElement.addEventListener('mousedown', (e) => {
-            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse') && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse') && !this._isMobile && !this._hasTouched) {
               this._isDraggingLeft = true;
               this._isDraggingCamera = true;
             }
@@ -1388,9 +1406,8 @@ class Game {
         this._checkOrientation = () => {
           const overlay = document.getElementById('rotate-device-overlay');
           if (!overlay) return;
-          const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
           const isPortrait = window.innerHeight > window.innerWidth;
-          if (isTouch && isPortrait && this.playing) {
+          if ((this._isMobile || this._hasTouched) && isPortrait && this.playing) {
             overlay.classList.add('on');
           } else {
             overlay.classList.remove('on');
@@ -1426,7 +1443,7 @@ class Game {
 
       // ── VIRTUAL JOYSTICK FOR MOBILE ──
       _initVirtualJoystick() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+        if (!this._isMobile && !this._hasTouched) return;
 
         const joystick = document.getElementById('virtual-joystick');
         const knob = document.getElementById('joystick-knob');
@@ -1508,7 +1525,7 @@ class Game {
 
       // ── CAMERA JOYSTICK FOR MOBILE LOOK-AROUND ──
       _initCameraJoystick() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+        if (!this._isMobile && !this._hasTouched) return;
 
         const camJoy = document.getElementById('camera-joystick');
         const camKnob = document.getElementById('camera-joystick-knob');
@@ -1578,7 +1595,7 @@ class Game {
 
       // ── HUD AUTO-HIDE ON MOBILE ──
       _initMobileHudAutohide() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+        if (!this._isMobile && !this._hasTouched) return;
         const hud = document.getElementById('hud');
         const hudbar = document.getElementById('hudbar');
         const hwrap = document.getElementById('hwrap');
@@ -1626,7 +1643,7 @@ class Game {
       }
 
       _initMobileCameraLook() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+        if (!this._isMobile && !this._hasTouched) return;
         const isControl = (el) => {
           if (!el) return false;
           const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-enter','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
@@ -1698,7 +1715,7 @@ class Game {
 
       // ── SWIPE TO TURN: Touch swipe turns player character toward swipe direction ──
       _initSwipeTurn() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+        if (!this._isMobile && !this._hasTouched) return;
 
         const isControl = (el) => {
           if (!el) return false;
@@ -2371,7 +2388,11 @@ class Game {
         const ageTimeScale = (typeof ui !== 'undefined' && ui.getAgeScale) ? ui.getAgeScale() : 1.0;
         this.timeLimit = Math.round(baseTime / ageTimeScale);
         const cfg = this.mapCfg || {};
-        ['gc', 'hud', 'hudbar', 'hwrap', 'mobile-controls', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
+        ['gc', 'hud', 'hudbar', 'hwrap', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
+        if (this._isMobile || this._hasTouched) {
+          const mcEl = document.getElementById('mobile-controls');
+          if (mcEl) mcEl.classList.add('on');
+        }
         // ── HUD Entrance Animations ──
         if (typeof IntersectionObserver === 'undefined' || true) {
           const hudAnims = [
