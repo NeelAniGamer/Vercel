@@ -7,6 +7,23 @@ const VEHICLE_STATS = {
   auto:      { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.072, grip: 0.40 },
 };
 
+// ── Per-vehicle chase camera profiles ──
+// dist:     distance behind the vehicle
+// height:   camera height above ground
+// lookAhead:how far ahead the camera looks (speed-proportional cap)
+// lookDist: fixed look-at distance ahead of vehicle
+// baseFov:  base field of view (expands with speed)
+// fovRange: max additional FOV from speed
+// lerpSmoothing: camera lerp factor (higher = snappier)
+const VEHICLE_CAM = {
+  bike:  { dist: 7,   height: 2.8, lookAhead: 2.5, lookDist: 5, baseFov: 65, fovRange: 18, lerpSmoothing: 7 },
+  car:   { dist: 12,  height: 4.5, lookAhead: 3.5, lookDist: 7, baseFov: 60, fovRange: 15, lerpSmoothing: 6 },
+  bus:   { dist: 18,  height: 6.5, lookAhead: 4.5, lookDist: 10, baseFov: 55, fovRange: 10, lerpSmoothing: 5 },
+  truck: { dist: 16,  height: 6.0, lookAhead: 4.0, lookDist: 9, baseFov: 56, fovRange: 12, lerpSmoothing: 5 },
+  auto:  { dist: 8,   height: 3.0, lookAhead: 2.8, lookDist: 5, baseFov: 64, fovRange: 16, lerpSmoothing: 7 },
+};
+const VEHICLE_CAM_DEFAULT = VEHICLE_CAM.car;
+
 // ════════════════════════════════════════════════════════════════════════════════
 // PACEJKA MF 5.2 TIRE MODEL — Full implementation for realistic vehicle physics
 // Based on the Pacejka "Magic Formula" tire model (MF 5.2 / MF 6.1 concepts)
@@ -905,6 +922,10 @@ class Game {
         this.clock = new THREE.Clock(); this.keys = {}; this.speed = 0; this.maxSpd = 1.1; this.accel = .045; this.fric = .95; this.turn = .065; this.gear = 'N'; this.gcap = 0;
         this.boostFuel = 100; this.maxBoostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._camTarget = new THREE.Vector3(); this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
+        // ── Camera collision raycaster ──
+        this._camRay = new THREE.Raycaster();
+        this._camRayVec = new THREE.Vector3();
+        this._camRayOrigin = new THREE.Vector3();
         // ── Enhanced Physics State ──
         this._bodyRoll = 0; this._bodyPitch = 0; this._suspensionY = 0;
         this._brakeHeat = 0; this._tireWear = 0; this._aeroDrag = 0;
@@ -7961,6 +7982,8 @@ class Game {
       }
       _ucam(dt) {
         if (!this.player || !this.player.position) return;
+        // Cinematic enter/exit has exclusive camera control — skip normal update
+        if (this._camOverride) return;
         // ── SLING-LOOK SMOOTHING ──
         const slingSmooth = 12; // Higher = snappier, Lower = more floaty
         this.camYaw += (this.targetCamYaw - this.camYaw) * Math.min(1, dt * slingSmooth);
@@ -8000,33 +8023,70 @@ class Game {
             this.camera.position.z + lz
           );
         } else {
-          // ── Third Person Chase Cam — improved ──
-          const camDist = this.isPedestrian ? 4 : 12;
-          const camHeight = this.isPedestrian ? 2.5 : 4.5;
+          // ── Third Person Chase Cam — per-vehicle profiles ──
+          const _vcam = (this.isPedestrian ? null : VEHICLE_CAM[this.vehMode]) || VEHICLE_CAM_DEFAULT;
+          const camDist = this.isPedestrian ? 4 : _vcam.dist;
+          const camHeight = this.isPedestrian ? 2.5 : _vcam.height;
           const rotY = this.player.rotation.y + (this.camYaw || 0);
           // Speed-based look-ahead: camera leads in the direction of travel
-          const lookAhead = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) * 5, 3.5);
+          const lookAhead = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) * 5, _vcam.lookAhead);
           const pitchOffset = (this.camPitch || 0) * 2;
           this._camTarget.set(
               this.player.position.x - Math.sin(rotY) * camDist + Math.sin(rotY) * lookAhead,
               camHeight - pitchOffset,
               this.player.position.z - Math.cos(rotY) * camDist + Math.cos(rotY) * lookAhead
           );
+          // ── Camera collision: raycast from player to target ──
+          if (this.obstacles && this.obstacles.length > 0) {
+            const _pp = this.player.position;
+            this._camRayOrigin.set(_pp.x, _pp.y + (this.isPedestrian ? 1.6 : 1.0), _pp.z);
+            this._camRayVec.subVectors(this._camTarget, this._camRayOrigin);
+            const rayLen = this._camRayVec.length();
+            if (rayLen > 0.5) {
+              this._camRay.set(this._camRayOrigin, this._camRayVec.normalize());
+              this._camRay.far = rayLen;
+              this._camRay.near = 0.3;
+              // Pre-filter: only test obstacles within ray range + margin
+              const _nearObs = [];
+              const margin = 5;
+              for (let i = 0; i < this.obstacles.length; i++) {
+                const ob = this.obstacles[i];
+                if (!ob || !ob.position) continue;
+                const odx = ob.position.x - _pp.x, odz = ob.position.z - _pp.z;
+                if (odx * odx + odz * odz < (rayLen + margin) * (rayLen + margin)) _nearObs.push(ob);
+              }
+              if (_nearObs.length > 0) {
+                const hits = this._camRay.intersectObjects(_nearObs, true);
+                if (hits.length > 0 && hits[0].distance < rayLen) {
+                  const pullBack = 0.5;
+                  const dx = this._camTarget.x - _pp.x;
+                  const dz = this._camTarget.z - _pp.z;
+                  const d = Math.sqrt(dx * dx + dz * dz) || 1;
+                  const safeDist = Math.max(1.5, hits[0].distance - pullBack);
+                  this._camTarget.set(
+                    _pp.x + (dx / d) * safeDist,
+                    this._camTarget.y,  // preserve intended height
+                    _pp.z + (dz / d) * safeDist
+                  );
+                }
+              }
+            }
+          }
           // Phase 7.4: Smooth camera transition on mode switch (0.4s lerp) or instant snap
           if (!this._camSnapped) {
             this._camSnapped = true;
             this.camera.position.copy(this._camTarget);
           }
-          // Frame-rate independent camera lerp
+          // Frame-rate independent camera lerp — snappier for bikes/autos, slower for buses/trucks
           const transT = (this._camTransition && this._camTransition > 0) ? this._camTransition : 0;
           if (transT > 0) this._camTransition = Math.max(0, transT - dt);
-          const baseLerp = Math.min(1, dt * 6);
+          const baseLerp = Math.min(1, dt * _vcam.lerpSmoothing);
           const camLerp = transT > 0 ? Math.min(1, dt * 3) : baseLerp; // slower during transition
           this.camera.position.lerp(this._camTarget, camLerp);
 
           const tiltRoll = this._camTilt || 0;
           this.camera.up.set(0, 1, 0);
-          const lookAheadDist = this.isPedestrian ? 3 : 7;
+          const lookAheadDist = this.isPedestrian ? 3 : _vcam.lookDist;
           this.camera.lookAt(
             this.player.position.x + Math.sin(rotY) * lookAheadDist + shakeX,
             1.5 - pitchOffset * 0.3 + shakeY,
@@ -8039,10 +8099,10 @@ class Game {
             this.camera.quaternion.multiply(_rollQ);
           }
 
-          // ── Speed-based FOV ──
+          // ── Speed-based FOV (per-vehicle base + range) ──
           if (!this.isPedestrian && this.camera.fov !== undefined) {
             const speedRatio = Math.min(Math.abs(this.speed) / (this.maxSpd || 1.1), 1);
-            this._camFovTarget = 60 + speedRatio * 15 + (this.boosting ? 5 : 0);
+            this._camFovTarget = _vcam.baseFov + speedRatio * _vcam.fovRange + (this.boosting ? 5 : 0);
             if (Math.abs(this.camera.fov - this._camFovTarget) > 0.15) {
               this.camera.fov += (this._camFovTarget - this.camera.fov) * Math.min(1, dt * 4);
               this.camera.updateProjectionMatrix();
