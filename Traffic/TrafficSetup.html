@@ -1201,10 +1201,12 @@
         const canvas = document.getElementById('setup-progress-ring')
         if (canvas && window.TrafficCharts) {
           setupProgressRing = window.TrafficCharts.createProgressRing(canvas, 0, { cutout: '70%' })
-          // Override update method
+          // Override update method — save reference to Chart.js native update first
+          // to avoid infinite recursion (this.update called the override, not the prototype)
+          var _nativeUpdate = setupProgressRing.update.bind(setupProgressRing)
           setupProgressRing.update = function(value) {
             this.data.datasets[0].data = [value, 100 - value]
-            this.update('none')
+            _nativeUpdate('none')
           }
           // Sync the text percentage with the ring
           const pctEl = document.getElementById('progress-pct')
