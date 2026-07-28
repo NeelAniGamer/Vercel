@@ -1,6 +1,6 @@
 const CACHE_NAME = 'col-cache-v4'
 const SW_VERSION = '2026-07-28'
-const urlsToCache = ['/', '/col-ui.css', '/col-ui.js', '/col-router.js', '/col-auth.js', '/Icon.png']
+const urlsToCache = ['/home.html', '/col-ui.css', '/col-ui.js', '/col-router.js', '/col-auth.js', '/Icon.png']
 
 async function cacheResources() {
   const cache = await caches.open(CACHE_NAME)
@@ -64,7 +64,7 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(() => {
           // Network failed — fallback to cached response or offline page
-          return caches.match('/')
+          return caches.match('/home.html')
         })
 
       return cachedResponse || fetchPromise
