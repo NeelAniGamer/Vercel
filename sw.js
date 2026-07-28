@@ -1,4 +1,5 @@
-const CACHE_NAME = 'col-cache-v3'
+const CACHE_NAME = 'col-cache-v4'
+const SW_VERSION = '2026-07-28'
 const urlsToCache = ['/', '/col-ui.css', '/col-ui.js', '/col-router.js', '/col-auth.js', '/Icon.png']
 
 async function cacheResources() {
@@ -45,6 +46,7 @@ self.addEventListener('activate', (event) => {
     })
   )
   self.clients.claim()
+  console.log('[SW] Activated version ' + SW_VERSION + ' (cache ' + CACHE_NAME + ')')
 })
 
 self.addEventListener('fetch', (event) => {
