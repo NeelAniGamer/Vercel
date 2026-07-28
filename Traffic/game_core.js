@@ -7900,6 +7900,7 @@ class Game {
       _animateCharacterWalk(character, speed, dt) {
         if (!character) return
         const ud = character.userData
+        
         // FBX animated characters: blend idle ↔ run weights
         if (ud.isFBXAnimated && ud.mixer) {
           const walkW = Math.min(Math.abs(speed) * 3, 1)
@@ -7908,124 +7909,176 @@ class Game {
           ud.mixer.update(dt)
           return
         }
-        // GLB / procedural characters: swing legs + arms + body bob
+        
+        // GLB / procedural characters: swing legs + arms + body bob - ULTRA SMOOTH VERSION
         const t = (ud.t || 0) + dt * 8
         ud.t = t
         const walkW = Math.min(Math.abs(speed) * 4, 1)
         const isIdle = walkW < 0.05
-        const swing = Math.sin(t) * 0.45 * walkW
-        // ── IDLE ANIMATIONS (NPCs standing still) ──
+        
+        // Use smoother interpolation factor
+        const swingSpeed = 6.0  // Natural walking cadence
+        const swing = Math.sin(t * swingSpeed) * 0.45 * walkW
+        const swingPhase = t * swingSpeed
+        
+        // ── IDLE ANIMATIONS (NPCs standing still) - Ultra smooth ──
         if (isIdle && !ud.isPlayer) {
           const ip = ud.idlePhase || 0
-          // Breathing: slow torso rise/fall
+          
+          // Breathing: slow torso rise/fall with smooth interpolation
           if (ud.torsoGroup) {
             const breathe = Math.sin(t * 0.4 + ip) * 0.006
-            ud.torsoGroup.position.y = 1.23 * (ud._sk || 1) + breathe
-            // Subtle shoulder sway
-            ud.torsoGroup.rotation.z = Math.sin(t * 0.3 + ip) * 0.008
+            // Smooth lerp for breathing motion
+            const targetY = 1.23 * (ud._sk || 1) + breathe
+            ud.torsoGroup.position.y += (targetY - ud.torsoGroup.position.y) * Math.min(1, dt * 4)
+            
+            // Subtle shoulder sway - smooth
+            const targetZ = Math.sin(t * 0.3 + ip) * 0.008
+            ud.torsoGroup.rotation.z += (targetZ - ud.torsoGroup.rotation.z) * Math.min(1, dt * 3)
           }
-          // Head turning: slow look-around + occasional glance at player
+          
+          // Head turning: smooth look-around + occasional glance at player
           if (ud.headGroup) {
             const lookCycle = Math.sin(t * 0.25 + ip * 2) * 0.06
             const lookCycleY = Math.cos(t * 0.18 + ip * 3) * 0.08
             // Every ~4 seconds, glance toward player direction
             const glancePhase = (t * 0.25 + ip) % (Math.PI * 2)
             const glance = glancePhase < 0.4 ? Math.sin(glancePhase / 0.4 * Math.PI) * 0.1 : 0
-            ud.headGroup.rotation.x = lookCycle
-            ud.headGroup.rotation.y = lookCycleY + glance * (ud.dir || 1)
+            
+            // Smooth interpolation for head movement
+            ud.headGroup.rotation.x += (lookCycle - ud.headGroup.rotation.x) * Math.min(1, dt * 2)
+            ud.headGroup.rotation.y += (lookCycleY + glance * (ud.dir || 1) - ud.headGroup.rotation.y) * Math.min(1, dt * 2)
           }
-          // Weight shift: alternating subtle leg pressure
-          if (ud.lLeg) ud.lLeg.rotation.x = Math.sin(t * 0.3 + ip) * 0.015
-          if (ud.rLeg) ud.rLeg.rotation.x = Math.sin(t * 0.3 + ip + Math.PI) * 0.015
-          // Arms: subtle sway or cross-body rest
-          if (ud.lArm) ud.lArm.rotation.x = Math.sin(t * 0.2 + ip) * 0.02
-          if (ud.rArm) ud.rArm.rotation.x = Math.sin(t * 0.2 + ip + Math.PI * 0.7) * 0.02
-          // Occasional fidget: every ~6-8 seconds, brief arm/shoulder twitch
+          
+          // Weight shift: alternating subtle leg pressure - smooth
+          if (ud.lLeg) {
+            const target = Math.sin(t * 0.3 + ip) * 0.015
+            ud.lLeg.rotation.x += (target - ud.lLeg.rotation.x) * Math.min(1, dt * 3)
+          }
+          if (ud.rLeg) {
+            const target = Math.sin(t * 0.3 + ip + Math.PI) * 0.015
+            ud.rLeg.rotation.x += (target - ud.rLeg.rotation.x) * Math.min(1, dt * 3)
+          }
+          
+          // Arms: subtle sway or cross-body rest - smooth
+          if (ud.lArm) {
+            const target = Math.sin(t * 0.2 + ip) * 0.02
+            ud.lArm.rotation.x += (target - ud.lArm.rotation.x) * Math.min(1, dt * 2)
+          }
+          if (ud.rArm) {
+            const target = Math.sin(t * 0.2 + ip + Math.PI * 0.7) * 0.02
+            ud.rArm.rotation.x += (target - ud.rArm.rotation.x) * Math.min(1, dt * 2)
+          }
+          
+          // Occasional fidget: every ~6-8 seconds, brief arm/shoulder twitch - smoother
           const fidgetCycle = (t * 0.15 + ip * 5) % (Math.PI * 2)
           if (fidgetCycle < 0.3) {
             const fidgetAmt = Math.sin(fidgetCycle / 0.3 * Math.PI) * 0.06
-            if (ud.lArm) ud.lArm.rotation.x += fidgetAmt
+            if (ud.lArm) ud.lArm.rotation.x += fidgetAmt * dt * 10 // Scale by dt for consistency
           }
+          
           // ── BLINKING ──
-          // Countdown timer; each blink is a quick close-open cycle (~0.15s)
           if (ud.eyeLids && ud.eyeLids.length > 0) {
             if (ud.blinkTimer === undefined) ud.blinkTimer = Math.random() * 4
             ud.blinkTimer -= dt
             if (ud.blinkTimer <= 0) {
-              // Start a new blink — schedule next blink in 2-6 seconds
               ud.blinkTimer = 2 + Math.random() * 4
-              ud._blinkPhase = 0.15 // blink duration in seconds
+              ud._blinkPhase = 0.15
             }
             if (ud._blinkPhase > 0) {
               ud._blinkPhase -= dt
-              // Smooth close-open using a cosine bell: 0→1→0 over _blinkPhase
               const blinkProg = 1 - (ud._blinkPhase / 0.15)
-              const blinkAmt = Math.sin(blinkProg * Math.PI) // peaks at 1.0 halfway
+              const blinkAmt = Math.sin(blinkProg * Math.PI)
               ud.eyeLids.forEach(lid => {
-                // Default open position y=0.065, closed would be ~0.03 (covering eye)
-                lid.position.y = (0.065 - blinkAmt * 0.035) * (ud._sk || 1)
-                lid.scale.y = 0.7 + blinkAmt * 0.6 // scale up when closing
+                const targetY = (0.065 - blinkAmt * 0.035) * (ud._sk || 1)
+                const targetScale = 0.7 + blinkAmt * 0.6
+                lid.position.y += (targetY - lid.position.y) * Math.min(1, dt * 20)
+                lid.scale.y += (targetScale - lid.scale.y) * Math.min(1, dt * 20)
               })
             } else {
-              // Eyes open — reset lids to default
               ud.eyeLids.forEach(lid => {
-                lid.position.y = 0.065 * (ud._sk || 1)
-                lid.scale.y = 0.7
+                const targetY = 0.065 * (ud._sk || 1)
+                const targetScale = 0.7
+                lid.position.y += (targetY - lid.position.y) * Math.min(1, dt * 10)
+                lid.scale.y += (targetScale - lid.scale.y) * Math.min(1, dt * 10)
               })
             }
           }
-          // Shadow blob: breathing pulse
+          
+          // Shadow blob: breathing pulse - smooth
           if (ud.shadowBlob) {
             const bs = 1 + Math.sin(t * 0.4 + ip) * 0.03
-            ud.shadowBlob.scale.set(bs, 1, bs)
-            ud.shadowBlob.material.opacity = 0.15
+            ud.shadowBlob.scale.x += (bs - ud.shadowBlob.scale.x) * Math.min(1, dt * 3)
+            ud.shadowBlob.scale.z += (bs - ud.shadowBlob.scale.z) * Math.min(1, dt * 3)
+            ud.shadowBlob.material.opacity += (0.15 - ud.shadowBlob.material.opacity) * Math.min(1, dt * 3)
           }
         } else {
-          // ── WALK ANIMATIONS ──
-          // Leg swing with natural knee bend
-          if (ud.lLeg) ud.lLeg.rotation.x = swing
-          if (ud.rLeg) ud.rLeg.rotation.x = -swing
-          // Arm swing (opposite to legs, natural walking motion)
-          if (ud.lArm) ud.lArm.rotation.x = -swing * 0.5
-          if (ud.rArm) ud.rArm.rotation.x = swing * 0.5
-          // Head bob (subtle nod forward/back)
+          // ── WALK ANIMATIONS - Ultra Smooth ──
+          // Leg swing with natural knee bend - smooth interpolation
+          if (ud.lLeg) {
+            ud.lLeg.rotation.x += (swing - ud.lLeg.rotation.x) * Math.min(1, dt * 15)
+          }
+          if (ud.rLeg) {
+            ud.rLeg.rotation.x += (-swing - ud.rLeg.rotation.x) * Math.min(1, dt * 15)
+          }
+          
+          // Arm swing (opposite to legs, natural walking motion) - smooth
+          if (ud.lArm) {
+            ud.lArm.rotation.x += (-swing * 0.5 - ud.lArm.rotation.x) * Math.min(1, dt * 15)
+          }
+          if (ud.rArm) {
+            ud.rArm.rotation.x += (swing * 0.5 - ud.rArm.rotation.x) * Math.min(1, dt * 15)
+          }
+          
+          // Head bob (subtle nod forward/back) - smooth
           if (ud.headGroup) {
-            ud.headGroup.rotation.x = Math.sin(t * 2) * 0.02 * walkW
-            ud.headGroup.rotation.y = 0
+            const targetX = Math.sin(t * 2) * 0.02 * walkW
+            ud.headGroup.rotation.x += (targetX - ud.headGroup.rotation.x) * Math.min(1, dt * 10)
+            ud.headGroup.rotation.y += (0 - ud.headGroup.rotation.y) * Math.min(1, dt * 10)
           }
-          // Reset torso sway when walking
+          
+          // Reset torso sway when walking - smooth
           if (ud.torsoGroup) {
-            ud.torsoGroup.rotation.z = 0
+            ud.torsoGroup.rotation.z += (0 - ud.torsoGroup.rotation.z) * Math.min(1, dt * 8)
           }
-          // Full body bob via torsoGroup (natural up-down)
+          
+          // Full body bob via torsoGroup (natural up-down) - smooth
           if (ud.torsoGroup) {
-            ud.torsoGroup.position.y = 1.23 * (ud._sk || 1) + Math.abs(Math.sin(t * 2)) * 0.03 * walkW
+            const targetY = 1.23 * (ud._sk || 1) + Math.abs(Math.sin(t * 2)) * 0.03 * walkW
+            ud.torsoGroup.position.y += (targetY - ud.torsoGroup.position.y) * Math.min(1, dt * 10)
           } else if (character.children[0]) {
-            // Fallback for models without torsoGroup
-            character.children[0].position.y = Math.abs(Math.sin(t)) * 0.04 * walkW
+            // Fallback for models without torsoGroup (GLB models)
+            const targetY = Math.abs(Math.sin(t)) * 0.04 * walkW
+            character.children[0].position.y += (targetY - character.children[0].position.y) * Math.min(1, dt * 10)
           }
-          // Shadow blob pulse (breathe effect)
+          
+          // Shadow blob pulse (breathe effect) - smooth
           if (ud.shadowBlob) {
             const s = 1 + Math.sin(t * 2) * 0.05 * walkW
-            ud.shadowBlob.scale.set(s, 1, s)
-            ud.shadowBlob.material.opacity = 0.15 + walkW * 0.08
+            ud.shadowBlob.scale.x += (s - ud.shadowBlob.scale.x) * Math.min(1, dt * 10)
+            ud.shadowBlob.scale.z += (s - ud.shadowBlob.scale.z) * Math.min(1, dt * 10)
+            const targetOpacity = 0.15 + walkW * 0.08
+            ud.shadowBlob.material.opacity += (targetOpacity - ud.shadowBlob.material.opacity) * Math.min(1, dt * 10)
           }
         }
-        // ── PLAYER EFFECTS (always active) ──
-        // Player glow ring pulse
+        
+        // ── PLAYER EFFECTS (always active) - smooth ──
         if (ud.ring && ud.isPlayer) {
-          ud.ring.material.opacity = 0.2 + Math.sin(t * 0.5) * 0.15
+          ud.ring.material.opacity += (0.2 + Math.sin(t * 0.5) * 0.15 - ud.ring.material.opacity) * Math.min(1, dt * 3)
         }
-        // Nametag glow ring pulse (rank-colored breathing)
         if (ud.nametagGlow && ud.isPlayer) {
-          ud.nametagGlow.material.opacity = 0.25 + Math.sin(t * 1.2) * 0.15
+          const targetOpacity = 0.25 + Math.sin(t * 1.2) * 0.15
           const gs = 1 + Math.sin(t * 1.2) * 0.08
-          ud.nametagGlow.scale.set(gs, gs, 1)
+          ud.nametagGlow.material.opacity += (targetOpacity - ud.nametagGlow.material.opacity) * Math.min(1, dt * 5)
+          ud.nametagGlow.scale.x += (gs - ud.nametagGlow.scale.x) * Math.min(1, dt * 5)
+          ud.nametagGlow.scale.y += (gs - ud.nametagGlow.scale.y) * Math.min(1, dt * 5)
         }
         if (ud.nametagGlowOuter && ud.isPlayer) {
-          ud.nametagGlowOuter.material.opacity = 0.1 + Math.sin(t * 1.2 + 0.5) * 0.08
+          const targetOpacity = 0.1 + Math.sin(t * 1.2 + 0.5) * 0.08
           const gso = 1 + Math.sin(t * 1.2 + 0.5) * 0.06
-          ud.nametagGlowOuter.scale.set(gso, gso, 1)
+          ud.nametagGlowOuter.material.opacity += (targetOpacity - ud.nametagGlowOuter.material.opacity) * Math.min(1, dt * 5)
+          ud.nametagGlowOuter.scale.x += (gso - ud.nametagGlowOuter.scale.x) * Math.min(1, dt * 5)
+          ud.nametagGlowOuter.scale.y += (gso - ud.nametagGlowOuter.scale.y) * Math.min(1, dt * 5)
         }
       }
       _ucam(dt) {
