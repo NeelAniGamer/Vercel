@@ -8,10 +8,10 @@
 ## Build System
 
 - **Primary deployment:** Static HTML — commit to repo → Vercel auto-deploys (no build step)
-- **React bundle (optional):** `npm run build` runs `build.js` → esbuild bundles `react-src/GamePage.tsx` → `dist/Traffic/simulator-bundle.js`. This is a secondary output, not the primary site.
+- **React bundle (optional):** `npm run build` runs `build.js` → esbuild bundles `react-src/GamePage.tsx` → `dist/Traffic/simulator-bundle.js`. Secondary output, not the primary site.
 - **No lint, no tests, no type checker** enforced in CI
-- `package.json` dependencies: React 19, Three.js 0.185, esbuild 0.28, TypeScript 6, Prettier 3.9.3 (optional)
-- No `tsconfig.json` at root — TypeScript is only used for the React bundle in `react-src/`
+- `package.json` deps: React 19, Three.js 0.185, esbuild 0.28, TypeScript 6, Prettier 3.9.3 (optional)
+- No `tsconfig.json` at root — TypeScript only used for React bundle in `react-src/`
 
 ---
 
@@ -31,22 +31,14 @@
 ├── sw.js               # Service worker (cache-first for core assets)
 ├── version.json        # APK version info (v1.6, code 7)
 ├── cast-version.json   # Cast app version (v1.1, code 2)
-├── Traffic/            # 3D driving simulator sub-app (see Traffic/ section below)
+├── Traffic/            # 3D driving simulator sub-app (see Traffic/AGENTS.md)
 ├── react-src/          # React/TypeScript source for simulator bundle
 │   ├── GamePage.tsx    # Main entrypoint → bundled to dist/Traffic/
-│   ├── DrivingSimulator.tsx  # Top-level simulator component
-│   ├── types.ts        # Shared TypeScript types
-│   ├── engine/         # Game engine modules
-│   ├── vehicles/       # Vehicle system
-│   ├── hud/            # HUD components
-│   ├── state/          # State management
-│   ├── hooks/          # React hooks
-│   ├── systems/        # Game systems
-│   ├── assets/         # Static assets (textures, models)
-│   ├── audio/          # Audio files
-│   └── data/           # Game data files
+│   ├── DrivingSimulator.tsx
+│   ├── types.ts
+│   ├── engine/ vehicles/ hud/ state/ hooks/ systems/ assets/ audio/ data/
 ├── cast/               # CastFlow PWA (separate mini-app)
-├── dist/               # Build output (committed to git — includes full site copy + Traffic bundle)
+├── dist/               # Build output (committed — full site copy + Traffic bundle)
 ├── skills-lock.json    # Installed agent skills registry
 ├── .agents/skills/     # Agent skills (3d-game-builder, browser-use, etc.)
 └── .claude/            # Claude Code settings + skills
@@ -56,13 +48,13 @@
 
 ## DO NOT TOUCH (Without Explicit Approval)
 
-| File                   | Why                                                                                              |
-| ---------------------- | ------------------------------------------------------------------------------------------------ |
-| `config.json`          | Supabase auth credentials + page status routing. Changes break auth site-wide                    |
-| `Traffic/config.json`  | Separate Supabase creds for Traffic sub-app. Do NOT mix with root config                         |
-| `col-auth.js`          | Global auth system (Google OAuth + email/password via Supabase). 497 lines.                      |
-| `col-router.js`        | Global router — fetches config.json, renders 503/404 screens. Affects ALL pages                  |
-| `supabase.js`          | Minified Supabase SDK v2.108.1. Replace only via CDN update                                      |
+| File | Why |
+|------|-----|
+| `config.json` | Supabase auth credentials + page status routing. Changes break auth site-wide |
+| `Traffic/config.json` | Separate Supabase creds for Traffic sub-app. Do NOT mix with root config |
+| `col-auth.js` | Global auth system (Google OAuth + email/password via Supabase). 497 lines |
+| `col-router.js` | Global router — fetches config.json, renders 503/404. Affects ALL pages |
+| `supabase.js` | Minified Supabase SDK v2.108.1. Replace only via CDN update |
 | Google OAuth Client ID | Hardcoded in multiple HTML files (`500448449044-...`). Changing breaks Google sign-in everywhere |
 
 ---
@@ -78,30 +70,29 @@ Every standard page loads these in `<head>` (all `defer`):
 <script defer src="col-auth.js"></script>
 ```
 
-- Order matters: `col-router.js` → `col-ui.css` → `col-ui.js` → `col-auth.js`
+**Order matters:** `col-router.js` → `col-ui.css` → `col-ui.js` → `col-auth.js`
 - Never include any shared script more than once per page
-- `col-3d.js` is loaded separately (at end of `<body>`) by pages needing Three.js backgrounds: `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `Career.html`, `Database_Logic.html`. It skips on mobile/touch devices
+- `col-3d.js` loads separately (end of `<body>`) on pages needing Three.js backgrounds: `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `Career.html`, `Database_Logic.html`. Skips on mobile/touch devices.
 
 ### Pages that DON'T load shared scripts
-
-- `Career.html` — standalone page with its own CSS variables, only loads `col-3d.js`
+- `Career.html` — standalone, own CSS variables, only loads `col-3d.js`
 - `Database_Logic.html` — same pattern, only loads `col-3d.js`
 
 ---
 
 ## Two Auth Systems
 
-1. **`col-auth.js`** — Used by most pages. Supabase-based Google OAuth + email/password. Injects `colAuthModal` / `loginMo` modal. Exposes `openLogin()`, `closeMo()` globally. On auth state change, fires `col-auth-changed` CustomEvent.
-2. **QR inline auth** — `qr.html` has its own legacy `gSignIn()` function and inline Google OAuth (access token in URL hash). Only `qr.html` defines `gSignIn()`.
+1. **`col-auth.js`** — Used by most pages. Supabase-based Google OAuth + email/password. Injects `colAuthModal`/`loginMo` modal. Exposes `openLogin()`, `closeMo()` globally. Fires `col-auth-changed` CustomEvent on auth state change.
+2. **QR inline auth** — `qr.html` has its own legacy `gSignIn()` and inline Google OAuth (access token in URL hash). Only `qr.html` defines `gSignIn()`.
 
-Do NOT merge these systems without understanding both. Most pages' `openLogin()` calls are bridged by `col-auth.js`.
+**Do NOT merge these systems** without understanding both. Most pages' `openLogin()` calls are bridged by `col-auth.js`.
 
 ---
 
 ## Theme System
 
-- **Main site**: dark mode default. Light mode via `body.lm` class. Theme stored in `localStorage('theme')`.
-- **QR pages**: separate system — uses `body.dark-mode` and `body.light` classes. Different CSS variables (`--pri`, `--bg`).
+- **Main site:** dark mode default. Light mode via `body.lm` class. Theme stored in `localStorage('theme')`.
+- **QR pages:** separate system — uses `body.dark-mode` and `body.light` classes. Different CSS variables (`--pri`, `--bg`).
 
 ---
 
@@ -120,8 +111,8 @@ Two layers control page status (200/503/404/500):
 --void: #070a14;      /* background */
 --void2: #0c1224;     /* secondary bg */
 --panel: #111827;     /* card bg */
---line: rgba(255, 255, 255, 0.08);   /* borders */
---lineb: rgba(255, 255, 255, 0.16);  /* strong borders */
+--line: rgba(255,255,255,0.08);   /* borders */
+--lineb: rgba(255,255,255,0.16);  /* strong borders */
 --ink: #e8e3d8;       /* primary text */
 --dim: #8891aa;       /* muted text */
 --signal: #f2b84b;    /* accent gold */
@@ -142,13 +133,23 @@ Two layers control page status (200/503/404/500):
 
 - Traffic HTML pages (`Driving.html`, `Academy.html`, `TrafficDashboard.html`, `TrafficSetup.html`) DO load shared `../col-router.js`, `../col-ui.js`, `../col-auth.js` with `../` prefix
 - `Driving.html` and `Academy.html` **patch `fetch()`** to redirect `config.json` requests to `../config.json`
-- `Cyberpunk/` inside Traffic/ is an archive — never modify
-- `Traffic/AGENTS.md` does not exist yet; Traffic/ does not have its own agent docs
+- `Traffic/Cyberpunk/` is an archive — never modify
+- `Traffic/AGENTS.md` contains full architecture docs for the simulator
 
 ---
 
 ## Vercel Config (`vercel.json`)
 
+```json
+{
+  "cleanUrls": true,
+  "rewrites": [{ "source": "/", "destination": "/home" }],
+  "redirects": [
+    { "source": "/index.html", "destination": "/home", "permanent": true },
+    { "source": "/index", "destination": "/home", "permanent": true }
+  ]
+}
+```
 - `cleanUrls: true` — serves pages without `.html` extension
 - Rewrite: `/` → `/home` (root serves home page)
 - Permanent redirects: `/index.html` → `/home`, `/index` → `/home`
@@ -159,8 +160,8 @@ Two layers control page status (200/503/404/500):
 
 - **PWA:** `manifest.json` + `sw.js` for "Add to Home Screen" on Android
 - **Service worker** (`sw.js`): cache name `col-cache-v2`, pre-caches 7 core assets: `/`, `/home.html`, `/col-ui.css`, `/col-ui.js`, `/col-router.js`, `/col-auth.js`, `/Icon.png`
-- **APK updater:** `version.json` checked by `col-ui.js` for in-app update prompts. Current version: v1.6 (versionCode 7). APK URL: `advancedlogiclabs.dpdns.org/COL.apk`
-- **Cast app:** `cast/` directory has its own mini-app (`CastFlow.html`) with separate manifest, plus root `CastFlow.html`
+- **APK updater:** `version.json` checked by `col-ui.js` for in-app update prompts. Current: v1.6 (versionCode 7). APK URL: `advancedlogiclabs.dpdns.org/COL.apk`
+- **Cast app:** `cast/` directory has own mini-app (`CastFlow.html`) with separate manifest, plus root `CastFlow.html`
 
 ---
 
@@ -177,34 +178,34 @@ Two layers control page status (200/503/404/500):
 
 ## Installed Agent Skills
 
-Skills in `.agents/skills/` are registered in `skills-lock.json`:
+Skills in `.agents/skills/` registered in `skills-lock.json`:
 - `browser-use` — browser automation via CDP
 - `valyu-best-practices` — Valyu API toolkit
-- 100+ additional skills in `.agents/skills/` (3d-game-builder, 3d-game-dev, humanizer, skill-creator, etc.)
+- 100+ additional skills: `3d-game-builder`, `3d-game-dev`, `humanizer`, `skill-creator`, etc.
 
 ---
 
 ## Pages You CAN Touch Freely
 
-| Category      | Files                                                                                                                                                                                          |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Pages**     | `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `download.html`, `sneh-asha.html`, `admin.html`, `Career.html`, `Database_Logic.html`, `sitemap.html` |
-| **Apps**      | `solar.html`, `ati.html`, `ati-demo.html`, `gesture.html`, `rpg.html`, `engine.html`                                                                                                           |
-| **QR System** | `qr.html`, `qr-editor.html`                                                                                                                                                                    |
-| **Shared UI** | `col-ui.js`, `col-ui.css`, `col-3d.js`, `style.css`                                                                                                                        |
-| **Assets**    | Any `.webp`, `.png`, `.glb` files                                                                                                                                                              |
-| **Config**    | `vercel.json`, `robots.txt`, `sitemap.xml`                                                                                                                                                     |
-| **Traffic/**  | All files under `Traffic/` except `Traffic/config.json`                                                                                                                                        |
+| Category | Files |
+|----------|-------|
+| **Pages** | `home.html`, `about.html`, `school.html`, `privacy.html`, `terms.html`, `feedback.html`, `download.html`, `sneh-asha.html`, `admin.html`, `Career.html`, `Database_Logic.html`, `sitemap.html` |
+| **Apps** | `solar.html`, `ati.html`, `ati-demo.html`, `gesture.html`, `rpg.html`, `engine.html` |
+| **QR System** | `qr.html`, `qr-editor.html` |
+| **Shared UI** | `col-ui.js`, `col-ui.css`, `col-3d.js`, `style.css` |
+| **Assets** | Any `.webp`, `.png`, `.glb` files |
+| **Config** | `vercel.json`, `robots.txt`, `sitemap.xml` |
+| **Traffic/** | All files under `Traffic/` except `Traffic/config.json` |
 
 ---
 
-## SEO Checklist
+## SEO Checklist (Every Page)
 
-- `<title>` and `<meta name="description">` required on every page
-- `<link rel="canonical">` recommended
-- `<meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU">` on every page
+- `<title>` and `<meta name="description">` — **required**
+- `<link rel="canonical">` — **recommended**
+- `<meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU">` — **required**
 - `loading="lazy"` on non-hero images
-- Use semantic HTML
+- Semantic HTML
 
 ---
 
@@ -214,13 +215,13 @@ Before deleting any file:
 
 1. Search ALL HTML files for references: `grep -r "filename" *.html`
 2. Check `config.json`, `vercel.json`, and any JS file
-3. Historical archives: `Traffic_Archives_Index.md` indexes old directories (`Traffic - Major UI Change/`, `Traffic - Major Updates/`)
+3. Historical archives: `Traffic_Archives_Index.md` indexes old dirs (`Traffic - Major UI Change/`, `Traffic - Major Updates/`)
 
 ---
 
 ## Page Structure Pattern
 
-Each HTML page follows this structure:
+Each HTML page follows:
 
 1. `<head>`: shared scripts (deferred), page-specific inline `<style>`
 2. `<body>`: HTML content
@@ -228,4 +229,4 @@ Each HTML page follows this structure:
 
 ---
 
-_Last updated: July 21, 2026_
+_Last updated: July 29, 2026_

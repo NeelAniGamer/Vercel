@@ -106,10 +106,15 @@ if (!window.closeMo) {
 
   function setupOneTap() {
     if (window.colUser) return
+    // Don't show One Tap on Driving.html levels screen or briefing screen
+    const path = window.location.pathname.toLowerCase()
+    if (path.includes('driving') && (new URLSearchParams(window.location.search).get('screen') === 'levels' || new URLSearchParams(window.location.search).get('lv'))) {
+      return
+    }
     google.accounts.id.initialize({
       client_id: '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com',
       callback: window.handleGoogleOneTap,
-      use_fedcm_for_prompt: true,
+      use_fedcm_for_prompt: false,
       itp_support: true
     })
     google.accounts.id.prompt((notification) => {
