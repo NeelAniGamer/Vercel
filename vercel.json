@@ -3,28 +3,18 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/home.html"
+      "destination": "/home"
     }
   ],
   "redirects": [
     {
-      "source": "/home",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/home.html",
-      "destination": "/",
-      "permanent": true
-    },
-    {
       "source": "/index.html",
-      "destination": "/",
+      "destination": "/home",
       "permanent": true
     },
     {
       "source": "/index",
-      "destination": "/",
+      "destination": "/home",
       "permanent": true
     }
   ]
