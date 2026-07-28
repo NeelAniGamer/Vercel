@@ -2073,6 +2073,8 @@
           const oldSStr2 = JSON.stringify(S)
           await _syncCloudToLocal(user.id)
           if (JSON.stringify(S) !== oldSStr2) window.location.reload()
+          // Refresh avatars with Google profile pic
+          renderDashboardUI()
         } else {
           const acadBtn = document.getElementById('academy-sign-in-btn')
           const acadProf = document.getElementById('trafficUserProfile')
@@ -2869,35 +2871,38 @@
         const emailMap = {} // user_id -> email
         const emailToUserIds = {} // email -> [user_id, ...]
         if (allUserIds.size > 0) {
-          const userIdsArray = Array.from(allUserIds)
-          try {
-            const { data: upProfiles } = await window.supabaseClient
-              .from('user_profiles')
-              .select('user_id, display_name, username')
-              .in('user_id', userIdsArray)
-            if (upProfiles) {
-              upProfiles.forEach(p => {
-                const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
-                if (name) profileMap[p.user_id] = name
-              })
-            }
-          } catch (e) {}
-          // Fetch emails from profiles table (contains Google OAuth metadata)
-          try {
-            const { data: profiles } = await window.supabaseClient
-              .from('profiles')
-              .select('id, raw_user_meta_data, username')
-              .in('id', userIdsArray)
-            if (profiles) {
-              profiles.forEach(p => {
-                const meta = p.raw_user_meta_data || {}
-                const email = meta.email || meta.provider_email || null
-                if (email) {
-                  emailMap[p.id] = email.toLowerCase()
-                  if (!emailToUserIds[email.toLowerCase()]) emailToUserIds[email.toLowerCase()] = []
-                  emailToUserIds[email.toLowerCase()].push(p.id)
-                }
-                // Fallback username if not in user_profiles
+          const userIdsArray = Array.from(allUserIds).filter(id => 
+            typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+          )
+          if (userIdsArray.length > 0) {
+            try {
+              const { data: upProfiles } = await window.supabaseClient
+                .from('user_profiles')
+                .select('user_id, display_name, username')
+                .in('user_id', userIdsArray)
+              if (upProfiles) {
+                upProfiles.forEach(p => {
+                  const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
+                  if (name) profileMap[p.user_id] = name
+                })
+              }
+            } catch (e) {}
+            // Fetch emails from profiles table (contains Google OAuth metadata)
+            try {
+              const { data: profiles } = await window.supabaseClient
+                .from('profiles')
+                .select('id, raw_user_meta_data, username')
+                .in('id', userIdsArray)
+              if (profiles) {
+                profiles.forEach(p => {
+                  const meta = p.raw_user_meta_data || {}
+                  const email = meta.email || meta.provider_email || null
+                  if (email) {
+                    emailMap[p.id] = email.toLowerCase()
+                    if (!emailToUserIds[email.toLowerCase()]) emailToUserIds[email.toLowerCase()] = []
+                    emailToUserIds[email.toLowerCase()].push(p.id)
+                  }
+                  // Fallback username if not in user_profiles
                 if (!profileMap[p.id] && p.username) {
                   profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
                 }
