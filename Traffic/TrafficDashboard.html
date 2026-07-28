@@ -631,9 +631,11 @@
       .leaderboard-row:nth-child(2) .rank { width: 34px; height: 34px; border-radius: 11px; }
       .leaderboard-row:nth-child(3) .rank { width: 33px; height: 33px; border-radius: 10px; }
       /* You highlight */
-      .leaderboard-row.you { border-color: rgba(242,184,75,0.35); background: rgba(242,184,75,0.06); }
+      .leaderboard-row.you { border-color: rgba(242,184,75,0.5); background: linear-gradient(90deg, rgba(242,184,75,0.08), rgba(242,184,75,0.02)); box-shadow: inset 0 0 0 1px rgba(242,184,75,0.2); }
       .leaderboard-row.you::before { background: linear-gradient(180deg, var(--accent), var(--teal)); }
       .leaderboard-row.you .name::after { content: ' · You'; color: var(--accent); font-size: 0.7rem; font-weight: 700; }
+      .leaderboard-row.you .rank-num { box-shadow: 0 0 8px rgba(242,184,75,0.4); }
+      .leaderboard-row.you:hover { background: linear-gradient(90deg, rgba(242,184,75,0.12), rgba(242,184,75,0.04)); transform: translateX(4px); }
 
       /* ── Tier Badges ── */
       .tier-badge {
@@ -645,6 +647,21 @@
       .tier-badge.gold { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.08)); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
       .tier-badge.silver { background: linear-gradient(135deg, rgba(148,163,184,0.2), rgba(148,163,184,0.08)); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
       .tier-badge.bronze { background: linear-gradient(135deg, rgba(180,83,9,0.2), rgba(180,83,9,0.08)); color: #d97706; border: 1px solid rgba(180,83,9,0.3); }
+
+      /* ── Device Badge (for multiple devices on same Google account) ── */
+      .device-badge {
+        display: inline-flex; align-items: center; gap: 3px;
+        font-size: 0.55rem; font-weight: 800; text-transform: uppercase;
+        letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px;
+        flex-shrink: 0; line-height: 1;
+        background: linear-gradient(135deg, rgba(94,212,245,0.2), rgba(94,212,245,0.08));
+        color: var(--signal); border: 1px solid rgba(94,212,245,0.3);
+        cursor: help;
+      }
+      .device-badge:hover {
+        background: linear-gradient(135deg, rgba(94,212,245,0.3), rgba(94,212,245,0.15));
+        border-color: rgba(94,212,245,0.5);
+      }
 
       /* ── Podium ── */
       .lb-podium {
@@ -2638,11 +2655,13 @@
                 const name = profileMap[u.user_id] || u.display_name || u.username || 'Anon'
                 const score = u.score || u.badge_count || u.modules_completed || 0
                 const initial = name.charAt(0).toUpperCase()
+                const isMultiDevice = u.user_id && multiDeviceUserIds.has(u.user_id)
+                const deviceBadge = isMultiDevice ? '<span class="device-badge" title="Multiple devices on this account" style="font-size:0.8rem;vertical-align:middle;margin-left:4px;">📱</span>' : ''
                 return `<div class="podium-spot ${podiumClasses[idx]}">
                   <div class="podium-avatar" style="background: linear-gradient(135deg, ${idx===1?'#fbbf24':idx===0?'#94a3b8':'#d97706'}, ${idx===1?'#f59e0b':idx===0?'#64748b':'#b45309'})">
                     ${initial}
                   </div>
-                  <div class="podium-name">${name}</div>
+                  <div class="podium-name">${name}${deviceBadge}</div>
                   <div class="podium-score">${score.toLocaleString()}</div>
                   <div class="podium-base">${podiumMedals[idx]}</div>
                 </div>`
@@ -2714,6 +2733,9 @@
             const prevRank = u.user_id ? prevRanks[u.user_id] : null
             let rankChangeHtml = ''
             let rowClass = isYou ? ' you' : ''
+            // Multi-device indicator
+            const isMultiDevice = u.user_id && multiDeviceUserIds.has(u.user_id)
+            const deviceBadge = isMultiDevice ? '<span class="device-badge" title="Multiple devices on this account">📱</span>' : ''
             if (prevRank != null) {
               const delta = prevRank - curRank // positive = moved up
               if (delta > 0) {
@@ -2736,7 +2758,7 @@
               <div class="rank"><span class="rank-num" data-target="${curRank}">${curRank}</span></div>
               ${rankChangeHtml}
               <div class="who">
-                <div class="name">${displayUsername} ${tierBadge(curRank)}</div>
+                <div class="name">${displayUsername} ${tierBadge(curRank)} ${deviceBadge}</div>
                 <div class="metric">${metric(u)}</div>
               </div>
               ${curRank <= 3 ? `<div class="crown">${crowns[board]}</div>` : ''}
@@ -2836,6 +2858,9 @@
         } catch (e) { console.warn('Leaderboard badges fetch failed:', e); allBadges = [] }
 
         // Fetch usernames from user_profiles first, then profiles as fallback
+        // Also fetch emails from profiles to detect multiple devices per Google account
+        const emailMap = {} // user_id -> email
+        const emailToUserIds = {} // email -> [user_id, ...]
         if (allUserIds.size > 0) {
           try {
             const { data: upProfiles } = await window.supabaseClient
@@ -2849,22 +2874,35 @@
               })
             }
           } catch (e) {}
-          // Fallback: profiles table
+          // Fetch emails from profiles table (contains Google OAuth metadata)
           try {
-            const missingIds = Array.from(allUserIds).filter(id => !profileMap[id])
-            if (missingIds.length > 0) {
-              const { data: profiles } = await window.supabaseClient
-                .from('profiles')
-                .select('id, username')
-                .in('id', missingIds)
-              if (profiles) {
-                profiles.forEach(p => {
-                  if (p.username) profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
-                })
-              }
+            const { data: profiles } = await window.supabaseClient
+              .from('profiles')
+              .select('id, raw_user_meta_data, username')
+              .in('id', Array.from(allUserIds))
+            if (profiles) {
+              profiles.forEach(p => {
+                const meta = p.raw_user_meta_data || {}
+                const email = meta.email || meta.provider_email || null
+                if (email) {
+                  emailMap[p.id] = email.toLowerCase()
+                  if (!emailToUserIds[email.toLowerCase()]) emailToUserIds[email.toLowerCase()] = []
+                  emailToUserIds[email.toLowerCase()].push(p.id)
+                }
+                // Fallback username if not in user_profiles
+                if (!profileMap[p.id] && p.username) {
+                  profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
+                }
+              })
             }
-          } catch (e) { console.warn('Leaderboard profiles fetch failed:', e) }
+          } catch (e) { console.warn('Leaderboard profiles email fetch failed:', e) }
         }
+
+        // Track which user_ids have "siblings" (same email, different device)
+        const multiDeviceUserIds = new Set()
+        Object.values(emailToUserIds).forEach(ids => {
+          if (ids.length > 1) ids.forEach(id => multiDeviceUserIds.add(id))
+        })
 
         if (certsByScore && certsByScore.length > 0) {
           renderBoard('leaderboard-xp', 'xp', certsByScore, u => `${(u.score || 0).toLocaleString()} XP`)
