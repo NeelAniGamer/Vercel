@@ -430,33 +430,106 @@ ui._addChallanCard = function (off, amt) {
 window.ui = window.ui || {}
 window.sfx = window.sfx || { play: () => {} }
 preloadModels(() => {
+  // ── Driving.html: Suppress ALL Academy-style screens before any code acts on them ──
+  const _isDriving = window.location.pathname.toLowerCase().includes('driving')
+  if (_isDriving) {
+    document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+  }
+
   ui.init()
   game = new Game()
   window.game = game
 
   const urlParams = new URLSearchParams(window.location.search)
-  let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv')
-  let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode')
+  let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
+  let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode') || 'car'
 
-  if (window.location.pathname.toLowerCase().includes('driving')) {
+  if (_isDriving) {
+    // Re-hide screens (ui.init may have shown one for non-lv-param driving pages)
+    document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+
     if (lvId) {
-      const levelObj = window.LVS.find((l) => l.id == lvId)
+      let levelObj = window.LVS ? window.LVS.find((l) => l.id == lvId) : null
+      // Fallback for free_roam / custom levels — create level on the fly
+      if (!levelObj && (lvId === 'custom' || lvId === 'freeroam')) {
+        levelObj = {
+          id: lvId,
+          themeType: 'free_roam',
+          name: 'Free Roam City',
+          mode: mode || 'car',
+          vehMode: mode || 'car',
+          assets: ['cars', 'suburban', 'industrial'],
+          noTimer: true,
+          noScore: true,
+          noObjective: true
+        }
+      }
+      if (!levelObj && window.LVS && window.LVS.length > 0) {
+        levelObj = window.LVS[0]
+      }
       if (levelObj) {
         ui.cur = levelObj
         ui.curMode = mode || 'car'
         ui.cur.vehMode = ui.curMode
-        document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
-        setTimeout(() => {
-          game.startLevel()
+        // Guard flag to prevent multiple redirects — used by ALL redirect paths
+        let _drivingRedirected = false
+        function _redirectToAcademy() {
+          if (_drivingRedirected) return
+          _drivingRedirected = true
+          window.location.href = 'Academy.html?screen=levels'
+        }
+        // Safety net: if game canvas hasn't started within 30s, redirect to Academy
+        const _startTime = Date.now()
+        const _drivingTimeout = setTimeout(function _checkCanvasTimeout() {
+          const gc = document.getElementById('gc')
+          if (!gc || !gc.classList.contains('on')) {
+            // Canvas still not active — check again every 500ms up to 30s total
+            if (Date.now() - _startTime < 30000) {
+              setTimeout(_checkCanvasTimeout, 500)
+            } else {
+              console.warn('[Driving] Canvas did not activate within 30s, redirecting to Academy')
+              _redirectToAcademy()
+            }
+          }
+        }, 3000)
+        // Short delay before starting the level (ensures DOM is settled)
+        setTimeout(function _startLevel() {
+          try {
+            game.startLevel()
+            // After startLevel runs, watch for canvas to become active
+            // Checks every 300ms until timeout fires or GC is ready
+            const _startCheck = Date.now()
+            ;(function _watchCanvas() {
+              const gc = document.getElementById('gc')
+              if (gc && gc.classList.contains('on')) {
+                clearTimeout(_drivingTimeout)
+                return
+              }
+              // Keep watching until timeout naturally fires
+              if (Date.now() - _startCheck < 18000) {
+                setTimeout(_watchCanvas, 300)
+              }
+            })()
+          } catch (err) {
+            console.error('game.startLevel() failed:', err)
+            clearTimeout(_drivingTimeout)
+            _redirectToAcademy()
+          }
         }, 300)
       } else {
+        _drivingRedirected = true
         window.location.href = 'Academy.html?screen=levels'
       }
     } else {
+      _drivingRedirected = true
       window.location.href = 'Academy.html?screen=levels'
     }
   } else {
-    if (ui.showStart) ui.showStart()
+    // Don't override if init() already showed a specific screen (e.g. ?screen=levels)
+    const alreadyActive = document.querySelector('.screen.active')
+    if (!alreadyActive || alreadyActive.id === 'ss') {
+      if (ui.showStart) ui.showStart()
+    }
   }
 })
 

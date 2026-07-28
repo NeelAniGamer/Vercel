@@ -1,0 +1,36 @@
+Hello!
+
+Thank you for downloading this 3D model. Before you proceed with rendering, here is a guide for applying the textures:
+
+You will find three textures inside the "Texture" folder for the 3D model:
+
+1. "Concrete" 4K Texture 
+2. "Light_Pole" 4K Texture
+3. "Road" 8K Texture
+
+Inside each, you may find four or more different texture maps:
+
+- BaseColor = Diffuse map
+- Metalness = Metallic
+- Roughness
+- Normal = Bump map
+- Transmission = Opacity
+- Emissive = Emission
+
+**If the textures are not automatically added or there are no material slots, here is how to do it manually:**
+
+Apply the "Concrete" texture to the following objects:
+- "Bridge_Abutments"
+- "Bridge_Beams"
+- "Bridge_Columns"
+- Concrete part of "Bridge_Deck"
+
+Apply the "Light_Pole" texture to the following objects:
+- "Bridge_LightPoles"
+
+Apply the "Road" texture to the following objects:
+- Road part of "Bridge_Deck"
+
+Thank you once again for downloading. I hope this model meets your needs and expectations. 
+
+If you have any questions or need further assistance, please don't hesitate to contact me.

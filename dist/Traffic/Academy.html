@@ -37,6 +37,7 @@
     <script src="traffic-charts.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
     <link rel="stylesheet" href="welcome-back.css" />
+    <link rel="stylesheet" href="animations.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
     <script src="course.js"></script>
     <style>
@@ -197,10 +198,129 @@
         .mobile-bottom-nav {
           display: flex !important;
         }
+        /* Hide desktop-only buttons on mobile */
+        #academy-compare-btn, #academy-sign-in-btn {
+          display: none !important;
+        }
+        .partner-badges {
+          display: none !important;
+        }
+        .brand-header {
+          gap: 8px !important;
+          margin-bottom: 20px !important;
+        }
+        .brand-header > div:first-child {
+          gap: 12px !important;
+        }
+        .brand-header img {
+          height: 32px !important;
+        }
+        .brand-header > div:first-child > div:last-child {
+          height: 28px !important;
+        }
+        /* Hamburger top bar on mobile */
+        #top-bar-container {
+          flex-wrap: nowrap !important;
+          gap: 8px !important;
+          padding: 10px 14px !important;
+          border-radius: 16px;
+          margin: 8px !important;
+          background: var(--card);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid var(--border);
+        }
+        #top-bar-container .mobile-hamburger-btn {
+          display: flex !important;
+        }
+        #top-bar-container #global-level-search,
+        #top-bar-container .desktop-top-bar-actions {
+          display: none !important;
+        }
+        /* Hamburger dropdown */
+        .mobile-hamburger-dropdown {
+          display: none;
+          position: absolute;
+          top: 60px;
+          right: 14px;
+          z-index: 200;
+          background: var(--card);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          padding: 8px;
+          min-width: 200px;
+          box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+          animation: menuSlideIn 0.2s ease-out;
+        }
+        .mobile-hamburger-dropdown.show {
+          display: block;
+        }
+        @keyframes menuSlideIn {
+          from { opacity: 0; transform: translateY(-8px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .mobile-hamburger-dropdown button {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          padding: 12px 16px;
+          border: none;
+          background: transparent;
+          color: var(--text);
+          font-size: 0.9rem;
+          font-weight: 600;
+          cursor: pointer;
+          border-radius: 12px;
+          min-height: 44px;
+          font-family: 'Inter', sans-serif;
+          transition: background 0.15s;
+        }
+        .mobile-hamburger-dropdown button:hover,
+        .mobile-hamburger-dropdown button:active {
+          background: var(--hover);
+        }
+        .mobile-hamburger-dropdown button:active {
+          transform: scale(0.97);
+        }
+        .mobile-hamburger-btn:active {
+          transform: scale(0.95);
+        }
+        /* Ensure touch targets on mobile */
+        .syl-item {
+          min-height: 48px;
+          padding: 16px;
+        }
+        .lcard {
+          min-height: 120px;
+        }
+        .btn {
+          min-height: 48px;
+          padding: 14px 24px;
+        }
+        .btn-g {
+          min-height: 48px;
+        }
         /* Add padding to body to prevent content from hiding behind the nav bar */
         body {
           padding-bottom: 70px !important;
         }
+      }
+
+      /* === Desktop top bar (outside media query) === */
+      #top-bar-container {
+        background: rgba(11, 16, 26, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 8px 14px;
+      }
+      body.lm #top-bar-container {
+        background: rgba(255, 255, 255, 0.75);
+        border-color: rgba(0, 0, 0, 0.08);
       }
 
       /* Mobile Bottom Navigation */
@@ -275,6 +395,11 @@
 
       .screen.active {
         display: flex;
+        animation: pageTransitionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+      @keyframes pageTransitionIn {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
       h1,
@@ -294,16 +419,43 @@
         font-weight: 600;
         font-size: clamp(0.95rem, 1.2vw, 1.1rem);
         cursor: pointer;
-        transition: all 0.2s;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                    box-shadow 0.3s ease,
+                    background 0.2s ease;
         display: inline-flex;
         align-items: center;
         gap: 8px;
         justify-content: center;
+        will-change: transform;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::after {
+        content: '';
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 0; height: 0;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.4s ease, height 0.4s ease;
+        pointer-events: none;
+      }
+
+      .btn:active::after {
+        width: 200px; height: 200px;
       }
 
       .btn:hover {
         background: var(--muted2);
-        transform: translateY(-1px);
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      }
+
+      .btn:active {
+        transform: translateY(0) scale(0.98);
+        transition-duration: 0.1s;
       }
 
       /* Pulse animation for Get Started button */
@@ -327,10 +479,16 @@
         color: var(--text);
         border: 1px solid var(--border);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                    background 0.2s ease,
+                    border-color 0.2s ease,
+                    box-shadow 0.3s ease;
       }
 
       .btn-g:hover {
         background: var(--hover);
+        border-color: rgba(255,255,255,0.15);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
       }
 
       .btn-danger {
@@ -518,14 +676,24 @@
         font-size: 0.95rem;
         padding: 12px 24px;
         min-height: 48px;
-        transition: all 0.2s ease;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                    background 0.2s ease,
+                    border-color 0.2s ease,
+                    box-shadow 0.3s ease;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        will-change: transform;
       }
 
       .back-btn:hover {
         background: var(--hover);
         border-color: var(--muted);
-        transform: translateY(-1px);
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      }
+
+      .back-btn:active {
+        transform: translateY(0) scale(0.97);
+        transition-duration: 0.1s;
       }
 
       .lw {
@@ -703,11 +871,16 @@
       }
 
       .lcard:hover:not(.lk) {
-        transform: translateY(-4px);
+        transform: translateY(-6px) scale(1.02);
         box-shadow:
-          0 12px 40px rgba(0, 0, 0, 0.1),
+          0 16px 48px rgba(0, 0, 0, 0.12),
           inset 0 1px 1px rgba(255, 255, 255, 0.1);
         border-color: var(--accent);
+      }
+
+      .lcard:active:not(.lk) {
+        transform: translateY(-2px) scale(0.99);
+        transition-duration: 0.1s;
       }
 
       .lcard::before {
@@ -960,6 +1133,12 @@
         gap: 24px;
         margin-bottom: 60px;
       }
+      .category-grid > * {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: cardStaggerIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: calc(var(--i, 0) * 0.06s + 0.05s);
+      }
       
       @media (max-width: 768px) {
         .category-grid {
@@ -1004,54 +1183,501 @@
         transform: scale(1.05);
       }
 
-      /* Duolingo-style Level Map */
+      /* ═══════════════════════════════════════════════════════
+         Duolingo-style Level Map — Premium Immersive
+         ═══════════════════════════════════════════════════════ */
       .level-map-container {
         position: relative;
-        height: calc(100vh - 200px);
+        height: calc(100vh - 160px);
         min-height: 400px;
         overflow: hidden;
-        padding: 20px;
+        padding: 0;
+        background:
+          radial-gradient(ellipse at 30% 20%, rgba(94,212,245,0.08) 0%, transparent 50%),
+          radial-gradient(ellipse at 70% 80%, rgba(242,184,75,0.06) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 50%, rgba(52,211,153,0.04) 0%, transparent 60%),
+          var(--bg);
       }
       .map-scroll-area {
         width: 100%;
         height: 100%;
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
         position: relative;
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.12) transparent;
+        padding-bottom: 120px;
       }
+      .map-scroll-area::-webkit-scrollbar { width: 5px; }
+      .map-scroll-area::-webkit-scrollbar-track { background: transparent; }
+      .map-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
       .level-path-svg {
         width: 100%;
         min-height: 2000px;
         display: block;
+        overflow: visible;
       }
+
+      /* ── Node Base ── */
       .level-node {
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: filter 0.3s ease;
       }
-      .level-node:hover {
-        transform: scale(1.15);
+      .level-node:hover { filter: brightness(1.15); }
+      .level-node.locked { cursor: not-allowed; opacity: 0.7; }
+      .level-node.locked:hover { filter: none; }
+
+      /* ── Completed Node ── */
+      .level-node.completed .node-outer {
+        filter: drop-shadow(0 0 14px rgba(52,211,153,0.5)) drop-shadow(0 4px 10px rgba(0,0,0,0.25));
+        transition: filter 0.3s ease;
       }
-      .level-node.completed circle { fill: #00c851; }
-      .level-node.current circle { fill: #f39c12; }
-      .level-node.locked circle { fill: #6b7280; }
+      .level-node.completed:hover .node-outer {
+        filter: drop-shadow(0 0 20px rgba(52,211,153,0.7)) drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+      }
+
+      /* ── Current Node — Animated Pulse ── */
+      .level-node.current .node-outer {
+        filter: drop-shadow(0 0 18px rgba(242,184,75,0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+        animation: currentPulse 2.2s ease-in-out infinite;
+      }
+      @keyframes currentPulse {
+        0%,100% { filter: drop-shadow(0 0 14px rgba(242,184,75,0.5)) drop-shadow(0 4px 10px rgba(0,0,0,0.25)); }
+        50% { filter: drop-shadow(0 0 28px rgba(242,184,75,0.85)) drop-shadow(0 4px 16px rgba(0,0,0,0.35)); }
+      }
+      .level-node.current .node-ring {
+        animation: ringRotate 6s linear infinite;
+        transform-origin: center;
+      }
+      @keyframes ringRotate { to { transform: rotate(360deg); } }
+
+      /* ── Node Inner Text ── */
       .level-node-label {
-        font-size: 12px;
+        font-size: 14px;
         fill: white;
-        font-weight: 700;
+        font-weight: 900;
+        font-family: 'Inter', sans-serif;
         text-anchor: middle;
-        dominant-baseline: middle;
+        dominant-baseline: central;
+        pointer-events: none;
+      }
+      .level-node-icon {
+        font-size: 20px;
+        text-anchor: middle;
+        dominant-baseline: central;
         pointer-events: none;
       }
 
-      /* Mobile Map View - Show by default on mobile */
+      /* ── Category Trophy Markers ── */
+      .category-marker {
+        pointer-events: none;
+      }
+      .category-marker text {
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        fill: var(--accent);
+      }
+      .category-marker .cat-emoji {
+        font-size: 28px;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+
+      /* ── Sparkle Particles ── */
+      @keyframes sparkleFloat {
+        0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+        20% { opacity: 1; }
+        100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+      }
+      .sparkle-particle {
+        animation: sparkleFloat var(--dur, 1.2s) var(--delay, 0s) ease-out forwards;
+      }
+
+      /* ── Node Fade-In Stagger ── */
+      @keyframes mapNodeIn {
+        0% { opacity: 0; transform: scale(0.4); }
+        60% { opacity: 1; transform: scale(1.1); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+
+      /* ── Map Progress Bar ── */
+      .map-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: linear-gradient(180deg, var(--bg) 60%, transparent);
+        pointer-events: none;
+      }
+      .map-progress-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        white-space: nowrap;
+        font-family: 'Inter', sans-serif;
+      }
+      .map-progress-track {
+        flex: 1;
+        height: 6px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 3px;
+        overflow: hidden;
+        position: relative;
+      }
+      .map-progress-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #34d399, #5ed4f5);
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 8px rgba(52,211,153,0.4);
+      }
+      .map-progress-count {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: var(--green);
+        white-space: nowrap;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: transform 0.15s ease;
+      }
+      .map-progress-count:hover {
+        transform: scale(1.05);
+      }
       @media (max-width: 768px) {
-        /* NOTE: this used to force .level-map-container visible and .lw hidden here —
-           but checkMobileAndShowMap() (the only function that would have populated the
-           map) is never actually called anywhere, and the map div's own inline
-           style="display:none" beats this class rule's specificity anyway. Net result
-           was an empty screen on every phone: no level list, no populated map either.
-           Falling back to the reliable list view until the map path is wired up and
-           tested — the toggle button (toggleLevelView()) still lets someone opt into
-           the map manually. */
+        .map-progress { padding: 8px 14px; }
+        .map-progress-label { font-size: 0.6rem; }
+      }
+
+      /* ── Category Breakdown Dropdown ── */
+      .map-progress-dropdown {
+        position: absolute;
+        top: 44px;
+        right: 20px;
+        z-index: 20;
+        background: rgba(17, 24, 39, 0.96);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 14px;
+        padding: 14px 16px;
+        min-width: 240px;
+        max-width: 300px;
+        pointer-events: auto;
+        opacity: 0;
+        transform: translateY(-6px) scale(0.97);
+        transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+        font-family: 'Inter', sans-serif;
+      }
+      .map-progress-dropdown.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      .map-progress-dropdown::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        right: 40px;
+        width: 12px;
+        height: 12px;
+        background: rgba(17, 24, 39, 0.96);
+        border-left: 1px solid rgba(255,255,255,0.1);
+        border-top: 1px solid rgba(255,255,255,0.1);
+        transform: rotate(45deg);
+        pointer-events: none;
+      }
+      .pd-title {
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      .pd-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+      }
+      .pd-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .pd-emoji {
+        font-size: 1rem;
+        flex-shrink: 0;
+        width: 22px;
+        text-align: center;
+      }
+      .pd-name {
+        flex: 1;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .pd-bar-wrap {
+        width: 52px;
+        height: 4px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .pd-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        width: 0%;
+        will-change: width;
+        transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .map-progress-dropdown.show .pd-bar-fill {
+        width: var(--bar-target);
+      }
+      .pd-row {
+        opacity: 0;
+        transform: translateY(4px);
+        will-change: opacity, transform;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+      .map-progress-dropdown.show .pd-row {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .pd-count {
+        font-size: 0.7rem;
+        font-weight: 800;
+        min-width: 30px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+      body.lm .map-progress-dropdown {
+        background: rgba(255, 255, 255, 0.96);
+        border-color: rgba(0,0,0,0.08);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.02) inset;
+      }
+      body.lm .map-progress-dropdown::before {
+        background: rgba(255, 255, 255, 0.96);
+        border-left-color: rgba(0,0,0,0.08);
+        border-top-color: rgba(0,0,0,0.08);
+      }
+      body.lm .pd-name { color: #1e293b; }
+      @media (max-width: 768px) {
+        .map-progress-dropdown {
+          right: 10px;
+          left: 10px;
+          min-width: auto;
+          max-width: none;
+        }
+      }
+
+      /* ── Wallet Transaction History Modal ── */
+      .wh-modal {
+        position: fixed; inset: 0; z-index: 10002;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+      .wh-modal.active {
+        opacity: 1; pointer-events: auto;
+      }
+      .wh-backdrop {
+        position: absolute; inset: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .wh-card {
+        position: relative;
+        background: var(--card, #1e293b);
+        border: 1px solid var(--border, rgba(255,255,255,0.08));
+        border-radius: 20px;
+        width: 92%; max-width: 440px; max-height: 80vh;
+        display: flex; flex-direction: column;
+        transform: translateY(20px) scale(0.96);
+        transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+        overflow: hidden;
+      }
+      .wh-modal.active .wh-card {
+        transform: translateY(0) scale(1);
+      }
+      .wh-header {
+        padding: 20px 20px 0;
+      }
+      .wh-title-row {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .wh-title {
+        font-family: 'Lora', serif; font-size: 1.3rem; font-weight: 700;
+        color: var(--text); margin: 0;
+      }
+      .wh-close {
+        width: 36px; height: 36px; border-radius: 10px;
+        border: 1px solid var(--border, rgba(255,255,255,0.08));
+        background: var(--hover, rgba(255,255,255,0.05));
+        color: var(--text); font-size: 1.3rem;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        transition: background 0.15s;
+      }
+      .wh-close:hover { background: var(--panel, rgba(255,255,255,0.08)); }
+      .wh-summary {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+        margin-bottom: 14px;
+      }
+      .wh-stat {
+        display: flex; align-items: center; gap: 8px;
+        padding: 10px; border-radius: 12px;
+        background: var(--hover, rgba(255,255,255,0.03));
+        border: 1px solid var(--border, rgba(255,255,255,0.06));
+      }
+      .wh-stat-icon { font-size: 1.2rem; flex-shrink: 0; }
+      .wh-stat-val { font-size: 0.8rem; font-weight: 800; line-height: 1.2; }
+      .wh-stat-lbl { font-size: 0.6rem; color: var(--muted, #94a3b8); text-transform: uppercase; letter-spacing: 0.05em; }
+      .wh-filters {
+        display: flex; gap: 6px; margin-bottom: 14px;
+      }
+      .wh-filter-btn {
+        flex: 1; padding: 8px 4px; border-radius: 8px;
+        border: 1px solid var(--border, rgba(255,255,255,0.08));
+        background: transparent; color: var(--muted, #94a3b8);
+        font-size: 0.72rem; font-weight: 600; cursor: pointer;
+        transition: all 0.15s;
+      }
+      .wh-filter-btn.active {
+        background: var(--accent, #d97706); color: #000; border-color: var(--accent);
+      }
+      .wh-filter-btn:hover:not(.active) { background: var(--hover, rgba(255,255,255,0.05)); }
+      .wh-list {
+        flex: 1; overflow-y: auto; padding: 0 20px 20px;
+        max-height: 50vh;
+      }
+      .wh-list::-webkit-scrollbar { width: 4px; }
+      .wh-list::-webkit-scrollbar-track { background: transparent; }
+      .wh-list::-webkit-scrollbar-thumb { background: var(--border, rgba(255,255,255,0.1)); border-radius: 2px; }
+      .wh-empty {
+        text-align: center; padding: 40px 20px;
+        color: var(--muted, #94a3b8); font-size: 0.85rem;
+      }
+      .wh-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 14px; border-radius: 12px;
+        margin-bottom: 6px;
+        border: 1px solid var(--border, rgba(255,255,255,0.05));
+        transition: background 0.15s;
+      }
+      .wh-item:hover { background: var(--hover, rgba(255,255,255,0.03)); }
+      .wh-earn { border-left: 3px solid var(--green, #34d399); }
+      .wh-deduct { border-left: 3px solid #ff3b30; }
+      .wh-item-icon { font-size: 1.3rem; flex-shrink: 0; width: 28px; text-align: center; }
+      .wh-item-details { flex: 1; min-width: 0; }
+      .wh-item-label { font-size: 0.8rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .wh-item-time { font-size: 0.65rem; color: var(--muted, #94a3b8); margin-top: 2px; }
+      .wh-item-amount { font-size: 0.85rem; font-weight: 800; flex-shrink: 0; white-space: nowrap; }
+      .wh-amount-earn { color: var(--green, #34d399); }
+      .wh-amount-deduct { color: #ff3b30; }
+
+      /* Light mode */
+      body.lm .wh-card { background: #fff; border-color: rgba(0,0,0,0.08); box-shadow: 0 24px 60px rgba(0,0,0,0.12); }
+      body.lm .wh-title { color: #1e293b; }
+      body.lm .wh-stat { background: #f8fafc; border-color: rgba(0,0,0,0.06); }
+      body.lm .wh-stat-val { color: #1e293b; }
+      body.lm .wh-filter-btn { border-color: rgba(0,0,0,0.1); color: #64748b; }
+      body.lm .wh-filter-btn.active { color: #fff; }
+      body.lm .wh-item { border-color: rgba(0,0,0,0.06); }
+      body.lm .wh-item-label { color: #1e293b; }
+
+      @media (max-width: 480px) {
+        .wh-card { width: 96%; max-height: 85vh; border-radius: 16px; }
+        .wh-summary { grid-template-columns: 1fr; gap: 6px; }
+        .wh-stat { padding: 8px 10px; }
+        .wh-header { padding: 16px 16px 0; }
+        .wh-list { padding: 0 16px 16px; }
+      }
+
+      /* ── Locked Node Shake ── */
+      @keyframes lockedShake {
+        0%, 100% { transform: translateX(0); }
+        10% { transform: translateX(-6px) rotate(-2deg); }
+        20% { transform: translateX(5px) rotate(1.5deg); }
+        30% { transform: translateX(-4px) rotate(-1deg); }
+        40% { transform: translateX(3px) rotate(0.5deg); }
+        50% { transform: translateX(-2px); }
+        60% { transform: translateX(1px); }
+      }
+      .level-node.shake {
+        animation: lockedShake 0.5s ease-in-out;
+      }
+      /* ── Locked Toast ── */
+      .locked-toast {
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: rgba(31, 41, 55, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      }
+      .locked-toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* ── Path Drawing Animation ── */
+      @keyframes pathDraw {
+        to { stroke-dashoffset: 0; }
+      }
+
+      /* ── Floating Decorations ── */
+      @keyframes floatSlow {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      .map-deco {
+        pointer-events: none;
+        opacity: 0.15;
+      }
+      .map-deco.cloud {
+        animation: floatSlow 8s ease-in-out infinite;
+      }
+      .map-deco.tree {
+        opacity: 0.12;
+      }
+
+      /* ── Mobile Map ── */
+      @media (max-width: 768px) {
+        .level-map-container { height: calc(100vh - 200px); min-height: 350px; }
+        .level-node-label { font-size: 12px; }
+        .level-node-icon { font-size: 16px; }
         .lw { padding: 30px 24px; }
       }
 
@@ -1121,6 +1747,11 @@
           0 20px 40px rgba(0, 0, 0, 0.1),
           inset 0 1px 2px rgba(255, 255, 255, 0.8);
         background: var(--hover);
+      }
+
+      .syl-item:active {
+        transform: translateY(-4px) scale(1.0);
+        transition-duration: 0.1s;
       }
 
       .syl-item:hover::before {
@@ -1704,6 +2335,13 @@
         gap: 24px;
         margin-top: 32px;
       }
+      .bgrid > div {
+        transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease, filter 0.3s ease;
+      }
+      .bgrid > div:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      }
 
       .bcard {
         background: #fff;
@@ -2032,6 +2670,7 @@
         position: fixed;
         top: 120px;
         left: 20px;
+        cursor: pointer;
         z-index: 22;
         display: none;
         flex-direction: column;
@@ -2347,7 +2986,9 @@
 
       @media (max-width: 768px) {
         .lv-track,
-        .bgrid,
+        .bgrid {
+          grid-template-columns: 1fr;
+        }
         .stats-body {
           grid-template-columns: 1fr;
         }
@@ -2459,6 +3100,195 @@
           opacity: 1;
           transform: translateY(0);
         }
+      }
+
+      /* ── Level Preview Modal ── */
+      .level-preview-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 10001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .level-preview-modal.active {
+        pointer-events: auto;
+        opacity: 1;
+      }
+      .level-preview-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      .level-preview-card {
+        position: relative;
+        background: var(--card, #1e293b);
+        border: 1px solid var(--border, rgba(255,255,255,0.1));
+        border-radius: 24px;
+        max-width: 440px;
+        width: 100%;
+        overflow: hidden;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+        transform: translateY(20px) scale(0.95);
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .level-preview-modal.active .level-preview-card {
+        transform: translateY(0) scale(1);
+      }
+      .level-preview-close {
+        position: absolute;
+        top: 12px;
+        right: 14px;
+        z-index: 2;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(0,0,0,0.3);
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+      .level-preview-close:hover { background: rgba(0,0,0,0.5); }
+      .level-preview-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 24px 24px 20px;
+      }
+      .level-preview-icon {
+        font-size: 2.8rem;
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--panel, rgba(255,255,255,0.05));
+        border-radius: 16px;
+        flex-shrink: 0;
+      }
+      .level-preview-level {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted, #94a3b8);
+        margin-bottom: 2px;
+      }
+      .level-preview-name {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.5rem;
+        color: var(--text, #f1f5f9);
+        margin: 0;
+        line-height: 1.2;
+      }
+      .level-preview-stars {
+        font-size: 0.85rem;
+        margin-top: 4px;
+      }
+      .level-preview-body {
+        padding: 0 24px 20px;
+      }
+      .level-preview-desc {
+        font-size: 0.9rem;
+        color: var(--muted2, #cbd5e1);
+        line-height: 1.5;
+        margin: 0 0 16px;
+      }
+      .level-preview-stats {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .level-preview-stat {
+        flex: 1;
+        text-align: center;
+        padding: 10px 6px;
+        background: var(--panel, rgba(255,255,255,0.05));
+        border-radius: 12px;
+      }
+      .lp-stat-icon { font-size: 1.1rem; margin-bottom: 2px; }
+      .lp-stat-val { font-size: 1rem; font-weight: 800; color: var(--text, #f1f5f9); }
+      .lp-stat-lbl { font-size: 0.6rem; color: var(--muted, #94a3b8); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+      .level-preview-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .level-preview-tag {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        background: var(--panel, rgba(255,255,255,0.05));
+        color: var(--muted2, #cbd5e1);
+        border: 1px solid var(--border, rgba(255,255,255,0.08));
+      }
+      .level-preview-penalty {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: #f87171;
+        padding: 8px 12px;
+        background: rgba(248,113,113,0.08);
+        border: 1px solid rgba(248,113,113,0.15);
+        border-radius: 10px;
+      }
+      .level-preview-footer {
+        display: flex;
+        gap: 10px;
+        padding: 16px 24px;
+        border-top: 1px solid var(--border, rgba(255,255,255,0.06));
+      }
+      .level-preview-btn {
+        flex: 1;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: none;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.15s, opacity 0.15s;
+        font-family: inherit;
+      }
+      .level-preview-btn:active { transform: scale(0.97); }
+      .level-preview-btn.secondary {
+        background: var(--panel, rgba(255,255,255,0.08));
+        color: var(--text, #f1f5f9);
+      }
+      .level-preview-btn.primary {
+        color: #000;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+      body.lm .level-preview-card {
+        background: rgba(255,255,255,0.96);
+        border-color: rgba(0,0,0,0.08);
+        box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+      }
+      body.lm .level-preview-close { background: rgba(0,0,0,0.1); color: #334155; }
+      body.lm .level-preview-name { color: #1e293b; }
+      body.lm .lp-stat-val { color: #1e293b; }
+      body.lm .level-preview-btn.secondary { background: rgba(0,0,0,0.06); color: #334155; }
+      body.lm .level-preview-tag { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #64748b; }
+      body.lm .level-preview-penalty { background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.2); }
+      @media (max-width: 480px) {
+        .level-preview-modal { padding: 12px; }
+        .level-preview-header { padding: 20px 18px 16px; }
+        .level-preview-body { padding: 0 18px 16px; }
+        .level-preview-footer { padding: 14px 18px; }
+        .level-preview-icon { width: 52px; height: 52px; font-size: 2.2rem; }
+        .level-preview-name { font-size: 1.3rem; }
       }
 
       /* Syllabus item staggered entrance */
@@ -2884,37 +3714,85 @@
 
       /* ── Mobile touch-target & responsive overrides ── */
       @media (max-width: 600px) {
+        /* Brand header: stack vertically, reduce size & spacing */
+        .brand-header {
+          flex-direction: column !important;
+          gap: 6px !important;
+          margin-bottom: 16px !important;
+          padding: 0 8px !important;
+          width: 100% !important;
+          align-items: center !important;
+        }
         .brand-header img,
         .brand-header [id^="cert-logo"] {
-          height: clamp(36px, 8vw, 60px) !important;
+          height: clamp(28px, 7vw, 44px) !important;
         }
         .brand-header > div:first-child {
-          gap: clamp(12px, 3vw, 24px) !important;
+          gap: 8px !important;
+          flex-wrap: wrap !important;
+          justify-content: center !important;
         }
+        /* Hide redundant partner-badges on mobile (brand-header already shows them) */
+        .partner-badges {
+          display: none !important;
+        }
+        /* Scale down large decorative text */
         .sc > div[style*="font-size: 6rem"],
         .sc .st {
-          font-size: clamp(2.2rem, 5.5vw, 3.5rem) !important;
+          font-size: clamp(1.8rem, 5vw, 3rem) !important;
+          margin-bottom: 12px !important;
         }
         .sc > div:first-of-type > div[style*="6rem"] {
-          font-size: clamp(2.5rem, 7vw, 4rem) !important;
+          font-size: clamp(1.8rem, 5vw, 3rem) !important;
+        }
+        /* Reduce start screen padding */
+        .sc {
+          padding: clamp(20px, 4vw, 40px) 16px !important;
+          padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+        }
+        /* Reduce subtitle text */
+        .su {
+          font-size: clamp(0.85rem, 2.2vw, 1rem) !important;
+          margin-bottom: 20px !important;
+          padding: 0 4px !important;
+          line-height: 1.5 !important;
+        }
+        /* Button spacing */
+        .pls {
+          gap: 10px !important;
+          margin-bottom: 16px !important;
         }
         .sc .btn,
         .sc .btn-p {
-          min-height: 48px;
-          padding: 12px 28px;
+          min-height: 44px;
+          padding: 10px 22px;
+          font-size: 0.85rem;
         }
         .back-btn,
         .btn-g,
         .btn-danger {
-          min-height: 48px;
+          min-height: 44px;
         }
         #academy-sign-in-btn {
           padding: 12px 24px !important;
-          min-height: 48px !important;
+          min-height: 44px !important;
         }
         .nav-user-profile {
           padding: 8px 16px 8px 8px !important;
-          min-height: 48px !important;
+          min-height: 44px !important;
+        }
+        /* Shrink mobile controls on start screen */
+        #steer-wheel-container {
+          width: 90px !important;
+          height: 90px !important;
+        }
+        #steer-wheel {
+          width: 90px !important;
+          height: 90px !important;
+        }
+        .mc-btn {
+          width: 56px !important;
+          height: 56px !important;
         }
       }
 
@@ -3480,15 +4358,7 @@
       .hz-toggle.night .hz-orb {
         left: 40px;
         background: radial-gradient(circle at 45% 40%, #E2E8F0 0%, #94A3B8 50%, #64748B 100%);
-      }
-      @media (max-width: 420px) {
-        .hz-toggle { width: 300px; height: 98px; border-radius: 49px; }
-        .hz-orb { width: 76px; height: 76px; left: 14px; }
-        .hz-toggle.night .hz-orb { left: 202px; }
-        .hz-orb::after { width: 48px; height: 48px; top: 6px; left: 10px; }
-        .hz-skyline { height: 26px; }
-        .hz-clouds { transform: scale(0.8); transform-origin: top left; }
-      }
+      /* Mobile horizon toggle maintains compact size */
 
     </style>
 
@@ -3772,12 +4642,31 @@
 
     <div id="ss" class="screen active">
       <div id="top-bar-container" style="position: absolute; top: 20px; left: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+        <button class="mobile-hamburger-btn" id="hamburger-btn" aria-label="Open menu" aria-expanded="false" aria-controls="hamburger-dropdown" onclick="toggleHamburger()" style="display:none; align-items:center; justify-content:center; width:44px; height:44px; min-height:44px; min-width:44px; border:none; background:var(--card); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:1.3rem; cursor:pointer; transition:background 0.15s, transform 0.1s; flex-shrink:0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="mobile-hamburger-dropdown" id="hamburger-dropdown" role="menu" aria-label="Menu">
+          <button role="menuitem" onclick="hzToggle(); toggleHamburger();">
+            <span aria-hidden="true">🌓</span> Toggle Theme
+          </button>
+          <button role="menuitem" onclick="openCompareModal(); toggleHamburger();">
+            <span aria-hidden="true">👥</span> Compare Players
+          </button>
+          <button role="menuitem" id="hamburger-signin" onclick="window.location.href='TrafficSetup.html';">
+            <span aria-hidden="true">🔑</span> Sign In
+          </button>
+        </div>
         <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.location.href='Academy.html'">
           <img src="../Icon.png" alt="Class Of Learners" style="height:36px; width:36px; border-radius:10px; object-fit:contain; box-shadow:0 2px 8px rgba(0,0,0,0.2);" onerror="this.src='Icon.png'" />
           <span style="font-family:'Lora',serif; font-weight:700; font-size:1.2rem; color:var(--text); letter-spacing:-0.02em;">Traffic Academy</span>
         </div>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <div class="hz-toggle" onclick="hzToggle()">
+        
+        <div style="display: flex; gap: 12px; align-items: center; flex: 1; max-width: 400px; margin: 0 20px;">
+          <input type="text" id="global-level-search" placeholder="Search levels..." onkeydown="if(event.key === 'Enter'){ const q = this.value; ui.showLevels(); let retries = 0; const tryFilter = () => { const ls = document.getElementById('level-search'); if (ls) { ls.value = q; ls.focus(); filterLevels(); } else if (retries++ < 10) requestAnimationFrame(tryFilter); }; setTimeout(tryFilter, 200); }" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; width: 100%; font-family: 'Inter', sans-serif;">
+        </div>
+        
+        <div class="desktop-top-bar-actions" style="display:flex; gap:10px; align-items:center;">
+          <div class="hz-toggle" onclick="hzToggle()" title="Toggle light/dark mode">
             <div class="hz-clouds"></div>
             <div class="hz-stars"></div>
             <div class="hz-skyline"></div>
@@ -3830,6 +4719,31 @@
         >
           Sign In
         </button>
+
+        <!-- Hide sign-in button when user is already signed in -->
+        <script>
+        (function() {
+          function checkAuthState() {
+            var signInBtn = document.getElementById('academy-sign-in-btn');
+            var hamburgerSignIn = document.getElementById('hamburger-signin');
+            var isLoggedIn = !!(window.colUser || localStorage.getItem('trafficSetupComplete'));
+            if (signInBtn) signInBtn.style.display = isLoggedIn ? 'none' : '';
+            if (hamburgerSignIn) hamburgerSignIn.style.display = isLoggedIn ? 'none' : '';
+          }
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+              checkAuthState();
+              window.addEventListener('col-auth-changed', checkAuthState);
+            });
+          } else {
+            checkAuthState();
+            window.addEventListener('col-auth-changed', checkAuthState);
+          }
+          setTimeout(checkAuthState, 1000);
+          setTimeout(checkAuthState, 3000);
+        })();
+        </script>
+
         <div
           class="nav-user-profile"
           id="trafficUserProfile"
@@ -3909,6 +4823,12 @@
           </div>
           <div class="pls" style="justify-content: center; margin-top: 40px; flex-wrap: wrap; gap: 12px;">
             <button class="btn btn-p pulse-btn" onclick="showOnboardingFromStart()" style="font-size: 1.25rem; padding: 16px 48px; min-width: 200px;" id="enter-academy-btn">Get Started</button>
+            <button class="btn btn-g" style="border-color: var(--teal); color: var(--teal); font-size: 1rem; padding: 12px 24px; min-width: 180px;" onclick="window.openCustomize && window.openCustomize()">
+              🎨 Customize Character
+            </button>
+            <button class="btn btn-g" style="border-color: var(--ion); color: var(--ion); font-size: 1.25rem; padding: 16px 48px; min-width: 200px;" onclick="window.location.href = 'Driving.html?lv=custom&mode=car'">
+              🏙️ Free Roam
+            </button>
             <button class="btn btn-g mobile-dl" style="border-color: var(--signal); color: var(--signal); font-size: 1rem; padding: 12px 24px" onclick="window.location.href = '../COL.apk'">
               📱 Download App
             </button>
@@ -3942,7 +4862,8 @@
           </svg>
           Back
         </button>
-        <div style="display: flex; gap: 12px; align-items: center">
+        <div style="display: flex; gap: 12px; align-items: center; width: 100%; justify-content: flex-end;">
+          <input type="text" id="level-search" placeholder="Search levels..." onkeyup="filterLevels()" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; flex: 1; max-width: 300px; font-family: 'Inter', sans-serif;">
           <button
             class="btn btn-g dynamic-auth-btn"
             onclick="window.location.href = 'TrafficSetup.html'"
@@ -3967,6 +4888,17 @@
 
       <!-- Duolingo-style Level Map (hidden by default) -->
       <div class="level-map-container" id="level-map" style="display: none;">
+        <div class="map-progress" id="map-progress-bar">
+          <span class="map-progress-label">Progress</span>
+          <div class="map-progress-track">
+            <div class="map-progress-fill" id="map-progress-fill" style="width: 0%"></div>
+          </div>
+          <span class="map-progress-count" id="map-progress-count" onclick="document.getElementById('map-progress-dropdown').classList.toggle('show')" title="Click to see category breakdown">0/52 ▾</span>
+        </div>
+        <div class="map-progress-dropdown" id="map-progress-dropdown">
+          <div class="pd-title">Category Breakdown</div>
+          <div id="pd-rows"></div>
+        </div>
         <div class="map-scroll-area" id="map-scroll">
           <svg class="level-path-svg" id="level-path-svg"></svg>
         </div>
@@ -3992,6 +4924,7 @@
           >
             Sign In
           </button>
+          <button class="btn btn-g" onclick="window.openCustomize && window.openCustomize()" style="padding: 8px; font-size: 1rem; min-width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px;" title="Customize Character">🎨</button>
           <div class="btn" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px" id="bvh"></div>
         </div>
       </div>
@@ -4019,14 +4952,12 @@
           <div id="br-module-checklist" style="margin-bottom: 20px;"></div>
           
           <div id="br-syllabus" style="max-height: 300px; overflow-y: auto;"></div>
-          
-          <!-- Garage Panel -->
-          <div id="br-garage" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); display: none;">
-            <div style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">🚗 GARAGE</div>
-            <div id="br-garage-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;"></div>
-          </div>
         </div>
-        <div class="br-r" id="br-content" style="flex: 1; min-width: 0;"></div>
+        <div class="br-r" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+          <!-- Pledge card — rendered by ui.js -->
+          <div id="br-pledge" style="display: none;"></div>
+          <div id="br-content" style="flex: 1; min-width: 0;"></div>
+        </div>
       </div>
     </div>
 
@@ -4402,6 +5333,7 @@
     <script src="levels/level50.js"></script>
     <script src="levels/level51.js"></script>
     <script src="levels/level52.js"></script>
+    <script src="levels/level_custom.js"></script>
 
     <script>
       // REMOVED: Auto-sorting code - levels now keep their original numbers (1, 5, 7, 4, etc.)
@@ -4425,12 +5357,32 @@
       })
       */
     </script>
-    <script src="ui.js"></script>
+    <script src="wallet-history.js"></script>
+  <script src="ui.js"></script>
   <script src="npc-ai.js"></script>
   <script src="traffic-manager.js"></script>
   <script src="rule-breaker-profiles.js"></script>
     <script src="scenario2d.js"></script>
     <script>
+      /* ===== SEARCH & FILTER ===== */
+      function filterLevels() {
+        const q = document.getElementById('level-search').value.toLowerCase();
+        const items = document.querySelectorAll('.syl-item');
+        items.forEach(item => {
+          const text = item.innerText.toLowerCase();
+          item.style.display = text.includes(q) ? 'flex' : 'none';
+        });
+        
+        // Hide categories that have no visible levels
+        document.querySelectorAll('.category-grid').forEach(grid => {
+          const hasVisible = Array.from(grid.children).some(c => c.style.display !== 'none');
+          if (grid.previousElementSibling && grid.previousElementSibling.classList.contains('category-header')) {
+            grid.previousElementSibling.style.display = hasVisible ? 'block' : 'none';
+          }
+          grid.style.display = hasVisible ? 'grid' : 'none';
+        });
+      }
+
       /* ===== ONBOARDING WIZARD JS ===== */
       let _onbCur = 0
       let _onbTotal = 4
@@ -4719,8 +5671,8 @@
           }
           
           try {
-            // Uniqueness check (simplistic view, real check depends on RLS, but we'll try profiles/traffic_users)
-            const { data } = await window.supabaseClient.from('profiles').select('username').eq('username', val).limit(1);
+            // Uniqueness check against user_profiles table
+            const { data } = await window.supabaseClient.from('user_profiles').select('username').ilike('username', val).limit(1);
             if (data && data.length > 0) {
               statusMsg.textContent = '❌ Username is already taken.';
               statusMsg.style.color = 'var(--red)';
@@ -4842,80 +5794,436 @@
         }
       }
 
-      // Build Duolingo-style level map
-      function buildLevelMap() {
-        const svg = document.getElementById('level-path-svg')
-        svg.innerHTML = ''
+        // ═══════════════════════════════════════════════════════
+        // Build Duolingo-style Level Map — Premium Immersive
+        // ═══════════════════════════════════════════════════════
+        function buildLevelMap() {
+          const svg = document.getElementById('level-path-svg')
+          svg.innerHTML = ''
 
-        // Get completed levels from storage
-        let S = {}
-        try { S = JSON.parse(localStorage.getItem('mth4') || '{}') } catch(e) {}
-        const completed = S.comp || {}
-        const totalLevels = window.LVS?.length || 52
+          // ── State ──
+          let S = {}
+          try { S = JSON.parse(localStorage.getItem('mth4') || '{}') } catch(e) {}
+          const completed = S.comp || {}
+          const totalLevels = window.LVS?.length || 52
 
-        // Generate nodes in a clean winding S-curve pattern (Duolingo style)
-        const nodes = []
-        const startY = 90
-        const stepY = 85
-        const centerX = 300
-        const ampX = 175
+          // ── Update mini progress bar ──
+          const doneCount = Object.keys(completed).filter(k => completed[k] && completed[k].score > 0).length // uses same logic as _getCompleted()
+          const pct = Math.round((doneCount / totalLevels) * 100)
+          const fillEl = document.getElementById('map-progress-fill')
+          const countEl = document.getElementById('map-progress-count')
+          if (fillEl) fillEl.style.width = pct + '%'
+          if (countEl) countEl.textContent = `${doneCount}/${totalLevels} ▾`
 
-        for (let i = 0; i < totalLevels; i++) {
-          const x = centerX + Math.sin(i * 0.45) * ampX
-          const y = startY + i * stepY
-          nodes.push({ id: i + 1, x, y })
-        }
+          // ── Derive categories dynamically from window.LVS level names ──
+          // Keyword-to-category mapping: first match wins
+          const _catRules = [
+            { kw: ['red light', 'signal', 'green light', 'patience'],           name: 'Traffic Signals',     emoji: '🚦', color: '#f59e0b' },
+            { kw: ['intersection', 'junction', 'cross', 'crossing'],             name: 'Intersections',       emoji: '🔀', color: '#3b82f6' },
+            { kw: ['parking', 'street parking', 'toll', 'stop'],                 name: 'Parking & Stopping',   emoji: '🅿️', color: '#ef4444' },
+            { kw: ['ambulance', 'emergency', 'fire', 'hospital'],                 name: 'Emergency Vehicles',  emoji: '🚑', color: '#ec4899' },
+            { kw: ['night', 'dark', 'visibility'],                                name: 'Night Driving',       emoji: '🌙', color: '#6366f1' },
+            { kw: ['rain', 'puddle', 'monsoon', 'weather', 'flood'],             name: 'Weather Conditions',  emoji: '🌧️', color: '#14b8a6' },
+            { kw: ['pedestrian', 'sidewalk', 'walk', 'school zone'],             name: 'Pedestrian Safety',   emoji: '🚶', color: '#10b981' },
+            { kw: ['highway', 'merge', 'speed', 'expressway'],                    name: 'Highway Rules',       emoji: '🛣️', color: '#8b5cf6' },
+            { kw: ['construction', 'road work', 'barrier'],                       name: 'Construction Zones',  emoji: '🚧', color: '#f97316' },
+            { kw: ['sign', 'lane', 'one-way', 'turn', 'blind', 'hill'],          name: 'Advanced Maneuvers',  emoji: '🏁', color: '#d97706' },
+            { kw: ['cow', 'animal', 'narrow', 'temple', 'festival', 'crowd'],    name: 'Special Scenarios',   emoji: '🎭', color: '#8b5cf6' },
+            { kw: ['cyclist', 'bike', 'auto', 'rickshaw'],                       name: 'Two-Wheeler Rules',   emoji: '🏍️', color: '#06b6d4' },
+            { kw: ['grand test', 'final', 'master', 'exam'],                     name: 'Master Driver',       emoji: '👑', color: '#eab308' }
+          ]
 
-        // Draw path lines
-        let pathD = ''
-        nodes.forEach((n, i) => {
-          if (i === 0) pathD = `M ${n.x} ${n.y}`
-          else pathD += ` L ${n.x} ${n.y}`
-        })
-
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-        path.setAttribute('d', pathD)
-        path.setAttribute('fill', 'none')
-        path.setAttribute('stroke', 'rgba(255,255,255,0.2)')
-        path.setAttribute('stroke-width', '4')
-        path.setAttribute('stroke-linecap', 'round')
-        svg.appendChild(path)
-
-        // Draw nodes
-        nodes.forEach((n, i) => {
-          const lvlId = n.id
-          const isDone = completed[lvlId] && completed[lvlId].score > 0
-          const isCurrent = !isDone && (i === 0 || completed[nodes[i-1].id])
-
-          const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-          g.classList.add('level-node')
-          g.classList.add(isDone ? 'completed' : isCurrent ? 'current' : 'locked')
-          // Use CSS translate so it doesn't conflict with CSS transform on hover
-          g.style.translate = `${n.x}px ${n.y}px`;
-          // Also set transform origin so hover scale is centered
-          g.style.transformOrigin = `0px 0px`;
-          g.onclick = () => {
-            if (typeof ui !== 'undefined' && ui.showBriefing) ui.showBriefing(lvlId)
+          function _deriveCategories(lvs) {
+            if (!lvs || !lvs.length) return []
+            const sorted = [...lvs].sort((a, b) => (a.id || 0) - (b.id || 0))
+            const catMap = new Map() // categoryName -> { name, emoji, color, startLevel }
+            sorted.forEach(lv => {
+              const name = (lv.name || '').toLowerCase()
+              let matched = _catRules.find(r => r.kw.some(k => name.includes(k)))
+              if (!matched) matched = { name: 'General', emoji: '📘', color: '#6b7280' }
+              const key = matched.name
+              if (!catMap.has(key)) {
+                catMap.set(key, { name: matched.name, emoji: matched.emoji, start: lv.id, color: matched.color })
+              }
+            })
+            // Sort categories by the start level of their first member
+            return Array.from(catMap.values()).sort((a, b) => a.start - b.start)
           }
 
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-          circle.setAttribute('r', '22')
-          circle.setAttribute('fill', isDone ? '#00c851' : isCurrent ? '#f39c12' : '#6b7280')
-          circle.setAttribute('stroke', 'white')
-          circle.setAttribute('stroke-width', '3')
+          const categories = _deriveCategories(window.LVS || [])
 
-          const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-          label.classList.add('level-node-label')
-          label.textContent = lvlId
+          // ── Populate category breakdown dropdown ──
+          const pdRowsEl = document.getElementById('pd-rows')
+          if (pdRowsEl && categories.length) {
+            // Count total and completed levels per category
+            const catLevelMap = new Map() // catName -> { total: number, done: number }
+            const lvs = window.LVS || []
+            lvs.forEach(lv => {
+              const lvName = (lv.name || '').toLowerCase()
+              const matched = _catRules.find(r => r.kw.some(k => lvName.includes(k))) || { name: 'General', emoji: '📘', color: '#6b7280' }
+              const catKey = matched.name
+              if (!catLevelMap.has(catKey)) catLevelMap.set(catKey, { total: 0, done: 0, emoji: matched.emoji, color: matched.color })
+              const entry = catLevelMap.get(catKey)
+              entry.total++
+              const lvId = String(lv.id || lv.num || lv.level)
+              if (completed[lvId] && completed[lvId].score > 0) entry.done++
+            })
+            // Render rows sorted by category start order
+            pdRowsEl.innerHTML = ''
+            const frag = document.createDocumentFragment()
+            let catIdx = 0, totalCatsDone = 0, totalCatsAll = 0
+            catLevelMap.forEach((val, key) => {
+              totalCatsDone += val.done
+              totalCatsAll += val.total
+              const pct = val.total > 0 ? Math.round((val.done / val.total) * 100) : 0
+              const row = document.createElement('div')
+              row.className = 'pd-row'
+              row.style.transitionDelay = (catIdx++ * 60) + 'ms'
+              row.innerHTML = `
+                <span class="pd-emoji">${val.emoji}</span>
+                <span class="pd-name">${key}</span>
+                <div class="pd-bar-wrap">
+                  <div class="pd-bar-fill" style="--bar-target:${pct}%;background:${val.color}"></div>
+                </div>
+                <span class="pd-count" style="color:${val.color}">${val.done}/${val.total}</span>
+              `
+              frag.appendChild(row)
+            })
+            pdRowsEl.appendChild(frag)
+          }
+          // Close dropdown when clicking outside (use named handler to avoid leaks)
+          const pdDropdown = document.getElementById('map-progress-dropdown')
+          if (pdDropdown) {
+            if (!window._closeProgressDropdown) {
+              window._closeProgressDropdown = (e) => {
+                const dd = document.getElementById('map-progress-dropdown')
+                const ct = document.getElementById('map-progress-count')
+                if (dd && !dd.contains(e.target) && e.target !== ct) {
+                  dd.classList.remove('show')
+                }
+              }
+              document.addEventListener('click', window._closeProgressDropdown)
+            }
+          }
 
-          g.appendChild(circle)
-          g.appendChild(label)
-          svg.appendChild(g)
-        })
+          // ── SVG Defs — Gradients, Filters, Patterns ──
+          const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
+          defs.innerHTML = `
+            <!-- Node Gradients -->
+            <radialGradient id="gradDone" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#059669"/></radialGradient>
+            <radialGradient id="gradCurrent" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#d97706"/></radialGradient>
+            <radialGradient id="gradLocked" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#4b5563"/><stop offset="100%" stop-color="#1f2937"/></radialGradient>
+            <!-- Path Gradient -->
+            <linearGradient id="gradPathDone" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#34d399" stop-opacity="0.6"/><stop offset="100%" stop-color="#059669" stop-opacity="0.4"/></linearGradient>
+            <linearGradient id="gradPathCurrent" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fbbf24" stop-opacity="0.5"/><stop offset="100%" stop-color="#f59e0b" stop-opacity="0.3"/></linearGradient>
+            <linearGradient id="gradPathFull" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(94,212,245,0.35)"/><stop offset="50%" stop-color="rgba(52,211,153,0.25)"/><stop offset="100%" stop-color="rgba(242,184,75,0.12)"/></linearGradient>
+            <!-- Glow Filters -->
+            <filter id="glowDone" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="blur"/><feFlood flood-color="#34d399" flood-opacity="0.5" result="color"/><feComposite in="color" in2="blur" operator="in" result="glow"/><feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="glowCurrent" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="blur"/><feFlood flood-color="#fbbf24" flood-opacity="0.6" result="color"/><feComposite in="color" in2="blur" operator="in" result="glow"/><feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="shadowNode" x="-30%" y="-20%" width="160%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.35)"/></filter>
+            <!-- Star shape -->
+            <polygon id="star5" points="0,-8 2.4,-3.2 7.6,-2.4 3.8,1.6 4.8,6.8 0,4 -4.8,6.8 -3.8,1.6 -7.6,-2.4 -2.4,-3.2" fill="white" opacity="0.9"/>
+          `
+          svg.appendChild(defs)
 
-        // Set SVG height based on nodes
-        const maxY = Math.max(...nodes.map(n => n.y)) + 100
-        svg.style.minHeight = maxY + 'px'
+          // ── Generate Winding S-Curve Nodes ──
+          const nodes = []
+          const svgWidth = Math.min(svg.parentElement.clientWidth || 600, 600)
+          const centerX = svgWidth / 2
+          const startY = 100
+          const stepY = 100
+          const ampX = Math.min(170, svgWidth * 0.28)
+
+          for (let i = 0; i < totalLevels; i++) {
+            const x = centerX + Math.sin(i * 0.52) * ampX
+            const y = startY + i * stepY
+            nodes.push({ id: i + 1, x, y })
+          }
+
+          // ── Add Floating Decorations (clouds, trees) ──
+          const decoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+          decoGroup.classList.add('map-decos')
+          const decoSymbols = [
+            { emoji: '☁️', scale: 1.2, opacity: 0.08 },
+            { emoji: '🌳', scale: 0.8, opacity: 0.07 },
+            { emoji: '☁️', scale: 0.9, opacity: 0.06 },
+            { emoji: '🌿', scale: 0.7, opacity: 0.06 },
+            { emoji: '☁️', scale: 1.0, opacity: 0.05 }
+          ]
+          for (let i = 0; i < nodes.length; i += 8) {
+            const d = decoSymbols[i % decoSymbols.length]
+            const offsetX = (Math.sin(i * 1.3) * ampX * 0.8)
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            text.setAttribute('x', centerX + offsetX + (Math.sin(i) * 40))
+            text.setAttribute('y', startY + i * stepY - 40)
+            text.setAttribute('font-size', 28 * d.scale)
+            text.setAttribute('opacity', d.opacity)
+            text.textContent = d.emoji
+            text.style.pointerEvents = 'none'
+            decoGroup.appendChild(text)
+          }
+          svg.appendChild(decoGroup)
+
+          // ── Add Category Trophies at section starts ──
+          const catMarkers = []
+          categories.forEach(cat => {
+            if (cat.start > totalLevels) return
+            const idx = cat.start - 1
+            const n = nodes[idx]
+            if (!n) return
+            catMarkers.push({ ...n, ...cat })
+          })
+
+          catMarkers.forEach(cm => {
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            g.classList.add('category-marker')
+            g.setAttribute('transform', `translate(${cm.x}, ${cm.y - 42})`)
+            // Trophy emoji
+            const emoji = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            emoji.classList.add('cat-emoji')
+            emoji.setAttribute('y', '0')
+            emoji.textContent = cm.emoji
+            g.appendChild(emoji)
+            // Category name pill
+            const pill = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            pill.setAttribute('transform', 'translate(0, 22)')
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            label.setAttribute('text-anchor', 'middle')
+            label.setAttribute('y', '0')
+            label.setAttribute('font-size', '9')
+            label.setAttribute('font-weight', '700')
+            label.setAttribute('fill', cm.color)
+            label.setAttribute('opacity', '0.7')
+            label.setAttribute('letter-spacing', '0.06em')
+            label.textContent = cm.name.toUpperCase()
+            pill.appendChild(label)
+            g.appendChild(pill)
+            svg.appendChild(g)
+          })
+
+          // ── Draw Smooth Bezier Path ──
+          // Build smooth cubic bezier path through all nodes
+          let pathD = `M ${nodes[0].x} ${nodes[0].y}`
+          for (let i = 1; i < nodes.length; i++) {
+            const prev = nodes[i - 1]
+            const curr = nodes[i]
+            const midY = (prev.y + curr.y) / 2
+            // Control points create smooth S-curves between nodes
+            pathD += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`
+          }
+
+          // Background path (full trail — dim)
+          const bgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+          bgPath.setAttribute('d', pathD)
+          bgPath.setAttribute('fill', 'none')
+          bgPath.setAttribute('stroke', 'rgba(255,255,255,0.06)')
+          bgPath.setAttribute('stroke-width', '8')
+          bgPath.setAttribute('stroke-linecap', 'round')
+          bgPath.setAttribute('stroke-linejoin', 'round')
+          svg.appendChild(bgPath)
+
+          // Main gradient path
+          const mainPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+          mainPath.setAttribute('d', pathD)
+          mainPath.setAttribute('fill', 'none')
+          mainPath.setAttribute('stroke', 'url(#gradPathFull)')
+          mainPath.setAttribute('stroke-width', '5')
+          mainPath.setAttribute('stroke-linecap', 'round')
+          mainPath.setAttribute('stroke-linejoin', 'round')
+          svg.appendChild(mainPath)
+
+          // Find current level index for path progress
+          let currentIdx = 0
+          for (let i = 0; i < nodes.length; i++) {
+            const lid = nodes[i].id
+            if (completed[lid] && completed[lid].score > 0) currentIdx = i + 1
+          }
+
+          // Completed portion of the path (bright green)
+          if (currentIdx > 0 && currentIdx < nodes.length) {
+            const segPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+            segPath.setAttribute('d', pathD)
+            segPath.setAttribute('fill', 'none')
+            segPath.setAttribute('stroke', 'url(#gradPathDone)')
+            segPath.setAttribute('stroke-width', '5')
+            segPath.setAttribute('stroke-linecap', 'round')
+            segPath.setAttribute('stroke-linejoin', 'round')
+            // Animate with dash
+            const totalLen = mainPath.getTotalLength() || 9999
+            segPath.setAttribute('stroke-dasharray', `${totalLen}`)
+            segPath.setAttribute('stroke-dashoffset', `${totalLen}`)
+            segPath.style.animation = `pathDraw 1.5s 0.3s ease-out forwards`
+            svg.appendChild(segPath)
+          }
+
+          // ── Draw Nodes with Staggered Entrance ──
+          nodes.forEach((n, i) => {
+            const lvlId = n.id
+            const isDone = completed[lvlId] && completed[lvlId].score > 0
+            const isCurrent = !isDone && (lvlId === 1 || (completed[lvlId - 1] && completed[lvlId - 1].score > 0))
+            const isLocked = !isDone && !isCurrent
+            const r = isCurrent ? 28 : isDone ? 24 : 21
+
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            g.classList.add('level-node', isDone ? 'completed' : isCurrent ? 'current' : 'locked')
+            g.setAttribute('transform', `translate(${n.x}, ${n.y})`)
+            g.style.opacity = '0'
+            g.style.animation = `mapNodeIn 0.5s ${i * 0.025}s cubic-bezier(0.34,1.56,0.64,1) forwards`
+            g.onclick = () => {
+              if (isLocked) {
+                // Haptic feedback (mobile vibration API)
+                if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+                // Screen shake animation on the node
+                g.classList.remove('shake');
+                void g.offsetWidth; // force reflow to restart animation
+                g.classList.add('shake');
+                g.addEventListener('animationend', () => g.classList.remove('shake'), { once: true });
+                // Show locked toast
+                _showLockedToast(lvlId);
+                return;
+              }
+              if (typeof ui !== 'undefined' && ui.showBriefing) ui.showBriefing(lvlId)
+            }
+
+            const outerG = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            outerG.classList.add('node-outer')
+
+            if (isCurrent) {
+              // Outer animated dashed ring
+              const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+              ring.classList.add('node-ring')
+              ring.setAttribute('r', r + 8)
+              ring.setAttribute('fill', 'none')
+              ring.setAttribute('stroke', 'rgba(251,191,36,0.25)')
+              ring.setAttribute('stroke-width', '2.5')
+              ring.setAttribute('stroke-dasharray', '6,4')
+              outerG.appendChild(ring)
+              // Glow ring
+              const glowRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+              glowRing.setAttribute('r', r + 4)
+              glowRing.setAttribute('fill', 'none')
+              glowRing.setAttribute('stroke', 'rgba(251,191,36,0.12)')
+              glowRing.setAttribute('stroke-width', '3')
+              outerG.appendChild(glowRing)
+            }
+
+            // Main circle
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+            circle.setAttribute('r', r)
+            circle.setAttribute('fill', isDone ? 'url(#gradDone)' : isCurrent ? 'url(#gradCurrent)' : 'url(#gradLocked)')
+            circle.setAttribute('stroke', isDone ? '#6ee7b7' : isCurrent ? '#fde68a' : '#374151')
+            circle.setAttribute('stroke-width', isDone ? '2.5' : isCurrent ? '3' : '2')
+            if (isDone) circle.setAttribute('filter', 'url(#glowDone)')
+            else if (isCurrent) circle.setAttribute('filter', 'url(#glowCurrent)')
+            else circle.setAttribute('filter', 'url(#shadowNode)')
+            outerG.appendChild(circle)
+
+            // Inner content
+            if (isDone) {
+              // Checkmark
+              const ck = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+              ck.setAttribute('d', `M${-r*0.28},${r*0.05} L${-r*0.05},${r*0.32} L${r*0.32},${-r*0.28}`)
+              ck.setAttribute('stroke', 'white')
+              ck.setAttribute('stroke-width', '3.5')
+              ck.setAttribute('fill', 'none')
+              ck.setAttribute('stroke-linecap', 'round')
+              ck.setAttribute('stroke-linejoin', 'round')
+              outerG.appendChild(ck)
+            } else if (isCurrent) {
+              // Level number
+              const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+              label.classList.add('level-node-label')
+              label.textContent = lvlId
+              outerG.appendChild(label)
+              // Star indicator above
+              const star = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+              star.setAttribute('points', '0,-40 3.6,-32 10.4,-30 5.4,-24 6.4,-16 0,-20 -6.4,-16 -5.4,-24 -10.4,-30 -3.6,-32')
+              star.setAttribute('fill', '#fbbf24')
+              star.setAttribute('opacity', '0.8')
+              star.style.animation = 'floatSlow 3s ease-in-out infinite'
+              outerG.appendChild(star)
+            } else {
+              // Level number
+              const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+              label.classList.add('level-node-label')
+              label.setAttribute('fill', isLocked ? '#6b7280' : 'white')
+              label.setAttribute('opacity', isLocked ? '0.7' : '1')
+              label.textContent = lvlId
+              outerG.appendChild(label)
+              // Lock icon for locked
+              if (isLocked) {
+                const lock = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+                lock.setAttribute('y', -r - 8)
+                lock.setAttribute('text-anchor', 'middle')
+                lock.setAttribute('font-size', '12')
+                lock.setAttribute('opacity', '0.35')
+                lock.textContent = '🔒'
+                outerG.appendChild(lock)
+              }
+            }
+
+            g.appendChild(outerG)
+            svg.appendChild(g)
+
+            // ── Sparkle particles on completed nodes ──
+            if (isDone && i < 20) {
+              for (let s = 0; s < 3; s++) {
+                const spark = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+                const angle = (s / 3) * Math.PI * 2 + Math.random() * 0.5
+                const dist = 16 + Math.random() * 10
+                spark.setAttribute('cx', Math.cos(angle) * dist)
+                spark.setAttribute('cy', Math.sin(angle) * dist)
+                spark.setAttribute('r', 1.5 + Math.random() * 1.5)
+                spark.setAttribute('fill', ['#34d399', '#6ee7b7', '#a7f3d0'][s % 3])
+                spark.classList.add('sparkle-particle')
+                spark.style.setProperty('--dx', `${Math.cos(angle) * 20}px`)
+                spark.style.setProperty('--dy', `${Math.sin(angle) * 20}px`)
+                spark.style.setProperty('--dur', `${0.8 + Math.random() * 0.8}s`)
+                spark.style.setProperty('--delay', `${i * 0.03 + s * 0.2}s`)
+                g.appendChild(spark)
+              }
+            }
+          })
+
+          // ── Set SVG height ──
+          const maxY = Math.max(...nodes.map(n => n.y)) + 180
+          svg.style.minHeight = maxY + 'px'        // ── Scroll to Current Level ──
+        setTimeout(() => {
+          const scrollArea = document.getElementById('map-scroll')
+          if (!scrollArea) return
+          const targetIdx = currentIdx < nodes.length ? currentIdx : 0
+          if (targetIdx >= 0 && nodes[targetIdx]) {
+            const targetY = nodes[targetIdx].y - scrollArea.clientHeight / 2
+            scrollArea.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' })
+          }
+        }, 600)
+      }
+
+      // ── Locked Node Toast (reusable, auto-dismiss) ──
+      let _lockedToastEl = null
+      let _lockedToastTimer = null
+      function _showLockedToast(lvlId) {
+        // Remove existing toast immediately
+        if (_lockedToastEl) { _lockedToastEl.remove(); clearTimeout(_lockedToastTimer) }
+        // Also do a brief viewport shake on mobile
+        if (window.innerWidth <= 768 && navigator.vibrate) {
+          const scroller = document.getElementById('map-scroll')
+          if (scroller) {
+            scroller.style.animation = 'lockedShake 0.4s ease-in-out'
+            scroller.addEventListener('animationend', () => scroller.style.animation = '', { once: true })
+          }
+        }
+        // Create toast
+        _lockedToastEl = document.createElement('div')
+        _lockedToastEl.className = 'locked-toast'
+        _lockedToastEl.innerHTML = `🔒 Complete Level ${Math.max(1, lvlId - 1)} first`
+        document.body.appendChild(_lockedToastEl)
+        // Animate in
+        requestAnimationFrame(() => requestAnimationFrame(() => _lockedToastEl.classList.add('show')))
+        // Auto-dismiss after 2s
+        _lockedToastTimer = setTimeout(() => {
+          if (_lockedToastEl) { _lockedToastEl.classList.remove('show'); setTimeout(() => _lockedToastEl?.remove(), 400) }
+        }, 2000)
       }
 
       function _onbSelectDot(el, group) {
@@ -4996,7 +6304,63 @@
         localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
         hzSync();
       }
+
+      // ── Hamburger Menu (mobile) ──
+      (function() {
+        const btn = document.getElementById('hamburger-btn');
+        const dd = document.getElementById('hamburger-dropdown');
+        if (!btn || !dd) return;
+        window.toggleHamburger = function() {
+          const open = dd.classList.toggle('show');
+          btn.setAttribute('aria-expanded', String(open));
+        };
+        // Close on click outside
+        document.addEventListener('click', function(e) {
+          if (dd.classList.contains('show') && !dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+            dd.classList.remove('show');
+            btn.setAttribute('aria-expanded', 'false');
+          }
+        });
+        // Close on Escape
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && dd.classList.contains('show')) {
+            dd.classList.remove('show');
+            btn.setAttribute('aria-expanded', 'false');
+            btn.focus();
+          }
+        });
+      })();
+
       hzInit();
+
+      // ── Ripple Touch Feedback for Mobile ──
+      if ('ontouchstart' in window) {
+        document.addEventListener('click', function(e) {
+          const target = e.target.closest('.btn, .btn-g, .syl-item, .lcard, .back-btn, .mobile-hamburger-btn, button');
+          if (!target) return;
+          if (!target.classList.contains('ripple-container')) {
+            target.classList.add('ripple-container');
+          }
+          const rect = target.getBoundingClientRect();
+          const ripple = document.createElement('span');
+          ripple.className = 'ripple';
+          ripple.style.left = (e.clientX - rect.left - 10) + 'px';
+          ripple.style.top = (e.clientY - rect.top - 10) + 'px';
+          target.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 600);
+        });
+      }
+
+      // ── Stagger level cards on render ──
+      const _origBuildSyl = ui._buildSylList.bind(ui);
+      ui._buildSylList = function() {
+        _origBuildSyl();
+        requestAnimationFrame(() => {
+          document.querySelectorAll('.syl-item').forEach((el, i) => {
+            el.style.setProperty('--i', i);
+          });
+        });
+      };
     </script>
 
       <!-- COMPARE MODAL -->
@@ -5091,68 +6455,107 @@
           try {
             if (!window.supabaseClient) throw new Error("Cloud database not connected.");
             
-            const { data, error } = await window.supabaseClient.from('profiles').select('id, raw_user_meta_data').eq('raw_user_meta_data->>username', username).maybeSingle();
-            
-            document.getElementById('compare-loading').style.display = 'none';
+            // Search user_profiles table (where usernames are stored)
+            const { data, error } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id, display_name, username, total_score, modules_completed, preferred_vehicle, civic_balance')
+              .ilike('username', username)
+              .maybeSingle();
             
             if (error || !data) {
-              document.getElementById('compare-error').style.display = 'block';
-              document.getElementById('compare-error').textContent = 'Player not found.';
-              return;
-            }
-            
-            const meta = data.raw_user_meta_data || {};
-            
-            // Try to log the search
-            try {
-              let myUid = null;
-              if (window.colUser) myUid = window.colUser.id;
-              window.supabaseClient.from('search_logs').insert([{ 
-                search_query: username, 
-                found_uid: data.id,
-                searcher_uid: myUid
-              }]).then();
-            } catch(e) {}
-
-            // Calculate their stats
-            let theirScore = 0;
-            let theirProgressCount = 0;
-            if (meta.traffic_save) {
-              const S = typeof meta.traffic_save === 'string' ? JSON.parse(meta.traffic_save) : meta.traffic_save;
-              theirScore = S.total || 0;
-              theirProgressCount = (S.completed && S.completed.length) ? S.completed.length : 0;
-            }
-
-            document.getElementById('compare-their-name').textContent = meta.full_name || 'Driver';
-            document.getElementById('compare-their-username').textContent = meta.username || username;
-            document.getElementById('compare-their-score').textContent = theirScore;
-            document.getElementById('compare-their-progress').textContent = theirProgressCount + '/52';
-
-            // Populate "My" side
-            let myName = 'Guest Driver', myUsername = 'Not Signed In', myScore = 0, myProgressCount = 0;
-            try {
-              const sRaw = localStorage.getItem('traffic_save');
-              if (sRaw) {
-                const S = JSON.parse(sRaw);
-                myName = S.name || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.full_name) || myName;
-                myUsername = S.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || myUsername;
-                if(myUsername !== 'Not Signed In' && !myUsername.startsWith('@')) myUsername = '@' + myUsername;
-                myScore = S.total || 0;
-                myProgressCount = S.completed ? S.completed.length : 0;
+              // Fallback: search by display_name
+              const { data: nameData } = await window.supabaseClient
+                .from('user_profiles')
+                .select('user_id, display_name, username, total_score, modules_completed, preferred_vehicle, civic_balance')
+                .ilike('display_name', '%' + q + '%')
+                .limit(1)
+                .maybeSingle();
+              
+              document.getElementById('compare-loading').style.display = 'none';
+              
+              if (!nameData) {
+                document.getElementById('compare-error').style.display = 'block';
+                document.getElementById('compare-error').textContent = 'Player not found. Try searching by @username or display name.';
+                return;
               }
-            } catch(e) {}
+              // Use the name search result
+              return await _showSearchResult(nameData, username);
+            }
             
-            document.getElementById('compare-my-name').textContent = myName;
-            document.getElementById('compare-my-username').textContent = myUsername;
-            document.getElementById('compare-my-score').textContent = myScore;
-            document.getElementById('compare-my-progress').textContent = myProgressCount + '/52';
-
-            document.getElementById('compare-results').style.display = 'block';
+            document.getElementById('compare-loading').style.display = 'none';
+            await _showSearchResult(data, username);
           } catch(e) {
             document.getElementById('compare-loading').style.display = 'none';
             document.getElementById('compare-error').style.display = 'block';
             document.getElementById('compare-error').textContent = e.message;
           }
+        }
+
+        async function _showSearchResult(profile, searchUsername) {
+          try {
+            let myUid = null;
+            if (window.colUser) myUid = window.colUser.id;
+            window.supabaseClient.from('search_logs').insert([{ 
+              search_query: searchUsername, 
+              found_uid: profile.user_id,
+              searcher_uid: myUid
+            }]).then();
+          } catch(e) {}
+
+          // Calculate their stats from local save data or profile
+          let theirScore = profile.total_score || 0;
+          let theirProgressCount = profile.modules_completed || 0;
+
+          // Also check localStorage for more accurate progress
+          try {
+            const sRaw = localStorage.getItem('traffic_save');
+            if (sRaw) {
+              const S = JSON.parse(sRaw);
+              if (S.total) theirScore = Math.max(theirScore, S.total);
+              if (S.completed) theirProgressCount = Math.max(theirProgressCount, S.completed.length);
+            }
+          } catch(e) {}
+
+          document.getElementById('compare-their-name').textContent = profile.display_name || 'Driver';
+          document.getElementById('compare-their-username').textContent = profile.username || searchUsername;
+          document.getElementById('compare-their-score').textContent = theirScore;
+          document.getElementById('compare-their-progress').textContent = theirProgressCount + '/52';
+
+          // Populate "My" side
+          let myName = 'Guest Driver', myUsername = 'Not Signed In', myScore = 0, myProgressCount = 0;
+          try {
+            // First check user_profiles for current user's data
+            if (window.colUser && window.supabaseClient) {
+              const { data: myProfile } = await window.supabaseClient
+                .from('user_profiles')
+                .select('display_name, username, total_score, modules_completed')
+                .eq('user_id', window.colUser.id)
+                .maybeSingle();
+              if (myProfile) {
+                myName = myProfile.display_name || window.colUser.user_metadata?.full_name || myName;
+                myUsername = myProfile.username || window.colUser.user_metadata?.username || myUsername;
+                myScore = myProfile.total_score || 0;
+                myProgressCount = myProfile.modules_completed || 0;
+              }
+            }
+            // Fallback to local storage
+            const sRaw = localStorage.getItem('traffic_save');
+            if (sRaw) {
+              const S = JSON.parse(sRaw);
+              if (!myName || myName === 'Guest Driver') myName = S.name || myName;
+              if (!myUsername || myUsername === 'Not Signed In') myUsername = S.username || myUsername;
+              if (myScore === 0) myScore = S.total || 0;
+              if (myProgressCount === 0) myProgressCount = S.completed ? S.completed.length : 0;
+            }
+            if(myUsername !== 'Not Signed In' && !myUsername.startsWith('@')) myUsername = '@' + myUsername;
+          } catch(e) {}
+          
+          document.getElementById('compare-my-name').textContent = myName;
+          document.getElementById('compare-my-username').textContent = myUsername;
+          document.getElementById('compare-my-score').textContent = myScore;
+          document.getElementById('compare-my-progress').textContent = myProgressCount + '/52';
+
+          document.getElementById('compare-results').style.display = 'block';
         }
       </script>
 
@@ -5174,6 +6577,52 @@
           <span>Profile</span>
         </a>
       </nav>
+
+  <!-- ═══ CHARACTER CUSTOMIZATION MODAL ═══ -->
+  <div id="customize-modal" style="display:none; position:fixed; inset:0; z-index:10001; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--card,#1e293b); border:1px solid var(--border,rgba(255,255,255,0.08)); border-radius:20px; max-width:440px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.5);">
+      <div style="padding:24px 24px 0; display:flex; align-items:center; justify-content:space-between;">
+        <h2 style="font-family:'Lora',serif; font-size:1.4rem; color:var(--text); margin:0;">Customize Character</h2>
+        <button onclick="document.getElementById('customize-modal').style.display='none'" style="width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--hover); color:var(--text); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+      </div>
+      <div style="padding:20px 24px 24px;">
+        <!-- Live Preview -->
+        <div style="text-align:center; margin-bottom:20px;">
+          <canvas id="customize-preview" width="200" height="280" style="border-radius:16px; background:rgba(0,0,0,0.2); border:1px solid var(--border);"></canvas>
+          <div style="font-size:0.75rem; color:var(--muted); margin-top:6px;">Live Preview</div>
+        </div>
+        <!-- Skin Tone -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Skin Tone</div>
+          <div id="skin-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Hair Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hair Color</div>
+          <div id="hair-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Shirt Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shirt Color</div>
+          <div id="shirt-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Pants Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Pants Color</div>
+          <div id="pants-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Accessories -->
+        <div style="margin-bottom:20px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Accessories</div>
+          <div id="accessory-options" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn" style="flex:1; background:var(--signal); color:#000; font-weight:700;" onclick="window._saveCustomize()">Save Character</button>
+          <button class="btn" style="flex:1; background:var(--panel); color:var(--text);" onclick="window._randomizeCustomize()">🎲 Random</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="welcome-back.js"></script>
   </body>

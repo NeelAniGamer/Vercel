@@ -441,15 +441,15 @@ preloadModels(() => {
   window.game = game
 
   const urlParams = new URLSearchParams(window.location.search)
-  let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv')
-  let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode')
+  let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
+  let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode') || 'car'
 
   if (_isDriving) {
     // Re-hide screens (ui.init may have shown one for non-lv-param driving pages)
     document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
 
     if (lvId) {
-      let levelObj = window.LVS.find((l) => l.id == lvId)
+      let levelObj = window.LVS ? window.LVS.find((l) => l.id == lvId) : null
       // Fallback for free_roam / custom levels — create level on the fly
       if (!levelObj && (lvId === 'custom' || lvId === 'freeroam')) {
         levelObj = {
@@ -463,6 +463,9 @@ preloadModels(() => {
           noScore: true,
           noObjective: true
         }
+      }
+      if (!levelObj && window.LVS && window.LVS.length > 0) {
+        levelObj = window.LVS[0]
       }
       if (levelObj) {
         ui.cur = levelObj

@@ -75,7 +75,108 @@
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
+  // ===== CHART.JS GLOBAL ERROR HANDLER =====
+
+  // Track whether Chart.js library loaded successfully
+  let _chartJsAvailable = typeof Chart !== 'undefined';
+
+  // Debounce: prevent toast spam from rapid chart re-renders
+  let _lastChartWarnTime = 0;
+  function _chartWarn(msg) {
+    const now = Date.now();
+    if (now - _lastChartWarnTime < 8000) return; // one toast per 8s max
+    _lastChartWarnTime = now;
+    if (typeof toast === 'function') {
+      toast('📊 Chart: ' + msg, '#f59e0b');
+    }
+  }
+
+  /**
+   * Safely execute a Chart.js operation. Catches errors, shows a user-visible
+   * toast, and returns a fallback value. Falls back to canvas-rendered text if
+   * a canvas is provided.
+   * @param {Function} fn - The chart operation to attempt
+   * @param {HTMLCanvasElement} [canvas] - Optional canvas for fallback text
+   * @param {string} [label='Chart'] - Short label for the toast message
+   * @param {any} [fallbackVal=null] - Return value on failure
+   */
+  function _safeChartOp(fn, canvas, label, fallbackVal) {
+    label = label || 'Chart';
+    if (!_chartJsAvailable) {
+      _chartWarn(label + ' not available — Chart.js failed to load');
+      _drawFallbackMessage(canvas, 'Chart.js unavailable');
+      return fallbackVal !== undefined ? fallbackVal : null;
+    }
+    try {
+      return fn();
+    } catch (e) {
+      const msg = (e && (e.message || e.toString())) || 'unknown error';
+      console.warn('[TrafficCharts] ' + label + ' error:', msg);
+      _chartWarn(label + ' — ' + msg.substring(0, 60));
+      _drawFallbackMessage(canvas, label + ' — ' + msg.substring(0, 40));
+      return fallbackVal !== undefined ? fallbackVal : null;
+    }
+  }
+
+  /**
+   * Draw a readable fallback message on a canvas when Chart.js fails.
+   */
+  function _drawFallbackMessage(canvas, message) {
+    if (!canvas || !canvas.getContext) return;
+    try {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const w = canvas.width || 200;
+      const h = canvas.height || 200;
+      ctx.clearRect(0, 0, w, h);
+      // Semi-transparent bg
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.08)';
+      ctx.roundRect ? ctx.roundRect(4, 4, w - 8, h - 8, 8) : ctx.rect(4, 4, w - 8, h - 8);
+      ctx.fill();
+      // Icon
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = (h > 40 ? '20px' : '14px') + ' sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⚠', w / 2, h / 2 - (h > 40 ? 10 : 0));
+      // Message
+      if (h > 50) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = (h > 70 ? '10px' : '7px') + ' Inter, sans-serif';
+        ctx.fillText(message.substring(0, 30), w / 2, h / 2 + 14);
+      }
+    } catch (_) { /* silent — canvas fallback itself failed */ }
+  }
+
+  // ===== GLOBAL ERROR CATCHER =====
+  // Handles cases where Chart.js CDN itself fails to load
+  (function _setupChartErrorCatcher() {
+    // Catch unhandled promise rejections from failed script loads
+    window.addEventListener('unhandledrejection', function _onChartRejection(e) {
+      if (!e.reason || typeof e.reason !== 'string' && !e.reason.message) return;
+      const msg = (e.reason.message || e.reason).toString();
+      if (msg.includes('chart.js') || msg.includes('chart.umd') || msg.includes('Chart') && msg.includes('cdn')) {
+        _chartJsAvailable = false;
+        _chartWarn('Chart.js failed to load — check your internet connection');
+      }
+    });
+    // Catch runtime errors originating from Chart.js
+    window.addEventListener('error', function _onChartError(e) {
+      if (!e.message) return;
+      const msg = e.message.toString();
+      if (msg.includes('Chart') && (msg.includes('is not defined') || msg.includes('is not a constructor') || msg.includes('chart'))) {
+        _chartJsAvailable = false;
+      }
+    }, { passive: true });
+  })();
+
   // ===== CHART.JS UTILITIES =====
+
+  // Check if Chart.js exists early
+  if (typeof Chart === 'undefined') {
+    _chartJsAvailable = false;
+    console.warn('[TrafficCharts] Chart.js library not detected at load time. Charts will use fallback rendering.');
+  }
 
   // Default chart options shared across all charts
   const defaultChartOptions = {
@@ -176,47 +277,44 @@
    * @param {Object} options - Configuration options
    */
   function createProgressRing(canvas, value, options = {}) {
-    const colors = getColors();
-    const ctx = canvas.getContext('2d');
+    if (!canvas) return null;
+    return _safeChartOp(function() {
+      const colors = getColors();
+      const ctx = canvas.getContext('2d');
 
-    const config = {
-      type: 'doughnut',
-      data: {
-        datasets: [{
-          data: [value, Math.max(0, 100 - value)],
-          backgroundColor: [
-            Gradients.progress(ctx),
-            'rgba(255, 255, 255, 0.05)',
-          ],
-          borderWidth: 0,
+      const config = {
+        type: 'doughnut',
+        data: {
+          datasets: [{
+            data: [value, Math.max(0, 100 - value)],
+            backgroundColor: [
+              Gradients.progress(ctx),
+              'rgba(255, 255, 255, 0.05)',
+            ],
+            borderWidth: 0,
+            cutout: options.cutout || '75%',
+            circumference: 360,
+            rotation: -90,
+          }],
+        },
+        options: {
+          ...defaultChartOptions,
           cutout: options.cutout || '75%',
-          circumference: 360,
-          rotation: -90,
-        }],
-      },
-      options: {
-        ...defaultChartOptions,
-        cutout: options.cutout || '75%',
-        plugins: {
-          ...defaultChartOptions.plugins,
-          tooltip: { enabled: false },
+          plugins: {
+            ...defaultChartOptions.plugins,
+            tooltip: { enabled: false },
+          },
+          layout: {
+            padding: options.padding || 0,
+          },
         },
-        layout: {
-          padding: options.padding || 0,
-        },
-      },
-    };
+      };
 
-    // Destroy existing chart if any
-    if (canvas._chart) canvas._chart.destroy();
-    try {
+      // Destroy existing chart if any
+      if (canvas._chart) canvas._chart.destroy();
       canvas._chart = new Chart(ctx, config);
-    } catch (e) {
-      console.warn('[TrafficCharts] Failed to create progress ring:', e.message);
-      // Fallback: draw a simple progress arc via canvas directly
-      createRadialProgress(canvas, value, { subtitle: '' });
-    }
-    return canvas._chart;
+      return canvas._chart;
+    }, canvas, 'Progress ring', null);
   }
 
   /**
@@ -226,61 +324,60 @@
    * @param {Object} options
    */
   function createHorizontalBarChart(canvas, data, options = {}) {
-    const colors = getColors();
-    const ctx = canvas.getContext('2d');
+    if (!canvas) return null;
+    return _safeChartOp(function() {
+      const colors = getColors();
+      const ctx = canvas.getContext('2d');
 
-    const config = {
-      type: 'bar',
-      data: {
-        labels: data.map(d => d.label),
-        datasets: [{
-          data: data.map(d => d.value),
-          backgroundColor: data.map(d =>
-            d.color || (d.value >= 100 ? colors.green : d.value > 0 ? colors.accent : colors.muted)
-          ),
-          borderRadius: 6,
-          borderSkipped: false,
-          maxBarThickness: 16,
-        }],
-      },
-      options: {
-        ...defaultChartOptions,
-        indexAxis: 'y',
-        scales: {
-          x: {
-            display: false,
-            min: 0,
-            max: 100,
+      const config = {
+        type: 'bar',
+        data: {
+          labels: data.map(d => d.label),
+          datasets: [{
+            data: data.map(d => d.value),
+            backgroundColor: data.map(d =>
+              d.color || (d.value >= 100 ? colors.green : d.value > 0 ? colors.accent : colors.muted)
+            ),
+            borderRadius: 6,
+            borderSkipped: false,
+            maxBarThickness: 16,
+          }],
+        },
+        options: {
+          ...defaultChartOptions,
+          indexAxis: 'y',
+          scales: {
+            x: {
+              display: false,
+              min: 0,
+              max: 100,
+            },
+            y: {
+              display: true,
+              grid: { display: false },
+              ticks: {
+                color: colors.muted,
+                font: { family: 'Inter', size: 11 },
+                padding: 8,
+              },
+            },
           },
-          y: {
-            display: true,
-            grid: { display: false },
-            ticks: {
-              color: colors.muted,
-              font: { family: 'Inter', size: 11 },
-              padding: 8,
+          plugins: {
+            ...defaultChartOptions.plugins,
+            tooltip: {
+              ...defaultChartOptions.plugins.tooltip,
+              callbacks: {
+                label: (ctx) => `${ctx.raw}% complete`,
+              },
             },
           },
         },
-        plugins: {
-          ...defaultChartOptions.plugins,
-          tooltip: {
-            ...defaultChartOptions.plugins.tooltip,
-            callbacks: {
-              label: (ctx) => `${ctx.raw}% complete`,
-            },
-          },
-        },
-      },
-    };
+      };
 
-    if (canvas._chart) canvas._chart.destroy();
-    try {
+      if (canvas._chart) canvas._chart.destroy();
       canvas._chart = new Chart(ctx, config);
-    } catch (e) {
-      console.warn('[TrafficCharts] Failed to create horizontal bar chart:', e.message);
-    }
-    return canvas._chart;
+      return canvas._chart;
+    }, canvas, 'Bar chart', null);
   }
 
   /**

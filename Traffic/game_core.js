@@ -1072,6 +1072,11 @@ class Game {
         // Setup post-processing (bloom, etc.) based on quality preset
         this.renderCore.setupPostProcessing(innerWidth, innerHeight, isMobile);
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
+        // Default camera position: above-ground safe fallback so the first render frame
+        // is never from world-origin (0,0,0) which is embedded in the ground plane.
+        this.camera.position.set(0, 8, -15);
+        this.camera.lookAt(0, 0, 0);
+
 
         // PERFORMANCE: Disable expensive bloom on mobile
         try {
@@ -2381,6 +2386,23 @@ class Game {
         this._updateLoading(50, 'Building city environment...');
         await new Promise(r => requestAnimationFrame(r));
         this._buildScene(lv.mode);
+        // ── Immediate camera snap to player spawn ──
+        // After _buildScene(), this.player is set. We position the camera behind
+        // and above the player RIGHT NOW so the first rendered frame (when playing=true
+        // is set below) is never from the stale world-origin (0,0,0) below the city.
+        if (this.player && this.player.position) {
+          const _spawnRot = (this.player.rotation && this.player.rotation.y) || 0;
+          const _initDist = 6;
+          const _initH = 5;
+          this.camera.position.set(
+            this.player.position.x - Math.sin(_spawnRot) * _initDist,
+            _initH,
+            this.player.position.z - Math.cos(_spawnRot) * _initDist
+          );
+          this.camera.lookAt(this.player.position.x, 1.0, this.player.position.z);
+          this._camSnapped = false; // reset so render loop does its first lerp-snap from here
+        }
+
         this._updateLoading(80, 'Spawning traffic & pedestrians...');
         await new Promise(r => requestAnimationFrame(r));
         this._updateLoading(100, 'Ready!');

@@ -133,10 +133,12 @@ window.ui = Object.assign(window.ui || {}, {
     const urlParams = new URLSearchParams(window.location.search)
     const screenParam = urlParams.get('screen')
     const lvParam = urlParams.get('lv')
-    if (screenParam === 'levels') {
-      this.showLevels()
-    } else if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
+    if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
       document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+    } else if (lvParam) {
+      this.showBriefing(lvParam)
+    } else if (screenParam === 'levels') {
+      this.showLevels()
     } else {
       this.show('ss', { instant: true })
     }
@@ -1070,13 +1072,19 @@ window.ui = Object.assign(window.ui || {}, {
     }, 50)
   },
   showBriefing(lid) {
-    const lv = LVS.find((l) => l.id === lid)
+    const lv = (typeof LVS !== 'undefined' ? LVS : window.LVS || []).find((l) => l.id == lid)
+    if (!lv) {
+      this.showLevels()
+      return
+    }
     this.cur = lv
     const availModes = lv.modes || ['car']
     const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
       : S.vehicle === 'Car' && availModes.includes('car') ? 'car'
       : availModes[0]
     this.curMode = preferred
+    localStorage.setItem('traffic_lv', lv.id)
+    localStorage.setItem('traffic_mode', preferred)
     if (history.replaceState) {
       history.replaceState(null, '', `?screen=levels&lv=${lv.id}`)
     }
@@ -2368,7 +2376,7 @@ window.ui = Object.assign(window.ui || {}, {
       save()
       toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851')
       if (window.location.pathname.toLowerCase().includes('driving')) {
-        window.location.href = 'Academy.html'
+        window.location.href = 'Academy.html?screen=levels'
       } else {
         if (typeof SCENARIOS !== 'undefined') {
           const sc = SCENARIOS.find(x => x.levelRef === lv.id)

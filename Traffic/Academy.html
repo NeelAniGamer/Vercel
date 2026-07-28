@@ -234,8 +234,7 @@
           display: flex !important;
         }
         #top-bar-container #global-level-search,
-        #top-bar-container .hz-toggle,
-        #top-bar-container > div:nth-child(3) {
+        #top-bar-container .desktop-top-bar-actions {
           display: none !important;
         }
         /* Hamburger dropdown */
@@ -4359,15 +4358,7 @@
       .hz-toggle.night .hz-orb {
         left: 40px;
         background: radial-gradient(circle at 45% 40%, #E2E8F0 0%, #94A3B8 50%, #64748B 100%);
-      }
-      @media (max-width: 420px) {
-        .hz-toggle { width: 300px; height: 98px; border-radius: 49px; }
-        .hz-orb { width: 76px; height: 76px; left: 14px; }
-        .hz-toggle.night .hz-orb { left: 202px; }
-        .hz-orb::after { width: 48px; height: 48px; top: 6px; left: 10px; }
-        .hz-skyline { height: 26px; }
-        .hz-clouds { transform: scale(0.8); transform-origin: top left; }
-      }
+      /* Mobile horizon toggle maintains compact size */
 
     </style>
 
@@ -4674,7 +4665,7 @@
           <input type="text" id="global-level-search" placeholder="Search levels..." onkeydown="if(event.key === 'Enter'){ const q = this.value; ui.showLevels(); let retries = 0; const tryFilter = () => { const ls = document.getElementById('level-search'); if (ls) { ls.value = q; ls.focus(); filterLevels(); } else if (retries++ < 10) requestAnimationFrame(tryFilter); }; setTimeout(tryFilter, 200); }" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; width: 100%; font-family: 'Inter', sans-serif;">
         </div>
         
-        <div style="display:flex; gap:10px; align-items:center;">
+        <div class="desktop-top-bar-actions" style="display:flex; gap:10px; align-items:center;">
           <div class="hz-toggle" onclick="hzToggle()" title="Toggle light/dark mode">
             <div class="hz-clouds"></div>
             <div class="hz-stars"></div>
@@ -4734,12 +4725,10 @@
         (function() {
           function checkAuthState() {
             var signInBtn = document.getElementById('academy-sign-in-btn');
-            if (!signInBtn) return;
-            if (window.colUser || localStorage.getItem('trafficSetupComplete')) {
-              signInBtn.style.display = 'none';
-            } else {
-              signInBtn.style.display = '';
-            }
+            var hamburgerSignIn = document.getElementById('hamburger-signin');
+            var isLoggedIn = !!(window.colUser || localStorage.getItem('trafficSetupComplete'));
+            if (signInBtn) signInBtn.style.display = isLoggedIn ? 'none' : '';
+            if (hamburgerSignIn) hamburgerSignIn.style.display = isLoggedIn ? 'none' : '';
           }
           if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {

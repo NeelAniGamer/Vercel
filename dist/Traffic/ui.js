@@ -70,6 +70,7 @@ window.ui = Object.assign(window.ui || {}, {
   cbusy: false,
   qst: null,
   _ccb: null,
+  _miInited: false,
   adminUnlock() {
 
     LVS.forEach((l) => {
@@ -101,8 +102,7 @@ window.ui = Object.assign(window.ui || {}, {
       }
       if (this.showStart) this.showStart()
       else {
-        document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
-        document.getElementById('ss').classList.add('active')
+        this.show('ss', { instant: true })
       }
     }
   },
@@ -117,7 +117,7 @@ window.ui = Object.assign(window.ui || {}, {
       if (!S.comp) S.comp = {}
       if (!S.badges) S.badges = []
       if (!S.studentId) {
-        S.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+        S.studentId = window.colUser?.uid || 'STU-' + Math.floor(100000 + Math.random() * 900000)
         try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
       }
     }
@@ -133,12 +133,14 @@ window.ui = Object.assign(window.ui || {}, {
     const urlParams = new URLSearchParams(window.location.search)
     const screenParam = urlParams.get('screen')
     const lvParam = urlParams.get('lv')
-    if (screenParam === 'levels') {
-      this.showLevels()
-    } else if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
+    if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
       document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+    } else if (lvParam) {
+      this.showBriefing(lvParam)
+    } else if (screenParam === 'levels') {
+      this.showLevels()
     } else {
-      this.show('ss')
+      this.show('ss', { instant: true })
     }
 
     window.addEventListener('col-auth-changed', (e) => {
@@ -160,19 +162,314 @@ window.ui = Object.assign(window.ui || {}, {
       hwalletEl.textContent = '₹' + (S.wallet || 50000).toLocaleString('en-IN')
     }
     this._applyAgeTier()
+    
+    // Initialize micro-interactions (ripples, magnetic hover, tactile press)
+    this.initMicroInteractions();
+    
+    // Listen for reduced-motion changes while page is open
+    if (window.matchMedia) {
+      const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+      mq.addEventListener('change', (e) => { this._prefersReducedMotion = e.matches })
+    }
   },
-  show(id) {
+  // ── Smooth Screen Transition System ──
+  _transitioning: false,
+  _transitionTimer: null,
+  _lastScreen: null,
+  
+  // Screen depth map: deeper screens slide up from below, shallower slide up
+  _screenDepth: { 'ss': 0, 'screen-levels': 1, 'screen-briefing': 2, 'screen-quiz': 3, 'screen-badges': 2, 'screen-certificate': 2, 'screen-2d': 4 },
+  
+  // Screen navigation history for back detection
+  _screenHistory: [],
+  // Pending target queue: if user clicks during transition, queue it
+  _pendingTarget: null,
+  // Detect prefers-reduced-motion for instant transitions
+  _prefersReducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false,
+  // Micro-interaction observer for dynamically added elements
+  _miObserver: null,
+
+  // ════════════════════════════════════════════════════════════════
+  // 🎛️ CENTRALIZED MICRO-INTERACTION SYSTEM
+  // Ripple clicks, magnetic hovers, tactile press, card tilt
+  // ════════════════════════════════════════════════════════════════
+
+  /** Initialize all micro-interactions. Called once from init(). */
+  initMicroInteractions() {
+    if (this._miInited) return;
+    this._miInited = true;
+    const isMobile = mob();
+
+    // Skip all animations under reduced-motion
+    const reducedMotion = this._prefersReducedMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) return;
+
+    // ── Inject ripple keyframe if not already in stylesheet ──
+    if (!document.getElementById('mi-keyframes')) {
+      const style = document.createElement('style');
+      style.id = 'mi-keyframes';
+      style.textContent = `
+        @keyframes miRipple {
+          from { transform: scale(0); opacity: 0.6; }
+          to   { transform: scale(1); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // ── 1. Ripple Click Effect ──
+    const rippleSelector = '.btn, .back-btn, .syl-item, .lcard:not(.lk), .mode-tab';
+    document.addEventListener('pointerdown', (e) => {
+      const target = e.target.closest(rippleSelector);
+      if (!target || target.disabled) return;
+      const rect = target.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      const size = Math.max(rect.width, rect.height) * 2;
+      ripple.style.cssText = `
+        position:absolute;border-radius:50%;pointer-events:none;
+        width:${size}px;height:${size}px;
+        left:${e.clientX - rect.left - size / 2}px;
+        top:${e.clientY - rect.top - size / 2}px;
+        background:radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 70%);
+        transform:scale(0);opacity:1;
+        animation:miRipple 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+        z-index:10;
+      `;
+      if (getComputedStyle(target).position === 'static') {
+        target.style.position = 'relative';
+      }
+      target.style.overflow = 'hidden';
+      target.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 550);
+    }, { passive: true });
+
+    // ── 2. Tactile Press Feedback (desktop only) ──
+    if (!isMobile) {
+      document.addEventListener('pointerdown', (e) => {
+        const el = e.target.closest('.btn, .back-btn');
+        if (!el || el.disabled) return;
+        el.style.transition = 'transform 0.08s ease';
+        el.style.transform = 'scale(0.95) translateY(1px)';
+      }, { passive: true });
+      document.addEventListener('pointerup', (e) => {
+        const el = e.target.closest('.btn, .back-btn');
+        if (!el) return;
+        el.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        el.style.transform = '';
+        setTimeout(() => { el.style.transition = ''; }, 300);
+      }, { passive: true });
+    }
+
+    // ── 3. Card Tilt on Hover (desktop only, event delegation) ──
+    if (!isMobile) {
+      let _tiltCard = null;
+      const tiltSelector = '.lcard:not(.lk), .wh-card, .lp-card';
+      document.addEventListener('pointermove', (e) => {
+        const card = e.target.closest(tiltSelector);
+        if (card !== _tiltCard) {
+          // Leaving previous card
+          if (_tiltCard) {
+            _tiltCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            _tiltCard.style.transform = '';
+            setTimeout(() => { if (_tiltCard) _tiltCard.style.transition = ''; }, 400);
+          }
+          _tiltCard = card;
+        }
+        if (!card || card.classList.contains('lk')) return;
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transition = 'transform 0.12s ease-out';
+        card.style.transform = `perspective(800px) rotateX(${y * -6}deg) rotateY(${x * 6}deg) translateY(-4px) scale(1.02)`;
+      }, { passive: true });
+      document.addEventListener('pointerleave', () => {
+        if (_tiltCard) {
+          _tiltCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          _tiltCard.style.transform = '';
+          setTimeout(() => { if (_tiltCard) _tiltCard.style.transition = ''; }, 400);
+          _tiltCard = null;
+        }
+      }, { passive: true });
+    }
+
+    // ── 4. Syllabus Item Active Glow ──
+    document.addEventListener('pointerdown', (e) => {
+      const item = e.target.closest('.syl-item');
+      if (!item) return;
+      item.style.transition = 'box-shadow 0.15s ease';
+      item.style.boxShadow = '0 0 20px rgba(242,184,75,0.15), inset 0 0 0 1px rgba(242,184,75,0.2)';
+    }, { passive: true });
+    document.addEventListener('pointerup', (e) => {
+      const item = e.target.closest('.syl-item');
+      if (!item) return;
+      setTimeout(() => {
+        item.style.transition = 'box-shadow 0.4s ease';
+        item.style.boxShadow = '';
+        setTimeout(() => { item.style.transition = ''; }, 400);
+      }, 100);
+    }, { passive: true });
+
+    // ── 5. Tab Switch Bounce ──
+    document.addEventListener('pointerdown', (e) => {
+      const tab = e.target.closest('.mode-tab');
+      if (!tab) return;
+      tab.style.transition = 'transform 0.1s ease';
+      tab.style.transform = 'scale(0.92)';
+    }, { passive: true });
+    document.addEventListener('pointerup', (e) => {
+      const tab = e.target.closest('.mode-tab');
+      if (!tab) return;
+      tab.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      tab.style.transform = '';
+      setTimeout(() => { tab.style.transition = ''; }, 350);
+    }, { passive: true });
+  },
+
+  /**
+   * Smooth screen transition with crossfade.
+   * @param {string} id - Target screen element id
+   * @param {object} opts - { instant: bool, direction: 'forward'|'back'|'up'|'scale' }
+   */
+  show(id, opts = {}) {
+    if (this._transitioning && !opts.instant) {
+      this._pendingTarget = { id, opts };
+      return;
+    }
+    
+    const target = id ? document.getElementById(id) : null;
+    const currentActive = document.querySelector('.screen.active:not(.screen-exiting)');
+    
+    // Same screen? No-op
+    if (currentActive && currentActive.id === id && !opts.instant) return;
+    
+    // If reduced motion is preferred, force instant
+    if (this._prefersReducedMotion && !opts.instant) opts.instant = true;
+    
     if (id && id !== null && document.fullscreenElement) {
       document.exitFullscreen().catch(() => {})
     }
     if (id !== 'screen-briefing') {
       this._disposeBriefingScene()
     }
-    document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
-    if (id) {
-      const el = document.getElementById(id)
-      if (el) el.classList.add('active')
+    
+    // Determine transition direction
+    let direction = opts.direction;
+    if (!direction && currentActive && id) {
+      const fromDepth = this._screenDepth[currentActive.id] ?? 1;
+      const toDepth = this._screenDepth[id] ?? 1;
+      direction = toDepth > fromDepth ? 'forward' : toDepth < fromDepth ? 'back' : 'up';
     }
+    direction = direction || 'fade';
+    
+    // Instant transition: skip animation entirely
+    if (opts.instant) {
+      document.querySelectorAll('.screen').forEach((s) => {
+        s.classList.remove('active', 'screen-exiting', 'screen-entering',
+          'screen-entering-forward', 'screen-entering-back', 'screen-entering-up',
+          'screen-entering-scale', 'screen-exiting-up', 'screen-exiting-backward');
+        s.style.opacity = '';
+        s.style.transform = '';
+        s.style.pointerEvents = '';
+      });
+      if (target) {
+        target.classList.add('active');
+        target.style.opacity = '';
+        target.style.transform = '';
+      }
+      return;
+    }
+    
+    // Track history for back detection
+    this._screenHistory.push(currentActive?.id || null);
+    if (this._screenHistory.length > 10) this._screenHistory.shift();
+    
+    // Set transitioning state
+    this._transitioning = true;
+    clearTimeout(this._transitionTimer);
+    
+    // If there's a current screen, animate it out
+    if (currentActive && currentActive.id !== id) {
+      const exitClass = 'screen-exiting';
+      const exitVariant = {
+        'forward': 'screen-exiting-up',
+        'back': 'screen-exiting-backward',
+        'up': 'screen-exiting-up',
+        'scale': 'screen-exiting-scale',
+        'fade': ''
+      }[direction] || '';
+      
+      // Apply exit animation
+      currentActive.classList.add(exitClass);
+      if (exitVariant) currentActive.classList.add(exitVariant);
+      
+      // After exit animation completes, clean up and show new screen
+      const exitDuration = 250; // matches CSS 0.25s
+      setTimeout(() => {
+        currentActive.classList.remove('active', exitClass, exitVariant);
+        currentActive.style.opacity = '';
+        currentActive.style.transform = '';
+        currentActive.style.pointerEvents = '';
+        
+        // Now show the new screen
+        if (target) {
+          const enterClass = {
+            'forward': 'screen-entering-forward',
+            'back': 'screen-entering-back',
+            'up': 'screen-entering-up',
+            'scale': 'screen-entering-scale',
+            'fade': 'screen-entering'
+          }[direction] || 'screen-entering';
+          
+          target.classList.add('active', enterClass);
+          
+          // Clean up entering class after animation completes
+          const enterDuration = 400; // matches CSS 0.4s
+          this._transitionTimer = setTimeout(() => {
+            target.classList.remove(enterClass);
+            this._transitioning = false;
+            // Process pending target if any
+            if (this._pendingTarget) {
+              const pending = this._pendingTarget;
+              this._pendingTarget = null;
+              this.show(pending.id, pending.opts);
+            }
+          }, enterDuration);
+        } else {
+          this._transitioning = false;
+        }
+      }, exitDuration);
+    } else {
+      // No current screen - just enter
+      if (target) {
+        const enterClass = {
+          'forward': 'screen-entering-forward',
+          'back': 'screen-entering-back',
+          'up': 'screen-entering-up',
+          'scale': 'screen-entering-scale',
+          'fade': 'screen-entering'
+        }[direction] || 'screen-entering';
+        
+        target.classList.add('active', enterClass);
+        this._transitionTimer = setTimeout(() => {
+          target.classList.remove(enterClass);
+          this._transitioning = false;
+          // Process pending target if any
+          if (this._pendingTarget) {
+            const pending = this._pendingTarget;
+            this._pendingTarget = null;
+            this.show(pending.id, pending.opts);
+          }
+        }, 400);
+      } else {
+        this._transitioning = false;
+      }
+    }
+  },
+  
+  /** Show screen going backward (back button) */
+  showBack(id) {
+    this._screenHistory.pop(); // remove current from history
+    this.show(id, { direction: 'back' });
   },
   _buildSylList() {
     // S should already be initialized from init(), but ensure it exists
@@ -191,6 +488,7 @@ window.ui = Object.assign(window.ui || {}, {
     wrap.innerHTML = ''
 
     const catMap = {
+      free_roam: 'free_roam',
       pedestrian_courtesy: 'courtesy', pedestrian_priority: 'courtesy',
       respectful_parking: 'parking', street_parking: 'parking', parking_rules: 'parking',
       ambulance_priority: 'emergency',
@@ -205,6 +503,7 @@ window.ui = Object.assign(window.ui || {}, {
       grand_test: 'grand', multi_modal: 'grand'
     }
     const cats = {
+      free_roam:   { title: '🌍 Free Roam', levels: [] },
       courtesy:    { title: '🚶 Pedestrian Courtesy', levels: [] },
       parking:     { title: '🅿️ Parking Rules', levels: [] },
       emergency:   { title: '🚑 Emergency Priority', levels: [] },
@@ -285,7 +584,9 @@ window.ui = Object.assign(window.ui || {}, {
       window.location.href = 'Academy.html?screen=levels'
       return
     }
-    this.show('screen-levels')
+    const currentActive = document.querySelector('.screen.active:not(.screen-exiting)')
+    const direction = (currentActive?.id === 'ss') ? 'forward' : 'fade'
+    this.show('screen-levels', { direction })
     requestAnimationFrame(() => this._buildSylList())
   },
   showNamePrompt() {
@@ -428,7 +729,7 @@ window.ui = Object.assign(window.ui || {}, {
     }
   },
   showCert(badgeId = null) {
-    this.show('screen-certificate')
+    this.show('screen-certificate', { direction: 'forward' })
 
     const cname = document.getElementById('cname')
     if (cname) cname.innerText = (S.name || 'DRIVER').toUpperCase()
@@ -436,7 +737,7 @@ window.ui = Object.assign(window.ui || {}, {
     const certNum = document.getElementById('cert-num')
     if (certNum) {
       if (!S.certId) {
-        S.certId = 'CERT-' + Math.floor(Math.random() * 1000000)
+        S.certId = 'CERT-' + (window.colUser?.uid || Math.floor(Math.random() * 1000000))
         save()
       }
     }
@@ -503,7 +804,7 @@ window.ui = Object.assign(window.ui || {}, {
     if (certNum) certNum.innerText = completedLevels >= totalLevels ? S.certId : '---'
   },
   showBadges() {
-    this.show('screen-badges')
+    this.show('screen-badges', { direction: 'forward' })
 
     const statsBody = document.getElementById('stats-body')
     if (statsBody) {
@@ -547,17 +848,65 @@ window.ui = Object.assign(window.ui || {}, {
   },
   dlCert() {
     if (typeof html2pdf !== 'undefined') {
-      const el = document.getElementById('cert-wrapper')
+      const wrapper = document.getElementById('cert-wrapper')
+      const crt = document.getElementById('cert')
+      if (!crt || !crt.parentNode) {
+        toast('Certificate not ready. Please wait a moment.', '#ff9500')
+        return
+      }
+      // Temporarily remove CSS transform so html2pdf captures at true size (avoids blank second page)
+      const prevWrapperOverflow = wrapper.style.overflow
+      const prevWrapperJustify = wrapper.style.justifyContent
+      const prevWrapperMargin = wrapper.style.margin
+      const prevCrtTransform = crt.style.transform
+      const prevCrtTransformOrigin = crt.style.transformOrigin
+      const prevCrtWidth = crt.style.width
+      const prevCrtPageBreak = crt.style.pageBreakInside
+      const prevCrtBreakInside = crt.style.breakInside
+      // Helper to restore all overridden styles
+      const restoreStyles = () => {
+        wrapper.style.overflow = prevWrapperOverflow
+        wrapper.style.justifyContent = prevWrapperJustify
+        wrapper.style.margin = prevWrapperMargin
+        crt.style.transform = prevCrtTransform
+        crt.style.transformOrigin = prevCrtTransformOrigin
+        crt.style.width = prevCrtWidth
+        crt.style.pageBreakInside = prevCrtPageBreak
+        crt.style.breakInside = prevCrtBreakInside
+      }
+      wrapper.style.overflow = 'visible'
+      wrapper.style.justifyContent = 'center'
+      wrapper.style.margin = '0'
+      crt.style.transform = 'none'
+      crt.style.transformOrigin = 'top center'
+      crt.style.width = '1056px'
+      crt.style.pageBreakInside = 'avoid'
+      crt.style.breakInside = 'avoid'
       html2pdf()
         .set({
-          margin: 0,
+          margin: [0, 0, 0, 0],
           filename: 'Traffic_Hero_Certificate.pdf',
           image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            width: 1056,
+            windowWidth: 1100,
+            allowTaint: true
+          },
+          jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'landscape',
+            hotfixes: ['px_scaling']
+          },
+          pagebreak: { mode: ['avoid-all'] }
         })
-        .from(el)
+        .from(crt)
         .save()
+        .then(restoreStyles)
+        .catch(restoreStyles)
     } else {
       alert('PDF library not loaded. Please ensure you have internet access.')
     }
@@ -568,7 +917,7 @@ window.ui = Object.assign(window.ui || {}, {
       window.location.href = 'Academy.html'
       return
     }
-    this.show('ss')
+    this.show('ss', { direction: 'back' })
     this._rain()
     
     // Update Get Started button if user has already made progress
@@ -619,7 +968,7 @@ window.ui = Object.assign(window.ui || {}, {
     }
   },
   showLevels_old() {
-    this.show('screen-levels')
+    this.show('screen-levels', { direction: 'forward' })
     this._bldLvs()
   },
   _bldLvs() {
@@ -693,7 +1042,15 @@ window.ui = Object.assign(window.ui || {}, {
           </div>
         `
         if (un) {
-          c.onclick = () => this.showBriefing(lv.id)
+          c.onclick = async () => {
+            // Show premium level preview before briefing
+            if (window.game && window.game._showLevelPreview) {
+              const proceed = await window.game._showLevelPreview(lv);
+              if (proceed) this.showBriefing(lv.id);
+            } else {
+              this.showBriefing(lv.id);
+            }
+          }
         }
         tr.appendChild(c)
       })
@@ -715,13 +1072,19 @@ window.ui = Object.assign(window.ui || {}, {
     }, 50)
   },
   showBriefing(lid) {
-    const lv = LVS.find((l) => l.id === lid)
+    const lv = (typeof LVS !== 'undefined' ? LVS : window.LVS || []).find((l) => l.id == lid)
+    if (!lv) {
+      this.showLevels()
+      return
+    }
     this.cur = lv
     const availModes = lv.modes || ['car']
     const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
       : S.vehicle === 'Car' && availModes.includes('car') ? 'car'
       : availModes[0]
     this.curMode = preferred
+    localStorage.setItem('traffic_lv', lv.id)
+    localStorage.setItem('traffic_mode', preferred)
     if (history.replaceState) {
       history.replaceState(null, '', `?screen=levels&lv=${lv.id}`)
     }
@@ -749,8 +1112,8 @@ window.ui = Object.assign(window.ui || {}, {
     // Build module progress checklist (Zeigarnik effect)
     this._renderModuleChecklist(lv)
     
-    // Build garage panel
-    if (window.showGarage) window.showGarage(lv.id)
+    // Render pledge card into right panel
+    this._renderPledgeCard(lv)
     
     const items = [
       { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
@@ -774,7 +1137,7 @@ window.ui = Object.assign(window.ui || {}, {
       list.appendChild(el)
     })
     this._selSyl('intro')
-    this.show('screen-briefing')
+    this.show('screen-briefing', { direction: 'forward' })
   },
   _initModeTabs(lv) {
     const tabs = document.querySelectorAll('#br-mode-tabs .mode-tab')
@@ -853,16 +1216,8 @@ window.ui = Object.assign(window.ui || {}, {
     if (!container || !mod) return
     
     const modes = Object.keys(window.COURSE?.MODES || {})
-    const hasPledge = S.pledges && S.pledges[lv.id]
     
     let html = '<div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">MODULE ' + moduleId + ' PROGRESS</div>'
-    
-    // Add commitment pledge button at the top
-    if (hasPledge) {
-      html += `<button class="btn" style="margin-bottom:12px;width:100%;background:rgba(255,255,255,0.05);color:var(--green);font-size:0.7rem;padding:8px;border-radius:8px;border:1px solid var(--green);cursor:default;">🤝 Pledge Completed</button>`
-    } else {
-      html += `<button class="btn pulse-btn" onclick="ui.showCommitmentPledge('${lv.id}')" style="margin-bottom:12px;width:100%;background:linear-gradient(90deg,var(--signal),var(--accent));color:#000;font-size:0.7rem;padding:8px;border-radius:8px;box-shadow: 0 4px 15px rgba(242,184,75,0.4);">🤝 Commitment Pledge</button>`
-    }
     
     html += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">'
     mod.module.levels.forEach(l => {
@@ -949,6 +1304,37 @@ window.ui = Object.assign(window.ui || {}, {
     S.pledges[levelId] = { if: ifStatement, then: thenStatement, created: Date.now() }
     save()
     toast('🤝 Pledge saved! Your if-then plan is set.', '#5ED4F5')
+    // Refresh the pledge card to show completed state
+    const lv = LVS.find(l => l.id === levelId)
+    if (lv) this._renderPledgeCard(lv)
+  },
+  _renderPledgeCard(lv) {
+    const container = document.getElementById('br-pledge')
+    if (!container) return
+    const hasPledge = S.pledges && S.pledges[lv.id]
+    container.style.display = 'block'
+    if (hasPledge) {
+      const pledge = S.pledges[lv.id]
+      container.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);border-radius:12px;">
+          <div style="font-size:1.5rem;">🤝</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.8rem;font-weight:700;color:var(--green);">Pledge Active</div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-top:2px;">If ${pledge.if || 'red signal'} → Then ${pledge.then || 'stop'}</div>
+          </div>
+          <button class="btn btn-s" style="padding:6px 14px;font-size:0.7rem;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:8px;cursor:pointer;flex-shrink:0;" onclick="ui.showCommitmentPledge('${lv.id}')">Edit</button>
+        </div>`
+    } else {
+      container.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(135deg,rgba(94,212,245,0.08),rgba(242,184,75,0.08));border:1px solid rgba(242,184,75,0.2);border-radius:12px;">
+          <div style="font-size:1.5rem;">🤝</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.85rem;font-weight:700;color:var(--text);">Commitment Pledge</div>
+            <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">Set an if-then plan to drive smarter</div>
+          </div>
+          <button class="btn pulse-btn" style="padding:8px 18px;font-size:0.75rem;background:linear-gradient(90deg,var(--signal),var(--accent));color:#000;font-weight:700;border:none;border-radius:8px;cursor:pointer;flex-shrink:0;white-space:nowrap;box-shadow:0 4px 15px rgba(242,184,75,0.3);" onclick="ui.showCommitmentPledge('${lv.id}')">+ Make Pledge</button>
+        </div>`
+    }
   },
   _selSyl(id) {
     const lv = this._sylLv,
@@ -1050,7 +1436,7 @@ window.ui = Object.assign(window.ui || {}, {
         .map((m) => {
           const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚛', bus: '🚌', pedestrian: '🚶' }
           const isPreferred = m === preferredMode
-          return `<button class="btn" style="flex:1; min-width:80px; text-transform:capitalize; background:${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel, rgba(0,0,0,0.04))'}; border:1px solid ${isPreferred ? 'var(--accent, #D97706)' : 'var(--line, rgba(0,0,0,0.08))'}; color:${isPreferred ? '#fff' : 'var(--ink, #111827)'}; font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--line)'}'" onmouseout="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel)'}'" onclick="ui.showQuiz('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}${isPreferred ? ' ✓' : ''}</span></button>`
+          return `<button class="btn" data-mode="${m}" style="flex:1; min-width:80px; text-transform:capitalize; background:${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel, rgba(0,0,0,0.04))'}; border:1px solid ${isPreferred ? 'var(--accent, #D97706)' : 'var(--line, rgba(0,0,0,0.08))'}; color:${isPreferred ? '#fff' : 'var(--ink, #111827)'}; font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--line)'}'" onmouseout="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel)'}'" onclick="ui.selectMode('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}${isPreferred ? ' ✓' : ''}</span></button>`
         })
         .join('')
       const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3); font-size:0.9rem;" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`
@@ -1101,6 +1487,25 @@ window.ui = Object.assign(window.ui || {}, {
               <div style="font-size:1.3rem; color:var(--red, #EF4444); font-weight:800; line-height:1;">${lv.law.fine}</div>
             </div>
           </div>
+        </div>
+        
+        <!-- Vehicle Selection -->
+        <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">🚗 Vehicle</div>
+           <div id="br-vehicle-list" style="display:flex; gap:8px; flex-wrap:wrap;">
+             ${(window.COURSE?.VEHICLES || []).map(v => {
+               const sel = v.id === (S.vehicle?.toLowerCase() || '')
+               const rec = window.COURSE?.getRecommendedVehicle?.(lv.id) === v.id
+               return `<div style="flex:1;min-width:100px;padding:12px;background:${sel ? 'rgba(242,184,75,0.15)' : 'var(--card)'};border:2px solid ${sel ? 'var(--accent)' : (rec ? 'var(--signal)' : 'var(--border)')};border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s;"
+                    onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='${sel ? 'rgba(242,184,75,0.15)' : 'var(--card)'}'"
+                    onclick="ui._selectVehicle('${v.id}')">
+                 <div style="font-size:1.6rem;line-height:1;">${v.icon || '🚗'}</div>
+                 <div style="font-size:0.8rem;font-weight:700;color:var(--text);margin-top:4px;">${v.name || v.id}</div>
+                 ${rec ? '<div style="font-size:0.6rem;color:var(--signal);font-weight:700;margin-top:2px;">✓ Recommended</div>' : ''}
+                 ${sel ? '<div style="font-size:0.6rem;color:var(--accent);font-weight:700;margin-top:2px;">Selected</div>' : ''}
+               </div>`
+             }).join('')}
+           </div>
         </div>
         
         <!-- Practice Modes -->
@@ -1791,6 +2196,32 @@ window.ui = Object.assign(window.ui || {}, {
     this._bCamera = cam
     this._bRenderer = renderer
   },
+  _selectVehicle(vehicleId) {
+    S.vehicle = vehicleId.charAt(0).toUpperCase() + vehicleId.slice(1)
+    save()
+    toast(`✅ Vehicle set to ${vehicleId}`, '#34d399')
+    // Re-render the practical section to show updated selection
+    const lv = this.cur
+    if (lv) this._selSyl('practical')
+  },
+  selectMode(mode) {
+    // Just select the mode — don't open quiz yet
+    this.curMode = mode
+    // Update the mode buttons visual state using data-mode attribute
+    const practBtns = document.querySelectorAll('#br-content .btn[data-mode]')
+    practBtns.forEach(btn => {
+      const btnMode = btn.dataset.mode
+      if (btnMode === mode) {
+        btn.style.background = 'var(--accent, #D97706)'
+        btn.style.color = '#fff'
+        btn.style.borderColor = 'var(--accent, #D97706)'
+      } else {
+        btn.style.background = 'var(--panel, rgba(0,0,0,0.04))'
+        btn.style.color = 'var(--ink, #111827)'
+        btn.style.borderColor = 'var(--line, rgba(0,0,0,0.08))'
+      }
+    })
+  },
   dispatchStart(mode) {
     // Use preferred vehicle from setup if mode not explicitly passed
     if (!mode) {
@@ -1842,7 +2273,7 @@ window.ui = Object.assign(window.ui || {}, {
       return
     }
     this._rq()
-    this.show('screen-quiz')
+    this.show('screen-quiz', { direction: 'forward' })
   },
   _rq() {
     const s = this.qst,
@@ -1945,7 +2376,7 @@ window.ui = Object.assign(window.ui || {}, {
       save()
       toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851')
       if (window.location.pathname.toLowerCase().includes('driving')) {
-        window.location.href = 'Academy.html'
+        window.location.href = 'Academy.html?screen=levels'
       } else {
         if (typeof SCENARIOS !== 'undefined') {
           const sc = SCENARIOS.find(x => x.levelRef === lv.id)
@@ -2618,140 +3049,724 @@ const _buildVehicle = (type, col) => {
   return g
 }
 
-const _buildHuman = (isPlayer = false) => {
+const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
+  const sk = isPlayer ? 1.0 : 0.92
 
-  // Pool: GLB mini-characters + animated FBX characters (when loaded)
-  const glbChars = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c']
-  const fbxChars = ['anim_survivors', 'anim_retro', 'anim_protagonists'].filter(k => window.PRELOADED_MODELS && window.PRELOADED_MODELS[k])
-  const allChars = glbChars.concat(fbxChars)
-  const charKey = allChars[Math.floor(Math.random() * allChars.length)]
+  // ═══ NPC VARIATION ═══
+  // Random skin tones, shirt colors, and hair for NPCs to make them look distinct
+  const npcSkins = [0xd4a574, 0xc68642, 0x8d5524, 0xf1c27d, 0xffdbac, 0xe0ac69]
+  const npcShirts = [0x3498db, 0x2ecc71, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xe74c3c, 0x34495e]
+  const npcPants = [0x555555, 0x2c3e50, 0x444444, 0x3d3d3d, 0x2d2d2d]
+  const npcHairs = [0x1a1a1a, 0x3d2b1f, 0x654321, 0x8B4513, 0x2c1810, 0xb5651d]
 
-  // Debug: Check if character models are loaded
-  const charLoaded = window.PRELOADED_MODELS && window.PRELOADED_MODELS[charKey];
-  if (!charLoaded) {
-    console.log('[DEBUG] Character model not loaded:', charKey, 'Available:', Object.keys(window.PRELOADED_MODELS || {}).filter(k => k.startsWith('char') || k.startsWith('anim')).join(', '));
-  }
-
-  if (charLoaded) {
-    const hModel = window.PRELOADED_MODELS[charKey].clone()
-    const isFBX = charKey.startsWith('anim_')
-
-    if (isFBX) {
-      // FBX models stored at 1x (already ~180 units). Scale to visible pedestrian size.
-      const targetH = isPlayer ? 1.8 : 1.5
-      hModel.scale.setScalar(targetH / 180)
-      hModel.position.y = 0
-    } else {
-      // GLB characters loaded at 4.5x, scale down to visible size
-      const loadScale = 4.5;
-      const targetScale = isPlayer ? 1.5 : 1.2;
-      hModel.scale.set(targetScale / loadScale, targetScale / loadScale, targetScale / loadScale);
-      hModel.position.y = 0;
-    }
-
-    // Ensure all meshes in cloned model render properly
-    hModel.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow = !isPlayer;
-        child.receiveShadow = true;
-        child.frustumCulled = false;
-        // Ensure material is visible
-        if (child.material) {
-          child.material.opacity = 1;
-          child.material.transparent = false;
-        }
-      }
-    });
-
-    // Add invisible hitbox for collisions
-    const hbGeo = new THREE.BoxGeometry(0.8, 2.0, 0.8)
-    const hbMat = new THREE.MeshBasicMaterial({ visible: false })
-    const hb = new THREE.Mesh(hbGeo, hbMat)
-    hb.position.y = 1.0
-
-    g.add(hModel)
-    g.add(hb)
-
-    // Find legs in the model for animation - look for child groups with leg-like names
-    let lLeg = null, rLeg = null;
-    hModel.traverse((child) => {
-      if (child.isGroup) {
-        const name = child.name.toLowerCase();
-        if (name.includes('leg') || name.includes('left')) lLeg = child;
-        if (name.includes('leg') || name.includes('right')) rLeg = child;
-      }
-    });
-
-    // GLB model already has full body — no procedural legs needed
-    // Walk animation uses lLeg/rLeg userData if found
-    g.userData = { lLeg: lLeg, rLeg: rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
-
-    // FBX animated characters: set up AnimationMixer for idle/run clips
-    if (isFBX && hModel.animations && hModel.animations.length > 0) {
-      const mixer = new THREE.AnimationMixer(hModel)
-      // Prefer 'idle' or first clip
-      const idleClip = hModel.animations.find(c => c.name.toLowerCase().includes('idle')) || hModel.animations[0]
-      const runClip = hModel.animations.find(c => c.name.toLowerCase().includes('run') || c.name.toLowerCase().includes('walk'))
-      const idleAction = mixer.clipAction(idleClip)
-      idleAction.play()
-      let runAction = null
-      if (runClip) { runAction = mixer.clipAction(runClip); runAction.setEffectiveWeight(0); runAction.play() }
-      g.userData.mixer = mixer
-      g.userData.idleAction = idleAction
-      g.userData.runAction = runAction
-      g.userData.isFBXAnimated = true
-    }
-
-    return g
-  }
-
-  // Fallback
-  const skins = [0xe0ac69, 0x8d5524, 0xc68642, 0xf1c27d, 0xffdbac]
-  const sColor = isPlayer ? 0xc68642 : skins[Math.floor(Math.random() * skins.length)]
-  const shColor = isPlayer ? 0xe74c3c : Math.random() * 0xffffff
-  const pColor = isPlayer ? 0x2980b9 : [0x333333, 0x111111, 0x555555, 0x4a2311][Math.floor(Math.random() * 4)]
-
-  const scale = isPlayer ? 1.1 : 1.0
-
-  const skin = new THREE.MeshToonMaterial({ color: sColor })
-  const shirt = new THREE.MeshToonMaterial({ color: shColor })
-  const pants = new THREE.MeshToonMaterial({ color: pColor })
-
-  const head = new THREE.Mesh(new THREE.BoxGeometry(0.4 * scale, 0.4 * scale, 0.4 * scale), skin)
-  head.position.y = 1.8 * scale
-  g.add(head)
-
-  const hair = new THREE.Mesh(new THREE.BoxGeometry(0.42 * scale, 0.1 * scale, 0.42 * scale), new THREE.MeshToonMaterial({ color: 0x111111 }))
-  hair.position.y = 2.0 * scale
-  g.add(hair)
-
-  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.6 * scale, 0.7 * scale, 0.3 * scale), shirt)
-  torso.position.y = 1.25 * scale
-  g.add(torso)
-
+  // Load saved player appearance or use defaults
+  let savedAppear = null
   if (isPlayer) {
-    const bag = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.2), new THREE.MeshToonMaterial({ color: 0xf39c12 }))
-    bag.position.set(0, 1.25 * scale, -0.2)
-    g.add(bag)
+    try { savedAppear = JSON.parse(localStorage.getItem('traffic_appearance')) } catch (e) {}
+  }
+  const app = (isPlayer && savedAppear) || appearance || {}
+
+  // Pick random variation for NPCs, use saved/customized for player
+  const skinColor = isPlayer ? (app.skin || 0xd4a574) : npcSkins[Math.floor(Math.random() * npcSkins.length)]
+  const shirtColor = isPlayer ? (app.shirt || 0xe74c3c) : npcShirts[Math.floor(Math.random() * npcShirts.length)]
+  const shirtDk = new THREE.Color(shirtColor).multiplyScalar(0.8).getHex()
+  const pantsColor = isPlayer ? (app.pants || 0x2c3e50) : npcPants[Math.floor(Math.random() * npcPants.length)]
+  const pantsDk = new THREE.Color(pantsColor).multiplyScalar(0.8).getHex()
+  const hairColor = isPlayer ? (app.hair || 0x1a1a1a) : npcHairs[Math.floor(Math.random() * npcHairs.length)]
+
+  // ── Materials ──
+  const SKIN = new THREE.MeshToonMaterial({ color: skinColor })
+  const SKIN2 = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.92).getHex() })
+  const HAIR = new THREE.MeshToonMaterial({ color: hairColor })
+  const SHIRT = new THREE.MeshToonMaterial({ color: shirtColor })
+  const SHIRT_DK = new THREE.MeshToonMaterial({ color: shirtDk })
+  const PANTS = new THREE.MeshToonMaterial({ color: pantsColor })
+  const PANTS_DK = new THREE.MeshToonMaterial({ color: pantsDk })
+  const SHOES = new THREE.MeshToonMaterial({ color: isPlayer ? 0x1a1a1a : 0x222222 })
+  const SHOE_SOLE = new THREE.MeshToonMaterial({ color: 0x333333 })
+  const EYE_W = new THREE.MeshToonMaterial({ color: 0xffffff })
+  const EYE_P = new THREE.MeshToonMaterial({ color: 0x2c1810 })
+  const EYE_IRIS = new THREE.MeshToonMaterial({ color: isPlayer ? 0x4a90d9 : 0x3d2b1f })
+  const MOUTH = new THREE.MeshToonMaterial({ color: 0x8b4513 })
+  const NOSE_M = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.95).getHex() })
+  const EAR_INNER = new THREE.MeshToonMaterial({ color: 0xc4956a })
+  const BELT = new THREE.MeshToonMaterial({ color: 0x3d2b1f })
+  const BELT_BUCKLE = new THREE.MeshToonMaterial({ color: 0xc0c0c0, emissive: 0xc0c0c0, emissiveIntensity: 0.1 })
+  const BAG = new THREE.MeshToonMaterial({ color: isPlayer ? 0xf39c12 : 0x8e44ad, emissive: isPlayer ? 0xf39c12 : 0x8e44ad, emissiveIntensity: 0.05 })
+  const BAG_DK = new THREE.MeshToonMaterial({ color: isPlayer ? 0xe67e22 : 0x7d3c98 })
+  const BAG_STRAP = new THREE.MeshToonMaterial({ color: 0x555555 })
+  const JOINT = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.88).getHex() })
+  const WRIST = new THREE.MeshToonMaterial({ color: 0xdddddd })
+  const LIP_COLOR = new THREE.MeshToonMaterial({ color: 0xb5651d })
+  const CAP = new THREE.MeshToonMaterial({ color: isPlayer ? 0xe74c3c : shirtColor })
+  const CAP_BRIM = new THREE.MeshToonMaterial({ color: isPlayer ? 0xc0392b : shirtDk })
+
+  function limb(rT, rB, h, mat, segs) {
+    return new THREE.Mesh(new THREE.CylinderGeometry(rT, rB, h, segs || 10, 1), mat)
   }
 
-  const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.25 * scale, 0.9 * scale, 0.25 * scale), pants)
-  lLeg.position.set(-0.15 * scale, 0.45 * scale, 0)
-  g.add(lLeg)
-  const rLeg = new THREE.Mesh(new THREE.BoxGeometry(0.25 * scale, 0.9 * scale, 0.25 * scale), pants)
-  rLeg.position.set(0.15 * scale, 0.45 * scale, 0)
-  g.add(rLeg)
+  function jointSphere(r, mat) {
+    return new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), mat)
+  }
 
-  const shoeM = new THREE.MeshToonMaterial({ color: 0x111111 })
-  const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26 * scale, 0.1 * scale, 0.3 * scale), shoeM)
-  lShoe.position.set(-0.15 * scale, 0.05 * scale, 0.05)
-  g.add(lShoe)
-  const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26 * scale, 0.1 * scale, 0.3 * scale), shoeM)
-  rShoe.position.set(0.15 * scale, 0.05 * scale, 0.05)
-  g.add(rShoe)
+  // ═══ HEAD ═══
+  const headGroup = new THREE.Group()
+  headGroup.position.y = 1.72 * sk
 
-  g.userData = { lLeg, rLeg, t: Math.random() * 10, spd: 1.5 + Math.random(), dir: Math.random() > 0.5 ? 1 : -1, startZ: 0 }
+  // Skull — slightly ovoid
+  const skull = new THREE.Mesh(new THREE.SphereGeometry(0.28 * sk, 16, 12), SKIN)
+  skull.scale.set(1, 1.05, 0.95)
+  headGroup.add(skull)
+
+  // Jaw / chin
+  const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.20 * sk, 12, 8), SKIN2)
+  jaw.position.set(0, -0.18 * sk, 0.10 * sk)
+  jaw.scale.set(0.85, 0.55, 0.75)
+  headGroup.add(jaw)
+
+  // Chin bump
+  const chin = new THREE.Mesh(new THREE.SphereGeometry(0.04 * sk, 8, 6), SKIN)
+  chin.position.set(0, -0.24 * sk, 0.16 * sk)
+  headGroup.add(chin)
+
+  // ── Hair (layered for volume) ──
+  const hairBack = new THREE.Mesh(new THREE.SphereGeometry(0.30 * sk, 12, 10), HAIR)
+  hairBack.position.set(0, 0.05 * sk, -0.04 * sk)
+  hairBack.scale.set(0.98, 0.55, 0.98)
+  headGroup.add(hairBack)
+  const hairTop = new THREE.Mesh(new THREE.SphereGeometry(0.26 * sk, 10, 8), HAIR)
+  hairTop.position.set(0, 0.14 * sk, -0.01 * sk)
+  hairTop.scale.set(0.88, 0.38, 0.92)
+  headGroup.add(hairTop)
+  // Side hair tufts
+  ;[-1, 1].forEach(s => {
+    const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.08 * sk, 8, 6), HAIR)
+    tuft.position.set(s * 0.22 * sk, 0.0 * sk, -0.06 * sk)
+    tuft.scale.set(0.5, 0.7, 0.6)
+    headGroup.add(tuft)
+  })
+
+  // ── Eyes (white + iris + pupil + eyelids) ──
+  const _eyeLids = []
+  ;[-1, 1].forEach(s => {
+    // Eye white
+    const ew = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 10, 8), EYE_W)
+    ew.position.set(s * 0.105 * sk, 0.04 * sk, 0.23 * sk)
+    ew.scale.set(1, 0.85, 0.6)
+    headGroup.add(ew)
+    // Iris
+    const iris = new THREE.Mesh(new THREE.SphereGeometry(0.028 * sk, 8, 6), EYE_IRIS)
+    iris.position.set(s * 0.105 * sk, 0.035 * sk, 0.255 * sk)
+    headGroup.add(iris)
+    // Pupil
+    const ep = new THREE.Mesh(new THREE.SphereGeometry(0.015 * sk, 6, 4), EYE_P)
+    ep.position.set(s * 0.105 * sk, 0.035 * sk, 0.268 * sk)
+    headGroup.add(ep)
+    // Eye highlight (tiny white dot for liveliness)
+    const hl = new THREE.Mesh(new THREE.SphereGeometry(0.006 * sk, 4, 3), EYE_W)
+    hl.position.set(s * 0.095 * sk, 0.045 * sk, 0.27 * sk)
+    headGroup.add(hl)
+    // Upper eyelid
+    const lid = new THREE.Mesh(new THREE.SphereGeometry(0.052 * sk, 8, 4, 0, Math.PI * 2, 0, Math.PI * 0.4), SKIN)
+    lid.position.set(s * 0.105 * sk, 0.065 * sk, 0.235 * sk)
+    lid.scale.set(1, 0.7, 0.7)
+    lid.rotation.x = -0.2
+    headGroup.add(lid)
+    _eyeLids.push(lid)
+  })
+
+  // ── Eyebrows ──
+  ;[-1, 1].forEach(s => {
+    const brow = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.018 * sk, 0.025 * sk), HAIR)
+    brow.position.set(s * 0.105 * sk, 0.11 * sk, 0.23 * sk)
+    brow.rotation.z = s * 0.1
+    headGroup.add(brow)
+  })
+
+  // ── Nose ──
+  const nose = new THREE.Mesh(new THREE.CylinderGeometry(0.018 * sk, 0.025 * sk, 0.08 * sk, 8), NOSE_M)
+  nose.position.set(0, -0.03 * sk, 0.26 * sk)
+  nose.rotation.x = Math.PI / 2 + 0.15
+  headGroup.add(nose)
+  // Nose tip
+  const noseTip = new THREE.Mesh(new THREE.SphereGeometry(0.022 * sk, 8, 6), NOSE_M)
+  noseTip.position.set(0, -0.06 * sk, 0.275 * sk)
+  headGroup.add(noseTip)
+
+  // ── Mouth ──
+  const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.07 * sk, 0.012 * sk, 0.018 * sk), MOUTH)
+  mouth.position.set(0, -0.11 * sk, 0.25 * sk)
+  headGroup.add(mouth)
+  // Lower lip (slight fullness)
+  const lip = new THREE.Mesh(new THREE.SphereGeometry(0.025 * sk, 8, 4), LIP_COLOR)
+  lip.position.set(0, -0.125 * sk, 0.245 * sk)
+  lip.scale.set(1.2, 0.4, 0.5)
+  headGroup.add(lip)
+
+  // ── Ears ──
+  ;[-1, 1].forEach(s => {
+    const ear = new THREE.Mesh(new THREE.SphereGeometry(0.04 * sk, 8, 6), SKIN2)
+    ear.position.set(s * 0.27 * sk, 0.02 * sk, 0.0)
+    ear.scale.set(0.6, 0.8, 0.4)
+    headGroup.add(ear)
+    // Inner ear
+    const earIn = new THREE.Mesh(new THREE.SphereGeometry(0.02 * sk, 6, 4), EAR_INNER)
+    earIn.position.set(s * 0.275 * sk, 0.02 * sk, 0.005 * sk)
+    earIn.scale.set(0.5, 0.7, 0.3)
+    headGroup.add(earIn)
+  })
+
+  // ── Player cap (togglable) ──
+  if (isPlayer && app.accessories?.cap !== false && !app.accessories?.beanie && !app.accessories?.helmet) {
+    const capTop = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), CAP)
+    capTop.position.set(0, 0.12 * sk, -0.01 * sk)
+    capTop.scale.set(1.02, 0.5, 1.02)
+    headGroup.add(capTop)
+    // Brim — curved arc for baseball-cap shape
+    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.28 * sk, 0.30 * sk, 0.02 * sk, 12), CAP_BRIM)
+    brim.position.set(0, 0.10 * sk, 0.12 * sk)
+    brim.scale.set(1, 1, 0.6)
+    headGroup.add(brim)
+    // Button on top
+    const btn = new THREE.Mesh(new THREE.SphereGeometry(0.025 * sk, 6, 4), CAP_BRIM)
+    btn.position.set(0, 0.22 * sk, -0.01 * sk)
+    headGroup.add(btn)
+  }
+
+  // ── Beanie (knit winter hat) ──
+  if (isPlayer && app.accessories?.beanie) {
+    const BEANIE = new THREE.MeshToonMaterial({ color: app.beanieColor || 0x3498db })
+    const BEANIE_RIBBON = new THREE.MeshToonMaterial({ color: app.beanieColor ? new THREE.Color(app.beanieColor).multiplyScalar(0.7).getHex() : 0x2980b9 })
+    // Main dome
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.31 * sk, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), BEANIE)
+    dome.position.set(0, 0.10 * sk, -0.02 * sk)
+    dome.scale.set(1.02, 0.55, 1.02)
+    headGroup.add(dome)
+    // Folded brim/ribbon
+    const ribbon = new THREE.Mesh(new THREE.TorusGeometry(0.28 * sk, 0.035 * sk, 8, 14), BEANIE_RIBBON)
+    ribbon.position.set(0, 0.04 * sk, -0.01 * sk)
+    ribbon.rotation.x = Math.PI / 2 + 0.15
+    ribbon.scale.set(1, 1, 0.7)
+    headGroup.add(ribbon)
+    // Pom-pom on top
+    const pompom = new THREE.Mesh(new THREE.SphereGeometry(0.055 * sk, 8, 6), BEANIE_RIBBON)
+    pompom.position.set(0.01 * sk, 0.23 * sk, -0.02 * sk)
+    headGroup.add(pompom)
+  }
+
+  // ── Helmet (bike/safety helmet) ──
+  if (isPlayer && app.accessories?.helmet) {
+    const HELMET_OUTER = new THREE.MeshToonMaterial({ color: 0xf5f5f5 })
+    const HELMET_STRIPE = new THREE.MeshToonMaterial({ color: 0x2980b9 })
+    const HELMET_PAD = new THREE.MeshToonMaterial({ color: 0x555555 })
+    const HELMET_VISOR = new THREE.MeshToonMaterial({ color: 0x1a1a2e, transparent: true, opacity: 0.5 })
+    // Main dome
+    const hDome = new THREE.Mesh(new THREE.SphereGeometry(0.33 * sk, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), HELMET_OUTER)
+    hDome.position.set(0, 0.10 * sk, -0.02 * sk)
+    hDome.scale.set(1.04, 0.6, 1.06)
+    headGroup.add(hDome)
+    // Center stripe
+    const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.015 * sk, 0.12 * sk, 0.25 * sk), HELMET_STRIPE)
+    stripe.position.set(0, 0.13 * sk, -0.02 * sk)
+    stripe.rotation.x = 0.15
+    headGroup.add(stripe)
+    // Visor
+    const visor = new THREE.Mesh(new THREE.SphereGeometry(0.27 * sk, 8, 6, 0, Math.PI * 1.2, 0, Math.PI * 0.4), HELMET_VISOR)
+    visor.position.set(0, 0.07 * sk, 0.05 * sk)
+    visor.scale.set(1.1, 0.5, 0.9)
+    headGroup.add(visor)
+    // Padding rim
+    const pad = new THREE.Mesh(new THREE.TorusGeometry(0.30 * sk, 0.025 * sk, 6, 14), HELMET_PAD)
+    pad.position.set(0, 0.03 * sk, -0.01 * sk)
+    pad.rotation.x = Math.PI / 2 + 0.15
+    pad.scale.set(1, 0.9, 0.7)
+    headGroup.add(pad)
+  }
+
+  // ── Sunglasses (togglable) ──
+  if (isPlayer && app.accessories?.glasses) {
+    const GLASS_FRAME = new THREE.MeshToonMaterial({ color: app.glassesFrame || 0x1a1a1a })
+    const GLASS_LENS = new THREE.MeshToonMaterial({
+      color: app.glassesTint || 0x1a1a2e,
+      transparent: true,
+      opacity: 0.45
+    })
+    const GLASS_HIGHLIGHT = new THREE.MeshToonMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 })
+    ;[-1, 1].forEach(s => {
+      // Larger lens with slight aviator curve
+      const lens = new THREE.Mesh(new THREE.SphereGeometry(0.075 * sk, 10, 8), GLASS_LENS)
+      lens.position.set(s * 0.13 * sk, 0.01 * sk, 0.24 * sk)
+      lens.scale.set(1, 0.75, 0.25)
+      headGroup.add(lens)
+      // Thicker frame ring
+      const frame = new THREE.Mesh(new THREE.TorusGeometry(0.072 * sk, 0.015 * sk, 8, 14), GLASS_FRAME)
+      frame.position.set(s * 0.13 * sk, 0.01 * sk, 0.24 * sk)
+      frame.scale.set(1, 0.85, 0.3)
+      headGroup.add(frame)
+      // Subtle lens highlight (reflection)
+      const hl = new THREE.Mesh(new THREE.SphereGeometry(0.035 * sk, 6, 4), GLASS_HIGHLIGHT)
+      hl.position.set(s * 0.10 * sk, 0.035 * sk, 0.265 * sk)
+      headGroup.add(hl)
+    })
+    // Bridge (wider, more prominent)
+    const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.02 * sk), GLASS_FRAME)
+    bridge.position.set(0, 0.01 * sk, 0.24 * sk)
+    headGroup.add(bridge)
+    // Temples (arms)
+    ;[-1, 1].forEach(s => {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.14 * sk, 0.012 * sk, 0.012 * sk), GLASS_FRAME)
+      arm.position.set(s * 0.19 * sk, 0.01 * sk, 0.12 * sk)
+      headGroup.add(arm)
+      // Temple tip (curved end)
+      const tip = new THREE.Mesh(new THREE.SphereGeometry(0.012 * sk, 4, 3), GLASS_FRAME)
+      tip.position.set(s * 0.26 * sk, 0.01 * sk, 0.12 * sk)
+      headGroup.add(tip)
+    })
+  }
+
+  // ── Cheek blush (subtle, player only) ──
+  if (isPlayer) {
+    const BLUSH = new THREE.MeshToonMaterial({ color: 0xff9999, transparent: true, opacity: 0.12 })
+    ;[-1, 1].forEach(s => {
+      const cheek = new THREE.Mesh(new THREE.SphereGeometry(0.045 * sk, 6, 4), BLUSH)
+      cheek.position.set(s * 0.12 * sk, -0.04 * sk, 0.20 * sk)
+      cheek.scale.set(1, 0.5, 0.6)
+      headGroup.add(cheek)
+    })
+  }
+
+  // ═══ NECK ═══
+  const neck = limb(0.08 * sk, 0.10 * sk, 0.14 * sk, SKIN, 8)
+  const neckGroup = new THREE.Group()
+  neckGroup.position.y = 1.56 * sk
+  neck.position.y = 0
+  neckGroup.add(neck)
+  g.add(neckGroup)
+
+  g.add(headGroup)
+
+  // ═══ TORSO ═══
+  const tH = 0.65 * sk
+  const torsoGroup = new THREE.Group()
+  torsoGroup.position.y = 1.23 * sk
+
+  // Chest (upper torso)
+  const chest = limb(0.34 * sk, 0.30 * sk, tH * 0.52, SHIRT, 10)
+  chest.position.y = tH * 0.15
+  torsoGroup.add(chest)
+
+  // Shirt pocket (left chest)
+  const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.07 * sk, 0.015 * sk), SHIRT_DK)
+  pocket.position.set(-0.12 * sk, tH * 0.2, 0.28 * sk)
+  torsoGroup.add(pocket)
+  // Pocket flap
+  const flap = new THREE.Mesh(new THREE.BoxGeometry(0.085 * sk, 0.015 * sk, 0.02 * sk), SHIRT_DK)
+  flap.position.set(-0.12 * sk, tH * 0.24, 0.29 * sk)
+  torsoGroup.add(flap)
+
+  // Shirt buttons
+  for (let i = 0; i < 3; i++) {
+    const btn = new THREE.Mesh(new THREE.SphereGeometry(0.008 * sk, 6, 4), EYE_W)
+    btn.position.set(0, tH * 0.15 - i * 0.08 * sk, 0.31 * sk)
+    torsoGroup.add(btn)
+  }
+
+  // Waist (lower torso)
+  const waist = limb(0.30 * sk, 0.26 * sk, tH * 0.48, SHIRT_DK, 10)
+  waist.position.y = -tH * 0.18
+  torsoGroup.add(waist)
+
+  // Belt
+  const belt = new THREE.Mesh(new THREE.TorusGeometry(0.28 * sk, 0.025 * sk, 6, 16), BELT)
+  belt.position.y = -tH * 0.40
+  belt.rotation.x = Math.PI / 2
+  torsoGroup.add(belt)
+  // Belt buckle
+  const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.02 * sk), BELT_BUCKLE)
+  buckle.position.set(0, -tH * 0.40, 0.28 * sk)
+  torsoGroup.add(buckle)
+
+  g.add(torsoGroup)
+
+  // ═══ SHOULDERS (joint spheres) ═══
+  const lShoulder = jointSphere(0.08 * sk, SHIRT)
+  lShoulder.position.set(-0.37 * sk, 1.42 * sk, 0)
+  g.add(lShoulder)
+  const rShoulder = jointSphere(0.08 * sk, SHIRT)
+  rShoulder.position.set(0.37 * sk, 1.42 * sk, 0)
+  g.add(rShoulder)
+
+  // ═══ ARMS (articulated groups) ═══
+  const lArmP = new THREE.Group()
+  lArmP.position.set(-0.38 * sk, 1.38 * sk, 0)
+  // Upper arm
+  const lUA = limb(0.085 * sk, 0.075 * sk, 0.32 * sk, SHIRT, 10)
+  lUA.position.y = -0.16 * sk
+  lArmP.add(lUA)
+  // Elbow joint
+  const lElbow = jointSphere(0.055 * sk, JOINT)
+  lElbow.position.set(0, -0.33 * sk, 0)
+  lArmP.add(lElbow)
+  // Forearm
+  const lFore = limb(0.07 * sk, 0.055 * sk, 0.28 * sk, SKIN, 10)
+  lFore.position.set(0, -0.48 * sk, 0)
+  lArmP.add(lFore)
+  // Wrist
+  const lWrist = jointSphere(0.038 * sk, WRIST)
+  lWrist.position.set(0, -0.63 * sk, 0)
+  lArmP.add(lWrist)
+  // Hand
+  const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 8, 6), SKIN2)
+  lHand.position.set(0, -0.68 * sk, 0)
+  lHand.scale.set(0.9, 1, 0.7)
+  lArmP.add(lHand)
+  // Fingers (simplified — 3 bumps)
+  ;[-0.015, 0, 0.015].forEach((fx, fi) => {
+    const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.008 * sk, 0.006 * sk, 0.06 * sk, 4), SKIN2)
+    finger.position.set(fx * sk, -0.74 * sk, 0)
+    lArmP.add(finger)
+  })
+  g.add(lArmP)
+
+  const rArmP = new THREE.Group()
+  rArmP.position.set(0.38 * sk, 1.38 * sk, 0)
+  const rUA = limb(0.085 * sk, 0.075 * sk, 0.32 * sk, SHIRT, 10)
+  rUA.position.y = -0.16 * sk
+  rArmP.add(rUA)
+  const rElbow = jointSphere(0.055 * sk, JOINT)
+  rElbow.position.set(0, -0.33 * sk, 0)
+  rArmP.add(rElbow)
+  const rFore = limb(0.07 * sk, 0.055 * sk, 0.28 * sk, SKIN, 10)
+  rFore.position.set(0, -0.48 * sk, 0)
+  rArmP.add(rFore)
+  const rWrist = jointSphere(0.038 * sk, WRIST)
+  rWrist.position.set(0, -0.63 * sk, 0)
+  rArmP.add(rWrist)
+  const rHand = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 8, 6), SKIN2)
+  rHand.position.set(0, -0.68 * sk, 0)
+  rHand.scale.set(0.9, 1, 0.7)
+  rArmP.add(rHand)
+  ;[-0.015, 0, 0.015].forEach((fx) => {
+    const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.008 * sk, 0.006 * sk, 0.06 * sk, 4), SKIN2)
+    finger.position.set(fx * sk, -0.74 * sk, 0)
+    rArmP.add(finger)
+  })
+  g.add(rArmP)
+
+  // ═══ LEGS (articulated groups) ═══
+  const lLegP = new THREE.Group()
+  lLegP.position.set(-0.14 * sk, 0.82 * sk, 0)
+  // Upper leg (thigh)
+  const lUL = limb(0.11 * sk, 0.095 * sk, 0.42 * sk, PANTS, 10)
+  lUL.position.y = -0.21 * sk
+  lLegP.add(lUL)
+  // Knee joint
+  const lKnee = jointSphere(0.065 * sk, PANTS_DK)
+  lKnee.position.set(0, -0.43 * sk, 0)
+  lLegP.add(lKnee)
+  // Lower leg (shin)
+  const lLL = limb(0.09 * sk, 0.075 * sk, 0.38 * sk, PANTS_DK, 10)
+  lLL.position.set(0, -0.62 * sk, 0)
+  lLegP.add(lLL)
+  // Ankle
+  const lAnkle = jointSphere(0.04 * sk, SHOES)
+  lAnkle.position.set(0, -0.82 * sk, 0)
+  lLegP.add(lAnkle)
+  // Shoe (with sole detail)
+  const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.07 * sk, 0.20 * sk), SHOES)
+  lShoe.position.set(0.01 * sk, -0.87 * sk, 0.04 * sk)
+  lLegP.add(lShoe)
+  const lSole = new THREE.Mesh(new THREE.BoxGeometry(0.115 * sk, 0.02 * sk, 0.21 * sk), SHOE_SOLE)
+  lSole.position.set(0.01 * sk, -0.91 * sk, 0.04 * sk)
+  lLegP.add(lSole)
+  // Shoe tongue
+  const lTongue = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.015 * sk), SHIRT_DK)
+  lTongue.position.set(0.01 * sk, -0.83 * sk, 0.14 * sk)
+  lTongue.rotation.x = -0.3
+  lLegP.add(lTongue)
+  g.add(lLegP)
+
+  const rLegP = new THREE.Group()
+  rLegP.position.set(0.14 * sk, 0.82 * sk, 0)
+  const rUL = limb(0.11 * sk, 0.095 * sk, 0.42 * sk, PANTS, 10)
+  rUL.position.y = -0.21 * sk
+  rLegP.add(rUL)
+  const rKnee = jointSphere(0.065 * sk, PANTS_DK)
+  rKnee.position.set(0, -0.43 * sk, 0)
+  rLegP.add(rKnee)
+  const rLL = limb(0.09 * sk, 0.075 * sk, 0.38 * sk, PANTS_DK, 10)
+  rLL.position.set(0, -0.62 * sk, 0)
+  rLegP.add(rLL)
+  const rAnkle = jointSphere(0.04 * sk, SHOES)
+  rAnkle.position.set(0, -0.82 * sk, 0)
+  rLegP.add(rAnkle)
+  const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.07 * sk, 0.20 * sk), SHOES)
+  rShoe.position.set(-0.01 * sk, -0.87 * sk, 0.04 * sk)
+  rLegP.add(rShoe)
+  const rSole = new THREE.Mesh(new THREE.BoxGeometry(0.115 * sk, 0.02 * sk, 0.21 * sk), SHOE_SOLE)
+  rSole.position.set(-0.01 * sk, -0.91 * sk, 0.04 * sk)
+  rLegP.add(rSole)
+  const rTongue = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.015 * sk), SHIRT_DK)
+  rTongue.position.set(-0.01 * sk, -0.83 * sk, 0.14 * sk)
+  rTongue.rotation.x = -0.3
+  rLegP.add(rTongue)
+  g.add(rLegP)
+
+  // ═══ GROUND SHADOW (soft blob) ═══
+  const shadowGeo = new THREE.CircleGeometry(0.3 * sk, 16)
+  const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.2, depthWrite: false })
+  const shadowBlob = new THREE.Mesh(shadowGeo, shadowMat)
+  shadowBlob.rotation.x = -Math.PI / 2
+  shadowBlob.position.y = 0.01
+  g.add(shadowBlob)
+
+  // ═══ PLAYER-SPECIFIC ACCESSORIES ═══
+  let ring = null, nametag = null, nametagGlow = null, nametagGlowOuter = null
+  if (isPlayer) {
+    // ── Backpack (detailed with straps and pocket) ──
+    if (app.accessories?.backpack !== false) {
+      const bagMain = new THREE.Mesh(new THREE.BoxGeometry(0.30 * sk, 0.40 * sk, 0.16 * sk), BAG)
+      bagMain.position.set(0, 1.28 * sk, -0.24 * sk)
+      g.add(bagMain)
+      // Bag front pocket
+      const bagPocket = new THREE.Mesh(new THREE.BoxGeometry(0.24 * sk, 0.12 * sk, 0.04 * sk), BAG_DK)
+      bagPocket.position.set(0, 1.20 * sk, -0.33 * sk)
+      g.add(bagPocket)
+      // Bag zipper
+      const zipper = new THREE.Mesh(new THREE.BoxGeometry(0.22 * sk, 0.008 * sk, 0.005 * sk), BELT_BUCKLE)
+      zipper.position.set(0, 1.27 * sk, -0.325 * sk)
+      g.add(zipper)
+      // Bag flap
+      const bagFlap = new THREE.Mesh(new THREE.BoxGeometry(0.28 * sk, 0.06 * sk, 0.03 * sk), BAG_DK)
+      bagFlap.position.set(0, 1.48 * sk, -0.30 * sk)
+      g.add(bagFlap)
+      // Shoulder straps
+      ;[-1, 1].forEach(s => {
+        const strap = new THREE.Mesh(new THREE.BoxGeometry(0.04 * sk, 0.5 * sk, 0.02 * sk), BAG_STRAP)
+        strap.position.set(s * 0.12 * sk, 1.35 * sk, -0.12 * sk)
+        strap.rotation.x = 0.15
+        g.add(strap)
+      })
+    }
+
+    // ── Scarf (3D draped geometry) ──
+    if (app.accessories?.scarf) {
+      const SCARF = new THREE.MeshToonMaterial({ color: 0xe74c3c })
+      const SCARF_STRIPE = new THREE.MeshToonMaterial({ color: 0xd4a017 })
+      // Main wrap around neck
+      const wrap = new THREE.Mesh(new THREE.TorusGeometry(0.16 * sk, 0.03 * sk, 8, 16), SCARF)
+      wrap.position.set(0, 1.54 * sk, -0.02 * sk)
+      wrap.rotation.x = Math.PI / 2 + 0.2
+      wrap.scale.set(1.2, 1, 0.8)
+      g.add(wrap)
+      // Draped front left segment
+      const segL = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.28 * sk, 0.03 * sk), SCARF)
+      segL.position.set(-0.10 * sk, 1.38 * sk, 0.07 * sk)
+      segL.rotation.x = 0.2
+      segL.rotation.z = 0.1
+      g.add(segL)
+      // Draped front right segment
+      const segR = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.28 * sk, 0.03 * sk), SCARF)
+      segR.position.set(0.10 * sk, 1.38 * sk, 0.07 * sk)
+      segR.rotation.x = 0.2
+      segR.rotation.z = -0.1
+      g.add(segR)
+      // Stripe on left segment
+      const stripeL = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.035 * sk), SCARF_STRIPE)
+      stripeL.position.set(-0.10 * sk, 1.34 * sk, 0.075 * sk)
+      g.add(stripeL)
+      // Stripe on right segment
+      const stripeR = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.035 * sk), SCARF_STRIPE)
+      stripeR.position.set(0.10 * sk, 1.34 * sk, 0.075 * sk)
+      g.add(stripeR)
+      // Draped back 
+      const segBack = new THREE.Mesh(new THREE.BoxGeometry(0.20 * sk, 0.16 * sk, 0.025 * sk), SCARF)
+      segBack.position.set(0, 1.38 * sk, -0.14 * sk)
+      segBack.rotation.x = -0.15
+      g.add(segBack)
+    }
+
+    // ── Glow ring ──
+    ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.32 * sk, 0.018, 10, 24),
+      new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.4 })
+    )
+    ring.position.set(0, 0.01, 0)
+    ring.rotation.x = Math.PI / 2
+    g.add(ring)
+    // Outer ring glow
+    const ringOuter = new THREE.Mesh(
+      new THREE.TorusGeometry(0.36 * sk, 0.008, 8, 20),
+      new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.2 })
+    )
+    ringOuter.position.set(0, 0.01, 0)
+    ringOuter.rotation.x = Math.PI / 2
+    g.add(ringOuter)
+
+    // ── Direction arrows (3D chevrons) ──
+    const arrowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.35 })
+    ;[-1, 1].forEach(s => {
+      const ar = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.09, 4), arrowMat)
+      ar.position.set(s * 0.52 * sk, 0.1 * sk, 0)
+      ar.rotation.z = s * Math.PI / 2
+      g.add(ar)
+    })
+    // Forward arrow
+    const fwdAr = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.08, 4), arrowMat)
+    fwdAr.position.set(0, 0.08 * sk, 0.5 * sk)
+    fwdAr.rotation.x = Math.PI / 2
+    g.add(fwdAr)
+
+    // ── Nametag sprite (enhanced: rank icon, name, rank title, XP bar, animated glow) ──
+    const nameTxt = (typeof S !== 'undefined' && S?.name) || 'Player'
+    const _nametagRankTiers = [
+      { min: 0, name: 'Rookie', icon: '🔰', color: '#94a3b8' },
+      { min: 5000, name: 'Bronze', icon: '🥉', color: '#cd7f32' },
+      { min: 15000, name: 'Silver', icon: '🥈', color: '#c0c0c0' },
+      { min: 30000, name: 'Gold', icon: '🥇', color: '#ffd54a' },
+      { min: 50000, name: 'Platinum', icon: '💎', color: '#b89bff' },
+      { min: 100000, name: 'Hero', icon: '🏆', color: '#34d399' }
+    ]
+    const _getNametagRank = (score) => {
+      let rank = _nametagRankTiers[0]
+      for (const r of _nametagRankTiers) { if (score >= r.min) rank = r }
+      return rank
+    }
+    const _playerScore = (typeof S !== 'undefined' && S?.total) || 0
+    const _rank = _getNametagRank(_playerScore)
+    const _nextRank = _nametagRankTiers.find(r => r.min > _playerScore)
+    const _xpPct = _nextRank ? Math.min(1, (_playerScore - _rank.min) / (_nextRank.min - _rank.min)) : 1
+    // Canvas: wider for rank info + progress bar
+    const canvas = document.createElement('canvas')
+    canvas.width = 512; canvas.height = 140
+    const ctx = canvas.getContext('2d')
+    // Rounded background with rank-colored border
+    ctx.fillStyle = 'rgba(0, 15, 10, 0.75)'
+    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 132, 14); ctx.fill() } else { ctx.fillRect(4, 4, 504, 132) }
+    // Rank-colored accent border
+    ctx.strokeStyle = _rank.color + '88'
+    ctx.lineWidth = 2.5
+    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 132, 14); ctx.stroke() }
+    // Rank icon (emoji)
+    ctx.font = '28px serif'
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(_rank.icon, 20, 38)
+    // Rank name + title
+    ctx.fillStyle = _rank.color
+    ctx.font = 'bold 11px Inter, sans-serif'
+    ctx.textAlign = 'left'
+    ctx.fillText(_rank.name.toUpperCase(), 52, 28)
+    // Player name
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 30px Inter, sans-serif'
+    ctx.fillText(nameTxt, 52, 55)
+    // XP progress bar
+    const barX = 20, barY = 78, barW = 472, barH = 10
+    // Bar background
+    ctx.fillStyle = 'rgba(255,255,255,0.08)'
+    if (ctx.roundRect) { ctx.roundRect(barX, barY, barW, barH, 5); ctx.fill() } else { ctx.fillRect(barX, barY, barW, barH) }
+    // Bar fill with rank color gradient
+    if (_xpPct > 0) {
+      const barGrad = ctx.createLinearGradient(barX, 0, barX + barW * _xpPct, 0)
+      barGrad.addColorStop(0, _rank.color)
+      barGrad.addColorStop(1, _nextRank ? _nextRank.color : _rank.color)
+      ctx.fillStyle = barGrad
+      if (ctx.roundRect) { ctx.roundRect(barX, barY, Math.max(4, barW * _xpPct), barH, 5); ctx.fill() } else { ctx.fillRect(barX, barY, Math.max(4, barW * _xpPct), barH) }
+    }
+    // XP label
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'
+    ctx.font = '10px Inter, sans-serif'
+    ctx.textAlign = 'left'
+    ctx.fillText(_playerScore.toLocaleString() + ' XP', barX, barY + 24)
+    ctx.textAlign = 'right'
+    ctx.fillText(_nextRank ? (_nextRank.min - _playerScore).toLocaleString() + ' to ' + _nextRank.name : 'MAX RANK', barX + barW, barY + 24)
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.minFilter = THREE.LinearFilter
+    nametag = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }))
+    nametag.position.set(0, 2.45 * sk, 0)
+    nametag.scale.set(1.4, 0.38, 1)
+    g.add(nametag)
+    // ── Animated glow ring under nametag (pulses with rank color) ──
+    const _rankColorObj = new THREE.Color(_rank.color)
+    nametagGlow = new THREE.Mesh(
+      new THREE.RingGeometry(0.25 * sk, 0.30 * sk, 24),
+      new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthTest: false })
+    )
+    nametagGlow.position.set(0, 2.45 * sk, -0.01)
+    nametagGlow.rotation.x = -Math.PI / 2
+    g.add(nametagGlow)
+    // Outer glow ring
+    nametagGlowOuter = new THREE.Mesh(
+      new THREE.RingGeometry(0.32 * sk, 0.35 * sk, 24),
+      new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthTest: false })
+    )
+    nametagGlowOuter.position.set(0, 2.45 * sk, -0.015)
+    nametagGlowOuter.rotation.x = -Math.PI / 2
+    g.add(nametagGlowOuter)
+
+    // ── Outline glow mesh (adds depth) ──
+    const glowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.04, side: THREE.BackSide })
+    const glowBody = new THREE.Mesh(new THREE.CylinderGeometry(0.38 * sk, 0.32 * sk, 1.6 * sk, 12), glowMat)
+    glowBody.position.y = 0.9 * sk
+    g.add(glowBody)
+  }
+
+  // ═══ NPC BACKPACK (simpler) ═══
+  if (!isPlayer) {
+    const npcBag = new THREE.Mesh(new THREE.BoxGeometry(0.22 * sk, 0.30 * sk, 0.12 * sk), BAG)
+    npcBag.position.set(0, 1.28 * sk, -0.22 * sk)
+    g.add(npcBag)
+    // NPC bag strap
+    ;[-0.08, 0.08].forEach(x => {
+      const s = new THREE.Mesh(new THREE.BoxGeometry(0.025 * sk, 0.35 * sk, 0.015 * sk), BAG_STRAP)
+      s.position.set(x * sk, 1.32 * sk, -0.10 * sk)
+      g.add(s)
+    })
+  }
+
+  // ═══ SHADOWS ═══
+  g.traverse(c => {
+    if (c.isMesh) {
+      c.castShadow = !isPlayer
+      c.receiveShadow = true
+      c.frustumCulled = false
+    }
+  })
+
+  // ═══ HITBOX ═══
+  const hb = new THREE.Mesh(
+    new THREE.BoxGeometry(0.6 * sk, 1.8 * sk, 0.6 * sk),
+    new THREE.MeshBasicMaterial({ visible: false })
+  )
+  hb.position.y = 0.9 * sk
+  g.add(hb)
+
+  // ═══ USERDATA (animation refs + NPC behavior) ═══
+  g.userData = {
+    lLeg: lLegP,
+    rLeg: rLegP,
+    lArm: lArmP,
+    rArm: rArmP,
+    headGroup,
+    torsoGroup,
+    eyeLids: _eyeLids,
+    ring,
+    nametag,
+    nametagGlow,
+    nametagGlowOuter,
+    shadowBlob,
+    isPlayer,
+    _sk: sk,
+    t: Math.random() * 10,
+    spd: 1.5 + Math.random() * 1.5,
+    dir: Math.random() > 0.5 ? 1 : -1,
+    startZ: 0,
+    // For idle animation variation
+    idlePhase: Math.random() * Math.PI * 2,
+    blinkTimer: Math.random() * 4 + Math.random() * 3
+  }
   return g
 }
 
@@ -2826,56 +3841,15 @@ updateTrafficAuthUI()
 window.addEventListener('DOMContentLoaded', updateTrafficAuthUI)
 
 // Garage panel functions
-function getVehicleIcon(v) {
-  const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚚', bus: '🚌', cycle: '🚲', ambulance: '🚑', police: '🚓', taxi: '🚕' }
-  return icons[v.id] || '🚗'
-}
-
-function getVehicleName(v) {
-  return v.name || v.id
-}
-
-function isVehicleRecommended(v, levelId) {
-  return v.recommended?.includes(levelId) || false
-}
-
-function showGarage(levelId) {
-  const container = document.getElementById('br-garage')
-  const list = document.getElementById('br-garage-list')
-  if (!container || !list) return
-  
-  const recommended = window.COURSE?.getRecommendedVehicle?.(levelId)
-  const vehicles = window.COURSE?.VEHICLES || []
-  
-  let html = ''
-  vehicles.forEach(v => {
-    const rec = isVehicleRecommended(v, levelId)
-    const isSelected = v.id === (S.vehicle?.toLowerCase() || '')
-    html += `
-      <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--card);border:1px solid ${rec ? 'var(--signal)' : (isSelected ? 'var(--accent)' : 'var(--border)')};border-radius:10px;transition:all 0.2s;" 
-           onmouseover="this.style.background='var(--hover)'" 
-           onmouseout="this.style.background='var(--card)'" 
-           onclick="selectVehicle('${v.id}')">
-        <div style="font-size:1.8rem;">${getVehicleIcon(v)}</div>
-        <div style="flex:1;">
-          <div style="font-weight:700;color:var(--text);">${getVehicleName(v)}</div>
-          ${rec ? '<div style="font-size:0.65rem;color:var(--signal);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;">✓ Recommended for this level</div>' : ''}
-          ${isSelected ? '<div style="font-size:0.65rem;color:var(--accent);font-weight:700;text-transform:uppercase;">Current Selection</div>' : ''}
-        </div>
-        <div style="font-size:0.7rem;color:var(--muted);">${v.id === 'car' ? 'Balanced' : v.id === 'bike' ? 'Agile' : v.id === 'auto' ? 'Compact' : v.id === 'bus' ? 'Heavy' : v.id === 'truck' ? 'Cargo' : 'Eco'}</div>
-      </div>
-    `
-  })
-  list.innerHTML = html
-  container.style.display = 'block'
-}
-
+// Legacy fallback — used by old onclick handlers
 function selectVehicle(vehicleId) {
-  S.vehicle = vehicleId.charAt(0).toUpperCase() + vehicleId.slice(1)
-  save()
-  toast(`✅ Vehicle set to ${vehicleId}`, '#34d399')
-  // Refresh garage to show selection
-  if (ui.cur) showGarage(ui.cur.id)
+  if (ui && typeof ui._selectVehicle === 'function') {
+    ui._selectVehicle(vehicleId)
+  } else {
+    S.vehicle = vehicleId.charAt(0).toUpperCase() + vehicleId.slice(1)
+    save()
+    toast(`✅ Vehicle set to ${vehicleId}`, '#34d399')
+  }
 }
 
 // Mystery reward system (variable reinforcement)
@@ -2998,3 +3972,306 @@ function showConsequenceModal(violationType, severity = 'normal') {
     document.head.appendChild(style)
   }
 }
+
+// ═══ CHARACTER CUSTOMIZATION SYSTEM ═══
+(function() {
+  const SKINS = [
+    { hex: 0xfce4c7, name: 'Light' }, { hex: 0xf1c27d, name: 'Fair' },
+    { hex: 0xd4a574, name: 'Medium' }, { hex: 0xc68642, name: 'Tan' },
+    { hex: 0x8d5524, name: 'Brown' }, { hex: 0x5c3317, name: 'Dark' }
+  ]
+  const HAIRS = [
+    { hex: 0x0a0a0a, name: 'Black' }, { hex: 0x3d2b1f, name: 'Dark Brown' },
+    { hex: 0x654321, name: 'Brown' }, { hex: 0x8B4513, name: 'Chestnut' },
+    { hex: 0xb5651d, name: 'Auburn' }, { hex: 0xd4a017, name: 'Dark Blonde' },
+    { hex: 0xe8c872, name: 'Blonde' }, { hex: 0xc0c0c0, name: 'Silver' },
+    { hex: 0xd32f2f, name: 'Red' }, { hex: 0x7b1fa2, name: 'Purple' }
+  ]
+  const SHIRTS = [
+    { hex: 0xe74c3c, name: 'Red' }, { hex: 0x3498db, name: 'Blue' },
+    { hex: 0x2ecc71, name: 'Green' }, { hex: 0xf39c12, name: 'Orange' },
+    { hex: 0x9b59b6, name: 'Purple' }, { hex: 0x1abc9c, name: 'Teal' },
+    { hex: 0xe67e22, name: 'Amber' }, { hex: 0x34495e, name: 'Navy' },
+    { hex: 0xecf0f1, name: 'White' }, { hex: 0x2c3e50, name: 'Dark' },
+    { hex: 0xff69b4, name: 'Pink' }, { hex: 0x00bcd4, name: 'Cyan' }
+  ]
+  const PANTS = [
+    { hex: 0x2c3e50, name: 'Dark' }, { hex: 0x555555, name: 'Gray' },
+    { hex: 0x1a237e, name: 'Navy' }, { hex: 0x333333, name: 'Charcoal' },
+    { hex: 0x5d4037, name: 'Brown' }, { hex: 0x006064, name: 'Teal' }
+  ]
+  const ACCESSORIES = [
+    { id: 'cap', name: '🧢 Cap', on: true },
+    { id: 'beanie', name: '🧶 Beanie', on: false },
+    { id: 'helmet', name: '⛑️ Helmet', on: false },
+    { id: 'backpack', name: '🎒 Backpack', on: true },
+    { id: 'glasses', name: '🕶️ Glasses', on: false },
+    { id: 'scarf', name: '🧣 Scarf', on: false }
+  ]
+
+  let _current = { skin: 0xd4a574, hair: 0x1a1a1a, shirt: 0xe74c3c, pants: 0x2c3e50, accessories: { cap: true, beanie: false, helmet: false, backpack: true, glasses: false, scarf: false } }
+  let _previewScene, _previewCamera, _previewRenderer, _previewChar, _previewRAF
+
+  function _loadSaved() {
+    try {
+      const s = JSON.parse(localStorage.getItem('traffic_appearance'))
+      if (s) {
+        _current.skin = s.skin || _current.skin
+        _current.hair = s.hair || _current.hair
+        _current.shirt = s.shirt || _current.shirt
+        _current.pants = s.pants || _current.pants
+        if (s.accessories) _current.accessories = s.accessories
+      }
+    } catch (e) {}
+  }
+
+  // ── Sync appearance from Supabase to localStorage (fire-and-forget) ──
+  async function _syncAppearanceFromCloud() {
+    if (!window.supabaseClient || !window.colUser?.id) return
+    try {
+      const { data, error } = await window.supabaseClient
+        .from('user_profiles')
+        .select('appearance, appearance_updated_at')
+        .eq('user_id', window.colUser.id)
+        .maybeSingle()
+      if (error || !data || !data.appearance) return
+      // Only overwrite local if cloud version is newer or local doesn't exist
+      const localRaw = localStorage.getItem('traffic_appearance')
+      if (localRaw) {
+        try {
+          const local = JSON.parse(localRaw)
+          const cloudTime = data.appearance_updated_at ? new Date(data.appearance_updated_at).getTime() : 0
+          const localTime = local._updated || 0
+          if (cloudTime <= localTime) return // local is newer or equal
+        } catch (e) {}
+      }
+      localStorage.setItem('traffic_appearance', JSON.stringify(data.appearance))
+      // Reload into _current and refresh preview if modal is open
+      _loadSaved()
+      _refreshSwatches()
+      _updatePreviewModel()
+    } catch (e) {
+      console.warn('[customize] Cloud sync error:', e)
+    }
+  }
+
+  // ── Sync appearance from localStorage to Supabase (fire-and-forget) ──
+  async function _syncAppearanceToCloud() {
+    if (!window.supabaseClient || !window.colUser?.id) return
+    try {
+      await window.supabaseClient
+        .from('user_profiles')
+        .upsert({
+          user_id: window.colUser.id,
+          appearance: { ..._current, _updated: Date.now() },
+          appearance_updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' })
+    } catch (e) {
+      console.warn('[customize] Cloud save error:', e)
+    }
+  }
+
+  function _swatchHTML(items, selected, group) {
+    return items.map(it => {
+      const sel = it.hex === selected ? 'border:2px solid #fff; transform:scale(1.2);' : 'border:2px solid transparent;'
+      const css = new THREE.Color(it.hex).getStyle()
+      return `<div title="${it.name}" onclick="window._pickSwatch('${group}',${it.hex})" style="width:36px; height:36px; border-radius:10px; background:${css}; cursor:pointer; transition:all 0.15s; ${sel}"></div>`
+    }).join('')
+  }
+
+  function _accessoryHTML() {
+    return ACCESSORIES.map(a => {
+      const on = _current.accessories[a.id]
+      return `<button onclick="window._toggleAccessory('${a.id}')" style="padding:8px 14px; border-radius:10px; border:1px solid ${on ? 'var(--teal)' : 'var(--border)'}; background:${on ? 'rgba(0,240,204,0.1)' : 'var(--hover)'}; color:${on ? 'var(--teal)' : 'var(--muted)'}; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.15s;">${a.name}</button>`
+    }).join('')
+  }
+
+  function _refreshSwatches() {
+    const ss = document.getElementById('skin-swatches')
+    const hs = document.getElementById('hair-swatches')
+    const shs = document.getElementById('shirt-swatches')
+    const ps = document.getElementById('pants-swatches')
+    const ao = document.getElementById('accessory-options')
+    if (ss) ss.innerHTML = _swatchHTML(SKINS, _current.skin, 'skin')
+    if (hs) hs.innerHTML = _swatchHTML(HAIRS, _current.hair, 'hair')
+    if (shs) shs.innerHTML = _swatchHTML(SHIRTS, _current.shirt, 'shirt')
+    if (ps) ps.innerHTML = _swatchHTML(PANTS, _current.pants, 'pants')
+    if (ao) ao.innerHTML = _accessoryHTML()
+  }
+
+  function _initPreview() {
+    const canvas = document.getElementById('customize-preview')
+    if (!canvas || !window.THREE) return
+    if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose() }
+    _previewScene = new THREE.Scene()
+    _previewScene.background = new THREE.Color(0x0a0e1a)
+    _previewCamera = new THREE.PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 100)
+    _previewCamera.position.set(0, 1.8, 5)
+    _previewCamera.lookAt(0, 1.2, 0)
+    _previewRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
+    _previewRenderer.setSize(canvas.width, canvas.height)
+    _previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    _previewRenderer.toneMapping = THREE.ACESFilmicToneMapping
+    _previewRenderer.toneMappingExposure = 1.0
+    // ── Cinematic 3-point lighting ──
+    const amb = new THREE.AmbientLight(0x8888ff, 0.25)
+    _previewScene.add(amb)
+    // Key light (warm, from front-right)
+    const key = new THREE.DirectionalLight(0xffeedd, 1.1)
+    key.position.set(3, 4, 4)
+    _previewScene.add(key)
+    // Fill light (cool, from front-left, softer)
+    const fill = new THREE.DirectionalLight(0x8899ff, 0.35)
+    fill.position.set(-2.5, 1.5, 3)
+    _previewScene.add(fill)
+    // Rim/Hair light from behind
+    const rim = new THREE.DirectionalLight(0x88ddff, 0.5)
+    rim.position.set(-1, 3, -5)
+    _previewScene.add(rim)
+    // Soft bottom bounce
+    const bounce = new THREE.DirectionalLight(0x4466aa, 0.2)
+    bounce.position.set(0, -3, 2)
+    _previewScene.add(bounce)
+    // ── Subtle ground reflection ──
+    const groundGeo = new THREE.CircleGeometry(2.5, 24)
+    const groundMat = new THREE.MeshBasicMaterial({
+      color: 0x111622,
+      transparent: true,
+      opacity: 0.6,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    })
+    const ground = new THREE.Mesh(groundGeo, groundMat)
+    ground.rotation.x = -Math.PI / 2
+    ground.position.y = -0.02
+    _previewScene.add(ground)
+    // Gradient ring accent
+    const ringAcc = new THREE.Mesh(
+      new THREE.RingGeometry(0.6, 0.65, 48),
+      new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false })
+    )
+    ringAcc.rotation.x = -Math.PI / 2
+    ringAcc.position.y = -0.01
+    _previewScene.add(ringAcc)
+    _updatePreviewModel()
+  }
+
+  function _updatePreviewModel() {
+    if (!_previewScene) return
+    if (_previewChar) _previewScene.remove(_previewChar)
+    _previewChar = _buildHuman(true, _current)
+    _previewChar.position.set(0, 0, 0)
+    _previewScene.add(_previewChar)
+  }
+
+  function _animatePreview() {
+    if (!_previewRenderer) return
+    _previewRAF = requestAnimationFrame(_animatePreview)
+    if (_previewChar) {
+      _previewChar.rotation.y += 0.006
+      // Subtle idle breathing — torso rises slightly
+      if (_previewChar.userData) {
+        const t = Date.now() * 0.002
+        const breathe = Math.sin(t) * 0.004
+        if (_previewChar.userData.torsoGroup) {
+          _previewChar.userData.torsoGroup.position.y = 1.23 + breathe * 0.5
+        }
+        // Slight head sway
+        if (_previewChar.userData.headGroup) {
+          _previewChar.userData.headGroup.rotation.z = Math.sin(t * 0.7) * 0.004
+        }
+        // Blink timer
+        if (_previewChar.userData.eyeLids) {
+          const blinkPhase = Math.sin(t * 0.5) * 0.5 + 0.5
+          _previewChar.userData.eyeLids.forEach(lid => {
+            lid.scale.y = blinkPhase > 0.98 ? 0.2 : 0.7
+          })
+        }
+      }
+    }
+    _previewRenderer.render(_previewScene, _previewCamera)
+  }
+
+  window._pickSwatch = function(group, hex) {
+    _current[group] = hex
+    _refreshSwatches()
+    _updatePreviewModel()
+  }
+
+  window._toggleAccessory = function(id) {
+    _current.accessories[id] = !_current.accessories[id]
+    // Mutual exclusion for headwear — only one at a time
+    if (id === 'cap' && _current.accessories.cap) {
+      _current.accessories.beanie = false
+      _current.accessories.helmet = false
+    } else if (id === 'beanie' && _current.accessories.beanie) {
+      _current.accessories.cap = false
+      _current.accessories.helmet = false
+    } else if (id === 'helmet' && _current.accessories.helmet) {
+      _current.accessories.cap = false
+      _current.accessories.beanie = false
+    }
+    _refreshSwatches()
+  }
+
+  window._randomizeCustomize = function() {
+    _current.skin = SKINS[Math.floor(Math.random() * SKINS.length)].hex
+    _current.hair = HAIRS[Math.floor(Math.random() * HAIRS.length)].hex
+    _current.shirt = SHIRTS[Math.floor(Math.random() * SHIRTS.length)].hex
+    _current.pants = PANTS[Math.floor(Math.random() * PANTS.length)].hex
+    // Randomize headwear first (mutually exclusive)
+    _current.accessories.beanie = Math.random() > 0.8
+    _current.accessories.helmet = !_current.accessories.beanie && Math.random() > 0.85
+    // Cap if neither beanie nor helmet active
+    _current.accessories.cap = !_current.accessories.beanie && !_current.accessories.helmet && Math.random() > 0.3
+    _current.accessories.backpack = Math.random() > 0.3
+    _current.accessories.glasses = Math.random() > 0.7
+    _current.accessories.scarf = Math.random() > 0.8
+    _refreshSwatches()
+    _updatePreviewModel()
+  }
+
+  window._saveCustomize = function() {
+    _current._updated = Date.now()
+    localStorage.setItem('traffic_appearance', JSON.stringify(_current))
+    // Sync to Supabase in background
+    _syncAppearanceToCloud()
+    const modal = document.getElementById('customize-modal')
+    if (modal) modal.style.display = 'none'
+    if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose(); _previewRenderer = null }
+    // If in-game, respawn player with new appearance
+    if (window.game && window.game.player && window.game.playerCharacter) {
+      const pos = window.game.playerCharacter.position.clone()
+      const rot = window.game.playerCharacter.rotation.y
+      window.game.scene.remove(window.game.playerCharacter)
+      window.game.playerCharacter = _buildHuman(true)
+      window.game.playerCharacter.position.copy(pos)
+      window.game.playerCharacter.rotation.y = rot
+      window.game.scene.add(window.game.playerCharacter)
+      window.game.player = window.game.playerCharacter
+      toast('✨ Character updated!', '#34d399')
+    } else {
+      toast('✨ Appearance saved!', '#34d399')
+    }
+  }
+
+  window.openCustomize = function() {
+    _loadSaved()
+    // Try loading cloud appearance (fires in background — local is immediate)
+    _syncAppearanceFromCloud()
+    const modal = document.getElementById('customize-modal')
+    if (modal) {
+      modal.style.display = 'flex'
+      _refreshSwatches()
+      _initPreview()
+      _animatePreview()
+    }
+  }
+
+  // ── Sync appearance on auth change (login/logout) ──
+  window.addEventListener('col-auth-changed', () => {
+    _syncAppearanceFromCloud()
+  })
+
+  window._buildHuman = _buildHuman
+})()

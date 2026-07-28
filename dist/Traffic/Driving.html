@@ -36,6 +36,7 @@
   <script src="traffic-charts.js"></script>
   <link rel="stylesheet" href="traffic-charts.css" />
   <link rel="stylesheet" href="welcome-back.css" />
+  <link rel="stylesheet" href="animations.css" />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
     rel="stylesheet" />
@@ -78,6 +79,37 @@
       .lw {
         padding: 30px 24px;
       }
+      /* Hide desktop-only settings/difficulty/weather buttons on mobile */
+      #btn-diff, .nav-login-btn[onclick*="gameWeather"], .nav-login-btn[onclick*="Difficulty"] {
+        display: none !important;
+      }
+      #top-bar-container {
+        gap: 8px !important;
+      }
+      .back-btn {
+        min-height: 48px;
+        min-width: 48px;
+        padding: 12px 16px;
+      }
+      .mc-btn {
+        min-width: 56px;
+        min-height: 56px;
+      }
+      .qo {
+        padding: 14px 20px;
+        min-height: 48px;
+      }
+      .btn {
+        min-height: 48px;
+        padding: 14px 24px;
+      }
+      .btn-g {
+        min-height: 48px;
+      }
+      .db {
+        width: 56px;
+        height: 56px;
+      }
     }
 
     * {
@@ -106,56 +138,319 @@
       padding-right: env(safe-area-inset-right, 0px);
     }
 
-    /* New Dedicated Loading Screen */
+    /* Premium Loading Screen */
     #loading-screen {
       position: fixed;
       inset: 0;
-      background: #070a14;
+      background: linear-gradient(135deg, #070a14 0%, #0d1117 40%, #111827 100%);
       z-index: var(--z-loading);
-      display: flex;
+      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: #34d399;
-      font-family: 'Space Mono', monospace;
-      transition:
-        opacity 0.8s ease,
-        transform 0.8s ease;
+      color: #e8e3d8;
+      font-family: 'Inter', sans-serif;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+    #loading-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(242,184,75,0.08) 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 40% at 80% 100%, rgba(52,211,153,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    #loading-screen::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 200%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(242,184,75,0.3), transparent);
+      animation: loadScanline 3s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes loadScanline { to { transform: translateX(100%); } }
+    #loading-screen.fade-out { opacity: 0; transform: scale(1.05); pointer-events: none; }
+    #loading-screen * { position: relative; z-index: 1; }
+
+    .ls-logo {
+      font-family: 'Lora', serif;
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      font-weight: 600;
+      color: rgba(242,184,75,0.6);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
     }
 
     #loading-screen h1 {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-size: clamp(2rem, 5vw, 4rem);
+      font-family: 'Lora', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
       color: #f2b84b;
-      margin-bottom: 20px;
+      margin-bottom: 4px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f2b84b 0%, #fbbf24 50%, #f2b84b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .ls-level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 32px;
+      background: rgba(242,184,75,0.1);
+      border: 1px solid rgba(242,184,75,0.2);
+      color: #f2b84b;
+      animation: fadeSlideUp 0.6s ease-out 0.2s both;
+    }
+
+    .ls-progress-wrap {
+      width: clamp(280px, 55vw, 480px);
+      animation: fadeSlideUp 0.6s ease-out 0.3s both;
+    }
+
+    .ls-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    #loading-status {
+      font-size: 0.8rem;
+      color: #8891aa;
+      font-weight: 500;
+    }
+    #loading-pct {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #34d399;
+      font-family: 'Space Mono', monospace;
     }
 
     #loading-bar-container {
-      width: clamp(250px, 50vw, 400px);
-      height: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
       overflow: hidden;
-      margin-bottom: 15px;
+      position: relative;
     }
+    #loading-bar-container::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      animation: shimmer 2s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%,100% { transform: translateX(-100%); } 50% { transform: translateX(100%); } }
 
     #loading-bar {
       width: 0%;
       height: 100%;
+      background: linear-gradient(90deg, #34d399, #5ed4f5);
+      border-radius: 3px;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .ls-tips {
+      margin-top: 40px;
+      max-width: 420px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.5;
+      animation: fadeSlideUp 0.6s ease-out 0.5s both;
+    }
+    .ls-tips span { color: rgba(242,184,75,0.5); }
+
+    .ls-dots {
+      display: flex;
+      gap: 6px;
+      margin-top: 24px;
+      animation: fadeSlideUp 0.6s ease-out 0.6s both;
+    }
+    .ls-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .ls-dot.active {
       background: #34d399;
-      transition: width 0.1s linear;
+      transform: scale(1.3);
     }
 
-    #loading-pct {
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Level Preview Modal ── */
+    #level-preview-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: calc(var(--z-loading) - 1);
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    #level-preview-overlay.show { display: flex; opacity: 1; }
+
+    .lp-card {
+      background: linear-gradient(160deg, rgba(17,24,39,0.95) 0%, rgba(15,23,42,0.98) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 0;
+      max-width: 520px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      animation: lpSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    @keyframes lpSlideUp {
+      from { opacity: 0; transform: translateY(40px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .lp-hero {
+      height: 180px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .lp-hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 60px;
+      background: linear-gradient(transparent, rgba(15,23,42,0.95));
+    }
+    .lp-hero-icon {
+      font-size: 4rem;
+      z-index: 1;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    }
+    .lp-hero-level {
+      position: absolute;
+      top: 16px; left: 16px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: rgba(0,0,0,0.5);
+      color: #f2b84b;
+      backdrop-filter: blur(8px);
+    }
+    .lp-hero-diff {
+      position: absolute;
+      top: 16px; right: 16px;
+      display: flex;
+      gap: 3px;
+    }
+    .lp-diff-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .lp-diff-dot.filled { background: #f2b84b; border-color: #f2b84b; box-shadow: 0 0 8px rgba(242,184,75,0.4); }
+
+    .lp-body { padding: 24px 28px 28px; }
+
+    .lp-name {
+      font-family: 'Lora', serif;
       font-size: 1.5rem;
-      font-weight: bold;
+      font-weight: 700;
+      color: #e8e3d8;
+      margin-bottom: 8px;
     }
-
-    #loading-status {
-      margin-top: 10px;
+    .lp-desc {
       font-size: 0.9rem;
       color: #8891aa;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .lp-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .lp-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+    .lp-stat-val {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #e8e3d8;
+    }
+    .lp-stat-lbl {
+      font-size: 0.65rem;
+      color: #8891aa;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    .lp-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .lp-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .lp-btn-start {
+      background: linear-gradient(135deg, #f2b84b 0%, #f59e0b 100%);
+      color: #1a1a2e;
+    }
+    .lp-btn-start:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(242,184,75,0.3); }
+    .lp-btn-back {
+      background: rgba(255,255,255,0.06);
+      color: #8891aa;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .lp-btn-back:hover { background: rgba(255,255,255,0.1); color: #e8e3d8; }
+
+    @media (max-width: 480px) {
+      .lp-card { border-radius: 16px; margin: 0 8px; }
+      .lp-hero { height: 140px; }
+      .lp-body { padding: 20px; }
+      .lp-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .lp-stat { padding: 8px; }
+      .lp-actions { flex-direction: column; }
     }
 
     .screen {
@@ -170,6 +465,11 @@
 
     .screen.active {
       display: flex;
+      animation: pageTransitionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes pageTransitionIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h1,
@@ -189,16 +489,43 @@
       font-weight: 600;
       font-size: clamp(0.95rem, 1.2vw, 1.1rem);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.3s ease,
+                  background 0.2s ease;
       display: inline-flex;
       align-items: center;
       gap: 8px;
       justify-content: center;
+      will-change: transform;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 0; height: 0;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.4s ease, height 0.4s ease;
+      pointer-events: none;
+    }
+
+    .btn:active::after {
+      width: 200px; height: 200px;
     }
 
     .btn:hover {
       background: var(--muted2);
-      transform: translateY(-1px);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.98);
+      transition-duration: 0.1s;
     }
 
     .btn-g {
@@ -206,10 +533,21 @@
       color: var(--text);
       border: 1px solid var(--border);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  background 0.2s ease,
+                  border-color 0.2s ease,
+                  box-shadow 0.3s ease;
     }
 
     .btn-g:hover {
       background: var(--hover);
+      border-color: rgba(255,255,255,0.15);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .btn-g:active {
+      transform: translateY(0) scale(0.97);
+      transition-duration: 0.1s;
     }
 
     .btn-danger {
@@ -391,14 +729,24 @@
       gap: 8px;
       font-size: 0.95rem;
       padding: 8px 20px;
-      transition: all 0.2s ease;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  background 0.2s ease,
+                  border-color 0.2s ease,
+                  box-shadow 0.3s ease;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      will-change: transform;
     }
 
     .back-btn:hover {
       background: var(--hover);
       border-color: var(--muted);
-      transform: translateY(-1px);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    }
+
+    .back-btn:active {
+      transform: translateY(0) scale(0.97);
+      transition-duration: 0.1s;
     }
 
     .lw {
@@ -428,17 +776,25 @@
       border-radius: 12px;
       padding: 24px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.3s ease,
+                  border-color 0.3s ease;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      will-change: transform;
     }
 
     .lcard:hover {
       border-color: var(--muted);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+      transform: translateY(-4px) scale(1.02);
+    }
+
+    .lcard:active {
+      transform: translateY(-1px) scale(0.99);
+      transition-duration: 0.1s;
     }
 
     .lcard.lk {
@@ -596,12 +952,22 @@
       display: flex;
       gap: 16px;
       align-items: flex-start;
-      transition: all 0.2s ease;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.3s ease,
+                  border-color 0.3s ease,
+                  background 0.2s ease;
+      will-change: transform;
     }
 
     .syl-item:hover {
       border-color: var(--muted);
-      transform: translateX(2px);
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .syl-item:active {
+      transform: translateY(-1px) scale(0.99);
+      transition-duration: 0.1s;
     }
 
     .syl-item.syl-active {
@@ -922,13 +1288,23 @@
       font-size: 1rem;
       color: var(--text);
       cursor: pointer;
-      transition: all 0.2s;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  background 0.2s ease,
+                  border-color 0.2s ease,
+                  box-shadow 0.3s ease;
       font-weight: 500;
+      will-change: transform;
     }
 
     .qo:hover:not(:disabled) {
       background: var(--hover);
       border-color: var(--muted);
+      transform: translateX(4px) scale(1.01);
+    }
+
+    .qo:active:not(:disabled) {
+      transform: translateX(1px) scale(0.98);
+      transition-duration: 0.1s;
     }
 
     .qo.selected {
@@ -1119,6 +1495,11 @@
       transform: translateY(-8px) scale(1.02);
       box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
       border-color: #ddd;
+    }
+
+    .bcard:not(.lk):active {
+      transform: translateY(-4px) scale(1.0);
+      transition-duration: 0.1s;
     }
 
     .bgi {
@@ -1714,6 +2095,11 @@
       }
     }
 
+    @keyframes camJoyPulse {
+      0%, 100% { border-color: rgba(100, 200, 255, 0.3); box-shadow: 0 0 0 0 rgba(100, 200, 255, 0); }
+      50% { border-color: rgba(100, 200, 255, 0.6); box-shadow: 0 0 12px 4px rgba(100, 200, 255, 0.15); }
+    }
+
     .da-arrow-icon {
       width: 44px;
       height: 44px;
@@ -1804,11 +2190,12 @@
     #mobile-controls {
       display: none;
       position: fixed;
-      bottom: 20px;
+      bottom: 6px;
       left: 0;
       right: 0;
-      padding: 0 20px;
+      padding: 0 16px 12px;
       justify-content: space-between;
+      align-items: flex-end;
       z-index: var(--z-hud);
       pointer-events: none;
     }
@@ -2146,14 +2533,14 @@
 
     #spgauge {
       position: fixed;
-      right: 3vw;
-      bottom: 3vw;
+      right: 12px;
+      bottom: 12px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 50%;
       padding: 0.5vw;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-      z-index: 25;
+      z-index: var(--z-controls);
       display: none;
       width: clamp(56px, 6vw, 100px);
       height: clamp(56px, 6vw, 100px);
@@ -2161,18 +2548,25 @@
 
     #boostgauge {
       position: fixed;
-      right: 3vw;
-      bottom: 12vh;
+      right: 12px;
+      bottom: clamp(80px, 14vw, 120px);
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 50%;
       padding: 0.5vw;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      z-index: 25;
+      z-index: var(--z-controls);
       display: none;
       transition: box-shadow 0.3s;
       width: clamp(48px, 5vw, 72px);
       height: clamp(48px, 5vw, 72px);
+    }
+
+    /* Mobile: stack speedo and boost vertically on bottom-right */
+    @media (max-width: 900px) {
+      #spgauge { right: 12px; bottom: 8px; width: 52px; height: 52px; }
+      #boostgauge { right: 12px; bottom: 70px; width: 42px; height: 42px; }
+      #mobile-controls { bottom: 6px; padding: 0 12px 8px; }
     }
 
     /* --- Responsive UI Adjustments --- */
@@ -2626,6 +3020,44 @@
     /* Pause overlay — show/hide */
     #pause-overlay.on {
       display: flex !important;
+    }
+
+    /* Pause menu tabs */
+    .pause-tab.active {
+      background: rgba(255,255,255,0.2) !important;
+      color: #fff !important;
+    }
+    .pause-panel {
+      animation: pauseFadeIn 0.25s ease-out;
+    }
+    @keyframes pauseFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Quality button active state */
+    .qbtn.active {
+      background: rgba(52,152,219,0.8) !important;
+      color: #fff !important;
+      box-shadow: 0 2px 8px rgba(52,152,219,0.4);
+    }
+    /* Range slider thumb styling */
+    #pause-volume::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    #pause-volume::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
 
     @media (min-width: 400px) and (max-width: 768px) {
@@ -4173,15 +4605,7 @@
       0%, 100% { box-shadow: 0 0 20px 6px rgba(148,163,184,0.2), 0 0 50px 12px rgba(148,163,184,0.08); }
       50% { box-shadow: 0 0 28px 10px rgba(148,163,184,0.3), 0 0 65px 18px rgba(148,163,184,0.12); }
     }
-    .hz-toggle.night .hz-orb { animation: hz-moon-glow 5s ease-in-out infinite; }
-    @media (max-width: 420px) {
-      .hz-toggle { width: 300px; height: 98px; border-radius: 49px; }
-      .hz-orb { width: 76px; height: 76px; left: 14px; }
-      .hz-toggle.night .hz-orb { left: 202px; }
-      .hz-orb::after { width: 48px; height: 48px; top: 6px; left: 10px; }
-      .hz-skyline { height: 26px; }
-      .hz-clouds { transform: scale(0.8); transform-origin: top left; }
-    }
+    /* Mobile horizon toggle maintains compact size */
 
     /* ── Civic Controls (Seatbelt + Indicators + Phone) ── */
     #civic-controls {
@@ -4468,6 +4892,7 @@
         touch-action: none;
         z-index: 10000;
         backdrop-filter: blur(4px);
+        animation: camJoyPulse 2s ease-in-out infinite;
       ">
     <div id="camera-joystick-knob" style="
           width: 44px;
@@ -4613,21 +5038,71 @@
     </div>
   </div>
 
-  <!-- Dedicated Pre-Loader Screen -->
-  <div id="loading-screen">
-    <h1>Traffic Academy</h1>
-    <div style="font-size: 1.2rem; margin-bottom: 10px">Loading 3D Open World...</div>
-    <div id="loading-bar-container">
-      <div id="loading-bar"></div>
+  <!-- Premium Loading Screen -->
+  <div id="loading-screen" style="display:none;">
+    <div class="ls-logo">Mumbai Traffic Hero</div>
+    <h1 id="loading-level-name">Loading...</h1>
+    <div class="ls-level-badge" id="loading-level-badge">🏁 Driving Level</div>
+    <div class="ls-progress-wrap">
+      <div class="ls-progress-header">
+        <div id="loading-status">Initializing assets...</div>
+        <div id="loading-pct">0%</div>
+      </div>
+      <div id="loading-bar-container">
+        <div id="loading-bar"></div>
+      </div>
     </div>
-    <div id="loading-pct">0%</div>
-    <div id="loading-status">Initializing assets...</div>
+    <div class="ls-tips" id="loading-tips"></div>
+    <div class="ls-dots">
+      <div class="ls-dot active"></div>
+      <div class="ls-dot"></div>
+      <div class="ls-dot"></div>
+      <div class="ls-dot"></div>
+      <div class="ls-dot"></div>
+    </div>
+  </div>
+
+  <!-- Level Preview Modal -->
+  <div id="level-preview-overlay">
+    <div class="lp-card">
+      <div class="lp-hero">
+        <div class="lp-hero-level" id="lp-level-num">Level 1</div>
+        <div class="lp-hero-diff" id="lp-diff-dots"></div>
+        <div class="lp-hero-icon" id="lp-icon">🚗</div>
+      </div>
+      <div class="lp-body">
+        <div class="lp-name" id="lp-name">Level Name</div>
+        <div class="lp-desc" id="lp-desc">Level description goes here...</div>
+        <div class="lp-stats">
+          <div class="lp-stat">
+            <div class="lp-stat-val" id="lp-time">2:00</div>
+            <div class="lp-stat-lbl">Time Limit</div>
+          </div>
+          <div class="lp-stat">
+            <div class="lp-stat-val" id="lp-best">—</div>
+            <div class="lp-stat-lbl">Best Score</div>
+          </div>
+          <div class="lp-stat">
+            <div class="lp-stat-val" id="lp-reward">₹5K</div>
+            <div class="lp-stat-lbl">Reward</div>
+          </div>
+        </div>
+        <div class="lp-actions">
+          <button class="lp-btn lp-btn-back" id="lp-back">← Back</button>
+          <button class="lp-btn lp-btn-start" id="lp-start">▶ Start Level</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="gc"><canvas id="3c" style="touch-action:none;"></canvas></div>
   <div id="swipe-look-hint"
     style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:20px; font-size:0.85rem; pointer-events:none; z-index:var(--z-hud); display:none; font-family:Inter,sans-serif; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.5s;">
     👆 Swipe empty area to look around
+  </div>
+  <div id="desktop-camera-hint"
+    style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:20px; font-size:0.85rem; pointer-events:none; z-index:var(--z-hud); display:none; font-family:Inter,sans-serif; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.5s;">
+    🖱️ Right-click + drag to look around  •  Click canvas to enter first person
   </div>
   <div id="hud">
     <div class="hp">Lv<span class="hv" id="hlv">1</span></div>
@@ -4659,18 +5134,77 @@
 
   <div id="pause-overlay"
     style="display:none; position:fixed; inset:0; z-index:100000; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); flex-direction:column; align-items:center; justify-content:center; gap:18px; pointer-events:auto;">
-    <div
-      style="font-family:'Bebas Neue',sans-serif; font-size:3rem; color:#fff; text-shadow:0 4px 12px rgba(0,0,0,0.5);">
-      PAUSED</div>
-    <button id="pause-resume"
-      style="font-family:'Inter',sans-serif; font-size:1.1rem; font-weight:600; padding:12px 36px; border:none; border-radius:12px; background:rgba(52,152,219,0.85); color:#fff; cursor:pointer; transition:background 0.2s;">Resume
-      (Esc)</button>
-    <button id="pause-restart"
-      style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(255,149,0,0.8); color:#fff; cursor:pointer;">Restart
-      Level</button>
-    <button id="pause-quit"
-      style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(231,76,60,0.8); color:#fff; cursor:pointer;">Quit
-      to Menu</button>
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:3rem; color:#fff; text-shadow:0 4px 12px rgba(0,0,0,0.5);">PAUSED</div>
+    
+    <!-- Tab Navigation -->
+    <div id="pause-tabs" style="display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:12px; padding:4px;">
+      <button class="pause-tab active" data-tab="main" onclick="pauseTab('main')" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:rgba(255,255,255,0.2); color:#fff; cursor:pointer; transition:all 0.2s;">Resume</button>
+      <button class="pause-tab" data-tab="settings" onclick="pauseTab('settings')" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Settings</button>
+      <button class="pause-tab" data-tab="controls" onclick="pauseTab('controls')" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Controls</button>
+    </div>
+    
+    <!-- Main Tab -->
+    <div id="pause-tab-main" class="pause-panel" style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+      <button id="pause-resume"
+        style="font-family:'Inter',sans-serif; font-size:1.1rem; font-weight:600; padding:12px 36px; border:none; border-radius:12px; background:rgba(52,152,219,0.85); color:#fff; cursor:pointer; transition:all 0.2s; min-height:48px;">Resume (Esc)</button>
+      <button id="pause-restart"
+        style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(255,149,0,0.8); color:#fff; cursor:pointer; min-height:48px;">Restart Level</button>
+      <button id="pause-quit"
+        style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(231,76,60,0.8); color:#fff; cursor:pointer; min-height:48px;">Quit to Menu</button>
+    </div>
+    
+    <!-- Settings Tab -->
+    <div id="pause-tab-settings" class="pause-panel" style="display:none; flex-direction:column; gap:16px; width:90%; max-width:320px;">
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🔊 Master Volume</label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <input type="range" id="pause-volume" min="0" max="100" value="70" oninput="pauseSetVolume(this.value)" style="flex:1; height:6px; border-radius:3px; background:rgba(255,255,255,0.2); outline:none; -webkit-appearance:none; cursor:pointer;">
+          <span id="pause-volume-val" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:700; color:#fff; min-width:36px; text-align:right;">70%</span>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🖥️ Graphics Quality</label>
+        <div id="pause-quality-btns" style="display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:8px; padding:4px;">
+          <button class="qbtn" data-q="LOW" onclick="pauseSetQuality('LOW')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Low</button>
+          <button class="qbtn" data-q="MED" onclick="pauseSetQuality('MED')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Med</button>
+          <button class="qbtn" data-q="HIGH" onclick="pauseSetQuality('HIGH')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">High</button>
+          <button class="qbtn" data-q="ULTRA" onclick="pauseSetQuality('ULTRA')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Ultra</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🌙 Night Mode</label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button id="pause-night-toggle" onclick="pauseToggleNight()" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); cursor:pointer; min-height:40px; transition:all 0.2s;">Off</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Controls Tab -->
+    <div id="pause-tab-controls" class="pause-panel" style="display:none; flex-direction:column; gap:12px; width:90%; max-width:400px; max-height:50vh; overflow-y:auto;">
+      <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.5); margin-bottom:4px;">Desktop Controls</div>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-family:'Inter',sans-serif; font-size:0.85rem;">
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">W / ↑</kbd><span style="color:rgba(255,255,255,0.8);">Accelerate</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">S / ↓</kbd><span style="color:rgba(255,255,255,0.8);">Brake / Reverse</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">A / ←</kbd><span style="color:rgba(255,255,255,0.8);">Steer Left</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">D / →</kbd><span style="color:rgba(255,255,255,0.8);">Steer Right</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">Q</kbd><span style="color:rgba(255,255,255,0.8);">Turn Signal Left</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">E</kbd><span style="color:rgba(255,255,255,0.8);">Turn Signal Right</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">H</kbd><span style="color:rgba(255,255,255,0.8);">High Beam</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">B</kbd><span style="color:rgba(255,255,255,0.8);">Seatbelt</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">F</kbd><span style="color:rgba(255,255,255,0.8);">Enter / Exit Vehicle</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">M</kbd><span style="color:rgba(255,255,255,0.8);">Toggle GPS</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">V</kbd><span style="color:rgba(255,255,255,0.8);">Mobile Phone</span>
+        <kbd style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">Esc</kbd><span style="color:rgba(255,255,255,0.8);">Pause / Resume</span>
+      </div>
+      <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.5); margin-top:8px; margin-bottom:4px;">Mobile Controls</div>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-family:'Inter',sans-serif; font-size:0.85rem;">
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">🛞</span><span style="color:rgba(255,255,255,0.8);">Steering Wheel — Drag to steer</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">🟢</span><span style="color:rgba(255,255,255,0.8);">Gas Pedal — Hold to accelerate</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">🔴</span><span style="color:rgba(255,255,255,0.8);">Brake Pedal — Hold to brake</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">👆</span><span style="color:rgba(255,255,255,0.8);">Screen Drag — Camera look</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">📱</span><span style="color:rgba(255,255,255,0.8);">Shake — Gyro steering</span>
+      </div>
+    </div>
   </div>
 
   <div id="task-tracker">
@@ -5186,7 +5720,7 @@
 
   <!-- SCREENS -->
 
-  <div id="ss" class="screen active">
+  <div id="ss" class="screen">
     <div id="top-bar-container"
       style="position: absolute; top: 20px; right: 20px; z-index: var(--z-controls); display: flex; gap: 10px">
       <div class="hz-toggle" onclick="hzToggle()">
@@ -5285,7 +5819,7 @@
       </div>
       <div style="text-align: center">
         <div style="font-size: 6rem; margin-bottom: 20px; text-shadow: 0 12px 24px rgba(0, 0, 0, 0.1)">🚦🏙️🚗</div>
-        <div class="st" style="text-align: center">Mumbai Traffic Hero Academy</div>
+        <div class="st" style="text-align: center">Mumbai Traffic Hero Academy — Loading Level...</div>
         <div class="su" style="max-width: 700px; margin-left: auto; margin-right: auto; text-align: center">
           Welcome to the premier driving simulation! Complete 15 rigorous real-world scenarios designed by the Mumbai
           Traffic Police to test your skills, patience, and compliance. Prove you have
@@ -5564,6 +6098,7 @@
   <script src="levels/level50.js"></script>
   <script src="levels/level51.js"></script>
   <script src="levels/level52.js"></script>
+  <script src="levels/level_custom.js"></script>
 
   <script>
       // Portrait mode hint (non-blocking)
@@ -5587,18 +6122,30 @@
         window.addEventListener('orientationchange', function () { setTimeout(update, 150); });
         setInterval(update, 500);
       })();
-    // Show swipe-to-look hint on mobile for 3 seconds after game starts
+    // Show camera control hints after game starts (mobile + desktop)
     (function () {
-      const hint = document.getElementById('swipe-look-hint');
-      if (!hint) return;
-      let shown = false;
+      const mobileHint = document.getElementById('swipe-look-hint');
+      const desktopHint = document.getElementById('desktop-camera-hint');
+      let mobileShown = false, desktopShown = false;
       setInterval(function () {
-        if (typeof game === 'undefined' || !game || !game.playing || shown) return;
-        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-          hint.style.display = 'block';
-          shown = true;
-          setTimeout(function () { hint.style.opacity = '0'; }, 2000);
-          setTimeout(function () { hint.style.display = 'none'; }, 2500);
+        if (typeof game === 'undefined' || !game || !game.playing) return;
+        // Mobile hint
+        if (!mobileShown && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          if (mobileHint) {
+            mobileHint.style.display = 'block';
+            mobileShown = true;
+            setTimeout(function () { mobileHint.style.opacity = '0'; }, 2000);
+            setTimeout(function () { mobileHint.style.display = 'none'; }, 2500);
+          }
+        }
+        // Desktop hint — show if game exists and device is a real desktop (not mobile userAgent)
+        if (!desktopShown && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && (!window.game || !window.game._hasTouched)) {
+          if (desktopHint) {
+            desktopHint.style.display = 'block';
+            desktopShown = true;
+            setTimeout(function () { desktopHint.style.opacity = '0'; }, 3000);
+            setTimeout(function () { desktopHint.style.display = 'none'; }, 3500);
+          }
         }
       }, 500);
     })();
@@ -5608,7 +6155,9 @@
   <script src="road-graph.js"></script>
   <script src="render_core.js"></script>
   <script src="safezone-ui.js"></script>
-  <script src="game_core.js?v=3"></script>
+  <script src="gameplay-recorder.js"></script>
+  <script src="scenario2d.js"></script>
+  <script src="game_core.js?v=11"></script>
   <script src="npc-ai.js"></script>
   <script src="traffic-manager.js"></script>
   <script src="rule-breaker-profiles.js"></script>
@@ -6341,8 +6890,135 @@
       localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
       hzSync();
     }
+
+    // ── Pause Menu: Tab Switching ──
+    function pauseTab(tab) {
+      document.querySelectorAll('.pause-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+      document.querySelectorAll('.pause-panel').forEach(p => p.style.display = 'none');
+      const panel = document.getElementById('pause-tab-' + tab);
+      if (panel) panel.style.display = 'flex';
+      // Reset to main when resuming
+      if (tab === 'main') document.getElementById('pause-resume')?.focus();
+    }
+
+    // ── Pause Menu: Volume Control ──
+    function pauseSetVolume(val) {
+      const v = parseInt(val);
+      document.getElementById('pause-volume-val').textContent = v + '%';
+      // Apply to game audio if available — try common sfx property patterns
+      const normalised = v / 100;
+      try {
+        if (window.sfx) {
+          // Try direct setter first
+          if (typeof window.sfx.setVolume === 'function') { window.sfx.setVolume(normalised); }
+          // Try _masterGain or _g gain node
+          const gain = window.sfx._masterGain || window.sfx._g;
+          if (gain && gain.gain) gain.gain.value = normalised;
+          // Try _c (AudioContext) destination gain
+          if (window.sfx._c && window.sfx._c.destination) {
+            const dest = window.sfx._c.destination;
+            if (dest.gain) dest.gain.value = normalised;
+          }
+        }
+      } catch(e) {}
+      localStorage.setItem('traffic_volume', v);
+    }
+
+    // ── Pause Menu: Graphics Quality ──
+    function pauseSetQuality(preset) {
+      document.querySelectorAll('.qbtn').forEach(b => b.classList.toggle('active', b.dataset.q === preset));
+      if (window.game && window.game.renderCore) {
+        window.game.renderCore.setQuality(preset);
+      }
+      localStorage.setItem('traffic_quality', preset);
+    }
+
+    // ── Pause Menu: Night Mode Toggle ──
+    let _pauseNightOn = false;
+    function pauseToggleNight() {
+      _pauseNightOn = !_pauseNightOn;
+      const btn = document.getElementById('pause-night-toggle');
+      if (btn) {
+        btn.textContent = _pauseNightOn ? 'On' : 'Off';
+        btn.style.background = _pauseNightOn ? 'rgba(52,152,219,0.6)' : 'rgba(255,255,255,0.1)';
+        btn.style.color = _pauseNightOn ? '#fff' : 'rgba(255,255,255,0.7)';
+      }
+      // Apply night mode to scene if game is active
+      if (window.game && window.game.scene) {
+        const fog = window.game.scene.fog;
+        const amb = window.game.scene.children.find(c => c.isAmbientLight);
+        if (_pauseNightOn) {
+          if (fog) { fog.color.set(0x0a0a1a); fog.near = 5; fog.far = 120; }
+          if (amb) { amb.intensity = 0.15; }
+          window.game.scene.background = new THREE.Color(0x0a0a1a);
+        } else {
+          if (fog) { fog.color.set(0xc8d6e5); fog.near = 50; fog.far = 350; }
+          if (amb) { amb.intensity = 0.6; }
+          window.game.scene.background = new THREE.Color(0xc8d6e5);
+        }
+      }
+    }
+
+    // Initialize pause settings from localStorage
+    (function() {
+      const savedVol = localStorage.getItem('traffic_volume');
+      if (savedVol !== null) {
+        pauseSetVolume(savedVol);
+        const el = document.getElementById('pause-volume');
+        if (el) el.value = savedVol;
+      }
+      const savedQ = localStorage.getItem('traffic_quality') || 'HIGH';
+      pauseSetQuality(savedQ);
+    })();
 hzInit();
     </script>
+
+  <!-- ═══ CHARACTER CUSTOMIZATION MODAL ═══ -->
+  <div id="customize-modal" style="display:none; position:fixed; inset:0; z-index:10001; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--card,#1e293b); border:1px solid var(--border,rgba(255,255,255,0.08)); border-radius:20px; max-width:440px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.5);">
+      <div style="padding:24px 24px 0; display:flex; align-items:center; justify-content:space-between;">
+        <h2 style="font-family:'Lora',serif; font-size:1.4rem; color:var(--text); margin:0;">Customize Character</h2>
+        <button onclick="document.getElementById('customize-modal').style.display='none'" style="width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--hover); color:var(--text); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+      </div>
+      <div style="padding:20px 24px 24px;">
+        <!-- Live Preview -->
+        <div style="text-align:center; margin-bottom:20px;">
+          <canvas id="customize-preview" width="200" height="280" style="border-radius:16px; background:rgba(0,0,0,0.2); border:1px solid var(--border);"></canvas>
+          <div style="font-size:0.75rem; color:var(--muted); margin-top:6px;">Live Preview</div>
+        </div>
+        <!-- Skin Tone -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Skin Tone</div>
+          <div id="skin-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Hair Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hair Color</div>
+          <div id="hair-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Shirt Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shirt Color</div>
+          <div id="shirt-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Pants Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Pants Color</div>
+          <div id="pants-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Accessories -->
+        <div style="margin-bottom:20px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Accessories</div>
+          <div id="accessory-options" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn" style="flex:1; background:var(--signal); color:#000; font-weight:700;" onclick="window._saveCustomize()">Save & Spawn</button>
+          <button class="btn" style="flex:1; background:var(--panel); color:var(--text);" onclick="window._randomizeCustomize()">🎲 Random</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="welcome-back.js"></script>
 </body>
 
