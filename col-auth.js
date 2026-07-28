@@ -1,5 +1,8 @@
 // Class Of Learners Global Authentication System (Supabase)
 
+// Supabase client - must be at top to avoid temporal dead zone
+let supabaseClient = null
+
 // --- Shared Login Modal Injection ---
 // Injects the standard loginMo modal if the page doesn't already have one inline.
 function injectLoginModal() {
@@ -126,8 +129,6 @@ if (!window.closeMo) {
       google.accounts.id.renderButton(container, { theme: 'filled_black', size: 'large', type: 'standard', shape: 'rectangular', width: 280 })
     }
   }
-
-  let supabaseClient = null
 
   function initSupabase(url, key) {
     supabaseClient = window.supabase.createClient(url, key)
