@@ -19,7 +19,14 @@
         var key = auth.supabaseKey || auth.anonKey || auth.key || '';
         if (url && key && window.supabase) {
           window.supabaseClient = window.supabase.createClient(url, key, {
-            auth: { persistSession: true, detectSessionInUrl: false }
+            auth: { persistSession: true, detectSessionInUrl: true }
+          });
+          // Also listen for session changes (catches OAuth redirect completion)
+          window.supabaseClient.auth.onAuthStateChange(function(event, session) {
+            if (session && session.user) {
+              window.colUser = session.user;
+              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: session.user } }));
+            }
           });
           try {
             var session = await Promise.race([
@@ -1597,25 +1604,23 @@
         }
       })
 
-      setTimeout(async () => {
-        if (window.colUser) {
-          showLocalSetup()
-          document.getElementById('cloud-status').style.display = 'block'
-          if (window.colUser.user_metadata && window.colUser.user_metadata.full_name) {
-            if (!document.getElementById('prof-name').value) {
-              document.getElementById('prof-name').value = window.colUser.user_metadata.full_name
-            }
-          }
-          if (window.supabaseClient) {
-            try {
-              const { data } = await window.supabaseClient.from('user_profiles').select('username').eq('user_id', window.colUser.id).maybeSingle()
-              if (data && data.username && !document.getElementById('prof-username').value) {
-                document.getElementById('prof-username').value = data.username.startsWith('@') ? data.username : '@' + data.username
-              }
-            } catch (e) {}
+      // Synchronous check: if the event already fired before the listener was registered
+      if (window.colUser) {
+        showLocalSetup()
+        document.getElementById('cloud-status').style.display = 'block'
+        if (window.colUser.user_metadata && window.colUser.user_metadata.full_name) {
+          if (!document.getElementById('prof-name').value) {
+            document.getElementById('prof-name').value = window.colUser.user_metadata.full_name
           }
         }
-      }, 500)
+        if (window.supabaseClient) {
+          window.supabaseClient.from('user_profiles').select('username').eq('user_id', window.colUser.id).maybeSingle().then(function(res) {
+            if (res.data && res.data.username && !document.getElementById('prof-username').value) {
+              document.getElementById('prof-username').value = res.data.username.startsWith('@') ? res.data.username : '@' + res.data.username
+            }
+          }).catch(function() {})
+        }
+      }
 
       // --- USERNAME AVAILABILITY CHECK ---
       let _usernameCheckTimeout = null
