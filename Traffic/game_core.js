@@ -1137,15 +1137,15 @@ class Game {
         document.addEventListener('mousemove', (e) => {
           if (this.isPointerLocked) {
             if (this.isPedestrian) {
-              if (this.player) this.player.rotation.y -= e.movementX * 0.003;
+              if (this.player) this.player.rotation.y -= e.movementX * 0.006;
             } else {
-              this.targetCamYaw -= e.movementX * 0.003;
+              this.targetCamYaw -= e.movementX * 0.006;
             }
-            this.targetCamPitch -= e.movementY * 0.003;
+            this.targetCamPitch -= e.movementY * 0.006;
             this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
           } else if (this._isDraggingCamera) {
-            this.targetCamYaw -= e.movementX * 0.004;
-            this.targetCamPitch -= e.movementY * 0.004;
+            this.targetCamYaw -= e.movementX * 0.008;
+            this.targetCamPitch -= e.movementY * 0.008;
             this.targetCamPitch = Math.max(-1.0, Math.min(1.0, this.targetCamPitch));
           }
         });
@@ -1837,9 +1837,8 @@ class Game {
         if (this._isDraggingMobileLook) return;
         if (this._camJoyActive) return;
         if (this.isPointerLocked || this._isDraggingCamera) return;
-        // After camera joystick use, use very slow decay so angle is preserved
-        // Reduced from 4 to 0.8 so camera angles persist longer before resetting
-        const decayRate = this._camJoyEverUsed ? 0.15 : 0.8;
+        // Gentle decay so camera angle persists — was 0.8 which fought user input
+        const decayRate = 0.15;
         const threshold = 0.005;
         if (Math.abs(this.camYaw) > threshold || Math.abs(this.camPitch) > threshold) {
           const factor = Math.max(0, 1 - decayRate * dt);
@@ -7633,7 +7632,7 @@ class Game {
         const t = this._enterTimer;
         const char = this.playerCharacter;
         const veh = this.playerVehicle;
-        if (!char || !veh) { this._enterState = 'IDLE'; return; }
+        if (!char || !veh) { this._enterState = 'IDLE'; this._camOverride = false; return; }
         const doorPivot = this._enterDoorSide === 'L' ? veh.userData.doorPivotL : veh.userData.doorPivotR;
 
         // ── Helper: animate character body pose during enter/exit ──
