@@ -2682,11 +2682,13 @@
               const totalPlayers = users.length
               const percentile = totalPlayers > 1 ? Math.round(((totalPlayers - yourRank) / (totalPlayers - 1)) * 100) : 100
               const name = profileMap[you.user_id] || you.display_name || 'You'
+              const isMultiDevice = multiDeviceUserIds.has(currentUserId)
+              const deviceBadgeHtml = isMultiDevice ? '<span class="device-badge" style="font-size:0.5rem;padding:1px 6px;margin-left:8px;">📱 Multiple devices</span>' : ''
               yourRankEl.innerHTML = `
                 <div class="your-rank-num">#${yourRank}</div>
                 <div class="your-rank-info">
-                  <div class="your-rank-label">Your Rank</div>
-                  <div class="your-rank-detail">${name} · ${metric(you)}</div>
+                  <div class="your-rank-label">Your Rank <span class="you-badge" style="font-size:0.55rem;padding:1px 6px;border-radius:4px;background:linear-gradient(135deg,rgba(242,184,75,0.2),rgba(242,184,75,0.08));color:var(--accent);border:1px solid rgba(242,184,75,0.3);font-weight:800;text-transform:uppercase;letter-spacing:0.06em;">You</span></div>
+                  <div class="your-rank-detail">${name} · ${metric(you)} ${deviceBadgeHtml}</div>
                 </div>
                 <div class="your-rank-percentile">Top ${100 - percentile}%</div>
               `
