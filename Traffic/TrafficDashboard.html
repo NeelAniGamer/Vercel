@@ -1846,7 +1846,12 @@
           if (!el) return;
           let userPhoto = null
           try {
-            if (!_isReadOnlyMode) {
+            // Priority 1: Google OAuth avatar from Supabase auth
+            if (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.avatar_url) {
+              userPhoto = window.colUser.user_metadata.avatar_url
+            }
+            // Priority 2: Local storage avatar
+            else if (!_isReadOnlyMode) {
               const ls = localStorage.getItem('col_user')
               if (ls) { const u = JSON.parse(ls); userPhoto = u.avatar || u.photo || null }
             }
@@ -2864,11 +2869,12 @@
         const emailMap = {} // user_id -> email
         const emailToUserIds = {} // email -> [user_id, ...]
         if (allUserIds.size > 0) {
+          const userIdsArray = Array.from(allUserIds)
           try {
             const { data: upProfiles } = await window.supabaseClient
               .from('user_profiles')
               .select('user_id, display_name, username')
-              .in('user_id', Array.from(allUserIds))
+              .in('user_id', userIdsArray)
             if (upProfiles) {
               upProfiles.forEach(p => {
                 const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
@@ -2881,7 +2887,7 @@
             const { data: profiles } = await window.supabaseClient
               .from('profiles')
               .select('id, raw_user_meta_data, username')
-              .in('id', Array.from(allUserIds))
+              .in('id', userIdsArray)
             if (profiles) {
               profiles.forEach(p => {
                 const meta = p.raw_user_meta_data || {}

@@ -3314,7 +3314,7 @@ class Game {
         if (vt === 'pedestrian') {
           this.isPedestrian = true;
           this.player = _buildHuman(true);
-          this.player.position.set(pStartX, 0, pStartZ);
+          this.player.position.set(pStartX, 0.1, pStartZ);
           this.player.rotation.y = pRot;
           this.scene.add(this.player);
           this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;

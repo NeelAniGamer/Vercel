@@ -582,9 +582,9 @@ window.ui = Object.assign(window.ui || {}, {
   showLevels() {
     const currentActive = document.querySelector('.screen.active:not(.screen-exiting)')
     const direction = (currentActive?.id === 'ss') ? 'forward' : 'fade'
+    // Build level cards FIRST before showing screen, so animations sync properly
+    this._bldLvs()
     this.show('screen-levels', { direction })
-    // Use level cards builder (_bldLvs) which creates .lcard elements that Driving.html CSS expects
-    requestAnimationFrame(() => this._bldLvs())
   },
   showNamePrompt() {
     const dlg = document.getElementById('name-prompt-dlg')
