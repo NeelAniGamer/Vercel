@@ -454,23 +454,23 @@ preloadModels(() => {
         ui.cur = levelObj
         ui.curMode = mode || 'car'
         ui.cur.vehMode = ui.curMode
-        // Guard flag to prevent multiple redirects
+        // Guard flag to prevent multiple redirects — used by ALL redirect paths
         let _drivingRedirected = false
         function _redirectToAcademy() {
           if (_drivingRedirected) return
           _drivingRedirected = true
           window.location.href = 'Academy.html?screen=levels'
         }
-        // Safety net: if game canvas hasn't started within 15s, redirect to Academy
+        // Safety net: if game canvas hasn't started within 30s, redirect to Academy
         const _startTime = Date.now()
         const _drivingTimeout = setTimeout(function _checkCanvasTimeout() {
           const gc = document.getElementById('gc')
           if (!gc || !gc.classList.contains('on')) {
-            // Canvas still not active — check again every 500ms up to 15s total
-            if (Date.now() - _startTime < 15000) {
+            // Canvas still not active — check again every 500ms up to 30s total
+            if (Date.now() - _startTime < 30000) {
               setTimeout(_checkCanvasTimeout, 500)
             } else {
-              console.warn('[Driving] Canvas did not activate within 15s, redirecting to Academy')
+              console.warn('[Driving] Canvas did not activate within 30s, redirecting to Academy')
               _redirectToAcademy()
             }
           }
@@ -500,9 +500,11 @@ preloadModels(() => {
           }
         }, 300)
       } else {
+        _drivingRedirected = true
         window.location.href = 'Academy.html?screen=levels'
       }
     } else {
+      _drivingRedirected = true
       window.location.href = 'Academy.html?screen=levels'
     }
   } else {

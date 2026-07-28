@@ -2319,6 +2319,8 @@ class Game {
         this._enterWalkEnd = null;
         this._camOverride = false;
         this._camSnapped = false;
+        this.targetCamYaw = 0;
+        this.targetCamPitch = 0;
         this._lastStepTime = 0;
         this.boostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
@@ -8078,11 +8080,11 @@ class Game {
               if (_nearObs.length > 0) {
                 const hits = this._camRay.intersectObjects(_nearObs, true);
                 if (hits.length > 0 && hits[0].distance < rayLen) {
-                  const pullBack = 0.5;
+                  const pullBack = 2.5;
                   const dx = this._camTarget.x - _pp.x;
                   const dz = this._camTarget.z - _pp.z;
                   const d = Math.sqrt(dx * dx + dz * dz) || 1;
-                  const safeDist = Math.max(1.5, hits[0].distance - pullBack);
+                  const safeDist = Math.max(3.0, hits[0].distance - pullBack);
                   this._camTarget.set(
                     _pp.x + (dx / d) * safeDist,
                     this._camTarget.y,  // preserve intended height
