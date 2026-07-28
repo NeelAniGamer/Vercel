@@ -449,7 +449,21 @@ preloadModels(() => {
     document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
 
     if (lvId) {
-      const levelObj = window.LVS.find((l) => l.id == lvId)
+      let levelObj = window.LVS.find((l) => l.id == lvId)
+      // Fallback for free_roam / custom levels — create level on the fly
+      if (!levelObj && (lvId === 'custom' || lvId === 'freeroam')) {
+        levelObj = {
+          id: lvId,
+          themeType: 'free_roam',
+          name: 'Free Roam City',
+          mode: mode || 'car',
+          vehMode: mode || 'car',
+          assets: ['cars', 'suburban', 'industrial'],
+          noTimer: true,
+          noScore: true,
+          noObjective: true
+        }
+      }
       if (levelObj) {
         ui.cur = levelObj
         ui.curMode = mode || 'car'
