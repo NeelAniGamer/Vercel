@@ -8048,14 +8048,16 @@ class Game {
           // ── Third Person Chase Cam — per-vehicle profiles ──
           const _vcam = (this.isPedestrian ? null : VEHICLE_CAM[this.vehMode]) || VEHICLE_CAM_DEFAULT;
           const camDist = this.isPedestrian ? 4 : _vcam.dist;
-          const camHeight = this.isPedestrian ? 2.5 : _vcam.height;
+          const camHeight = this.isPedestrian ? 3.5 : _vcam.height;
           const rotY = this.player.rotation.y + (this.camYaw || 0);
           // Speed-based look-ahead: camera leads in the direction of travel
           const lookAhead = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) * 5, _vcam.lookAhead);
           const pitchOffset = (this.camPitch || 0) * 2;
+          // Clamp camera Y so it never goes below ground level
+          const camY = Math.max(1.0, camHeight - pitchOffset);
           this._camTarget.set(
               this.player.position.x - Math.sin(rotY) * camDist + Math.sin(rotY) * lookAhead,
-              camHeight - pitchOffset,
+              camY,
               this.player.position.z - Math.cos(rotY) * camDist + Math.cos(rotY) * lookAhead
           );
           // ── Camera collision: raycast from player to target ──
