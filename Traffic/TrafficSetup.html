@@ -1116,6 +1116,22 @@
         if (authArea) {
           authArea.style.display = currentStep === 1 ? 'block' : 'none'
         }
+
+        // Update title and subtitle for each step
+        var titles = {
+          1: 'Welcome',
+          2: window.colUser ? 'Welcome, ' + (window.colUser.user_metadata?.full_name?.split(' ')[0] || 'Driver') + '!' : 'Your Profile',
+          3: 'Choose Your Vehicle'
+        }
+        var subtitles = {
+          1: "Let's setup your driver profile to get started.",
+          2: window.colUser ? 'Almost done — just fill in a few details to complete your setup.' : 'Tell us about yourself so we can personalize your experience.',
+          3: 'Pick your preferred vehicle and you\'ll be ready to hit the road.'
+        }
+        var titleEl = document.getElementById('step-title-h1')
+        var subEl = document.getElementById('subtitle-text')
+        if (titleEl) titleEl.textContent = titles[currentStep] || 'Welcome'
+        if (subEl) subEl.textContent = subtitles[currentStep] || ''
       }
 
       function goToStep(step) {
