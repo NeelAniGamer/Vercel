@@ -2903,12 +2903,13 @@
                     emailToUserIds[email.toLowerCase()].push(p.id)
                   }
                   // Fallback username if not in user_profiles
-                if (!profileMap[p.id] && p.username) {
-                  profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
-                }
-              })
-            }
-          } catch (e) { console.warn('Leaderboard profiles email fetch failed:', e) }
+                  if (!profileMap[p.id] && p.username) {
+                    profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
+                  }
+                })
+              }
+            } catch (e) { console.warn('Leaderboard profiles email fetch failed:', e) }
+          }
         }
 
         // Track which user_ids have "siblings" (same email, different device)
