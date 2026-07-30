@@ -631,11 +631,9 @@
       .leaderboard-row:nth-child(2) .rank { width: 34px; height: 34px; border-radius: 11px; }
       .leaderboard-row:nth-child(3) .rank { width: 33px; height: 33px; border-radius: 10px; }
       /* You highlight */
-      .leaderboard-row.you { border-color: rgba(242,184,75,0.5); background: linear-gradient(90deg, rgba(242,184,75,0.08), rgba(242,184,75,0.02)); box-shadow: inset 0 0 0 1px rgba(242,184,75,0.2); }
+      .leaderboard-row.you { border-color: rgba(242,184,75,0.35); background: rgba(242,184,75,0.06); }
       .leaderboard-row.you::before { background: linear-gradient(180deg, var(--accent), var(--teal)); }
       .leaderboard-row.you .name::after { content: ' · You'; color: var(--accent); font-size: 0.7rem; font-weight: 700; }
-      .leaderboard-row.you .rank-num { box-shadow: 0 0 8px rgba(242,184,75,0.4); }
-      .leaderboard-row.you:hover { background: linear-gradient(90deg, rgba(242,184,75,0.12), rgba(242,184,75,0.04)); transform: translateX(4px); }
 
       /* ── Tier Badges ── */
       .tier-badge {
@@ -647,21 +645,6 @@
       .tier-badge.gold { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.08)); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
       .tier-badge.silver { background: linear-gradient(135deg, rgba(148,163,184,0.2), rgba(148,163,184,0.08)); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
       .tier-badge.bronze { background: linear-gradient(135deg, rgba(180,83,9,0.2), rgba(180,83,9,0.08)); color: #d97706; border: 1px solid rgba(180,83,9,0.3); }
-
-      /* ── Device Badge (for multiple devices on same Google account) ── */
-      .device-badge {
-        display: inline-flex; align-items: center; gap: 3px;
-        font-size: 0.55rem; font-weight: 800; text-transform: uppercase;
-        letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px;
-        flex-shrink: 0; line-height: 1;
-        background: linear-gradient(135deg, rgba(94,212,245,0.2), rgba(94,212,245,0.08));
-        color: var(--signal); border: 1px solid rgba(94,212,245,0.3);
-        cursor: help;
-      }
-      .device-badge:hover {
-        background: linear-gradient(135deg, rgba(94,212,245,0.3), rgba(94,212,245,0.15));
-        border-color: rgba(94,212,245,0.5);
-      }
 
       /* ── Podium ── */
       .lb-podium {
@@ -1735,15 +1718,18 @@
         try {
           const completedCount = S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
           const badgeCount = S.badges ? S.badges.length : 0
+          const googleMeta = (window.colUser && window.colUser.user_metadata) || {}
+          const googleAvatarUrl = googleMeta.avatar_url || googleMeta.picture || googleMeta.avatar || null
           await client.from('user_profiles').upsert({
             user_id: window.colUser.id,
-            display_name: tUser.name || S.name || null,
+            display_name: tUser.name || S.name || googleMeta.full_name || null,
             username: tUser.username || S.username || null,
             total_score: S.total || 0,
             modules_completed: completedCount,
             badges_count: badgeCount,
             preferred_vehicle: tUser.vehicle || S.vehicle || null,
             ...(S.studentId ? { student_id: S.studentId } : {}),
+            ...(googleAvatarUrl ? { avatar_url: googleAvatarUrl } : {}),
             updated_at: new Date().toISOString()
           }, { onConflict: 'user_id' }).catch(() => {})
           // Sync badges to badges table (one row per badge_type)
@@ -1807,17 +1793,10 @@
                 S.total = upData.total_score || 0
                 S.studentId = upData.student_id || null
               }
-              const { data } = await client.from('profiles').select('id, raw_user_meta_data').eq('id', targetId).maybeSingle();
-              if (data && data.raw_user_meta_data) {
-                 const meta = data.raw_user_meta_data;
-                 if (!tUser.name || tUser.name === 'Driver') tUser.name = meta.full_name || 'Driver';
-                 if (!tUser.username) tUser.username = meta.username || '';
-                 if (!tUser.vehicle || tUser.vehicle === 'Car') tUser.vehicle = meta.vehicle || 'Car';
-                 tUser.age = tUser.age || meta.age || 18;
-                 tUser.language = tUser.language || meta.language || 'en';
-                 if (meta.traffic_save && (!S.total || S.total === 0)) {
-                    S = typeof meta.traffic_save === 'string' ? JSON.parse(meta.traffic_save) : meta.traffic_save;
-                 }
+              const { data } = await client.from('profiles').select('username, full_name').eq('id', targetId).maybeSingle();
+              if (data) {
+                 if (!tUser.name || tUser.name === 'Driver') tUser.name = data.full_name || 'Driver';
+                 if (!tUser.username) tUser.username = data.username || '';
               }
             }
             // Hide edit controls in read-only mode
@@ -1846,12 +1825,7 @@
           if (!el) return;
           let userPhoto = null
           try {
-            // Priority 1: Google OAuth avatar from Supabase auth
-            if (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.avatar_url) {
-              userPhoto = window.colUser.user_metadata.avatar_url
-            }
-            // Priority 2: Local storage avatar
-            else if (!_isReadOnlyMode) {
+            if (!_isReadOnlyMode) {
               const ls = localStorage.getItem('col_user')
               if (ls) { const u = JSON.parse(ls); userPhoto = u.avatar || u.photo || null }
             }
@@ -2022,11 +1996,11 @@
       }
 
       window.addEventListener('col-auth-changed', async (e) => {
-        const customUser = e.detail && e.detail.user ? e.detail.user : window.colUser
-        const user = customUser ? customUser.session.user : null
+        const user = e.detail && e.detail.user ? e.detail.user : window.colUser
 
         if (user) {
           const meta = user.user_metadata || {}
+          const googleAvatar = meta.avatar_url || meta.picture || meta.avatar || null
           const name = meta.full_name || 'Driver'
           const fName = name.split(' ')[0]
 
@@ -2038,8 +2012,8 @@
             document.getElementById('navUserName').innerText = fName
             const pfp = document.getElementById('navUserPfp')
             const ini = document.getElementById('navUserInitials')
-            if (meta.avatar_url && pfp && ini) {
-              pfp.src = meta.avatar_url
+            if (googleAvatar && pfp && ini) {
+              pfp.src = googleAvatar
               pfp.style.display = 'block'
               ini.style.display = 'none'
             } else if (ini) {
@@ -2060,8 +2034,8 @@
           if (acadName) acadName.textContent = fName
           const acadPfp = document.getElementById('trafficUserPfp')
           const acadIni = document.getElementById('trafficUserInitials')
-          if (meta.avatar_url && acadPfp && acadIni) {
-            acadPfp.src = meta.avatar_url
+          if (googleAvatar && acadPfp && acadIni) {
+            acadPfp.src = googleAvatar
             acadPfp.style.display = 'block'
             acadIni.style.display = 'none'
           } else if (acadIni) {
@@ -2073,8 +2047,6 @@
           const oldSStr2 = JSON.stringify(S)
           await _syncCloudToLocal(user.id)
           if (JSON.stringify(S) !== oldSStr2) window.location.reload()
-          // Refresh avatars with Google profile pic
-          renderDashboardUI()
         } else {
           const acadBtn = document.getElementById('academy-sign-in-btn')
           const acadProf = document.getElementById('trafficUserProfile')
@@ -2113,40 +2085,40 @@
           const searchPattern = '%' + uname + '%'
           const { data, error: searchErr } = await window.supabaseClient
             .from('user_profiles')
-            .select('user_id, display_name, username, total_score, modules_completed')
+            .select('user_id, display_name, username, total_score, modules_completed, badges_count')
             .ilike('username', searchPattern)
             .order('total_score', { ascending: false })
-            .limit(20)
+            .limit(1)
           if (searchErr) console.warn('Player search error:', searchErr)
-          if (!data) {
+          const result = data && data[0]
+          if (!result) {
             // Fallback to profiles table
             const { data: pData } = await window.supabaseClient
               .from('profiles')
-              .select('id, raw_user_meta_data')
-              .eq('raw_user_meta_data->>username', uname)
+              .select('id, username, full_name')
+              .eq('username', uname)
               .maybeSingle()
             if (!pData) {
               resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">Player not found. Try a different username.</div>'
               return
             }
-            const meta = pData.raw_user_meta_data || {}
             resultsEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;" onclick="window.open('TrafficDashboard.html?uid=${pData.id}','_blank')">
-              <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;">${(meta.full_name||'U')[0]}</div>
-              <div style="flex:1;"><div style="font-weight:700;">${meta.full_name||'Unknown'}</div><div style="color:var(--signal);font-size:0.85rem;">${uname}</div></div>
+              <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;">${(pData.full_name||'U')[0]}</div>
+              <div style="flex:1;"><div style="font-weight:700;">${pData.full_name||'Unknown'}</div><div style="color:var(--signal);font-size:0.85rem;">${uname}</div></div>
               <div style="text-align:right;"><div style="font-size:0.85rem;font-weight:600;color:var(--dim);">Profile</div><div style="font-size:0.7rem;color:var(--muted);">VIEW &rarr;</div></div>
             </div>`
             return
           }
           const baseUrl = 'TrafficDashboard.html?user=' + encodeURIComponent(uname)
           resultsEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;" onclick="window.open('${baseUrl}','_blank')" onmouseover="this.style.borderColor='rgba(94,212,245,0.4)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:1.2rem;">${(data.display_name||'U')[0]}</div>
+            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:1.2rem;">${(result.display_name||'U')[0]}</div>
             <div style="flex:1;min-width:0;">
-              <div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${data.display_name||'Unknown'}</div>
+              <div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${result.display_name||'Unknown'}</div>
               <div style="color:var(--signal);font-size:0.85rem;">${uname}</div>
             </div>
             <div style="text-align:right;flex-shrink:0;">
-              <div style="font-size:1.2rem;font-weight:800;">${(data.total_score||0).toLocaleString()} XP</div>
-              <div style="font-size:0.7rem;color:var(--muted);">${data.modules_completed||0}/52 modules · ${data.badges_count||0} badges</div>
+              <div style="font-size:1.2rem;font-weight:800;">${(result.total_score||0).toLocaleString()} XP</div>
+              <div style="font-size:0.7rem;color:var(--muted);">${result.modules_completed||0}/52 modules · ${result.badges_count||0} badges</div>
             </div>
           </div>`
         } catch (e) {
@@ -2662,13 +2634,11 @@
                 const name = profileMap[u.user_id] || u.display_name || u.username || 'Anon'
                 const score = u.score || u.badge_count || u.modules_completed || 0
                 const initial = name.charAt(0).toUpperCase()
-                const isMultiDevice = u.user_id && multiDeviceUserIds.has(u.user_id)
-                const deviceBadge = isMultiDevice ? '<span class="device-badge" title="Multiple devices on this account" style="font-size:0.8rem;vertical-align:middle;margin-left:4px;">📱</span>' : ''
                 return `<div class="podium-spot ${podiumClasses[idx]}">
                   <div class="podium-avatar" style="background: linear-gradient(135deg, ${idx===1?'#fbbf24':idx===0?'#94a3b8':'#d97706'}, ${idx===1?'#f59e0b':idx===0?'#64748b':'#b45309'})">
                     ${initial}
                   </div>
-                  <div class="podium-name">${name}${deviceBadge}</div>
+                  <div class="podium-name">${name}</div>
                   <div class="podium-score">${score.toLocaleString()}</div>
                   <div class="podium-base">${podiumMedals[idx]}</div>
                 </div>`
@@ -2689,13 +2659,11 @@
               const totalPlayers = users.length
               const percentile = totalPlayers > 1 ? Math.round(((totalPlayers - yourRank) / (totalPlayers - 1)) * 100) : 100
               const name = profileMap[you.user_id] || you.display_name || 'You'
-              const isMultiDevice = multiDeviceUserIds.has(currentUserId)
-              const deviceBadgeHtml = isMultiDevice ? '<span class="device-badge" style="font-size:0.5rem;padding:1px 6px;margin-left:8px;">📱 Multiple devices</span>' : ''
               yourRankEl.innerHTML = `
                 <div class="your-rank-num">#${yourRank}</div>
                 <div class="your-rank-info">
-                  <div class="your-rank-label">Your Rank <span class="you-badge" style="font-size:0.55rem;padding:1px 6px;border-radius:4px;background:linear-gradient(135deg,rgba(242,184,75,0.2),rgba(242,184,75,0.08));color:var(--accent);border:1px solid rgba(242,184,75,0.3);font-weight:800;text-transform:uppercase;letter-spacing:0.06em;">You</span></div>
-                  <div class="your-rank-detail">${name} · ${metric(you)} ${deviceBadgeHtml}</div>
+                  <div class="your-rank-label">Your Rank</div>
+                  <div class="your-rank-detail">${name} · ${metric(you)}</div>
                 </div>
                 <div class="your-rank-percentile">Top ${100 - percentile}%</div>
               `
@@ -2742,9 +2710,6 @@
             const prevRank = u.user_id ? prevRanks[u.user_id] : null
             let rankChangeHtml = ''
             let rowClass = isYou ? ' you' : ''
-            // Multi-device indicator
-            const isMultiDevice = u.user_id && multiDeviceUserIds.has(u.user_id)
-            const deviceBadge = isMultiDevice ? '<span class="device-badge" title="Multiple devices on this account">📱</span>' : ''
             if (prevRank != null) {
               const delta = prevRank - curRank // positive = moved up
               if (delta > 0) {
@@ -2767,7 +2732,7 @@
               <div class="rank"><span class="rank-num" data-target="${curRank}">${curRank}</span></div>
               ${rankChangeHtml}
               <div class="who">
-                <div class="name">${displayUsername} ${tierBadge(curRank)} ${deviceBadge}</div>
+                <div class="name">${displayUsername} ${tierBadge(curRank)}</div>
                 <div class="metric">${metric(u)}</div>
               </div>
               ${curRank <= 3 ? `<div class="crown">${crowns[board]}</div>` : ''}
@@ -2867,56 +2832,35 @@
         } catch (e) { console.warn('Leaderboard badges fetch failed:', e); allBadges = [] }
 
         // Fetch usernames from user_profiles first, then profiles as fallback
-        // Also fetch emails from profiles to detect multiple devices per Google account
-        const emailMap = {} // user_id -> email
-        const emailToUserIds = {} // email -> [user_id, ...]
         if (allUserIds.size > 0) {
-          const userIdsArray = Array.from(allUserIds).filter(id => 
-            typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
-          )
-          if (userIdsArray.length > 0) {
-            try {
-              const { data: upProfiles } = await window.supabaseClient
-                .from('user_profiles')
-                .select('user_id, display_name, username')
-                .in('user_id', userIdsArray)
-              if (upProfiles) {
-                upProfiles.forEach(p => {
-                  const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
-                  if (name) profileMap[p.user_id] = name
-                })
-              }
-            } catch (e) {}
-            // Fetch emails from profiles table (contains Google OAuth metadata)
-            try {
+          try {
+            const { data: upProfiles } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id, display_name, username')
+              .in('user_id', Array.from(allUserIds))
+            if (upProfiles) {
+              upProfiles.forEach(p => {
+                const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
+                if (name) profileMap[p.user_id] = name
+              })
+            }
+          } catch (e) {}
+          // Fallback: profiles table
+          try {
+            const missingIds = Array.from(allUserIds).filter(id => !profileMap[id])
+            if (missingIds.length > 0) {
               const { data: profiles } = await window.supabaseClient
                 .from('profiles')
-                .select('id, raw_user_meta_data, username')
-                .in('id', userIdsArray)
+                .select('id, username')
+                .in('id', missingIds)
               if (profiles) {
                 profiles.forEach(p => {
-                  const meta = p.raw_user_meta_data || {}
-                  const email = meta.email || meta.provider_email || null
-                  if (email) {
-                    emailMap[p.id] = email.toLowerCase()
-                    if (!emailToUserIds[email.toLowerCase()]) emailToUserIds[email.toLowerCase()] = []
-                    emailToUserIds[email.toLowerCase()].push(p.id)
-                  }
-                  // Fallback username if not in user_profiles
-                  if (!profileMap[p.id] && p.username) {
-                    profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
-                  }
+                  if (p.username) profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
                 })
               }
-            } catch (e) { console.warn('Leaderboard profiles email fetch failed:', e) }
-          }
+            }
+          } catch (e) { console.warn('Leaderboard profiles fetch failed:', e) }
         }
-
-        // Track which user_ids have "siblings" (same email, different device)
-        const multiDeviceUserIds = new Set()
-        Object.values(emailToUserIds).forEach(ids => {
-          if (ids.length > 1) ids.forEach(id => multiDeviceUserIds.add(id))
-        })
 
         if (certsByScore && certsByScore.length > 0) {
           renderBoard('leaderboard-xp', 'xp', certsByScore, u => `${(u.score || 0).toLocaleString()} XP`)
