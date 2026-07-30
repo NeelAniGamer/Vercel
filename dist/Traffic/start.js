@@ -443,12 +443,18 @@ preloadModels(() => {
   const urlParams = new URLSearchParams(window.location.search)
   let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
   let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode') || 'car'
+  // Check if we're on the levels screen - don't auto-start a level
+  const isLevelsScreen = urlParams.get('screen') === 'levels'
 
   if (_isDriving) {
     // Re-hide screens (ui.init may have shown one for non-lv-param driving pages)
-    document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+    // But don't hide if we're explicitly on the levels screen
+    if (!isLevelsScreen) {
+      document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
+    }
 
-    if (lvId) {
+    // Only auto-start a level if not on the levels screen
+    if (lvId && !isLevelsScreen) {
       let levelObj = window.LVS ? window.LVS.find((l) => l.id == lvId) : null
       // Fallback for free_roam / custom levels — create level on the fly
       if (!levelObj && (lvId === 'custom' || lvId === 'freeroam')) {
@@ -521,8 +527,8 @@ preloadModels(() => {
         window.location.href = 'Academy.html?screen=levels'
       }
     } else {
-      _drivingRedirected = true
-      window.location.href = 'Academy.html?screen=levels'
+      // On levels screen - just show the levels screen
+      if (ui.showLevels) ui.showLevels()
     }
   } else {
     // Don't override if init() already showed a specific screen (e.g. ?screen=levels)

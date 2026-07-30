@@ -8,22 +8,40 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&display=swap" rel="stylesheet" />
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>    <script>
     (async function() {
       try {
+        if (window.supabaseClient) return;
         var res = await fetch('config.json?t=' + Date.now());
         var cfg = await res.json();
         var auth = (cfg.auth || cfg.supabase || {});
         var url = auth.supabaseUrl || auth.url || '';
         var key = auth.supabaseKey || auth.anonKey || auth.key || '';
         if (url && key && window.supabase) {
-          window.supabaseClient = window.supabase.createClient(url, key);
-          var session = await window.supabaseClient.auth.getSession();
-          var user = session && session.data && session.data.session && session.data.session.user;
-          if (user) {
-            window.colUser = user;
-            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: user } }));
+          window.supabaseClient = window.supabase.createClient(url, key, {
+            auth: { persistSession: true, detectSessionInUrl: true }
+          });
+          // Also listen for session changes (catches OAuth redirect completion)
+          window.supabaseClient.auth.onAuthStateChange(function(event, session) {
+            if (session && session.user) {
+              window.colUser = session.user;
+              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: session.user } }));
+            }
+          });
+          try {
+            var session = await Promise.race([
+              window.supabaseClient.auth.getSession(),
+              new Promise(function(_, reject) { setTimeout(function() { reject(new Error('timeout')); }, 10000); })
+            ]);
+            var user = session && session.data && session.data.session && session.data.session.user;
+            if (user) {
+              window.colUser = user;
+              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: user } }));
+            }
+          } catch(sessionErr) {
+            if (sessionErr.message !== 'timeout') {
+              window.supabaseClient.auth.signOut().catch(function() {});
+            }
           }
         }
       } catch(e) {}
@@ -67,6 +85,39 @@
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+
+      /* === ENTRY ANIMATIONS === */
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeSlideRight {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.92); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      @keyframes shimmerPulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      .setup-container { animation: scaleIn 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+      .setup-left-pane > * { animation: fadeSlideRight 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+      .setup-left-pane > *:nth-child(1) { animation-delay: 0.15s; }
+      .setup-left-pane > *:nth-child(2) { animation-delay: 0.25s; }
+      .setup-left-pane > *:nth-child(3) { animation-delay: 0.35s; }
+      .wizard-step, #authArea { animation: fadeSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+
+      /* === STEP TRANSITION === */
+      .wizard-step {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      .wizard-step[style*="display: none"] {
+        opacity: 0;
+        transform: translateY(8px);
       }
 
       body.lm {
@@ -135,7 +186,7 @@
       
       .setup-right-pane {
         width: 60%;
-        padding: 60px 80px;
+        padding: 40px 48px;
         position: relative;
         overflow: hidden;
         display: flex;
@@ -599,12 +650,212 @@
       .remote-role-btn { flex: 1; background: var(--void); border: 1px solid var(--line); border-radius: 12px; padding: 12px; color: var(--dim); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
       .remote-role-btn.active { background: rgba(94, 212, 245, 0.1); border-color: var(--ion); color: var(--ion); }
       .remote-role-btn:hover:not(.active) { border-color: var(--lineb); color: var(--ink); }
-      .remote-bottom-links { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; align-items: center; }
-      .remote-bottom-link { background: none; border: none; color: var(--dim); font-size: 0.9rem; cursor: pointer; padding: 5px; transition: color 0.2s; }
-      .remote-bottom-link:hover { color: var(--ink); text-decoration: underline; }
+      body.lm .remote-role-btn { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); color: var(--dim); }
+      body.lm .remote-role-btn.active { background: rgba(14, 114, 160, 0.1); border-color: var(--ion); color: var(--ion); }
+      body.lm .remote-role-btn:hover:not(.active) { border-color: rgba(0,0,0,0.2); color: var(--ink); }
+      .remote-bottom-links { display: flex; flex-direction: row; gap: 12px; margin-top: 24px; align-items: center; justify-content: center; }
+      .remote-bottom-link {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        color: var(--dim);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 10px 20px;
+        transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        justify-content: center;
+        min-height: 44px;
+        font-family: var(--sans, 'Inter'), sans-serif;
+      }
+      .remote-bottom-link:hover {
+        background: rgba(255,255,255,0.08);
+        border-color: var(--lineb);
+        color: var(--ink);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      .remote-bottom-link:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+      .remote-bottom-link.primary {
+        border-color: var(--signal);
+        color: var(--signal);
+        background: rgba(242,184,75,0.08);
+      }
+      .remote-bottom-link.primary:hover {
+        background: rgba(242,184,75,0.15);
+        box-shadow: 0 4px 12px rgba(242,184,75,0.15);
+      }
+      body.lm .remote-bottom-link {
+        background: rgba(0,0,0,0.03);
+        border-color: rgba(0,0,0,0.1);
+      }
+      body.lm .remote-bottom-link:hover {
+        background: rgba(0,0,0,0.06);
+      }
+
+      /* === CUSTOM SELECT DROPDOWN (Resend-style smooth) === */
+      .custom-select-wrapper {
+        position: relative;
+        width: 100%;
+        z-index: 50;
+      }
+      .custom-select-trigger {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 14px 16px;
+        min-height: 48px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        font-size: max(1rem, 16px);
+        font-family: 'Inter', sans-serif;
+        color: var(--ink);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        outline: none;
+        user-select: none;
+      }
+      .custom-select-trigger:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255,255,255,0.2);
+      }
+      .custom-select-wrapper.open .custom-select-trigger {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: var(--signal);
+        box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.15);
+      }
+      body.lm .custom-select-trigger {
+        background: rgba(255, 255, 255, 0.6);
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+      body.lm .custom-select-wrapper.open .custom-select-trigger {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 0 3px rgba(14, 114, 160, 0.15);
+      }
+      .custom-select-icon { font-size: 1.2rem; flex-shrink: 0; }
+      .custom-select-text { flex: 1; font-weight: 500; }
+      .custom-select-arrow {
+        flex-shrink: 0;
+        color: var(--dim);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        pointer-events: none;
+      }
+      .custom-select-wrapper.open .custom-select-arrow {
+        transform: rotate(180deg);
+      }
+      .custom-select-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: rgba(17, 24, 39, 0.97);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 6px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        max-height: 280px;
+        overflow-y: auto;
+      }
+      .custom-select-wrapper.open .custom-select-dropdown {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+      body.lm .custom-select-dropdown {
+        background: rgba(255, 255, 255, 0.97);
+        border-color: rgba(0, 0, 0, 0.08);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+      }
+      .custom-select-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        min-height: 44px;
+      }
+      .custom-select-option:hover { background: rgba(255, 255, 255, 0.07); }
+      body.lm .custom-select-option:hover { background: rgba(0, 0, 0, 0.04); }
+      .custom-select-option:active { transform: scale(0.98); }
+      .custom-select-option.selected { background: rgba(242, 184, 75, 0.12); }
+      body.lm .custom-select-option.selected { background: rgba(14, 114, 160, 0.1); }
+      .option-icon { font-size: 1.3rem; flex-shrink: 0; width: 28px; text-align: center; }
+      .option-label { flex: 1; font-size: 0.95rem; font-weight: 500; color: var(--ink); }
+      body.lm .option-label { color: #1e293b; }
+      .option-check {
+        flex-shrink: 0;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: var(--signal);
+      }
+      body.lm .option-check { color: var(--ion); }
+      .custom-select-option.selected .option-check {
+        opacity: 1;
+        transform: scale(1);
+      }
+    </style>
+    <style>
+      /* === TOAST NOTIFICATION === */
+      @keyframes toastSlideIn {
+        from { opacity: 0; transform: translateY(-24px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes toastSlideOut {
+        from { opacity: 1; transform: translateY(0) scale(1); }
+        to { opacity: 0; transform: translateY(-24px) scale(0.95); }
+      }
+      .auth-toast {
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 99999;
+        background: rgba(5, 150, 105, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        color: #fff;
+        padding: 16px 32px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 12px 40px rgba(5, 150, 105, 0.35), 0 0 0 1px rgba(255,255,255,0.08);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: toastSlideIn 0.45s cubic-bezier(0.16,1,0.3,1) both;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .auth-toast.out {
+        animation: toastSlideOut 0.35s cubic-bezier(0.16,1,0.3,1) both;
+      }
+      body.lm .auth-toast {
+        background: rgba(5, 150, 105, 0.92);
+        color: #fff;
+      }
     </style>
 </head>
   <body>
+    <div id="auth-toast" class="auth-toast" style="display:none;">✅ You're signed in!</div>
     <canvas id="bg-canvas"></canvas>
 
     <div class="setup-container">
@@ -671,6 +922,14 @@
               </div>
 
               <button class="remote-btn-primary" id="auth-submit-btn" onclick="handleEmailAuth()">Log in</button>
+              <button class="remote-btn-primary" id="auth-otp-btn" onclick="sendLoginOtp()" style="margin-top: 10px; background: transparent; border: 1px solid var(--ion); color: var(--ion);">Log in with Email Code</button>
+              
+              <div id="login-otp-section" style="display: none; margin-top: 15px;">
+                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter the 6-digit code sent to your email:</p>
+                <input type="text" id="login-otp-input" class="remote-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-family: 'Space Mono', monospace;" />
+                <button class="remote-btn-primary" onclick="verifyLoginOtp()" style="margin-top: 10px; background: var(--signal); color: var(--void);">Verify Code</button>
+                <button type="button" onclick="cancelLoginOtp()" style="margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--line); color: var(--dim); border-radius: 24px; padding: 12px; cursor: pointer;">Cancel</button>
+              </div>
 
               <div class="remote-divider">OR</div>
 
@@ -715,6 +974,11 @@
               </div>
 
               <button class="remote-btn-primary" id="signup-submit-btn" onclick="handleEmailAuth()">Create Account</button>
+              <div id="signup-otp-section" style="display: none; margin-top: 15px;">
+                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter the 6-digit code sent to your email to confirm:</p>
+                <input type="text" id="signup-otp-input" class="remote-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-family: 'Space Mono', monospace;" />
+                <button class="remote-btn-primary" onclick="verifySignupOtp()" style="margin-top: 10px; background: var(--signal); color: var(--void);">Verify Code</button>
+              </div>
 
               <div class="remote-divider">OR</div>
 
@@ -733,8 +997,8 @@
           </div>
 
           <div class="remote-bottom-links" style="margin-top: 24px;">
-            <button type="button" class="remote-bottom-link" onclick="goToStep(2); updateWizardStep(2)">Skip Cloud & Play Locally</button>
-            <button type="button" class="remote-bottom-link" onclick="window.location.href = 'Academy.html'">Back to Academy</button>
+            <button type="button" class="remote-bottom-link primary" onclick="goToStep(2); updateWizardStep(2)">🎮 Skip & Play Locally</button>
+            <button type="button" class="remote-bottom-link" onclick="window.location.href = 'Academy.html'">← Back to Academy</button>
           </div>
         </div>
       </div>
@@ -750,7 +1014,8 @@
 
           <div class="input-group">
             <label for="prof-username">Username (Public on Leaderboard)</label>
-            <input type="text" id="prof-username" placeholder="@your_username" required autocomplete="username" oninput="if(this.value && !this.value.startsWith('@')) this.value = '@' + this.value;" />
+            <input type="text" id="prof-username" placeholder="@your_username" required autocomplete="username" oninput="if(this.value && !this.value.startsWith('@')) this.value = '@' + this.value; checkUsernameAvailability(this.value);" style="padding-right: 40px;" />
+            <div id="username-status" style="font-size: 0.8rem; margin-top: 6px; min-height: 18px; font-weight: 600;"></div>
           </div>
 
           <div class="input-group">
@@ -776,18 +1041,47 @@
         <form id="vehicleForm">
           <div class="input-group">
             <label for="prof-veh">Preferred Vehicle</label>
-            <select id="prof-veh" autocomplete="off">
-              <option value="Car">Standard Car</option>
-              <option value="Bike">Motorcycle</option>
-              <option value="Bus">Bus</option>
-              <option value="Truck">Truck</option>
-              <option value="Auto">Auto Rickshaw</option>
-            </select>
+            <div class="custom-select-wrapper" id="veh-select-wrapper">
+              <div class="custom-select-trigger" id="veh-select-trigger" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-label="Preferred Vehicle" tabindex="0" onclick="toggleCustomSelect('veh')" onkeydown="handleSelectKeydown(event, 'veh')">
+                <span class="custom-select-icon" aria-hidden="true">🚗</span>
+                <span class="custom-select-text" id="veh-select-text">Standard Car</span>
+                <svg class="custom-select-arrow" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="custom-select-dropdown" id="veh-select-dropdown" role="listbox" aria-label="Vehicle options">
+                <div class="custom-select-option selected" data-value="Car" data-icon="🚗" role="option" aria-selected="true" tabindex="-1" onclick="selectCustomOption('veh', 'Car', '🚗', 'Standard Car')">
+                  <span class="option-icon" aria-hidden="true">🚗</span>
+                  <span class="option-label">Standard Car</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Bike" data-icon="🏍️" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Bike', '🏍️', 'Motorcycle')">
+                  <span class="option-icon" aria-hidden="true">🏍️</span>
+                  <span class="option-label">Motorcycle</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Bus" data-icon="🚌" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Bus', '🚌', 'Bus')">
+                  <span class="option-icon" aria-hidden="true">🚌</span>
+                  <span class="option-label">Bus</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Truck" data-icon="🚛" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Truck', '🚛', 'Truck')">
+                  <span class="option-icon" aria-hidden="true">🚛</span>
+                  <span class="option-label">Truck</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Auto" data-icon="🛺" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Auto', '🛺', 'Auto Rickshaw')">
+                  <span class="option-icon" aria-hidden="true">🛺</span>
+                  <span class="option-label">Auto Rickshaw</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="prof-veh" value="Car" />
           </div>
 
           <div class="input-group">
-            <label for="prof-pin">Local Login PIN (Optional)</label>
-            <input type="password" id="prof-pin" placeholder="4-digit PIN (e.g. 1234)" autocomplete="off" />
+            <label for="prof-pin">Local Login PIN <span style="color:var(--dim);font-weight:400;font-size:0.8rem">(Optional — keeps local saves secure)</span></label>
+            <input type="password" id="prof-pin" placeholder="4-8 digit PIN (no repeated/sequential)" autocomplete="off" maxlength="8" oninput="validatePinStrength(this.value)" />
+            <div id="pin-status" style="font-size:0.8rem;margin-top:6px;min-height:18px;font-weight:600;"></div>
           </div>
 
           <button type="submit" class="btn-submit" form="vehicleForm">Complete Setup &rarr;</button>
@@ -847,6 +1141,11 @@
         if (setupProgressRing && window.TrafficCharts) {
           const pct = Math.round(((currentStep - 1) / (totalSteps - 1)) * 100)
           setupProgressRing.update(pct)
+          // Sync the text percentage with the ring
+          const pctEl = document.getElementById('progress-pct')
+          if (pctEl) {
+            pctEl.textContent = pct + '%'
+          }
         }
 
         // Show/hide steps
@@ -859,6 +1158,22 @@
         if (authArea) {
           authArea.style.display = currentStep === 1 ? 'block' : 'none'
         }
+
+        // Update title and subtitle for each step
+        var titles = {
+          1: 'Welcome',
+          2: window.colUser ? 'Welcome, ' + (window.colUser.user_metadata?.full_name?.split(' ')[0] || 'Driver') + '!' : 'Your Profile',
+          3: 'Choose Your Vehicle'
+        }
+        var subtitles = {
+          1: "Let's setup your driver profile to get started.",
+          2: window.colUser ? 'Almost done — just fill in a few details to complete your setup.' : 'Tell us about yourself so we can personalize your experience.',
+          3: 'Pick your preferred vehicle and you\'ll be ready to hit the road.'
+        }
+        var titleEl = document.getElementById('step-title-h1')
+        var subEl = document.getElementById('subtitle-text')
+        if (titleEl) titleEl.textContent = titles[currentStep] || 'Welcome'
+        if (subEl) subEl.textContent = subtitles[currentStep] || ''
       }
 
       function goToStep(step) {
@@ -884,14 +1199,19 @@
 
       // Initialize progress ring
       function initProgressRing() {
-        const canvas = document.getElementById('setup-progress-canvas')
+        const canvas = document.getElementById('setup-progress-ring')
         if (canvas && window.TrafficCharts) {
           setupProgressRing = window.TrafficCharts.createProgressRing(canvas, 0, { cutout: '70%' })
-          // Override update method
+          // Override update method — save reference to Chart.js native update first
+          // to avoid infinite recursion (this.update called the override, not the prototype)
+          var _nativeUpdate = setupProgressRing.update.bind(setupProgressRing)
           setupProgressRing.update = function(value) {
             this.data.datasets[0].data = [value, 100 - value]
-            this.update('none')
+            _nativeUpdate('none')
           }
+          // Sync the text percentage with the ring
+          const pctEl = document.getElementById('progress-pct')
+          if (pctEl) pctEl.textContent = '0%'
         }
       }
 
@@ -1018,7 +1338,9 @@
         if (typeof THREE !== 'undefined') {
           init3D()
         }
+        // Init progress ring here so TrafficCharts is guaranteed loaded
         initProgressRing()
+        updateWizardStep(1)
       })
 
       // --- AUTH LOGIC ---
@@ -1029,34 +1351,30 @@
         selectedRole = role
         if (mode === 'signup') {
           document.getElementById('signup-role').value = role
-          document.querySelectorAll('.role-btn-signup').forEach(btn => {
+          // Reset ALL remote-role-btn elements in signup panel
+          document.querySelectorAll('#signup-panel .remote-role-btn').forEach(btn => {
             btn.classList.remove('active')
-            btn.style.borderColor = 'var(--line)'
-            btn.style.background = 'var(--void)'
-            btn.style.color = 'var(--ink)'
+            btn.style.borderColor = ''
+            btn.style.background = ''
+            btn.style.color = ''
           })
           const btnId = role === 'student' ? 'btn-signup-student' : 'btn-signup-parent'
           const btn = document.getElementById(btnId)
           if(btn) {
             btn.classList.add('active')
-            btn.style.borderColor = 'var(--signal)'
-            btn.style.background = 'rgba(242, 184, 75, 0.1)'
-            btn.style.color = 'var(--signal)'
           }
         } else {
-          document.querySelectorAll('.role-btn-login').forEach(btn => {
+          // Reset ALL remote-role-btn elements in login panel
+          document.querySelectorAll('#login-panel .remote-role-btn').forEach(btn => {
             btn.classList.remove('active')
-            btn.style.borderColor = 'var(--line)'
-            btn.style.background = 'var(--void)'
-            btn.style.color = 'var(--ink)'
+            btn.style.borderColor = ''
+            btn.style.background = ''
+            btn.style.color = ''
           })
           const btnId = role === 'student' ? 'btn-login-student' : 'btn-login-parent'
           const btn = document.getElementById(btnId)
           if(btn) {
             btn.classList.add('active')
-            btn.style.borderColor = 'var(--signal)'
-            btn.style.background = 'rgba(242, 184, 75, 0.1)'
-            btn.style.color = 'var(--signal)'
           }
         }
       }
@@ -1078,6 +1396,138 @@
       }
 
 
+
+      
+      function friendlyAuthError(err) {
+        var msg = (err.message || '').toLowerCase();
+        if (msg.includes('rate limit') || msg.includes('too many')) return 'Too many attempts. Please wait a few minutes and try again.';
+        if (msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch') || msg.includes('networkerror')) return 'Network error — check your connection and try again.';
+        if (msg.includes('invalid login credentials') || msg.includes('invalid email') || msg.includes('invalid grant')) return 'No account found with this email. Please sign up first.';
+        if (msg.includes('email not confirmed')) return 'Please confirm your email address before logging in.';
+        if (msg.includes('signup disabled') || msg.includes('signups not allowed')) return 'New signups are currently disabled. Please contact support.';
+        if (msg.includes('token has expired') || msg.includes('invalid token') || msg.includes('invalid otp')) return 'Code is invalid or expired. Please request a new one.';
+        if (msg.includes('email rate limit exceeded')) return 'Too many emails sent. Please wait a few minutes.';
+        if (msg.includes('email address invalid')) return 'Please enter a valid email address.';
+        return err.message || 'Something went wrong. Please try again.';
+      }
+
+      async function sendLoginOtp() {
+        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
+        const email = document.getElementById('auth-email').value.trim()
+        const errDiv = document.getElementById('col-auth-err')
+        if (!email) {
+          errDiv.textContent = 'Please enter an email address.'
+          return
+        }
+
+        document.getElementById('auth-otp-btn').textContent = 'Sending...'
+        document.getElementById('auth-otp-btn').disabled = true
+        errDiv.textContent = ''
+
+        try {
+          const res = await window.supabaseClient.auth.signInWithOtp({ email })
+          if (res.error) throw res.error
+          
+          document.getElementById('auth-pass').parentElement.style.display = 'none'
+          document.getElementById('auth-submit-btn').style.display = 'none'
+          document.getElementById('auth-otp-btn').style.display = 'none'
+          document.getElementById('login-otp-section').style.display = 'block'
+          errDiv.innerHTML = '<span style="color:var(--em)">✓ Code sent to ' + email + '</span>'
+        } catch (err) {
+          errDiv.textContent = friendlyAuthError(err)
+          document.getElementById('auth-otp-btn').textContent = 'Log in with Email Code'
+          document.getElementById('auth-otp-btn').disabled = false
+        }
+      }
+
+      function cancelLoginOtp() {
+        document.getElementById('auth-pass').parentElement.style.display = 'block'
+        document.getElementById('auth-submit-btn').style.display = 'block'
+        document.getElementById('auth-otp-btn').style.display = 'block'
+        document.getElementById('login-otp-section').style.display = 'none'
+        document.getElementById('auth-otp-btn').textContent = 'Log in with Email Code'
+        document.getElementById('auth-otp-btn').disabled = false
+      }
+
+      async function verifyLoginOtp() {
+        const email = document.getElementById('auth-email').value.trim()
+        const token = document.getElementById('login-otp-input').value.trim()
+        const errDiv = document.getElementById('col-auth-err')
+        const verifyBtn = document.querySelector('#login-otp-section .remote-btn-primary')
+
+        if (!token) {
+          errDiv.textContent = 'Please enter the 6-digit code.'
+          return
+        }
+        if (token.length < 6) {
+          errDiv.textContent = 'Code must be 6 digits.'
+          return
+        }
+
+        errDiv.textContent = ''
+        if (verifyBtn) { verifyBtn.textContent = 'Verifying...'; verifyBtn.disabled = true; }
+
+        try {
+          const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'email' })
+          if (res.error) throw res.error
+
+          if (res.data.session) {
+            window.colUser = res.data.session.user
+            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+            document.getElementById('cloud-status').style.display = 'block'
+            
+            const p = await window.supabaseClient.from('user_profiles').select('*').eq('user_id', window.colUser.id).maybeSingle()
+            if (p.data) {
+              window.colUser.uid = p.data.user_id;
+              document.getElementById('auth-dashboard-btn').style.display = 'block'
+            }
+            goToStep(2); updateWizardStep(2);
+          } else {
+            errDiv.textContent = 'Verification succeeded but no session was created. Please try again.'
+          }
+        } catch (err) {
+          errDiv.textContent = friendlyAuthError(err)
+        } finally {
+          if (verifyBtn) { verifyBtn.textContent = 'Verify Code'; verifyBtn.disabled = false; }
+        }
+      }
+
+      async function verifySignupOtp() {
+        const email = document.getElementById('signup-email').value.trim()
+        const token = document.getElementById('signup-otp-input').value.trim()
+        const errDiv = document.getElementById('col-auth-err-signup')
+        const verifyBtn = document.querySelector('#signup-otp-section .remote-btn-primary')
+
+        if (!token) {
+          errDiv.textContent = 'Please enter the 6-digit code.'
+          return
+        }
+        if (token.length < 6) {
+          errDiv.textContent = 'Code must be 6 digits.'
+          return
+        }
+
+        errDiv.textContent = ''
+        if (verifyBtn) { verifyBtn.textContent = 'Verifying...'; verifyBtn.disabled = true; }
+
+        try {
+          const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'signup' })
+          if (res.error) throw res.error
+
+          if (res.data.session) {
+            window.colUser = res.data.session.user
+            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+            document.getElementById('cloud-status').style.display = 'block'
+            goToStep(2); updateWizardStep(2);
+          } else {
+            errDiv.textContent = 'Verification succeeded but no session was created. Please try again.'
+          }
+        } catch (err) {
+          errDiv.textContent = friendlyAuthError(err)
+        } finally {
+          if (verifyBtn) { verifyBtn.textContent = 'Verify Code'; verifyBtn.disabled = false; }
+        }
+      }
 
       async function handleEmailAuth() {
         if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
@@ -1151,24 +1601,22 @@
 
             errDiv.textContent = 'Success!'
             errDiv.style.color = 'var(--em)'
-            showLocalSetup()
-          } catch (err) {
-            errDiv.textContent = err.message || 'Authentication failed.'
-            errDiv.style.color = '#ef4444'
+            showLocalSetup()            } catch (err) {
+              errDiv.textContent = friendlyAuthError(err)
+              errDiv.style.color = '#ef4444'
+            }
           }
         }
-      }
 
       async function handleGoogleAuth() {
+        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
         try {
-          var allowedOrigin = 'https://advancedlogiclabs.dpdns.org';
-          var currentOrigin = window.location.origin;
-          var redirectUrl = currentOrigin === allowedOrigin ? window.location.href : currentOrigin + window.location.pathname;
+          var redirectTo = new URL('TrafficSetup.html', window.location.href).href
           
           let res = await window.supabaseClient.auth.signInWithOAuth({
             provider: 'google',
             options: {
-              redirectTo: redirectUrl,
+              redirectTo: redirectTo,
             },
           })
           if (res.error) throw res.error
@@ -1178,7 +1626,23 @@
       }
 
       function showLocalSetup() {
-        goToStep(2)
+        var toast = document.getElementById('auth-toast')
+        if (toast && toast.dataset.advancing === '1') return // prevent re-entry
+        if (toast) {
+          toast.dataset.advancing = '1'
+          toast.style.display = 'flex'
+          toast.classList.remove('out')
+          setTimeout(function() {
+            toast.classList.add('out')
+            setTimeout(function() {
+              toast.style.display = 'none'
+              toast.classList.remove('out')
+            }, 400)
+            goToStep(2)
+          }, 1800)
+        } else {
+          goToStep(2)
+        }
       }
 
       window.addEventListener('col-auth-changed', async (e) => {
@@ -1199,33 +1663,212 @@
             localStorage.removeItem('pending_role');
           }
 
-          showLocalSetup()
-          document.getElementById('cloud-status').style.display = 'block'
-          if (user.user_metadata && user.user_metadata.full_name) {
-            document.getElementById('prof-name').value = user.user_metadata.full_name
-          }
+          // Use the shared profile restoration function (fills all fields: name, username, age, vehicle, language)
+          _restoreProfileFromCloud(user)
         }
       })
 
-      setTimeout(async () => {
+      // Retry loop: poll window.colUser up to 5 seconds (catches race with async Supabase init)
+      var _setupRetries = 0
+      var _maxSetupRetries = 10
+      function _tryAutoAdvance() {
         if (window.colUser) {
+          _restoreProfileFromCloud(window.colUser)
+        } else if (_setupRetries < _maxSetupRetries) {
+          _setupRetries++
+          setTimeout(_tryAutoAdvance, 500)
+        }
+      }
+      _tryAutoAdvance()
+
+      // Shared function: restores the full profile from both Google metadata and Supabase
+      async function _restoreProfileFromCloud(user) {
+        var alreadyAdvanced = document.querySelector('#authArea') && document.querySelector('#authArea').style.display !== 'block'
+        if (!alreadyAdvanced) {
           showLocalSetup()
-          document.getElementById('cloud-status').style.display = 'block'
-          if (window.colUser.user_metadata && window.colUser.user_metadata.full_name) {
-            if (!document.getElementById('prof-name').value) {
-              document.getElementById('prof-name').value = window.colUser.user_metadata.full_name
-            }
-          }
-          if (window.supabaseClient) {
-            try {
-              const { data } = await window.supabaseClient.from('profiles').select('username').eq('id', window.colUser.id).single()
-              if (data && data.username && !document.getElementById('prof-username').value) {
-                document.getElementById('prof-username').value = data.username.startsWith('@') ? data.username : '@' + data.username
-              }
-            } catch (e) {}
+        }
+        document.getElementById('cloud-status').style.display = 'block'
+        if (user.user_metadata && user.user_metadata.full_name) {
+          var nameEl = document.getElementById('prof-name')
+          if (nameEl && !nameEl.value) {
+            nameEl.value = user.user_metadata.full_name
           }
         }
-      }, 500)
+        if (window.supabaseClient) {
+          try {
+            var res = await window.supabaseClient
+              .from('user_profiles')
+              .select('username, age, preferred_vehicle, language')
+              .eq('user_id', user.id).maybeSingle()
+            if (res.data) {
+              var d = res.data
+              if (d.username) {
+                var unEl = document.getElementById('prof-username')
+                if (unEl && !unEl.value) {
+                  unEl.value = d.username.startsWith('@') ? d.username : '@' + d.username
+                }
+              }
+              if (d.age) {
+                var ageEl = document.getElementById('prof-age')
+                if (ageEl && !ageEl.value) ageEl.value = d.age
+              }
+              if (d.preferred_vehicle) {
+                document.getElementById('prof-veh').value = d.preferred_vehicle
+                _updateVehicleDropdownText(d.preferred_vehicle)
+              }
+              if (d.language) {
+                var langEl = document.getElementById('prof-lang')
+                if (langEl) langEl.value = d.language
+              }
+            }
+          } catch (e) {
+            console.warn('Could not load profile from cloud', e)
+          }
+        }
+      }
+
+      // Updates the custom vehicle dropdown trigger text to match the saved value
+      function _updateVehicleDropdownText(val) {
+        var triggerText = document.getElementById('veh-select-text')
+        var triggerIcon = document.querySelector('#veh-select-trigger .custom-select-icon')
+        if (!triggerText) return
+        var map = {
+          'Car': { label: 'Standard Car', icon: '🚗' },
+          'Bike': { label: 'Motorcycle', icon: '🏍️' },
+          'Bus': { label: 'Bus', icon: '🚌' },
+          'Truck': { label: 'Truck', icon: '🚛' },
+          'Auto': { label: 'Auto Rickshaw', icon: '🛺' }
+        }
+        var entry = map[val]
+        if (entry) {
+          triggerText.textContent = entry.label
+          if (triggerIcon) triggerIcon.textContent = entry.icon
+          // Also update the selected class in the dropdown
+          document.querySelectorAll('#veh-select-dropdown .custom-select-option').forEach(function(opt) {
+            opt.classList.toggle('selected', opt.dataset.value === val)
+            opt.setAttribute('aria-selected', opt.dataset.value === val ? 'true' : 'false')
+          })
+        }
+      }
+
+      // --- USERNAME AVAILABILITY CHECK ---
+      let _usernameCheckTimeout = null
+
+      // --- PIN STRENGTH VALIDATOR ---
+      function validatePinStrength(pin) {
+        const statusEl = document.getElementById('pin-status')
+        if (!statusEl) return
+        if (!pin) {
+          statusEl.textContent = ''
+          statusEl.style.color = ''
+          return
+        }
+        // Check if all digits
+        if (!/^\d+$/.test(pin)) {
+          statusEl.textContent = '✕ PIN must be numbers only'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        if (pin.length < 4) {
+          statusEl.textContent = '✕ PIN must be at least 4 digits'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        // Check for repeated digits (1111, 2222)
+        if (/^(\d)\1+$/.test(pin)) {
+          statusEl.textContent = '✕ Avoid repeated digits (e.g. 1111)'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        // Check for sequential digits (1234, 5678)
+        let isSequential = true
+        for (let i = 1; i < pin.length; i++) {
+          if (parseInt(pin[i]) !== parseInt(pin[i-1]) + 1 &&
+              parseInt(pin[i]) !== parseInt(pin[i-1]) - 1) {
+            isSequential = false
+            break
+          }
+        }
+        if (isSequential) {
+          statusEl.textContent = '✕ Avoid sequential digits (e.g. 1234)'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        // Check common PINs
+        const commonPins = ['0852','1212','1998','2000','2001','2580','6969']
+        if (commonPins.includes(pin)) {
+          statusEl.textContent = '✕ This PIN is too common — choose something harder'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        // Determine strength
+        const uniqueDigits = new Set(pin.split('')).size
+        if (pin.length >= 6 && uniqueDigits >= 4) {
+          statusEl.textContent = '✓ Strong PIN'
+          statusEl.style.color = 'var(--em)'
+        } else        if (pin.length >= 4 && uniqueDigits >= 3 && pin.length <= 8) {
+          statusEl.textContent = '✓ Acceptable PIN'
+          statusEl.style.color = 'var(--signal)'
+        } else {
+          statusEl.textContent = '⚠ Weak PIN — try using more unique digits'
+          statusEl.style.color = 'var(--red)'
+        }
+      }
+
+      async function checkUsernameAvailability(username) {
+        const statusEl = document.getElementById('username-status')
+        if (!statusEl) return
+        username = username.trim()
+        // Strip @ prefix for validation
+        let nameOnly = username.startsWith('@') ? username.slice(1) : username
+        if (!nameOnly) {
+          statusEl.textContent = ''
+          statusEl.style.color = ''
+          return
+        }
+        if (nameOnly.length < 3) {
+          statusEl.textContent = 'Username must be at least 3 characters'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        if (!username.startsWith('@')) username = '@' + nameOnly
+        statusEl.textContent = 'Checking...'
+        statusEl.style.color = 'var(--dim)'
+        clearTimeout(_usernameCheckTimeout)
+        _usernameCheckTimeout = setTimeout(async () => {
+          try {
+            if (!window.supabaseClient) {
+              statusEl.textContent = '✓ Username accepted (offline)'
+              statusEl.style.color = 'var(--em)'
+              return
+            }
+            // Check both user_profiles and profiles tables
+            const uname = username.startsWith('@') ? username : '@' + username
+            const { data: upData } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id')
+              .ilike('username', uname)
+              .maybeSingle()
+            if (upData) {
+              // If it's the current user, it's fine
+              if (window.colUser && upData.user_id === window.colUser.id) {
+                statusEl.textContent = '✓ This is your current username'
+                statusEl.style.color = 'var(--em)'
+              } else {
+                statusEl.textContent = '✕ Username already taken'
+                statusEl.style.color = 'var(--red)'
+              }
+              return
+            }
+            // Username is available
+            statusEl.textContent = '✓ Username available!'
+            statusEl.style.color = 'var(--em)'
+          } catch (e) {
+            statusEl.textContent = '✓ Username accepted'
+            statusEl.style.color = 'var(--em)'
+          }
+        }, 500)
+      }
 
       let S = {}
       try {
@@ -1235,7 +1878,10 @@
 
       if (S.name) document.getElementById('prof-name').value = S.name
       if (S.username) document.getElementById('prof-username').value = S.username
-      if (S.vehicle) document.getElementById('prof-veh').value = S.vehicle
+      if (S.vehicle) {
+        document.getElementById('prof-veh').value = S.vehicle
+        _updateVehicleDropdownText(S.vehicle)
+      }
       if (S.age) document.getElementById('prof-age').value = S.age
       if (S.language) document.getElementById('prof-lang').value = S.language
 
@@ -1248,6 +1894,131 @@
         // Skip to dashboard button visible
         updateWizardStep(totalSteps)
       }
+
+      // === CUSTOM SELECT DROPDOWN LOGIC ===
+      function toggleCustomSelect(prefix) {
+        const wrapper = document.getElementById(prefix + '-select-wrapper')
+        const trigger = document.getElementById(prefix + '-select-trigger')
+        const isOpen = wrapper.classList.contains('open')
+        // Close all other open dropdowns
+        document.querySelectorAll('.custom-select-wrapper.open').forEach(el => {
+          el.classList.remove('open')
+          const t = el.querySelector('.custom-select-trigger')
+          if (t) t.setAttribute('aria-expanded', 'false')
+        })
+        if (!isOpen) {
+          wrapper.classList.add('open')
+          trigger.setAttribute('aria-expanded', 'true')
+          // Focus the currently selected option
+          const selected = wrapper.querySelector('.custom-select-option.selected')
+          if (selected) selected.focus()
+        } else {
+          trigger.setAttribute('aria-expanded', 'false')
+        }
+      }
+
+      function selectCustomOption(prefix, value, icon, label) {
+        const wrapper = document.getElementById(prefix + '-select-wrapper')
+        const trigger = document.getElementById(prefix + '-select-trigger')
+        const hidden = document.getElementById('prof-' + prefix)
+        const textEl = document.getElementById(prefix + '-select-text')
+        const iconEl = trigger.querySelector('.custom-select-icon')
+
+        // Update hidden input and dispatch change event
+        if (hidden) {
+          hidden.value = value
+          hidden.dispatchEvent(new Event('change', { bubbles: true }))
+        }
+        // Update trigger display
+        if (textEl) textEl.textContent = label
+        if (iconEl) iconEl.textContent = icon
+
+        // Update ARIA states
+        trigger.setAttribute('aria-expanded', 'false')
+
+        // Update selected state on options
+        wrapper.querySelectorAll('.custom-select-option').forEach(opt => {
+          const isSelected = opt.dataset.value === value
+          opt.classList.toggle('selected', isSelected)
+          opt.setAttribute('aria-selected', isSelected ? 'true' : 'false')
+        })
+
+        // Close dropdown
+        wrapper.classList.remove('open')
+        trigger.focus()
+      }
+
+      // Keyboard navigation for custom select
+      function handleSelectKeydown(e, prefix) {
+        const wrapper = document.getElementById(prefix + '-select-wrapper')
+        const options = Array.from(wrapper.querySelectorAll('.custom-select-option'))
+        const currentIdx = options.findIndex(opt => opt.classList.contains('selected'))
+
+        switch (e.key) {
+          case 'Enter':
+          case ' ':
+            e.preventDefault()
+            if (wrapper.classList.contains('open') && currentIdx >= 0) {
+              const opt = options[currentIdx]
+              selectCustomOption(prefix, opt.dataset.value, opt.dataset.icon, opt.querySelector('.option-label').textContent)
+            } else {
+              toggleCustomSelect(prefix)
+            }
+            break
+          case 'ArrowDown':
+            e.preventDefault()
+            if (!wrapper.classList.contains('open')) {
+              toggleCustomSelect(prefix)
+            } else {
+              const nextIdx = Math.min(currentIdx + 1, options.length - 1)
+              options[nextIdx].focus()
+            }
+            break
+          case 'ArrowUp':
+            e.preventDefault()
+            if (!wrapper.classList.contains('open')) {
+              toggleCustomSelect(prefix)
+            } else {
+              const prevIdx = Math.max(currentIdx - 1, 0)
+              options[prevIdx].focus()
+            }
+            break
+          case 'Escape':
+            wrapper.classList.remove('open')
+            break
+        }
+      }
+
+      // Focus management for dropdown options
+      document.querySelectorAll('.custom-select-option').forEach(opt => {
+        opt.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            this.click()
+          } else if (e.key === 'Escape') {
+            const wrapper = this.closest('.custom-select-wrapper')
+            if (wrapper) {
+              wrapper.classList.remove('open')
+              wrapper.querySelector('.custom-select-trigger').focus()
+            }
+          } else if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            const next = this.nextElementSibling
+            if (next && next.classList.contains('custom-select-option')) next.focus()
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            const prev = this.previousElementSibling
+            if (prev && prev.classList.contains('custom-select-option')) prev.focus()
+          }
+        })
+      })
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-select-wrapper')) {
+          document.querySelectorAll('.custom-select-wrapper.open').forEach(el => el.classList.remove('open'))
+        }
+      })
 
       document.getElementById('vehicleForm').addEventListener('submit', async function (e) {
         e.preventDefault()
@@ -1277,27 +2048,72 @@
           }
           if (window.supabaseClient && window.colUser) {
             try {
-              // Check if username is already taken
-              const { data: existing, error: err } = await window.supabaseClient
-                .from('profiles')
-                .select('id')
-                .eq('username', username)
-                .neq('id', window.colUser.id)
+              // Check if username is already taken in user_profiles
+              const { data: upExisting } = await window.supabaseClient
+                .from('user_profiles')
+                .select('user_id')
+                .ilike('username', username)
+                .neq('user_id', window.colUser.id)
                 .maybeSingle()
-              
-              if (existing) {
+              if (upExisting) {
                 alert('That username is already taken. Please choose another.')
                 return
               }
 
-              // Update profile
+              // Upsert profile to user_profiles
+              const studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
               await window.supabaseClient
-                .from('profiles')
-                .upsert({ id: window.colUser.id, username: username, full_name: name, avatar_url: '' })
+                .from('user_profiles')
+                .upsert({
+                  user_id: window.colUser.id,
+                  display_name: name,
+                  username: username,
+                  student_id: studentId,
+                  preferred_vehicle: veh,
+                  age: age,
+                  language: language,
+                  role: document.getElementById('signup-role')?.value || 'student',
+                  updated_at: new Date().toISOString()
+                }, { onConflict: 'user_id' })
             } catch (err) {
-              console.warn('Error saving username to cloud', err)
+              console.warn('Error saving profile to cloud', err)
             }
           }
+        }
+
+        // Validate PIN strength before saving
+        if (pin && !/^\d+$/.test(pin)) {
+          alert('PIN must contain only numbers.')
+          return
+        }
+        if (pin && pin.length < 4) {
+          alert('PIN must be at least 4 digits.')
+          return
+        }
+        if (pin && /^(\d)\1+$/.test(pin)) {
+          alert('Avoid repeated digits like 1111 in your PIN.')
+          return
+        }
+        // Check for sequential digits (1234, 5678)
+        if (pin && pin.length >= 4) {
+          let isSeq = true
+          for (let i = 1; i < pin.length; i++) {
+            if (parseInt(pin[i]) !== parseInt(pin[i-1]) + 1 &&
+                parseInt(pin[i]) !== parseInt(pin[i-1]) - 1) {
+              isSeq = false
+              break
+            }
+          }
+          if (isSeq) {
+            alert('Avoid sequential digits like 1234 in your PIN.')
+            return
+          }
+        }
+        // Check against common weak PINs (non-repeated, non-sequential)
+        const weakPins = ['0852','1212','1998','2000','2001','2580','6969']
+        if (pin && weakPins.includes(pin)) {
+          alert('This PIN is too common. Please choose a harder one.')
+          return
         }
 
         const tUser = { name, username, vehicle: veh, pin, age, language, createdAt: new Date().toISOString() }
@@ -1314,6 +2130,35 @@
         localStorage.setItem('th-save', JSON.stringify(L))
         localStorage.setItem('trafficSetupComplete', 'true')
 
+        // Initialize wallet with starting balance based on level spending research
+        // Real driving lessons cost ₹500-2000/session, sim gives ₹50000 starting balance
+        const walletKey = 'mth4'
+        let saveData = {}
+        try {
+          const raw = localStorage.getItem(walletKey)
+          if (raw) saveData = JSON.parse(raw)
+        } catch(e) {}
+        if (!saveData.wallet) saveData.wallet = 50000
+        if (!saveData.name) saveData.name = name
+        if (!saveData.vehicle) saveData.vehicle = veh
+        if (!saveData.comp) saveData.comp = {}
+        if (!saveData.badges) saveData.badges = []
+        if (!saveData.studentId) saveData.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+        localStorage.setItem(walletKey, JSON.stringify(saveData))
+
+        // Also save wallet to Supabase if logged in
+        if (window.supabaseClient && window.colUser) {
+          try {
+            await window.supabaseClient.from('user_profiles').upsert({
+              user_id: window.colUser.id,
+              civic_balance: 50000,
+              display_name: name,
+              preferred_vehicle: veh,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id' })
+          } catch(err) { console.warn('Could not sync wallet to cloud', err) }
+        }
+
         // Complete wizard
         updateWizardStep(totalSteps)
         
@@ -1323,23 +2168,14 @@
           if (returnTo && /^[a-zA-Z0-9_-]+\.html$/.test(returnTo)) {
             window.location.href = returnTo;
           } else {
-            window.location.href = 'Academy.html';
+            window.location.href = 'TrafficDashboard.html';
           }
         }, 500)
       })
 
-      // Initialize progress ring
-      const setupProgressCanvas = document.getElementById('setup-progress-ring')
-      if (setupProgressCanvas && window.TrafficCharts) {
-        window.TrafficCharts.createRadialProgress(setupProgressCanvas, 33, {
-          strokeWidth: 6,
-          subtitle: 'Setup Progress',
-          fontSize: 20
-        })
-      }
+      // Second init attempt removed — initProgressRing() above already handles this correctly
 
-      // Initialize on load
-      updateWizardStep(1)
+      // initProgressRing() + updateWizardStep(1) moved to window.load handler above
     </script>
   <script src="welcome-back.js"></script>
 </body>

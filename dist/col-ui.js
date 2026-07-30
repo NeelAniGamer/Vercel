@@ -145,7 +145,7 @@ window.toggleTheme = function (el) {
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/sw.js').then(
+    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(
       function (registration) {
         console.log('SW registered: ', registration.scope)
       },

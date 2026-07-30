@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import DrivingSimulator from './DrivingSimulator';
 import AchievementToast from './components/HUD';
 import { supabase } from '../supabase';
@@ -71,6 +72,7 @@ const GamePage = () => {
 
   return (
     <div className="relative h-screen w-screen">
+      <SpeedInsights />
       <DrivingSimulator
         onScoreChange={syncScore}
         onAchievementTrigger={triggerAchievement}

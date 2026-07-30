@@ -24,6 +24,48 @@
         _oldWarn.apply(console, args)
       }
     </script>
+
+    <!-- Supabase Client Initialization -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+    (async function() {
+      try {
+        if (window.supabaseClient) return;
+        var res = await fetch('../config.json?t=' + Date.now());
+        var cfg = await res.json();
+        var auth = (cfg.auth || cfg.supabase || {});
+        var url = auth.supabaseUrl || auth.url || '';
+        var key = auth.supabaseKey || auth.anonKey || auth.key || '';
+        if (url && key && window.supabase) {
+          window.supabaseClient = window.supabase.createClient(url, key, {
+            auth: { persistSession: true, detectSessionInUrl: true }
+          });
+          // Also listen for session changes (catches OAuth redirect completion)
+          window.supabaseClient.auth.onAuthStateChange(function(event, session) {
+            if (session && session.user) {
+              window.colUser = session.user;
+              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: session.user } }));
+            }
+          });
+          try {
+            var session = await Promise.race([
+              window.supabaseClient.auth.getSession(),
+              new Promise(function(_, reject) { setTimeout(function() { reject(new Error('timeout')); }, 10000); })
+            ]);
+            var user = session && session.data && session.data.session && session.data.session.user;
+            if (user) {
+              window.colUser = user;
+              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: user } }));
+            }
+          } catch(sessionErr) {
+            if (sessionErr.message !== 'timeout') {
+              window.supabaseClient.auth.signOut().catch(function() {});
+            }
+          }
+        }
+      } catch(e) {}
+    })();
+    </script>
     <script defer src="../col-router.js"></script>
     <link rel="stylesheet" href="../col-ui.css" />
     <script defer src="../col-ui.js"></script>

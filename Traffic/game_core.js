@@ -1039,24 +1039,6 @@ class Game {
         const cv = document.getElementById('3c');
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         this._isMobile = isMobile;
-        this._hasTouched = false; // Set to true on first detected touch event
-        // One-time listener: if a real touch event fires on a non-mobile device,
-        // treat it as a touch device for the rest of the session
-        document.addEventListener('touchstart', () => {
-          if (!this._hasTouched) {
-            this._hasTouched = true;
-            // For non-mobile devices (e.g. touchscreen laptop), lazy-init controls on first touch
-            if (!this._isMobile) {
-              this._initVirtualJoystick()
-              this._initCameraJoystick()
-              this._initMobileCameraLook()
-              const mc = document.getElementById('mobile-controls')
-              if (mc && this.playing) mc.classList.add('on')
-              const cj = document.getElementById('camera-joystick')
-              if (cj) cj.style.display = 'flex'
-            }
-          }
-        }, { once: true })
 
         // PERFORMANCE: Cap pixel ratio lower on mobile to reduce render cost
         let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2);
@@ -1072,11 +1054,6 @@ class Game {
         // Setup post-processing (bloom, etc.) based on quality preset
         this.renderCore.setupPostProcessing(innerWidth, innerHeight, isMobile);
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
-        // Default camera position: above-ground safe fallback so the first render frame
-        // is never from world-origin (0,0,0) which is embedded in the ground plane.
-        this.camera.position.set(0, 8, -15);
-        this.camera.lookAt(0, 0, 0);
-
 
         // PERFORMANCE: Disable expensive bloom on mobile
         try {
@@ -1160,22 +1137,22 @@ class Game {
         document.addEventListener('mousemove', (e) => {
           if (this.isPointerLocked) {
             if (this.isPedestrian) {
-              if (this.player) this.player.rotation.y -= e.movementX * 0.006;
+              if (this.player) this.player.rotation.y -= e.movementX * 0.003;
             } else {
-              this.targetCamYaw -= e.movementX * 0.006;
+              this.targetCamYaw -= e.movementX * 0.003;
             }
-            this.targetCamPitch -= e.movementY * 0.006;
+            this.targetCamPitch -= e.movementY * 0.003;
             this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
           } else if (this._isDraggingCamera) {
-            this.targetCamYaw -= e.movementX * 0.008;
-            this.targetCamPitch -= e.movementY * 0.008;
+            this.targetCamYaw -= e.movementX * 0.004;
+            this.targetCamPitch -= e.movementY * 0.004;
             this.targetCamPitch = Math.max(-1.0, Math.min(1.0, this.targetCamPitch));
           }
         });
         // Left-click drag for third-person camera orbit (desktop only)
         if (this.renderCore.renderer && this.renderCore.renderer.domElement) {
           this.renderCore.renderer.domElement.addEventListener('mousedown', (e) => {
-            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse') && !this._isMobile && !this._hasTouched) {
+            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse') && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
               this._isDraggingLeft = true;
               this._isDraggingCamera = true;
             }
@@ -1411,8 +1388,9 @@ class Game {
         this._checkOrientation = () => {
           const overlay = document.getElementById('rotate-device-overlay');
           if (!overlay) return;
+          const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
           const isPortrait = window.innerHeight > window.innerWidth;
-          if ((this._isMobile || this._hasTouched) && isPortrait && this.playing) {
+          if (isTouch && isPortrait && this.playing) {
             overlay.classList.add('on');
           } else {
             overlay.classList.remove('on');
@@ -1448,7 +1426,7 @@ class Game {
 
       // ── VIRTUAL JOYSTICK FOR MOBILE ──
       _initVirtualJoystick() {
-        if (!this._isMobile && !this._hasTouched) return;
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
 
         const joystick = document.getElementById('virtual-joystick');
         const knob = document.getElementById('joystick-knob');
@@ -1530,7 +1508,7 @@ class Game {
 
       // ── CAMERA JOYSTICK FOR MOBILE LOOK-AROUND ──
       _initCameraJoystick() {
-        if (!this._isMobile && !this._hasTouched) return;
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
 
         const camJoy = document.getElementById('camera-joystick');
         const camKnob = document.getElementById('camera-joystick-knob');
@@ -1600,7 +1578,7 @@ class Game {
 
       // ── HUD AUTO-HIDE ON MOBILE ──
       _initMobileHudAutohide() {
-        if (!this._isMobile && !this._hasTouched) return;
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
         const hud = document.getElementById('hud');
         const hudbar = document.getElementById('hudbar');
         const hwrap = document.getElementById('hwrap');
@@ -1648,7 +1626,7 @@ class Game {
       }
 
       _initMobileCameraLook() {
-        if (!this._isMobile && !this._hasTouched) return;
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
         const isControl = (el) => {
           if (!el) return false;
           const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-enter','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
@@ -1720,7 +1698,7 @@ class Game {
 
       // ── SWIPE TO TURN: Touch swipe turns player character toward swipe direction ──
       _initSwipeTurn() {
-        if (!this._isMobile && !this._hasTouched) return;
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
 
         const isControl = (el) => {
           if (!el) return false;
@@ -1859,8 +1837,9 @@ class Game {
         if (this._isDraggingMobileLook) return;
         if (this._camJoyActive) return;
         if (this.isPointerLocked || this._isDraggingCamera) return;
-        // Gentle decay so camera angle persists — was 0.8 which fought user input
-        const decayRate = 0.15;
+        // After camera joystick use, use very slow decay so angle is preserved
+        // Reduced from 4 to 0.8 so camera angles persist longer before resetting
+        const decayRate = this._camJoyEverUsed ? 0.15 : 0.8;
         const threshold = 0.005;
         if (Math.abs(this.camYaw) > threshold || Math.abs(this.camPitch) > threshold) {
           const factor = Math.max(0, 1 - decayRate * dt);
@@ -2292,16 +2271,29 @@ class Game {
         // ── 2D Scenario Intro (cinematic canvas animation before gameplay) ──
         if (window.Scenario2D && ui.cur && ui.cur.id) {
           window.Scenario2D.play(ui.cur.id, () => {
-            this._actualStart(ui.cur);
+            this._actualStart(ui.cur).catch(err => this._onActualStartFailed(err));
           });
         } else {
           const cd = document.getElementById('cdown');
           if (cd) cd.classList.add('on');
           setTimeout(() => {
             if (cd) cd.classList.remove('on');
-            this._actualStart(ui.cur);
+            this._actualStart(ui.cur).catch(err => this._onActualStartFailed(err));
           }, 1500);
         }
+      }
+      // _actualStart() is async and was previously called without being awaited or caught —
+      // any error thrown inside it (bad map config, a failed asset load, etc.) became a
+      // silent unhandled promise rejection. The loading screen just hung forever with no
+      // player-visible error, until start.js's generic 15–18s "canvas never turned on"
+      // safety net eventually fired and redirected to Academy.html?screen=levels. That
+      // redirect was never related to the quiz — this surfaces the real error immediately
+      // instead of waiting out that timer.
+      _onActualStartFailed(err) {
+        console.error('[Driving] _actualStart() failed for level', ui.cur && ui.cur.id, err);
+        this._hideLoading();
+        toast('⚠️ Level failed to load — returning to levels', '#ff3b30');
+        setTimeout(() => { window.location.href = 'Academy.html?screen=levels'; }, 1200);
       }
       async _actualStart(lv) {
         // Show loading screen with level name
@@ -2324,8 +2316,6 @@ class Game {
         this._enterWalkEnd = null;
         this._camOverride = false;
         this._camSnapped = false;
-        this.targetCamYaw = 0;
-        this.targetCamPitch = 0;
         this._lastStepTime = 0;
         this.boostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
@@ -2386,23 +2376,6 @@ class Game {
         this._updateLoading(50, 'Building city environment...');
         await new Promise(r => requestAnimationFrame(r));
         this._buildScene(lv.mode);
-        // ── Immediate camera snap to player spawn ──
-        // After _buildScene(), this.player is set. We position the camera behind
-        // and above the player RIGHT NOW so the first rendered frame (when playing=true
-        // is set below) is never from the stale world-origin (0,0,0) below the city.
-        if (this.player && this.player.position) {
-          const _spawnRot = (this.player.rotation && this.player.rotation.y) || 0;
-          const _initDist = 6;
-          const _initH = 5;
-          this.camera.position.set(
-            this.player.position.x - Math.sin(_spawnRot) * _initDist,
-            _initH,
-            this.player.position.z - Math.cos(_spawnRot) * _initDist
-          );
-          this.camera.lookAt(this.player.position.x, 1.0, this.player.position.z);
-          this._camSnapped = false; // reset so render loop does its first lerp-snap from here
-        }
-
         this._updateLoading(80, 'Spawning traffic & pedestrians...');
         await new Promise(r => requestAnimationFrame(r));
         this._updateLoading(100, 'Ready!');
@@ -2412,11 +2385,7 @@ class Game {
         const ageTimeScale = (typeof ui !== 'undefined' && ui.getAgeScale) ? ui.getAgeScale() : 1.0;
         this.timeLimit = Math.round(baseTime / ageTimeScale);
         const cfg = this.mapCfg || {};
-        ['gc', 'hud', 'hudbar', 'hwrap', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
-        if (this._isMobile || this._hasTouched) {
-          const mcEl = document.getElementById('mobile-controls');
-          if (mcEl) mcEl.classList.add('on');
-        }
+        ['gc', 'hud', 'hudbar', 'hwrap', 'mobile-controls', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
         // ── HUD Entrance Animations ──
         if (typeof IntersectionObserver === 'undefined' || true) {
           const hudAnims = [
@@ -3209,10 +3178,6 @@ class Game {
         if (window.LVS) {
             lv = window.LVS.find(l => l.id === lvId);
         }
-        // Fallback: if LVS lookup fails, check ui.cur (e.g. fallback from lv=custom/freeroam)
-        if (!lv && window.ui && window.ui.cur && window.ui.cur.id === lvId) {
-            lv = window.ui.cur;
-        }
         
         const M = {
           1: { name: 'Andheri Junction', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car', npcTypes: ['car', 'car', 'bike', 'auto', 'bus', 'truck', 'car', 'bike', 'taxi', 'car', 'auto', 'car', 'car', 'bike', 'bus', 'car', 'auto', 'truck', 'car', 'car', 'car', 'bike', 'auto', 'car'], roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -140, z2: 20 }, { type: 'v', x: 240, z1: -20, z2: 140 }, { type: 'v', x: 240, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 100, x2: 260 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 100, z2: 260 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -20, z2: 140 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'h', z: -120, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -380, x2: -220 }, { type: 'h', z: -360, x1: -260, x2: 880 }, { type: 'h', z: 120, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -880, z2: 1120 }, { type: 'h', z: 240, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -760, z2: 1240 }, { type: 'h', z: 0, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1000, z2: 1000 }, { type: 'h', z: 240, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -760, z2: 1240 }, { type: 'h', z: -240, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1240, z2: 760 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 240, z: -120 }, { x: 240, z: 0 }, { x: 240, z: 120 }, { x: 240, z: 240 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 120 }, { x: -120, z: 120 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -480, z: -120 }, { x: -480, z: -240 }, { x: -360, z: -240 }, { x: -360, z: -360 }, { x: -240, z: -360 }, { x: -120, z: -360 }], ints: [[240, 0], [0, 240], [-120, -360], [0, 120], [-240, -120], [0, 0], [-360, -240], [120, 240], [240, -120], [-360, -360], [-360, -120], [-120, 0], [240, 240], [-120, 120], [0, -120], [-120, -120], [-480, -240], [120, -120], [-480, -120], [-240, -360], [240, 120]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 218, z1: -120, z2: 0, s: 0.9 }, { x: 262, z1: -120, z2: 0, s: 0.9 }, { x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 }, { x: 218, z1: 120, z2: 240, s: 0.9 }, { x: 262, z1: 120, z2: 240, s: 0.9 }, { x: -22, z1: 120, z2: 240, s: 0.9 }, { x: 22, z1: 120, z2: 240, s: 0.9 }, { x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -502, z1: -240, z2: -120, s: 0.9 }, { x: -458, z1: -240, z2: -120, s: 0.9 }, { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 }], timeLimit: 600, hasGarage: true, assets: ['suburban', 'industrial'] },
@@ -3314,7 +3279,7 @@ class Game {
         if (vt === 'pedestrian') {
           this.isPedestrian = true;
           this.player = _buildHuman(true);
-          this.player.position.set(pStartX, 0.1, pStartZ);
+          this.player.position.set(pStartX, 0, pStartZ);
           this.player.rotation.y = pRot;
           this.scene.add(this.player);
           this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
@@ -5106,7 +5071,20 @@ class Game {
           this._computeAeroForces(dt);
           this._updateBrakeHeat(dt);
         }
-        this._tickEnterExit(dt); this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
+        try { this._tickEnterExit(dt); } catch (err) {
+          // _tickEnterExit runs the enter/exit-vehicle cinematic (camera orbit, door/seat
+          // animation). It sets this._camOverride = true for its duration and only clears it
+          // once the whole sequence finishes normally. If anything inside threw (a missing
+          // bone/pivot on a particular vehicle model, etc.), _camOverride stayed stuck true
+          // forever — which makes _ucam() bail out early every frame, freezing the camera
+          // wherever it happened to be (this is almost certainly the "camera stuck" bug).
+          // It also aborted every other call later in this same chain, since one throw here
+          // stopped the whole unguarded call chain for that frame. Recover instead of freezing.
+          console.error('[Driving] _tickEnterExit() failed, resetting camera/enter-state:', err);
+          this._camOverride = false;
+          this._enterState = 'IDLE';
+        }
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
         // ── Suspension (after input, needs steering data) ──
         if (!this.isPedestrian) {
           this._updateSuspension(dt);
@@ -7681,7 +7659,7 @@ class Game {
         const t = this._enterTimer;
         const char = this.playerCharacter;
         const veh = this.playerVehicle;
-        if (!char || !veh) { this._enterState = 'IDLE'; this._camOverride = false; return; }
+        if (!char || !veh) { this._enterState = 'IDLE'; return; }
         const doorPivot = this._enterDoorSide === 'L' ? veh.userData.doorPivotL : veh.userData.doorPivotR;
 
         // ── Helper: animate character body pose during enter/exit ──
@@ -7900,7 +7878,6 @@ class Game {
       _animateCharacterWalk(character, speed, dt) {
         if (!character) return
         const ud = character.userData
-        
         // FBX animated characters: blend idle ↔ run weights
         if (ud.isFBXAnimated && ud.mixer) {
           const walkW = Math.min(Math.abs(speed) * 3, 1)
@@ -7909,176 +7886,124 @@ class Game {
           ud.mixer.update(dt)
           return
         }
-        
-        // GLB / procedural characters: swing legs + arms + body bob - ULTRA SMOOTH VERSION
+        // GLB / procedural characters: swing legs + arms + body bob
         const t = (ud.t || 0) + dt * 8
         ud.t = t
         const walkW = Math.min(Math.abs(speed) * 4, 1)
         const isIdle = walkW < 0.05
-        
-        // Use smoother interpolation factor
-        const swingSpeed = 6.0  // Natural walking cadence
-        const swing = Math.sin(t * swingSpeed) * 0.45 * walkW
-        const swingPhase = t * swingSpeed
-        
-        // ── IDLE ANIMATIONS (NPCs standing still) - Ultra smooth ──
+        const swing = Math.sin(t) * 0.45 * walkW
+        // ── IDLE ANIMATIONS (NPCs standing still) ──
         if (isIdle && !ud.isPlayer) {
           const ip = ud.idlePhase || 0
-          
-          // Breathing: slow torso rise/fall with smooth interpolation
+          // Breathing: slow torso rise/fall
           if (ud.torsoGroup) {
             const breathe = Math.sin(t * 0.4 + ip) * 0.006
-            // Smooth lerp for breathing motion
-            const targetY = 1.23 * (ud._sk || 1) + breathe
-            ud.torsoGroup.position.y += (targetY - ud.torsoGroup.position.y) * Math.min(1, dt * 4)
-            
-            // Subtle shoulder sway - smooth
-            const targetZ = Math.sin(t * 0.3 + ip) * 0.008
-            ud.torsoGroup.rotation.z += (targetZ - ud.torsoGroup.rotation.z) * Math.min(1, dt * 3)
+            ud.torsoGroup.position.y = 1.23 * (ud._sk || 1) + breathe
+            // Subtle shoulder sway
+            ud.torsoGroup.rotation.z = Math.sin(t * 0.3 + ip) * 0.008
           }
-          
-          // Head turning: smooth look-around + occasional glance at player
+          // Head turning: slow look-around + occasional glance at player
           if (ud.headGroup) {
             const lookCycle = Math.sin(t * 0.25 + ip * 2) * 0.06
             const lookCycleY = Math.cos(t * 0.18 + ip * 3) * 0.08
             // Every ~4 seconds, glance toward player direction
             const glancePhase = (t * 0.25 + ip) % (Math.PI * 2)
             const glance = glancePhase < 0.4 ? Math.sin(glancePhase / 0.4 * Math.PI) * 0.1 : 0
-            
-            // Smooth interpolation for head movement
-            ud.headGroup.rotation.x += (lookCycle - ud.headGroup.rotation.x) * Math.min(1, dt * 2)
-            ud.headGroup.rotation.y += (lookCycleY + glance * (ud.dir || 1) - ud.headGroup.rotation.y) * Math.min(1, dt * 2)
+            ud.headGroup.rotation.x = lookCycle
+            ud.headGroup.rotation.y = lookCycleY + glance * (ud.dir || 1)
           }
-          
-          // Weight shift: alternating subtle leg pressure - smooth
-          if (ud.lLeg) {
-            const target = Math.sin(t * 0.3 + ip) * 0.015
-            ud.lLeg.rotation.x += (target - ud.lLeg.rotation.x) * Math.min(1, dt * 3)
-          }
-          if (ud.rLeg) {
-            const target = Math.sin(t * 0.3 + ip + Math.PI) * 0.015
-            ud.rLeg.rotation.x += (target - ud.rLeg.rotation.x) * Math.min(1, dt * 3)
-          }
-          
-          // Arms: subtle sway or cross-body rest - smooth
-          if (ud.lArm) {
-            const target = Math.sin(t * 0.2 + ip) * 0.02
-            ud.lArm.rotation.x += (target - ud.lArm.rotation.x) * Math.min(1, dt * 2)
-          }
-          if (ud.rArm) {
-            const target = Math.sin(t * 0.2 + ip + Math.PI * 0.7) * 0.02
-            ud.rArm.rotation.x += (target - ud.rArm.rotation.x) * Math.min(1, dt * 2)
-          }
-          
-          // Occasional fidget: every ~6-8 seconds, brief arm/shoulder twitch - smoother
+          // Weight shift: alternating subtle leg pressure
+          if (ud.lLeg) ud.lLeg.rotation.x = Math.sin(t * 0.3 + ip) * 0.015
+          if (ud.rLeg) ud.rLeg.rotation.x = Math.sin(t * 0.3 + ip + Math.PI) * 0.015
+          // Arms: subtle sway or cross-body rest
+          if (ud.lArm) ud.lArm.rotation.x = Math.sin(t * 0.2 + ip) * 0.02
+          if (ud.rArm) ud.rArm.rotation.x = Math.sin(t * 0.2 + ip + Math.PI * 0.7) * 0.02
+          // Occasional fidget: every ~6-8 seconds, brief arm/shoulder twitch
           const fidgetCycle = (t * 0.15 + ip * 5) % (Math.PI * 2)
           if (fidgetCycle < 0.3) {
             const fidgetAmt = Math.sin(fidgetCycle / 0.3 * Math.PI) * 0.06
-            if (ud.lArm) ud.lArm.rotation.x += fidgetAmt * dt * 10 // Scale by dt for consistency
+            if (ud.lArm) ud.lArm.rotation.x += fidgetAmt
           }
-          
           // ── BLINKING ──
+          // Countdown timer; each blink is a quick close-open cycle (~0.15s)
           if (ud.eyeLids && ud.eyeLids.length > 0) {
             if (ud.blinkTimer === undefined) ud.blinkTimer = Math.random() * 4
             ud.blinkTimer -= dt
             if (ud.blinkTimer <= 0) {
+              // Start a new blink — schedule next blink in 2-6 seconds
               ud.blinkTimer = 2 + Math.random() * 4
-              ud._blinkPhase = 0.15
+              ud._blinkPhase = 0.15 // blink duration in seconds
             }
             if (ud._blinkPhase > 0) {
               ud._blinkPhase -= dt
+              // Smooth close-open using a cosine bell: 0→1→0 over _blinkPhase
               const blinkProg = 1 - (ud._blinkPhase / 0.15)
-              const blinkAmt = Math.sin(blinkProg * Math.PI)
+              const blinkAmt = Math.sin(blinkProg * Math.PI) // peaks at 1.0 halfway
               ud.eyeLids.forEach(lid => {
-                const targetY = (0.065 - blinkAmt * 0.035) * (ud._sk || 1)
-                const targetScale = 0.7 + blinkAmt * 0.6
-                lid.position.y += (targetY - lid.position.y) * Math.min(1, dt * 20)
-                lid.scale.y += (targetScale - lid.scale.y) * Math.min(1, dt * 20)
+                // Default open position y=0.065, closed would be ~0.03 (covering eye)
+                lid.position.y = (0.065 - blinkAmt * 0.035) * (ud._sk || 1)
+                lid.scale.y = 0.7 + blinkAmt * 0.6 // scale up when closing
               })
             } else {
+              // Eyes open — reset lids to default
               ud.eyeLids.forEach(lid => {
-                const targetY = 0.065 * (ud._sk || 1)
-                const targetScale = 0.7
-                lid.position.y += (targetY - lid.position.y) * Math.min(1, dt * 10)
-                lid.scale.y += (targetScale - lid.scale.y) * Math.min(1, dt * 10)
+                lid.position.y = 0.065 * (ud._sk || 1)
+                lid.scale.y = 0.7
               })
             }
           }
-          
-          // Shadow blob: breathing pulse - smooth
+          // Shadow blob: breathing pulse
           if (ud.shadowBlob) {
             const bs = 1 + Math.sin(t * 0.4 + ip) * 0.03
-            ud.shadowBlob.scale.x += (bs - ud.shadowBlob.scale.x) * Math.min(1, dt * 3)
-            ud.shadowBlob.scale.z += (bs - ud.shadowBlob.scale.z) * Math.min(1, dt * 3)
-            ud.shadowBlob.material.opacity += (0.15 - ud.shadowBlob.material.opacity) * Math.min(1, dt * 3)
+            ud.shadowBlob.scale.set(bs, 1, bs)
+            ud.shadowBlob.material.opacity = 0.15
           }
         } else {
-          // ── WALK ANIMATIONS - Ultra Smooth ──
-          // Leg swing with natural knee bend - smooth interpolation
-          if (ud.lLeg) {
-            ud.lLeg.rotation.x += (swing - ud.lLeg.rotation.x) * Math.min(1, dt * 15)
-          }
-          if (ud.rLeg) {
-            ud.rLeg.rotation.x += (-swing - ud.rLeg.rotation.x) * Math.min(1, dt * 15)
-          }
-          
-          // Arm swing (opposite to legs, natural walking motion) - smooth
-          if (ud.lArm) {
-            ud.lArm.rotation.x += (-swing * 0.5 - ud.lArm.rotation.x) * Math.min(1, dt * 15)
-          }
-          if (ud.rArm) {
-            ud.rArm.rotation.x += (swing * 0.5 - ud.rArm.rotation.x) * Math.min(1, dt * 15)
-          }
-          
-          // Head bob (subtle nod forward/back) - smooth
+          // ── WALK ANIMATIONS ──
+          // Leg swing with natural knee bend
+          if (ud.lLeg) ud.lLeg.rotation.x = swing
+          if (ud.rLeg) ud.rLeg.rotation.x = -swing
+          // Arm swing (opposite to legs, natural walking motion)
+          if (ud.lArm) ud.lArm.rotation.x = -swing * 0.5
+          if (ud.rArm) ud.rArm.rotation.x = swing * 0.5
+          // Head bob (subtle nod forward/back)
           if (ud.headGroup) {
-            const targetX = Math.sin(t * 2) * 0.02 * walkW
-            ud.headGroup.rotation.x += (targetX - ud.headGroup.rotation.x) * Math.min(1, dt * 10)
-            ud.headGroup.rotation.y += (0 - ud.headGroup.rotation.y) * Math.min(1, dt * 10)
+            ud.headGroup.rotation.x = Math.sin(t * 2) * 0.02 * walkW
+            ud.headGroup.rotation.y = 0
           }
-          
-          // Reset torso sway when walking - smooth
+          // Reset torso sway when walking
           if (ud.torsoGroup) {
-            ud.torsoGroup.rotation.z += (0 - ud.torsoGroup.rotation.z) * Math.min(1, dt * 8)
+            ud.torsoGroup.rotation.z = 0
           }
-          
-          // Full body bob via torsoGroup (natural up-down) - smooth
+          // Full body bob via torsoGroup (natural up-down)
           if (ud.torsoGroup) {
-            const targetY = 1.23 * (ud._sk || 1) + Math.abs(Math.sin(t * 2)) * 0.03 * walkW
-            ud.torsoGroup.position.y += (targetY - ud.torsoGroup.position.y) * Math.min(1, dt * 10)
+            ud.torsoGroup.position.y = 1.23 * (ud._sk || 1) + Math.abs(Math.sin(t * 2)) * 0.03 * walkW
           } else if (character.children[0]) {
-            // Fallback for models without torsoGroup (GLB models)
-            const targetY = Math.abs(Math.sin(t)) * 0.04 * walkW
-            character.children[0].position.y += (targetY - character.children[0].position.y) * Math.min(1, dt * 10)
+            // Fallback for models without torsoGroup
+            character.children[0].position.y = Math.abs(Math.sin(t)) * 0.04 * walkW
           }
-          
-          // Shadow blob pulse (breathe effect) - smooth
+          // Shadow blob pulse (breathe effect)
           if (ud.shadowBlob) {
             const s = 1 + Math.sin(t * 2) * 0.05 * walkW
-            ud.shadowBlob.scale.x += (s - ud.shadowBlob.scale.x) * Math.min(1, dt * 10)
-            ud.shadowBlob.scale.z += (s - ud.shadowBlob.scale.z) * Math.min(1, dt * 10)
-            const targetOpacity = 0.15 + walkW * 0.08
-            ud.shadowBlob.material.opacity += (targetOpacity - ud.shadowBlob.material.opacity) * Math.min(1, dt * 10)
+            ud.shadowBlob.scale.set(s, 1, s)
+            ud.shadowBlob.material.opacity = 0.15 + walkW * 0.08
           }
         }
-        
-        // ── PLAYER EFFECTS (always active) - smooth ──
+        // ── PLAYER EFFECTS (always active) ──
+        // Player glow ring pulse
         if (ud.ring && ud.isPlayer) {
-          ud.ring.material.opacity += (0.2 + Math.sin(t * 0.5) * 0.15 - ud.ring.material.opacity) * Math.min(1, dt * 3)
+          ud.ring.material.opacity = 0.2 + Math.sin(t * 0.5) * 0.15
         }
+        // Nametag glow ring pulse (rank-colored breathing)
         if (ud.nametagGlow && ud.isPlayer) {
-          const targetOpacity = 0.25 + Math.sin(t * 1.2) * 0.15
+          ud.nametagGlow.material.opacity = 0.25 + Math.sin(t * 1.2) * 0.15
           const gs = 1 + Math.sin(t * 1.2) * 0.08
-          ud.nametagGlow.material.opacity += (targetOpacity - ud.nametagGlow.material.opacity) * Math.min(1, dt * 5)
-          ud.nametagGlow.scale.x += (gs - ud.nametagGlow.scale.x) * Math.min(1, dt * 5)
-          ud.nametagGlow.scale.y += (gs - ud.nametagGlow.scale.y) * Math.min(1, dt * 5)
+          ud.nametagGlow.scale.set(gs, gs, 1)
         }
         if (ud.nametagGlowOuter && ud.isPlayer) {
-          const targetOpacity = 0.1 + Math.sin(t * 1.2 + 0.5) * 0.08
+          ud.nametagGlowOuter.material.opacity = 0.1 + Math.sin(t * 1.2 + 0.5) * 0.08
           const gso = 1 + Math.sin(t * 1.2 + 0.5) * 0.06
-          ud.nametagGlowOuter.material.opacity += (targetOpacity - ud.nametagGlowOuter.material.opacity) * Math.min(1, dt * 5)
-          ud.nametagGlowOuter.scale.x += (gso - ud.nametagGlowOuter.scale.x) * Math.min(1, dt * 5)
-          ud.nametagGlowOuter.scale.y += (gso - ud.nametagGlowOuter.scale.y) * Math.min(1, dt * 5)
+          ud.nametagGlowOuter.scale.set(gso, gso, 1)
         }
       }
       _ucam(dt) {
@@ -8127,16 +8052,14 @@ class Game {
           // ── Third Person Chase Cam — per-vehicle profiles ──
           const _vcam = (this.isPedestrian ? null : VEHICLE_CAM[this.vehMode]) || VEHICLE_CAM_DEFAULT;
           const camDist = this.isPedestrian ? 4 : _vcam.dist;
-          const camHeight = this.isPedestrian ? 3.5 : _vcam.height;
+          const camHeight = this.isPedestrian ? 2.5 : _vcam.height;
           const rotY = this.player.rotation.y + (this.camYaw || 0);
           // Speed-based look-ahead: camera leads in the direction of travel
           const lookAhead = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) * 5, _vcam.lookAhead);
           const pitchOffset = (this.camPitch || 0) * 2;
-          // Clamp camera Y so it never goes below ground level - FIXED: ensure min height is reasonable
-          const camY = Math.max(2.0, camHeight - pitchOffset);
           this._camTarget.set(
               this.player.position.x - Math.sin(rotY) * camDist + Math.sin(rotY) * lookAhead,
-              camY,
+              camHeight - pitchOffset,
               this.player.position.z - Math.cos(rotY) * camDist + Math.cos(rotY) * lookAhead
           );
           // ── Camera collision: raycast from player to target ──
@@ -8161,11 +8084,11 @@ class Game {
               if (_nearObs.length > 0) {
                 const hits = this._camRay.intersectObjects(_nearObs, true);
                 if (hits.length > 0 && hits[0].distance < rayLen) {
-                  const pullBack = 2.5;
+                  const pullBack = 0.5;
                   const dx = this._camTarget.x - _pp.x;
                   const dz = this._camTarget.z - _pp.z;
                   const d = Math.sqrt(dx * dx + dz * dz) || 1;
-                  const safeDist = Math.max(3.0, hits[0].distance - pullBack);
+                  const safeDist = Math.max(1.5, hits[0].distance - pullBack);
                   this._camTarget.set(
                     _pp.x + (dx / d) * safeDist,
                     this._camTarget.y,  // preserve intended height
@@ -8186,6 +8109,11 @@ class Game {
           const baseLerp = Math.min(1, dt * _vcam.lerpSmoothing);
           const camLerp = transT > 0 ? Math.min(1, dt * 3) : baseLerp; // slower during transition
           this.camera.position.lerp(this._camTarget, camLerp);
+          // Hard floor clamp: whatever produced this._camTarget, never let the rendered
+          // camera end up at/below ground level (the "camera stuck under the city" bug —
+          // it can't recover on its own once below the ground plane, since everything it
+          // would see from there is the underside of road/building meshes).
+          if (this.camera.position.y < 0.6) this.camera.position.y = 0.6;
 
           const tiltRoll = this._camTilt || 0;
           this.camera.up.set(0, 1, 0);

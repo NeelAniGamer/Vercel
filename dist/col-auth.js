@@ -1,5 +1,8 @@
 // Class Of Learners Global Authentication System (Supabase)
 
+// Supabase client - must be at top to avoid temporal dead zone
+let supabaseClient = null
+
 // --- Shared Login Modal Injection ---
 // Injects the standard loginMo modal if the page doesn't already have one inline.
 function injectLoginModal() {
@@ -103,10 +106,15 @@ if (!window.closeMo) {
 
   function setupOneTap() {
     if (window.colUser) return
+    // Don't show One Tap on Driving.html levels screen or briefing screen
+    const path = window.location.pathname.toLowerCase()
+    if (path.includes('driving') && (new URLSearchParams(window.location.search).get('screen') === 'levels' || new URLSearchParams(window.location.search).get('lv'))) {
+      return
+    }
     google.accounts.id.initialize({
       client_id: '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com',
       callback: window.handleGoogleOneTap,
-      use_fedcm_for_prompt: true,
+      use_fedcm_for_prompt: false,
       itp_support: true
     })
     google.accounts.id.prompt((notification) => {
@@ -127,22 +135,42 @@ if (!window.closeMo) {
     }
   }
 
-  let supabaseClient = null
-
   function initSupabase(url, key) {
     supabaseClient = window.supabase.createClient(url, key)
     window.supabaseClient = supabaseClient
 
     // Listen for Auth changes
-    supabaseClient.auth.onAuthStateChange((event, session) => {
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
       if (session && session.user) {
         const meta = session.user.user_metadata || {}
+        const userId = session.user.id;
+        const email = session.user.email;
+
         window.colUser = {
-          id: session.user.id,
-          email: session.user.email,
-          name: meta.full_name || meta.name || session.user.email.split('@')[0],
+          id: userId,
+          email: email,
+          name: meta.full_name || meta.name || email.split('@')[0],
           picture: meta.avatar_url || meta.picture || null,
-          session: session
+          session: session,
+          uid: null // Default until profile is fetched
+        }
+
+        try {
+          const { data: profile, error } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .maybeSingle();
+
+          if (error && error.code !== 'PGRST116') throw error;
+
+          if (profile) {
+            window.colUser.uid = profile.id;
+          } else {
+            promptForUsername();
+          }
+        } catch (e) {
+          console.error('[col-auth] Profile sync error:', e);
         }
       } else {
         window.colUser = null
@@ -170,7 +198,73 @@ if (!window.closeMo) {
     window.dispatchEvent(event)
   }
 
-  // --- UI INJECTION ---
+  async function createProfile(username) {
+    const { data, error } = await supabaseClient
+      .from('profiles')
+      .insert([{
+        id: window.colUser.id,
+        username: username,
+        email: window.colUser.email
+      }]);
+    if (error) throw error;
+    return data;
+  }
+
+  function promptForUsername() {
+    if (!document.getElementById('colAuthModal')) injectAuthUI();
+    const body = document.getElementById('colAuthBody');
+    if (!body) return;
+
+    const hd = document.querySelector('.col-auth-hd');
+    if (hd) hd.style.display = 'none';
+
+    body.innerHTML = `
+      <div style="text-align:center; margin-bottom: 24px; margin-top: 10px; position: relative;">
+        <button type="button" onclick="window.colDoLogout()" aria-label="Cancel" style="position: absolute; top: -10px; right: -10px; background: transparent; border: none; color: var(--dim, #8891AA); font-size: 1.5rem; cursor: pointer; padding: 4px;">&times;</button>
+        <h3 style="font-family: var(--serif, 'Instrument Serif'); font-style: italic; font-size: 2.5rem; color: var(--signal, #F2B84B); margin-bottom: 8px; margin-top: 10px;">Welcome!</h3>
+        <p style="color: var(--dim, #8891AA); font-size: 0.95rem; line-height: 1.4;">Please choose a unique username to complete your profile.</p>
+      </div>
+      <div id="profileCreateError" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 12px; text-align: center; display: none;"></div>
+      <form onsubmit="window._handleProfileCreate(event)" style="display:flex; flex-direction:column; gap:12px;">
+        <input type="text" id="profileUsername" class="col-auth-inp" placeholder="@username" value="@" oninput="if(!this.value.startsWith('@')) this.value = '@' + this.value.replace(/@/g, '');" required maxlength="40" style="font-size: 1.1rem; text-align:center; padding: 14px;">
+        <button type="submit" class="col-auth-btn" id="profileCreateBtn" style="padding: 14px; font-size: 1.05rem;">Create Profile</button>
+      </form>
+    `;
+    document.getElementById('colAuthModal').classList.add('open');
+  }
+
+  window._handleProfileCreate = async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('profileUsername').value;
+    const btn = document.getElementById('profileCreateBtn');
+    const errDiv = document.getElementById('profileCreateError');
+
+    btn.textContent = 'Creating...';
+    btn.disabled = true;
+    errDiv.style.display = 'none';
+
+    try {
+      await createProfile(username);
+
+      // Update colUser.uid and close modal
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('id', window.colUser.id)
+        .maybeSingle();
+
+      window.colUser.uid = profile.id;
+      document.getElementById('colAuthModal').classList.remove('open');
+      dispatchAuthEvent();
+    } catch (error) {
+      errDiv.textContent = error.message;
+      errDiv.style.display = 'block';
+    } finally {
+      btn.textContent = 'Create Profile';
+      btn.disabled = false;
+    }
+  };
+
   function injectAuthStyles() {
     if (document.getElementById('col-auth-styles')) return
     const style = document.createElement('style')
@@ -382,9 +476,49 @@ if (!window.closeMo) {
     document.getElementById('colAuthModal').classList.remove('open')
   }
 
-  // --- APK Certificate Verification ---
-  window.colApkVerified = false
-  window.colApkFingerprint = null
+  // --- Secure Profile Linking (Verification Code Flow) ---
+  window.colAuthGenerateCode = async () => {
+    if (!window.supabaseClient || !window.colUser) {
+      toast('Please log in to generate a linking code', '#ef4444');
+      return null;
+    }
+    try {
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      const { error } = await window.supabaseClient
+        .from('profiles')
+        .update({ verification_code: code })
+        .eq('id', window.colUser.id);
+      if (error) throw error;
+      return code;
+    } catch (e) {
+      console.error('[col-auth] Code generation failed:', e);
+      return null;
+    }
+  };
+
+  window.colAuthVerifyCode = async (code) => {
+    if (!window.supabaseClient) return { success: false, error: 'Auth system unavailable' };
+    try {
+      const { data, error } = await window.supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('verification_code', code)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return { success: false, error: 'Invalid or expired code' };
+
+      // Clear code after successful verification
+      await window.supabaseClient
+        .from('profiles')
+        .update({ verification_code: null })
+        .eq('id', data.id);
+
+      return { success: true, userId: data.id };
+    } catch (e) {
+      console.error('[col-auth] Code verification failed:', e);
+      return { success: false, error: e.message };
+    }
+  };
 
   async function verifyApkCertificate() {
     if (!window.AndroidBridge) {

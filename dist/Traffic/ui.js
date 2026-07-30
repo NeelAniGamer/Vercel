@@ -580,14 +580,11 @@ window.ui = Object.assign(window.ui || {}, {
     if (queue.length) requestAnimationFrame(flush)
   },
   showLevels() {
-    if (window.location.pathname.toLowerCase().includes('driving')) {
-      window.location.href = 'Academy.html?screen=levels'
-      return
-    }
     const currentActive = document.querySelector('.screen.active:not(.screen-exiting)')
     const direction = (currentActive?.id === 'ss') ? 'forward' : 'fade'
+    // Build level cards FIRST before showing screen, so animations sync properly
+    this._bldLvs()
     this.show('screen-levels', { direction })
-    requestAnimationFrame(() => this._buildSylList())
   },
   showNamePrompt() {
     const dlg = document.getElementById('name-prompt-dlg')
@@ -3053,8 +3050,93 @@ const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
   const sk = isPlayer ? 1.0 : 0.92
 
-  // ═══ NPC VARIATION ═══
-  // Random skin tones, shirt colors, and hair for NPCs to make them look distinct
+  // ═══ NPC: USE KENNY GLB CHARACTER MODELS ═══
+  // For NPCs, use preloaded GLB models instead of procedural generation
+  if (!isPlayer && window.PRELOADED_MODELS) {
+    const charKeys = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c']
+    const availableChars = charKeys.filter(k => window.PRELOADED_MODELS[k])
+    if (availableChars.length > 0) {
+      const charKey = availableChars[Math.floor(Math.random() * availableChars.length)]
+      const glbModel = window.PRELOADED_MODELS[charKey].clone()
+      
+      // Scale to match procedural NPC size (0.92)
+      glbModel.scale.set(0.92, 0.92, 0.92)
+      glbModel.position.y = 0
+      
+      // Apply random color variation to clothing materials
+      glbModel.traverse((child) => {
+        if (child.isMesh && child.material) {
+          const mats = Array.isArray(child.material) ? child.material : [child.material]
+          mats.forEach(mat => {
+            if (mat.color && mat.name && (
+              mat.name.toLowerCase().includes('shirt') ||
+              mat.name.toLowerCase().includes('pants') ||
+              mat.name.toLowerCase().includes('torso') ||
+              mat.name.toLowerCase().includes('leg') ||
+              mat.name.toLowerCase().includes('arm') ||
+              mat.name.toLowerCase().includes('sleeve')
+            )) {
+              mat.color.setHex([
+                0x3498db, 0x2ecc71, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xe74c3c, 0x34495e,
+                0x555555, 0x2c3e50, 0x444444, 0x3d3d3d
+              ][Math.floor(Math.random() * 11)])
+            }
+          })
+        }
+      })
+
+      // Enable shadows
+      glbModel.traverse(c => {
+        if (c.isMesh) {
+          c.castShadow = true
+          c.receiveShadow = true
+          c.frustumCulled = false
+        }
+      })
+
+      // Add GLB model FIRST so it's children[0] for animation fallback
+      g.add(glbModel)
+
+      // Add hitbox for collision (same as procedural)
+      const hb = new THREE.Mesh(
+        new THREE.BoxGeometry(0.6 * 0.92, 1.8 * 0.92, 0.6 * 0.92),
+        new THREE.MeshBasicMaterial({ visible: false })
+      )
+      hb.position.y = 0.9 * 0.92
+      g.add(hb)
+
+      // Add ground shadow blob
+      const shadowGeo = new THREE.CircleGeometry(0.3 * 0.92, 16)
+      const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.2, depthWrite: false })
+      const shadowBlob = new THREE.Mesh(shadowGeo, shadowMat)
+      shadowBlob.rotation.x = -Math.PI / 2
+      shadowBlob.position.y = 0.01
+      g.add(shadowBlob)
+
+      // Store reference for animation system
+      // For GLB models, don't set specific body part refs - let the animation system
+      // fall back to character.children[0] which will be the GLB model (first child)
+      g.userData = {
+        isPlayer: false,
+        _sk: 0.92,
+        glbModel: true,
+        modelKey: charKey,
+        // Shadow blob reference
+        shadowBlob: shadowBlob,
+        // Keep existing animation timing properties
+        t: Math.random() * 10,
+        spd: 1.5 + Math.random() * 1.5,
+        dir: Math.random() > 0.5 ? 1 : -1,
+        startZ: 0,
+        idlePhase: Math.random() * Math.PI * 2,
+        blinkTimer: Math.random() * 4 + Math.random() * 3
+      }
+      return g
+    }
+  }
+
+  // ═══ FALLBACK / PLAYER: PROCEDURAL MODEL ═══
+  // NPC VARIATION - Random skin tones, shirt colors, and hair for NPCs
   const npcSkins = [0xd4a574, 0xc68642, 0x8d5524, 0xf1c27d, 0xffdbac, 0xe0ac69]
   const npcShirts = [0x3498db, 0x2ecc71, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xe74c3c, 0x34495e]
   const npcPants = [0x555555, 0x2c3e50, 0x444444, 0x3d3d3d, 0x2d2d2d]
