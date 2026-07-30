@@ -1497,7 +1497,8 @@
      */
     play (levelId, onComplete) {
       // Find the scenario data
-      const lv = window.LVS ? window.LVS.find(l => l.id === levelId) : null
+      this.lv = window.LVS ? window.LVS.find(l => l.id === levelId) : null
+      const lv = this.lv
       const themeType = lv ? (lv.themeType || 'signal_jump') : 'signal_jump'
       const scenario = SCENARIOS[themeType] || SCENARIOS.signal_jump
 
@@ -1725,8 +1726,8 @@
         ctx.font = `bold ${Math.round(14 * (w / 800))}px Inter, sans-serif`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        const levelNum = lv ? lv.id : 1
-        const levelIcon = lv ? lv.icon : '🚦'
+        const levelNum = this.lv ? this.lv.id : 1
+        const levelIcon = this.lv ? this.lv.icon : '🚦'
         ctx.fillText(`${levelIcon}  Level ${levelNum}  ${levelIcon}`, bx, by)
         ctx.globalAlpha = 1
       }
@@ -1796,7 +1797,7 @@
       }
 
       // Law hint (bottom)
-      if (lv && lv.law && elapsed > 2000) {
+      if (this.lv && this.lv.law && elapsed > 2000) {
         const lawAlpha = Ease.easeOutCubic(clamp((elapsed - 2000) / 500, 0, 0.6))
         ctx.globalAlpha = lawAlpha
         const lawY = h * 0.92
@@ -1806,7 +1807,7 @@
         ctx.fillStyle = 'rgba(255,180,180,0.7)'
         ctx.font = `500 ${Math.round(10 * (w / 800))}px Inter, sans-serif`
         ctx.textAlign = 'center'
-        ctx.fillText(`⚖️ ${lv.law.off} — Fine: ${lv.law.fine}`, w / 2, lawY)
+        ctx.fillText(`⚖️ ${this.lv.law.off} — Fine: ${this.lv.law.fine}`, w / 2, lawY)
         ctx.globalAlpha = 1
       }
 
