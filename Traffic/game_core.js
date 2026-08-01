@@ -3656,7 +3656,14 @@ class Game {
             if (cfg.isNight) this._nightLightCount = 0; // reset for next level
 
             // ── Intersection tiles ──
-            if (_intModel && cfg.ints) {
+            // Skipped for the 50km open-world grid: at 1km spacing that's 2,601 intersections,
+            // and cloning a model + building 6 crosswalk meshes for every single one (~18k+
+            // objects, built synchronously with no yielding) was freezing the tab on load and
+            // is what caused the redirect-to-Academy bug on the free-roam level specifically.
+            // Crosswalk decoration at every km of an open highway grid isn't meaningful content
+            // anyway - regular city levels (which have a few dozen intersections, not thousands)
+            // are unaffected by this and still get full intersection/crosswalk detail below.
+            if (_intModel && cfg.ints && !cfg.is50km) {
               const _intScale = RW / 1000;
               cfg.ints.forEach(([ix, iz]) => {
                 const intTile = _intModel.clone();

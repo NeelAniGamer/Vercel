@@ -27,48 +27,6 @@
       _oldWarn.apply(console, args)
     }
   </script>
-
-  <!-- Supabase Client Initialization -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-  (async function() {
-    try {
-      if (window.supabaseClient) return;
-      var res = await fetch('../config.json?t=' + Date.now());
-      var cfg = await res.json();
-      var auth = (cfg.auth || cfg.supabase || {});
-      var url = auth.supabaseUrl || auth.url || '';
-      var key = auth.supabaseKey || auth.anonKey || auth.key || '';
-      if (url && key && window.supabase) {
-        window.supabaseClient = window.supabase.createClient(url, key, {
-          auth: { persistSession: true, detectSessionInUrl: true }
-        });
-        // Also listen for session changes (catches OAuth redirect completion)
-        window.supabaseClient.auth.onAuthStateChange(function(event, session) {
-          if (session && session.user) {
-            window.colUser = session.user;
-            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: session.user } }));
-          }
-        });
-        try {
-          var session = await Promise.race([
-            window.supabaseClient.auth.getSession(),
-            new Promise(function(_, reject) { setTimeout(function() { reject(new Error('timeout')); }, 10000); })
-          ]);
-          var user = session && session.data && session.data.session && session.data.session.user;
-          if (user) {
-            window.colUser = user;
-            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: user } }));
-          }
-        } catch(sessionErr) {
-          if (sessionErr.message !== 'timeout') {
-            window.supabaseClient.auth.signOut().catch(function() {});
-          }
-        }
-      }
-    } catch(e) {}
-  })();
-  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -4647,7 +4605,15 @@
       0%, 100% { box-shadow: 0 0 20px 6px rgba(148,163,184,0.2), 0 0 50px 12px rgba(148,163,184,0.08); }
       50% { box-shadow: 0 0 28px 10px rgba(148,163,184,0.3), 0 0 65px 18px rgba(148,163,184,0.12); }
     }
-    /* Mobile horizon toggle maintains compact size */
+    .hz-toggle.night .hz-orb { animation: hz-moon-glow 5s ease-in-out infinite; }
+    @media (max-width: 420px) {
+      .hz-toggle { width: 300px; height: 98px; border-radius: 49px; }
+      .hz-orb { width: 76px; height: 76px; left: 14px; }
+      .hz-toggle.night .hz-orb { left: 202px; }
+      .hz-orb::after { width: 48px; height: 48px; top: 6px; left: 10px; }
+      .hz-skyline { height: 26px; }
+      .hz-clouds { transform: scale(0.8); transform-origin: top left; }
+    }
 
     /* ── Civic Controls (Seatbelt + Indicators + Phone) ── */
     #civic-controls {
@@ -6180,8 +6146,8 @@
             setTimeout(function () { mobileHint.style.display = 'none'; }, 2500);
           }
         }
-        // Desktop hint — show if game exists and device is a real desktop (not mobile userAgent)
-        if (!desktopShown && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) && (!window.game || !window.game._hasTouched)) {
+        // Desktop hint
+        if (!desktopShown && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
           if (desktopHint) {
             desktopHint.style.display = 'block';
             desktopShown = true;
@@ -7038,6 +7004,16 @@ hzInit();
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hair Color</div>
           <div id="hair-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
+        <!-- Hairstyle -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hairstyle</div>
+          <div id="hairstyle-options" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Eye Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Eye Color</div>
+          <div id="eye-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
         <!-- Shirt Color -->
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shirt Color</div>
@@ -7047,6 +7023,11 @@ hzInit();
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Pants Color</div>
           <div id="pants-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Shoe Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shoe Color</div>
+          <div id="shoe-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
         <!-- Accessories -->
         <div style="margin-bottom:20px;">

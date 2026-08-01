@@ -133,12 +133,10 @@ window.ui = Object.assign(window.ui || {}, {
     const urlParams = new URLSearchParams(window.location.search)
     const screenParam = urlParams.get('screen')
     const lvParam = urlParams.get('lv')
-    if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
-      document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
-    } else if (lvParam) {
-      this.showBriefing(lvParam)
-    } else if (screenParam === 'levels') {
+    if (screenParam === 'levels') {
       this.showLevels()
+    } else if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
+      document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
     } else {
       this.show('ss', { instant: true })
     }
@@ -580,11 +578,14 @@ window.ui = Object.assign(window.ui || {}, {
     if (queue.length) requestAnimationFrame(flush)
   },
   showLevels() {
+    if (window.location.pathname.toLowerCase().includes('driving')) {
+      window.location.href = 'Academy.html?screen=levels'
+      return
+    }
     const currentActive = document.querySelector('.screen.active:not(.screen-exiting)')
     const direction = (currentActive?.id === 'ss') ? 'forward' : 'fade'
-    // Build level cards FIRST before showing screen, so animations sync properly
-    this._bldLvs()
     this.show('screen-levels', { direction })
+    requestAnimationFrame(() => this._buildSylList())
   },
   showNamePrompt() {
     const dlg = document.getElementById('name-prompt-dlg')
@@ -1069,19 +1070,13 @@ window.ui = Object.assign(window.ui || {}, {
     }, 50)
   },
   showBriefing(lid) {
-    const lv = (typeof LVS !== 'undefined' ? LVS : window.LVS || []).find((l) => l.id == lid)
-    if (!lv) {
-      this.showLevels()
-      return
-    }
+    const lv = LVS.find((l) => l.id === lid)
     this.cur = lv
     const availModes = lv.modes || ['car']
     const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
       : S.vehicle === 'Car' && availModes.includes('car') ? 'car'
       : availModes[0]
     this.curMode = preferred
-    localStorage.setItem('traffic_lv', lv.id)
-    localStorage.setItem('traffic_mode', preferred)
     if (history.replaceState) {
       history.replaceState(null, '', `?screen=levels&lv=${lv.id}`)
     }
@@ -2373,7 +2368,7 @@ window.ui = Object.assign(window.ui || {}, {
       save()
       toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851')
       if (window.location.pathname.toLowerCase().includes('driving')) {
-        window.location.href = 'Academy.html?screen=levels'
+        window.location.href = 'Academy.html'
       } else {
         if (typeof SCENARIOS !== 'undefined') {
           const sc = SCENARIOS.find(x => x.levelRef === lv.id)
@@ -3050,93 +3045,8 @@ const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
   const sk = isPlayer ? 1.0 : 0.92
 
-  // ═══ NPC: USE KENNY GLB CHARACTER MODELS ═══
-  // For NPCs, use preloaded GLB models instead of procedural generation
-  if (!isPlayer && window.PRELOADED_MODELS) {
-    const charKeys = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c']
-    const availableChars = charKeys.filter(k => window.PRELOADED_MODELS[k])
-    if (availableChars.length > 0) {
-      const charKey = availableChars[Math.floor(Math.random() * availableChars.length)]
-      const glbModel = window.PRELOADED_MODELS[charKey].clone()
-      
-      // Scale to match procedural NPC size (0.92)
-      glbModel.scale.set(0.92, 0.92, 0.92)
-      glbModel.position.y = 0
-      
-      // Apply random color variation to clothing materials
-      glbModel.traverse((child) => {
-        if (child.isMesh && child.material) {
-          const mats = Array.isArray(child.material) ? child.material : [child.material]
-          mats.forEach(mat => {
-            if (mat.color && mat.name && (
-              mat.name.toLowerCase().includes('shirt') ||
-              mat.name.toLowerCase().includes('pants') ||
-              mat.name.toLowerCase().includes('torso') ||
-              mat.name.toLowerCase().includes('leg') ||
-              mat.name.toLowerCase().includes('arm') ||
-              mat.name.toLowerCase().includes('sleeve')
-            )) {
-              mat.color.setHex([
-                0x3498db, 0x2ecc71, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xe74c3c, 0x34495e,
-                0x555555, 0x2c3e50, 0x444444, 0x3d3d3d
-              ][Math.floor(Math.random() * 11)])
-            }
-          })
-        }
-      })
-
-      // Enable shadows
-      glbModel.traverse(c => {
-        if (c.isMesh) {
-          c.castShadow = true
-          c.receiveShadow = true
-          c.frustumCulled = false
-        }
-      })
-
-      // Add GLB model FIRST so it's children[0] for animation fallback
-      g.add(glbModel)
-
-      // Add hitbox for collision (same as procedural)
-      const hb = new THREE.Mesh(
-        new THREE.BoxGeometry(0.6 * 0.92, 1.8 * 0.92, 0.6 * 0.92),
-        new THREE.MeshBasicMaterial({ visible: false })
-      )
-      hb.position.y = 0.9 * 0.92
-      g.add(hb)
-
-      // Add ground shadow blob
-      const shadowGeo = new THREE.CircleGeometry(0.3 * 0.92, 16)
-      const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.2, depthWrite: false })
-      const shadowBlob = new THREE.Mesh(shadowGeo, shadowMat)
-      shadowBlob.rotation.x = -Math.PI / 2
-      shadowBlob.position.y = 0.01
-      g.add(shadowBlob)
-
-      // Store reference for animation system
-      // For GLB models, don't set specific body part refs - let the animation system
-      // fall back to character.children[0] which will be the GLB model (first child)
-      g.userData = {
-        isPlayer: false,
-        _sk: 0.92,
-        glbModel: true,
-        modelKey: charKey,
-        // Shadow blob reference
-        shadowBlob: shadowBlob,
-        // Keep existing animation timing properties
-        t: Math.random() * 10,
-        spd: 1.5 + Math.random() * 1.5,
-        dir: Math.random() > 0.5 ? 1 : -1,
-        startZ: 0,
-        idlePhase: Math.random() * Math.PI * 2,
-        blinkTimer: Math.random() * 4 + Math.random() * 3
-      }
-      return g
-    }
-  }
-
-  // ═══ FALLBACK / PLAYER: PROCEDURAL MODEL ═══
-  // NPC VARIATION - Random skin tones, shirt colors, and hair for NPCs
+  // ═══ NPC VARIATION ═══
+  // Random skin tones, shirt colors, and hair for NPCs to make them look distinct
   const npcSkins = [0xd4a574, 0xc68642, 0x8d5524, 0xf1c27d, 0xffdbac, 0xe0ac69]
   const npcShirts = [0x3498db, 0x2ecc71, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xe74c3c, 0x34495e]
   const npcPants = [0x555555, 0x2c3e50, 0x444444, 0x3d3d3d, 0x2d2d2d]
@@ -3165,11 +3075,11 @@ const _buildHuman = (isPlayer = false, appearance) => {
   const SHIRT_DK = new THREE.MeshToonMaterial({ color: shirtDk })
   const PANTS = new THREE.MeshToonMaterial({ color: pantsColor })
   const PANTS_DK = new THREE.MeshToonMaterial({ color: pantsDk })
-  const SHOES = new THREE.MeshToonMaterial({ color: isPlayer ? 0x1a1a1a : 0x222222 })
+  const SHOES = new THREE.MeshToonMaterial({ color: isPlayer ? (app.shoes || 0x1a1a1a) : 0x222222 })
   const SHOE_SOLE = new THREE.MeshToonMaterial({ color: 0x333333 })
   const EYE_W = new THREE.MeshToonMaterial({ color: 0xffffff })
   const EYE_P = new THREE.MeshToonMaterial({ color: 0x2c1810 })
-  const EYE_IRIS = new THREE.MeshToonMaterial({ color: isPlayer ? 0x4a90d9 : 0x3d2b1f })
+  const EYE_IRIS = new THREE.MeshToonMaterial({ color: isPlayer ? (app.eyeColor || 0x4a90d9) : 0x3d2b1f })
   const MOUTH = new THREE.MeshToonMaterial({ color: 0x8b4513 })
   const NOSE_M = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.95).getHex() })
   const EAR_INNER = new THREE.MeshToonMaterial({ color: 0xc4956a })
@@ -3212,22 +3122,67 @@ const _buildHuman = (isPlayer = false, appearance) => {
   chin.position.set(0, -0.24 * sk, 0.16 * sk)
   headGroup.add(chin)
 
-  // ── Hair (layered for volume) ──
-  const hairBack = new THREE.Mesh(new THREE.SphereGeometry(0.30 * sk, 12, 10), HAIR)
-  hairBack.position.set(0, 0.05 * sk, -0.04 * sk)
-  hairBack.scale.set(0.98, 0.55, 0.98)
-  headGroup.add(hairBack)
-  const hairTop = new THREE.Mesh(new THREE.SphereGeometry(0.26 * sk, 10, 8), HAIR)
-  hairTop.position.set(0, 0.14 * sk, -0.01 * sk)
-  hairTop.scale.set(0.88, 0.38, 0.92)
-  headGroup.add(hairTop)
-  // Side hair tufts
-  ;[-1, 1].forEach(s => {
-    const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.08 * sk, 8, 6), HAIR)
-    tuft.position.set(s * 0.22 * sk, 0.0 * sk, -0.06 * sk)
-    tuft.scale.set(0.5, 0.7, 0.6)
-    headGroup.add(tuft)
-  })
+  // ── Hair (styled — shape varies by app.hairStyle, not just color) ──
+  const hairStyle = isPlayer ? (app.hairStyle || 'classic') : 'classic'
+  if (hairStyle !== 'bald') {
+    if (hairStyle === 'short') {
+      // Short/buzz cut — tight cap hugging the skull, no back volume
+      const buzz = new THREE.Mesh(new THREE.SphereGeometry(0.285 * sk, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.5), HAIR)
+      buzz.position.set(0, 0.09 * sk, -0.01 * sk)
+      buzz.scale.set(1, 0.55, 1)
+      headGroup.add(buzz)
+    } else if (hairStyle === 'long') {
+      // Long flowing hair — extends down past the neck on the sides and back
+      const crown = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 12, 10), HAIR)
+      crown.position.set(0, 0.10 * sk, -0.02 * sk)
+      crown.scale.set(1, 0.62, 0.98)
+      headGroup.add(crown)
+      ;[-1, 1].forEach(s => {
+        const flow = limb(0.075 * sk, 0.04 * sk, 0.32 * sk, HAIR, 8)
+        flow.position.set(s * 0.20 * sk, -0.18 * sk, -0.05 * sk)
+        flow.rotation.z = s * 0.08
+        headGroup.add(flow)
+        const flowTip = new THREE.Mesh(new THREE.SphereGeometry(0.04 * sk, 6, 5), HAIR)
+        flowTip.position.set(s * 0.205 * sk, -0.34 * sk, -0.05 * sk)
+        headGroup.add(flowTip)
+      })
+      const back = limb(0.15 * sk, 0.10 * sk, 0.30 * sk, HAIR, 10)
+      back.position.set(0, -0.14 * sk, -0.14 * sk)
+      headGroup.add(back)
+    } else if (hairStyle === 'ponytail') {
+      const crown = new THREE.Mesh(new THREE.SphereGeometry(0.28 * sk, 12, 10), HAIR)
+      crown.position.set(0, 0.10 * sk, -0.01 * sk)
+      crown.scale.set(0.98, 0.55, 0.98)
+      headGroup.add(crown)
+      const tail = limb(0.055 * sk, 0.03 * sk, 0.30 * sk, HAIR, 8)
+      tail.position.set(0, -0.10 * sk, -0.26 * sk)
+      tail.rotation.x = 0.55
+      headGroup.add(tail)
+      const tailTip = new THREE.Mesh(new THREE.SphereGeometry(0.03 * sk, 6, 5), HAIR)
+      tailTip.position.set(0, -0.24 * sk, -0.37 * sk)
+      headGroup.add(tailTip)
+      const tie = new THREE.Mesh(new THREE.TorusGeometry(0.045 * sk, 0.012 * sk, 6, 10), SHIRT_DK)
+      tie.position.set(0, 0.03 * sk, -0.20 * sk)
+      tie.rotation.x = 1.2
+      headGroup.add(tie)
+    } else {
+      // 'classic' — the original layered volume look
+      const hairBack = new THREE.Mesh(new THREE.SphereGeometry(0.30 * sk, 12, 10), HAIR)
+      hairBack.position.set(0, 0.05 * sk, -0.04 * sk)
+      hairBack.scale.set(0.98, 0.55, 0.98)
+      headGroup.add(hairBack)
+      const hairTop = new THREE.Mesh(new THREE.SphereGeometry(0.26 * sk, 10, 8), HAIR)
+      hairTop.position.set(0, 0.14 * sk, -0.01 * sk)
+      hairTop.scale.set(0.88, 0.38, 0.92)
+      headGroup.add(hairTop)
+      ;[-1, 1].forEach(s => {
+        const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.08 * sk, 8, 6), HAIR)
+        tuft.position.set(s * 0.22 * sk, 0.0 * sk, -0.06 * sk)
+        tuft.scale.set(0.5, 0.7, 0.6)
+        headGroup.add(tuft)
+      })
+    }
+  }
 
   // ── Eyes (white + iris + pupil + eyelids) ──
   const _eyeLids = []
@@ -4082,6 +4037,21 @@ function showConsequenceModal(violationType, severity = 'normal') {
     { hex: 0x1a237e, name: 'Navy' }, { hex: 0x333333, name: 'Charcoal' },
     { hex: 0x5d4037, name: 'Brown' }, { hex: 0x006064, name: 'Teal' }
   ]
+  const EYES = [
+    { hex: 0x4a90d9, name: 'Blue' }, { hex: 0x3d2b1f, name: 'Brown' },
+    { hex: 0x2e7d32, name: 'Green' }, { hex: 0x616161, name: 'Gray' },
+    { hex: 0x6d4c41, name: 'Hazel' }, { hex: 0x00acc1, name: 'Teal' }
+  ]
+  const SHOE_COLORS = [
+    { hex: 0x1a1a1a, name: 'Black' }, { hex: 0xffffff, name: 'White' },
+    { hex: 0xe74c3c, name: 'Red' }, { hex: 0x3498db, name: 'Blue' },
+    { hex: 0xf39c12, name: 'Orange' }, { hex: 0x555555, name: 'Gray' }
+  ]
+  const HAIRSTYLES = [
+    { id: 'classic', name: 'Classic' }, { id: 'short', name: 'Short' },
+    { id: 'long', name: 'Long' }, { id: 'ponytail', name: 'Ponytail' },
+    { id: 'bald', name: 'Bald' }
+  ]
   const ACCESSORIES = [
     { id: 'cap', name: '🧢 Cap', on: true },
     { id: 'beanie', name: '🧶 Beanie', on: false },
@@ -4091,7 +4061,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     { id: 'scarf', name: '🧣 Scarf', on: false }
   ]
 
-  let _current = { skin: 0xd4a574, hair: 0x1a1a1a, shirt: 0xe74c3c, pants: 0x2c3e50, accessories: { cap: true, beanie: false, helmet: false, backpack: true, glasses: false, scarf: false } }
+  let _current = { skin: 0xd4a574, hair: 0x1a1a1a, hairStyle: 'classic', eyeColor: 0x4a90d9, shoes: 0x1a1a1a, shirt: 0xe74c3c, pants: 0x2c3e50, accessories: { cap: true, beanie: false, helmet: false, backpack: true, glasses: false, scarf: false } }
   let _previewScene, _previewCamera, _previewRenderer, _previewChar, _previewRAF
 
   function _loadSaved() {
@@ -4100,6 +4070,9 @@ function showConsequenceModal(violationType, severity = 'normal') {
       if (s) {
         _current.skin = s.skin || _current.skin
         _current.hair = s.hair || _current.hair
+        _current.hairStyle = s.hairStyle || _current.hairStyle
+        _current.eyeColor = s.eyeColor || _current.eyeColor
+        _current.shoes = s.shoes || _current.shoes
         _current.shirt = s.shirt || _current.shirt
         _current.pants = s.pants || _current.pants
         if (s.accessories) _current.accessories = s.accessories
@@ -4161,6 +4134,13 @@ function showConsequenceModal(violationType, severity = 'normal') {
     }).join('')
   }
 
+  function _hairstyleHTML() {
+    return HAIRSTYLES.map(h => {
+      const on = _current.hairStyle === h.id
+      return `<button onclick="window._pickHairstyle('${h.id}')" style="padding:8px 14px; border-radius:10px; border:1px solid ${on ? 'var(--teal)' : 'var(--border)'}; background:${on ? 'rgba(0,240,204,0.1)' : 'var(--hover)'}; color:${on ? 'var(--teal)' : 'var(--muted)'}; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.15s;">${h.name}</button>`
+    }).join('')
+  }
+
   function _accessoryHTML() {
     return ACCESSORIES.map(a => {
       const on = _current.accessories[a.id]
@@ -4171,13 +4151,19 @@ function showConsequenceModal(violationType, severity = 'normal') {
   function _refreshSwatches() {
     const ss = document.getElementById('skin-swatches')
     const hs = document.getElementById('hair-swatches')
+    const hys = document.getElementById('hairstyle-options')
+    const es = document.getElementById('eye-swatches')
     const shs = document.getElementById('shirt-swatches')
     const ps = document.getElementById('pants-swatches')
+    const shoes = document.getElementById('shoe-swatches')
     const ao = document.getElementById('accessory-options')
     if (ss) ss.innerHTML = _swatchHTML(SKINS, _current.skin, 'skin')
     if (hs) hs.innerHTML = _swatchHTML(HAIRS, _current.hair, 'hair')
+    if (hys) hys.innerHTML = _hairstyleHTML()
+    if (es) es.innerHTML = _swatchHTML(EYES, _current.eyeColor, 'eyeColor')
     if (shs) shs.innerHTML = _swatchHTML(SHIRTS, _current.shirt, 'shirt')
     if (ps) ps.innerHTML = _swatchHTML(PANTS, _current.pants, 'pants')
+    if (shoes) shoes.innerHTML = _swatchHTML(SHOE_COLORS, _current.shoes, 'shoes')
     if (ao) ao.innerHTML = _accessoryHTML()
   }
 
@@ -4280,6 +4266,12 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _updatePreviewModel()
   }
 
+  window._pickHairstyle = function(id) {
+    _current.hairStyle = id
+    _refreshSwatches()
+    _updatePreviewModel()
+  }
+
   window._toggleAccessory = function(id) {
     _current.accessories[id] = !_current.accessories[id]
     // Mutual exclusion for headwear — only one at a time
@@ -4299,6 +4291,9 @@ function showConsequenceModal(violationType, severity = 'normal') {
   window._randomizeCustomize = function() {
     _current.skin = SKINS[Math.floor(Math.random() * SKINS.length)].hex
     _current.hair = HAIRS[Math.floor(Math.random() * HAIRS.length)].hex
+    _current.hairStyle = HAIRSTYLES[Math.floor(Math.random() * HAIRSTYLES.length)].id
+    _current.eyeColor = EYES[Math.floor(Math.random() * EYES.length)].hex
+    _current.shoes = SHOE_COLORS[Math.floor(Math.random() * SHOE_COLORS.length)].hex
     _current.shirt = SHIRTS[Math.floor(Math.random() * SHIRTS.length)].hex
     _current.pants = PANTS[Math.floor(Math.random() * PANTS.length)].hex
     // Randomize headwear first (mutually exclusive)

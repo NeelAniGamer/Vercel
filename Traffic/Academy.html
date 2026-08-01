@@ -4656,6 +4656,13 @@
         </button>
         <div class="mobile-hamburger-dropdown" id="hamburger-dropdown" role="menu" aria-label="Menu">
           <button role="menuitem" onclick="hzToggle(); toggleHamburger();">
+            <span aria-hidden="true">🌓</span> Toggle Theme
+          </button>
+          <button role="menuitem" onclick="openCompareModal(); toggleHamburger();">
+            <span aria-hidden="true">👥</span> Compare Players
+          </button>
+          <button role="menuitem" id="hamburger-signin" onclick="window.location.href='TrafficSetup.html';">
+            <span aria-hidden="true">🔑</span> Sign In
           </button>
         </div>
         <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.location.href='Academy.html'">
@@ -6605,6 +6612,16 @@
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hair Color</div>
           <div id="hair-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
+        <!-- Hairstyle -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hairstyle</div>
+          <div id="hairstyle-options" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Eye Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Eye Color</div>
+          <div id="eye-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
         <!-- Shirt Color -->
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shirt Color</div>
@@ -6614,6 +6631,11 @@
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Pants Color</div>
           <div id="pants-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <!-- Shoe Color -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shoe Color</div>
+          <div id="shoe-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
         <!-- Accessories -->
         <div style="margin-bottom:20px;">
