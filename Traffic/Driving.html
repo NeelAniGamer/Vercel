@@ -11,6 +11,17 @@
 
   <!-- Cloud Auth & Sync Logic -->
   <script>
+    // ── Global game state (matches Academy.html / other pages) ──
+    let S = {}
+    try {
+      const _raw = localStorage.getItem('mth4')
+      if (_raw) S = JSON.parse(_raw)
+    } catch(e) {}
+    if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
+    if (!S.comp) S.comp = {}
+    if (!S.badges) S.badges = []
+    function save() { try { localStorage.setItem('mth4', JSON.stringify(S)) } catch(e) {} }
+
     const _oldFetch = window.fetch
     window.fetch = function () {
       if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {

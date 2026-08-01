@@ -2282,7 +2282,14 @@ class Game {
             // 2D canvas, revealing the 3D view) - which is very likely why the 2D scenario
             // cutout stayed stuck on screen even though the real 3D game underneath had already
             // loaded and was running fine (HUD, wallet, controls all live).
-            Promise.resolve(this._actualStart(ui.cur)).catch(err => this._onActualStartFailed(err));
+            try {
+              Promise.resolve(this._actualStart(ui.cur)).catch(err => this._onActualStartFailed(err));
+            } catch (e) {
+              // If _actualStart throws synchronously (e.g. ui.cur undefined, state corruption),
+              // still route to the error handler so the Scenario2D overlay gets cleaned up.
+              console.error('[Driving] startLevel callback sync error:', e);
+              this._onActualStartFailed(e);
+            }
           });
         } else {
           const cd = document.getElementById('cdown');
