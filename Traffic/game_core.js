@@ -2271,14 +2271,25 @@ class Game {
         // ── 2D Scenario Intro (cinematic canvas animation before gameplay) ──
         if (window.Scenario2D && ui.cur && ui.cur.id) {
           window.Scenario2D.play(ui.cur.id, () => {
-            this._actualStart(ui.cur).catch(err => this._onActualStartFailed(err));
+            // Promise.resolve(...) wrap: _actualStart is declared async so calling it should
+            // always hand back a real Promise, but on at least one deployment this call site
+            // threw "Cannot read properties of undefined (reading 'catch')" - meaning whatever
+            // ran here returned undefined instead of a Promise (a stale/partially-updated copy
+            // of this file is the most likely explanation). Wrapping in Promise.resolve()
+            // guarantees .catch() never fails regardless. This crash mattered more than it
+            // looked: it fired inside Scenario2D's own completion callback, so scenario2d.js
+            // never got to finish whatever cleanup/handoff it does after calling us (hiding its
+            // 2D canvas, revealing the 3D view) - which is very likely why the 2D scenario
+            // cutout stayed stuck on screen even though the real 3D game underneath had already
+            // loaded and was running fine (HUD, wallet, controls all live).
+            Promise.resolve(this._actualStart(ui.cur)).catch(err => this._onActualStartFailed(err));
           });
         } else {
           const cd = document.getElementById('cdown');
           if (cd) cd.classList.add('on');
           setTimeout(() => {
             if (cd) cd.classList.remove('on');
-            this._actualStart(ui.cur).catch(err => this._onActualStartFailed(err));
+            Promise.resolve(this._actualStart(ui.cur)).catch(err => this._onActualStartFailed(err));
           }, 1500);
         }
       }
