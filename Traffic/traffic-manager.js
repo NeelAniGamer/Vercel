@@ -81,13 +81,15 @@ class TrafficManager {
     this.vehicles.forEach(vehicle => {
       if (vehicle.active && vehicle.npcAI) {
         vehicle.npcAI.update(dt, playerVehicle, signals);
+        vehicle.mesh.position.copy(vehicle.position);
+        vehicle.mesh.rotation.y = vehicle.rotation.y;
       }
     });
   }
 
   _updateDensity(dt) {
     this.lastDensityUpdate += dt;
-    if (this.lastDensityUpdate >= 60) {
+    if (this.lastDensityUpdate >= 10) {
       this.lastDensityUpdate = 0;
       const targetDensity = Math.min(getBaseNPCCount() * (1 + this.densityMultiplier * 2), getMaxNPCCount());
       const currentCount = this.vehicles.filter(v => v.active).length;
@@ -184,7 +186,8 @@ class TrafficManager {
     vehicle.targetNode = this._getNextRouteNode(vehicle.currentNode);
     vehicle.active = true;
     vehicle.health = 100;
-    vehicle.npcAI = new window.NPCAI(vehicle, profile, this);
+    // Fix: pass roadGraph as second argument to NPCAI
+    vehicle.npcAI = new window.NPCAI(vehicle, this.roadGraph, this);
     vehicle.npcAI.trafficManager = this;
     vehicle.profile = profile;
     vehicle.isRuleBreaker = isRuleBreaker;
@@ -194,6 +197,7 @@ class TrafficManager {
 
     this.vehicles.push(vehicle);
     this.game.scene.add(vehicle.mesh);
+    if (this.game.npcs) this.game.npcs.push(vehicle.mesh);
     
     this._maybeFormPlatoon(vehicle);
     
@@ -220,78 +224,101 @@ class TrafficManager {
       taxi: [0xffcc00, 0xffaa00, 0xffff00],
       ambulance: [0xffffff]
     };
-    const list = colors[type] || colors.car;
-    return list[Math.floor(Math.random() * list.length)];
+    const palette = colors[type] || colors.car;
+    return palette[Math.floor(Math.random() * palette.length)];
   }
 
   _createVehicle(type, color, profile, isRuleBreaker) {
-    const pool = this.vehiclePools.get(type);
-    let vehicle;
-    
-    if (pool && pool.length > 0) {
-      vehicle = pool.pop();
-      vehicle.mesh.traverse(m => {
-        if (m.material) {
-          if (Array.isArray(m.material)) {
-            m.material.forEach(mat => { if (mat.color) mat.color.setHex(color); });
-          } else if (m.material.color) {
-            m.material.color.setHex(color);
-          }
-        }
-      });
-    } else {
-      const mesh = window.IndianVehicles.buildVehicle(type, color);
-      vehicle = {
-        mesh,
-        type,
-        profile,
-        isRuleBreaker,
-        velocity: new THREE.Vector3(),
-        position: new THREE.Vector3(),
-        rotation: new THREE.Vector3(),
-        stats: window.VEHICLE_STATS[type] || window.VEHICLE_STATS.car,
-        vehicleClass: type
-      };
+    // Try to get from pool first
+    let vehicle = null;
+    if (this.vehiclePools.has(type)) {
+      const pool = this.vehiclePools.get(type);
+      if (pool.length > 0) {
+        vehicle = pool.pop();
+        this._resetVehicle(vehicle, color, profile);
+        return vehicle;
+      }
     }
+
+    // Create new if pool is empty
+    vehicle = {
+      id: `npc_${type}_${Math.random().toString(36).substr(2, 9)}`,
+      type: type,
+      active: false,
+      position: new THREE.Vector3(),
+      rotation: new THREE.Vector3(),
+      velocity: new THREE.Vector3(),
+      speed: 0,
+      mesh: this._createVehicleMesh(type, color),
+      stats: VEHICLE_STATS[type] || VEHICLE_STATS.car,
+      profileKey: profile
+    };
     
-    vehicle.mesh.visible = true;
-    vehicle.profile = profile;
-    vehicle.isRuleBreaker = isRuleBreaker;
     return vehicle;
   }
 
-  _returnToPool(vehicle) {
-    if (!vehicle) return;
-    vehicle.mesh.visible = false;
+  _resetVehicle(vehicle, color, profile) {
     vehicle.active = false;
-    vehicle.npcAI = null;
-    vehicle.currentEdge = null;
-    vehicle.currentNode = null;
-    vehicle.targetNode = null;
-    vehicle.routeProgress = 0;
-    vehicle.health = 100;
+    vehicle.speed = 0;
+    vehicle.velocity.set(0, 0, 0);
+    vehicle.profileKey = profile;
     
-    const pool = this.vehiclePools.get(vehicle.type);
-    if (pool && pool.length < 20) {
-      pool.push(vehicle);
-    } else {
-      this.game.scene.remove(vehicle.mesh);
+    // Update color
+    if (vehicle.mesh && vehicle.mesh.userData.materials) {
+      const mats = vehicle.mesh.userData.materials;
+      if (mats.body) mats.body.color.setHex(color);
     }
   }
 
+  _returnToPool(vehicle) {
+    vehicle.active = false;
+    this.game.scene.remove(vehicle.mesh);
+    if (this.game.npcs) {
+      this.game.npcs = this.game.npcs.filter(n => n !== vehicle.mesh);
+    }
+    
+    if (this.vehiclePools.has(vehicle.type)) {
+      this.vehiclePools.get(vehicle.type).push(vehicle);
+    }
+    
+    this.vehicles = this.vehicles.filter(v => v !== vehicle);
+  }
+
   _despawnVehicle(vehicle) {
+    if (!vehicle.active) return;
+    vehicle.active = false;
+    this.game.scene.remove(vehicle.mesh);
+    if (this.game.npcs) {
+      const idx = this.game.npcs.indexOf(vehicle.mesh);
+      if (idx > -1) this.game.npcs.splice(idx, 1);
+    }
     if (vehicle.isRuleBreaker) this.ruleBreakerCount--;
     this._returnToPool(vehicle);
     this.vehicles = this.vehicles.filter(v => v !== vehicle);
   }
 
   _findSpawnPoint() {
-    if (!this.roadGraph || !this.mainRoute || this.mainRoute.length < 2) return null;
+    if (!this.roadGraph) return null;
     
-    const startIdx = Math.floor(Math.random() * (this.mainRoute.length - 1));
-    const startNode = this.mainRoute[startIdx];
-    const endNode = this.mainRoute[startIdx + 1];
-    const edge = startNode.getEdgeTo(endNode);
+    let edge = null;
+    let startNode = null;
+    let endNode = null;
+    
+    if (this.mainRoute && Array.isArray(this.mainRoute) && this.mainRoute.length >= 2) {
+      const startIdx = Math.floor(Math.random() * (this.mainRoute.length - 1));
+      startNode = this.mainRoute[startIdx];
+      endNode = this.mainRoute[startIdx + 1];
+      if (startNode && startNode.getEdgeTo) {
+        edge = startNode.getEdgeTo(endNode);
+      }
+    }
+    
+    // Fallback if mainRoute is a string or invalid
+    if (!edge && this.roadGraph.edges && this.roadGraph.edges.length > 0) {
+      edge = this.roadGraph.edges[Math.floor(Math.random() * this.roadGraph.edges.length)];
+      startNode = edge.startNode;
+      endNode = edge.endNode;
+    }
     
     if (!edge) return null;
 
@@ -299,7 +326,7 @@ class TrafficManager {
     const lane = Math.floor(Math.random() * laneCount);
     const offset = edge.getLaneOffsets()[lane] || 0;
     
-    const pos = edge.getPointAt(0.02);
+    const pos = edge.getPointAt(Math.random() * 0.9);
     const forward = edge.getForwardVector(startNode);
     const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0));
     
@@ -316,12 +343,20 @@ class TrafficManager {
   }
 
   _getNextRouteNode(currentNode) {
-    if (!this.mainRoute || this.mainRoute.length < 2) return null;
-    const idx = this.mainRoute.indexOf(currentNode);
-    if (idx >= 0 && idx < this.mainRoute.length - 1) {
-      return this.mainRoute[idx + 1];
+    if (this.mainRoute && Array.isArray(this.mainRoute) && this.mainRoute.length >= 2) {
+      const idx = this.mainRoute.indexOf(currentNode);
+      if (idx >= 0 && idx < this.mainRoute.length - 1) {
+        return this.mainRoute[idx + 1];
+      }
+      return this.mainRoute[0];
     }
-    return this.mainRoute[0];
+    
+    // Fallback if no specific route array: just pick a random connected node
+    if (currentNode && currentNode.edges && currentNode.edges.length > 0) {
+        const randomEdge = currentNode.edges[Math.floor(Math.random() * currentNode.edges.length)];
+        return randomEdge.endNode === currentNode ? randomEdge.startNode : randomEdge.endNode;
+    }
+    return null;
   }
 
   _maybeFormPlatoon(vehicle) {

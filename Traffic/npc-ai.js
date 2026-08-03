@@ -191,16 +191,32 @@ class NPCAI {
   }
 
   _pickNextTarget() {
-    if (this.routeIndex < this.route.length) {
+    if (this.route && this.route.length > 0 && this.routeIndex < this.route.length) {
       this.targetNode = this.route[this.routeIndex];
       const edge = this.roadGraph.getEdgeTo(this.vehicle.currentNode, this.targetNode);
       if (edge) {
         this.currentEdge = edge;
         this.currentLane = this._pickInitialLane(edge);
+        return;
       }
-    } else {
-      this.state = NPC_STATE.COMPLETE;
     }
+    
+    // Fallback: ask TrafficManager for next node or pick a random connected one
+    if (this.trafficManager) {
+      this.targetNode = this.trafficManager._getNextRouteNode(this.vehicle.currentNode);
+      if (this.targetNode) {
+        const edge = this.roadGraph.getEdgeTo(this.vehicle.currentNode, this.targetNode);
+        if (edge) {
+          this.currentEdge = edge;
+          this.currentLane = this._pickInitialLane(edge);
+          this.vehicle.currentNode = this.targetNode; // Advance current node for next lookup
+          return;
+        }
+      }
+    }
+    
+    // If all fails, mark as complete
+    this.state = NPC_STATE.COMPLETE;
   }
 
   _pickInitialLane(edge) {

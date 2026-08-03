@@ -111,7 +111,7 @@ class RenderCore {
         // Three.js r128+ Color Management
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.0;
+        this.renderer.toneMappingExposure = 0.7; // Lowered from 1.0 to reduce over-exposure
 
         // Shadow defaults
         this.renderer.shadowMap.enabled = true;

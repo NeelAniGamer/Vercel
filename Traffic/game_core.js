@@ -2489,8 +2489,7 @@ class Game {
         
         // Release all pooled objects to prevent memory leaks
         if (window.ThreePools) ThreePools.releaseAll();
-        // Cleanup crash VFX
-        this._cleanupCrashFX();
+        // Cleanup crash VFX (Not implemented yet)
         
         // Clean up GPS navigation elements
         if (this._gpsFlowChevrons) {
@@ -3472,7 +3471,7 @@ class Game {
         if (!this._npcFree) this._npcFree = [];
         if (!this._pedFree) this._pedFree = [];
         if (this.npcs) this.npcs.forEach(n => { n.visible = false; n.children.length = 0; this._npcFree.push(n); });
-        if (this.peds) this.peds.forEach(p => { p.visible = false; this._pedFree.push(p); });
+        if (this.peds) this.peds.forEach(p => { p.visible = false; p.children.length = 0; this._pedFree.push(p); });
         if (this.scene) this.scene.children.filter(c => c.userData?.isNPC).forEach(c => { c.visible = false; c.children.length = 0; this._npcFree.push(c); });
 
         const lvId = ui.cur ? ui.cur.id : 1;
@@ -3493,12 +3492,13 @@ class Game {
             this.scene.fog = new THREE.Fog(sk, fogNear, fogFar);
         }
         // Enhanced true color lighting with better contrast and shadows
-        this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.1 : 0.35);
+        this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.1 : 0.2);
         this.scene.add(this._ambient);
-        this._hemi = new THREE.HemisphereLight(0x87ceeb, 0x8a7560, cfg.isNight ? 0.1 : 0.45);
+        this._hemi = new THREE.HemisphereLight(0x87ceeb, 0x8a7560, cfg.isNight ? 0.1 : 0.25);
+        this._hemi.position.set(0, 1000, 0);
         this.scene.add(this._hemi);
 
-        this._sun = new THREE.DirectionalLight(0xfff5e0, cfg.isNight ? 0.4 : 1.2);
+        this._sun = new THREE.DirectionalLight(0xfff5e0, cfg.isNight ? 0.4 : 0.7);
         this._sun.position.set(30, 60, 20);
         this._sun.castShadow = true;
         this._sun.shadow.camera.near = 0.5;
@@ -4291,6 +4291,9 @@ class Game {
         if (!this.trafficManager) {
           this.trafficManager = new window.TrafficManager(this);
         }
+        if (this.roadGraph) {
+          this.trafficManager.spawnInitialTraffic(this.roadGraph, cfg.route, window.isMobile && window.isMobile() ? 8 : 24);
+        }
       }
        
       // ─── Graph-based road generation ───
@@ -4575,7 +4578,8 @@ class Game {
               const im = new THREE.InstancedMesh(mesh.geometry, mesh.material, instances.length);
               im.castShadow = false;
               im.receiveShadow = true;
-              im.frustumCulled = true;
+              im.frustumCulled = false;
+              im.userData = { noLod: true };
               
               const dummy = new THREE.Object3D();
               const finalMatrix = new THREE.Matrix4();
@@ -5154,45 +5158,48 @@ class Game {
             }
         }
 
-        if (this.keys['f'] && !this._fPressed && this._enterState === 'IDLE') {
-          this._fPressed = true;
-          if (this.playerVehicle && this.playerCharacter) {
-            if (this.isPedestrian) {
-              const dist = this.player.position.distanceTo(this.playerVehicle.position);
-              if (dist < 3.0) {
-                this._enterDir = 1;
+        if (this.keys['f']) {
+          if (!this._fPressed && this._enterState === 'IDLE') {
+            if (this.playerVehicle && this.playerCharacter) {
+              if (this.isPedestrian) {
+                const dist = this.player.position.distanceTo(this.playerVehicle.position);
+                if (dist < 3.0) {
+                  this._enterDir = 1;
+                  this._enterTimer = 0;
+                  this._enterState = 'WALKING_TO_DOOR';
+                  this._camOverride = true;
+                  this._enterDoorSide = 'L';
+                  const vehPos = this.playerVehicle.position;
+                  const vehRot = this.playerVehicle.rotation.y;
+                  const doorLocal = new THREE.Vector3(1.2, 0, 0.4);
+                  doorLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
+                this._enterWalkStart = this.player.position.clone();
+                this._enterWalkEnd = vehPos.clone().add(doorLocal);
+                  this._enterWalkEnd.y = 0;
+                  toast('Walking to vehicle...', '#f39c12');
+                } else {
+                  toast('Too far from vehicle.', '#ff9500');
+                }
+              } else {
+                this._enterDir = -1;
                 this._enterTimer = 0;
-                this._enterState = 'WALKING_TO_DOOR';
+                this._enterState = 'OPENING_DOOR';
                 this._camOverride = true;
                 this._enterDoorSide = 'L';
                 const vehPos = this.playerVehicle.position;
                 const vehRot = this.playerVehicle.rotation.y;
-                const doorLocal = new THREE.Vector3(1.2, 0, 0.4);
-                doorLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
-              this._enterWalkStart = this.player.position.clone();
-              this._enterWalkEnd = vehPos.clone().add(doorLocal);
+                const outLocal = new THREE.Vector3(3.0, 0, 0.4);
+                outLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
+                this._enterWalkEnd = vehPos.clone().add(outLocal);
                 this._enterWalkEnd.y = 0;
-                toast('Walking to vehicle...', '#f39c12');
-              } else {
-                toast('Too far from vehicle.', '#ff9500');
+                toast('Exiting vehicle...', '#f39c12');
               }
-            } else {
-              this._enterDir = -1;
-              this._enterTimer = 0;
-              this._enterState = 'OPENING_DOOR';
-              this._camOverride = true;
-              this._enterDoorSide = 'L';
-              const vehPos = this.playerVehicle.position;
-              const vehRot = this.playerVehicle.rotation.y;
-              const outLocal = new THREE.Vector3(3.0, 0, 0.4);
-              outLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
-              this._enterWalkEnd = vehPos.clone().add(outLocal);
-              this._enterWalkEnd.y = 0;
-              toast('Exiting vehicle...', '#f39c12');
             }
           }
+          this._fPressed = true;
+        } else {
+          this._fPressed = false;
         }
-        if (!this.keys['f']) this._fPressed = false;
 
         const inTransition = this._enterState !== 'IDLE';
         let at = window.analogThrottle || 0;
@@ -5676,19 +5683,19 @@ class Game {
             if (!this.isPedestrian && this.turnSignal !== 0 && Math.abs(this.speed) > 0.3 && !this._overtakeCheckDone) {
               this._overtakeCheckDone = true;
               const pp = this.player.position;
-              const fwd = this.pools.vec3.get().set(Math.sin(this.player.rotation.y), 0, Math.cos(this.player.rotation.y));
+              const fwd = window.ThreePools.vec3.get().set(Math.sin(this.player.rotation.y), 0, Math.cos(this.player.rotation.y));
               let oncoming = false;
               for (const nv of this.npcs) {
                 if (!nv || !nv.position) continue;
-                const toNpc = this.pools.vec3.get().subVectors(nv.position, pp);
+                const toNpc = window.ThreePools.vec3.get().subVectors(nv.position, pp);
                 const dot = toNpc.dot(fwd);
-                this.pools.vec3.release(toNpc);
+                window.ThreePools.vec3.release(toNpc);
                 if (dot > 0 && dot < 20) {
                   const npcSpeed = nv.userData?.speed || 0;
                   if (npcSpeed < -0.05) { oncoming = true; break; }
                 }
               }
-              this.pools.vec3.release(fwd);
+              window.ThreePools.vec3.release(fwd);
               if (oncoming) {
                 toast('⚠️ Oncoming traffic detected! Check before overtaking.', '#ef4444');
                 if (typeof sfx !== 'undefined' && sfx.play) sfx.play('error');
@@ -6982,8 +6989,8 @@ class Game {
               const pedAI = new PedestrianAI(ped, this.trafficManager);
               // Use appropriate profile based on theme
               if (isFestCrowd) { pedAI.profileKey = 'rusher'; pedAI.profile = PED_PROFILES.rusher; }
-              else if (cfg.hasRain) { pedAI.profileKey = 'cautious'; pedAI.profile = PED_PROFILES.cautious; }
-              else if (cfg.hasSchool) { pedAI.profileKey = 'child'; pedAI.profile = PED_PROFILES.child; }
+              else if (this.mapCfg && this.mapCfg.hasRain) { pedAI.profileKey = 'cautious'; pedAI.profile = PED_PROFILES.cautious; }
+              else if (this.mapCfg && this.mapCfg.hasSchool) { pedAI.profileKey = 'child'; pedAI.profile = PED_PROFILES.child; }
               this.pedestrianAIs.push(pedAI); ped._pedAI = pedAI;
             }
           }
@@ -7684,7 +7691,7 @@ class Game {
         const t = this._enterTimer;
         const char = this.playerCharacter;
         const veh = this.playerVehicle;
-        if (!char || !veh) { this._enterState = 'IDLE'; return; }
+        if (!char || !veh) { this._enterState = 'IDLE'; this._camOverride = false; return; }
         const doorPivot = this._enterDoorSide === 'L' ? veh.userData.doorPivotL : veh.userData.doorPivotR;
 
         // ── Helper: animate character body pose during enter/exit ──
@@ -7781,9 +7788,9 @@ class Game {
             const dur = 0.8;
             const p = Math.min(t / dur, 1);
             const ease = p * p * (3 - 2 * p)
-            const seatPos = this.pools.vec3.get().set(0, 0.6, 0.2)
+            const seatPos = window.ThreePools.vec3.get().set(0, 0.6, 0.2)
             char.position.lerpVectors(this._enterWalkEnd, seatPos, ease)
-            this.pools.vec3.release(seatPos)
+            window.ThreePools.vec3.release(seatPos)
             char.scale.setScalar(1 - ease * 0.45)
             // Body pose: lean forward then settle into seat
             if (p < 0.5) {
@@ -7851,9 +7858,9 @@ class Game {
             const ease = p * p * (3 - 2 * p)
             const standPos = this._enterWalkEnd.clone()
             standPos.y = 0
-            const seatPosC = this.pools.vec3.get().set(0, 0.6, 0.2)
+            const seatPosC = window.ThreePools.vec3.get().set(0, 0.6, 0.2)
             char.position.lerpVectors(seatPosC, standPos, ease)
-            this.pools.vec3.release(seatPosC)
+            window.ThreePools.vec3.release(seatPosC)
             char.position.y = ease * 0
             char.scale.setScalar(0.55 + ease * 0.45)
             // Body pose: stand up animation

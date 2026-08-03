@@ -2695,7 +2695,7 @@ const _buildVehicle = (type, col) => {
       lpRoot.traverse(c => { if (c.isGroup && c.children.length > 0) cars.push(c) })
       if (cars.length > 0) {
         baseModel = cars[Math.floor(Math.random() * cars.length)].clone()
-        s = 3.2
+        s = 2.0
         // Apply color to body meshes
         baseModel.traverse((child) => {
           if (child.isMesh && child.material) {
@@ -2719,9 +2719,9 @@ const _buildVehicle = (type, col) => {
 
       if (window.PRELOADED_MODELS[modelKey]) {
         baseModel = window.PRELOADED_MODELS[modelKey].clone()
-        if (type === 'bus' || type === 'truck') s = 4.0
-        else if (type === 'auto' || type === 'bike') s = 2.5
-        else s = 3.2
+        if (type === 'bus' || type === 'truck') s = 2.5
+        else if (type === 'auto' || type === 'bike') s = 1.5
+        else s = 2.0
 
         baseModel.traverse((child) => {
           if (child.isMesh && child.material) {
