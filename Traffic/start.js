@@ -298,13 +298,17 @@ function preloadModels(callback) {
       const loader = new THREE.GLTFLoader()
       Object.keys(window.MODELS).forEach((key) => {
         if (window.MODELS[key] && !window.PRELOADED_MODELS[key]) {
-          loader.load(window.MODELS[key], (gltf) => {
-            gltf.scene.traverse((child) => {
-              if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; if (child.material) { child.material.roughness = 0.8; child.material.metalness = 0.1 } }
-            })
-            gltf.scene.scale.set(4.5, 4.5, 4.5)
-            window.PRELOADED_MODELS[key] = gltf.scene
-          }, undefined, (err) => console.warn('Failed to load base64 model:', key, err))
+          try {
+            loader.load(window.MODELS[key], (gltf) => {
+              gltf.scene.traverse((child) => {
+                if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; if (child.material) { child.material.roughness = 0.8; child.material.metalness = 0.1 } }
+              })
+              gltf.scene.scale.set(4.5, 4.5, 4.5)
+              window.PRELOADED_MODELS[key] = gltf.scene
+            }, undefined, (err) => console.warn('Failed to load base64 model:', key, err))
+          } catch(e) {
+            console.error('SYNC Error parsing base64 for', key, e);
+          }
         }
       })
     }

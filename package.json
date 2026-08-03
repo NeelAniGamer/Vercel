@@ -13,6 +13,7 @@
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
     "acorn": "^8.17.0",
+    "playwright": "^1.62.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "three": "^0.185.1"
