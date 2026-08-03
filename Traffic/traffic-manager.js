@@ -76,6 +76,13 @@ class TrafficManager {
     this._updateSignalAccumulation(dt, signals);
     this._manageVehicleLifecycle(playerVehicle);
     this._updateEdgeIndex();
+    
+    // Update individual vehicle AI
+    this.vehicles.forEach(vehicle => {
+      if (vehicle.active && vehicle.npcAI) {
+        vehicle.npcAI.update(dt, playerVehicle, signals);
+      }
+    });
   }
 
   _updateDensity(dt) {
@@ -95,7 +102,7 @@ class TrafficManager {
   }
 
   _updateSignalAccumulation(dt, signals) {
-    const redSignals = signals.filter(s => s.state === 'red').length;
+    const redSignals = signals ? signals.filter(s => s.state === 'red').length : 0;
     if (redSignals > 0) {
       this.timeAtSignal += dt;
       this.signalAccumulation = Math.min(MAX_SIGNAL_ACCUMULATION, this.signalAccumulation + SIGNAL_ACCUMULATION_RATE * dt / 60);

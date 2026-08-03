@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 
-<head>
+<head><script>const origAtob = window.atob; window.atob = function(str) { try { return origAtob(str); } catch(e) { console.error("ATOB FAILED ON STRING (length " + str.length + "):", str.substring(0, 100)); throw e; } };</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <meta http-equiv="Content-Security-Policy"
@@ -6180,9 +6180,9 @@
   <script src="safezone-ui.js"></script>
   <script src="gameplay-recorder.js"></script>
   <script src="scenario2d.js"></script>
-  <script src="game_core.js?v=11"></script>
+  <script src="game_core.js?v=12"></script>
   <script src="npc-ai.js"></script>
-  <script src="traffic-manager.js"></script>
+  <script src="traffic-manager.js?v=5"></script>
   <script src="rule-breaker-profiles.js"></script>
   <script src="course.js"></script>
   <script src="ui.js"></script>

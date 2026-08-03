@@ -6,6 +6,7 @@ const VEHICLE_STATS = {
   truck:     { maxSpd: 0.90, accel: 0.033, fric: 0.960, turn: 0.042, grip: 0.50 },
   auto:      { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.072, grip: 0.40 },
 };
+window.VEHICLE_STATS = VEHICLE_STATS;
 
 // ── Per-vehicle chase camera profiles ──
 // dist:     distance behind the vehicle
@@ -3337,9 +3338,7 @@ class Game {
           let profile = profileStr ? JSON.parse(profileStr) : {};
           let username = profile.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || 'Anonymous';
           
-          let usernameSpriteVeh = createNametagSprite(username);
-          usernameSpriteVeh.position.set(0, 3, 0);
-          this.playerVehicle.add(usernameSpriteVeh);
+          // Nametag removed because createNametagSprite is undefined
 
           this.scene.add(this.playerVehicle);
 
@@ -3363,7 +3362,9 @@ class Game {
       }
 
       _makeNPC(type, col) {
-        return _buildVehicle(type, col);
+        const v = _buildVehicle(type, col);
+        if (v) v.stats = VEHICLE_STATS[type] || VEHICLE_STATS.car;
+        return v;
       }
 
       // ── VEHICLE BEACON — scene-level glowing pillar + floating arrow above the player's car ──
@@ -4285,19 +4286,19 @@ class Game {
           }
         }
       
-      // Initialize TrafficManager and NPCAI for Mumbai-style traffic
-      if (!cfg.isPedestrian && window.TrafficManager && window.NPCAI) {
+      // Initialize TrafficManager for Mumbai-style traffic
+      if (!cfg.isPedestrian && window.TrafficManager) {
         if (!this.trafficManager) {
           this.trafficManager = new window.TrafficManager(this);
-          this.npcAI = new window.NPCAI(this, this.roadGraph, this.trafficManager);
         }
-        this.npcAI.init();
       }
        
       // ─── Graph-based road generation ───
       // Builds visual road geometry (tiles, sidewalks, crosswalks) from RoadGraph edges
       // Uses GLB road models when available, falls back to procedural geometry
 
+      // Initialize player vehicle/pedestrian
+      this._pmesh(mode, this.vehMode || cfg.veh);
       }
       _buildRoadsFromGraph(roadWidth) {
         const graph = this.roadGraph;
@@ -6126,10 +6127,9 @@ class Game {
 
       _unpcs(dt) {
         if (!this.player || !this.player.position) return;
-        // Delegate to TrafficManager and NPCAI for Mumbai-style traffic simulation
-        if (this.trafficManager && this.npcAI) {
-          this.trafficManager.update(dt, this);
-          this.npcAI.update(dt, this);
+        // Delegate to TrafficManager for Mumbai-style traffic simulation
+        if (this.trafficManager) {
+          this.trafficManager.update(dt, this.player, this.signals || []);
           return;
         }
         
