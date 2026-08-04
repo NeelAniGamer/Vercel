@@ -111,7 +111,7 @@ class RenderCore {
         // Three.js r128+ Color Management
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 0.7; // Lowered from 1.0 to reduce over-exposure
+        this.renderer.toneMappingExposure = 0.55; // Lowered from 0.7 to reduce over-exposure and improve saturation
 
         // Shadow defaults
         this.renderer.shadowMap.enabled = true;
@@ -154,6 +154,12 @@ class RenderCore {
      */
     autoDetectQuality() {
         console.log("RenderCore: Auto-detecting hardware capabilities...");
+        const savedQuality = localStorage.getItem('traffic_quality');
+        if (savedQuality && QUALITY_PRESETS[savedQuality]) {
+            console.log(`RenderCore: Using saved quality preset from localStorage: ${savedQuality}`);
+            this.setQuality(savedQuality);
+            return;
+        }
         let score = 2; // Start at MED
 
         // 1. GPU Analysis

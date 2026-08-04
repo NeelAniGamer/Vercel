@@ -21,5 +21,5 @@ window.LVS.push({
   themeType: 'free_roam',
   startOutside: false,
   tasks: [],
-  assets: []
+  assets: ['lowpoly_city']
 })
