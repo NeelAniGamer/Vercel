@@ -1,0 +1,74 @@
+[    1804ms] [LOG] [Scenario2D] Engine loaded — 35 theme scenarios, parallax, particles, typewriter text, view bobbing @ http://localhost:8899/Traffic/scenario2d.js:1880
+[    1944ms] [LOG] [Kid Mode] Initialized — simplified UI for children @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6859
+[    1962ms] [LOG] SafeZoneGrid: Initialized @ http://localhost:8899/Traffic/safezone-ui.js:68
+[    3161ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[    3163ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[    3197ms] [LOG] RenderCore: Auto-detecting hardware capabilities... @ http://localhost:8899/Traffic/render_core.js?v=2:155
+[    3198ms] [LOG] RenderCore: Detected GPU: ANGLE (AMD, AMD Radeon (TM) Graphics (0x000015E7) Direct3D11 vs_5_0 ps_5_0, D3D11) @ http://localhost:8899/Traffic/render_core.js?v=2:163
+[    3199ms] [LOG] RenderCore: CPU Cores: 12 @ http://localhost:8899/Traffic/render_core.js?v=2:178
+[    3199ms] [LOG] RenderCore: Device Memory: 16GB @ http://localhost:8899/Traffic/render_core.js?v=2:185
+[    3201ms] [LOG] RenderCore: Burn-in test: 0.09ms/frame @ http://localhost:8899/Traffic/render_core.js?v=2:192
+[    3201ms] [LOG] RenderCore: Auto-detected quality: ULTRA (score: 5) @ http://localhost:8899/Traffic/render_core.js?v=2:207
+[    3201ms] [LOG] RenderCore: Applying quality settings - Ultra Cinematic @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[    3202ms] [LOG] RenderCore: Quality set to ULTRA @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[    3370ms] [LOG] [Kid Mode] Game hooks installed @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6855
+[    4634ms] [LOG] RenderCore: Applying quality settings - High Quality @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[    4635ms] [LOG] RenderCore: Quality set to HIGH @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[    4635ms] [LOG] RenderCore: Auto-downgraded to HIGH (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[    5926ms] [LOG] RenderCore: Applying quality settings - Balanced @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[    5927ms] [LOG] RenderCore: Quality set to MED @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[    5927ms] [LOG] RenderCore: Auto-downgraded to MED (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[    7279ms] [LOG] RenderCore: Applying quality settings - Performance mode @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[    7280ms] [LOG] RenderCore: Quality set to LOW @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[    7280ms] [LOG] RenderCore: Auto-downgraded to LOW (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[   15239ms] [LOG] RenderCore: Applying quality settings - Balanced @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[   15239ms] [LOG] RenderCore: Quality set to MED @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[   15239ms] [LOG] RenderCore: Auto-upgraded to MED (frame budget healthy) @ http://localhost:8899/Traffic/render_core.js?v=2:391
+[   66863ms] [LOG] RenderCore: Applying quality settings - Performance mode @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[   66863ms] [LOG] RenderCore: Quality set to LOW @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[   66863ms] [LOG] RenderCore: Auto-downgraded to LOW (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[  166494ms] [LOG] [Scenario2D] Engine loaded — 35 theme scenarios, parallax, particles, typewriter text, view bobbing @ http://localhost:8899/Traffic/scenario2d.js:1880
+[  166625ms] [LOG] [Kid Mode] Initialized — simplified UI for children @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6859
+[  166641ms] [LOG] SafeZoneGrid: Initialized @ http://localhost:8899/Traffic/safezone-ui.js:68
+[  167508ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[  167510ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[  167538ms] [LOG] RenderCore: Auto-detecting hardware capabilities... @ http://localhost:8899/Traffic/render_core.js?v=2:155
+[  167538ms] [LOG] RenderCore: Detected GPU: ANGLE (AMD, AMD Radeon (TM) Graphics (0x000015E7) Direct3D11 vs_5_0 ps_5_0, D3D11) @ http://localhost:8899/Traffic/render_core.js?v=2:163
+[  167539ms] [LOG] RenderCore: CPU Cores: 12 @ http://localhost:8899/Traffic/render_core.js?v=2:178
+[  167539ms] [LOG] RenderCore: Device Memory: 16GB @ http://localhost:8899/Traffic/render_core.js?v=2:185
+[  167540ms] [LOG] RenderCore: Burn-in test: 0.05ms/frame @ http://localhost:8899/Traffic/render_core.js?v=2:192
+[  167540ms] [LOG] RenderCore: Auto-detected quality: ULTRA (score: 5) @ http://localhost:8899/Traffic/render_core.js?v=2:207
+[  167540ms] [LOG] RenderCore: Applying quality settings - Ultra Cinematic @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  167541ms] [LOG] RenderCore: Quality set to ULTRA @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  167643ms] [LOG] [Kid Mode] Game hooks installed @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6855
+[  167886ms] [WARNING] Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture. @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:0
+[  168610ms] [LOG] RenderCore: Applying quality settings - High Quality @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  168610ms] [LOG] RenderCore: Quality set to HIGH @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  168610ms] [LOG] RenderCore: Auto-downgraded to HIGH (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[  171230ms] [LOG] [Scenario2D] Engine loaded — 35 theme scenarios, parallax, particles, typewriter text, view bobbing @ http://localhost:8899/Traffic/scenario2d.js:1880
+[  171335ms] [LOG] [Kid Mode] Initialized — simplified UI for children @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6859
+[  171351ms] [LOG] SafeZoneGrid: Initialized @ http://localhost:8899/Traffic/safezone-ui.js:68
+[  172292ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[  172294ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[  172321ms] [LOG] RenderCore: Auto-detecting hardware capabilities... @ http://localhost:8899/Traffic/render_core.js?v=2:155
+[  172322ms] [LOG] RenderCore: Detected GPU: ANGLE (AMD, AMD Radeon (TM) Graphics (0x000015E7) Direct3D11 vs_5_0 ps_5_0, D3D11) @ http://localhost:8899/Traffic/render_core.js?v=2:163
+[  172322ms] [LOG] RenderCore: CPU Cores: 12 @ http://localhost:8899/Traffic/render_core.js?v=2:178
+[  172322ms] [LOG] RenderCore: Device Memory: 16GB @ http://localhost:8899/Traffic/render_core.js?v=2:185
+[  172324ms] [LOG] RenderCore: Burn-in test: 0.07ms/frame @ http://localhost:8899/Traffic/render_core.js?v=2:192
+[  172324ms] [LOG] RenderCore: Auto-detected quality: ULTRA (score: 5) @ http://localhost:8899/Traffic/render_core.js?v=2:207
+[  172325ms] [LOG] RenderCore: Applying quality settings - Ultra Cinematic @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  172325ms] [LOG] RenderCore: Quality set to ULTRA @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  172458ms] [LOG] [Kid Mode] Game hooks installed @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6855
+[  172674ms] [WARNING] Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture. @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:0
+[  173426ms] [LOG] RenderCore: Applying quality settings - High Quality @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  173426ms] [LOG] RenderCore: Quality set to HIGH @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  173426ms] [LOG] RenderCore: Auto-downgraded to HIGH (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[  180223ms] [LOG] RenderCore: Applying quality settings - Balanced @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  180224ms] [LOG] RenderCore: Quality set to MED @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  180224ms] [LOG] RenderCore: Auto-downgraded to MED (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[  181560ms] [LOG] RenderCore: Applying quality settings - Performance mode @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  181560ms] [LOG] RenderCore: Quality set to LOW @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  181560ms] [LOG] RenderCore: Auto-downgraded to LOW (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[  182560ms] [LOG] RenderCore: Applying quality settings - Balanced @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  182561ms] [LOG] RenderCore: Quality set to MED @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  182561ms] [LOG] RenderCore: Auto-upgraded to MED (frame budget healthy) @ http://localhost:8899/Traffic/render_core.js?v=2:391

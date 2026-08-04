@@ -4920,7 +4920,9 @@ class Game {
         g.add(ps_pole, ps_box, mks(1.95, 'p_red'), mks(1.65, 'p_green'));
         g.add(p, bx, mkHood(4.6), mkHood(4.3), mkHood(4.0), mk(4.6, 'red'), mk(4.3, 'yellow'), mk(4.0, 'green'));
         g.position.set(x, 0, z); this.scene.add(g); this.sigs.push(g);
-        g.userData = { st: 'red', t: Math.random() * 6, rd: 4, gd: 4, yd: 1.5 }; return g;
+        g.userData = { st: 'red', t: Math.random() * 6, rd: 4, gd: 4, yd: 1.5 };
+        g.state = g.userData.st; // NPCAI reads signal.state; kept in sync by _usigs
+        return g;
       }
       
       _addTrafficSign(x, z, type, rotY = 0) {
@@ -5683,19 +5685,17 @@ class Game {
             if (!this.isPedestrian && this.turnSignal !== 0 && Math.abs(this.speed) > 0.3 && !this._overtakeCheckDone) {
               this._overtakeCheckDone = true;
               const pp = this.player.position;
-              const fwd = window.ThreePools.vec3.get().set(Math.sin(this.player.rotation.y), 0, Math.cos(this.player.rotation.y));
+              const fwd = this._v1.set(Math.sin(this.player.rotation.y), 0, Math.cos(this.player.rotation.y));
               let oncoming = false;
               for (const nv of this.npcs) {
                 if (!nv || !nv.position) continue;
-                const toNpc = window.ThreePools.vec3.get().subVectors(nv.position, pp);
+                const toNpc = this._v2.subVectors(nv.position, pp);
                 const dot = toNpc.dot(fwd);
-                window.ThreePools.vec3.release(toNpc);
                 if (dot > 0 && dot < 20) {
                   const npcSpeed = nv.userData?.speed || 0;
                   if (npcSpeed < -0.05) { oncoming = true; break; }
                 }
               }
-              window.ThreePools.vec3.release(fwd);
               if (oncoming) {
                 toast('⚠️ Oncoming traffic detected! Check before overtaking.', '#ef4444');
                 if (typeof sfx !== 'undefined' && sfx.play) sfx.play('error');
@@ -5860,6 +5860,7 @@ class Game {
           const d = sg.userData; d.t += dt; const rem = d.t % 9.5;
           const prev = d.st;
           d.st = rem < 4 ? 'red' : rem < 5.5 ? 'yellow' : 'green';
+          sg.state = d.st; // mirrored for NPCAI._getSignalAhead
           const r = sg.getObjectByName('red'), y = sg.getObjectByName('yellow'), g = sg.getObjectByName('green');
           if (r) r.material.color.setHex(d.st === 'red' ? 0xff3b30 : 0x220000);
           if (y) y.material.color.setHex(d.st === 'yellow' ? 0xffd54a : 0x222200);
@@ -6136,7 +6137,9 @@ class Game {
         if (!this.player || !this.player.position) return;
         // Delegate to TrafficManager for Mumbai-style traffic simulation
         if (this.trafficManager) {
-          this.trafficManager.update(dt, this.player, this.signals || []);
+          // `this.signals` never existed — the signal array is `this.sigs`, so NPCs were
+          // handed an empty list and drove through every red light.
+          this.trafficManager.update(dt, this.player, this.sigs || []);
           return;
         }
         
@@ -7665,7 +7668,7 @@ class Game {
             this.lightningTimer = 8 + Math.random() * 7;
             // Screen flash
             const flash = document.createElement('div');
-            flash.style.cssText = 'position:fixed;inset:0;background:rgba(255,255,255,0.35);z-index:99999;pointer-events:none;transition:opacity 0.3s';
+            flash.style.cssText = 'position:fixed;inset:0;background:rgba(255,255,255,0.35);z-index:9999;pointer-events:none;transition:opacity 0.3s';
             document.body.appendChild(flash);
             setTimeout(() => { flash.style.opacity = '0'; }, 50);
             setTimeout(() => { if (flash.parentNode) flash.parentNode.removeChild(flash); }, 400);
@@ -7788,9 +7791,9 @@ class Game {
             const dur = 0.8;
             const p = Math.min(t / dur, 1);
             const ease = p * p * (3 - 2 * p)
-            const seatPos = window.ThreePools.vec3.get().set(0, 0.6, 0.2)
+            const seatPos = this._v1.set(0, 0.6, 0.2)
             char.position.lerpVectors(this._enterWalkEnd, seatPos, ease)
-            window.ThreePools.vec3.release(seatPos)
+            
             char.scale.setScalar(1 - ease * 0.45)
             // Body pose: lean forward then settle into seat
             if (p < 0.5) {
@@ -7858,9 +7861,9 @@ class Game {
             const ease = p * p * (3 - 2 * p)
             const standPos = this._enterWalkEnd.clone()
             standPos.y = 0
-            const seatPosC = window.ThreePools.vec3.get().set(0, 0.6, 0.2)
+            const seatPosC = this._v1.set(0, 0.6, 0.2)
             char.position.lerpVectors(seatPosC, standPos, ease)
-            window.ThreePools.vec3.release(seatPosC)
+            
             char.position.y = ease * 0
             char.scale.setScalar(0.55 + ease * 0.45)
             // Body pose: stand up animation

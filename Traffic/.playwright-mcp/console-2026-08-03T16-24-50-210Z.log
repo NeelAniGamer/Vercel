@@ -1,0 +1,93 @@
+[    3086ms] [LOG] [Scenario2D] Engine loaded — 35 theme scenarios, parallax, particles, typewriter text, view bobbing @ http://localhost:8899/Traffic/scenario2d.js:1880
+[    3195ms] [LOG] [Kid Mode] Initialized — simplified UI for children @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6859
+[    3260ms] [LOG] SafeZoneGrid: Initialized @ http://localhost:8899/Traffic/safezone-ui.js:68
+[    4642ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[    4643ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[    4889ms] [LOG] RenderCore: Auto-detecting hardware capabilities... @ http://localhost:8899/Traffic/render_core.js?v=2:155
+[    4900ms] [LOG] RenderCore: Detected GPU: ANGLE (AMD, AMD Radeon (TM) Graphics (0x000015E7) Direct3D11 vs_5_0 ps_5_0, D3D11) @ http://localhost:8899/Traffic/render_core.js?v=2:163
+[    4901ms] [LOG] RenderCore: CPU Cores: 12 @ http://localhost:8899/Traffic/render_core.js?v=2:178
+[    4901ms] [LOG] RenderCore: Device Memory: 16GB @ http://localhost:8899/Traffic/render_core.js?v=2:185
+[    4907ms] [LOG] RenderCore: Burn-in test: 0.26ms/frame @ http://localhost:8899/Traffic/render_core.js?v=2:192
+[    4907ms] [LOG] RenderCore: Auto-detected quality: ULTRA (score: 5) @ http://localhost:8899/Traffic/render_core.js?v=2:207
+[    4908ms] [LOG] RenderCore: Applying quality settings - Ultra Cinematic @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[    4909ms] [LOG] RenderCore: Quality set to ULTRA @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[    5290ms] [LOG] [Kid Mode] Game hooks installed @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6855
+[    7048ms] [LOG] RenderCore: Applying quality settings - High Quality @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[    7048ms] [LOG] RenderCore: Quality set to HIGH @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[    7048ms] [LOG] RenderCore: Auto-downgraded to HIGH (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[    8080ms] [LOG] RenderCore: Applying quality settings - Balanced @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[    8080ms] [LOG] RenderCore: Quality set to MED @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[    8080ms] [LOG] RenderCore: Auto-downgraded to MED (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[   11736ms] [LOG] RenderCore: Applying quality settings - Performance mode @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[   11736ms] [LOG] RenderCore: Quality set to LOW @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[   11737ms] [LOG] RenderCore: Auto-downgraded to LOW (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[   12210ms] TypeError: this._createVehicleMesh is not a function
+    at TrafficManager._createVehicle (http://localhost:8899/Traffic/traffic-manager.js?v=6:252:18)
+    at TrafficManager._spawnSingleVehicle (http://localhost:8899/Traffic/traffic-manager.js?v=6:170:26)
+    at TrafficManager._spawnBatch (http://localhost:8899/Traffic/traffic-manager.js?v=6:157:12)
+    at TrafficManager.spawnInitialTraffic (http://localhost:8899/Traffic/traffic-manager.js?v=6:152:10)
+    at Game._buildScene (http://localhost:8899/Traffic/game_core.js?v=13:4295:31)
+    at Game._actualStart (http://localhost:8899/Traffic/game_core.js?v=13:2397:14)
+[   35476ms] [WARNING] [Driving] Canvas did not activate within 30s, redirecting to Academy @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:37
+[   36641ms] [LOG] [Scenario2D] Engine loaded — 35 theme scenarios, parallax, particles, typewriter text, view bobbing @ http://localhost:8899/Traffic/scenario2d.js:1880
+[   37069ms] [LOG] SW registered:  http://localhost:8899/ @ http://localhost:8899/col-ui.js:149
+[   37112ms] ReferenceError: S is not defined
+    at Object.init (http://localhost:8899/Traffic/ui.js:116:7)
+    at http://localhost:8899/Traffic/Academy.html?screen=levels:6272:56
+[   37813ms] [WARNING] [GSI_LOGGER]: Your client application uses one of the Google One Tap prompt UI status methods that may stop functioning when FedCM becomes mandatory. Refer to the migration guide to update your code accordingly and opt-in to FedCM to test your changes. Learn more: https://developers.google.com/identity/gsi/web/guides/fedcm-migration?s=dc#display_moment and https://developers.google.com/identity/gsi/web/guides/fedcm-migration?s=dc#skipped_moment @ http://localhost:8899/Traffic/Academy.html?screen=levels:23
+[   37821ms] [ERROR] Not signed in with the identity provider. @ http://localhost:8899/Traffic/Academy.html?screen=levels:0
+[   38606ms] [ERROR] [GSI_LOGGER]: FedCM get() rejects with NetworkError: Error retrieving a token. @ https://accounts.google.com/gsi/client:87
+[   38607ms] [LOG] One tap skipped:  unknown_reason @ http://localhost:8899/col-auth.js:123
+[  707035ms] [LOG] [Scenario2D] Engine loaded — 35 theme scenarios, parallax, particles, typewriter text, view bobbing @ http://localhost:8899/Traffic/scenario2d.js:1880
+[  707126ms] [LOG] [Kid Mode] Initialized — simplified UI for children @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6859
+[  707153ms] [LOG] SafeZoneGrid: Initialized @ http://localhost:8899/Traffic/safezone-ui.js:68
+[  708054ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[  708055ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[  708085ms] [LOG] RenderCore: Auto-detecting hardware capabilities... @ http://localhost:8899/Traffic/render_core.js?v=2:155
+[  708087ms] [LOG] RenderCore: Detected GPU: ANGLE (AMD, AMD Radeon (TM) Graphics (0x000015E7) Direct3D11 vs_5_0 ps_5_0, D3D11) @ http://localhost:8899/Traffic/render_core.js?v=2:163
+[  708087ms] [LOG] RenderCore: CPU Cores: 12 @ http://localhost:8899/Traffic/render_core.js?v=2:178
+[  708087ms] [LOG] RenderCore: Device Memory: 16GB @ http://localhost:8899/Traffic/render_core.js?v=2:185
+[  708089ms] [LOG] RenderCore: Burn-in test: 0.05ms/frame @ http://localhost:8899/Traffic/render_core.js?v=2:192
+[  708089ms] [LOG] RenderCore: Auto-detected quality: ULTRA (score: 5) @ http://localhost:8899/Traffic/render_core.js?v=2:207
+[  708089ms] [LOG] RenderCore: Applying quality settings - Ultra Cinematic @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  708090ms] [LOG] RenderCore: Quality set to ULTRA @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  708196ms] [LOG] [Kid Mode] Game hooks installed @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6855
+[  708446ms] [WARNING] Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture. @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:0
+[  709195ms] [LOG] RenderCore: Applying quality settings - High Quality @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  709195ms] [LOG] RenderCore: Quality set to HIGH @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  709195ms] [LOG] RenderCore: Auto-downgraded to HIGH (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[  714992ms] TypeError: this._createVehicleMesh is not a function
+    at TrafficManager._createVehicle (http://localhost:8899/Traffic/traffic-manager.js?v=6:318:18)
+    at TrafficManager._spawnSingleVehicle (http://localhost:8899/Traffic/traffic-manager.js?v=6:195:26)
+    at TrafficManager._spawnBatch (http://localhost:8899/Traffic/traffic-manager.js?v=6:180:12)
+    at TrafficManager.spawnInitialTraffic (http://localhost:8899/Traffic/traffic-manager.js?v=6:160:10)
+    at Game._buildScene (http://localhost:8899/Traffic/game_core.js?v=13:4295:31)
+    at Game._actualStart (http://localhost:8899/Traffic/game_core.js?v=13:2397:14)
+[  716880ms] [LOG] RenderCore: Applying quality settings - Balanced @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  716880ms] [LOG] RenderCore: Quality set to MED @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  716880ms] [LOG] RenderCore: Auto-downgraded to MED (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[  721082ms] [LOG] [Scenario2D] Engine loaded — 35 theme scenarios, parallax, particles, typewriter text, view bobbing @ http://localhost:8899/Traffic/scenario2d.js:1880
+[  721189ms] [LOG] [Kid Mode] Initialized — simplified UI for children @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6859
+[  721205ms] [LOG] SafeZoneGrid: Initialized @ http://localhost:8899/Traffic/safezone-ui.js:68
+[  722134ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[  722136ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[  722165ms] [LOG] RenderCore: Auto-detecting hardware capabilities... @ http://localhost:8899/Traffic/render_core.js?v=2:155
+[  722166ms] [LOG] RenderCore: Detected GPU: ANGLE (AMD, AMD Radeon (TM) Graphics (0x000015E7) Direct3D11 vs_5_0 ps_5_0, D3D11) @ http://localhost:8899/Traffic/render_core.js?v=2:163
+[  722166ms] [LOG] RenderCore: CPU Cores: 12 @ http://localhost:8899/Traffic/render_core.js?v=2:178
+[  722166ms] [LOG] RenderCore: Device Memory: 16GB @ http://localhost:8899/Traffic/render_core.js?v=2:185
+[  722168ms] [LOG] RenderCore: Burn-in test: 0.06ms/frame @ http://localhost:8899/Traffic/render_core.js?v=2:192
+[  722168ms] [LOG] RenderCore: Auto-detected quality: ULTRA (score: 5) @ http://localhost:8899/Traffic/render_core.js?v=2:207
+[  722168ms] [LOG] RenderCore: Applying quality settings - Ultra Cinematic @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  722169ms] [LOG] RenderCore: Quality set to ULTRA @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  722270ms] [LOG] [Kid Mode] Game hooks installed @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6855
+[  722507ms] [WARNING] Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture. @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:0
+[  723238ms] [LOG] RenderCore: Applying quality settings - High Quality @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[  723239ms] [LOG] RenderCore: Quality set to HIGH @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[  723239ms] [LOG] RenderCore: Auto-downgraded to HIGH (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382
+[  729166ms] TypeError: this._createVehicleMesh is not a function
+    at TrafficManager._createVehicle (http://localhost:8899/Traffic/traffic-manager.js?v=6:318:18)
+    at TrafficManager._spawnSingleVehicle (http://localhost:8899/Traffic/traffic-manager.js?v=6:195:26)
+    at TrafficManager._spawnBatch (http://localhost:8899/Traffic/traffic-manager.js?v=6:180:12)
+    at TrafficManager.spawnInitialTraffic (http://localhost:8899/Traffic/traffic-manager.js?v=6:160:10)
+    at Game._buildScene (http://localhost:8899/Traffic/game_core.js?v=13:4295:31)
+    at Game._actualStart (http://localhost:8899/Traffic/game_core.js?v=13:2397:14)

@@ -78,12 +78,20 @@ class TrafficManager {
     this._updateEdgeIndex();
     
     // Update individual vehicle AI
-    this.vehicles.forEach(vehicle => {
-      if (vehicle.active && vehicle.npcAI) {
-        vehicle.npcAI.update(dt, playerVehicle, signals);
-        vehicle.mesh.position.copy(vehicle.position);
-        vehicle.mesh.rotation.y = vehicle.rotation.y;
+    const COMPLETE = (window.NPC_STATE && window.NPC_STATE.COMPLETE) || 'COMPLETE';
+    this.vehicles.slice().forEach(vehicle => {
+      if (!vehicle.active || !vehicle.npcAI) return;
+
+      // Route exhausted — hand out a new destination so traffic keeps circulating
+      // instead of parking itself permanently at the end of its first route.
+      if (vehicle.npcAI.state === COMPLETE && !this._assignRoute(vehicle)) {
+        this._despawnVehicle(vehicle);
+        return;
       }
+
+      vehicle.npcAI.update(dt, playerVehicle, signals);
+      vehicle.mesh.position.copy(vehicle.position);
+      vehicle.mesh.rotation.y = vehicle.rotation.y;
     });
   }
 
@@ -148,8 +156,23 @@ class TrafficManager {
 
   spawnInitialTraffic(roadGraph, route, count = BASE_NPC_COUNT) {
     this.roadGraph = roadGraph;
-    this.mainRoute = route;
+    this.mainRoute = this._resolveRouteNodes(route);
     this._spawnBatch(count);
+  }
+
+  // Level configs express `route` as plain {x,z} waypoints, but every consumer here
+  // (getEdgeTo, indexOf, NPCAI.targetNode.position) needs real RoadNodes — snap them.
+  _resolveRouteNodes(route) {
+    if (!Array.isArray(route) || !this.roadGraph || typeof this.roadGraph.getNearestNode !== 'function') return [];
+    const out = [];
+    route.forEach(p => {
+      if (!p) return;
+      if (p.edges && p.position) { if (out[out.length - 1] !== p) out.push(p); return; }
+      if (typeof p.x !== 'number' || typeof p.z !== 'number') return;
+      const node = this.roadGraph.getNearestNode(p.x, p.z);
+      if (node && out[out.length - 1] !== node) out.push(node);
+    });
+    return out;
   }
 
   _spawnBatch(count) {
@@ -161,14 +184,16 @@ class TrafficManager {
   _spawnSingleVehicle() {
     const type = this._pickVehicleType();
     const isRuleBreaker = Math.random() < RULE_BREAKER_PROBABILITY && this.ruleBreakerCount / Math.max(1, this.totalSpawned) < RULE_BREAKER_PROBABILITY;
-    
-    const profile = isRuleBreaker 
-      ? window.pickRandomProfile('reckless_bike', 'rulebreaker', 'aggressive')
-      : window.pickRandomProfile('normal', 'cautious');
-    
+
+    // NPCAI keys off a profile *name*, not the profile object — passing the object
+    // silently demoted every NPC (rule-breakers included) to the `normal` profile.
+    const profileKey = isRuleBreaker
+      ? this._pickProfileKey('reckless_bike', 'rulebreaker', 'aggressive')
+      : this._pickProfileKey('normal', 'cautious', 'delivery', 'elderly');
+
     const color = this._pickColorForType(type);
-    const vehicle = this._createVehicle(type, color, profile, isRuleBreaker);
-    
+    const vehicle = this._createVehicle(type, color, profileKey, isRuleBreaker);
+
     if (!vehicle) return null;
 
     const spawnPoint = this._findSpawnPoint();
@@ -181,16 +206,23 @@ class TrafficManager {
     vehicle.rotation.y = spawnPoint.rotation;
     vehicle.currentNode = spawnPoint.node;
     vehicle.currentEdge = spawnPoint.edge;
-    vehicle.currentLane = Math.floor(Math.random() * (spawnPoint.edge.lanes || 1));
+    vehicle.currentLane = spawnPoint.lane;
     vehicle.routeProgress = 0;
     vehicle.targetNode = this._getNextRouteNode(vehicle.currentNode);
     vehicle.active = true;
     vehicle.health = 100;
+    vehicle.mesh.position.copy(vehicle.position);
+    vehicle.mesh.rotation.y = vehicle.rotation.y;
+    vehicle.mesh.visible = true;
     // Fix: pass roadGraph as second argument to NPCAI
     vehicle.npcAI = new window.NPCAI(vehicle, this.roadGraph, this);
     vehicle.npcAI.trafficManager = this;
-    vehicle.profile = profile;
+    vehicle.profile = vehicle.npcAI.profile;
     vehicle.isRuleBreaker = isRuleBreaker;
+
+    // Without a route NPCAI never leaves IDLE (and _checkTransitions immediately
+    // marks an empty route COMPLETE), so the car would just sit on the road.
+    this._assignRoute(vehicle);
 
     if (isRuleBreaker) this.ruleBreakerCount++;
     this.totalSpawned++;
@@ -198,10 +230,44 @@ class TrafficManager {
     this.vehicles.push(vehicle);
     this.game.scene.add(vehicle.mesh);
     if (this.game.npcs) this.game.npcs.push(vehicle.mesh);
-    
+
     this._maybeFormPlatoon(vehicle);
-    
+
     return vehicle;
+  }
+
+  // Pick a fresh destination and hand NPCAI the node path to it.
+  _assignRoute(vehicle) {
+    if (!this.roadGraph || !vehicle.npcAI || !vehicle.currentNode) return false;
+    const dest = this._pickDestinationNode(vehicle.currentNode);
+    if (!dest) return false;
+    const path = this.roadGraph.findPath(vehicle.currentNode, dest);
+    if (!path || path.length < 2) return false;
+    // findPath includes the start node; NPCAI treats route[routeIndex] as the *next* target.
+    vehicle.npcAI.setRoute(path.slice(1));
+    return true;
+  }
+
+  _pickDestinationNode(fromNode) {
+    if (!this.roadGraph || !this.roadGraph.nodes) return null;
+    const nodes = Array.from(this.roadGraph.nodes.values());
+    if (nodes.length < 2) return null;
+    let best = null, bestDist = -1;
+    // Sample a few and take the furthest — long routes mean fewer re-route churns.
+    for (let i = 0; i < 6; i++) {
+      const n = nodes[Math.floor(Math.random() * nodes.length)];
+      if (n === fromNode) continue;
+      const d = n.position.distanceTo(fromNode.position);
+      if (d > bestDist) { bestDist = d; best = n; }
+    }
+    return best;
+  }
+
+  _pickProfileKey(...allowedKeys) {
+    const profiles = window.NPC_PROFILES || {};
+    const keys = (allowedKeys.length ? allowedKeys : Object.keys(profiles)).filter(k => profiles[k]);
+    if (!keys.length) return 'normal';
+    return keys[Math.floor(Math.random() * keys.length)];
   }
 
   _pickVehicleType() {
@@ -228,17 +294,20 @@ class TrafficManager {
     return palette[Math.floor(Math.random() * palette.length)];
   }
 
-  _createVehicle(type, color, profile, isRuleBreaker) {
+  _createVehicle(type, color, profileKey, isRuleBreaker) {
     // Try to get from pool first
     let vehicle = null;
     if (this.vehiclePools.has(type)) {
       const pool = this.vehiclePools.get(type);
       if (pool.length > 0) {
         vehicle = pool.pop();
-        this._resetVehicle(vehicle, color, profile);
+        this._resetVehicle(vehicle, color, profileKey);
         return vehicle;
       }
     }
+
+    const mesh = this._createVehicleMesh(type, color);
+    if (!mesh) return null;
 
     // Create new if pool is empty
     vehicle = {
@@ -249,20 +318,56 @@ class TrafficManager {
       rotation: new THREE.Vector3(),
       velocity: new THREE.Vector3(),
       speed: 0,
-      mesh: this._createVehicleMesh(type, color),
-      stats: VEHICLE_STATS[type] || VEHICLE_STATS.car,
-      profileKey: profile
+      mesh: mesh,
+      stats: (window.VEHICLE_STATS && (window.VEHICLE_STATS[type] || window.VEHICLE_STATS.car)) || { accel: 0.045, fric: 0.945, maxSpd: 1.1 },
+      profileKey: profileKey
     };
-    
+
     return vehicle;
   }
 
-  _resetVehicle(vehicle, color, profile) {
+  // The mesh factory lives in ui.js (`_buildVehicle`), wrapped by Game._makeNPC which
+  // also attaches VEHICLE_STATS. Degrade to a placeholder box rather than throwing —
+  // a throw here aborts _buildScene and the level never boots.
+  _createVehicleMesh(type, color) {
+    let mesh = null;
+    try {
+      if (this.game && typeof this.game._makeNPC === 'function') {
+        mesh = this.game._makeNPC(type, color);
+      } else if (typeof window._buildVehicle === 'function') {
+        mesh = window._buildVehicle(type, color);
+      }
+    } catch (e) {
+      console.warn('[TrafficManager] vehicle mesh factory failed for "' + type + '"', e);
+    }
+
+    if (!mesh) {
+      mesh = new THREE.Group();
+      mesh.add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 3.5), new THREE.MeshToonMaterial({ color: color })));
+    }
+
+    mesh.userData = mesh.userData || {};
+    mesh.userData.npcType = type;
+    mesh.userData.isTrafficManagerVehicle = true;
+
+    // Cache the body material so pooled vehicles can be recoloured on reuse
+    if (!mesh.userData.materials) {
+      let body = null;
+      mesh.traverse(c => { if (!body && c.isMesh && c.material && c.material.color) body = c.material; });
+      mesh.userData.materials = { body: body };
+    }
+
+    return mesh;
+  }
+
+  _resetVehicle(vehicle, color, profileKey) {
     vehicle.active = false;
     vehicle.speed = 0;
     vehicle.velocity.set(0, 0, 0);
-    vehicle.profileKey = profile;
-    
+    vehicle.profileKey = profileKey;
+    vehicle.health = 100;
+    vehicle.npcAI = null;
+
     // Update color
     if (vehicle.mesh && vehicle.mesh.userData.materials) {
       const mats = vehicle.mesh.userData.materials;
@@ -299,38 +404,45 @@ class TrafficManager {
 
   _findSpawnPoint() {
     if (!this.roadGraph) return null;
-    
+
     let edge = null;
     let startNode = null;
-    let endNode = null;
-    
-    if (this.mainRoute && Array.isArray(this.mainRoute) && this.mainRoute.length >= 2) {
+
+    // Prefer an edge along the player's route so traffic appears where it is seen.
+    if (Array.isArray(this.mainRoute) && this.mainRoute.length >= 2) {
       const startIdx = Math.floor(Math.random() * (this.mainRoute.length - 1));
-      startNode = this.mainRoute[startIdx];
-      endNode = this.mainRoute[startIdx + 1];
-      if (startNode && startNode.getEdgeTo) {
-        edge = startNode.getEdgeTo(endNode);
+      const a = this.mainRoute[startIdx];
+      const b = this.mainRoute[startIdx + 1];
+      if (a && typeof a.getEdgeTo === 'function') {
+        edge = a.getEdgeTo(b);
+        if (edge) startNode = a;
       }
     }
-    
-    // Fallback if mainRoute is a string or invalid
-    if (!edge && this.roadGraph.edges && this.roadGraph.edges.length > 0) {
-      edge = this.roadGraph.edges[Math.floor(Math.random() * this.roadGraph.edges.length)];
-      startNode = edge.startNode;
-      endNode = edge.endNode;
-    }
-    
-    if (!edge) return null;
 
-    const laneCount = edge.lanes || 1;
+    // `roadGraph.edges` is a Map — it has no .length and no numeric indices, so the
+    // old array-style fallback never produced an edge and every spawn was aborted.
+    if (!edge) {
+      const candidates = this._spawnCandidateEdges();
+      if (!candidates.length) return null;
+      edge = candidates[Math.floor(Math.random() * candidates.length)];
+      startNode = Math.random() < 0.5 ? edge.startNode : edge.endNode;
+    }
+
+    if (!edge || !startNode) return null;
+
+    // getLaneOffsets() returns lanes*2 entries (both travel directions). Vehicles
+    // heading away from startNode belong in the half matching that direction.
+    const offsets = edge.getLaneOffsets();
+    const laneCount = Math.max(1, edge.lanes || 1);
     const lane = Math.floor(Math.random() * laneCount);
-    const offset = edge.getLaneOffsets()[lane] || 0;
-    
-    const pos = edge.getPointAt(Math.random() * 0.9);
+    const dirBase = startNode === edge.startNode ? laneCount : 0;
+    const offset = offsets[dirBase + lane] !== undefined ? offsets[dirBase + lane] : 0;
+
+    const pos = edge.getPointAt(0.1 + Math.random() * 0.8);
     const forward = edge.getForwardVector(startNode);
-    const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0));
-    
-    pos.add(right.multiplyScalar(offset));
+    const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+    pos.addScaledVector(right, offset);
     pos.y = 0.5;
 
     return {
@@ -340,6 +452,22 @@ class TrafficManager {
       edge: edge,
       lane: lane
     };
+  }
+
+  // Edges close enough to the player to be worth populating: spawning uniformly over
+  // the whole map just fed _manageVehicleLifecycle's 400-unit despawn ring.
+  _spawnCandidateEdges() {
+    const all = typeof this.roadGraph.getEdgeList === 'function'
+      ? this.roadGraph.getEdgeList()
+      : Array.from(this.roadGraph.edges.values ? this.roadGraph.edges.values() : []);
+    const player = this.game && this.game.player && this.game.player.position;
+    if (!player || all.length === 0) return all;
+
+    const near = all.filter(e => {
+      const d = e.getPointAt(0.5).distanceTo(player);
+      return d > 30 && d < 300;
+    });
+    return near.length ? near : all;
   }
 
   _getNextRouteNode(currentNode) {
@@ -480,11 +608,9 @@ class Platoon {
   }
 }
 
-function pickRandomProfile(...allowedKeys) {
-  const keys = allowedKeys.length > 0 ? allowedKeys : Object.keys(window.NPC_PROFILES || {});
-  const key = keys[Math.floor(Math.random() * keys.length)];
-  return window.NPC_PROFILES[key] || window.NPC_PROFILES.normal;
-}
+// NOTE: no global pickRandomProfile here. npc-ai.js declares one that returns a profile
+// *key*, and this file loading second used to overwrite it with an object-returning
+// version — which broke NPCAI's own internal calls. Use TrafficManager#_pickProfileKey.
 
 window.TrafficManager = TrafficManager;
 window.Platoon = Platoon;
@@ -493,4 +619,3 @@ window.RULE_BREAKER_PROBABILITY = RULE_BREAKER_PROBABILITY;
 window.BASE_NPC_COUNT = BASE_NPC_COUNT;
 window.MAX_NPC_COUNT = MAX_NPC_COUNT;
 window.DENSITY_INCREASE_PER_MIN = DENSITY_INCREASE_PER_MIN;
-window.pickRandomProfile = pickRandomProfile;

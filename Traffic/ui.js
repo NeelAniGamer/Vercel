@@ -107,19 +107,26 @@ window.ui = Object.assign(window.ui || {}, {
     }
   },
   init() {
-    // Ensure S is always initialized before any other code runs
+    // Ensure S is always initialized before any other code runs.
+    // Pages that declare `let S` inline (Driving.html) already have it; pages that do
+    // not (Academy.html declares its S inside a function) land here — build the state
+    // locally and publish it on window so bare `S` resolves everywhere below.
+    // Reading bare `S` inside this branch would throw ReferenceError, which used to
+    // abort ui.init() entirely and leave the hub screens unbuilt.
     if (typeof S === 'undefined') {
+      let s = null
       try {
         const raw = localStorage.getItem('mth4')
-        if (raw) S = JSON.parse(raw)
+        if (raw) s = JSON.parse(raw)
       } catch (e) {}
-      if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null }
-      if (!S.comp) S.comp = {}
-      if (!S.badges) S.badges = []
-      if (!S.studentId) {
-        S.studentId = window.colUser?.uid || 'STU-' + Math.floor(100000 + Math.random() * 900000)
-        try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
+      if (!s || typeof s !== 'object') s = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null }
+      if (!s.comp) s.comp = {}
+      if (!s.badges) s.badges = []
+      if (!s.studentId) {
+        s.studentId = window.colUser?.uid || 'STU-' + Math.floor(100000 + Math.random() * 900000)
       }
+      window.S = s
+      try { localStorage.setItem('mth4', JSON.stringify(s)) } catch (e) {}
     }
     // Fallback save if course.js hasn't loaded
     if (typeof save === 'undefined') {
@@ -4351,4 +4358,5 @@ function showConsequenceModal(violationType, severity = 'normal') {
   })
 
   window._buildHuman = _buildHuman
+  window._buildVehicle = _buildVehicle
 })()

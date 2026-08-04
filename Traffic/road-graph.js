@@ -48,6 +48,10 @@ class RoadEdge {
     nodeB.addEdge(this);
   }
 
+  // Aliases — traffic-manager.js / npc-ai.js address the endpoints by name
+  get startNode() { return this.nodes[0]; }
+  get endNode() { return this.nodes[1]; }
+
   getOther(node) {
     return this.nodes[0] === node ? this.nodes[1] : this.nodes[0];
   }
@@ -295,6 +299,25 @@ class RoadGraph {
     return best;
   }
 
+  // `edges` is a Map — callers that need index/length access go through these.
+  getEdgeList() {
+    if (!this._edgeList || this._edgeList.length !== this.edges.size) {
+      this._edgeList = Array.from(this.edges.values());
+    }
+    return this._edgeList;
+  }
+
+  getRandomEdge() {
+    const list = this.getEdgeList();
+    return list.length ? list[Math.floor(Math.random() * list.length)] : null;
+  }
+
+  // Edge connecting two nodes (either direction), or null.
+  getEdgeTo(nodeA, nodeB) {
+    if (!nodeA || !nodeB || !nodeA.edges) return null;
+    return nodeA.getEdgeTo(nodeB) || null;
+  }
+
   getEdgesAtIntersection(node) {
     return node.edges;
   }
@@ -316,7 +339,11 @@ class RoadGraph {
       open.delete(current);
       current.neighbors.forEach(neighbor => {
         const edge = current.getEdgeTo(neighbor);
-        if (edge.oneWay && edge.getForwardVector(current) !== edge.direction) return;
+        if (!edge) return;
+        // One-way edges may only be walked from nodes[0] → nodes[1].
+        // (getForwardVector returns a clone, so comparing it to `direction` by
+        // identity was always true and silently made every one-way road impassable.)
+        if (edge.oneWay && edge.nodes[0] !== current) return;
         const tentative = (gScore.get(current) || Infinity) + edge.length;
         if (tentative < (gScore.get(neighbor) || Infinity)) {
           cameFrom.set(neighbor, current);

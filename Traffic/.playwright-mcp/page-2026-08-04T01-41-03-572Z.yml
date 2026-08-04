@@ -1,0 +1,477 @@
+- generic [active] [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - button "Back" [ref=f1e4] [cursor=pointer]
+      - generic [ref=f1e7]:
+        - textbox "Search levels..." [ref=f1e8]
+        - button "Sign In" [ref=f1e9] [cursor=pointer]
+        - generic [ref=f1e10] [cursor=pointer]: 0/53 ✅
+        - button "Toggle Map View" [ref=f1e11] [cursor=pointer]
+    - generic [ref=f1e15]:
+      - generic [ref=f1e16]: 🌍 Free Roam
+      - generic [ref=f1e18] [cursor=pointer]:
+        - generic [ref=f1e20]:
+          - generic [ref=f1e21]: 🏙️
+          - generic [ref=f1e22]: Lesson custom
+        - generic [ref=f1e23]:
+          - generic [ref=f1e24]: Free Roam - Low Poly City
+          - generic [ref=f1e25]: Explore the newly added custom low poly city. No time limits, no rules. Just free roam.
+          - generic [ref=f1e26]: ○ Not Started
+      - generic [ref=f1e27]: 🚶 Pedestrian Courtesy
+      - generic [ref=f1e28]:
+        - generic [ref=f1e29] [cursor=pointer]:
+          - generic [ref=f1e31]:
+            - generic [ref=f1e32]: 🏫
+            - generic [ref=f1e33]: Lesson 5
+          - generic [ref=f1e34]:
+            - generic [ref=f1e35]: School Zone Crossing
+            - generic [ref=f1e36]: You are approaching a school zone during dismissal time. Children in uniforms are crossing randomly between parked cars. Slow down and give them priority.
+            - generic [ref=f1e37]: ○ Not Started
+        - generic [ref=f1e38] [cursor=pointer]:
+          - generic [ref=f1e40]:
+            - generic [ref=f1e41]: 🌙
+            - generic [ref=f1e42]: Lesson 14
+          - generic [ref=f1e43]:
+            - generic [ref=f1e44]: Night Crossing
+            - generic [ref=f1e45]: It is late at night. Visibility is poor. An elderly person with a walking stick is slowly crossing at an unmarked crossing point. NPCs are speeding past — do not follow them.
+            - generic [ref=f1e46]: ○ Not Started
+        - generic [ref=f1e47] [cursor=pointer]:
+          - generic [ref=f1e49]:
+            - generic [ref=f1e50]: 🚶
+            - generic [ref=f1e51]: Lesson 24
+          - generic [ref=f1e52]:
+            - generic [ref=f1e53]: Pedestrian Priority
+            - generic [ref=f1e54]: An elderly person is trying to cross the road at a zebra crossing. Traffic is flowing but you must stop and let them cross safely.
+            - generic [ref=f1e55]: ○ Not Started
+      - generic [ref=f1e56]: 🅿️ Parking Rules
+      - generic [ref=f1e57]:
+        - generic [ref=f1e58] [cursor=pointer]:
+          - generic [ref=f1e60]:
+            - generic [ref=f1e61]: 🅿️
+            - generic [ref=f1e62]: Lesson 2
+          - generic [ref=f1e63]:
+            - generic [ref=f1e64]: Street Parking
+            - generic [ref=f1e65]: In busy Mumbai streets, finding legal parking is a challenge. NPCs routinely double-park and block footpaths.
+            - generic [ref=f1e66]: ○ Not Started
+        - generic [ref=f1e67] [cursor=pointer]:
+          - generic [ref=f1e69]:
+            - generic [ref=f1e70]: 🏥
+            - generic [ref=f1e71]: Lesson 6
+          - generic [ref=f1e72]:
+            - generic [ref=f1e73]: Hospital Zone Parking
+            - generic [ref=f1e74]: You are near a hospital entrance. NPC ambulances need clear access. Do not park within 100 meters of the hospital gate — find a spot further away.
+            - generic [ref=f1e75]: ○ Not Started
+        - generic [ref=f1e76] [cursor=pointer]:
+          - generic [ref=f1e78]:
+            - generic [ref=f1e79]: 🏘️
+            - generic [ref=f1e80]: Lesson 15
+          - generic [ref=f1e81]:
+            - generic [ref=f1e82]: Residential Parking
+            - generic [ref=f1e83]: You are in a residential colony. A resident is blocking your path, pointing at your bumper — you are parked in front of their gate. Move your car to a visitor parking spot.
+            - generic [ref=f1e84]: ○ Not Started
+        - generic [ref=f1e85] [cursor=pointer]:
+          - generic [ref=f1e87]:
+            - generic [ref=f1e88]: 🅿️
+            - generic [ref=f1e89]: Lesson 28
+          - generic [ref=f1e90]:
+            - generic [ref=f1e91]: Parking Rules!
+            - generic [ref=f1e92]: You need to park near a shopping area. A fire hydrant is visible, a no-parking zone is marked, and a legal parking spot is further away. Choose wisely.
+            - generic [ref=f1e93]: ○ Not Started
+      - generic [ref=f1e94]: 🚑 Emergency Priority
+      - generic [ref=f1e95]:
+        - generic [ref=f1e96] [cursor=pointer]:
+          - generic [ref=f1e98]:
+            - generic [ref=f1e99]: 🚑
+            - generic [ref=f1e100]: Lesson 3
+          - generic [ref=f1e101]:
+            - generic [ref=f1e102]: Ambulance on a Busy Road
+            - generic [ref=f1e103]: Emergency vehicles need a clear path. On a busy road, your quick reaction can save a life.
+            - generic [ref=f1e104]: ○ Not Started
+        - generic [ref=f1e105] [cursor=pointer]:
+          - generic [ref=f1e107]:
+            - generic [ref=f1e108]: 🚑
+            - generic [ref=f1e109]: Lesson 8
+          - generic [ref=f1e110]:
+            - generic [ref=f1e111]: Narrow Street Ambulance
+            - generic [ref=f1e112]: An ambulance is stuck behind you on a narrow single-lane street. There is no room to pull over. Find a gap between parked cars or a driveway to squeeze into.
+            - generic [ref=f1e113]: ○ Not Started
+        - generic [ref=f1e114] [cursor=pointer]:
+          - generic [ref=f1e116]:
+            - generic [ref=f1e117]: 🚑
+            - generic [ref=f1e118]: Lesson 12
+          - generic [ref=f1e119]:
+            - generic [ref=f1e120]: Highway Ambulance
+            - generic [ref=f1e121]: You are on a multi-lane highway. An ambulance approaches at high speed from behind. Move to the leftmost lane and maintain speed — do not stop suddenly.
+            - generic [ref=f1e122]: ○ Not Started
+        - generic [ref=f1e123] [cursor=pointer]:
+          - generic [ref=f1e125]:
+            - generic [ref=f1e126]: 🚑
+            - generic [ref=f1e127]: Lesson 17
+          - generic [ref=f1e128]:
+            - generic [ref=f1e129]: Traffic Jam Ambulance
+            - generic [ref=f1e130]: Complete gridlock. An ambulance is trapped in the jam behind you. NPC drivers are not moving. You must create a path by inching forward and pulling as far left as possible.
+            - generic [ref=f1e131]: ○ Not Started
+      - generic [ref=f1e132]: 🌧️ Weather Driving
+      - generic [ref=f1e133]:
+        - generic [ref=f1e134] [cursor=pointer]:
+          - generic [ref=f1e136]:
+            - generic [ref=f1e137]: 🌧️
+            - generic [ref=f1e138]: Lesson 4
+          - generic [ref=f1e139]:
+            - generic [ref=f1e140]: Puddle on the Main Road
+            - generic [ref=f1e141]: After heavy rain, puddles form along footpath edges where pedestrians walk. Your speed determines the splash radius.
+            - generic [ref=f1e142]: ○ Not Started
+        - generic [ref=f1e143] [cursor=pointer]:
+          - generic [ref=f1e145]:
+            - generic [ref=f1e146]: ⛈️
+            - generic [ref=f1e147]: Lesson 9
+          - generic [ref=f1e148]:
+            - generic [ref=f1e149]: Puddle at a Bus Stop
+            - generic [ref=f1e150]: A bus stop is flooded. Commuters are huddled under the shelter, but some are wading through ankle-deep water to reach the road. You must not splash them.
+            - generic [ref=f1e151]: ○ Not Started
+        - generic [ref=f1e152] [cursor=pointer]:
+          - generic [ref=f1e154]:
+            - generic [ref=f1e155]: 🌙
+            - generic [ref=f1e156]: Lesson 13
+          - generic [ref=f1e157]:
+            - generic [ref=f1e158]: Night Rain Puddles
+            - generic [ref=f1e159]: It is raining at night. Puddles are hard to see in the dark. A pedestrian with a broken umbrella is walking on the road edge. You may not see the puddle until it is too late.
+            - generic [ref=f1e160]: ○ Not Started
+        - generic [ref=f1e161] [cursor=pointer]:
+          - generic [ref=f1e163]:
+            - generic [ref=f1e164]: 🎒
+            - generic [ref=f1e165]: Lesson 18
+          - generic [ref=f1e166]:
+            - generic [ref=f1e167]: School Zone Puddles
+            - generic [ref=f1e168]: School children in uniforms are walking through puddles on their way home. They are in groups, chatting, and not paying attention to traffic. Slow down to a crawl.
+            - generic [ref=f1e169]: ○ Not Started
+        - generic [ref=f1e170] [cursor=pointer]:
+          - generic [ref=f1e172]:
+            - generic [ref=f1e173]: 🌧️
+            - generic [ref=f1e174]: Lesson 23
+          - generic [ref=f1e175]:
+            - generic [ref=f1e176]: Heavy Rain Driving
+            - generic [ref=f1e177]: Heavy rain is falling. Visibility is poor, roads are flooded, and pedestrians are running for cover. Slow down and use your headlights.
+            - generic [ref=f1e178]: ○ Not Started
+        - generic [ref=f1e179] [cursor=pointer]:
+          - generic [ref=f1e181]:
+            - generic [ref=f1e182]: ⛈️
+            - generic [ref=f1e183]: Lesson 41
+          - generic [ref=f1e184]:
+            - generic [ref=f1e185]: Night Monsoon Grid!
+            - generic [ref=f1e186]: Drive through heavy monsoon rain at night. Zero visibility, flooded roads, and complex intersections. Use headlights and extreme caution.
+            - generic [ref=f1e187]: ○ Not Started
+        - generic [ref=f1e188] [cursor=pointer]:
+          - generic [ref=f1e190]:
+            - generic [ref=f1e191]: 👻
+            - generic [ref=f1e192]: Lesson 45
+          - generic [ref=f1e193]:
+            - generic [ref=f1e194]: Zero Visibility!
+            - generic [ref=f1e195]: Dense fog at night with rain. You can barely see 10 meters ahead. Use fog lights, crawl at minimum speed, and trust your instincts.
+            - generic [ref=f1e196]: ○ Not Started
+      - generic [ref=f1e197]: 🔇 Silence Zones
+      - generic [ref=f1e198]:
+        - generic [ref=f1e199] [cursor=pointer]:
+          - generic [ref=f1e201]:
+            - generic [ref=f1e202]: 📚
+            - generic [ref=f1e203]: Lesson 11
+          - generic [ref=f1e204]:
+            - generic [ref=f1e205]: Library Zone
+            - generic [ref=f1e206]: You are passing a public library. Students are studying near open windows. An NPC is blocking the road ahead. Resist the urge to honk — wait patiently.
+            - generic [ref=f1e207]: ○ Not Started
+        - generic [ref=f1e208] [cursor=pointer]:
+          - generic [ref=f1e210]:
+            - generic [ref=f1e211]: 🌙
+            - generic [ref=f1e212]: Lesson 16
+          - generic [ref=f1e213]:
+            - generic [ref=f1e214]: Residential Night
+            - generic [ref=f1e215]: It is late at night in a residential colony. Your GPS is leading you through narrow lanes. A sleeping dog is lying in the middle of the road. Do not honk to wake it — slowly go around.
+            - generic [ref=f1e216]: ○ Not Started
+        - generic [ref=f1e217] [cursor=pointer]:
+          - generic [ref=f1e219]:
+            - generic [ref=f1e220]: 🧘
+            - generic [ref=f1e221]: Lesson 20
+          - generic [ref=f1e222]:
+            - generic [ref=f1e223]: Temple & Prayer Zone
+            - generic [ref=f1e224]: You are driving past a temple during evening aarti. Devotees are gathered outside. A cow is sitting in the road. This is the ultimate test of your patience — no honking, no rushing.
+            - generic [ref=f1e225]: ○ Not Started
+        - generic [ref=f1e226] [cursor=pointer]:
+          - generic [ref=f1e228]:
+            - generic [ref=f1e229]: 🏥
+            - generic [ref=f1e230]: Lesson 37
+          - generic [ref=f1e231]:
+            - generic [ref=f1e232]: Hospital Quiet Zone!
+            - generic [ref=f1e233]: You're driving past a hospital. Absolutely no honking. Slow down, watch for ambulances entering/exiting, and leave the zone quietly.
+            - generic [ref=f1e234]: ○ Not Started
+      - generic [ref=f1e235]: 🚦 Signals & Signs
+      - generic [ref=f1e236]:
+        - generic [ref=f1e237] [cursor=pointer]:
+          - generic [ref=f1e239]:
+            - generic [ref=f1e240]: 🚥
+            - generic [ref=f1e241]: Lesson 1
+          - generic [ref=f1e242]:
+            - generic [ref=f1e243]: Red Light Patience
+            - generic [ref=f1e244]: You are stuck at a busy junction. NPC cars honk aggressively behind you. A family of four is crossing the road — wait for them to reach the other side before you move.
+            - generic [ref=f1e245]: ○ Not Started
+        - generic [ref=f1e246] [cursor=pointer]:
+          - generic [ref=f1e248]:
+            - generic [ref=f1e249]: 🚦
+            - generic [ref=f1e250]: Lesson 21
+          - generic [ref=f1e251]:
+            - generic [ref=f1e252]: Signal Discipline
+            - generic [ref=f1e253]: You approach a busy intersection with multiple signals. A delivery truck jumps the red light ahead of you. Stay disciplined — follow the rules even when others don't.
+            - generic [ref=f1e254]: ○ Not Started
+        - generic [ref=f1e255] [cursor=pointer]:
+          - generic [ref=f1e257]:
+            - generic [ref=f1e258]: 🔶
+            - generic [ref=f1e259]: Lesson 25
+          - generic [ref=f1e260]:
+            - generic [ref=f1e261]: Know Your Signs!
+            - generic [ref=f1e262]: "You encounter three types of road signs: blue mandatory signs, red cautionary signs, and green informational signs. Each requires a different response."
+            - generic [ref=f1e263]: ○ Not Started
+        - generic [ref=f1e264] [cursor=pointer]:
+          - generic [ref=f1e266]:
+            - generic [ref=f1e267]: ➡️
+            - generic [ref=f1e268]: Lesson 35
+          - generic [ref=f1e269]:
+            - generic [ref=f1e270]: One-Way Wonder!
+            - generic [ref=f1e271]: You approach a one-way street. Enter from the correct end, follow the flow of traffic, and exit at the intersection. Never go against traffic.
+            - generic [ref=f1e272]: ○ Not Started
+        - generic [ref=f1e273] [cursor=pointer]:
+          - generic [ref=f1e275]:
+            - generic [ref=f1e276]: 🔶
+            - generic [ref=f1e277]: Lesson 36
+          - generic [ref=f1e278]:
+            - generic [ref=f1e279]: Sign Recognition!
+            - generic [ref=f1e280]: A complex intersection presents three sign types simultaneously. Identify mandatory (blue), cautionary (red), and informational (green) signs and respond to each correctly.
+            - generic [ref=f1e281]: ○ Not Started
+      - generic [ref=f1e282]: 😡 Road Discipline
+      - generic [ref=f1e283]:
+        - generic [ref=f1e284] [cursor=pointer]:
+          - generic [ref=f1e286]:
+            - generic [ref=f1e287]: 😡
+            - generic [ref=f1e288]: Lesson 22
+          - generic [ref=f1e289]:
+            - generic [ref=f1e290]: Road Rage Control
+            - generic [ref=f1e291]: A taxi driver cut you off aggressively. You feel angry. But road rage never helps — stay calm, give space, and drive safely.
+            - generic [ref=f1e292]: ○ Not Started
+        - generic [ref=f1e293] [cursor=pointer]:
+          - generic [ref=f1e295]:
+            - generic [ref=f1e296]: 🏘️
+            - generic [ref=f1e297]: Lesson 27
+          - generic [ref=f1e298]:
+            - generic [ref=f1e299]: Narrow Street!
+            - generic [ref=f1e300]: You enter a narrow residential street. An auto-rickshaw is coming from the opposite direction. There's barely room for both — crawl at walking pace and find a gap.
+            - generic [ref=f1e301]: ○ Not Started
+        - generic [ref=f1e302] [cursor=pointer]:
+          - generic [ref=f1e304]:
+            - generic [ref=f1e305]: ⚠️
+            - generic [ref=f1e306]: Lesson 42
+          - generic [ref=f1e307]:
+            - generic [ref=f1e308]: Wrong-Side Danger!
+            - generic [ref=f1e309]: Other vehicles are driving on the wrong side! Navigate carefully, predict their movements, and reach the destination without collision.
+            - generic [ref=f1e310]: ○ Not Started
+        - generic [ref=f1e311] [cursor=pointer]:
+          - generic [ref=f1e313]:
+            - generic [ref=f1e314]: 🛣️
+            - generic [ref=f1e315]: Lesson 43
+          - generic [ref=f1e316]:
+            - generic [ref=f1e317]: Highway Merge Chaos!
+            - generic [ref=f1e318]: Merge onto a busy highway with heavy truck and bus traffic. Match speed, find gaps, and merge smoothly without causing accidents.
+            - generic [ref=f1e319]: ○ Not Started
+        - generic [ref=f1e320] [cursor=pointer]:
+          - generic [ref=f1e322]:
+            - generic [ref=f1e323]: 🛣️
+            - generic [ref=f1e324]: Lesson 51
+          - generic [ref=f1e325]:
+            - generic [ref=f1e326]: Lane Discipline
+            - generic [ref=f1e327]: A multi-lane highway with heavy truck and bus traffic. You must stay in your lane, overtake only from the right side (India drives left), and use indicators before changing lanes. Weaving between lanes is dangerous!
+            - generic [ref=f1e328]: ○ Not Started
+      - generic [ref=f1e329]: 🐄 Animals & Cyclists
+      - generic [ref=f1e330]:
+        - generic [ref=f1e331] [cursor=pointer]:
+          - generic [ref=f1e333]:
+            - generic [ref=f1e334]: 🐄
+            - generic [ref=f1e335]: Lesson 26
+          - generic [ref=f1e336]:
+            - generic [ref=f1e337]: Cows on the Road!
+            - generic [ref=f1e338]: A cow is sitting right in the middle of the road. Cars behind you are honking. But cows are sacred in India — never honk at them, just wait patiently.
+            - generic [ref=f1e339]: ○ Not Started
+        - generic [ref=f1e340] [cursor=pointer]:
+          - generic [ref=f1e342]:
+            - generic [ref=f1e343]: 🚲
+            - generic [ref=f1e344]: Lesson 39
+          - generic [ref=f1e345]:
+            - generic [ref=f1e346]: Cyclist Safety!
+            - generic [ref=f1e347]: A cyclist is riding on the left side of the road. You need to pass safely with at least 1 meter of space. Never overtake near an intersection.
+            - generic [ref=f1e348]: ○ Not Started
+      - generic [ref=f1e349]: 🛺 Vehicle Etiquette
+      - generic [ref=f1e350]:
+        - generic [ref=f1e351] [cursor=pointer]:
+          - generic [ref=f1e353]:
+            - generic [ref=f1e354]: 🛺
+            - generic [ref=f1e355]: Lesson 29
+          - generic [ref=f1e356]:
+            - generic [ref=f1e357]: Auto-Rickshaw Dance!
+            - generic [ref=f1e358]: You're driving behind an auto-rickshaw. It keeps stopping suddenly, swerving to pick up passengers, and making unpredictable moves. Stay alert and maintain safe distance.
+            - generic [ref=f1e359]: ○ Not Started
+        - generic [ref=f1e360] [cursor=pointer]:
+          - generic [ref=f1e362]:
+            - generic [ref=f1e363]: 💳
+            - generic [ref=f1e364]: Lesson 30
+          - generic [ref=f1e365]:
+            - generic [ref=f1e366]: Toll Plaza!
+            - generic [ref=f1e367]: You approach a highway toll plaza. Choose the correct lane (FASTag or cash), slow down, stop at the booth, and pay the toll.
+            - generic [ref=f1e368]: ○ Not Started
+        - generic [ref=f1e369] [cursor=pointer]:
+          - generic [ref=f1e371]:
+            - generic [ref=f1e372]: 🚌
+            - generic [ref=f1e373]: Lesson 33
+          - generic [ref=f1e374]:
+            - generic [ref=f1e375]: Bus Stop Yield!
+            - generic [ref=f1e376]: A bus is stopped at a bus stop picking up passengers. You must wait behind the bus and never overtake near a bus stop — passengers may cross unexpectedly.
+            - generic [ref=f1e377]: ○ Not Started
+      - generic [ref=f1e378]: ⛰️ Driving Challenges
+      - generic [ref=f1e379]:
+        - generic [ref=f1e380] [cursor=pointer]:
+          - generic [ref=f1e382]:
+            - generic [ref=f1e383]: 👁️
+            - generic [ref=f1e384]: Lesson 31
+          - generic [ref=f1e385]:
+            - generic [ref=f1e386]: Blind Corner!
+            - generic [ref=f1e387]: You approach a blind corner where you cannot see oncoming traffic. Honk once to warn others, then crawl around the corner.
+            - generic [ref=f1e388]: ○ Not Started
+        - generic [ref=f1e389] [cursor=pointer]:
+          - generic [ref=f1e391]:
+            - generic [ref=f1e392]: ⛰️
+            - generic [ref=f1e393]: Lesson 32
+          - generic [ref=f1e394]:
+            - generic [ref=f1e395]: Hill Driving!
+            - generic [ref=f1e396]: You're driving up a steep hill with hairpin bends. Use low gear uphill, honk at blind hairpin bends, and engine brake downhill.
+            - generic [ref=f1e397]: ○ Not Started
+        - generic [ref=f1e398] [cursor=pointer]:
+          - generic [ref=f1e400]:
+            - generic [ref=f1e401]: 🚧
+            - generic [ref=f1e402]: Lesson 34
+          - generic [ref=f1e403]:
+            - generic [ref=f1e404]: Construction Zone!
+            - generic [ref=f1e405]: A construction zone blocks part of the road. Follow the detour signs, obey the flagman, and slow down through the zone.
+            - generic [ref=f1e406]: ○ Not Started
+        - generic [ref=f1e407] [cursor=pointer]:
+          - generic [ref=f1e409]:
+            - generic [ref=f1e410]: 🚧
+            - generic [ref=f1e411]: Lesson 44
+          - generic [ref=f1e412]:
+            - generic [ref=f1e413]: Construction Maze!
+            - generic [ref=f1e414]: Road construction blocks your lane. Follow diversion signs through narrow temporary paths while avoiding workers and equipment.
+            - generic [ref=f1e415]: ○ Not Started
+        - generic [ref=f1e416] [cursor=pointer]:
+          - generic [ref=f1e418]:
+            - generic [ref=f1e419]: 🏔️
+            - generic [ref=f1e420]: Lesson 47
+          - generic [ref=f1e421]:
+            - generic [ref=f1e422]: Mountain Pass!
+            - generic [ref=f1e423]: Navigate a treacherous mountain road with hairpin turns, steep gradients, and falling rocks. Brake management and patience are key.
+            - generic [ref=f1e424]: ○ Not Started
+        - generic [ref=f1e425] [cursor=pointer]:
+          - generic [ref=f1e427]:
+            - generic [ref=f1e428]: 🌾
+            - generic [ref=f1e429]: Lesson 48
+          - generic [ref=f1e430]:
+            - generic [ref=f1e431]: Rural Kacha Road!
+            - generic [ref=f1e432]: A narrow unpaved village road with potholes, stray animals, and oncoming tractors. Patience and spatial awareness are everything.
+            - generic [ref=f1e433]: ○ Not Started
+      - generic [ref=f1e434]: 🎪 Special Events
+      - generic [ref=f1e435]:
+        - generic [ref=f1e436] [cursor=pointer]:
+          - generic [ref=f1e438]:
+            - generic [ref=f1e439]: 🎉
+            - generic [ref=f1e440]: Lesson 19
+          - generic [ref=f1e441]:
+            - generic [ref=f1e442]: Festival Crowd
+            - generic [ref=f1e443]: A festival procession has spilled onto the road. There are no traffic signals working — a police volunteer is directing traffic manually. Follow their signals exactly.
+            - generic [ref=f1e444]: ○ Not Started
+        - generic [ref=f1e445] [cursor=pointer]:
+          - generic [ref=f1e447]:
+            - generic [ref=f1e448]: 🎉
+            - generic [ref=f1e449]: Lesson 38
+          - generic [ref=f1e450]:
+            - generic [ref=f1e451]: Festival Traffic!
+            - generic [ref=f1e452]: A festival procession blocks part of the road. Diversion signs are placed. Expect unexpected crowds, music vehicles, and pedestrians everywhere.
+            - generic [ref=f1e453]: ○ Not Started
+        - generic [ref=f1e454] [cursor=pointer]:
+          - generic [ref=f1e456]:
+            - generic [ref=f1e457]: 🪔
+            - generic [ref=f1e458]: Lesson 46
+          - generic [ref=f1e459]:
+            - generic [ref=f1e460]: Festival Night Parade!
+            - generic [ref=f1e461]: Night-time festival procession with lights, music, and crowds spilling onto the road. Navigate through Diwali celebrations safely.
+            - generic [ref=f1e462]: ○ Not Started
+      - generic [ref=f1e463]: 🏆 Grand Tests
+      - generic [ref=f1e464]:
+        - generic [ref=f1e465] [cursor=pointer]:
+          - generic [ref=f1e467]:
+            - generic [ref=f1e468]: 🏆
+            - generic [ref=f1e469]: Lesson 40
+          - generic [ref=f1e470]:
+            - generic [ref=f1e471]: Grand Test!
+            - generic [ref=f1e472]: The ultimate test! Apply everything you've learned from 39 levels. Navigate a complex route with signals, pedestrians, speed limits, lane discipline, and emergency vehicles.
+            - generic [ref=f1e473]: ○ Not Started
+        - generic [ref=f1e474] [cursor=pointer]:
+          - generic [ref=f1e476]:
+            - generic [ref=f1e477]: 🌪️
+            - generic [ref=f1e478]: Lesson 49
+          - generic [ref=f1e479]:
+            - generic [ref=f1e480]: Multi-Modal Chaos!
+            - generic [ref=f1e481]: Every type of vehicle on the road at once — buses, trucks, autos, bikes, cycles, and pedestrians. The ultimate chaos management test.
+            - generic [ref=f1e482]: ○ Not Started
+        - generic [ref=f1e483] [cursor=pointer]:
+          - generic [ref=f1e485]:
+            - generic [ref=f1e486]: 🏆
+            - generic [ref=f1e487]: Lesson 50
+          - generic [ref=f1e488]:
+            - generic [ref=f1e489]: Grand Mastery!
+            - generic [ref=f1e490]: THE ULTIMATE TEST. All weather conditions, all vehicle types, all road types, all traffic situations. Only a master driver can pass this.
+            - generic [ref=f1e491]: ○ Not Started
+      - generic [ref=f1e492]: 📚 General
+      - generic [ref=f1e493]:
+        - generic [ref=f1e494] [cursor=pointer]:
+          - generic [ref=f1e496]:
+            - generic [ref=f1e497]: 🤫
+            - generic [ref=f1e498]: Lesson 7
+          - generic [ref=f1e499]:
+            - generic [ref=f1e500]: Hospital Zone Silence
+            - generic [ref=f1e501]: You are driving past a hospital. A 'Silence Zone' sign is visible. An NPC ahead is braking suddenly. Do not honk — slow down and maintain distance.
+            - generic [ref=f1e502]: ○ Not Started
+        - generic [ref=f1e503] [cursor=pointer]:
+          - generic [ref=f1e505]:
+            - generic [ref=f1e506]: 🛒
+            - generic [ref=f1e507]: Lesson 10
+          - generic [ref=f1e508]:
+            - generic [ref=f1e509]: Market Area Parking
+            - generic [ref=f1e510]: A crowded market area with vendors spilling onto the road. NPC auto-rickshaws are parked haphazardly. Navigate through carefully and find a designated parking zone.
+            - generic [ref=f1e511]: ○ Not Started
+        - generic [ref=f1e512] [cursor=pointer]:
+          - generic [ref=f1e514]:
+            - generic [ref=f1e515]: 🎓
+            - generic [ref=f1e516]: Lesson 52
+          - generic [ref=f1e517]:
+            - generic [ref=f1e518]: Driving Instructor
+            - generic [ref=f1e519]: "A structured driving lesson: change lanes to overtake a slow bus, then signal and merge back. Practice controlled lane changes with proper indicators."
+            - generic [ref=f1e520]: ○ Not Started
+  - generic [ref=f1e524]:
+    - heading "Driver Search" [level=3] [ref=f1e525]
+    - paragraph [ref=f1e526]: Search by @username to view and compare stats.
+    - generic [ref=f1e527]:
+      - generic [ref=f1e528]:
+        - generic [ref=f1e529]: "@"
+        - textbox "username" [ref=f1e530]
+      - button "Search" [ref=f1e531] [cursor=pointer]
+    - button "Close" [ref=f1e536] [cursor=pointer]
+  - generic "Dev options" [ref=f1e537] [cursor=pointer]: v2.4.1
+  - dialog "Authenticate":
+    - generic:
+      - generic:
+        - button "Close login dialog": ×
+        - heading "Authenticate" [level=2]
+        - paragraph: Unlock dashboard storage and cloud sync.
