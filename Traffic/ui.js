@@ -410,7 +410,7 @@ window.ui = Object.assign(window.ui || {}, {
       // After exit animation completes, clean up and show new screen
       const exitDuration = 250; // matches CSS 0.25s
       setTimeout(() => {
-        currentActive.classList.remove('active', exitClass, exitVariant);
+        currentActive.classList.remove('active', 'screen-animate-in', exitClass, exitVariant);
         currentActive.style.opacity = '';
         currentActive.style.transform = '';
         currentActive.style.pointerEvents = '';
@@ -425,12 +425,13 @@ window.ui = Object.assign(window.ui || {}, {
             'fade': 'screen-entering'
           }[direction] || 'screen-entering';
           
-          target.classList.add('active', enterClass);
+          // Add active first (display:flex), then animate-in on next frame to ensure CSS picks it up
+          target.classList.add('active', 'screen-animate-in', enterClass);
           
-          // Clean up entering class after animation completes
-          const enterDuration = 400; // matches CSS 0.4s
+          // Clean up entering classes after animation completes (does NOT re-trigger animation)
+          const enterDuration = 520; // slightly longer than 0.5s animation
           this._transitionTimer = setTimeout(() => {
-            target.classList.remove(enterClass);
+            target.classList.remove('screen-animate-in', enterClass);
             this._transitioning = false;
             // Process pending target if any
             if (this._pendingTarget) {
@@ -454,9 +455,10 @@ window.ui = Object.assign(window.ui || {}, {
           'fade': 'screen-entering'
         }[direction] || 'screen-entering';
         
-        target.classList.add('active', enterClass);
+        // Add active (display:flex) + animate-in for entrance animation
+        target.classList.add('active', 'screen-animate-in', enterClass);
         this._transitionTimer = setTimeout(() => {
-          target.classList.remove(enterClass);
+          target.classList.remove('screen-animate-in', enterClass);
           this._transitioning = false;
           // Process pending target if any
           if (this._pendingTarget) {
@@ -464,7 +466,7 @@ window.ui = Object.assign(window.ui || {}, {
             this._pendingTarget = null;
             this.show(pending.id, pending.opts);
           }
-        }, 400);
+        }, 520);
       } else {
         this._transitioning = false;
       }
@@ -575,7 +577,6 @@ window.ui = Object.assign(window.ui || {}, {
         const badgeColor = done ? '#00f0cc' : started ? '#5ed4f5' : 'rgba(184,155,255,0.5)'
         const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')
         div.innerHTML = `<div class="syl-ck"></div><div class="syl-top"><span class="syl-icon">${lv.icon}</span><span class="syl-num">Lesson ${lv.id}</span></div><div class="syl-info"><div class="syl-lbl">${cleanName}</div><div class="syl-sub">${lv.ds}</div><div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div></div>`
-        div.style.animationDelay = `${idx * 0.08}s`
         div.onclick = () => ui.showBriefing(lv.id)
         frag.appendChild(div)
       }
@@ -594,8 +595,23 @@ window.ui = Object.assign(window.ui || {}, {
       requestAnimationFrame(() => this._buildSylList())
       return
     }
-    const direction = (currentActive?.id === 'ss') ? 'forward' : 'fade'
-    this.show('screen-levels', { direction })
+    // When coming from the start screen, use instant transition to avoid
+    // any flickering from other UI elements (e.g., compare-modal) showing through
+    const fromStart = currentActive?.id === 'ss'
+    const levelsEl = document.getElementById('screen-levels')
+    if (fromStart) {
+      this.show('screen-levels', { instant: true })
+      // Add entrance animation after instant display (no flicker risk)
+      if (levelsEl) {
+        requestAnimationFrame(() => {
+          levelsEl.classList.add('screen-animate-in')
+          setTimeout(() => levelsEl.classList.remove('screen-animate-in'), 520)
+        })
+      }
+    } else {
+      this.show('screen-levels', { direction: 'fade' })
+    }
+    // Build the level list in the next frame so the screen is visible first
     requestAnimationFrame(() => this._buildSylList())
   },
   showNamePrompt() {

@@ -396,11 +396,25 @@
 
       .screen.active {
         display: flex;
+      }
+      /* Animation only fires when entering class is explicitly added - avoids re-trigger on class mutations */
+      .screen.screen-animate-in {
         animation: pageTransitionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
       }
       @keyframes pageTransitionIn {
         from { opacity: 0; transform: translateY(16px); }
         to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Modal overlays: hidden by default, shown with .show */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+      }
+      .modal-overlay.show {
+        display: flex;
       }
 
       h1,
@@ -1139,6 +1153,13 @@
         transform: translateY(20px);
         animation: cardStaggerIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         animation-delay: calc(var(--i, 0) * 0.06s + 0.05s);
+      }
+      
+      @keyframes cardStaggerIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       
       @media (max-width: 768px) {
@@ -3051,6 +3072,10 @@
       }
 
       .screen.active {
+        animation: none;
+      }
+
+      .screen.screen-animate-in {
         animation: screenFadeIn 0.35s ease-out forwards;
       }
 
@@ -3292,20 +3317,9 @@
         .level-preview-name { font-size: 1.3rem; }
       }
 
-      /* Syllabus item staggered entrance */
+      /* Syllabus item staggered entrance (removed to fix invisibility bug) */
       .syl-item {
-        animation: sylSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-      }
-
-      @keyframes sylSlide {
-        0% {
-          opacity: 0;
-          transform: translateY(24px) scale(0.96);
-        }
-        100% {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease;
       }
 
       /* Button hover pulse */
@@ -4749,14 +4763,35 @@
 
     <div id="screen-levels" class="screen">
       <div class="tb">
-        <button class="back-btn" onclick="ui.showStart()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          Back
-        </button>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="back-btn" onclick="ui.showStart()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
+          
+          <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="ui.showStart()">
+            <img src="../Icon.png" alt="Class Of Learners" style="height: 42px; width: 42px; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 14px rgba(0,0,0,0.35); border: 1.5px solid rgba(255,255,255,0.15); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='none';" onerror="this.src='Icon.png'" />
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-family: 'Lora', serif; font-weight: 700; font-size: 1.25rem; color: var(--text, #e8e3d8); letter-spacing: -0.02em; line-height: 1.1; white-space: nowrap;">Traffic Academy</span>
+              <span style="font-size: 0.72rem; color: var(--muted, #8891aa); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;">Class Of Learners</span>
+            </div>
+          </div>
+        </div>
+
         <div style="display: flex; gap: 12px; align-items: center; width: 100%; justify-content: flex-end;">
           <input type="text" id="level-search" placeholder="Search levels..." onkeyup="filterLevels()" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; flex: 1; max-width: 300px; font-family: 'Inter', sans-serif;">
+          
+          <!-- Sun & Moon Horizon Toggle Switch -->
+          <div class="hz-toggle" onclick="hzToggle()" title="Toggle Light/Dark Theme" style="cursor: pointer; margin-right: 8px;">
+            <div class="hz-clouds"></div>
+            <div class="hz-stars"></div>
+            <div class="hz-skyline"></div>
+            <div class="hz-windows"></div>
+            <div class="hz-orb"></div>
+          </div>
+
           <button
             class="btn btn-g dynamic-auth-btn"
             onclick="window.location.href = 'TrafficSetup.html'"
@@ -4798,6 +4833,14 @@
       </div>
 
       <div class="lw" id="lvbody"></div>
+
+      <!-- Bottom-Left Corner Action (Game Settings Pill Button) -->
+      <div style="position: absolute; bottom: 28px; left: 28px; z-index: 100;">
+        <button class="top-btn settings-top-btn" id="levels-game-settings-btn" onclick="openSettingsModal()" style="display: inline-flex; align-items: center; gap: 12px; padding: 12px 28px; height: 50px; background: rgba(0, 240, 204, 0.08); border: 2px solid #00f0cc; border-radius: 50px; color: #00f0cc; font-weight: 700; font-size: 1.05rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 8px 24px rgba(0,240,204,0.2); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,240,204,0.35)'; this.style.background='rgba(0, 240, 204, 0.16)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 24px rgba(0,240,204,0.2)'; this.style.background='rgba(0, 240, 204, 0.08)';">
+          <span style="font-size: 1.3rem;">⚙️</span>
+          <span>Game Settings</span>
+        </button>
+      </div>
     </div>
 
     <div id="screen-briefing" class="screen">
@@ -6261,7 +6304,7 @@
     </script>
 
       <!-- COMPARE MODAL -->
-      <div class="modal-overlay" id="compare-modal" style="z-index: 10000; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);">
+      <div class="modal-overlay" id="compare-modal" style="display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);">
         <div class="modal-box" style="max-width: 600px; width: 90%; padding: 32px; border-radius: 24px; text-align: left; background: var(--card); border: 1px solid var(--border);">
           <h3 style="margin-top: 0; font-size: 1.8rem; font-weight: 800; font-family: var(--sans);">Driver Search</h3>
           <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 24px; line-height: 1.5;">Search by @username to view and compare stats.</p>
