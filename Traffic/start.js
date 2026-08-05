@@ -122,6 +122,71 @@ window.ASSET_MANIFEST = {}
   // Previously unused: no level's assets[] ever requested this pack.
   const petsKit = 'Models/kenney_cube-pets_1.0/Models/GLB format/'
   M.animal_cow = glb(petsKit + 'animal-cow.glb'); M.animal_dog = glb(petsKit + 'animal-dog.glb')
+
+  // Low Poly City (Cartoon City Free + One file assets + Separate assets)
+  const lowPolyCityKit = 'Models/source/'
+  M.lowpoly_city_main = glb(lowPolyCityKit + 'Cartoon_City_Free.glb')
+  M.lowpoly_city_onefile = glb(lowPolyCityKit + 'One_file_assets.glb')
+  // Separate assets
+  const sepKit = lowPolyCityKit + 'Separate_assets_glb/Separate_assets_glb/'
+  M.lowpoly_banner = glb(sepKit + 'Banners.png')
+  M.lowpoly_billboard_2x1_03 = glb(sepKit + 'Billboard_2x1_03.glb')
+  M.lowpoly_billboard_2x1_05 = glb(sepKit + 'Billboard_2x1_05.glb')
+  M.lowpoly_billboard_4x1_03 = glb(sepKit + 'Billboard_4x1_03.glb')
+  M.lowpoly_billboard_4x1_04 = glb(sepKit + 'Billboard_4x1_04.glb')
+  M.lowpoly_bush_06 = glb(sepKit + 'Bush_06.glb')
+  M.lowpoly_bush_07 = glb(sepKit + 'Bush_07.glb')
+  M.lowpoly_bush_10 = glb(sepKit + 'Bush_10.glb')
+  M.lowpoly_bus_stop_02 = glb(sepKit + 'Bus_Stop_02.glb')
+  M.lowpoly_car_06 = glb(sepKit + 'Car_06.glb')
+  M.lowpoly_car_13 = glb(sepKit + 'Car_13.glb')
+  M.lowpoly_car_16 = glb(sepKit + 'Car_16.glb')
+  M.lowpoly_car_19 = glb(sepKit + 'Car_19.glb')
+  M.lowpoly_eco_building_grid = glb(sepKit + 'Eco_Building_Grid.glb')
+  M.lowpoly_eco_building_slope = glb(sepKit + 'Eco_Building_Slope.glb')
+  M.lowpoly_eco_building_terrace = glb(sepKit + 'Eco_Building_Terrace.glb')
+  M.lowpoly_fountain_03 = glb(sepKit + 'Fountain_03.glb')
+  M.lowpoly_futuristic_car_1 = glb(sepKit + 'Futuristic_Car_1.glb')
+  M.lowpoly_graffiti = glb(sepKit + 'Graffiti.png')
+  M.lowpoly_graffiti_03 = glb(sepKit + 'Graffiti_03.glb')
+  M.lowpoly_palm_03 = glb(sepKit + 'Palm_03.glb')
+  M.lowpoly_regular_building_twistedtower_large = glb(sepKit + 'Regular_Building_TwistedTower_Large.glb')
+  M.lowpoly_roads_png = glb(sepKit + 'Roads.png')
+  M.lowpoly_road_001 = glb(sepKit + 'road_001.glb')
+  M.lowpoly_road_003 = glb(sepKit + 'road_003.glb')
+  M.lowpoly_road_009 = glb(sepKit + 'road_009.glb')
+  M.lowpoly_road_013 = glb(sepKit + 'road_013.glb')
+  M.lowpoly_road_019 = glb(sepKit + 'road_019.glb')
+  M.lowpoly_road_020 = glb(sepKit + 'road_020.glb')
+  M.lowpoly_road_022 = glb(sepKit + 'road_022.glb')
+  M.lowpoly_road_signs = glb(sepKit + 'Road_Signs.png')
+  M.lowpoly_scrolling_text = glb(sepKit + 'scrolling text.png')
+  M.lowpoly_set_b_tiles_01 = glb(sepKit + 'Set_B_Tiles_01.glb')
+  M.lowpoly_set_b_tiles_04 = glb(sepKit + 'Set_B_Tiles_04.glb')
+  M.lowpoly_set_b_tiles_05 = glb(sepKit + 'Set_B_Tiles_05.glb')
+  M.lowpoly_set_b_tiles_06 = glb(sepKit + 'Set_B_Tiles_06.glb')
+  M.lowpoly_set_b_tiles_09 = glb(sepKit + 'Set_B_Tiles_09.glb')
+  M.lowpoly_signboard_01 = glb(sepKit + 'Signboard_01.glb')
+  M.lowpoly_spotlight_01 = glb(sepKit + 'Spotlight_01.glb')
+  M.lowpoly_spotlight_02 = glb(sepKit + 'Spotlight_02.glb')
+  M.lowpoly_textures1 = glb(sepKit + 'Textures1.png')
+  M.lowpoly_tiles_2 = glb(sepKit + 'Tiles_2.png')
+  M.lowpoly_tiles_2_normal = glb(sepKit + 'Tiles_2_Normal.png')
+  M.lowpoly_tiles_2_roughness = glb(sepKit + 'Tiles_2_Roughness.png')
+  M.lowpoly_traffic_light_001 = glb(sepKit + 'traffic_light_001.glb')
+  M.lowpoly_traffic_light_002 = glb(sepKit + 'traffic_light_002.glb')
+  M.lowpoly_traffic_light_003 = glb(sepKit + 'traffic_light_003.glb')
+  M.lowpoly_trash_02 = glb(sepKit + 'Trash_02.glb')
+  M.lowpoly_trash_03 = glb(sepKit + 'Trash_03.glb')
+  M.lowpoly_trash_04 = glb(sepKit + 'Trash_04.glb')
+  M.lowpoly_trash_05 = glb(sepKit + 'Trash_05.glb')
+  M.lowpoly_trash_06 = glb(sepKit + 'Trash_06.glb')
+  M.lowpoly_trash_can_04 = glb(sepKit + 'Trash_Can_04.glb')
+  M.lowpoly_trash_can_05 = glb(sepKit + 'Trash_Can_05.glb')
+  M.lowpoly_trash_can_06 = glb(sepKit + 'Trash_Can_06.glb')
+  M.lowpoly_trash_can_07 = glb(sepKit + 'Trash_Can_07.glb')
+  M.lowpoly_trash_can_08 = glb(sepKit + 'Trash_Can_08.glb')
+  M.lowpoly_van = glb(sepKit + 'Van.glb')
 })()
 
 // Logical groups — level configs reference these in their assets[] array
@@ -155,7 +220,8 @@ window.ASSET_GROUPS = {
   trains:    ['train','metro','tk_train-diesel-a','tk_train-electric-bullet-a','tk_train-tram-modern','tk_train-carriage-box'],
   emergency: ['ambulance'],
   construction:['barrier','cone','sign_highway'],
-  animals: ['animal_cow','animal_dog']
+  animals: ['animal_cow','animal_dog'],
+  lowpoly_city: ['lowpoly_city_main','lowpoly_city_onefile','lowpoly_billboard_2x1_03','lowpoly_billboard_2x1_05','lowpoly_billboard_4x1_03','lowpoly_billboard_4x1_04','lowpoly_bush_06','lowpoly_bush_07','lowpoly_bush_10','lowpoly_bus_stop_02','lowpoly_car_06','lowpoly_car_13','lowpoly_car_16','lowpoly_car_19','lowpoly_eco_building_grid','lowpoly_eco_building_slope','lowpoly_eco_building_terrace','lowpoly_fountain_03','lowpoly_futuristic_car_1','lowpoly_graffiti_03','lowpoly_palm_03','lowpoly_regular_building_twistedtower_large','lowpoly_road_001','lowpoly_road_003','lowpoly_road_009','lowpoly_road_013','lowpoly_road_019','lowpoly_road_020','lowpoly_road_022','lowpoly_set_b_tiles_01','lowpoly_set_b_tiles_04','lowpoly_set_b_tiles_05','lowpoly_set_b_tiles_06','lowpoly_set_b_tiles_09','lowpoly_signboard_01','lowpoly_spotlight_01','lowpoly_spotlight_02','lowpoly_traffic_light_001','lowpoly_traffic_light_002','lowpoly_traffic_light_003','lowpoly_trash_02','lowpoly_trash_03','lowpoly_trash_04','lowpoly_trash_05','lowpoly_trash_06','lowpoly_trash_can_04','lowpoly_trash_can_05','lowpoly_trash_can_06','lowpoly_trash_can_07','lowpoly_trash_can_08','lowpoly_van']
 }
 
 // Keys always loaded at startup (fast boot — 21 models instead of 109)

@@ -287,13 +287,14 @@ function _getThemeRoads(themeType) {
   const t = themeType || 'urban_grid';
   const templates = {
     free_roam: {
-      name: 'Free Roam City', sky: 0x87b6d8, fog: 800, ground: 0x4a7c59, amb: 0.85, veh: 'car',
+      name: 'Free Roam City', sky: 0x87b6d8, fog: 1200, ground: 0x4a7c59, amb: 0.6, veh: 'car',
       npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car'],
       timeLimit: 0,
       noTimer: true,
       noScore: true,
       noObjective: true,
       tasks: [],
+      useLowPolyCity: true,
       roads: [
         { type:'v', x:-360, z1:-480, z2:480 }, { type:'v', x:-240, z1:-480, z2:480 },
         { type:'v', x:-120, z1:-480, z2:480 }, { type:'v', x:0,    z1:-480, z2:480 },
@@ -1425,9 +1426,22 @@ class Game {
       }
       _initG() { document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); }); }
 
+      // Touch-capable is not the same as touch-driven: a Windows laptop with a
+      // touchscreen reports maxTouchPoints > 0 while still being a mouse+keyboard
+      // machine, which used to paste both on-screen joysticks over the desktop HUD.
+      // Require a coarse primary pointer with no hover (or a phone/tablet UA).
+      _useTouchControls() {
+        if (this._isMobile) return true;
+        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return false;
+        if (window.matchMedia) {
+          return window.matchMedia('(pointer: coarse)').matches && window.matchMedia('(hover: none)').matches;
+        }
+        return false;
+      }
+
       // ── VIRTUAL JOYSTICK FOR MOBILE ──
       _initVirtualJoystick() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+        if (!this._useTouchControls()) return;
 
         const joystick = document.getElementById('virtual-joystick');
         const knob = document.getElementById('joystick-knob');
@@ -1509,7 +1523,7 @@ class Game {
 
       // ── CAMERA JOYSTICK FOR MOBILE LOOK-AROUND ──
       _initCameraJoystick() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
+        if (!this._useTouchControls()) return;
 
         const camJoy = document.getElementById('camera-joystick');
         const camKnob = document.getElementById('camera-joystick-knob');
@@ -2471,7 +2485,11 @@ class Game {
           if (document.getElementById('hudbar')) SZ.register('hudbar', document.getElementById('hudbar'), 'TL', { order: 1, priority: 'high' });
           if (document.getElementById('hwrap')) SZ.register('hwrap', document.getElementById('hwrap'), 'TL', { order: 2, priority: 'medium' });
           if (document.getElementById('objective-overlay')) SZ.register('objective', document.getElementById('objective-overlay'), 'TR', { order: 0, priority: 'high' });
-          if (this.dom.mmc) SZ.register('minimap', this.dom.mmc, 'TR', { order: 1, priority: 'high' });
+          // #task-tracker used to be positioned by hand at top: calc(3vw + 52px), which
+          // assumed a ~52px objective panel — a wrapped objective is ~130px tall, so the
+          // two overlapped. Let the zone stack them instead.
+          if (document.getElementById('task-tracker')) SZ.register('tasks', document.getElementById('task-tracker'), 'TR', { order: 1, priority: 'medium' });
+          if (this.dom.mmc) SZ.register('minimap', this.dom.mmc, 'TR', { order: 2, priority: 'high' });
           if (this.dom['sig-ind']) SZ.register('signal', this.dom['sig-ind'], 'BL', { order: 0, priority: 'high' });
           if (document.getElementById('spgauge')) SZ.register('speedometer', document.getElementById('spgauge'), 'BR', { order: 0, priority: 'high' });
           if (this.dom.boostgauge) SZ.register('boost', this.dom.boostgauge, 'BR', { order: 1, priority: 'high' });
@@ -3491,14 +3509,14 @@ class Game {
         } else {
             this.scene.fog = new THREE.Fog(sk, fogNear, fogFar);
         }
-        // Enhanced true color lighting with better contrast and shadows
-        this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.1 : 0.2);
+        // Enhanced true color lighting with better contrast and shadows - FIXED EXPOSURE/SATURATION
+        this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.15 : 0.35);
         this.scene.add(this._ambient);
-        this._hemi = new THREE.HemisphereLight(0x87ceeb, 0x8a7560, cfg.isNight ? 0.1 : 0.25);
+        this._hemi = new THREE.HemisphereLight(0x87ceeb, 0x8a7560, cfg.isNight ? 0.15 : 0.4);
         this._hemi.position.set(0, 1000, 0);
         this.scene.add(this._hemi);
 
-        this._sun = new THREE.DirectionalLight(0xfff5e0, cfg.isNight ? 0.4 : 0.7);
+        this._sun = new THREE.DirectionalLight(0xfff5e0, cfg.isNight ? 0.5 : 0.85);
         this._sun.position.set(30, 60, 20);
         this._sun.castShadow = true;
         this._sun.shadow.camera.near = 0.5;
@@ -3516,7 +3534,7 @@ class Game {
         this._sunLastPos = null;
 
         // Moon light (always created, toggled by day/night cycle)
-        this._moon = new THREE.DirectionalLight(0x88aacc, cfg.isNight ? 0.5 : 0);
+        this._moon = new THREE.DirectionalLight(0x88aacc, cfg.isNight ? 0.6 : 0);
         this._moon.position.set(-20, 40, -30);
         this.scene.add(this._moon);
 
@@ -3559,6 +3577,88 @@ class Game {
         const ground = new THREE.Mesh(new THREE.PlaneGeometry(gs, gs), groundMat);
         ground.rotation.x = -Math.PI / 2;
         this.scene.add(ground);
+
+        // Load low-poly city models for free_roam level
+        if (cfg.useLowPolyCity && window.PRELOADED_MODELS) {
+          // Load main city model
+          if (window.PRELOADED_MODELS.lowpoly_city_main) {
+            const cityMain = window.PRELOADED_MODELS.lowpoly_city_main.clone();
+            cityMain.scale.set(1, 1, 1); // GLB already scaled appropriately
+            cityMain.position.set(0, 0, 0);
+            cityMain.traverse(c => {
+              if (c.isMesh) {
+                c.castShadow = true;
+                c.receiveShadow = true;
+                c.frustumCulled = true;
+              }
+            });
+            this.scene.add(cityMain);
+            this.obstacles.push(cityMain);
+          }
+          
+          // Load one-file assets
+          if (window.PRELOADED_MODELS.lowpoly_city_onefile) {
+            const cityOneFile = window.PRELOADED_MODELS.lowpoly_city_onefile.clone();
+            cityOneFile.scale.set(1, 1, 1);
+            cityOneFile.position.set(0, 0, 0);
+            cityOneFile.traverse(c => {
+              if (c.isMesh) {
+                c.castShadow = true;
+                c.receiveShadow = true;
+                c.frustumCulled = true;
+              }
+            });
+            this.scene.add(cityOneFile);
+            this.obstacles.push(cityOneFile);
+          }
+
+          // Add separate city assets as decorative elements
+          const _cityAssets = [
+            'lowpoly_eco_building_grid', 'lowpoly_eco_building_slope', 'lowpoly_eco_building_terrace',
+            'lowpoly_regular_building_twistedtower_large',
+            'lowpoly_car_06', 'lowpoly_car_13', 'lowpoly_car_16', 'lowpoly_car_19',
+            'lowpoly_futuristic_car_1', 'lowpoly_van',
+            'lowpoly_bush_06', 'lowpoly_bush_07', 'lowpoly_bush_10', 'lowpoly_palm_03',
+            'lowpoly_fountain_03',
+            'lowpoly_bus_stop_02',
+            'lowpoly_billboard_2x1_03', 'lowpoly_billboard_2x1_05',
+            'lowpoly_billboard_4x1_03', 'lowpoly_billboard_4x1_04',
+            'lowpoly_signboard_01',
+            'lowpoly_spotlight_01', 'lowpoly_spotlight_02',
+            'lowpoly_traffic_light_001', 'lowpoly_traffic_light_002', 'lowpoly_traffic_light_003',
+            'lowpoly_trash_02', 'lowpoly_trash_03', 'lowpoly_trash_04', 'lowpoly_trash_05', 'lowpoly_trash_06',
+            'lowpoly_trash_can_04', 'lowpoly_trash_can_05', 'lowpoly_trash_can_06', 'lowpoly_trash_can_07', 'lowpoly_trash_can_08',
+            'lowpoly_graffiti_03',
+            'lowpoly_set_b_tiles_01', 'lowpoly_set_b_tiles_04', 'lowpoly_set_b_tiles_05', 'lowpoly_set_b_tiles_06', 'lowpoly_set_b_tiles_09'
+          ];
+          
+          _cityAssets.forEach((assetKey, idx) => {
+            if (window.PRELOADED_MODELS[assetKey]) {
+              const asset = window.PRELOADED_MODELS[assetKey].clone();
+              asset.scale.set(1, 1, 1);
+              // Distribute assets around the city
+              const angle = (idx / _cityAssets.length) * Math.PI * 2;
+              const radius = 100 + (idx % 5) * 50;
+              asset.position.set(
+                Math.cos(angle) * radius,
+                0,
+                Math.sin(angle) * radius
+              );
+              asset.rotation.y = Math.random() * Math.PI * 2;
+              asset.traverse(c => {
+                if (c.isMesh) {
+                  c.castShadow = true;
+                  c.receiveShadow = true;
+                  c.frustumCulled = true;
+                }
+              });
+              this.scene.add(asset);
+              if (assetKey.includes('building') || assetKey.includes('trash') || assetKey.includes('traffic') || assetKey.includes('spotlight') || assetKey.includes('fountain')) {
+                this.obstacles.push(asset);
+              }
+            }
+          });
+        }
 
         if (this.roadGraph) {
             this._buildRoadsFromGraph(RW);
@@ -4292,7 +4392,7 @@ class Game {
           this.trafficManager = new window.TrafficManager(this);
         }
         if (this.roadGraph) {
-          this.trafficManager.spawnInitialTraffic(this.roadGraph, cfg.route, window.isMobile && window.isMobile() ? 8 : 24);
+          this.trafficManager.spawnInitialTraffic(this.roadGraph, cfg.route, window.isMobile && window.isMobile() ? 8 : 24, cfg);
         }
       }
        
@@ -8261,7 +8361,7 @@ class Game {
         }
 
         // ── Tone mapping exposure ──
-        if (this.renderCore.renderer) this.renderCore.renderer.toneMappingExposure = this._dnLerp(0.6, 1.2, sunElev);
+        if (this.renderCore.renderer) this.renderCore.renderer.toneMappingExposure = this._dnLerp(0.5, 0.9, sunElev);
 
         // ── Street lights ──
         const slIntensity = sunElev < 0.3 ? this._dnLerp(0.8, 0, sunElev / 0.3) : 0;

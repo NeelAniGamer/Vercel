@@ -410,8 +410,12 @@ window.ui = Object.assign(window.ui || {}, {
       // After exit animation completes, clean up and show new screen
       const exitDuration = 250; // matches CSS 0.25s
       setTimeout(() => {
+<<<<<<< HEAD
         currentActive.classList.remove('active', exitClass);
         if (exitVariant) currentActive.classList.remove(exitVariant);
+=======
+        currentActive.classList.remove('active', 'screen-animate-in', exitClass, exitVariant);
+>>>>>>> 7544bb541decddef8f2a73cd2d73cc130b22e64f
         currentActive.style.opacity = '';
         currentActive.style.transform = '';
         currentActive.style.pointerEvents = '';
@@ -426,12 +430,13 @@ window.ui = Object.assign(window.ui || {}, {
             'fade': 'screen-entering'
           }[direction] || 'screen-entering';
           
-          target.classList.add('active', enterClass);
+          // Add active first (display:flex), then animate-in on next frame to ensure CSS picks it up
+          target.classList.add('active', 'screen-animate-in', enterClass);
           
-          // Clean up entering class after animation completes
-          const enterDuration = 400; // matches CSS 0.4s
+          // Clean up entering classes after animation completes (does NOT re-trigger animation)
+          const enterDuration = 520; // slightly longer than 0.5s animation
           this._transitionTimer = setTimeout(() => {
-            target.classList.remove(enterClass);
+            target.classList.remove('screen-animate-in', enterClass);
             this._transitioning = false;
             // Process pending target if any
             if (this._pendingTarget) {
@@ -455,9 +460,10 @@ window.ui = Object.assign(window.ui || {}, {
           'fade': 'screen-entering'
         }[direction] || 'screen-entering';
         
-        target.classList.add('active', enterClass);
+        // Add active (display:flex) + animate-in for entrance animation
+        target.classList.add('active', 'screen-animate-in', enterClass);
         this._transitionTimer = setTimeout(() => {
-          target.classList.remove(enterClass);
+          target.classList.remove('screen-animate-in', enterClass);
           this._transitioning = false;
           // Process pending target if any
           if (this._pendingTarget) {
@@ -465,7 +471,7 @@ window.ui = Object.assign(window.ui || {}, {
             this._pendingTarget = null;
             this.show(pending.id, pending.opts);
           }
-        }, 400);
+        }, 520);
       } else {
         this._transitioning = false;
       }
@@ -567,8 +573,8 @@ window.ui = Object.assign(window.ui || {}, {
           frag = document.createDocumentFragment()
           curGrid = grid
         }
-        const done = S.comp[lv.id]
-        const started = S.started && S.started[lv.id]
+        const done = S.comp[lv.id] && (S.comp[lv.id].score > 0 || S.comp[lv.id].finalQuiz || S.comp[lv.id].completed || S.comp[lv.id] === true)
+        const started = !done && ((S.started && S.started[lv.id]) || (S.sylViewed && S.sylViewed[lv.id] && S.sylViewed[lv.id].length > 0))
         const statusClass = done ? ' syl-done' : started ? ' syl-started' : ''
         const div = document.createElement('div')
         div.className = 'syl-item' + statusClass
@@ -576,7 +582,6 @@ window.ui = Object.assign(window.ui || {}, {
         const badgeColor = done ? '#00f0cc' : started ? '#5ed4f5' : 'rgba(184,155,255,0.5)'
         const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')
         div.innerHTML = `<div class="syl-ck"></div><div class="syl-top"><span class="syl-icon">${lv.icon}</span><span class="syl-num">Lesson ${lv.id}</span></div><div class="syl-info"><div class="syl-lbl">${cleanName}</div><div class="syl-sub">${lv.ds}</div><div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div></div>`
-        div.style.animationDelay = `${idx * 0.08}s`
         div.onclick = () => ui.showBriefing(lv.id)
         frag.appendChild(div)
       }
@@ -591,8 +596,27 @@ window.ui = Object.assign(window.ui || {}, {
       return
     }
     const currentActive = document.querySelector('.screen.active:not(.screen-exiting)')
-    const direction = (currentActive?.id === 'ss') ? 'forward' : 'fade'
-    this.show('screen-levels', { direction })
+    if (currentActive && currentActive.id === 'screen-levels') {
+      requestAnimationFrame(() => this._buildSylList())
+      return
+    }
+    // When coming from the start screen, use instant transition to avoid
+    // any flickering from other UI elements (e.g., compare-modal) showing through
+    const fromStart = currentActive?.id === 'ss'
+    const levelsEl = document.getElementById('screen-levels')
+    if (fromStart) {
+      this.show('screen-levels', { instant: true })
+      // Add entrance animation after instant display (no flicker risk)
+      if (levelsEl) {
+        requestAnimationFrame(() => {
+          levelsEl.classList.add('screen-animate-in')
+          setTimeout(() => levelsEl.classList.remove('screen-animate-in'), 520)
+        })
+      }
+    } else {
+      this.show('screen-levels', { direction: 'fade' })
+    }
+    // Build the level list in the next frame so the screen is visible first
     requestAnimationFrame(() => this._buildSylList())
   },
   showNamePrompt() {
@@ -1353,8 +1377,26 @@ window.ui = Object.assign(window.ui || {}, {
       if (!S.sylViewed[lv.id]) S.sylViewed[lv.id] = []
       if (!S.sylViewed[lv.id].includes(id)) {
         S.sylViewed[lv.id].push(id)
-        if (typeof save === 'function') save()
       }
+      
+      if (!S.started) S.started = {}
+      S.started[lv.id] = true
+
+      // Check if all items in syllabus have been viewed, or if user is on practical/exam tab
+      const allViewed = items.every(it => S.sylViewed[lv.id].includes(it.id))
+      if (allViewed || id === 'practical' || id === 'exam') {
+        if (!S.comp) S.comp = {}
+        if (!S.comp[lv.id]) {
+          S.comp[lv.id] = { score: 100, time: Date.now(), finalQuiz: true, modes: { learn: true } }
+        } else {
+          S.comp[lv.id].score = Math.max(S.comp[lv.id].score || 0, 100)
+          S.comp[lv.id].finalQuiz = true
+          if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
+          S.comp[lv.id].modes.learn = true
+        }
+      }
+
+      if (typeof save === 'function') save()
 
       const sylEl = document.getElementById('syl-' + id)
       if (sylEl) sylEl.classList.add('syl-done')

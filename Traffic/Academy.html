@@ -396,11 +396,25 @@
 
       .screen.active {
         display: flex;
+      }
+      /* Animation only fires when entering class is explicitly added - avoids re-trigger on class mutations */
+      .screen.screen-animate-in {
         animation: pageTransitionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
       }
       @keyframes pageTransitionIn {
         from { opacity: 0; transform: translateY(16px); }
         to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Modal overlays: hidden by default, shown with .show */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+      }
+      .modal-overlay.show {
+        display: flex;
       }
 
       h1,
@@ -1139,6 +1153,13 @@
         transform: translateY(20px);
         animation: cardStaggerIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         animation-delay: calc(var(--i, 0) * 0.06s + 0.05s);
+      }
+      
+      @keyframes cardStaggerIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       
       @media (max-width: 768px) {
@@ -3051,6 +3072,10 @@
       }
 
       .screen.active {
+        animation: none;
+      }
+
+      .screen.screen-animate-in {
         animation: screenFadeIn 0.35s ease-out forwards;
       }
 
@@ -3292,20 +3317,9 @@
         .level-preview-name { font-size: 1.3rem; }
       }
 
-      /* Syllabus item staggered entrance */
+      /* Syllabus item staggered entrance (removed to fix invisibility bug) */
       .syl-item {
-        animation: sylSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-      }
-
-      @keyframes sylSlide {
-        0% {
-          opacity: 0;
-          transform: translateY(24px) scale(0.96);
-        }
-        100% {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease;
       }
 
       /* Button hover pulse */
@@ -4650,156 +4664,44 @@
     <!-- SCREENS -->
 
     <div id="ss" class="screen active">
-      <div id="top-bar-container" style="position: absolute; top: 20px; left: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; align-items: center; justify-content: space-between;">
-        <button class="mobile-hamburger-btn" id="hamburger-btn" aria-label="Open menu" aria-expanded="false" aria-controls="hamburger-dropdown" onclick="toggleHamburger()" style="display:none; align-items:center; justify-content:center; width:44px; height:44px; min-height:44px; min-width:44px; border:none; background:var(--card); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:1.3rem; cursor:pointer; transition:background 0.15s, transform 0.1s; flex-shrink:0;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <div class="mobile-hamburger-dropdown" id="hamburger-dropdown" role="menu" aria-label="Menu">
-          <button role="menuitem" onclick="hzToggle(); toggleHamburger();">
-            <span aria-hidden="true">🌓</span> Toggle Theme
-          </button>
-          <button role="menuitem" onclick="openCompareModal(); toggleHamburger();">
-            <span aria-hidden="true">👥</span> Compare Players
-          </button>
-          <button role="menuitem" id="hamburger-signin" onclick="window.location.href='TrafficSetup.html';">
-            <span aria-hidden="true">🔑</span> Sign In
-          </button>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.location.href='Academy.html'">
-          <img src="../Icon.png" alt="Class Of Learners" style="height:36px; width:36px; border-radius:10px; object-fit:contain; box-shadow:0 2px 8px rgba(0,0,0,0.2);" onerror="this.src='Icon.png'" />
-          <span style="font-family:'Lora',serif; font-weight:700; font-size:1.2rem; color:var(--text); letter-spacing:-0.02em;">Traffic Academy</span>
-        </div>
-        
-        <div style="display: flex; gap: 12px; align-items: center; flex: 1; max-width: 400px; margin: 0 20px;">
-          <input type="text" id="global-level-search" placeholder="Search levels..." onkeydown="if(event.key === 'Enter'){ const q = this.value; ui.showLevels(); let retries = 0; const tryFilter = () => { const ls = document.getElementById('level-search'); if (ls) { ls.value = q; ls.focus(); filterLevels(); } else if (retries++ < 10) requestAnimationFrame(tryFilter); }; setTimeout(tryFilter, 200); }" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; width: 100%; font-family: 'Inter', sans-serif;">
-        </div>
-        
-        <div style="display:flex; gap:10px; align-items:center;">
-          <div class="hz-toggle" onclick="hzToggle()" title="Toggle light/dark mode">
-            <div class="hz-clouds"></div>
-            <div class="hz-stars"></div>
-            <div class="hz-skyline"></div>
-            <div class="hz-windows"></div>
-            <div class="hz-orb"></div>
-          </div>
-
-        <button
-          class=""
-          id="academy-compare-btn"
-          onclick="openCompareModal()"
-          style="
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 12px 24px;
-            min-height: 48px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            font-size: 0.95rem;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-          "
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          Compare Drivers
-        </button>
-
-        <button
-          class=""
-          id="academy-sign-in-btn"
-          onclick="window.location.href = 'TrafficSetup.html'"
-          style="
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 12px 24px;
-            min-height: 48px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            font-size: 0.95rem;
-            transition: 0.3s;
-          "
-        >
-          Sign In
-        </button>
-
-        <!-- Hide sign-in button when user is already signed in -->
-        <script>
-        (function() {
-          function checkAuthState() {
-            var signInBtn = document.getElementById('academy-sign-in-btn');
-            if (!signInBtn) return;
-            if (window.colUser || localStorage.getItem('trafficSetupComplete')) {
-              signInBtn.style.display = 'none';
-            } else {
-              signInBtn.style.display = '';
-            }
-          }
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-              checkAuthState();
-              window.addEventListener('col-auth-changed', checkAuthState);
-            });
-          } else {
-            checkAuthState();
-            window.addEventListener('col-auth-changed', checkAuthState);
-          }
-          setTimeout(checkAuthState, 1000);
-          setTimeout(checkAuthState, 3000);
-        })();
-        </script>
-
-        <div
-          class="nav-user-profile"
-          id="trafficUserProfile"
-          data-preserve-click="true"
-          onclick="window.location.href = 'TrafficDashboard.html'"
-          style="
-            display: none;
-            align-items: center;
-            gap: 8px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 8px 16px 8px 8px;
-            min-height: 48px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: 0.3s;
-          "
-        >
-          <img class="nav-user-avatar" id="trafficUserPfp" src="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; display: none" />
-          <div
-            class="nav-user-avatar"
-            id="trafficUserInitials"
-            style="
-              width: 32px;
-              height: 32px;
-              border-radius: 50%;
-              background: var(--signal);
-              color: white;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              font-weight: bold;
-              overflow: hidden;
-            "
-          >
-            ?
-          </div>
-          <span class="nun" id="trafficUserName" style="font-weight: 600; font-size: 0.9rem; margin-right: 8px; max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
-            >Profile</span
-          >
-        </div>
-      </div>
-      </div>
       <div id="rl"></div>
+
+      <!-- Top-Left Branding Logo & Title (Class Of Learners - Traffic Academy) -->
+      <div style="position: absolute; top: 24px; left: 28px; z-index: 100; display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.location.href='Academy.html'">
+        <img src="../Icon.png" alt="Class Of Learners" style="height: 42px; width: 42px; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 14px rgba(0,0,0,0.35); border: 1.5px solid rgba(255,255,255,0.15); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='none';" onerror="this.src='Icon.png'" />
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-family: 'Lora', serif; font-weight: 700; font-size: 1.25rem; color: var(--text, #e8e3d8); letter-spacing: -0.02em; line-height: 1.1;">Traffic Academy</span>
+          <span style="font-size: 0.72rem; color: var(--muted, #8891aa); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;">Class Of Learners</span>
+        </div>
+      </div>
+
+      <!-- Top-Right Corner Actions (Sign In & Sun/Moon Toggle) -->
+      <div style="position: absolute; top: 24px; right: 28px; z-index: 100; display: flex; align-items: center; gap: 14px;">
+        <!-- Sun & Moon Horizon Toggle Switch -->
+        <div class="hz-toggle" onclick="hzToggle()" title="Toggle Light/Dark Theme" style="cursor: pointer;">
+          <div class="hz-clouds"></div>
+          <div class="hz-stars"></div>
+          <div class="hz-skyline"></div>
+          <div class="hz-windows"></div>
+          <div class="hz-orb"></div>
+        </div>
+
+        <!-- Sign In / Account Profile Button -->
+        <button class="top-btn account-top-btn" id="top-profile-btn" onclick="handleAccountClick()" style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 22px; height: 46px; background: linear-gradient(135deg, rgba(242,184,75,0.22), rgba(251,191,36,0.15)); border: 1.5px solid rgba(242,184,75,0.55); border-radius: 14px; color: #f2b84b; font-weight: 700; font-size: 0.95rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 6px 20px rgba(0,0,0,0.35); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 28px rgba(242,184,75,0.35)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.35)';">
+          <span style="font-size: 1.15rem;">👤</span>
+          <span id="top-profile-label">Sign In</span>
+        </button>
+      </div>
+
+      <!-- Bottom-Left Corner Action (Game Settings Pill Button) -->
+      <div style="position: absolute; bottom: 28px; left: 28px; z-index: 100;">
+        <!-- Big Game Settings Pill Button (Matching user screenshot) -->
+        <button class="top-btn settings-top-btn" id="top-game-settings-btn" onclick="openSettingsModal()" style="display: inline-flex; align-items: center; gap: 12px; padding: 12px 28px; height: 50px; background: rgba(0, 240, 204, 0.08); border: 2px solid #00f0cc; border-radius: 50px; color: #00f0cc; font-weight: 700; font-size: 1.05rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 8px 24px rgba(0,240,204,0.2); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,240,204,0.35)'; this.style.background='rgba(0, 240, 204, 0.16)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 24px rgba(0,240,204,0.2)'; this.style.background='rgba(0, 240, 204, 0.08)';">
+          <span style="font-size: 1.3rem;">⚙️</span>
+          <span>Game Settings</span>
+        </button>
+      </div>
+
       <div class="sc">
         <div class="brand-header" style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 40px; width: 100%; align-self: center">
           <div style="display: flex; gap: 32px; align-items: center; justify-content: center">
@@ -4834,13 +4736,7 @@
           </div>
           <div class="pls" style="justify-content: center; margin-top: 40px; flex-wrap: wrap; gap: 12px;">
             <button class="btn btn-p pulse-btn" onclick="showOnboardingFromStart()" style="font-size: 1.25rem; padding: 16px 48px; min-width: 200px;" id="enter-academy-btn">Get Started</button>
-            <button class="btn btn-g" style="border-color: var(--teal); color: var(--teal); font-size: 1rem; padding: 12px 24px; min-width: 180px;" onclick="window.openCustomize && window.openCustomize()">
-              🎨 Customize Character
-            </button>
-            <button class="btn btn-g" style="border-color: var(--ion); color: var(--ion); font-size: 1.25rem; padding: 16px 48px; min-width: 200px;" onclick="window.location.href = 'Driving.html?lv=custom&mode=car'">
-              🏙️ Free Roam
-            </button>
-            <button class="btn btn-g mobile-dl" style="border-color: var(--signal); color: var(--signal); font-size: 1rem; padding: 12px 24px" onclick="window.location.href = '../COL.apk'">
+            <button class="btn btn-g" id="download-app-btn" style="display: none; border-color: var(--signal); color: var(--signal); font-size: 1rem; padding: 12px 24px" onclick="window.location.href = '../COL.apk'">
               📱 Download App
             </button>
           </div>
@@ -4867,14 +4763,35 @@
 
     <div id="screen-levels" class="screen">
       <div class="tb">
-        <button class="back-btn" onclick="ui.showStart()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          Back
-        </button>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <button class="back-btn" onclick="ui.showStart()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
+          
+          <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="ui.showStart()">
+            <img src="../Icon.png" alt="Class Of Learners" style="height: 42px; width: 42px; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 14px rgba(0,0,0,0.35); border: 1.5px solid rgba(255,255,255,0.15); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='none';" onerror="this.src='Icon.png'" />
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-family: 'Lora', serif; font-weight: 700; font-size: 1.25rem; color: var(--text, #e8e3d8); letter-spacing: -0.02em; line-height: 1.1; white-space: nowrap;">Traffic Academy</span>
+              <span style="font-size: 0.72rem; color: var(--muted, #8891aa); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;">Class Of Learners</span>
+            </div>
+          </div>
+        </div>
+
         <div style="display: flex; gap: 12px; align-items: center; width: 100%; justify-content: flex-end;">
           <input type="text" id="level-search" placeholder="Search levels..." onkeyup="filterLevels()" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; flex: 1; max-width: 300px; font-family: 'Inter', sans-serif;">
+          
+          <!-- Sun & Moon Horizon Toggle Switch -->
+          <div class="hz-toggle" onclick="hzToggle()" title="Toggle Light/Dark Theme" style="cursor: pointer; margin-right: 8px;">
+            <div class="hz-clouds"></div>
+            <div class="hz-stars"></div>
+            <div class="hz-skyline"></div>
+            <div class="hz-windows"></div>
+            <div class="hz-orb"></div>
+          </div>
+
           <button
             class="btn btn-g dynamic-auth-btn"
             onclick="window.location.href = 'TrafficSetup.html'"
@@ -4916,6 +4833,14 @@
       </div>
 
       <div class="lw" id="lvbody"></div>
+
+      <!-- Bottom-Left Corner Action (Game Settings Pill Button) -->
+      <div style="position: absolute; bottom: 28px; left: 28px; z-index: 100;">
+        <button class="top-btn settings-top-btn" id="levels-game-settings-btn" onclick="openSettingsModal()" style="display: inline-flex; align-items: center; gap: 12px; padding: 12px 28px; height: 50px; background: rgba(0, 240, 204, 0.08); border: 2px solid #00f0cc; border-radius: 50px; color: #00f0cc; font-weight: 700; font-size: 1.05rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 8px 24px rgba(0,240,204,0.2); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,240,204,0.35)'; this.style.background='rgba(0, 240, 204, 0.16)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 24px rgba(0,240,204,0.2)'; this.style.background='rgba(0, 240, 204, 0.08)';">
+          <span style="font-size: 1.3rem;">⚙️</span>
+          <span>Game Settings</span>
+        </button>
+      </div>
     </div>
 
     <div id="screen-briefing" class="screen">
@@ -5527,10 +5452,8 @@
           
           const msg = userName ? `Welcome back, ${userName}! Loading your progress...` : 'Welcome back! Loading your progress...';
           if (typeof toast !== 'undefined') toast(msg, '#34d399');
-          setTimeout(function() {
-            if (typeof ui !== 'undefined' && ui.showLevels) ui.showLevels();
-            else window.location.href = 'Academy.html?screen=levels';
-          }, 300);
+          if (typeof ui !== 'undefined' && ui.showLevels) ui.showLevels();
+          else window.location.href = 'Academy.html?screen=levels';
           return;
         }
 
@@ -6051,7 +5974,8 @@
           let currentIdx = 0
           for (let i = 0; i < nodes.length; i++) {
             const lid = nodes[i].id
-            if (completed[lid] && completed[lid].score > 0) currentIdx = i + 1
+            const c = completed[lid]
+            if (c && (c.score > 0 || c.finalQuiz || c.completed || c === true)) currentIdx = i + 1
           }
 
           // Completed portion of the path (bright green)
@@ -6074,8 +5998,9 @@
           // ── Draw Nodes with Staggered Entrance ──
           nodes.forEach((n, i) => {
             const lvlId = n.id
-            const isDone = completed[lvlId] && completed[lvlId].score > 0
-            const isCurrent = !isDone && (lvlId === 1 || (completed[lvlId - 1] && completed[lvlId - 1].score > 0))
+            const isDone = !!(completed[lvlId] && (completed[lvlId].score > 0 || completed[lvlId].finalQuiz || completed[lvlId].completed || completed[lvlId] === true))
+            const prevDone = completed[lvlId - 1] && (completed[lvlId - 1].score > 0 || completed[lvlId - 1].finalQuiz || completed[lvlId - 1].completed || completed[lvlId - 1] === true)
+            const isCurrent = !isDone && (lvlId === 1 || prevDone)
             const isLocked = !isDone && !isCurrent
             const r = isCurrent ? 28 : isDone ? 24 : 21
 
@@ -6379,7 +6304,7 @@
     </script>
 
       <!-- COMPARE MODAL -->
-      <div class="modal-overlay" id="compare-modal" style="z-index: 10000; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);">
+      <div class="modal-overlay" id="compare-modal" style="display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);">
         <div class="modal-box" style="max-width: 600px; width: 90%; padding: 32px; border-radius: 24px; text-align: left; background: var(--card); border: 1px solid var(--border);">
           <h3 style="margin-top: 0; font-size: 1.8rem; font-weight: 800; font-family: var(--sans);">Driver Search</h3>
           <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 24px; line-height: 1.5;">Search by @username to view and compare stats.</p>
@@ -6653,6 +6578,138 @@
       </div>
     </div>
   </div>
+
+  <!-- ═══ GAME SETTINGS MODAL ═══ -->
+  <div id="game-settings-modal" style="display:none; position:fixed; inset:0; z-index:10002; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--card,#1e293b); border:1px solid var(--border,rgba(255,255,255,0.08)); border-radius:20px; max-width:460px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.5);">
+      <div style="padding:24px 24px 0; display:flex; align-items:center; justify-content:space-between;">
+        <h2 style="font-family:'Lora',serif; font-size:1.4rem; color:var(--text); margin:0;">⚙️ Game Settings</h2>
+        <button onclick="document.getElementById('game-settings-modal').style.display='none'" style="width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--hover); color:var(--text); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+      </div>
+      <div style="padding:20px 24px 24px;">
+        
+        <!-- Graphics Quality Section -->
+        <div style="margin-bottom:20px; background:rgba(0,0,0,0.2); padding:16px; border-radius:14px; border:1px solid var(--border);">
+          <div style="font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:4px;">🖥️ Graphics Quality</div>
+          <div style="font-size:0.75rem; color:var(--muted); margin-bottom:12px;">Saved setting will be remembered automatically.</div>
+          <div id="settings-quality-btns" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
+            <button class="menu-qbtn" data-q="LOW" onclick="setMenuQuality('LOW')" style="padding:10px 4px; border:1px solid var(--border); border-radius:10px; background:var(--panel); color:var(--text); font-weight:600; cursor:pointer; font-size:0.8rem; transition:0.2s;">Low</button>
+            <button class="menu-qbtn" data-q="MED" onclick="setMenuQuality('MED')" style="padding:10px 4px; border:1px solid var(--border); border-radius:10px; background:var(--panel); color:var(--text); font-weight:600; cursor:pointer; font-size:0.8rem; transition:0.2s;">Med</button>
+            <button class="menu-qbtn" data-q="HIGH" onclick="setMenuQuality('HIGH')" style="padding:10px 4px; border:1px solid var(--border); border-radius:10px; background:var(--panel); color:var(--text); font-weight:600; cursor:pointer; font-size:0.8rem; transition:0.2s;">High</button>
+            <button class="menu-qbtn" data-q="ULTRA" onclick="setMenuQuality('ULTRA')" style="padding:10px 4px; border:1px solid var(--border); border-radius:10px; background:var(--panel); color:var(--text); font-weight:600; cursor:pointer; font-size:0.8rem; transition:0.2s;">Ultra</button>
+          </div>
+        </div>
+
+        <!-- Customization & Display Section -->
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+          <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left;" onclick="document.getElementById('game-settings-modal').style.display='none'; if(window.openCustomize) window.openCustomize();">
+            🎨 Customize Character
+          </button>
+          <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left;" onclick="hzToggle();">
+            🌓 Toggle Theme (Light / Dark)
+          </button>
+        </div>
+
+        <!-- Driver Comparison Section -->
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left;" onclick="document.getElementById('game-settings-modal').style.display='none'; openCompareModal();">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Compare Drivers
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+  window.openSettingsModal = function openSettingsModal() {
+    const modal = document.getElementById('game-settings-modal');
+    if (modal) {
+      modal.style.display = 'flex';
+      const currentQ = localStorage.getItem('traffic_quality') || 'HIGH';
+      updateQualityBtnsUI(currentQ);
+    }
+  };
+
+  function updateTopProfileBtn() {
+    const label = document.getElementById('top-profile-label');
+    if (!label) return;
+    const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
+    let userName = '';
+    if (localStorage.getItem('traffic_local_user')) {
+      try { userName = JSON.parse(localStorage.getItem('traffic_local_user')).name; } catch(e){}
+    }
+    if (!userName && window.colUser) {
+      const uObj = window.colUser.user || window.colUser;
+      const meta = uObj.user_metadata || {};
+      userName = meta.full_name || meta.name || '';
+    }
+    if (isLoggedIn && userName) {
+      label.textContent = userName;
+    } else if (isLoggedIn) {
+      label.textContent = 'Account Profile';
+    } else {
+      label.textContent = 'Sign In';
+    }
+  }
+
+  function handleAccountClick() {
+    const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
+    if (isLoggedIn) {
+      if (typeof ui !== 'undefined' && ui.showProfile) ui.showProfile();
+      else window.location.href = 'TrafficSetup.html';
+    } else {
+      window.location.href = 'TrafficSetup.html';
+    }
+  }
+
+  window.addEventListener('col-auth-changed', updateTopProfileBtn);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateTopProfileBtn);
+  } else {
+    updateTopProfileBtn();
+  }
+
+  function setMenuQuality(preset) {
+    localStorage.setItem('traffic_quality', preset);
+    if (window.game && window.game.renderCore) {
+      window.game.renderCore.setQuality(preset);
+    }
+    updateQualityBtnsUI(preset);
+  }
+
+  function updateQualityBtnsUI(preset) {
+    document.querySelectorAll('.menu-qbtn').forEach(btn => {
+      if (btn.dataset.q === preset) {
+        btn.style.background = 'var(--signal, #5ed4f5)';
+        btn.style.color = '#000';
+        btn.style.borderColor = 'var(--signal, #5ed4f5)';
+      } else {
+        btn.style.background = 'var(--panel, #111827)';
+        btn.style.color = 'var(--text, #e8e3d8)';
+        btn.style.borderColor = 'var(--border, rgba(255,255,255,0.08))';
+      }
+    });
+  }
+
+  // Detect Phone Screen to show/hide Download App button
+  (function() {
+    function checkPhoneScreen() {
+      const btn = document.getElementById('download-app-btn');
+      if (!btn) return;
+      const isPhone = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                      (window.innerWidth <= 768 && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
+      btn.style.display = isPhone ? 'inline-flex' : 'none';
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkPhoneScreen);
+    } else {
+      checkPhoneScreen();
+    }
+    window.addEventListener('resize', checkPhoneScreen);
+  })();
+  </script>
 
   <script src="welcome-back.js"></script>
   </body>

@@ -103,9 +103,17 @@ class SafeZoneGrid {
         flex-wrap: nowrap;
         align-items: flex-start;
         justify-content: flex-start;
+        /* Keep zone content off the physical screen edge — without this every
+           registered panel sits flush against the corner and reads as clipped. */
+        padding: var(--sz-inset, 14px);
+        box-sizing: border-box;
+        max-width: 100vw;
         transition: transform 0.2s ease, opacity 0.2s ease;
         will-change: transform, opacity;
       }
+      /* Right/bottom zones align their stack toward their own edge */
+      .safe-zone[data-zone="TR"], .safe-zone[data-zone="BR"], .safe-zone[data-zone="MR"] { align-items: flex-end; }
+      .safe-zone[data-zone="BL"], .safe-zone[data-zone="BR"] { justify-content: flex-end; }
       
       /* Positioning via custom properties */
       .safe-zone[data-zone="TL"] { top: var(--safe-top, 0); left: var(--safe-left, 0); }
@@ -155,15 +163,15 @@ class SafeZoneGrid {
       /* Breakpoint-specific adjustments */
       @media (max-width: 767px) {
         :root { --sz-base-scale: 0.8; }
-        .safe-zone { --sz-gap: 6px; }
+        .safe-zone { --sz-gap: 6px; --sz-inset: 8px; }
       }
       @media (min-width: 768px) and (max-width: 1023px) {
         :root { --sz-base-scale: 0.9; }
-        .safe-zone { --sz-gap: 8px; }
+        .safe-zone { --sz-gap: 8px; --sz-inset: 12px; }
       }
       @media (min-width: 1024px) {
         :root { --sz-base-scale: 1.0; }
-        .safe-zone { --sz-gap: 10px; }
+        .safe-zone { --sz-gap: 10px; --sz-inset: 16px; }
       }
       
       /* Reduced motion */

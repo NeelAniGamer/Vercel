@@ -3630,7 +3630,9 @@
     #kid-level-name {
       display: none;
       position: fixed;
-      top: 80px;
+      /* Clears #kid-hearts at its tallest (child tier: 3.2rem + padding ≈ 81px from
+         top:20px). The old top:80px overlapped the hearts row on every tier. */
+      top: 108px;
       left: 50%;
       transform: translateX(-50%);
       z-index: var(--z-hud);
@@ -3650,7 +3652,7 @@
     #kid-task-bar {
       display: none;
       position: fixed;
-      top: 120px;
+      top: 152px; /* stacked under #kid-level-name (108px + ~36px + gap) */
       left: 50%;
       transform: translateX(-50%);
       z-index: var(--z-hud);
@@ -6177,10 +6179,10 @@
   <script src="pools.js"></script>
   <script src="road-graph.js?v=2"></script>
   <script src="render_core.js?v=2"></script>
-  <script src="safezone-ui.js"></script>
+  <script src="safezone-ui.js?v=2"></script>
   <script src="gameplay-recorder.js"></script>
   <script src="scenario2d.js"></script>
-  <script src="game_core.js?v=14"></script>
+  <script src="game_core.js?v=15"></script>
   <script src="npc-ai.js"></script>
   <script src="traffic-manager.js?v=7"></script>
   <script src="rule-breaker-profiles.js"></script>
@@ -6269,6 +6271,12 @@
         '#phone-gps',
         '#phone-gps-btn',
         '#mmc',          // minimap canvas
+        // The kid task card already shows the objective and progress — leaving the
+        // adult panels up put two HUDs on screen at once, overlapping each other.
+        '#objective-overlay',
+        '#task-tracker',
+        '#compass-strip', // heading + clock strip, collided with the hearts row
+        '#dn-clock',
         '#challan-stack',
         '#challenge-overlay',
         '#cov',

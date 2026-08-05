@@ -1,0 +1,17 @@
+[    1267ms] [LOG] [Scenario2D] Engine loaded — 35 theme scenarios, parallax, particles, typewriter text, view bobbing @ http://localhost:8899/Traffic/scenario2d.js:1880
+[    1343ms] [LOG] [Kid Mode] Initialized — simplified UI for children @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6859
+[    1386ms] [LOG] SafeZoneGrid: Initialized @ http://localhost:8899/Traffic/safezone-ui.js:68
+[    2209ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[    2210ms] [LOG] ThreePools: Initialized all pools @ http://localhost:8899/Traffic/pools.js:166
+[    2397ms] [LOG] RenderCore: Auto-detecting hardware capabilities... @ http://localhost:8899/Traffic/render_core.js?v=2:155
+[    2412ms] [LOG] RenderCore: Detected GPU: ANGLE (AMD, AMD Radeon (TM) Graphics (0x000015E7) Direct3D11 vs_5_0 ps_5_0, D3D11) @ http://localhost:8899/Traffic/render_core.js?v=2:163
+[    2413ms] [LOG] RenderCore: CPU Cores: 12 @ http://localhost:8899/Traffic/render_core.js?v=2:178
+[    2413ms] [LOG] RenderCore: Device Memory: 16GB @ http://localhost:8899/Traffic/render_core.js?v=2:185
+[    2414ms] [LOG] RenderCore: Burn-in test: 0.03ms/frame @ http://localhost:8899/Traffic/render_core.js?v=2:192
+[    2414ms] [LOG] RenderCore: Auto-detected quality: ULTRA (score: 5) @ http://localhost:8899/Traffic/render_core.js?v=2:207
+[    2414ms] [LOG] RenderCore: Applying quality settings - Ultra Cinematic @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[    2415ms] [LOG] RenderCore: Quality set to ULTRA @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[    2681ms] [LOG] [Kid Mode] Game hooks installed @ http://localhost:8899/Traffic/Driving.html?lv=1&mode=car:6855
+[    3852ms] [LOG] RenderCore: Applying quality settings - High Quality @ http://localhost:8899/Traffic/render_core.js?v=2:276
+[    3852ms] [LOG] RenderCore: Quality set to HIGH @ http://localhost:8899/Traffic/render_core.js?v=2:139
+[    3852ms] [LOG] RenderCore: Auto-downgraded to HIGH (frame budget exceeded) @ http://localhost:8899/Traffic/render_core.js?v=2:382

@@ -154,9 +154,13 @@ class TrafficManager {
     });
   }
 
-  spawnInitialTraffic(roadGraph, route, count = BASE_NPC_COUNT) {
+  spawnInitialTraffic(roadGraph, route, count = BASE_NPC_COUNT, levelConfig = {}) {
     this.roadGraph = roadGraph;
     this.mainRoute = this._resolveRouteNodes(route);
+    this.levelConfig = levelConfig;
+    this.levelNpcTypes = levelConfig.npcTypes || [];
+    this.levelNpcs = levelConfig.npcs || [];
+    this.levelNpcIndex = 0;
     this._spawnBatch(count);
   }
 
@@ -182,16 +186,31 @@ class TrafficManager {
   }
 
   _spawnSingleVehicle() {
-    const type = this._pickVehicleType();
-    const isRuleBreaker = Math.random() < RULE_BREAKER_PROBABILITY && this.ruleBreakerCount / Math.max(1, this.totalSpawned) < RULE_BREAKER_PROBABILITY;
+    // Use level-specific NPC config if available
+    let type, isRuleBreaker, profileKey, color, route;
 
-    // NPCAI keys off a profile *name*, not the profile object — passing the object
-    // silently demoted every NPC (rule-breakers included) to the `normal` profile.
-    const profileKey = isRuleBreaker
-      ? this._pickProfileKey('reckless_bike', 'rulebreaker', 'aggressive')
-      : this._pickProfileKey('normal', 'cautious', 'delivery', 'elderly');
+    if (this.levelNpcs.length > 0 && this.levelNpcIndex < this.levelNpcs.length) {
+      // Use level-specific NPC configuration
+      const npcConfig = this.levelNpcs[this.levelNpcIndex];
+      type = npcConfig.type;
+      route = npcConfig.route;
+      color = npcConfig.color;
+      // Determine if rule breaker based on type
+      isRuleBreaker = ['reckless_bike', 'rulebreaker', 'aggressive'].includes(type) || Math.random() < RULE_BREAKER_PROBABILITY;
+      profileKey = isRuleBreaker
+        ? this._pickProfileKey('reckless_bike', 'rulebreaker', 'aggressive')
+        : this._pickProfileKey('normal', 'cautious', 'delivery', 'elderly');
+      this.levelNpcIndex++;
+    } else {
+      // Fallback to random generation
+      type = this._pickVehicleType();
+      isRuleBreaker = Math.random() < RULE_BREAKER_PROBABILITY && this.ruleBreakerCount / Math.max(1, this.totalSpawned) < RULE_BREAKER_PROBABILITY;
+      profileKey = isRuleBreaker
+        ? this._pickProfileKey('reckless_bike', 'rulebreaker', 'aggressive')
+        : this._pickProfileKey('normal', 'cautious', 'delivery', 'elderly');
+      color = this._pickColorForType(type);
+    }
 
-    const color = this._pickColorForType(type);
     const vehicle = this._createVehicle(type, color, profileKey, isRuleBreaker);
 
     if (!vehicle) return null;
@@ -220,9 +239,17 @@ class TrafficManager {
     vehicle.profile = vehicle.npcAI.profile;
     vehicle.isRuleBreaker = isRuleBreaker;
 
-    // Without a route NPCAI never leaves IDLE (and _checkTransitions immediately
-    // marks an empty route COMPLETE), so the car would just sit on the road.
-    this._assignRoute(vehicle);
+    // Assign route: use level-specific route if provided, otherwise generate one
+    if (route) {
+      const resolvedRoute = this._resolveRouteNodes(route);
+      if (resolvedRoute.length >= 2) {
+        vehicle.npcAI.setRoute(resolvedRoute.slice(1));
+      } else {
+        this._assignRoute(vehicle);
+      }
+    } else {
+      this._assignRoute(vehicle);
+    }
 
     if (isRuleBreaker) this.ruleBreakerCount++;
     this.totalSpawned++;
