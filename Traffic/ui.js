@@ -410,7 +410,8 @@ window.ui = Object.assign(window.ui || {}, {
       // After exit animation completes, clean up and show new screen
       const exitDuration = 250; // matches CSS 0.25s
       setTimeout(() => {
-        currentActive.classList.remove('active', exitClass, exitVariant);
+        currentActive.classList.remove('active', exitClass);
+        if (exitVariant) currentActive.classList.remove(exitVariant);
         currentActive.style.opacity = '';
         currentActive.style.transform = '';
         currentActive.style.pointerEvents = '';
