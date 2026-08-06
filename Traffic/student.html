@@ -10,9 +10,8 @@
   <meta property="og:description" content="Track your driving progress and achievements" />
   <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
   <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/student" />
-  
-  <!-- Cloud Auth & Sync Logic -->
-  <script>
+
+    <script>
     const _oldFetch = window.fetch
     window.fetch = function () {
       if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
@@ -21,7 +20,7 @@
       return _oldFetch.apply(this, arguments)
     }
 
-    // Silence GLTFLoader spam for KHR_texture_transform
+
     const _oldWarn = console.warn
     console.warn = function (...args) {
       if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported')))
@@ -29,12 +28,12 @@
       _oldWarn.apply(console, args)
     }
   </script>
-  
+
   <script defer src="../col-router.js"></script>
   <link rel="stylesheet" href="../col-ui.css" />
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/4.1.0/phaser.min.js"></script>
@@ -45,7 +44,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <script src="course.js"></script>
   <script src="../ui.js"></script>
-  
+
   <style>
     :root {
       --bg: #070a14;
@@ -486,13 +485,13 @@
   </div>
 
   <script>
-    // Parse URL parameters
+
     const urlParams = new URLSearchParams(window.location.search);
     const studentId = urlParams.get('studentId') || localStorage.getItem('currentStudentId') || 'STU-' + Math.floor(100000 + Math.random() * 900000);
-    
-    // Store for cross-page navigation
+
+
     localStorage.setItem('currentStudentId', studentId);
-    
+
     let S = {}
     try {
       const raw = localStorage.getItem('mth4')
@@ -508,7 +507,7 @@
     const displayName = tUser.name || S.name || 'Student'
     const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
-    // Populate avatar
+
     const avatarEl = document.getElementById('avatar')
     let userPhoto = null
     try {
@@ -521,16 +520,16 @@
       avatarEl.textContent = userInitials
     }
 
-    // Populate header
+
     document.getElementById('student-name').textContent = displayName
     document.getElementById('student-id').textContent = 'ID: ' + studentId
 
-    // Populate Stats
+
     document.getElementById('s-name').textContent = displayName
     const completed = S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
     document.getElementById('s-prog').textContent = completed + '/52'
     document.getElementById('s-score').textContent = (S.total || 0).toLocaleString()
-    
+
     const civicScore = S.civicScore || 0
     const civicTiers = [
       { at: 500, label: 'Platinum Citizen', emoji: '💎' },
@@ -543,21 +542,21 @@
     document.getElementById('s-civic').textContent = civicScore + ' ' + civicTier.emoji
     document.getElementById('s-civic-tier').textContent = civicTier.label
 
-    // Build Level Grid
+
     const levelGrid = document.getElementById('level-grid')
     if (window.LVS && levelGrid) {
       LVS.forEach(lv => {
         const done = S.comp && S.comp[lv.id] && S.comp[lv.id].score > 0
         const started = S.started && S.started[lv.id]
         const isLocked = lv.id > 1 && (!S.comp || !S.comp[lv.id - 1] || !S.comp[lv.id - 1].score > 0)
-        
+
         const card = document.createElement('div')
         card.className = 'level-card' + (done ? '' : started ? '' : isLocked ? ' locked' : '')
         if (isLocked) card.style.opacity = '0.6'
-        
+
         const statusClass = done ? 'status-completed' : started ? 'status-in-progress' : 'status-locked'
         const statusText = done ? '✅ Completed' : started ? '🔄 In Progress' : '🔒 Locked'
-        
+
         card.innerHTML = `
           <div class="level-header">
             <span class="level-icon" style="background: ${lv.col || '#e74c3c'}">${lv.icon}</span>
@@ -571,7 +570,7 @@
             <span>${lv.modes ? lv.modes.join(', ') : ''}</span>
           </div>
         `
-        
+
         if (!isLocked) {
           card.style.cursor = 'pointer'
           card.onclick = () => {
@@ -580,12 +579,12 @@
             window.location.href = 'Driving.html?lv=' + lv.id + '&mode=car'
           }
         }
-        
+
         levelGrid.appendChild(card)
       })
     }
 
-    // Horizon Toggle
+
     function hzInit() {
       const t = localStorage.getItem('theme')
       if (t === 'light') document.body.classList.add('lm')
@@ -605,12 +604,12 @@
     }
     hzInit()
 
-    // Load welcome-back module
+
     const wbScript = document.createElement('script')
     wbScript.src = 'welcome-back.js'
     document.body.appendChild(wbScript)
 
-    // Logout
+
     function logoutAndClear() {
       localStorage.removeItem('trafficSetupComplete')
       localStorage.removeItem('traffic_local_user')

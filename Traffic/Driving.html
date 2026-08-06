@@ -9,9 +9,9 @@
   <title>Mumbai Traffic Hero Academy - Simulation</title>
   <link rel="icon" type="image/png" href="../Icon.png" />
 
-  <!-- Cloud Auth & Sync Logic -->
+  
   <script>
-    // ── Global game state (matches Academy.html / other pages) ──
+
     let S = {}
     try {
       const _raw = localStorage.getItem('mth4')
@@ -30,7 +30,7 @@
       return _oldFetch.apply(this, arguments)
     }
 
-    // Silence GLTFLoader spam for KHR_texture_transform
+
     const _oldWarn = console.warn
     console.warn = function (...args) {
       if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported')))
@@ -38,6 +38,10 @@
       _oldWarn.apply(console, args)
     }
   </script>
+  <script defer src="../col-router.js"></script>
+  <link rel="stylesheet" href="../col-ui.css" />
+  <script defer src="../col-ui.js"></script>
+  <script defer src="../col-auth.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -66,7 +70,7 @@
       --yellow: #f2b84b;
       --signal: #5ed4f5;
       --r: 16px;
-      /* Z-index scale — 10 semantic layers, everything fits here */
+      
       --z-canvas: 1;
       --z-effects: 19;
       --z-vehicle: 20;
@@ -90,12 +94,14 @@
       .lw {
         padding: 30px 24px;
       }
-      /* Hide desktop-only settings/difficulty/weather buttons on mobile */
+      
       #btn-diff, .nav-login-btn[onclick*="gameWeather"], .nav-login-btn[onclick*="Difficulty"] {
         display: none !important;
       }
       #top-bar-container {
         gap: 8px !important;
+        top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+        right: calc(env(safe-area-inset-right, 0px) + 8px) !important;
       }
       .back-btn {
         min-height: 48px;
@@ -120,6 +126,425 @@
       .db {
         width: 56px;
         height: 56px;
+      }
+    }
+
+    
+    
+    @media (max-width: 767px) {
+      
+      #top-bar-container {
+        top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+        right: calc(env(safe-area-inset-right, 0px) + 8px) !important;
+        left: auto !important;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        max-width: calc(100vw - 16px);
+      }
+
+      
+      #hud {
+        top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
+        left: calc(env(safe-area-inset-left, 0px) + 4px) !important;
+        right: auto !important;
+        padding: 0 !important;
+        gap: 3px !important;
+      }
+
+      .hp {
+        padding: 2px 6px !important;
+        font-size: 0.6rem !important;
+        border-radius: 4px !important;
+      }
+
+      
+      #hudbar {
+        top: calc(env(safe-area-inset-top, 0px) + 32px) !important;
+        left: calc(env(safe-area-inset-left, 0px) + 4px) !important;
+        right: auto !important;
+        gap: 3px !important;
+      }
+
+      .hb {
+        padding: 2px 6px !important;
+        font-size: 0.58rem !important;
+        border-radius: 4px !important;
+      }
+
+      
+      #mmc {
+        top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
+        right: calc(env(safe-area-inset-right, 0px) + 4px) !important;
+        width: 72px !important;
+        height: 72px !important;
+        border-width: 2px !important;
+      }
+
+      
+      #spgauge {
+        left: calc(env(safe-area-inset-left, 0px) + 4px) !important;
+        right: auto !important;
+        bottom: 100px !important;
+        width: 52px !important;
+        height: 52px !important;
+      }
+
+      #spgauge svg {
+        width: 52px !important;
+        height: 52px !important;
+      }
+
+      
+      #boostgauge {
+        right: calc(env(safe-area-inset-right, 0px) + 4px) !important;
+        bottom: 160px !important;
+      }
+
+      #boostgauge svg {
+        width: 36px !important;
+        height: 36px !important;
+      }
+
+      
+      #objective-overlay {
+        top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        width: auto !important;
+        max-width: 60vw !important;
+        padding: 3px 8px !important;
+        font-size: 0.55rem !important;
+        border-radius: 8px !important;
+      }
+
+      #objective-title {
+        font-size: 0.55rem !important;
+        letter-spacing: 1px !important;
+      }
+
+      #objective-desc {
+        font-size: 0.55rem !important;
+      }
+
+      
+      #task-tracker {
+        top: calc(env(safe-area-inset-top, 0px) + 50px) !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        width: auto !important;
+        max-width: 60vw !important;
+        max-height: 25vh !important;
+        font-size: 0.55rem !important;
+        padding: 4px 8px !important;
+      }
+
+      
+      #sig-ind {
+        top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        font-size: 0.55rem !important;
+        padding: 2px 6px !important;
+      }
+
+      
+      #mobile-controls {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 4px) !important;
+        padding: 0 8px calc(env(safe-area-inset-bottom, 0px) + 4px) !important;
+        background: none !important;
+      }
+
+      
+      #steer-wheel-container {
+        width: 80px !important;
+        height: 80px !important;
+        border-width: 2px !important;
+        margin-left: 20px !important;
+      }
+
+      
+      .mc-btn {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 13px !important;
+        border-width: 2px !important;
+      }
+
+      #mc-gas, #mc-brake {
+        width: 50px !important;
+        height: 50px !important;
+      }
+
+      
+      #gp {
+        bottom: 60px !important;
+        left: calc(env(safe-area-inset-left, 0px) + 4px) !important;
+        transform: none !important;
+        padding: 2px !important;
+        gap: 2px !important;
+      }
+
+      .gb {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.6rem !important;
+      }
+
+      #gread {
+        bottom: 44px !important;
+        left: calc(env(safe-area-inset-left, 0px) + 4px) !important;
+        font-size: 0.55rem !important;
+      }
+
+      
+      #civic-controls {
+        top: calc(env(safe-area-inset-top, 0px) + 80px) !important;
+        right: calc(env(safe-area-inset-right, 0px) + 4px) !important;
+        bottom: auto !important;
+        left: auto !important;
+        gap: 2px !important;
+      }
+
+      #civic-controls .civic-btn {
+        padding: 2px 5px !important;
+        font-size: 0.55rem !important;
+        border-radius: 8px !important;
+      }
+
+      
+      #compass-strip {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 100px) !important;
+        font-size: 0.6rem !important;
+        padding: 2px 8px !important;
+      }
+
+      
+      #phone-gps-btn {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 16px !important;
+      }
+
+      
+      #pause-overlay {
+        padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
+      }
+
+      #pause-tabs {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .pause-tab {
+        font-size: 0.75rem !important;
+        padding: 6px 12px !important;
+      }
+
+      
+      #toast {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 120px) !important;
+        top: auto !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        max-width: 90vw !important;
+      }
+
+      
+      #speed-lines {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 80px) !important;
+      }
+
+      
+      #boost-vignette {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 80px) !important;
+      }
+
+      
+      #boost-ready {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 140px) !important;
+      }
+
+      
+      #desktop-camera-hint {
+        display: none !important;
+      }
+
+      
+      #look-hint {
+        font-size: 0.6rem !important;
+        padding: 4px 10px !important;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 170px) !important;
+      }
+
+      
+      #dn-clock {
+        top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
+        right: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        font-size: 0.6rem !important;
+        padding: 2px 8px !important;
+      }
+
+      
+      .nav-user-profile {
+        padding: 3px 10px 3px 3px !important;
+        font-size: 0.75rem !important;
+      }
+
+      .nav-user-avatar {
+        width: 24px !important;
+        height: 24px !important;
+      }
+
+      
+      .back-btn {
+        top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+        left: calc(env(safe-area-inset-left, 0px) + 8px) !important;
+        min-height: 40px !important;
+        min-width: 40px !important;
+        padding: 8px 12px !important;
+        font-size: 0.8rem !important;
+      }
+
+      
+      #ls {
+        padding: calc(env(safe-area-inset-top, 0px) + 60px) 16px calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
+      }
+
+      
+      .lc {
+        padding: 12px !important;
+        border-radius: 12px !important;
+      }
+
+      .lc .ln {
+        font-size: 1rem !important;
+      }
+
+      .lc .lt {
+        font-size: 0.7rem !important;
+      }
+
+      
+      .qo {
+        padding: 10px 16px !important;
+        min-height: 44px !important;
+        font-size: 0.85rem !important;
+      }
+
+      
+      .btn-g {
+        flex-wrap: wrap;
+        gap: 6px !important;
+      }
+
+      .btn-g .btn {
+        min-height: 44px !important;
+        padding: 10px 16px !important;
+        font-size: 0.85rem !important;
+      }
+    }
+
+    
+    @media (max-width: 375px) {
+      #mmc {
+        width: 60px !important;
+        height: 60px !important;
+      }
+
+      #spgauge {
+        width: 44px !important;
+        height: 44px !important;
+        bottom: 90px !important;
+      }
+
+      #spgauge svg {
+        width: 44px !important;
+        height: 44px !important;
+      }
+
+      .mc-btn {
+        width: 40px !important;
+        height: 40px !important;
+      }
+
+      #mc-gas, #mc-brake {
+        width: 46px !important;
+        height: 46px !important;
+      }
+
+      #steer-wheel-container {
+        width: 70px !important;
+        height: 70px !important;
+      }
+
+      #objective-overlay {
+        max-width: 70vw !important;
+      }
+
+      #task-tracker {
+        max-width: 70vw !important;
+      }
+    }
+
+    
+    @media (max-width: 767px) and (orientation: landscape) {
+      #hud {
+        top: calc(env(safe-area-inset-top, 0px) + 2px) !important;
+        left: calc(env(safe-area-inset-left, 0px) + 2px) !important;
+      }
+
+      #mmc {
+        top: calc(env(safe-area-inset-top, 0px) + 2px) !important;
+        right: calc(env(safe-area-inset-right, 0px) + 2px) !important;
+        width: 56px !important;
+        height: 56px !important;
+      }
+
+      #mobile-controls {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 2px) !important;
+        padding: 0 4px !important;
+      }
+
+      #steer-wheel-container {
+        width: 60px !important;
+        height: 60px !important;
+        margin-left: 10px !important;
+      }
+
+      .mc-btn {
+        width: 36px !important;
+        height: 36px !important;
+      }
+
+      #mc-gas, #mc-brake {
+        width: 40px !important;
+        height: 40px !important;
+      }
+
+      #spgauge {
+        bottom: 60px !important;
+        width: 40px !important;
+        height: 40px !important;
+      }
+
+      #spgauge svg {
+        width: 40px !important;
+        height: 40px !important;
+      }
+
+      #objective-overlay {
+        top: calc(env(safe-area-inset-top, 0px) + 2px) !important;
+        max-width: 40vw !important;
+      }
+
+      #task-tracker {
+        top: calc(env(safe-area-inset-top, 0px) + 30px) !important;
+        max-width: 40vw !important;
       }
     }
 
@@ -149,7 +574,7 @@
       padding-right: env(safe-area-inset-right, 0px);
     }
 
-    /* Premium Loading Screen */
+    
     #loading-screen {
       position: fixed;
       inset: 0;
@@ -304,7 +729,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Level Preview Modal ── */
+    
     #level-preview-overlay {
       position: fixed;
       inset: 0;
@@ -578,7 +1003,7 @@
       transform: translateY(-1px);
     }
 
-    /* Start Screen */
+    
     .brand-header {
       display: flex;
       align-items: center;
@@ -650,7 +1075,7 @@
       }
     }
 
-    /* Name Dialog */
+    
     #name-dlg {
       position: fixed;
       inset: 0;
@@ -686,7 +1111,7 @@
       text-align: center;
     }
 
-    /* Toast */
+    
     #toast {
       position: fixed;
       top: 20px;
@@ -713,7 +1138,7 @@
       gap: 8px;
     }
 
-    /* Levels Screen */
+    
     .tb {
       display: flex;
       align-items: center;
@@ -905,7 +1330,7 @@
       color: var(--muted);
     }
 
-    /* Briefing Screen */
+    
     .br-w {
       display: flex;
       max-width: 100%;
@@ -930,7 +1355,7 @@
       align-items: center;
     }
 
-    /* Tablet: shrink left sidebar */
+    
     @media (max-width: 1280px) {
       .br-l {
         flex: 0 0 320px;
@@ -1038,7 +1463,7 @@
       }
     }
 
-    /* Badge Pill */
+    
     .syl-badge {
       display: inline-flex;
       align-items: center;
@@ -1224,7 +1649,7 @@
       color: var(--red);
     }
 
-    /* Quiz Screen */
+    
     .qw {
       max-width: 100%;
       margin: 60px auto;
@@ -1378,7 +1803,7 @@
       margin-top: 32px;
     }
 
-    /* Results Screen */
+    
     .res-w {
       max-width: 100%;
       margin: 60px auto;
@@ -1476,7 +1901,7 @@
       justify-content: center;
     }
 
-    /* Badges Screen */
+    
     .bgrid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -1562,7 +1987,7 @@
       color: var(--text);
     }
 
-    /* Certificate */
+    
     #cert-wrapper {
       display: flex;
       justify-content: center;
@@ -1597,7 +2022,7 @@
       position: absolute;
       inset: 20px;
       border: 2px solid rgba(0, 0, 0, 0);
-      /* disabled old border */
+      
       pointer-events: none;
     }
 
@@ -1634,7 +2059,7 @@
       line-height: 1.6;
     }
 
-    /* === Certificate Print Styles - Fixed Single Page === */
+    
     @media print {
       body { background: white !important; }
       #cert-wrapper {
@@ -1659,7 +2084,7 @@
       .crt-meta { font-size: 10pt !important; }
     }
 
-    /* Challan & In-game overlays */
+    
     #cov {
       position: fixed;
       inset: 0;
@@ -1743,7 +2168,7 @@
       }
     }
 
-    /* HUD overrides */
+    
     #gc {
       position: fixed;
       inset: 0;
@@ -1823,7 +2248,7 @@
       display: flex;
     }
 
-    /* objective-overlay — fluid version defined below under "Fluid HUD Elements" */
+    
 
     #objective-overlay.on {
       transform: translateX(0);
@@ -1968,7 +2393,7 @@
       border-color: var(--muted);
     }
 
-    /* Gear selection overlay */
+    
     #gp {
       position: fixed;
       bottom: 20px;
@@ -2147,7 +2572,7 @@
       display: flex;
     }
 
-    /* Modals */
+    
     #mgo {
       position: fixed;
       inset: 0;
@@ -2197,7 +2622,7 @@
       margin-top: 16px;
     }
 
-    /* MOBILE RESPONSIVE UI & ON-SCREEN CONTROLS */
+    
     #mobile-controls {
       display: none;
       position: fixed;
@@ -2305,10 +2730,10 @@
         padding: 10px;
       }
 
-      /* Show mobile controls when HUD is active (handled by JS) */
+      
     }
 
-    /* Screen transitions */
+    
     .screen {
       animation: none;
     }
@@ -2329,7 +2754,7 @@
       }
     }
 
-    /* Card entrance animations */
+    
     .lcard {
       animation: cardSlideUp 0.4s ease-out backwards;
     }
@@ -2366,7 +2791,7 @@
       }
     }
 
-    /* Syllabus item animations */
+    
     .syl-item {
       animation: sylSlide 0.3s ease-out backwards;
     }
@@ -2403,7 +2828,7 @@
       }
     }
 
-    /* Button hover pulse */
+    
     .btn:hover {
       transform: translateY(-2px) scale(1.02);
     }
@@ -2412,12 +2837,12 @@
       transform: translateY(0) scale(0.98);
     }
 
-    /* Toast animation improvement */
+    
     #toast {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Challan card stack */
+    
     #challan-stack {
       position: fixed;
       bottom: 100px;
@@ -2459,7 +2884,7 @@
       color: var(--text);
     }
 
-    /* Fluid HUD Elements */
+    
     #objective-overlay {
       position: fixed;
       top: 8vh;
@@ -2508,10 +2933,7 @@
       font-size: clamp(0.7rem, 1.2vw, 0.85rem);
     }
 
-    /* Ensure proper separation between overlapping elements —
-       #dn-clock sits at top:3vw/right:3vw when visible (night-cycle levels), so
-       #task-tracker is pushed down below it at every breakpoint where both stay
-       anchored to the top-right corner, instead of overlapping it. */
+    
     @media (max-width: 768px) {
       #task-tracker {
         top: calc(2vh + 52px);
@@ -2573,16 +2995,16 @@
       height: clamp(48px, 5vw, 72px);
     }
 
-    /* Mobile: stack speedo and boost vertically on bottom-right */
+    
     @media (max-width: 900px) {
       #spgauge { right: 12px; bottom: 8px; width: 52px; height: 52px; }
       #boostgauge { right: 12px; bottom: 70px; width: 42px; height: 42px; }
       #mobile-controls { bottom: 6px; padding: 0 12px 8px; }
     }
 
-    /* --- Responsive UI Adjustments --- */
+    
 
-    /* Make the root containers fluid and center them */
+    
     .sc {
       width: 100%;
       min-height: 100vh;
@@ -2617,12 +3039,12 @@
       font-weight: 400;
     }
 
-    /* Level grid: ensure it doesn't overflow on tiny screens */
+    
     .lv-track {
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
     }
 
-    /* Briefing screen: stack on smaller screens */
+    
     @media (max-width: 900px) {
       .br-w {
         flex-direction: column;
@@ -2655,10 +3077,8 @@
       }
     }
 
-    /* Global screen padding for mobile */
-    /* Certificate mobile/tablet scaling — own breakpoint, wider than the general 600px
-       mobile block below, since the certificate's fixed width starts clipping on
-       anything under ~1100px, well before phone-sized breakpoints kick in. */
+    
+    
     @media (max-width: 1100px) {
       #cert-wrapper {
         overflow-x: auto;
@@ -2707,7 +3127,7 @@
         margin: 20px auto;
       }
 
-      /* Mobile direction box */
+      
       #da {
         top: 100px;
         padding: 10px 18px;
@@ -2735,7 +3155,7 @@
         font-size: 0.9rem;
       }
 
-      /* Mobile objective overlay */
+      
       #objective-overlay {
         top: auto;
         bottom: 100px;
@@ -2753,7 +3173,7 @@
       }
     }
 
-    /* Certificate specific responsiveness */
+    
     #cert-wrapper {
       width: 100%;
       display: flex;
@@ -2763,15 +3183,15 @@
     }
 
     .crt {
-      /* Removed min-width and max-width to allow transform scaling without text overflow */
+      
     }
 
-    /* === COMPLETE MOBILE DRIVING UI REDESIGN === */
+    
     @media (max-width: 1400px),
     (max-height: 800px),
     (pointer: coarse) {
 
-      /* Ensure canvas fills screen without distortion */
+      
       #gc {
         position: fixed;
         inset: 0;
@@ -2781,7 +3201,7 @@
         background: #000;
       }
 
-      /* HUD — compact top-left cluster */
+      
       #hud {
         top: 6px;
         left: 6px;
@@ -2882,7 +3302,7 @@
         min-width: 18px;
       }
 
-      /* Touch Controls (Center Bottom) */
+      
       #tc {
         bottom: 6px;
         left: 50%;
@@ -2899,7 +3319,7 @@
         border-radius: 8px;
       }
 
-      /* Gear Selector (Vertical on Left) */
+      
       #gp.on {
         display: flex;
       }
@@ -2933,14 +3353,14 @@
         background: rgba(255, 255, 255, 0.75);
       }
 
-      /* Mobile Controls Wrapper */
+      
       #mobile-controls {
         bottom: 6px;
         padding: 0 10px;
         background: none;
       }
 
-      /* Steering Wheel (Bottom Left) */
+      
       #steer-wheel-container {
         width: 86px;
         height: 86px;
@@ -2949,7 +3369,7 @@
         margin-left: 24px;
       }
 
-      /* Pedals (Bottom Right) */
+      
       .mc-col {
         gap: 8px;
       }
@@ -3012,7 +3432,7 @@
         border-radius: 12px;
       }
 
-      /* Phone GPS Button mobile sizing */
+      
       #phone-gps-btn {
         width: 46px !important;
         height: 46px !important;
@@ -3028,12 +3448,12 @@
       }
     }
 
-    /* Pause overlay — show/hide */
+    
     #pause-overlay.on {
       display: flex !important;
     }
 
-    /* Pause menu tabs */
+    
     .pause-tab.active {
       background: rgba(255,255,255,0.2) !important;
       color: #fff !important;
@@ -3045,13 +3465,13 @@
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    /* Quality button active state */
+    
     .qbtn.active {
       background: rgba(52,152,219,0.8) !important;
       color: #fff !important;
       box-shadow: 0 2px 8px rgba(52,152,219,0.4);
     }
-    /* Range slider thumb styling */
+    
     #pause-volume::-webkit-slider-thumb {
       -webkit-appearance: none;
       width: 18px;
@@ -3155,14 +3575,14 @@
       }
     }
 
-    /* Very small screens: hide signal indicator */
+    
     @media (max-width: 400px) {
       #sig-ind {
         display: none !important;
       }
     }
 
-    /* Portrait mode: adaptive layout for mobile */
+    
     @media (orientation: portrait) and (max-width: 600px) {
       #hwrap {
         top: 4px;
@@ -3256,7 +3676,7 @@
       }
     }
 
-    /* Phone GPS Overlay */
+    
     #phone-gps {
       display: none;
       position: fixed;
@@ -3367,7 +3787,7 @@
       transform: translate(-50%, -50%);
     }
 
-    /* Phone GPS Button (in mobile controls) */
+    
     #phone-gps-btn {
       width: 56px;
       height: 56px;
@@ -3399,12 +3819,12 @@
       }
     }
 
-    /* === KID MODE — Phase 2: Simplified UI for 4-5 year olds === */
+    
     .kid-hide {
       display: none !important;
     }
 
-    /* Big colorful kid buttons — min 60px touch target */
+    
     .kid-btn {
       min-width: 64px;
       min-height: 64px;
@@ -3439,7 +3859,7 @@
       text-shadow: none;
     }
 
-    /* Kid steering wheel — bigger, centered */
+    
     #kid-steer {
       display: none;
       position: fixed;
@@ -3472,7 +3892,7 @@
       background: radial-gradient(circle, rgba(59, 130, 246, 0.7) 0%, rgba(59, 130, 246, 0.35) 60%, transparent 100%);
     }
 
-    /* Kid pedal buttons — right side */
+    
     #kid-pedals {
       display: none;
       position: fixed;
@@ -3512,7 +3932,7 @@
       font-size: 2rem;
     }
 
-    /* Kid indicator button — left side */
+    
     #kid-indicators {
       display: none;
       position: fixed;
@@ -3552,7 +3972,7 @@
       color: white;
     }
 
-    /* Kid locked control — hidden with lock */
+    
     .kid-locked {
       opacity: 0.25 !important;
       pointer-events: none !important;
@@ -3570,7 +3990,7 @@
       filter: none;
     }
 
-    /* Kid unlock notification */
+    
     #kid-unlock-toast {
       display: none;
       position: fixed;
@@ -3607,7 +4027,7 @@
       }
     }
 
-    /* Kid health hearts — big, prominent */
+    
     #kid-hearts {
       display: none;
       position: fixed;
@@ -3626,12 +4046,11 @@
       transition: opacity 0.3s ease;
     }
 
-    /* Kid level name display */
+    
     #kid-level-name {
       display: none;
       position: fixed;
-      /* Clears #kid-hearts at its tallest (child tier: 3.2rem + padding ≈ 81px from
-         top:20px). The old top:80px overlapped the hearts row on every tier. */
+      
       top: 108px;
       left: 50%;
       transform: translateX(-50%);
@@ -3648,11 +4067,11 @@
       white-space: nowrap;
     }
 
-    /* Kid task indicator — visual emoji card */
+    
     #kid-task-bar {
       display: none;
       position: fixed;
-      top: 152px; /* stacked under #kid-level-name (108px + ~36px + gap) */
+      top: 152px; 
       left: 50%;
       transform: translateX(-50%);
       z-index: var(--z-hud);
@@ -3720,7 +4139,7 @@
       transform: scale(1.15);
     }
 
-    /* Progressive HUD hide — applied to body.kid-lvl-N class */
+    
     body.kid-lvl-low #mmc {
       display: none !important;
     }
@@ -3729,7 +4148,7 @@
       display: none !important;
     }
 
-    /* Kid countdown — big, centered, colorful */
+    
     #kid-countdown {
       display: none;
       position: fixed;
@@ -3766,7 +4185,7 @@
       }
     }
 
-    /* Kid GO! flash */
+    
     #kid-go-flash {
       display: none;
       position: fixed;
@@ -3807,7 +4226,7 @@
       }
     }
 
-    /* Kid tutorial overlay — big arrows + simple text */
+    
     #kid-tutorial {
       display: none;
       position: fixed;
@@ -3871,7 +4290,7 @@
       margin-top: 16px;
     }
 
-    /* Kid level intro card — 5s visual demo before gameplay */
+    
     #kid-intro {
       display: none;
       position: fixed;
@@ -3944,7 +4363,7 @@
       transform: scale(1.3);
     }
 
-    /* Animated hand pointer — points at the control being taught */
+    
     #kid-hand {
       display: none;
       position: fixed;
@@ -3970,7 +4389,7 @@
       }
     }
 
-    /* Kid celebration — stars + confetti */
+    
     #kid-celebrate {
       display: none;
       position: fixed;
@@ -4029,7 +4448,7 @@
       margin-top: 20px;
     }
 
-    /* Kid crash screen — friendly Oops! */
+    
     #kid-crash {
       display: none;
       position: fixed;
@@ -4083,7 +4502,7 @@
       border: 2px solid rgba(255, 255, 255, 0.3);
     }
 
-    /* Kid off-road warning — simple shake */
+    
     #kid-offroad {
       display: none;
       position: fixed;
@@ -4118,7 +4537,7 @@
       }
     }
 
-    /* Kid start screen overrides */
+    
     .kid-mode #ss .sc {
       gap: 12px;
     }
@@ -4155,7 +4574,7 @@
       display: none !important;
     }
 
-    /* Kid level cards — bigger, more colorful */
+    
     .kid-mode .lcard {
       min-height: 120px;
       border-radius: 16px;
@@ -4180,7 +4599,7 @@
       box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
 
-    /* === KID-MODE: Start screen simplification === */
+    
     .kid-mode #ss .pls .btn-g,
     .kid-mode #ss .btn-g[onclick*="hardReset"],
     .kid-mode #ss .btn-s[onclick*="prompt"],
@@ -4223,7 +4642,7 @@
       line-height: 1.5;
     }
 
-    /* Level selection: hide profile + progress chip */
+    
     .kid-mode #screen-levels .tb .btn-g,
     .kid-mode #screen-levels #pchip {
       display: none !important;
@@ -4235,12 +4654,12 @@
       font-size: 1rem;
     }
 
-    /* Briefing: hide profile */
+    
     .kid-mode #screen-briefing .tb .btn-g {
       display: none !important;
     }
 
-    /* Confetti particle */
+    
     .kid-confetti {
       position: fixed;
       width: 10px;
@@ -4263,8 +4682,8 @@
       }
     }
 
-    /* --- Age-adaptive visuals --- */
-    /* Child tier: bigger HUD, simpler info, hide numeric speed */
+    
+    
     [data-age-tier="child"] #kid-hearts {
       font-size: 3.2rem;
       padding: 10px 28px;
@@ -4299,7 +4718,7 @@
       display: none !important;
     }
 
-    /* Teen tier: slightly larger, keep all info */
+    
     [data-age-tier="teen"] #kid-hearts {
       font-size: 2.8rem;
     }
@@ -4308,7 +4727,7 @@
       font-size: 1.4rem;
     }
 
-    /* Senior tier: larger text, higher contrast */
+    
     [data-age-tier="senior"] #kid-hearts {
       font-size: 3rem;
     }
@@ -4322,9 +4741,9 @@
       font-weight: 800;
     }
 
-    /* Adult and young: default sizing, all HUD visible (no overrides needed) */
+    
 
-    /* Landscape phone: compact HUD for short viewports */
+    
     @media (max-height: 450px) and (orientation: landscape) {
       #objective-overlay {
         top: auto;
@@ -4437,7 +4856,7 @@
       }
     }
 
-    /* Perf: disable backdrop-filter on mobile (GPU compositing overhead) */
+    
     @media (max-width: 600px) {
       * {
         -webkit-backdrop-filter: none !important;
@@ -4445,7 +4864,7 @@
       }
     }
 
-    /* ── Light mode overrides (matches parent site pattern) ── */
+    
     body.lm {
       --bg: #f3f2eb;
       --card: rgba(255, 255, 255, 0.45);
@@ -4461,7 +4880,7 @@
       --signal: #0369a1;
     }
 
-    /* ── Horizon Toggle ── */
+    
     .hz-toggle {
       position: relative;
       width: 369px;
@@ -4495,7 +4914,7 @@
         275px 58px 0 0px #fff, 320px 38px 0 0px #fff;
     }
     .hz-toggle.night .hz-stars { opacity: 1; }
-    /* Clouds — day-mode counterpart to the stars (same as Academy.html) */
+    
     .hz-clouds {
       position: absolute; inset: 0;
       border-radius: inherit;
@@ -4628,7 +5047,7 @@
       .hz-clouds { transform: scale(0.8); transform-origin: top left; }
     }
 
-    /* ── Civic Controls (Seatbelt + Indicators + Phone) ── */
+    
     #civic-controls {
       display: flex;
       flex-direction: row;
@@ -4656,7 +5075,7 @@
     .civic-btn:active { transform: scale(0.92); }
     .civic-btn:hover { border-color: #777; }
 
-    /* Seatbelt icon */
+    
     .sb-icon-wrap {
       width: 22px;
       height: 22px;
@@ -4683,7 +5102,7 @@
       50%      { box-shadow: 0 0 0 6px rgba(255,59,48,0); }
     }
 
-    /* Indicator arrows */
+    
     .civic-ind {
       padding: 7px 10px;
       min-width: 34px;
@@ -4706,15 +5125,15 @@
       50%      { opacity: 0.35; }
     }
 
-    /* Phone icon */
+    
     .civic-icon { width: 16px; height: 16px; flex-shrink: 0; }
     .civic-label { white-space: nowrap; line-height: 1; }
 
-    /* Seatbelt label color states */
+    
     #btn-seatbelt .civic-label.off { color: #ff3b30; }
     #btn-seatbelt .civic-label.on  { color: #27ae60; }
 
-    /* ── Responsive: civic-controls ── */
+    
     @media (max-width: 600px) {
       #civic-controls {
         gap: 3px;
@@ -4729,10 +5148,9 @@
       .civic-label { font-size: 0.6rem; }
     }
 
-    /* --- Global mobile-UX patterns --- */
+    
 
-    /* Respect reduced-motion preference across menu/UI screens — not the in-game HUD
-       or 3D rendering itself, which is a separate performance concern. */
+    
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -4741,8 +5159,7 @@
       }
     }
 
-    /* Touch devices don't have real :hover — guards against stuck/jittery hover
-       transforms on menu cards after a tap. */
+    
     @media (hover: none) {
       .syl-item:hover,
       .lcard:hover,
@@ -4752,21 +5169,19 @@
       }
     }
 
-    /* Visible press feedback on tap. */
+    
     .btn:active, .btn-g:active, .back-btn:active {
       transform: scale(0.98);
       transition-duration: 0.1s;
     }
 
-    /* Safety net against sideways scroll on the menu screens. Deliberately not
-       touching the in-game canvas/HUD here, since that's already handled separately
-       and full-bleed by design. */
+    
     html, body { overflow-x: hidden; }
 
     h1, h2, h3 { text-wrap: balance; }
     p, .ltg, .syl-sub { text-wrap: pretty; }
 
-    /* --- Gyro calibration + rotate-device overlays --- */
+    
     #gyro-calibrate-overlay,
     #rotate-device-overlay {
       display: none;
@@ -4862,15 +5277,49 @@
 </head>
 
 <body class="lm">
-  <!-- Script entry points -->
+  
 
-  <!-- Portrait mode hint (non-blocking) -->
-  <div id="rotate-overlay"
-    style="display:none;position:fixed;top:4px;left:50%;transform:translateX(-50%);z-index:var(--z-hud);background:rgba(0,0,0,0.6);border-radius:8px;padding:4px 10px;color:#34D399;font-family:'Inter',sans-serif;font-size:0.65rem;text-align:center;backdrop-filter:blur(4px);pointer-events:none;transition:opacity 0.3s;">
-    Rotate for best view
+  <style>
+    
+    #landscape-enforcer {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--void);
+      z-index: 999999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      text-align: center;
+      padding: 20px;
+    }
+    #landscape-enforcer svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      animation: rotate-phone 2s ease-in-out infinite alternate;
+    }
+    @keyframes rotate-phone {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(-90deg); }
+    }
+    @media (orientation: portrait) and (max-width: 900px) {
+      #landscape-enforcer {
+        display: flex;
+      }
+    }
+  </style>
+  <div id="landscape-enforcer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+      <line x1="12" y1="18" x2="12.01" y2="18"></line>
+    </svg>
+    <h2 style="font-family: var(--sans); font-size: 1.5rem; margin-bottom: 10px;">Please Rotate Your Device</h2>
+    <p style="font-family: var(--sans); color: var(--dim);">This simulator requires landscape orientation.</p>
   </div>
 
-  <!-- Virtual Joystick for Mobile -->
+  
   <div id="virtual-joystick" style="
         position: fixed;
         bottom: clamp(40px, 12vh, 100px);
@@ -4897,7 +5346,7 @@
         "></div>
   </div>
 
-  <!-- Right-side Camera Joystick for Mobile Look-Around -->
+  
   <div id="camera-joystick" style="
         position: fixed;
         bottom: clamp(40px, 12vh, 100px);
@@ -5059,7 +5508,7 @@
     </div>
   </div>
 
-  <!-- Premium Loading Screen -->
+  
   <div id="loading-screen" style="display:none;">
     <div class="ls-logo">Mumbai Traffic Hero</div>
     <h1 id="loading-level-name">Loading...</h1>
@@ -5083,7 +5532,7 @@
     </div>
   </div>
 
-  <!-- Level Preview Modal -->
+  
   <div id="level-preview-overlay">
     <div class="lp-card">
       <div class="lp-hero">
@@ -5157,14 +5606,14 @@
     style="display:none; position:fixed; inset:0; z-index:100000; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); flex-direction:column; align-items:center; justify-content:center; gap:18px; pointer-events:auto;">
     <div style="font-family:'Bebas Neue',sans-serif; font-size:3rem; color:#fff; text-shadow:0 4px 12px rgba(0,0,0,0.5);">PAUSED</div>
     
-    <!-- Tab Navigation -->
+    
     <div id="pause-tabs" style="display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:12px; padding:4px;">
       <button class="pause-tab active" data-tab="main" onclick="pauseTab('main')" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:rgba(255,255,255,0.2); color:#fff; cursor:pointer; transition:all 0.2s;">Resume</button>
       <button class="pause-tab" data-tab="settings" onclick="pauseTab('settings')" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Settings</button>
       <button class="pause-tab" data-tab="controls" onclick="pauseTab('controls')" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Controls</button>
     </div>
     
-    <!-- Main Tab -->
+    
     <div id="pause-tab-main" class="pause-panel" style="display:flex; flex-direction:column; gap:12px; align-items:center;">
       <button id="pause-resume"
         style="font-family:'Inter',sans-serif; font-size:1.1rem; font-weight:600; padding:12px 36px; border:none; border-radius:12px; background:rgba(52,152,219,0.85); color:#fff; cursor:pointer; transition:all 0.2s; min-height:48px;">Resume (Esc)</button>
@@ -5174,7 +5623,7 @@
         style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(231,76,60,0.8); color:#fff; cursor:pointer; min-height:48px;">Quit to Menu</button>
     </div>
     
-    <!-- Settings Tab -->
+    
     <div id="pause-tab-settings" class="pause-panel" style="display:none; flex-direction:column; gap:16px; width:90%; max-width:320px;">
       <div style="display:flex; flex-direction:column; gap:8px;">
         <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🔊 Master Volume</label>
@@ -5200,7 +5649,7 @@
       </div>
     </div>
     
-    <!-- Controls Tab -->
+    
     <div id="pause-tab-controls" class="pause-panel" style="display:none; flex-direction:column; gap:12px; width:90%; max-width:400px; max-height:50vh; overflow-y:auto;">
       <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.5); margin-bottom:4px;">Desktop Controls</div>
       <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-family:'Inter',sans-serif; font-size:0.85rem;">
@@ -5445,7 +5894,7 @@
     </div>
   </div>
 
-  <!-- GAME HUD RESTORATION -->
+  
   <div id="cdown" style="
         position: fixed;
         top: 50%;
@@ -5739,7 +6188,7 @@
     </div>
   </div>
 
-  <!-- SCREENS -->
+  
 
   <div id="ss" class="screen">
     <div id="top-bar-container"
@@ -6123,38 +6572,18 @@
   <script src="levels/level50.js"></script>
   <script src="levels/level51.js"></script>
   <script src="levels/level52.js"></script>
+  <script src="levels/level53.js"></script>
   <script src="levels/level_custom.js"></script>
 
   <script>
-      // Portrait mode hint (non-blocking)
-      (function () {
-        const ov = document.getElementById('rotate-overlay');
-        if (!ov) return;
-        function isMobile() { return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); }
-        function isPortrait() { return window.innerHeight > window.innerWidth; }
-        let hideTimer = null;
-        function update() {
-          if (isMobile() && isPortrait() && typeof game !== 'undefined' && game && game.playing) {
-            ov.style.display = 'block';
-            ov.style.opacity = '1';
-            clearTimeout(hideTimer);
-            hideTimer = setTimeout(function () { ov.style.opacity = '0'; }, 3000);
-          } else {
-            ov.style.display = 'none';
-          }
-        }
-        window.addEventListener('resize', update);
-        window.addEventListener('orientationchange', function () { setTimeout(update, 150); });
-        setInterval(update, 500);
-      })();
-    // Show camera control hints after game starts (mobile + desktop)
+
     (function () {
       const mobileHint = document.getElementById('swipe-look-hint');
       const desktopHint = document.getElementById('desktop-camera-hint');
       let mobileShown = false, desktopShown = false;
       setInterval(function () {
         if (typeof game === 'undefined' || !game || !game.playing) return;
-        // Mobile hint
+
         if (!mobileShown && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
           if (mobileHint) {
             mobileHint.style.display = 'block';
@@ -6163,7 +6592,7 @@
             setTimeout(function () { mobileHint.style.display = 'none'; }, 2500);
           }
         }
-        // Desktop hint
+
         if (!desktopShown && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
           if (desktopHint) {
             desktopHint.style.display = 'block';
@@ -6180,16 +6609,18 @@
   <script src="road-graph.js?v=2"></script>
   <script src="render_core.js?v=2"></script>
   <script src="safezone-ui.js?v=2"></script>
+  <script src="world-streamer.js"></script>
+  <script src="mission-manager.js"></script>
   <script src="gameplay-recorder.js"></script>
   <script src="scenario2d.js"></script>
-  <script src="game_core.js?v=15"></script>
+  <script src="game_core.js?v=17"></script>
   <script src="npc-ai.js"></script>
-  <script src="traffic-manager.js?v=7"></script>
+  <script src="traffic-manager.js?v=8"></script>
   <script src="rule-breaker-profiles.js"></script>
   <script src="course.js"></script>
   <script src="ui.js?v=2"></script>
 
-  <!-- KID MODE HTML OVERLAYS -->
+  
   <div id="kid-steer"></div>
   <div id="kid-pedals">
     <div class="kid-btn go-btn" id="kid-go-btn">▶</div>
@@ -6244,38 +6675,38 @@
   <div id="kid-unlock-toast">🆕 New control unlocked!</div>
 
   <script>
-    /* ===== KID MODE ENGINE — Phase 2 ===== */
-    window.KID_MODE = true; // toggle to enable/disable kid mode
+    
+    window.KID_MODE = true;
 
     (function () {
       if (!window.KID_MODE) return;
 
       const $ = id => document.getElementById(id);
-      // Track last time each kid control was used (for reminder tooltips)
+
       window._kidLastUsed = { go: 0, stop: 0, horn: 0, indicator: 0, headlight: 0 };
 
-      // --- Activate kid mode class on body ---
+
       document.body.classList.add('kid-mode');
 
-      // --- Hide complex controls ---
+
       const hideSelectors = [
-        '#gp',           // gear selector
-        '#spgauge',      // speed gauge
-        '#boostgauge',   // boost gauge
+        '#gp',
+        '#spgauge',
+        '#boostgauge',
         '#boost-vignette',
         '#speed-lines',
         '#boost-ready',
         '#civic-controls',
-        '#sig-ind',      // traffic light
-        '#da',           // direction arrow
+        '#sig-ind',
+        '#da',
         '#phone-gps',
         '#phone-gps-btn',
-        '#mmc',          // minimap canvas
-        // The kid task card already shows the objective and progress — leaving the
-        // adult panels up put two HUDs on screen at once, overlapping each other.
+        '#mmc',
+
+
         '#objective-overlay',
         '#task-tracker',
-        '#compass-strip', // heading + clock strip, collided with the hearts row
+        '#compass-strip',
         '#dn-clock',
         '#challan-stack',
         '#challenge-overlay',
@@ -6289,24 +6720,24 @@
         document.querySelectorAll(sel).forEach(el => el.classList.add('kid-hide'));
       });
 
-      // Kid start screen: rename "Enter Academy" to "PLAY!"
+
       document.querySelectorAll('#ss .pls .btn-p').forEach(btn => {
         btn.textContent = '🎮 PLAY!';
       });
 
-      // Hide original mobile controls (steering wheel + pedals)
+
       const mc = $('mobile-controls');
       if (mc) mc.classList.add('kid-hide');
       const tc = $('tc');
       if (tc) tc.classList.add('kid-hide');
 
-      // Show kid controls
+
       $('kid-hearts').style.display = 'flex';
       $('kid-level-name').style.display = 'block';
       $('kid-task-bar').style.display = 'block';
       requestAnimationFrame(() => { $('kid-task-bar').classList.add('on'); });
 
-      // --- Kid steering wheel touch (left/right tap zones) ---
+
       const steer = $('kid-steer');
       let steerActive = false;
       let steerTouchId = null;
@@ -6317,7 +6748,7 @@
         const lv = window.game._lv || 1;
         steer.style.display = 'block';
         $('kid-pedals').style.display = 'flex';
-        // Progressive HUD: indicators only after level 10
+
         if (lv >= 11) {
           $('kid-indicators').style.display = 'flex';
           $('kid-indicators').classList.add('on');
@@ -6325,7 +6756,7 @@
           $('kid-indicators').classList.remove('on');
           setTimeout(() => { $('kid-indicators').style.display = 'none'; }, 350);
         }
-        // Progressive: hide minimap/GPS for early levels
+
         document.body.classList.remove('kid-lvl-low', 'kid-lvl-mid', 'kid-lvl-high');
         if (lv <= 5) {
           document.body.classList.add('kid-lvl-low');
@@ -6342,7 +6773,7 @@
         steerTouchId = e.changedTouches[0].identifier;
         steerCenterX = steer.getBoundingClientRect().left + steer.offsetWidth / 2;
         steer.classList.add('touching');
-        // Determine left or right side of wheel
+
         const x = e.changedTouches[0].clientX;
         if (x < steerCenterX) {
           window.game.keys['a'] = true;
@@ -6357,10 +6788,10 @@
         for (let i = 0; i < e.changedTouches.length; i++) {
           if (e.changedTouches[i].identifier === steerTouchId) {
             const x = e.changedTouches[i].clientX;
-            // Release both first
+
             window.game.keys['a'] = false;
             window.game.keys['d'] = false;
-            // Set based on position relative to center
+
             if (x < steerCenterX) {
               window.game.keys['a'] = true;
             } else {
@@ -6389,8 +6820,8 @@
         window.game.keys['d'] = false;
       });
 
-      // --- Pedal buttons ---
-      // GO (accelerate) — hold (maps to W key)
+
+
       const goBtn = $('kid-go-btn');
       goBtn.addEventListener('touchstart', function (e) {
         e.preventDefault();
@@ -6404,7 +6835,7 @@
         if (window.game) window.game.keys['w'] = false;
       });
 
-      // STOP (brake) — hold (maps to S key)
+
       const stopBtn = $('kid-stop-btn');
       stopBtn.addEventListener('touchstart', function (e) {
         e.preventDefault();
@@ -6418,34 +6849,34 @@
         if (window.game) window.game.keys['s'] = false;
       });
 
-      // HORN — tap (calls _horn() method)
+
       $('kid-horn-btn').addEventListener('touchstart', function (e) {
         e.preventDefault();
         if (window.game && window.game._horn) window.game._horn();
         window._kidLastUsed.horn = Date.now();
       }, { passive: false });
 
-      // --- Indicator buttons ---
-      // Left indicator (calls toggleTurnSignal(-1))
+
+
       $('kid-left-btn').addEventListener('touchstart', function (e) {
         e.preventDefault();
         if (window.game && window.game.toggleTurnSignal) window.game.toggleTurnSignal(-1);
         window._kidLastUsed.indicator = Date.now();
       }, { passive: false });
-      // Right indicator (calls toggleTurnSignal(1))
+
       $('kid-right-btn').addEventListener('touchstart', function (e) {
         e.preventDefault();
         if (window.game && window.game.toggleTurnSignal) window.game.toggleTurnSignal(1);
         window._kidLastUsed.indicator = Date.now();
       }, { passive: false });
-      // Headlights (calls toggleHighBeam)
+
       $('kid-headlight-btn').addEventListener('touchstart', function (e) {
         e.preventDefault();
         if (window.game && window.game.toggleHighBeam) window.game.toggleHighBeam();
         window._kidLastUsed.headlight = Date.now();
       }, { passive: false });
 
-      // --- Update hearts display (5 hearts based on HP%) ---
+
       window._kidUpdateHearts = function (hp, maxHp) {
         const hearts = $('kid-hearts');
         const pct = maxHp > 0 ? hp / maxHp : 1;
@@ -6458,16 +6889,16 @@
         hearts.innerHTML = html;
       };
 
-      // --- Update level name ---
+
       window._kidUpdateLevelName = function (name) {
         $('kid-level-name').textContent = '🏁 ' + name;
       };
 
-      // --- Update task progress ---
+
       window._kidUpdateTask = function (text, progress, emoji) {
         $('kid-task-text').textContent = text;
         if (emoji) $('kid-task-emoji').textContent = emoji;
-        // Star progress: show up to 5 stars, fill based on progress
+
         var stars = '';
         var total = 5;
         var filled = Math.round((progress / 100) * total);
@@ -6477,7 +6908,7 @@
         $('kid-task-progress').innerHTML = stars;
       };
 
-      // --- Show tutorial with animated hand pointer ---
+
       window._kidShowTutorial = function (emoji, text, arrowDir, targetBtnId) {
         $('kid-tut-emoji').textContent = emoji || '🚗';
         $('kid-tut-text').textContent = text || 'Turn the wheel to drive!';
@@ -6492,7 +6923,7 @@
           arrow.style.display = 'none';
         }
         $('kid-tutorial').style.display = 'flex';
-        // Position animated hand below the target button
+
         const hand = $('kid-hand');
         if (targetBtnId) {
           const btn = $(targetBtnId);
@@ -6513,7 +6944,7 @@
         if (window.game && window.game.onTutorialDismiss) window.game.onTutorialDismiss();
       };
 
-      // --- Level intro card — multi-step for first play, single card for repeat ---
+
       var _introSteps = [
         { emoji: '🖐️', text: 'Use left and right buttons to steer!' },
         { emoji: '⛽', text: 'Press the green pedal to go!' },
@@ -6528,7 +6959,7 @@
         var introLevel = $('kid-intro-level');
         var dots = $('kid-intro-dots');
         if (isFirstPlay && lvNum === 1) {
-          // Multi-step walkthrough for Level 1 first play
+
           var tier = (document.body.dataset.ageTier || 'adult');
           var maxSteps = tier === 'child' ? 2 : tier === 'teen' ? 3 : _introSteps.length;
           var steps = _introSteps.slice(0, maxSteps);
@@ -6556,7 +6987,7 @@
           }
           showStep();
         } else {
-          // Single card for all other levels
+
           introLevel.textContent = 'Level ' + lvNum;
           introEmoji.textContent = lvNum <= 3 ? '🚗' : lvNum <= 6 ? '🚦' : lvNum <= 9 ? '🏙️' : '🌙';
           introText.textContent = lvName || 'Let\'s go!';
@@ -6570,7 +7001,7 @@
         }
       };
 
-      // --- Show celebration ---
+
       window._kidShowCelebrate = function (stars, text, sub) {
         $('kid-cel-stars').textContent = stars || '⭐⭐⭐';
         $('kid-cel-text').textContent = text || 'Amazing!';
@@ -6584,7 +7015,7 @@
         if (window.ui && window.ui.showStart) window.ui.showStart();
       };
 
-      // --- Show crash (friendly) ---
+
       window._kidShowCrash = function (msg) {
         $('kid-crash-sub').textContent = msg || 'Be careful next time!';
         $('kid-crash').style.display = 'flex';
@@ -6604,7 +7035,7 @@
         if (window.ui && window.ui.showStart) window.ui.showStart();
       };
 
-      // --- Show countdown ---
+
       window._kidCountdown = function (callback) {
         const cd = $('kid-countdown');
         const num = $('kid-count-num');
@@ -6635,7 +7066,7 @@
         }, 800);
       };
 
-      // --- Show off-road warning ---
+
       window._kidShowOffroad = function () {
         const ow = $('kid-offroad');
         ow.style.display = 'block';
@@ -6648,7 +7079,7 @@
         }, 1500);
       };
 
-      // --- Confetti ---
+
       function spawnConfetti() {
         const colors = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
         for (let i = 0; i < 40; i++) {
@@ -6667,40 +7098,40 @@
         }
       }
 
-      // --- Hook into game events ---
-      // Wait for game object, then override _go (crash) and completeLevel (win)
-      let _kidOrigUh = null; // save original _uh once
-      let _kidOrigComplete = null; // save original completeLevel once
-      let _kidOrigCheckTasks = null; // save original _checkTasks once
+
+
+      let _kidOrigUh = null;
+      let _kidOrigComplete = null;
+      let _kidOrigCheckTasks = null;
 
       function _kidHookGame() {
         if (!window.game) { setTimeout(_kidHookGame, 200); return; }
 
-        // Override crash screen — show kid-friendly "Oops!" instead of legal report
+
         const origGo = window.game._go.bind(window.game);
         window.game._go = function (reason) {
           origGo(reason);
-          // After original crash screen appears, show kid overlay on top
+
           setTimeout(() => {
             const kidFriendly = reason || 'Be careful next time!';
             window._kidShowCrash(kidFriendly);
           }, 600);
         };
 
-        // Save original completeLevel once
+
         if (!_kidOrigComplete) {
           _kidOrigComplete = window.game.completeLevel.bind(window.game);
         }
-        // Override level completion — suppress original overlay, show kid celebration
+
         window.game.completeLevel = function () {
           if (window.KID_MODE) {
-            // Call original but remove its overlay after it appears
+
             _kidOrigComplete();
             setTimeout(() => {
-              // Remove the original "MISSION COMPLETE!" overlay
+
               const overlays = document.querySelectorAll('div[style*="z-index:9998"]');
               overlays.forEach(el => el.remove());
-              // Show kid-friendly celebration instead
+
               window._kidShowCelebrate('⭐⭐⭐', 'Amazing!', 'You did it!');
             }, 100);
           } else {
@@ -6708,12 +7139,12 @@
           }
         };
 
-        // Save original _uh once
+
         if (!_kidOrigUh) {
           _kidOrigUh = window.game._uh.bind(window.game);
         }
 
-        // Show kid controls when game starts
+
         const origActualStart = window.game._actualStart.bind(window.game);
         window.game._actualStart = function (lv) {
           origActualStart(lv);
@@ -6722,20 +7153,20 @@
           setTimeout(() => {
             showSteerAndPedals();
             window._kidUpdateLevelName(lv.name || 'Level ' + lv.id);
-            // Initialize hearts
+
             window._kidUpdateHearts(100, 100);
-            // Hook hearts update into _uh (use saved original to avoid stacking)
+
             window.game._uh = function () {
               _kidOrigUh();
               window._kidUpdateHearts(window.game.hp, 100);
             };
 
-            // Show intro card (non-blocking overlay)
+
             window._kidShowIntro(lvNum, lv.name || 'Level ' + lvNum, isFirstPlay, function () {
-              // After intro dismisses, show task tutorial if applicable
+
               if (isFirstPlay && lvNum === 1) {
                 localStorage.setItem('kid_tutorial_done', '1');
-                // Show first task tutorial after intro
+
                 setTimeout(function () {
                   var firstTask = window.game.tasks && window.game.tasks.find(function (t) { return !t.done; });
                   if (firstTask) {
@@ -6743,7 +7174,7 @@
                     setTimeout(function () { window._kidDismissTutorial(); }, 4000);
                   }
                 }, 300);
-                // ── E. Progressive tutorial tooltips (levels 2-5) ──
+
                 const tutStage = parseInt(localStorage.getItem('kid_tutorial_stage') || '1', 10);
                 if (lvNum >= 2 && lvNum <= 5 && lvNum > tutStage) {
                   const tips = {
@@ -6764,28 +7195,28 @@
               }
             });
 
-            // Progressive control unlock based on level
+
             const stopBtn = $('kid-stop-btn');
             const hornBtn = $('kid-horn-btn');
             const leftBtn = $('kid-left-btn');
             const rightBtn = $('kid-right-btn');
             const headBtn = $('kid-headlight-btn');
-            // Reset all locks
+
             [stopBtn, hornBtn, leftBtn, rightBtn, headBtn].forEach(b => { if (b) b.classList.remove('kid-locked'); });
-            // Tier 1 (1-3): steering + gas only
+
             if (lvNum <= 3) {
               [stopBtn, hornBtn, leftBtn, rightBtn, headBtn].forEach(b => { if (b) b.classList.add('kid-locked'); });
             }
-            // Tier 2 (4-6): add brake
+
             else if (lvNum <= 6) {
               [hornBtn, leftBtn, rightBtn, headBtn].forEach(b => { if (b) b.classList.add('kid-locked'); });
             }
-            // Tier 3 (7-9): add horn
+
             else if (lvNum <= 9) {
               [leftBtn, rightBtn, headBtn].forEach(b => { if (b) b.classList.add('kid-locked'); });
             }
-            // Tier 4 (10+): all controls unlocked
-            // Show unlock toast on tier transitions
+
+
             const prevTier = parseInt(localStorage.getItem('kid_tier') || '0', 10);
             let curTier = 1;
             if (lvNum > 9) curTier = 4;
@@ -6799,7 +7230,7 @@
               setTimeout(() => { toast.style.display = 'none'; }, 3000);
             }
             localStorage.setItem('kid_tier', curTier.toString());
-            // Auto-unlock controls needed by current tasks
+
             const neededTargets = (window.game.tasks || []).map(t => t.target);
             if (neededTargets.includes('indicator') || neededTargets.includes('hazards')) {
               if (leftBtn) leftBtn.classList.remove('kid-locked');
@@ -6815,18 +7246,18 @@
               'toggle': { 'seatbelt': ['🔒', 'Buckle up!', ''], 'indicator': ['➡️', 'Use indicator!', 'kid-left-btn'], 'headlights': ['💡', 'Turn on lights!', 'kid-headlight-btn'], 'hazards': ['⚠️', 'Turn on hazard lights!', 'kid-left-btn'] }
             };
             const firstTask = window.game.tasks && window.game.tasks.find(t => !t.done);
-            // Skip task tutorial if intro already handled it (Level 1 first play)
+
             if (firstTask && !(isFirstPlay && lvNum === 1)) {
               const tm = taskMap[firstTask.type] && taskMap[firstTask.type][firstTask.target];
               const emoji = tm ? tm[0] : '🚗';
               const text = tm ? tm[1] : firstTask.text;
               const btnId = tm ? tm[2] : '';
               window._kidShowTutorial(emoji, text, '', btnId);
-              // Auto-dismiss after 4 seconds
+
               setTimeout(() => { window._kidDismissTutorial(); }, 4000);
             }
 
-            // Hook task completion for kid task bar updates (save original once)
+
             if (!_kidOrigCheckTasks) {
               _kidOrigCheckTasks = window.game._checkTasks.bind(window.game);
             }
@@ -6834,17 +7265,17 @@
             window.game._checkTasks = function () {
               _kidOrigCheckTasks();
               var now = performance.now();
-              if (now - _kidLastTaskUpdate < 500) return; // throttle to 2x/sec
+              if (now - _kidLastTaskUpdate < 500) return;
               _kidLastTaskUpdate = now;
               var tasks = window.game.tasks || [];
               var doneCount = tasks.filter(function (t) { return t.done; }).length;
               var total = tasks.length;
               var pct = total > 0 ? (doneCount / total) * 100 : 0;
-              // For reach destination, use checkpoint progress
+
               var next = tasks.find(function (t) { return !t.done; });
               if (next && next.type === 'reach' && next.target === 'destination' && window.game.cps && window.game.cps.length > 0) {
                 var cpPct = (window.game.hits / window.game.cps.length) * 100;
-                pct = Math.max(pct, cpPct); // at least the task-based pct
+                pct = Math.max(pct, cpPct);
               }
               if (next) {
                 var tm = taskMap[next.type] && taskMap[next.type][next.target];
@@ -6853,7 +7284,7 @@
                 window._kidUpdateTask('All done!', 100, '🎉');
               }
             };
-            // Initial task bar
+
             if (firstTask) {
               var tm0 = taskMap[firstTask.type] && taskMap[firstTask.type][firstTask.target];
               window._kidUpdateTask(tm0 ? tm0[1] : firstTask.text, 0, tm0 ? tm0[0] : null);
@@ -6867,7 +7298,7 @@
 
       console.log('[Kid Mode] Initialized — simplified UI for children');
 
-      // --- Reminder tooltips: pulse buttons when unused for 20s during relevant tasks ---
+
       const REMIND_MS = 20000;
       const _remindMap = {
         'stop': 'stop',
@@ -6888,11 +7319,11 @@
         if (!ctrl) return;
         const last = window._kidLastUsed[ctrl] || 0;
         if (Date.now() - last < REMIND_MS) return;
-        // Don't remind if control is locked
+
         const btnMap = { stop: 'kid-stop-btn', indicator: 'kid-left-btn', headlight: 'kid-headlight-btn' };
         const btn = $(btnMap[ctrl]);
         if (!btn || btn.classList.contains('kid-locked')) return;
-        // Pulse the button briefly
+
         btn.style.transition = 'transform 0.3s, box-shadow 0.3s';
         btn.style.transform = 'scale(1.25)';
         btn.style.boxShadow = '0 0 20px rgba(255,255,0,0.7)';
@@ -6903,7 +7334,7 @@
       }, 5000);
     })();
 
-    /* ── Horizon Toggle ── */
+    
     function hzInit() {
       var t = localStorage.getItem('theme');
       if (t === 'light') { document.body.classList.add('lm'); }
@@ -6922,30 +7353,30 @@
       hzSync();
     }
 
-    // ── Pause Menu: Tab Switching ──
+
     function pauseTab(tab) {
       document.querySelectorAll('.pause-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
       document.querySelectorAll('.pause-panel').forEach(p => p.style.display = 'none');
       const panel = document.getElementById('pause-tab-' + tab);
       if (panel) panel.style.display = 'flex';
-      // Reset to main when resuming
+
       if (tab === 'main') document.getElementById('pause-resume')?.focus();
     }
 
-    // ── Pause Menu: Volume Control ──
+
     function pauseSetVolume(val) {
       const v = parseInt(val);
       document.getElementById('pause-volume-val').textContent = v + '%';
-      // Apply to game audio if available — try common sfx property patterns
+
       const normalised = v / 100;
       try {
         if (window.sfx) {
-          // Try direct setter first
+
           if (typeof window.sfx.setVolume === 'function') { window.sfx.setVolume(normalised); }
-          // Try _masterGain or _g gain node
+
           const gain = window.sfx._masterGain || window.sfx._g;
           if (gain && gain.gain) gain.gain.value = normalised;
-          // Try _c (AudioContext) destination gain
+
           if (window.sfx._c && window.sfx._c.destination) {
             const dest = window.sfx._c.destination;
             if (dest.gain) dest.gain.value = normalised;
@@ -6955,7 +7386,7 @@
       localStorage.setItem('traffic_volume', v);
     }
 
-    // ── Pause Menu: Graphics Quality ──
+
     function pauseSetQuality(preset) {
       document.querySelectorAll('.qbtn').forEach(b => b.classList.toggle('active', b.dataset.q === preset));
       if (window.game && window.game.renderCore) {
@@ -6965,7 +7396,7 @@
       localStorage.setItem('traffic_quality', preset);
     }
 
-    // ── Pause Menu: Night Mode Toggle ──
+
     let _pauseNightOn = false;
     function pauseToggleNight() {
       _pauseNightOn = !_pauseNightOn;
@@ -6975,7 +7406,7 @@
         btn.style.background = _pauseNightOn ? 'rgba(52,152,219,0.6)' : 'rgba(255,255,255,0.1)';
         btn.style.color = _pauseNightOn ? '#fff' : 'rgba(255,255,255,0.7)';
       }
-      // Apply night mode to scene if game is active
+
       if (window.game && window.game.scene) {
         const fog = window.game.scene.fog;
         const amb = window.game.scene.children.find(c => c.isAmbientLight);
@@ -6991,7 +7422,7 @@
       }
     }
 
-    // Initialize pause settings from localStorage
+
     (function() {
       const savedVol = localStorage.getItem('traffic_volume');
       if (savedVol !== null) {
@@ -7005,7 +7436,7 @@
 hzInit();
     </script>
 
-  <!-- ═══ CHARACTER CUSTOMIZATION MODAL ═══ -->
+  
   <div id="customize-modal" style="display:none; position:fixed; inset:0; z-index:10001; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; justify-content:center; padding:20px;">
     <div style="background:var(--card,#1e293b); border:1px solid var(--border,rgba(255,255,255,0.08)); border-radius:20px; max-width:440px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.5);">
       <div style="padding:24px 24px 0; display:flex; align-items:center; justify-content:space-between;">
@@ -7013,47 +7444,47 @@ hzInit();
         <button onclick="document.getElementById('customize-modal').style.display='none'" style="width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--hover); color:var(--text); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
       </div>
       <div style="padding:20px 24px 24px;">
-        <!-- Live Preview -->
+        
         <div style="text-align:center; margin-bottom:20px;">
           <canvas id="customize-preview" width="200" height="280" style="border-radius:16px; background:rgba(0,0,0,0.2); border:1px solid var(--border);"></canvas>
           <div style="font-size:0.75rem; color:var(--muted); margin-top:6px;">Live Preview</div>
         </div>
-        <!-- Skin Tone -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Skin Tone</div>
           <div id="skin-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Hair Color -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hair Color</div>
           <div id="hair-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Hairstyle -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hairstyle</div>
           <div id="hairstyle-options" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Eye Color -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Eye Color</div>
           <div id="eye-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Shirt Color -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shirt Color</div>
           <div id="shirt-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Pants Color -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Pants Color</div>
           <div id="pants-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Shoe Color -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shoe Color</div>
           <div id="shoe-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Accessories -->
+        
         <div style="margin-bottom:20px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Accessories</div>
           <div id="accessory-options" style="display:flex; gap:8px; flex-wrap:wrap;"></div>

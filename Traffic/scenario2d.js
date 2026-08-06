@@ -1,15 +1,9 @@
-/* ══════════════════════════════════════════════════════════════════════════
-   scenario2d.js — 2D Scenario Intro Engine for Traffic Driving Simulator
-   ══════════════════════════════════════════════════════════════════════════
-   Renders animated Canvas-based cinematic intros before each level starts.
-   Each themeType gets a unique 2D scene with parallax layers, particles,
-   character sprites, weather effects, view bobbing, and smooth transitions.
-   ══════════════════════════════════════════════════════════════════════════ */
+
 
 ;(function () {
   'use strict'
 
-  /* ── EASING FUNCTIONS ── */
+
   const Ease = {
     linear: (t) => t,
     easeInQuad: (t) => t * t,
@@ -22,7 +16,7 @@
     easeInExpo: (t) => (t === 0 ? 0 : Math.pow(2, 10 * t - 10))
   }
 
-  /* ── COLOR UTILITIES ── */
+
   const hexToRgb = (hex) => {
     const h = hex.replace('#', '')
     return { r: parseInt(h.substring(0, 2), 16), g: parseInt(h.substring(2, 4), 16), b: parseInt(h.substring(4, 6), 16) }
@@ -33,15 +27,13 @@
     return rgbStr(Math.round(a.r + (b.r - a.r) * t), Math.round(a.g + (b.g - a.g) * t), Math.round(a.b + (b.b - a.b) * t))
   }
 
-  /* ── MATH UTILITIES ── */
+
   const rand = (min, max) => Math.random() * (max - min) + min
   const randInt = (min, max) => Math.floor(rand(min, max + 1))
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
   const lerp = (a, b, t) => a + (b - a) * t
 
-  /* ════════════════════════════════════════════════════════════════════════
-     SCENARIO DATA — Detailed scene descriptors for all 52 levels
-     ════════════════════════════════════════════════════════════════════════ */
+
   const SCENARIOS = {
     signal_jump: {
       sky: ['#87b6d8', '#5a9cc5'],
@@ -647,9 +639,7 @@
     }
   }
 
-  /* ════════════════════════════════════════════════════════════════════════
-     PARTICLE SYSTEMS
-     ════════════════════════════════════════════════════════════════════════ */
+
   class ParticleSystem {
     constructor (type, w, h) {
       this.type = type
@@ -728,9 +718,7 @@
     }
   }
 
-  /* ════════════════════════════════════════════════════════════════════════
-     DRAWING PRIMITIVES
-     ════════════════════════════════════════════════════════════════════════ */
+
 
   function drawSky (ctx, w, h, colors, t) {
     const grad = ctx.createLinearGradient(0, 0, 0, h * 0.7)
@@ -751,7 +739,7 @@
     ctx.beginPath()
     ctx.arc(x, y, 50, 0, Math.PI * 2)
     ctx.fill()
-    // Core
+
     ctx.fillStyle = 'rgba(255,250,220,0.95)'
     ctx.beginPath()
     ctx.arc(x, y, 15, 0, Math.PI * 2)
@@ -773,7 +761,7 @@
     ctx.beginPath()
     ctx.arc(x, y, 12, 0, Math.PI * 2)
     ctx.fill()
-    // Crescent shadow
+
     ctx.fillStyle = 'rgba(10,10,20,0.6)'
     ctx.beginPath()
     ctx.arc(x + 5, y - 2, 10, 0, Math.PI * 2)
@@ -795,7 +783,7 @@
 
   function drawMountains (ctx, w, h, t) {
     const roadY = h * 0.65
-    // Far mountains
+
     ctx.fillStyle = '#4a6a5a'
     ctx.beginPath()
     ctx.moveTo(0, roadY)
@@ -806,7 +794,7 @@
     ctx.lineTo(w, roadY)
     ctx.closePath()
     ctx.fill()
-    // Near mountains
+
     ctx.fillStyle = '#3a5a3a'
     ctx.beginPath()
     ctx.moveTo(0, roadY)
@@ -829,10 +817,10 @@
       const bh = config.minH + (Math.sin(i * 2.7) * 0.5 + 0.5) * (config.maxH - config.minH)
       const by = roadY - bh
       const color = config.colors[i % config.colors.length]
-      // Building body
+
       ctx.fillStyle = color
       ctx.fillRect(bx + 2, by, bw - 4, bh)
-      // Windows
+
       ctx.fillStyle = 'rgba(255,255,200,0.3)'
       for (let wy = by + 10; wy < roadY - 15; wy += 18) {
         for (let wx = bx + 8; wx < bx + bw - 12; wx += 14) {
@@ -848,10 +836,10 @@
     if (!config) return
     const roadY = h * config.y
     const roadH = 80
-    // Road surface
+
     ctx.fillStyle = config.color
     ctx.fillRect(0, roadY, w, roadH)
-    // Lane markings
+
     if (config.lanes > 1) {
       ctx.strokeStyle = config.lineColor
       ctx.lineWidth = 2
@@ -866,7 +854,7 @@
       }
       ctx.setLineDash([])
     }
-    // Road edges
+
     ctx.strokeStyle = config.lineColor
     ctx.lineWidth = 3
     ctx.beginPath()
@@ -877,7 +865,7 @@
     ctx.moveTo(0, roadY + roadH)
     ctx.lineTo(w, roadY + roadH)
     ctx.stroke()
-    // Cycle lane
+
     if (config.cycleLane) {
       ctx.strokeStyle = '#00cc66'
       ctx.lineWidth = 2
@@ -899,7 +887,7 @@
 
     ctx.save()
 
-    // Headlights glow for night
+
     if (v.headlights) {
       const grad = ctx.createRadialGradient(vx + (v.dir > 0 ? vw : 0), vy + vh / 2, 0, vx + (v.dir > 0 ? vw : 0), vy + vh / 2, 80)
       grad.addColorStop(0, 'rgba(255,240,180,0.4)')
@@ -911,7 +899,7 @@
     }
 
     if (v.type === 'auto') {
-      // Auto-rickshaw body
+
       ctx.fillStyle = v.color
       ctx.beginPath()
       ctx.moveTo(vx, vy)
@@ -921,10 +909,10 @@
       ctx.lineTo(vx, vy + vh)
       ctx.closePath()
       ctx.fill()
-      // Roof
+
       ctx.fillStyle = '#222'
       ctx.fillRect(vx + vw * 0.1, vy - 5, vw * 0.5, 6)
-      // Wheels
+
       ctx.fillStyle = '#111'
       ctx.beginPath()
       ctx.arc(vx + vw * 0.2, vy + vh + 2, 5, 0, Math.PI * 2)
@@ -933,17 +921,17 @@
       ctx.arc(vx + vw * 0.8, vy + vh + 2, 5, 0, Math.PI * 2)
       ctx.fill()
     } else if (v.type === 'bike') {
-      // Bike body
+
       ctx.fillStyle = v.color
       ctx.fillRect(vx + vw * 0.3, vy + 2, vw * 0.4, vh * 0.6)
-      // Handlebar
+
       ctx.strokeStyle = '#333'
       ctx.lineWidth = 2
       ctx.beginPath()
       ctx.moveTo(vx + vw * 0.1, vy)
       ctx.lineTo(vx + vw * 0.3, vy + vh * 0.3)
       ctx.stroke()
-      // Wheels
+
       ctx.fillStyle = '#111'
       ctx.beginPath()
       ctx.arc(vx + vw * 0.15, vy + vh + 2, 6, 0, Math.PI * 2)
@@ -952,16 +940,16 @@
       ctx.arc(vx + vw * 0.85, vy + vh + 2, 6, 0, Math.PI * 2)
       ctx.fill()
     } else if (v.type === 'bus') {
-      // Bus body
+
       ctx.fillStyle = v.color
       roundRect(ctx, vx, vy, vw, vh, 4)
       ctx.fill()
-      // Windows
+
       ctx.fillStyle = 'rgba(180,220,255,0.5)'
       for (let wx = vx + 8; wx < vx + vw - 10; wx += 14) {
         ctx.fillRect(wx, vy + 4, 10, vh * 0.35)
       }
-      // Wheels
+
       ctx.fillStyle = '#111'
       ctx.beginPath()
       ctx.arc(vx + 12, vy + vh + 2, 6, 0, Math.PI * 2)
@@ -970,15 +958,15 @@
       ctx.arc(vx + vw - 12, vy + vh + 2, 6, 0, Math.PI * 2)
       ctx.fill()
     } else if (v.type === 'truck') {
-      // Truck cab
+
       ctx.fillStyle = v.color
       roundRect(ctx, vx, vy, vw * 0.35, vh, 3)
       ctx.fill()
-      // Truck bed
+
       ctx.fillStyle = darkenColor(v.color, 0.7)
       roundRect(ctx, vx + vw * 0.35, vy + 2, vw * 0.65, vh - 4, 2)
       ctx.fill()
-      // Wheels
+
       ctx.fillStyle = '#111'
       ctx.beginPath()
       ctx.arc(vx + 10, vy + vh + 2, 7, 0, Math.PI * 2)
@@ -987,28 +975,28 @@
       ctx.arc(vx + vw - 10, vy + vh + 2, 7, 0, Math.PI * 2)
       ctx.fill()
     } else if (v.type === 'ambulance') {
-      // Ambulance body
+
       ctx.fillStyle = '#fff'
       roundRect(ctx, vx, vy, vw, vh, 4)
       ctx.fill()
-      // Red cross
+
       ctx.fillStyle = '#e74c3c'
       ctx.fillRect(vx + vw * 0.4, vy + 2, vw * 0.2, vh * 0.6)
       ctx.fillRect(vx + vw * 0.35, vy + vh * 0.15, vw * 0.3, vh * 0.3)
-      // Siren flash
+
       if (v.siren) {
         const flash = Math.sin(t * 8) > 0
         ctx.fillStyle = flash ? 'rgba(255,0,0,0.8)' : 'rgba(0,100,255,0.8)'
         ctx.beginPath()
         ctx.arc(vx + vw * 0.5, vy - 5, 6, 0, Math.PI * 2)
         ctx.fill()
-        // Glow
+
         ctx.fillStyle = flash ? 'rgba(255,0,0,0.2)' : 'rgba(0,100,255,0.2)'
         ctx.beginPath()
         ctx.arc(vx + vw * 0.5, vy - 5, 20, 0, Math.PI * 2)
         ctx.fill()
       }
-      // Wheels
+
       ctx.fillStyle = '#111'
       ctx.beginPath()
       ctx.arc(vx + 12, vy + vh + 2, 5, 0, Math.PI * 2)
@@ -1017,26 +1005,26 @@
       ctx.arc(vx + vw - 12, vy + vh + 2, 5, 0, Math.PI * 2)
       ctx.fill()
     } else {
-      // Default car
+
       ctx.fillStyle = v.color
       roundRect(ctx, vx, vy, vw, vh, 6)
       ctx.fill()
-      // Windshield
+
       ctx.fillStyle = 'rgba(150,200,255,0.4)'
       const wsX = v.dir > 0 ? vx + vw * 0.6 : vx + vw * 0.1
       roundRect(ctx, wsX, vy + 3, vw * 0.25, vh * 0.5, 3)
       ctx.fill()
-      // Headlights
+
       ctx.fillStyle = 'rgba(255,255,200,0.9)'
       const hlX = v.dir > 0 ? vx + vw - 3 : vx + 3
       ctx.fillRect(hlX - 2, vy + 4, 4, 4)
       ctx.fillRect(hlX - 2, vy + vh - 8, 4, 4)
-      // Taillights
+
       ctx.fillStyle = 'rgba(255,30,30,0.8)'
       const tlX = v.dir > 0 ? vx + 3 : vx + vw - 3
       ctx.fillRect(tlX - 2, vy + 4, 4, 4)
       ctx.fillRect(tlX - 2, vy + vh - 8, 4, 4)
-      // Wheels
+
       ctx.fillStyle = '#111'
       ctx.beginPath()
       ctx.arc(vx + vw * 0.2, vy + vh + 2, 5, 0, Math.PI * 2)
@@ -1058,13 +1046,13 @@
     ctx.save()
     ctx.translate(px, py + bobY)
 
-    // Shadow
+
     ctx.fillStyle = 'rgba(0,0,0,0.15)'
     ctx.beginPath()
     ctx.ellipse(0, 18, 6, 2, 0, 0, Math.PI * 2)
     ctx.fill()
 
-    // Legs
+
     ctx.strokeStyle = '#2c3e50'
     ctx.lineWidth = 3
     ctx.beginPath()
@@ -1076,17 +1064,17 @@
     ctx.lineTo(2 - Math.sin(legSwing) * 4, 16)
     ctx.stroke()
 
-    // Body
+
     ctx.fillStyle = p.color
     ctx.fillRect(-4, -4, 8, 12)
 
-    // Head
+
     ctx.fillStyle = '#f1c27d'
     ctx.beginPath()
     ctx.arc(0, -8, 5, 0, Math.PI * 2)
     ctx.fill()
 
-    // Hair
+
     ctx.fillStyle = '#2c1810'
     ctx.beginPath()
     ctx.arc(0, -10, 5, Math.PI, 0)
@@ -1102,17 +1090,17 @@
     ctx.translate(ax, ay)
 
     if (a.type === 'cow') {
-      // Cow body
+
       ctx.fillStyle = a.color || '#8B4513'
       ctx.beginPath()
       ctx.ellipse(0, 0, 25, 12, 0, 0, Math.PI * 2)
       ctx.fill()
-      // Head
+
       ctx.fillStyle = a.color || '#8B4513'
       ctx.beginPath()
       ctx.ellipse(28, -5, 10, 8, 0, 0, Math.PI * 2)
       ctx.fill()
-      // Horns
+
       ctx.strokeStyle = '#ddd'
       ctx.lineWidth = 2
       ctx.beginPath()
@@ -1123,12 +1111,12 @@
       ctx.moveTo(26, -12)
       ctx.lineTo(21, -18)
       ctx.stroke()
-      // Eye
+
       ctx.fillStyle = '#111'
       ctx.beginPath()
       ctx.arc(32, -6, 2, 0, Math.PI * 2)
       ctx.fill()
-      // Legs
+
       ctx.strokeStyle = a.color || '#6B3410'
       ctx.lineWidth = 3
       for (const lx of [-15, -5, 8, 18]) {
@@ -1137,7 +1125,7 @@
         ctx.lineTo(lx, 18)
         ctx.stroke()
       }
-      // Tail
+
       ctx.strokeStyle = a.color || '#6B3410'
       ctx.lineWidth = 1.5
       ctx.beginPath()
@@ -1145,7 +1133,7 @@
       ctx.quadraticCurveTo(-35, -8 + Math.sin(t * 2) * 5, -38, -4)
       ctx.stroke()
     } else {
-      // Chicken
+
       ctx.fillStyle = a.color || '#cc8833'
       ctx.beginPath()
       ctx.ellipse(0, 0, 8, 6, 0, 0, Math.PI * 2)
@@ -1158,7 +1146,7 @@
       ctx.beginPath()
       ctx.arc(7, -5, 3, 0, Math.PI * 2)
       ctx.fill()
-      // Beak
+
       ctx.fillStyle = '#ff9900'
       ctx.beginPath()
       ctx.moveTo(8, -6)
@@ -1166,7 +1154,7 @@
       ctx.lineTo(8, -4)
       ctx.closePath()
       ctx.fill()
-      // Legs
+
       ctx.strokeStyle = '#cc8833'
       ctx.lineWidth = 1.5
       ctx.beginPath()
@@ -1189,14 +1177,14 @@
     const state = config.states[stateIdx]
 
     ctx.save()
-    // Pole
+
     ctx.fillStyle = '#333'
     ctx.fillRect(x - 2, y, 4, h * 0.3)
-    // Housing
+
     ctx.fillStyle = '#222'
     roundRect(ctx, x - 12, y - 50, 24, 55, 5)
     ctx.fill()
-    // Lights
+
     const lights = [
       { color: '#ff0000', on: state === 'red', yOff: -42 },
       { color: '#ffaa00', on: state === 'yellow', yOff: -25 },
@@ -1225,10 +1213,10 @@
     const x = sign.x * w
     const y = h * 0.5
     ctx.save()
-    // Pole
+
     ctx.fillStyle = '#888'
     ctx.fillRect(x - 1.5, y, 3, h * 0.2)
-    // Sign shape
+
     if (sign.type === 'mandatory') {
       ctx.fillStyle = sign.color
       ctx.beginPath()
@@ -1247,7 +1235,7 @@
       roundRect(ctx, x - 18, y - 25, 36, 25, 3)
       ctx.fill()
     }
-    // Symbol
+
     ctx.fillStyle = '#fff'
     ctx.font = 'bold 14px Inter, sans-serif'
     ctx.textAlign = 'center'
@@ -1264,7 +1252,7 @@
     ctx.beginPath()
     ctx.ellipse(px, py, p.w / 2, p.h / 2, 0, 0, Math.PI * 2)
     ctx.fill()
-    // Reflection highlight
+
     ctx.fillStyle = `rgba(200,230,255,${shimmer * 0.5})`
     ctx.beginPath()
     ctx.ellipse(px - p.w * 0.15, py - 2, p.w * 0.2, p.h * 0.2, -0.3, 0, Math.PI * 2)
@@ -1286,7 +1274,7 @@
   }
 
   function drawDecorations (ctx, w, h, t) {
-    // Bunting / festive lights across the road
+
     const roadY = h * 0.65
     const startY = roadY - 40
     ctx.strokeStyle = '#f39c12'
@@ -1297,7 +1285,7 @@
       ctx.lineTo(x, startY + Math.sin(x * 0.02 + t * 0.5) * 8)
     }
     ctx.stroke()
-    // Light bulbs
+
     for (let x = 20; x < w; x += 40) {
       const by = startY + Math.sin(x * 0.02 + t * 0.5) * 8 + 5
       const colors = ['#e74c3c', '#f39c12', '#2ecc71', '#3498db', '#9b59b6']
@@ -1310,7 +1298,7 @@
 
   function drawConstruction (ctx, w, h, t) {
     const roadY = h * 0.65
-    // Barriers
+
     for (let i = 0; i < 5; i++) {
       const bx = w * 0.3 + i * 30
       ctx.fillStyle = '#ff6600'
@@ -1319,7 +1307,7 @@
       ctx.fillRect(bx + 1, roadY - 13, 6, 3)
       ctx.fillRect(bx + 1, roadY - 8, 6, 3)
     }
-    // Cones
+
     for (let i = 0; i < 3; i++) {
       const cx = w * 0.6 + i * 25
       ctx.fillStyle = '#ff6600'
@@ -1337,17 +1325,17 @@
   function drawTollPlaza (ctx, w, h, t) {
     const roadY = h * 0.65
     const plazaY = roadY - 60
-    // Structure
+
     ctx.fillStyle = '#8B7355'
     ctx.fillRect(w * 0.3, plazaY, w * 0.4, 70)
     ctx.fillStyle = '#A0926B'
     ctx.fillRect(w * 0.28, plazaY - 8, w * 0.44, 12)
-    // Booths
+
     for (let i = 0; i < 4; i++) {
       const bx = w * 0.33 + i * (w * 0.09)
       ctx.fillStyle = '#555'
       ctx.fillRect(bx, plazaY + 15, 20, 45)
-      // Barrier arm
+
       const armUp = i === 2
       ctx.strokeStyle = '#e74c3c'
       ctx.lineWidth = 3
@@ -1360,7 +1348,7 @@
   }
 
   function drawSchool (ctx, w, h, t) {
-    // School sign
+
     const sx = w * 0.15
     const sy = h * 0.55
     ctx.fillStyle = '#f1c40f'
@@ -1371,7 +1359,7 @@
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText('SCHOOL', sx, sy - 8)
-    // Zebra crossing
+
     const roadY = h * 0.65
     ctx.fillStyle = '#fff'
     for (let i = 0; i < 8; i++) {
@@ -1382,12 +1370,12 @@
   function drawTemple (ctx, w, h, t) {
     const tx = w * 0.8
     const ty = h * 0.45
-    // Temple dome
+
     ctx.fillStyle = '#c0a060'
     ctx.beginPath()
     ctx.arc(tx, ty, 25, Math.PI, 0)
     ctx.fill()
-    // Spire
+
     ctx.fillStyle = '#d4af37'
     ctx.beginPath()
     ctx.moveTo(tx, ty - 40)
@@ -1395,16 +1383,16 @@
     ctx.lineTo(tx - 8, ty - 20)
     ctx.closePath()
     ctx.fill()
-    // Base
+
     ctx.fillStyle = '#c0a060'
     ctx.fillRect(tx - 30, ty, 60, 40)
-    // Entrance
+
     ctx.fillStyle = '#8B4513'
     ctx.beginPath()
     ctx.arc(tx, ty + 20, 12, Math.PI, 0)
     ctx.fill()
     ctx.fillRect(tx - 12, ty + 20, 24, 20)
-    // Flag
+
     ctx.strokeStyle = '#ff6600'
     ctx.lineWidth = 1.5
     ctx.beginPath()
@@ -1423,19 +1411,19 @@
   function drawNoHonkSign (ctx, w, h, t) {
     const nx = w * 0.85
     const ny = h * 0.5
-    // Circle
+
     ctx.strokeStyle = '#cc0000'
     ctx.lineWidth = 3
     ctx.beginPath()
     ctx.arc(nx, ny, 20, 0, Math.PI * 2)
     ctx.stroke()
-    // Horn icon
+
     ctx.fillStyle = '#cc0000'
     ctx.font = '16px serif'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText('📯', nx, ny - 2)
-    // Slash
+
     ctx.strokeStyle = '#cc0000'
     ctx.lineWidth = 3
     ctx.beginPath()
@@ -1444,7 +1432,7 @@
     ctx.stroke()
   }
 
-  /* ── UTILITY DRAWING ── */
+
   function roundRect (ctx, x, y, w, h, r) {
     ctx.beginPath()
     ctx.moveTo(x + r, y)
@@ -1464,9 +1452,7 @@
     return rgbStr(Math.round(r.r * factor), Math.round(r.g * factor), Math.round(r.b * factor))
   }
 
-  /* ════════════════════════════════════════════════════════════════════════
-     MAIN SCENARIO ENGINE
-     ════════════════════════════════════════════════════════════════════════ */
+
   class Scenario2D {
     constructor () {
       this.canvas = null
@@ -1475,7 +1461,7 @@
       this.particles = null
       this.animFrame = null
       this.startTime = 0
-      this.duration = 5000 // 5 second intro
+      this.duration = 5000
       this.onComplete = null
       this.headlineAlpha = 0
       this.sublineAlpha = 0
@@ -1490,13 +1476,9 @@
       this.skipRequested = false
     }
 
-    /**
-     * Play a 2D scenario intro for a given level.
-     * @param {number} levelId - The level ID (1-52)
-     * @param {Function} onComplete - Called when intro finishes or is skipped
-     */
+
     play (levelId, onComplete) {
-      // Find the scenario data
+
       this.lv = window.LVS ? window.LVS.find(l => l.id === levelId) : null
       const lv = this.lv
       const themeType = lv ? (lv.themeType || 'signal_jump') : 'signal_jump'
@@ -1505,7 +1487,7 @@
       this.onComplete = onComplete
       this.skipRequested = false
 
-      // Create canvas
+
       this.canvas = document.createElement('canvas')
       this.canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;cursor:pointer;'
       this.canvas.width = window.innerWidth * (window.devicePixelRatio || 1)
@@ -1513,7 +1495,7 @@
       this.ctx = this.canvas.getContext('2d')
       document.body.appendChild(this.canvas)
 
-      // Handle skip
+
       const skipHandler = (e) => {
         e.preventDefault()
         this.skip()
@@ -1525,7 +1507,7 @@
       this.canvas.addEventListener('touchstart', skipHandler, { passive: false })
       this.canvas.addEventListener('keydown', skipHandler)
 
-      // Init particles
+
       if (scenario.rain) {
         this.particles = new ParticleSystem('rain', this.canvas.width, this.canvas.height)
       } else if (scenario.particles === 'confetti') {
@@ -1534,7 +1516,7 @@
         this.particles = new ParticleSystem('dust', this.canvas.width, this.canvas.height)
       }
 
-      // Init pedestrian positions
+
       if (scenario.pedestrians) {
         scenario._pedInstances = []
         for (let i = 0; i < scenario.pedestrians.count; i++) {
@@ -1549,7 +1531,7 @@
         }
       }
 
-      // Camera setup
+
       const focus = scenario.focus || { x: 0.5, y: 0.65, zoom: 1 }
       this.targetCamX = (focus.x - 0.5) * 30
       this.targetCamY = (focus.y - 0.5) * 20
@@ -1583,7 +1565,7 @@
       const w = this.canvas.width
       const h = this.canvas.height
 
-      // Skip fade
+
       if (this.skipRequested) {
         const skipProgress = clamp((elapsed - (this.duration - 500)) / 500, 0, 1)
         if (skipProgress >= 1) {
@@ -1592,26 +1574,26 @@
         }
       }
 
-      // Camera animation — smooth zoom in from wide to focus
+
       const camProgress = Ease.easeInOutCubic(clamp(elapsed / 2500, 0, 1))
       this.camX = lerp(0, this.targetCamX, camProgress)
       this.camY = lerp(-20, this.targetCamY, camProgress)
       this.camZoom = lerp(1.3, this.targetCamZoom, camProgress)
 
-      // View bobbing
+
       const bobX = Math.sin(t * 1.2) * 2 * (1 - progress)
       const bobY = Math.cos(t * 0.8) * 1.5 * (1 - progress)
 
-      // Clear
+
       ctx.clearRect(0, 0, w, h)
 
-      // Apply camera transform
+
       ctx.save()
       ctx.translate(w / 2, h / 2)
       ctx.scale(this.camZoom, this.camZoom)
       ctx.translate(-w / 2 + this.camX + bobX, -h / 2 + this.camY + bobY)
 
-      // Draw scene layers (back to front)
+
       drawSky(ctx, w, h, scenario.sky, t)
 
       if (scenario.night) {
@@ -1629,7 +1611,7 @@
         drawBuildings(ctx, w, h, scenario.buildings, t, this.camX)
       }
 
-      // Scene-specific elements
+
       if (scenario.school) drawSchool(ctx, w, h, t)
       if (scenario.temple) drawTemple(ctx, w, h, t)
       if (scenario.noHonk) drawNoHonkSign(ctx, w, h, t)
@@ -1637,33 +1619,33 @@
       if (scenario.tollPlaza) drawTollPlaza(ctx, w, h, t)
       if (scenario.decorations) drawDecorations(ctx, w, h, t)
 
-      // Road signs
+
       if (scenario.roadSigns) {
         for (const sign of scenario.roadSigns) drawRoadSign(ctx, sign, w, h, t)
       }
 
-      // Traffic light
+
       if (scenario.trafficLight) drawTrafficLight(ctx, scenario.trafficLight, w, h, t)
 
-      // Road
+
       drawRoad(ctx, w, h, scenario.road, t, this.camX)
 
-      // Puddles
+
       if (scenario.puddles) {
         for (const p of scenario.puddles) drawPuddle(ctx, p, w, h, t)
       }
 
-      // Parked cars
+
       if (scenario.parkedCars) {
         for (const pc of scenario.parkedCars) drawVehicle(ctx, { ...pc, dir: 1, type: 'car' }, w, h, t)
       }
 
-      // Animals
+
       if (scenario.animals) {
         for (const a of scenario.animals) drawAnimal(ctx, a, w, h, t)
       }
 
-      // Vehicles — animate movement
+
       if (scenario.vehicles) {
         for (const v of scenario.vehicles) {
           const vv = { ...v }
@@ -1678,7 +1660,7 @@
         }
       }
 
-      // Pedestrians
+
       if (scenario._pedInstances) {
         for (const p of scenario._pedInstances) {
           const pp = { ...p }
@@ -1689,14 +1671,14 @@
         }
       }
 
-      // Fog
+
       if (scenario.fog) {
         drawFog(ctx, w, h, t, 0.25)
       } else if (scenario.night) {
         drawFog(ctx, w, h, t, 0.08)
       }
 
-      // Particles
+
       if (this.particles) {
         this.particles.update(dt, scenario.wind || 0)
         this.particles.draw(ctx)
@@ -1704,21 +1686,21 @@
 
       ctx.restore()
 
-      // ── UI OVERLAY ──
-      // Dark vignette
+
+
       const vignette = ctx.createRadialGradient(w / 2, h / 2, w * 0.2, w / 2, h / 2, w * 0.7)
       vignette.addColorStop(0, 'rgba(0,0,0,0)')
       vignette.addColorStop(1, 'rgba(0,0,0,0.5)')
       ctx.fillStyle = vignette
       ctx.fillRect(0, 0, w, h)
 
-      // Level badge
+
       const badgeAlpha = Ease.easeOutBack(clamp((elapsed - 300) / 600, 0, 1))
       if (badgeAlpha > 0) {
         ctx.globalAlpha = badgeAlpha
         const bx = w / 2
         const by = h * 0.32
-        // Badge background
+
         ctx.fillStyle = 'rgba(0,0,0,0.4)'
         roundRect(ctx, bx - 140, by - 18, 280, 36, 18)
         ctx.fill()
@@ -1732,19 +1714,19 @@
         ctx.globalAlpha = 1
       }
 
-      // Headline — typewriter effect
+
       const headlineDelay = 800
       const headlineAlpha = Ease.easeOutCubic(clamp((elapsed - headlineDelay) / 500, 0, 1))
       if (headlineAlpha > 0) {
         ctx.globalAlpha = headlineAlpha
         const hx = w / 2
         const hy = h * 0.48
-        // Background bar
+
         ctx.fillStyle = 'rgba(0,0,0,0.5)'
         const hw = Math.min(w * 0.85, 600)
         roundRect(ctx, hx - hw / 2, hy - 28, hw, 56, 12)
         ctx.fill()
-        // Accent line
+
         const accentGrad = ctx.createLinearGradient(hx - hw / 2, 0, hx + hw / 2, 0)
         accentGrad.addColorStop(0, '#00ff88')
         accentGrad.addColorStop(0.5, '#5ed4f5')
@@ -1752,7 +1734,7 @@
         ctx.fillStyle = accentGrad
         roundRect(ctx, hx - hw / 2, hy - 28, hw, 3, 1.5)
         ctx.fill()
-        // Text
+
         const headline = scenario.headline || 'SCENARIO'
         const charIdx = Math.floor(clamp((elapsed - headlineDelay) / 30, 0, headline.length))
         const displayHeadline = headline.substring(0, charIdx)
@@ -1761,7 +1743,7 @@
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(displayHeadline, hx, hy)
-        // Cursor blink
+
         if (charIdx < headline.length && Math.floor(t * 3) % 2 === 0) {
           const metrics = ctx.measureText(displayHeadline)
           ctx.fillStyle = '#00ff88'
@@ -1770,7 +1752,7 @@
         ctx.globalAlpha = 1
       }
 
-      // Subline — fade in after headline types out
+
       const sublineDelay = headlineDelay + 500 + (scenario.headline || '').length * 30
       const sublineAlpha = Ease.easeOutCubic(clamp((elapsed - sublineDelay) / 400, 0, 1))
       if (sublineAlpha > 0) {
@@ -1785,7 +1767,7 @@
         ctx.globalAlpha = 1
       }
 
-      // "Tap to skip" hint
+
       if (elapsed > 1500) {
         const skipAlpha = Ease.easeOutCubic(clamp((elapsed - 1500) / 300, 0, 0.4))
         ctx.globalAlpha = skipAlpha * (0.3 + Math.sin(t * 2) * 0.1)
@@ -1796,7 +1778,7 @@
         ctx.globalAlpha = 1
       }
 
-      // Law hint (bottom)
+
       if (this.lv && this.lv.law && elapsed > 2000) {
         const lawAlpha = Ease.easeOutCubic(clamp((elapsed - 2000) / 500, 0, 0.6))
         ctx.globalAlpha = lawAlpha
@@ -1811,7 +1793,7 @@
         ctx.globalAlpha = 1
       }
 
-      // Progress bar
+
       const barW = 120
       const barH = 3
       const barX = w / 2 - barW / 2
@@ -1826,7 +1808,7 @@
       roundRect(ctx, barX, barY, barW * progress, barH, 1.5)
       ctx.fill()
 
-      // Auto-complete at duration
+
       if (elapsed >= this.duration) {
         this.destroy()
         return
@@ -1838,7 +1820,7 @@
     skip () {
       if (!this.running) return
       this.skipRequested = true
-      // Quick fade out
+
       const fadeStart = performance.now()
       const fadeOut = () => {
         const elapsed = performance.now() - fadeStart
@@ -1874,7 +1856,7 @@
     }
   }
 
-  /* ── Expose globally ── */
+
   window.Scenario2D = new Scenario2D()
   window.Scenario2DData = SCENARIOS
 

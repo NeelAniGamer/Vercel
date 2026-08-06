@@ -1,0 +1,39 @@
+- generic [active]:
+  - generic [ref=f1e5]: "GEAR: D"
+  - generic [ref=f1e1]: 🚶 WASD to walk, F to enter your vehicle!
+  - text: 🎯 🔒 🔒 🔒 🔒 🔒
+  - generic: ❤️❤️❤️❤️❤️
+  - generic: 🏁 Lesson 1 - Red Light Patience
+  - generic:
+    - generic: 🟢
+    - generic: Go when green!
+    - generic:
+      - generic: ⭐
+      - generic: ⭐
+      - generic: ⭐
+      - generic: ⭐
+      - generic: ⭐
+  - generic:
+    - generic:
+      - generic [ref=f1e6]: Lv1
+      - generic [ref=f1e8]: Score6
+    - generic:
+      - generic [ref=f1e9]:
+        - text: ⏱
+        - generic [ref=f1e10]: 9:55
+      - generic [ref=f1e11]:
+        - text: 💸
+        - generic [ref=f1e12]: "0"
+      - generic [ref=f1e13]:
+        - text: ✅
+        - generic [ref=f1e14]: 0/0
+    - generic [ref=f1e15]:
+      - generic [ref=f1e16]: 💰 WALLET
+      - generic [ref=f1e17]: ₹50,500
+      - generic [ref=f1e18]: 🚗 HEALTH
+  - dialog "Authenticate":
+    - generic:
+      - generic:
+        - button "Close login dialog": ×
+        - heading "Authenticate" [level=2]
+        - paragraph: Unlock dashboard storage and cloud sync.

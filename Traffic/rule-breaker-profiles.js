@@ -1,7 +1,4 @@
-/**
- * RuleBreakerProfiles - Specialized behavior profiles for Mumbai traffic rule-breakers
- * Implements 20% weighted spawning with distinct behavioral patterns
- */
+
 
 const RULE_BREAKER_TYPES = {
   signal_jumper: {
@@ -205,9 +202,9 @@ class RuleBreakerProfile {
   checkTrigger(npcAI, context) {
     const triggers = this.data.triggers;
     const now = Date.now() / 1000;
-    
+
     if (now - this.lastViolation < this.violationCooldown) return false;
-    
+
     switch (this.typeKey) {
       case 'signal_jumper':
         return context.signalState === 'red' && context.waitTime > 15 && Math.random() < 0.3;

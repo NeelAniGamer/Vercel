@@ -10,10 +10,10 @@ function toast(msg, col = '#ffd54a') {
 }
 const mob = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
-// 🚦 SOUND FX 🚦 (Phase 7.5: audio categories)
+
 window.sfx = Object.assign(window.sfx || {}, {
   _c: null,
-  vol: { sfx: 1, ui: 1, env: 1 }, // volume multipliers: car sounds, UI sounds, environmental
+  vol: { sfx: 1, ui: 1, env: 1 },
   _cat: { horn: 'sfx', brake: 'sfx', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
   init() {
     if (this._c) return
@@ -52,7 +52,7 @@ window.sfx = Object.assign(window.sfx || {}, {
   }
 });
 
-// 🚦 UI INTERACTION LOGIC LAYER 🚦
+
 const CORRECTIVE_QUIZ = {
   'NO_HONKING': { q: 'Corrective Check: What is the rule for honking in silence zones?', o: ['It is strictly prohibited and carries a fine.', 'Honking is allowed once', 'Only honk if traffic is slow', 'Honk to warn pedestrians'], a: 0 },
   'MOBILE_USE': { q: 'Corrective Check: Why is phone use prohibited while driving?', o: ['It causes distraction and significantly increases accident risk.', 'It is only banned on highways', 'It is allowed if using a speaker', 'It only affects the vehicle speed'], a: 0 },
@@ -107,12 +107,12 @@ window.ui = Object.assign(window.ui || {}, {
     }
   },
   init() {
-    // Ensure S is always initialized before any other code runs.
-    // Pages that declare `let S` inline (Driving.html) already have it; pages that do
-    // not (Academy.html declares its S inside a function) land here — build the state
-    // locally and publish it on window so bare `S` resolves everywhere below.
-    // Reading bare `S` inside this branch would throw ReferenceError, which used to
-    // abort ui.init() entirely and leave the hub screens unbuilt.
+
+
+
+
+
+
     if (typeof S === 'undefined') {
       let s = null
       try {
@@ -128,7 +128,7 @@ window.ui = Object.assign(window.ui || {}, {
       window.S = s
       try { localStorage.setItem('mth4', JSON.stringify(s)) } catch (e) {}
     }
-    // Fallback save if course.js hasn't loaded
+
     if (typeof save === 'undefined') {
       window.save = async () => {
         try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
@@ -168,48 +168,48 @@ window.ui = Object.assign(window.ui || {}, {
     }
     this._applyAgeTier()
     
-    // Initialize micro-interactions (ripples, magnetic hover, tactile press)
+
     this.initMicroInteractions();
     
-    // Listen for reduced-motion changes while page is open
+
     if (window.matchMedia) {
       const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
       mq.addEventListener('change', (e) => { this._prefersReducedMotion = e.matches })
     }
   },
-  // ── Smooth Screen Transition System ──
+
   _transitioning: false,
   _transitionTimer: null,
   _lastScreen: null,
   
-  // Screen depth map: deeper screens slide up from below, shallower slide up
+
   _screenDepth: { 'ss': 0, 'screen-levels': 1, 'screen-briefing': 2, 'screen-quiz': 3, 'screen-badges': 2, 'screen-certificate': 2, 'screen-2d': 4 },
   
-  // Screen navigation history for back detection
+
   _screenHistory: [],
-  // Pending target queue: if user clicks during transition, queue it
+
   _pendingTarget: null,
-  // Detect prefers-reduced-motion for instant transitions
+
   _prefersReducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false,
-  // Micro-interaction observer for dynamically added elements
+
   _miObserver: null,
 
-  // ════════════════════════════════════════════════════════════════
-  // 🎛️ CENTRALIZED MICRO-INTERACTION SYSTEM
-  // Ripple clicks, magnetic hovers, tactile press, card tilt
-  // ════════════════════════════════════════════════════════════════
 
-  /** Initialize all micro-interactions. Called once from init(). */
+
+
+
+
+  
   initMicroInteractions() {
     if (this._miInited) return;
     this._miInited = true;
     const isMobile = mob();
 
-    // Skip all animations under reduced-motion
+
     const reducedMotion = this._prefersReducedMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
 
-    // ── Inject ripple keyframe if not already in stylesheet ──
+
     if (!document.getElementById('mi-keyframes')) {
       const style = document.createElement('style');
       style.id = 'mi-keyframes';
@@ -222,7 +222,7 @@ window.ui = Object.assign(window.ui || {}, {
       document.head.appendChild(style);
     }
 
-    // ── 1. Ripple Click Effect ──
+
     const rippleSelector = '.btn, .back-btn, .syl-item, .lcard:not(.lk), .mode-tab';
     document.addEventListener('pointerdown', (e) => {
       const target = e.target.closest(rippleSelector);
@@ -248,7 +248,7 @@ window.ui = Object.assign(window.ui || {}, {
       setTimeout(() => ripple.remove(), 550);
     }, { passive: true });
 
-    // ── 2. Tactile Press Feedback (desktop only) ──
+
     if (!isMobile) {
       document.addEventListener('pointerdown', (e) => {
         const el = e.target.closest('.btn, .back-btn');
@@ -265,14 +265,14 @@ window.ui = Object.assign(window.ui || {}, {
       }, { passive: true });
     }
 
-    // ── 3. Card Tilt on Hover (desktop only, event delegation) ──
+
     if (!isMobile) {
       let _tiltCard = null;
       const tiltSelector = '.lcard:not(.lk), .wh-card, .lp-card';
       document.addEventListener('pointermove', (e) => {
         const card = e.target.closest(tiltSelector);
         if (card !== _tiltCard) {
-          // Leaving previous card
+
           if (_tiltCard) {
             _tiltCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
             _tiltCard.style.transform = '';
@@ -297,7 +297,7 @@ window.ui = Object.assign(window.ui || {}, {
       }, { passive: true });
     }
 
-    // ── 4. Syllabus Item Active Glow ──
+
     document.addEventListener('pointerdown', (e) => {
       const item = e.target.closest('.syl-item');
       if (!item) return;
@@ -314,7 +314,7 @@ window.ui = Object.assign(window.ui || {}, {
       }, 100);
     }, { passive: true });
 
-    // ── 5. Tab Switch Bounce ──
+
     document.addEventListener('pointerdown', (e) => {
       const tab = e.target.closest('.mode-tab');
       if (!tab) return;
@@ -330,11 +330,7 @@ window.ui = Object.assign(window.ui || {}, {
     }, { passive: true });
   },
 
-  /**
-   * Smooth screen transition with crossfade.
-   * @param {string} id - Target screen element id
-   * @param {object} opts - { instant: bool, direction: 'forward'|'back'|'up'|'scale' }
-   */
+  
   show(id, opts = {}) {
     if (this._transitioning && !opts.instant) {
       this._pendingTarget = { id, opts };
@@ -344,10 +340,10 @@ window.ui = Object.assign(window.ui || {}, {
     const target = id ? document.getElementById(id) : null;
     const currentActive = document.querySelector('.screen.active:not(.screen-exiting)');
     
-    // Same screen? No-op
+
     if (currentActive && currentActive.id === id && !opts.instant) return;
     
-    // If reduced motion is preferred, force instant
+
     if (this._prefersReducedMotion && !opts.instant) opts.instant = true;
     
     if (id && id !== null && document.fullscreenElement) {
@@ -357,7 +353,7 @@ window.ui = Object.assign(window.ui || {}, {
       this._disposeBriefingScene()
     }
     
-    // Determine transition direction
+
     let direction = opts.direction;
     if (!direction && currentActive && id) {
       const fromDepth = this._screenDepth[currentActive.id] ?? 1;
@@ -366,7 +362,7 @@ window.ui = Object.assign(window.ui || {}, {
     }
     direction = direction || 'fade';
     
-    // Instant transition: skip animation entirely
+
     if (opts.instant) {
       document.querySelectorAll('.screen').forEach((s) => {
         s.classList.remove('active', 'screen-exiting', 'screen-entering',
@@ -384,15 +380,15 @@ window.ui = Object.assign(window.ui || {}, {
       return;
     }
     
-    // Track history for back detection
+
     this._screenHistory.push(currentActive?.id || null);
     if (this._screenHistory.length > 10) this._screenHistory.shift();
     
-    // Set transitioning state
+
     this._transitioning = true;
     clearTimeout(this._transitionTimer);
     
-    // If there's a current screen, animate it out
+
     if (currentActive && currentActive.id !== id) {
       const exitClass = 'screen-exiting';
       const exitVariant = {
@@ -403,12 +399,12 @@ window.ui = Object.assign(window.ui || {}, {
         'fade': ''
       }[direction] || '';
       
-      // Apply exit animation
+
       currentActive.classList.add(exitClass);
       if (exitVariant) currentActive.classList.add(exitVariant);
       
-      // After exit animation completes, clean up and show new screen
-      const exitDuration = 250; // matches CSS 0.25s
+
+      const exitDuration = 250;
       setTimeout(() => {
         currentActive.classList.remove('active', 'screen-animate-in', exitClass);
         if (exitVariant) currentActive.classList.remove(exitVariant);
@@ -416,7 +412,7 @@ window.ui = Object.assign(window.ui || {}, {
         currentActive.style.transform = '';
         currentActive.style.pointerEvents = '';
         
-        // Now show the new screen
+
         if (target) {
           const enterClass = {
             'forward': 'screen-entering-forward',
@@ -426,15 +422,15 @@ window.ui = Object.assign(window.ui || {}, {
             'fade': 'screen-entering'
           }[direction] || 'screen-entering';
           
-          // Add active first (display:flex), then animate-in on next frame to ensure CSS picks it up
+
           target.classList.add('active', 'screen-animate-in', enterClass);
           
-          // Clean up entering classes after animation completes (does NOT re-trigger animation)
-          const enterDuration = 520; // slightly longer than 0.5s animation
+
+          const enterDuration = 520;
           this._transitionTimer = setTimeout(() => {
             target.classList.remove('screen-animate-in', enterClass);
             this._transitioning = false;
-            // Process pending target if any
+
             if (this._pendingTarget) {
               const pending = this._pendingTarget;
               this._pendingTarget = null;
@@ -446,7 +442,7 @@ window.ui = Object.assign(window.ui || {}, {
         }
       }, exitDuration);
     } else {
-      // No current screen - just enter
+
       if (target) {
         const enterClass = {
           'forward': 'screen-entering-forward',
@@ -456,12 +452,12 @@ window.ui = Object.assign(window.ui || {}, {
           'fade': 'screen-entering'
         }[direction] || 'screen-entering';
         
-        // Add active (display:flex) + animate-in for entrance animation
+
         target.classList.add('active', 'screen-animate-in', enterClass);
         this._transitionTimer = setTimeout(() => {
           target.classList.remove('screen-animate-in', enterClass);
           this._transitioning = false;
-          // Process pending target if any
+
           if (this._pendingTarget) {
             const pending = this._pendingTarget;
             this._pendingTarget = null;
@@ -474,13 +470,13 @@ window.ui = Object.assign(window.ui || {}, {
     }
   },
   
-  /** Show screen going backward (back button) */
+  
   showBack(id) {
-    this._screenHistory.pop(); // remove current from history
+    this._screenHistory.pop();
     this.show(id, { direction: 'back' });
   },
   _buildSylList() {
-    // S should already be initialized from init(), but ensure it exists
+
     if (typeof S === 'undefined') {
       try {
         const raw = localStorage.getItem('mth4')
@@ -596,13 +592,13 @@ window.ui = Object.assign(window.ui || {}, {
       requestAnimationFrame(() => this._buildSylList())
       return
     }
-    // When coming from the start screen, use instant transition to avoid
-    // any flickering from other UI elements (e.g., compare-modal) showing through
+
+
     const fromStart = currentActive?.id === 'ss'
     const levelsEl = document.getElementById('screen-levels')
     if (fromStart) {
       this.show('screen-levels', { instant: true })
-      // Add entrance animation after instant display (no flicker risk)
+
       if (levelsEl) {
         requestAnimationFrame(() => {
           levelsEl.classList.add('screen-animate-in')
@@ -612,7 +608,7 @@ window.ui = Object.assign(window.ui || {}, {
     } else {
       this.show('screen-levels', { direction: 'fade' })
     }
-    // Build the level list in the next frame so the screen is visible first
+
     requestAnimationFrame(() => this._buildSylList())
   },
   showNamePrompt() {
@@ -662,12 +658,12 @@ window.ui = Object.assign(window.ui || {}, {
     if (langEl) S.language = langEl.value
     save()
     
-    // Also persist vehicle preference to localStorage for Execution tab default
+
     const localUser = JSON.parse(localStorage.getItem('traffic_local_user') || '{}')
     localUser.vehicle = v
     localStorage.setItem('traffic_local_user', JSON.stringify(localUser))
     
-    // Sync to Supabase if logged in
+
     if (window.supabaseClient && window.colUser) {
       window.supabaseClient.from('user_profiles').upsert({
         user_id: window.colUser.id,
@@ -694,12 +690,12 @@ window.ui = Object.assign(window.ui || {}, {
     return 'senior'
   },
   getGradeTier() {
-    // Map standard (grade) to tier - Std 1-10
+
     const grade = S.grade || 5
-    if (grade <= 3) return 'grade-low'      // Std 1-3: Very childish
-    if (grade <= 6) return 'grade-mid'       // Std 4-6: Childish but more text
-    if (grade <= 9) return 'grade-high'      // Std 7-9: Teen - normal
-    return 'grade-max'                         // Std 10: Young adult
+    if (grade <= 3) return 'grade-low'
+    if (grade <= 6) return 'grade-mid'
+    if (grade <= 9) return 'grade-high'
+    return 'grade-max'
   },
   getGradeConfig() {
     const tier = this.getGradeTier()
@@ -722,7 +718,7 @@ window.ui = Object.assign(window.ui || {}, {
     document.body.dataset.ageTier = tier
     document.body.dataset.gradeTier = gradeTier
 
-    // Default grade if not set
+
     if (!S.grade) S.grade = 5
 
     this._applyGradeUI()
@@ -731,7 +727,7 @@ window.ui = Object.assign(window.ui || {}, {
     const cfg = this.getGradeConfig()
     const root = document.documentElement
 
-    // Apply button size
+
     if (cfg.buttonSize === 'large') {
       root.style.setProperty('--btn-scale', '1.3')
       root.style.setProperty('--btn-padding', '20px 30px')
@@ -743,7 +739,7 @@ window.ui = Object.assign(window.ui || {}, {
       root.style.setProperty('--btn-padding', '10px 16px')
     }
 
-    // Apply font size
+
     if (cfg.fontSize === 'large') {
       root.style.setProperty('--ui-font-size', '1.2rem')
     } else if (cfg.fontSize === 'medium') {
@@ -774,7 +770,7 @@ window.ui = Object.assign(window.ui || {}, {
     const cScoreLbl = document.getElementById('cscore')
     const cdownloadBtn = document.getElementById('cdownload')
 
-    // Check if user is logged in (via local or Supabase)
+
     const localData = localStorage.getItem('traffic_local_user')
     const isLoggedIn = localData || (window.colUser && window.colUser.user)
 
@@ -799,7 +795,7 @@ window.ui = Object.assign(window.ui || {}, {
       }
     }
 
-    // Default behavior - Main certificate
+
     if (cTitle) cTitle.innerText = 'Traffic Hero Certification'
     if (cIcon) cIcon.style.display = 'none'
 
@@ -816,7 +812,7 @@ window.ui = Object.assign(window.ui || {}, {
     }
     let avgScore = count > 0 ? totalScore / count : 0
 
-    // Show progress toward certificate
+
     if (completedLevels >= totalLevels) {
       if (cStat) cStat.innerText = `COMPLETED WITH ${Math.round(avgScore)}% PROFICIENCY`
       if (cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`
@@ -824,7 +820,7 @@ window.ui = Object.assign(window.ui || {}, {
     } else {
       if (cStat) cStat.innerText = `IN PROGRESS: ${completedLevels}/${totalLevels} levels completed`
       if (cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`
-      // Enable download for logged-in users even if not complete
+
       if (cdownloadBtn) cdownloadBtn.style.display = isLoggedIn ? 'flex' : 'none'
     }
     if (certNum) certNum.innerText = completedLevels >= totalLevels ? S.certId : '---'
@@ -880,7 +876,7 @@ window.ui = Object.assign(window.ui || {}, {
         toast('Certificate not ready. Please wait a moment.', '#ff9500')
         return
       }
-      // Temporarily remove CSS transform so html2pdf captures at true size (avoids blank second page)
+
       const prevWrapperOverflow = wrapper.style.overflow
       const prevWrapperJustify = wrapper.style.justifyContent
       const prevWrapperMargin = wrapper.style.margin
@@ -889,7 +885,7 @@ window.ui = Object.assign(window.ui || {}, {
       const prevCrtWidth = crt.style.width
       const prevCrtPageBreak = crt.style.pageBreakInside
       const prevCrtBreakInside = crt.style.breakInside
-      // Helper to restore all overridden styles
+
       const restoreStyles = () => {
         wrapper.style.overflow = prevWrapperOverflow
         wrapper.style.justifyContent = prevWrapperJustify
@@ -946,7 +942,7 @@ window.ui = Object.assign(window.ui || {}, {
     this.show('ss', { direction: 'back' })
     this._rain()
     
-    // Update Get Started button if user has already made progress
+
     let hasStarted = false;
     if (S.completed && S.completed.length > 0) hasStarted = true;
     if (S.started && Object.keys(S.started).length > 0) hasStarted = true;
@@ -1026,11 +1022,11 @@ window.ui = Object.assign(window.ui || {}, {
         const cm = !!isDone(lv.id)
         const ip = !cm && un
         
-        // Calculate progress for this level (0, 50, 100)
+
         let levelProgress = 0
         if (cm) levelProgress = 100
         else if (ip && S.comp[lv.id]) {
-          // In progress - check which sub-modules are done
+
           const subModules = ['intro', ...lv.hps.map((_, i) => 'rule' + i), 'law', 'theory', 'practical']
           let doneSubs = 0
           subModules.forEach(sm => {
@@ -1069,7 +1065,7 @@ window.ui = Object.assign(window.ui || {}, {
         `
         if (un) {
           c.onclick = async () => {
-            // Show premium level preview before briefing
+
             if (window.game && window.game._showLevelPreview) {
               const proceed = await window.game._showLevelPreview(lv);
               if (proceed) this.showBriefing(lv.id);
@@ -1083,7 +1079,7 @@ window.ui = Object.assign(window.ui || {}, {
       body.appendChild(tr)
     })
     
-    // Initialize progress rings after DOM insertion
+
     setTimeout(() => {
       if (window.TrafficCharts) {
         document.querySelectorAll('.level-progress-ring').forEach(canvas => {
@@ -1111,10 +1107,10 @@ window.ui = Object.assign(window.ui || {}, {
     document.getElementById('blt').textContent = 'Level ' + lv.id
     document.getElementById('bvh').textContent = lv.v
     
-    // Initialize streak if not present
+
     if (!S.streak) S.streak = { current: 0, best: 0, lastDate: null }
     
-    // Update streak display with loss aversion framing
+
     const streakEl = document.getElementById('br-streak')
     if (streakEl) {
       const isActive = S.streak.current > 0
@@ -1126,21 +1122,19 @@ window.ui = Object.assign(window.ui || {}, {
         : 'linear-gradient(90deg, var(--muted), var(--muted2))'
     }
     
-    // Build mode tabs
+
     this._initModeTabs(lv)
     
-    // Build module progress checklist (Zeigarnik effect)
+
     this._renderModuleChecklist(lv)
-    
-    // Render pledge card into right panel
-    this._renderPledgeCard(lv)
     
     const items = [
       { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
       ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
       { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' },
       { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' },
-      { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' }
+      { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' },
+      { id: 'pledge', icon: '🤝', label: 'Pledge', sub: 'Commitment if-then plan' }
     ]
     this._sylItems = items
     this._sylViewed = new Set()
@@ -1170,7 +1164,7 @@ window.ui = Object.assign(window.ui || {}, {
         this._currentModeTab = tab.dataset.mode
         this._updateBriefingForMode(lv, tab.dataset.mode)
       }
-      // Set initial active state
+
       if (tab.dataset.mode === 'learn') {
         tab.classList.add('active')
         tab.style.color = 'var(--text)'
@@ -1184,12 +1178,12 @@ window.ui = Object.assign(window.ui || {}, {
     const contentEl = document.getElementById('br-content')
     if (!contentEl) return
     
-    // Update syllabus based on mode
+
     const syllabusEl = document.getElementById('br-syllabus')
     const items = this._getSyllabusForMode(lv, mode)
     this._sylItems = items
     
-    // Initialize from saved progress if available
+
     this._sylViewed = new Set((S.sylViewed && S.sylViewed[lv.id]) ? S.sylViewed[lv.id] : [])
     this._sylLv = lv
     syllabusEl.innerHTML = ''
@@ -1205,11 +1199,11 @@ window.ui = Object.assign(window.ui || {}, {
       syllabusEl.appendChild(el)
     })
     
-    // Auto-select the first item that hasn't been viewed, or the first item if all viewed
+
     let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
     this._selSyl(firstUnviewed ? firstUnviewed.id : (items[0]?.id || 'intro'))
     
-    // Update rewards preview
+
     this._renderRewardsPreview(lv, mode, config)
   },
   _getSyllabusForMode(lv, mode) {
@@ -1218,7 +1212,7 @@ window.ui = Object.assign(window.ui || {}, {
       ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
     ]
     if (mode === 'learn') {
-      return [...base, { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' }, { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' }]
+      return [...base, { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' }, { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' }, { id: 'pledge', icon: '🤝', label: 'Pledge', sub: 'Commitment if-then plan' }]
     } else if (mode === 'practice') {
       return [...base, { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' }]
     } else if (mode === 'exam') {
@@ -1261,9 +1255,9 @@ window.ui = Object.assign(window.ui || {}, {
     const xp = config.xpBase || 0
     const streakBonus = config.streakBonus || 0
     const badge = config.badge
-    const mysteryChance = 0.15 // 15% variable reinforcement
+    const mysteryChance = 0.15
     
-    // Check if this is practical mode - inject rewards panel
+
     const existingCard = contentEl.querySelector('.bc-card')
     if (existingCard && mode === 'practice') {
       const rewardsHtml = `
@@ -1324,7 +1318,7 @@ window.ui = Object.assign(window.ui || {}, {
     S.pledges[levelId] = { if: ifStatement, then: thenStatement, created: Date.now() }
     save()
     toast('🤝 Pledge saved! Your if-then plan is set.', '#5ED4F5')
-    // Refresh the pledge card to show completed state
+
     const lv = LVS.find(l => l.id === levelId)
     if (lv) this._renderPledgeCard(lv)
   },
@@ -1360,6 +1354,32 @@ window.ui = Object.assign(window.ui || {}, {
     const lv = this._sylLv,
       items = this._sylItems
     if (!lv) return
+
+
+    if (id === 'pledge') {
+      document.querySelectorAll('.syl-item').forEach((el) => el.classList.remove('syl-active'))
+      const el = document.getElementById('syl-' + id)
+      if (el) el.classList.add('syl-active')
+      this.showCommitmentPledge(lv.id)
+      if (!this._sylViewed.has(id)) {
+        this._sylViewed.add(id)
+        if (!S.sylViewed) S.sylViewed = {}
+        if (!S.sylViewed[lv.id]) S.sylViewed[lv.id] = []
+        if (!S.sylViewed[lv.id].includes(id)) {
+          S.sylViewed[lv.id].push(id)
+        }
+        if (typeof save === 'function') save()
+        const sylEl = document.getElementById('syl-' + id)
+        if (sylEl) sylEl.classList.add('syl-done')
+      }
+      const pct = Math.round((this._sylViewed.size / items.length) * 100)
+      const progFill = document.getElementById('br-prog-fill')
+      const progLabel = document.getElementById('br-prog-label')
+      if (progFill) progFill.style.width = pct + '%'
+      if (progLabel) progLabel.textContent = pct + '%'
+      return
+    }
+
     this._disposeBriefingScene()
     ui.curMode = ui.curMode || (lv.modes ? lv.modes[0] : 'car')
     document.querySelectorAll('.syl-item').forEach((el) => el.classList.remove('syl-active'))
@@ -1368,7 +1388,7 @@ window.ui = Object.assign(window.ui || {}, {
     if (!this._sylViewed.has(id)) {
       this._sylViewed.add(id)
       
-      // Persist syllabus progress to S
+
       if (!S.sylViewed) S.sylViewed = {}
       if (!S.sylViewed[lv.id]) S.sylViewed[lv.id] = []
       if (!S.sylViewed[lv.id].includes(id)) {
@@ -1378,7 +1398,7 @@ window.ui = Object.assign(window.ui || {}, {
       if (!S.started) S.started = {}
       S.started[lv.id] = true
 
-      // Check if all items in syllabus have been viewed, or if user is on practical/exam tab
+
       const allViewed = items.every(it => S.sylViewed[lv.id].includes(it.id))
       if (allViewed || id === 'practical' || id === 'exam') {
         if (!S.comp) S.comp = {}
@@ -1398,7 +1418,7 @@ window.ui = Object.assign(window.ui || {}, {
       if (sylEl) sylEl.classList.add('syl-done')
     }
     
-    // Always update progress bar
+
     const pct = Math.round((this._sylViewed.size / items.length) * 100)
     const progFill = document.getElementById('br-prog-fill')
     const progLabel = document.getElementById('br-prog-label')
@@ -1458,7 +1478,7 @@ window.ui = Object.assign(window.ui || {}, {
       const theoryHint = isYoung ? '<div style="text-align:center; font-size:0.85rem; color:var(--signal); margin-bottom:8px; font-weight:600;">Easy version for young drivers</div>' : ''
       const langLabel = this._theoryLang === 'hi' ? 'English' : 'हिन्दी'
 
-      // Get theory content based on language
+
       let theoryContent = lv.theory || ''
       if (this._theoryLang === 'hi' && lv.theoryHi) {
         theoryContent = lv.theoryHi
@@ -1566,7 +1586,7 @@ window.ui = Object.assign(window.ui || {}, {
     }
     c.appendChild(card)
     if (id === 'practical') {
-      // Use 2D CSS Art instead of 3D Scene
+
       requestAnimationFrame(() => this._initBriefingArt(lv))
     }
   },
@@ -1590,14 +1610,14 @@ window.ui = Object.assign(window.ui || {}, {
     if (!wrap) return;
     const theme = lv.themeType || 'default';
 
-    // ── Shared CSS building blocks ──
+
     const road = (w, l, b) => `position:absolute; bottom:${b||40}px; left:${l||0}; width:${w||'100%'}; height:60px; background:#3d3f45; border-top:4px solid #fff; border-bottom:4px solid #fff;`;
     const zebra = `position:absolute; top:0; left:50%; transform:translateX(-50%); width:60px; height:60px; background:repeating-linear-gradient(90deg,#fff 0,#fff 10px,transparent 10px,transparent 20px);`;
     const sidewalk = `position:absolute; bottom:100px; left:0; width:100%; height:18px; background:#6b7280;`;
     const nightBg = `background:rgba(0,0,30,0.35);`;
     const badge = `<div style="position:absolute;top:12px;left:12px;color:var(--muted2,#6B7280);font-size:.7rem;font-weight:800;opacity:.9;z-index:10;background:rgba(255,255,255,.75);padding:6px 14px;border-radius:8px;letter-spacing:1.2px;backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.06);font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>`;
 
-    // ── Keyframes (collected, injected once) ──
+
     const K = `
       @keyframes ba{from{left:-15%}to{left:115%}}
       @keyframes ab{from{left:115%}to{left:-15%}}
@@ -1621,10 +1641,10 @@ window.ui = Object.assign(window.ui || {}, {
       @keyframes merge{0%{left:20%}50%{left:42%}100%{left:20%}}
     `;
 
-    // ── Theme art map ──
+
     const A = {};
 
-    // 1. PEDESTRIAN COURTESY — school zone, zebra crossing, traffic light, walking peds, car braking
+
     A.pedestrian_courtesy = () => `
       <div style="${road()}">${`<div style="${zebra}"></div>`}</div>
       <div style="position:absolute;top:30%;left:10%;width:28px;height:64px;background:#222;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:4px 0;">
@@ -1637,14 +1657,14 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:58px;left:26%;font-size:1.4rem;animation:ped 2.8s infinite alternate;">🚶‍♀️</div>
       <div style="position:absolute;bottom:50px;font-size:2.4rem;animation:carStop 4s infinite ease-out;">🚗</div>`;
 
-    // 2. AMBULANCE PRIORITY — ambulance rushing, cars pulling over
+
     A.ambulance_priority = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:48px;font-size:2.6rem;animation:ab 3.5s infinite linear;">🚑<span style="position:absolute;top:-18px;left:8px;font-size:.9rem;animation:flash .4s infinite;">🚨</span></div>
       <div style="position:absolute;bottom:48px;left:35%;font-size:2rem;animation:pullOver 4s infinite ease-out;">🚗</div>
       <div style="position:absolute;bottom:48px;left:58%;font-size:2rem;animation:pullOver 4s infinite ease-out .6s;">🚕</div>`;
 
-    // 3. MARKET STREET — market tents, auto, pedestrians
+
     A.market_street = () => `
       <div style="${road()}"></div>
       <div style="${sidewalk}"></div>
@@ -1656,7 +1676,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:105px;left:18%;font-size:1.3rem;animation:ped 3s infinite alternate;">🚶</div>
       <div style="position:absolute;bottom:105px;left:62%;font-size:1.3rem;animation:ped2 3.2s infinite alternate;">🚶‍♀️</div>`;
 
-    // 4. STREET PARKING — cars parked, one pulling into spot
+
     A.street_parking = () => `
       <div style="${road()}"></div>
       <div style="${sidewalk}"></div>
@@ -1667,7 +1687,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:104px;left:50%;font-size:2.2rem;animation:carStop 5s infinite ease-out;">🚗</div>
       <div style="position:absolute;top:30px;right:30px;font-size:2.4rem;">🅿️</div>`;
 
-    // 5. PUDDLE ETIQUETTE — rain, puddle, car driving carefully around
+
     A.puddle_etiquette = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:48px;left:42%;width:70px;height:20px;background:rgba(80,140,255,.45);border-radius:50%;animation:splash 2s infinite;"></div>
@@ -1675,7 +1695,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:15%;font-size:2.2rem;animation:slow 5s infinite linear;">🚗</div>
       <div style="position:absolute;top:25px;right:40px;font-size:2rem;">🌧️</div>`;
 
-    // 6. RESPECTFUL PARKING — hospital nearby, car parked neatly, green check
+
     A.respectful_parking = () => `
       <div style="${road()}"></div>
       <div style="${sidewalk}"></div>
@@ -1685,7 +1705,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:58px;left:28%;font-size:1.2rem;color:#4a4;">✓</div>
       <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:slow 5s infinite linear;">🚑</div>`;
 
-    // 7. SILENT ZONE — hospital, mute symbol, car creeping
+
     A.silent_zone = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;top:15px;left:30%;font-size:3.5rem;">🏥</div>
@@ -1694,7 +1714,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:104px;left:32%;font-size:1.5rem;opacity:.4;">📢</div>
       <div style="position:absolute;bottom:110px;left:38%;font-size:1rem;color:#f66;">✕</div>`;
 
-    // 8. NO HONKING — muted speaker, library/temple, no-honk sign
+
     A.no_honking = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;top:15px;left:20%;font-size:3rem;">📚</div>
@@ -1703,7 +1723,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:30%;font-size:2rem;animation:slow 6s infinite linear;">🚗</div>
       <div style="position:absolute;bottom:65px;left:38%;font-size:1rem;animation:honk 3s infinite;">💬HONK</div>`;
 
-    // 9. FESTIVAL — bunting, decorations, crowd, slow traffic
+
     A.festival = () => `
       <div style="${road()}"></div>
       <div style="${sidewalk}"></div>
@@ -1718,7 +1738,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;font-size:2rem;animation:slow 8s infinite linear;">🚗</div>
       <div style="position:absolute;bottom:48px;left:35%;font-size:1.8rem;animation:slow 9s infinite linear -3s;">🛺</div>`;
 
-    // 10. SIGNAL JUMP — traffic light red, car zooming past
+
     A.signal_jump = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;top:30%;left:42%;width:36px;height:80px;background:#222;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;">
@@ -1729,7 +1749,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;font-size:2.4rem;animation:ba 2.5s infinite linear;">🚗<span style="position:absolute;top:-12px;right:-5px;font-size:1rem;">⚡</span></div>
       <div style="position:absolute;bottom:110px;left:48%;font-size:1.5rem;animation:flash .6s infinite;">❗</div>`;
 
-    // 11. ROAD RAGE — two cars close, angry emoji, swerving
+
     A.road_rage = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:48px;left:30%;font-size:2.2rem;animation:ba 3s infinite linear;">🚗</div>
@@ -1737,7 +1757,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:80px;left:28%;font-size:1.8rem;animation:bounce .5s infinite;">😡</div>
       <div style="position:absolute;bottom:85px;left:36%;font-size:1.2rem;color:#f44;">❗❗</div>`;
 
-    // 12. RAIN DRIVING — heavy rain, headlights, wiper
+
     A.rain_driving = () => `
       <div style="${road()};background:#2d2f35;"></div>
       ${[10,18,26,34,42,50,58,66,74,82].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:18px;background:rgba(100,160,255,.5);border-radius:0 0 2px 2px;animation:rain .6s infinite linear ${x*.015}s;"></div>`).join('')}
@@ -1747,7 +1767,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:60px;left:42%;width:2px;height:16px;background:#fff;transform-origin:bottom;animation:wiper 1.5s infinite;"></div>
       <div style="position:absolute;top:20px;right:30px;font-size:2rem;">⛈️</div>`;
 
-    // 13. PEDESTRIAN PRIORITY — zebra crossing, ped walking, car stopped, green signal
+
     A.pedestrian_priority = () => `
       <div style="${road()}">${`<div style="${zebra}"></div>`}</div>
       <div style="position:absolute;top:25%;left:42%;width:30px;height:60px;background:#222;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:4px 0;">
@@ -1758,7 +1778,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:55px;left:45%;font-size:2rem;animation:ped 4s infinite alternate;">🚶</div>
       <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:carStop 5s infinite ease-out;">🚗</div>`;
 
-    // 14. SIGNS — road with multiple traffic signs
+
     A.signs = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:100px;left:15%;width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:32px solid #fc0;transform:rotate(0deg);"></div>
@@ -1768,7 +1788,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:108px;right:20%;font-size:.6rem;">⚠️</div>
       <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>`;
 
-    // 15. ANIMALS — cow on road, car stopped
+
     A.animals = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:48px;left:45%;font-size:2.8rem;">🐄</div>
@@ -1777,7 +1797,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;top:25px;left:25%;font-size:2rem;">🌾</div>
       <div style="position:absolute;top:25px;right:25%;font-size:2rem;">🌾</div>`;
 
-    // 16. NARROW STREET — buildings close, car squeezing through
+
     A.narrow_street = () => `
       <div style="${road('45%',null,null)}"></div>
       <div style="position:absolute;bottom:40px;left:55%;width:45%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;"></div>
@@ -1787,7 +1807,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:100px;right:20%;font-size:2.5rem;">🏘️</div>
       <div style="position:absolute;bottom:48px;left:42%;font-size:1.8rem;animation:ba 6s infinite linear;">🚗</div>`;
 
-    // 17. PARKING RULES — marked bays, one correct, one wrong
+
     A.parking_rules = () => `
       <div style="${road()}"></div>
       <div style="${sidewalk}"></div>
@@ -1800,14 +1820,14 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;top:25px;right:30px;font-size:2.5rem;">🅿️</div>
       <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:slow 6s infinite linear;">🚗</div>`;
 
-    // 18. AUTO DANCE — auto-rickshaw weaving between cars
+
     A.auto_dance = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:48px;left:25%;font-size:2rem;">🚗</div>
       <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;">🚕</div>
       <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:weave 4s infinite ease-in-out;">🛺</div>`;
 
-    // 19. TOLL — toll booth, car stopped, queue
+
     A.toll = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:40px;left:48%;width:50px;height:65px;background:#555;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;">
@@ -1818,7 +1838,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:5%;font-size:1.8rem;animation:slow 8s infinite linear -3s;">🚙</div>
       <div style="position:absolute;bottom:48px;left:-10%;font-size:1.8rem;animation:slow 9s infinite linear -5s;">🚕</div>`;
 
-    // 20. BLIND CORNER — curved road, warning sign, car approaching
+
     A.blind_corner = () => `
       <div style="position:absolute;bottom:40px;left:0;width:55%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 30px 30px 0;"></div>
       <div style="position:absolute;bottom:40px;right:0;width:50%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:30px 0 0 30px;transform:rotate(-15deg);transform-origin:left center;"></div>
@@ -1826,14 +1846,14 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
       <div style="position:absolute;top:25px;right:30px;font-size:1.5rem;">👁️‍🗨️</div>`;
 
-    // 21. HILL DRIVING — inclined road, mountain backdrop, car climbing
+
     A.hill_driving = () => `
       <div style="position:absolute;bottom:30px;left:0;width:110%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;transform:rotate(-8deg);transform-origin:left bottom;"></div>
       <div style="position:absolute;top:10px;right:20%;font-size:4rem;">⛰️</div>
       <div style="position:absolute;top:25px;left:15%;font-size:3rem;">🏔️</div>
       <div style="position:absolute;bottom:68px;left:20%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>`;
 
-    // 22. BUS STOP — bus shelter, bus stopped, passengers waiting
+
     A.bus_stop = () => `
       <div style="${road()}"></div>
       <div style="${sidewalk}"></div>
@@ -1844,7 +1864,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:18%;font-size:2.4rem;animation:slow 6s infinite linear;">🚌</div>
       <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>`;
 
-    // 23. CONSTRUCTION — barricades, worker, car detouring
+
     A.construction = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:52px;left:35%;width:30px;height:10px;background:repeating-linear-gradient(90deg,#f90 0,#f90 6px,#fff 6px,#fff 12px);border-radius:2px;"></div>
@@ -1854,7 +1874,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
       <div style="position:absolute;bottom:108px;left:55%;font-size:1.2rem;">➡️</div>`;
 
-    // 24. ONE WAY — road with big arrow, wrong-way car
+
     A.one_way = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:55px;left:40%;font-size:3rem;opacity:.3;">➡️</div>
@@ -1864,7 +1884,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;top:25px;left:30%;font-size:1.5rem;">➡️</div>
       <div style="position:absolute;top:25px;left:50%;font-size:1.5rem;">ONE WAY</div>`;
 
-    // 25. HOSPITAL QUIET — hospital zone, silence markings
+
     A.hospital_quiet = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:100px;left:0;width:100%;height:18px;border:2px dashed rgba(100,150,255,.4);background:rgba(100,150,255,.05);"></div>
@@ -1873,7 +1893,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:40%;font-size:2rem;animation:slow 7s infinite linear;">🚗</div>
       <div style="position:absolute;bottom:70px;left:50%;font-size:1rem;opacity:.5;">🔇 SILENCE ZONE</div>`;
 
-    // 26. CYCLIST — bike lane, cyclist, car maintaining distance
+
     A.cyclist = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:100px;left:0;width:100%;height:4px;background:repeating-linear-gradient(90deg,#4a4 0,#4a4 12px,transparent 12px,transparent 18px);"></div>
@@ -1881,7 +1901,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
       <div style="position:absolute;bottom:108px;left:60%;font-size:.9rem;color:#4a4;">BIKE LANE</div>`;
 
-    // 27. GRAND TEST — trophy, multiple vehicles, complex
+
     A.grand_test = () => `
       <div style="${road()}"></div>
       <div style="${road('50%','50%',100)};transform:rotate(90deg);transform-origin:left bottom;height:50px;"></div>
@@ -1891,7 +1911,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:140px;left:52%;font-size:1.5rem;animation:ab 6s infinite linear;">🛺</div>
       <div style="position:absolute;top:20px;right:25%;font-size:1.5rem;">🥇</div>`;
 
-    // 28. NIGHT MONSOON — night overlay, heavy rain, lightning, puddle
+
     A.night_monsoon = () => `
       <div style="${road()};background:#2a2d35;"></div>
       <div style="position:absolute;inset:0;background:rgba(0,0,30,.4);pointer-events:none;"></div>
@@ -1903,7 +1923,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;top:15px;right:30px;font-size:2rem;">🌙</div>
       <div style="position:absolute;top:30px;left:40%;font-size:2rem;animation:flash 2s infinite;">⚡</div>`;
 
-    // 29. WRONG SIDE — car on wrong lane, head-on, danger
+
     A.wrong_side = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:68px;left:0;width:100%;height:2px;background:repeating-linear-gradient(90deg,#fc0 0,#fc0 12px,transparent 12px,transparent 20px);"></div>
@@ -1911,7 +1931,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:72px;left:60%;font-size:2rem;animation:ab 3.5s infinite linear;">🚙</div>
       <div style="position:absolute;bottom:85px;left:48%;font-size:1.5rem;color:#f44;animation:flash .5s infinite;">⚠️</div>`;
 
-    // 30. HIGHWAY MERGE — two lanes merging, car merging
+
     A.highway_merge = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:98px;left:0;width:22%;height:18px;background:#3d3f45;border-top:2px solid #fff;border-bottom:2px solid #fff;border-radius:0 0 10px 0;"></div>
@@ -1919,7 +1939,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:merge 4s infinite ease-in-out;">🚗</div>
       <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ba 4s infinite linear;">🚕</div>`;
 
-    // 31. ZERO VISIBILITY — fog, barely visible car
+
     A.zero_visibility = () => `
       <div style="${road()};background:#4a4d55;"></div>
       <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(200,200,210,.8) 0%,rgba(200,200,210,.3) 40%,transparent 70%);animation:fogPulse 4s infinite alternate;pointer-events:none;"></div>
@@ -1928,7 +1948,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:54px;left:54%;width:10px;height:5px;background:rgba(255,255,150,.5);border-radius:2px;opacity:.4;"></div>
       <div style="position:absolute;top:20px;right:30px;font-size:2rem;opacity:.4;">👻</div>`;
 
-    // 32. MOUNTAIN — winding road, hairpin, car navigating
+
     A.mountain = () => `
       <div style="position:absolute;bottom:40px;left:0;width:45%;height:50px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 20px 20px 0;"></div>
       <div style="position:absolute;bottom:55px;left:40%;width:50px;height:40px;background:#3d3f45;border:4px solid #fff;border-radius:50%;border-left-color:transparent;border-bottom-color:transparent;transform:rotate(-45deg);"></div>
@@ -1937,7 +1957,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;top:10px;left:10%;font-size:3rem;">⛰️</div>
       <div style="position:absolute;bottom:48px;left:10%;font-size:1.8rem;animation:ba 5s infinite linear;">🚗</div>`;
 
-    // 33. RURAL — dirt road, wheat fields, cow
+
     A.rural = () => `
       <div style="position:absolute;bottom:40px;left:0;width:100%;height:60px;background:repeating-linear-gradient(90deg,#8B7355 0,#8B7355 4px,#9B8365 4px,#9B8365 8px);border-top:3px solid #6B5335;border-bottom:3px solid #6B5335;"></div>
       <div style="position:absolute;bottom:100px;left:0;width:100%;height:30px;background:#5a7a3a;"></div>
@@ -1947,7 +1967,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:50%;font-size:2.2rem;">🐄</div>
       <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 6s infinite linear;">🚗</div>`;
 
-    // 34. MULTI MODAL — mixed traffic: car, auto, cyclist, ped, bus
+
     A.multi_modal = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:48px;left:10%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
@@ -1957,7 +1977,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:48px;left:70%;font-size:2.2rem;animation:ba 5.5s infinite linear -2s;">🚌</div>
       <div style="position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:1.5rem;">🌪️</div>`;
 
-    // 35. LANE DISCIPLINE — dashed center, one car correct, one straddling
+
     A.lane_discipline = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:68px;left:0;width:100%;height:3px;background:repeating-linear-gradient(90deg,#fff 0,#fff 14px,transparent 14px,transparent 22px);"></div>
@@ -1966,7 +1986,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:60px;left:55%;font-size:2rem;animation:ba 4.5s infinite linear -.5s;transform:translateY(-3px);">🚙</div>
       <div style="position:absolute;bottom:72px;left:58%;font-size:.9rem;color:#f44;">✗</div>`;
 
-    // 36. DRIVING SCHOOL — L plate, instructor car, cones, classroom
+
     A.driving_school = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;top:15px;left:20%;font-size:3rem;">🏫</div>
@@ -1977,7 +1997,7 @@ window.ui = Object.assign(window.ui || {}, {
       <div style="position:absolute;bottom:42px;left:75%;font-size:1.2rem;">🚧</div>
       <div style="position:absolute;top:20px;right:25%;font-size:2rem;">🎓</div>`;
 
-    // 37. INTERSECTION / SIGNALS — crossroad, traffic light, car through
+
     A.intersection = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:40px;left:45%;width:60px;height:100%;background:#3d3f45;border-left:4px solid #fff;border-right:4px solid #fff;"></div>
@@ -1995,12 +2015,12 @@ window.ui = Object.assign(window.ui || {}, {
     A.hospital = A.hospital_quiet;
     A.emergency = A.ambulance_priority;
 
-    // DEFAULT — generic car driving across
+
     A._default = () => `
       <div style="${road()}"></div>
       <div style="position:absolute;bottom:48px;font-size:2.4rem;animation:ba 4s infinite linear;">🚗</div>`;
 
-    // ── Resolve and render ──
+
     const artFn = A[theme] || A._default;
     const artHTML = artFn();
 
@@ -2238,14 +2258,14 @@ window.ui = Object.assign(window.ui || {}, {
     S.vehicle = vehicleId.charAt(0).toUpperCase() + vehicleId.slice(1)
     save()
     toast(`✅ Vehicle set to ${vehicleId}`, '#34d399')
-    // Re-render the practical section to show updated selection
+
     const lv = this.cur
     if (lv) this._selSyl('practical')
   },
   selectMode(mode) {
-    // Just select the mode — don't open quiz yet
+
     this.curMode = mode
-    // Update the mode buttons visual state using data-mode attribute
+
     const practBtns = document.querySelectorAll('#br-content .btn[data-mode]')
     practBtns.forEach(btn => {
       const btnMode = btn.dataset.mode
@@ -2261,7 +2281,7 @@ window.ui = Object.assign(window.ui || {}, {
     })
   },
   dispatchStart(mode) {
-    // Use preferred vehicle from setup if mode not explicitly passed
+
     if (!mode) {
       const lv = this.cur
       const availModes = lv.modes || ['car']
@@ -2278,9 +2298,9 @@ window.ui = Object.assign(window.ui || {}, {
     mode = mode || ui.curMode || 'car'
     let qs = this.cur.quiz && this.cur.quiz[mode] ? this.cur.quiz[mode] : this.cur.quiz ? this.cur.quiz.car : null
 
-    // Adaptive Logic: Inject corrective question if violations occurred
+
     if (perf && perf.violations && perf.violations.length > 0) {
-      const tag = perf.violations[0]; // Use the first recorded violation
+      const tag = perf.violations[0];
       const correction = CORRECTIVE_QUIZ[tag];
       if (correction) {
         if (!qs) qs = [];
@@ -2296,7 +2316,7 @@ window.ui = Object.assign(window.ui || {}, {
       ]
     }
 
-    // Shuffle options for all questions
+
     qs.forEach((q) => {
       const c = q.o[q.a]
       const rIdx = Math.floor(Math.random() * 4)
@@ -2362,10 +2382,10 @@ window.ui = Object.assign(window.ui || {}, {
       if (!S.comp[lv.id]) S.comp[lv.id] = {}
       if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
       S.comp[lv.id].modes[s.mode] = true
-      // A level only used to count as "complete" (isDone() / certificate progress) if a
-      // mode called 'final' had run its quiz — but nothing in the game ever set mode to
-      // 'final', so no level could ever be marked complete. Fix: once every mode this
-      // level requires has had its quiz passed, mark the level itself complete right here.
+
+
+
+
       const requiredModes = lv.modes || [s.mode]
       const allModesDone = requiredModes.every((m) => S.comp[lv.id].modes[m])
       if (allModesDone && !S.comp[lv.id].finalQuiz) {
@@ -2384,16 +2404,16 @@ window.ui = Object.assign(window.ui || {}, {
         if (completedCount >= 52 && !S.badges.includes('level_52')) S.badges.push('level_52')
         if (completedCount >= 52 && !S.badges.includes('traffic_hero')) S.badges.push('traffic_hero')
 
-        // Civic score — a persistent reputation number separate from per-level score,
-        // rewarding clean driving over time rather than just "did you pass." Doesn't
-        // penalize mistakes (this is a learning tool for kids, not a punishment system) —
-        // clean runs just earn more than rough ones.
+
+
+
+
         const vioCount = game?.fst?.vio || 0
         const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
         S.civicScore = (S.civicScore || 0) + civicGain
-        // Track which specific violation types occur, across levels, so a parent/teacher can
-        // see a real pattern ("keeps forgetting to signal") instead of just a raw count —
-        // this was previously discarded every level, nothing kept a history of it at all.
+
+
+
         if (!S.violationHistory) S.violationHistory = {}
         ;(game?.violationsLog || []).forEach((v) => {
           S.violationHistory[v] = (S.violationHistory[v] || 0) + 1
@@ -2463,7 +2483,7 @@ window.ui = Object.assign(window.ui || {}, {
     if (!S.badges.includes('signal_master') && Object.keys(S.comp).length >= 5 && !stats.vio) S.badges.push('signal_master')
     if (S.badges.includes('traffic_hero') && !S.badges.includes('smart_citizen')) S.badges.push('smart_citizen')
 
-    // Check for level group badges
+
     const completedCount = Object.keys(S.comp).length
     if (completedCount >= 10 && !S.badges.includes('level_10')) S.badges.push('level_10')
     if (completedCount >= 20 && !S.badges.includes('level_20')) S.badges.push('level_20')
@@ -2472,7 +2492,7 @@ window.ui = Object.assign(window.ui || {}, {
     if (completedCount >= 52 && !S.badges.includes('level_52')) S.badges.push('level_52')
     if (completedCount >= 52 && !S.badges.includes('traffic_hero')) S.badges.push('traffic_hero')
 
-    // Check for category badges based on level themeType
+
     const themeTypes = {
       pedestrian_expert: ['pedestrian_courtesy', 'pedestrian_priority', 'pedestrian', 'crosswalk'],
       night_driver: ['night', 'night_driving', 'night_monsoon', 'blind_corner', 'zero_visibility'],
@@ -2481,7 +2501,7 @@ window.ui = Object.assign(window.ui || {}, {
       parking_master: ['parking', 'street_parking', 'respectful_parking', 'parking_rules']
     }
 
-    // Check if all levels of a category are completed
+
     for (const [badgeId, themes] of Object.entries(themeTypes)) {
       if (S.badges.includes(badgeId)) continue
       const categoryLevels = LVS.filter(l => themes.some(t => (l.themeType || '').includes(t)))
@@ -2535,7 +2555,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     const cov = document.getElementById('cov')
     const cvc = document.getElementById('cvc-main')
 
-    // Create clone for animation
+
     const rect = cvc.getBoundingClientRect()
     const clone = cvc.cloneNode(true)
     clone.id = ''
@@ -2549,10 +2569,10 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     clone.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
     document.body.appendChild(clone)
 
-    // Hide original immediately
+
     cov.classList.remove('on')
 
-    // Trigger animation
+
     setTimeout(() => {
       clone.style.transform = 'scale(0.2)'
       clone.style.top = window.innerHeight - 150 + 'px'
@@ -2560,7 +2580,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       clone.style.opacity = '0'
     }, 20)
 
-    // Create corner card
+
     setTimeout(() => {
       const stack = document.getElementById('challan-stack')
       stack.classList.add('on')
@@ -2569,7 +2589,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       ui._addChallanCard(offText, amtText)
     }, 300)
 
-    // Cleanup and continue
+
     setTimeout(() => {
       clone.remove()
       if (this._ccb) {
@@ -2609,8 +2629,8 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
   }
 });
 
-// 🚦 PROCEDURAL ENGINE AND SCENARIO ARRAYS 🚦
-// Texture Generator
+
+
 const _genTex = (type) => {
   if (type === 'asphalt') {
     const tex = new THREE.TextureLoader().load('textures/road.png')
@@ -2694,14 +2714,14 @@ const _genTex = (type) => {
     ctx.fillStyle = '#ffffff'
     ctx.fillRect(0, 0, 256, 256)
     ctx.fillStyle = '#000000'
-    ctx.fillRect(32, 32, 192, 64) // windshield
-    ctx.fillRect(32, 160, 192, 64) // rear window
+    ctx.fillRect(32, 32, 192, 64)
+    ctx.fillRect(32, 160, 192, 64)
     ctx.fillStyle = '#c0392b'
     ctx.fillRect(16, 220, 64, 36)
-    ctx.fillRect(176, 220, 64, 36) // taillights
+    ctx.fillRect(176, 220, 64, 36)
     ctx.fillStyle = '#f1c40f'
     ctx.fillRect(16, 0, 64, 32)
-    ctx.fillRect(176, 0, 64, 32) // headlights
+    ctx.fillRect(176, 0, 64, 32)
   }
   const tex = new THREE.CanvasTexture(c)
   tex.wrapS = THREE.RepeatWrapping
@@ -2733,16 +2753,16 @@ const _buildVehicle = (type, col) => {
   let rotY = 0
 
   if (window.PRELOADED_MODELS) {
-    // For 'car' type, sometimes use LowPoly Cars FBX instead of GLB variants
+
     if (type === 'car' && window.PRELOADED_MODELS['lowpoly_cars'] && Math.random() < 0.4) {
       const lpRoot = window.PRELOADED_MODELS['lowpoly_cars']
-      // FBX multi-mesh: pick a random child car body
+
       const cars = []
       lpRoot.traverse(c => { if (c.isGroup && c.children.length > 0) cars.push(c) })
       if (cars.length > 0) {
         baseModel = cars[Math.floor(Math.random() * cars.length)].clone()
         s = 2.0
-        // Apply color to body meshes
+
         baseModel.traverse((child) => {
           if (child.isMesh && child.material) {
             const n = child.name.toLowerCase()
@@ -2755,7 +2775,7 @@ const _buildVehicle = (type, col) => {
       }
     }
 
-    // Default: GLB variant pool
+
     if (!baseModel) {
       let modelKey = type
       const keysForType = Object.keys(window.PRELOADED_MODELS).filter((k) => k === type || k.startsWith(type + '_'))
@@ -2771,7 +2791,7 @@ const _buildVehicle = (type, col) => {
 
         baseModel.traverse((child) => {
           if (child.isMesh && child.material) {
-            // Kenney models usually use materials like "paint", "body", "color"
+
             if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
               child.material = child.material.clone()
               child.material.color.setHex(col)
@@ -2793,7 +2813,7 @@ const _buildVehicle = (type, col) => {
     baseModel.rotation.y = rotY
     baseModel.position.y = 0
 
-    // Add an invisible hitbox for collisions
+
     const hw = type === 'bus' || type === 'truck' ? 1.8 : 1.2
     const hl = type === 'bus' || type === 'truck' ? 5.5 : 2.8
     const hbGeo = new THREE.BoxGeometry(hw, 2, hl)
@@ -2804,9 +2824,9 @@ const _buildVehicle = (type, col) => {
     g.add(baseModel)
     g.add(hb)
 
-    // ── GTA-style door pivots (GLB cars) ──
+
     const doorGeoGLB = new THREE.BoxGeometry(0.06, 0.5, 1.0)
-    // Find body color from model materials for door overlay
+
     let bodyColGLB = col || 0x888888
     baseModel.traverse((child) => {
       if (child.isMesh && child.material && child.material.color) {
@@ -2817,14 +2837,14 @@ const _buildVehicle = (type, col) => {
     })
     const doorMatGLB = new THREE.MeshToonMaterial({ color: bodyColGLB })
     const doorWGLB = hw * 0.95
-    // Left door — hinge at front edge
+
     const dpLGLB = new THREE.Group()
     dpLGLB.position.set(doorWGLB, 1.0, 0.5)
     const dmLGLB = new THREE.Mesh(doorGeoGLB, doorMatGLB.clone())
     dmLGLB.position.set(0, 0, -0.5)
     dpLGLB.add(dmLGLB)
     g.add(dpLGLB)
-    // Right door — hinge at front edge
+
     const dpRGLB = new THREE.Group()
     dpRGLB.position.set(-doorWGLB, 1.0, 0.5)
     const dmRGLB = new THREE.Mesh(doorGeoGLB, doorMatGLB.clone())
@@ -2849,15 +2869,15 @@ const _buildVehicle = (type, col) => {
       const rimM = new THREE.MeshToonMaterial({ color: 0xcccccc })
       const hlM = new THREE.MeshBasicMaterial({ color: 0xffffcc })
       const tlM = new THREE.MeshBasicMaterial({ color: 0xff0000 })
-      // Chassis
+
       const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 3.8), bodyM)
       body.position.y = 0.42
       g.add(body)
-      // Cabin
+
       const cab = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.44, 1.9), bodyM)
       cab.position.set(0, 0.84, 0.08)
       g.add(cab)
-      // Windshield
+
       const ws = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.4), glassM)
       ws.position.set(0, 0.84, 1.02)
       ws.rotation.x = Math.PI / 5
@@ -2866,7 +2886,7 @@ const _buildVehicle = (type, col) => {
       rs.position.set(0, 0.84, -0.85)
       rs.rotation.x = -Math.PI / 5
       g.add(rs)
-      // 4 Wheels
+
       ;[
         [0.85, 0, 1.25],
         [-0.85, 0, 1.25],
@@ -2882,7 +2902,7 @@ const _buildVehicle = (type, col) => {
         rim.position.set(x, 0.3, z)
         g.add(rim)
       })
-      // Headlights & taillights
+
       ;[
         [0.55, 0.45, 1.92, hlM],
         [-0.55, 0.45, 1.92, hlM],
@@ -2893,17 +2913,17 @@ const _buildVehicle = (type, col) => {
         l.position.set(x, y, z)
         g.add(l)
       })
-      // ── GTA-style door pivots (procedural car) ──
+
       const doorGeoPC = new THREE.BoxGeometry(0.04, 0.38, 0.85)
       const doorMatPC = bodyM.clone()
-      // Left door — hinge at front edge (B-pillar)
+
       const dpLPC = new THREE.Group()
       dpLPC.position.set(0.82, 0.65, 0.4)
       const dmLPC = new THREE.Mesh(doorGeoPC, doorMatPC.clone())
       dmLPC.position.set(0, 0, -0.425)
       dpLPC.add(dmLPC)
       g.add(dpLPC)
-      // Right door — hinge at front edge
+
       const dpRPC = new THREE.Group()
       dpRPC.position.set(-0.82, 0.65, 0.4)
       const dmRPC = new THREE.Mesh(doorGeoPC, doorMatPC.clone())
@@ -2915,7 +2935,7 @@ const _buildVehicle = (type, col) => {
       break
     }
     case 'bus': {
-      const bM = new THREE.MeshToonMaterial({ color: col || 0xe74c3c }) // BEST bus red
+      const bM = new THREE.MeshToonMaterial({ color: col || 0xe74c3c })
       const gM = new THREE.MeshToonMaterial({ color: 0x88bbdd, transparent: true, opacity: 0.6 })
       const wM = new THREE.MeshToonMaterial({ color: 0x111111 })
       const bdy = new THREE.Mesh(new THREE.BoxGeometry(2.3, 2.2, 8.0), bM)
@@ -2961,7 +2981,7 @@ const _buildVehicle = (type, col) => {
       const hood = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 1.4), aM)
       hood.position.set(0, 0.85, -0.1)
       g.add(hood)
-      // 3 wheels: 2 rear + 1 front
+
       ;[
         [-0.58, 0, 0.72],
         [0.58, 0, 0.72]
@@ -3080,7 +3100,7 @@ const _buildVehicle = (type, col) => {
       break
     }
     default: {
-      // Fallback: simple colored box
+
       g.add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 3.5), new THREE.MeshToonMaterial({ color: col })))
     }
   }
@@ -3091,21 +3111,21 @@ const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
   const sk = isPlayer ? 1.0 : 0.92
 
-  // ═══ NPC VARIATION ═══
-  // Random skin tones, shirt colors, and hair for NPCs to make them look distinct
+
+
   const npcSkins = [0xd4a574, 0xc68642, 0x8d5524, 0xf1c27d, 0xffdbac, 0xe0ac69]
   const npcShirts = [0x3498db, 0x2ecc71, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xe74c3c, 0x34495e]
   const npcPants = [0x555555, 0x2c3e50, 0x444444, 0x3d3d3d, 0x2d2d2d]
   const npcHairs = [0x1a1a1a, 0x3d2b1f, 0x654321, 0x8B4513, 0x2c1810, 0xb5651d]
 
-  // Load saved player appearance or use defaults
+
   let savedAppear = null
   if (isPlayer) {
     try { savedAppear = JSON.parse(localStorage.getItem('traffic_appearance')) } catch (e) {}
   }
   const app = (isPlayer && savedAppear) || appearance || {}
 
-  // Pick random variation for NPCs, use saved/customized for player
+
   const skinColor = isPlayer ? (app.skin || 0xd4a574) : npcSkins[Math.floor(Math.random() * npcSkins.length)]
   const shirtColor = isPlayer ? (app.shirt || 0xe74c3c) : npcShirts[Math.floor(Math.random() * npcShirts.length)]
   const shirtDk = new THREE.Color(shirtColor).multiplyScalar(0.8).getHex()
@@ -3113,7 +3133,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   const pantsDk = new THREE.Color(pantsColor).multiplyScalar(0.8).getHex()
   const hairColor = isPlayer ? (app.hair || 0x1a1a1a) : npcHairs[Math.floor(Math.random() * npcHairs.length)]
 
-  // ── Materials ──
+
   const SKIN = new THREE.MeshToonMaterial({ color: skinColor })
   const SKIN2 = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.92).getHex() })
   const HAIR = new THREE.MeshToonMaterial({ color: hairColor })
@@ -3148,37 +3168,37 @@ const _buildHuman = (isPlayer = false, appearance) => {
     return new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), mat)
   }
 
-  // ═══ HEAD ═══
+
   const headGroup = new THREE.Group()
   headGroup.position.y = 1.72 * sk
 
-  // Skull — slightly ovoid
+
   const skull = new THREE.Mesh(new THREE.SphereGeometry(0.28 * sk, 16, 12), SKIN)
   skull.scale.set(1, 1.05, 0.95)
   headGroup.add(skull)
 
-  // Jaw / chin
+
   const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.20 * sk, 12, 8), SKIN2)
   jaw.position.set(0, -0.18 * sk, 0.10 * sk)
   jaw.scale.set(0.85, 0.55, 0.75)
   headGroup.add(jaw)
 
-  // Chin bump
+
   const chin = new THREE.Mesh(new THREE.SphereGeometry(0.04 * sk, 8, 6), SKIN)
   chin.position.set(0, -0.24 * sk, 0.16 * sk)
   headGroup.add(chin)
 
-  // ── Hair (styled — shape varies by app.hairStyle, not just color) ──
+
   const hairStyle = isPlayer ? (app.hairStyle || 'classic') : 'classic'
   if (hairStyle !== 'bald') {
     if (hairStyle === 'short') {
-      // Short/buzz cut — tight cap hugging the skull, no back volume
+
       const buzz = new THREE.Mesh(new THREE.SphereGeometry(0.285 * sk, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.5), HAIR)
       buzz.position.set(0, 0.09 * sk, -0.01 * sk)
       buzz.scale.set(1, 0.55, 1)
       headGroup.add(buzz)
     } else if (hairStyle === 'long') {
-      // Long flowing hair — extends down past the neck on the sides and back
+
       const crown = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 12, 10), HAIR)
       crown.position.set(0, 0.10 * sk, -0.02 * sk)
       crown.scale.set(1, 0.62, 0.98)
@@ -3212,7 +3232,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
       tie.rotation.x = 1.2
       headGroup.add(tie)
     } else {
-      // 'classic' — the original layered volume look
+
       const hairBack = new THREE.Mesh(new THREE.SphereGeometry(0.30 * sk, 12, 10), HAIR)
       hairBack.position.set(0, 0.05 * sk, -0.04 * sk)
       hairBack.scale.set(0.98, 0.55, 0.98)
@@ -3230,27 +3250,27 @@ const _buildHuman = (isPlayer = false, appearance) => {
     }
   }
 
-  // ── Eyes (white + iris + pupil + eyelids) ──
+
   const _eyeLids = []
   ;[-1, 1].forEach(s => {
-    // Eye white
+
     const ew = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 10, 8), EYE_W)
     ew.position.set(s * 0.105 * sk, 0.04 * sk, 0.23 * sk)
     ew.scale.set(1, 0.85, 0.6)
     headGroup.add(ew)
-    // Iris
+
     const iris = new THREE.Mesh(new THREE.SphereGeometry(0.028 * sk, 8, 6), EYE_IRIS)
     iris.position.set(s * 0.105 * sk, 0.035 * sk, 0.255 * sk)
     headGroup.add(iris)
-    // Pupil
+
     const ep = new THREE.Mesh(new THREE.SphereGeometry(0.015 * sk, 6, 4), EYE_P)
     ep.position.set(s * 0.105 * sk, 0.035 * sk, 0.268 * sk)
     headGroup.add(ep)
-    // Eye highlight (tiny white dot for liveliness)
+
     const hl = new THREE.Mesh(new THREE.SphereGeometry(0.006 * sk, 4, 3), EYE_W)
     hl.position.set(s * 0.095 * sk, 0.045 * sk, 0.27 * sk)
     headGroup.add(hl)
-    // Upper eyelid
+
     const lid = new THREE.Mesh(new THREE.SphereGeometry(0.052 * sk, 8, 4, 0, Math.PI * 2, 0, Math.PI * 0.4), SKIN)
     lid.position.set(s * 0.105 * sk, 0.065 * sk, 0.235 * sk)
     lid.scale.set(1, 0.7, 0.7)
@@ -3259,7 +3279,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     _eyeLids.push(lid)
   })
 
-  // ── Eyebrows ──
+
   ;[-1, 1].forEach(s => {
     const brow = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.018 * sk, 0.025 * sk), HAIR)
     brow.position.set(s * 0.105 * sk, 0.11 * sk, 0.23 * sk)
@@ -3267,99 +3287,99 @@ const _buildHuman = (isPlayer = false, appearance) => {
     headGroup.add(brow)
   })
 
-  // ── Nose ──
+
   const nose = new THREE.Mesh(new THREE.CylinderGeometry(0.018 * sk, 0.025 * sk, 0.08 * sk, 8), NOSE_M)
   nose.position.set(0, -0.03 * sk, 0.26 * sk)
   nose.rotation.x = Math.PI / 2 + 0.15
   headGroup.add(nose)
-  // Nose tip
+
   const noseTip = new THREE.Mesh(new THREE.SphereGeometry(0.022 * sk, 8, 6), NOSE_M)
   noseTip.position.set(0, -0.06 * sk, 0.275 * sk)
   headGroup.add(noseTip)
 
-  // ── Mouth ──
+
   const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.07 * sk, 0.012 * sk, 0.018 * sk), MOUTH)
   mouth.position.set(0, -0.11 * sk, 0.25 * sk)
   headGroup.add(mouth)
-  // Lower lip (slight fullness)
+
   const lip = new THREE.Mesh(new THREE.SphereGeometry(0.025 * sk, 8, 4), LIP_COLOR)
   lip.position.set(0, -0.125 * sk, 0.245 * sk)
   lip.scale.set(1.2, 0.4, 0.5)
   headGroup.add(lip)
 
-  // ── Ears ──
+
   ;[-1, 1].forEach(s => {
     const ear = new THREE.Mesh(new THREE.SphereGeometry(0.04 * sk, 8, 6), SKIN2)
     ear.position.set(s * 0.27 * sk, 0.02 * sk, 0.0)
     ear.scale.set(0.6, 0.8, 0.4)
     headGroup.add(ear)
-    // Inner ear
+
     const earIn = new THREE.Mesh(new THREE.SphereGeometry(0.02 * sk, 6, 4), EAR_INNER)
     earIn.position.set(s * 0.275 * sk, 0.02 * sk, 0.005 * sk)
     earIn.scale.set(0.5, 0.7, 0.3)
     headGroup.add(earIn)
   })
 
-  // ── Player cap (togglable) ──
+
   if (isPlayer && app.accessories?.cap !== false && !app.accessories?.beanie && !app.accessories?.helmet) {
     const capTop = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), CAP)
     capTop.position.set(0, 0.12 * sk, -0.01 * sk)
     capTop.scale.set(1.02, 0.5, 1.02)
     headGroup.add(capTop)
-    // Brim — curved arc for baseball-cap shape
+
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.28 * sk, 0.30 * sk, 0.02 * sk, 12), CAP_BRIM)
     brim.position.set(0, 0.10 * sk, 0.12 * sk)
     brim.scale.set(1, 1, 0.6)
     headGroup.add(brim)
-    // Button on top
+
     const btn = new THREE.Mesh(new THREE.SphereGeometry(0.025 * sk, 6, 4), CAP_BRIM)
     btn.position.set(0, 0.22 * sk, -0.01 * sk)
     headGroup.add(btn)
   }
 
-  // ── Beanie (knit winter hat) ──
+
   if (isPlayer && app.accessories?.beanie) {
     const BEANIE = new THREE.MeshToonMaterial({ color: app.beanieColor || 0x3498db })
     const BEANIE_RIBBON = new THREE.MeshToonMaterial({ color: app.beanieColor ? new THREE.Color(app.beanieColor).multiplyScalar(0.7).getHex() : 0x2980b9 })
-    // Main dome
+
     const dome = new THREE.Mesh(new THREE.SphereGeometry(0.31 * sk, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), BEANIE)
     dome.position.set(0, 0.10 * sk, -0.02 * sk)
     dome.scale.set(1.02, 0.55, 1.02)
     headGroup.add(dome)
-    // Folded brim/ribbon
+
     const ribbon = new THREE.Mesh(new THREE.TorusGeometry(0.28 * sk, 0.035 * sk, 8, 14), BEANIE_RIBBON)
     ribbon.position.set(0, 0.04 * sk, -0.01 * sk)
     ribbon.rotation.x = Math.PI / 2 + 0.15
     ribbon.scale.set(1, 1, 0.7)
     headGroup.add(ribbon)
-    // Pom-pom on top
+
     const pompom = new THREE.Mesh(new THREE.SphereGeometry(0.055 * sk, 8, 6), BEANIE_RIBBON)
     pompom.position.set(0.01 * sk, 0.23 * sk, -0.02 * sk)
     headGroup.add(pompom)
   }
 
-  // ── Helmet (bike/safety helmet) ──
+
   if (isPlayer && app.accessories?.helmet) {
     const HELMET_OUTER = new THREE.MeshToonMaterial({ color: 0xf5f5f5 })
     const HELMET_STRIPE = new THREE.MeshToonMaterial({ color: 0x2980b9 })
     const HELMET_PAD = new THREE.MeshToonMaterial({ color: 0x555555 })
     const HELMET_VISOR = new THREE.MeshToonMaterial({ color: 0x1a1a2e, transparent: true, opacity: 0.5 })
-    // Main dome
+
     const hDome = new THREE.Mesh(new THREE.SphereGeometry(0.33 * sk, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), HELMET_OUTER)
     hDome.position.set(0, 0.10 * sk, -0.02 * sk)
     hDome.scale.set(1.04, 0.6, 1.06)
     headGroup.add(hDome)
-    // Center stripe
+
     const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.015 * sk, 0.12 * sk, 0.25 * sk), HELMET_STRIPE)
     stripe.position.set(0, 0.13 * sk, -0.02 * sk)
     stripe.rotation.x = 0.15
     headGroup.add(stripe)
-    // Visor
+
     const visor = new THREE.Mesh(new THREE.SphereGeometry(0.27 * sk, 8, 6, 0, Math.PI * 1.2, 0, Math.PI * 0.4), HELMET_VISOR)
     visor.position.set(0, 0.07 * sk, 0.05 * sk)
     visor.scale.set(1.1, 0.5, 0.9)
     headGroup.add(visor)
-    // Padding rim
+
     const pad = new THREE.Mesh(new THREE.TorusGeometry(0.30 * sk, 0.025 * sk, 6, 14), HELMET_PAD)
     pad.position.set(0, 0.03 * sk, -0.01 * sk)
     pad.rotation.x = Math.PI / 2 + 0.15
@@ -3367,7 +3387,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     headGroup.add(pad)
   }
 
-  // ── Sunglasses (togglable) ──
+
   if (isPlayer && app.accessories?.glasses) {
     const GLASS_FRAME = new THREE.MeshToonMaterial({ color: app.glassesFrame || 0x1a1a1a })
     const GLASS_LENS = new THREE.MeshToonMaterial({
@@ -3377,38 +3397,38 @@ const _buildHuman = (isPlayer = false, appearance) => {
     })
     const GLASS_HIGHLIGHT = new THREE.MeshToonMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 })
     ;[-1, 1].forEach(s => {
-      // Larger lens with slight aviator curve
+
       const lens = new THREE.Mesh(new THREE.SphereGeometry(0.075 * sk, 10, 8), GLASS_LENS)
       lens.position.set(s * 0.13 * sk, 0.01 * sk, 0.24 * sk)
       lens.scale.set(1, 0.75, 0.25)
       headGroup.add(lens)
-      // Thicker frame ring
+
       const frame = new THREE.Mesh(new THREE.TorusGeometry(0.072 * sk, 0.015 * sk, 8, 14), GLASS_FRAME)
       frame.position.set(s * 0.13 * sk, 0.01 * sk, 0.24 * sk)
       frame.scale.set(1, 0.85, 0.3)
       headGroup.add(frame)
-      // Subtle lens highlight (reflection)
+
       const hl = new THREE.Mesh(new THREE.SphereGeometry(0.035 * sk, 6, 4), GLASS_HIGHLIGHT)
       hl.position.set(s * 0.10 * sk, 0.035 * sk, 0.265 * sk)
       headGroup.add(hl)
     })
-    // Bridge (wider, more prominent)
+
     const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.02 * sk), GLASS_FRAME)
     bridge.position.set(0, 0.01 * sk, 0.24 * sk)
     headGroup.add(bridge)
-    // Temples (arms)
+
     ;[-1, 1].forEach(s => {
       const arm = new THREE.Mesh(new THREE.BoxGeometry(0.14 * sk, 0.012 * sk, 0.012 * sk), GLASS_FRAME)
       arm.position.set(s * 0.19 * sk, 0.01 * sk, 0.12 * sk)
       headGroup.add(arm)
-      // Temple tip (curved end)
+
       const tip = new THREE.Mesh(new THREE.SphereGeometry(0.012 * sk, 4, 3), GLASS_FRAME)
       tip.position.set(s * 0.26 * sk, 0.01 * sk, 0.12 * sk)
       headGroup.add(tip)
     })
   }
 
-  // ── Cheek blush (subtle, player only) ──
+
   if (isPlayer) {
     const BLUSH = new THREE.MeshToonMaterial({ color: 0xff9999, transparent: true, opacity: 0.12 })
     ;[-1, 1].forEach(s => {
@@ -3419,7 +3439,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     })
   }
 
-  // ═══ NECK ═══
+
   const neck = limb(0.08 * sk, 0.10 * sk, 0.14 * sk, SKIN, 8)
   const neckGroup = new THREE.Group()
   neckGroup.position.y = 1.56 * sk
@@ -3429,50 +3449,50 @@ const _buildHuman = (isPlayer = false, appearance) => {
 
   g.add(headGroup)
 
-  // ═══ TORSO ═══
+
   const tH = 0.65 * sk
   const torsoGroup = new THREE.Group()
   torsoGroup.position.y = 1.23 * sk
 
-  // Chest (upper torso)
+
   const chest = limb(0.34 * sk, 0.30 * sk, tH * 0.52, SHIRT, 10)
   chest.position.y = tH * 0.15
   torsoGroup.add(chest)
 
-  // Shirt pocket (left chest)
+
   const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.07 * sk, 0.015 * sk), SHIRT_DK)
   pocket.position.set(-0.12 * sk, tH * 0.2, 0.28 * sk)
   torsoGroup.add(pocket)
-  // Pocket flap
+
   const flap = new THREE.Mesh(new THREE.BoxGeometry(0.085 * sk, 0.015 * sk, 0.02 * sk), SHIRT_DK)
   flap.position.set(-0.12 * sk, tH * 0.24, 0.29 * sk)
   torsoGroup.add(flap)
 
-  // Shirt buttons
+
   for (let i = 0; i < 3; i++) {
     const btn = new THREE.Mesh(new THREE.SphereGeometry(0.008 * sk, 6, 4), EYE_W)
     btn.position.set(0, tH * 0.15 - i * 0.08 * sk, 0.31 * sk)
     torsoGroup.add(btn)
   }
 
-  // Waist (lower torso)
+
   const waist = limb(0.30 * sk, 0.26 * sk, tH * 0.48, SHIRT_DK, 10)
   waist.position.y = -tH * 0.18
   torsoGroup.add(waist)
 
-  // Belt
+
   const belt = new THREE.Mesh(new THREE.TorusGeometry(0.28 * sk, 0.025 * sk, 6, 16), BELT)
   belt.position.y = -tH * 0.40
   belt.rotation.x = Math.PI / 2
   torsoGroup.add(belt)
-  // Belt buckle
+
   const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.02 * sk), BELT_BUCKLE)
   buckle.position.set(0, -tH * 0.40, 0.28 * sk)
   torsoGroup.add(buckle)
 
   g.add(torsoGroup)
 
-  // ═══ SHOULDERS (joint spheres) ═══
+
   const lShoulder = jointSphere(0.08 * sk, SHIRT)
   lShoulder.position.set(-0.37 * sk, 1.42 * sk, 0)
   g.add(lShoulder)
@@ -3480,31 +3500,31 @@ const _buildHuman = (isPlayer = false, appearance) => {
   rShoulder.position.set(0.37 * sk, 1.42 * sk, 0)
   g.add(rShoulder)
 
-  // ═══ ARMS (articulated groups) ═══
+
   const lArmP = new THREE.Group()
   lArmP.position.set(-0.38 * sk, 1.38 * sk, 0)
-  // Upper arm
+
   const lUA = limb(0.085 * sk, 0.075 * sk, 0.32 * sk, SHIRT, 10)
   lUA.position.y = -0.16 * sk
   lArmP.add(lUA)
-  // Elbow joint
+
   const lElbow = jointSphere(0.055 * sk, JOINT)
   lElbow.position.set(0, -0.33 * sk, 0)
   lArmP.add(lElbow)
-  // Forearm
+
   const lFore = limb(0.07 * sk, 0.055 * sk, 0.28 * sk, SKIN, 10)
   lFore.position.set(0, -0.48 * sk, 0)
   lArmP.add(lFore)
-  // Wrist
+
   const lWrist = jointSphere(0.038 * sk, WRIST)
   lWrist.position.set(0, -0.63 * sk, 0)
   lArmP.add(lWrist)
-  // Hand
+
   const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 8, 6), SKIN2)
   lHand.position.set(0, -0.68 * sk, 0)
   lHand.scale.set(0.9, 1, 0.7)
   lArmP.add(lHand)
-  // Fingers (simplified — 3 bumps)
+
   ;[-0.015, 0, 0.015].forEach((fx, fi) => {
     const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.008 * sk, 0.006 * sk, 0.06 * sk, 4), SKIN2)
     finger.position.set(fx * sk, -0.74 * sk, 0)
@@ -3537,33 +3557,33 @@ const _buildHuman = (isPlayer = false, appearance) => {
   })
   g.add(rArmP)
 
-  // ═══ LEGS (articulated groups) ═══
+
   const lLegP = new THREE.Group()
   lLegP.position.set(-0.14 * sk, 0.82 * sk, 0)
-  // Upper leg (thigh)
+
   const lUL = limb(0.11 * sk, 0.095 * sk, 0.42 * sk, PANTS, 10)
   lUL.position.y = -0.21 * sk
   lLegP.add(lUL)
-  // Knee joint
+
   const lKnee = jointSphere(0.065 * sk, PANTS_DK)
   lKnee.position.set(0, -0.43 * sk, 0)
   lLegP.add(lKnee)
-  // Lower leg (shin)
+
   const lLL = limb(0.09 * sk, 0.075 * sk, 0.38 * sk, PANTS_DK, 10)
   lLL.position.set(0, -0.62 * sk, 0)
   lLegP.add(lLL)
-  // Ankle
+
   const lAnkle = jointSphere(0.04 * sk, SHOES)
   lAnkle.position.set(0, -0.82 * sk, 0)
   lLegP.add(lAnkle)
-  // Shoe (with sole detail)
+
   const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.07 * sk, 0.20 * sk), SHOES)
   lShoe.position.set(0.01 * sk, -0.87 * sk, 0.04 * sk)
   lLegP.add(lShoe)
   const lSole = new THREE.Mesh(new THREE.BoxGeometry(0.115 * sk, 0.02 * sk, 0.21 * sk), SHOE_SOLE)
   lSole.position.set(0.01 * sk, -0.91 * sk, 0.04 * sk)
   lLegP.add(lSole)
-  // Shoe tongue
+
   const lTongue = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.015 * sk), SHIRT_DK)
   lTongue.position.set(0.01 * sk, -0.83 * sk, 0.14 * sk)
   lTongue.rotation.x = -0.3
@@ -3596,7 +3616,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   rLegP.add(rTongue)
   g.add(rLegP)
 
-  // ═══ GROUND SHADOW (soft blob) ═══
+
   const shadowGeo = new THREE.CircleGeometry(0.3 * sk, 16)
   const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.2, depthWrite: false })
   const shadowBlob = new THREE.Mesh(shadowGeo, shadowMat)
@@ -3604,27 +3624,27 @@ const _buildHuman = (isPlayer = false, appearance) => {
   shadowBlob.position.y = 0.01
   g.add(shadowBlob)
 
-  // ═══ PLAYER-SPECIFIC ACCESSORIES ═══
+
   let ring = null, nametag = null, nametagGlow = null, nametagGlowOuter = null
   if (isPlayer) {
-    // ── Backpack (detailed with straps and pocket) ──
+
     if (app.accessories?.backpack !== false) {
       const bagMain = new THREE.Mesh(new THREE.BoxGeometry(0.30 * sk, 0.40 * sk, 0.16 * sk), BAG)
       bagMain.position.set(0, 1.28 * sk, -0.24 * sk)
       g.add(bagMain)
-      // Bag front pocket
+
       const bagPocket = new THREE.Mesh(new THREE.BoxGeometry(0.24 * sk, 0.12 * sk, 0.04 * sk), BAG_DK)
       bagPocket.position.set(0, 1.20 * sk, -0.33 * sk)
       g.add(bagPocket)
-      // Bag zipper
+
       const zipper = new THREE.Mesh(new THREE.BoxGeometry(0.22 * sk, 0.008 * sk, 0.005 * sk), BELT_BUCKLE)
       zipper.position.set(0, 1.27 * sk, -0.325 * sk)
       g.add(zipper)
-      // Bag flap
+
       const bagFlap = new THREE.Mesh(new THREE.BoxGeometry(0.28 * sk, 0.06 * sk, 0.03 * sk), BAG_DK)
       bagFlap.position.set(0, 1.48 * sk, -0.30 * sk)
       g.add(bagFlap)
-      // Shoulder straps
+
       ;[-1, 1].forEach(s => {
         const strap = new THREE.Mesh(new THREE.BoxGeometry(0.04 * sk, 0.5 * sk, 0.02 * sk), BAG_STRAP)
         strap.position.set(s * 0.12 * sk, 1.35 * sk, -0.12 * sk)
@@ -3633,44 +3653,44 @@ const _buildHuman = (isPlayer = false, appearance) => {
       })
     }
 
-    // ── Scarf (3D draped geometry) ──
+
     if (app.accessories?.scarf) {
       const SCARF = new THREE.MeshToonMaterial({ color: 0xe74c3c })
       const SCARF_STRIPE = new THREE.MeshToonMaterial({ color: 0xd4a017 })
-      // Main wrap around neck
+
       const wrap = new THREE.Mesh(new THREE.TorusGeometry(0.16 * sk, 0.03 * sk, 8, 16), SCARF)
       wrap.position.set(0, 1.54 * sk, -0.02 * sk)
       wrap.rotation.x = Math.PI / 2 + 0.2
       wrap.scale.set(1.2, 1, 0.8)
       g.add(wrap)
-      // Draped front left segment
+
       const segL = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.28 * sk, 0.03 * sk), SCARF)
       segL.position.set(-0.10 * sk, 1.38 * sk, 0.07 * sk)
       segL.rotation.x = 0.2
       segL.rotation.z = 0.1
       g.add(segL)
-      // Draped front right segment
+
       const segR = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.28 * sk, 0.03 * sk), SCARF)
       segR.position.set(0.10 * sk, 1.38 * sk, 0.07 * sk)
       segR.rotation.x = 0.2
       segR.rotation.z = -0.1
       g.add(segR)
-      // Stripe on left segment
+
       const stripeL = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.035 * sk), SCARF_STRIPE)
       stripeL.position.set(-0.10 * sk, 1.34 * sk, 0.075 * sk)
       g.add(stripeL)
-      // Stripe on right segment
+
       const stripeR = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.035 * sk), SCARF_STRIPE)
       stripeR.position.set(0.10 * sk, 1.34 * sk, 0.075 * sk)
       g.add(stripeR)
-      // Draped back 
+
       const segBack = new THREE.Mesh(new THREE.BoxGeometry(0.20 * sk, 0.16 * sk, 0.025 * sk), SCARF)
       segBack.position.set(0, 1.38 * sk, -0.14 * sk)
       segBack.rotation.x = -0.15
       g.add(segBack)
     }
 
-    // ── Glow ring ──
+
     ring = new THREE.Mesh(
       new THREE.TorusGeometry(0.32 * sk, 0.018, 10, 24),
       new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.4 })
@@ -3678,7 +3698,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     ring.position.set(0, 0.01, 0)
     ring.rotation.x = Math.PI / 2
     g.add(ring)
-    // Outer ring glow
+
     const ringOuter = new THREE.Mesh(
       new THREE.TorusGeometry(0.36 * sk, 0.008, 8, 20),
       new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.2 })
@@ -3687,7 +3707,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     ringOuter.rotation.x = Math.PI / 2
     g.add(ringOuter)
 
-    // ── Direction arrows (3D chevrons) ──
+
     const arrowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.35 })
     ;[-1, 1].forEach(s => {
       const ar = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.09, 4), arrowMat)
@@ -3695,13 +3715,13 @@ const _buildHuman = (isPlayer = false, appearance) => {
       ar.rotation.z = s * Math.PI / 2
       g.add(ar)
     })
-    // Forward arrow
+
     const fwdAr = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.08, 4), arrowMat)
     fwdAr.position.set(0, 0.08 * sk, 0.5 * sk)
     fwdAr.rotation.x = Math.PI / 2
     g.add(fwdAr)
 
-    // ── Nametag sprite (enhanced: rank icon, name, rank title, XP bar, animated glow) ──
+
     const nameTxt = (typeof S !== 'undefined' && S?.name) || 'Player'
     const _nametagRankTiers = [
       { min: 0, name: 'Rookie', icon: '🔰', color: '#94a3b8' },
@@ -3720,37 +3740,37 @@ const _buildHuman = (isPlayer = false, appearance) => {
     const _rank = _getNametagRank(_playerScore)
     const _nextRank = _nametagRankTiers.find(r => r.min > _playerScore)
     const _xpPct = _nextRank ? Math.min(1, (_playerScore - _rank.min) / (_nextRank.min - _rank.min)) : 1
-    // Canvas: wider for rank info + progress bar
+
     const canvas = document.createElement('canvas')
     canvas.width = 512; canvas.height = 140
     const ctx = canvas.getContext('2d')
-    // Rounded background with rank-colored border
+
     ctx.fillStyle = 'rgba(0, 15, 10, 0.75)'
     if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 132, 14); ctx.fill() } else { ctx.fillRect(4, 4, 504, 132) }
-    // Rank-colored accent border
+
     ctx.strokeStyle = _rank.color + '88'
     ctx.lineWidth = 2.5
     if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 132, 14); ctx.stroke() }
-    // Rank icon (emoji)
+
     ctx.font = '28px serif'
     ctx.textAlign = 'left'
     ctx.textBaseline = 'middle'
     ctx.fillText(_rank.icon, 20, 38)
-    // Rank name + title
+
     ctx.fillStyle = _rank.color
     ctx.font = 'bold 11px Inter, sans-serif'
     ctx.textAlign = 'left'
     ctx.fillText(_rank.name.toUpperCase(), 52, 28)
-    // Player name
+
     ctx.fillStyle = '#ffffff'
     ctx.font = 'bold 30px Inter, sans-serif'
     ctx.fillText(nameTxt, 52, 55)
-    // XP progress bar
+
     const barX = 20, barY = 78, barW = 472, barH = 10
-    // Bar background
+
     ctx.fillStyle = 'rgba(255,255,255,0.08)'
     if (ctx.roundRect) { ctx.roundRect(barX, barY, barW, barH, 5); ctx.fill() } else { ctx.fillRect(barX, barY, barW, barH) }
-    // Bar fill with rank color gradient
+
     if (_xpPct > 0) {
       const barGrad = ctx.createLinearGradient(barX, 0, barX + barW * _xpPct, 0)
       barGrad.addColorStop(0, _rank.color)
@@ -3758,7 +3778,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
       ctx.fillStyle = barGrad
       if (ctx.roundRect) { ctx.roundRect(barX, barY, Math.max(4, barW * _xpPct), barH, 5); ctx.fill() } else { ctx.fillRect(barX, barY, Math.max(4, barW * _xpPct), barH) }
     }
-    // XP label
+
     ctx.fillStyle = 'rgba(255,255,255,0.5)'
     ctx.font = '10px Inter, sans-serif'
     ctx.textAlign = 'left'
@@ -3771,7 +3791,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     nametag.position.set(0, 2.45 * sk, 0)
     nametag.scale.set(1.4, 0.38, 1)
     g.add(nametag)
-    // ── Animated glow ring under nametag (pulses with rank color) ──
+
     const _rankColorObj = new THREE.Color(_rank.color)
     nametagGlow = new THREE.Mesh(
       new THREE.RingGeometry(0.25 * sk, 0.30 * sk, 24),
@@ -3780,7 +3800,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     nametagGlow.position.set(0, 2.45 * sk, -0.01)
     nametagGlow.rotation.x = -Math.PI / 2
     g.add(nametagGlow)
-    // Outer glow ring
+
     nametagGlowOuter = new THREE.Mesh(
       new THREE.RingGeometry(0.32 * sk, 0.35 * sk, 24),
       new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthTest: false })
@@ -3789,19 +3809,19 @@ const _buildHuman = (isPlayer = false, appearance) => {
     nametagGlowOuter.rotation.x = -Math.PI / 2
     g.add(nametagGlowOuter)
 
-    // ── Outline glow mesh (adds depth) ──
+
     const glowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.04, side: THREE.BackSide })
     const glowBody = new THREE.Mesh(new THREE.CylinderGeometry(0.38 * sk, 0.32 * sk, 1.6 * sk, 12), glowMat)
     glowBody.position.y = 0.9 * sk
     g.add(glowBody)
   }
 
-  // ═══ NPC BACKPACK (simpler) ═══
+
   if (!isPlayer) {
     const npcBag = new THREE.Mesh(new THREE.BoxGeometry(0.22 * sk, 0.30 * sk, 0.12 * sk), BAG)
     npcBag.position.set(0, 1.28 * sk, -0.22 * sk)
     g.add(npcBag)
-    // NPC bag strap
+
     ;[-0.08, 0.08].forEach(x => {
       const s = new THREE.Mesh(new THREE.BoxGeometry(0.025 * sk, 0.35 * sk, 0.015 * sk), BAG_STRAP)
       s.position.set(x * sk, 1.32 * sk, -0.10 * sk)
@@ -3809,7 +3829,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     })
   }
 
-  // ═══ SHADOWS ═══
+
   g.traverse(c => {
     if (c.isMesh) {
       c.castShadow = !isPlayer
@@ -3818,7 +3838,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     }
   })
 
-  // ═══ HITBOX ═══
+
   const hb = new THREE.Mesh(
     new THREE.BoxGeometry(0.6 * sk, 1.8 * sk, 0.6 * sk),
     new THREE.MeshBasicMaterial({ visible: false })
@@ -3826,7 +3846,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   hb.position.y = 0.9 * sk
   g.add(hb)
 
-  // ═══ USERDATA (animation refs + NPC behavior) ═══
+
   g.userData = {
     lLeg: lLegP,
     rLeg: rLegP,
@@ -3846,7 +3866,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     spd: 1.5 + Math.random() * 1.5,
     dir: Math.random() > 0.5 ? 1 : -1,
     startZ: 0,
-    // For idle animation variation
+
     idlePhase: Math.random() * Math.PI * 2,
     blinkTimer: Math.random() * 4 + Math.random() * 3
   }
@@ -3854,11 +3874,11 @@ const _buildHuman = (isPlayer = false, appearance) => {
 }
 
 function updateTrafficAuthUI() {
-  // Check both local storage and Supabase (colUser) for logged in status
+
   const localData = localStorage.getItem('traffic_local_user')
   let user = localData ? JSON.parse(localData) : null
 
-  // If not found locally, check for Supabase user (colUser)
+
   if (!user && window.colUser) {
     const uObj = window.colUser.user || window.colUser
     const meta = uObj.user_metadata || {}
@@ -3879,7 +3899,7 @@ function updateTrafficAuthUI() {
     b.onclick = () => (window.location.href = user ? 'TrafficDashboard.html' : 'TrafficSetup.html')
   })
 
-  // Update Get Started button to Start Academy if logged in
+
   const getStartedBtn = document.getElementById('enter-academy-btn')
   if (getStartedBtn) {
     getStartedBtn.innerHTML = user ? 'Start Academy' : 'Get Started'
@@ -3896,7 +3916,7 @@ function updateTrafficAuthUI() {
 
     if (userName) userName.textContent = user.name || 'Driver'
     
-    // Avatar vs Anagram logic: show ONLY profile picture if available, hide initials completely
+
     if (user.avatar && pfp) {
       pfp.src = user.avatar
       pfp.style.setProperty('display', 'block', 'important')
@@ -3911,20 +3931,20 @@ function updateTrafficAuthUI() {
   }
 }
 
-// Also listen for col-auth-changed event to update UI when Supabase auth changes
+
 if (typeof window !== 'undefined') {
   window.addEventListener('col-auth-changed', function() {
     setTimeout(updateTrafficAuthUI, 500)
   })
 }
 
-// Run immediately
+
 updateTrafficAuthUI()
-// And on load
+
 window.addEventListener('DOMContentLoaded', updateTrafficAuthUI)
 
-// Garage panel functions
-// Legacy fallback — used by old onclick handlers
+
+
 function selectVehicle(vehicleId) {
   if (ui && typeof ui._selectVehicle === 'function') {
     ui._selectVehicle(vehicleId)
@@ -3935,7 +3955,7 @@ function selectVehicle(vehicleId) {
   }
 }
 
-// Mystery reward system (variable reinforcement)
+
 const MYSTERY_REWARDS = [
   { type: 'xp', amount: 500, label: '💎 Bonus XP', desc: '+500 XP injected!' },
   { type: 'wallet', amount: 5000, label: '💰 Cash Bonus', desc: '₹5,000 added to wallet!' },
@@ -3975,7 +3995,7 @@ function showMysteryRewardModal(reward) {
   modal.className = 'modal'
   document.body.appendChild(modal)
   
-  // Add bounce animation
+
   if (!document.getElementById('mystery-anim')) {
     const style = document.createElement('style')
     style.id = 'mystery-anim'
@@ -3984,7 +4004,7 @@ function showMysteryRewardModal(reward) {
   }
 }
 
-// Mumbai consequence modal with real stats
+
 function showConsequenceModal(violationType, severity = 'normal') {
   const stat = window.COURSE?.getMumbaiStat?.(violationType) || { stat: '—', unit: 'data unavailable', year: 2024, source: 'MTP' }
   const violationNames = {
@@ -4047,7 +4067,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
   modal.className = 'modal'
   document.body.appendChild(modal)
   
-  // Add modal animation
+
   if (!document.getElementById('modal-anim')) {
     const style = document.createElement('style')
     style.id = 'modal-anim'
@@ -4056,7 +4076,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
   }
 }
 
-// ═══ CHARACTER CUSTOMIZATION SYSTEM ═══
+
 (function() {
   const SKINS = [
     { hex: 0xfce4c7, name: 'Light' }, { hex: 0xf1c27d, name: 'Fair' },
@@ -4126,7 +4146,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     } catch (e) {}
   }
 
-  // ── Sync appearance from Supabase to localStorage (fire-and-forget) ──
+
   async function _syncAppearanceFromCloud() {
     if (!window.supabaseClient || !window.colUser?.id) return
     try {
@@ -4136,18 +4156,18 @@ function showConsequenceModal(violationType, severity = 'normal') {
         .eq('user_id', window.colUser.id)
         .maybeSingle()
       if (error || !data || !data.appearance) return
-      // Only overwrite local if cloud version is newer or local doesn't exist
+
       const localRaw = localStorage.getItem('traffic_appearance')
       if (localRaw) {
         try {
           const local = JSON.parse(localRaw)
           const cloudTime = data.appearance_updated_at ? new Date(data.appearance_updated_at).getTime() : 0
           const localTime = local._updated || 0
-          if (cloudTime <= localTime) return // local is newer or equal
+          if (cloudTime <= localTime) return
         } catch (e) {}
       }
       localStorage.setItem('traffic_appearance', JSON.stringify(data.appearance))
-      // Reload into _current and refresh preview if modal is open
+
       _loadSaved()
       _refreshSwatches()
       _updatePreviewModel()
@@ -4156,7 +4176,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     }
   }
 
-  // ── Sync appearance from localStorage to Supabase (fire-and-forget) ──
+
   async function _syncAppearanceToCloud() {
     if (!window.supabaseClient || !window.colUser?.id) return
     try {
@@ -4216,6 +4236,42 @@ function showConsequenceModal(violationType, severity = 'normal') {
   function _initPreview() {
     const canvas = document.getElementById('customize-preview')
     if (!canvas || !window.THREE) return
+
+    if (!canvas.dataset.swipeEnabled) {
+      canvas.dataset.swipeEnabled = "true"
+      let isDragging = false
+      let previousX = 0
+      
+      canvas.addEventListener('mousedown', e => {
+        isDragging = true
+        window._autoRotatePreview = false
+        previousX = e.clientX
+      })
+      canvas.addEventListener('mousemove', e => {
+        if (isDragging && typeof _previewChar !== 'undefined' && _previewChar) {
+          const deltaX = e.clientX - previousX
+          _previewChar.rotation.y += deltaX * 0.01
+          previousX = e.clientX
+        }
+      })
+      canvas.addEventListener('mouseup', () => { isDragging = false; window._autoRotatePreview = true; })
+      canvas.addEventListener('mouseleave', () => { isDragging = false; window._autoRotatePreview = true; })
+      
+      canvas.addEventListener('touchstart', e => {
+        isDragging = true
+        window._autoRotatePreview = false
+        previousX = e.touches[0].clientX
+      }, { passive: true })
+      canvas.addEventListener('touchmove', e => {
+        if (isDragging && typeof _previewChar !== 'undefined' && _previewChar) {
+          const deltaX = e.touches[0].clientX - previousX
+          _previewChar.rotation.y += deltaX * 0.01
+          previousX = e.touches[0].clientX
+        }
+      }, { passive: true })
+      canvas.addEventListener('touchend', () => { isDragging = false; window._autoRotatePreview = true; })
+    }
+
     if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose() }
     _previewScene = new THREE.Scene()
     _previewScene.background = new THREE.Color(0x0a0e1a)
@@ -4227,26 +4283,26 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     _previewRenderer.toneMapping = THREE.ACESFilmicToneMapping
     _previewRenderer.toneMappingExposure = 1.0
-    // ── Cinematic 3-point lighting ──
+
     const amb = new THREE.AmbientLight(0x8888ff, 0.25)
     _previewScene.add(amb)
-    // Key light (warm, from front-right)
+
     const key = new THREE.DirectionalLight(0xffeedd, 1.1)
     key.position.set(3, 4, 4)
     _previewScene.add(key)
-    // Fill light (cool, from front-left, softer)
+
     const fill = new THREE.DirectionalLight(0x8899ff, 0.35)
     fill.position.set(-2.5, 1.5, 3)
     _previewScene.add(fill)
-    // Rim/Hair light from behind
+
     const rim = new THREE.DirectionalLight(0x88ddff, 0.5)
     rim.position.set(-1, 3, -5)
     _previewScene.add(rim)
-    // Soft bottom bounce
+
     const bounce = new THREE.DirectionalLight(0x4466aa, 0.2)
     bounce.position.set(0, -3, 2)
     _previewScene.add(bounce)
-    // ── Subtle ground reflection ──
+
     const groundGeo = new THREE.CircleGeometry(2.5, 24)
     const groundMat = new THREE.MeshBasicMaterial({
       color: 0x111622,
@@ -4259,7 +4315,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     ground.rotation.x = -Math.PI / 2
     ground.position.y = -0.02
     _previewScene.add(ground)
-    // Gradient ring accent
+
     const ringAcc = new THREE.Mesh(
       new THREE.RingGeometry(0.6, 0.65, 48),
       new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false })
@@ -4282,19 +4338,21 @@ function showConsequenceModal(violationType, severity = 'normal') {
     if (!_previewRenderer) return
     _previewRAF = requestAnimationFrame(_animatePreview)
     if (_previewChar) {
-      _previewChar.rotation.y += 0.006
-      // Subtle idle breathing — torso rises slightly
+      if (window._autoRotatePreview !== false) {
+        _previewChar.rotation.y += 0.006
+      }
+
       if (_previewChar.userData) {
         const t = Date.now() * 0.002
         const breathe = Math.sin(t) * 0.004
         if (_previewChar.userData.torsoGroup) {
           _previewChar.userData.torsoGroup.position.y = 1.23 + breathe * 0.5
         }
-        // Slight head sway
+
         if (_previewChar.userData.headGroup) {
           _previewChar.userData.headGroup.rotation.z = Math.sin(t * 0.7) * 0.004
         }
-        // Blink timer
+
         if (_previewChar.userData.eyeLids) {
           const blinkPhase = Math.sin(t * 0.5) * 0.5 + 0.5
           _previewChar.userData.eyeLids.forEach(lid => {
@@ -4320,7 +4378,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
 
   window._toggleAccessory = function(id) {
     _current.accessories[id] = !_current.accessories[id]
-    // Mutual exclusion for headwear — only one at a time
+
     if (id === 'cap' && _current.accessories.cap) {
       _current.accessories.beanie = false
       _current.accessories.helmet = false
@@ -4342,10 +4400,10 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _current.shoes = SHOE_COLORS[Math.floor(Math.random() * SHOE_COLORS.length)].hex
     _current.shirt = SHIRTS[Math.floor(Math.random() * SHIRTS.length)].hex
     _current.pants = PANTS[Math.floor(Math.random() * PANTS.length)].hex
-    // Randomize headwear first (mutually exclusive)
+
     _current.accessories.beanie = Math.random() > 0.8
     _current.accessories.helmet = !_current.accessories.beanie && Math.random() > 0.85
-    // Cap if neither beanie nor helmet active
+
     _current.accessories.cap = !_current.accessories.beanie && !_current.accessories.helmet && Math.random() > 0.3
     _current.accessories.backpack = Math.random() > 0.3
     _current.accessories.glasses = Math.random() > 0.7
@@ -4357,12 +4415,12 @@ function showConsequenceModal(violationType, severity = 'normal') {
   window._saveCustomize = function() {
     _current._updated = Date.now()
     localStorage.setItem('traffic_appearance', JSON.stringify(_current))
-    // Sync to Supabase in background
+
     _syncAppearanceToCloud()
     const modal = document.getElementById('customize-modal')
     if (modal) modal.style.display = 'none'
     if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose(); _previewRenderer = null }
-    // If in-game, respawn player with new appearance
+
     if (window.game && window.game.player && window.game.playerCharacter) {
       const pos = window.game.playerCharacter.position.clone()
       const rot = window.game.playerCharacter.rotation.y
@@ -4380,7 +4438,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
 
   window.openCustomize = function() {
     _loadSaved()
-    // Try loading cloud appearance (fires in background — local is immediate)
+
     _syncAppearanceFromCloud()
     const modal = document.getElementById('customize-modal')
     if (modal) {
@@ -4391,7 +4449,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     }
   }
 
-  // ── Sync appearance on auth change (login/logout) ──
+
   window.addEventListener('col-auth-changed', () => {
     _syncAppearanceFromCloud()
   })

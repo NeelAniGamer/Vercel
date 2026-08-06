@@ -6,7 +6,7 @@
     <title>Mumbai Traffic Hero Academy - Hub</title>
     <link rel="icon" type="image/png" href="../Icon.png" />
 
-    <!-- Cloud Auth & Sync Logic -->
+    
     <script>
       const _oldFetch = window.fetch
       window.fetch = function () {
@@ -16,7 +16,7 @@
         return _oldFetch.apply(this, arguments)
       }
 
-      // Silence GLTFLoader spam for KHR_texture_transform
+
       const _oldWarn = console.warn
       console.warn = function (...args) {
         if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported')))
@@ -42,7 +42,7 @@
     <script src="course.js"></script>
     <style>
       :root {
-        /* Dark theme (default) — matches parent site dark mode */
+        
         --bg: #070a14;
         --card: rgba(17, 24, 39, 0.85);
         --text: #e8e3d8;
@@ -62,14 +62,14 @@
         --ui-font-size: 0.95rem;
       }
 
-      /* Grade-based UI classes */
+      
       body.grade-low { --btn-scale: 1.3; --btn-padding: 20px 30px; --ui-font-size: 1.2rem; }
       body.grade-mid { --btn-scale: 1.15; --btn-padding: 14px 22px; --ui-font-size: 1rem; }
       body.grade-high { --btn-scale: 1; --btn-padding: 10px 16px; --ui-font-size: 0.95rem; }
       body.grade-max { --btn-scale: 0.95; --btn-padding: 8px 14px; --ui-font-size: 0.85rem; }
 
       body.lm {
-        /* Light mode — toggled via scenic toggle */
+        
         --bg: #f3f2eb;
         --card: rgba(255, 255, 255, 0.45);
         --text: #111827;
@@ -86,7 +86,7 @@
       }
 
       body.lm .category-header {
-        color: #b45309; /* Darker yellow/amber for light mode contrast */
+        color: #b45309; 
         border-bottom: 1px solid rgba(0, 0, 0, 0.15);
       }
 
@@ -154,7 +154,7 @@
         color: #9ca3af;
       }
 
-      /* Execution tab visual tutorial - light mode */
+      
       body.lm .sim-anim-wrap {
         background: linear-gradient(
           180deg,
@@ -167,7 +167,7 @@
         border-color: rgba(0, 0, 0, 0.06) !important;
       }
 
-      /* Execution tab objective banner - light mode */
+      
       body.lm .pract-banner {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(243, 242, 235, 0.8) 100%) !important;
         border-color: rgba(0, 0, 0, 0.06) !important;
@@ -178,7 +178,7 @@
         filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08)) !important;
       }
 
-      /* Loading screen overrides for light mode */
+      
       body.lm #loading-screen {
         background: #f3f2eb !important;
       }
@@ -198,7 +198,7 @@
         .mobile-bottom-nav {
           display: flex !important;
         }
-        /* Hide desktop-only buttons on mobile */
+        
         #academy-compare-btn, #academy-sign-in-btn {
           display: none !important;
         }
@@ -218,7 +218,7 @@
         .brand-header > div:first-child > div:last-child {
           height: 28px !important;
         }
-        /* Hamburger top bar on mobile */
+        
         #top-bar-container {
           flex-wrap: nowrap !important;
           gap: 8px !important;
@@ -238,7 +238,7 @@
         #top-bar-container > div:nth-child(3) {
           display: none !important;
         }
-        /* Hamburger dropdown */
+        
         .mobile-hamburger-dropdown {
           display: none;
           position: absolute;
@@ -289,7 +289,7 @@
         .mobile-hamburger-btn:active {
           transform: scale(0.95);
         }
-        /* Ensure touch targets on mobile */
+        
         .syl-item {
           min-height: 48px;
           padding: 16px;
@@ -304,13 +304,13 @@
         .btn-g {
           min-height: 48px;
         }
-        /* Add padding to body to prevent content from hiding behind the nav bar */
+        
         body {
           padding-bottom: 70px !important;
         }
       }
 
-      /* === Desktop top bar (outside media query) === */
+      
       #top-bar-container {
         background: rgba(11, 16, 26, 0.75);
         backdrop-filter: blur(20px);
@@ -324,7 +324,7 @@
         border-color: rgba(0, 0, 0, 0.08);
       }
 
-      /* Mobile Bottom Navigation */
+      
       .mobile-bottom-nav {
         display: none;
         position: fixed;
@@ -397,7 +397,7 @@
       .screen.active {
         display: flex;
       }
-      /* Animation only fires when entering class is explicitly added - avoids re-trigger on class mutations */
+      
       .screen.screen-animate-in {
         animation: pageTransitionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
       }
@@ -406,7 +406,7 @@
         to { opacity: 1; transform: translateY(0); }
       }
 
-      /* Modal overlays: hidden by default, shown with .show */
+      
       .modal-overlay {
         display: none;
         position: fixed;
@@ -473,7 +473,7 @@
         transition-duration: 0.1s;
       }
 
-      /* Pulse animation for Get Started button */
+      
       @keyframes pulse-glow {
         0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.5); }
         70% { box-shadow: 0 0 0 15px rgba(217, 119, 6, 0); }
@@ -523,7 +523,7 @@
         transform: translateY(-1px);
       }
 
-      /* Start Screen */
+      
       .brand-header {
         display: flex;
         align-items: center;
@@ -595,7 +595,7 @@
         }
       }
 
-      /* Name Dialog */
+      
       #name-dlg {
         position: fixed;
         inset: 0;
@@ -633,7 +633,7 @@
         text-align: center;
       }
 
-      /* Toast */
+      
       #toast {
         position: fixed;
         top: 20px;
@@ -660,7 +660,7 @@
         gap: 8px;
       }
 
-      /* Levels Screen */
+      
       .tb {
         display: flex;
         align-items: center;
@@ -736,7 +736,7 @@
         background: rgba(255, 255, 255, 0.65);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(249, 115, 22, 0.35); /* Subtle orange/creme border */
+        border: 1px solid rgba(249, 115, 22, 0.35); 
         border-radius: 16px;
         padding: 20px;
         flex: 0 0 300px;
@@ -859,7 +859,7 @@
         color: var(--muted);
       }
 
-      /* === Enhanced Level Card Styles (New Design) === */
+      
       .lcard {
         background: var(--card);
         backdrop-filter: blur(16px);
@@ -980,7 +980,7 @@
         color: var(--signal);
       }
 
-      /* Dark mode adjustments for lcard in levels screen */
+      
       body:not(.lm) .lcard {
         background: rgba(255, 255, 255, 0.05);
         border-color: rgba(255, 255, 255, 0.1);
@@ -993,7 +993,7 @@
           inset 0 1px 1px rgba(255, 255, 255, 0.1);
       }
 
-      /* Progress bar at top of lcard */
+      
       .lbar {
         position: absolute;
         top: 0;
@@ -1005,7 +1005,7 @@
         transition: background 0.3s ease, width 0.4s ease;
       }
 
-      /* LCT (Level Card Top) */
+      
       .lct {
         display: flex;
         align-items: flex-start;
@@ -1035,7 +1035,7 @@
         flex-shrink: 0;
       }
 
-      /* Badge variants for lcard */
+      
       .sdk {
         background: rgba(52, 211, 153, 0.15);
         color: var(--green);
@@ -1051,7 +1051,7 @@
         color: var(--muted);
       }
 
-      /* Level number and name */
+      
       .lnum {
         font-size: 0.8rem;
         font-weight: 600;
@@ -1077,7 +1077,7 @@
         flex-grow: 1;
       }
 
-      /* Briefing Screen */
+      
       .br-w {
         display: flex;
         max-width: 100%;
@@ -1102,14 +1102,14 @@
         padding-bottom: 40px;
       }
 
-      /* Tablet: shrink left sidebar */
+      
       @media (max-width: 1280px) {
         .br-l {
           flex: 0 0 320px;
         }
       }
       
-      /* Mobile: Stack layout, stick CTA to bottom */
+      
       @media (max-width: 768px) {
         .br-w {
           flex-direction: column;
@@ -1120,7 +1120,7 @@
         .br-l {
           flex: 1;
           width: 100%;
-          order: 2; /* Content first, syllabus second */
+          order: 2; 
         }
         .br-r {
           order: 1;
@@ -1174,7 +1174,7 @@
           padding-left: 24px;
           padding-right: 24px;
           gap: 16px;
-          /* hide scrollbar */
+          
           scrollbar-width: none;
         }
         .category-grid::-webkit-scrollbar {
@@ -1186,7 +1186,7 @@
         }
       }
 
-      /* Map Toggle Button */
+      
       .map-toggle-btn {
         background: var(--card);
         border: 1px solid var(--border);
@@ -1205,9 +1205,7 @@
         transform: scale(1.05);
       }
 
-      /* ═══════════════════════════════════════════════════════
-         Duolingo-style Level Map — Premium Immersive
-         ═══════════════════════════════════════════════════════ */
+      
       .level-map-container {
         position: relative;
         height: calc(100vh - 160px);
@@ -1241,7 +1239,7 @@
         overflow: visible;
       }
 
-      /* ── Node Base ── */
+      
       .level-node {
         cursor: pointer;
         transition: filter 0.3s ease;
@@ -1250,7 +1248,7 @@
       .level-node.locked { cursor: not-allowed; opacity: 0.7; }
       .level-node.locked:hover { filter: none; }
 
-      /* ── Completed Node ── */
+      
       .level-node.completed .node-outer {
         filter: drop-shadow(0 0 14px rgba(52,211,153,0.5)) drop-shadow(0 4px 10px rgba(0,0,0,0.25));
         transition: filter 0.3s ease;
@@ -1259,7 +1257,7 @@
         filter: drop-shadow(0 0 20px rgba(52,211,153,0.7)) drop-shadow(0 4px 12px rgba(0,0,0,0.3));
       }
 
-      /* ── Current Node — Animated Pulse ── */
+      
       .level-node.current .node-outer {
         filter: drop-shadow(0 0 18px rgba(242,184,75,0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.3));
         animation: currentPulse 2.2s ease-in-out infinite;
@@ -1274,7 +1272,7 @@
       }
       @keyframes ringRotate { to { transform: rotate(360deg); } }
 
-      /* ── Node Inner Text ── */
+      
       .level-node-label {
         font-size: 14px;
         fill: white;
@@ -1291,7 +1289,7 @@
         pointer-events: none;
       }
 
-      /* ── Category Trophy Markers ── */
+      
       .category-marker {
         pointer-events: none;
       }
@@ -1309,7 +1307,7 @@
         dominant-baseline: central;
       }
 
-      /* ── Sparkle Particles ── */
+      
       @keyframes sparkleFloat {
         0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
         20% { opacity: 1; }
@@ -1319,14 +1317,14 @@
         animation: sparkleFloat var(--dur, 1.2s) var(--delay, 0s) ease-out forwards;
       }
 
-      /* ── Node Fade-In Stagger ── */
+      
       @keyframes mapNodeIn {
         0% { opacity: 0; transform: scale(0.4); }
         60% { opacity: 1; transform: scale(1.1); }
         100% { opacity: 1; transform: scale(1); }
       }
 
-      /* ── Map Progress Bar ── */
+      
       .map-progress {
         position: absolute;
         top: 0;
@@ -1382,7 +1380,7 @@
         .map-progress-label { font-size: 0.6rem; }
       }
 
-      /* ── Category Breakdown Dropdown ── */
+      
       .map-progress-dropdown {
         position: absolute;
         top: 44px;
@@ -1509,7 +1507,7 @@
         }
       }
 
-      /* ── Wallet Transaction History Modal ── */
+      
       .wh-modal {
         position: fixed; inset: 0; z-index: 10002;
         display: flex; align-items: center; justify-content: center;
@@ -1616,7 +1614,7 @@
       .wh-amount-earn { color: var(--green, #34d399); }
       .wh-amount-deduct { color: #ff3b30; }
 
-      /* Light mode */
+      
       body.lm .wh-card { background: #fff; border-color: rgba(0,0,0,0.08); box-shadow: 0 24px 60px rgba(0,0,0,0.12); }
       body.lm .wh-title { color: #1e293b; }
       body.lm .wh-stat { background: #f8fafc; border-color: rgba(0,0,0,0.06); }
@@ -1634,7 +1632,7 @@
         .wh-list { padding: 0 16px 16px; }
       }
 
-      /* ── Locked Node Shake ── */
+      
       @keyframes lockedShake {
         0%, 100% { transform: translateX(0); }
         10% { transform: translateX(-6px) rotate(-2deg); }
@@ -1647,7 +1645,7 @@
       .level-node.shake {
         animation: lockedShake 0.5s ease-in-out;
       }
-      /* ── Locked Toast ── */
+      
       .locked-toast {
         position: fixed;
         bottom: 80px;
@@ -1674,12 +1672,12 @@
         transform: translateX(-50%) translateY(0);
       }
 
-      /* ── Path Drawing Animation ── */
+      
       @keyframes pathDraw {
         to { stroke-dashoffset: 0; }
       }
 
-      /* ── Floating Decorations ── */
+      
       @keyframes floatSlow {
         0%,100% { transform: translateY(0); }
         50% { transform: translateY(-6px); }
@@ -1695,7 +1693,7 @@
         opacity: 0.12;
       }
 
-      /* ── Mobile Map ── */
+      
       @media (max-width: 768px) {
         .level-map-container { height: calc(100vh - 200px); min-height: 350px; }
         .level-node-label { font-size: 12px; }
@@ -1716,9 +1714,9 @@
         text-shadow: 0 4px 20px rgba(255, 213, 74, 0.1);
       }
 
-      /* body.lm .category-header merged into first definition above */
+      
 
-      /* --- Ultimate Syllabus Card Base --- */
+      
       .syl-item {
         position: relative;
         background: var(--card);
@@ -1739,7 +1737,7 @@
         z-index: 1;
       }
 
-      /* --- Animated Glowing Gradient Border --- */
+      
       .syl-item::before {
         content: '';
         position: absolute;
@@ -1762,7 +1760,7 @@
         pointer-events: none;
       }
 
-      /* --- Hover State --- */
+      
       .syl-item:hover {
         transform: translateY(-8px) scale(1.02);
         box-shadow:
@@ -1781,7 +1779,7 @@
         opacity: 0.5;
       }
 
-      /* --- Typography --- */
+      
       .syl-lbl {
         font-family: 'Lora', serif;
         font-size: 1.6rem;
@@ -1806,7 +1804,7 @@
         color: #475569;
       }
 
-      /* --- The Ultimate Checkbox --- */
+      
       .syl-ck {
         position: absolute;
         top: 28px;
@@ -1827,7 +1825,7 @@
         transform: scale(1.1);
       }
 
-      /* --- Completed (Done) State --- */
+      
       .syl-item.syl-done {
         background: rgba(0, 240, 204, 0.08);
       }
@@ -1855,7 +1853,7 @@
         transform: rotate(45deg);
       }
 
-      /* --- Started State --- */
+      
       .syl-item.syl-started {
         background: rgba(94, 212, 245, 0.08);
       }
@@ -1892,7 +1890,7 @@
         }
       }
 
-      /* --- Badge Pill --- */
+      
       .syl-badge {
         display: inline-flex;
         align-items: center;
@@ -1930,7 +1928,7 @@
         color: rgba(184, 155, 255, 0.5);
       }
 
-      /* --- Top Row: Icon + Level Number --- */
+      
       .syl-top {
         display: flex;
         align-items: center;
@@ -2102,7 +2100,7 @@
         color: var(--red);
       }
 
-      /* Quiz Screen */
+      
       .qw {
         max-width: 100%;
         margin: 60px auto;
@@ -2248,7 +2246,7 @@
         margin-top: 32px;
       }
 
-      /* Results Screen */
+      
       .res-w {
         max-width: 100%;
         margin: 60px auto;
@@ -2350,7 +2348,7 @@
         justify-content: center;
       }
 
-      /* Badges Screen */
+      
       .bgrid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -2433,7 +2431,7 @@
         color: var(--text);
       }
 
-      /* Certificate */
+      
       #cert-wrapper {
         display: flex;
         justify-content: center;
@@ -2468,7 +2466,7 @@
         position: absolute;
         inset: 20px;
         border: 2px solid rgba(0, 0, 0, 0);
-        /* disabled old border */
+        
         pointer-events: none;
       }
 
@@ -2505,7 +2503,7 @@
         line-height: 1.6;
       }
 
-      /* Challan & In-game overlays */
+      
       #cov {
         position: fixed;
         inset: 0;
@@ -2591,7 +2589,7 @@
         }
       }
 
-      /* HUD overrides */
+      
       #gc {
         position: fixed;
         inset: 0;
@@ -2805,7 +2803,7 @@
         border-color: var(--muted);
       }
 
-      /* Gear selection overlay */
+      
       #gp {
         position: fixed;
         bottom: 20px;
@@ -2904,7 +2902,7 @@
         display: flex;
       }
 
-      /* Modals */
+      
       #mgo {
         position: fixed;
         inset: 0;
@@ -2956,7 +2954,7 @@
         margin-top: 16px;
       }
 
-      /* MOBILE RESPONSIVE UI & ON-SCREEN CONTROLS */
+      
       #mobile-controls {
         display: none;
         position: fixed;
@@ -3063,10 +3061,10 @@
           padding: 10px;
         }
 
-        /* Show mobile controls when HUD is active (handled by JS) */
+        
       }
 
-      /* Screen transitions */
+      
       .screen {
         animation: none;
       }
@@ -3091,7 +3089,7 @@
         }
       }
 
-      /* Card entrance animations */
+      
       .lcard {
         animation: cardSlideUp 0.4s ease-out backwards;
       }
@@ -3128,7 +3126,7 @@
         }
       }
 
-      /* ── Level Preview Modal ── */
+      
       .level-preview-modal {
         position: fixed;
         inset: 0;
@@ -3317,12 +3315,12 @@
         .level-preview-name { font-size: 1.3rem; }
       }
 
-      /* Syllabus item staggered entrance (removed to fix invisibility bug) */
+      
       .syl-item {
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease;
       }
 
-      /* Button hover pulse */
+      
       .btn:hover {
         transform: translateY(-2px) scale(1.02);
       }
@@ -3331,12 +3329,12 @@
         transform: translateY(0) scale(0.98);
       }
 
-      /* Toast animation improvement */
+      
       #toast {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      /* Challan card stack */
+      
       #challan-stack {
         position: fixed;
         bottom: 100px;
@@ -3378,9 +3376,9 @@
         color: var(--text);
       }
 
-      /* --- Responsive UI Adjustments --- */
+      
 
-      /* Make the root containers fluid and center them */
+      
       .sc {
         width: 100%;
         min-height: 100vh;
@@ -3415,12 +3413,12 @@
         font-weight: 400;
       }
 
-      /* Level grid: ensure it doesn't overflow on tiny screens */
+      
       .lv-track {
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
       }
 
-      /* Briefing screen: stack on smaller screens */
+      
       @media (max-width: 900px) {
         .br-w {
           flex-direction: column;
@@ -3448,10 +3446,8 @@
         }
       }
 
-      /* Global screen padding for mobile */
-      /* Certificate mobile/tablet scaling — own breakpoint, wider than the general 600px
-         mobile block below, since the certificate's fixed 1056px width starts clipping
-         on anything under ~1100px, well before phone-sized breakpoints kick in. */
+      
+      
       @media (max-width: 1100px) {
         #cert-wrapper {
           overflow-x: auto;
@@ -3494,7 +3490,7 @@
           margin: 20px auto;
         }
 
-        /* Mobile level box styling */
+        
         .syl-item {
           padding: 16px;
           border-radius: 16px;
@@ -3528,7 +3524,7 @@
         }
       }
 
-      /* Certificate specific responsiveness */
+      
       #cert-wrapper {
         width: 100%;
         display: flex;
@@ -3538,22 +3534,22 @@
       }
 
       .crt {
-        /* Removed min-width and max-width to allow transform scaling without text overflow */
+        
       }
 
-      /* === COMPLETE MOBILE DRIVING UI REDESIGN === */
+      
       @media (max-width: 1400px), (max-height: 800px), (pointer: coarse) {
-        /* Ensure canvas fills screen without distortion */
+        
         #gc {
           position: fixed;
           inset: 0;
           width: 100vw;
           height: 100vh;
           z-index: 1;
-          background: #000; /* Prevent bright flashes or letterboxing issues */
+          background: #000; 
         }
 
-        /* HUD Scaling and Repositioning */
+        
         #hud {
           top: 8px;
           left: 8px;
@@ -3601,7 +3597,7 @@
           height: 6px;
         }
 
-        /* Touch Controls (Center Bottom) */
+        
         #tc {
           bottom: 12px;
           left: 50%;
@@ -3617,7 +3613,7 @@
           border-radius: 12px;
         }
 
-        /* Gear Selector (Vertical on Left) */
+        
         #gp.on {
           display: flex;
         }
@@ -3648,23 +3644,23 @@
           background: rgba(255, 255, 255, 0.8);
         }
 
-        /* Mobile Controls Wrapper */
+        
         #mobile-controls {
           bottom: 12px;
           padding: 0 20px;
-          background: none; /* remove gradient to keep view clear */
+          background: none; 
         }
 
-        /* Steering Wheel (Bottom Left) */
+        
         #steer-wheel-container {
           width: 110px;
           height: 110px;
           border-width: 3px;
           background: rgba(0, 0, 0, 0.25);
-          margin-left: 50px; /* Offset to not overlap gears */
+          margin-left: 50px; 
         }
 
-        /* Pedals (Bottom Right) */
+        
         .mc-col {
           gap: 12px;
         }
@@ -3690,7 +3686,7 @@
         }
       }
 
-      /* 2D Scenario Game */
+      
       .play2d-btn {
         display: inline-flex;
         align-items: center;
@@ -3727,9 +3723,9 @@
         max-height: 100%;
       }
 
-      /* ── Mobile touch-target & responsive overrides ── */
+      
       @media (max-width: 600px) {
-        /* Brand header: stack vertically, reduce size & spacing */
+        
         .brand-header {
           flex-direction: column !important;
           gap: 6px !important;
@@ -3747,11 +3743,11 @@
           flex-wrap: wrap !important;
           justify-content: center !important;
         }
-        /* Hide redundant partner-badges on mobile (brand-header already shows them) */
+        
         .partner-badges {
           display: none !important;
         }
-        /* Scale down large decorative text */
+        
         .sc > div[style*="font-size: 6rem"],
         .sc .st {
           font-size: clamp(1.8rem, 5vw, 3rem) !important;
@@ -3760,19 +3756,19 @@
         .sc > div:first-of-type > div[style*="6rem"] {
           font-size: clamp(1.8rem, 5vw, 3rem) !important;
         }
-        /* Reduce start screen padding */
+        
         .sc {
           padding: clamp(20px, 4vw, 40px) 16px !important;
           padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
         }
-        /* Reduce subtitle text */
+        
         .su {
           font-size: clamp(0.85rem, 2.2vw, 1rem) !important;
           margin-bottom: 20px !important;
           padding: 0 4px !important;
           line-height: 1.5 !important;
         }
-        /* Button spacing */
+        
         .pls {
           gap: 10px !important;
           margin-bottom: 16px !important;
@@ -3796,7 +3792,7 @@
           padding: 8px 16px 8px 8px !important;
           min-height: 44px !important;
         }
-        /* Shrink mobile controls on start screen */
+        
         #steer-wheel-container {
           width: 90px !important;
           height: 90px !important;
@@ -3811,7 +3807,7 @@
         }
       }
 
-      /* ===== ONBOARDING WIZARD ===== */
+      
       .onb-overlay {
         position: fixed;
         inset: 0;
@@ -3829,7 +3825,7 @@
         visibility: hidden;
         pointer-events: none;
       }
-      /* Section-based progress bar - respect safe area */
+      
       .onb-prog {
         position: fixed;
         top: max(36px, env(safe-area-inset-top));
@@ -3866,10 +3862,10 @@
         50% { background-position: 100% 50%; box-shadow: 0 0 14px rgba(241, 196, 15, 0.8); }
         100% { background-position: 0% 50%; box-shadow: 0 0 4px rgba(243, 156, 18, 0.4); }
       }
-      /* Hide the old fill bar */
+      
       .onb-prog-fill { display: none; }
 
-      /* Progress percentage label - respect safe area */
+      
       .onb-pct-label {
         position: fixed;
         top: max(54px, calc(env(safe-area-inset-top) + 18px));
@@ -3886,7 +3882,7 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         z-index: 10001;
       }
-      /* Full-page onboarding - like landing page */
+      
       .onb-box {
         background: transparent;
         backdrop-filter: none;
@@ -4088,7 +4084,7 @@
         .onb-skip-btns { flex-direction: column; }
       }
 
-      /* ── Horizon Toggle (Compact - matches col-ui.css) ── */
+      
       .hz-toggle {
         position: relative;
         width: 72px;
@@ -4107,7 +4103,7 @@
         border: 1px solid rgba(255, 255, 255, 0.25);
       }
 
-      /* Concentric background rings for Light Mode & Dark Mode */
+      
       .hz-toggle::before {
         content: '';
         position: absolute;
@@ -4128,7 +4124,7 @@
         background: radial-gradient(circle at 18px 17px, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 8px, transparent 9px, transparent 13px, rgba(255, 255, 255, 0.04) 14px, rgba(255, 255, 255, 0.04) 20px, transparent 21px);
       }
 
-      /* 4-Point Diamond Sparkle Stars (Dark Mode) */
+      
       .hz-stars {
         position: absolute;
         inset: 0;
@@ -4144,7 +4140,7 @@
         opacity: 1;
       }
 
-      /* Layered Fluffy Clouds (Light Mode) */
+      
       .hz-clouds,
       .hz-toggle:not(.night)::after {
         content: '';
@@ -4181,13 +4177,13 @@
       .hz-clouds::before { left: 16px; }
       .hz-clouds::after { left: 92px; top: 19px; transform: scale(0.8); }
 
-      /* Legacy skyline/windows hidden gracefully */
+      
       .hz-skyline,
       .hz-windows {
         display: none;
       }
 
-      /* Sun / Moon Orb Thumb */
+      
       .hz-orb {
         position: absolute;
         width: 26px;
@@ -4201,7 +4197,7 @@
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.8);
       }
 
-      /* Sun Outer Glow Pulse */
+      
       .hz-orb::before {
         content: '';
         position: absolute;
@@ -4217,7 +4213,7 @@
         50% { transform: scale(1.1); opacity: 0.15; }
       }
 
-      /* Moon Craters (Dark Mode) */
+      
       .hz-orb::after {
         content: '';
         position: absolute;
@@ -4275,9 +4271,7 @@
           275px 58px 0 0px #fff, 320px 38px 0 0px #fff;
       }
       .hz-toggle.night .hz-stars { opacity: 1; }
-      /* Clouds — day-mode counterpart to the stars, fades out together with the sky
-         gradient when switching to night, matching the reference "sun+clouds /
-         moon+stars" toggle style while keeping this pack's skyline theme underneath. */
+      
       .hz-clouds {
         position: absolute; inset: 0;
         border-radius: inherit;
@@ -4386,7 +4380,7 @@
     </style>
 
     <style>
-      /* Keyboard overlap handling — hide fixed bottom elements when mobile keyboard is open */
+      
       body.keyboard-open #task-tracker,
       body.keyboard-open #objective-overlay,
       body.keyboard-open #steer-wheel-container,
@@ -4398,14 +4392,14 @@
         bottom: calc(env(safe-area-inset-bottom, 0px) + 12px) !important;
       }
 
-      /* Force 16px+ on all text inputs to prevent iOS auto-zoom */
+      
       #prof-name, #prof-age, #prof-grade, #prof-lang, #prof-veh, #prompt-name {
         font-size: max(1rem, 16px) !important;
         -webkit-appearance: none !important;
         appearance: none !important;
       }
 
-      /* Partner section on start screen */
+      
       .partner-section {
         background: rgba(255,255,255,0.65);
         backdrop-filter: blur(8px);
@@ -4466,10 +4460,9 @@
         .partner-section .partner-divider { display: none; }
       }
 
-      /* --- Global mobile-UX patterns --- */
+      
 
-      /* Respect reduced-motion preference: card entrances, pulse glows, and screen
-         transitions all currently run unconditionally regardless of this setting. */
+      
       @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after {
           animation-duration: 0.01ms !important;
@@ -4478,9 +4471,7 @@
         }
       }
 
-      /* Touch devices don't have real :hover — without this guard, hover transforms
-         (e.g. .syl-item's translateY+scale) can stick or feel jittery after a tap/scroll,
-         since touch simulates :hover on tap without a corresponding "un-hover". */
+      
       @media (hover: none) {
         .syl-item:hover,
         .lcard:hover,
@@ -4490,21 +4481,16 @@
         }
       }
 
-      /* Visible press feedback on tap, since touch has no hover state to signal
-         interactivity the way desktop's :hover does. */
+      
       .btn:active, .btn-g:active, .back-btn:active {
         transform: scale(0.98);
         transition-duration: 0.1s;
       }
 
-      /* Safety net: with 52 levels' worth of dynamic content and several fixed-width
-         elements (certificate, toggle, etc.) already patched above, this catches any we
-         missed rather than letting the page scroll sideways. */
+      
       html, body { overflow-x: hidden; }
 
-      /* Graceful heading/paragraph wrapping instead of orphaned single words on narrow
-         screens. balance/pretty degrade to normal wrapping on browsers that don't
-         support them yet, so this is a safe progressive enhancement either way. */
+      
       h1, h2, h3 { text-wrap: balance; }
       p, .ltg, .syl-sub { text-wrap: pretty; }
     </style>
@@ -4566,7 +4552,7 @@
         <div id="loading-pct" style="font-family: 'Space Mono', monospace; font-size: 0.75rem; color: #34d399; font-weight: 700">0%</div>
       </div>
     </div>
-    <!-- Script entry points -->
+    
 
     <div
       id="mobile-controls"
@@ -4661,12 +4647,12 @@
       </div>
     </div>
 
-    <!-- SCREENS -->
+    
 
     <div id="ss" class="screen active">
       <div id="rl"></div>
 
-      <!-- Top-Left Branding Logo & Title (Class Of Learners - Traffic Academy) -->
+      
       <div style="position: absolute; top: 24px; left: 28px; z-index: 100; display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.location.href='Academy.html'">
         <img src="../Icon.png" alt="Class Of Learners" style="height: 42px; width: 42px; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 14px rgba(0,0,0,0.35); border: 1.5px solid rgba(255,255,255,0.15); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='none';" onerror="this.src='Icon.png'" />
         <div style="display: flex; flex-direction: column;">
@@ -4675,9 +4661,9 @@
         </div>
       </div>
 
-      <!-- Top-Right Corner Actions (Sign In & Sun/Moon Toggle) -->
+      
       <div style="position: absolute; top: 24px; right: 28px; z-index: 100; display: flex; align-items: center; gap: 14px;">
-        <!-- Sun & Moon Horizon Toggle Switch -->
+        
         <div class="hz-toggle" onclick="hzToggle()" title="Toggle Light/Dark Theme" style="cursor: pointer;">
           <div class="hz-clouds"></div>
           <div class="hz-stars"></div>
@@ -4686,16 +4672,16 @@
           <div class="hz-orb"></div>
         </div>
 
-        <!-- Sign In / Account Profile Button -->
+        
         <button class="top-btn account-top-btn" id="top-profile-btn" onclick="handleAccountClick()" style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 22px; height: 46px; background: linear-gradient(135deg, rgba(242,184,75,0.22), rgba(251,191,36,0.15)); border: 1.5px solid rgba(242,184,75,0.55); border-radius: 14px; color: #f2b84b; font-weight: 700; font-size: 0.95rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 6px 20px rgba(0,0,0,0.35); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 28px rgba(242,184,75,0.35)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.35)';">
           <span style="font-size: 1.15rem;">👤</span>
           <span id="top-profile-label">Sign In</span>
         </button>
       </div>
 
-      <!-- Bottom-Left Corner Action (Game Settings Pill Button) -->
+      
       <div style="position: absolute; bottom: 28px; left: 28px; z-index: 100;">
-        <!-- Big Game Settings Pill Button (Matching user screenshot) -->
+        
         <button class="top-btn settings-top-btn" id="top-game-settings-btn" onclick="openSettingsModal()" style="display: inline-flex; align-items: center; gap: 12px; padding: 12px 28px; height: 50px; background: rgba(0, 240, 204, 0.08); border: 2px solid #00f0cc; border-radius: 50px; color: #00f0cc; font-weight: 700; font-size: 1.05rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 8px 24px rgba(0,240,204,0.2); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,240,204,0.35)'; this.style.background='rgba(0, 240, 204, 0.16)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 24px rgba(0,240,204,0.2)'; this.style.background='rgba(0, 240, 204, 0.08)';">
           <span style="font-size: 1.3rem;">⚙️</span>
           <span>Game Settings</span>
@@ -4717,7 +4703,7 @@
           </div>
           <div style="font-size: 0.85rem; font-weight: 600; color: var(--muted2); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 8px">Proudly Sponsored By</div>
         </div>
-        <!-- Partner Badges - Prominent Display -->
+        
         <div class="partner-badges" style="display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap">
           <div style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1a237e 0%, #283593 100%); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(26, 35, 126, 0.3)">
             <img src="mumbai-police-logo.png" style="height: 24px; width: auto" alt="Mumbai Police" onerror="this.style.display='none'" />
@@ -4743,7 +4729,7 @@
         </div>
       </div>
 
-      <!-- Dedicated Partner Section (Hidden - Partners now shown as badges above) -->
+      
       <div class="partner-section" style="display: none;">
         <div class="partner-heading">Our Trusted Partners</div>
         <div class="partner-logos">
@@ -4783,7 +4769,7 @@
         <div style="display: flex; gap: 12px; align-items: center; width: 100%; justify-content: flex-end;">
           <input type="text" id="level-search" placeholder="Search levels..." onkeyup="filterLevels()" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; flex: 1; max-width: 300px; font-family: 'Inter', sans-serif;">
           
-          <!-- Sun & Moon Horizon Toggle Switch -->
+          
           <div class="hz-toggle" onclick="hzToggle()" title="Toggle Light/Dark Theme" style="cursor: pointer; margin-right: 8px;">
             <div class="hz-clouds"></div>
             <div class="hz-stars"></div>
@@ -4814,7 +4800,7 @@
         </div>
       </div>
 
-      <!-- Duolingo-style Level Map (hidden by default) -->
+      
       <div class="level-map-container" id="level-map" style="display: none;">
         <div class="map-progress" id="map-progress-bar">
           <span class="map-progress-label">Progress</span>
@@ -4834,7 +4820,7 @@
 
       <div class="lw" id="lvbody"></div>
 
-      <!-- Bottom-Left Corner Action (Game Settings Pill Button) -->
+      
       <div style="position: absolute; bottom: 28px; left: 28px; z-index: 100;">
         <button class="top-btn settings-top-btn" id="levels-game-settings-btn" onclick="openSettingsModal()" style="display: inline-flex; align-items: center; gap: 12px; padding: 12px 28px; height: 50px; background: rgba(0, 240, 204, 0.08); border: 2px solid #00f0cc; border-radius: 50px; color: #00f0cc; font-weight: 700; font-size: 1.05rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 8px 24px rgba(0,240,204,0.2); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,240,204,0.35)'; this.style.background='rgba(0, 240, 204, 0.16)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 24px rgba(0,240,204,0.2)'; this.style.background='rgba(0, 240, 204, 0.08)';">
           <span style="font-size: 1.3rem;">⚙️</span>
@@ -4871,7 +4857,7 @@
             <div id="br-streak" style="background: linear-gradient(90deg, var(--signal), var(--accent)); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em;">🔥 0 Day Streak</div>
           </div>
           
-          <!-- Mode Tabs -->
+          
           <div class="mode-tabs" id="br-mode-tabs" style="display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 4px; margin-bottom: 20px;">
             <button class="mode-tab active" data-mode="learn" style="flex: 1; padding: 8px 12px; border: none; background: transparent; color: var(--text); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;">📖 LEARN</button>
             <button class="mode-tab" data-mode="practice" style="flex: 1; padding: 8px 12px; border: none; background: transparent; color: var(--muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;">🚗 PRACTICE</button>
@@ -4884,14 +4870,12 @@
           </div>
           <div style="font-size: 0.75rem; color: var(--muted); text-align: right; margin-bottom: 16px" id="br-prog-label">0% Complete</div>
           
-          <!-- Module Progress Checklist (Zeigarnik Effect) -->
+          
           <div id="br-module-checklist" style="margin-bottom: 20px;"></div>
           
           <div id="br-syllabus" style="max-height: 300px; overflow-y: auto;"></div>
         </div>
         <div class="br-r" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
-          <!-- Pledge card — rendered by ui.js -->
-          <div id="br-pledge" style="display: none;"></div>
           <div id="br-content" style="flex: 1; min-width: 0;"></div>
         </div>
       </div>
@@ -4936,7 +4920,7 @@
       </div>
     </div>
 
-    <!-- 2D Scenario Game Screen -->
+    
     <div id="screen-2d" class="screen" style="flex-direction:column; height:100vh; background:#1a1a2e;">
       <div class="tb" style="flex-shrink:0;">
         <button class="back-btn" onclick="ui.exit2D()">
@@ -5038,7 +5022,7 @@
       </div>
     </div>
 
-    <!-- Toast -->
+    
     <div id="toast">
       <div id="ti"></div>
     </div>
@@ -5090,9 +5074,9 @@
       </div>
     </div>
 
-    <!-- Onboarding Wizard - Full Page Style -->
+    
     <div class="onb-overlay hidden" id="onb-overlay" style="display:none">
-      <!-- Section-based progress -->
+      
       <div class="onb-prog" id="onb-progress">
         <div class="onb-prog-section"></div>
         <div class="onb-prog-section"></div>
@@ -5101,7 +5085,7 @@
       </div>
       <div class="onb-pct-label">0% Complete</div>
 
-      <!-- Screen 0: Welcome -->
+      
       <div class="onb-box" style="display:flex">
         <div style="font-size: clamp(3rem, 10vw, 5rem); margin-bottom: 20px">🚦🏙️</div>
         <h2 class="onb-h">Welcome to Mumbai Traffic Hero Academy</h2>
@@ -5109,7 +5093,7 @@
         <button class="onb-btn" onclick="showOnboardingScreen(1)" style="max-width: 300px; font-size: 1.2rem; padding: 16px 32px;">Get Started</button>
       </div>
 
-      <!-- Screen 1: Name -->
+      
       <div class="onb-box" style="display:none">
         <h2 class="onb-h">Get your name for the certificate.</h2>
         <p class="onb-sub">This will appear on your official certificate.</p>
@@ -5132,7 +5116,7 @@
         <button class="onb-skip" onclick="skipOnboarding()">Skip & Continue</button>
       </div>
 
-      <!-- Screen 2: Auth choice -->
+      
       <div class="onb-box" style="display:none">
         <h2 class="onb-h">Save Your Progress</h2>
         <p class="onb-sub">Sign in to continue your learning across devices and earn your certificate.</p>
@@ -5152,7 +5136,7 @@
         </div>
       </div>
 
-      <!-- Screen 3: Details -->
+      
       <div class="onb-box" style="display:none">
         <h2 class="onb-h">A few more details</h2>
         <p class="onb-sub">Help us personalize your experience.</p>
@@ -5174,7 +5158,7 @@
         <button class="onb-skip" onclick="skipOnboarding()">Skip & Continue</button>
       </div>
 
-      <!-- Screen 4: Completion -->
+      
       <div class="onb-box" style="display:none">
         <div style="font-size:3.5rem;margin-bottom:16px">🎉</div>
         <h2 class="onb-h">You're all set!</h2>
@@ -5182,7 +5166,7 @@
         <button class="onb-btn" onclick="_onbComplete()">Start Learning</button>
       </div>
 
-      <!-- Skip confirmation popup -->
+      
       <div class="onb-skip-popup" id="onb-skip-popup">
         <div class="onb-skip-box">
           <h3>Are you sure?</h3>
@@ -5273,38 +5257,22 @@
     <script src="levels/level50.js"></script>
     <script src="levels/level51.js"></script>
     <script src="levels/level52.js"></script>
+    <script src="levels/level53.js"></script>
     <script src="levels/level_custom.js"></script>
 
     <script>
-      // REMOVED: Auto-sorting code - levels now keep their original numbers (1, 5, 7, 4, etc.)
-      // If you need to re-enable sorting, uncomment the code below:
-      /*
-      window.LVS.forEach((levelData, index) => {
-        const correctNumber = index + 1
-        levelData.id = correctNumber
-        levelData.num = correctNumber
-        levelData.level = correctNumber
-        if (typeof levelData.name === 'string') {
-          levelData.name = levelData.name.replace(/Lesson\s+\d+/i, `Lesson ${correctNumber}`)
-        }
-        if (Array.isArray(levelData.syllabus)) {
-          levelData.syllabus.forEach((lesson) => {
-            if (typeof lesson.title === 'string') {
-              lesson.title = lesson.title.replace(/Lesson\s+\d+/i, `Lesson ${correctNumber}`)
-            }
-          })
-        }
-      })
-      */
+
+
+      
     </script>
     <script src="wallet-history.js"></script>
   <script src="ui.js?v=2"></script>
   <script src="npc-ai.js"></script>
-  <script src="traffic-manager.js?v=7"></script>
+  <script src="traffic-manager.js?v=8"></script>
   <script src="rule-breaker-profiles.js"></script>
     <script src="scenario2d.js"></script>
     <script>
-      /* ===== SEARCH & FILTER ===== */
+      
       function filterLevels() {
         const q = document.getElementById('level-search').value.toLowerCase();
         const items = document.querySelectorAll('.syl-item');
@@ -5313,7 +5281,7 @@
           item.style.display = text.includes(q) ? 'flex' : 'none';
         });
         
-        // Hide categories that have no visible levels
+
         document.querySelectorAll('.category-grid').forEach(grid => {
           const hasVisible = Array.from(grid.children).some(c => c.style.display !== 'none');
           if (grid.previousElementSibling && grid.previousElementSibling.classList.contains('category-header')) {
@@ -5323,7 +5291,7 @@
         });
       }
 
-      /* ===== ONBOARDING WIZARD JS ===== */
+      
       let _onbCur = 0
       let _onbTotal = 4
 
@@ -5343,11 +5311,11 @@
         if (lbl) lbl.textContent = msg || ''
       }
 
-      // Update section-based progress
+
       function _updateSectionProgress() {
         const sections = document.querySelectorAll('.onb-prog-section')
         const pctLabel = document.querySelector('.onb-pct-label')
-        const totalSections = 4 // 4 sections: welcome, name, auth, details
+        const totalSections = 4
         sections.forEach((sec, i) => {
           sec.classList.remove('completed', 'active')
           if (i < _onbCur) {
@@ -5372,10 +5340,10 @@
           'You\'re all set!'
         ]
 
-        // Update section progress
+
         _updateSectionProgress()
 
-        // Show progress toasts with confetti at milestones
+
         if (n === 1) {
           setTimeout(function() {
             if (typeof toast !== 'undefined') toast('📝 Great! 25% - Let\'s set up your profile', '#3b8c66')
@@ -5387,7 +5355,7 @@
           }, 500)
         }
         if (n === 3) {
-          // 75% completion - show confetti
+
           setTimeout(function() {
             if (typeof window.confetti !== 'undefined') { window.confetti.init(); window.confetti.burst(2000) }
             if (typeof toast !== 'undefined') toast('🎯 Amazing! 75% - Almost there!', '#9b59b6')
@@ -5403,11 +5371,11 @@
         }
         if (n === 3) _onbUpdateAuthChips()
         if (n === 4) {
-          // 100% completion - show big celebration and go to levels
+
           setTimeout(function () {
             if (typeof window.confetti !== 'undefined') { window.confetti.init(); window.confetti.burst(5000) }
             if (typeof toast !== 'undefined') toast('🎉 Congratulations! 100% - Profile setup complete!', '#00c851')
-            // Auto-navigate to levels after 2 seconds
+
             setTimeout(function() {
               _onbComplete()
             }, 2000)
@@ -5415,7 +5383,7 @@
         }
       }
 
-      // Update button text based on auth state
+
       function updateStartButton() {
         const btn = document.getElementById('enter-academy-btn');
         if (!btn) return;
@@ -5426,7 +5394,7 @@
       window.addEventListener('col-auth-changed', updateStartButton);
       window.addEventListener('DOMContentLoaded', updateStartButton);
       
-      // Start onboarding from the Get Started / Start Academy button
+
       function showOnboardingFromStart() {
         const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
         if (isLoggedIn) {
@@ -5460,36 +5428,36 @@
         window.location.href = 'TrafficSetup.html';
       }
 
-      // Listen for auth changes - redirect to levels if logged in
+
       window.addEventListener('col-auth-changed', function(e) {
         const user = e.detail && e.detail.user ? e.detail.user : window.colUser;
         if (user && !localStorage.getItem('trafficSetupComplete')) {
-          // User just logged in, check if they need setup
+
           const localUser = localStorage.getItem('traffic_local_user');
           if (localUser) {
-            // Has local profile, go to levels
+
             if (typeof toast !== 'undefined') toast('Welcome back! Loading your progress...', '#34d399');
             setTimeout(function() {
               if (typeof ui !== 'undefined' && ui.showLevels) ui.showLevels();
               else window.location.href = 'Academy.html?screen=levels';
             }, 300);
           } else {
-            // Needs setup
+
             showOnboardingFromStart();
           }
         }
       });
 
-      // Handle Google Login - redirect to Setup
+
       function handleGoogleLogin() {
         window.location.href = 'TrafficSetup.html?returnTo=Academy.html';
       }
 
-      // Handle Email Login
+
       function handleEmailLogin() {
         if (typeof ui !== 'undefined' && ui.openLogin) {
           ui.openLogin()
-          // Wait for col-auth-changed event to proceed
+
           const onAuth = (e) => {
             const user = e.detail && e.detail.user ? e.detail.user : window.colUser;
             if (user) {
@@ -5513,7 +5481,7 @@
         }
       }
 
-      // Hidden dev unlock - click version 5 times
+
       let devClickCount = 0
       function handleDevClick() {
         devClickCount++
@@ -5552,14 +5520,14 @@
           if (val.length > 0 && uval.length > 1) {
             if (!uval.startsWith('@')) uval = '@' + uval
             
-            // Save locally
+
             let localUser = {};
             try { localUser = JSON.parse(localStorage.getItem('traffic_local_user')) || {}; } catch(e) {}
             localUser.name = val;
             localUser.username = uval;
             localStorage.setItem('traffic_local_user', JSON.stringify(localUser));
 
-            // Also save to Traffic Save state (S) if it exists
+
             let localS = {};
             try { localS = JSON.parse(localStorage.getItem('traffic_save')) || {}; } catch(e) {}
             localS.name = val;
@@ -5583,13 +5551,13 @@
         const statusMsg = document.getElementById('username-status-msg');
         let val = input.value;
         
-        // Auto-write @ symbol
+
         if (val && !val.startsWith('@')) {
           val = '@' + val.replace(/@/g, '');
           input.value = val;
         }
         
-        proceedBtn.disabled = true; // Disable until validated
+        proceedBtn.disabled = true;
         
         if (val.length <= 1) {
           statusMsg.textContent = '';
@@ -5609,7 +5577,7 @@
           }
           
           try {
-            // Uniqueness check against user_profiles table
+
             const { data } = await window.supabaseClient.from('user_profiles').select('username').ilike('username', val).limit(1);
             if (data && data.length > 0) {
               statusMsg.textContent = '❌ Username is already taken.';
@@ -5668,7 +5636,7 @@
       }
 
       function _onbSaveName() {
-        // Kept for backward compatibility if called elsewhere
+
         _onbSaveNameAndUsername();
       }
 
@@ -5677,19 +5645,19 @@
         var ov = document.getElementById('onb-overlay')
         if (ov) { ov.classList.add('hidden'); setTimeout(function () { ov.style.display = 'none' }, 400) }
         if (typeof ui !== 'undefined' && ui && ui.init) ui.init()
-        // Go to levels page after completion (not back to start page)
+
         setTimeout(function () {
           if (typeof ui !== 'undefined' && ui && ui.showLevels) {
             ui.showLevels()
           } else {
-            // Fallback: redirect directly to levels
+
             window.location.href = 'Academy.html?screen=levels'
           }
         }, 500)
       }
 
       function skipOnboarding() {
-        // Skip directly to levels without confirmation popup
+
         _onbComplete()
       }
 
@@ -5702,7 +5670,7 @@
         _onbComplete()
       }
 
-      // Toggle between list view and map view
+
       let mapViewActive = false
       function toggleLevelView() {
         mapViewActive = !mapViewActive
@@ -5718,7 +5686,7 @@
         }
       }
 
-      // Auto-show map on mobile devices
+
       function checkMobileAndShowMap() {
         if (window.innerWidth <= 768) {
           const mapEl = document.getElementById('level-map')
@@ -5732,29 +5700,29 @@
         }
       }
 
-        // ═══════════════════════════════════════════════════════
-        // Build Duolingo-style Level Map — Premium Immersive
-        // ═══════════════════════════════════════════════════════
+
+
+
         function buildLevelMap() {
           const svg = document.getElementById('level-path-svg')
           svg.innerHTML = ''
 
-          // ── State ──
+
           let S = {}
           try { S = JSON.parse(localStorage.getItem('mth4') || '{}') } catch(e) {}
           const completed = S.comp || {}
           const totalLevels = window.LVS?.length || 52
 
-          // ── Update mini progress bar ──
-          const doneCount = Object.keys(completed).filter(k => completed[k] && completed[k].score > 0).length // uses same logic as _getCompleted()
+
+          const doneCount = Object.keys(completed).filter(k => completed[k] && completed[k].score > 0).length
           const pct = Math.round((doneCount / totalLevels) * 100)
           const fillEl = document.getElementById('map-progress-fill')
           const countEl = document.getElementById('map-progress-count')
           if (fillEl) fillEl.style.width = pct + '%'
           if (countEl) countEl.textContent = `${doneCount}/${totalLevels} ▾`
 
-          // ── Derive categories dynamically from window.LVS level names ──
-          // Keyword-to-category mapping: first match wins
+
+
           const _catRules = [
             { kw: ['red light', 'signal', 'green light', 'patience'],           name: 'Traffic Signals',     emoji: '🚦', color: '#f59e0b' },
             { kw: ['intersection', 'junction', 'cross', 'crossing'],             name: 'Intersections',       emoji: '🔀', color: '#3b82f6' },
@@ -5774,7 +5742,7 @@
           function _deriveCategories(lvs) {
             if (!lvs || !lvs.length) return []
             const sorted = [...lvs].sort((a, b) => (a.id || 0) - (b.id || 0))
-            const catMap = new Map() // categoryName -> { name, emoji, color, startLevel }
+            const catMap = new Map()
             sorted.forEach(lv => {
               const name = (lv.name || '').toLowerCase()
               let matched = _catRules.find(r => r.kw.some(k => name.includes(k)))
@@ -5784,17 +5752,17 @@
                 catMap.set(key, { name: matched.name, emoji: matched.emoji, start: lv.id, color: matched.color })
               }
             })
-            // Sort categories by the start level of their first member
+
             return Array.from(catMap.values()).sort((a, b) => a.start - b.start)
           }
 
           const categories = _deriveCategories(window.LVS || [])
 
-          // ── Populate category breakdown dropdown ──
+
           const pdRowsEl = document.getElementById('pd-rows')
           if (pdRowsEl && categories.length) {
-            // Count total and completed levels per category
-            const catLevelMap = new Map() // catName -> { total: number, done: number }
+
+            const catLevelMap = new Map()
             const lvs = window.LVS || []
             lvs.forEach(lv => {
               const lvName = (lv.name || '').toLowerCase()
@@ -5806,7 +5774,7 @@
               const lvId = String(lv.id || lv.num || lv.level)
               if (completed[lvId] && completed[lvId].score > 0) entry.done++
             })
-            // Render rows sorted by category start order
+
             pdRowsEl.innerHTML = ''
             const frag = document.createDocumentFragment()
             let catIdx = 0, totalCatsDone = 0, totalCatsAll = 0
@@ -5829,7 +5797,7 @@
             })
             pdRowsEl.appendChild(frag)
           }
-          // Close dropdown when clicking outside (use named handler to avoid leaks)
+
           const pdDropdown = document.getElementById('map-progress-dropdown')
           if (pdDropdown) {
             if (!window._closeProgressDropdown) {
@@ -5844,7 +5812,7 @@
             }
           }
 
-          // ── SVG Defs — Gradients, Filters, Patterns ──
+
           const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
           defs.innerHTML = `
             <!-- Node Gradients -->
@@ -5864,7 +5832,7 @@
           `
           svg.appendChild(defs)
 
-          // ── Generate Winding S-Curve Nodes ──
+
           const nodes = []
           const svgWidth = Math.min(svg.parentElement.clientWidth || 600, 600)
           const centerX = svgWidth / 2
@@ -5878,7 +5846,7 @@
             nodes.push({ id: i + 1, x, y })
           }
 
-          // ── Add Floating Decorations (clouds, trees) ──
+
           const decoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
           decoGroup.classList.add('map-decos')
           const decoSymbols = [
@@ -5902,7 +5870,7 @@
           }
           svg.appendChild(decoGroup)
 
-          // ── Add Category Trophies at section starts ──
+
           const catMarkers = []
           categories.forEach(cat => {
             if (cat.start > totalLevels) return
@@ -5916,13 +5884,13 @@
             const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
             g.classList.add('category-marker')
             g.setAttribute('transform', `translate(${cm.x}, ${cm.y - 42})`)
-            // Trophy emoji
+
             const emoji = document.createElementNS('http://www.w3.org/2000/svg', 'text')
             emoji.classList.add('cat-emoji')
             emoji.setAttribute('y', '0')
             emoji.textContent = cm.emoji
             g.appendChild(emoji)
-            // Category name pill
+
             const pill = document.createElementNS('http://www.w3.org/2000/svg', 'g')
             pill.setAttribute('transform', 'translate(0, 22)')
             const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
@@ -5939,18 +5907,18 @@
             svg.appendChild(g)
           })
 
-          // ── Draw Smooth Bezier Path ──
-          // Build smooth cubic bezier path through all nodes
+
+
           let pathD = `M ${nodes[0].x} ${nodes[0].y}`
           for (let i = 1; i < nodes.length; i++) {
             const prev = nodes[i - 1]
             const curr = nodes[i]
             const midY = (prev.y + curr.y) / 2
-            // Control points create smooth S-curves between nodes
+
             pathD += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`
           }
 
-          // Background path (full trail — dim)
+
           const bgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
           bgPath.setAttribute('d', pathD)
           bgPath.setAttribute('fill', 'none')
@@ -5960,7 +5928,7 @@
           bgPath.setAttribute('stroke-linejoin', 'round')
           svg.appendChild(bgPath)
 
-          // Main gradient path
+
           const mainPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
           mainPath.setAttribute('d', pathD)
           mainPath.setAttribute('fill', 'none')
@@ -5970,7 +5938,7 @@
           mainPath.setAttribute('stroke-linejoin', 'round')
           svg.appendChild(mainPath)
 
-          // Find current level index for path progress
+
           let currentIdx = 0
           for (let i = 0; i < nodes.length; i++) {
             const lid = nodes[i].id
@@ -5978,7 +5946,7 @@
             if (c && (c.score > 0 || c.finalQuiz || c.completed || c === true)) currentIdx = i + 1
           }
 
-          // Completed portion of the path (bright green)
+
           if (currentIdx > 0 && currentIdx < nodes.length) {
             const segPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
             segPath.setAttribute('d', pathD)
@@ -5987,7 +5955,7 @@
             segPath.setAttribute('stroke-width', '5')
             segPath.setAttribute('stroke-linecap', 'round')
             segPath.setAttribute('stroke-linejoin', 'round')
-            // Animate with dash
+
             const totalLen = mainPath.getTotalLength() || 9999
             segPath.setAttribute('stroke-dasharray', `${totalLen}`)
             segPath.setAttribute('stroke-dashoffset', `${totalLen}`)
@@ -5995,7 +5963,7 @@
             svg.appendChild(segPath)
           }
 
-          // ── Draw Nodes with Staggered Entrance ──
+
           nodes.forEach((n, i) => {
             const lvlId = n.id
             const isDone = !!(completed[lvlId] && (completed[lvlId].score > 0 || completed[lvlId].finalQuiz || completed[lvlId].completed || completed[lvlId] === true))
@@ -6011,14 +5979,14 @@
             g.style.animation = `mapNodeIn 0.5s ${i * 0.025}s cubic-bezier(0.34,1.56,0.64,1) forwards`
             g.onclick = () => {
               if (isLocked) {
-                // Haptic feedback (mobile vibration API)
+
                 if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
-                // Screen shake animation on the node
+
                 g.classList.remove('shake');
-                void g.offsetWidth; // force reflow to restart animation
+                void g.offsetWidth;
                 g.classList.add('shake');
                 g.addEventListener('animationend', () => g.classList.remove('shake'), { once: true });
-                // Show locked toast
+
                 _showLockedToast(lvlId);
                 return;
               }
@@ -6029,7 +5997,7 @@
             outerG.classList.add('node-outer')
 
             if (isCurrent) {
-              // Outer animated dashed ring
+
               const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
               ring.classList.add('node-ring')
               ring.setAttribute('r', r + 8)
@@ -6038,7 +6006,7 @@
               ring.setAttribute('stroke-width', '2.5')
               ring.setAttribute('stroke-dasharray', '6,4')
               outerG.appendChild(ring)
-              // Glow ring
+
               const glowRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
               glowRing.setAttribute('r', r + 4)
               glowRing.setAttribute('fill', 'none')
@@ -6047,7 +6015,7 @@
               outerG.appendChild(glowRing)
             }
 
-            // Main circle
+
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
             circle.setAttribute('r', r)
             circle.setAttribute('fill', isDone ? 'url(#gradDone)' : isCurrent ? 'url(#gradCurrent)' : 'url(#gradLocked)')
@@ -6058,9 +6026,9 @@
             else circle.setAttribute('filter', 'url(#shadowNode)')
             outerG.appendChild(circle)
 
-            // Inner content
+
             if (isDone) {
-              // Checkmark
+
               const ck = document.createElementNS('http://www.w3.org/2000/svg', 'path')
               ck.setAttribute('d', `M${-r*0.28},${r*0.05} L${-r*0.05},${r*0.32} L${r*0.32},${-r*0.28}`)
               ck.setAttribute('stroke', 'white')
@@ -6070,12 +6038,12 @@
               ck.setAttribute('stroke-linejoin', 'round')
               outerG.appendChild(ck)
             } else if (isCurrent) {
-              // Level number
+
               const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
               label.classList.add('level-node-label')
               label.textContent = lvlId
               outerG.appendChild(label)
-              // Star indicator above
+
               const star = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
               star.setAttribute('points', '0,-40 3.6,-32 10.4,-30 5.4,-24 6.4,-16 0,-20 -6.4,-16 -5.4,-24 -10.4,-30 -3.6,-32')
               star.setAttribute('fill', '#fbbf24')
@@ -6083,14 +6051,14 @@
               star.style.animation = 'floatSlow 3s ease-in-out infinite'
               outerG.appendChild(star)
             } else {
-              // Level number
+
               const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
               label.classList.add('level-node-label')
               label.setAttribute('fill', isLocked ? '#6b7280' : 'white')
               label.setAttribute('opacity', isLocked ? '0.7' : '1')
               label.textContent = lvlId
               outerG.appendChild(label)
-              // Lock icon for locked
+
               if (isLocked) {
                 const lock = document.createElementNS('http://www.w3.org/2000/svg', 'text')
                 lock.setAttribute('y', -r - 8)
@@ -6105,7 +6073,7 @@
             g.appendChild(outerG)
             svg.appendChild(g)
 
-            // ── Sparkle particles on completed nodes ──
+
             if (isDone && i < 20) {
               for (let s = 0; s < 3; s++) {
                 const spark = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
@@ -6125,9 +6093,9 @@
             }
           })
 
-          // ── Set SVG height ──
+
           const maxY = Math.max(...nodes.map(n => n.y)) + 180
-          svg.style.minHeight = maxY + 'px'        // ── Scroll to Current Level ──
+          svg.style.minHeight = maxY + 'px'
         setTimeout(() => {
           const scrollArea = document.getElementById('map-scroll')
           if (!scrollArea) return
@@ -6139,13 +6107,13 @@
         }, 600)
       }
 
-      // ── Locked Node Toast (reusable, auto-dismiss) ──
+
       let _lockedToastEl = null
       let _lockedToastTimer = null
       function _showLockedToast(lvlId) {
-        // Remove existing toast immediately
+
         if (_lockedToastEl) { _lockedToastEl.remove(); clearTimeout(_lockedToastTimer) }
-        // Also do a brief viewport shake on mobile
+
         if (window.innerWidth <= 768 && navigator.vibrate) {
           const scroller = document.getElementById('map-scroll')
           if (scroller) {
@@ -6153,14 +6121,14 @@
             scroller.addEventListener('animationend', () => scroller.style.animation = '', { once: true })
           }
         }
-        // Create toast
+
         _lockedToastEl = document.createElement('div')
         _lockedToastEl.className = 'locked-toast'
         _lockedToastEl.innerHTML = `🔒 Complete Level ${Math.max(1, lvlId - 1)} first`
         document.body.appendChild(_lockedToastEl)
-        // Animate in
+
         requestAnimationFrame(() => requestAnimationFrame(() => _lockedToastEl.classList.add('show')))
-        // Auto-dismiss after 2s
+
         _lockedToastTimer = setTimeout(() => {
           if (_lockedToastEl) { _lockedToastEl.classList.remove('show'); setTimeout(() => _lockedToastEl?.remove(), 400) }
         }, 2000)
@@ -6173,7 +6141,7 @@
         el.classList.add('selected')
       }
 
-      /* ===== INIT ===== */
+      
       ;(function () {
         const ld = document.getElementById('loading-screen')
         const bar = document.getElementById('loading-bar')
@@ -6193,13 +6161,13 @@
         setTimeout(() => tick('Preparing interface...', 85), 300)
         setTimeout(() => {
           tick('Ready', 100)
-          // Init the UI
+
           if (typeof ui !== 'undefined' && ui.init) ui.init()
-          // Auto-show map on mobile
+
           if (window.innerWidth <= 768) {
             setTimeout(checkMobileAndShowMap, 500)
           }
-          // Dismiss loading screen
+
           setTimeout(() => {
             if (ld) {
               ld.style.opacity = '0'
@@ -6208,10 +6176,10 @@
                 if (ld && ld.parentNode) ld.parentNode.removeChild(ld)
               }, 500)
             }
-            // NOTE: Onboarding is now triggered ONLY by clicking "Get Started" button
-            // Removed auto-show to prevent loop issues
 
-            // Keyboard overlap detection — adds .keyboard-open class to body
+
+
+
             if (window.visualViewport) {
               var vkOpen = false
               window.visualViewport.addEventListener('resize', function () {
@@ -6226,7 +6194,7 @@
         }, 400)
       })()
 
-      /* ── Horizon Toggle ── */
+      
       function hzInit() {
         var t = localStorage.getItem('theme');
         if (t === 'light') { document.body.classList.add('lm'); }
@@ -6245,7 +6213,7 @@
         hzSync();
       }
 
-      // ── Hamburger Menu (mobile) ──
+
       (function() {
         const btn = document.getElementById('hamburger-btn');
         const dd = document.getElementById('hamburger-dropdown');
@@ -6254,14 +6222,14 @@
           const open = dd.classList.toggle('show');
           btn.setAttribute('aria-expanded', String(open));
         };
-        // Close on click outside
+
         document.addEventListener('click', function(e) {
           if (dd.classList.contains('show') && !dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
             dd.classList.remove('show');
             btn.setAttribute('aria-expanded', 'false');
           }
         });
-        // Close on Escape
+
         document.addEventListener('keydown', function(e) {
           if (e.key === 'Escape' && dd.classList.contains('show')) {
             dd.classList.remove('show');
@@ -6273,7 +6241,7 @@
 
       hzInit();
 
-      // ── Ripple Touch Feedback for Mobile ──
+
       if ('ontouchstart' in window) {
         document.addEventListener('click', function(e) {
           const target = e.target.closest('.btn, .btn-g, .syl-item, .lcard, .back-btn, .mobile-hamburger-btn, button');
@@ -6291,7 +6259,7 @@
         });
       }
 
-      // ── Stagger level cards on render ──
+
       const _origBuildSyl = ui._buildSylList.bind(ui);
       ui._buildSylList = function() {
         _origBuildSyl();
@@ -6303,7 +6271,7 @@
       };
     </script>
 
-      <!-- COMPARE MODAL -->
+      
       <div class="modal-overlay" id="compare-modal" style="display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);">
         <div class="modal-box" style="max-width: 600px; width: 90%; padding: 32px; border-radius: 24px; text-align: left; background: var(--card); border: 1px solid var(--border);">
           <h3 style="margin-top: 0; font-size: 1.8rem; font-weight: 800; font-family: var(--sans);">Driver Search</h3>
@@ -6330,7 +6298,7 @@
 
           <div id="compare-results" style="display: none;">
             <div style="display: flex; align-items: stretch; gap: 16px; margin-bottom: 24px;">
-              <!-- My Stats -->
+              
               <div style="flex: 1; background: var(--bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border); text-align: center; position: relative; overflow: hidden;">
                 <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--signal);"></div>
                 <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.1em; font-weight: 700;">You</div>
@@ -6344,12 +6312,12 @@
                 <div style="font-size: 0.75rem; color: var(--muted);">Modules Complete</div>
               </div>
 
-              <!-- VS Badge -->
+              
               <div style="display: flex; align-items: center; justify-content: center; padding: 0 8px;">
                 <div style="width: 40px; height: 40px; background: var(--card); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-style: italic; color: var(--muted); font-size: 1.1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">VS</div>
               </div>
 
-              <!-- Their Stats -->
+              
               <div style="flex: 1; background: var(--bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border); text-align: center; position: relative; overflow: hidden;">
                 <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--ion);"></div>
                 <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.1em; font-weight: 700;">Player</div>
@@ -6395,7 +6363,7 @@
           try {
             if (!window.supabaseClient) throw new Error("Cloud database not connected.");
             
-            // Search user_profiles table (where usernames are stored)
+
             const { data, error } = await window.supabaseClient
               .from('user_profiles')
               .select('user_id, display_name, username, total_score, modules_completed, preferred_vehicle')
@@ -6403,7 +6371,7 @@
               .maybeSingle();
             
             if (error || !data) {
-              // Fallback: search by display_name
+
               const { data: nameData } = await window.supabaseClient
                 .from('user_profiles')
                 .select('user_id, display_name, username, total_score, modules_completed, preferred_vehicle')
@@ -6418,7 +6386,7 @@
                 document.getElementById('compare-error').textContent = 'Player not found. Try searching by @username or display name.';
                 return;
               }
-              // Use the name search result
+
               return await _showSearchResult(nameData, username);
             }
             
@@ -6442,11 +6410,11 @@
             }]).then();
           } catch(e) {}
 
-          // Calculate their stats from local save data or profile
+
           let theirScore = profile.total_score || 0;
           let theirProgressCount = profile.modules_completed || 0;
 
-          // Also check localStorage for more accurate progress
+
           try {
             const sRaw = localStorage.getItem('traffic_save');
             if (sRaw) {
@@ -6461,10 +6429,10 @@
           document.getElementById('compare-their-score').textContent = theirScore;
           document.getElementById('compare-their-progress').textContent = theirProgressCount + '/52';
 
-          // Populate "My" side
+
           let myName = 'Guest Driver', myUsername = 'Not Signed In', myScore = 0, myProgressCount = 0;
           try {
-            // First check user_profiles for current user's data
+
             if (window.colUser && window.supabaseClient) {
               const { data: myProfile } = await window.supabaseClient
                 .from('user_profiles')
@@ -6478,7 +6446,7 @@
                 myProgressCount = myProfile.modules_completed || 0;
               }
             }
-            // Fallback to local storage
+
             const sRaw = localStorage.getItem('traffic_save');
             if (sRaw) {
               const S = JSON.parse(sRaw);
@@ -6499,10 +6467,10 @@
         }
       </script>
 
-      <!-- Hidden dev unlock (click 5 times) -->
+      
       <div style="position: fixed; bottom: 5px; right: 10px; font-size: 0.7rem; color: var(--muted2); opacity: 0.3; cursor: pointer; z-index: 9999" onclick="handleDevClick()" title="Dev options">v2.4.1</div>
       
-      <!-- Mobile Bottom Navigation -->
+      
       <nav class="mobile-bottom-nav">
         <a href="Academy.html" class="nav-item active">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -6518,7 +6486,7 @@
         </a>
       </nav>
 
-  <!-- ═══ CHARACTER CUSTOMIZATION MODAL ═══ -->
+  
   <div id="customize-modal" style="display:none; position:fixed; inset:0; z-index:10001; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; justify-content:center; padding:20px;">
     <div style="background:var(--card,#1e293b); border:1px solid var(--border,rgba(255,255,255,0.08)); border-radius:20px; max-width:440px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.5);">
       <div style="padding:24px 24px 0; display:flex; align-items:center; justify-content:space-between;">
@@ -6526,47 +6494,47 @@
         <button onclick="document.getElementById('customize-modal').style.display='none'" style="width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--hover); color:var(--text); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
       </div>
       <div style="padding:20px 24px 24px;">
-        <!-- Live Preview -->
+        
         <div style="text-align:center; margin-bottom:20px;">
           <canvas id="customize-preview" width="200" height="280" style="border-radius:16px; background:rgba(0,0,0,0.2); border:1px solid var(--border);"></canvas>
           <div style="font-size:0.75rem; color:var(--muted); margin-top:6px;">Live Preview</div>
         </div>
-        <!-- Skin Tone -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Skin Tone</div>
           <div id="skin-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Hair Color -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hair Color</div>
           <div id="hair-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Hairstyle -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Hairstyle</div>
           <div id="hairstyle-options" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Eye Color -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Eye Color</div>
           <div id="eye-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Shirt Color -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shirt Color</div>
           <div id="shirt-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Pants Color -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Pants Color</div>
           <div id="pants-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Shoe Color -->
+        
         <div style="margin-bottom:16px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Shoe Color</div>
           <div id="shoe-swatches" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
         </div>
-        <!-- Accessories -->
+        
         <div style="margin-bottom:20px;">
           <div style="font-size:0.7rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Accessories</div>
           <div id="accessory-options" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
@@ -6579,7 +6547,7 @@
     </div>
   </div>
 
-  <!-- ═══ GAME SETTINGS MODAL ═══ -->
+  
   <div id="game-settings-modal" style="display:none; position:fixed; inset:0; z-index:10002; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; justify-content:center; padding:20px;">
     <div style="background:var(--card,#1e293b); border:1px solid var(--border,rgba(255,255,255,0.08)); border-radius:20px; max-width:460px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.5);">
       <div style="padding:24px 24px 0; display:flex; align-items:center; justify-content:space-between;">
@@ -6588,7 +6556,7 @@
       </div>
       <div style="padding:20px 24px 24px;">
         
-        <!-- Graphics Quality Section -->
+        
         <div style="margin-bottom:20px; background:rgba(0,0,0,0.2); padding:16px; border-radius:14px; border:1px solid var(--border);">
           <div style="font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:4px;">🖥️ Graphics Quality</div>
           <div style="font-size:0.75rem; color:var(--muted); margin-bottom:12px;">Saved setting will be remembered automatically.</div>
@@ -6600,7 +6568,7 @@
           </div>
         </div>
 
-        <!-- Customization & Display Section -->
+        
         <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
           <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left;" onclick="document.getElementById('game-settings-modal').style.display='none'; if(window.openCustomize) window.openCustomize();">
             🎨 Customize Character
@@ -6610,7 +6578,7 @@
           </button>
         </div>
 
-        <!-- Driver Comparison Section -->
+        
         <div style="display:flex; flex-direction:column; gap:10px;">
           <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left;" onclick="document.getElementById('game-settings-modal').style.display='none'; openCompareModal();">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -6694,7 +6662,7 @@
     });
   }
 
-  // Detect Phone Screen to show/hide Download App button
+
   (function() {
     function checkPhoneScreen() {
       const btn = document.getElementById('download-app-btn');

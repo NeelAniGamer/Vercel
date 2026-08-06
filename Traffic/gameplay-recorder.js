@@ -1,6 +1,5 @@
-// ── Gameplay Recorder ──
-// Records timestamped events during gameplay for post-level review
-// Lightweight: stores only essential data, no screenshots/video
+
+
 
 window.GameplayRecorder = {
   _events: [],
@@ -8,9 +7,9 @@ window.GameplayRecorder = {
   _levelId: null,
   _levelName: '',
 
-  // Severity levels: 'info', 'warning', 'danger', 'critical'
+
   _eventMeta: {
-    // Violations
+
     'NO_HONKING':        { label: 'Honked in silence zone', icon: '📢', category: 'Noise', severity: 'warning', tip: 'Silence zones near schools/hospitals require zero honking. Use hand signals instead.' },
     'MOBILE_USE':        { label: 'Used phone while driving', icon: '📱', category: 'Distraction', severity: 'critical', tip: 'Phone use causes 3,412 accidents/year in Mumbai. Pull over if you must use your phone.' },
     'SAFETY_VIOLATION':  { label: 'No seatbelt/helmet', icon: '⛑️', category: 'Safety', severity: 'critical', tip: '67% of fatalities involve unhelmeted riders. Always buckle up!' },
@@ -23,14 +22,14 @@ window.GameplayRecorder = {
     'SPLASH':            { label: 'Splashed pedestrian', icon: '💦', category: 'Courtesy', severity: 'warning', tip: 'Slow down near puddles. Splashing pedestrians is fined ₹500.' },
     'ANIMAL_HONK':       { label: 'Honked at animals', icon: '🐄', category: 'Courtesy', severity: 'info', tip: 'Honking scares animals. Slow down and wait for them to cross.' },
     'PEDESTRIAN_HIT':    { label: 'Hit pedestrian', icon: '🚶', category: 'Safety', severity: 'critical', tip: 'Pedestrians have right of way. Always yield at crosswalks.' },
-    // Collisions
+
     'COLLISION':         { label: 'Vehicle collision', icon: '💥', category: 'Safety', severity: 'danger', tip: 'Maintain safe following distance. Use brake early.' },
     'BARRICADE_HIT':     { label: 'Hit barricade', icon: '🚧', category: 'Awareness', severity: 'warning', tip: 'Slow down in construction zones. Watch for barriers.' },
-    // Driving
+
     'OFF_ROAD':          { label: 'Went off-road', icon: '🌿', category: 'Control', severity: 'danger', tip: 'Stay on marked roads. Off-road driving damages vehicles and terrain.' },
     'HARD_BRAKE':        { label: 'Emergency braking', icon: '🛑', category: 'Control', severity: 'info', tip: 'Anticipate stops. Smooth braking is safer and saves fuel.' },
     'NEAR_MISS':         { label: 'Near miss with NPC', icon: '⚠️', category: 'Awareness', severity: 'warning', tip: 'Keep safe distance from other vehicles. Watch blind spots.' },
-    // Positive
+
     'SEATBELT_ON':       { label: 'Put on seatbelt', icon: '✅', category: 'Safety', severity: 'info', tip: 'Great! Seatbelts reduce fatality risk by 45%.' },
     'SIGNAL_USED':       { label: 'Used turn signal', icon: '✅', category: 'Communication', severity: 'info', tip: 'Excellent! Using indicators makes you a predictable, safe driver.' },
     'CHECKPOINT_STOP':   { label: 'Stopped at checkpoint', icon: '✅', category: 'Compliance', severity: 'info', tip: 'Perfect! Always stop at police checkpoints.' },
@@ -39,7 +38,7 @@ window.GameplayRecorder = {
     'TUTORIAL_SHOWN':    { label: 'Viewed tutorial', icon: '📖', category: 'Learning', severity: 'info', tip: '' },
   },
 
-  // Category grouping for the review UI
+
   categories: {
     'Safety': { icon: '🛡️', color: '#ef4444' },
     'Speed': { icon: '⚡', color: '#f59e0b' },
@@ -67,7 +66,7 @@ window.GameplayRecorder = {
     const meta = this._eventMeta[type] || { label: type, icon: '📌', category: 'Other', severity: 'info', tip: '' };
     const event = {
       type,
-      time: Math.round((performance.now() - this._startTime) / 1000 * 10) / 10, // seconds with 1 decimal
+      time: Math.round((performance.now() - this._startTime) / 1000 * 10) / 10,
       label: meta.label,
       icon: meta.icon,
       category: meta.category,
@@ -93,20 +92,20 @@ window.GameplayRecorder = {
     const mistakes = [];
 
     events.forEach(ev => {
-      // Count by category
+
       if (!byCategory[ev.category]) byCategory[ev.category] = [];
       byCategory[ev.category].push(ev);
 
-      // Count by severity
+
       bySeverity[ev.severity] = (bySeverity[ev.severity] || 0) + 1;
 
-      // Collect mistakes (non-positive events)
+
       if (ev.severity !== 'info' || ev.type.includes('HIT') || ev.type.includes('VIOLATION') || ev.type.includes('OFF_ROAD') || ev.type === 'COLLISION' || ev.type === 'BARRICADE_HIT' || ev.type === 'NEAR_MISS') {
         mistakes.push(ev);
       }
     });
 
-    // Calculate driving grade
+
     const criticalCount = bySeverity.critical || 0;
     const dangerCount = bySeverity.danger || 0;
     const warningCount = bySeverity.warning || 0;
@@ -130,7 +129,7 @@ window.GameplayRecorder = {
   },
 
   getTimeline() {
-    // Return events formatted for timeline display
+
     return this._events.map(ev => ({
       time: ev.time,
       timeFormatted: this._formatTime(ev.time),
@@ -147,7 +146,7 @@ window.GameplayRecorder = {
     return `${m}:${s.toString().padStart(2, '0')}`;
   },
 
-  // Show the driving review overlay
+
   showReview(onContinue) {
     const summary = this.getSummary();
     const timeline = this.getTimeline();
@@ -155,17 +154,17 @@ window.GameplayRecorder = {
       ev.severity === 'critical' || ev.severity === 'danger' || ev.severity === 'warning'
     );
 
-    // Build grade color
+
     const gradeColors = { 'A+': '#22c55e', 'A': '#22c55e', 'B+': '#06b6d4', 'B': '#3b82f6', 'C+': '#f59e0b', 'C': '#f97316', 'D': '#ef4444' };
     const gradeColor = gradeColors[summary.grade] || '#64748b';
 
-    // Group mistakes by category for the tips section
+
     const tipMap = new Map();
     mistakes.forEach(ev => {
       if (ev.tip && !tipMap.has(ev.type)) tipMap.set(ev.type, { icon: ev.icon, label: ev.label, tip: ev.tip, category: ev.category });
     });
 
-    // Build timeline dots
+
     const timelineHtml = timeline.length > 0 ? `
       <div class="dr-timeline-wrap">
         <div class="dr-timeline-track">
@@ -180,7 +179,7 @@ window.GameplayRecorder = {
       </div>
     ` : '';
 
-    // Build mistakes list
+
     const mistakesHtml = mistakes.length > 0 ? `
       <div class="dr-section">
         <div class="dr-section-title">⚠️ Mistakes (${mistakes.length})</div>
@@ -196,7 +195,7 @@ window.GameplayRecorder = {
       </div>
     ` : '<div class="dr-section"><div class="dr-section-title">✅ No mistakes! Perfect driving!</div></div>';
 
-    // Build tips section
+
     const tipsHtml = tipMap.size > 0 ? `
       <div class="dr-section">
         <div class="dr-section-title">💡 Tips for Next Time</div>
@@ -211,7 +210,7 @@ window.GameplayRecorder = {
       </div>
     ` : '';
 
-    // Build stats row
+
     const statsHtml = `
       <div class="dr-stats">
         <div class="dr-stat">
@@ -233,7 +232,7 @@ window.GameplayRecorder = {
       </div>
     `;
 
-    // Category breakdown
+
     const catEntries = Object.entries(summary.byCategory).filter(([k]) => k !== 'Mission' && k !== 'Learning');
     const catBreakdownHtml = catEntries.length > 0 ? `
       <div class="dr-section">
@@ -254,7 +253,7 @@ window.GameplayRecorder = {
       </div>
     ` : '';
 
-    // Create overlay
+
     const overlay = document.createElement('div');
     overlay.className = 'dr-overlay';
     overlay.setAttribute('role', 'dialog');
@@ -283,7 +282,7 @@ window.GameplayRecorder = {
       </div>
     `;
 
-    // Inject CSS if not already present
+
     if (!document.getElementById('dr-styles')) {
       const style = document.createElement('style');
       style.id = 'dr-styles';
@@ -436,7 +435,7 @@ window.GameplayRecorder = {
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add('show'));
 
-    // Close handlers
+
     const doClose = () => {
       overlay.classList.remove('show');
       setTimeout(() => overlay.remove(), 300);

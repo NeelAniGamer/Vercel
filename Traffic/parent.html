@@ -10,9 +10,8 @@
   <meta property="og:description" content="Monitor your child's driving progress and safety" />
   <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
   <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/parent" />
-  
-  <!-- Cloud Auth & Sync Logic -->
-  <script>
+
+    <script>
     const _oldFetch = window.fetch
     window.fetch = function () {
       if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
@@ -28,12 +27,12 @@
       _oldWarn.apply(console, args)
     }
   </script>
-  
+
   <script defer src="../col-router.js"></script>
   <link rel="stylesheet" href="../col-ui.css" />
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/4.1.0/phaser.min.js"></script>
@@ -44,7 +43,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <script src="course.js"></script>
   <script src="../ui.js"></script>
-  
+
   <style>
     :root {
       --bg: #070a14;
@@ -666,13 +665,13 @@
   </div>
 
   <script>
-    // Parse URL parameters
+
     const urlParams = new URLSearchParams(window.location.search);
     const studentId = urlParams.get('studentId') || localStorage.getItem('currentStudentId') || 'STU-' + Math.floor(100000 + Math.random() * 900000);
-    
-    // Store for cross-page navigation
+
+
     localStorage.setItem('currentStudentId', studentId)
-    
+
     let S = {}
     try {
       const raw = localStorage.getItem('mth4')
@@ -688,7 +687,7 @@
     const displayName = tUser.name || S.name || 'Student'
     const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
-    // Student avatar
+
     const avatarEl = document.getElementById('student-avatar')
     let userPhoto = null
     try {
@@ -701,17 +700,17 @@
       avatarEl.textContent = userInitials
     }
 
-    // Header info
+
     document.getElementById('student-name').textContent = displayName
     document.getElementById('student-id-display').textContent = 'ID: ' + studentId
     document.getElementById('student-grade').textContent = 'Grade: ' + (tUser.grade || 'Not set')
     document.getElementById('student-vehicle').textContent = 'Vehicle: ' + (tUser.vehicle || 'Not set')
 
-    // Stats
+
     const completed = S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
     document.getElementById('p-prog').textContent = completed + '/52'
     document.getElementById('p-score').textContent = (S.total || 0).toLocaleString()
-    
+
     const civicScore = S.civicScore || 0
     const civicTiers = [
       { at: 500, label: 'Platinum Citizen', emoji: '💎' },
@@ -724,11 +723,11 @@
     document.getElementById('p-civic').textContent = civicScore + ' ' + civicTier.emoji
     document.getElementById('p-civic-tier').textContent = civicTier.label
 
-    // Violations count
+
     const violationCount = S.violationHistory ? Object.keys(S.violationHistory).length : 0
     document.getElementById('p-violations').textContent = violationCount
 
-    // Progress ring
+
     const progressPct = Math.round((completed / 52) * 100)
     const progressCanvas = document.getElementById('parent-progress-canvas')
     if (progressCanvas && window.TrafficCharts) {
@@ -736,7 +735,7 @@
     }
     document.getElementById('parent-progress-pct').textContent = progressPct + '%'
     document.getElementById('parent-progress-fill').style.width = progressPct + '%'
-    
+
     if (completed >= 52) {
       document.getElementById('parent-progress-text').textContent = '🎉 All Levels Complete!'
       document.getElementById('parent-progress-sub').textContent = 'Certificate unlocked!'
@@ -748,7 +747,7 @@
       document.getElementById('parent-progress-sub').textContent = 'Complete levels to unlock certificate'
     }
 
-    // Violations list
+
     const violationsList = document.getElementById('violations-list')
     if (violationCount > 0 && S.violationHistory) {
       violationsList.innerHTML = ''
@@ -786,21 +785,21 @@
       `
     }
 
-    // Level grid
+
     const levelGrid = document.getElementById('parent-level-grid')
     if (window.LVS && levelGrid) {
       LVS.forEach(lv => {
         const done = S.comp && S.comp[lv.id] && S.comp[lv.id].score > 0
         const started = S.started && S.started[lv.id]
         const isLocked = lv.id > 1 && (!S.comp || !S.comp[lv.id - 1] || !S.comp[lv.id - 1].score > 0)
-        
+
         const card = document.createElement('div')
         card.className = 'level-card' + (done ? '' : started ? '' : isLocked ? ' locked' : '')
         if (isLocked) card.style.opacity = '0.6'
-        
+
         const statusClass = done ? 'status-completed' : started ? 'status-in-progress' : 'status-locked'
         const statusText = done ? '✅ Completed' : started ? '🔄 In Progress' : '🔒 Locked'
-        
+
         card.innerHTML = `
           <div class="level-header">
             <span class="level-icon" style="background: ${lv.col || '#e74c3c'}">${lv.icon}</span>
@@ -814,7 +813,7 @@
             <span>${lv.modes ? lv.modes.join(', ') : ''}</span>
           </div>
         `
-        
+
         if (!isLocked) {
           card.style.cursor = 'pointer'
           card.onclick = () => {
@@ -823,12 +822,12 @@
             window.location.href = 'Driving.html?lv=' + lv.id + '&mode=car'
           }
         }
-        
+
         levelGrid.appendChild(card)
       })
     }
 
-    // Horizon Toggle
+
     function hzInit() {
       const t = localStorage.getItem('theme')
       if (t === 'light') document.body.classList.add('lm')
@@ -848,7 +847,7 @@
     }
     hzInit()
 
-    // Logout
+
     function logoutAndClear() {
       localStorage.removeItem('trafficSetupComplete')
       localStorage.removeItem('traffic_local_user')

@@ -73,7 +73,7 @@ const NPC_PROFILES = {
     overtakeThreshold: 0.85,
     sidewalkProbability: 0.0,
     parkingSkill: 0.95
-  },    // ── New personalities based on Mumbai traffic research ──
+  },
   teen: {
     name: 'Teen Driver',
     weight: 6,
@@ -173,12 +173,12 @@ class NPCAI {
       lightFlashFrequency: p.aggression * 0.3,
       tailgateDistance: (1 - p.patience) * 10 + 5
     };
-    // Distracted driving: some NPCs check phones periodically (~1-5% chance per second at 60fps)
+
     this.distractTimer = 0;
     this.distractChance = this.profileKey === 'normal' ? 0.0003 : this.profileKey === 'cautious' ? 0.0001 : this.profileKey === 'aggressive' ? 0.0008 : 0.0005;
-    // Road rage: aggressive NPCs get angry when blocked
+
     this.rageTimer = 0;
-    this.rageLevel = 0; // 0-100, triggers ROAD_RAGE at 100
+    this.rageLevel = 0;
   }
 
   init() {}
@@ -201,7 +201,7 @@ class NPCAI {
       }
     }
     
-    // Fallback: ask TrafficManager for next node or pick a random connected one
+
     if (this.trafficManager) {
       this.targetNode = this.trafficManager._getNextRouteNode(this.vehicle.currentNode);
       if (this.targetNode) {
@@ -209,13 +209,13 @@ class NPCAI {
         if (edge) {
           this.currentEdge = edge;
           this.currentLane = this._pickInitialLane(edge);
-          this.vehicle.currentNode = this.targetNode; // Advance current node for next lookup
+          this.vehicle.currentNode = this.targetNode;
           return;
         }
       }
     }
     
-    // If all fails, mark as complete
+
     this.state = NPC_STATE.COMPLETE;
   }
 
@@ -292,7 +292,7 @@ class NPCAI {
 
     if (signalAhead && signalAhead.state === 'red') {
       const distToSignal = this._distanceToSignal(signalAhead);
-      if (distToSignal < 25) {
+      if (distToSignal < 15) {
         if (this.profile.signalCompliance < Math.random()) {
           this.signalViolation = true;
           this.state = NPC_STATE.FOLLOW_LANE;
@@ -352,6 +352,7 @@ class NPCAI {
 
   _updateWaitSignal(dt, signals) {
     this.waitTimer += dt;
+    this.desiredSpeed = 0;
     const signal = this._getSignalAhead(signals);
     if (signal && signal.state === 'green') {
       this.state = NPC_STATE.FOLLOW_LANE;
@@ -441,7 +442,7 @@ class NPCAI {
     const signal = this._getSignalAhead(signals);
     if (signal && signal.state === 'red') {
       const dist = this._distanceToSignal(signal);
-      if (dist < 30 && this.state !== NPC_STATE.WAIT_SIGNAL) {
+      if (dist < 15 && this.state !== NPC_STATE.WAIT_SIGNAL) {
         if (this.profile.signalCompliance >= Math.random()) {
           this.state = NPC_STATE.WAIT_SIGNAL;
         }
@@ -455,7 +456,7 @@ class NPCAI {
       }
     }
 
-    // Emergency vehicle response: pull over for ambulances (throttled to every 0.5s)
+
     this._ambCheckTimer = (this._ambCheckTimer || 0) + dt;
     if (this.state === NPC_STATE.FOLLOW_LANE && this._ambCheckTimer > 0.5) {
       this._ambCheckTimer = 0;
@@ -470,13 +471,13 @@ class NPCAI {
       this._reactToPlayer(playerVehicle);
     }
 
-    // Distracted driving: some NPCs check phones, drift, slow suddenly
+
     if (this.state === NPC_STATE.FOLLOW_LANE && Math.random() < this.distractChance) {
       this.state = NPC_STATE.DISTRACTED;
       this.distractTimer = 0;
     }
 
-    // Road rage: aggressive NPCs get angry when blocked behind slow vehicles
+
     if (this.state === NPC_STATE.FOLLOW_LANE && this.profile.aggression > 0.5) {
       const ahead = this._getVehicleAhead();
       if (ahead) {
@@ -674,10 +675,10 @@ class NPCAI {
     setTimeout(() => { this.vehicle.flashHighBeams = false; }, 200);
   }
 
-  // ── Emergency Vehicle Response: Pull Over for ambulances ──
+
   _updatePullOver(dt) {
     this.pullOverTimer = (this.pullOverTimer || 0) + dt;
-    // Steer toward the curb (right side of the road)
+
     if (this.currentEdge) {
       const curbPos = this.currentEdge.getLaneCenter(0, this.vehicle.routeProgress);
       const right = new THREE.Vector3().crossVectors(
@@ -696,7 +697,7 @@ class NPCAI {
     }
     this.desiredSpeed = 0;
     this.currentSpeed *= 0.92;
-    // Resume after ambulance passes or 8 seconds
+
     if (this.pullOverTimer > 8 || !this._isAmbulanceNearby()) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.pullOverTimer = 0;
@@ -704,15 +705,15 @@ class NPCAI {
     }
   }
 
-  // ── Distracted Driving: Some NPCs check phones, drift, slow suddenly ──
+
   _updateDistracted(dt) {
     this.distractTimer += dt;
-    // Drift slightly while distracted
+
     this.vehicle.rotation.y += (Math.random() - 0.5) * 0.003;
-    // Slow down significantly
+
     this.desiredSpeed *= 0.5;
     this.currentSpeed *= 0.97;
-    // Resume after 2-5 seconds
+
     if (this.distractTimer > 2 + Math.random() * 3) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.distractTimer = 0;
@@ -720,18 +721,18 @@ class NPCAI {
     }
   }
 
-  // ── Road Rage: Aggressive NPCs tailgate, honk, flash lights ──
+
   _updateRoadRage(dt) {
     this.rageTimer += dt;
-    // Aggressive acceleration toward target
+
     this.desiredSpeed = this._getTargetSpeed() * 1.2;
-    // Honk frequently
+
     if (this.rageTimer % 1.5 < dt) this._honk();
-    // Flash lights
+
     if (this.rageTimer % 2 < dt) this._flashLights();
-    // Tailgate closely
+
     this.followDistance = 5;
-    // Calm down after 6 seconds
+
     if (this.rageTimer > 6) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.rageTimer = 0;
@@ -747,22 +748,22 @@ class NPCAI {
     for (const v of this.trafficManager.vehicles) {
       if (v === this.vehicle) continue;
       if (v.userData && v.userData.isAmb && v.position.distanceTo(myPos) < 80) {
-        // Check if ambulance is behind us (coming toward us)
+
         const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
         const toAmb = new THREE.Vector3().subVectors(v.position, myPos);
-        if (toAmb.dot(forward) < 0) return true; // Ambulance is behind us
+        if (toAmb.dot(forward) < 0) return true;
       }
     }
     return false;
   }
 
-  // ── Emergency Brake: React to sudden obstacles ──
+
   _updateEmergencyBrake(dt) {
     this.emergencyBrakeTimer = (this.emergencyBrakeTimer || 0) + dt;
-    this.currentSpeed *= 0.85; // Hard deceleration
+    this.currentSpeed *= 0.85;
     this.desiredSpeed = 0;
     if (this.vehicle.brakeLights) this.vehicle.brakeLights.intensity = 3;
-    // Resume after stopping or 3 seconds
+
     if (this.currentSpeed < 0.5 || this.emergencyBrakeTimer > 3) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.emergencyBrakeTimer = 0;
@@ -770,10 +771,10 @@ class NPCAI {
     }
   }
 
-  // ── Emergency Avoidance: Check for imminent collisions ──
+
   _checkEmergencyAvoidance(playerVehicle) {
     if (this.state === NPC_STATE.CRASH || this.state === NPC_STATE.EMERGENCY_BRAKE) return;
-    if (this.currentSpeed < 3) return; // Only check at meaningful speed
+    if (this.currentSpeed < 3) return;
     const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
     const myPos = this.vehicle.position;
     const checkRadius = 12;
@@ -790,13 +791,13 @@ class NPCAI {
         }
       }
     }
-    // Check NPC vehicles — only iterate if any are within checkRadius
+
     if (this.trafficManager && this.trafficManager.vehicles) {
       for (const v of this.trafficManager.vehicles) {
         if (v === this.vehicle) continue;
         const toV = new THREE.Vector3().subVectors(v.position, myPos);
         const dist = toV.length();
-        if (dist > checkRadius) continue; // Early exit for distant vehicles
+        if (dist > checkRadius) continue;
         const proj = toV.dot(forward);
         if (proj > 0 && proj < 8 && dist < 6 && Math.abs(toV.x * forward.z - toV.z * forward.x) < 2) {
           this.state = NPC_STATE.EMERGENCY_BRAKE;
@@ -808,17 +809,17 @@ class NPCAI {
     }
   }
 
-  // ── Enhanced Player Interaction: Swerve, honk, brake ──
+
   _reactToPlayer(player) {
     const dist = this.vehicle.position.distanceTo(player.position);
     const aggression = this.profile.aggression;
 
-    // Aggressive NPCs honk when player is too close
+
     if (aggression > 0.5 && dist < 15 && Math.random() < 0.02) {
       this._honk();
     }
 
-    // All NPCs brake when player cuts them off
+
     if (dist < 12 && this.currentSpeed > 2) {
       const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
       const toPlayer = new THREE.Vector3().subVectors(player.position, this.vehicle.position);
@@ -828,7 +829,7 @@ class NPCAI {
       }
     }
 
-    // Aggressive NPCs swerve around slow players
+
     if (aggression > 0.6 && dist < 20 && this.currentSpeed > 3) {
       const right = new THREE.Vector3().crossVectors(
         new THREE.Vector3(0, 1, 0),
@@ -841,24 +842,24 @@ class NPCAI {
       }
     }
 
-    // Cautious NPCs brake early when player approaches
+
     if (aggression < 0.2 && dist < 25 && Math.random() < 0.01) {
       this.desiredSpeed *= 0.8;
     }
 
-    // ── Trait-specific behaviors ──
-    // Teen: extra distracted — double distractChance
+
+
     if (this.profileKey === 'teen' && this.state === NPC_STATE.FOLLOW_LANE) {
       if (Math.random() < this.distractChance * 2) {
         this.state = NPC_STATE.DISTRACTED;
         this.distractTimer = 0;
       }
     }
-    // Elderly: slower reaction — only set once per reaction cycle
+
     if (this.profileKey === 'elderly' && this.reactionTimer <= 0) {
       this.reactionTimer = 0.3 + Math.random() * 0.6;
     }
-    // Delivery: double-park near destinations — stop in road briefly
+
     if (this.profileKey === 'delivery' && this.routeIndex >= this.route.length - 1) {
       if (this.state === NPC_STATE.FOLLOW_LANE && Math.random() < 0.005) {
         this.desiredSpeed = 0;
@@ -866,7 +867,7 @@ class NPCAI {
         this._honk();
       }
     }
-    // Tourist: erratic lane changes — swerve randomly
+
     if (this.profileKey === 'tourist' && this.state === NPC_STATE.FOLLOW_LANE) {
       if (Math.random() < 0.002) {
         this.vehicle.rotation.y += (Math.random() - 0.5) * 0.08;
@@ -874,12 +875,12 @@ class NPCAI {
     }
   }
 
-  // ── Weather-Affected Driving: Slow down in rain ──
+
   _getTargetSpeed() {
     const baseSpeed = this.currentEdge ? this.currentEdge.speedLimit / 3.6 : 10;
     const variance = (Math.random() - 0.5) * 2 * this.profile.speedVariance * baseSpeed;
     let speed = Math.max(2, baseSpeed + variance);
-    // Rain/night penalties via trafficManager reference (avoids fragile gameRef chain)
+
     const tm = this.trafficManager;
     if (tm && tm.game) {
       const cfg = tm.game.mapCfg;
@@ -935,7 +936,7 @@ class NPCAI {
   }
 }
 
-// ── Pedestrian AI System ──
+
 const PED_STATE = {
   WAITING: 'WAITING',
   CROSSING: 'CROSSING',
@@ -1021,7 +1022,7 @@ class PedestrianAI {
       this.facing = Math.atan2(dir.x, dir.z);
       this.ped.rotation.y = this.facing;
     } else {
-      // Pick a random nearby target on sidewalk
+
       const angle = Math.random() * Math.PI * 2;
       const dist = 8 + Math.random() * 15;
       this.target = new THREE.Vector3(
@@ -1034,13 +1035,13 @@ class PedestrianAI {
 
   _updateWaiting(dt, npcs) {
     this.waitTimer += dt;
-    // Look left and right while waiting
+
     if (this.lookTimer > 1.5) {
       this.lookTimer = 0;
       this.facing += (Math.random() - 0.5) * 1.5;
       this.ped.rotation.y = this.facing;
     }
-    // Decide to cross after waiting
+
     if (!this._waitThreshold) this._waitThreshold = 2 + Math.random() * 4;
     if (this.waitTimer > this._waitThreshold) {
       if (this.profile.jaywalkChance > Math.random()) {
@@ -1049,7 +1050,7 @@ class PedestrianAI {
         this._waitThreshold = null;
         this._pickCrossingTarget();
       } else {
-        // Check if road is clear to cross properly
+
         if (this._isRoadClear(npcs)) {
           this.state = PED_STATE.CROSSING;
           this.crossingTimer = 0;
@@ -1062,7 +1063,7 @@ class PedestrianAI {
 
   _updateCrossing(dt, npcs, playerVehicle) {
     this.crossingTimer += dt;
-    // Walk across the road
+
     if (this.target) {
       const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
       toTarget.y = 0;
@@ -1082,7 +1083,7 @@ class PedestrianAI {
 
   _updateJaywalking(dt, npcs, playerVehicle) {
     this.crossingTimer += dt;
-    // Faster pace when jaywalking (rushing across)
+
     const jaywalkSpeed = this.profile.speed * 1.3;
     if (this.target) {
       const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
@@ -1103,7 +1104,7 @@ class PedestrianAI {
 
   _updateFleeing(dt) {
     this.fleeTimer += dt;
-    // Run away from danger
+
     if (this.target) {
       const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
       toTarget.y = 0;
@@ -1124,20 +1125,20 @@ class PedestrianAI {
   _checkVehicleProximity(playerVehicle, npcs) {
     if (this.state === PED_STATE.FLEEING || this.state === PED_STATE.FROZEN) return;
     const myPos = this.ped.position;
-    // Check player vehicle
+
     if (playerVehicle) {
       const dist = myPos.distanceTo(playerVehicle.position);
       if (dist < 8) {
         this.state = PED_STATE.FLEEING;
         this.fleeTimer = 0;
-        // Flee perpendicular to vehicle direction
+
         const away = new THREE.Vector3().subVectors(myPos, playerVehicle.position).normalize();
         away.y = 0;
         this.target = myPos.clone().addScaledVector(away, 10);
         return;
       }
     }
-    // Check NPC vehicles
+
     if (npcs) {
       for (const npc of npcs) {
         if (!npc.position) continue;
@@ -1155,7 +1156,7 @@ class PedestrianAI {
   }
 
   _isRoadClear(npcs) {
-    // Simple check: no vehicles within 10 units ahead
+
     if (!npcs) return true;
     const myPos = this.ped.position;
     for (const npc of npcs) {
@@ -1167,7 +1168,7 @@ class PedestrianAI {
   }
 
   _pickCrossingTarget() {
-    // Pick a point across the road
+
     const crossAngle = this.facing + Math.PI / 2 + (Math.random() - 0.5) * 0.5;
     const crossDist = 12 + Math.random() * 8;
     this.target = new THREE.Vector3(
@@ -1178,7 +1179,7 @@ class PedestrianAI {
   }
 
   _keepOnGround() {
-    // Respect model's natural height offset (player at y=0.5, peds at y=0)
+
     if (!this._groundY) this._groundY = this.ped.position.y > 0.1 ? 0.5 : 0;
     this.ped.position.y = this._groundY;
   }

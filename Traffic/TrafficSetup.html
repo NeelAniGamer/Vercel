@@ -21,7 +21,7 @@
           window.supabaseClient = window.supabase.createClient(url, key, {
             auth: { persistSession: true, detectSessionInUrl: true }
           });
-          // Also listen for session changes (catches OAuth redirect completion)
+
           window.supabaseClient.auth.onAuthStateChange(function(event, session) {
             if (session && session.user) {
               window.colUser = session.user;
@@ -55,17 +55,17 @@
 
 <style>
       :root {
-        /* Shared color tokens (mirrors col-ui.css) */
+        
         --void: #070a14;
         --ink: #e8e3d8;
         --line: rgba(255, 255, 255, 0.08);
         --lineb: rgba(255, 255, 255, 0.16);
-        --signal: #f2b84b;    /* gold accent */
-        --em: #34d399;        /* green success */
-        --teal: #00f0cc;      /* teal */
-        --ion: #5ed4f5;       /* blue */
-        --plasma: #b89bff;    /* purple */
-        --red: #ef4444;       /* error */
+        --signal: #f2b84b;    
+        --em: #34d399;        
+        --teal: #00f0cc;      
+        --ion: #5ed4f5;       
+        --plasma: #b89bff;    
+        --red: #ef4444;       
         --r: 16px;
       }
 
@@ -87,7 +87,7 @@
         justify-content: center;
       }
 
-      /* === ENTRY ANIMATIONS === */
+      
       @keyframes fadeSlideUp {
         from { opacity: 0; transform: translateY(24px); }
         to { opacity: 1; transform: translateY(0); }
@@ -111,7 +111,7 @@
       .setup-left-pane > *:nth-child(3) { animation-delay: 0.35s; }
       .wizard-step, #authArea { animation: fadeSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
 
-      /* === STEP TRANSITION === */
+      
       .wizard-step {
         transition: opacity 0.3s ease, transform 0.3s ease;
       }
@@ -251,7 +251,7 @@
           inset 0 1px 1px rgba(255, 255, 255, 0.8);
       }
 
-      /* === WIZARD STEPPER === */
+      
       .wizard-stepper {
         display: flex;
         align-items: center;
@@ -358,7 +358,7 @@
         font-size: 1rem;
       }
 
-      /* === PROGRESS RING FOR SETUP COMPLETION === */
+      
       .setup-progress-ring {
         display: flex;
         align-items: center;
@@ -397,7 +397,7 @@
         margin-top: 4px;
       }
 
-      /* === INPUT GROUPS === */
+      
       .input-group {
         margin-bottom: 24px;
         text-align: left;
@@ -451,7 +451,7 @@
         box-shadow: 0 0 0 3px rgba(14, 114, 160, 0.15);
       }
 
-      /* === BUTTONS === */
+      
       .btn-submit {
         background: var(--signal);
         color: #000;
@@ -516,7 +516,7 @@
         background: rgba(0, 0, 0, 0.05);
       }
 
-      /* === TABS === */
+      
       .tab-btn {
         flex: 1;
         padding: 12px;
@@ -539,7 +539,7 @@
         border-color: var(--page-theme-light);
       }
 
-      /* === MOBILE RESPONSIVE === */
+      
       @media (max-width: 600px) {
         .setup-container {
           padding: 24px 16px;
@@ -582,7 +582,7 @@
           min-height: 48px !important;
           padding: 12px 14px !important;
         }
-        /* Wizard stepper mobile */
+        
         .wizard-stepper::before {
           top: 18px;
         }
@@ -604,7 +604,7 @@
         .progress-ring-pct {
           font-size: 1.4rem;
         }
-        /* OR divider spacing */
+        
         #authArea > div:nth-child(3) {
           margin: 12px 0;
         }
@@ -700,7 +700,7 @@
         background: rgba(0,0,0,0.06);
       }
 
-      /* === CUSTOM SELECT DROPDOWN (Resend-style smooth) === */
+      
       .custom-select-wrapper {
         position: relative;
         width: 100%;
@@ -814,7 +814,7 @@
       }
     </style>
     <style>
-      /* === TOAST NOTIFICATION === */
+      
       @keyframes toastSlideIn {
         from { opacity: 0; transform: translateY(-24px) scale(0.95); }
         to { opacity: 1; transform: translateY(0) scale(1); }
@@ -859,7 +859,7 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="setup-container">
-      <!-- Left Pane: Branding & Progress -->
+      
       <div class="setup-left-pane">
         <div style="display:flex; flex-direction:column; align-items:center; gap:16px; margin-bottom:24px; cursor:pointer;" onclick="window.location.href='Academy.html'">
           <img src="../Icon.png" alt="Class Of Learners" style="height:72px; width:72px; border-radius:16px; object-fit:contain; box-shadow:0 8px 24px rgba(0,0,0,0.4);" onerror="this.src='Icon.png'" />
@@ -867,7 +867,7 @@
         </div>
         <p class="subtitle" style="font-size: 0.95rem; opacity: 0.85; line-height: 1.5; margin-bottom: 24px;">The ultimate driving simulator.<br>Master the roads, rules, and reality.</p>
         
-        <!-- Progress Ring -->
+        
         <div class="setup-progress-ring" style="border:none; background:transparent; padding:0; margin-top:16px;">
           <canvas id="setup-progress-ring" width="80" height="80" data-chart="progress-ring" data-value="0"></canvas>
           <div class="progress-ring-info">
@@ -877,9 +877,9 @@
         </div>
       </div>
 
-      <!-- Right Pane: Form Steps -->
+      
       <div class="setup-right-pane">
-        <!-- Wizard Stepper -->
+        
         <div class="wizard-stepper" id="wizard-stepper">
           <div class="step-progress" id="step-progress" style="width: 0%"></div>
           <div class="step-item" data-step="1">
@@ -899,11 +899,11 @@
         <h1 id="step-title-h1" style="font-size: 2rem;">Welcome</h1>
         <p class="subtitle" id="subtitle-text">Let's setup your driver profile to get started.</p>
 
-            <!-- Auth Area (Step 1) - Remote Style -->
+            
       <div id="authArea" class="wizard-step" data-step="1">
         <div class="remote-auth-panel auth-slider-wrapper slide-login" id="auth-slider-container" style="flex: 1; display: flex; align-items: center;">
           <div class="auth-slider">
-            <!-- Login Tab -->
+            
             <div id="login-panel" class="auth-slide">
               <div id="col-auth-err" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; text-align: left;"></div>
               
@@ -948,7 +948,7 @@
               <button class="remote-btn-primary" id="auth-dashboard-btn" style="display: none; margin-top: 15px; background: transparent; border: 1px solid var(--em); color: var(--em)" onclick="window.location.href = 'TrafficDashboard.html'">Go to Dashboard &rarr;</button>
             </div>
 
-            <!-- Signup Tab -->
+            
             <div id="signup-panel" class="auth-slide">
               <div id="col-auth-err-signup" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; text-align: left;"></div>
 
@@ -1003,7 +1003,7 @@
         </div>
       </div>
 
-        <!-- Setup Form Area - Step 2: Personal Details -->
+        
       <div id="setupFormArea" class="wizard-step" data-step="2" style="display: none">
         <div id="cloud-status" style="margin-bottom: 20px; font-weight: 600; color: var(--em); display: none">✅ Cloud Account Connected</div>
         <form id="setupForm">
@@ -1036,7 +1036,7 @@
         </form>
       </div>
 
-      <!-- Setup Form Area - Step 3: Vehicle Selection -->
+      
       <div id="vehicleStep" class="wizard-step" data-step="3" style="display: none">
         <form id="vehicleForm">
           <div class="input-group">
@@ -1096,11 +1096,11 @@
           </button>
         </form>
       </div>
-      </div> <!-- End right pane -->
+      </div> 
     </div>
 
     <script>
-      // --- THEME LOGIC ---
+
       function applyTheme() {
         const currentTheme = localStorage.getItem('theme') || 'dark'
         if (currentTheme === 'light') {
@@ -1111,12 +1111,12 @@
       }
       applyTheme()
       
-      // Listen for theme changes from other tabs/frames
+
       window.addEventListener('storage', (e) => {
         if (e.key === 'theme') applyTheme()
       })
 
-      // --- WIZARD LOGIC ---
+
       let currentStep = 1
       const totalSteps = 3
       let setupProgressRing = null
@@ -1124,7 +1124,7 @@
       function updateWizardStep(step) {
         currentStep = Math.max(1, Math.min(step, totalSteps))
 
-        // Update stepper circles
+
         document.querySelectorAll('.step-item').forEach((item, i) => {
           const stepNum = i + 1
           item.classList.remove('active', 'completed')
@@ -1132,33 +1132,33 @@
           else if (stepNum === currentStep) item.classList.add('active')
         })
 
-        // Update progress bar
+
         const progress = ((currentStep - 1) / (totalSteps - 1)) * 100
         document.querySelector('.wizard-stepper .step-progress').style.width = `${progress}%`
 
-        // Update progress ring
+
         if (setupProgressRing && window.TrafficCharts) {
           const pct = Math.round(((currentStep - 1) / (totalSteps - 1)) * 100)
           setupProgressRing.update(pct)
-          // Sync the text percentage with the ring
+
           const pctEl = document.getElementById('progress-pct')
           if (pctEl) {
             pctEl.textContent = pct + '%'
           }
         }
 
-        // Show/hide steps
+
         document.querySelectorAll('.wizard-step').forEach(el => {
           el.style.display = parseInt(el.dataset.step) === currentStep ? 'block' : 'none'
         })
 
-        // Also handle auth area as step 1
+
         const authArea = document.getElementById('authArea')
         if (authArea) {
           authArea.style.display = currentStep === 1 ? 'block' : 'none'
         }
 
-        // Update title and subtitle for each step
+
         var titles = {
           1: 'Welcome',
           2: window.colUser ? 'Welcome, ' + (window.colUser.user_metadata?.full_name?.split(' ')[0] || 'Driver') + '!' : 'Your Profile',
@@ -1176,10 +1176,10 @@
       }
 
       function goToStep(step) {
-        // Validate current step before moving forward
+
         if (step > currentStep) {
           if (currentStep === 1) {
-            // For step 1, we allow skip (local setup)
+
           } else if (currentStep === 2) {
             const name = document.getElementById('prof-name').value.trim()
             const age = parseInt(document.getElementById('prof-age').value) || 0
@@ -1196,25 +1196,25 @@
         updateWizardStep(step)
       }
 
-      // Initialize progress ring
+
       function initProgressRing() {
         const canvas = document.getElementById('setup-progress-ring')
         if (canvas && window.TrafficCharts) {
           setupProgressRing = window.TrafficCharts.createProgressRing(canvas, 0, { cutout: '70%' })
-          // Override update method — save reference to Chart.js native update first
-          // to avoid infinite recursion (this.update called the override, not the prototype)
+
+
           var _nativeUpdate = setupProgressRing.update.bind(setupProgressRing)
           setupProgressRing.update = function(value) {
             this.data.datasets[0].data = [value, 100 - value]
             _nativeUpdate('none')
           }
-          // Sync the text percentage with the ring
+
           const pctEl = document.getElementById('progress-pct')
           if (pctEl) pctEl.textContent = '0%'
         }
       }
 
-      // --- 3D BACKGROUND LOGIC ---
+
       let scene, camera, renderer, particles
       const init3D = () => {
         const canvas = document.getElementById('bg-canvas')
@@ -1337,12 +1337,12 @@
         if (typeof THREE !== 'undefined') {
           init3D()
         }
-        // Init progress ring here so TrafficCharts is guaranteed loaded
+
         initProgressRing()
         updateWizardStep(1)
       })
 
-      // --- AUTH LOGIC ---
+
       let authMode = 'login'
       let selectedRole = 'student'
 
@@ -1350,7 +1350,7 @@
         selectedRole = role
         if (mode === 'signup') {
           document.getElementById('signup-role').value = role
-          // Reset ALL remote-role-btn elements in signup panel
+
           document.querySelectorAll('#signup-panel .remote-role-btn').forEach(btn => {
             btn.classList.remove('active')
             btn.style.borderColor = ''
@@ -1363,7 +1363,7 @@
             btn.classList.add('active')
           }
         } else {
-          // Reset ALL remote-role-btn elements in login panel
+
           document.querySelectorAll('#login-panel .remote-role-btn').forEach(btn => {
             btn.classList.remove('active')
             btn.style.borderColor = ''
@@ -1626,7 +1626,7 @@
 
       function showLocalSetup() {
         var toast = document.getElementById('auth-toast')
-        if (toast && toast.dataset.advancing === '1') return // prevent re-entry
+        if (toast && toast.dataset.advancing === '1') return
         if (toast) {
           toast.dataset.advancing = '1'
           toast.style.display = 'flex'
@@ -1647,7 +1647,7 @@
       window.addEventListener('col-auth-changed', async (e) => {
         const user = e.detail && e.detail.user ? e.detail.user : window.colUser
         if (user) {
-          // Check if we need to apply a pending role from a Google OAuth signin
+
           const pendingRole = localStorage.getItem('pending_role');
           if (pendingRole && (!user.user_metadata || !user.user_metadata.role)) {
             try {
@@ -1678,7 +1678,7 @@
         }
       })
 
-      // Synchronous check: if the event already fired before the listener was registered
+
       if (window.colUser) {
         showLocalSetup()
         document.getElementById('cloud-status').style.display = 'block'
@@ -1696,7 +1696,7 @@
         }
       }
 
-      // --- USERNAME AVAILABILITY CHECK ---
+
       let _usernameCheckTimeout = null
       async function checkUsernameAvailability(username) {
         const statusEl = document.getElementById('username-status')
@@ -1723,7 +1723,7 @@
               statusEl.style.color = 'var(--em)'
               return
             }
-            // Check both user_profiles and profiles tables
+
             const uname = username.startsWith('@') ? username : '@' + username
             const { data: upData } = await window.supabaseClient
               .from('user_profiles')
@@ -1731,7 +1731,7 @@
               .ilike('username', uname)
               .maybeSingle()
             if (upData) {
-              // If it's the current user, it's fine
+
               if (window.colUser && upData.user_id === window.colUser.id) {
                 statusEl.textContent = '✓ This is your current username'
                 statusEl.style.color = 'var(--em)'
@@ -1741,7 +1741,7 @@
               }
               return
             }
-            // Username is available
+
             statusEl.textContent = '✓ Username available!'
             statusEl.style.color = 'var(--em)'
           } catch (e) {
@@ -1763,22 +1763,22 @@
       if (S.age) document.getElementById('prof-age').value = S.age
       if (S.language) document.getElementById('prof-lang').value = S.language
 
-      // Update wizard state if already completed
+
       if (localStorage.getItem('trafficSetupComplete') === 'true' || S.name) {
         const authDashBtn = document.getElementById('auth-dashboard-btn')
         const setupDashBtn = document.getElementById('setup-dashboard-btn')
         if (authDashBtn) authDashBtn.style.display = 'inline-flex'
         if (setupDashBtn) setupDashBtn.style.display = 'inline-flex'
-        // Skip to dashboard button visible
+
         updateWizardStep(totalSteps)
       }
 
-      // === CUSTOM SELECT DROPDOWN LOGIC ===
+
       function toggleCustomSelect(prefix) {
         const wrapper = document.getElementById(prefix + '-select-wrapper')
         const trigger = document.getElementById(prefix + '-select-trigger')
         const isOpen = wrapper.classList.contains('open')
-        // Close all other open dropdowns
+
         document.querySelectorAll('.custom-select-wrapper.open').forEach(el => {
           el.classList.remove('open')
           const t = el.querySelector('.custom-select-trigger')
@@ -1787,7 +1787,7 @@
         if (!isOpen) {
           wrapper.classList.add('open')
           trigger.setAttribute('aria-expanded', 'true')
-          // Focus the currently selected option
+
           const selected = wrapper.querySelector('.custom-select-option.selected')
           if (selected) selected.focus()
         } else {
@@ -1802,31 +1802,31 @@
         const textEl = document.getElementById(prefix + '-select-text')
         const iconEl = trigger.querySelector('.custom-select-icon')
 
-        // Update hidden input and dispatch change event
+
         if (hidden) {
           hidden.value = value
           hidden.dispatchEvent(new Event('change', { bubbles: true }))
         }
-        // Update trigger display
+
         if (textEl) textEl.textContent = label
         if (iconEl) iconEl.textContent = icon
 
-        // Update ARIA states
+
         trigger.setAttribute('aria-expanded', 'false')
 
-        // Update selected state on options
+
         wrapper.querySelectorAll('.custom-select-option').forEach(opt => {
           const isSelected = opt.dataset.value === value
           opt.classList.toggle('selected', isSelected)
           opt.setAttribute('aria-selected', isSelected ? 'true' : 'false')
         })
 
-        // Close dropdown
+
         wrapper.classList.remove('open')
         trigger.focus()
       }
 
-      // Keyboard navigation for custom select
+
       function handleSelectKeydown(e, prefix) {
         const wrapper = document.getElementById(prefix + '-select-wrapper')
         const options = Array.from(wrapper.querySelectorAll('.custom-select-option'))
@@ -1867,7 +1867,7 @@
         }
       }
 
-      // Focus management for dropdown options
+
       document.querySelectorAll('.custom-select-option').forEach(opt => {
         opt.addEventListener('keydown', function(e) {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -1891,7 +1891,7 @@
         })
       })
 
-      // Close dropdown when clicking outside
+
       document.addEventListener('click', function(e) {
         if (!e.target.closest('.custom-select-wrapper')) {
           document.querySelectorAll('.custom-select-wrapper.open').forEach(el => el.classList.remove('open'))
@@ -1926,7 +1926,7 @@
           }
           if (window.supabaseClient && window.colUser) {
             try {
-              // Check if username is already taken in user_profiles
+
               const { data: upExisting } = await window.supabaseClient
                 .from('user_profiles')
                 .select('user_id')
@@ -1938,7 +1938,7 @@
                 return
               }
 
-              // Upsert profile to user_profiles
+
               const studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
               await window.supabaseClient
                 .from('user_profiles')
@@ -1973,8 +1973,8 @@
         localStorage.setItem('th-save', JSON.stringify(L))
         localStorage.setItem('trafficSetupComplete', 'true')
 
-        // Initialize wallet with starting balance based on level spending research
-        // Real driving lessons cost ₹500-2000/session, sim gives ₹50000 starting balance
+
+
         const walletKey = 'mth4'
         let saveData = {}
         try {
@@ -1989,7 +1989,7 @@
         if (!saveData.studentId) saveData.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
         localStorage.setItem(walletKey, JSON.stringify(saveData))
 
-        // Also save wallet to Supabase if logged in
+
         if (window.supabaseClient && window.colUser) {
           try {
             const gMeta = window.colUser.user_metadata || {}
@@ -2004,7 +2004,7 @@
           } catch(err) { console.warn('Could not sync wallet to cloud', err) }
         }
 
-        // Complete wizard
+
         updateWizardStep(totalSteps)
         
         setTimeout(() => {
@@ -2018,9 +2018,9 @@
         }, 500)
       })
 
-      // Second init attempt removed — initProgressRing() above already handles this correctly
 
-      // initProgressRing() + updateWizardStep(1) moved to window.load handler above
+
+
     </script>
   <script src="welcome-back.js"></script>
 </body>

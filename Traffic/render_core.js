@@ -1,8 +1,4 @@
-/**
- * RenderCore - Performance Engine Core
- * Handles WebGL renderer initialization, quality preset management, DRS, and frame budget monitoring.
- * Compatible with Three.js r128+.
- */
+
 
 const QUALITY_PRESETS = {
     LOW: {
@@ -92,10 +88,7 @@ class RenderCore {
         this._lastQualityCheck = 0;
     }
 
-    /**
-     * Initializes the WebGL renderer with the provided canvas.
-     * @param {HTMLCanvasElement} canvas
-     */
+    
     init(canvas) {
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({
@@ -108,27 +101,24 @@ class RenderCore {
             preserveDrawingBuffer: false
         });
 
-        // Three.js r128+ Color Management
+
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 0.55; // Lowered from 0.7 to reduce over-exposure and improve saturation
+        this.renderer.toneMappingExposure = 0.55;
 
-        // Shadow defaults
+
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.shadowMap.autoUpdate = true;
         this.renderer.shadowMap.needsUpdate = true;
 
-        // Auto-detect quality based on hardware
+
         this.autoDetectQuality();
 
         return this.renderer;
     }
 
-    /**
-     * Updates the quality preset and applies corresponding settings.
-     * @param {string} presetKey - Key from QUALITY_PRESETS (LOW, MED, HIGH, ULTRA)
-     */
+    
     setQuality(presetKey) {
         if (!QUALITY_PRESETS[presetKey]) {
             console.error(`RenderCore: Invalid quality preset: ${presetKey}`);
@@ -140,18 +130,12 @@ class RenderCore {
         console.log(`RenderCore: Quality set to ${presetKey}`);
     }
 
-    /**
-     * Enables/disables automatic quality adjustment based on frame budget.
-     * @param {boolean} enabled
-     */
+    
     setAutoQuality(enabled) {
         this._autoQualityEnabled = enabled;
     }
 
-    /**
-     * Automatically detects hardware capabilities and selects the best quality preset.
-     * @private
-     */
+    
     autoDetectQuality() {
         console.log("RenderCore: Auto-detecting hardware capabilities...");
         const savedQuality = localStorage.getItem('traffic_quality');
@@ -161,9 +145,9 @@ class RenderCore {
             this.setAutoQuality(false);
             return;
         }
-        let score = 2; // Start at MED
+        let score = 2;
 
-        // 1. GPU Analysis
+
         const gl = this.renderer.getContext();
         const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
         if (debugInfo) {
@@ -174,34 +158,34 @@ class RenderCore {
             const lowEnd = /Adreno|Mali|Intel.*HD|Intel.*UHD|Apple GPU|PowerVR|VideoCore/i;
 
             if (highEnd.test(renderer)) {
-                score += 1; // Potential HIGH
-                if (/RTX|GTX 30|GTX 40|RX 6[0-9]{3}|RX 7[0-9]{3}/i.test(renderer)) score += 1; // Potential ULTRA
+                score += 1;
+                if (/RTX|GTX 30|GTX 40|RX 6[0-9]{3}|RX 7[0-9]{3}/i.test(renderer)) score += 1;
             } else if (lowEnd.test(renderer)) {
-                score -= 1; // Potential LOW
+                score -= 1;
             }
         }
 
-        // 2. Hardware Concurrency (CPU cores)
+
         if (navigator.hardwareConcurrency) {
             console.log(`RenderCore: CPU Cores: ${navigator.hardwareConcurrency}`);
             if (navigator.hardwareConcurrency <= 2) score -= 1;
             else if (navigator.hardwareConcurrency >= 8) score += 1;
         }
 
-        // 3. Memory (deprecated but still useful)
+
         if (navigator.deviceMemory) {
             console.log(`RenderCore: Device Memory: ${navigator.deviceMemory}GB`);
             if (navigator.deviceMemory < 4) score -= 1;
             else if (navigator.deviceMemory >= 16) score += 1;
         }
 
-        // 4. Burn-in FPS Test
+
         const msPerFrame = this._perfTest();
         console.log(`RenderCore: Burn-in test: ${msPerFrame.toFixed(2)}ms/frame`);
         if (msPerFrame > 16.67) score -= 2;
         else if (msPerFrame > 10) score -= 1;
 
-        // Map score to preset
+
         let finalPreset = 'MED';
         if (score <= 0) finalPreset = 'LOW';
         else if (score === 1) finalPreset = 'LOW';
@@ -209,18 +193,14 @@ class RenderCore {
         else if (score === 3) finalPreset = 'HIGH';
         else if (score >= 4) finalPreset = 'ULTRA';
 
-        // Absolute override for very poor performance
+
         if (msPerFrame > 33) finalPreset = 'LOW';
 
         console.log(`RenderCore: Auto-detected quality: ${finalPreset} (score: ${score})`);
         this.setQuality(finalPreset);
     }
 
-    /**
-     * Performs a brief burn-in test to measure baseline rendering speed.
-     * @private
-     * @returns {number} Average milliseconds per frame.
-     */
+    
     _perfTest() {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera();
@@ -232,10 +212,7 @@ class RenderCore {
         return (performance.now() - start) / iterations;
     }
 
-    /**
-     * Sets up the render target and blit scene for Dynamic Resolution Scaling.
-     * @private
-     */
+    
     _setupRenderBypass() {
         if (!this.renderer || !this.canvas) return;
 
@@ -245,7 +222,7 @@ class RenderCore {
         const width = Math.floor(this.canvas.width * scale);
         const height = Math.floor(this.canvas.height * scale);
 
-        // Dispose old target
+
         if (this.renderTarget) this.renderTarget.dispose();
 
         this.renderTarget = new THREE.WebGLRenderTarget(width, height, {
@@ -257,7 +234,7 @@ class RenderCore {
             stencilBuffer: false
         });
 
-        // Setup Blit Scene for upscaling/downscaling
+
         if (!this.blitScene) {
             this.blitScene = new THREE.Scene();
             this.blitCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -274,16 +251,13 @@ class RenderCore {
         this.blitMesh.material.needsUpdate = true;
     }
 
-    /**
-     * Applies the numeric settings of a preset to the renderer and effects.
-     * @private
-     */
+    
     _applyQualitySettings(preset) {
         if (!this.renderer) return;
 
         console.log(`RenderCore: Applying quality settings - ${preset.description}`);
 
-        // Dynamic Resolution Scaling
+
         if (preset.resScale !== 1.0) {
             this._setupRenderBypass();
         } else {
@@ -293,25 +267,25 @@ class RenderCore {
             }
         }
 
-        // Shadow quality
+
         if (this.renderer.shadowMap) {
-            // Note: shadowMap.size is per-light, but we set a default for new lights
+
             this._defaultShadowRes = preset.shadowRes;
             this._defaultShadowBias = preset.shadowBias;
             this._defaultShadowNormalBias = preset.shadowNormalBias;
         }
 
-        // Texture quality
+
         this._defaultTextureFilter = preset.textureFilter;
         this._defaultAnisotropy = preset.maxAnisotropy;
 
-        // LOD multiplier for LODChunk system
+
         this._lodMultiplier = preset.lodMultiplier;
 
-        // Particle budget
+
         this._maxParticles = preset.maxParticles;
 
-        // Bloom
+
         if (this.composer && this.bloomPass) {
             this.bloomPass.enabled = preset.bloom;
             if (preset.bloom) {
@@ -322,11 +296,7 @@ class RenderCore {
         }
     }
 
-    /**
-     * Renders the scene using either direct canvas rendering or DRS.
-     * @param {THREE.Scene} scene
-     * @param {THREE.Camera} camera
-     */
+    
     render(scene, camera) {
         if (!this.renderer) return;
 
@@ -334,10 +304,10 @@ class RenderCore {
         const scale = preset.resScale;
 
         if (scale === 1.0) {
-            // High Quality: Render directly to canvas
+
             this.renderer.render(scene, camera);
         } else {
-            // DRS: Render to target, then blit to canvas
+
             if (!this.renderTarget) this._setupRenderBypass();
 
             this.renderer.setRenderTarget(this.renderTarget);
@@ -347,14 +317,11 @@ class RenderCore {
             this.renderer.render(this.blitScene, this.blitCamera);
         }
 
-        // Frame budget monitoring
+
         if (this._autoQualityEnabled) this._checkFrameBudget();
     }
 
-    /**
-     * Monitors frame time and auto-adjusts quality if budget exceeded.
-     * @private
-     */
+    
     _checkFrameBudget() {
         const now = performance.now();
         if (!this._lastFrameTime) this._lastFrameTime = now;
@@ -367,7 +334,7 @@ class RenderCore {
 
         this._frameBudgetFrames++;
         
-        // Check every 60 frames (1 second at 60fps)
+
         if (this._frameBudgetFrames >= 60) {
             this._frameBudgetFrames = 0;
             const avg = this._frameTimeHistory.reduce((a, b) => a + b, 0) / this._frameTimeHistory.length;
@@ -400,10 +367,7 @@ class RenderCore {
         }
     }
 
-    /**
-     * Creates/updates the EffectComposer with bloom for post-processing.
-     * Call after scene setup.
-     */
+    
     setupPostProcessing(width, height, isMobile) {
         if (!THREE.EffectComposer || isMobile) {
             this.composer = null;
@@ -431,9 +395,7 @@ class RenderCore {
         }
     }
 
-    /**
-     * Updates post-processing resolution on resize.
-     */
+    
     resizePostProcessing(width, height) {
         if (this.composer) {
             this.composer.setSize(width, height);
@@ -476,6 +438,6 @@ class RenderCore {
     }
 }
 
-// Export
+
 window.RenderCore = RenderCore;
 window.QUALITY_PRESETS = QUALITY_PRESETS;

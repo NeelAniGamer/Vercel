@@ -11,10 +11,10 @@ window.addEventListener('DOMContentLoaded', () => {
   if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
     document.body.classList.add('is-touch')
   }
-  // Do NOT call ui.init() or create Game() here yet. Wait for assets to load.
+
 })
 
-// Developer Mode: Ctrl+Shift+D to unlock everything
+
 document.addEventListener('keydown', (e) => {
   if (e.ctrlKey && e.shiftKey && e.key === 'D') {
     e.preventDefault()
@@ -23,9 +23,8 @@ document.addEventListener('keydown', (e) => {
 })
 
 window.PRELOADED_MODELS = {}
-// ─── Per-Level Model Loading System ─────────────────────────────────────────
-// Every asset key mapped to its file path + format. Used by loadLevelAssets() to
-// lazy-load only the models a level actually needs.
+
+
 window.ASSET_MANIFEST = {}
 ;(function () {
   const carKit = 'Models/kenney_car-kit/Models/GLB format/'
@@ -39,25 +38,25 @@ window.ASSET_MANIFEST = {}
   const tkKit = 'Models/kenney_train-kit/Models/GLB format/'
   const M = window.ASSET_MANIFEST
 
-  // Helper: manifest entry = { path, fmt }
-  // fmt: 'glb' (default), 'fbx', 'obj', 'gltf'
+
+
   function glb(p) { return { path: p, fmt: 'glb' } }
   function fbx(p) { return { path: p, fmt: 'fbx' } }
   function obj(p, m) { return { path: p, fmt: 'obj', mtl: m || null } }
 
-  // Vehicles — core
+
   M.car = glb(carKit + 'sedan.glb'); M.taxi = glb(carKit + 'taxi.glb'); M.police = glb(carKit + 'police.glb')
   M.bus = glb(carKit + 'delivery.glb'); M.truck = glb(carKit + 'truck.glb'); M.auto = glb(carKit + 'van.glb'); M.bike = glb(carKit + 'race.glb')
 
-  // Vehicles — variants
+
   M.ambulance = glb(carKit + 'ambulance.glb')
   ;['hatchback-sports','suv','suv-luxury','race-future','sedan-sports','kart-oobi','kart-oodi','kart-ooli','kart-oopi','kart-oozi','tractor','tractor-police','tractor-shovel'].forEach(c => { M['car_'+c] = glb(carKit + c + '.glb') })
   ;['firetruck','garbage-truck','truck-flat'].forEach(t => { M['truck_'+t] = glb(carKit + t + '.glb') })
 
-  // LowPoly Cars (FBX — multi-mesh file, bodies only)
+
   M.lowpoly_cars = fbx('Models/uploads_files_3354643_LowPoly_Cars_01_fbx.FBX')
 
-  // Roads
+
   M.road_straight = glb(roadKit + 'road-straight.glb'); M.road_intersect = glb(roadKit + 'road-intersection.glb')
   M.road_cross = glb(roadKit + 'road-crossroad.glb'); M.road_cross_path = glb(roadKit + 'road-crossroad-path.glb')
   M.road_intersect_path = glb(roadKit + 'road-intersection-path.glb'); M.road_bend = glb(roadKit + 'road-bend-sidewalk.glb')
@@ -65,28 +64,28 @@ window.ASSET_MANIFEST = {}
   M.barrier = glb(roadKit + 'construction-barrier.glb'); M.cone = glb(roadKit + 'construction-cone.glb'); M.sign_highway = glb(roadKit + 'sign-highway.glb')
   M.road_avenue = { path: 'Models/road__avenue__street/scene.gltf', fmt: 'gltf' }
 
-  // Characters — GLB (Kenney mini-characters)
+
   M.char_f_a = glb(charKit + 'character-female-a.glb'); M.char_f_b = glb(charKit + 'character-female-b.glb'); M.char_f_c = glb(charKit + 'character-female-c.glb')
   M.char_m_a = glb(charKit + 'character-male-a.glb'); M.char_m_b = glb(charKit + 'character-male-b.glb'); M.char_m_c = glb(charKit + 'character-male-c.glb')
 
-  // Characters — animated FBX (Kenney animated character packs)
+
   const animPacks = ['survivors','retro','protagonists']
   animPacks.forEach(pack => {
     const base = 'Models/kenney_animated-characters-' + pack + '/Model/characterMedium.fbx'
     M['anim_' + pack] = fbx(base)
   })
 
-  // Suburban buildings (a-u)
+
   'abcdefghijklmnopqrstu'.split('').forEach(l => { M['suburban_'+l] = glb(subKit + 'building-type-' + l + '.glb') })
 
-  // Industrial buildings (a-t)
+
   'abcdefghijklmnopqrst'.split('').forEach(l => { M['industrial_'+l] = glb(indKit + 'building-' + l + '.glb') })
 
-  // Modular buildings
+
   ;['sample-house-a','sample-house-b','sample-house-c'].forEach(h => { M['mbuilding_'+h] = glb(mbKit + 'building-' + h + '.glb') })
   ;['sample-tower-a','sample-tower-b','sample-tower-c','sample-tower-d'].forEach(t => { M['mbuilding_'+t] = glb(mbKit + 'building-' + t + '.glb') })
 
-  // Building kit (modular components for procedural buildings)
+
   ;['wall','wall-doorway-square','wall-doorway-round','wall-doorway-wide-round','wall-doorway-wide-square',
     'wall-window-square','wall-window-round','wall-window-round-detailed','wall-window-wide-square','wall-window-wide-round',
     'wall-window-wide-round-detailed','wall-window-narrow','wall-window-tall','wall-window-wide',
@@ -107,29 +106,27 @@ window.ASSET_MANIFEST = {}
   ].forEach(w => { M['bkit_'+w] = glb(bkKit + w + '.glb') })
   ;['barricade-doorway-a','barricade-doorway-b','barricade-doorway-c','barricade-window-a','barricade-window-b','barricade-window-c'].forEach(b => { M['bkit_'+b] = glb(bkKit + b + '.glb') })
 
-  // Watercraft
+
   M.ship_cargo = glb(wcKit + 'ship-cargo-a.glb'); M.boat_speed = glb(wcKit + 'boat-speed-a.glb')
   ;['boat-speed-b','boat-speed-c','boat-fishing-small','boat-tug-a','ship-cargo-b','ship-small'].forEach(w => { M['wc_'+w] = glb(wcKit + w + '.glb') })
 
-  // Trains
+
   M.train = glb(tkKit + 'train-locomotive-a.glb'); M.metro = glb(tkKit + 'train-electric-subway-a.glb')
   ;['train-diesel-a','train-electric-bullet-a','train-tram-modern','train-carriage-box'].forEach(t => { M['tk_'+t] = glb(tkKit + t + '.glb') })
 
-  // Trees & greenery
+
   M.tree_small = glb(subKit + 'tree-small.glb'); M.tree_large = glb(subKit + 'tree-large.glb'); M.planter = glb(subKit + 'planter.glb')
 
-  // Animals (Kenney cube-pets) — stray cow/dog obstacles for animal-themed levels.
-  // Previously unused: no level's assets[] ever requested this pack.
+
+
   const petsKit = 'Models/kenney_cube-pets_1.0/Models/GLB format/'
   M.animal_cow = glb(petsKit + 'animal-cow.glb'); M.animal_dog = glb(petsKit + 'animal-dog.glb')
 
-  // Low Poly City (Cartoon City Free + One file assets + Separate assets)
+
   const lowPolyCityKit = 'Models/source/'
-  M.lowpoly_city_main = glb(lowPolyCityKit + 'Cartoon_City_Free.glb')
-  M.lowpoly_city_onefile = glb(lowPolyCityKit + 'One_file_assets.glb')
-  // Separate assets
+
   const sepKit = lowPolyCityKit + 'Separate_assets_glb/Separate_assets_glb/'
-  M.lowpoly_banner = glb(sepKit + 'Banners.png')
+
   M.lowpoly_billboard_2x1_03 = glb(sepKit + 'Billboard_2x1_03.glb')
   M.lowpoly_billboard_2x1_05 = glb(sepKit + 'Billboard_2x1_05.glb')
   M.lowpoly_billboard_4x1_03 = glb(sepKit + 'Billboard_4x1_03.glb')
@@ -147,11 +144,11 @@ window.ASSET_MANIFEST = {}
   M.lowpoly_eco_building_terrace = glb(sepKit + 'Eco_Building_Terrace.glb')
   M.lowpoly_fountain_03 = glb(sepKit + 'Fountain_03.glb')
   M.lowpoly_futuristic_car_1 = glb(sepKit + 'Futuristic_Car_1.glb')
-  M.lowpoly_graffiti = glb(sepKit + 'Graffiti.png')
+
   M.lowpoly_graffiti_03 = glb(sepKit + 'Graffiti_03.glb')
   M.lowpoly_palm_03 = glb(sepKit + 'Palm_03.glb')
   M.lowpoly_regular_building_twistedtower_large = glb(sepKit + 'Regular_Building_TwistedTower_Large.glb')
-  M.lowpoly_roads_png = glb(sepKit + 'Roads.png')
+
   M.lowpoly_road_001 = glb(sepKit + 'road_001.glb')
   M.lowpoly_road_003 = glb(sepKit + 'road_003.glb')
   M.lowpoly_road_009 = glb(sepKit + 'road_009.glb')
@@ -159,8 +156,7 @@ window.ASSET_MANIFEST = {}
   M.lowpoly_road_019 = glb(sepKit + 'road_019.glb')
   M.lowpoly_road_020 = glb(sepKit + 'road_020.glb')
   M.lowpoly_road_022 = glb(sepKit + 'road_022.glb')
-  M.lowpoly_road_signs = glb(sepKit + 'Road_Signs.png')
-  M.lowpoly_scrolling_text = glb(sepKit + 'scrolling text.png')
+
   M.lowpoly_set_b_tiles_01 = glb(sepKit + 'Set_B_Tiles_01.glb')
   M.lowpoly_set_b_tiles_04 = glb(sepKit + 'Set_B_Tiles_04.glb')
   M.lowpoly_set_b_tiles_05 = glb(sepKit + 'Set_B_Tiles_05.glb')
@@ -169,10 +165,7 @@ window.ASSET_MANIFEST = {}
   M.lowpoly_signboard_01 = glb(sepKit + 'Signboard_01.glb')
   M.lowpoly_spotlight_01 = glb(sepKit + 'Spotlight_01.glb')
   M.lowpoly_spotlight_02 = glb(sepKit + 'Spotlight_02.glb')
-  M.lowpoly_textures1 = glb(sepKit + 'Textures1.png')
-  M.lowpoly_tiles_2 = glb(sepKit + 'Tiles_2.png')
-  M.lowpoly_tiles_2_normal = glb(sepKit + 'Tiles_2_Normal.png')
-  M.lowpoly_tiles_2_roughness = glb(sepKit + 'Tiles_2_Roughness.png')
+
   M.lowpoly_traffic_light_001 = glb(sepKit + 'traffic_light_001.glb')
   M.lowpoly_traffic_light_002 = glb(sepKit + 'traffic_light_002.glb')
   M.lowpoly_traffic_light_003 = glb(sepKit + 'traffic_light_003.glb')
@@ -189,7 +182,7 @@ window.ASSET_MANIFEST = {}
   M.lowpoly_van = glb(sepKit + 'Van.glb')
 })()
 
-// Logical groups — level configs reference these in their assets[] array
+
 window.ASSET_GROUPS = {
   suburban:  'abcdefghijklmnopqrstu'.split('').map(l => 'suburban_' + l),
   industrial:'abcdefghijklmnopqrst'.split('').map(l => 'industrial_' + l),
@@ -221,10 +214,10 @@ window.ASSET_GROUPS = {
   emergency: ['ambulance'],
   construction:['barrier','cone','sign_highway'],
   animals: ['animal_cow','animal_dog'],
-  lowpoly_city: ['lowpoly_city_main','lowpoly_city_onefile','lowpoly_billboard_2x1_03','lowpoly_billboard_2x1_05','lowpoly_billboard_4x1_03','lowpoly_billboard_4x1_04','lowpoly_bush_06','lowpoly_bush_07','lowpoly_bush_10','lowpoly_bus_stop_02','lowpoly_car_06','lowpoly_car_13','lowpoly_car_16','lowpoly_car_19','lowpoly_eco_building_grid','lowpoly_eco_building_slope','lowpoly_eco_building_terrace','lowpoly_fountain_03','lowpoly_futuristic_car_1','lowpoly_graffiti_03','lowpoly_palm_03','lowpoly_regular_building_twistedtower_large','lowpoly_road_001','lowpoly_road_003','lowpoly_road_009','lowpoly_road_013','lowpoly_road_019','lowpoly_road_020','lowpoly_road_022','lowpoly_set_b_tiles_01','lowpoly_set_b_tiles_04','lowpoly_set_b_tiles_05','lowpoly_set_b_tiles_06','lowpoly_set_b_tiles_09','lowpoly_signboard_01','lowpoly_spotlight_01','lowpoly_spotlight_02','lowpoly_traffic_light_001','lowpoly_traffic_light_002','lowpoly_traffic_light_003','lowpoly_trash_02','lowpoly_trash_03','lowpoly_trash_04','lowpoly_trash_05','lowpoly_trash_06','lowpoly_trash_can_04','lowpoly_trash_can_05','lowpoly_trash_can_06','lowpoly_trash_can_07','lowpoly_trash_can_08','lowpoly_van']
+  lowpoly_city: ['lowpoly_billboard_2x1_03','lowpoly_billboard_2x1_05','lowpoly_billboard_4x1_03','lowpoly_billboard_4x1_04','lowpoly_bush_06','lowpoly_bush_07','lowpoly_bush_10','lowpoly_bus_stop_02','lowpoly_car_06','lowpoly_car_13','lowpoly_car_16','lowpoly_car_19','lowpoly_eco_building_grid','lowpoly_eco_building_slope','lowpoly_eco_building_terrace','lowpoly_fountain_03','lowpoly_futuristic_car_1','lowpoly_graffiti_03','lowpoly_palm_03','lowpoly_regular_building_twistedtower_large','lowpoly_road_001','lowpoly_road_003','lowpoly_road_009','lowpoly_road_013','lowpoly_road_019','lowpoly_road_020','lowpoly_road_022','lowpoly_set_b_tiles_01','lowpoly_set_b_tiles_04','lowpoly_set_b_tiles_05','lowpoly_set_b_tiles_06','lowpoly_set_b_tiles_09','lowpoly_signboard_01','lowpoly_spotlight_01','lowpoly_spotlight_02','lowpoly_traffic_light_001','lowpoly_traffic_light_002','lowpoly_traffic_light_003','lowpoly_trash_02','lowpoly_trash_03','lowpoly_trash_04','lowpoly_trash_05','lowpoly_trash_06','lowpoly_trash_can_04','lowpoly_trash_can_05','lowpoly_trash_can_06','lowpoly_trash_can_07','lowpoly_trash_can_08','lowpoly_van']
 }
 
-// Keys always loaded at startup (fast boot — 21 models instead of 109)
+
 window.CORE_ASSETS = [
   'car','taxi','police','bus','truck','auto','bike',
   'road_straight','road_intersect','road_cross','road_cross_path','road_intersect_path','road_bend','road_crossing','road_roundabout','road_avenue',
@@ -232,7 +225,7 @@ window.CORE_ASSETS = [
   'tree_small','tree_large','animal_dog'
 ]
 
-// Expand an assets[] array: resolve group names to individual keys, deduplicate
+
 window._expandAssets = function (assets) {
   if (!assets || !assets.length) return []
   const out = new Set()
@@ -243,24 +236,24 @@ window._expandAssets = function (assets) {
   return [...out]
 }
 
-// Load specific model keys into PRELOADED_MODELS (skips already-loaded ones)
-// calls callback() when done. If no keys given, loads ALL keys (backward compat).
+
+
 window.loadLevelAssets = function (keys, callback) {
   if (typeof THREE === 'undefined') { callback(); return }
   const manifest = window.ASSET_MANIFEST
 
-  // Determine which keys to load
+
   let toLoad
   if (keys === undefined || keys === null) {
-    // Backward compat: no assets specified → load everything not yet loaded
+
     toLoad = Object.keys(manifest).filter(k => !window.PRELOADED_MODELS[k])
   } else {
-    // Explicit assets array (even empty) → expand and load only those
+
     const expanded = window._expandAssets(keys)
     toLoad = expanded.filter(k => !window.PRELOADED_MODELS[k])
   }
 
-  if (toLoad.length === 0) { callback(); return }
+  if (toLoad.length === 0) { setTimeout(callback, 0); return }
 
   let loaded = 0
   const total = toLoad.length
@@ -269,7 +262,7 @@ window.loadLevelAssets = function (keys, callback) {
   const barEl = document.getElementById('loading-bar')
   const statusEl = document.getElementById('loading-status')
 
-  // Shared post-process: set shadow + material props on every mesh
+
   function postProcess(root, key) {
     root.traverse((child) => {
       if (child.isMesh) {
@@ -283,7 +276,7 @@ window.loadLevelAssets = function (keys, callback) {
     })
   }
 
-  // Progress helper
+
   function tick() {
     loaded++
     const pct = Math.round((loaded / total) * 100)
@@ -306,13 +299,13 @@ window.loadLevelAssets = function (keys, callback) {
     if (!entry) { tick(); setTimeout(() => loadNext(index + 1), 0); return }
     if (statusEl) statusEl.textContent = 'Loading: ' + key + '...'
 
-    // Resolve entry — legacy plain string = GLB
+
     const fmt = (typeof entry === 'string') ? 'glb' : (entry.fmt || 'glb')
     const filePath = (typeof entry === 'string') ? entry : entry.path
 
     const onOk = (root) => {
       postProcess(root, key)
-      // GLB: ~1 unit tall → scale 4.5x;  FBX/OBJ: already large → store at 1x, callers rescale
+
       const isFBXOBJ = (fmt === 'fbx' || fmt === 'obj')
       if (!isFBXOBJ) root.scale.set(4.5, 4.5, 4.5)
       window.PRELOADED_MODELS[key] = root
@@ -347,19 +340,19 @@ window.loadLevelAssets = function (keys, callback) {
   setTimeout(() => loadNext(0), 50)
 }
 
-// ─── Startup: load only core assets (fast boot) ────────────────────────────
+
 function preloadModels(callback) {
   if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') { callback(); return }
 
-  // Show loading screen
+
   const ld = document.getElementById('loading-screen')
   const pctEl = document.getElementById('loading-pct')
   const barEl = document.getElementById('loading-bar')
   const statusEl = document.getElementById('loading-status')
 
-  // Load core assets only — 21 models instead of 109
+
   window.loadLevelAssets(window.CORE_ASSETS, () => {
-    // Also load base64 models from window.MODELS into PRELOADED_MODELS
+
     if (window.MODELS) {
       const loader = new THREE.GLTFLoader()
       Object.keys(window.MODELS).forEach((key) => {
@@ -381,7 +374,7 @@ function preloadModels(callback) {
     callback()
   })
 }
-// Confetti particle system
+
 window.confetti = {
   canvas: null,
   ctx: null,
@@ -396,7 +389,7 @@ window.confetti = {
   },
   burst(duration = 3000) {
     this.init()
-    // Skip confetti if user prefers reduced motion
+
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     this.canvas.width = window.innerWidth
     this.canvas.height = window.innerHeight
@@ -448,7 +441,7 @@ window.confetti = {
   }
 }
 
-// Quiz confirmation logic
+
 ui._selectedAnswer = -1
 ui.selectOption = function (idx, correctIdx) {
   this._selectedAnswer = idx
@@ -464,12 +457,12 @@ ui.confirmAnswer = function () {
   if (this._selectedAnswer < 0) return
   const cb = document.getElementById('qconfirm')
   if (cb) cb.classList.remove('show')
-  // Call the original answer handler
+
   this._submitAnswer(this._selectedAnswer, this._correctIdx)
   this._selectedAnswer = -1
 }
 
-// Challan card stack
+
 ui._challanCards = []
 ui._addChallanCard = function (off, amt) {
   const stack = document.getElementById('challan-stack')
@@ -478,19 +471,19 @@ ui._addChallanCard = function (off, amt) {
   const card = document.createElement('div')
   card.className = 'challan-card'
 
-  // Calculate stack depth for rotation and offset (like a hand of cards)
+
   const depth = stack.children.length
-  // Rotate between -15deg and -5deg based on depth to fan them out
+
   const rot = -15 + depth * 3
 
-  // Get exact clone of cvc-main HTML
+
   const cvcHtml = document.getElementById('cvc-main').innerHTML
 
-  // Use zoom so it shrinks its physical layout size — like holding cards
+
   card.innerHTML = `<div style="width:400px; zoom: 0.18; transform: rotate(${rot}deg); box-shadow: -6px 6px 20px rgba(0,0,0,0.5); border-radius:16px; overflow:hidden; background:white; pointer-events:none;">${cvcHtml}</div>`
   stack.appendChild(card)
   this._challanCards.push(card)
-  // Keep max 5 visible
+
   if (this._challanCards.length > 5) {
     const old = this._challanCards.shift()
     if (old.parentNode) old.parentNode.removeChild(old)
@@ -500,7 +493,7 @@ ui._addChallanCard = function (off, amt) {
 window.ui = window.ui || {}
 window.sfx = window.sfx || { play: () => {} }
 preloadModels(() => {
-  // ── Driving.html: Suppress ALL Academy-style screens before any code acts on them ──
+
   const _isDriving = window.location.pathname.toLowerCase().includes('driving')
   if (_isDriving) {
     document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
@@ -513,20 +506,20 @@ preloadModels(() => {
   const urlParams = new URLSearchParams(window.location.search)
   let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
   let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode') || 'car'
-  // Check if we're on the levels screen - don't auto-start a level
+
   const isLevelsScreen = urlParams.get('screen') === 'levels'
 
   if (_isDriving) {
-    // Re-hide screens (ui.init may have shown one for non-lv-param driving pages)
-    // But don't hide if we're explicitly on the levels screen
+
+
     if (!isLevelsScreen) {
       document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
     }
 
-    // Only auto-start a level if not on the levels screen
+
     if (lvId && !isLevelsScreen) {
       let levelObj = window.LVS ? window.LVS.find((l) => l.id == lvId) : null
-      // Fallback for free_roam / custom levels — create level on the fly
+
       if (!levelObj && (lvId === 'custom' || lvId === 'freeroam')) {
         levelObj = {
           id: lvId,
@@ -547,19 +540,19 @@ preloadModels(() => {
         ui.cur = levelObj
         ui.curMode = mode || 'car'
         ui.cur.vehMode = ui.curMode
-        // Guard flag to prevent multiple redirects — used by ALL redirect paths
+
         let _drivingRedirected = false
         function _redirectToAcademy() {
           if (_drivingRedirected) return
           _drivingRedirected = true
           window.location.href = 'Academy.html?screen=levels'
         }
-        // Safety net: if game canvas hasn't started within 30s, redirect to Academy
+
         const _startTime = Date.now()
         const _drivingTimeout = setTimeout(function _checkCanvasTimeout() {
           const gc = document.getElementById('gc')
           if (!gc || !gc.classList.contains('on')) {
-            // Canvas still not active — check again every 500ms up to 30s total
+
             if (Date.now() - _startTime < 30000) {
               setTimeout(_checkCanvasTimeout, 500)
             } else {
@@ -568,12 +561,12 @@ preloadModels(() => {
             }
           }
         }, 3000)
-        // Short delay before starting the level (ensures DOM is settled)
-        setTimeout(function _startLevel() {
+
+        function _doStartLevel() {
           try {
             game.startLevel()
-            // After startLevel runs, watch for canvas to become active
-            // Checks every 300ms until timeout fires or GC is ready
+
+
             const _startCheck = Date.now()
             ;(function _watchCanvas() {
               const gc = document.getElementById('gc')
@@ -581,7 +574,7 @@ preloadModels(() => {
                 clearTimeout(_drivingTimeout)
                 return
               }
-              // Keep watching until timeout naturally fires
+
               if (Date.now() - _startCheck < 18000) {
                 setTimeout(_watchCanvas, 300)
               }
@@ -591,17 +584,50 @@ preloadModels(() => {
             clearTimeout(_drivingTimeout)
             _redirectToAcademy()
           }
-        }, 300)
+        }
+
+        const _isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth <= 768
+
+        function _onPlayClick() {
+          const overlay = document.getElementById('play-overlay')
+          if (overlay) overlay.style.display = 'none'
+          if (!_isMobile && document.documentElement.requestFullscreen && !document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {})
+          }
+          _doStartLevel()
+        }
+
+        function _ensureOverlay() {
+          let overlay = document.getElementById('play-overlay')
+          if (!overlay) {
+            overlay = document.createElement('div')
+            overlay.id = 'play-overlay'
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);cursor:pointer;backdrop-filter:blur(8px);'
+            overlay.innerHTML = '<div style="text-align:center;animation:pulse 2s infinite"><div style="font-size:4rem;margin-bottom:16px">🚗</div><div style="font-family:\'Instrument Serif\',serif;font-size:2.5rem;color:#e8e3d8;margin-bottom:8px">Click to Play</div><div style="font-size:1rem;color:#8891aa">Fullscreen mode for the best experience</div></div>'
+            document.body.appendChild(overlay)
+            overlay.addEventListener('click', _onPlayClick)
+          }
+          overlay.style.display = 'flex'
+        }
+
+        _ensureOverlay()
+
+        setTimeout(function _delayedStart() {
+          const overlay = document.getElementById('play-overlay')
+          if (overlay && overlay.style.display !== 'none') {
+            _doStartLevel()
+          }
+        }, 5000)
       } else {
         _drivingRedirected = true
         window.location.href = 'Academy.html?screen=levels'
       }
     } else {
-      // On levels screen - just show the levels screen
+
       if (ui.showLevels) ui.showLevels()
     }
   } else {
-    // Don't override if init() already showed a specific screen (e.g. ?screen=levels)
+
     const alreadyActive = document.querySelector('.screen.active')
     if (!alreadyActive || alreadyActive.id === 'ss') {
       if (ui.showStart) ui.showStart()

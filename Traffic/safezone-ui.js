@@ -1,18 +1,14 @@
-/**
- * SafeZoneGrid - Constraint-Based Responsive UI System
- * Replaces absolute px/vw positioning with adaptive quadrant stacking
- * Supports: PC (expanded), Tablet (compact), Mobile (action-only)
- */
+
 
 const SAFE_ZONES = {
-  TL: { x: 'left', y: 'top', stack: 'vertical', gap: 8, priority: 'high' },      // Top-Left
-  TR: { x: 'right', y: 'top', stack: 'vertical', gap: 8, priority: 'high' },      // Top-Right
-  BL: { x: 'left', y: 'bottom', stack: 'vertical', gap: 8, priority: 'medium' },  // Bottom-Left
-  BR: { x: 'right', y: 'bottom', stack: 'vertical', gap: 8, priority: 'medium' }, // Bottom-Right
-  TC: { x: 'center', y: 'top', stack: 'horizontal', gap: 12, priority: 'high' },  // Top-Center
-  BC: { x: 'center', y: 'bottom', stack: 'horizontal', gap: 12, priority: 'high' },// Bottom-Center
-  ML: { x: 'left', y: 'center', stack: 'vertical', gap: 10, priority: 'low' },    // Middle-Left
-  MR: { x: 'right', y: 'center', stack: 'vertical', gap: 10, priority: 'low' }    // Middle-Right
+  TL: { x: 'left', y: 'top', stack: 'vertical', gap: 8, priority: 'high' },
+  TR: { x: 'right', y: 'top', stack: 'vertical', gap: 8, priority: 'high' },
+  BL: { x: 'left', y: 'bottom', stack: 'vertical', gap: 8, priority: 'medium' },
+  BR: { x: 'right', y: 'bottom', stack: 'vertical', gap: 8, priority: 'medium' },
+  TC: { x: 'center', y: 'top', stack: 'horizontal', gap: 12, priority: 'high' },
+  BC: { x: 'center', y: 'bottom', stack: 'horizontal', gap: 12, priority: 'high' },
+  ML: { x: 'left', y: 'center', stack: 'vertical', gap: 10, priority: 'low' },
+  MR: { x: 'right', y: 'center', stack: 'vertical', gap: 10, priority: 'low' }
 };
 
 const BREAKPOINTS = {
@@ -44,14 +40,14 @@ const ZONE_PRESETS = {
     BL: { scale: 0.75, maxItems: 2, compact: true },
     BR: { scale: 0.75, maxItems: 2, compact: true },
     TC: { scale: 0.85, maxItems: 3, compact: true },
-    BC: { scale: 1.0, maxItems: 4, compact: true } // Bottom center = thumb zone
+    BC: { scale: 1.0, maxItems: 4, compact: true }
   }
 };
 
 class SafeZoneGrid {
   constructor() {
-    this.zones = new Map();        // zoneId -> HTMLElement (container)
-    this.items = new Map();        // itemId -> { element, zone, order, visible, priority }
+    this.zones = new Map();
+    this.items = new Map();
     this.currentBreakpoint = 'desktop';
     this.enabled = true;
     this._resizeHandler = null;
@@ -76,13 +72,13 @@ class SafeZoneGrid {
       container.id = `sz-${zoneId.toLowerCase()}`;
       container.className = 'safe-zone';
       container.dataset.zone = zoneId;
-      
-      // Position via CSS custom properties
+
+
       container.style.setProperty('--sz-x', zone.x);
       container.style.setProperty('--sz-y', zone.y);
       container.style.setProperty('--sz-gap', `${zone.gap}px`);
       container.style.setProperty('--sz-stack', zone.stack);
-      
+
       document.body.appendChild(container);
       this.zones.set(zoneId, container);
     });
@@ -90,7 +86,7 @@ class SafeZoneGrid {
 
   _injectBaseStyles() {
     if (document.getElementById('safezone-styles')) return;
-    
+
     const style = document.createElement('style');
     style.id = 'safezone-styles';
     style.textContent = `
@@ -114,7 +110,7 @@ class SafeZoneGrid {
       /* Right/bottom zones align their stack toward their own edge */
       .safe-zone[data-zone="TR"], .safe-zone[data-zone="BR"], .safe-zone[data-zone="MR"] { align-items: flex-end; }
       .safe-zone[data-zone="BL"], .safe-zone[data-zone="BR"] { justify-content: flex-end; }
-      
+
       /* Positioning via custom properties */
       .safe-zone[data-zone="TL"] { top: var(--safe-top, 0); left: var(--safe-left, 0); }
       .safe-zone[data-zone="TR"] { top: var(--safe-top, 0); right: var(--safe-right, 0); }
@@ -124,14 +120,14 @@ class SafeZoneGrid {
       .safe-zone[data-zone="BC"] { bottom: var(--safe-bottom, 0); left: 50%; transform: translateX(-50%); }
       .safe-zone[data-zone="ML"] { top: 50%; left: var(--safe-left, 0); transform: translateY(-50%); }
       .safe-zone[data-zone="MR"] { top: 50%; right: var(--safe-right, 0); transform: translateY(-50%); }
-      
+
       /* Stack direction */
       .safe-zone[style*="--sz-stack: vertical"] { flex-direction: column; }
       .safe-zone[style*="--sz-stack: horizontal"] { flex-direction: row; }
-      
+
       /* Gap */
       .safe-zone { gap: var(--sz-gap, 8px); }
-      
+
       /* Items inside zones */
       .sz-item {
         position: relative !important;
@@ -142,16 +138,16 @@ class SafeZoneGrid {
         transition: transform 0.15s ease, opacity 0.15s ease, scale 0.15s ease;
         will-change: transform, opacity;
       }
-      
+
       .sz-item.hidden { display: none !important; }
       .sz-item.compact { scale: 0.85; }
       .sz-item.ultra-compact { scale: 0.7; }
-      
+
       /* Priority-based hiding */
       .safe-zone.overflow-low .sz-item[data-priority="low"] { display: none; }
       .safe-zone.overflow-medium .sz-item[data-priority="medium"] { display: none; }
       .safe-zone.overflow-high .sz-item[data-priority="high"] { display: none; }
-      
+
       /* Safe area insets (notch, home indicator) */
       :root {
         --safe-top: env(safe-area-inset-top, 0px);
@@ -159,7 +155,7 @@ class SafeZoneGrid {
         --safe-bottom: env(safe-area-inset-bottom, 0px);
         --safe-left: env(safe-area-inset-left, 0px);
       }
-      
+
       /* Breakpoint-specific adjustments */
       @media (max-width: 767px) {
         :root { --sz-base-scale: 0.8; }
@@ -173,12 +169,12 @@ class SafeZoneGrid {
         :root { --sz-base-scale: 1.0; }
         .safe-zone { --sz-gap: 10px; --sz-inset: 16px; }
       }
-      
+
       /* Reduced motion */
       @media (prefers-reduced-motion: reduce) {
         .safe-zone, .sz-item { transition: none !important; }
       }
-      
+
       /* High contrast */
       @media (prefers-contrast: high) {
         .sz-item { border: 2px solid currentColor; }
@@ -188,7 +184,7 @@ class SafeZoneGrid {
   }
 
   _setupSafeAreaListener() {
-    // iOS safe area insets can change on rotation
+
     const updateSafeArea = () => {
       const style = getComputedStyle(document.documentElement);
       this._safeAreaInsets = {
@@ -199,7 +195,7 @@ class SafeZoneGrid {
       };
       this._reflowAllZones();
     };
-    
+
     window.addEventListener('resize', updateSafeArea);
     window.addEventListener('orientationchange', () => {
       setTimeout(updateSafeArea, 100);
@@ -211,7 +207,7 @@ class SafeZoneGrid {
     let bp = 'desktop';
     if (w <= BREAKPOINTS.mobile.max) bp = 'mobile';
     else if (w <= BREAKPOINTS.tablet.max) bp = 'tablet';
-    
+
     if (bp !== this.currentBreakpoint) {
       this.currentBreakpoint = bp;
       this._applyBreakpointStyles();
@@ -222,14 +218,14 @@ class SafeZoneGrid {
   _applyBreakpointStyles() {
     const preset = ZONE_PRESETS[this.currentBreakpoint];
     document.documentElement.style.setProperty('--sz-breakpoint', this.currentBreakpoint);
-    
+
     this.zones.forEach((container, zoneId) => {
       const config = preset[zoneId] || { scale: 1, maxItems: 4, compact: false };
       container.style.setProperty('--sz-scale', config.scale);
       container.style.setProperty('--sz-max-items', config.maxItems);
       container.dataset.compact = config.compact;
-      
-      // Apply compact class to items
+
+
       container.querySelectorAll('.sz-item').forEach(item => {
         item.classList.toggle('compact', config.compact);
         item.classList.toggle('ultra-compact', this.currentBreakpoint === 'mobile' && config.compact);
@@ -251,15 +247,7 @@ class SafeZoneGrid {
     window.addEventListener('resize', this._resizeHandler, { passive: true });
   }
 
-  // Public API
-  
-  /**
-   * Register a UI element to a safe zone
-   * @param {string} itemId - Unique identifier
-   * @param {HTMLElement} element - The DOM element
-   * @param {string} zoneId - One of TL, TR, BL, BR, TC, BC, ML, MR
-   * @param {Object} options - { order, priority: 'high'|'medium'|'low', visible }
-   */
+
   register(itemId, element, zoneId, options = {}) {
     if (!this.zones.has(zoneId)) {
       console.warn(`SafeZoneGrid: Unknown zone ${zoneId}`);
@@ -276,13 +264,13 @@ class SafeZoneGrid {
       hidden: false
     };
 
-    // Prepare element
+
     element.classList.add('sz-item');
     element.dataset.szId = itemId;
     element.dataset.priority = item.priority;
     element.style.setProperty('--sz-order', item.order);
 
-    // Insert in order
+
     const children = Array.from(zone.children);
     let inserted = false;
     for (const child of children) {
@@ -328,14 +316,14 @@ class SafeZoneGrid {
   moveToZone(itemId, newZoneId) {
     const item = this.items.get(itemId);
     if (!item || !this.zones.has(newZoneId)) return false;
-    
+
     const oldZone = this.zones.get(item.zone);
     const newZone = this.zones.get(newZoneId);
-    
+
     oldZone.removeChild(item.element);
     newZone.appendChild(item.element);
     item.zone = newZoneId;
-    
+
     this._checkOverflow(item.zone);
     this._checkOverflow(newZoneId);
     return true;
@@ -345,16 +333,16 @@ class SafeZoneGrid {
     const zone = this.zones.get(zoneId);
     const preset = ZONE_PRESETS[this.currentBreakpoint][zoneId] || { maxItems: 4 };
     const visibleItems = Array.from(zone.children).filter(el => !el.classList.contains('hidden'));
-    
-    // Remove overflow classes
+
+
     zone.classList.remove('overflow-low', 'overflow-medium', 'overflow-high');
-    
+
     if (visibleItems.length > preset.maxItems) {
-      // Hide lowest priority items first
+
       const overflow = visibleItems.length - preset.maxItems;
       let hidden = 0;
-      
-      // Hide low priority first
+
+
       if (hidden < overflow) {
         zone.classList.add('overflow-low');
         hidden += zone.querySelectorAll('[data-priority="low"]:not(.hidden)').length;
@@ -373,7 +361,7 @@ class SafeZoneGrid {
     this.zones.forEach((zone, zoneId) => this._checkOverflow(zoneId));
   }
 
-  // Layout utilities
+
   static getZoneForElement(element) {
     return element.closest('.safe-zone')?.dataset.zone || null;
   }
@@ -385,7 +373,7 @@ class SafeZoneGrid {
     return 'desktop';
   }
 
-  // Cleanup
+
   destroy() {
     if (this._resizeHandler) window.removeEventListener('resize', this._resizeHandler);
     this.zones.forEach(zone => zone.remove());
@@ -396,7 +384,7 @@ class SafeZoneGrid {
   }
 }
 
-// Auto-init
+
 if (typeof document !== 'undefined') {
   const initGrid = () => {
     window.safeZoneGridInstance = new SafeZoneGrid();

@@ -1,13 +1,6 @@
-/* ═══════════════════════════════════════════════════════════════════════
-   🎬 Mumbai Traffic Hero — Master Animation System
-   ═══════════════════════════════════════════════════════════════════════
-   Centralized smooth animations for Academy, Driving, and Dashboard.
-   Loaded via <link rel="stylesheet" href="animations.css">
-   ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── 1. Screen Transitions (Smooth Crossfade System) ── */
 
-/* Base screen: hidden by default, positioned for overlay */
+
 .screen {
   will-change: opacity, transform;
 }
@@ -15,7 +8,7 @@
   z-index: 2;
 }
 
-/* ── Enter Animations ── */
+
 @keyframes screenFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -36,12 +29,16 @@
   from { opacity: 0; transform: translateX(40px); }
   to   { opacity: 1; transform: translateX(0); }
 }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
 @keyframes screenSlideInLeft {
   from { opacity: 0; transform: translateX(-40px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* ── Exit Animations ── */
+
 @keyframes screenFadeOut {
   from { opacity: 1; }
   to   { opacity: 0; }
@@ -67,7 +64,7 @@
   to   { opacity: 0; transform: scale(0.95); }
 }
 
-/* ── Transition State Classes ── */
+
 .screen.screen-exiting {
   pointer-events: none;
   animation: screenFadeOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
@@ -89,7 +86,7 @@
   animation: screenScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
 }
 
-/* Exit variants */
+
 .screen.screen-exiting-up {
   animation: screenSlideOutUp 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
@@ -106,23 +103,23 @@
   animation: screenScaleOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
-/* ── Backward variant: exit slides right, enter slides left ── */
+
 .screen.screen-exiting-backward {
   animation: screenSlideOutRight 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
-/* Applied to .screen.active (fallback for no-JS) */
+
 .screen.active:not(.screen-exiting):not(.screen-entering) {
   animation: screenFadeIn 0.35s ease-out;
 }
-/* Inner content gets a staggered slide */
+
 .screen.active .sc,
 .screen.active .lw,
 .screen.active .br-w {
   animation: screenSlideUp 0.45s ease-out 0.05s both;
 }
 
-/* ── 2. Level Card Stagger Entrance ── */
+
 @keyframes cardStaggerIn {
   from {
     opacity: 0;
@@ -138,7 +135,7 @@
   opacity: 0;
   animation: cardStaggerIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-/* Stagger via JS: set style="--i:0" on each card */
+
 .lcard:nth-child(1), .syl-item:nth-child(1) { animation-delay: calc(var(--i, 0) * 0.06s + 0.05s); }
 .lcard:nth-child(2), .syl-item:nth-child(2) { animation-delay: calc(var(--i, 0) * 0.06s + 0.11s); }
 .lcard:nth-child(3), .syl-item:nth-child(3) { animation-delay: calc(var(--i, 0) * 0.06s + 0.17s); }
@@ -148,7 +145,7 @@
 .lcard:nth-child(7), .syl-item:nth-child(7) { animation-delay: calc(var(--i, 0) * 0.06s + 0.41s); }
 .lcard:nth-child(8), .syl-item:nth-child(8) { animation-delay: calc(var(--i, 0) * 0.06s + 0.47s); }
 
-/* ── 3. HUD Element Entrance ── */
+
 @keyframes hudSlideInLeft {
   from { opacity: 0; transform: translateX(-40px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -170,14 +167,14 @@
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* Applied when HUD elements become visible */
+
 .hud-enter-left   { animation: hudSlideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .hud-enter-right  { animation: hudSlideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .hud-enter-bottom { animation: hudSlideInBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .hud-enter-top    { animation: hudSlideInTop 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .hud-enter-scale  { animation: hudScaleIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 
-/* ── 4. Pause Menu ── */
+
 @keyframes pauseOverlayIn {
   from { opacity: 0; backdrop-filter: blur(0px); }
   to   { opacity: 1; backdrop-filter: blur(12px); }
@@ -191,7 +188,7 @@
   to   { opacity: 0; transform: translate(-50%, -50%) scale(0.9) translateY(20px); }
 }
 
-/* ── 5. Briefing Screen Panels ── */
+
 @keyframes briefingLeftIn {
   from { opacity: 0; transform: translateX(-40px); }
   to   { opacity: 1; transform: translateX(0); }
@@ -203,7 +200,7 @@
 .br-l { animation: briefingLeftIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .br-r { animation: briefingRightIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
 
-/* ── 6. Mission Complete Overlay ── */
+
 @keyframes missionCompleteBg {
   from { opacity: 0; backdrop-filter: blur(0px); }
   to   { opacity: 1; backdrop-filter: blur(8px); }
@@ -222,7 +219,7 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── 7. Challan/Warning Popup ── */
+
 @keyframes challanShakeIn {
   0%   { opacity: 0; transform: translateX(-50%) translateY(-100px) rotate(-3deg); }
   20%  { opacity: 1; transform: translateX(-50%) translateY(0) rotate(2deg); }
@@ -236,7 +233,7 @@
   to   { opacity: 0; transform: translateX(-50%) translateY(-60px); }
 }
 
-/* ── 8. Toast Enhancements ── */
+
 @keyframes toastBounceIn {
   0%   { opacity: 0; transform: translateX(-50%) translateY(-100px) scale(0.8); }
   50%  { opacity: 1; transform: translateX(-50%) translateY(8px) scale(1.02); }
@@ -248,7 +245,7 @@
   to   { opacity: 0; transform: translateX(-50%) translateY(-80px) scale(0.9); }
 }
 
-/* ── 9. Badge Unlock Celebration ── */
+
 @keyframes badgeUnlockPop {
   0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
   50%  { transform: scale(1.25) rotate(5deg); opacity: 1; }
@@ -264,13 +261,13 @@
   100% { background-position: 200% center; }
 }
 
-/* ── 10. Number Count-Up Effect ── */
+
 @keyframes countFadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── 11. Loading Spinner ── */
+
 @keyframes loadingSpin {
   to { transform: rotate(360deg); }
 }
@@ -283,13 +280,13 @@
   100% { transform: translateX(100%); }
 }
 
-/* ── 12. Smooth Scroll Indicators ── */
+
 @keyframes scrollHintBounce {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(8px); }
 }
 
-/* ── 13. Tab Switch Transitions ── */
+
 @keyframes tabContentIn {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -298,7 +295,7 @@
   animation: tabContentIn 0.3s ease-out both;
 }
 
-/* ── 14. Floating/Gentle Bounce ── */
+
 @keyframes gentleBounce {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-4px); }
@@ -309,7 +306,7 @@
   75%      { transform: translateY(2px) rotate(-1deg); }
 }
 
-/* ── 15. Ripple Touch Feedback ── */
+
 @keyframes rippleExpand {
   from { transform: scale(0); opacity: 0.5; }
   to   { transform: scale(4); opacity: 0; }
@@ -329,50 +326,50 @@
   pointer-events: none;
 }
 
-/* ── 16. Score Popup ── */
+
 @keyframes scorePopupIn {
   0%   { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
   40%  { opacity: 1; transform: translate(-50%, -12px) scale(1.1); }
   100% { opacity: 0; transform: translate(-50%, -40px) scale(0.8); }
 }
 
-/* ── 17. Direction Arrow Pulse ── */
+
 @keyframes daPulseSmooth {
   0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.9; }
   50%      { transform: translateX(-50%) scale(1.08); opacity: 1; }
 }
 
-/* ── 18. Compass Spin ── */
+
 @keyframes compassSpin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 
-/* ── 19. Speed Gauge Needle ── */
+
 @keyframes speedNeedleSweep {
   from { transform: rotate(-120deg); }
   to   { transform: rotate(var(--needle-angle, 0deg)); }
 }
 
-/* ── 20. Particle Burst (for collisions, rewards) ── */
+
 @keyframes particleBurst {
   0%   { opacity: 1; transform: translate(0, 0) scale(1); }
   100% { opacity: 0; transform: translate(var(--px, 50px), var(--py, -50px)) scale(0); }
 }
 
-/* ── 21. Progress Bar Fill Animation ── */
+
 @keyframes progressFill {
   from { width: 0; }
   to   { width: var(--fill-width, 100%); }
 }
 
-/* ── 22. Leaderboard Row Stagger ── */
+
 @keyframes leaderboardRowIn {
   from { opacity: 0; transform: translateX(-20px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* ── 23. Button Press Feedback ── */
+
 .btn-press-feedback {
   transition: transform 0.1s ease;
 }
@@ -381,39 +378,34 @@
   transition: transform 0.05s ease;
 }
 
-/* ── 24. Shimmer Loading Skeleton ── */
+
 @keyframes shimmerSkeleton {
   0%   { background-position: -200px 0; }
   100% { background-position: calc(200px + 100%) 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, 
-    rgba(255,255,255,0.03) 0%, 
-    rgba(255,255,255,0.08) 50%, 
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.03) 0%,
+    rgba(255,255,255,0.08) 50%,
     rgba(255,255,255,0.03) 100%);
   background-size: 200px 100%;
   animation: shimmerSkeleton 1.5s ease-in-out infinite;
   border-radius: 8px;
 }
 
-/* ── 25. Welcome-Back Card ── */
+
 @keyframes welcomeCardIn {
   from { opacity: 0; transform: scale(0.85) translateY(20px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* ── 26. Rank Toast (post-level rank notification) ── */
+
 @keyframes rankToastIn {
   from { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(0.9); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   🎨 PREMIUM MICRO-INTERACTIONS & SMOOTHNESS ENHANCEMENTS
-   GPU-accelerated animations using transform/opacity only
-   ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── 27. Magnetic Hover Effect (Buttons & Cards) ── */
 .magnetic-hover {
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 0.3s ease;
@@ -427,7 +419,7 @@
   transition: transform 0.1s ease;
 }
 
-/* ── 28. Directional Hover-Aware Button ── */
+
 .dir-hover-btn {
   position: relative;
   overflow: hidden;
@@ -445,7 +437,7 @@
   opacity: 1;
 }
 
-/* ── 29. Spring-Based Transitions ── */
+
 .spring-transition {
   transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
               opacity 0.4s ease;
@@ -454,7 +446,7 @@
   transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* ── 30. Parallax Tilt Effect (3D Cards) ── */
+
 .tilt-card {
   perspective: 1000px;
   transform-style: preserve-3d;
@@ -467,7 +459,7 @@
   transform: rotateY(5deg) rotateX(5deg);
 }
 
-/* ── 31. Spotlight Border Effect ── */
+
 .spotlight-border {
   position: relative;
 }
@@ -477,9 +469,9 @@
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, 
-    rgba(242,184,75,0.3) 0%, 
-    rgba(94,212,245,0.3) 50%, 
+  background: linear-gradient(135deg,
+    rgba(242,184,75,0.3) 0%,
+    rgba(94,212,245,0.3) 50%,
     rgba(52,211,153,0.3) 100%);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -494,7 +486,7 @@
   opacity: 1;
 }
 
-/* ── 32. Glassmorphism Hover Glow ── */
+
 .glass-hover {
   background: rgba(255,255,255,0.03);
   backdrop-filter: blur(8px);
@@ -508,7 +500,7 @@
   box-shadow: 0 8px 32px rgba(0,0,0,0.1);
 }
 
-/* ── 33. Smooth Counter Animation ── */
+
 .counter-animate {
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -516,7 +508,7 @@
   transform: scale(1.1);
 }
 
-/* ── 34. Staggered Grid Reveal ── */
+
 .stagger-grid > * {
   opacity: 0;
   transform: translateY(20px);
@@ -529,7 +521,7 @@
     transform: translateY(0);
   }
 }
-/* Fallback for elements without --stagger-i set */
+
 .stagger-grid > *:nth-child(1) { --stagger-i: 1; }
 .stagger-grid > *:nth-child(2) { --stagger-i: 2; }
 .stagger-grid > *:nth-child(3) { --stagger-i: 3; }
@@ -539,7 +531,7 @@
 .stagger-grid > *:nth-child(7) { --stagger-i: 7; }
 .stagger-grid > *:nth-child(8) { --stagger-i: 8; }
 
-/* ── 35. Smooth Scroll Reveal ── */
+
 .reveal-on-scroll {
   opacity: 0;
   transform: translateY(30px);
@@ -550,7 +542,7 @@
   transform: translateY(0);
 }
 
-/* ── 36. Interactive Button States ── */
+
 .btn-interactive {
   position: relative;
   overflow: hidden;
@@ -570,7 +562,7 @@
   width: 200px; height: 200px;
 }
 
-/* ── 37. Floating Action Button Animation ── */
+
 @keyframes fabPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(242,184,75,0.4); }
   50% { box-shadow: 0 0 0 12px rgba(242,184,75,0); }
@@ -579,7 +571,7 @@
   animation: fabPulse 2s infinite;
 }
 
-/* ── 38. Smooth Modal Transitions ── */
+
 .modal-smooth {
   transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -592,8 +584,7 @@
   transform: scale(0.95);
 }
 
-/* ── 39. Card Lift Effect (Merged with magnetic-hover) ── */
-/* Use .card-lift for cards, .magnetic-hover for buttons */
+
 .card-lift {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
               box-shadow 0.3s ease;
@@ -604,7 +595,7 @@
   box-shadow: 0 12px 40px rgba(0,0,0,0.15);
 }
 
-/* ── 40. Progress Bar Glow ── */
+
 .progress-glow {
   position: relative;
 }
@@ -622,11 +613,11 @@
   opacity: 0.8;
 }
 
-/* ── 41. Text Shimmer Effect ── */
+
 .text-shimmer {
-  background: linear-gradient(90deg, 
-    var(--text-color, #e8e3d8) 0%, 
-    var(--accent, #f2b84b) 50%, 
+  background: linear-gradient(90deg,
+    var(--text-color, #e8e3d8) 0%,
+    var(--accent, #f2b84b) 50%,
     var(--text-color, #e8e3d8) 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -639,7 +630,7 @@
   to { background-position: -200% center; }
 }
 
-/* ── 42. Smooth Icon Rotation ── */
+
 .icon-rotate {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -647,7 +638,7 @@
   transform: rotate(15deg);
 }
 
-/* ── 43. Loading Skeleton Pulse ── */
+
 @keyframes skeletonPulse {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.8; }
@@ -657,7 +648,7 @@
   will-change: opacity;
 }
 
-/* ── 44. Smooth Tab Indicator ── */
+
 .tab-indicator {
   position: relative;
 }
@@ -674,7 +665,7 @@
   transform: scaleX(1);
 }
 
-/* ── 45. Notification Badge Bounce ── */
+
 @keyframes badgeBounce {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.2); }
@@ -683,7 +674,7 @@
   animation: badgeBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ── 46. Smooth Background Gradient (GPU-accelerated) ── */
+
 .gradient-animate {
   position: relative;
   overflow: hidden;
@@ -692,9 +683,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, 
-    rgba(242,184,75,0.1) 0%, 
-    rgba(94,212,245,0.1) 50%, 
+  background: linear-gradient(135deg,
+    rgba(242,184,75,0.1) 0%,
+    rgba(94,212,245,0.1) 50%,
     rgba(52,211,153,0.1) 100%);
   background-size: 200% 200%;
   animation: gradientShiftGPU 8s ease infinite;
@@ -707,8 +698,7 @@
   100% { transform: translate(0, 0); }
 }
 
-/* ── 47. Interactive Hover Scale ── */
-/* Deprecated: Use .magnetic-hover for buttons or .card-lift for cards */
+
 .hover-scale {
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   will-change: transform;
@@ -721,14 +711,14 @@
   transition-duration: 0.1s;
 }
 
-/* ── 48. Smooth Focus Ring ── */
+
 .focus-smooth:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   transition: outline-offset 0.2s ease;
 }
 
-/* ── 49. Loading Spinner Enhanced ── */
+
 @keyframes spinnerRotate {
   to { transform: rotate(360deg); }
 }
@@ -745,7 +735,7 @@
   stroke-linecap: round;
 }
 
-/* ── 50. Smooth Page Transitions ── */
+
 .page-transition {
   animation: pageSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -760,7 +750,7 @@
   }
 }
 
-/* ── Reduced Motion Support ── */
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -779,18 +769,18 @@
     opacity: 1 !important;
     transform: none !important;
   }
-  /* Ensure level cards and syllabus items are visible even without animation */
+
   .lcard, .syl-item, .bgrid {
     opacity: 1 !important;
     transform: none !important;
     animation: none !important;
   }
-  /* Disable backdrop-filter effects under reduced motion */
+
   .glass-hover {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
-  /* Ensure all reveal-on-scroll elements are visible */
+
   .reveal-on-scroll {
     opacity: 1 !important;
     transform: none !important;

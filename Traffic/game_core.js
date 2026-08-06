@@ -286,33 +286,20 @@ const PACEJKA_GLOBAL = PACEJKA;
 function _getThemeRoads(themeType) {
   const t = themeType || 'urban_grid';
   const templates = {
-    free_roam: {
-      name: 'Free Roam City', sky: 0x87b6d8, fog: 1200, ground: 0x4a7c59, amb: 0.6, veh: 'car',
-      npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car'],
-      timeLimit: 0,
-      noTimer: true,
-      noScore: true,
-      noObjective: true,
-      tasks: [],
-      useLowPolyCity: true,
-      roads: [
-        { type:'v', x:-360, z1:-480, z2:480 }, { type:'v', x:-240, z1:-480, z2:480 },
-        { type:'v', x:-120, z1:-480, z2:480 }, { type:'v', x:0,    z1:-480, z2:480 },
-        { type:'v', x:120,  z1:-480, z2:480 }, { type:'v', x:240,  z1:-480, z2:480 },
-        { type:'v', x:360,  z1:-480, z2:480 },
-        { type:'h', z:-480, x1:-360, x2:360 }, { type:'h', z:-360, x1:-360, x2:360 },
-        { type:'h', z:-240, x1:-360, x2:360 }, { type:'h', z:-120, x1:-360, x2:360 },
-        { type:'h', z:0,    x1:-360, x2:360 }, { type:'h', z:120,  x1:-360, x2:360 },
-        { type:'h', z:240,  x1:-360, x2:360 }, { type:'h', z:360,  x1:-360, x2:360 },
-        { type:'h', z:480,  x1:-360, x2:360 }
-      ],
-      route: [{ x:0,z:-480 },{ x:0,z:0 },{ x:360,z:0 },{ x:360,z:480 },{ x:0,z:480 },{ x:-360,z:480 },{ x:-360,z:0 },{ x:0,z:0 }],
-      npcs: [
-        { type:'taxi', color:0xffcc00, route:[[-360,-480],[-360,0],[-360,480],[0,480],[360,480]] },
-        { type:'auto', color:0xff8800, route:[[0,480],[0,0],[0,-480]] },
-        { type:'car', color:0x2288ff, route:[[360,-480],[360,0],[360,480]] }
-      ]
-    },
+     free_roam: {
+       name: 'Free Roam City', sky: 0x87b6d8, fog: 1200, ground: 0x4a7c59, amb: 0.6, veh: 'car',
+       npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car'],
+       timeLimit: 0,
+       noTimer: true,
+       noScore: true,
+       noObjective: true,
+       tasks: [],
+       useLowPolyCity: true,
+       // No roads — WorldStreamer handles procedural city generation
+       roads: [],
+       route: [],
+       npcs: []
+     },
     urban_grid: {
       name: 'Urban Grid', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
       npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car'],
@@ -924,6 +911,9 @@ class Game {
         this.clock = new THREE.Clock(); this.keys = {}; this.speed = 0; this.maxSpd = 1.1; this.accel = .045; this.fric = .95; this.turn = .065; this.gear = 'N'; this.gcap = 0;
         this.boostFuel = 100; this.maxBoostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._camTarget = new THREE.Vector3(); this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
+        this.missionManager = new MissionManager(this);
+        this.playerScore = 0;
+        this.rupees = 0;
         // ── Camera collision raycaster ──
         this._camRay = new THREE.Raycaster();
         this._camRayVec = new THREE.Vector3();
@@ -1123,7 +1113,7 @@ class Game {
           this.renderCore.renderer.domElement.addEventListener('click', () => {
             if (this.playing && !this.pause && Date.now() - this._lastPointerUnlock > 500) {
               try { 
-                const p = document.body.requestPointerLock();
+                const p = this.renderCore.renderer.domElement.requestPointerLock();
                 if (p && p.catch) p.catch(() => {});
               } catch(e) {}
             }
@@ -1143,12 +1133,11 @@ class Game {
             } else {
               this.targetCamYaw -= e.movementX * 0.003;
             }
-            this.targetCamPitch -= e.movementY * 0.003;
             this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
           } else if (this._isDraggingCamera) {
-            this.targetCamYaw -= e.movementX * 0.004;
-            this.targetCamPitch -= e.movementY * 0.004;
-            this.targetCamPitch = Math.max(-1.0, Math.min(1.0, this.targetCamPitch));
+            this.targetCamYaw -= e.movementX * 0.005;
+            this.targetCamPitch -= e.movementY * 0.005;
+            this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
           }
         });
         // Left-click drag for third-person camera orbit (desktop only)
@@ -1305,11 +1294,19 @@ class Game {
         this._startGyro = () => {
           if (this._gyroHandler) return;
           this._gyroHandler = (e) => {
-            if (e.gamma !== null) this._lastGyroGamma = e.gamma;
-            if (e.gamma !== null && this._calibrating) this._gyroSamples.push(e.gamma);
-            if (e.gamma !== null && this.gyroOn && this.playing && !this.isPedestrian && !this._calibrating) {
-              const raw = Math.max(-30, Math.min(30, e.gamma));
-              window.gyroSteering = (raw - this.gyroBaseGamma) / 30;
+            let steerValue = 0;
+            let ori = window.orientation || 0;
+            if (ori === 90) steerValue = e.beta;
+            else if (ori === -90 || ori === 270) steerValue = -e.beta;
+            else steerValue = e.gamma;
+            
+            if (steerValue !== null && steerValue !== undefined) this._lastGyroGamma = steerValue;
+            if (steerValue !== null && steerValue !== undefined && this._calibrating) this._gyroSamples.push(steerValue);
+            if (steerValue !== null && steerValue !== undefined && this.gyroOn && this.playing && !this.isPedestrian && !this._calibrating) {
+              // Increased sensitivity: full lock at 25 degrees tilt
+              const raw = Math.max(-25, Math.min(25, steerValue));
+              let normalizedSteer = (raw - (this.gyroBaseGamma || 0)) / 25;
+              window.gyroSteering = Math.max(-1, Math.min(1, normalizedSteer));
             } else if (!this._calibrating) {
               window.gyroSteering = 0;
             }
@@ -1548,10 +1545,10 @@ class Game {
           }
           camKnob.style.transform = `translate(${dx}px, ${dy}px)`;
           // Map joystick displacement to camYaw/camPitch changes
-          const sensitivity = 0.04;
+          const sensitivity = 0.12; // Increased sensitivity significantly
           this.targetCamYaw -= dx * sensitivity;
           this.targetCamPitch -= dy * sensitivity;
-          this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
+          this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
         };
 
         const resetCamJoy = () => {
@@ -1845,7 +1842,7 @@ class Game {
             while (diff > Math.PI) diff -= Math.PI * 2;
             while (diff < -Math.PI) diff += Math.PI * 2;
 
-            this.player.rotation.y += diff * 0.08;
+            this.player.rotation.y += diff * 0.15; // Increased steering response
           }
         });
       }
@@ -2277,14 +2274,6 @@ class Game {
         this._speedLinesIntensity = Math.min(1, intensity * 1.5);
       }
       startLevel() {
-        // Auto fullscreen on desktop
-        if (!this._isMobile && document.documentElement.requestFullscreen && !document.fullscreenElement) {
-          try {
-            document.documentElement.requestFullscreen().catch(() => {});
-            // Show ESC hint after entering fullscreen
-            setTimeout(() => toast('Press ESC to exit fullscreen', '#ffffff', 3000), 1500);
-          } catch(e) {}
-        }
         // ── 2D Scenario Intro (cinematic canvas animation before gameplay) ──
         if (window.Scenario2D && ui.cur && ui.cur.id) {
           window.Scenario2D.play(ui.cur.id, () => {
@@ -2402,7 +2391,7 @@ class Game {
         if (cStack) { cStack.innerHTML = ''; cStack.classList.remove('on'); }
         if (ui.cq) ui.cq = [];
         ui.cbusy = false;
-        this.setGear('N');
+        this.setGear('D');
         this._updateLoading(20, 'Loading vehicle models...');
         // Lazy-load level-specific models before building scene
         if (typeof window.loadLevelAssets === 'function') {
@@ -2528,6 +2517,17 @@ class Game {
 
         // Clear road graph reference
         this.roadGraph = null;
+
+        // Clean up world streamer
+        if (this.worldStreamer) {
+          this.worldStreamer.reset();
+          this.worldStreamer = null;
+        }
+
+        // Clean up mission manager
+        if (this.missionManager) {
+          this.missionManager.clear();
+        }
       }
       toggleSeatbelt(btn) {
           this.seatbeltOn = !this.seatbeltOn;
@@ -3610,8 +3610,13 @@ class Game {
 
         // Build Road Graph from level config (spatial topology for NPC routing, building placement)
         if (window.RoadGraph) {
-            this.roadGraph = RoadGraph.fromLevelConfig(cfg);
-            this.roadGraph.setAnchorNodes(this._anchorNodes);
+            try {
+                this.roadGraph = RoadGraph.fromLevelConfig(cfg);
+                this.roadGraph.setAnchorNodes(this._anchorNodes);
+            } catch (e) {
+                console.warn('[RoadGraph] Failed to build graph:', e);
+                this.roadGraph = null;
+            }
         }
 
         const RW = cfg.isPedestrian ? 10 : 12;
@@ -3626,7 +3631,7 @@ class Game {
           window._toonGrad.magFilter = THREE.NearestFilter;
           window._toonGrad.needsUpdate = true;
         }        const tg = window._toonGrad;
-        const gs = cfg.is50km ? 8000 : 2000;
+        const gs = cfg.is50km ? 8000 : (cfg.useLowPolyCity ? 12000 : 2000);
         const groundColor = cfg.ground !== undefined ? cfg.ground : 0x4a4a4f;
         const groundMat = cfg.isBridge
           ? new THREE.MeshToonMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7, gradientMap: tg })
@@ -3636,85 +3641,30 @@ class Game {
         this.scene.add(ground);
 
         // Load low-poly city models for free_roam level
-        if (cfg.useLowPolyCity && window.PRELOADED_MODELS) {
-          // Load main city model
-          if (window.PRELOADED_MODELS.lowpoly_city_main) {
-            const cityMain = window.PRELOADED_MODELS.lowpoly_city_main.clone();
-            cityMain.scale.set(1, 1, 1); // GLB already scaled appropriately
-            cityMain.position.set(0, 0, 0);
-            cityMain.traverse(c => {
-              if (c.isMesh) {
-                c.castShadow = true;
-                c.receiveShadow = true;
-                c.frustumCulled = true;
-              }
-            });
-            this.scene.add(cityMain);
-            this.obstacles.push(cityMain);
+        if (cfg.useLowPolyCity) {
+          if (!window.PRELOADED_MODELS || Object.keys(window.PRELOADED_MODELS).length === 0) {
+            console.warn('[FreeRoam] PRELOADED_MODELS is empty — streamer will have no assets');
           }
-          
-          // Load one-file assets
-          if (window.PRELOADED_MODELS.lowpoly_city_onefile) {
-            const cityOneFile = window.PRELOADED_MODELS.lowpoly_city_onefile.clone();
-            cityOneFile.scale.set(1, 1, 1);
-            cityOneFile.position.set(0, 0, 0);
-            cityOneFile.traverse(c => {
-              if (c.isMesh) {
-                c.castShadow = true;
-                c.receiveShadow = true;
-                c.frustumCulled = true;
-              }
-            });
-            this.scene.add(cityOneFile);
-            this.obstacles.push(cityOneFile);
-          }
-
-          // Add separate city assets as decorative elements
-          const _cityAssets = [
-            'lowpoly_eco_building_grid', 'lowpoly_eco_building_slope', 'lowpoly_eco_building_terrace',
-            'lowpoly_regular_building_twistedtower_large',
-            'lowpoly_car_06', 'lowpoly_car_13', 'lowpoly_car_16', 'lowpoly_car_19',
-            'lowpoly_futuristic_car_1', 'lowpoly_van',
-            'lowpoly_bush_06', 'lowpoly_bush_07', 'lowpoly_bush_10', 'lowpoly_palm_03',
-            'lowpoly_fountain_03',
-            'lowpoly_bus_stop_02',
-            'lowpoly_billboard_2x1_03', 'lowpoly_billboard_2x1_05',
-            'lowpoly_billboard_4x1_03', 'lowpoly_billboard_4x1_04',
-            'lowpoly_signboard_01',
-            'lowpoly_spotlight_01', 'lowpoly_spotlight_02',
-            'lowpoly_traffic_light_001', 'lowpoly_traffic_light_002', 'lowpoly_traffic_light_003',
-            'lowpoly_trash_02', 'lowpoly_trash_03', 'lowpoly_trash_04', 'lowpoly_trash_05', 'lowpoly_trash_06',
-            'lowpoly_trash_can_04', 'lowpoly_trash_can_05', 'lowpoly_trash_can_06', 'lowpoly_trash_can_07', 'lowpoly_trash_can_08',
-            'lowpoly_graffiti_03',
-            'lowpoly_set_b_tiles_01', 'lowpoly_set_b_tiles_04', 'lowpoly_set_b_tiles_05', 'lowpoly_set_b_tiles_06', 'lowpoly_set_b_tiles_09'
-          ];
-          
-          _cityAssets.forEach((assetKey, idx) => {
-            if (window.PRELOADED_MODELS[assetKey]) {
-              const asset = window.PRELOADED_MODELS[assetKey].clone();
-              asset.scale.set(1, 1, 1);
-              // Distribute assets around the city
-              const angle = (idx / _cityAssets.length) * Math.PI * 2;
-              const radius = 100 + (idx % 5) * 50;
-              asset.position.set(
-                Math.cos(angle) * radius,
-                0,
-                Math.sin(angle) * radius
-              );
-              asset.rotation.y = Math.random() * Math.PI * 2;
-              asset.traverse(c => {
-                if (c.isMesh) {
-                  c.castShadow = true;
-                  c.receiveShadow = true;
-                  c.frustumCulled = true;
-                }
-              });
-              this.scene.add(asset);
-              if (assetKey.includes('building') || assetKey.includes('trash') || assetKey.includes('traffic') || assetKey.includes('spotlight') || assetKey.includes('fountain')) {
-                this.obstacles.push(asset);
-              }
-            }
+          this.worldStreamer = new WorldStreamer(this, {
+            chunkSize: 40,
+            renderDistance: 8,
+            bufferDistance: 12
           });
+          // Initial load around spawn — defer to next frame when player exists
+          if (this.player && this.player.position) {
+            this.worldStreamer.update(this.player.position, 1.0);
+            this._needsInitialStream = false;
+          } else {
+            this._needsInitialStream = true;
+          }
+          console.log(`[FreeRoam] WorldStreamer created, waiting for player. PRELOADED_MODELS keys: ${Object.keys(window.PRELOADED_MODELS || {}).length}`);
+        }
+
+        // Initialize missions and collectibles for this level
+        if (this.missionManager) {
+          this.playerScore = 0;
+          this.rupees = (S.wallet || 50000);
+          this.missionManager.generateMissions(cfg);
         }
 
         if (this.roadGraph) {
@@ -3730,7 +3680,7 @@ class Game {
             const _roadMat = new THREE.MeshToonMaterial({ color: 0x3d3f45, gradientMap: window._toonGrad || null });
             const _paveMat = new THREE.MeshToonMaterial({ color: 0xb0b0a0, gradientMap: window._toonGrad || null });
 
-            cfg.roads.forEach(r => {
+            (cfg.roads || []).forEach(r => {
               const isV = r.type === 'v';
               const len = isV ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
               const cx = isV ? r.x : (r.x1 + r.x2) / 2;
@@ -4587,6 +4537,25 @@ class Game {
         });
       }
 
+      separateRoadAndBuilding(pos, graph) {
+        if (!graph || !graph.edges) return false;
+        const edges = typeof graph.edges.values === 'function' ? Array.from(graph.edges.values()) : graph.edges;
+        for (const edge of edges) {
+          const a = edge.nodes[0].position, b = edge.nodes[1].position;
+          const abx = b.x - a.x, abz = b.z - a.z;
+          const len2 = abx * abx + abz * abz;
+          let t = len2 ? ((pos.x - a.x) * abx + (pos.z - a.z) * abz) / len2 : 0;
+          t = Math.max(0, Math.min(1, t));
+          const dist = Math.hypot(a.x + abx * t - pos.x, a.z + abz * t - pos.z);
+          const width = edge.width || 12;
+          if (dist < width / 2 + 5) {
+            console.log("the building wont go on top of the road");
+            return true;
+          }
+        }
+        return false;
+      }
+
       // ─── Graph-based building generation ───
       // Places buildings using RoadGraph's buildingSlots (road-aware, zoned)
       // Uses InstancedMesh for GLB models, falls back to procedural boxes
@@ -4667,6 +4636,12 @@ class Game {
           
           const zone = slot.getZone();
           const pos = slot.getWorldPosition();
+          
+          if (this.separateRoadAndBuilding(pos, graph)) {
+            slot.occupied = true;
+            return;
+          }
+
           const rot = slot.getRotation();
           const distFromCenter = Math.hypot(pos.x, pos.z);
           const type = getBldgType(zone, distFromCenter);
@@ -5274,6 +5249,18 @@ class Game {
           this._enterState = 'IDLE';
         }
         this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
+        // World streaming update — handle deferred initial load
+        if (this._needsInitialStream && this.player && this.player.position) {
+          this.worldStreamer.update(this.player.position, 1.0);
+          this._needsInitialStream = false;
+        } else if (this.worldStreamer && this.player) {
+          this.worldStreamer.update(this.player.position, dt);
+        }
+
+        // Mission and collectible update
+        if (this.missionManager && this.player && this.missionManager.active) {
+          this.missionManager.update(this.player.position, dt, this.timer);
+        }
         // ── Suspension (after input, needs steering data) ──
         if (!this.isPedestrian) {
           this._updateSuspension(dt);
@@ -5626,7 +5613,10 @@ class Game {
         // Hard world boundary clamp — prevents floating-point precision loss
         // Regular maps: roads extend to ~±1500, ground is 2000x2000 → clamp at ±1550
         // 50km maps: roads extend to ~±25000 → clamp at ±25500
-        const _wBound = this.mapCfg && this.mapCfg.is50km ? 25500 : 1550;
+        // Free roam: streaming world, large boundary → clamp at ±5000 (10km x 10km)
+        let _wBound = 1550;
+        if (this.mapCfg && this.mapCfg.is50km) _wBound = 25500;
+        else if (this.mapCfg && this.mapCfg.useLowPolyCity) _wBound = 5000;
         this.player.position.x = Math.max(-_wBound, Math.min(_wBound, this.player.position.x));
         this.player.position.z = Math.max(-_wBound, Math.min(_wBound, this.player.position.z));
 
@@ -6076,7 +6066,7 @@ class Game {
       // them, and only re-scans a slice of the scene every few frames rather than the whole
       // thing every frame.
       _updateDynamicLOD(lodMult = 1) {
-        if (!this._isMobile || !this.player) return;
+        if (!this.player) return;
         this._lodFrame = (this._lodFrame || 0) + 1;
         if (this._lodFrame % 20 !== 0) return; // ~3x/sec at 60fps, not every frame
         const px = this.player.position.x, pz = this.player.position.z;
@@ -6084,8 +6074,10 @@ class Game {
         // Rebuild the candidate list occasionally too, in case new objects were added since
         // (e.g. NPCs, obstacles) — cheap relative to the distance pass itself.
         if (this._lodFrame % 300 === 0) this._lodChildren = this.scene.children.filter(c => c.isMesh || c.isInstancedMesh);
-        const visDist = 400 * lodMult;
-        const fogDist = 200 * lodMult;
+        // Scale visibility distance by platform — desktop gets more range
+        const baseDist = this._isMobile ? 400 : 600;
+        const visDist = baseDist * lodMult;
+        const fogDist = (this._isMobile ? 200 : 350) * lodMult;
         this._lodChildren.forEach(child => {
           if (!child.position || child.userData.noLod) return;
           const dx = child.position.x - px, dz = child.position.z - pz;
@@ -8615,6 +8607,28 @@ class Game {
             }
           }
         }
+
+        // ── Mission & Collectible HUD ──
+        if (this.missionManager && this.missionManager.active) {
+          const mm = this.missionManager;
+          const stats = mm.getStats();
+
+          // Update score display
+          const hsc = this.dom['hsc'];
+          if (hsc) hsc.textContent = this.playerScore || 0;
+
+          // Update checkpoint progress
+          const hcp = this.dom['hcp'];
+          if (hcp) {
+            const totalCp = mm.missions.filter(m => m.type === 'CHECKPOINT').reduce((sum, m) => sum + m.target, 0);
+            const doneCp = mm.missions.filter(m => m.type === 'CHECKPOINT').reduce((sum, m) => sum + m.progress, 0);
+            if (totalCp > 0) {
+              hcp.textContent = `${doneCp}/${totalCp}`;
+            } else {
+              hcp.textContent = `${stats.collectiblesCollected}/${stats.collectibles}`;
+            }
+          }
+        }
       }
       _ummap() {
         if (!this.player || !this.player.position) return;
@@ -8755,6 +8769,101 @@ class Game {
             ctx.fillStyle = '#5dade2';
             ctx.font = 'bold 9px Inter';
             ctx.fillText('GPS', 4, 106);
+        }
+      }
+
+      _buildLowPolyCity() {
+        // Legacy static city builder — kept for compatibility.
+        // The WorldStreamer now handles dynamic chunk loading in _buildScene().
+        // This method is called as a fallback if WorldStreamer is not available.
+        if (this.worldStreamer) return; // Streamer handles everything
+        if (!window.PRELOADED_MODELS) return;
+
+        const buildings = [
+          'lowpoly_eco_building_grid', 'lowpoly_eco_building_slope', 'lowpoly_eco_building_terrace',
+          'lowpoly_regular_building_twistedtower_large'
+        ];
+        const cars = [
+          'lowpoly_car_06', 'lowpoly_car_13', 'lowpoly_car_16', 'lowpoly_car_19',
+          'lowpoly_futuristic_car_1', 'lowpoly_van'
+        ];
+        const foliage = ['lowpoly_bush_06', 'lowpoly_bush_07', 'lowpoly_bush_10', 'lowpoly_palm_03'];
+        const props = [
+          'lowpoly_bus_stop_02', 'lowpoly_fountain_03', 'lowpoly_billboard_2x1_03', 'lowpoly_billboard_2x1_05',
+          'lowpoly_billboard_4x1_03', 'lowpoly_billboard_4x1_04', 'lowpoly_signboard_01',
+          'lowpoly_spotlight_01', 'lowpoly_spotlight_02', 'lowpoly_traffic_light_001',
+          'lowpoly_traffic_light_002', 'lowpoly_traffic_light_003',
+          'lowpoly_trash_02', 'lowpoly_trash_03', 'lowpoly_trash_04', 'lowpoly_trash_05', 'lowpoly_trash_06',
+          'lowpoly_trash_can_04', 'lowpoly_trash_can_05', 'lowpoly_trash_can_06', 'lowpoly_trash_can_07', 'lowpoly_trash_can_08',
+          'lowpoly_graffiti_03'
+        ];
+
+        const tiles = ['lowpoly_set_b_tiles_01', 'lowpoly_set_b_tiles_04', 'lowpoly_set_b_tiles_05', 'lowpoly_set_b_tiles_06', 'lowpoly_set_b_tiles_09'];
+
+        const setupAsset = (key, x, z, ry, isGround = false) => {
+          if (!window.PRELOADED_MODELS[key]) return;
+          const asset = window.PRELOADED_MODELS[key].clone();
+          asset.position.set(x, 0, z);
+          asset.rotation.y = ry;
+          const scale = isGround ? 1 : 1.2;
+          asset.scale.set(scale, scale, scale);
+
+          asset.traverse(c => {
+            if (c.isMesh) {
+              c.castShadow = !isGround;
+              c.receiveShadow = true;
+              c.frustumCulled = true;
+              if (c.material) {
+                c.material.metalness = 0.1;
+                c.material.roughness = 0.8;
+                c.material.needsUpdate = true;
+              }
+            }
+          });
+
+          this.scene.add(asset);
+
+          if (!isGround && (key.includes('building') || key.includes('fountain') || key.includes('trash') || key.includes('traffic') || key.includes('bus_stop'))) {
+            this.obstacles.push(asset);
+          }
+        };
+
+        const gridSize = 40;
+        const halfExtents = 8;
+
+        for (let ix = -halfExtents; ix <= halfExtents; ix++) {
+          for (let iz = -halfExtents; iz <= halfExtents; iz++) {
+            const cx = ix * gridSize;
+            const cz = iz * gridSize;
+
+            if (Math.random() > 0.7) {
+              const tile = tiles[Math.floor(Math.random() * tiles.length)];
+              setupAsset(tile, cx, cz, Math.floor(Math.random() * 4) * (Math.PI / 2), true);
+            }
+
+            if (Math.abs(ix) <= 1 && Math.abs(iz) <= 1) continue;
+
+            if (Math.random() > 0.6) {
+              const bldg = buildings[Math.floor(Math.random() * buildings.length)];
+              const ry = Math.floor(Math.random() * 4) * (Math.PI / 2);
+              setupAsset(bldg, cx, cz, ry);
+
+              if (Math.random() > 0.5) {
+                const prop = props[Math.floor(Math.random() * props.length)];
+                setupAsset(prop, cx + 15, cz + 15, Math.random() * Math.PI);
+              }
+              if (Math.random() > 0.5) {
+                const fol = foliage[Math.floor(Math.random() * foliage.length)];
+                setupAsset(fol, cx - 15, cz - 15, 0);
+              }
+            } else if (Math.random() > 0.7) {
+              const car = cars[Math.floor(Math.random() * cars.length)];
+              setupAsset(car, cx, cz, Math.floor(Math.random() * 4) * (Math.PI / 2));
+            } else if (Math.random() > 0.8) {
+              const prop = props[Math.floor(Math.random() * props.length)];
+              setupAsset(prop, cx, cz, Math.random() * Math.PI);
+            }
+          }
         }
       }
     }

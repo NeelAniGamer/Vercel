@@ -1,6 +1,6 @@
-// Mumbai Traffic Simulator — Course Structure
-// 10 modules × 5 levels = 50 levels + 2 bonus = 52 total
-// Each level has 4 modes: LEARN, PRACTICE, EXAM, CHAOS
+
+
+
 
 const MODES = {
   LEARN:   { id: 'learn',   label: 'LEARN',   icon: '📖', color: '--ion',    desc: 'Theory & rules' },
@@ -236,6 +236,12 @@ const MODULES = [
     id: 12, name: 'Bonus: VIP Convoy', theme: 'bonus_vip_convoy',
     levels: [
       { id: 52, name: 'Protocol Drive',      route: 'protocol_route',  timeLimit: 150, npcTypes: ['police','car','car','ambulance','car','truck','bus','car'] }
+    ]
+  },
+  {
+    id: 13, name: 'Bonus: Free Roam', theme: 'bonus_free_roam',
+    levels: [
+      { id: 53, name: 'City Sandbox',      route: 'free_roam',  timeLimit: 999, npcTypes: ['car','bus','auto','bike','truck'], assets: ['lowpoly_city'] }
     ]
   }
 ];
