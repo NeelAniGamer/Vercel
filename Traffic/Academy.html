@@ -4377,6 +4377,10 @@
         .hz-clouds { transform: scale(0.8); transform-origin: top left; }
       }
 
+      /* Fix for mobile controls appearing on screens other than the game */
+      #mobile-controls:not(.on) {
+        display: none !important;
+      }
     </style>
 
     <style>

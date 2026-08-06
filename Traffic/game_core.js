@@ -7946,8 +7946,9 @@ class Game {
             const dur = 0.8;
             const p = Math.min(t / dur, 1);
             const ease = p * p * (3 - 2 * p)
-            const seatPos = this._v1.set(0, 0.6, 0.2)
-            char.position.lerpVectors(this._enterWalkEnd, seatPos, ease)
+            const seatLocal = this._v1.set(0, 0.6, 0.2)
+            const seatWorld = veh.localToWorld(seatLocal)
+            char.position.lerpVectors(this._enterWalkEnd, seatWorld, ease)
             
             char.scale.setScalar(1 - ease * 0.45)
             // Body pose: lean forward then settle into seat

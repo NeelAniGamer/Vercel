@@ -127,6 +127,14 @@ window.ASSET_MANIFEST = {}
 
   const sepKit = lowPolyCityKit + 'Separate_assets_glb/Separate_assets_glb/'
 
+  // Street lights and props (from city-kit-roads)
+  M.streetlight_curved = glb(roadKit + 'light-curved.glb')
+  M.streetlight_square = glb(roadKit + 'light-square.glb')
+  M.construction_light = glb(roadKit + 'construction-light.glb')
+  M.sign_highway = glb(roadKit + 'sign-highway.glb')
+  M.sign_highway_detailed = glb(roadKit + 'sign-highway-detailed.glb')
+  M.bollard = glb(roadKit + 'bollard.glb')
+
   M.lowpoly_billboard_2x1_03 = glb(sepKit + 'Billboard_2x1_03.glb')
   M.lowpoly_billboard_2x1_05 = glb(sepKit + 'Billboard_2x1_05.glb')
   M.lowpoly_billboard_4x1_03 = glb(sepKit + 'Billboard_4x1_03.glb')
@@ -214,6 +222,7 @@ window.ASSET_GROUPS = {
   emergency: ['ambulance'],
   construction:['barrier','cone','sign_highway'],
   animals: ['animal_cow','animal_dog'],
+  street_props: ['streetlight_curved','streetlight_square','construction_light','sign_highway','sign_highway_detailed','bollard'],
   lowpoly_city: ['lowpoly_billboard_2x1_03','lowpoly_billboard_2x1_05','lowpoly_billboard_4x1_03','lowpoly_billboard_4x1_04','lowpoly_bush_06','lowpoly_bush_07','lowpoly_bush_10','lowpoly_bus_stop_02','lowpoly_car_06','lowpoly_car_13','lowpoly_car_16','lowpoly_car_19','lowpoly_eco_building_grid','lowpoly_eco_building_slope','lowpoly_eco_building_terrace','lowpoly_fountain_03','lowpoly_futuristic_car_1','lowpoly_graffiti_03','lowpoly_palm_03','lowpoly_regular_building_twistedtower_large','lowpoly_road_001','lowpoly_road_003','lowpoly_road_009','lowpoly_road_013','lowpoly_road_019','lowpoly_road_020','lowpoly_road_022','lowpoly_set_b_tiles_01','lowpoly_set_b_tiles_04','lowpoly_set_b_tiles_05','lowpoly_set_b_tiles_06','lowpoly_set_b_tiles_09','lowpoly_signboard_01','lowpoly_spotlight_01','lowpoly_spotlight_02','lowpoly_traffic_light_001','lowpoly_traffic_light_002','lowpoly_traffic_light_003','lowpoly_trash_02','lowpoly_trash_03','lowpoly_trash_04','lowpoly_trash_05','lowpoly_trash_06','lowpoly_trash_can_04','lowpoly_trash_can_05','lowpoly_trash_can_06','lowpoly_trash_can_07','lowpoly_trash_can_08','lowpoly_van']
 }
 
@@ -227,14 +236,19 @@ window.CORE_ASSETS = [
 
 
 window._expandAssets = function (assets) {
-  if (!assets || !assets.length) return []
-  const out = new Set()
+  if (!assets || !assets.length) return [];
+  const out = new Set();
   assets.forEach(a => {
-    if (window.ASSET_GROUPS[a]) window.ASSET_GROUPS[a].forEach(k => out.add(k))
-    else out.add(a)
-  })
-  return [...out]
-}
+    if (window.ASSET_GROUPS[a]) window.ASSET_GROUPS[a].forEach(k => out.add(k));
+    else out.add(a);
+  });
+  // Auto-include street props and building kit for urban levels
+  if (out.has('suburban') || out.has('industrial') || out.has('modular')) {
+    if (window.ASSET_GROUPS.street_props) window.ASSET_GROUPS.street_props.forEach(k => out.add(k));
+    if (window.ASSET_GROUPS.bkit) window.ASSET_GROUPS.bkit.forEach(k => out.add(k));
+  }
+  return [...out];
+};
 
 
 

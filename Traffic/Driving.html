@@ -5983,6 +5983,10 @@
           transform: translateY(-15px);
         }
       }
+      /* Fix for mobile controls appearing on screens other than the game */
+      #mobile-controls:not(.on) {
+        display: none !important;
+      }
     </style>
     <div style="
           position: absolute;
@@ -6611,9 +6615,12 @@
   <script src="safezone-ui.js?v=2"></script>
   <script src="world-streamer.js"></script>
   <script src="mission-manager.js"></script>
+  <script src="scenery-kit.js"></script>
+  <script src="collectible-system.js"></script>
+  <script src="checkpoint-system.js"></script>
   <script src="gameplay-recorder.js"></script>
   <script src="scenario2d.js"></script>
-  <script src="game_core.js?v=17"></script>
+  <script src="game_core.js?v=18"></script>
   <script src="npc-ai.js"></script>
   <script src="traffic-manager.js?v=8"></script>
   <script src="rule-breaker-profiles.js"></script>

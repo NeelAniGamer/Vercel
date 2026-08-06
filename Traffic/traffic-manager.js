@@ -126,7 +126,7 @@ class TrafficManager {
     this.platoons.forEach(platoon => {
       platoon.update(dt, this);
     });
-    this.platoons = this.platoons.filter(p => p.active && p.vehicles && p.vehicles.length > 1);
+    this.platoons = this.platoons.filter(p => p.active && p.followers && p.followers.length > 0);
   }
 
   _manageVehicleLifecycle(playerVehicle) {

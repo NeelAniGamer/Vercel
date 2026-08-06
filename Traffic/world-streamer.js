@@ -256,10 +256,12 @@ class CityChunk {
     const asset = window.PRELOADED_MODELS[key].clone();
     asset.position.set(x, 0, z);
     asset.rotation.y = ry;
-    asset.scale.set(scale, scale, scale);
+    // Apply scale (default 1.0) multiplied by game's global scale factor 4.5
+    const s = scale * 4.5;
+    asset.scale.set(s, s, s);
     asset.traverse(c => {
       if (c.isMesh) {
-        c.castShadow = scale > 0.5;
+        c.castShadow = s > 2.0;
         c.receiveShadow = true;
         c.frustumCulled = true;
         if (c.material) {
