@@ -158,6 +158,7 @@ class RenderCore {
         if (savedQuality && QUALITY_PRESETS[savedQuality]) {
             console.log(`RenderCore: Using saved quality preset from localStorage: ${savedQuality}`);
             this.setQuality(savedQuality);
+            this.setAutoQuality(false);
             return;
         }
         let score = 2; // Start at MED

@@ -1825,6 +1825,8 @@ class Game {
         });
 
         window.addEventListener('mousemove', (e) => {
+          this._mouseX = e.clientX;
+          this._mouseY = e.clientY;
           if (!mouseActive || !this.playing || this.pause) return;
 
           const cx = window.innerWidth / 2;
@@ -2881,6 +2883,61 @@ class Game {
       }
       _uh() { const p = Math.max(0, this.hp); const f = this.dom['hfill']; if (f) f.style.width = p + '%'; if (p <= 0) this._go("Structural Failure"); }
       
+      _showIRLDeathPopup(cause) {
+        this.pause = true; // Pause game immediately
+        
+        // Hide kid HUD elements so they don't overlap with the popup
+        const kidHearts = document.getElementById('kid-hearts');
+        if (kidHearts) kidHearts.style.display = 'none';
+        const kidLevel = document.getElementById('kid-level-name');
+        if (kidLevel) kidLevel.style.display = 'none';
+        const kidTask = document.getElementById('kid-task-bar');
+        if (kidTask) kidTask.style.display = 'none';
+        const kidSteer = document.getElementById('kid-steer');
+        if (kidSteer) kidSteer.style.display = 'none';
+
+        let popup = document.getElementById('irl-death-popup');
+        if (!popup) {
+          popup = document.createElement('div');
+          popup.id = 'irl-death-popup';
+          // Ensure z-index is extremely high to be above the HP hearts (999999)
+          popup.style.cssText = 'position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(20,20,25,0.95); padding:30px; border-radius:12px; border:1px solid rgba(255,59,48,0.5); z-index:999999; display:flex; flex-direction:column; align-items:center; box-shadow:0 10px 40px rgba(0,0,0,0.8); text-align:center; min-width:320px; max-width:90vw; pointer-events:auto; font-family:var(--sans, sans-serif); color:#e8e3d8;';
+          
+          const icon = document.createElement('div');
+          icon.style.cssText = 'font-size:3.5rem; margin-bottom:15px;';
+          icon.textContent = '💀';
+          
+          const title = document.createElement('h2');
+          title.style.cssText = 'color:#ff3b30; margin:0 0 15px 0; font-size:2rem; letter-spacing:1px;';
+          title.textContent = 'FATAL ACCIDENT';
+          
+          const msg = document.createElement('p');
+          msg.id = 'irl-death-msg';
+          msg.style.cssText = 'font-size:1.1rem; line-height:1.6; margin-bottom:25px; color:#8891aa;';
+          
+          const btn = document.createElement('button');
+          btn.textContent = 'CONTINUE TO REPORT';
+          btn.style.cssText = 'background:#ff3b30; color:white; border:none; padding:14px 28px; border-radius:6px; font-size:1.1rem; font-weight:bold; cursor:pointer; font-family:var(--sans, sans-serif); text-transform:uppercase; transition:background 0.2s;';
+          btn.addEventListener('mouseover', () => btn.style.background = '#d32f2f');
+          btn.addEventListener('mouseout', () => btn.style.background = '#ff3b30');
+          btn.addEventListener('click', () => {
+            popup.style.display = 'none';
+            this.pause = false;
+            this._go('Hit by ' + (popup.dataset.cause || 'Vehicle'));
+          });
+          
+          popup.appendChild(icon);
+          popup.appendChild(title);
+          popup.appendChild(msg);
+          popup.appendChild(btn);
+          document.body.appendChild(popup);
+        }
+        
+        popup.dataset.cause = cause;
+        document.getElementById('irl-death-msg').innerHTML = `You were struck by a ${cause}.<br><br><span style="color:#e8e3d8;">In the real world, being hit by a vehicle causes catastrophic physical trauma, permanent disability, or instant death.</span><br><br>Always look both ways, use designated crossings, and never play in traffic.`;
+        popup.style.display = 'flex';
+      }
+
       _initTasks(lv) {
         this.tasks = lv.tasks ? JSON.parse(JSON.stringify(lv.tasks)) : [];
         this._renderTasks();
@@ -5339,6 +5396,12 @@ class Game {
             }
             overrideMove = true;
           } else {
+            // Mouse steering for pedestrian without clicking
+            if (!this.isPointerLocked && this._mouseX !== undefined) {
+              const dx = this._mouseX - window.innerWidth / 2;
+              if (dx < -60) this.player.rotation.y += 0.035;
+              if (dx > 60) this.player.rotation.y -= 0.035;
+            }
             if (lt) this.player.rotation.y += 0.05;
             if (rt) this.player.rotation.y -= 0.05;
             if (up) this.speed = this.maxSpd * shift;
@@ -6899,7 +6962,7 @@ class Game {
             if (this.isPedestrian) {
               // Pedestrian hit by vehicle - instant failure
               this.hp = 0;
-              this._go('Hit by ' + (n.userData.npcType || 'Vehicle'));
+              this._showIRLDeathPopup(n.userData.npcType || 'Vehicle');
               toast('🚨 HIT BY VEHICLE!', '#ff3b30');
             } else {
               // Vehicle collision — enhanced crash impact system
@@ -8408,7 +8471,7 @@ class Game {
         
         if (!this.warnEl) {
             this.warnEl = document.createElement('div');
-            this.warnEl.style.cssText = 'position:fixed; top:20%; left:50%; transform:translateX(-50%); font-family:"Bebas Neue",sans-serif; font-size:3rem; color:#ff3b30; text-shadow:0 4px 12px rgba(0,0,0,0.5); z-index:9999; display:none; pointer-events:none; text-align:center; transition:opacity 0.2s;';
+            this.warnEl.style.cssText = 'position:fixed; bottom:25%; left:50%; transform:translateX(-50%); font-family: "Bebas Neue", var(--sans, sans-serif); font-size:2.2rem; letter-spacing:2px; color:#ffffff; background:rgba(20,20,25,0.9); box-shadow:0 8px 32px rgba(0,0,0,0.5); padding:16px 32px; border-radius:16px; border:2px solid rgba(255,255,255,0.2); z-index:9999; display:none; pointer-events:none; text-align:center; transition:opacity 0.2s; text-transform:uppercase;';
             document.body.appendChild(this.warnEl);
         }
         let warnMsg = '';

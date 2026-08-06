@@ -6960,6 +6960,7 @@
       document.querySelectorAll('.qbtn').forEach(b => b.classList.toggle('active', b.dataset.q === preset));
       if (window.game && window.game.renderCore) {
         window.game.renderCore.setQuality(preset);
+        window.game.renderCore.setAutoQuality(false);
       }
       localStorage.setItem('traffic_quality', preset);
     }

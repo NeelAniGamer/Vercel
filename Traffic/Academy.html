@@ -6675,6 +6675,7 @@
     localStorage.setItem('traffic_quality', preset);
     if (window.game && window.game.renderCore) {
       window.game.renderCore.setQuality(preset);
+      window.game.renderCore.setAutoQuality(false);
     }
     updateQualityBtnsUI(preset);
   }

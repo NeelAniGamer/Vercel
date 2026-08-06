@@ -127,153 +127,19 @@ window.IndianVehicles = {
     return tex
   },
 
-<<<<<<< Updated upstream
   buildWheel: function () {
     const w = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.2, 16), new THREE.MeshToonMaterial({ color: 0x111111, map: this.textures.wheel }))
     w.rotation.z = Math.PI / 2
     return w
-=======
-  buildWheel: function (scale = 1.0) {
-    const g = new THREE.Group()
-    const tire = new THREE.Mesh(
-      new THREE.TorusGeometry(0.3 * scale, 0.12 * scale, 8, 16),
-      new THREE.MeshLambertMaterial({ color: 0x111111 })
-    )
-    tire.rotation.y = Math.PI / 2
-    g.add(tire)
-
-    const rim = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.2 * scale, 0.2 * scale, 0.15 * scale, 12),
-      new THREE.MeshPhongMaterial({ color: 0x888888, shininess: 100 })
-    )
-    rim.rotation.z = Math.PI / 2
-    g.add(rim)
-
-    const hub = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.08 * scale, 0.08 * scale, 0.18 * scale, 8),
-      new THREE.MeshPhongMaterial({ color: 0x666666 })
-    )
-    hub.rotation.z = Math.PI / 2
-    g.add(hub)
-
-    return g
-  },
-
-  buildHeadlight: function (x, y, z, side = 1) {
-    const g = new THREE.Group()
-    const housing = new THREE.Mesh(
-      new THREE.BoxGeometry(0.25, 0.2, 0.15),
-      new THREE.MeshPhongMaterial({ color: 0x222222 })
-    )
-    g.add(housing)
-
-    const lens = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.22, 0.18),
-      new THREE.MeshBasicMaterial({ map: this.textures.headlight })
-    )
-    lens.position.z = 0.08
-    g.add(lens)
-
-    g.position.set(x, y, z)
-    return g
-  },
-
-  buildTaillight: function (x, y, z) {
-    const g = new THREE.Group()
-    const housing = new THREE.Mesh(
-      new THREE.BoxGeometry(0.2, 0.15, 0.1),
-      new THREE.MeshPhongMaterial({ color: 0x111111 })
-    )
-    g.add(housing)
-
-    const lens = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.18, 0.13),
-      new THREE.MeshBasicMaterial({ map: this.textures.taillight })
-    )
-    lens.position.z = -0.06
-    lens.rotation.y = Math.PI
-    g.add(lens)
-
-    g.position.set(x, y, z)
-    return g
-  },
-
-  buildIndicator: function (x, y, z, facing = 'front') {
-    const lens = new THREE.Mesh(
-      new THREE.SphereGeometry(0.06, 8, 8),
-      new THREE.MeshBasicMaterial({ map: this.textures.indicator })
-    )
-    lens.position.set(x, y, z)
-    return lens
-  },
-
-  addFourWheels: function (g, w, l, wheelScale = 1.0) {
-    const hw = w / 2
-    const hl = l / 2
-    const y = 0.35 * wheelScale
-    const positions = [
-      [-hw - 0.05, y, -hl + 0.6],
-      [hw + 0.05, y, -hl + 0.6],
-      [-hw - 0.05, y, hl - 0.6],
-      [hw + 0.05, y, hl - 0.6]
-    ]
-    positions.forEach((p) => {
-      const wheel = this.buildWheel(wheelScale)
-      wheel.position.set(p[0], p[1], p[2])
-      g.add(wheel)
-    })
-  },
-
-  addBumper: function (g, w, l, y, z, color = 0x222222) {
-    const bumper = new THREE.Mesh(
-      new THREE.BoxGeometry(w + 0.1, 0.15, 0.2),
-      new THREE.MeshPhongMaterial({ color: color })
-    )
-    bumper.position.set(0, y, z)
-    g.add(bumper)
-  },
-
-  addMirror: function (g, x, y, z) {
-    const arm = new THREE.Mesh(
-      new THREE.BoxGeometry(0.15, 0.05, 0.2),
-      new THREE.MeshPhongMaterial({ color: 0x222222 })
-    )
-    arm.position.set(x, y, z)
-    g.add(arm)
-
-    const mirror = new THREE.Mesh(
-      new THREE.BoxGeometry(0.08, 0.12, 0.05),
-      new THREE.MeshPhongMaterial({ color: 0x333333 })
-    )
-    mirror.position.set(x + (x > 0 ? 0.1 : -0.1), y, z)
-    g.add(mirror)
-  },
-
-  addRoofRails: function (g, w, l, y) {
-    const railMat = new THREE.MeshPhongMaterial({ color: 0x555555 })
-    const rail1 = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.08, l * 0.7), railMat)
-    rail1.position.set(-w / 2 + 0.1, y, 0)
-    g.add(rail1)
-    const rail2 = rail1.clone()
-    rail2.position.x = w / 2 - 0.1
-    g.add(rail2)
->>>>>>> Stashed changes
   },
 
   buildVehicle: function (type, colorHex) {
     if (!this.textures.grille) this.init()
 
     const g = new THREE.Group()
-<<<<<<< Updated upstream
     const bMat = new THREE.MeshToonMaterial({ color: colorHex })
     const gMat = new THREE.MeshToonMaterial({ color: 0xffffff, map: this.textures.glass, transparent: true, opacity: 0.7 })
     const grMat = new THREE.MeshToonMaterial({ color: 0xffffff, map: this.textures.grille })
-=======
-    const bMat = new THREE.MeshPhongMaterial({ color: colorHex, shininess: 80 })
-    const gMat = new THREE.MeshPhongMaterial({ color: 0xffffff, map: this.textures.glass, shininess: 100, transparent: true, opacity: 0.7 })
-    const grMat = new THREE.MeshLambertMaterial({ color: 0xffffff, map: this.textures.grille })
-    const chromeMat = new THREE.MeshPhongMaterial({ color: 0xcccccc, shininess: 120 })
->>>>>>> Stashed changes
 
     let body, roof
 
@@ -358,7 +224,6 @@ window.IndianVehicles = {
     }
     // --- THREE WHEELERS ---
     else if (type === 'auto') {
-<<<<<<< Updated upstream
       // Auto Rickshaw (Yellow/Black or Green/Yellow)
       const aMat = new THREE.MeshToonMaterial({ color: 0x2e8b57 }) // Green body
       const rMat = new THREE.MeshToonMaterial({ color: 0xffd700 }) // Yellow roof
@@ -366,12 +231,6 @@ window.IndianVehicles = {
       body.position.y = 0.6
       roof = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.0, 2.0), rMat)
       roof.position.set(0, 1.5, 0.2)
-=======
-      // Auto Rickshaw (Indian style)
-      const aMat = new THREE.MeshPhongMaterial({ color: 0x2e8b57 }) // Green body
-      const rMat = new THREE.MeshPhongMaterial({ color: 0xffd700 }) // Yellow roof
-      const blackMat = new THREE.MeshPhongMaterial({ color: 0x111111 })
->>>>>>> Stashed changes
 
       // Main body
       body = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.7, 2.2), aMat)
@@ -613,7 +472,6 @@ window.IndianVehicles = {
 
       this.addFourWheels(g, 1.7, 4.4, 1.05)
     } else if (type === 'cab' || type === 'taxi') {
-<<<<<<< Updated upstream
       // Dzire cab
       const wMat = new THREE.MeshToonMaterial({ color: 0xffffff })
       body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 3.8), wMat)
@@ -624,18 +482,6 @@ window.IndianVehicles = {
       // Taxi sign
       const sign = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.4), new THREE.MeshToonMaterial({ color: 0xffd700 }))
       sign.position.set(0, 1.75, 0)
-=======
-      // Uber/Ola style cab (white sedan)
-      const wMat = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 90 })
-      body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.65, 4.0), wMat)
-      body.position.y = 0.55
-      g.add(body)
-
-      // Cabin
-      roof = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.7, 2.0), gMat)
-      roof.position.set(0, 1.25, 0)
-      g.add(roof)
->>>>>>> Stashed changes
 
       // Hood
       const hood = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 1.0), wMat)
@@ -674,7 +520,6 @@ window.IndianVehicles = {
     }
     // --- COMMERCIAL VEHICLES ---
     else if (type === 'ace' || type === 'scv') {
-<<<<<<< Updated upstream
       // Tata Ace
       body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.7, 3.5), bMat)
       body.position.y = 0.65
@@ -702,100 +547,11 @@ window.IndianVehicles = {
       const windows = new THREE.Mesh(new THREE.BoxGeometry(2.65, 1.2, 9.8), gMat)
       windows.position.y = 2.4
       g.add(body, windows)
-=======
-      // Tata Ace style mini truck
-      body = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.6, 3.2), bMat)
-      body.position.y = 0.6
-      g.add(body)
-
-      // Cab
-      const cab = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, 1.2), bMat)
-      cab.position.set(0, 1.4, -1.2)
-      g.add(cab)
-
-      // Cargo bed
-      const bed = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.9, 2.0), new THREE.MeshLambertMaterial({ color: 0x888888 }))
-      bed.position.set(0, 1.1, 0.6)
-      g.add(bed)
-
-      // Bed rails
-      const railMat = new THREE.MeshPhongMaterial({ color: 0x666666 })
-      ;[-0.75, 0.75].forEach(x => {
-        const rail = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.4, 2.0), railMat)
-        rail.position.set(x, 1.55, 0.6)
-        g.add(rail)
-      })
-
-      // Headlights
-      ;[-0.5, 0.5].forEach(x => {
-        const hl = this.buildHeadlight(x, 0.6, -1.8)
-        g.add(hl)
-      })
-
-      // Taillights
-      ;[-0.5, 0.5].forEach(x => {
-        const tl = this.buildTaillight(x, 0.6, 1.6)
-        g.add(tl)
-      })
-
-      this.addFourWheels(g, 1.4, 3.2, 0.9)
-    } else if (type === 'truck' || type === 'eicher') {
-      // Eicher/Ashok Leyland style truck
-      const cabMat = new THREE.MeshPhongMaterial({ color: colorHex, shininess: 60 })
-      const cargoColor = [0xaa4422, 0x886644, 0x556677, 0x884422][Math.floor(Math.random() * 4)]
-
-      // Chassis
-      const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.3, 6.5), new THREE.MeshPhongMaterial({ color: 0x222222 }))
-      chassis.position.y = 0.5
-      g.add(chassis)
-
-      // Cab
-      const cab = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.0, 2.0), cabMat)
-      cab.position.set(0, 1.8, -2.5)
-      g.add(cab)
-
-      // Windshield
-      const windshield = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.0, 0.08), gMat)
-      windshield.position.set(0, 2.2, -3.5)
-      windshield.rotation.x = -0.15
-      g.add(windshield)
-
-      // Cargo container
-      const cargo = new THREE.Mesh(new THREE.BoxGeometry(2.3, 2.4, 4.5), new THREE.MeshLambertMaterial({ color: cargoColor }))
-      cargo.position.set(0, 2.3, 1.0)
-      g.add(cargo)
-
-      // Headlights
-      ;[-0.7, 0.7].forEach(x => {
-        const hl = this.buildHeadlight(x, 1.2, -3.5)
-        g.add(hl)
-      })
-
-      // Taillights
-      ;[-0.7, 0.7].forEach(x => {
-        const tl = this.buildTaillight(x, 1.0, 3.25)
-        g.add(tl)
-      })
-
-      // Side mirrors
-      this.addMirror(g, -1.2, 2.0, -2.0)
-      this.addMirror(g, 1.2, 2.0, -2.0)
-
-      this.addFourWheels(g, 2.2, 6.5, 0.6)
-    }
-    // --- PUBLIC TRANSPORT ---
-    else if (type === 'bus' || type === 'msrtc') {
-      // MSRTC style bus
-      const msrtcMat = new THREE.MeshPhongMaterial({ color: 0xcc2222 }) // Red MSRTC bus
-      body = new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.8, 9.5), msrtcMat)
-      body.position.y = 1.8
-      g.add(body)
->>>>>>> Stashed changes
 
       // Windows
-      const windows = new THREE.Mesh(new THREE.BoxGeometry(2.45, 1.0, 9.3), gMat)
-      windows.position.y = 2.2
-      g.add(windows)
+      const windowsSide = new THREE.Mesh(new THREE.BoxGeometry(2.45, 1.0, 9.3), gMat)
+      windowsSide.position.y = 2.2
+      g.add(windowsSide)
 
       // Roof
       const roofBus = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.2, 9.4), new THREE.MeshPhongMaterial({ color: 0xdddddd }))
