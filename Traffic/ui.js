@@ -46,10 +46,66 @@ window.sfx = Object.assign(window.sfx || {}, {
       o.frequency.setValueAtTime(pp.f, this._c.currentTime)
       g.gain.setValueAtTime(pp.v * catVol, this._c.currentTime)
       g.gain.exponentialRampToValueAtTime(0.001, this._c.currentTime + pp.d)
-      o.start()
-      o.stop(this._c.currentTime + pp.d)
-    } catch (e) {}
-  }
+       o.start()
+       o.stop(this._c.currentTime + pp.d)
+     } catch (e) {}
+   },
+   // Ambient sound generators (procedural)
+   _ambNodes: null,
+   startAmbient(type) {
+     this.stopAmbient()
+     if (!this._c || this.vol.env <= 0) return
+     try {
+       const ctx = this._c
+       this._ambNodes = {}
+       const masterGain = ctx.createGain()
+       masterGain.gain.value = 0.06 * this.vol.env
+       masterGain.connect(ctx.destination)
+       this._ambNodes.master = masterGain
+       if (type === 'rain' || type === 'urban' || type === 'highway' || type === 'siren' || type === 'school') {
+         const bufferSize = ctx.sampleRate * 2
+         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+         const data = buffer.getChannelData(0)
+         for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3
+         const noise = ctx.createBufferSource()
+         noise.buffer = buffer; noise.loop = true
+         const filter = ctx.createBiquadFilter()
+         filter.type = 'lowpass'; filter.frequency.value = type === 'rain' ? 3000 : 1500
+         noise.connect(filter); filter.connect(masterGain)
+         noise.start()
+         this._ambNodes.noise = noise; this._ambNodes.filter = filter
+       }
+       if (type === 'night') {
+         const osc = ctx.createOscillator()
+         osc.type = 'sine'; osc.frequency.value = 4200
+         const gain = ctx.createGain(); gain.gain.value = 0.015
+         const lfo = ctx.createOscillator(); lfo.frequency.value = 8
+         const lfoGain = ctx.createGain(); lfoGain.gain.value = 0.01
+         lfo.connect(lfoGain); lfoGain.connect(gain.gain)
+         osc.connect(gain); gain.connect(masterGain)
+         osc.start(); lfo.start()
+         this._ambNodes.osc = osc; this._ambNodes.lfo = lfo
+       }
+       if (type === 'festival') {
+         const osc = ctx.createOscillator()
+         osc.type = 'sine'; osc.frequency.value = 80
+         const gain = ctx.createGain(); gain.gain.value = 0.025
+         const lfo = ctx.createOscillator(); lfo.frequency.value = 2
+         const lfoGain = ctx.createGain(); lfoGain.gain.value = 0.02
+         lfo.connect(lfoGain); lfoGain.connect(gain.gain)
+         osc.connect(gain); gain.connect(masterGain)
+         osc.start(); lfo.start()
+         this._ambNodes.osc = osc; this._ambNodes.lfo = lfo
+       }
+     } catch (e) {}
+   },
+   stopAmbient() {
+     if (!this._ambNodes) return
+     try {
+       Object.values(this._ambNodes).forEach(n => { if (n.stop) n.stop(); if (n.disconnect) n.disconnect() })
+     } catch (e) {}
+     this._ambNodes = null
+   }
 });
 
 
@@ -86,7 +142,7 @@ window.ui = Object.assign(window.ui || {}, {
   },
   async hardReset() {
     if (confirm('Reset all progress?')) {
-      S = { comp: {}, badges: [], total: 0, name: null, wallet: 50000 }
+      S = { comp: {}, badges: [], total: 0, name: null, wallet: 50000, civicScore: 0 }
       try {
         localStorage.removeItem('mth4')
       } catch (e) {}
@@ -119,9 +175,10 @@ window.ui = Object.assign(window.ui || {}, {
         const raw = localStorage.getItem('mth4')
         if (raw) s = JSON.parse(raw)
       } catch (e) {}
-      if (!s || typeof s !== 'object') s = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null }
+      if (!s || typeof s !== 'object') s = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null, civicScore: 0 }
       if (!s.comp) s.comp = {}
       if (!s.badges) s.badges = []
+      if (!s.civicScore) s.civicScore = 0
       if (!s.studentId) {
         s.studentId = window.colUser?.uid || 'STU-' + Math.floor(100000 + Math.random() * 900000)
       }
@@ -2534,69 +2591,93 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     }
     this.cbusy = true
     const c = this.cq.shift()
-    const vf = document.getElementById('vflash')
-    if (vf) {
-      vf.classList.remove('flash')
-      void vf.offsetWidth
-      vf.classList.add('flash')
+    try {
+      const vf = document.getElementById('vflash')
+      if (vf) {
+        vf.classList.remove('flash')
+        void vf.offsetWidth
+        vf.classList.add('flash')
+      }
+      const cnumEl = document.getElementById('cnum')
+      if (cnumEl) cnumEl.textContent = 'MTP/2026/' + (Math.floor(Math.random() * 90000) + 10000)
+      const coffEl = document.getElementById('coff')
+      if (coffEl) coffEl.textContent = c.off
+      const clawEl = document.getElementById('claw')
+      if (clawEl) clawEl.textContent = c.sec
+      const camtEl = document.getElementById('camt')
+      if (camtEl) camtEl.textContent = c.amt
+      const locEl = document.getElementById('cloc')
+      if (locEl) locEl.textContent = c.loc || '📍 Mumbai'
+      const covEl = document.getElementById('cov')
+      if (covEl) covEl.classList.add('on')
+      this._ccb = c.cb || null
+      if (game.playing) game.pause = true
+      sfx.play('challan')
+    } catch (e) {
+      console.warn('Challan display error:', e)
+      this.cbusy = false
+      if (this.cq.length > 0) {
+        setTimeout(() => this._nc(), 100)
+      }
     }
-    document.getElementById('cnum').textContent = 'MTP/2026/' + (Math.floor(Math.random() * 90000) + 10000)
-    document.getElementById('coff').textContent = c.off
-    document.getElementById('claw').textContent = c.sec
-    document.getElementById('camt').textContent = c.amt
-    const locEl = document.getElementById('cloc')
-    if (locEl) locEl.textContent = c.loc || '📍 Mumbai'
-    document.getElementById('cov').classList.add('on')
-    this._ccb = c.cb || null
-    if (game.playing) game.pause = true
-    sfx.play('challan')
   },
   dismissChallan() {
     const cov = document.getElementById('cov')
     const cvc = document.getElementById('cvc-main')
 
+    if (cvc) {
+      try {
+        const rect = cvc.getBoundingClientRect()
+        const clone = cvc.cloneNode(true)
+        clone.id = ''
+        clone.style.position = 'fixed'
+        clone.style.top = rect.top + 'px'
+        clone.style.left = rect.left + 'px'
+        clone.style.width = rect.width + 'px'
+        clone.style.height = rect.height + 'px'
+        clone.style.margin = '0'
+        clone.style.zIndex = getComputedStyle(document.documentElement).getPropertyValue('--z-modal').trim() || '100001'
+        clone.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+        document.body.appendChild(clone)
 
-    const rect = cvc.getBoundingClientRect()
-    const clone = cvc.cloneNode(true)
-    clone.id = ''
-    clone.style.position = 'fixed'
-    clone.style.top = rect.top + 'px'
-    clone.style.left = rect.left + 'px'
-    clone.style.width = rect.width + 'px'
-    clone.style.height = rect.height + 'px'
-    clone.style.margin = '0'
-    clone.style.zIndex = getComputedStyle(document.documentElement).getPropertyValue('--z-modal').trim() || '100001'
-    clone.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-    document.body.appendChild(clone)
+        setTimeout(() => {
+          clone.style.transform = 'scale(0.2)'
+          clone.style.top = window.innerHeight - 150 + 'px'
+          clone.style.left = window.innerWidth - 150 + 'px'
+          clone.style.opacity = '0'
+        }, 20)
 
+        setTimeout(() => {
+          clone.remove()
+        }, 500)
+      } catch (e) {
+        console.warn('Challan animation error:', e)
+      }
+    }
 
-    cov.classList.remove('on')
-
+    if (cov) cov.classList.remove('on')
 
     setTimeout(() => {
-      clone.style.transform = 'scale(0.2)'
-      clone.style.top = window.innerHeight - 150 + 'px'
-      clone.style.left = window.innerWidth - 150 + 'px'
-      clone.style.opacity = '0'
-    }, 20)
-
-
-    setTimeout(() => {
-      const stack = document.getElementById('challan-stack')
-      stack.classList.add('on')
-      const offText = document.getElementById('coff').textContent
-      const amtText = document.getElementById('camt').textContent
-      ui._addChallanCard(offText, amtText)
+      try {
+        const stack = document.getElementById('challan-stack')
+        if (stack) stack.classList.add('on')
+        const coffEl = document.getElementById('coff')
+        const camtEl = document.getElementById('camt')
+        const offText = coffEl ? coffEl.textContent : ''
+        const amtText = camtEl ? camtEl.textContent : ''
+        if (ui._addChallanCard) ui._addChallanCard(offText, amtText)
+      } catch (e) {
+        console.warn('Challan card error:', e)
+      }
     }, 300)
 
-
     setTimeout(() => {
-      clone.remove()
       if (this._ccb) {
         this._ccb()
         this._ccb = null
       }
       if (game.playing) game.pause = false
+      this.cbusy = false
       setTimeout(() => this._nc(), 80)
     }, 500)
   },

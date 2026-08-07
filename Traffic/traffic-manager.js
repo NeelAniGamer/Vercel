@@ -459,15 +459,27 @@ class TrafficManager {
 
 
 
-    const offsets = edge.getLaneOffsets();
-    const laneCount = Math.max(1, edge.lanes || 1);
-    const lane = Math.floor(Math.random() * laneCount);
-    const dirBase = startNode === edge.startNode ? laneCount : 0;
-    const offset = offsets[dirBase + lane] !== undefined ? offsets[dirBase + lane] : 0;
-
     const pos = edge.getPointAt(this._spawnTOnEdge(edge));
     const forward = edge.getForwardVector(startNode);
     const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+
+    let offset;
+    const isPedMode = this.levelConfig && this.levelConfig.isPedestrian;
+
+    if (isPedMode) {
+      // In pedestrian mode, spawn NPCs on the sidewalk/footpath, not on road
+      const roadHalfWidth = edge.width / 2;
+      const sidewalkWidth = this.levelConfig.sidewalkWidth || 3;
+      const side = Math.random() > 0.5 ? 1 : -1;
+      offset = side * (roadHalfWidth + sidewalkWidth + 1.5);
+    } else {
+      // In driving mode, spawn NPCs in traffic lanes
+      const offsets = edge.getLaneOffsets();
+      const laneCount = Math.max(1, edge.lanes || 1);
+      const lane = Math.floor(Math.random() * laneCount);
+      const dirBase = startNode === edge.startNode ? laneCount : 0;
+      offset = offsets[dirBase + lane] !== undefined ? offsets[dirBase + lane] : 0;
+    }
 
     pos.addScaledVector(right, offset);
     pos.y = 0.5;
@@ -477,7 +489,7 @@ class TrafficManager {
       rotation: Math.atan2(forward.x, forward.z),
       node: startNode,
       edge: edge,
-      lane: lane
+      lane: 0
     };
   }
 

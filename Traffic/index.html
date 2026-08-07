@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; connect-src 'self' https: wss: data: blob:; font-src 'self' https: data:;" />
+  <title>Mumbai Traffic Hero Academy</title>
+  <link rel="icon" type="image/png" href="../Icon.png" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #070a14;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: #e8e3d8;
+    }
+    #game-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #070a14;
+      z-index: 999999;
+      transition: opacity 0.5s ease;
+    }
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #loading h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #f2b84b, #5ed4f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    #loading-bar {
+      width: 300px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    #loading-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f2b84b, #5ed4f5);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    #loading-text {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: #8891aa;
+    }
+    #error-display {
+      position: fixed;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #070a14;
+      z-index: 999999;
+      padding: 2rem;
+      text-align: center;
+    }
+    #error-display.visible {
+      display: flex;
+    }
+    #error-display h2 {
+      color: #ef4444;
+      margin-bottom: 1rem;
+    }
+    #error-display pre {
+      background: rgba(255,0,0,0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      max-width: 600px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      text-align: left;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <div id="loading">
+    <h1>Mumbai Traffic Hero</h1>
+    <div id="loading-bar"><div id="loading-fill"></div></div>
+    <div id="loading-text">Initializing...</div>
+  </div>
+
+  <div id="error-display">
+    <h2>Something went wrong</h2>
+    <pre id="error-message"></pre>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+  <script>
+    // Hide loading screen when game is ready
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loading = document.getElementById('loading');
+        if (loading) loading.classList.add('hidden');
+      }, 500);
+    });
+
+    // Error handling
+    window.addEventListener('error', (e) => {
+      const display = document.getElementById('error-display');
+      const msg = document.getElementById('error-message');
+      if (display && msg) {
+        msg.textContent = e.message + '\n\n' + (e.error?.stack || '');
+        display.classList.add('visible');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -479,28 +479,29 @@ ui.confirmAnswer = function () {
 
 ui._challanCards = []
 ui._addChallanCard = function (off, amt) {
-  const stack = document.getElementById('challan-stack')
-  if (!stack) return
-  stack.classList.add('on')
-  const card = document.createElement('div')
-  card.className = 'challan-card'
+  try {
+    const stack = document.getElementById('challan-stack')
+    if (!stack) return
+    stack.classList.add('on')
+    const card = document.createElement('div')
+    card.className = 'challan-card'
 
+    const depth = stack.children.length
+    const rot = -15 + depth * 3
 
-  const depth = stack.children.length
+    const cvcEl = document.getElementById('cvc-main')
+    const cvcHtml = cvcEl ? cvcEl.innerHTML : '<div>Traffic Challan</div>'
 
-  const rot = -15 + depth * 3
+    card.innerHTML = `<div style="width:400px; zoom: 0.18; transform: rotate(${rot}deg); box-shadow: -6px 6px 20px rgba(0,0,0,0.5); border-radius:16px; overflow:hidden; background:white; pointer-events:none;">${cvcHtml}</div>`
+    stack.appendChild(card)
+    this._challanCards.push(card)
 
-
-  const cvcHtml = document.getElementById('cvc-main').innerHTML
-
-
-  card.innerHTML = `<div style="width:400px; zoom: 0.18; transform: rotate(${rot}deg); box-shadow: -6px 6px 20px rgba(0,0,0,0.5); border-radius:16px; overflow:hidden; background:white; pointer-events:none;">${cvcHtml}</div>`
-  stack.appendChild(card)
-  this._challanCards.push(card)
-
-  if (this._challanCards.length > 5) {
-    const old = this._challanCards.shift()
-    if (old.parentNode) old.parentNode.removeChild(old)
+    if (this._challanCards.length > 5) {
+      const old = this._challanCards.shift()
+      if (old.parentNode) old.parentNode.removeChild(old)
+    }
+  } catch (e) {
+    console.warn('Add challan card error:', e)
   }
 }
 

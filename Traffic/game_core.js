@@ -980,6 +980,62 @@ class Game {
         window.addEventListener('resize', () => this._rsz());
         document.addEventListener('fullscreenchange', () => this._rsz());
       }
+
+      // ── Supabase Cloud Sync ──
+      async _syncWalletToSupabase(amount, type, source) {
+        try {
+          if (!window.supabaseClient || !window.colUser) return;
+          const userId = window.colUser.id;
+          if (!userId) return;
+          await window.supabaseClient.rpc('upsert_wallet_balance', {
+            p_user_id: userId,
+            p_amount: Math.abs(amount),
+            p_type: type,
+            p_source: source,
+            p_level_id: this.lvId || null
+          });
+        } catch (e) {
+          console.warn('Wallet sync failed:', e);
+        }
+      }
+
+      async _syncCivicToSupabase() {
+        try {
+          if (!window.supabaseClient || !window.colUser) return;
+          const userId = window.colUser.id;
+          if (!userId) return;
+          await window.supabaseClient.from('civic_scores').upsert({
+            user_id: userId,
+            score: window.S?.civicScore || 0,
+            level_id: this.lvId || null,
+            violations: this.vio || 0,
+            recorded_at: new Date().toISOString()
+          }, { onConflict: 'user_id' });
+        } catch (e) {
+          console.warn('Civic sync failed:', e);
+        }
+      }
+
+      async _syncSessionToSupabase(completed) {
+        try {
+          if (!window.supabaseClient || !window.colUser) return;
+          const userId = window.colUser.id;
+          if (!userId) return;
+          await window.supabaseClient.from('game_sessions').insert({
+            user_id: userId,
+            level_id: this.lvId || 0,
+            wallet_balance: window.S?.wallet || 50000,
+            civic_score: window.S?.civicScore || 0,
+            total_score: this.score || 0,
+            play_time_seconds: Math.floor(this.timer || 0),
+            completed: completed,
+            ended_at: new Date().toISOString()
+          });
+        } catch (e) {
+          console.warn('Session sync failed:', e);
+        }
+      }
+
       _initGyro() {
         if (!('DeviceOrientationEvent' in window)) return;
         window.addEventListener('deviceorientation', (e) => {
@@ -1103,9 +1159,27 @@ class Game {
             if (e.key.toLowerCase() === 'q') this.toggleTurnSignal(-1);
             if (e.key.toLowerCase() === 'e') this.toggleTurnSignal(1);
             if (e.key.toLowerCase() === 'm') this.togglePhoneGps();
-            if (e.key === 'Escape') this.togglePause();
-        });
-        window.addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
+             if (e.key === 'Escape') this.togglePause();
+         });
+         window.addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
+
+         // Show mobile pause button on touch devices
+         if (this._useTouchControls()) {
+           const pauseBtn = document.getElementById('mobile-pause-btn');
+           if (pauseBtn) pauseBtn.style.display = 'flex';
+         }
+         if (mobilePauseBtn) {
+           mobilePauseBtn.addEventListener('click', (e) => {
+             e.preventDefault();
+             e.stopPropagation();
+             this.togglePause();
+           });
+           mobilePauseBtn.addEventListener('touchend', (e) => {
+             e.preventDefault();
+             e.stopPropagation();
+             this.togglePause();
+           });
+         }
 
         // Pointer Lock & Mouse Look
         this._lastPointerUnlock = 0;
@@ -1126,20 +1200,22 @@ class Game {
           // Phase 7.4: Trigger smooth camera transition on mode switch
           if (locked) this._camTransition = 0.4; // 1st→3rd: lerp over 0.4s
         });
-        document.addEventListener('mousemove', (e) => {
-          if (this.isPointerLocked) {
-            if (this.isPedestrian) {
-              if (this.player) this.player.rotation.y -= e.movementX * 0.003;
-            } else {
-              this.targetCamYaw -= e.movementX * 0.003;
-            }
-            this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
-          } else if (this._isDraggingCamera) {
-            this.targetCamYaw -= e.movementX * 0.005;
-            this.targetCamPitch -= e.movementY * 0.005;
-            this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
-          }
-        });
+         document.addEventListener('mousemove', (e) => {
+           if (this.isPointerLocked) {
+             if (this.isPedestrian) {
+               if (this.player) this.player.rotation.y -= e.movementX * 0.003;
+             } else {
+               this.targetCamYaw -= e.movementX * 0.003;
+               this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
+             }
+             this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
+           } else if (this._isDraggingCamera) {
+             this.targetCamYaw -= e.movementX * 0.005;
+             this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
+             this.targetCamPitch -= e.movementY * 0.005;
+             this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
+           }
+         });
         // Left-click drag for third-person camera orbit (desktop only)
         if (this.renderCore.renderer && this.renderCore.renderer.domElement) {
           this.renderCore.renderer.domElement.addEventListener('mousedown', (e) => {
@@ -1440,20 +1516,19 @@ class Game {
       _initVirtualJoystick() {
         if (!this._useTouchControls()) return;
 
-        const joystick = document.getElementById('virtual-joystick');
+        const joystickZone = document.getElementById('joystick-zone');
         const knob = document.getElementById('joystick-knob');
-        if (!joystick || !knob) return;
+        if (!joystickZone || !knob) return;
 
         // Show joystick on mobile
-        joystick.style.display = 'flex';
+        joystickZone.style.display = 'block';
 
         let isDragging = false;
-        let startX = 0, startY = 0;
-        const maxDist = 40; // Max distance knob can move from center
-        const joystickRadius = 65; // Half of joystick width
+        let touchId = null;
+        const maxDist = 38; // Max distance knob can move from center
 
         const handleJoystickMove = (clientX, clientY) => {
-          const rect = joystick.getBoundingClientRect();
+          const rect = joystickZone.getBoundingClientRect();
           const centerX = rect.left + rect.width / 2;
           const centerY = rect.top + rect.height / 2;
 
@@ -1468,52 +1543,70 @@ class Game {
           }
 
           // Move knob
-          knob.style.transform = `translate(${dx}px, ${dy}px)`;
+          knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
 
-          // Set steering based on horizontal movement
+          // Set steering/throttle (-1 to 1 range)
           window.analogSteering = dx / maxDist;
-          // Set throttle based on vertical movement (negative dy is up)
           window.analogThrottle = -dy / maxDist;
         };
 
         const resetJoystick = () => {
           isDragging = false;
-          knob.style.transform = 'translate(0px, 0px)';
+          touchId = null;
+          knob.style.transform = 'translate(-50%, -50%)';
           window.analogSteering = 0;
           window.analogThrottle = 0;
         };
 
         // Touch events for joystick
-        joystick.addEventListener('touchstart', (e) => {
+        joystickZone.addEventListener('touchstart', (e) => {
           e.preventDefault();
           e.stopPropagation();
           isDragging = true;
+          touchId = e.touches[0].identifier;
           handleJoystickMove(e.touches[0].clientX, e.touches[0].clientY);
         }, { passive: false });
 
-        joystick.addEventListener('touchmove', (e) => {
+        joystickZone.addEventListener('touchmove', (e) => {
           if (!isDragging) return;
           e.preventDefault();
-          handleJoystickMove(e.touches[0].clientX, e.touches[0].clientY);
+          // Find our touch
+          for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === touchId) {
+              handleJoystickMove(e.touches[i].clientX, e.touches[i].clientY);
+              break;
+            }
+          }
         }, { passive: false });
 
-        joystick.addEventListener('touchend', resetJoystick);
-        joystick.addEventListener('touchcancel', resetJoystick);
+        joystickZone.addEventListener('touchend', (e) => {
+          // Check if our touch ended
+          let found = false;
+          for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === touchId) { found = true; break; }
+          }
+          if (!found) resetJoystick();
+        });
+
+        joystickZone.addEventListener('touchcancel', resetJoystick);
 
         // Also support mouse for testing
-        joystick.addEventListener('mousedown', (e) => {
+        joystickZone.addEventListener('mousedown', (e) => {
           isDragging = true;
+          touchId = 'mouse';
           handleJoystickMove(e.clientX, e.clientY);
         });
 
         window.addEventListener('mousemove', (e) => {
-          if (!isDragging) return;
+          if (!isDragging || touchId !== 'mouse') return;
           handleJoystickMove(e.clientX, e.clientY);
         });
 
-        window.addEventListener('mouseup', resetJoystick);
+        window.addEventListener('mouseup', () => {
+          if (touchId === 'mouse') resetJoystick();
+        });
 
-        // Hide default steering wheel when joystick is active
+        // Hide old steering wheel
         const steerWheel = document.getElementById('steer-wheel-container');
         if (steerWheel) steerWheel.style.display = 'none';
       }
@@ -1544,11 +1637,12 @@ class Game {
             dy = (dy / dist) * maxDist;
           }
           camKnob.style.transform = `translate(${dx}px, ${dy}px)`;
-          // Map joystick displacement to camYaw/camPitch changes
-          const sensitivity = 0.12; // Increased sensitivity significantly
-          this.targetCamYaw -= dx * sensitivity;
-          this.targetCamPitch -= dy * sensitivity;
-          this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
+           // Map joystick displacement to camYaw/camPitch changes
+           const sensitivity = 0.12; // Increased sensitivity significantly
+           this.targetCamYaw -= dx * sensitivity;
+           this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
+           this.targetCamPitch -= dy * sensitivity;
+           this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
         };
 
         const resetCamJoy = () => {
@@ -1666,13 +1760,14 @@ class Game {
           if (this._isDraggingMobileLook) {
             for (let i = 0; i < e.touches.length; i++) {
               if (e.touches[i].identifier === this._mobileLookTouchId) {
-                const dx = e.touches[i].clientX - this._prevMobileLookX;
-                const dy = e.touches[i].clientY - this._prevMobileLookY;
-                this._prevMobileLookX = e.touches[i].clientX;
-                this._prevMobileLookY = e.touches[i].clientY;
-                this.targetCamYaw -= dx * 0.005;
-                this.targetCamPitch -= dy * 0.005;
-                this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
+                 const dx = e.touches[i].clientX - this._prevMobileLookX;
+                 const dy = e.touches[i].clientY - this._prevMobileLookY;
+                 this._prevMobileLookX = e.touches[i].clientX;
+                 this._prevMobileLookY = e.touches[i].clientY;
+                 this.targetCamYaw -= dx * 0.005;
+                 this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
+                 this.targetCamPitch -= dy * 0.005;
+                 this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
                 e.preventDefault();
                 return;
               }
@@ -3160,11 +3255,15 @@ class Game {
         const _reward = _baseRew + _noViolBonus;
         S.wallet += _reward;
         if (window.WalletHistory) WalletHistory.earn('level_reward', _reward, { levelId: _lvId, levelName: (ui.cur ? ui.cur.name : ''), violations: this.vio });
+        this._syncWalletToSupabase(_reward, 'earn', 'level_reward');
         // Deduct fines from wallet
         if (this.fine > 0) {
           S.wallet = Math.max(0, S.wallet - this.fine);
           if (window.WalletHistory) WalletHistory.deduct('fine', this.fine, { levelId: _lvId, levelName: (ui.cur ? ui.cur.name : ''), violations: this.vio });
+          this._syncWalletToSupabase(this.fine, 'deduct', 'fine');
         }
+        this._syncCivicToSupabase();
+        this._syncSessionToSupabase(true);
         save();
         const _hw = document.getElementById('hwallet');
         if (_hw) _hw.textContent = '₹' + S.wallet.toLocaleString('en-IN');
@@ -3346,21 +3445,46 @@ class Game {
         this.isPedestrian = false;
         const vt = vehType || 'car';
         this.vehType = vt;
-        
+
         let pStartX = -40 + 7, pStartZ = -80, pRot = 0;
         let vStartX = 5, vStartZ = 0, vRotY = 0;
 
-        if (this.mapCfg && this.mapCfg.route && this.mapCfg.route.length >= 2) {
+        // Find the longest road segment for spawn (avoid intersections)
+        if (this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
+          // Find the longest straight road section
+          let longestRoad = this.mapCfg.roads[0];
+          let longestLen = 0;
+          for (const r of this.mapCfg.roads) {
+            const len = r.type === 'v' ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
+            if (len > longestLen) { longestLen = len; longestRoad = r; }
+          }
+          // Spawn at 1/4 along the longest road (away from intersections)
+          const t = 0.25;
+          if (longestRoad.type === 'v') {
+            const zMid = longestRoad.z1 + (longestRoad.z2 - longestRoad.z1) * t;
+            vStartX = longestRoad.x - 3; // Left side of road (driver side)
+            vStartZ = zMid;
+            vRotY = 0; // Facing +Z
+          } else {
+            const xMid = longestRoad.x1 + (longestRoad.x2 - longestRoad.x1) * t;
+            vStartX = xMid;
+            vStartZ = longestRoad.z - 3;
+            vRotY = Math.PI / 2; // Facing +X
+          }
+        } else if (this.mapCfg && this.mapCfg.route && this.mapCfg.route.length >= 2) {
+          // Fallback: use route but at midpoint, not at intersection
           const p1 = this.mapCfg.route[0];
           const p2 = this.mapCfg.route[1];
+          const mx = (p1.x + p2.x) / 2;
+          const mz = (p1.z + p2.z) / 2;
           const dx = p2.x - p1.x;
           const dz = p2.z - p1.z;
           const dist = Math.sqrt(dx * dx + dz * dz);
           if (dist > 0) {
             const nx = dx / dist;
             const nz = dz / dist;
-            vStartX = p1.x - nz * 5;
-            vStartZ = p1.z + nx * 5;
+            vStartX = mx - nz * 3;
+            vStartZ = mz + nx * 3;
             vRotY = Math.atan2(nx, nz);
           }
         }
@@ -4003,13 +4127,15 @@ class Game {
         }
     }
 } else if (cfg.themeType === 'respectful_parking') {
-            // Spawn haphazard parked cars
+            // Spawn parked cars on SIDES of road (sidewalk/parking strip), not on road
             for (let i = 0; i < 15; i++) {
                 const carTpl = this._makeNPC('car', 0x999999);
                 if (carTpl) {
                   const pc = carTpl.clone();
-                  pc.position.set((Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 4), 0, (Math.random() - 0.5) * 150);
-                  pc.rotation.y = (Math.random() - 0.5) * 0.5;
+                  const side = Math.random() > 0.5 ? 1 : -1;
+                  const parkOffset = 8 + Math.random() * 4; // 8-12 units from center (clear of 6-unit road)
+                  pc.position.set(side * parkOffset, 0, (Math.random() - 0.5) * 150);
+                  pc.rotation.y = side > 0 ? Math.PI / 2 : -Math.PI / 2;
                   pc.userData.spd = 0; pc.userData.isStopped = true; pc.userData.isParked = true;
                   this.npcs.push(pc); this.scene.add(pc);
                 }
@@ -4377,16 +4503,23 @@ class Game {
           }
           return true;
         });
-        // Parked vehicles
+        // Parked vehicles — placed on sidewalk/shoulder, NOT on road
         if (!cfg.isPedestrian) {
+          const sidewalkOffset = 9.5; // roadHalfWidth(6) + sidewalk(2) + carHalfWidth(1.5) = safe offset
           for (let i = 0; i < 6; i++) {
             const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
             const types = ['car', 'auto', 'bike'];
             const pcTpl = this._makeNPC(types[i % 3], Math.random() * 0xffffff);
             if (pcTpl) {
               const pc = pcTpl.clone();
-              if (seg.type === 'v') pc.position.set(seg.x + (Math.random() > .5 ? 5.5 : -5.5), 0, seg.z1 + Math.random() * (seg.z2 - seg.z1));
-              else pc.position.set(seg.x1 + Math.random() * (seg.x2 - seg.x1), 0, seg.z + (Math.random() > .5 ? 5.5 : -5.5));
+              const side = Math.random() > 0.5 ? 1 : -1;
+              if (seg.type === 'v') {
+                pc.position.set(seg.x + side * sidewalkOffset, 0, seg.z1 + Math.random() * (seg.z2 - seg.z1));
+                pc.rotation.y = side > 0 ? Math.PI / 2 : -Math.PI / 2;
+              } else {
+                pc.position.set(seg.x1 + Math.random() * (seg.x2 - seg.x1), 0, seg.z + side * sidewalkOffset);
+                pc.rotation.y = side > 0 ? 0 : Math.PI;
+              }
               pc.userData = { isParked: true, halfW: 2.5, halfD: 1.5 };
               this.scene.add(pc); this.obstacles.push(pc);
             }
@@ -8458,7 +8591,7 @@ class Game {
         cfg.isNight = nightOn;
       }
       _dnLerp(a, b, t) { return a + (b - a) * Math.min(1, Math.max(0, t)); }
-        _uhud() {
+      _uhud() {
         if (!this.player) return;
         const k = Math.round(Math.abs(this.speed) * 100);
         
@@ -8502,9 +8635,16 @@ class Game {
               if (mcEnterHide) mcEnterHide.style.display = 'none';
             }
             this.warnEl.classList.remove('flash');
-        }          const gspdEl = this.dom['gspd'];
-          if (gspdEl) {
-            gspdEl.textContent = k;
+         }
+          // Contextual: show speed gauge only when driving
+          const speedGauge = document.getElementById('spgauge');
+          if (speedGauge) speedGauge.style.display = this.isPedestrian ? 'none' : 'block';
+          // Contextual: show gear only when driving
+          const gearPanel = document.getElementById('gp');
+          if (gearPanel) gearPanel.style.display = this.isPedestrian ? 'none' : 'flex';
+          const gspdEl = this.dom['gspd'];
+           if (gspdEl) {
+             gspdEl.textContent = k;
             // Colour by speed zone — respect level speedLimit if set
             const speedLimitKmh = this.mapCfg && this.mapCfg.speedLimit ? this.mapCfg.speedLimit : 80;
             const speedLimit = speedLimitKmh / 3.6;

@@ -184,23 +184,24 @@ class MissionManager {
 
     if (!levelConfig) return [];
 
+    // Fewer collectibles but more valuable, placed along the route
+    this.spawnCollectibles(levelConfig, 5 + Math.floor(Math.random() * 4));
 
-    this.spawnCollectibles(levelConfig, 8 + Math.floor(Math.random() * 7));
-
-
-    if (levelConfig.roads && levelConfig.roads.length > 0) {
+    // Primary mission: distance-based checkpoints along the route
+    if (levelConfig.route && levelConfig.route.length >= 2) {
+      const cpMission = this.createRouteCheckpointMission(levelConfig);
+      if (cpMission) this.missions.push(cpMission);
+    } else if (levelConfig.roads && levelConfig.roads.length > 0) {
       const cpMission = this.createCheckpointMission(levelConfig);
       if (cpMission) this.missions.push(cpMission);
     }
 
+    // Secondary mission: driving behavior objectives
+    const behaviorMission = this.createBehaviorMission(levelConfig);
+    if (behaviorMission) this.missions.push(behaviorMission);
 
-    if (levelConfig.route && levelConfig.route.length > 2) {
-      const followMission = this.createFollowMission(levelConfig);
-      if (followMission) this.missions.push(followMission);
-    }
-
-
-    if (levelConfig.useLowPolyCity) {
+    // Tertiary mission: exploration/collection
+    if (levelConfig.useLowPolyCity || (levelConfig.roads && levelConfig.roads.length > 2)) {
       const exploreMission = this.createExplorationMission(levelConfig);
       if (exploreMission) this.missions.push(exploreMission);
     }
@@ -208,28 +209,110 @@ class MissionManager {
     return this.missions;
   }
 
+  createRouteCheckpointMission(levelConfig) {
+    const route = levelConfig.route;
+    const checkpoints = [];
+
+    // Calculate total route distance
+    let totalDist = 0;
+    for (let i = 1; i < route.length; i++) {
+      totalDist += Math.hypot(route[i].x - route[i-1].x, route[i].z - route[i-1].z);
+    }
+
+    // Place checkpoints at equal distance intervals (min 80 units apart)
+    const minSpacing = 80;
+    const numCheckpoints = Math.max(3, Math.min(6, Math.floor(totalDist / minSpacing)));
+
+    for (let i = 1; i <= numCheckpoints; i++) {
+      const targetDist = (totalDist * i) / (numCheckpoints + 1);
+      let accumulated = 0;
+      for (let j = 1; j < route.length; j++) {
+        const segDist = Math.hypot(route[j].x - route[j-1].x, route[j].z - route[j-1].z);
+        if (accumulated + segDist >= targetDist) {
+          const t = segDist > 0 ? (targetDist - accumulated) / segDist : 0;
+          checkpoints.push({
+            x: route[j-1].x + (route[j].x - route[j-1].x) * t,
+            z: route[j-1].z + (route[j].z - route[j-1].z) * t,
+            reached: false
+          });
+          break;
+        }
+        accumulated += segDist;
+      }
+    }
+
+    // Filter out checkpoints that are too close to each other
+    const filtered = [checkpoints[0]].filter(Boolean);
+    for (let i = 1; i < checkpoints.length; i++) {
+      const prev = filtered[filtered.length - 1];
+      const dist = Math.hypot(checkpoints[i].x - prev.x, checkpoints[i].z - prev.z);
+      if (dist >= minSpacing) {
+        filtered.push(checkpoints[i]);
+      }
+    }
+
+    const baseReward = levelConfig.isPedestrian ? 1500 : 3000;
+
+    return new Mission('CHECKPOINT', {
+      target: filtered.length,
+      reward: baseReward + filtered.length * 750,
+      data: { checkpoints: filtered },
+    });
+  }
+
   createCheckpointMission(levelConfig) {
     const checkpoints = [];
     const roads = levelConfig.roads;
-    const numCheckpoints = Math.min(5, Math.max(3, Math.floor(roads.length / 3)));
+    const numCheckpoints = Math.min(4, Math.max(2, Math.floor(roads.length / 2)));
 
+    // Place checkpoints on DIFFERENT roads for variety
+    const usedRoads = new Set();
     for (let i = 0; i < numCheckpoints; i++) {
-      const road = roads[Math.floor(Math.random() * roads.length)];
+      let road;
+      let attempts = 0;
+      do {
+        road = roads[Math.floor(Math.random() * roads.length)];
+        attempts++;
+      } while (usedRoads.has(road) && attempts < 20);
+      usedRoads.add(road);
+
       let x, z;
+      // Place at 1/3 or 2/3 along the road (not at intersection)
+      const t = (i % 2 === 0) ? 0.33 : 0.67;
       if (road.type === 'v') {
         x = road.x;
-        z = road.z1 + (Math.random() * (road.z2 - road.z1));
+        z = road.z1 + (road.z2 - road.z1) * t;
       } else {
         z = road.z;
-        x = road.x1 + (Math.random() * (road.x2 - road.x1));
+        x = road.x1 + (road.x2 - road.x1) * t;
       }
       checkpoints.push({ x, z, reached: false });
     }
 
     return new Mission('CHECKPOINT', {
       target: numCheckpoints,
-      reward: numCheckpoints * 500,
+      reward: 2000 + numCheckpoints * 500,
       data: { checkpoints },
+    });
+  }
+
+  createBehaviorMission(levelConfig) {
+    // Multi-step driving behavior mission
+    const objectives = [];
+
+    if (!levelConfig.isPedestrian) {
+      objectives.push({ id: 'wear_safety', text: 'Wear seatbelt / Helmet', type: 'toggle', count: 1 });
+      objectives.push({ id: 'use_indicator', text: 'Use turn signal once', type: 'toggle', count: 1 });
+      objectives.push({ id: 'drive_straight', text: 'Drive 50m without violations', type: 'distance', count: 50 });
+    } else {
+      objectives.push({ id: 'walk_sidewalk', text: 'Walk 30m on sidewalk', type: 'distance', count: 30 });
+      objectives.push({ id: 'look_both_ways', text: 'Stop at intersection', type: 'stop', count: 1 });
+    }
+
+    return new Mission('BEHAVIOR', {
+      target: objectives.length,
+      reward: levelConfig.isPedestrian ? 2000 : 4000,
+      data: { objectives },
     });
   }
 
@@ -243,8 +326,8 @@ class MissionManager {
 
   createExplorationMission(levelConfig) {
     return new Mission('COLLECT', {
-      target: 5,
-      reward: 3000,
+      target: 3,
+      reward: 2500,
       data: { type: 'exploration' },
     });
   }
@@ -264,26 +347,29 @@ class MissionManager {
     const roads = levelConfig.roads || [];
 
     if (roads.length > 0) {
-
+      // Spread collectibles along different road segments
       for (let i = 0; i < count; i++) {
-        const road = roads[Math.floor(Math.random() * roads.length)];
+        const road = roads[i % roads.length];
         let x, z;
+        // Place at different positions along each road
+        const t = ((i * 0.37) % 1.0); // Pseudo-random spread
         if (road.type === 'v') {
-          x = road.x + (Math.random() - 0.5) * 20;
-          z = road.z1 + Math.random() * (road.z2 - road.z1);
+          x = road.x + (Math.random() - 0.5) * 8;
+          z = road.z1 + (road.z2 - road.z1) * t;
         } else {
-          z = road.z + (Math.random() - 0.5) * 20;
-          x = road.x1 + Math.random() * (road.x2 - road.x1);
+          z = road.z + (Math.random() - 0.5) * 8;
+          x = road.x1 + (road.x2 - road.x1) * t;
         }
         positions.push({ x, z });
       }
     } else {
-
       const spread = levelConfig.useLowPolyCity ? 1000 : 500;
       for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2;
+        const radius = spread * (0.3 + Math.random() * 0.7);
         positions.push({
-          x: (Math.random() - 0.5) * spread * 2,
-          z: (Math.random() - 0.5) * spread * 2,
+          x: Math.cos(angle) * radius,
+          z: Math.sin(angle) * radius,
         });
       }
     }
@@ -328,7 +414,7 @@ class MissionManager {
           const dx = playerPos.x - cp.x;
           const dz = playerPos.z - cp.z;
           const dist = Math.sqrt(dx * dx + dz * dz);
-          if (dist < 15) {
+          if (dist < 20) {
             cp.reached = true;
             reached++;
             this._onCheckpointReached(cp);
