@@ -1,0 +1,17 @@
+{
+  "name": "terra3d-interactive-globe",
+  "version": "1.0.0",
+  "description": "Terra3D: Interactive 3D World Atlas & Country Knowledge Engine",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

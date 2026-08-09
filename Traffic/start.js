@@ -514,9 +514,36 @@ preloadModels(() => {
     document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
   }
 
-  ui.init()
-  game = new Game()
-  window.game = game
+  // Init UI then create game (guard against ui.js/game_core.js not loaded yet)
+  function _doBoot() {
+    if (typeof ui.init === 'function') ui.init()
+    if (typeof Game !== 'undefined') {
+      game = new Game()
+      window.game = game
+    } else {
+      // game_core.js hasn't loaded yet - report error
+      console.error('Game class not found - game_core.js failed to load')
+      document.body.innerHTML = '<div style="color:white;text-align:center;padding:50px;font-family:sans-serif"><h1>Loading Error</h1><p>Game engine failed to load. Please refresh.</p></div>'
+    }
+  }
+
+  if (typeof Game !== 'undefined') {
+    // Game class ready - boot now (ui.init can run later if needed)
+    if (typeof ui.init === 'function') ui.init()
+    game = new Game()
+    window.game = game
+  } else {
+    // game_core.js hasn't loaded yet - poll for it
+    var _bootWait = setInterval(function() {
+      if (typeof Game !== 'undefined') {
+        clearInterval(_bootWait)
+        if (typeof ui.init === 'function') ui.init()
+        game = new Game()
+        window.game = game
+      }
+    }, 50)
+    setTimeout(function() { clearInterval(_bootWait) }, 5000)
+  }
 
   const urlParams = new URLSearchParams(window.location.search)
   let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
@@ -579,7 +606,12 @@ preloadModels(() => {
 
         function _doStartLevel() {
           try {
-            game.startLevel()
+            if (!window.game || typeof window.game.startLevel !== 'function') {
+              console.warn('Game not ready yet, retrying...')
+              setTimeout(_doStartLevel, 200)
+              return
+            }
+            window.game.startLevel()
 
 
             const _startCheck = Date.now()
@@ -609,7 +641,18 @@ preloadModels(() => {
           if (!_isMobile && document.documentElement.requestFullscreen && !document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(() => {})
           }
-          _doStartLevel()
+          // If game isn't ready yet, wait for it (max 5s)
+          if (!window.game) {
+            var _playWait = setInterval(function() {
+              if (window.game) {
+                clearInterval(_playWait)
+                _doStartLevel()
+              }
+            }, 100)
+            setTimeout(function() { clearInterval(_playWait) }, 5000)
+          } else {
+            _doStartLevel()
+          }
         }
 
         function _ensureOverlay() {

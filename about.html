@@ -894,7 +894,7 @@
     /* ==================== TEAM SECTION ==================== */
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 24px;
       margin-top: 52px;
     }
@@ -949,6 +949,14 @@
       background: var(--teal);
     }
 
+    .tm:nth-child(5)::before {
+      background: var(--em);
+    }
+
+    .tm:nth-child(6)::before {
+      background: var(--ion);
+    }
+
     .tm:nth-child(1):hover {
       box-shadow: 0 28px 60px -20px rgba(94, 212, 245, 0.2);
       border-color: rgba(94, 212, 245, 0.3);
@@ -967,6 +975,16 @@
     .tm:nth-child(4):hover {
       box-shadow: 0 28px 60px -20px rgba(0, 240, 204, 0.2);
       border-color: rgba(0, 240, 204, 0.3);
+    }
+
+    .tm:nth-child(5):hover {
+      box-shadow: 0 28px 60px -20px rgba(52, 211, 153, 0.2);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .tm:nth-child(6):hover {
+      box-shadow: 0 28px 60px -20px rgba(94, 212, 245, 0.2);
+      border-color: rgba(94, 212, 245, 0.3);
     }
 
     .tm-av {
@@ -1007,6 +1025,16 @@
     .tm:nth-child(4) .tm-av {
       background: linear-gradient(135deg, var(--teal), #00a895);
       box-shadow: 0 14px 36px -10px rgba(0, 240, 204, 0.4);
+    }
+
+    .tm:nth-child(5) .tm-av {
+      background: linear-gradient(135deg, var(--em), #059669);
+      box-shadow: 0 14px 36px -10px rgba(52, 211, 153, 0.4);
+    }
+
+    .tm:nth-child(6) .tm-av {
+      background: linear-gradient(135deg, var(--ion), #2a9bd4);
+      box-shadow: 0 14px 36px -10px rgba(94, 212, 245, 0.4);
     }
 
     /* Orbiting ring */
@@ -1684,7 +1712,12 @@
                 <rect x="20" y="14" width="2" height="2" />
                 <rect x="14" y="20" width="2" height="2" />
                 <rect x="20" y="20" width="2" height="2" />
-              </svg>QR Generator</a>
+              </svg>QR Generator</a><a href="Terra3D/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+              </svg>Terra3D Atlas</a>
           </div>
         </div>
       </div>
@@ -1746,11 +1779,11 @@
   <section class="stats-bar">
     <div class="stats-grid">
       <div class="stat rv">
-        <div class="stat-num">05</div>
+        <div class="stat-num">06</div>
         <div class="stat-label">Active Projects</div>
       </div>
       <div class="stat rv">
-        <div class="stat-num">04</div>
+        <div class="stat-num">06</div>
         <div class="stat-label">Team Members</div>
       </div>
       <div class="stat rv">
@@ -1784,7 +1817,7 @@
   <!-- ==================== TEAM ==================== -->
   <section class="section rv">
     <div class="sey">The Core Team</div>
-    <h2 class="st">Three Students. One Studio.</h2>
+    <h2 class="st">Six Students. One Studio.</h2>
     <p class="sdesc">Each member brings a different strength to the table &mdash; from low-level system architecture to
       physics simulations to pixel-perfect design.</p>
     <div class="team-grid">
@@ -1831,15 +1864,41 @@
       </div>
       <div class="tm rv">
         <div class="tm-av">Y</div>
-        <h3 class="tm-name">Yash Raj</h3>
+        <h3 class="tm-name">Yashraj Jadhav</h3>
         <div class="tm-role">QA Tester, UI/UX Designer &amp; Idea Developer</div>
         <p class="tm-bio"
           style="font-size: 0.9rem; color: var(--dim); margin: 15px 0; text-align: left; line-height: 1.6">
-          Yash Raj specializes in refining user experiences, stress-testing core concepts, and developing new ideas. By bridging the gap between
+          Yashraj Jadhav specializes in refining user experiences, stress-testing core concepts, and developing new ideas. By bridging the gap between
           initial ideation and final implementation, he ensures every feature is intuitive and robust.
         </p>
         <div class="tm-tags"><span class="tag">QA Testing</span><span class="tag">UI/UX Design</span><span
             class="tag">Idea Developer</span></div>
+      </div>
+      <div class="tm rv">
+        <div class="tm-av">Ar</div>
+        <h3 class="tm-name">Aarayaman Jadhav</h3>
+        <div class="tm-role">3D Systems &amp; Geospatial Data</div>
+        <p class="tm-bio"
+          style="font-size: 0.9rem; color: var(--dim); margin: 15px 0; text-align: left; line-height: 1.6">
+          Aarayaman works on real-time 3D rendering and the geospatial data pipelines behind Terra3D. He turns raw
+          country datasets into interactive globe layers, tuning performance so complex scenes stay smooth in the
+          browser.
+        </p>
+        <div class="tm-tags"><span class="tag">Three.js</span><span class="tag">WebGL</span><span
+            class="tag">Data Modelling</span></div>
+      </div>
+      <div class="tm rv">
+        <div class="tm-av">Ak</div>
+        <h3 class="tm-name">Akshara Bangar</h3>
+        <div class="tm-role">Content Research &amp; Interface Polish</div>
+        <p class="tm-bio"
+          style="font-size: 0.9rem; color: var(--dim); margin: 15px 0; text-align: left; line-height: 1.6">
+          Akshara researches and verifies the educational content across the studio's projects, then shapes how it is
+          presented. She focuses on clear information hierarchy and accessible copy so every tool teaches as well as it
+          performs.
+        </p>
+        <div class="tm-tags"><span class="tag">Research</span><span class="tag">Content</span><span
+            class="tag">UI Polish</span></div>
       </div>
     </div>
   </section>
@@ -1926,7 +1985,7 @@
         <a href="feedback">Feedback</a>
         <a href="download">Downloads</a>
       </div>
-      <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
+      <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yashraj Jadhav.</div>
     </div>
   </footer>
 

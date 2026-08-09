@@ -1163,23 +1163,23 @@ class Game {
          });
          window.addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
 
-         // Show mobile pause button on touch devices
-         if (this._useTouchControls()) {
-           const pauseBtn = document.getElementById('mobile-pause-btn');
-           if (pauseBtn) pauseBtn.style.display = 'flex';
-         }
-         if (mobilePauseBtn) {
-           mobilePauseBtn.addEventListener('click', (e) => {
-             e.preventDefault();
-             e.stopPropagation();
-             this.togglePause();
-           });
-           mobilePauseBtn.addEventListener('touchend', (e) => {
-             e.preventDefault();
-             e.stopPropagation();
-             this.togglePause();
-           });
-         }
+          // Show mobile pause button on touch devices
+          if (this._useTouchControls()) {
+            const pauseBtn = document.getElementById('mobile-pause-btn');
+            if (pauseBtn) {
+              pauseBtn.style.display = 'flex';
+              pauseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.togglePause();
+              });
+              pauseBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.togglePause();
+              });
+            }
+          }
 
         // Pointer Lock & Mouse Look
         this._lastPointerUnlock = 0;
@@ -4330,11 +4330,14 @@ class Game {
             this.scene.add(lg);
           };
           // Pick 3 random roads and offset them heavily to place landmarks
-          const types = ['gateway', 'bse', 'antilia'];
-          for (let i = 0; i < 3; i++) {
-            const r = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
-            if (r.type === 'v') buildLandmark(types[i], r.x + 35, (r.z1 + r.z2) / 2);
-            else buildLandmark(types[i], (r.x1 + r.x2) / 2, r.z + 35);
+          if (cfg.roads && cfg.roads.length > 0) {
+            const types = ['gateway', 'bse', 'antilia'];
+            for (let i = 0; i < 3; i++) {
+              const r = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
+              if (!r) continue;
+              if (r.type === 'v') buildLandmark(types[i], r.x + 35, (r.z1 + r.z2) / 2);
+              else buildLandmark(types[i], (r.x1 + r.x2) / 2, r.z + 35);
+            }
           }
         }
 
@@ -4475,6 +4478,7 @@ class Game {
         // Bollards and barricades
         const bCount = cfg.isPedestrian ? 2 : 6;
         for (let i = 0; i < bCount; i++) {
+          if (!cfg.roads || cfg.roads.length === 0) break;
           const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
           const bx = seg.type === 'v' ? seg.x + (Math.random() > .5 ? 10 : -10) : seg.x1 + Math.random() * (seg.x2 - seg.x1);
           const bz = seg.type === 'v' ? seg.z1 + Math.random() * (seg.z2 - seg.z1) : seg.z + (Math.random() > .5 ? 10 : -10);
@@ -4504,7 +4508,7 @@ class Game {
           return true;
         });
         // Parked vehicles — placed on sidewalk/shoulder, NOT on road
-        if (!cfg.isPedestrian) {
+        if (!cfg.isPedestrian && cfg.roads && cfg.roads.length > 0) {
           const sidewalkOffset = 9.5; // roadHalfWidth(6) + sidewalk(2) + carHalfWidth(1.5) = safe offset
           for (let i = 0; i < 6; i++) {
             const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];

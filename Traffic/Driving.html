@@ -5599,7 +5599,7 @@
   </div>
   <div id="civic-controls"
     style="position: fixed; bottom: 16px; right: 20px; z-index: var(--z-controls); display: flex; flex-direction: row; gap: 6px; align-items: center">
-    <div id="btn-seatbelt" class="civic-btn" onclick="game.toggleSeatbelt(this)">
+    <div id="btn-seatbelt" class="civic-btn" onclick="window.game && window.game.toggleSeatbelt(this)">
       <div id="sb-icon-wrap" class="sb-icon-wrap">
         <svg id="sb-icon" class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2a4 4 0 0 0-4 4v2"/>
@@ -5611,27 +5611,27 @@
       </div>
       <span id="sb-label" class="civic-label">Belt OFF</span>
     </div>
-    <div id="btn-ind-left" class="civic-btn civic-ind" onclick="game.toggleTurnSignal(-1)">
+    <div id="btn-ind-left" class="civic-btn civic-ind" onclick="window.game && window.game.toggleTurnSignal(-1)">
       <svg class="ind-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M15 4l-8 8 8 8V4z"/></svg>
     </div>
-    <div id="btn-ind-right" class="civic-btn civic-ind" onclick="game.toggleTurnSignal(1)">
+    <div id="btn-ind-right" class="civic-btn civic-ind" onclick="window.game && window.game.toggleTurnSignal(1)">
       <svg class="ind-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M9 4l8 8-8 8V4z"/></svg>
     </div>
-    <div id="btn-mobile" class="civic-btn" onclick="game.toggleMobile(this)">
+    <div id="btn-mobile" class="civic-btn" onclick="window.game && window.game.toggleMobile(this)">
       <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
         <line x1="12" y1="18" x2="12.01" y2="18"/>
       </svg>
       <span class="civic-label">Phone</span>
     </div>
-    <div id="btn-gyro" class="civic-btn" onclick="game.toggleGyro(this)">
+    <div id="btn-gyro" class="civic-btn" onclick="window.game && window.game.toggleGyro(this)">
       <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
         <path d="M12 2v20M2 12h20"/>
       </svg>
       <span class="civic-label">Gyro</span>
     </div>
-    <div id="btn-kid" class="civic-btn" onclick="game.toggleKidMode(this)">
+    <div id="btn-kid" class="civic-btn" onclick="window.game && window.game.toggleKidMode(this)">
       <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/>
         <path d="M12 2a10 10 0 0 0 -10 10c0 3 2 6 5 8v2h10v-2c3-2 5-5 5-8a10 10 0 0 0 -10 -10z"/>
@@ -5786,7 +5786,7 @@
         style="background: #f8f9fa; padding: 20px; border-top: 1px solid #e9ecef; display: flex; flex-direction: column; gap: 12px">
         <button class="btn btn-p"
           style="background: #b02a37; font-size: 1.1rem; padding: 12px; border-radius: 30px; width: 100%; border: none"
-          onclick="game.retryLevel()">Try Again</button>
+          onclick="window.game && window.game.retryLevel()">Try Again</button>
         <button class="btn btn-g"
           style="font-size: 1rem; padding: 12px; border-radius: 30px; width: 100%; background: transparent; border: 2px solid #ccc; color: #555"
           onclick="
@@ -6090,7 +6090,7 @@
         style="background: #f8f9fa; padding: 20px; border-top: 1px solid #e9ecef; display: flex; flex-direction: column; align-items: center">
         <button class="btn btn-p"
           style="background: #b02a37; width: 100%; font-size: 1.2rem; padding: 14px; border-radius: 30px; margin-bottom: 16px"
-          onclick="ui.dismissChallan()">
+          onclick="window.ui && window.ui.dismissChallan && window.ui.dismissChallan()">
           Pay & Continue &rarr;
         </button>
 
@@ -6534,7 +6534,7 @@
   <script src="checkpoint-system.js"></script>
   <script src="gameplay-recorder.js"></script>
   <script src="scenario2d.js"></script>
-  <script src="game_core.js?v=18"></script>
+  <script src="game_core.js?v=20"></script>
   <script src="npc-ai.js"></script>
   <script src="traffic-manager.js?v=8"></script>
   <script src="rule-breaker-profiles.js"></script>

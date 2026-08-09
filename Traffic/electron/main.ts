@@ -17,7 +17,7 @@ function createWindow(): void {
       contextIsolation: true,
       nodeIntegration: false,
       webgl: true,
-      webSecurity: true
+      webSecurity: false
     },
     backgroundColor: '#070a14',
     show: false,
@@ -29,9 +29,9 @@ function createWindow(): void {
   });
 
   if (isDev) {
-    mainWindow.loadURL('http://localhost:5173/Driving.html');
+    mainWindow.loadURL('http://localhost:5173/index.html');
   } else {
-    mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'Driving.html'));
+    mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
   }
 
   mainWindow.on('closed', () => {

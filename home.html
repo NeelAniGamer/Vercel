@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Class Of Learners — 5 interactive projects built by students from Mumbai. Explore our Solar Engine, Typing Instructor, Gesture Controller, QR Editor, and RPG Engine."
+      content="Class Of Learners — 6 interactive projects built by students from Mumbai. Explore our Solar Engine, Typing Instructor, Gesture Controller, QR Editor, RPG Engine, and Terra3D World Atlas."
     />
     <meta property="og:title" content="Class Of Learners | Studio Hub" />
-    <meta property="og:description" content="5 interactive projects built by students from Mumbai — Solar Engine, ATI, Gesture Controller, QR Editor, and RPG Engine." />
+    <meta property="og:description" content="6 interactive projects built by students from Mumbai — Solar Engine, ATI, Gesture Controller, QR Editor, RPG Engine, and Terra3D." />
     <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Class Of Learners | Studio Hub" />
-    <meta name="twitter:description" content="5 interactive projects built by students from Mumbai. Explore our Solar Engine, Typing Instructor, and more." />
+    <meta name="twitter:description" content="6 interactive projects built by students from Mumbai. Explore our Solar Engine, Typing Instructor, Terra3D Atlas, and more." />
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/" />
     <title>Class Of Learners | Studio Hub</title>
@@ -1737,6 +1737,12 @@
                   <rect x="14" y="20" width="2" height="2" />
                   <rect x="20" y="20" width="2" height="2" /></svg
                 >QR Generator</a
+              ><a href="Terra3D/"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg
+                >Terra3D Atlas</a
               >
             </div>
           </div>
@@ -1794,8 +1800,8 @@
         <div class="scl"></div>
       </div>
       <div class="hst">
-        <div><b>PROJECTS</b> &mdash; 05</div>
-        <div><b>TEAM</b> &mdash; 04</div>
+        <div><b>PROJECTS</b> &mdash; 06</div>
+        <div><b>TEAM</b> &mdash; 06</div>
         <div><b>BASE</b> &mdash; Mumbai</div>
       </div>
     </section>
@@ -1824,7 +1830,7 @@
       <div class="sh">
         <div>
           <div class="sey">Portfolio</div>
-          <h2 class="st">Five Tools.<br />One Studio.</h2>
+          <h2 class="st">Six Tools.<br />One Studio.</h2>
         </div>
         <p class="ssb">
           Each project is a standalone engine &mdash; a focused exploration of a specific domain of computer science and interactive design, engineered from scratch to push the boundaries of what web
@@ -1940,8 +1946,144 @@
               Preview <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></a>
+        <a href="Terra3D/" class="pc ct" data-delay="400"
+          ><div class="pv" style="background: #030812">
+            <div class="t3-bg">
+              <div class="t3-glow"></div>
+              <div class="t3-stars"></div>
+              <div class="t3-globe">
+                <div class="t3-ring t3r-1"></div>
+                <div class="t3-ring t3r-2"></div>
+                <div class="t3-ring t3r-3"></div>
+                <div class="t3-core"></div>
+              </div>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">06 &mdash; 3D Atlas</div>
+            <h3 class="pname">Terra3D World Atlas</h3>
+            <p class="pdesc">
+              An interactive 3D globe built on WebGL. Explore every country with live demographic data, historical timelines, and cultural insights rendered on a fully navigable planetary surface.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Three.js</span><span class="tag">WebGL</span><span class="tag">Geo Data</span></div>
+            <div class="plink">
+              Explore Globe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div></div
+        ></a>
       </div>
     </section>
+
+    <style id="terra3d-styles">
+      /* Terra3D (Globe & Orbit Rings) */
+      .t3-bg {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(ellipse at 50% 55%, #071426 0%, #030812 70%);
+      }
+      .t3-glow {
+        position: absolute;
+        width: 190px;
+        height: 190px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0, 240, 204, 0.28) 0%, transparent 68%);
+        animation: t3-pulse 4s ease-in-out infinite alternate;
+      }
+      @keyframes t3-pulse {
+        0% {
+          transform: scale(0.92);
+          opacity: 0.55;
+        }
+        100% {
+          transform: scale(1.14);
+          opacity: 1;
+        }
+      }
+      .t3-stars {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(1px 1px at 18% 24%, rgba(255, 255, 255, 0.75) 50%, transparent 50%),
+          radial-gradient(1px 1px at 74% 18%, rgba(255, 255, 255, 0.55) 50%, transparent 50%),
+          radial-gradient(1px 1px at 86% 62%, rgba(255, 255, 255, 0.7) 50%, transparent 50%),
+          radial-gradient(1px 1px at 30% 78%, rgba(255, 255, 255, 0.5) 50%, transparent 50%),
+          radial-gradient(1px 1px at 62% 86%, rgba(255, 255, 255, 0.6) 50%, transparent 50%),
+          radial-gradient(1px 1px at 8% 58%, rgba(255, 255, 255, 0.45) 50%, transparent 50%);
+        animation: t3-twinkle 5s ease-in-out infinite alternate;
+      }
+      @keyframes t3-twinkle {
+        0% {
+          opacity: 0.35;
+        }
+        100% {
+          opacity: 0.9;
+        }
+      }
+      .t3-globe {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        z-index: 2;
+        animation: t3-float 6s ease-in-out infinite alternate;
+      }
+      @keyframes t3-float {
+        0% {
+          transform: translateY(-5px);
+        }
+        100% {
+          transform: translateY(5px);
+        }
+      }
+      .t3-core {
+        position: absolute;
+        inset: 14px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 34% 30%, #1d7a8c 0%, #0d3a4d 55%, #06131f 100%);
+        box-shadow: inset -10px -10px 26px rgba(0, 0, 0, 0.65), 0 0 26px rgba(0, 240, 204, 0.32);
+      }
+      .t3-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 240, 204, 0.42);
+      }
+      .t3r-1 {
+        animation: t3-spin 9s linear infinite;
+      }
+      .t3r-2 {
+        inset: 6px;
+        border-color: rgba(94, 212, 245, 0.34);
+        animation: t3-spin 13s linear infinite reverse;
+      }
+      .t3r-3 {
+        inset: -8px;
+        border-style: dashed;
+        border-color: rgba(0, 240, 204, 0.22);
+        animation: t3-spin 20s linear infinite;
+      }
+      @keyframes t3-spin {
+        0% {
+          transform: rotateX(72deg) rotateZ(0deg);
+        }
+        100% {
+          transform: rotateX(72deg) rotateZ(360deg);
+        }
+      }
+      body.lm .t3-bg {
+        background: radial-gradient(ellipse at 50% 55%, #dff3f6 0%, #eef4f8 70%) !important;
+      }
+      body.lm .t3-core {
+        background: radial-gradient(circle at 34% 30%, #3aa7bd 0%, #17607a 60%, #0b3550 100%) !important;
+      }
+      body.lm .t3-stars {
+        opacity: 0.18 !important;
+      }
+    </style>
 
     <style id="edu-styles">
       /* Career (Briefcase & Network) */

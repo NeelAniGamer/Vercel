@@ -7,10 +7,10 @@
   "scripts": {
     "dev": "vite",
     "build:web": "tsc --noEmit && vite build --mode web",
-    "build:electron": "tsc --noEmit && vite build --mode electron && electron-builder",
-    "electron:dev": "vite --mode electron && electron .",
-    "electron:build": "vite build --mode electron && electron-builder",
-    "electron:portable": "vite build --mode electron && electron-builder --portable",
+    "build:electron": "npx esbuild electron/main.ts electron/preload.ts --outdir=electron --platform=node --format=cjs && tsc --noEmit && vite build --mode electron && electron-builder",
+    "electron:dev": "npx esbuild electron/main.ts electron/preload.ts --outdir=electron --platform=node --format=cjs && vite --mode electron && electron .",
+    "electron:build": "npx esbuild electron/main.ts electron/preload.ts --outdir=electron --platform=node --format=cjs && vite build --mode electron && electron-builder",
+    "electron:portable": "npx esbuild electron/main.ts electron/preload.ts --outdir=electron --platform=node --format=cjs && vite build --mode electron && electron-builder --portable",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test:smoke": "node pw_test.js"
@@ -39,10 +39,8 @@
     },
     "files": [
       "dist/**/*",
-      "electron/**/*",
-      "Models/**/*",
-      "textures/**/*",
-      "levels/**/*"
+      "electron/**/*.js",
+      "!electron/**/*.ts"
     ],
     "extraResources": [
       {

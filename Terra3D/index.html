@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terra3D - Interactive World Atlas</title>
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Global Error Handler to debug browser console issues directly on screen -->
+  <script>
+    window.addEventListener('error', function(e) {
+      const errDiv = document.createElement('div');
+      errDiv.style.position = 'fixed';
+      errDiv.style.top = '0';
+      errDiv.style.left = '0';
+      errDiv.style.width = '100%';
+      errDiv.style.backgroundColor = '#ff4757';
+      errDiv.style.color = '#fff';
+      errDiv.style.padding = '20px';
+      errDiv.style.zIndex = '9999';
+      errDiv.style.fontFamily = 'monospace';
+      errDiv.style.fontSize = '14px';
+      errDiv.style.whiteSpace = 'pre-wrap';
+      errDiv.innerHTML = '<strong>[Terra3D Critical Error]:</strong> ' + e.message + ' at ' + e.filename + ':' + e.lineno;
+      document.body.appendChild(errDiv);
+    });
+  </script>
+
+  <!-- Import Map for Three.js CDN (no npm required) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- Full-screen container for Three.js canvas -->
+  <div id="globe-container"></div>
+
+  <!-- Full-screen loading overlay -->
+  <div id="loading-screen">
+    <div class="loading-globe-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="globe-spinner-svg">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+        <path d="M2 12h20"></path>
+      </svg>
+    </div>
+    <div class="loading-text">Initializing Terra3D...</div>
+    <div id="loading-bar">
+      <div id="loading-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header id="top-bar" class="game-hud">
+    <div class="logo">TERRA3D</div>
+    <div id="search-container">
+      <input id="country-search" type="text" placeholder="Search any country..." autocomplete="off">
+      <div id="search-results"></div>
+    </div>
+    <div class="top-bar-controls">
+      <span id="fps-counter">60 FPS</span>
+      <span id="resolution-badge">1440p QHD</span>
+      <button id="settings-btn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="gear-icon">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Menu Overlay -->
+  <div id="main-menu" class="visible">
+    <div class="menu-content">
+      <h1 class="menu-title">TERRA3D</h1>
+      <p class="menu-tagline">Experience the world like never before. Explore continents, deep historical timelines, current demographic insights, and cultural treasures on an interactive 3D globe.</p>
+      
+      <div class="menu-actions">
+        <button id="play-btn">
+          <span>EXPLORE WORLD</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="play-icon">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+        </button>
+        
+        <button id="menu-settings-btn" class="secondary-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>SETTINGS</span>
+        </button>
+      </div>
+      <div class="menu-credits-highlight">Made by Aryaman</div>
+    </div>
+    
+    <div class="menu-footer">
+      Powered by Class of Learners [CoL] • Sneh Asha Foundation
+    </div>
+  </div>
+
+  <!-- Floating Tooltip -->
+  <div id="country-tooltip">
+    <span id="tooltip-name"></span>
+    <span id="tooltip-region"></span>
+  </div>
+
+  <!-- Side Drawer Panel -->
+  <div id="info-drawer">
+    <div id="drawer-header">
+      <div id="drawer-country-flag"></div>
+      <h2 id="drawer-country-name"></h2>
+      <span id="drawer-country-subtitle"></span>
+      <button id="drawer-close">&times;</button>
+    </div>
+    <div id="drawer-tabs">
+      <button class="drawer-tab" data-tab="history">📜 History</button>
+      <button class="drawer-tab" data-tab="demographics">📊 Current State</button>
+      <button class="drawer-tab" data-tab="geography">🌍 Geography</button>
+      <button class="drawer-tab" data-tab="culture">🎭 Culture</button>
+    </div>
+    <div id="drawer-content">
+      <div id="tab-history" class="tab-panel"></div>
+      <div id="tab-demographics" class="tab-panel"></div>
+      <div id="tab-geography" class="tab-panel"></div>
+      <div id="tab-culture" class="tab-panel"></div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal">
+    <div id="settings-panel">
+      <div class="settings-panel-header">
+        <h3>Settings</h3>
+        <button id="settings-close">&times;</button>
+      </div>
+
+      <!-- Settings Tab buttons -->
+      <div class="settings-tabs">
+        <button class="settings-tab-btn active" data-settings-tab="preferences">Preferences</button>
+        <button class="settings-tab-btn" data-settings-tab="credits">Credits</button>
+      </div>
+
+      <!-- Tab Contents -->
+      <div class="settings-tab-content">
+        <!-- Preferences Tab Panel -->
+        <div id="settings-tab-preferences" class="settings-tab-panel active">
+          <div class="setting-group">
+            <label>Resolution Mode</label>
+            <div class="setting-options">
+              <label class="radio-label">
+                <input type="radio" name="resolution" value="480p">
+                <span>480p SD</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="resolution" value="720p">
+                <span>720p HD</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="resolution" value="1440p" checked>
+                <span>1440p QHD</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="resolution" value="4k">
+                <span>4K UHD</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <label>Theme Mode</label>
+            <div class="setting-options">
+              <label class="radio-label">
+                <input type="radio" name="theme" value="dark" checked>
+                <span>Black Mode</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="theme" value="light">
+                <span>Off-White Mode</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <label>Auto Rotate</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="auto-rotate-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-group">
+            <label>Atmosphere</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="atmosphere-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-group">
+            <label>Country Borders</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="borders-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-group">
+            <label>Bold Outlines</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="bold-borders-toggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-header-row">
+              <label for="sensitivity-slider">Rotation Sensitivity</label>
+              <span id="sensitivity-value" class="setting-value-badge">1.0x</span>
+            </div>
+            <input type="range" id="sensitivity-slider" class="setting-slider" min="0.2" max="3.0" step="0.1" value="1.0">
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-header-row">
+              <label for="glow-slider">Atmosphere Glow</label>
+              <span id="glow-value" class="setting-value-badge">60%</span>
+            </div>
+            <input type="range" id="glow-slider" class="setting-slider" min="0" max="100" value="60">
+          </div>
+        </div>
+
+        <!-- Credits Tab Panel -->
+        <div id="settings-tab-credits" class="settings-tab-panel">
+          <div class="credits-container">
+            <div class="credits-item">
+              <div class="credits-role">Owner</div>
+              <div class="credits-name">Aryaman J.</div>
+            </div>
+            <div class="credits-item">
+              <div class="credits-role">Game Designer</div>
+              <div class="credits-name">Aryaman J., Ansh P., Neel B.</div>
+            </div>
+            <div class="credits-item">
+              <div class="credits-role">MasterMind</div>
+              <div class="credits-name font-gradient">Aryaman J., Ansh P., Neel B.</div>
+            </div>
+            <div class="credits-item">
+              <div class="credits-role">Belongs to</div>
+              <div class="credits-name col-badge">Class of Learners [CoL]</div>
+            </div>
+            <div class="credits-item powered-by">
+              <div class="credits-role">Co-Powered By</div>
+              <div class="credits-brand">Sneh Asha Foundation</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom-left Controls Hint -->
+  <div id="controls-hint" class="game-hud">Right-click drag to rotate • Scroll to zoom • Click country to explore</div>
+
+  <!-- Main JavaScript Module -->
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
