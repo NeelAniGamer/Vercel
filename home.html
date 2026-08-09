@@ -1946,32 +1946,6 @@
               Preview <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></a>
-        <a href="Terra3D/" class="pc ct" data-delay="400"
-          ><div class="pv" style="background: #030812">
-            <div class="t3-bg">
-              <div class="t3-glow"></div>
-              <div class="t3-stars"></div>
-              <div class="t3-globe">
-                <div class="t3-ring t3r-1"></div>
-                <div class="t3-ring t3r-2"></div>
-                <div class="t3-ring t3r-3"></div>
-                <div class="t3-core"></div>
-              </div>
-            </div>
-          </div>
-          <div class="pb">
-            <div class="pn">06 &mdash; 3D Atlas</div>
-            <h3 class="pname">Terra3D World Atlas</h3>
-            <p class="pdesc">
-              An interactive 3D globe built on WebGL. Explore every country with live demographic data, historical timelines, and cultural insights rendered on a fully navigable planetary surface.
-            </p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">Three.js</span><span class="tag">WebGL</span><span class="tag">Geo Data</span></div>
-            <div class="plink">
-              Explore Globe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div></div
-        ></a>
       </div>
     </section>
 
@@ -2082,6 +2056,57 @@
       }
       body.lm .t3-stars {
         opacity: 0.18 !important;
+      }
+
+      /* Full-width Terra3D card: spans all 3 educational columns */
+      .pgrid .pc.t3-wide {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 42% 1fr;
+        grid-template-rows: 1fr auto;
+        align-items: stretch;
+      }
+      .pgrid .pc.t3-wide .pv {
+        grid-column: 1;
+        grid-row: 1 / -1;
+        height: 100%;
+        min-height: 280px;
+      }
+      .pgrid .pc.t3-wide .pb {
+        grid-column: 2;
+        grid-row: 1;
+        justify-content: center;
+        padding: 34px 34px 12px;
+      }
+      .pgrid .pc.t3-wide .pf {
+        grid-column: 2;
+        grid-row: 2;
+      }
+      .pgrid .pc.t3-wide .pname {
+        font-size: 1.9rem;
+      }
+      .pgrid .pc.t3-wide .pdesc {
+        max-width: 62ch;
+      }
+      .pgrid .pc.t3-wide .t3-globe {
+        width: 150px;
+        height: 150px;
+      }
+      @media (max-width: 900px) {
+        .pgrid .pc.t3-wide {
+          display: flex;
+          flex-direction: column;
+        }
+        .pgrid .pc.t3-wide .pv {
+          height: 230px;
+          min-height: 0;
+        }
+        .pgrid .pc.t3-wide .pb {
+          padding: 26px 28px 20px;
+        }
+        .pgrid .pc.t3-wide .pname {
+          font-size: 1.5rem;
+        }
       }
     </style>
 
@@ -2744,6 +2769,34 @@
             <div class="ptags"><span class="tag">Educational</span><span class="tag">Traffic</span></div>
             <div class="plink">
               Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="Terra3D/" class="pc ct t3-wide" data-delay="240">
+          <div class="pv" style="background: #030812">
+            <div class="t3-bg">
+              <div class="t3-glow"></div>
+              <div class="t3-stars"></div>
+              <div class="t3-globe">
+                <div class="t3-ring t3r-1"></div>
+                <div class="t3-ring t3r-2"></div>
+                <div class="t3-ring t3r-3"></div>
+                <div class="t3-core"></div>
+              </div>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">04 &mdash; 3D Atlas</div>
+            <h3 class="pname">Terra3D World Atlas</h3>
+            <p class="pdesc">
+              An interactive 3D globe built on WebGL. Explore every country with live demographic data, historical timelines, and cultural insights rendered on a fully navigable planetary surface.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Three.js</span><span class="tag">WebGL</span><span class="tag">Geo Data</span></div>
+            <div class="plink">
+              Explore Globe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div>
           </div>
         </a>

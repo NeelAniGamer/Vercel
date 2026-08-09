@@ -1053,7 +1053,12 @@ const DYN=[
   {id:'event',icon:'📅',name:'Event',desc:'Promote ticket sales'},
   {id:'feedback',icon:'⭐',name:'Review',desc:'Collect customer ratings'},
   {id:'maps',icon:'📍',name:'Location',desc:'Google Maps drop pin'},
-  {id:'menu',icon:'🍔',name:'Menu',desc:'Restaurant digital menu'}
+  {id:'menu',icon:'🍔',name:'Menu',desc:'Restaurant digital menu'},
+  {id:'appstore',icon:'📱',name:'App Store',desc:'Smart app store redirect (iOS/Android)'},
+  {id:'calendar',icon:'📅',name:'Calendar Event',desc:'Add event to calendar'},
+  {id:'payment',icon:'💳',name:'Payment Link',desc:'Stripe/PayPal checkout redirect'},
+  {id:'coupon',icon:'🎫',name:'Coupon',desc:'Redeemable discount code'},
+  {id:'survey',icon:'📋',name:'Survey',desc:'Feedback or NPS form'}
 ];
 const STA=[
   {id:'text',icon:'📝',name:'Raw Text',desc:'Displays encoded plain text'},
@@ -1077,6 +1082,11 @@ const FORMS={
   event:`<div><label class="fl">Ticketing / Event Link</label><input class="fi" id="f0" type="url" placeholder="https://eventbrite.com/..." oninput="lu()"></div>`,
   feedback:`<div><label class="fl">Review Form Link</label><input class="fi" id="f0" type="url" placeholder="https://forms.google.com/..." oninput="lu()"></div>`,
   menu:`<div><label class="fl">Digital Menu Link</label><input class="fi" id="f0" type="url" placeholder="https://..." oninput="lu()"></div>`,
+  appstore:`<div><label class="fl">App Store Link (iOS) *</label><input class="fi" id="f0" type="url" placeholder="https://apps.apple.com/app/id..." oninput="lu()"></div><div><label class="fl">Play Store Link (Android) *</label><input class="fi" id="f1" type="url" placeholder="https://play.google.com/store/apps/details?id=..." oninput="lu()"></div>`,
+  calendar:`<div><label class="fl">Event Title *</label><input class="fi" id="f0" placeholder="Team Meeting" oninput="lu()"></div><div class="fr2"><div><label class="fl">Start Date/Time *</label><input class="fi" id="f1" type="datetime-local" oninput="lu()"></div><div><label class="fl">End Date/Time *</label><input class="fi" id="f2" type="datetime-local" oninput="lu()"></div></div><div><label class="fl">Description</label><textarea class="fi" id="f3" placeholder="Event details..." oninput="lu()"></textarea></div><div><label class="fl">Location</label><input class="fi" id="f4" placeholder="Office / Zoom link" oninput="lu()"></div>`,
+  payment:`<div><label class="fl">Checkout URL *</label><input class="fi" id="f0" type="url" placeholder="https://checkout.stripe.com/..." oninput="lu()"></div><div><label class="fl">Amount (optional)</label><input class="fi" id="f1" type="number" step="0.01" placeholder="9.99" oninput="lu()"></div><div><label class="fl">Currency</label><select class="fi" id="f2" oninput="lu()"><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="INR">INR</option></select></div>`,
+  coupon:`<div><label class="fl">Coupon Code *</label><input class="fi" id="f0" placeholder="SAVE20" oninput="lu()"></div><div><label class="fl">Discount (%)</label><input class="fi" id="f1" type="number" min="1" max="100" placeholder="20" oninput="lu()"></div><div><label class="fl">Expiry Date</label><input class="fi" id="f2" type="date" oninput="lu()"></div>`,
+  survey:`<div><label class="fl">Survey Form URL *</label><input class="fi" id="f0" type="url" placeholder="https://forms.google.com/..." oninput="lu()"></div><div><label class="fl">Incentive (optional)</label><input class="fi" id="f1" placeholder="10% off next order" oninput="lu()"></div>`,
   'vcard+':`<div><label class="fl">vCard Plus Hub</label><input class="fi" id="f0" type="url" placeholder="https://..." oninput="lu()"></div>`,
   text:`<div><label class="fl">Raw Plain Text *</label><textarea class="fi" id="f0" placeholder="Enter alphanumeric text to encode..." oninput="lu()"></textarea></div>`,
   vcard:`
@@ -1125,7 +1135,58 @@ function getContent(){
         return `mailto:${g('em0')}?subject=${encodeURIComponent(g('em1'))}&body=${encodeURIComponent(g('em2'))}`;
       }
       case 'sms': return `sms:${g('sm0')}?body=${encodeURIComponent(g('sm1'))}`;
-      default: return g('f0') || 'https://classoflearners.com';
+      case 'appstore':{
+        const ios=g('f0');const android=g('f1');
+        return `https://advancedlogiclabs.dpdns.org/qr/a/${window.activeQrId}?ios=${encodeURIComponent(ios)}&android=${encodeURIComponent(android)}`;
+      }
+      case 'calendar':{
+        const title=encodeURIComponent(g('f0'));
+        const start=g('f1').replace(/[-:]/g,'').replace('T','');
+        const end=g('f2').replace(/[-:]/g,'').replace('T','');
+        const desc=encodeURIComponent(g('f3'));
+        const loc=encodeURIComponent(g('f4'));
+        return `https://advancedlogiclabs.dpdns.org/qr/cal/${window.activeQrId}?title=${title}&start=${start}&end=${end}&desc=${desc}&loc=${loc}`;
+      }
+      case 'payment':{
+        return `https://advancedlogiclabs.dpdns.org/qr/pay/${window.activeQrId}?amount=${g('f1')||''}&currency=${g('f2')||'USD'}&redirect=${encodeURIComponent(g('f0'))}`;
+      }
+      case 'coupon':{
+        return `https://advancedlogiclabs.dpdns.org/qr/cpn/${window.activeQrId}?code=${g('f0')}&discount=${g('f1')}&expiry=${g('f2')}`;
+      }
+      case 'survey':{
+        return `https://advancedlogiclabs.dpdns.org/qr/svy/${window.activeQrId}?url=${encodeURIComponent(g('f0'))}&incentive=${encodeURIComponent(g('f1')||'')}`;
+      }
+      case 'vcard+':{
+        return `https://advancedlogiclabs.dpdns.org/qr/vcard/${window.activeQrId}?data=${encodeURIComponent(getContent().replace('vcard','text'))}`;
+      }
+      case 'links':{
+        return `https://advancedlogiclabs.dpdns.org/qr/links/${window.activeQrId}`;
+      }
+      case 'feedback':{
+        return `https://advancedlogiclabs.dpdns.org/qr/fdb/${window.activeQrId}`;
+      }
+      case 'business':{
+        return `https://advancedlogiclabs.dpdns.org/qr/biz/${window.activeQrId}?url=${encodeURIComponent(g('f0'))}`;
+      }
+      case 'event':{
+        return `https://advancedlogiclabs.dpdns.org/qr/evt/${window.activeQrId}`;
+      }
+      case 'maps':{
+        return `https://advancedlogiclabs.dpdns.org/qr/loc/${window.activeQrId}?url=${encodeURIComponent(g('f0'))}`;
+      }
+      case 'menu':{
+        return `https://advancedlogiclabs.dpdns.org/qr/menu/${window.activeQrId}`;
+      }
+      case 'images':{
+        return `https://advancedlogiclabs.dpdns.org/qr/gal/${window.activeQrId}`;
+      }
+      case 'video':{
+        return `https://advancedlogiclabs.dpdns.org/qr/vid/${window.activeQrId}?url=${encodeURIComponent(g('f0'))}`;
+      }
+      case 'social':{
+        return `https://advancedlogiclabs.dpdns.org/qr/soc/${window.activeQrId}`;
+      }
+      default: return g('f0') || 'https://advancedlogiclabs.dpdns.org';
     }
   }catch(e){return 'https://classoflearners.com';}
 }
@@ -1695,7 +1756,7 @@ function dlQR(ext){
 }
 
 function validateContent(){
-  const urlTypes=['url','pdf','images','video','social','maps','links','business','event','feedback','menu','vcard+'];
+  const urlTypes=['url','pdf','images','video','social','maps','links','business','event','feedback','menu','vcard+','appstore','calendar','payment','coupon','survey'];
   if(urlTypes.indexOf(selType)!==-1){
     const u=(g('f0')||'').trim();
     if(!u) return {ok:false,msg:'Please enter a URL.'};
@@ -1708,6 +1769,11 @@ function validateContent(){
   if(selType==='email'){ if(!(g('em0')||'').trim()) return {ok:false,msg:'Please enter an email address.'}; }
   if(selType==='sms'){ if(!(g('sm0')||'').trim()) return {ok:false,msg:'Please enter a phone number.'}; }
   if(selType==='phone'){ if(!(g('ph0')||'').trim()) return {ok:false,msg:'Please enter a phone number.'}; }
+  if(selType==='appstore'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter an iOS App Store link.'}; if(!(g('f1')||'').trim()) return {ok:false,msg:'Please enter an Android Play Store link.'}; }
+  if(selType==='calendar'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Event title is required.'}; if(!(g('f1')||'').trim()) return {ok:false,msg:'Start date/time is required.'}; }
+  if(selType==='payment'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter a checkout URL.'}; }
+  if(selType==='coupon'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Coupon code is required.'}; }
+  if(selType==='survey'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Survey form URL is required.'}; }
   return {ok:true};
 }
 
@@ -1751,6 +1817,16 @@ function saveQR(silent = false){
         schedEnd: document.getElementById('advSchedEnd') ? document.getElementById('advSchedEnd').value : null
     };
 
+    // Preserve shortCode for dynamic QRs when editing
+    let existingShortCode = null;
+    if (editId) {
+        const existing = saved.find(x => x.id === parseInt(editId));
+        if (existing && existing.shortCode) existingShortCode = existing.shortCode;
+    }
+
+    const shortCode = existingShortCode || (isDynamic ? DYNAMIC_QR.generateShortCode() : null);
+    const shortUrl = shortCode ? `https://advancedlogiclabs.dpdns.org/qr/r/${shortCode}` : null;
+
     const entry={
         id: idToSave, 
         type:selType, 
@@ -1761,6 +1837,8 @@ function saveQR(silent = false){
         date:new Date().toLocaleDateString(), 
         opts:finalOpts,
         isDynamic: isDynamic,
+        shortCode: shortCode,
+        shortUrl: shortUrl,
         advSettings: advSettings
     };
     
@@ -2131,6 +2209,190 @@ document.addEventListener('keydown', function(e){
 function toggleTheme(element){
     if(element && element.checked){ document.body.classList.remove('light'); Storage.set('theme', 'dark'); }
     else{ document.body.classList.add('light'); Storage.set('theme', 'light'); }
+  }
+
+// â”€â”€ DYNAMIC QR MODULE (QRFY-style) â”€â”€
+const DYNAMIC_QR = {
+  baseUrl: 'https://advancedlogiclabs.dpdns.org/qr',
+  shortDomain: 'cl.ink',
+  
+  generateShortCode: function() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for(let i=0; i<6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    return code;
+  },
+  
+  create: function(qrData) {
+    const shortCode = this.generateShortCode();
+    const entry = {
+      id: Date.now(),
+      shortCode: shortCode,
+      shortUrl: `${this.baseUrl}/r/${shortCode}`,
+      destination: qrData.destination,
+      type: qrData.type,
+      title: qrData.title || '',
+      password: qrData.password || null,
+      expiry: qrData.expiry || null,
+      schedule: qrData.schedule || null,
+      utmcp tool codex
+    };
+    return entry;
+  },
+  
+  updateDestination: function(shortCode, newDestination) {
+    const stored = this.getAll();
+    const idx = stored.findIndex(q => q.shortCode === shortCode);
+    if(idx !== -1) {
+      stored[idx].destination = newDestination;
+      stored[idx].updated = new Date().toISOString();
+      this.saveAll(stored);
+      return true;
+    }
+    return false;
+  },
+  
+  trackScan: function(shortCode, scanData) {
+    const stored = this.getAll();
+    const idx = stored.findIndex(q => q.shortCode === shortCode);
+    if(idx !== -1) {
+      stored[idx].scans = (stored[idx].scans || 0) + 1;
+      const ipHash = this.hashIP(scanData.ip);
+      if(!stored[idx].uniqueIPs) stored[idx].uniqueIPs = new Set();
+      const wasNew = !stored[idx].uniqueIPs.has(ipHash);
+      stored[idx].uniqueIPs.add(ipHash);
+      stored[idx].uniqueScans = stored[idx].uniqueIPs.size;
+      
+      stored[idx].analytics.push({
+        time: new Date().toISOString(),
+        ip: ipHash,
+        country: scanData.country || 'Unknown',
+        city: scanData.city || 'Unknown',
+        device: scanData.device || 'Unknown',
+        os: scanData.os || 'Unknown',
+        browser: scanData.browser || 'Unknown',
+        referrer: scanData.referrer || 'Direct'
+      });
+      this.saveAll(stored);
+    }
+  },
+  
+  checkPassword: function(shortCode, password) {
+    const stored = this.getAll();
+    const entry = stored.find(q => q.shortCode === shortCode);
+    if(!entry || !entry.password) return true;
+    return entry.password === this.hashPassword(password);
+  },
+  
+  isExpired: function(entry) {
+    if(!entry.expiry) return false;
+    return new Date(entry.expiry) < new Date();
+  },
+  
+  isActive: function(entry) {
+    if(entry.schedule) {
+      const now = new Date();
+      const start = entry.schedule.start ? new Date(entry.schedule.start) : null;
+      const end = entry.schedule.end ? new Date(entry.schedule.end) : null;
+      if(start && now < start) return false;
+      if(end && now > end) return false;
+    }
+    return true;
+  },
+  
+  getAnalytics: function(shortCode, period = '30d') {
+    const entry = this.getAll().find(q => q.shortCode === shortCode);
+    if(!entry) return null;
+    
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - parseInt(period));
+    
+    const filtered = entry.analytics.filter(a => new Date(a.time) >= cutoff);
+    
+    const byDay = {};
+    filtered.forEach(a => { const day = a.time.split('T')[0]; byDay[day] = (byDay[day] || 0) + 1; });
+    
+    const byCountry = {}; filtered.forEach(a => { byCountry[a.country] = (byCountry[a.country] || 0) + 1; });
+    const byDevice = {}; filtered.forEach(a => { byDevice[a.device] = (byDevice[a.device] || 0) + 1; });
+    const byOS = {}; filtered.forEach(a => { byOS[a.os] = (byOS[a.os] || 0) + 1; });
+    const byBrowser = {}; filtered.forEach(a => { byBrowser[a.browser] = (byBrowser[a.browser] || 0) + 1; });
+    
+    return {
+      totalScans: entry.scans,
+      uniqueScans: entry.uniqueScans,
+      scansToday: filtered.filter(a => a.time.startsWith(new Date().toISOString().split('T')[0])).length,
+      scansThisWeek: filtered.filter(a => new Date(a.time) >= new Date(Date.now() - 7*86400000)).length,
+      byDay: byDay, byCountry: byCountry, byDevice: byDevice, byOS: byOS, byBrowser: byBrowser,
+      recentScans: entry.analytics.slice(-50)
+    };
+  },
+  
+  exportCSV: function(shortCode) {
+    const entry = this.getAll().find(q => q.shortCode === shortCode);
+    if(!entry) return '';
+    const headers = ['Time','Country','City','Device','OS','Browser','Referrer','IP Hash'];
+    const rows = entry.analytics.map(a => [a.time, a.country, a.city, a.device, a.os, a.browser, a.referrer, a.ip]);
+    return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  },
+  
+  getAll: function() {
+    try { return JSON.parse(localStorage.getItem('col_dynamic_qr')) || []; }
+    catch(e) { return []; }
+  },
+  saveAll: function(data) { localStorage.setItem('col_dynamic_qr', JSON.stringify(data)); },
+  getByCode: function(shortCode) { return this.getAll().find(q => q.shortCode === shortCode); },
+  
+  hashIP: function(ip) {
+    let hash = 0; for(let i=0;i<ip.length;i++) hash = ((hash<<5)-hash)+ip.charCodeAt(i), hash|=0;
+    return 'ip_'+Math.abs(hash).toString(36);
+  },
+  hashPassword: function(pwd) {
+    let hash = 0; for(let i=0;i<pwd.length;i++) hash = ((hash<<5)-hash)+pwd.charCodeAt(i), hash|=0;
+    return 'pwd_'+Math.abs(hash).toString(36);
+  },
+  
+  bulkCreate: function(items) {
+    const results = items.map(item => this.create(item));
+    this.saveAll([...this.getAll(), ...results]);
+    return results;
+  },
+  
+  bulkDelete: function(shortCodes) {
+    const stored = this.getAll().filter(q => !shortCodes.includes(q.shortCode));
+    this.saveAll(stored);
+  },
+  
+  templates: {
+    getAll: function() {
+      try { return JSON.parse(localStorage.getItem('col_qr_templates')) || []; }
+      catch(e) { return []; }
+    },
+    save: function(template) {
+      const all = this.getAll();
+      template.id = Date.now();
+      template.created = new Date().toISOString();
+      all.push(template);
+      localStorage.setItem('col_qr_templates', JSON.stringify(all));
+      return template;
+    },
+    delete: function(id) {
+      const all = this.getAll().filter(t => t.id !== id);
+      localStorage.setItem('col_qr_templates', JSON.stringify(all));
+    },
+    apply: function(template, qrData) {
+      return { ...qrData, ...template, id: Date.now(), shortCode: DYNAMIC_QR.generateShortCode() };
+    }
+  }
+};
+
+if(!localStorage.getItem('col_qr_templates')) {
+  DYNAMIC_QR.templates.saveAll([
+    {id:1,name:'Business Card',type:'vcard',opts:{dotsOptions:{type:'extra-rounded',color:'#3b82f6'},cornersSquareOptions:{type:'extra-rounded',color:'#2dd4bf'},backgroundOptions:{color:'#ffffff'}}},
+    {id:2,name:'Wi-Fi Neon',type:'wifi',opts:{dotsOptions:{type:'extra-rounded',color:'#10b981'},cornersSquareOptions:{type:'extra-rounded',color:'#f59e0b'},backgroundOptions:{color:'#0f172a'}}},
+    {id:3,name:'Minimal Menu',type:'url',opts:{dotsOptions:{type:'square',color:'#111827'},cornersSquareOptions:{type:'square',color:'#111827'},backgroundOptions:{color:'#fafafa'}}},
+    {id:4,name:'Social Hub',type:'url',opts:{dotsOptions:{type:'dot',color:'#8b5cf6'},cornersSquareOptions:{type:'dot',color:'#6366f1'},backgroundOptions:{color:'#faf5ff'}}},
+    {id:5,name:'Event Promo',type:'event',opts:{dotsOptions:{type:'classy',color:'#f97316'},cornersSquareOptions:{type:'extra-rounded',color:'#ea580c'},backgroundOptions:{color:'#fff7ed'}}}
+  ]);
 }
 </script>
 

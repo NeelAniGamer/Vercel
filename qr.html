@@ -1787,23 +1787,103 @@
           })
         }).catch(function(){ toast('Chart library failed to load', 'err') })
 
-        // Render accordions
-        const accList = ['Scans by day', 'Scans by operating system', 'Scans by country', 'Scans by region/city', 'Scans by browser', 'Scans by user language', 'Scans by QR name']
-        let accHtml = ''
-        accList.forEach((title) => {
+        // Render accordions with actual analytics data
+        const dynamicQrCodes = saved.filter(q => q.isDynamic || DYNAMIC.some(x => x.id === q.type));
+        let accHtml = '';
+        
+        dynamicQrCodes.forEach((qr) => {
+          if(!qr.shortCode) return;
+          const analytics = DYNAMIC_QR.getAnalytics(qr.shortCode, '30d');
+          if(!analytics) return;
+          
+          const byDay = analytics.byDay || {};
+          const byCountry = analytics.byCountry || {};
+          const byDevice = analytics.byDevice || {};
+          const byOS = analytics.byOS || {};
+          const byBrowser = analytics.byBrowser || {};
+          
           accHtml += `
-            <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden; transition:0.3s;" class="acc-box">
+            <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden; transition:0.3s; margin-bottom:15px;" class="acc-box">
                 <button style="width:100%; padding:20px; background:transparent; border:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer; color:var(--txt); font-weight:700; font-size:1rem;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('svg').style.transform = this.nextElementSibling.style.display === 'block' ? 'rotate(180deg)' : 'rotate(0deg)';">
-                    ${title}
+                    ${qr.typeIcon || '⬛'} ${qr.typeName || qr.type} ${qr.advSettings?.name || ''}
+                    <span style="font-size:0.85rem; color:var(--txt-m); font-weight:500;">${analytics.totalScans} scans / ${analytics.uniqueScans} unique</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:0.3s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
                 <div style="display:none; padding: 0 20px 20px 20px; color:var(--txt-m); font-size:0.9rem; border-top:1px solid rgba(255,255,255,0.05);">
-                    <div style="padding-top:20px;">No data available for the selected period.</div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; padding-top:20px;">
+                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
+                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Total Scans</div>
+                            <div style="font-size:1.5rem; font-weight:800; color:var(--pri);">${analytics.totalScans}</div>
+                        </div>
+                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
+                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Unique Scans</div>
+                            <div style="font-size:1.5rem; font-weight:800; color:var(--pri);">${analytics.uniqueScans}</div>
+                        </div>
+                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
+                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Today</div>
+                            <div style="font-size:1.5rem; font-weight:800; color:var(--pri);">${analytics.scansToday}</div>
+                        </div>
+                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
+                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">This Week</div>
+                            <div style="font-size:1.5rem; font-weight:800; color:var(--pri);">${analytics.scansThisWeek}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px; margin-top:20px;">
+                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
+                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Top Countries</div>
+                            <div style="font-size:0.85rem; color:var(--txt);">
+                                ${Object.entries(analytics.byCountry).slice(0,5).map(([c,n]) => `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">${c} <strong>${n}</strong></div>`).join('') || 'No data'}
+                            </div>
+                        </div>
+                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
+                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Devices</div>
+                            <div style="font-size:0.85rem; color:var(--txt);">
+                                ${Object.entries(analytics.byDevice).map(([c,n]) => `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">${c} <strong>${n}</strong></div>`).join('') || 'No data'}
+                            </div>
+                        </div>
+                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
+                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Operating Systems</div>
+                            <div style="font-size:0.85rem; color:var(--txt);">
+                                ${Object.entries(analytics.byOS).map(([c,n]) => `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">${c} <strong>${n}</strong></div>`).join('') || 'No data'}
+                            </div>
+                        </div>
+                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
+                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Browsers</div>
+                            <div style="font-size:0.85rem; color:var(--txt);">
+                                ${Object.entries(analytics.byBrowser).map(([c,n]) => `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">${c} <strong>${n}</strong></div>`).join('') || 'No data'}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border);">
+                        <div style="font-weight:600; margin-bottom:10px; color:var(--txt);">Recent Scans</div>
+                        <div style="max-height:200px; overflow-y:auto; font-size:0.8rem; color:var(--txt-m);">
+                            ${analytics.recentScans.slice().reverse().map(s => `<div style="padding:8px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; gap:10px;"><span>${new Date(s.time).toLocaleString()}</span><span>${s.country}, ${s.city}</span><span>${s.device}/${s.os}</span><span>${s.browser}</span></div>`).join('') || '<div style="padding:20px; text-align:center; color:var(--txt-m);">No recent scans</div>'}
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:15px;">
+                            <button class="dbf" onclick="downloadAnalyticsCSV('${qr.shortCode}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Download CSV
+                            </button>
+                            <button class="dbf" onclick="copyShortUrl('${qr.shortUrl || qr.shortCode}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                                Copy Short URL
+                            </button>
+                            <button class="dbf" style="background:rgba(239,68,68,0.1); color:#f87171; border-color:#ef4444;" onclick="if(confirm('Delete this dynamic QR?')) { DYNAMIC_QR.bulkDelete(['${qr.shortCode}']); renderDB(); renderStats(); toast('Deleted', 'green'); }">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                                Delete
+                            </button>
+                        </div>
                 </div>
             </div>
-        `
-        })
-        document.getElementById('accordions-container').innerHTML = accHtml
+          `
+        });
+        
+        if(!accHtml) {
+          accHtml = '<div style="padding:50px; text-align:center; color:var(--txt-m);"><p>No dynamic QR codes found. Create one in the editor to see analytics.</p></div>';
+        }
+        document.getElementById('accordions-container').innerHTML = accHtml;
       }
 
       function renderTemplates() {
@@ -2054,9 +2134,31 @@
         toast('Logged out successfully.', '')
       }
 
-      async function syncDrive() {
+async function loadFromDrive() {
         toast('Cloud sync not yet implemented for QR Studio', 'yellow')
       }
+
+      function downloadAnalyticsCSV(shortCode) {
+        const csv = DYNAMIC_QR.exportCSV(shortCode);
+        if(!csv) { toast('No analytics data', ''); return; }
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `analytics-${shortCode}-${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        toast('CSV downloaded', 'green');
+      }
+
+      function copyShortUrl(code) {
+        const url = code.startsWith('http') ? code : `https://advancedlogiclabs.dpdns.org/qr/r/${code}`;
+        navigator.clipboard.writeText(url).then(() => {
+          toast('Short URL copied!', 'green');
+        }).catch(() => {
+          toast('Failed to copy', '');
+        });
+      }
+
+      async function syncDrive() {
 
       async function loadFromDrive() {
         toast('Cloud sync not yet implemented for QR Studio', 'yellow')

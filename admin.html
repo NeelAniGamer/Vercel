@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
     <style>
-      /* ���� ADMIN THEME VARIABLES ���� */
+      /* ADMIN THEME VARIABLES */
       :root {
         --bg-color: #0f172a;
         --text-main: #f8fafc;
@@ -60,7 +60,7 @@
         background: var(--primary);
       }
 
-      /* ���� SECURE LOCK SCREEN ���� */
+      /* SECURE LOCK SCREEN */
       .lock-screen {
         position: fixed;
         inset: 0;
@@ -116,7 +116,7 @@
         transform: translateY(-2px);
       }
 
-      /* ���� NAVBAR ���� */
+      /* NAVBAR */
       .top-nav {
         width: 100%;
         display: flex;
@@ -160,7 +160,7 @@
         box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
       }
 
-      /* ���� LAYOUT ���� */
+      /* LAYOUT */
       .container {
         max-width: 1400px;
         margin: 40px auto 80px;
@@ -198,7 +198,7 @@
         align-items: start;
       }
 
-      /* ���� FEEDBACK UI ���� */
+      /* FEEDBACK UI */
       .btn-clear {
         background: rgba(16, 185, 129, 0.1);
         color: var(--success);
@@ -351,7 +351,7 @@
         color: var(--text-main);
       }
 
-      /* ���� ROUTING CONTROLS UI ���� */
+      /* ROUTING CONTROLS UI */
       .controls-panel {
         background: var(--card-bg);
         border: 1px solid var(--border-light);
@@ -496,7 +496,7 @@
         box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
       }
 
-      /* ���� TOAST ���� */
+      /* TOAST */
       .toast {
         position: fixed;
         bottom: 30px;
@@ -522,7 +522,7 @@
         border-color: var(--success);
       }
 
-      /* ���� CONFIRM MODAL CLASSES ���� */
+      /* CONFIRM MODAL CLASSES */
       .mo {
         position: fixed;
         inset: 0;
@@ -587,7 +587,7 @@
         background: rgba(239, 68, 68, 0.1);
       }
 
-      /* ���� TABS ���� */
+      /* TABS */
       .tabs {
         display: flex;
         gap: 10px;
@@ -642,7 +642,7 @@
         }
       }
 
-      /* ���� MOBILE RESPONSIVENESS FIXES ���� */
+      /* MOBILE RESPONSIVENESS FIXES */
       @media (max-width: 1000px) {
         .admin-grid {
           grid-template-columns: 1fr;
@@ -774,7 +774,7 @@
             </div>
             <div style="display: flex; gap: 10px">
               <button class="btn-clear" onclick="renderFeedback()" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: rgba(16, 185, 129, 0.3); padding: 8px 15px">
-                � � Refresh
+                🔄 Refresh
               </button>
               <button class="btn-clear" onclick="clearAll()" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.3); padding: 8px 15px">Purge</button>
             </div>
@@ -843,7 +843,7 @@
           <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap">
             <input type="password" id="gh-token" class="banner-inp" style="flex: 1; margin-bottom: 0" placeholder="Enter GitHub Personal Access Token (PAT) with repo scope" />
             <button class="btn-clear" onclick="saveGhToken()" style="background: rgba(56, 189, 248, 0.1); color: var(--primary); border-color: rgba(56, 189, 248, 0.3)">Save Token</button>
-            <button class="btn-clear" onclick="loadGhFiles()" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: rgba(16, 185, 129, 0.3)">� � Fetch Files</button>
+            <button class="btn-clear" onclick="loadGhFiles()" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: rgba(16, 185, 129, 0.3)">🔄 Fetch Files</button>
           </div>
 
           <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap">
@@ -856,9 +856,9 @@
             id="builder-toolbar"
             style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: rgba(15, 23, 42, 0.5); padding: 10px; border-radius: 8px; border: 1px solid var(--border-light)"
           >
-            <button class="btn-clear" onclick="setIframeSize('100%')" style="flex: 1; border-color: var(--border-light); color: var(--text-main)">�x� Desktop</button>
-            <button class="btn-clear" onclick="setIframeSize('768px')" style="flex: 1; border-color: var(--border-light); color: var(--text-main)">�x� Tablet</button>
-            <button class="btn-clear" onclick="setIframeSize('375px')" style="flex: 1; border-color: var(--border-light); color: var(--text-main)">�x� Mobile</button>
+            <button class="btn-clear" onclick="setIframeSize('100%')" style="flex: 1; border-color: var(--border-light); color: var(--text-main)">🌐 Desktop</button>
+            <button class="btn-clear" onclick="setIframeSize('768px')" style="flex: 1; border-color: var(--border-light); color: var(--text-main)">📋 Tablet</button>
+            <button class="btn-clear" onclick="setIframeSize('375px')" style="flex: 1; border-color: var(--border-light); color: var(--text-main)">📋 Mobile</button>
             <button class="ms-save" id="gh-deploy-btn" onclick="deployGhFile()" style="margin-top: 0; padding: 10px 20px; width: auto">Deploy Changes Directly to Vercel</button>
           </div>
 
@@ -876,7 +876,7 @@
     <div class="mo" id="confirmMo">
       <div class="md" style="max-width: 400px; text-align: center">
         <div class="md-body" style="padding: 40px 30px">
-          <div style="font-size: 3rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.3))">�a�️</div>
+          <div style="font-size: 3rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.3))">📱</div>
           <h2 id="confirmTitle" style="font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main); text-transform: none">Confirm Action</h2>
           <p id="confirmMsg" style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; text-transform: none">Are you sure?</p>
           <div style="display: flex; gap: 15px">
@@ -937,7 +937,7 @@
                   buildRoutingUI();
               } else {
                   document.getElementById('lockBoxContent').innerHTML = `
-                      <div style="font-size:3.5rem; margin-bottom:15px; filter:drop-shadow(0 0 15px var(--danger));">�xa�</div>
+                      <div style="font-size:3.5rem; margin-bottom:15px; filter:drop-shadow(0 0 15px var(--danger));">🚧</div>
                       <h2 style="color:var(--danger)">Access Denied</h2>
                       <p>The account <b style="color:var(--text-main)">${window.colUser.email}</b> lacks administrative privileges.</p>
                       <button style="width: 100%; padding: 14px; background: transparent; border: 1px solid var(--danger); border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; color: var(--danger); transition: 0.3s; margin-top: 10px;" onclick="doLogoutAdmin()">Sign Out & Retry</button>
@@ -977,9 +977,9 @@
               grid.innerHTML = '';
               if(arr.length === 0) { grid.innerHTML = `<div class="empty"><h3>No Data Logs Found</h3></div>`; return; }
               arr.forEach(fb => {
-                  let stars = ''; for(let i=0; i<fb.rating; i++) stars += '��&';
+                  let stars = ''; for(let i=0; i<fb.rating; i++) stars += '⭐';
                   let dynamicContent = `<div class="fb-msg">"${fb.message}"</div>`;
-                  if (fb.device) dynamicContent += `<div class="fb-device">�x� ${fb.device}</div>`;
+                  if (fb.device) dynamicContent += `<div class="fb-device">🌐 ${fb.device}</div>`;
                   if (fb.steps) dynamicContent += `<div class="fb-steps"><strong>Steps to Reproduce:</strong><br>${fb.steps.replace(/\n/g, '<br>')}</div>`;
                   const card = document.createElement('div');
                   card.className = 'fb-card';
@@ -1013,9 +1013,9 @@
       }
 
       const PAGE_GROUPS = {
-          "Core Hub": [ {id: "index", label: "�x Home (home.html)"}, {id: "about", label: "�x About Us (about.html)"}, {id: "school", label: "�x School (school.html)"}, {id: "sneh-asha", label: "�x Sneh Asha (sneh-asha.html)"}, {id: "download", label: "�x� Downloads (download.html)"} ],
-          "Applications": [ {id: "ati", label: "�R�️ ATI Info (ati.html)"}, {id: "ati-demo", label: "�R�️ ATI Demo (ati-demo.html)"}, {id: "solar", label: "�x�� Solar Engine (solar.html)"}, {id: "gesture", label: "�x�️ Gesture (gesture.html)"}, {id: "rpg", label: "�a️ RPG Game (rpg.html)"}, {id: "qr", label: "�: QR Dash (qr.html)"}, {id: "qr-editor", label: "�: QR Editor (qr-editor.html)"} ],
-          "Support": [ {id: "feedback", label: "�x� Feedback (feedback.html)"}, {id: "privacy", label: "�x:�️ Privacy (privacy.html)"}, {id: "terms", label: "�a️ Terms (terms.html)"} ]
+          "Core Hub": [ {id: "index", label: "📄 Home (home.html)"}, {id: "about", label: "📄 About Us (about.html)"}, {id: "school", label: "📄 School (school.html)"}, {id: "sneh-asha", label: "📄 Sneh Asha (sneh-asha.html)"}, {id: "download", label: "📋 Downloads (download.html)"} ],
+          "Applications": [ {id: "ati", label: "🖥️ ATI Info (ati.html)"}, {id: "ati-demo", label: "🖥️ ATI Demo (ati-demo.html)"}, {id: "solar", label: "💥 Solar Engine (solar.html)"}, {id: "gesture", label: "🔒️ Gesture (gesture.html)"}, {id: "rpg", label: "🛠️ RPG Game (rpg.html)"}, {id: "qr", label: "📱 QR Dash (qr.html)"}, {id: "qr-editor", label: "📱 QR Editor (qr-editor.html)"} ],
+          "Support": [ {id: "feedback", label: "🌐 Feedback (feedback.html)"}, {id: "privacy", label: "📝️ Privacy (privacy.html)"}, {id: "terms", label: "⚠️ Terms (terms.html)"} ]
       };
 
       function buildRoutingUI() {
@@ -1034,13 +1034,13 @@
                   row.innerHTML = `
                       <span class="mono" style="flex:1">${p.label}</span>
                       <select id="ctrl-${p.id}" class="banner-inp" style="flex:1; margin-bottom:0; padding:10px; font-family:var(--font-mono); font-weight:700; font-size:0.85rem; cursor:pointer;">
-                          <option value="200" ${currentStatus==='200'?'selected':''}>�xx� 200 - LIVE</option>
-                          <option value="301" ${currentStatus==='301'?'selected':''}>� �️ 301 - Redirect</option>
-                          <option value="401" ${currentStatus==='401'?'selected':''}>�x 401 - Unauthorized</option>
-                          <option value="403" ${currentStatus==='403'?'selected':''}>�: 403 - Forbidden</option>
-                          <option value="404" ${currentStatus==='404'?'selected':''}>� 404 - Not Found</option>
-                          <option value="500" ${currentStatus==='500'?'selected':''}>�x� 500 - Server Error</option>
-                          <option value="503" ${currentStatus==='503'?'selected':''}>�xa� 503 - Maintenance</option>
+                          <option value="200" ${currentStatus==='200'?'selected':''}>🚫 200 - LIVE</option>
+                          <option value="301" ${currentStatus==='301'?'selected':''}>📟 301 - Redirect</option>
+                          <option value="401" ${currentStatus==='401'?'selected':''}>💻 401 - Unauthorized</option>
+                          <option value="403" ${currentStatus==='403'?'selected':''}>🛑 403 - Forbidden</option>
+                          <option value="404" ${currentStatus==='404'?'selected':''}>✅ 404 - Not Found</option>
+                          <option value="500" ${currentStatus==='500'?'selected':''}>🌐 500 - Server Error</option>
+                          <option value="503" ${currentStatus==='503'?'selected':''}>🚧 503 - Maintenance</option>
                       </select>
                   `;
                   container.appendChild(row);
@@ -1075,7 +1075,7 @@
               try { const data = await fetchGh("contents/config.json"); sha = data.sha; } catch(e) {}
               const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
               await fetchGh("contents/config.json", { method: 'PUT', body: JSON.stringify({ message: "Admin update: routing config.json", content: base64Content, sha: sha || undefined }) });
-              toast('�xa� Global Configuration Deployed! Live in seconds.', 'green');
+              toast('🚧 Global Configuration Deployed! Live in seconds.', 'green');
           } catch (e) { toast('Save failed: ' + e.message, ''); }
       }
 
@@ -1267,71 +1267,15 @@
           try {
               toast('Loading visual builder...', 'green');
               toolbar.style.display = "flex";
-              iframe.srcdoc = `<html><body><h2>Loading preview...</h2>
-      <footer class="sf">
-          <div class="fi">
-              <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
-              <div class="fl">
-                  <a href="privacy">Privacy</a>
-                  <a href="terms">Terms</a>
-                  <a href="feedback">Feedback</a>
-                  <a href="download">Downloads</a>
-              </div>
-              <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
-          </div>
-      </footer>
-
-      </body></html>`;
+              iframe.srcdoc = `<html><body><h2>Loading preview...</h2></body></html>`;
 
               const data = await fetchGh(`contents/${path}`);
               currentFileSha = data.sha;
               let content = decodeURIComponent(escape(atob(data.content)));
 
               // Inject builder script before closing body tag
-              if (content.includes('
-      <footer class="sf">
-          <div class="fi">
-              <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
-              <div class="fl">
-                  <a href="privacy">Privacy</a>
-                  <a href="terms">Terms</a>
-                  <a href="feedback">Feedback</a>
-                  <a href="download">Downloads</a>
-              </div>
-              <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
-          </div>
-      </footer>
-
-      </body>')) {
-                  content = content.replace('
-      <footer class="sf">
-          <div class="fi">
-              <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
-              <div class="fl">
-                  <a href="privacy">Privacy</a>
-                  <a href="terms">Terms</a>
-                  <a href="feedback">Feedback</a>
-                  <a href="download">Downloads</a>
-              </div>
-              <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
-          </div>
-      </footer>
-
-      </body>', VISUAL_BUILDER_SCRIPT + '
-      <footer class="sf">
-          <div class="fi">
-              <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
-              <div class="fl">
-                  <a href="privacy">Privacy</a>
-                  <a href="terms">Terms</a>
-                  <a href="feedback">Feedback</a>
-                  <a href="download">Downloads</a>
-              </div>
-              <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
-          </div>
-      </footer>
-
-      </body>');
+              if (content.includes('</body>')) {
+                  content = content.replace('</body>', VISUAL_BUILDER_SCRIPT + '</body>');
               } else {
                   content += VISUAL_BUILDER_SCRIPT;
               }
@@ -1386,7 +1330,7 @@
                   });
 
                   currentFileSha = result.content.sha;
-                  toast('�S& Deployed Successfully! Vercel is building...', 'green');
+                  toast('🚀 Deployed Successfully! Vercel is building...', 'green');
               } catch(e) {
                   toast(e.message, '');
               }

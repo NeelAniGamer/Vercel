@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #070a14; color: #e8e3d8; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .loader { text-align: center; }
+    .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #10b981; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .msg { color: #8891aa; font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+  <div class="loader">
+    <div class="spinner"></div>
+    <div class="msg">Redirecting...</div>
+  </div>
+  <script>
+    (async function() {
+      const params = new URLSearchParams(window.location.search);
+      const code = window.location.pathname.split('/').pop();
+      
+      if(!code || code === 'qr') {
+        window.location.href = 'https://advancedlogiclabs.dpdns.org/';
+        return;
+      }
+      
+      try {
+        // Try to fetch from Supabase or localStorage (via parent if in iframe)
+        let entry = null;
+        
+        // Check if we have access to parent's localStorage (for same-origin)
+        try {
+          const stored = JSON.parse(localStorage.getItem('col_dynamic_qr') || '[]');
+          entry = stored.find(q => q.shortCode === code);
+        } catch(e) {}
+        
+        if(!entry && window.parent !== window) {
+          try {
+            const stored = JSON.parse(window.parent.localStorage.getItem('col_dynamic_qr') || '[]');
+            entry = stored.find(q => q.shortCode === code);
+          } catch(e) {}
+        }
+        
+        // Fallback: fetch from Supabase via API
+        if(!entry && window.SUPABASE_URL) {
+          const resp = await fetch(`${window.SUPABASE_URL}/rest/v1/dynamic_qr?shortCode=eq.${code}`, {
+            headers: { 'apikey': window.SUPABASE_KEY, 'Authorization': `Bearer ${window.SUPABASE_KEY}` }
+          });
+          const data = await resp.json();
+          entry = data?.[0];
+        }
+        
+        if(!entry) {
+          document.body.innerHTML = '<div class="loader"><div class="spinner"></div><div class="msg">QR code not found</div></div>';
+          return;
+        }
+        
+        // Check expiry
+        if(entry.expiry && new Date(entry.expiry) < new Date()) {
+          document.body.innerHTML = '<div class="loader"><div class="spinner"></div><div class="msg">This QR code has expired</div></div>';
+          return;
+        }
+        
+        // Check schedule
+        if(entry.schedule) {
+          const now = new Date();
+          if(entry.schedule.start && new Date(entry.schedule.start) > now) {
+            document.body.innerHTML = '<div class="loader"><div class="spinner"></div><div class="msg">This QR code is not yet active</div></div>';
+            return;
+          }
+          if(entry.schedule.end && new Date(entry.schedule.end) < now) {
+            document.body.innerHTML = '<div class="loader"><div class="spinner"></div><div class="msg">This QR code has expired</div></div>';
+            return;
+          }
+        }
+        
+        // Password check
+        if(entry.password) {
+          const saved = sessionStorage.getItem('qr_auth_' + code);
+          if(saved !== entry.password) {
+            const pwd = prompt('This QR code is password protected. Enter password:');
+            if(!pwd || DYNAMIC_QR.hashPassword(pwd) !== entry.password) {
+              document.body.innerHTML = '<div class="loader"><div class="spinner"></div><div class="msg">Incorrect password</div></div>';
+              return;
+            }
+            sessionStorage.setItem('qr_auth_' + code, entry.password);
+          }
+        }
+        
+        // Track scan
+        const scanData = {
+          ip: 'client', // Will be resolved server-side
+          country: 'Unknown',
+          city: 'Unknown',
+          device: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+          os: navigator.userAgent.includes('Windows') ? 'Windows' : 
+              navigator.userAgent.includes('Mac') ? 'macOS' : 
+              navigator.userAgent.includes('Linux') ? 'Linux' : 'Other',
+          browser: navigator.userAgent.includes('Chrome') ? 'Chrome' :
+                   navigator.userAgent.includes('Firefox') ? 'Firefox' :
+                   navigator.userAgent.includes('Safari') ? 'Safari' : 'Other',
+          referrer: document.referrer || 'Direct'
+        };
+        
+        // Send tracking to parent or API
+        try {
+          if(window.parent !== window && window.parent.DYNAMIC_QR) {
+            window.parent.DYNAMIC_QR.trackScan(code, scanData);
+          } else if(window.DYNAMIC_QR) {
+            window.DYNAMIC_QR.trackScan(code, scanData);
+          } else {
+            // Fallback: send to API
+            fetch('https://advancedlogiclabs.dpdns.org/api/qr/track', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code, ...scanData })
+            }).catch(()=>{});
+          }
+        } catch(e) {}
+        
+        // Redirect
+        window.location.href = entry.destination;
+        
+      } catch(err) {
+        console.error(err);
+        window.location.href = 'https://advancedlogiclabs.dpdns.org/';
+      }
+    })();
+  </script>
+</body>
+</html>
