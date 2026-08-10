@@ -1,875 +1,958 @@
-// col-3d.js — Shared Procedural Three.js Backgrounds for Class Of Learners
-// Desktop only. No external models. Each page gets a unique scene.
+﻿// col-3d.js — Interactive 3D Worlds for Class Of Learners
+// Philosophy: The 3D scene IS the interface. Click, drag, explore.
+// Not background decoration — navigable space.
 
 ;(function () {
   'use strict'
 
-  // Skip on mobile/touch devices for performance, and respect reduced-motion preference
+  // Guard: mobile, touch, reduced-motion
   if (window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 960) return
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-  // Wait for Three.js to load
   function waitForThree(cb) {
-    if (typeof THREE !== 'undefined') {
-      cb()
-      return
-    }
-    var checks = 0
-    var interval = setInterval(function () {
-      checks++
-      if (typeof THREE !== 'undefined') {
-        clearInterval(interval)
-        cb()
-      }
-      if (checks > 50) clearInterval(interval) // give up after 5s
+    if (typeof THREE !== 'undefined') { cb(); return }
+    var n = 0, iv = setInterval(function () {
+      if (++n > 50 || typeof THREE !== 'undefined') { clearInterval(iv); if (typeof THREE !== 'undefined') cb() }
     }, 100)
   }
 
-  waitForThree(function () {
-    // Find the canvas
-    var canvas =
-      document.getElementById('orrery') ||
-      document.getElementById('constellation') ||
-      document.getElementById('cosmos') ||
-      document.getElementById('bgCanvas') ||
-      document.getElementById('schoolBg') ||
-      document.getElementById('webgl-canvas')
+  waitForThree(initEngine)
 
+  function initEngine() {
+    var canvas = document.getElementById('orrery') ||
+                 document.getElementById('constellation') ||
+                 document.getElementById('cosmos') ||
+                 document.getElementById('bgCanvas') ||
+                 document.getElementById('schoolBg') ||
+                 document.getElementById('webgl-canvas')
     if (!canvas) return
 
-    // Determine which page we're on
-    var path = window.location.pathname.split('/').pop() || 'home'
-    path = path.replace('.html', '').toLowerCase()
-    // Map index to home
-    if (path === '' || path === 'index' || path === 'home') path = 'home'
+    var path = (window.location.pathname.split('/').pop() || 'home').replace('.html', '').toLowerCase()
+    if (path === '' || path === 'index') path = 'home'
 
-    // Setup renderer — antialias off for perf (barely visible on canvas-over-scene)
-    var renderer = new THREE.WebGLRenderer({
-      canvas: canvas,
-      antialias: false,
-      alpha: true,
-      powerPreference: 'high-performance'
-    })
+    // ─── Renderer ───
+    var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance' })
     renderer.setSize(window.innerWidth, window.innerHeight)
-    // Cap pixel ratio at 1.5 — above that provides diminishing returns at high GPU cost
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.setClearColor(0x000000, 0)
-    // Hint the browser that this canvas composites independently
     canvas.style.willChange = 'transform'
 
     var scene = new THREE.Scene()
-    // Fog gives distant particles/shapes a sense of depth instead of all rendering at full brightness
-    scene.fog = new THREE.FogExp2(0x070a14, 0.0055)
-    var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000)
-    camera.position.z = 50
+    scene.fog = new THREE.FogExp2(0x070a14, 0.003)
 
-    // Pause rendering while the tab isn't visible to save battery/GPU
-    var isVisible = true
-    document.addEventListener('visibilitychange', function () {
-      isVisible = !document.hidden
-    })
+    var camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 500)
+    camera.position.set(0, 0, 60)
 
-    // Mouse tracking for parallax — throttled to 1 update per rAF to avoid
-    // queueing heavy work on every pixel of mouse movement
-    var mouseX = 0,
-      mouseY = 0,
-      _pendingMX = 0,
-      _pendingMY = 0
+    // ─── Input State ───
+    var mouseX = 0, mouseY = 0
+    var _pmx = 0, _pmy = 0
+    var mouseDown = false
+    var dragStartX = 0, dragStartY = 0
+    var raycaster = new THREE.Raycaster()
+    var mouseVec = new THREE.Vector2()
+    var currentHovered = null
+    var cameraTarget = { x: 0, y: 0, z: 60, rotY: 0, rotX: 0 }
+    var cameraCurrent = { x: 0, y: 0, z: 60, rotY: 0, rotX: 0 }
+
     document.addEventListener('mousemove', function (e) {
-      _pendingMX = (e.clientX / window.innerWidth) * 2 - 1
-      _pendingMY = -(e.clientY / window.innerHeight) * 2 + 1
+      _pmx = (e.clientX / window.innerWidth) * 2 - 1
+      _pmy = -(e.clientY / window.innerHeight) * 2 + 1
+      mouseVec.set(_pmx, _pmy)
+      if (mouseDown) {
+        var dx = e.clientX - dragStartX
+        var dy = e.clientY - dragStartY
+        cameraTarget.rotY += dx * 0.005
+        cameraTarget.rotX = Math.max(-0.5, Math.min(0.5, cameraTarget.rotX + dy * 0.003))
+        dragStartX = e.clientX
+        dragStartY = e.clientY
+      }
     }, { passive: true })
 
-    // Resize handler
+    document.addEventListener('mousedown', function (e) {
+      if (e.target.closest('a, button, input, .pc, .nav-link')) return
+      mouseDown = true
+      dragStartX = e.clientX
+      dragStartY = e.clientY
+      canvas.style.cursor = 'grabbing'
+    })
+
+    document.addEventListener('mouseup', function () {
+      mouseDown = false
+      canvas.style.cursor = 'grab'
+    })
+
+    canvas.style.cursor = 'grab'
+
+    // ─── Tab visibility ───
+    var visible = true
+    document.addEventListener('visibilitychange', function () { visible = !document.hidden })
+
+    // ─── Resize ───
     window.addEventListener('resize', function () {
-      if (window.innerWidth < 960) return
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
       renderer.setSize(window.innerWidth, window.innerHeight)
     })
 
-    // Dual-theme colour palettes
-    var PALETTES = {
-      dark:  { signal:0xf2b84b, ion:0x5ed4f5, teal:0x00f0cc, plasma:0xb89bff, em:0x34d399, dim:0x8891aa },
-      light: { signal:0xd97706, ion:0x0077b6, teal:0x009b8d,  plasma:0x7c4ddb, em:0x0a7c55, dim:0x6b7399 }
+    // ─── Theme ───
+    var PAL = {
+      dark:  { signal:0xf2b84b, ion:0x5ed4f5, teal:0x00f0cc, plasma:0xb89bff, em:0x34d399, dim:0x8891aa, void:0x070a14 },
+      light: { signal:0xb8720a, ion:0x0077b6, teal:0x009b8d, plasma:0x6f4fe0, em:0x0a7c55, dim:0x6b7399, void:0xf3f2eb }
     }
-    var COL = PALETTES.dark // keep COL reference for other scenes
-    function P() { return document.body.classList.contains('lm') ? PALETTES.light : PALETTES.dark }
+    function pal() { return document.body.classList.contains('lm') ? PAL.light : PAL.dark }
 
-    // ==================== SCENE BUILDERS ====================
+    var _themeTargets = []
+    function trackTheme(mat, key) { _themeTargets.push({ mat: mat, key: key }); return mat }
+    function applyTheme() {
+      var p = pal(), lm = document.body.classList.contains('lm')
+      _themeTargets.forEach(function (t) { t.mat.color.setHex(p[t.key]) })
+      scene.fog.color.setHex(lm ? PAL.light.void : PAL.dark.void)
+      canvas.style.opacity = lm ? 0.6 : 1
+    }
 
-    var scenes = {
-      // HOME — Multi-identity scene representing all 5 CoL apps:
-      //  Solar Engine   -> orbital particle rings + glowing star
-      //  ATI Typing     -> falling particle-rain columns
-      //  Gesture Ctrl   -> sine-wave ribbon
-      //  QR Editor      -> sparse luminous grid cells
-      //  RPG Engine     -> floating wireframe gem shards
+    // ─── Click handler ───
+    var clickables = []
+    var onClickCallback = null
+
+    canvas.addEventListener('click', function (e) {
+      if (mouseDown) return
+      mouseVec.set(_pmx, _pmy)
+      raycaster.setFromCamera(mouseVec, camera)
+      var hits = raycaster.intersectObjects(clickables, true)
+      if (hits.length > 0) {
+        var obj = hits[0].object
+        while (obj && !obj.userData.clickable && obj.parent) obj = obj.parent
+        if (obj && obj.userData.clickable && onClickCallback) onClickCallback(obj.userData.payload)
+      }
+    })
+
+    // ─── Hover handler ───
+    var onHoverCallback = null
+
+    function updateHover() {
+      raycaster.setFromCamera(mouseVec, camera)
+      var hits = raycaster.intersectObjects(clickables, true)
+      var found = null
+      if (hits.length > 0) {
+        var obj = hits[0].object
+        while (obj && !obj.userData.clickable && obj.parent) obj = obj.parent
+        if (obj && obj.userData.clickable) found = obj
+      }
+      if (found !== currentHovered) {
+        if (currentHovered && currentHovered.userData.onUnhover) currentHovered.userData.onUnhover()
+        if (found && found.userData.onHover) found.userData.onHover()
+        currentHovered = found
+        canvas.style.cursor = found ? 'pointer' : (mouseDown ? 'grabbing' : 'grab')
+        if (onHoverCallback) onHoverCallback(found ? found.userData.payload : null)
+      }
+    }
+
+    // ─── External API ───
+    var _hoverTarget = 0, _hoverCurrent = 0
+    window.__col3d = {
+      get hover() { return _hoverCurrent },
+      setHover: function (v) { _hoverTarget = v ? 1 : 0 },
+      onClick: function (cb) { onClickCallback = cb },
+      onHover: function (cb) { onHoverCallback = cb },
+      registerClickable: function (obj, payload, onHoverFn, onUnhoverFn) {
+        obj.traverse(function (child) {
+          child.userData.clickable = true
+          child.userData.payload = payload
+          child.userData.onHover = onHoverFn
+          child.userData.onUnhover = onUnhoverFn
+          clickables.push(child)
+        })
+      },
+      flyTo: function (x, y, z, rotY, rotX) {
+        cameraTarget.x = x; cameraTarget.y = y; cameraTarget.z = z
+        cameraTarget.rotY = rotY || 0; cameraTarget.rotX = rotX || 0
+      },
+      resetCamera: function () {
+        cameraTarget.x = 0; cameraTarget.y = 0; cameraTarget.z = 60
+        cameraTarget.rotY = 0; cameraTarget.rotX = 0
+      }
+    }
+
+    // ─── Helper: create glow texture ───
+    function makeGlowTexture(color) {
+      var c = document.createElement('canvas')
+      c.width = c.height = 128
+      var ctx = c.getContext('2d')
+      var rd = ctx.createRadialGradient(64, 64, 0, 64, 64, 64)
+      rd.addColorStop(0, color + ')')
+      rd.addColorStop(0.5, color + ')')
+      rd.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = rd
+      ctx.fillRect(0, 0, 128, 128)
+      return new THREE.CanvasTexture(c)
+    }
+
+    // ─── Helper: create dust ───
+    function createDust(colorKey, count, innerR, outerR) {
+      var positions = new Float32Array(count * 3)
+      for (var i = 0; i < count; i++) {
+        var r = innerR + Math.random() * (outerR - innerR)
+        var phi = Math.acos(-1 + (2 * i) / count)
+        var theta = Math.sqrt(count * Math.PI) * phi
+        positions[i*3]   = r * Math.cos(theta) * Math.sin(phi)
+        positions[i*3+1] = r * Math.sin(theta) * Math.sin(phi)
+        positions[i*3+2] = r * Math.cos(phi)
+      }
+      var geo = new THREE.BufferGeometry()
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+      var mat = new THREE.PointsMaterial({ color: pal()[colorKey], size: 0.12, transparent: true, opacity: 0.3, sizeAttenuation: true })
+      trackTheme(mat, colorKey)
+      return new THREE.Points(geo, mat)
+    }
+
+
+    // ─── Scene builders ───
+    var builders = {
+
+      // ── HOME: Interactive Orrery ──
+      // Six orbiting project nodes. Drag to rotate. Click to navigate.
       home: function () {
-        camera.position.set(0, 6, 65)
-        var allMats = [] // {mat, key} pairs for live theme recolour
+        camera.position.set(0, 8, 50)
+        cameraCurrent.z = 50
+        cameraTarget.z = 50
+
         var root = new THREE.Group()
         scene.add(root)
 
-        // ── 1. The Core: D3-Inspired Network & Solar Rings ─────────
-        var coreGroup = new THREE.Group()
-        root.add(coreGroup)
-        coreGroup.position.set(0, 4, -5)
+        // Central core
+        var coreGeo = new THREE.IcosahedronGeometry(2, 3)
+        var coreMat = new THREE.MeshBasicMaterial({ color: pal().signal })
+        trackTheme(coreMat, 'signal')
+        var core = new THREE.Mesh(coreGeo, coreMat)
+        root.add(core)
 
-        // Glow
+        // Core glow
         var glowCvs = document.createElement('canvas')
-        glowCvs.width = 128; glowCvs.height = 128
-        var gCtx = glowCvs.getContext('2d')
-        var grd = gCtx.createRadialGradient(64,64,0,64,64,64)
-        grd.addColorStop(0,'rgba(242,184,75,0.95)')
-        grd.addColorStop(0.4,'rgba(242,184,75,0.35)')
-        grd.addColorStop(1,'rgba(242,184,75,0)')
-        gCtx.fillStyle = grd; gCtx.fillRect(0,0,128,128)
-        var glowMat = new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(glowCvs), transparent:true, blending:THREE.AdditiveBlending })
-        var glowSpr = new THREE.Sprite(glowMat)
-        glowSpr.scale.set(16,16,1); coreGroup.add(glowSpr)
+        glowCvs.width = glowCvs.height = 256
+        var gctx = glowCvs.getContext('2d')
+        var grd = gctx.createRadialGradient(128, 128, 0, 128, 128, 128)
+        grd.addColorStop(0, 'rgba(242,184,75,0.4)')
+        grd.addColorStop(0.5, 'rgba(242,184,75,0.08)')
+        grd.addColorStop(1, 'rgba(242,184,75,0)')
+        gctx.fillStyle = grd
+        gctx.fillRect(0, 0, 256, 256)
+        var glowTex = new THREE.CanvasTexture(glowCvs)
+        var glowMat = new THREE.SpriteMaterial({ map: glowTex, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.5 })
+        var glow = new THREE.Sprite(glowMat)
+        glow.scale.set(16, 16, 1)
+        root.add(glow)
 
-        var starMat = new THREE.MeshBasicMaterial({ color:P().signal, transparent:true, opacity:0.9 })
-        allMats.push({ mat:starMat, key:'signal' })
-        var starSph = new THREE.Mesh(new THREE.IcosahedronGeometry(2.5, 2), starMat)
-        coreGroup.add(starSph)
-
-        // Geometric Network around the star
-        var netNodeCount = 45
-        var netNodes = []
-        var netGeo = new THREE.BufferGeometry()
-        var netPos = new Float32Array(netNodeCount * 3)
-        var netMat = new THREE.PointsMaterial({ color:P().teal, size: 0.4, transparent:true, opacity:0.8, blending:THREE.AdditiveBlending })
-        allMats.push({ mat:netMat, key:'teal' })
-        
-        for (var i = 0; i < netNodeCount; i++) {
-          // distribute roughly on a sphere
-          var phi = Math.acos(-1 + (2 * i) / netNodeCount)
-          var theta = Math.sqrt(netNodeCount * Math.PI) * phi
-          var r = 4.5 + Math.random()*1.5
-          var vx = r * Math.cos(theta) * Math.sin(phi)
-          var vy = r * Math.sin(theta) * Math.sin(phi)
-          var vz = r * Math.cos(phi)
-          netPos[i*3]=vx; netPos[i*3+1]=vy; netPos[i*3+2]=vz
-          netNodes.push(new THREE.Vector3(vx,vy,vz))
-        }
-        netGeo.setAttribute('position', new THREE.BufferAttribute(netPos, 3))
-        var netPts = new THREE.Points(netGeo, netMat)
-        coreGroup.add(netPts)
-
-        // Connect nodes
-        var linesGeo = new THREE.BufferGeometry()
-        var linePos = []
-        for(var i=0; i<netNodeCount; i++) {
-          for(var j=i+1; j<netNodeCount; j++) {
-            if(netNodes[i].distanceTo(netNodes[j]) < 4.2) {
-              linePos.push(netNodes[i].x, netNodes[i].y, netNodes[i].z)
-              linePos.push(netNodes[j].x, netNodes[j].y, netNodes[j].z)
-            }
-          }
-        }
-        linesGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3))
-        var lineMat = new THREE.LineBasicMaterial({ color:P().ion, transparent:true, opacity:0.15 })
-        allMats.push({ mat:lineMat, key:'ion' })
-        var netLines = new THREE.LineSegments(linesGeo, lineMat)
-        coreGroup.add(netLines)
-
-        // Orbital Rings
-        var orbDefs = [
-          { r:14,  n:60,  key:'ion',    sz:0.25, spd: 0.007, inc: 0.25 },
-          { r:22,  n:80,  key:'teal',   sz:0.2,  spd:-0.005, inc:-0.2 },
-          { r:32,  n:100, key:'plasma', sz:0.16, spd: 0.003, inc: 0.15 },
-          { r:45,  n:120, key:'dim',    sz:0.12, spd:-0.002, inc:-0.1 }
+        // Six project nodes
+        var projectNodes = [
+          { name: 'ATI',     key: 'ion',    radius: 14, speed: 0.15,  page: 'ati',           y: 0 },
+          { name: 'Traffic', key: 'signal', radius: 20, speed: -0.1,  page: 'Traffic/Driving', y: 1.5 },
+          { name: 'Solar',   key: 'teal',   radius: 26, speed: 0.08,  page: 'solar',         y: -1 },
+          { name: 'Gesture', key: 'plasma', radius: 17, speed: -0.12, page: 'gesture',       y: 2 },
+          { name: 'RPG',     key: 'em',     radius: 23, speed: 0.09,  page: 'rpg',           y: -2 },
+          { name: 'QR',      key: 'dim',    radius: 30, speed: -0.07, page: 'qr',            y: 0.5 }
         ]
-        var orbRings = []
-        orbDefs.forEach(function(d) {
-          var pos = new Float32Array(d.n*3)
-          for(var i=0;i<d.n;i++) {
-            var a=(i/d.n)*Math.PI*2, jit=(Math.random()-0.5)*3.5
-            pos[i*3]=Math.cos(a)*(d.r+jit); pos[i*3+1]=(Math.random()-0.5)*4.5; pos[i*3+2]=Math.sin(a)*(d.r+jit)
-          }
-          var geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.BufferAttribute(pos,3))
-          var mat=new THREE.PointsMaterial({ color:P()[d.key], size:d.sz, transparent:true, opacity:0.8, blending:THREE.AdditiveBlending, depthWrite:false })
-          allMats.push({ mat:mat, key:d.key })
-          var pts=new THREE.Points(geo,mat); pts.rotation.x=d.inc
-          coreGroup.add(pts); orbRings.push({ pts:pts, spd:d.spd })
 
-          var lp=[]; for(var j=0;j<=120;j++){var ag=(j/120)*Math.PI*2;lp.push(new THREE.Vector3(Math.cos(ag)*d.r,0,Math.sin(ag)*d.r))}
-          var lmat=new THREE.LineBasicMaterial({ color:P()[d.key], transparent:true, opacity:0.1 })
-          allMats.push({ mat:lmat, key:d.key })
-          coreGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(lp),lmat))
-        })
-        coreGroup.rotation.x = 0.45
+        var nodeObjects = []
+        var whiteHex = 0xffffff
 
-        // ── 2. Matrix Rain: Vertical glowing trails ──────────────────────
-        var rainGroup = new THREE.Group()
-        root.add(rainGroup)
-        // Spread evenly around the scene rather than clumped on left
-        var rainTrails = []
-        var rainKeys = ['em','teal','ion']
-        for(var c=0;c<40;c++) {
-          var rx = (Math.random()-0.5)*100
-          var rz = (Math.random()-0.5)*40 - 15
-          if(Math.abs(rx)<15 && Math.abs(rz)<15) rx += 20 * Math.sign(rx) // Avoid dead center
+        projectNodes.forEach(function (p, i) {
+          var angle = (i / projectNodes.length) * Math.PI * 2
 
-          var trPos = new Float32Array(6) // Line segment
-          var y = (Math.random()-0.5)*80
-          var len = 1.5 + Math.random()*3
-          trPos[0]=rx; trPos[1]=y; trPos[2]=rz
-          trPos[3]=rx; trPos[4]=y+len; trPos[5]=rz
-          
-          var trGeo = new THREE.BufferGeometry(); trGeo.setAttribute('position',new THREE.BufferAttribute(trPos,3))
-          var rKey = rainKeys[c%3]
-          var rMat = new THREE.LineBasicMaterial({ color:P()[rKey], transparent:true, opacity:0.4, blending:THREE.AdditiveBlending })
-          allMats.push({ mat:rMat, key:rKey })
-          var rLine = new THREE.Line(trGeo,rMat); rLine.userData.speed=0.15+Math.random()*0.2; rLine.userData.len=len
-          rainGroup.add(rLine); rainTrails.push(rLine)
-        }
+          // Orbit ring
+          var orbitGeo = new THREE.TorusGeometry(p.radius, 0.02, 6, 100)
+          var orbitMat = new THREE.MeshBasicMaterial({ color: pal()[p.key], transparent: true, opacity: 0.08 })
+          trackTheme(orbitMat, p.key)
+          var orbit = new THREE.Mesh(orbitGeo, orbitMat)
+          orbit.rotation.x = Math.PI * 0.5
+          orbit.position.y = p.y
+          root.add(orbit)
 
-        // ── 3. Fluid Ribbon: Translucent Mesh Wave ───────────────────
-        var waveGroup = new THREE.Group()
-        root.add(waveGroup)
-        waveGroup.position.set(0,-18,-15)
-        var waveSegs=40, waveW=120
-        var wGeo = new THREE.PlaneGeometry(waveW, 16, waveSegs, 4)
-        // Displace points slightly
-        wGeo.rotateX(-Math.PI/2)
-        var origY = []
-        var posAtt = wGeo.attributes.position
-        for(var i=0; i<posAtt.count; i++) {
-          origY.push(posAtt.getY(i))
-        }
-        var wMat = new THREE.MeshBasicMaterial({ color:P().ion, transparent:true, opacity:0.12, side:THREE.DoubleSide, blending:THREE.AdditiveBlending, wireframe:true })
-        allMats.push({ mat:wMat, key:'ion' })
-        var waveMesh = new THREE.Mesh(wGeo, wMat)
-        waveGroup.add(waveMesh)
+          // Planet body
+          var planetSize = 1.0
+          if (p.key === 'signal') planetSize = 1.4
+          if (p.key === 'ion') planetSize = 1.2
+          var planetGeo = new THREE.IcosahedronGeometry(planetSize, 1)
+          var planetMat = new THREE.MeshBasicMaterial({ color: pal()[p.key] })
+          trackTheme(planetMat, p.key)
+          var planet = new THREE.Mesh(planetGeo, planetMat)
+          planet.position.set(Math.cos(angle) * p.radius, p.y, Math.sin(angle) * p.radius)
+          root.add(planet)
 
-        // ── 4. Floor Grid: Expansive pulsing grid ────────────────────
-        var qrGroup = new THREE.Group()
-        root.add(qrGroup)
-        qrGroup.position.set(0,-24,-25); qrGroup.rotation.x=Math.PI/2
-        var qrCells=[]
-        var qrMat=new THREE.MeshBasicMaterial({ color:P().signal, transparent:true, opacity:0.1, wireframe:true })
-        allMats.push({ mat:qrMat, key:'signal' })
-        for(var qx=-6; qx<=6; qx++) {
-          for(var qy=-4; qy<=4; qy++) {
-            if(Math.random()<0.3) continue
-            var cell=new THREE.Mesh(new THREE.BoxGeometry(3.8,3.8,0.2),qrMat)
-            cell.position.set(qx*4.2, qy*4.2, (Math.random()-0.5)*1.5)
-            var dist = Math.sqrt(qx*qx + qy*qy)
-            cell.userData = { dist: dist, rot: (Math.random()-0.5)*0.005 }
-            qrGroup.add(cell); qrCells.push(cell)
-          }
-        }
+          // Planet glow sprite
+          var pGlowMat = new THREE.SpriteMaterial({ map: glowTex, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.3 })
+          var pGlow = new THREE.Sprite(pGlowMat)
+          pGlow.scale.set(planetSize * 5, planetSize * 5, 1)
+          pGlow.position.copy(planet.position)
+          root.add(pGlow)
 
-        // ── 5. Floating Cores: Inner cores with wireframe shells ───────────────
-        var rpgGroup = new THREE.Group()
-        root.add(rpgGroup)
-        var gemKeys=['plasma','signal','em','ion','teal']
-        var gems=[]
-        for(var g=0;g<16;g++) {
-          var gKey=gemKeys[g%gemKeys.length]
-          var gBaseGeo = g%2===0 ? new THREE.IcosahedronGeometry(1.2+Math.random()*0.5,0) : new THREE.OctahedronGeometry(1.0+Math.random()*0.6,0)
-          
-          // Inner solid core
-          var coreMat = new THREE.MeshBasicMaterial({ color:P()[gKey], transparent:true, opacity:0.4, blending:THREE.AdditiveBlending })
-          allMats.push({ mat:coreMat, key:gKey })
-          var gemCore = new THREE.Mesh(gBaseGeo, coreMat)
-          
-          // Outer wireframe
-          var wireMat = new THREE.MeshBasicMaterial({ color:P()[gKey], transparent:true, opacity:0.7, wireframe:true })
-          allMats.push({ mat:wireMat, key:gKey })
-          var gemWire = new THREE.Mesh(gBaseGeo, wireMat)
-          gemWire.scale.set(1.15,1.15,1.15)
-          
-          var gemObj = new THREE.Group()
-          gemObj.add(gemCore)
-          gemObj.add(gemWire)
-
-          // Scatter widely around the core
-          var rA = Math.random()*Math.PI*2, rR = 18 + Math.random()*25
-          gemObj.position.set(Math.cos(rA)*rR, (Math.random()-0.5)*30, Math.sin(rA)*rR)
-          gemObj.userData={ 
-            rotSpdX: (Math.random()-0.5)*0.02, 
-            rotSpdY: (Math.random()-0.5)*0.02,
-            orbitSpd: (Math.random()-0.5)*0.003,
-            floatOff: Math.random()*Math.PI*2, 
-            floatSpd: 0.5+Math.random()*0.8,
-            dist: rR, ang: rA
-          }
-          rpgGroup.add(gemObj); gems.push(gemObj)
-        }
-
-        // ── Live theme recolour + opacity/fog ────────────────────────────────
-        function applyTheme() {
-          var pal = P(), lm = document.body.classList.contains('lm')
-          allMats.forEach(function(e){ e.mat.color.setHex(pal[e.key]) })
-          scene.fog.color.setHex(lm ? 0xeef2ff : 0x070a14)
-          glowMat.opacity = lm ? 0.35 : 0.95
-          starMat.opacity = lm ? 0.7 : 0.9
-          canvas.style.opacity = lm ? '0.65' : '1'
-        }
-        applyTheme()
-        new MutationObserver(applyTheme).observe(document.body,{ attributes:true, attributeFilter:['class'] })
-
-        return function (time) {
-          // Core & Network orbit
-          orbRings.forEach(function(r){ r.pts.rotation.y+=r.spd })
-          starSph.material.opacity = 0.75+Math.sin(time*2.2)*0.15
-          glowSpr.scale.set(15+Math.sin(time*1.8)*2,15+Math.sin(time*1.8)*2,1)
-          netPts.rotation.y = time * 0.05
-          netPts.rotation.x = time * 0.03
-          netLines.rotation.y = time * 0.05
-          netLines.rotation.x = time * 0.03
-          coreGroup.rotation.y += (mouseX*0.25-coreGroup.rotation.y)*0.015
-          coreGroup.rotation.x = 0.45+(mouseY*0.15-(coreGroup.rotation.x-0.45))*0.015
-
-          // Rain trails fall
-          rainTrails.forEach(function(tr){
-            var pos = tr.geometry.attributes.position.array
-            pos[1] -= tr.userData.speed
-            pos[4] -= tr.userData.speed
-            if(pos[4] < -40) {
-              pos[1] = 40; pos[4] = 40 + tr.userData.len
+          // Clickable
+          window.__col3d.registerClickable(planet, p.page,
+            function () {
+              planetMat.color.setHex(whiteHex)
+              pGlowMat.opacity = 0.7
+              planet.scale.set(1.4, 1.4, 1.4)
+              var tip = document.getElementById('ntip')
+              if (tip) {
+                document.getElementById('ntip-dot').style.background = 'var(--' + p.key + ')'
+                document.getElementById('ntip-name').textContent = p.name
+                tip.style.display = 'block'
+                tip.style.opacity = '1'
+              }
+            },
+            function () {
+              planetMat.color.setHex(pal()[p.key])
+              pGlowMat.opacity = 0.3
+              planet.scale.set(1, 1, 1)
+              var tip = document.getElementById('ntip')
+              if (tip) { tip.style.opacity = '0' }
             }
-            tr.geometry.attributes.position.needsUpdate=true
-          })
-          rainGroup.rotation.y += (mouseX*0.06-rainGroup.rotation.y)*0.01
+          )
 
-          // Ribbon undulates
-          for(var i=0; i<posAtt.count; i++) {
-            var x = posAtt.getX(i), z = posAtt.getZ(i)
-            var yOff = Math.sin(time*1.5 + x*0.05 + z*0.1) * 3.5
-            posAtt.setY(i, origY[i] + yOff)
+          nodeObjects.push({ data: p, planet: planet, glow: pGlow, glowMat: pGlowMat, orbit: orbit, angle: angle, mat: planetMat })
+        })
+
+        // Background dust
+        scene.add(createDust('dim', 500, 50, 150))
+
+        // Click handler -> navigate
+        window.__col3d.onClick(function (page) {
+          var target = nodeObjects.find(function (n) { return n.data.page === page })
+          if (target) {
+            target.mat.color.setHex(whiteHex)
+            target.planet.scale.set(2, 2, 2)
+            setTimeout(function () { window.location.href = page }, 300)
+          } else {
+            window.location.href = page
           }
-          posAtt.needsUpdate = true
-          waveGroup.rotation.y += (mouseX*0.1-waveGroup.rotation.y)*0.01
+        })
 
-          // QR cells pulse via distance wave
-          qrCells.forEach(function(cell){
-            cell.material.opacity = 0.08 + Math.sin(time*2.5 - cell.userData.dist*0.2)*0.15
-            cell.rotation.z += cell.userData.rot
+        // Sync card hover
+        document.querySelectorAll('.pc').forEach(function (card) {
+          card.addEventListener('mouseenter', function () { _hoverTarget = 1 })
+          card.addEventListener('mouseleave', function () { _hoverTarget = 0 })
+        })
+
+        // Tooltip positioning
+        document.addEventListener('mousemove', function (e) {
+          var tip = document.getElementById('ntip')
+          if (tip && tip.style.opacity === '1') {
+            tip.style.left = e.clientX + 'px'
+            tip.style.top = e.clientY + 'px'
+          }
+        }, { passive: true })
+
+        applyTheme()
+        new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
+        return function (t) {
+          // Orbit nodes
+          nodeObjects.forEach(function (n) {
+            n.angle += n.data.speed * 0.01
+            n.planet.position.x = Math.cos(n.angle) * n.data.radius
+            n.planet.position.z = Math.sin(n.angle) * n.data.radius
+            n.planet.position.y = n.data.y + Math.sin(t * 0.5 + n.data.radius) * 0.3
+            n.glow.position.copy(n.planet.position)
+            n.planet.rotation.y = t * 0.2
+            n.planet.rotation.x = t * 0.1
           })
-          qrGroup.rotation.z += (mouseX*0.05 - qrGroup.rotation.z)*0.01
 
-          // Gems spin, float, and orbit
-          gems.forEach(function(g){
-            g.children[1].rotation.x += g.userData.rotSpdX
-            g.children[1].rotation.y += g.userData.rotSpdY
-            g.userData.ang += g.userData.orbitSpd
-            g.position.x = Math.cos(g.userData.ang) * g.userData.dist
-            g.position.z = Math.sin(g.userData.ang) * g.userData.dist
-            g.position.y += Math.sin(time*g.userData.floatSpd+g.userData.floatOff)*0.02
+          // Core breathing
+          var breathe = 1 + Math.sin(t * 0.8) * 0.04
+          core.scale.set(breathe, breathe, breathe)
+          core.rotation.y = t * 0.05
+          glow.scale.set(15 + Math.sin(t * 0.8) * 2, 15 + Math.sin(t * 0.8) * 2, 1)
+
+          // Drag rotation
+          if (!mouseDown) cameraTarget.rotY += 0.0003
+          cameraTarget.rotX += (_pmy * 0.15 - cameraTarget.rotX) * 0.008
+
+          // Hover from HTML cards
+          var hover = window.__col3d.hover
+          nodeObjects.forEach(function (n) {
+            if (n.planet !== currentHovered) {
+              var targetScale = 1 + hover * 0.15
+              n.planet.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.05)
+            }
           })
-          rpgGroup.rotation.y+=(mouseX*0.15-rpgGroup.rotation.y)*0.015
 
-          root.rotation.y+=mouseX*0.002
-          root.rotation.x+=mouseY*0.001
+          // Scroll: dolly out as user reads
+          cameraTarget.z = 50 + scrollProgress * 20
+
+          // Camera easing
+          cameraCurrent.rotY += (cameraTarget.rotY - cameraCurrent.rotY) * 0.04
+          cameraCurrent.rotX += (cameraTarget.rotX - cameraCurrent.rotX) * 0.04
+          cameraCurrent.z += (cameraTarget.z - cameraCurrent.z) * 0.04
+          root.rotation.y = cameraCurrent.rotY
+          root.rotation.x = cameraCurrent.rotX
+
+          // Hover detection every few frames
+          if (Math.floor(t * 30) % 3 === 0) updateHover()
         }
       },
 
-      // ABOUT — Constellation Network (nodes connected by lines)
-      about: function () {
-        camera.position.set(0, 0, 80)
-        var group = new THREE.Group()
-        var nodeCount = 60
-        var nodes = []
 
-        for (var i = 0; i < nodeCount; i++) {
-          var geo = new THREE.SphereGeometry(0.3 + Math.random() * 0.4, 8, 8)
-          var colors = [COL.signal, COL.ion, COL.teal, COL.plasma, COL.em]
-          var color = colors[Math.floor(Math.random() * colors.length)]
-          var mat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.7 })
-          var mesh = new THREE.Mesh(geo, mat)
-          mesh.position.set((Math.random() - 0.5) * 100, (Math.random() - 0.5) * 60, (Math.random() - 0.5) * 40)
-          mesh.userData = {
-            vel: new THREE.Vector3((Math.random() - 0.5) * 0.02, (Math.random() - 0.5) * 0.02, (Math.random() - 0.5) * 0.01),
-            baseColor: color
-          }
-          group.add(mesh)
-          nodes.push(mesh)
-        }
+      // ── ABOUT: Team Constellation ──
+      // Click stars to fly camera to team members. Drag to rotate.
+      about: function () {
+        camera.position.set(0, 0, 50)
+        cameraCurrent.z = 50
+        cameraTarget.z = 50
+
+        var root = new THREE.Group()
+        scene.add(root)
+
+        var members = [
+          { name: 'Sanjana Kasbe',  role: 'Mentor',  key: 'signal', pos: new THREE.Vector3(0, 14, 0) },
+          { name: 'Neel Badri',     role: 'Lead Dev', key: 'ion',   pos: new THREE.Vector3(-16, 7, 0) },
+          { name: 'Ansh Patil',     role: 'Co-Dev',  key: 'teal',  pos: new THREE.Vector3(16, 7, 0) },
+          { name: 'Aarush Vangari', role: 'UI/UX',   key: 'plasma', pos: new THREE.Vector3(-16, -8, 0) },
+          { name: 'Yashraj Jadhav', role: 'QA/Design', key: 'em',  pos: new THREE.Vector3(16, -8, 0) },
+          { name: 'Akshara Bangar', role: 'Research', key: 'dim',  pos: new THREE.Vector3(0, -16, 0) }
+        ]
+
+        var stars = []
+        var whiteHex = 0xffffff
+
+        members.forEach(function (m, i) {
+          var grp = new THREE.Group()
+          grp.position.copy(m.pos)
+
+          var geo = new THREE.SphereGeometry(0.7, 16, 16)
+          var mat = new THREE.MeshBasicMaterial({ color: pal()[m.key] })
+          trackTheme(mat, m.key)
+          var sphere = new THREE.Mesh(geo, mat)
+          grp.add(sphere)
+
+          // Glow
+          var glowCvs2 = document.createElement('canvas')
+          glowCvs2.width = glowCvs2.height = 128
+          var gctx2 = glowCvs2.getContext('2d')
+          var grd2 = gctx2.createRadialGradient(64, 64, 0, 64, 64, 64)
+          grd2.addColorStop(0, 'rgba(255,255,255,0.4)')
+          grd2.addColorStop(0.5, 'rgba(255,255,255,0.05)')
+          grd2.addColorStop(1, 'rgba(255,255,255,0)')
+          gctx2.fillStyle = grd2
+          gctx2.fillRect(0, 0, 128, 128)
+          var glowMat2 = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(glowCvs2), transparent: true, blending: THREE.AdditiveBlending, opacity: 0.4 })
+          var glow2 = new THREE.Sprite(glowMat2)
+          glow2.scale.set(6, 6, 1)
+          grp.add(glow2)
+
+          root.add(grp)
+
+          // Clickable
+          window.__col3d.registerClickable(grp, i,
+            function () {
+              mat.color.setHex(whiteHex)
+              grp.scale.set(1.3, 1.3, 1.3)
+              var tip = document.getElementById('ntip')
+              if (tip) {
+                document.getElementById('ntip-dot').style.background = 'var(--' + m.key + ')'
+                document.getElementById('ntip-name').textContent = m.name
+                tip.style.display = 'block'; tip.style.opacity = '1'
+              }
+              window.__col3d.flyTo(m.pos.x * 0.5, m.pos.y * 0.5, 25)
+            },
+            function () {
+              mat.color.setHex(pal()[m.key])
+              grp.scale.set(1, 1, 1)
+              var tip = document.getElementById('ntip')
+              if (tip) { tip.style.opacity = '0' }
+              window.__col3d.flyTo(0, 0, 50)
+            }
+          )
+
+          stars.push({ data: m, group: grp, sphere: sphere, mat: mat })
+        })
 
         // Connection lines
-        var lineMat = new THREE.LineBasicMaterial({ color: COL.ion, transparent: true, opacity: 0.06 })
-        var lineGroup = new THREE.Group()
-        group.add(lineGroup)
+        var connMat = new THREE.LineBasicMaterial({ color: pal().dim, transparent: true, opacity: 0.1 })
+        trackTheme(connMat, 'dim')
+        var connPts = [
+          members[0].pos, members[1].pos, members[0].pos, members[2].pos,
+          members[0].pos, members[3].pos, members[0].pos, members[4].pos,
+          members[0].pos, members[5].pos, members[1].pos, members[3].pos,
+          members[2].pos, members[4].pos, members[3].pos, members[5].pos,
+          members[4].pos, members[5].pos
+        ]
+        var connGeo = new THREE.BufferGeometry().setFromPoints(connPts)
+        root.add(new THREE.LineSegments(connGeo, connMat))
 
-        scene.add(group)
+        // Background dust
+        scene.add(createDust('dim', 350, 60, 120))
 
-        // Pre-allocate a pool of line geometries to avoid per-frame GC allocation.
-        // We create the max possible connections (n*(n-1)/2) and hide unused ones.
-        var maxLines = (nodeCount * (nodeCount - 1)) / 2
-        var linePool = []
-        for (var li = 0; li < maxLines; li++) {
-          var lposArr = new Float32Array(6) // 2 points * 3 components
-          var lgeo = new THREE.BufferGeometry()
-          lgeo.setAttribute('position', new THREE.BufferAttribute(lposArr, 3))
-          var lmesh = new THREE.Line(lgeo, lineMat)
-          lmesh.visible = false
-          lineGroup.add(lmesh)
-          linePool.push({ mesh: lmesh, pos: lposArr })
-        }
+        // Tooltip
+        document.addEventListener('mousemove', function (e) {
+          var tip = document.getElementById('ntip')
+          if (tip && tip.style.opacity === '1') {
+            tip.style.left = e.clientX + 'px'
+            tip.style.top = e.clientY + 'px'
+          }
+        }, { passive: true })
 
-        var _lineTick = 0
-        return function (time) {
-          // Move nodes
-          nodes.forEach(function (n) {
-            n.position.add(n.userData.vel)
-            if (Math.abs(n.position.x) > 55) n.userData.vel.x *= -1
-            if (Math.abs(n.position.y) > 35) n.userData.vel.y *= -1
-            if (Math.abs(n.position.z) > 25) n.userData.vel.z *= -1
+        applyTheme()
+        new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
+        return function (t) {
+          stars.forEach(function (s, i) {
+            s.group.position.y = s.data.pos.y + Math.sin(t * 0.6 + i * 1.2) * 0.4
+            s.group.position.x = s.data.pos.x + Math.cos(t * 0.4 + i * 0.8) * 0.2
           })
 
-          // Update connections every 45 frames using pre-allocated pool (no GC)
-          _lineTick++
-          if (_lineTick % 45 === 0) {
-            var idx = 0
-            for (var i = 0; i < nodes.length; i++) {
-              for (var j = i + 1; j < nodes.length; j++) {
-                var dist = nodes[i].position.distanceTo(nodes[j].position)
-                if (dist < 20 && idx < linePool.length) {
-                  var entry = linePool[idx++]
-                  var pa = nodes[i].position, pb = nodes[j].position
-                  entry.pos[0] = pa.x; entry.pos[1] = pa.y; entry.pos[2] = pa.z
-                  entry.pos[3] = pb.x; entry.pos[4] = pb.y; entry.pos[5] = pb.z
-                  entry.mesh.geometry.attributes.position.needsUpdate = true
-                  entry.mesh.visible = true
-                }
-              }
-            }
-            // Hide unused pool entries
-            for (; idx < linePool.length; idx++) linePool[idx].mesh.visible = false
-          }
+          // Drag rotation
+          if (!mouseDown) cameraTarget.rotY += 0.0002
 
-          group.rotation.y += (mouseX * 0.15 - group.rotation.y) * 0.01
-          group.rotation.x += (mouseY * 0.08 - group.rotation.x) * 0.01
+          // Camera easing
+          cameraCurrent.rotY += (cameraTarget.rotY - cameraCurrent.rotY) * 0.03
+          cameraCurrent.rotX += (cameraTarget.rotX - cameraCurrent.rotX) * 0.03
+          cameraCurrent.z += (cameraTarget.z - cameraCurrent.z) * 0.03
+          root.rotation.y = cameraCurrent.rotY
+          root.rotation.x = cameraCurrent.rotX
+
+          if (Math.floor(t * 30) % 3 === 0) updateHover()
         }
       },
 
-      // SCHOOL — Floating Geometric Knowledge
+
+      // ── SCHOOL: Orbiting Knowledge Orbs ──
+      // Drag to rotate. Hover orbs to highlight.
       school: function () {
-        camera.position.set(0, 0, 60)
-        var group = new THREE.Group()
-        var shapes = []
-        var geometries = [
-          new THREE.IcosahedronGeometry(2, 0),
-          new THREE.OctahedronGeometry(2, 0),
-          new THREE.TetrahedronGeometry(2, 0),
-          new THREE.DodecahedronGeometry(1.5, 0),
-          new THREE.TorusGeometry(1.5, 0.4, 8, 12)
-        ]
-        var colors = [COL.ion, COL.signal, COL.teal, COL.plasma, COL.em]
-
-        for (var i = 0; i < 25; i++) {
-          var geoIdx = i % geometries.length
-          var wireMat = new THREE.MeshBasicMaterial({ color: colors[geoIdx], wireframe: true, transparent: true, opacity: 0.35 })
-          var mesh = new THREE.Mesh(geometries[geoIdx].clone(), wireMat)
-          mesh.position.set((Math.random() - 0.5) * 80, (Math.random() - 0.5) * 50, (Math.random() - 0.5) * 30 - 10)
-          mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0)
-          var s = 0.5 + Math.random() * 1.5
-          mesh.scale.set(s, s, s)
-          mesh.userData = {
-            rotSpeed: new THREE.Vector3((Math.random() - 0.5) * 0.01, (Math.random() - 0.5) * 0.01, (Math.random() - 0.5) * 0.005),
-            floatSpeed: 0.3 + Math.random() * 0.5,
-            floatOffset: Math.random() * Math.PI * 2
-          }
-          group.add(mesh)
-          shapes.push(mesh)
-        }
-
-        scene.add(group)
-
-        return function (time) {
-          shapes.forEach(function (s) {
-            s.rotation.x += s.userData.rotSpeed.x
-            s.rotation.y += s.userData.rotSpeed.y
-            s.position.y += Math.sin(time * s.userData.floatSpeed + s.userData.floatOffset) * 0.02
-          })
-          group.rotation.y += (mouseX * 0.2 - group.rotation.y) * 0.015
-          group.rotation.x += (mouseY * 0.1 - group.rotation.x) * 0.015
-        }
-      },
-
-      // CAREER — Deep Space / Cosmos
-      career: function () {
         camera.position.set(0, 0, 50)
-        var group = new THREE.Group()
+        cameraCurrent.z = 50
+        cameraTarget.z = 50
 
-        // Star field
-        var starCount = 2000
-        var starPos = new Float32Array(starCount * 3)
-        var starColors = new Float32Array(starCount * 3)
-        for (var i = 0; i < starCount; i++) {
-          starPos[i * 3] = (Math.random() - 0.5) * 200
-          starPos[i * 3 + 1] = (Math.random() - 0.5) * 200
-          starPos[i * 3 + 2] = (Math.random() - 0.5) * 200
-          var c = new THREE.Color([COL.ion, COL.signal, COL.plasma, 0xffffff][Math.floor(Math.random() * 4)])
-          starColors[i * 3] = c.r
-          starColors[i * 3 + 1] = c.g
-          starColors[i * 3 + 2] = c.b
-        }
-        var starGeo = new THREE.BufferGeometry()
-        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3))
-        starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3))
-        group.add(
-          new THREE.Points(
-            starGeo,
-            new THREE.PointsMaterial({
-              size: 0.3,
-              vertexColors: true,
-              transparent: true,
-              opacity: 0.8,
-              blending: THREE.AdditiveBlending
-            })
-          )
-        )
+        var root = new THREE.Group()
+        scene.add(root)
 
-        // Nebula sprites
-        for (var j = 0; j < 5; j++) {
-          var nc = document.createElement('canvas')
-          nc.width = 128
-          nc.height = 128
-          var nctx = nc.getContext('2d')
-          var nebulaColors = ['rgba(184,155,255,', 'rgba(94,212,245,', 'rgba(242,184,75,', 'rgba(0,240,204,', 'rgba(52,211,153,']
-          var ng = nctx.createRadialGradient(64, 64, 0, 64, 64, 64)
-          ng.addColorStop(0, nebulaColors[j] + '0.15)')
-          ng.addColorStop(0.5, nebulaColors[j] + '0.05)')
-          ng.addColorStop(1, nebulaColors[j] + '0)')
-          nctx.fillStyle = ng
-          nctx.fillRect(0, 0, 128, 128)
-          var sprite = new THREE.Sprite(
-            new THREE.SpriteMaterial({
-              map: new THREE.CanvasTexture(nc),
-              transparent: true,
-              blending: THREE.AdditiveBlending,
-              depthWrite: false
-            })
-          )
-          sprite.position.set((Math.random() - 0.5) * 80, (Math.random() - 0.5) * 60, -30 - Math.random() * 30)
-          sprite.scale.set(40 + Math.random() * 30, 40 + Math.random() * 30, 1)
-          group.add(sprite)
+        var orbCount = 8
+        var orbs = []
+        var orbKeys = ['ion', 'signal', 'teal', 'plasma', 'em', 'ion', 'signal', 'teal']
+
+        for (var i = 0; i < orbCount; i++) {
+          var geo = new THREE.IcosahedronGeometry(1 + Math.random() * 0.8, 1)
+          var mat = new THREE.MeshBasicMaterial({ color: pal()[orbKeys[i]], wireframe: true, transparent: true, opacity: 0.3 })
+          trackTheme(mat, orbKeys[i])
+          var mesh = new THREE.Mesh(geo, mat)
+          var angle = (i / orbCount) * Math.PI * 2
+          var radius = 15 + Math.random() * 8
+          mesh.position.set(Math.cos(angle) * radius, (Math.random() - 0.5) * 12, Math.sin(angle) * radius * 0.5)
+          mesh.userData.angle = angle
+          mesh.userData.radius = radius
+          mesh.userData.speed = 0.1 + Math.random() * 0.15
+          mesh.userData.floatOff = Math.random() * Math.PI * 2
+          mesh.userData.baseColor = orbKeys[i]
+          root.add(mesh)
+          orbs.push(mesh)
         }
 
-        scene.add(group)
+        scene.add(createDust('dim', 300, 60, 100))
 
-        return function (time) {
-          group.rotation.y += 0.0003
-          group.rotation.x += (mouseY * 0.08 - group.rotation.x) * 0.01
-          group.rotation.y += mouseX * 0.08 * 0.005
+        applyTheme()
+        new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
+        return function (t) {
+          orbs.forEach(function (o) {
+            o.userData.angle += o.userData.speed * 0.01
+            o.position.x = Math.cos(o.userData.angle) * o.userData.radius
+            o.position.z = Math.sin(o.userData.angle) * o.userData.radius * 0.5
+            o.position.y = Math.sin(t * o.userData.speed + o.userData.floatOff) * 2
+            o.rotation.x = t * 0.1
+            o.rotation.y = t * 0.15
+          })
+
+          if (!mouseDown) cameraTarget.rotY += 0.0002
+
+          cameraCurrent.rotY += (cameraTarget.rotY - cameraCurrent.rotY) * 0.03
+          cameraCurrent.rotX += (cameraTarget.rotX - cameraCurrent.rotX) * 0.03
+          root.rotation.y = cameraCurrent.rotY
+          root.rotation.x = cameraCurrent.rotX
         }
       },
 
-      // DATABASE_LOGIC — Data Grid / Network Topology
-      database_logic: function () {
-        camera.position.set(0, 15, 45)
-        camera.lookAt(0, 0, 0)
-        var group = new THREE.Group()
 
-        // Grid
-        var gridHelper = new THREE.GridHelper(80, 40, COL.teal, 0x0a1420)
-        gridHelper.material.transparent = true
-        gridHelper.material.opacity = 0.15
-        group.add(gridHelper)
+      // ── ATI: Typing Waveform ──
+      // 28 bars pulse like a typing rhythm. Two accent keys press rhythmically.
+      // Drag to shift the waveform angle. Hover intensifies the pattern.
+      ati: function () {
+        camera.position.set(0, 0, 40)
+        cameraCurrent.z = 40
+        cameraTarget.z = 40
 
-        // Data nodes (cylinders)
-        var dataNodes = []
-        for (var i = 0; i < 30; i++) {
-          var h = 1 + Math.random() * 6
-          var geo = new THREE.CylinderGeometry(0.4, 0.4, h, 8)
-          var mat = new THREE.MeshBasicMaterial({
-            color: [COL.teal, COL.ion, COL.em][Math.floor(Math.random() * 3)],
-            transparent: true,
-            opacity: 0.5,
-            wireframe: Math.random() > 0.5
-          })
-          var cyl = new THREE.Mesh(geo, mat)
-          cyl.position.set((Math.random() - 0.5) * 60, h / 2, (Math.random() - 0.5) * 60)
-          cyl.userData = { targetH: h, baseY: 0, pulseSpeed: 0.5 + Math.random() * 2, pulseOffset: Math.random() * Math.PI * 2 }
-          group.add(cyl)
-          dataNodes.push(cyl)
+        var root = new THREE.Group()
+        scene.add(root)
+
+        var barCount = 28
+        var bars = []
+        var barSpacing = 1.5
+
+        for (var i = 0; i < barCount; i++) {
+          var h = 1.5 + Math.random() * 5
+          var geo = new THREE.BoxGeometry(0.5, h, 0.3)
+          var mat = new THREE.MeshBasicMaterial({ color: pal().ion, transparent: true, opacity: 0.2 + Math.random() * 0.15 })
+          trackTheme(mat, 'ion')
+          var bar = new THREE.Mesh(geo, mat)
+          bar.position.set((i - barCount / 2) * barSpacing, 0, 0)
+          bar.userData.baseY = 0
+          bar.userData.h = h
+          bar.userData.speed = 1.2 + Math.random() * 1.8
+          bar.userData.phase = (i / barCount) * Math.PI * 2
+          root.add(bar)
+          bars.push(bar)
         }
 
-        // Connection lines between nearby nodes
-        var connMat = new THREE.LineBasicMaterial({ color: COL.ion, transparent: true, opacity: 0.08 })
-        for (var a = 0; a < dataNodes.length; a++) {
-          for (var b = a + 1; b < dataNodes.length; b++) {
-            if (dataNodes[a].position.distanceTo(dataNodes[b].position) < 18) {
-              var pts = [dataNodes[a].position.clone(), dataNodes[b].position.clone()]
-              pts[0].y = 0
-              pts[1].y = 0
-              group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), connMat))
-            }
+        // Two accent bars (signal gold) at center
+        var accentMatL = new THREE.MeshBasicMaterial({ color: pal().signal, transparent: true, opacity: 0.35 })
+        var accentMatR = new THREE.MeshBasicMaterial({ color: pal().signal, transparent: true, opacity: 0.35 })
+        trackTheme(accentMatL, 'signal')
+        trackTheme(accentMatR, 'signal')
+        var accentL = new THREE.Mesh(new THREE.BoxGeometry(0.6, 4, 0.4), accentMatL)
+        var accentR = new THREE.Mesh(new THREE.BoxGeometry(0.6, 4, 0.4), accentMatR)
+        accentL.position.set(-barSpacing, 0, 0.5)
+        accentR.position.set(barSpacing, 0, 0.5)
+        root.add(accentL)
+        root.add(accentR)
+
+        scene.add(createDust('ion', 250, 50, 100))
+
+        applyTheme()
+        new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
+        return function (t) {
+          var hover = window.__col3d.hover
+
+          bars.forEach(function (b, i) {
+            var wave = Math.sin(t * b.userData.speed + b.userData.phase)
+            var h = b.userData.h * (0.3 + (wave * 0.5 + 0.5) * 0.7 + hover * 0.3)
+            b.scale.y = h / b.userData.h
+            b.position.y = (h - b.userData.h) * 0.5
+            b.material.opacity = 0.15 + (wave * 0.5 + 0.5) * 0.2 + hover * 0.1
+          })
+
+          // Accent keys press rhythmically
+          var press = (Math.sin(t * 2.5) * 0.5 + 0.5) > 0.7 ? 1 : 0
+          accentL.position.y = -press * 0.4
+          accentR.position.y = -(1 - press) * 0.4
+          accentL.material.opacity = 0.3 + press * 0.3 + hover * 0.15
+          accentR.material.opacity = 0.3 + (1 - press) * 0.3 + hover * 0.15
+
+          // Drag tilts the waveform
+          if (!mouseDown) cameraTarget.rotY += 0.0003
+          root.rotation.z = Math.sin(t * 0.3) * 0.01
+          root.rotation.y += (mouseX * 0.04 - root.rotation.y) * 0.012
+          root.rotation.x += (mouseY * 0.02 - root.rotation.x) * 0.012
+
+          cameraCurrent.z += (cameraTarget.z - cameraCurrent.z) * 0.03
+        }
+      },
+
+
+      // ── DRIVING: Perspective Road ──
+      // Markers flow toward you = driving forward. Mouse steers the road.
+      // Horizon glow where the road disappears.
+      driving: function () {
+        camera.position.set(0, 2, 30)
+        cameraCurrent.z = 30
+        cameraTarget.z = 30
+
+        var root = new THREE.Group()
+        scene.add(root)
+
+        // Road surface
+        var roadGeo = new THREE.PlaneGeometry(6, 120, 1, 1)
+        var roadMat = new THREE.MeshBasicMaterial({ color: pal().ion, transparent: true, opacity: 0.06 })
+        trackTheme(roadMat, 'ion')
+        var road = new THREE.Mesh(roadGeo, roadMat)
+        road.rotation.x = -Math.PI / 2.2
+        road.position.set(0, -2, -50)
+        root.add(road)
+
+        // Lane markers
+        var markerCount = 16
+        var markers = []
+        for (var i = 0; i < markerCount; i++) {
+          var z = -i * 7 - 5
+          var alpha = 1 - (i / markerCount)
+          var geo = new THREE.PlaneGeometry(0.12, 2.5)
+          var mat = new THREE.MeshBasicMaterial({ color: pal().signal, transparent: true, opacity: alpha * 0.25 })
+          trackTheme(mat, 'signal')
+          var marker = new THREE.Mesh(geo, mat)
+          marker.rotation.x = -Math.PI / 2.2
+          marker.position.set(0, -1.95, z)
+          marker.userData.baseZ = z
+          root.add(marker)
+          markers.push(marker)
+        }
+
+        // Side rails
+        var railMat = new THREE.LineBasicMaterial({ color: pal().dim, transparent: true, opacity: 0.08 })
+        trackTheme(railMat, 'dim')
+        var railGeoL = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-3, -1.9, 5), new THREE.Vector3(-3, -1.9, -70)])
+        var railGeoR = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(3, -1.9, 5), new THREE.Vector3(3, -1.9, -70)])
+        root.add(new THREE.Line(railGeoL, railMat))
+        root.add(new THREE.Line(railGeoR, railMat))
+
+        // Horizon glow
+        var horizonCvs = document.createElement('canvas')
+        horizonCvs.width = horizonCvs.height = 128
+        var hctx = horizonCvs.getContext('2d')
+        var hrd = hctx.createRadialGradient(64, 64, 0, 64, 64, 64)
+        hrd.addColorStop(0, 'rgba(94,212,245,0.12)')
+        hrd.addColorStop(0.6, 'rgba(94,212,245,0.03)')
+        hrd.addColorStop(1, 'rgba(94,212,245,0)')
+        hctx.fillStyle = hrd
+        hctx.fillRect(0, 0, 128, 128)
+        var horizon = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(horizonCvs), transparent: true, opacity: 0.8 }))
+        horizon.scale.set(12, 12, 1)
+        horizon.position.set(0, -1.5, -68)
+        root.add(horizon)
+
+        scene.add(createDust('ion', 200, 40, 90))
+
+        applyTheme()
+        new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
+        return function (t) {
+          var hover = window.__col3d.hover
+
+          // Markers flow toward camera
+          markers.forEach(function (m) {
+            m.position.z += 0.12 + hover * 0.08
+            if (m.position.z > 8) m.position.z = -m.userData.baseZ - markerCount * 2
+            var a = Math.max(0, 1 - Math.abs(m.position.z + 5) / 70)
+            m.material.opacity = a * 0.25
+          })
+
+          roadMat.opacity = 0.05 + Math.sin(t * 0.5) * 0.015 + hover * 0.04
+          horizon.material.opacity = 0.6 + Math.sin(t * 0.7) * 0.15 + hover * 0.2
+          horizon.scale.set(12 + Math.sin(t * 0.7) * 1, 12 + Math.sin(t * 0.7) * 1, 1)
+
+          // Steering
+          root.rotation.y = mouseX * 0.04
+          root.rotation.z = -mouseX * 0.008
+          root.rotation.x = 0.02 + mouseY * 0.015
+        }
+      },
+
+
+      // ── SOLAR: Simple sphere + glow ──
+      solar: function () {
+        camera.position.set(0, 0, 35)
+        cameraCurrent.z = 35
+        cameraTarget.z = 35
+
+        var root = new THREE.Group()
+        scene.add(root)
+
+        var geo = new THREE.IcosahedronGeometry(3, 2)
+        var mat = new THREE.MeshBasicMaterial({ color: pal().signal, transparent: true, opacity: 0.15 })
+        trackTheme(mat, 'signal')
+        var mesh = new THREE.Mesh(geo, mat)
+        root.add(mesh)
+
+        var coreMat = new THREE.MeshBasicMaterial({ color: pal().signal, transparent: true, opacity: 0.6 })
+        trackTheme(coreMat, 'signal')
+        var core = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, 2), coreMat)
+        root.add(core)
+
+        scene.add(createDust('signal', 200, 40, 80))
+
+        applyTheme()
+        new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
+        return function (t) {
+          mesh.rotation.y = t * 0.08
+          mesh.scale.set(1 + Math.sin(t * 0.5) * 0.03, 1 + Math.sin(t * 0.5) * 0.03, 1 + Math.sin(t * 0.5) * 0.03)
+          core.rotation.y = -t * 0.1
+          core.rotation.x = t * 0.05
+          root.rotation.y += (mouseX * 0.06 - root.rotation.y) * 0.02
+          root.rotation.x += (mouseY * 0.03 - root.rotation.x) * 0.02
+        }
+      },
+
+      // ── GESTURE: Sine wave ribbon ──
+      gesture: function () {
+        camera.position.set(0, 0, 35)
+        cameraCurrent.z = 35
+        cameraTarget.z = 35
+
+        var root = new THREE.Group()
+        scene.add(root)
+
+        var waveGeo = new THREE.PlaneGeometry(40, 6, 60, 8)
+        waveGeo.rotateX(-Math.PI / 2)
+        var wMat = new THREE.MeshBasicMaterial({ color: pal().plasma, transparent: true, opacity: 0.1, wireframe: true })
+        trackTheme(wMat, 'plasma')
+        var wave = new THREE.Mesh(waveGeo, wMat)
+        wave.position.y = -3
+        root.add(wave)
+
+        var origY = []
+        var posAtt = waveGeo.attributes.position
+        for (var k = 0; k < posAtt.count; k++) origY.push(posAtt.getY(k))
+
+        scene.add(createDust('plasma', 200, 40, 80))
+
+        applyTheme()
+        new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
+        return function (t) {
+          for (var i = 0; i < posAtt.count; i++) {
+            var x = posAtt.getX(i), z = posAtt.getZ(i)
+            posAtt.setY(i, origY[i] + Math.sin(t * 1.2 + x * 0.15) * 1.5 + Math.cos(t * 0.8 + z * 0.1) * 0.8)
+          }
+          posAtt.needsUpdate = true
+          root.rotation.y += (mouseX * 0.05 - root.rotation.y) * 0.01
+        }
+      },
+
+      // ── RPG: Crystal ──
+      rpg: function () {
+        camera.position.set(0, 0, 35)
+        cameraCurrent.z = 35
+        cameraTarget.z = 35
+
+        var root = new THREE.Group()
+        scene.add(root)
+
+        var geo = new THREE.OctahedronGeometry(2.5, 0)
+        var cMat = new THREE.MeshBasicMaterial({ color: pal().em, wireframe: true, transparent: true, opacity: 0.3 })
+        trackTheme(cMat, 'em')
+        var crystal = new THREE.Mesh(geo, cMat)
+        root.add(crystal)
+
+        var cCoreMat = new THREE.MeshBasicMaterial({ color: pal().em, transparent: true, opacity: 0.4 })
+        trackTheme(cCoreMat, 'em')
+        var cCore = new THREE.Mesh(new THREE.OctahedronGeometry(1.2, 0), cCoreMat)
+        root.add(cCore)
+
+        scene.add(createDust('em', 200, 40, 80))
+
+        applyTheme()
+        new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
+        return function (t) {
+          crystal.rotation.y = t * 0.06
+          crystal.rotation.x = t * 0.03
+          cCore.rotation.y = -t * 0.1
+          root.rotation.y += (mouseX * 0.06 - root.rotation.y) * 0.02
+          root.rotation.x += (mouseY * 0.03 - root.rotation.x) * 0.02
+        }
+      },
+
+      // ── QR: Sparse grid ──
+      qr: function () {
+        camera.position.set(0, 0, 35)
+        cameraCurrent.z = 35
+        cameraTarget.z = 35
+
+        var root = new THREE.Group()
+        scene.add(root)
+
+        var cells = []
+        var gridMat = new THREE.MeshBasicMaterial({ color: pal().signal, wireframe: true, transparent: true, opacity: 0.08 })
+        trackTheme(gridMat, 'signal')
+        for (var gx = -3; gx <= 3; gx++) {
+          for (var gz = -2; gz <= 2; gz++) {
+            if (Math.random() < 0.4) continue
+            var cell = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 2), gridMat)
+            cell.position.set(gx * 2.5, -5, gz * 2.5)
+            cell.userData.dist = Math.sqrt(gx * gx + gz * gz)
+            root.add(cell)
+            cells.push(cell)
           }
         }
 
-        scene.add(group)
+        scene.add(createDust('signal', 200, 40, 80))
 
-        return function (time) {
-          dataNodes.forEach(function (n) {
-            var pulse = Math.sin(time * n.userData.pulseSpeed + n.userData.pulseOffset)
-            var newH = n.userData.targetH * (0.5 + pulse * 0.5)
-            n.scale.y = Math.max(0.1, newH / n.userData.targetH)
-            n.material.opacity = 0.3 + pulse * 0.3
+        applyTheme()
+        new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
+        return function (t) {
+          cells.forEach(function (c) {
+            c.rotation.z += 0.002
+            c.material.opacity = 0.05 + Math.sin(t * 1.5 - c.userData.dist * 0.3) * 0.06
           })
-          group.rotation.y += (mouseX * 0.2 - group.rotation.y) * 0.01
+          root.rotation.y += (mouseX * 0.04 - root.rotation.y) * 0.01
         }
       },
 
-      // PRIVACY — Shield Hex Grid
-      privacy: function () {
-        camera.position.set(0, 0, 50)
-        var group = new THREE.Group()
 
-        // Hexagonal grid
-        var hexSize = 3
-        var cols = 12,
-          rows = 10
-        var hexes = []
-        for (var row = 0; row < rows; row++) {
-          for (var col = 0; col < cols; col++) {
-            var x = col * hexSize * 1.75 - (cols * hexSize * 1.75) / 2
-            var y = row * hexSize * 1.55 - (rows * hexSize * 1.55) / 2
-            if (row % 2) x += hexSize * 0.875
+      // ── STATIC PAGES: Minimal atmospheric ──
+      privacy: function () { return makeMinimal('teal') },
+      terms:   function () { return makeMinimal('dim') },
+      feedback:function () { return makeMinimal('signal') },
+      career:  function () { return makeMinimal('plasma') },
+      database_logic: function () { return makeMinimal('teal') },
+      download: function () { return makeMinimal('signal') },
+      sitemap: function () { return makeMinimal('dim') },
+      admin:   function () { return makeMinimal('ion') },
 
-            var shape = new THREE.Shape()
-            for (var k = 0; k < 6; k++) {
-              var angle = (Math.PI / 3) * k - Math.PI / 6
-              var hx = Math.cos(angle) * hexSize * 0.85
-              var hy = Math.sin(angle) * hexSize * 0.85
-              if (k === 0) shape.moveTo(hx, hy)
-              else shape.lineTo(hx, hy)
-            }
-            shape.closePath()
-
-            var geo = new THREE.ShapeGeometry(shape)
-            var mat = new THREE.MeshBasicMaterial({
-              color: COL.teal,
-              transparent: true,
-              opacity: 0.03 + Math.random() * 0.04,
-              side: THREE.DoubleSide
-            })
-            var hex = new THREE.Mesh(geo, mat)
-            hex.position.set(x, y, 0)
-            hex.userData = { pulseDelay: Math.random() * Math.PI * 2, baseOpacity: mat.opacity }
-            group.add(hex)
-            hexes.push(hex)
-
-            // Edge lines
-            var edgeGeo = new THREE.EdgesGeometry(geo)
-            var edgeMat = new THREE.LineBasicMaterial({ color: COL.teal, transparent: true, opacity: 0.1 })
-            var edges = new THREE.LineSegments(edgeGeo, edgeMat)
-            edges.position.copy(hex.position)
-            group.add(edges)
-          }
-        }
-
-        // Shield icon (simple triangle outline)
-        var shieldPts = [
-          new THREE.Vector3(0, 8, 0.1),
-          new THREE.Vector3(-6, 3, 0.1),
-          new THREE.Vector3(-5, -4, 0.1),
-          new THREE.Vector3(0, -7, 0.1),
-          new THREE.Vector3(5, -4, 0.1),
-          new THREE.Vector3(6, 3, 0.1),
-          new THREE.Vector3(0, 8, 0.1)
-        ]
-        var shieldGeo = new THREE.BufferGeometry().setFromPoints(shieldPts)
-        var shieldLine = new THREE.Line(shieldGeo, new THREE.LineBasicMaterial({ color: COL.em, transparent: true, opacity: 0.3 }))
-        group.add(shieldLine)
-
-        scene.add(group)
-
-        return function (time) {
-          hexes.forEach(function (h) {
-            var pulse = Math.sin(time * 0.8 + h.userData.pulseDelay)
-            h.material.opacity = h.userData.baseOpacity + pulse * 0.03
-          })
-          shieldLine.material.opacity = 0.2 + Math.sin(time * 1.5) * 0.15
-          group.rotation.y += (mouseX * 0.08 - group.rotation.y) * 0.01
-          group.rotation.x += (mouseY * 0.04 - group.rotation.x) * 0.01
-        }
-      },
-
-      // TERMS — Matrix / Code Rain
-      terms: function () {
-        camera.position.set(0, 0, 50)
-        var group = new THREE.Group()
-
-        // Falling particle columns
-        var columnCount = 25
-        var particlesPerCol = 20
-        var columns = []
-
-        for (var c = 0; c < columnCount; c++) {
-          var colX = (c - columnCount / 2) * 4
-          var positions = new Float32Array(particlesPerCol * 3)
-          var opacities = new Float32Array(particlesPerCol)
-          for (var p = 0; p < particlesPerCol; p++) {
-            positions[p * 3] = colX + (Math.random() - 0.5) * 0.5
-            positions[p * 3 + 1] = (Math.random() - 0.5) * 80
-            positions[p * 3 + 2] = (Math.random() - 0.5) * 20
-            opacities[p] = Math.random()
-          }
-          var geo = new THREE.BufferGeometry()
-          geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-          var mat = new THREE.PointsMaterial({
-            color: [COL.em, COL.teal, COL.ion][c % 3],
-            size: 0.4,
-            transparent: true,
-            opacity: 0.5,
-            blending: THREE.AdditiveBlending
-          })
-          var points = new THREE.Points(geo, mat)
-          points.userData = { speed: 0.1 + Math.random() * 0.15 }
-          group.add(points)
-          columns.push(points)
-        }
-
-        scene.add(group)
-
-        return function (time) {
-          columns.forEach(function (col) {
-            var pos = col.geometry.attributes.position.array
-            for (var i = 0; i < pos.length; i += 3) {
-              pos[i + 1] -= col.userData.speed
-              if (pos[i + 1] < -40) pos[i + 1] = 40
-            }
-            col.geometry.attributes.position.needsUpdate = true
-          })
-          group.rotation.y += (mouseX * 0.05 - group.rotation.y) * 0.01
-        }
-      },
-
-      // FEEDBACK — Signal Waves / Communication Ripples
-      feedback: function () {
-        camera.position.set(0, 0, 60)
-        var group = new THREE.Group()
-
-        // Concentric rings
-        var ringCount = 8
-        var rings = []
-        for (var i = 0; i < ringCount; i++) {
-          var radius = 5 + i * 5
-          var ringGeo = new THREE.RingGeometry(radius - 0.15, radius + 0.15, 64)
-          var ringMat = new THREE.MeshBasicMaterial({
-            color: [COL.signal, COL.ion][i % 2],
-            transparent: true,
-            opacity: 0.12 - i * 0.01,
-            side: THREE.DoubleSide
-          })
-          var ring = new THREE.Mesh(ringGeo, ringMat)
-          ring.userData = { baseRadius: radius, phase: i * 0.5 }
-          group.add(ring)
-          rings.push(ring)
-        }
-
-        // Floating signal dots
-        var dotCount = 80
-        var dotPositions = new Float32Array(dotCount * 3)
-        for (var d = 0; d < dotCount; d++) {
-          var angle = Math.random() * Math.PI * 2
-          var dist = 5 + Math.random() * 40
-          dotPositions[d * 3] = Math.cos(angle) * dist
-          dotPositions[d * 3 + 1] = Math.sin(angle) * dist
-          dotPositions[d * 3 + 2] = (Math.random() - 0.5) * 10
-        }
-        var dotGeo = new THREE.BufferGeometry()
-        dotGeo.setAttribute('position', new THREE.BufferAttribute(dotPositions, 3))
-        group.add(
-          new THREE.Points(
-            dotGeo,
-            new THREE.PointsMaterial({
-              color: COL.signal,
-              size: 0.4,
-              transparent: true,
-              opacity: 0.5,
-              blending: THREE.AdditiveBlending
-            })
-          )
-        )
-
-        scene.add(group)
-
-        return function (time) {
-          rings.forEach(function (r) {
-            var pulse = Math.sin(time * 1.2 + r.userData.phase)
-            var scale = 1 + pulse * 0.08
-            r.scale.set(scale, scale, 1)
-            r.material.opacity = (0.12 - rings.indexOf(r) * 0.01) * (0.6 + pulse * 0.4)
-          })
-          group.rotation.z += 0.001
-          group.rotation.y += (mouseX * 0.1 - group.rotation.y) * 0.01
-          group.rotation.x += (mouseY * 0.05 - group.rotation.x) * 0.01
-        }
-      },
-
-      // SNEH-ASHA — skip (already has its own procedural 3D)
+      // ── SNEH-ASHA: handled by its own page ──
       'sneh-asha': null,
       sneh_asha: null
     }
 
-    // Find the right scene
-    var sceneBuilder = scenes[path] || scenes[path.replace('-', '_')] || scenes[path.replace('_', '-')]
+    // ─── Helper: minimal atmospheric scene ───
+    function makeMinimal(colorKey) {
+      camera.position.set(0, 0, 40)
+      cameraCurrent.z = 40
+      cameraTarget.z = 40
 
-    // For Database_Logic.html (path becomes "database_logic")
-    if (!sceneBuilder && path.indexOf('database') >= 0) sceneBuilder = scenes.database_logic
-    // For Career.html
-    if (!sceneBuilder && path.indexOf('career') >= 0) sceneBuilder = scenes.career
+      var root = new THREE.Group()
+      scene.add(root)
 
-    if (!sceneBuilder) {
-      // Fallback: generic starfield for any unknown page
-      sceneBuilder = scenes.career // reuse cosmos
-    }
+      var geo = new THREE.SphereGeometry(4, 24, 24)
+      var mat = new THREE.MeshBasicMaterial({ color: pal()[colorKey], wireframe: true, transparent: true, opacity: 0.06 })
+      trackTheme(mat, colorKey)
+      var sphere = new THREE.Mesh(geo, mat)
+      root.add(sphere)
 
-    if (sceneBuilder === null) return // explicitly null = page handles its own 3D
+      scene.add(createDust(colorKey, 300, 50, 100))
 
-    var updateFn = sceneBuilder()
+      applyTheme()
+      new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
 
-    // Fade in canvas
-    var hasFadedIn = false
-    canvas.style.opacity = '0'
-    canvas.style.transition = 'opacity 1.5s ease'
-    setTimeout(function () {
-      hasFadedIn = true
-      syncThemeOpacity()
-    }, 100)
-    if (canvas.classList) canvas.classList.add('v')
-
-    function syncThemeOpacity() {
-      if (!hasFadedIn) return
-      var isLight = document.body.classList.contains('lm')
-      var nativeLight = ['home', 'ati', 'solar', 'qr', 'rpg', 'gesture', 'driving']
-      if (nativeLight.indexOf(path) >= 0) {
-        canvas.style.opacity = isLight ? '0.65' : '1'
-      } else {
-        canvas.style.opacity = isLight ? '0.18' : '1'
+      return function (t) {
+        sphere.rotation.y = t * 0.03
+        sphere.rotation.x = t * 0.02
+        root.rotation.y += (mouseX * 0.03 - root.rotation.y) * 0.01
       }
-      scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)
     }
-    new MutationObserver(syncThemeOpacity).observe(document.body, { attributes: true, attributeFilter: ['class'] })
 
+    // ─── Resolve scene ───
+    var builder = builders[path] || builders[path.replace('-', '_')] || builders[path.replace('_', '-')]
+    if (!builder && path.indexOf('database') >= 0) builder = builders.database_logic
+    if (!builder && path.indexOf('career') >= 0) builder = builders.career
+    if (!builder) builder = builders.privacy
+    if (builder === null) return
 
-    // Animation loop — capped at 30fps to keep the main thread free for user input.
-    // 30fps is imperceptible for background ambient scenes; interaction latency
-    // (INP) is far more noticeable than frame rate for decorative canvases.
+    applyTheme()
+    var updateFn = builder()
+
+    // ─── Fade in ───
+    canvas.style.opacity = '0'
+    canvas.style.transition = 'opacity 1.8s cubic-bezier(0.16,1,0.3,1)'
+    setTimeout(function () { canvas.style.opacity = '1'; if (canvas.classList) canvas.classList.add('v') }, 120)
+
+    // ─── Animation loop ───
     var clock = new THREE.Clock()
-    var _TARGET_FPS = 30
-    var _FRAME_MS = 1000 / _TARGET_FPS
-    var _lastFrameTime = 0
+    var FRAME_MS = 1000 / 30
+    var lastFrame = 0
+
     function animate(now) {
       requestAnimationFrame(animate)
-      if (!isVisible) return
-      var elapsed = now - _lastFrameTime
-      if (elapsed < _FRAME_MS) return // skip — too soon
-      _lastFrameTime = now - (elapsed % _FRAME_MS) // drift-correct
-      // Consume pending mouse coords once per frame (not per-event)
-      mouseX = _pendingMX
-      mouseY = _pendingMY
+      if (!visible) return
+      var elapsed = now - lastFrame
+      if (elapsed < FRAME_MS) return
+      lastFrame = now - (elapsed % FRAME_MS)
+      mouseX = _pmx
+      mouseY = _pmy
+      _hoverCurrent += (_hoverTarget - _hoverCurrent) * 0.05
       var t = clock.getElapsedTime()
       if (updateFn) updateFn(t)
       renderer.render(scene, camera)
     }
     animate(0)
-  })
+  }
 })()
+
