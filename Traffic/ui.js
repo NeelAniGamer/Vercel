@@ -769,7 +769,7 @@ window.ui = Object.assign(window.ui || {}, {
     const scale = { child: 0.7, teen: 0.85, young: 1.0, adult: 1.0, senior: 0.9 }
     return scale[b] || 1.0
   },
-  _applyAgeTier() {
+_applyAgeTier() {
     const tier = this.getAgeBracket()
     const gradeTier = this.getGradeTier()
     document.body.dataset.ageTier = tier
@@ -779,6 +779,54 @@ window.ui = Object.assign(window.ui || {}, {
     if (!S.grade) S.grade = 5
 
     this._applyGradeUI()
+  },
+
+  // ─── PUBLIC: Apply config-driven age tier ───
+  async applyAgeTier(tier) {
+    // Fetch age config if not cached
+    if (!window.AGE_CONFIG) {
+      try {
+        const resp = await fetch('age-config.json');
+        window.AGE_CONFIG = await resp.json();
+      } catch (e) {
+        console.warn('Could not load age-config.json, using defaults');
+        window.AGE_CONFIG = {
+          ui: { child: { buttonScale: 1.5, fontSize: 1.3, sounds: true, animations: 'bounce' },
+               teen: { buttonScale: 1.15, fontSize: 1.1, sounds: true, animations: 'smooth' },
+               adult: { buttonScale: 1.0, fontSize: 1.0, sounds: false, animations: 'minimal' } },
+          gameplay: { child: { timeLimitMult: 2.0, npcDensityMult: 0.3, autoBrake: true, ghostCar: true },
+                      teen: { timeLimitMult: 1.2, npcDensityMult: 0.7, autoBrake: false, ghostCar: true },
+                      adult: { timeLimitMult: 1.0, npcDensityMult: 1.0, autoBrake: false, ghostCar: false } }
+        };
+      }
+    }
+
+    const cfg = window.AGE_CONFIG;
+    const uiCfg = cfg.ui[tier] || cfg.ui.adult;
+    const gameCfg = cfg.gameplay[tier] || cfg.gameplay.adult;
+    const root = document.documentElement;
+
+    // Apply UI config
+    root.style.setProperty('--btn-scale', uiCfg.buttonScale || 1);
+    root.style.setProperty('--ui-font-size', uiCfg.fontSize + 'rem' || '1rem');
+    
+    // Store tier on body for CSS
+    document.body.dataset.ageTier = tier;
+    
+    // Apply sound settings
+    if (window.sfx) {
+      window.sfx.vol.sfx = uiCfg.sounds ? 1 : 0;
+      window.sfx.vol.ui = uiCfg.sounds ? 1 : 0;
+    }
+    
+    // Apply gameplay config globally
+    window.GAME_CONFIG = { ...window.GAME_CONFIG, ...gameCfg };
+    
+    // Apply CSS class for tier-specific styling
+    document.body.classList.remove('age-child', 'age-teen', 'age-adult');
+    document.body.classList.add('age-' + tier);
+    
+    toast(`🎯 Age tier applied: ${tier}`, '#5ed4f5');
   },
   _applyGradeUI() {
     const cfg = this.getGradeConfig()
@@ -1120,15 +1168,9 @@ window.ui = Object.assign(window.ui || {}, {
             </div>
           </div>
         `
-        if (un) {
-          c.onclick = async () => {
-
-            if (window.game && window.game._showLevelPreview) {
-              const proceed = await window.game._showLevelPreview(lv);
-              if (proceed) this.showBriefing(lv.id);
-            } else {
-              this.showBriefing(lv.id);
-            }
+if (un) {
+          c.onclick = () => {
+            ui.showSyllabus(lv.id);
           }
         }
         tr.appendChild(c)
@@ -1257,10 +1299,14 @@ window.ui = Object.assign(window.ui || {}, {
     })
     
 
-    let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
+let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
     this._selSyl(firstUnviewed ? firstUnviewed.id : (items[0]?.id || 'intro'))
     
-
+    
+    // Render campaign progress for this module
+    this._renderCampaignProgress(lv)
+    
+    
     this._renderRewardsPreview(lv, mode, config)
   },
   _getSyllabusForMode(lv, mode) {
@@ -1304,6 +1350,77 @@ window.ui = Object.assign(window.ui || {}, {
     })
     html += '</div>'
     container.innerHTML = html
+  },
+  _renderCampaignProgress(lv) {
+    const campaignManager = window.game?.campaignManager
+    if (!campaignManager || !window.getCampaignsForModule) return
+    
+    const campaigns = window.getCampaignsForModule(lv.module?.id || 1)
+    if (!campaigns || campaigns.length === 0) return
+    
+    const campaign = campaigns[0]
+    const progress = campaignManager.getCampaignProgress(campaign.id)
+    if (!progress) return
+    
+    const container = document.getElementById('br-campaign-progress')
+    if (!container) return
+    
+    const { campaign: c, completedCount, totalMissions, currentMission, unlocked, progressPercent } = progress
+    
+    if (!unlocked) {
+      container.innerHTML = `
+        <div style="padding:16px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:12px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:8px;">🔒</div>
+          <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">CAMPAIGN LOCKED</div>
+          <div style="font-size:0.85rem;color:var(--text);">${c.prerequisite ? 'Complete ' + window.getCampaign(c.prerequisite)?.name + ' first' : 'Requirements not met'}</div>
+        </div>
+      `
+      return
+    }
+    
+    const missionsHtml = c.missions.map((m, i) => {
+      const status = i < completedCount ? 'completed' : 
+                     (currentMission && m.levelId === currentMission.levelId ? 'current' : 'pending')
+      const statusIcon = status === 'completed' ? '✅' : status === 'current' ? '▶️' : '⏳'
+      const statusColor = status === 'completed' ? 'var(--green)' : status === 'current' ? 'var(--signal)' : 'var(--muted)'
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;transition:all 0.2s;">
+          <div style="font-size:1.2rem;flex-shrink:0;">${statusIcon}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.85rem;font-weight:600;color:var(--text);">${m.title}</div>
+            <div style="font-size:0.7rem;color:var(--muted);margin-top:2px;">${m.briefing}</div>
+          </div>
+          <div style="font-size:0.7rem;font-weight:700;color:${statusColor};text-transform:uppercase;letter-spacing:0.03em;">${status}</div>
+        </div>
+      `
+    }).join('')
+    
+    container.innerHTML = `
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:2rem;">${c.icon}</div>
+            <div>
+              <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">CAMPAIGN</div>
+              <div style="font-size:1.1rem;font-weight:800;color:var(--text);font-family:'Bebas Neue',sans-serif;letter-spacing:0.02em;">${c.name}</div>
+            </div>
+          </div>
+          <div style="font-size:0.85rem;font-weight:700;color:var(--signal);">${Math.round(progressPercent)}%</div>
+        </div>
+        <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${progressPercent}%;background:linear-gradient(90deg,var(--signal),var(--accent));border-radius:3px;transition:width 0.5s ease;"></div>
+        </div>
+        <div style="margin-top:16px;max-height:300px;overflow-y:auto;padding-right:8px;">
+          ${missionsHtml}
+        </div>
+        ${progress.completed ? `
+          <div style="margin-top:16px;padding:16px;background:rgba(255,213,74,0.15);border:1px solid rgba(255,213,74,0.4);border-radius:12px;text-align:center;">
+            <div style="font-size:2rem;margin-bottom:8px;">🏆</div>
+            <div style="font-size:1rem;font-weight:800;color:var(--signal);font-family:'Bebas Neue',sans-serif;">CAMPAIGN COMPLETE!</div>
+            <div style="font-size:0.85rem;color:var(--muted);margin-top:4px;">Rewards: ${c.rewards.wallet?.toLocaleString()}₹ + ${c.rewards.xp?.toLocaleString()} XP + Badge</div>
+          </div>
+        ` : ''}
+    `
   },
   _renderRewardsPreview(lv, mode, config) {
     const contentEl = document.getElementById('br-content')
@@ -2351,7 +2468,7 @@ window.ui = Object.assign(window.ui || {}, {
     localStorage.setItem('traffic_mode', mode)
     window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`
   },
-  showQuiz(mode, perf = null) {
+showQuiz(mode, perf = null) {
     mode = mode || ui.curMode || 'car'
     let qs = this.cur.quiz && this.cur.quiz[mode] ? this.cur.quiz[mode] : this.cur.quiz ? this.cur.quiz.car : null
 
@@ -2365,6 +2482,10 @@ window.ui = Object.assign(window.ui || {}, {
       }
     }
 
+    // Use AdaptiveQuiz engine for syllabus-based + violation-based questions
+    const adaptiveQuiz = new AdaptiveQuiz(this.cur.id, perf);
+    const adaptiveQuestions = adaptiveQuiz.generateQuiz(5);
+    
     if (!qs || qs.length === 0) {
       qs = [
         { q: `What is the primary rule for this scenario: ${this.cur.name}?`, o: [this.cur.law.sec, 'Speed up', 'Ignore signals', 'Honk loudly'], a: 0 },
@@ -2372,7 +2493,9 @@ window.ui = Object.assign(window.ui || {}, {
         { q: `If you fail to follow ${this.cur.themeType.replace('_', ' ')} rules, what happens?`, o: ['Accidents and fines', 'Nothing', 'You get a reward', 'Traffic speeds up'], a: 0 }
       ]
     }
-
+    
+    // Merge adaptive questions with base questions
+    qs = [...adaptiveQuestions, ...qs];
 
     qs.forEach((q) => {
       const c = q.o[q.a]
@@ -2572,11 +2695,23 @@ window.ui = Object.assign(window.ui || {}, {
     document.getElementById('rico').textContent = score > 200 ? '🌟' : '⭐'
     document.getElementById('rtit').textContent = 'Level Complete!'
     document.getElementById('rsub').textContent = lv.name + ' 🔄 Well done!'
+    
+    // Generate and store certificate data for sharing
+    const certData = this._generateCertificateData(lv, score, stats);
+    window.LAST_CERTIFICATE = certData;
     document.getElementById('rcard').innerHTML =
       `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 52</span></div>
 ${stats.reward ? `<div class="rr"><span class="rl" style="color:var(--green, #059669)">Level Reward</span><span class="rv" style="color:var(--green, #059669)">+₹${stats.reward.toLocaleString('en-IN')}</span></div>` : ''}
 ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines Deducted</span><span class="rv" style="color:#ff3b30">-₹${stats.fineAmt.toLocaleString('en-IN')}</span></div>` : ''}
-<div class="rr" style="margin-top:10px; border-top:1px solid var(--line, rgba(0,0,0,0.15)); padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:var(--accent, #b45309); font-weight:700;">₹${S.wallet.toLocaleString('en-IN')}</span></div>`
+<div class="rr" style="margin-top:10px; border-top:1px solid var(--line, rgba(0,0,0,0.15)); padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:var(--accent, #b45309); font-weight:700;">₹${S.wallet.toLocaleString('en-IN')}</span></div>
+<div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+  <button class="btn btn-p" onclick="ui.downloadCertificate()" style="flex: 1; min-width: 140px;">
+    📥 Download Certificate
+  </button>
+  <button class="btn btn-g" onclick="ui.shareCertificate()" style="flex: 1; min-width: 140px;">
+    🔗 Share Certificate
+  </button>
+</div>`
     document.getElementById('ro').classList.add('on')
     sfx.play('win')
   },
@@ -2678,20 +2813,173 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       }
       if (game.playing) game.pause = false
       this.cbusy = false
-      setTimeout(() => this._nc(), 80)
+setTimeout(() => this._nc(), 80)
     }, 500)
   },
+  
+  // ─── CERTIFICATE GENERATION ───
+  _generateCertificateData(lv, score, stats) {
+    const now = new Date();
+    const certId = 'MTH-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+    return {
+      id: certId,
+      levelId: lv.id,
+      levelName: lv.name,
+      moduleName: lv.module?.name || 'Unknown',
+      score: Math.round(score),
+      violations: stats?.vio || 0,
+      date: now.toISOString(),
+      dateFormatted: now.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+      studentName: S?.name || 'Traffic Hero',
+      studentId: S?.studentId || 'STU-' + Math.floor(100000 + Math.random() * 900000),
+      civicScore: S?.civicScore || 0,
+      wallet: S?.wallet || 50000,
+      badge: lv.badge?.id || null,
+      verificationUrl: `${window.location.origin}/verify-cert.html?id=${certId}`
+    };
+  },
+  
+  downloadCertificate() {
+    if (!window.LAST_CERTIFICATE) {
+      toast('No certificate data available', '#ef4444');
+      return;
+    }
+    
+    const cert = window.LAST_CERTIFICATE;
+    const element = document.createElement('div');
+    element.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;padding:40px;background:white;color:#1a1a2e;font-family:"Inter",sans-serif;';
+    element.innerHTML = this._getCertificateHTML(cert);
+    document.body.appendChild(element);
+    
+    const opt = {
+      margin: 0,
+      filename: `Traffic_Academy_Certificate_${cert.id}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'px', format: 'a4', orientation: 'landscape' }
+    };
+    
+    if (window.html2pdf) {
+      window.html2pdf().set(opt).from(element).save().then(() => {
+        element.remove();
+        toast('📥 Certificate downloaded!', '#34d399');
+      }).catch(() => {
+        element.remove();
+        toast('❌ Download failed', '#ef4444');
+      });
+    } else {
+      element.remove();
+      toast('❌ PDF library not loaded', '#ef4444');
+    }
+  },
+  
+  shareCertificate() {
+    if (!window.LAST_CERTIFICATE) {
+      toast('No certificate to share', '#ef4444');
+      return;
+    }
+    
+    const cert = window.LAST_CERTIFICATE;
+    const shareUrl = cert.verificationUrl;
+    const shareText = `🏆 I earned the "${cert.levelName}" certificate from Mumbai Traffic Hero Academy! Score: ${cert.score}/100 | Civic Score: ${cert.civicScore} | Verify: ${shareUrl}`;
+    
+    if (navigator.share) {
+      navigator.share({ title: 'My Traffic Academy Certificate', text: shareText, url: shareUrl })
+        .then(() => toast('✅ Shared!', '#34d399'))
+        .catch(() => {});
+    } else {
+      // Copy to clipboard fallback
+      navigator.clipboard.writeText(shareText).then(() => {
+        toast('🔗 Certificate link copied to clipboard!', '#34d399');
+      }).catch(() => {
+        prompt('Copy this link to share:', shareText);
+      });
+    }
+  },
+  
+  _getCertificateHTML(cert) {
+    return `
+      <div style="border: 4px solid #f2b84b; border-radius: 20px; padding: 40px; max-width: 720px; margin: 0 auto; background: linear-gradient(135deg, #fff 0%, #fef9f0 100%);">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #f2b84b; padding-bottom: 20px;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 16px;">
+            <img src="../Icon.png" alt="CoL" style="height: 60px;" onerror="this.style.display='none'">
+            <img src="mumbai-police-logo.png" alt="MTP" style="height: 60px;" onerror="this.style.display='none'">
+          </div>
+          <h1 style="font-family: 'Instrument Serif', serif; font-size: 2.5rem; color: #1a1a2e; margin: 0 0 8px; font-weight: 700;">Certificate of Completion</h1>
+          <p style="font-size: 1.1rem; color: #666; margin: 0;">Mumbai Traffic Hero Academy</p>
+        </div>
+        
+        <!-- Certificate ID -->
+        <div style="text-align: center; margin-bottom: 24px; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: #888;">
+          Certificate ID: <strong style="color: #f2b84b;">${cert.id}</strong>
+        </div>
+        
+        <!-- Recipient -->
+        <div style="background: #f8fafc; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
+          <p style="font-size: 0.85rem; color: #888; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.1em;">Awarded to</p>
+          <p style="font-family: 'Instrument Serif', serif; font-size: 2rem; color: #1a1a2e; font-weight: 700; margin: 0 0 4px;">${cert.studentName}</p>
+          <p style="font-size: 0.85rem; color: #888; margin: 0;">Student ID: ${cert.studentId}</p>
+        </div>
+        
+        <!-- Achievement -->
+        <div style="background: linear-gradient(135deg, #f2b84b 0%, #f59e0b 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center; color: #1a1a2e;">
+          <p style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 8px;">Successfully Completed</p>
+          <p style="font-family: 'Instrument Serif', serif; font-size: 1.8rem; font-weight: 700; margin: 0 0 4px;">${cert.levelName}</p>
+          <p style="font-size: 1rem; opacity: 0.9; margin: 0;">${cert.moduleName} — Level ${cert.levelId}</p>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+          <div style="background: #f0fdf4; border-radius: 12px; padding: 16px; text-align: center;">
+            <p style="font-size: 2rem; font-weight: 800; color: #059669; margin: 0; font-family: 'Space Mono', monospace;">${cert.score}/100</p>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase;">Score</p>
+          </div>
+          <div style="background: #fff7ed; border-radius: 12px; padding: 16px; text-align: center;">
+            <p style="font-size: 2rem; font-weight: 800; color: #d97706; margin: 0; font-family: 'Space Mono', monospace;">${cert.violations === 0 ? 'Perfect' : cert.violations}</p>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase;">Violations</p>
+          </div>
+          <div style="background: #eff6ff; border-radius: 12px; padding: 16px; text-align: center;">
+            <p style="font-size: 2rem; font-weight: 800; color: #2563eb; margin: 0; font-family: 'Space Mono', monospace;">${cert.civicScore}</p>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase;">Civic Score</p>
+          </div>
+          <div style="background: #fafafa; border-radius: 12px; padding: 16px; text-align: center;">
+            <p style="font-size: 1.5rem; font-weight: 800; color: #f2b84b; margin: 0; font-family: 'Space Mono', monospace;">₹${cert.wallet.toLocaleString('en-IN')}</p>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase;">Wallet</p>
+          </div>
+        </div>
+        
+        <!-- Date & Verification -->
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; text-align: center; font-size: 0.85rem; color: #666;">
+          <p style="margin: 0 0 8px;">Completed on <strong>${cert.dateFormatted}</strong></p>
+          <p style="margin: 0 0 8px;">Verify at: <a href="${cert.verificationUrl}" style="color: #f2b84b; text-decoration: none;">${cert.verificationUrl}</a></p>
+          <p style="margin: 0; font-size: 0.75rem;">© ${new Date().getFullYear()} Mumbai Traffic Hero Academy — Class Of Learners</p>
+        </div>
+        
+        <!-- Badge if earned -->
+        ${cert.badge ? `
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed #e5e7eb; text-align: center;">
+          <span style="font-size: 2.5rem;">${BADGES.find(b => b.id === cert.badge)?.icon || '🏅'}</span>
+          <p style="margin: 8px 0 0; font-weight: 700; color: #f2b84b;">${BADGES.find(b => b.id === cert.badge)?.name || 'Special Badge'}</p>
+        </div>` : ''}
+      </div>
+    `;
+  },
+
   show2D(scenarioId) {
-    const sc = (typeof SCENARIOS !== 'undefined') ? SCENARIOS.find(s => s.id === scenarioId) : null
-    if (!sc) return
-    this._cur2D = sc
-    document.getElementById('s2d-title').textContent = sc.icon + ' ' + sc.name
-    this.show('screen-2d')
+    const sc = (typeof SCENARIOS !== 'undefined') ? SCENARIOS[scenarioId] : null;
+    if (!sc) {
+      console.warn('[ui] Scenario not found:', scenarioId);
+      return;
+    }
+    this._cur2D = { ...sc, id: scenarioId };
+    document.getElementById('s2d-title').textContent = (sc.icon || '🚦') + ' ' + (sc.headline || sc.name || scenarioId);
+    this.show('screen-2d');
     setTimeout(() => {
       if (typeof initScenario2D === 'function') {
-        initScenario2D('scenario2d-container', scenarioId)
+        initScenario2D('scenario2d-container', scenarioId);
       }
-    }, 100)
+    }, 100);
   },
   exit2D() {
     if (typeof destroyScenario2D === 'function') destroyScenario2D()
@@ -4517,7 +4805,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     }
   }
 
-  window.openCustomize = function() {
+window.openCustomize = function() {
     _loadSaved()
 
     _syncAppearanceFromCloud()
@@ -4530,11 +4818,577 @@ function showConsequenceModal(violationType, severity = 'normal') {
     }
   }
 
+  // ─── TOKEN SHOP SYSTEM ───
+  const TOKEN_SHOP = {
+    categories: {
+      skins: {
+        name: 'Vehicle Skins',
+        icon: '🎨',
+        items: [
+          { id: 'skin_mumbai_taxi', name: 'Mumbai Taxi', desc: 'Classic black & yellow kaali-peeli', price: 500, preview: '🚕', rarity: 'common' },
+          { id: 'skin_police', name: 'Police Livery', desc: 'White with blue/red stripes', price: 800, preview: '🚓', rarity: 'rare' },
+          { id: 'skin_ambulance', name: 'Ambulance', desc: 'White with red cross & sirens', price: 800, preview: '🚑', rarity: 'rare' },
+          { id: 'skin_best_bus', name: 'BEST Bus Red', desc: 'Iconic Mumbai red double-decker', price: 1200, preview: '🚌', rarity: 'epic' },
+          { id: 'skin_gold', name: 'Gold Chrome', desc: 'Shiny 24k gold finish', price: 2500, preview: '✨', rarity: 'legendary' },
+          { id: 'skin_carbon', name: 'Carbon Fiber', desc: 'Matte carbon fiber weave', price: 2000, preview: '🖤', rarity: 'epic' },
+          { id: 'skin_neon', name: 'Neon Glow', desc: 'Cyberpunk neon underglow', price: 3000, preview: '🌈', rarity: 'legendary' },
+          { id: 'skin_camouflage', name: 'Urban Camo', desc: 'Grey-green urban camouflage', price: 1500, preview: '🌿', rarity: 'rare' },
+        ]
+      },
+      horns: {
+        name: 'Horn Sounds',
+        icon: '📢',
+        items: [
+          { id: 'horn_classic', name: 'Classic Beep', desc: 'Standard vehicle horn', price: 100, preview: '🔊', rarity: 'common' },
+          { id: 'horn_mumbai', name: 'Mumbai Traffic', desc: 'Cacophony of horns & bells', price: 300, preview: '🚨', rarity: 'common' },
+          { id: 'horn_bollywood', name: 'Bollywood Hit', desc: 'Famous movie theme snippet', price: 500, preview: '🎵', rarity: 'rare' },
+          { id: 'horn_siren', name: 'Police Siren', desc: 'Wailing police siren', price: 800, preview: '🚔', rarity: 'rare' },
+          { id: 'horn_ambulance', name: 'Ambulance Siren', desc: 'Medical emergency siren', price: 800, preview: '🚑', rarity: 'rare' },
+          { id: 'horn_train', name: 'Local Train', desc: 'Mumbai local train horn', price: 1000, preview: '🚂', rarity: 'epic' },
+          { id: 'horn_custom', name: 'Custom Upload', desc: 'Upload your own 3s audio', price: 2000, preview: '🎤', rarity: 'legendary' },
+        ]
+      },
+      accessories: {
+        name: 'Dashboard Accessories',
+        icon: '🪆',
+        items: [
+          { id: 'acc_ganesh', name: 'Dashboard Ganesha', desc: 'Blessed idol for safe journeys', price: 200, preview: '🐘', rarity: 'common' },
+          { id: 'acc_hamsa', name: 'Hamsa Hand', desc: 'Protection from evil eye', price: 200, preview: '🤚', rarity: 'common' },
+          { id: 'acc_dreamcatcher', name: 'Dreamcatcher', desc: 'Catches bad driving vibes', price: 400, preview: '🕸️', rarity: 'rare' },
+          { id: 'acc_pendant', name: 'Om Pendant', desc: 'Sacred symbol hanging', price: 300, preview: '🕉️', rarity: 'rare' },
+          { id: 'acc_plush', name: 'Plush Toy', desc: 'Cute companion for the ride', price: 500, preview: '🧸', rarity: 'rare' },
+          { id: 'acc_airfresh', name: 'Premium Air Fresh', desc: 'Sandalwood & jasmine scent', price: 600, preview: '🌸', rarity: 'epic' },
+          { id: 'acc_hologram', name: 'Hologram AI', desc: 'Floating nav assistant', price: 2000, preview: '🤖', rarity: 'legendary' },
+        ]
+      },
+      titles: {
+        name: 'Title Prefixes',
+        icon: '🏷️',
+        items: [
+          { id: 'title_learner', name: 'Learner', desc: 'Just starting out', price: 50, preview: '🔰', rarity: 'common' },
+          { id: 'title_citizen', name: 'Smart Citizen', desc: 'Follows all rules', price: 300, preview: '🏙️', rarity: 'common' },
+          { id: 'title_safe', name: 'Safe Driver', desc: 'Zero violations streak', price: 500, preview: '🛡️', rarity: 'rare' },
+          { id: 'title_speed', name: 'Speed Demon', desc: 'Loves the fast lane', price: 800, preview: '🏎️', rarity: 'rare' },
+          { id: 'title_night', name: 'Night Owl', desc: 'Owns the night roads', price: 1000, preview: '🌙', rarity: 'epic' },
+          { id: 'title_chaos', name: 'Chaos Walker', desc: 'Survived max difficulty', price: 1500, preview: '🌪️', rarity: 'epic' },
+          { id: 'title_legend', name: 'Mumbai Legend', desc: 'Completed all campaigns', price: 5000, preview: '👑', rarity: 'legendary' },
+        ]
+      }
+    },
 
-  window.addEventListener('col-auth-changed', () => {
-    _syncAppearanceFromCloud()
-  })
+    getOwnedItems() {
+      return S.shopOwned || {};
+    },
 
-  window._buildHuman = _buildHuman
-  window._buildVehicle = _buildVehicle
+    getEquippedItems() {
+      return S.shopEquipped || { skin: null, horn: null, accessory: null, title: null };
+    },
+
+    isOwned(itemId) {
+      return this.getOwnedItems()[itemId] === true;
+    },
+
+    isEquipped(itemId) {
+      const equipped = this.getEquippedItems();
+      return Object.values(equipped).includes(itemId);
+    },
+
+    canAfford(price) {
+      return (S.missionTokens || 0) >= price;
+    },
+
+    purchase(itemId) {
+      const item = this.findItem(itemId);
+      if (!item) return { success: false, reason: 'Item not found' };
+
+      if (this.isOwned(itemId)) return { success: false, reason: 'Already owned' };
+
+      if (!this.canAfford(item.price)) return { success: false, reason: 'Insufficient tokens' };
+
+      // Deduct tokens
+      S.missionTokens = (S.missionTokens || 0) - item.price;
+
+      // Mark as owned
+      if (!S.shopOwned) S.shopOwned = {};
+      S.shopOwned[itemId] = true;
+
+      // Auto-equip if first in category
+      const equipped = this.getEquippedItems();
+      if (!equipped[item.category]) {
+        equipped[item.category] = itemId;
+        S.shopEquipped = equipped;
+      }
+
+      save();
+
+      // Sync to Supabase
+      if (window.game && window.game._syncWalletToSupabase) {
+        window.game._syncWalletToSupabase(-item.price, 'spend', 'shop_purchase_' + itemId);
+      }
+
+      // Update UI
+      this.refreshUI();
+
+      toast(`✅ Purchased ${item.name} for ${item.price} tokens!`, '#34d399');
+      return { success: true, item };
+    },
+
+    equip(itemId) {
+      const item = this.findItem(itemId);
+      if (!item || !this.isOwned(itemId)) return { success: false, reason: 'Not owned' };
+
+      const equipped = this.getEquippedItems();
+      equipped[item.category] = itemId;
+      S.shopEquipped = equipped;
+      save();
+
+      toast(`✨ Equipped ${item.name}`, '#b89bff');
+      this.refreshUI();
+      return { success: true };
+    },
+
+    unequip(category) {
+      const equipped = this.getEquippedItems();
+      delete equipped[category];
+      S.shopEquipped = equipped;
+      save();
+      this.refreshUI();
+    },
+
+    findItem(itemId) {
+      for (const [catKey, cat] of Object.entries(this.categories)) {
+        const item = cat.items.find(i => i.id === itemId);
+        if (item) return { ...item, category: catKey };
+      }
+      return null;
+    },
+
+    getCategoryItems(categoryKey) {
+      return this.categories[categoryKey]?.items || [];
+    },
+
+    renderShop() {
+      const owned = this.getOwnedItems();
+      const equipped = this.getEquippedItems();
+      const tokens = S.missionTokens || 0;
+
+      let html = `
+        <div style="padding: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">🎖️ MISSION TOKENS</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #b89bff; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em;" id="shop-token-display">${tokens.toLocaleString()}</div>
+          </div>
+        </div>
+      `;
+
+      for (const [catKey, cat] of Object.entries(this.categories)) {
+        html += `
+          <div style="margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <span style="font-size: 1.5rem;">${cat.icon}</span>
+              <span style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">${cat.name}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;">
+        `;
+
+        for (const item of cat.items) {
+          const isOwned = owned[item.id];
+          const isEquipped = equipped[catKey] === item.id;
+          const canAfford = this.canAfford(item.price);
+
+          const rarityColors = {
+            common: 'var(--muted)',
+            rare: 'var(--signal)',
+            epic: 'var(--plasma)',
+            legendary: '#ffd54a'
+          };
+
+          html += `
+            <div style="background: var(--card); border: 1px solid ${isEquipped ? 'var(--signal)' : (isOwned ? 'var(--border)' : (canAfford ? 'rgba(94,212,245,0.3)' : 'rgba(239,68,68,0.3)'))}; border-radius: 12px; padding: 16px; position: relative; transition: all 0.2s;">
+              <div style="font-size: 2.5rem; text-align: center; margin-bottom: 8px;">${item.preview}</div>
+              <div style="font-size: 0.8rem; font-weight: 700; color: var(--text); text-align: center; margin-bottom: 4px;">${item.name}</div>
+              <div style="font-size: 0.65rem; color: var(--muted); text-align: center; margin-bottom: 8px; min-height: 2.5rem;">${item.desc}</div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border);">
+                <span style="font-size: 0.7rem; font-weight: 700; color: ${rarityColors[item.rarity]}; text-transform: uppercase;">${item.rarity}</span>
+                <span style="font-size: 0.85rem; font-weight: 800; color: #b89bff; font-family: 'Bebas Neue', sans-serif;">${item.price}</span>
+              </div>
+              <div style="margin-top: 12px; display: flex; gap: 8px;">
+          `;
+
+          if (!isOwned) {
+            html += `
+                <button class="btn ${canAfford ? '' : 'btn-s'}" style="flex: 1; padding: 8px; font-size: 0.7rem; ${!canAfford ? 'opacity: 0.5; cursor: not-allowed;' : ''}" 
+                        onclick="TOKEN_SHOP.purchase('${item.id}'); TOKEN_SHOP.renderShop()" 
+                        ${!canAfford ? 'disabled' : ''}>
+                  ${canAfford ? 'BUY' : 'TOKENS'}
+                </button>
+            `;
+          } else if (!isEquipped) {
+            html += `
+                <button class="btn" style="flex: 1; padding: 8px; font-size: 0.7rem;" 
+                        onclick="TOKEN_SHOP.equip('${item.id}'); TOKEN_SHOP.renderShop()">
+                  EQUIP
+                </button>
+            `;
+          } else {
+            html += `
+                <button class="btn btn-s" style="flex: 1; padding: 8px; font-size: 0.7rem; background: var(--green); color: #000;" 
+                        onclick="TOKEN_SHOP.unequip('${catKey}'); TOKEN_SHOP.renderShop()">
+                  EQUIPPED
+                </button>
+            `;
+          }
+
+          html += `
+              </div>
+            </div>
+          `;
+        }
+
+        html += `
+            </div>
+          </div>
+        `;
+      }
+
+      return html;
+    },
+
+    refreshUI() {
+      const container = document.getElementById('token-shop-container');
+      if (container) {
+        container.innerHTML = this.renderShop();
+      }
+      // Update token display in HUD
+      const tokenEl = document.getElementById('mission-tokens');
+      if (tokenEl) tokenEl.textContent = (S.missionTokens || 0).toLocaleString();
+      const shopTokenEl = document.getElementById('shop-token-display');
+      if (shopTokenEl) shopTokenEl.textContent = (S.missionTokens || 0).toLocaleString();
+    },
+
+    openShop() {
+      const modal = document.createElement('div');
+      modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
+      modal.innerHTML = `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:2.5rem;">🏪</span>
+              <div>
+                <div style="font-size:1.5rem;font-weight:800;color:var(--text);font-family:'Bebas Neue',sans-serif;letter-spacing:0.02em;">TOKEN SHOP</div>
+                <div style="font-size:0.75rem;color:var(--muted);">Spend Mission Tokens on cosmetics</div>
+              </div>
+            </div>
+            <button onclick="this.closest('.modal').remove()" style="background:none;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;padding:8px;">✕</button>
+          </div>
+          <div id="token-shop-container">${this.renderShop()}</div>
+        </div>
+      `;
+      modal.className = 'modal';
+      document.body.appendChild(modal);
+    }
+  };
+
+  window.TOKEN_SHOP = TOKEN_SHOP;
+
+  // ─── SYLLABUS MODAL METHODS ───
+  let _currentSyllabusLevel = null;
+  let _syllabusProgress = { theory: false, rules: false, penalties: false, scenarios: false };
+
+  ui.showSyllabus = function(levelId) {
+    _currentSyllabusLevel = levelId;
+    const level = window.COURSE?.getLevel?.(levelId);
+    if (!level || !level.syllabus) {
+      toast('Syllabus not available for this level yet', '#f2b84b');
+      return;
+    }
+
+    const syllabus = level.syllabus;
+    const modal = document.getElementById('syllabus-modal');
+    if (!modal) return;
+
+    // Update header
+    document.getElementById('syl-title').textContent = level.name;
+    document.getElementById('syl-subtitle').textContent = `Level ${level.id} — ${level.module?.name || 'Unknown Module'}`;
+    document.getElementById('syl-icon').textContent = level.icon || '🚦';
+    document.getElementById('syl-icon').style.background = level.color ? `var(${level.color})` : 'var(--signal)';
+
+    // Update theory tab
+    document.getElementById('syl-overview').textContent = syllabus.theory?.overview || '';
+    const learningPoints = syllabus.theory?.rules || [];
+    document.getElementById('syl-learning-points').innerHTML = learningPoints.map(r => `<li>${r}</li>`).join('');
+
+    // Update rules tab
+    document.getElementById('syl-rules-list').innerHTML = learningPoints.map(r => `<li>${r}</li>`).join('');
+
+    // Update penalties tab
+    const penalties = syllabus.theory?.penalties || [];
+    document.getElementById('syl-penalties-body').innerHTML = penalties.map(p => `
+      <tr style="border-bottom: 1px solid var(--border);">
+        <td style="padding: 12px 8px; color: var(--text);">${p.violation}</td>
+        <td style="padding: 12px 8px; color: var(--red); font-weight: 700;">${p.fine}</td>
+        <td style="padding: 12px 8px; color: var(--muted); font-size: 0.8rem;">${p.act}</td>
+        <td style="padding: 12px 8px; color: var(--yellow); font-weight: 700;">${p.points}</td>
+      </tr>
+    `).join('');
+
+    // Update scenarios tab
+    const scenarios = syllabus.theory?.scenarios || [];
+    document.getElementById('syl-scenarios-carousel').innerHTML = scenarios.map((s, i) => `
+      <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, var(--signal), var(--accent));"></div>
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <div style="flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--signal), var(--accent)); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem;">${i + 1}</div>
+          <div style="flex: 1; font-size: 0.9rem; line-height: 1.6; color: var(--text);">${s}</div>
+        </div>
+      </div>
+    `).join('');
+
+    // Reset progress
+    _syllabusProgress = { theory: false, rules: false, penalties: false, scenarios: false };
+    updateSyllabusProgress();
+
+    // Show modal
+    modal.style.display = 'flex';
+    requestAnimationFrame(() => modal.classList.add('show'));
+  };
+
+  function updateSyllabusProgress() {
+    const completed = Object.values(_syllabusProgress).filter(v => v).length;
+    const total = 4;
+    const pct = Math.round((completed / total) * 100);
+    document.getElementById('syl-progress-pct').textContent = pct + '%';
+    document.getElementById('syl-progress-fill').style.width = pct + '%';
+  }
+
+  function switchSyllabusTab(tab) {
+    _syllabusProgress[tab] = true;
+    updateSyllabusProgress();
+    
+    document.querySelectorAll('.syl-tab').forEach(btn => {
+      const isActive = btn.dataset.tab === tab;
+      btn.classList.toggle('active', isActive);
+      btn.style.background = isActive ? 'var(--card)' : 'transparent';
+      btn.style.color = isActive ? 'var(--text)' : 'var(--muted)';
+    });
+    document.querySelectorAll('.syl-tab-content').forEach(content => {
+      content.style.display = content.id === 'syl-tab-' + tab ? 'block' : 'none';
+    });
+  }
+
+  window.switchSyllabusTab = switchSyllabusTab;
+
+  function closeSyllabusModal() {
+    const modal = document.getElementById('syllabus-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    _currentSyllabusLevel = null;
+  }
+
+  window.closeSyllabusModal = closeSyllabusModal;
+
+  function startSyllabusDemo() {
+    if (!_currentSyllabusLevel) return;
+    const level = window.COURSE?.getLevel?.(_currentSyllabusLevel);
+    const demo2dKey = level?.syllabus?.demo2d;
+    if (!demo2dKey) return;
+
+    closeSyllabusModal();
+    
+    // Show 2D scenario screen
+    if (typeof ui !== 'undefined' && ui.show2D) {
+      ui.show2D(demo2dKey);
+    } else if (window.Scenario2D) {
+      window.Scenario2D.play(_currentSyllabusLevel, () => {
+        // Demo complete, return to levels
+        ui.showLevels();
+      });
+    }
+  }
+
+  window.startSyllabusDemo = startSyllabusDemo;
+
+  function launchSyllabusTest() {
+    if (!_currentSyllabusLevel) return;
+    const level = window.COURSE?.getLevel?.(_currentSyllabusLevel);
+    if (!level) return;
+
+    closeSyllabusModal();
+
+    // Show loading overlay
+    const overlay = document.getElementById('test-loading-overlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      document.getElementById('test-loading-level-name').textContent = level.name;
+      document.getElementById('test-loading-mode').textContent = 'EXAM MODE';
+      
+      // Animate progress
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 15 + 5;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          document.getElementById('test-loading-bar').style.width = '100%';
+          document.getElementById('test-loading-pct').textContent = '100%';
+          document.getElementById('test-loading-status').textContent = 'Launching...';
+          
+          setTimeout(() => {
+            overlay.style.display = 'none';
+            // Navigate to Driving.html with syllabus param
+            window.location.href = `Driving.html?lv=${_currentSyllabusLevel}&mode=exam&syllabus=true`;
+          }, 500);
+        } else {
+          document.getElementById('test-loading-bar').style.width = progress + '%';
+          document.getElementById('test-loading-pct').textContent = Math.round(progress) + '%';
+        }
+      }, 200);
+    }
+  }
+
+  window.launchSyllabusTest = launchSyllabusTest;
+
+  // Add shop button to profile/briefing
+  const originalShowProfile = ui.showProfile;
+  ui.showProfile = function() {
+    originalShowProfile.call(this);
+    // Could add shop button here
+  };
+
+  // Add shop button to briefing screen
+  // ─── ADAPTIVE QUIZ ENGINE ───
+  class AdaptiveQuiz {
+    constructor(levelId, userActions) {
+      this.levelId = levelId;
+      this.userActions = userActions || { violations: [], correctActions: [] };
+      this.questionPool = this._buildPool();
+    }
+    
+    _buildPool() {
+      const level = window.COURSE?.getLevel?.(this.levelId);
+      const syllabus = level?.syllabus;
+      const questions = [];
+      
+      // Syllabus-based questions
+      if (syllabus?.theory?.rules) {
+        syllabus.theory.rules.forEach(rule => questions.push({
+          type: 'rule',
+          text: rule,
+          source: 'syllabus',
+          weight: 1.0
+        }));
+      }
+      
+      // Violation-based questions (learning from mistakes) - higher weight
+      this.userActions.violations?.forEach(v => {
+        const violationText = v.message || v.type || v;
+        questions.push({
+          type: 'corrective',
+          text: `You ${violationText.toLowerCase().replace('violation', '')}. Why is this wrong?`,
+          source: 'violation',
+          weight: 2.0
+        });
+      });
+      
+      // Correct action reinforcement
+      this.userActions.correctActions?.forEach(c => {
+        const actionText = c.message || c.type || c;
+        questions.push({
+          type: 'reinforcement',
+          text: `You correctly ${actionText.toLowerCase().replace('correct', '')}. What rule does this follow?`,
+          source: 'correct',
+          weight: 1.0
+        });
+      });
+      
+      return questions;
+    }
+    
+    generateQuiz(count = 5) {
+      // Weighted random selection
+      const selected = [];
+      const pool = [...this.questionPool];
+      
+      for (let i = 0; i < count && pool.length > 0; i++) {
+        // Calculate total weight
+        const totalWeight = pool.reduce((sum, q) => sum + (q.weight || 1), 0);
+        let random = Math.random() * totalWeight;
+        
+        for (let j = 0; j < pool.length; j++) {
+          random -= pool[j].weight || 1;
+          if (random <= 0) {
+            selected.push(this._formatQuestion(pool[j]));
+            pool.splice(j, 1);
+            break;
+          }
+        }
+      }
+      
+      // Fallback if not enough questions
+      while (selected.length < count) {
+        selected.push(this._getFallbackQuestion(selected.length));
+      }
+      
+      return selected;
+    }
+    
+    _formatQuestion(q) {
+      const baseQuestions = {
+        'rule': (text) => ({
+          q: `Which rule applies: "${text}"?`,
+          o: [text, 'Speed up through intersections', 'Honk to clear the way', 'Ignore if no police'],
+          a: 0
+        }),
+        'corrective': (text) => ({
+          q: `Corrective Check: ${text}`,
+          o: ['It endangers lives and violates traffic law', 'Only wrong if caught by police', 'Acceptable in emergencies', 'Only applies to new drivers'],
+          a: 0
+        }),
+        'reinforcement': (text) => ({
+          q: `Good job! ${text}. This demonstrates:`,
+          o: ['Defensive driving and rule compliance', 'Luck and timing', 'Aggressive driving skills', 'Vehicle performance'],
+          a: 0
+        })
+      };
+      
+      return baseQuestions[q.type] ? baseQuestions[q.type](q.text) : this._getFallbackQuestion(0);
+    }
+    
+    _getFallbackQuestion(index) {
+      const fallbacks = [
+        { q: 'What does a red traffic signal mean?', o: ['Stop completely before the stop line', 'Slow down and proceed', 'Honk and proceed', 'Turn right immediately'], a: 0 },
+        { q: 'What is the speed limit in a school zone?', o: ['30 km/h', '50 km/h', '40 km/h', 'No limit'], a: 0 },
+        { q: 'When must you yield to pedestrians?', o: ['At all crosswalks and intersections', 'Only at marked crosswalks', 'Only when they signal', 'Never - vehicles have priority'], a: 0 },
+        { q: 'What should you do when an ambulance approaches with sirens?', o: ['Pull over to the left and stop', 'Speed up to get out of the way', 'Continue driving normally', 'Honk to alert the ambulance'], a: 0 },
+        { q: 'Using a mobile phone while driving is:', o: ['Prohibited and carries a ₹5,000 fine', 'Allowed with hands-free only', 'Only banned on highways', 'Permitted at red lights'], a: 0 }
+      ];
+      return fallbacks[index % fallbacks.length];
+    }
+  }
+  
+  // Make it globally accessible
+  window.AdaptiveQuiz = AdaptiveQuiz;
+
+  const originalShowBriefing = ui._updateBriefingForMode;
+  ui._updateBriefingForMode = function(lv, mode) {
+    originalShowBriefing.call(this, lv, mode);
+    // Add shop access button to briefing content
+    setTimeout(() => {
+      const contentEl = document.getElementById('br-content');
+      if (contentEl && !contentEl.querySelector('#shop-access-btn')) {
+        const shopBtn = document.createElement('button');
+        shopBtn.id = 'shop-access-btn';
+        shopBtn.className = 'btn';
+        shopBtn.style.marginTop = '16px';
+        shopBtn.style.width = '100%';
+        shopBtn.style.background = 'linear-gradient(90deg, var(--plasma), var(--signal))';
+        shopBtn.style.color = '#000';
+        shopBtn.innerHTML = '🏪 Open Token Shop';
+        shopBtn.onclick = () => TOKEN_SHOP.openShop();
+        contentEl.appendChild(shopBtn);
+      }
+    }, 100);
+  };
+
 })()

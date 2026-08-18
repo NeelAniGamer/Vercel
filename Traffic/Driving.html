@@ -5676,6 +5676,10 @@
     <div id="hwallet"
       style="font-size: 1.05rem; font-weight: 900; color: #ffd54a; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em">
       ₹50,000</div>
+    <div class="hl" style="font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; margin-top: 4px">🎖️ TOKENS</div>
+    <div id="mission-tokens"
+      style="font-size: 1.05rem; font-weight: 900; color: #b89bff; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em">
+      0</div>
     <div class="hl" style="font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; margin-top: 4px">🚗 HEALTH
     </div>
     <div class="ht">
@@ -6291,6 +6295,8 @@
         <div style="font-size: 0.85rem; color: var(--muted); text-align: right; margin-bottom: 24px" id="br-prog-label">
           0%</div>
         <div id="br-syllabus"></div>
+        <!-- Campaign Progress Panel -->
+        <div id="br-campaign-progress" style="margin-top: 24px; padding: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px;"></div>
       </div>
       <div class="br-r" id="br-content"></div>
     </div>
@@ -7457,7 +7463,176 @@
     </div>
   </div>
 
-  <script src="welcome-back.js"></script>
-</body>
+<script src="welcome-back.js"></script>
 
+  <!-- Signal HUD Indicator -->
+  <div id="sig-ind" style="position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10000; pointer-events: none; transition: all 0.3s ease;">
+    <div style="display: flex; gap: 4px; background: rgba(0,0,0,0.7); padding: 8px 12px; border-radius: 20px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1);">
+      <div id="sig-red" class="sig-light" style="width: 16px; height: 16px; border-radius: 50%; background: #330000; border: 2px solid #ef4444; box-shadow: 0 0 0 #ef4444; transition: all 0.3s ease;"></div>
+      <div id="sig-yellow" class="sig-light" style="width: 16px; height: 16px; border-radius: 50%; background: #332200; border: 2px solid #f1c40f; box-shadow: 0 0 0 #f1c40f; transition: all 0.3s ease;"></div>
+      <div id="sig-green" class="sig-light" style="width: 16px; height: 16px; border-radius: 50%; background: #002200; border: 2px solid #2ecc71; box-shadow: 0 0 0 #2ecc71; transition: all 0.3s ease;"></div>
+    </div>
+    <div id="sig-label" style="position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); font-size: 0.65rem; font-weight: 700; color: var(--text); white-space: nowrap; background: rgba(0,0,0,0.7); padding: 2px 8px; border-radius: 8px; opacity: 0; transition: opacity 0.2s;"></div>
+  </div>
+
+  <!-- Syllabus & Signal Handler -->
+  <script>
+    (function() {
+      // Parse URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const syllabusMode = urlParams.get('syllabus') === 'true';
+      const levelId = parseInt(urlParams.get('lv')) || 1;
+      const mode = urlParams.get('mode') || 'exam';
+      
+      console.log('[Driving] Params:', { syllabusMode, levelId, mode });
+      
+      // Store syllabus mode globally
+      window.SYLLABUS_MODE = syllabusMode;
+      window.SYLLABUS_LEVEL_ID = levelId;
+      window.SYLLABUS_MODE_TYPE = mode;
+      
+      // Signal HUD logic
+      const sigRed = document.getElementById('sig-red');
+      const sigYellow = document.getElementById('sig-yellow');
+      const sigGreen = document.getElementById('sig-green');
+      const sigLabel = document.getElementById('sig-label');
+      const sigInd = document.getElementById('sig-ind');
+      
+      let currentSignalState = 'unknown';
+      let signalCheckInterval = null;
+      
+      function updateSignalHUD(state) {
+        if (!sigRed || !sigYellow || !sigGreen) return;
+        
+        currentSignalState = state;
+        
+        // Reset all
+        [sigRed, sigYellow, sigGreen].forEach(el => {
+          el.style.background = el.style.background.replace(/[^,]+\)$/, 'transparent)');
+          el.style.boxShadow = '0 0 0 transparent';
+        });
+        
+        // Activate current
+        const active = { red: sigRed, yellow: sigYellow, green: sigGreen }[state];
+        const glowColors = { red: '#ef4444', yellow: '#f1c40f', green: '#2ecc71' };
+        const bgColors = { red: 'rgba(239,68,68,0.9)', yellow: 'rgba(241,196,15,0.9)', green: 'rgba(46,204,113,0.9)' };
+        
+        if (active) {
+          active.style.background = bgColors[state];
+          active.style.boxShadow = `0 0 12px ${glowColors[state]}, 0 0 24px ${glowColors[state]}`;
+        }
+        
+        // Update label
+        const labels = { red: 'STOP', yellow: 'PREPARE', green: 'GO', unknown: '—' };
+        sigLabel.textContent = labels[state] || '—';
+        sigLabel.style.opacity = '1';
+      }
+      
+      function checkSignalState() {
+        if (!window.game || !window.game.trafficLights) return;
+        
+        // Find nearest traffic light to player
+        const player = window.game.player;
+        if (!player) return;
+        
+        const playerPos = new THREE.Vector3();
+        player.getWorldPosition(playerPos);
+        
+        let nearestLight = null;
+        let nearestDist = Infinity;
+        
+        window.game.trafficLights.forEach(light => {
+          const lightPos = new THREE.Vector3();
+          light.mesh?.getWorldPosition(lightPos);
+          const dist = playerPos.distanceTo(lightPos);
+          if (dist < nearestDist && dist < 80) { // Only show nearby signals
+            nearestDist = dist;
+            nearestLight = light;
+          }
+        });
+        
+        if (nearestLight) {
+          updateSignalHUD(nearestLight.state || 'unknown');
+        } else {
+          updateSignalHUD('unknown');
+        }
+      }
+      
+      // Expose for game to call
+      window.updateSignalHUD = updateSignalHUD;
+      window.checkSignalState = checkSignalState;
+      
+      // Start signal checking when game is ready
+      function startSignalMonitoring() {
+        if (signalCheckInterval) clearInterval(signalCheckInterval);
+        signalCheckInterval = setInterval(checkSignalState, 100);
+      }
+      
+      // Hook into game start
+      const originalStart = window.Game?.prototype?.startPlay || (() => {});
+      if (window.game && window.game.startPlay) {
+        const orig = window.game.startPlay.bind(window.game);
+        window.game.startPlay = function(...args) {
+          orig(...args);
+          setTimeout(startSignalMonitoring, 1000);
+        };
+      } else {
+        // Wait for game to be created
+        const checkGame = setInterval(() => {
+          if (window.game && window.game.startPlay) {
+            clearInterval(checkGame);
+            const orig = window.game.startPlay.bind(window.game);
+            window.game.startPlay = function(...args) {
+              orig(...args);
+              setTimeout(startSignalMonitoring, 1000);
+            };
+          }
+        }, 500);
+      }
+      
+      // Syllabus mode enhancements
+      if (syllabusMode) {
+        console.log('[Driving] Syllabus mode active for level', levelId);
+        
+        // Track violations for quiz
+        window.SYLLABUS_VIOLATIONS = [];
+        window.SYLLABUS_CORRECT_ACTIONS = [];
+        
+        // Override violation tracking
+        const originalToast = window.toast;
+        window.toast = function(msg, color) {
+          if (msg && msg.includes('Challan') || msg.includes('violation') || msg.includes('Signal') || msg.includes('Red light')) {
+            window.SYLLABUS_VIOLATIONS.push({ message: msg, time: Date.now(), type: 'violation' });
+          } else if (msg && (msg.includes('Checkpoint') || msg.includes('Perfect') || msg.includes('Yield'))) {
+            window.SYLLABUS_CORRECT_ACTIONS.push({ message: msg, time: Date.now(), type: 'correct' });
+          }
+          return originalToast(msg, color);
+        };
+        
+        // Add syllabus HUD
+        setTimeout(() => {
+          const hud = document.createElement('div');
+          hud.id = 'syllabus-hud';
+          hud.style.cssText = 'position:fixed;top:70px;left:16px;z-index:9999;background:rgba(0,0,0,0.8);padding:12px 16px;border-radius:12px;border:1px solid var(--border);font-size:0.8rem;color:var(--text);max-width:280px;';
+          hud.innerHTML = `
+            <div style="font-weight:700;color:var(--signal);margin-bottom:8px;">📚 Syllabus Test Active</div>
+            <div id="syl-track-violations" style="color:#ef4444;">Violations: 0</div>
+            <div id="syl-track-correct" style="color:#34d399;">Correct: 0</div>
+            <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:0.7rem;color:var(--muted);">
+              Level: ${levelId} | Mode: ${mode.toUpperCase()}
+            </div>
+          `;
+          document.body.appendChild(hud);
+          
+          // Update counters periodically
+          setInterval(() => {
+            document.getElementById('syl-track-violations').textContent = 'Violations: ' + window.SYLLABUS_VIOLATIONS.length;
+            document.getElementById('syl-track-correct').textContent = 'Correct: ' + window.SYLLABUS_CORRECT_ACTIONS.length;
+          }, 1000);
+        }, 2000);
+      }
+    })();
+  </script>
+
+</body>
 </html>

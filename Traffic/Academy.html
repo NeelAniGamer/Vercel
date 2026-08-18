@@ -4878,6 +4878,8 @@
           <div id="br-module-checklist" style="margin-bottom: 20px;"></div>
           
           <div id="br-syllabus" style="max-height: 300px; overflow-y: auto;"></div>
+        <!-- Campaign Progress Panel -->
+        <div id="br-campaign-progress" style="margin-top: 20px; padding: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px;"></div>
         </div>
         <div class="br-r" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
           <div id="br-content" style="flex: 1; min-width: 0;"></div>
@@ -5146,17 +5148,16 @@
         <p class="onb-sub">Help us personalize your experience.</p>
         <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;text-align:left;font-weight:600">Your age</p>
         <div class="onb-dots">
-          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')">Under 18</button>
-          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')">18–25</button>
-          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')">26–40</button>
-          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')">40+</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')" data-age-tier="child">👶 Junior (5-12)</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')" data-age-tier="teen">🧑 Teen (13-17)</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')" data-age-tier="adult">👤 Adult (18+)</button>
         </div>
         <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;text-align:left;font-weight:600">Vehicle you drive most</p>
         <div class="onb-dots">
-          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')">🚗 Car</button>
-          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')">🏍️ Bike</button>
-          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')">🛺 Auto</button>
-          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')">🚌 Bus</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')" data-vehicle="car">🚗 Car</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')" data-vehicle="bike">🏍️ Bike</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')" data-vehicle="auto">🛺 Auto</button>
+          <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')" data-vehicle="bus">🚌 Bus</button>
         </div>
         <button class="onb-btn" onclick="showOnboardingScreen(4)">Continue</button>
         <button class="onb-skip" onclick="skipOnboarding()">Skip & Continue</button>
@@ -5644,7 +5645,26 @@
         _onbSaveNameAndUsername();
       }
 
-      function _onbComplete() {
+function _onbComplete() {
+        // Save age tier
+        const ageDot = document.querySelector('.onb-dot[data-age-tier].selected');
+        if (ageDot) {
+          const ageTier = ageDot.dataset.ageTier;
+          localStorage.setItem('ageTier', ageTier);
+          
+          // Apply age tier config
+          if (typeof ui !== 'undefined' && ui.applyAgeTier) {
+            ui.applyAgeTier(ageTier);
+          }
+        }
+        
+        // Save vehicle preference
+        const vehDot = document.querySelector('.onb-dot[data-vehicle].selected');
+        if (vehDot) {
+          const vehicle = vehDot.dataset.vehicle;
+          localStorage.setItem('preferredVehicle', vehicle);
+        }
+        
         localStorage.setItem('onboardingComplete', '1')
         var ov = document.getElementById('onb-overlay')
         if (ov) { ov.classList.add('hidden'); setTimeout(function () { ov.style.display = 'none' }, 400) }
@@ -5654,7 +5674,6 @@
           if (typeof ui !== 'undefined' && ui && ui.showLevels) {
             ui.showLevels()
           } else {
-
             window.location.href = 'Academy.html?screen=levels'
           }
         }, 500)
@@ -6685,5 +6704,119 @@
   </script>
 
   <script src="welcome-back.js"></script>
-  </body>
+
+  <!-- Syllabus Modal -->
+  <div id="syllabus-modal" class="modal-overlay" style="display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 20px; z-index: 10001;">
+    <div class="modal-box" style="background: var(--card); border: 1px solid var(--border); border-radius: 24px; max-width: 700px; width: 95%; max-height: 85vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.5); position: relative; animation: modalSlideIn 0.3s cubic-bezier(0.34,1.56,0.64,1);">
+      <style>
+        @keyframes modalSlideIn {
+          from { opacity: 0; transform: scale(0.95) translateY(20px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      </style>
+      
+      <!-- Header -->
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--card); border-radius: 24px 24px 0 0; z-index: 10;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div id="syl-icon" style="width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">🚦</div>
+          <div>
+            <div id="syl-title" style="font-family: 'Lora', serif; font-size: 1.4rem; font-weight: 700; color: var(--text);">Signal Basics</div>
+            <div id="syl-subtitle" style="font-size: 0.85rem; color: var(--muted); margin-top: 2px;">Level 1 — Andheri Junction</div>
+          </div>
+        </div>
+        <button onclick="closeSyllabusModal()" style="width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--hover); color: var(--text); font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" onmouseover="this.style.background='var(--signal)'; this.style.color='#000'; this.style.borderColor='var(--signal)'" onmouseout="this.style.background='var(--hover)'; this.style.color='var(--text)'; this.style.borderColor='var(--border)'">✕</button>
+      </div>
+
+      <!-- Content -->
+      <div style="padding: 24px;">
+        <!-- Progress Bar -->
+        <div style="margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);">Syllabus Progress</span>
+            <span id="syl-progress-pct" style="font-family: 'Space Mono', monospace; font-size: 0.9rem; font-weight: 800; color: var(--signal);">0%</span>
+          </div>
+          <div style="height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden;">
+            <div id="syl-progress-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--signal), var(--accent)); border-radius: 3px; transition: width 0.5s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div style="display: flex; gap: 4px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 20px;">
+          <button class="syl-tab active" data-tab="theory" onclick="switchSyllabusTab('theory')" style="flex: 1; padding: 10px 16px; border: none; background: var(--card); color: var(--text); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">📖 Theory</button>
+          <button class="syl-tab" data-tab="rules" onclick="switchSyllabusTab('rules')" style="flex: 1; padding: 10px 16px; border: none; background: transparent; color: var(--muted); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">📋 Rules</button>
+          <button class="syl-tab" data-tab="penalties" onclick="switchSyllabusTab('penalties')" style="flex: 1; padding: 10px 16px; border: none; background: transparent; color: var(--muted); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">⚖️ Penalties</button>
+          <button class="syl-tab" data-tab="scenarios" onclick="switchSyllabusTab('scenarios')" style="flex: 1; padding: 10px 16px; border: none; background: transparent; color: var(--muted); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">🎬 Scenarios</button>
+        </div>
+
+        <!-- Theory Tab -->
+        <div id="syl-tab-theory" class="syl-tab-content" style="display: block;">
+          <div id="syl-overview" style="font-size: 0.95rem; line-height: 1.7; color: var(--text); margin-bottom: 20px;"></div>
+          <div style="background: rgba(94,212,245,0.08); border: 1px solid rgba(94,212,245,0.2); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+            <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--signal); margin-bottom: 8px;">What You'll Learn</div>
+            <ul id="syl-learning-points" style="margin: 0; padding-left: 20px; color: var(--text); line-height: 1.8;"></ul>
+          </div>
+        </div>
+
+        <!-- Rules Tab -->
+        <div id="syl-tab-rules" class="syl-tab-content" style="display: none;">
+          <ol id="syl-rules-list" style="margin: 0; padding-left: 20px; color: var(--text); line-height: 2;"></ol>
+        </div>
+
+        <!-- Penalties Tab -->
+        <div id="syl-tab-penalties" class="syl-tab-content" style="display: none;">
+          <div id="syl-penalties-table" style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border);">
+                  <th style="text-align: left; padding: 12px 8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem;">Violation</th>
+                  <th style="text-align: left; padding: 12px 8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem;">Fine</th>
+                  <th style="text-align: left; padding: 12px 8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem;">Act</th>
+                  <th style="text-align: left; padding: 12px 8px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem;">Points</th>
+                </tr>
+              </thead>
+              <tbody id="syl-penalties-body" style="color: var(--text);"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Scenarios Tab -->
+        <div id="syl-tab-scenarios" class="syl-tab-content" style="display: none;">
+          <div id="syl-scenarios-carousel" style="display: flex; flex-direction: column; gap: 16px;"></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); flex-wrap: wrap;">
+          <button class="btn btn-g" onclick="startSyllabusDemo()" style="flex: 1; min-width: 160px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; padding: 14px 24px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            Watch Demo
+          </button>
+          <button class="btn btn-p pulse-btn" onclick="launchSyllabusTest()" style="flex: 1; min-width: 160px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; padding: 14px 24px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Take Test
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading overlay for test transition -->
+  <div id="test-loading-overlay" style="display: none; position: fixed; inset: 0; background: linear-gradient(135deg, #070a14 0%, #0d1117 40%, #111827 100%); z-index: 99999; flex-direction: column; justify-content: center; align-items: center; color: #e8e3d8; font-family: 'Inter', sans-serif;">
+    <div style="font-family: 'Lora', serif; font-size: clamp(1rem, 2.5vw, 1.5rem); font-weight: 600; color: rgba(242,184,75,0.6); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px;">Mumbai Traffic Hero Academy</div>
+    <div style="font-family: 'Lora', serif; font-size: clamp(2rem, 5vw, 3.5rem); color: #f2b84b; margin-bottom: 4px; font-weight: 700; background: linear-gradient(135deg, #f2b84b 0%, #fbbf24 50%, #f2b84b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" id="test-loading-level-name">Loading Level...</div>
+    <div style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 32px; background: rgba(242,184,75,0.1); border: 1px solid rgba(242,184,75,0.2); color: #f2b84b;" id="test-loading-mode">EXAM MODE</div>
+    <div style="width: clamp(280px, 55vw, 480px);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div style="font-size: 0.8rem; color: #8891aa; font-weight: 500;" id="test-loading-status">Preparing scenario...</div>
+        <div style="font-size: 0.9rem; font-weight: 800; color: #34d399; font-family: 'Space Mono', monospace;" id="test-loading-pct">0%</div>
+      </div>
+      <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; position: relative;">
+        <div style="width: 0%; height: 100%; background: linear-gradient(90deg, #34d399, #5ed4f5); border-radius: 3px; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);" id="test-loading-bar"></div>
+      </div>
+    </div>
+    <div style="margin-top: 40px; max-width: 420px; text-align: center; font-size: 0.82rem; color: rgba(255,255,255,0.3); line-height: 1.5;">
+      <span style="color: rgba(242,184,75,0.5);">Tip:</span> Stop at red. Yield to pedestrians. Proceed on green.
+    </div>
+  </div>
+
+</body>
 </html>

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terrain Test - Traffic Simulator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background: #1a1a2e; font-family: 'Segoe UI', monospace; }
+    canvas { display: block; }
+    #hud {
+      position: fixed; top: 10px; left: 10px; color: #0f0;
+      font-size: 13px; line-height: 1.6; pointer-events: none;
+      text-shadow: 1px 1px 2px #000; z-index: 10;
+      background: rgba(0,0,0,0.6); padding: 10px 14px; border-radius: 6px;
+    }
+    #controls {
+      position: fixed; bottom: 10px; left: 10px; color: #fff;
+      font-size: 12px; z-index: 10; background: rgba(0,0,0,0.7);
+      padding: 10px 14px; border-radius: 6px;
+    }
+    #controls label { display: block; margin: 4px 0; }
+    #controls input[type="range"] { width: 140px; vertical-align: middle; }
+    #controls button {
+      background: #3a6; color: #fff; border: none; padding: 4px 10px;
+      border-radius: 3px; cursor: pointer; margin: 2px;
+    }
+    #controls button:hover { background: #4b7; }
+    .val { color: #3f3; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <div id="hud">
+    <div>FPS: <span id="fps" class="val">0</span></div>
+    <div>Chunks: <span id="chunks" class="val">0</span></div>
+    <div>Pos: <span id="pos" class="val">0, 0</span></div>
+    <div>Height: <span id="height" class="val">0</span></div>
+    <div>Biome: <span id="biome" class="val">-</span></div>
+    <div>Quality: <span id="quality" class="val">MED</span></div>
+  </div>
+  <div id="controls">
+    <label>Seed: <input type="number" id="seed" value="12345" style="width:80px">
+      <button id="newSeed">Random</button></label>
+    <label>Scale: <input type="range" id="scale" min="1" max="20" value="5" step="1">
+      <span id="scaleVal">0.005</span></label>
+    <label>Amplitude: <input type="range" id="amp" min="5" max="100" value="40" step="5">
+      <span id="ampVal">40</span></label>
+    <label>Octaves: <input type="range" id="oct" min="1" max="8" value="5" step="1">
+      <span id="octVal">5</span></label>
+    <label>Quality:
+      <button data-q="LOW">Low</button>
+      <button data-q="MED">Med</button>
+      <button data-q="HIGH">High</button>
+      <button data-q="ULTRA">Ultra</button>
+    </label>
+    <label><input type="checkbox" id="wireframe"> Wireframe</label>
+    <label><input type="checkbox" id="autopilot" checked> Autopilot (drive forward)</label>
+  </div>
+
+  <script src="proc_terrain.js"></script>
+  <script>
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87ceeb);
+    scene.fog = new THREE.Fog(0x87ceeb, 150, 500);
+
+    const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.5, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    // Lighting
+    const ambient = new THREE.AmbientLight(0x6688aa, 0.6);
+    scene.add(ambient);
+    const sun = new THREE.DirectionalLight(0xffeedd, 1.2);
+    sun.position.set(100, 150, 80);
+    scene.add(sun);
+    const hemi = new THREE.HemisphereLight(0x88bbff, 0x445522, 0.4);
+    scene.add(hemi);
+
+    // Camera rig for "driving" view
+    let camX = 0, camZ = 0, camY = 15, camAngle = 0, camSpeed = 0.3;
+    camera.position.set(0, 15, -20);
+    camera.lookAt(0, 0, 0);
+
+    // Terrain
+    let terrain = new ProcTerrain({ seed: 12345 });
+    let chunkManager = new TerrainChunkManager(scene, terrain, 'MED');
+    chunkManager.update(0, 0);
+
+    // Input
+    const keys = {};
+    addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+    addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    // UI controls
+    const $ = id => document.getElementById(id);
+    $('newSeed').onclick = () => { $('seed').value = Math.floor(Math.random() * 99999); rebuildTerrain(); };
+    $('seed').onchange = rebuildTerrain;
+    $('scale').oninput = e => {
+      $('scaleVal').textContent = (e.target.value / 1000).toFixed(3);
+      terrain.scale = parseFloat(e.target.value) / 1000;
+      chunkManager.rebuild();
+    };
+    $('amp').oninput = e => {
+      $('ampVal').textContent = e.target.value;
+      terrain.amplitude = parseFloat(e.target.value);
+      chunkManager.rebuild();
+    };
+    $('oct').oninput = e => {
+      $('octVal').textContent = e.target.value;
+      terrain.octaves = parseInt(e.target.value);
+      chunkManager.rebuild();
+    };
+    document.querySelectorAll('[data-q]').forEach(btn => {
+      btn.onclick = () => {
+        chunkManager.setQuality(btn.dataset.q);
+        $('quality').textContent = btn.dataset.q;
+      };
+    });
+    $('wireframe').onchange = e => {
+      chunkManager.chunks.forEach(m => m.material.wireframe = e.target.checked);
+    };
+
+    function rebuildTerrain() {
+      terrain = new ProcTerrain({
+        seed: parseInt($('seed').value) || 12345,
+        scale: parseFloat($('scale').value) / 1000,
+        amplitude: parseFloat($('amp').value),
+        octaves: parseInt($('oct').value),
+      });
+      chunkManager.rebuild();
+      chunkManager.terrain = terrain;
+      chunkManager.update(camX, camZ);
+    }
+
+    // FPS counter
+    let frames = 0, lastTime = performance.now(), fps = 0;
+
+    // Main loop
+    function animate() {
+      requestAnimationFrame(animate);
+      const now = performance.now();
+      frames++;
+      if (now - lastTime >= 1000) {
+        fps = frames;
+        frames = 0;
+        lastTime = now;
+        $('fps').textContent = fps;
+      }
+
+      // Movement
+      const rotSpeed = 0.03;
+      if (keys['a'] || keys['arrowleft']) camAngle += rotSpeed;
+      if (keys['d'] || keys['arrowright']) camAngle -= rotSpeed;
+
+      let moving = false;
+      if (keys['w'] || keys['arrowup'] || $('autopilot').checked) {
+        camX += Math.sin(camAngle) * camSpeed;
+        camZ += Math.cos(camAngle) * camSpeed;
+        moving = true;
+      }
+      if (keys['s'] || keys['arrowdown']) {
+        camX -= Math.sin(camAngle) * camSpeed * 0.5;
+        camZ -= Math.cos(camAngle) * camSpeed * 0.5;
+        moving = true;
+      }
+
+      // Terrain follow
+      const groundH = chunkManager.getHeightAt(camX, camZ);
+      camY = groundH + 8;
+
+      camera.position.set(camX, camY, camZ);
+      camera.rotation.set(0, camAngle, 0);
+      // Tilt down slightly
+      camera.rotation.x = -0.15;
+
+      // Update chunks
+      chunkManager.update(camX, camZ);
+
+      // HUD
+      $('chunks').textContent = chunkManager.getStats().activeChunks;
+      $('pos').textContent = `${camX.toFixed(0)}, ${camZ.toFixed(0)}`;
+      $('height').textContent = groundH.toFixed(1);
+      $('biome').textContent = terrain.getBiome(camX, camZ);
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

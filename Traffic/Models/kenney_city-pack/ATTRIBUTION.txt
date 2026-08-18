@@ -1,0 +1,93 @@
+# City Pack by J-Toastie - Attribution
+
+**Source:** [Poly Pizza](https://poly.pizza/bundle/City-Pack-kJqRAIGsw0)  
+**License:** Mixed - CC-BY (Creative Commons Attribution) and CC0 (Public Domain)  
+**Downloaded:** August 11, 2026
+
+---
+
+## Attribution Requirements
+
+### CC-BY Models (Attribution Required):
+
+| Model | Creator | License |
+|-------|---------|---------|
+| Air conditioner | Poly by Google | CC-BY |
+| ATM | J-Toastie | CC-BY |
+| Bench | Danni Bittman | CC-BY |
+| Bicycle | Poly by Google | CC-BY |
+| Billboard | Poly by Google | CC-BY |
+| Box | Kay Lousberg | CC-BY |
+| Brown Building | J-Toastie | CC-BY |
+| Building Green | J-Toastie | CC-BY |
+| Building Red | J-Toastie | CC-BY |
+| Building Red Corner | J-Toastie | CC-BY |
+| Bus | Poly by Google | CC-BY |
+| Bus Stop | Zsky | CC-BY |
+| Bus stop sign | dook | CC-BY |
+| Cone | J-Toastie | CC-BY |
+| Fence | J-Toastie | CC-BY |
+| Fence End | J-Toastie | CC-BY |
+| Fence Piece | J-Toastie | CC-BY |
+| Fire Exit | J-Toastie | CC-BY |
+| Fire hydrant | Poly by Google | CC-BY |
+| Floor Hole | J-Toastie | CC-BY |
+| Flower Pot | Zsky | CC-BY |
+| Gb Blank | J-Toastie | CC-BY |
+| Greenhouse | J-Toastie | CC-BY |
+| Mailbox | J-Toastie | CC-BY |
+| Manhole Cover | J-Toastie | CC-BY |
+| Motorcycle | Poly by Google | CC-BY |
+| Pizza Corner | J-Toastie | CC-BY |
+| Planter & Bushes | J-Toastie | CC-BY |
+| Power Box | J-Toastie | CC-BY |
+| RB Blank | J-Toastie | CC-BY |
+| Rock band poster | jeremy | CC-BY |
+| Roof Exit | J-Toastie | CC-BY |
+| Stop sign | Poly by Google | CC-BY |
+| Tree | Poly by Google | CC-BY |
+| Trash Can | Zsky | CC-BY |
+| trah bag grey | Jens Kull | CC-BY |
+| Van | Poly by Google | CC-BY |
+| Washing Line | J-Toastie | CC-BY |
+| Yellow Post-it | Zack Huang | CC-BY |
+
+### CC0 Models (No Attribution Required):
+
+| Model | Creator | License |
+|-------|---------|---------|
+| Adventurer | Quaternius | CC0 |
+| Animated Woman | Quaternius | CC0 |
+| Big Building | Quaternius | CC0 |
+| Car | Quaternius | CC0 |
+| Debris Papers | Quaternius | CC0 |
+| Dumpster | Quaternius | CC0 |
+| Man | Quaternius | CC0 |
+| Pickup Truck | Quaternius | CC0 |
+| Police Car | Quaternius | CC0 |
+| Road Bits | Kay Lousberg | CC0 |
+| Sports Car | Quaternius | CC0 |
+| SUV | Quaternius | CC0 |
+| Traffic Light | Quaternius | CC0 |
+
+---
+
+## Attribution Text for Game Credits
+
+```
+City Pack by J-Toastie [CC-BY] via Poly Pizza
+Vehicles by Poly by Google [CC-BY] via Poly Pizza
+Vehicles by Quaternius [CC0] via Poly Pizza
+Roads & Props by Kay Lousberg [CC0] via Poly Pizza
+Props by Zsky [CC-BY] via Poly Pizza
+Bench by Danni Bittman [CC-BY] via Poly Pizza
+Props by Jens Kull [CC-BY] via Poly Pizza
+Poster by jeremy [CC-BY] via Poly Pizza
+Post-it by Zack Huang [CC-BY] via Poly Pizza
+Bus Stop Sign by dook [CC-BY] via Poly Pizza
+```
+
+---
+
+**Poly Pizza:** https://poly.pizza  
+**J-Toastie on Twitter:** https://twitter.com/@JToastieDev

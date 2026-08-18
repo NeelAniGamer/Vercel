@@ -912,8 +912,10 @@ class Game {
         this.boostFuel = 100; this.maxBoostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._camTarget = new THREE.Vector3(); this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
         this.missionManager = new MissionManager(this);
+        this.campaignManager = new CampaignManager(this);
         this.playerScore = 0;
         this.rupees = 0;
+        this.missionTokens = 0;
         // ── Camera collision raycaster ──
         this._camRay = new THREE.Raycaster();
         this._camRayVec = new THREE.Vector3();
@@ -939,6 +941,18 @@ class Game {
         this._isDraggingLeft = false; this._isDraggingRight = false;
         this._prevMobileLookX = 0; this._prevMobileLookY = 0;
         this.dom = {}; // Cached DOM elements
+        // Mission tracking data
+        this._leadVehiclePos = null;
+        this._targetVehiclePos = null;
+        this._pursuerPositions = [];
+        this._childrenGroups = [];
+        this._sidewalkViolations = [];
+        this._ambulancePos = null;
+        this._intersections = [];
+        this._lastPlayerPos = null;
+        this._hitPotholeThisFrame = false;
+        this._prevSpeedForCargo = null;
+        this._longitudinalAccel = 0;
         // Day/Night cycle state
         this.timeOfDay = 0.5; // 0=midnight, 0.25=dawn, 0.5=noon, 0.75=dusk
         this.dayNightCycle = false;
@@ -980,6 +994,257 @@ class Game {
         window.addEventListener('resize', () => this._rsz());
         document.addEventListener('fullscreenchange', () => this._rsz());
       }
+  
+  // ─── CUMULATIVE RULES ENGINE ───
+  // Tracks all rules learned across completed levels and enforces them
+  static LEARNED_RULES = new Map(); // levelId -> Set of rule IDs
+  
+  static RULE_DEFINITIONS = {
+    // Level 1: Signal Basics
+    1: [
+      'red_light_stop', 'green_light_go', 'yellow_light_prepare_stop',
+      'yield_pedestrians', 'yield_emergency_vehicles', 'stop_line_compliance'
+    ],
+    // Level 2: Protected Left Turn
+    2: [
+      'protected_left_turn', 'yield_oncoming_traffic', 'left_turn_signal'
+    ],
+    // Level 3: Pedestrian Phase
+    3: [
+      'pedestrian_crosswalk_yield', 'elderly_priority', 'children_priority'
+    ],
+    // Level 4: Ambulance Priority
+    4: [
+      'emergency_vehicle_pull_over', 'clear_intersection_for_emergency'
+    ],
+    // Level 5: Rush Hour
+    5: [
+      'lane_discipline_rush', 'no_blocking_intersection', 'patience_in_traffic'
+    ],
+    // Level 6: Zebra Yield
+    6: [
+      'zebra_crossing_stop', 'pedestrian_right_of_way'
+    ],
+    // Level 7: School Children
+    7: [
+      'school_zone_30kmh', 'stop_for_school_children', 'school_crossing_guard'
+    ],
+    // Level 8: Senior Citizen Cross
+    8: [
+      'senior_citizen_patience', 'extended_crossing_time'
+    ],
+    // Level 9: Hawker Zone
+    9: [
+      'sidewalk_vendor_awareness', 'no_parking_on_sidewalk'
+    ],
+    // Level 10: Monsoon Puddles
+    10: [
+      'puddle_slow_down', 'no_splashing_pedestrians', 'increased_following_distance'
+    ],
+    // Level 11: Single Lane Flow
+    11: [
+      'single_lane_discipline', 'no_overtaking_single_lane'
+    ],
+    // Level 12: Overtaking Rules
+    12: [
+      'safe_overtaking', 'overtaking_signal', 'return_to_lane'
+    ],
+    // Level 13: Bus Lane Respect
+    13: [
+      'bus_lane_compliance', 'no_driving_in_bus_lane'
+    ],
+    // Level 14: Cycle Track
+    14: [
+      'cycle_lane_respect', 'no_parking_cycle_track', 'cyclist_safety_margin'
+    ],
+    // Level 15: Gully Navigation
+    15: [
+      'narrow_road_caution', 'yield_oncoming_in_gully', 'reverse_if_needed'
+    ],
+    // Level 16: Coastal 40 km/h
+    16: [
+      'coastal_speed_40', 'speed_limit_adherence', 'ghost_car_following'
+    ],
+    // Level 17: Beach Parking
+    17: [
+      'parallel_parking', 'parking_within_lines', 'no_parking_signs'
+    ],
+    // Level 18: Sunset Cruise
+    18: [
+      'scenic_driving_caution', 'speed_control_on_curves'
+    ],
+    // Level 19: Jogger Avoidance
+    19: [
+      'jogger_path_awareness', 'share_road_with_joggers'
+    ],
+    // Level 20: High Wind Gusts
+    20: [
+      'crosswind_compensation', 'bridge_driving_caution', 'truck_sway_awareness'
+    ],
+    // Level 21: No Honking
+    21: [
+      'silence_zone_no_horn', 'hospital_silence', 'library_silence'
+    ],
+    // Level 22: Assembly Dismissal
+    22: [
+      'school_rush_patience', 'children_road_safety'
+    ],
+    // Level 23: Ambulance Silencer
+    23: [
+      'ambulance_approach_silence', 'clear_path_silently'
+    ],
+    // Level 24: Library Zone
+    24: [
+      'library_zone_quiet', 'minimal_noise_driving'
+    ],
+    // Level 25: Exam Season
+    25: [
+      'exam_area_caution', 'student_pedestrian_awareness'
+    ],
+    // Level 26: Level Crossing
+    26: [
+      'railway_crossing_stop', 'gate_timing_patience', 'train_horn_reaction'
+    ],
+    // Level 27: Gate Timing
+    27: [
+      'rail_gate_compliance', 'no_crossing_closed_gate'
+    ],
+    // Level 28: Metro Pillar Nav
+    28: [
+      'metro_pillar_navigation', 'construction_zone_caution'
+    ],
+    // Level 29: Train Horn Reaction
+    29: [
+      'train_horn_awareness', 'sudden_noise_composure'
+    ],
+    // Level 30: Peak Hour Commute
+    30: [
+      'commuter_rush_discipline', 'platform_crowd_awareness'
+    ],
+    // Level 31: High Beam Etiquette
+    31: [
+      'high_beam_dip', 'night_visibility_courtesy', 'oncoming_traffic_consideration'
+    ],
+    // Level 32: Drunk Driver Spot
+    32: [
+      'impaired_driver_recognition', 'safe_distance_erratic', 'report_drunk_driver'
+    ],
+    // Level 33: Sea Mist Visibility
+    33: [
+      'fog_driving_caution', 'reduced_visibility_speed', 'fog_lights_usage'
+    ],
+    // Level 34: Couple Seats
+    34: [
+      'parked_car_awareness', 'door_zone_caution', 'pedestrian_near_parked'
+    ],
+    // Level 35: Racer Deterrence
+    35: [
+      'street_racing_avoidance', 'speed_limit_night', 'peer_pressure_resistance'
+    ],
+    // Level 36: Narrow Lane Ambulance
+    36: [
+      'emergency_access_narrow', 'ambulance_priority_alley'
+    ],
+    // Level 37: Fire Engine Clear
+    37: [
+      'fire_engine_priority', 'hydrant_access_clear'
+    ],
+    // Level 38: Police Chase Assist
+    38: [
+      'police_pursuit_assistance', 'pull_over_for_police'
+    ],
+    // Level 39: 108 Bike Paramedic
+    39: [
+      'bike_paramedic_awareness', 'narrow_emergency_access'
+    ],
+    // Level 40: Disaster Evacuation
+    40: [
+      'evacuation_route_following', 'calm_under_pressure', 'emergency_lane_discipline'
+    ],
+    // Level 41: Waterlogged Roads
+    41: [
+      'flooded_road_assessment', 'hydroplaning_prevention', 'engine_protection_water'
+    ],
+    // Level 42: Pothole Slalom
+    42: [
+      'pothole_avoidance', 'suspension_care', 'sudden_swerve_avoidance'
+    ],
+    // Level 43: Open Manhole
+    43: [
+      'manhole_hazard_awareness', 'road_damage_reporting'
+    ],
+    // Level 44: Zero Visibility
+    44: [
+      'blind_rain_navigation', 'pull_over_zero_vis', 'hazard_lights_heavy_rain'
+    ],
+    // Level 45: Stranded Vehicle
+    45: [
+      'stranded_motorist_assistance', 'breakdown_safety_procedure', 'warning_triangle_usage'
+    ],
+    // Level 46: Lane Discipline 80
+    46: [
+      'highway_lane_discipline', 'overtaking_lane_only', 'cruise_control_usage'
+    ],
+    // Level 47: Exit Merge
+    47: [
+      'highway_merge_signal', 'match_speed_merge', 'exit_lane_early'
+    ],
+    // Level 48: Toll Plaza Flow
+    48: [
+      'toll_plaza_preparation', 'exact_change_ready', 'lane_selection_early'
+    ],
+    // Level 49: Breakdown Shoulder
+    49: [
+      'shoulder_usage_emergency', 'breakdown_procedure_highway', 'reflective_vest'
+    ],
+    // Level 50: Convoy Escort
+    50: [
+      'vip_convoy_protocol', 'convoy_formation_maintenance', 'communication_discipline'
+    ],
+    // Level 51: Monsoon Nightmare
+    51: [
+      'extreme_weather_navigation', 'combined_hazard_management'
+    ],
+    // Level 52: Protocol Drive
+    52: [
+      'vip_protocol_compliance', 'ceremonial_driving_precision'
+    ]
+  };
+  
+  // Get all rules learned up to and including a level
+  static getLearnedRulesUpTo(levelId) {
+    const rules = new Set();
+    for (let i = 1; i <= levelId; i++) {
+      const levelRules = this.RULE_DEFINITIONS[i] || [];
+      levelRules.forEach(r => rules.add(r));
+    }
+    return rules;
+  }
+  
+  // Check if a rule is already learned (should be strictly enforced)
+  static isRuleLearned(ruleId, currentLevelId) {
+    const learned = this.getLearnedRulesUpTo(currentLevelId - 1);
+    return learned.has(ruleId);
+  }
+  
+  // Register rules for a completed level
+  registerLevelRules(levelId) {
+    if (!window.Game.LEARNED_RULES.has(levelId)) {
+      const rules = window.Game.RULE_DEFINITIONS[levelId] || [];
+      window.Game.LEARNED_RULES.set(levelId, new Set(rules));
+      console.log(`[Rules Engine] Registered ${rules.length} rules for Level ${levelId}`);
+    }
+  }
+  
+  // Check violation against cumulative rules
+  checkCumulativeViolation(ruleId, currentLevelId) {
+    if (window.Game.isRuleLearned(ruleId, currentLevelId)) {
+      // Rule was learned in a previous level - strict enforcement
+      return { enforce: true, severity: 'challan', message: `Repeated violation: ${ruleId} (learned in earlier level)` };
+    }
+    // First time encountering this rule - warning only
+    return { enforce: false, severity: 'warning', message: `First reminder: ${ruleId}` };
+  }
 
       // ── Supabase Cloud Sync ──
       async _syncWalletToSupabase(amount, type, source) {
@@ -2024,13 +2289,21 @@ class Game {
       _horn() { 
           this._honkedThisFrame = true;
           if (this.mapCfg && this.mapCfg.isSilenceZone) {
+            
+            // Check cumulative rules for no honking
+            const _lvId = (ui.cur ? ui.cur.id : 1);
+            const cumCheck = this.checkCumulativeViolation('silence_zone_no_horn', _lvId);
+            if (cumCheck.enforce) {
               this.vio++;
               this.violationsLog.push('NO_HONKING');
               this.score -= 50;
               this.fine += 2000;
               if (window.GameplayRecorder) GameplayRecorder.record('NO_HONKING', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
-              ui.issueChallan('Honking in No-Honking Zone', 'Sec 190(2) MV Act', '₹2,000', 'Silence Zone Violation');
-            toast('💡 TIP: Silence zones near schools/hospitals require zero honking. Use hand signals instead.', '#ffd54a');
+              ui.issueChallan('Honking in No-Honking Zone (repeat offense)', 'Sec 190(2) MV Act', '₹2,000', 'Silence Zone Violation');
+            } else {
+              this.violationsLog.push('NO_HONKING_WARNING');
+              toast('⚠️ Honking in silence zone — first warning', '#f2b84b');
+            }
           } else {
               toast('📢 Beep Beep!', '#ffd54a'); 
               sfx.play('horn'); 
@@ -2931,8 +3204,17 @@ class Game {
                   toast('⚠️ Distracted Driving! ₹500 fine', '#e74c3c');
                   if (!this.challanFired.has('mobile_drive')) {
                       this.challanFired.add('mobile_drive');
-                      ui.issueChallan('Using Mobile while Driving', 'Sec 184 MV Act', '₹5,000', 'Dangerous Driving');
-                      this.vio++; this.violationsLog.push('MOBILE_USE'); this.score -= 50; this.fine += 5000;
+                      
+                      // Check cumulative rules for mobile use
+                      const _lvId = (ui.cur ? ui.cur.id : 1);
+                      const cumCheck = this.checkCumulativeViolation('mobile_use', _lvId);
+                      if (cumCheck.enforce) {
+                        ui.issueChallan('Using Mobile while Driving', 'Sec 184 MV Act', '₹5,000', 'Dangerous Driving');
+                        this.vio++; this.violationsLog.push('MOBILE_USE'); this.score -= 50; this.fine += 5000;
+                      } else {
+                        this.violationsLog.push('MOBILE_USE_WARNING');
+                        toast('⚠️ Mobile use while driving — first warning', '#f2b84b');
+                      }
                       if (window.GameplayRecorder) GameplayRecorder.record('MOBILE_USE', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
                       this.hp -= 10; this._uh();
                   }
@@ -3203,6 +3485,85 @@ class Game {
         }
         if (changed) this._renderTasks();
       }
+
+      _collectMissionData(dt) {
+        if (!this.player || !this.player.position) return;
+
+        // Track lead vehicle for ESCORT missions
+        if (this.npcs && this.npcs.length > 0) {
+          // Find the lead vehicle (first NPC on route for escort missions)
+          const escortNPCs = this.npcs.filter(n => n.userData?.missionRole === 'escort_lead');
+          if (escortNPCs.length > 0) {
+            this._leadVehiclePos = escortNPCs[0].position.clone();
+          } else if (!this._leadVehiclePos && this.npcs[0]) {
+            // Default to first NPC if no specific lead vehicle
+            this._leadVehiclePos = this.npcs[0].position.clone();
+          }
+
+          // Track target vehicle for CHASE missions
+          const chaseTargets = this.npcs.filter(n => n.userData?.missionRole === 'chase_target');
+          if (chaseTargets.length > 0) {
+            this._targetVehiclePos = chaseTargets[0].position.clone();
+          }
+
+          // Track pursuers for EVASION missions
+          const pursuers = this.npcs.filter(n => n.userData?.missionRole === 'pursuer');
+          if (pursuers.length > 0) {
+            this._pursuerPositions = pursuers.map(p => p.position.clone());
+          }
+
+          // Track ambulance for EMERGENCY_CLEAR missions
+          const ambulances = this.npcs.filter(n => n.userData?.npcType === 'ambulance' || n.userData?.missionRole === 'ambulance');
+          if (ambulances.length > 0) {
+            this._ambulancePos = ambulances[0].position.clone();
+          }
+        }
+
+        // Track children groups for CROSSING_GUARD missions (pedestrian mode)
+        if (this.peds && this.peds.length > 0) {
+          this._childrenGroups = this.peds
+            .filter(p => p.userData?.isChildGroup)
+            .map(p => ({
+              x: p.position.x,
+              z: p.position.z,
+              waiting: p.userData?.waiting ?? true,
+              crossing: p.userData?.crossing ?? false,
+              crossed: p.userData?.crossed ?? false
+            }));
+        }
+
+        // Track sidewalk violations for SIDEWALK_PATROL missions
+        if (this.npcs) {
+          this._sidewalkViolations = this.npcs
+            .filter(n => n.userData?.onSidewalk && n.userData?.npcType === 'bike')
+            .map(n => ({
+              x: n.position.x,
+              z: n.position.z,
+              type: 'bike_on_sidewalk',
+              reported: n.userData?.violationReported ?? false
+            }));
+        }
+
+        // Track intersections for ESCORT missions
+        if (this.sigs) {
+          this._intersections = this.sigs
+            .filter(sg => sg.userData?.st === 'green')
+            .map(sg => ({
+              x: sg.position.x,
+              z: sg.position.z,
+              cleared: sg.userData?.escortCleared ?? false
+            }));
+        }
+
+        // Calculate longitudinal acceleration for CARGO missions
+        if (!this.isPedestrian) {
+          const currentSpeed = Math.abs(this.speed);
+          if (this._prevSpeedForCargo !== undefined) {
+            this._longitudinalAccel = (currentSpeed - this._prevSpeedForCargo) / dt;
+          }
+          this._prevSpeedForCargo = currentSpeed;
+        }
+      }
       
       _go(reason) {
         this.stopPlay();
@@ -3245,6 +3606,11 @@ class Game {
           }
         }
         this.fs = Math.max(0, finalBase);
+        
+        // ── REGISTER LEARNED RULES FOR CUMULATIVE ENFORCEMENT ──
+        const _lvId = (ui.cur ? ui.cur.id : 1);
+        this.registerLevelRules(_lvId);
+        
         if (window.confetti) { confetti.init(); confetti.burst(4000); }
         else this._confettiThree();
         // ── LEVEL REWARD CALCULATION ──
@@ -3788,6 +4154,7 @@ class Game {
         if (this.missionManager) {
           this.playerScore = 0;
           this.rupees = (S.wallet || 50000);
+          this.missionTokens = (S.missionTokens || 0);
           this.missionManager.generateMissions(cfg);
         }
 
@@ -5394,9 +5761,31 @@ class Game {
           this.worldStreamer.update(this.player.position, dt);
         }
 
+        // Collect mission data before updating missions
+        this._collectMissionData(dt);
+
         // Mission and collectible update
         if (this.missionManager && this.player && this.missionManager.active) {
-          this.missionManager.update(this.player.position, dt, this.timer);
+          const extra = {
+            playerRot: this.player.rotation.y,
+            speed: Math.abs(this.speed),
+            lateralG: this._lateralAccel || 0,
+            longitudinalG: this._longitudinalAccel || 0,
+            hitPothole: this._hitPotholeThisFrame || false,
+            lastPos: this._lastPlayerPos || null,
+            leadVehiclePos: this._leadVehiclePos || null,
+            targetVehiclePos: this._targetVehiclePos || null,
+            pursuerPositions: this._pursuerPositions || [],
+            childrenGroups: this._childrenGroups || [],
+            violations: this._sidewalkViolations || [],
+            ambulancePos: this._ambulancePos || null,
+            pedPositions: this.peds?.map(p => ({ x: p.position.x, z: p.position.z })) || [],
+            vehiclePositions: this.npcs?.map(n => ({ x: n.position.x, z: n.position.z, speed: n.userData?.spd || 0, caught: n.caught })) || [],
+            intersections: this._intersections || []
+          };
+          this.missionManager.update(this.player.position, dt, this.timer, extra);
+          this._lastPlayerPos = this.player.position.clone();
+          this._hitPotholeThisFrame = false;
         }
         // ── Suspension (after input, needs steering data) ──
         if (!this.isPedestrian) {
@@ -5435,8 +5824,17 @@ class Game {
         if (!this.isPedestrian && Math.abs(this.speed) > 0.05) {
             if (!this.seatbeltOn && !this.challanFired.has('seatbelt')) {
                 this.challanFired.add('seatbelt');
-                ui.issueChallan((this.vehMode === 'bike' || this.vehMode === 'cycle') ? 'Riding without Helmet' : 'Driving without Seatbelt', 'Sec 194D MV Act', '₹1,000', 'Safety Violation');
-                this.vio++; this.violationsLog.push('SAFETY_VIOLATION'); this.score -= 20; this.fine += 1000;
+                
+                // Check cumulative rules for seatbelt/helmet
+                const _lvId = (ui.cur ? ui.cur.id : 1);
+                const cumCheck = this.checkCumulativeViolation('wear_safety', _lvId);
+                if (cumCheck.enforce) {
+                  ui.issueChallan((this.vehMode === 'bike' || this.vehMode === 'cycle') ? 'Riding without Helmet' : 'Driving without Seatbelt', 'Sec 194D MV Act', '₹1,000', 'Safety Violation');
+                  this.vio++; this.violationsLog.push('SAFETY_VIOLATION'); this.score -= 20; this.fine += 1000;
+                } else {
+                  this.violationsLog.push('SAFETY_WARNING');
+                  toast('⚠️ Safety gear required — first reminder', '#f2b84b');
+                }
                 if (window.GameplayRecorder) GameplayRecorder.record('SAFETY_VIOLATION', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
             }
         }
@@ -5832,19 +6230,30 @@ class Game {
                 }
             }
 
-            // Check Overspeeding
+// Check Overspeeding
             if (this.mapCfg && this.mapCfg.speedLimit && !this.isPedestrian) {
               const currentSpeedKmH = Math.round(Math.abs(this.speed) * 100);
               if (currentSpeedKmH > this.mapCfg.speedLimit) {
                  if (!this.player.userData.spdCooldown) this.player.userData.spdCooldown = 0;
                  this.player.userData.spdCooldown -= dt;                  if (this.player.userData.spdCooldown <= 0 && window.ui && window.ui.issueChallan) {
-                     window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
-            toast('💡 TIP: Over-speeding is the #1 cause of road accidents in India. Stay within limits!', '#ff9500');
-                    if (window.GameplayRecorder) GameplayRecorder.record('SPEED_VIOLATION', { speed: Math.round(currentSpeedKmH), limit: this.mapCfg.speedLimit, score: this.score, fine: this.fine });
-                    this.player.userData.spdCooldown = 5;
+                    
+                    // Check cumulative rules for speed limit adherence
+                    const _lvId = (ui.cur ? ui.cur.id : 1);
+                    const cumCheck = this.checkCumulativeViolation('speed_limit_adherence', _lvId);
+                    if (cumCheck.enforce) {
+                      window.ui.issueChallan('Overspeeding (repeat offense)', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
+                      this.vio++; this.violationsLog.push('SPEED_VIOLATION'); this.fine += 1000;
+                    } else {
+                      window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
+                      this.violationsLog.push('SPEED_WARNING');
+                    }
+                    
+                    toast('💡 TIP: Over-speeding is the #1 cause of road accidents in India. Stay within limits!', '#ff9500');
+                      if (window.GameplayRecorder) GameplayRecorder.record('SPEED_VIOLATION', { speed: Math.round(currentSpeedKmH), limit: this.mapCfg.speedLimit, score: this.score, fine: this.fine });
+                      this.player.userData.spdCooldown = 5;
+                    }
                   }
-              }
-            }
+                }
 
             // Two-wheeler-specific rule: bikes carry a lower safe-speed expectation than cars
             // even where a zone doesn't post an explicit limit, and a one-time helmet reminder —
@@ -5912,8 +6321,17 @@ class Game {
                   this._phoneRinging = false; this._phoneDismissed = true;
                   if (typeof sfx !== 'undefined' && sfx.play) sfx.play('error');
                   if (window.ui && window.ui.issueChallan) {
-                    window.ui.issueChallan('Distracted Driving - Phone', 'Sec 184 MV Act', '₹1,000', 'Mobile Use');
-                    this.score -= 25; this.fine += 1000; this.vio++; this.violationsLog.push('MOBILE_USE');
+                    
+                    // Check cumulative rules for mobile use
+                    const _lvId = (ui.cur ? ui.cur.id : 1);
+                    const cumCheck = this.checkCumulativeViolation('mobile_use', _lvId);
+                    if (cumCheck.enforce) {
+                      window.ui.issueChallan('Distracted Driving - Phone', 'Sec 184 MV Act', '₹1,000', 'Mobile Use');
+                      this.score -= 25; this.fine += 1000; this.vio++; this.violationsLog.push('MOBILE_USE');
+                    } else {
+                      this.violationsLog.push('MOBILE_USE_WARNING');
+                      toast('⚠️ Phone use while driving — first warning', '#f2b84b');
+                    }
                     if (window.GameplayRecorder) GameplayRecorder.record('MOBILE_USE', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
                   }
                   toast('📱 Phone use while driving! ₹1,000 fine', '#ef4444');
@@ -6164,8 +6582,18 @@ class Game {
           const dist = this.player.position.distanceTo(sg.position);
           if (d.st === 'red' && dist < 6.5 && Math.abs(this.speed) > .18 && !this.challanFired.has(sg.uuid)) {
             this.challanFired.add(sg.uuid);
-            this.vio++; this.violationsLog.push('RED_LIGHT_VIOLATION'); this.fine += 500;
-            ui.issueChallan('Jumping red signal', 'Section 119, MV Act', '₹500', 'Junction Sensor');
+            
+            // Check cumulative rules engine
+            const _lvId = (ui.cur ? ui.cur.id : 1);
+            const cumCheck = this.checkCumulativeViolation('red_light_stop', _lvId);
+            if (cumCheck.enforce) {
+              this.vio++; this.violationsLog.push('RED_LIGHT_VIOLATION'); this.fine += 500;
+              ui.issueChallan('Jumping red signal (repeat offense)', 'Section 119, MV Act', '₹500', 'Junction Sensor');
+            } else {
+              // First offense - warning
+              this.violationsLog.push('RED_LIGHT_WARNING');
+              toast('⚠️ Red light violation — first warning', '#f2b84b');
+            }
           }
           // Track nearest signal for HUD
           if (dist < nearestDist) { nearestDist = dist; nearestSig = sg; }

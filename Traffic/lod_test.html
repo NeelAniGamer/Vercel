@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3-Tier LOD Test</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{overflow:hidden;background:#1a1a2e;font-family:monospace}
+    canvas{display:block}
+    #hud{position:fixed;top:10px;left:10px;color:#0f0;font-size:11px;line-height:1.5;pointer-events:none;text-shadow:1px 1px 2px #000;z-index:10;background:rgba(0,0,0,0.75);padding:8px 12px;border-radius:6px}
+    #controls{position:fixed;bottom:10px;left:10px;color:#fff;font-size:11px;z-index:10;background:rgba(0,0,0,0.8);padding:8px 12px;border-radius:6px;max-width:240px}
+    #controls label{display:block;margin:2px 0}
+    #controls button{background:#3a6;color:#fff;border:none;padding:2px 6px;border-radius:3px;cursor:pointer;margin:1px;font-size:10px}
+    .val{color:#3f3}.t-f{color:#f88}.t-m{color:#ff4}.t-n{color:#4f4}
+    hr{border-color:#444;margin:3px 0}
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+<div id="hud">
+  <div>FPS: <span id="fps" class="val">0</span> | Frame: <span id="frm" class="val">0</span></div>
+  <div>Pos: <span id="pos" class="val">0,0</span> | H: <span id="hgt" class="val">0</span></div>
+  <div class="t-f">Far: <span id="fC">0</span> chk (<span id="fS">0</span>m res:<span id="fR">0</span>)</div>
+  <div class="t-m">Med: <span id="mC">0</span> chk (<span id="mS">0</span>m res:<span id="mR">0</span>)</div>
+  <div class="t-n">Near: <span id="nC">0</span> chk (<span id="nS">0</span>m res:<span id="nR">0</span>)</div>
+  <div>Total: <span id="tC" class="val">0</span> | Tris: <span id="trs" class="val">0</span></div>
+  <div>Road: <span id="rI" class="val">-</span></div>
+</div>
+<div id="controls">
+  <label>Seed: <input type="number" id="seed" value="42" style="width:60px"><button id="nS">Rand</button></label>
+  <label>Length: <input type="range" id="rL" min="2000" max="15000" value="8000" step="1000"><span id="rLv">8000</span>m</label>
+  <hr>
+  <label>Quality: <button data-q="LOW">Low</button><button data-q="MED">Med</button><button data-q="HIGH">High</button><button data-q="ULTRA">Ultra</button></label>
+  <label><input type="checkbox" id="wfr"> Wireframe</label>
+  <label><input type="checkbox" id="apr" checked> Autopilot</label>
+  <label><input type="checkbox" id="shR" checked> Show Road</label>
+  <hr>
+  <div style="color:#aaa">WASD/Arrows = drive</div>
+</div>
+<script src="proc_terrain.js"></script>
+<script src="proc_road.js"></script>
+<script src="proc_chunks.js"></script>
+<script>
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x87ceeb);
+scene.fog=new THREE.Fog(0x87ceeb,300,800);
+const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.5,2000);
+const ren=new THREE.WebGLRenderer({antialias:true});
+ren.setSize(innerWidth,innerHeight);
+ren.setPixelRatio(Math.min(devicePixelRatio,2));
+document.body.appendChild(ren.domElement);
+scene.add(new THREE.AmbientLight(0x6688aa,0.6));
+const sun=new THREE.DirectionalLight(0xffeedd,1.2);sun.position.set(100,150,80);scene.add(sun);
+scene.add(new THREE.HemisphereLight(0x88bbff,0x445522,0.4));
+
+let terrain,chunkMgr,roadMgr,roadMesh;
+let camX=0,camZ=0,camY=20,camAngle=0;
+const $=id=>document.getElementById(id);
+
+function buildWorld(){
+  if(roadMesh){scene.remove(roadMesh);roadMesh.geometry.dispose();roadMesh.material.dispose();}
+  terrain=new ProcTerrain({seed:parseInt($('seed').value)||42});
+  chunkMgr=new ProcChunkManager(scene,terrain,'MED');
+  const gen=new RoadGenerator(terrain);
+  const rd=gen.generate(parseInt($('rL').value)||8000);
+  chunkMgr.setRoadData(rd);
+  const mg=new RoadMeshGenerator(terrain);
+  roadMesh=mg.generateRoadMesh(rd.fine);
+  if(roadMesh&&$('shR').checked)scene.add(roadMesh);
+  camX=rd.fine[0].x;camZ=rd.fine[0].z;camAngle=0;
+  $('rI').textContent=rd.fine.length+' pts, '+rd.length.toFixed(0)+'m';
+}
+buildWorld();
+
+const keys={};
+addEventListener('keydown',e=>keys[e.key.toLowerCase()]=true);
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();ren.setSize(innerWidth,innerHeight)});
+
+$('nS').onclick=()=>{$('seed').value=Math.floor(Math.random()*99999);buildWorld()};
+$('seed').onchange=buildWorld;
+$('rL').oninput=e=>{$('rLv').textContent=e.target.value};
+$('rL').onchange=buildWorld;
+$('shR').onchange=e=>{if(roadMesh)roadMesh.visible=e.target.checked};
+$('wfr').onchange=e=>{
+  chunkMgr.farTier.chunks.forEach(m=>m.material.wireframe=e.target.checked);
+  chunkMgr.medTier.chunks.forEach(m=>m.material.wireframe=e.target.checked);
+  chunkMgr.nearTier.chunks.forEach(m=>m.material.wireframe=e.target.checked);
+  if(roadMesh)roadMesh.material.wireframe=e.target.checked;
+};
+document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>chunkMgr.setQuality(b.dataset.q));
+
+let frames=0,lastT=performance.now();
+function animate(){
+  requestAnimationFrame(animate);
+  const now=performance.now();
+  frames++;
+  if(now-lastT>=1000){$('fps').textContent=frames;frames=0;lastT=now;}
+
+  const rs=0.03;
+  if(keys['a']||keys['arrowleft'])camAngle+=rs;
+  if(keys['d']||keys['arrowright'])camAngle-=rs;
+  if(keys['w']||keys['arrowup']||$('apr').checked){camX+=Math.sin(camAngle)*0.5;camZ+=Math.cos(camAngle)*0.5}
+  if(keys['s']||keys['arrowdown']){camX-=Math.sin(camAngle)*0.25;camZ-=Math.cos(camAngle)*0.25}
+
+  const gH=chunkMgr.getHeightAt(camX,camZ);
+  camY=gH+8;
+  cam.position.set(camX,camY,camZ);
+  cam.rotation.set(-0.1,camAngle,0);
+
+  chunkMgr.update(camX,camZ);
+
+  const st=chunkMgr.getStats();
+  $('frm').textContent=chunkMgr._frameCounter;
+  $('pos').textContent=camX.toFixed(0)+','+camZ.toFixed(0);
+  $('hgt').textContent=gH.toFixed(1);
+  $('fC').textContent=st.far.activeChunks;$('fS').textContent=st.far.chunkSize;$('fR').textContent=st.far.resolution;
+  $('mC').textContent=st.med.activeChunks;$('mS').textContent=st.med.chunkSize;$('mR').textContent=st.med.resolution;
+  $('nC').textContent=st.near.activeChunks;$('nS').textContent=st.near.chunkSize;$('nR').textContent=st.near.resolution;
+  $('tC').textContent=st.totalChunks;
+  // Estimate triangles: each chunk has res*res*2 triangles
+  const tris=(st.far.activeChunks*st.far.resolution*st.far.resolution+
+               st.med.activeChunks*st.med.resolution*st.med.resolution+
+               st.near.activeChunks*st.near.resolution*st.near.resolution)*2;
+  $('trs').textContent=tris.toLocaleString();
+
+  ren.render(scene,cam);
+}
+animate();
+</script>
+</body>
+</html>

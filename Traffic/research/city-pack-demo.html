@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mumbai Traffic Hero - City Pack Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: #0a0a14; 
+      color: #e0e0e0; 
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+    }
+    #canvas-container { 
+      position: fixed; 
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+    }
+    #ui-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .panel {
+      position: absolute;
+      background: rgba(17, 24, 39, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      pointer-events: auto;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    #controls-panel {
+      top: 20px; left: 20px; width: 280px;
+    }
+    #stats-panel {
+      top: 20px; right: 20px; width: 200px;
+    }
+    #loading {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #0a0a14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      flex-direction: column;
+    }
+    #loading h1 { color: #f2b84b; margin-bottom: 20px; }
+    #loading p { color: #8891aa; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid rgba(242, 184, 75, 0.3);
+      border-top-color: #f2b84b;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    h3 { 
+      color: #f2b84b; 
+      margin-bottom: 12px; 
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .control-group { margin-bottom: 12px; }
+    .control-group label {
+      display: block;
+      font-size: 12px;
+      color: #8891aa;
+      margin-bottom: 4px;
+    }
+    select, button {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.3);
+      color: #e0e0e0;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    button {
+      background: #f2b84b;
+      color: #000;
+      border: none;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    button:hover { background: #ffc857; }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .stat-value { color: #34d399; font-weight: 600; }
+    #attribution-panel {
+      bottom: 20px; left: 20px; right: 20px;
+      max-height: 150px;
+      font-size: 11px;
+    }
+    #attribution-panel a { color: #5ed4f5; }
+    .model-list {
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 11px;
+      color: #8891aa;
+    }
+    .model-list div { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .license-cc0 { color: #34d399; }
+    .license-cc-by { color: #f2b84b; }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <h1>🚦 Mumbai Traffic Hero</h1>
+    <div class="spinner"></div>
+    <p id="loading-text">Loading city pack models...</p>
+  </div>
+  
+  <div id="canvas-container"></div>
+  
+  <div id="ui-overlay">
+    <div class="panel" id="controls-panel">
+      <h3>🎮 Controls</h3>
+      <div class="control-group">
+        <label>Category</label>
+        <select id="category-select">
+          <option value="buildings">Buildings</option>
+          <option value="vehicles">Vehicles</option>
+          <option value="props">Props</option>
+          <option value="vegetation">Vegetation</option>
+          <option value="characters">Characters</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Actions</label>
+        <button id="spawn-btn">📦 Spawn Model</button>
+        <button id="spawn-many-btn">🏙️ Spawn 10 Models</button>
+        <button id="clear-btn">🗑️ Clear All</button>
+        <button id="reset-cam-btn">🎥 Reset Camera</button>
+      </div>
+      <div class="control-group">
+        <label>Camera</label>
+        <button id="cam-orbit">🔄 Orbit</button>
+        <button id="cam-top">🗺️ Top View</button>
+      </div>
+    </div>
+    
+    <div class="panel" id="stats-panel">
+      <h3>📊 Stats</h3>
+      <div class="stat-row"><span>FPS:</span><span class="stat-value" id="stat-fps">60</span></div>
+      <div class="stat-row"><span>Models:</span><span class="stat-value" id="stat-models">0</span></div>
+      <div class="stat-row"><span>Vertices:</span><span class="stat-value" id="stat-verts">0</span></div>
+      <div class="stat-row"><span>Loaded:</span><span class="stat-value" id="stat-loaded">0/57</span></div>
+    </div>
+    
+    <div class="panel" id="attribution-panel">
+      <h3>📄 Attribution</h3>
+      <p>City Pack by <strong>J-Toastie</strong> via <a href="https://poly.pizza" target="_blank">Poly Pizza</a></p>
+      <p>Licenses: <span class="license-cc0">CC0</span> (no attribution) | <span class="license-cc-by">CC-BY</span> (attribution required)</p>
+      <p>57 models total: Buildings, Vehicles, Props, Vegetation, Characters</p>
+      <p>See <code>Models/kenney_city-pack/ATTRIBUTION.txt</code> for full details.</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87ceeb);
+    scene.fog = new THREE.Fog(0x87ceeb, 100, 500);
+    
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(30, 25, 30);
+    camera.lookAt(0, 0, 0);
+    
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+    
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    
+    const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    sunLight.position.set(50, 100, 50);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 500;
+    sunLight.shadow.camera.left = -100;
+    sunLight.shadow.camera.right = 100;
+    sunLight.shadow.camera.top = 100;
+    sunLight.shadow.camera.bottom = -100;
+    scene.add(sunLight);
+    
+    // Ground
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(500, 500),
+      new THREE.MeshStandardMaterial({ color: 0x335533, roughness: 0.9 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+    
+    // Grid
+    const grid = new THREE.GridHelper(500, 50, 0x444444, 0x333333);
+    grid.position.y = 0.01;
+    scene.add(grid);
+    
+    // Road (simple cross)
+    const roadMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 });
+    const road1 = new THREE.Mesh(new THREE.PlaneGeometry(12, 500), roadMat);
+    road1.rotation.x = -Math.PI / 2;
+    road1.position.y = 0.02;
+    scene.add(road1);
+    
+    const road2 = new THREE.Mesh(new THREE.PlaneGeometry(500, 12), roadMat);
+    road2.rotation.x = -Math.PI / 2;
+    road2.position.y = 0.02;
+    scene.add(road2);
+    
+    // Road markings
+    const markMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    for (let i = -200; i <= 200; i += 20) {
+      const mark = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 8), markMat);
+      mark.rotation.x = -Math.PI / 2;
+      mark.position.set(0, 0.03, i);
+      scene.add(mark);
+      
+      const mark2 = new THREE.Mesh(new THREE.PlaneGeometry(8, 0.3), markMat);
+      mark2.rotation.x = -Math.PI / 2;
+      mark2.position.set(i, 0.03, 0);
+      scene.add(mark2);
+    }
+    
+    // Model management
+    const loadedModels = {};
+    const spawnedObjects = [];
+    let totalVertices = 0;
+    const loader = new THREE.GLTFLoader();
+    
+    // Asset list from city pack
+    const assets = {
+      buildings: ['Building Green.glb', 'Building Red.glb', 'Brown Building.glb', 'Pizza Corner.glb', 'Greenhouse.glb', 'Gb Blank.glb', 'RB Blank.glb', 'Big Building.glb'],
+      vehicles: ['Car.glb', 'Bus.glb', 'Van.glb', 'Motorcycle.glb', 'Sports Car.glb', 'SUV.glb', 'Pickup Truck.glb'],
+      props: ['Traffic Light.glb', 'Cone.glb', 'Stop sign.glb', 'Fire hydrant.glb', 'Mailbox.glb', 'Bench.glb', 'Trash Can.glb', 'ATM.glb', 'Power Box.glb', 'Tree.glb'],
+      vegetation: ['Tree.glb'],
+      characters: ['Man.glb', 'Adventurer.glb', 'Animated Woman.glb']
+    };
+    
+    const basePath = 'Models/kenney_city-pack/';
+    let loadedCount = 0;
+    
+    // Load a model
+    function loadModel(file) {
+      return new Promise((resolve, reject) => {
+        if (loadedModels[file]) {
+          resolve(loadedModels[file]);
+          return;
+        }
+        
+        loader.load(
+          basePath + file,
+          (gltf) => {
+            loadedModels[file] = gltf.scene;
+            loadedCount++;
+            document.getElementById('stat-loaded').textContent = `${loadedCount}/57`;
+            document.getElementById('loading-text').textContent = `Loading... (${loadedCount}/57)`;
+            resolve(gltf.scene);
+          },
+          undefined,
+          (error) => {
+            console.warn(`Failed to load ${file}`);
+            reject(error);
+          }
+        );
+      });
+    }
+    
+    // Spawn a model
+    async function spawnModel(category, position) {
+      const list = assets[category];
+      if (!list || list.length === 0) return;
+      
+      const file = list[Math.floor(Math.random() * list.length)];
+      
+      try {
+        const model = await loadModel(file);
+        const clone = model.clone();
+        
+        clone.position.copy(position);
+        clone.rotation.y = Math.random() * Math.PI * 2;
+        clone.traverse(child => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            totalVertices += (child.geometry.attributes.position?.count || 0);
+          }
+        });
+        
+        scene.add(clone);
+        spawnedObjects.push(clone);
+        document.getElementById('stat-models').textContent = spawnedObjects.length;
+        document.getElementById('stat-verts').textContent = totalVertices.toLocaleString();
+      } catch (e) {
+        // ignore
+      }
+    }
+    
+    // Spawn multiple in a grid
+    async function spawnMany(category, count) {
+      for (let i = 0; i < count; i++) {
+        const x = (Math.random() - 0.5) * 80;
+        const z = (Math.random() - 0.5) * 80;
+        
+        // Avoid road area
+        if (Math.abs(x) < 8 || Math.abs(z) < 8) continue;
+        
+        const pos = new THREE.Vector3(x, 0, z);
+        await spawnModel(category, pos);
+        
+        // Small delay to not block UI
+        if (i % 3 === 0) {
+          await new Promise(r => setTimeout(r, 50));
+        }
+      }
+    }
+    
+    // Clear all spawned
+    function clearAll() {
+      spawnedObjects.forEach(obj => scene.remove(obj));
+      spawnedObjects.length = 0;
+      totalVertices = 0;
+      document.getElementById('stat-models').textContent = '0';
+      document.getElementById('stat-verts').textContent = '0';
+    }
+    
+    // Camera controls
+    let cameraAngle = 0;
+    let cameraRadius = 50;
+    let cameraHeight = 25;
+    let autoRotate = false;
+    let topView = false;
+    
+    // Event listeners
+    document.getElementById('spawn-btn').addEventListener('click', () => {
+      const cat = document.getElementById('category-select').value;
+      const x = (Math.random() - 0.5) * 80;
+      const z = (Math.random() - 0.5) * 80;
+      spawnModel(cat, new THREE.Vector3(x, 0, z));
+    });
+    
+    document.getElementById('spawn-many-btn').addEventListener('click', () => {
+      const cat = document.getElementById('category-select').value;
+      spawnMany(cat, 10);
+    });
+    
+    document.getElementById('clear-btn').addEventListener('click', clearAll);
+    
+    document.getElementById('reset-cam-btn').addEventListener('click', () => {
+      cameraAngle = 0;
+      cameraRadius = 50;
+      cameraHeight = 25;
+      autoRotate = false;
+      topView = false;
+      camera.position.set(30, 25, 30);
+      camera.lookAt(0, 0, 0);
+    });
+    
+    document.getElementById('cam-orbit').addEventListener('click', () => {
+      autoRotate = !autoRotate;
+      topView = false;
+    });
+    
+    document.getElementById('cam-top').addEventListener('click', () => {
+      topView = !topView;
+      autoRotate = false;
+    });
+    
+    // Mouse controls
+    let isDragging = false;
+    let lastMouse = { x: 0, y: 0 };
+    
+    renderer.domElement.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastMouse.x = e.clientX;
+      lastMouse.y = e.clientY;
+    });
+    
+    renderer.domElement.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastMouse.x;
+      const dy = e.clientY - lastMouse.y;
+      cameraAngle += dx * 0.01;
+      cameraHeight = Math.max(5, Math.min(80, cameraHeight - dy * 0.2));
+      lastMouse.x = e.clientX;
+      lastMouse.y = e.clientY;
+    });
+    
+    renderer.domElement.addEventListener('mouseup', () => isDragging = false);
+    renderer.domElement.addEventListener('wheel', (e) => {
+      cameraRadius = Math.max(10, Math.min(150, cameraRadius + e.deltaY * 0.1));
+    });
+    
+    // Window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    // Animation loop
+    let lastTime = performance.now();
+    let frameCount = 0;
+    let fps = 60;
+    
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      const now = performance.now();
+      frameCount++;
+      if (now - lastTime >= 1000) {
+        fps = frameCount;
+        frameCount = 0;
+        lastTime = now;
+        document.getElementById('stat-fps').textContent = fps;
+      }
+      
+      // Camera update
+      if (autoRotate) {
+        cameraAngle += 0.005;
+      }
+      
+      if (topView) {
+        camera.position.set(0, 80, 0);
+        camera.lookAt(0, 0, 0);
+      } else {
+        camera.position.x = Math.sin(cameraAngle) * cameraRadius;
+        camera.position.z = Math.cos(cameraAngle) * cameraRadius;
+        camera.position.y = cameraHeight;
+        camera.lookAt(0, 0, 0);
+      }
+      
+      renderer.render(scene, camera);
+    }
+    
+    // Initial load
+    async function init() {
+      // Preload a few models
+      for (const cat of Object.keys(assets)) {
+        for (const file of assets[cat].slice(0, 2)) {
+          try { await loadModel(file); } catch(e) {}
+        }
+      }
+      
+      // Spawn initial buildings
+      await spawnMany('buildings', 8);
+      await spawnMany('vehicles', 4);
+      
+      // Hide loading
+      document.getElementById('loading').style.display = 'none';
+      
+      // Start animation
+      animate();
+    }
+    
+    init();
+  </script>
+</body>
+</html>

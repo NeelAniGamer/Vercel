@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terrain + Road Test - Traffic Simulator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background: #1a1a2e; font-family: 'Segoe UI', monospace; }
+    canvas { display: block; }
+    #hud {
+      position: fixed; top: 10px; left: 10px; color: #0f0;
+      font-size: 12px; line-height: 1.6; pointer-events: none;
+      text-shadow: 1px 1px 2px #000; z-index: 10;
+      background: rgba(0,0,0,0.7); padding: 10px 14px; border-radius: 6px;
+    }
+    #controls {
+      position: fixed; bottom: 10px; left: 10px; color: #fff;
+      font-size: 11px; z-index: 10; background: rgba(0,0,0,0.8);
+      padding: 10px 14px; border-radius: 6px; max-width: 280px;
+    }
+    #controls label { display: block; margin: 3px 0; }
+    #controls input[type="range"] { width: 100px; vertical-align: middle; }
+    #controls button {
+      background: #3a6; color: #fff; border: none; padding: 3px 8px;
+      border-radius: 3px; cursor: pointer; margin: 2px; font-size: 11px;
+    }
+    #controls button:hover { background: #4b7; }
+    .val { color: #3f3; }
+    hr { border-color: #333; margin: 4px 0; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <div id="hud">
+    <div>FPS: <span id="fps" class="val">0</span></div>
+    <div>Chunks: <span id="chunks" class="val">0</span></div>
+    <div>Road pts: <span id="roadpts" class="val">0</span></div>
+    <div>Pos: <span id="pos" class="val">0, 0</span></div>
+    <div>Height: <span id="height" class="val">0</span></div>
+    <div>On Road: <span id="onroad" class="val">no</span></div>
+  </div>
+  <div id="controls">
+    <label>Seed: <input type="number" id="seed" value="42" style="width:70px">
+      <button id="newSeed">Random</button></label>
+    <label>Road Length: <input type="range" id="roadlen" min="1000" max="15000" value="5000" step="1000">
+      <span id="roadlenVal">5000</span>m</label>
+    <hr>
+    <label>Quality:
+      <button data-q="LOW">Low</button>
+      <button data-q="MED">Med</button>
+      <button data-q="HIGH">High</button>
+    </label>
+    <label><input type="checkbox" id="wireframe"> Wireframe</label>
+    <label><input type="checkbox" id="showRoad" checked> Show Road</label>
+    <label><input type="checkbox" id="autopilot"> Autopilot</label>
+    <hr>
+    <div style="color:#aaa">WASD/Arrows = drive, Mouse = look</div>
+  </div>
+
+  <script src="proc_terrain.js"></script>
+  <script src="proc_road.js"></script>
+  <script>
+    // Scene
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x87ceeb);
+    scene.fog = new THREE.Fog(0x87ceeb, 200, 600);
+
+    const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.5, 1500);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    // Lighting
+    scene.add(new THREE.AmbientLight(0x6688aa, 0.6));
+    const sun = new THREE.DirectionalLight(0xffeedd, 1.2);
+    sun.position.set(100, 150, 80);
+    scene.add(sun);
+    scene.add(new THREE.HemisphereLight(0x88bbff, 0x445522, 0.4));
+
+    // State
+    let terrain, chunkManager, roadManager;
+    let camX = 0, camZ = 0, camY = 20, camAngle = 0;
+    let roadMesh = null;
+
+    const $ = id => document.getElementById(id);
+
+    function buildWorld() {
+      // Clear old
+      if (roadMesh) { scene.remove(roadMesh); roadMesh.geometry.dispose(); }
+
+      terrain = new ProcTerrain({ seed: parseInt($('seed').value) || 42 });
+      chunkManager = new TerrainChunkManager(scene, terrain, 'MED');
+      chunkManager.update(0, 0);
+
+      // Generate road
+      const gen = new RoadGenerator(terrain);
+      const roadData = gen.generate(parseInt($('roadlen').value) || 5000);
+
+      // Build road mesh
+      const meshGen = new RoadMeshGenerator(terrain);
+      roadMesh = meshGen.generateRoadMesh(roadData.fine);
+      if (roadMesh && $('showRoad').checked) scene.add(roadMesh);
+
+      // Position camera at road start
+      camX = roadData.fine[0].x;
+      camZ = roadData.fine[0].z;
+      camAngle = 0;
+
+      $('roadpts').textContent = roadData.fine.length;
+    }
+
+    buildWorld();
+
+    // Input
+    const keys = {};
+    addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+    addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    // UI
+    $('newSeed').onclick = () => { $('seed').value = Math.floor(Math.random() * 99999); buildWorld(); };
+    $('seed').onchange = buildWorld;
+    $('roadlen').oninput = e => { $('roadlenVal').textContent = e.target.value; };
+    $('roadlen').onchange = buildWorld;
+    $('showRoad').onchange = e => {
+      if (roadMesh) roadMesh.visible = e.target.checked;
+    };
+    $('wireframe').onchange = e => {
+      chunkManager.chunks.forEach(m => m.material.wireframe = e.target.checked);
+      if (roadMesh) roadMesh.material.wireframe = e.target.checked;
+    };
+    document.querySelectorAll('[data-q]').forEach(btn => {
+      btn.onclick = () => chunkManager.setQuality(btn.dataset.q);
+    });
+
+    // FPS
+    let frames = 0, lastTime = performance.now();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const now = performance.now();
+      frames++;
+      if (now - lastTime >= 1000) {
+        $('fps').textContent = frames;
+        frames = 0;
+        lastTime = now;
+      }
+
+      // Controls
+      const rotSpeed = 0.03;
+      if (keys['a'] || keys['arrowleft']) camAngle += rotSpeed;
+      if (keys['d'] || keys['arrowright']) camAngle -= rotSpeed;
+
+      if (keys['w'] || keys['arrowup'] || $('autopilot').checked) {
+        camX += Math.sin(camAngle) * 0.4;
+        camZ += Math.cos(camAngle) * 0.4;
+      }
+      if (keys['s'] || keys['arrowdown']) {
+        camX -= Math.sin(camAngle) * 0.2;
+        camZ -= Math.cos(camAngle) * 0.2;
+      }
+
+      const groundH = chunkManager.getHeightAt(camX, camZ);
+      camY = groundH + 6;
+      camera.position.set(camX, camY, camZ);
+      camera.rotation.set(-0.1, camAngle, 0);
+
+      chunkManager.update(camX, camZ);
+
+      // HUD
+      $('chunks').textContent = chunkManager.getStats().activeChunks;
+      $('pos').textContent = `${camX.toFixed(0)}, ${camZ.toFixed(0)}`;
+      $('height').textContent = groundH.toFixed(1);
+
+      // Check if near road
+      if (roadMesh) {
+        const d = Math.sqrt((camX - roadMesh.position.x) ** 2 + (camZ - roadMesh.position.z) ** 2);
+        $('onroad').textContent = d < 15 ? 'YES' : 'no';
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "tiers": {
+    "child": { "ageRange": [5, 12], "label": "Junior (5-12)" },
+    "teen":  { "ageRange": [13, 17], "label": "Teen (13-17)" },
+    "adult": { "ageRange": [18, 100], "label": "Adult (18+)" }
+  },
+  "ui": {
+    "child": {
+      "buttonScale": 1.5,
+      "fontSize": 1.3,
+      "animations": "bounce",
+      "sounds": true,
+      "colors": "bright",
+      "haptics": true,
+      "tutorialDensity": "high",
+      "celebration": "confetti+sound+voice",
+      "cardScale": 1.15,
+      "spacing": "comfortable"
+    },
+    "teen": {
+      "buttonScale": 1.15,
+      "fontSize": 1.1,
+      "animations": "smooth",
+      "sounds": true,
+      "colors": "vibrant",
+      "haptics": false,
+      "tutorialDensity": "medium",
+      "celebration": "confetti+sound",
+      "cardScale": 1.05,
+      "spacing": "balanced"
+    },
+    "adult": {
+      "buttonScale": 1.0,
+      "fontSize": 1.0,
+      "animations": "minimal",
+      "sounds": false,
+      "colors": "muted",
+      "haptics": false,
+      "tutorialDensity": "low",
+      "celebration": "subtle",
+      "cardScale": 1.0,
+      "spacing": "compact"
+    }
+  },
+  "gameplay": {
+    "child": { "timeLimitMult": 2.0, "npcDensityMult": 0.3, "autoBrake": true, "ghostCar": true, "speedLimitMult": 0.7 },
+    "teen":  { "timeLimitMult": 1.2, "npcDensityMult": 0.7, "autoBrake": false, "ghostCar": true, "speedLimitMult": 0.9 },
+    "adult": { "timeLimitMult": 1.0, "npcDensityMult": 1.0, "autoBrake": false, "ghostCar": false, "speedLimitMult": 1.0 }
+  }
+}

@@ -1,19 +1,13 @@
-# PLAN: Infinite Procedural Driving — Research & Implementation Roadmap
+# PLAN: Traffic Simulator — Research & Implementation Roadmap
 
-> Research sources: slowroads.io, PGDrive paper, procedural generation techniques
+> Research sources: slowroads.io (procedural driving), redcoats.io (character class system + multiplayer), PGDrive paper
 > Target: Traffic Simulator (Three.js r128, Mumbai-themed driving game)
-
----
-
-## Note on "readcoats.io"
-
-**readcoats.io** does not exist as a driving game. The user likely meant **redcoats.io**, which is a 3D multiplayer FPS (musket-era battle game) — NOT relevant to driving simulation. All research below focuses on slowroads.io and procedural driving generation techniques.
 
 ---
 
 ## 1. Executive Summary
 
-**slowroads.io** is a zen infinite driving game with:
+### slowroads.io — Infinite Procedural Driving
 - Procedurally generated terrain (Perlin noise heightmap)
 - Self-avoiding road that winds through terrain forever
 - 3-level LOD system (far grid, near grid, ultra-fine)
@@ -22,13 +16,28 @@
 - Object pooling for performance
 - No fail states — pure "active meditation"
 
-**Your Traffic simulator** already has:
+### redcoats.io — Character Class System + Massive Multiplayer
+- **4 distinct character classes** with fundamentally different mechanics (not just skins)
+- Mount/dismount system (F key) — cavalry mounts horses, sailors board ships
+- Class-specific combat loops (aim→fire→reload→repeat)
+- Team interdependence (combined arms > solo play)
+- Up to 1,000 concurrent players (interest management, LOD on remote players)
+- Objective-based gameplay (fort capture, territory control)
+- Stiff/weighty movement (deliberate, not twitchy)
+- Class switching on respawn for strategic adaptation
+
+### Your Traffic Simulator Currently Has
 - Fixed road network (grid-based) with A* pathfinding
 - Pacejka MF 5.2 tire physics (more advanced than slowroads)
 - Three.js r128, object pooling, quality presets, DRS
 - Mumbai-themed assets and buildings
+- Vehicle types: bike, car, bus, truck, auto, lambo
+- Pedestrian mode (Academy.html)
 
-**Goal**: Add an **infinite procedural mode** inspired by slowroads.io while keeping your existing Mumbai city mode intact.
+### Goal
+1. Add **infinite procedural mode** (slowroads.io style)
+2. Add **character class system** with mount/dismount (redcoats.io style)
+3. Add **multiplayer architecture** (redcoats.io scale)
 
 ---
 
@@ -47,7 +56,50 @@
 | **Physics** | Per-wheel kinematic (gravity, friction, ground normal) |
 | **Optimization** | Geometry merging, object pooling, pre-generation ahead of view |
 
-### 2.2 PGDrive Procedural Generation (Academic Reference)
+### 2.2 redcoats.io Character Class System
+
+**Core Pattern: Classes Are Not Skins — They're Completely Different Gameplay Loops**
+
+| Class | Mount/Dismount | Primary Loop | Vulnerability | Team Role |
+|-------|---------------|--------------|---------------|-----------|
+| **Musketeer** | None (foot infantry) | AIM → FIRE → RELOAD (long) → repeat | Reload window = dead | Hold the line, group DPS |
+| **Cavalryman** | Mount horse (F key) | GALLOP → SLASH → DISENGAGE → repeat | Horse HP, obstacles | Flanking, scouting, pursuit |
+| **Cannoneer** | Operates cannon (fixed) | AIM → FIRE → RELOAD (very long) → if rushed → HAMMER | Melee, long reload | Structure damage, troop clearing |
+| **Sailor** | Boards ship (F key) | SAIL → NAVAL GUN → RELOAD → BOARDING | Boarding action | Sea control, bombardment |
+
+**Character State Machine (FSP):**
+```
+States: IDLE → WALKING → AIMING → FIRING → RELOADING → MELEE
+Mount-specific: MOUNTING → MOUNTED → DISMOUNTING
+Vehicle-specific: BOARDING → SAILING → FIRING_CANNON → DISEMBARKING
+```
+
+**Key Technical Insights:**
+1. **Mount = separate entity** with own HP, hitbox, speed
+2. **F key = universal interact** (context-sensitive: mount horse, board ship, enter vehicle)
+3. **Stiff movement** — no bunny hopping, deliberate positioning over reflexes
+4. **Long reload windows** — creates tension, requires cover/teamwork
+5. **Class switch on respawn** — no commitment, try all roles
+
+**How This Maps to Traffic Simulator Character System:**
+
+| redcoats.io Class | Traffic Simulator Equivalent | Mount/Vehicle | Unique Ability |
+|-------------------|-----------------------------|---------------|----------------|
+| Musketeer | **Pedestrian / Traffic Cop** | None (on foot) | Direct traffic, issue fines, walk anywhere |
+| Cavalryman | **Bike Rider** | Bike (fast, 2-wheel) | Lane splitting, quick escape, chase |
+| Cavalryman (alt) | **Auto Driver** | Auto-rickshaw | Navigate tight streets, quick stops |
+| Cannoneer | **Bus Driver** | Bus (large vehicle) | Carry passengers, route following, high capacity |
+| Sailor | **Truck Driver** | Truck (heavy vehicle) | Cargo delivery, towing, slow but powerful |
+
+**Character Functioning to Implement:**
+1. **Character Class Selection Screen** — pick class before spawning/respawn
+2. **Mount/Dismount (F key)** — get in/out of vehicles, enter/exit buildings
+3. **Class-Specific Stats** — speed, HP, vehicle access, special abilities
+4. **Character State Machine** — idle, walking, driving, working, fined, arrested
+5. **Class Switching** — on respawn, change class based on team needs
+6. **Team Interdependence** — cops need buses to catch, buses need cops to clear traffic
+
+### 2.3 PGDrive Procedural Generation (Academic Reference)
 
 - 7 road block types: Straight, Curve, Ramp, Intersection, Roundabout, Tollgate, Bottleneck
 - Blocks assembled via procedural algorithm into infinite maps
@@ -89,76 +141,50 @@ Road:        12 chunks × 100m  (cycled/recycled)
 
 ---
 
-## 3. Implementation Plan
+## 4. Implementation Plan
 
-### Phase 1: Procedural Terrain Generator
+### Phase 1: Procedural Terrain Generator ✅ COMPLETE
 
-**New file: `Traffic/proc_terrain.js`**
+**File: `Traffic/proc_terrain.js`** — 15 unit tests pass
 
-- [ ] Implement Alea-based seeded PRNG
-- [ ] Implement multi-octave Perlin/Simplex noise function
-- [ ] Create `ProcTerrain` class:
-  - `getHeight(x, z)` — returns terrain height at world coords
-  - `getNormal(x, z)` — returns surface normal
-  - `getBiome(x, z)` — returns biome type (for ground texture blending)
-- [ ] Integrate with existing `RenderCore` quality settings (lower res for LOW preset)
-- [ ] Add debug visualization (wireframe toggle for terrain grid)
+- [x] Mulberry32 seeded PRNG (deterministic from seed)
+- [x] SeededPerlin — 2D Perlin noise with shuffled permutation table
+- [x] ProcTerrain class: `getHeight()`, `getNormal()`, `getSlope()`, `getBiome()`, `getTreeDensity()`, `isRoadable()`
+- [x] TerrainMeshGenerator — creates Three.js chunks with vertex-colored biomes
+- [x] TerrainChunkManager — LOD streaming with quality-aware view distance
+- [x] Test page: `terrain_test.html`
 
-**Key decisions:**
-- Resolution: 10m per sample for far grid, 1m for near grid
-- Seeded generation for reproducible worlds (seed in URL hash)
-- Use `PlaneGeometry` with vertex displacement (existing Three.js pattern)
-- World-coordinate UVs for texture tiling (like slowroads)
+### Phase 2: Infinite Road Generator ✅ COMPLETE
 
-### Phase 2: Infinite Road Generator
+**File: `Traffic/proc_road.js`** — 16 unit tests pass
 
-**New file: `Traffic/proc_road.js`**
+- [x] SpatialHash for O(1) self-intersection checks
+- [x] RoadGenerator — gradient-following with 16-direction sampling
+- [x] Self-avoidance with spatial hash (no 180° turns, no nearby revisit)
+- [x] Turnback mechanism when stuck (remove last N points, retry)
+- [x] Height smoothing (9-point moving average)
+- [x] Catmull-Rom spline interpolation (10m → 1m resolution)
+- [x] RoadMeshGenerator — ribbon mesh from fine points
+- [x] RoadManager — streaming + queries (`getPointAtDistance`, `getDirectionAt`)
+- [x] Combined test page: `terrain_road_test.html`
+- [x] Road generates 4000-5000m+ consistently across seeds
 
-- [ ] Implement `RoadGenerator` class:
-  - `generate(startX, startZ, seed)` — creates initial road
-  - `extendTo(distance)` — generates road ahead to given distance
-  - `getSegmentsNear(pos, radius)` — returns road segments for rendering
-- [ ] Core routing algorithm:
-  - Sample gradient in 16 directions
-  - Score each by: slope penalty + direction continuity bonus + turnback avoidance
-  - Choose best valid direction
-  - Store midpoint list with metadata
-- [ ] Self-avoidance:
-  - Spatial hash of visited cells (5m grid)
-  - Trigger turnback when collision detected
-  - maxRetries before accepting slight overlap
-- [ ] Smoothing:
-  - 9-point window average on heights
-  - Quadratic Bezier for 1m resolution midline
-- [ ] Road mesh generation:
-  - Generate ribbon mesh from midline points
-  - Width variation metadata
-  - Cycling chunk system (create ahead, recycle behind)
+### Phase 3: Chunk Management & LOD ✅ COMPLETE
 
-**Integration with existing RoadGraph:**
-- Optional: expose proc road as a `RoadGraph`-compatible interface
-- Or: proc road mode skips `RoadGraph` entirely (new code path)
+**File: `Traffic/proc_chunks.js`** — 22 unit tests pass
 
-### Phase 3: Chunk Management & LOD
-
-**Extend or new file: `Traffic/proc_chunks.js`**
-
-- [ ] Implement chunk manager:
-  - Track player position
-  - Maintain active chunk set (radius-based)
-  - Load/unload chunks asynchronously
-  - Pool chunk geometries (reuse ThreePools)
-- [ ] 3-tier LOD:
-  - Far: low-poly terrain only
-  - Medium: medium terrain + basic roads
-  - Near: high-detail terrain + road + foliage
-- [ ] Seam hiding:
-  - Sink far-grid vertices below near-grid edges
-  - Interpolate heights at boundaries
-- [ ] Performance targets:
-  - < 16ms frame time for chunk updates
-  - Max 50 chunks active at once
-  - Object pooling for all meshes/vectors
+- [x] `GeometryPool` — reusable BufferGeometry pool to minimize GC
+- [x] `ChunkTier` — single LOD tier with circular/square view distance
+- [x] `ProcChunkManager` — orchestrates 3 tiers:
+  - Far: 500m chunks, 4-12 res, 2-5 view distance
+  - Med: 100m chunks, 6-24 res, 2-5 view distance
+  - Near: 10m chunks, 8-32 res, 2-5 view distance (road corridor)
+- [x] Frame-skip optimization: far updates every 3rd frame, med every 2nd
+- [x] Road-following near tier (blends player + road position)
+- [x] Vertex hiding regions (lower tiers sink vertices under higher tiers)
+- [x] Quality presets (LOW/MED/HIGH/ULTRA) control all tier params
+- [x] Test page: `lod_test.html` with per-tier stats
+- [x] ~8.7ms/frame update time in mock (real GPU will be faster)
 
 ### Phase 4: Procedural Foliage & Scenery
 
@@ -205,7 +231,45 @@ Road:        12 chunks × 100m  (cycled/recycled)
 - [ ] Minimal HUD option (press U to hide UI)
 - [ ] Music integration (optional, background ambient)
 
-### Phase 7: Optimization & Polish
+### Phase 7: Character Class System (redcoats.io Style)
+
+**New file: `Traffic/character_system.js`**
+
+- [ ] Character class definitions:
+  - `Pedestrian` (Traffic Cop) — on foot, can direct traffic, issue fines
+  - `BikeRider` — fast 2-wheel, lane splitting, chase ability
+  - `AutoDriver` — auto-rickshaw, tight navigation
+  - `BusDriver` — large vehicle, passenger capacity, route following
+  - `TruckDriver` — heavy vehicle, cargo, towing
+- [ ] Mount/Dismount system:
+  - F key = universal interact (context-sensitive)
+  - Mount animation + state transition
+  - Vehicle inherits character class stats
+- [ ] Character state machine:
+  - `IDLE → WALKING → RUNNING → MOUNTED → DRIVING → DISMOUNTING`
+  - `WORKING` state (cop directing, passenger boarding)
+  - `FINED` / `ARRESTED` state (traffic violations)
+- [ ] Class selection UI:
+  - Spawn screen with class cards
+  - Class stats display (speed, HP, vehicle, abilities)
+  - Team balance indicator
+- [ ] Class-specific abilities:
+  - Cop: whistle, ticket book, radio for backup
+  - Bus: passenger pickup, route HUD, emergency brake
+  - Truck: cargo attach/detach, tow cable
+  - Bike: lane split, wheelie (speed boost)
+- [ ] Team interdependence:
+  - Cops need vehicles to chase
+  - Bus drivers need cops to clear intersections
+  - Score system rewards teamwork
+
+**Integration with existing systems:**
+- `game_core.js` — add character state machine alongside vehicle physics
+- `course.js` — add class spawn points per level
+- `safezone-ui.js` — add class selection HUD
+- `Driving.html` — add "Character Mode" toggle
+
+### Phase 8: Optimization & Polish
 
 - [ ] Profile chunk generation — must not block render loop
 - [ ] Implement web worker for terrain/road generation (optional, advanced)
@@ -214,23 +278,57 @@ Road:        12 chunks × 100m  (cycled/recycled)
 - [ ] Mobile touch controls for endless mode
 - [ ] Save/load seed from localStorage
 
+### Phase 9: Multiplayer Architecture (redcoats.io Scale)
+
+**New file: `Traffic/netcode.js` (or integrate into game_core.js)**
+
+- [ ] Server-authoritative architecture:
+  - WebSocket server (Node.js + `ws` or Socket.io)
+  - Client prediction for local player
+  - Server reconciliation for position correction
+- [ ] Interest management:
+  - Only sync entities within radius of player
+  - LOD for remote players (billboard → low-poly → full)
+  - Priority queuing (closer = more frequent updates)
+- [ ] Entity streaming:
+  - Players spawn/despawn based on proximity
+  - Vehicle sync (position, rotation, velocity)
+  - Character class sync (class, state, mount status)
+- [ ] Team system:
+  - Red vs Blue (or Mumbai roles: Drivers vs Cops)
+  - Team chat, team objectives
+  - Shared scoring
+- [ ] Scale targets:
+  - Phase 9a: 2-4 players (proof of concept)
+  - Phase 9b: 16-32 players (small battles)
+  - Phase 9c: 100+ players (massive, with aggressive LOD)
+  - Phase 9d: 1000 players (redcoats.io level — requires dedicated server)
+
+**Reference for netcode:**
+- redcoats.io likely uses: WebSocket + delta compression + spatial partitioning
+- Client-side: interpolate remote players, predict local
+- Server-side: validate positions, detect speed hacks, manage teams
+
 ---
 
-## 4. Architecture Decisions
+## 5. Architecture Decisions
 
 ### A. Additive, Not Replacement
 - Proc mode is a NEW game mode alongside existing Mumbai city
-- Don't modify `course.js` or existing level configs
-- New `Endless.html` entry point (or mode toggle in Driving.html)
+- Character classes are NEW alongside existing vehicle types
+- Multiplayer is NEW — doesn't replace single-player
+- Don't modify `course.js` or existing level configs without care
 
 ### B. Leverage Existing Systems
 | Existing System | How to Reuse |
 |----------------|-------------|
-| `ThreePools` | Pool all proc-generated meshes/vectors/groups |
+| `ThreePools` | Pool all proc-generated meshes/vectors/groups + remote player models |
 | `RenderCore` | Use quality presets for LOD decisions |
-| `SafeZoneUI` | HUD for endless mode |
-| `Pacejka physics` | Just add terrain height sampling |
+| `SafeZoneUI` | HUD for endless mode + character class UI |
+| `Pacejka physics` | Just add terrain height sampling + character on-foot physics |
 | `DRS` | Auto-adjust quality for stable FPS |
+| `A* pathfinding` | NPCs in multiplayer, traffic simulation |
+| `Vehicle stats` | Each character class maps to existing vehicle stats |
 
 ### C. File Structure
 ```
@@ -240,6 +338,8 @@ Traffic/
   proc_chunks.js     — LOD chunk management
   proc_scenery.js    — foliage, buildings, props
   proc_mode.js       — game mode controller (or integrate into game_core.js)
+  character_system.js — class definitions, state machine, mount/dismount
+  netcode.js         — client/server communication (multiplayer)
   Endless.html       — new entry point (optional)
 ```
 
@@ -251,7 +351,7 @@ Traffic/
 
 ---
 
-## 5. Technical Challenges & Solutions
+## 6. Technical Challenges & Solutions
 
 | Challenge | Solution |
 |-----------|----------|
@@ -310,14 +410,30 @@ function sampleGradient(x, z, dx, dz) {
 
 ## 7. Success Criteria
 
-- [ ] Infinite road that never ends (can drive for 30+ minutes without repeating)
+### Single-Player (Phases 1-6 + 8)
+- [ ] Infinite road that never ends (drive 30+ min without repeating)
 - [ ] No self-intersections in generated road
-- [ ] Stable 60fps on HIGH preset (30fps on LOW for mobile)
-- [ ] Seed-based reproducibility (same seed = same world)
-- [ ] Seamless chunk transitions (no visible pop-in)
-- [ ] Existing Mumbai city mode still works unchanged
-- [ ] Mobile touch controls functional
+- [ ] Stable 60fps on HIGH preset (30fps LOW for mobile)
+- [ ] Seed-based reproducibility
+- [ ] Seamless chunk transitions
+- [ ] Existing Mumbai city mode still works
+- [ ] Mobile touch controls
 - [ ] World sharing via URL seed
+
+### Character System (Phase 7)
+- [ ] 4+ distinct classes with different gameplay loops
+- [ ] Mount/dismount (F key) works smoothly
+- [ ] Class selection on spawn/respawn
+- [ ] Class-specific abilities functional
+- [ ] Team interdependence (score rewards teamwork)
+- [ ] Character state machine handles all transitions
+
+### Multiplayer (Phase 9)
+- [ ] 2-4 players in same world (9a)
+- [ ] Smooth remote player interpolation
+- [ ] Interest management
+- [ ] Team objectives work
+- [ ] Scale to 16-32 players (9b)
 
 ---
 
@@ -325,16 +441,19 @@ function sampleGradient(x, z, dx, dz) {
 
 | Phase | Effort | Complexity |
 |-------|--------|------------|
-| Phase 1: Terrain | Medium | Medium — noise algorithms, mesh generation |
-| Phase 2: Road | **High** | **High** — self-avoidance is tricky |
-| Phase 3: Chunks | Medium | Medium — pattern similar to existing systems |
-| Phase 4: Scenery | Low | Medium — instanced meshes, placement rules |
-| Phase 5: Physics | Low | Low — extend existing Pacejka model |
-| Phase 6: UI | Low | Low — mode toggle, minimal HUD |
-| Phase 7: Polish | Medium | Medium — profiling, mobile, edge cases |
-| **Total** | **~3-4 weeks** | **Solo dev estimate** |
+| Phase 1: Terrain | Medium | Medium |
+| Phase 2: Road | **High** | **High** — self-avoidance |
+| Phase 3: Chunks | Medium | Medium |
+| Phase 4: Scenery | Low | Medium |
+| Phase 5: Physics | Low | Low |
+| Phase 6: UI | Low | Low |
+| Phase 7: Character System | **High** | **High** |
+| Phase 8: Polish | Medium | Medium |
+| Phase 9: Multiplayer | **Very High** | **Very High** |
+| **Total (1-6 + 8)** | **~3-4 weeks** | **Single-player complete** |
+| **Total (all)** | **~8-12 weeks** | **Full vision** |
 
 ---
 
 _Last updated: August 10, 2026_
-_Research based on: slowroads.io, PGDrive, procedural generation literature_
+_Research: slowroads.io, redcoats.io, PGDrive, procedural generation_
