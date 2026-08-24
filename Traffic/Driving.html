@@ -292,20 +292,27 @@
         font-size: 0.6rem !important;
       }
 
-      #gread {
-        bottom: 44px !important;
-        left: calc(env(safe-area-inset-left, 0px) + 4px) !important;
-        font-size: 0.55rem !important;
-      }
+      #gread { display: none !important; }
 
       
       #civic-controls {
-        top: calc(env(safe-area-inset-top, 0px) + 80px) !important;
-        right: calc(env(safe-area-inset-right, 0px) + 4px) !important;
-        bottom: auto !important;
-        left: auto !important;
-        gap: 2px !important;
-      }
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 94px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      top: auto !important;
+      left: auto !important;
+      z-index: 55 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      background: #0d131f !important;
+      border: 1.5px solid #26354a !important;
+      border-radius: 10px !important;
+      padding: 5px 8px !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.7) !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
 
       #civic-controls .civic-btn {
         padding: 2px 5px !important;
@@ -322,10 +329,24 @@
 
       
       #phone-gps-btn {
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 16px !important;
-      }
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 200px) !important;
+      left: calc(env(safe-area-inset-left, 0px) + 24px) !important;
+      right: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
+      background: #0d131f !important;
+      border: 1px solid #26354a !important;
+      border-radius: 8px !important;
+      padding: 4px 8px !important;
+      font-size: 0.7rem !important;
+      color: #94a3b8 !important;
+      display: none;
+      align-items: center !important;
+      gap: 4px !important;
+      backdrop-filter: none !important;
+    }
 
       
       #pause-overlay {
@@ -1519,54 +1540,174 @@
     }
 
     .bc-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 40px;
-      min-height: 400px;
-      max-width: 700px;
+      background: var(--card, #1a1f2e);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+      border-radius: 18px;
+      padding: 32px 36px;
+      min-height: 380px;
+      max-width: 720px;
       width: 100%;
       margin: 0 auto;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      transition: border-color 0.25s ease;
     }
 
     .bc-ttl {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted, #94a3b8);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 24px;
+      letter-spacing: 0.08em;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .bc-next-btn {
-      margin-top: 40px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-      text-align: right;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .bc-next-btn button {
       background: var(--text);
       color: #fff;
       border: none;
-      padding: 12px 24px;
-      border-radius: 30px;
+      padding: 10px 22px;
+      border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
+      transition: all 0.2s;
     }
 
     .stat-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
-      margin-top: 24px;
+      gap: 14px;
+      margin-top: 20px;
     }
 
     .stat-box {
       flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
+      min-width: 120px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+      border-radius: 14px;
+      padding: 16px 12px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 1.8rem;
+      font-family: 'Lora', serif;
+      font-weight: 700;
+      color: var(--text, #fff);
+    }
+
+    .stat-lbl {
+      font-size: 0.75rem;
+      color: var(--muted, #94a3b8);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    .bc-rule-pill {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(242, 184, 75, 0.15);
+      color: var(--signal, #f2b84b);
+      border: 1px solid rgba(242, 184, 75, 0.3);
+      font-weight: 800;
+      font-size: 0.78rem;
+      padding: 4px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .bc-rule-txt {
+      font-size: 1.5rem;
+      font-family: 'Lora', serif;
+      line-height: 1.4;
+      color: var(--text, #fff);
+      font-weight: 700;
+    }
+
+    .theory-rich-content {
+      text-align: left;
+      max-width: 100%;
+      margin: 0 auto;
+      color: var(--text, #fff);
+    }
+
+    .theory-rich-content h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--signal, #f2b84b);
+      margin: 0 0 12px 0;
+      font-family: 'Lora', serif;
+      border-bottom: 1px solid rgba(242, 184, 75, 0.2);
+      padding-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .theory-rich-content h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 18px 0 10px 0;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid var(--signal, #f2b84b);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .theory-rich-content p {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.88);
+      margin-bottom: 12px;
+    }
+
+    .theory-rich-content ul {
+      background: rgba(242, 184, 75, 0.04);
+      border: 1px solid rgba(242, 184, 75, 0.15);
+      border-radius: 12px;
+      padding: 14px 18px 14px 36px;
+      margin: 14px 0;
+      list-style: none;
+    }
+
+    .theory-rich-content li {
+      position: relative;
+      margin-bottom: 8px;
+      font-size: 0.92rem;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.55;
+    }
+
+    .theory-rich-content li:last-child {
+      margin-bottom: 0;
+    }
+
+    .theory-rich-content li::before {
+      content: '✓';
+      color: var(--signal, #f2b84b);
+      font-weight: 800;
+      position: absolute;
+      left: -22px;
+      top: 0;
+    }
       border-radius: 16px;
       padding: 20px;
       text-align: center;
@@ -2395,18 +2536,22 @@
 
     
     #gp {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 25;
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 120px) !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
       display: none;
-      gap: 4px;
-      background: var(--card);
-      padding: 8px;
-      border-radius: 30px;
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      flex-direction: row !important;
+      gap: 4px !important;
+      background: #0d131f !important;
+      padding: 6px !important;
+      border-radius: 8px !important;
+      border: 1.5px solid #26354a !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
     }
 
     #gp.on {
@@ -2430,24 +2575,245 @@
       color: #fff;
     }
 
-    #gread {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.8);
-      padding: 4px 12px;
-      border-radius: 12px;
-      z-index: var(--z-minimap);
-      display: none;
+    #gread { display: none !important; }
+
+    #gc.on~#gread { display: none !important; }
+
+    
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* MODERN GLASSMORPHIC HUD & GTA STORYLINE MISSION INTRO STYLES   */
+    /* ═══════════════════════════════════════════════════════════════ */
+    #mmc {
+      position: fixed !important;
+      left: 24px !important;
+      bottom: 24px !important;
+      top: auto !important;
+      right: auto !important;
+      width: 170px !important;
+      height: 170px !important;
+      border-radius: 50% !important;
+      border: 3px solid rgba(255, 255, 255, 0.22) !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 240, 204, 0.15) !important;
+      backdrop-filter: blur(12px) !important;
+      z-index: 45 !important;
+      display: block !important;
+      background: #0a0f18 !important;
     }
 
-    #gc.on~#gread {
-      display: block;
+    @media (max-width: 768px) {
+      #mmc {
+        left: calc(env(safe-area-inset-left, 0px) + 12px) !important;
+        top: calc(env(safe-area-inset-top, 0px) + 64px) !important;
+        bottom: auto !important;
+        width: 110px !important;
+        height: 110px !important;
+      }
     }
+
+    /* GTA Mission Intro Overlay */
+    .gta-intro-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 7, 14, 0.78);
+      backdrop-filter: blur(10px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: gtaFadeIn 0.35s ease-out forwards;
+    }
+    .gta-intro-overlay.gta-fade-out {
+      animation: gtaFadeOut 0.35s ease-in forwards;
+    }
+    @keyframes gtaFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes gtaFadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+    .gta-intro-card {
+      background: linear-gradient(135deg, rgba(16, 22, 34, 0.95), rgba(9, 13, 22, 0.98));
+      border: 1.5px solid rgba(94, 212, 245, 0.3);
+      border-radius: 20px;
+      padding: 28px 32px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(94, 212, 245, 0.15);
+      animation: gtaCardPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+    }
+    @keyframes gtaCardPop {
+      from { transform: scale(0.92) translateY(20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .gta-intro-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .gta-module-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: #5ed4f5;
+      background: rgba(94, 212, 245, 0.12);
+      border: 1px solid rgba(94, 212, 245, 0.3);
+      padding: 4px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+    .gta-reward-tag {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #ffd54a;
+      letter-spacing: 0.04em;
+    }
+    .gta-mission-title {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: #ffffff;
+      margin: 0 0 16px 0;
+      line-height: 1.15;
+    }
+    .gta-dialogue-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid #5ed4f5;
+      border-radius: 0 12px 12px 0;
+      padding: 12px 16px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .gta-avatar {
+      font-size: 2.2rem;
+      flex-shrink: 0;
+    }
+    .gta-speech {
+      flex: 1;
+    }
+    .gta-speaker {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #5ed4f5;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .gta-line {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
+    }
+    .gta-objectives-section {
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .gta-obj-heading {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 8px;
+    }
+    .gta-obj-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .gta-obj-item:last-child { margin-bottom: 0; }
+    .gta-obj-item.secondary {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .gta-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .gta-btn-start {
+      background: linear-gradient(135deg, #00f0cc, #00a8ff);
+      color: #070a14;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 28px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0, 240, 204, 0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .gta-btn-start:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 22px rgba(0, 240, 204, 0.5);
+    }
+    .gta-btn-start:active { transform: scale(0.98); }
+
+    /* Speed Control Cluster */
+    #speed-ctrl {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 72px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 120px) !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
+      display: none;
+      flex-direction: column !important;
+      gap: 4px !important;
+      background: #0d131f !important;
+      padding: 6px 8px !important;
+      border-radius: 8px !important;
+      border: 1.5px solid #26354a !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+    }
+    #speed-ctrl.on { display: flex; }
+    .sc-row { display: flex; gap: 6px; align-items: center; }
+    .sc-btn {
+      padding: 5px 10px;
+      border-radius: 20px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      background: rgba(20,22,30,0.72);
+      backdrop-filter: blur(8px);
+      color: rgba(255,255,255,0.75);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+    .sc-btn:hover { background: rgba(60,65,90,0.82); color: #fff; }
+    .sc-btn.sc-on { background: rgba(79,195,247,0.25); border-color: #4fc3f7; color: #4fc3f7; }
+    .sc-btn.sc-active { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.6); color: #fff; }
+    .sc-adj { width: 28px; height: 28px; border-radius: 50%; font-size: 1rem; padding: 0; display: flex; align-items: center; justify-content: center; }
+    .sc-badge {
+      display: none;
+      margin-left: 3px;
+      background: #4fc3f7;
+      color: #000;
+      border-radius: 8px;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 1px 5px;
+      vertical-align: middle;
+    }
+
 
     #ow {
       position: fixed;
@@ -2948,7 +3314,7 @@
     #dn-clock {
       position: fixed;
       top: 3vw;
-      right: 3vw;
+      /*right:*/ 3vw;
       z-index: 25;
       display: none;
       align-items: center;
@@ -3343,15 +3709,7 @@
         border-radius: 7px;
       }
 
-      #gread {
-        bottom: 48px;
-        top: auto;
-        left: 6px;
-        transform: none;
-        font-size: 0.6rem;
-        padding: 2px 5px;
-        background: rgba(255, 255, 255, 0.75);
-      }
+      #gread { display: none !important; }
 
       
       #mobile-controls {
@@ -3419,12 +3777,13 @@
       }
 
       #civic-controls {
-        top: 80px;
-        right: 4px;
-        bottom: auto;
-        left: auto;
-        gap: 2px;
-      }
+      position: fixed !important;
+      bottom: 94px !important;
+      right: 16px !important;
+      top: auto !important;
+      left: auto !important;
+      z-index: 55 !important;
+    }
 
       #civic-controls .civic-btn {
         padding: 3px 6px;
@@ -3434,10 +3793,24 @@
 
       
       #phone-gps-btn {
-        width: 46px !important;
-        height: 46px !important;
-        font-size: 18px !important;
-      }
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 200px) !important;
+      left: calc(env(safe-area-inset-left, 0px) + 24px) !important;
+      right: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
+      background: #0d131f !important;
+      border: 1px solid #26354a !important;
+      border-radius: 8px !important;
+      padding: 4px 8px !important;
+      font-size: 0.7rem !important;
+      color: #94a3b8 !important;
+      display: none;
+      align-items: center !important;
+      gap: 4px !important;
+      backdrop-filter: none !important;
+    }
 
 
     }
@@ -3653,9 +4026,13 @@
       }
 
       #civic-controls {
-        top: 60px;
-        right: 4px;
-      }
+      position: fixed !important;
+      bottom: 94px !important;
+      right: 16px !important;
+      top: auto !important;
+      left: auto !important;
+      z-index: 55 !important;
+    }
 
       #da {
         display: none !important;
@@ -3789,22 +4166,23 @@
 
     
     #phone-gps-btn {
-      width: 56px;
-      height: 56px;
-      background: rgba(94, 212, 245, 0.25);
-      color: #5ed4f5;
-      border: 2px solid rgba(94, 212, 245, 0.4);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      -webkit-user-select: none;
-      font-size: 22px;
-      flex-shrink: 0;
-      align-self: flex-end;
-      box-shadow: 0 4px 12px rgba(94, 212, 245, 0.15);
-      transition: background 0.15s;
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 200px) !important;
+      left: calc(env(safe-area-inset-left, 0px) + 24px) !important;
+      right: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
+      background: #0d131f !important;
+      border: 1px solid #26354a !important;
+      border-radius: 8px !important;
+      padding: 4px 8px !important;
+      font-size: 0.7rem !important;
+      color: #94a3b8 !important;
+      display: none;
+      align-items: center !important;
+      gap: 4px !important;
+      backdrop-filter: none !important;
     }
 
     #phone-gps-btn:active {
@@ -4766,7 +5144,7 @@
       #dn-clock {
         top: 4px;
         left: 8px;
-        right: auto;
+        /*right:*/ auto;
         padding: 2px 8px;
         font-size: clamp(0.55rem, 1vw, 0.7rem);
       }
@@ -4817,9 +5195,13 @@
       }
 
       #civic-controls {
-        top: 40px;
-        right: 4px;
-      }
+      position: fixed !important;
+      bottom: 94px !important;
+      right: 16px !important;
+      top: auto !important;
+      left: auto !important;
+      z-index: 55 !important;
+    }
 
       #civic-controls .civic-btn {
         padding: 2px 6px;
@@ -5229,6 +5611,976 @@
       0%, 100% { transform: rotate(0deg); }
       50% { transform: rotate(90deg); }
     }
+  
+    
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* UNIFIED REDESIGNED GLASSMORPHIC TOP-LEFT PLAYER DASHBOARD      */
+    /* ═══════════════════════════════════════════════════════════════ */
+    #player-hud-card {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
+      left: calc(env(safe-area-inset-left, 0px) + 16px) !important;
+      z-index: 40 !important;
+      background: linear-gradient(135deg, rgba(12, 17, 29, 0.90), rgba(6, 10, 18, 0.95)) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.16) !important;
+      border-radius: 16px !important;
+      padding: 12px 16px !important;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 20px rgba(94, 212, 245, 0.08) !important;
+      backdrop-filter: blur(14px) !important;
+      display: none;
+      flex-direction: column !important;
+      gap: 10px !important;
+      min-width: 250px !important;
+      max-width: 290px !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+      color: #ffffff !important;
+      transition: transform 0.2s ease, opacity 0.2s ease !important;
+      user-select: none !important;
+    }
+    #gc.on ~ #player-hud-card,
+    #player-hud-card.on {
+      display: flex !important;
+    }
+
+    .hud-dash-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 8px !important;
+    }
+    .hud-lvl-pill {
+      background: linear-gradient(135deg, #00f0cc, #0099ff) !important;
+      color: #060a12 !important;
+      border-radius: 8px !important;
+      padding: 3px 8px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      font-weight: 900 !important;
+      font-size: 0.75rem !important;
+      letter-spacing: 0.05em !important;
+    }
+    .hud-lvl-prefix { font-size: 0.65rem !important; opacity: 0.85 !important; }
+    .hud-lvl-num { font-size: 0.85rem !important; font-weight: 900 !important; }
+
+    .hud-score-chip, .hud-timer-chip {
+      background: rgba(255, 255, 255, 0.07) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      border-radius: 8px !important;
+      padding: 3px 8px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      font-size: 0.78rem !important;
+      font-weight: 700 !important;
+      color: #e2e8f0 !important;
+    }
+    .hud-chip-icon { font-size: 0.78rem !important; }
+    .hud-chip-val { font-weight: 800 !important; }
+
+    .hud-dash-stats {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 6px !important;
+      background: rgba(0, 0, 0, 0.3) !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+      border-radius: 10px !important;
+      padding: 8px 10px !important;
+    }
+    .hud-dash-col {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 2px !important;
+      text-align: center !important;
+    }
+    .hud-col-lbl {
+      font-size: 0.58rem !important;
+      font-weight: 800 !important;
+      color: rgba(255, 255, 255, 0.55) !important;
+      letter-spacing: 0.06em !important;
+      white-space: nowrap !important;
+    }
+    .hud-col-val {
+      font-size: 0.82rem !important;
+      font-weight: 800 !important;
+      font-family: 'Space Mono', monospace, monospace !important;
+      letter-spacing: -0.02em !important;
+    }
+    .val-wallet { color: #ffd54a !important; }
+    .val-tokens { color: #c084fc !important; }
+    .val-cp { color: #38bdf8 !important; }
+
+    .hud-dash-health {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 4px !important;
+    }
+    .hud-health-row {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      font-size: 0.65rem !important;
+      font-weight: 700 !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+    .hud-health-score { color: #4ade80 !important; }
+    .hud-bar-track {
+      width: 100% !important;
+      height: 6px !important;
+      background: rgba(255, 255, 255, 0.12) !important;
+      border-radius: 999px !important;
+      overflow: hidden !important;
+    }
+    .hud-bar-fill {
+      height: 100% !important;
+      background: linear-gradient(90deg, #10b981, #00f0cc) !important;
+      border-radius: 999px !important;
+      transition: width 0.25s ease, background 0.25s ease !important;
+    }
+
+    /* Hide legacy fragmented HUD blocks */
+    #hud, #hudbar, #hwrap {
+      display: none !important;
+    }
+
+    /* Mobile responsive adjustments */
+    @media (max-width: 768px) {
+      #player-hud-card {
+        top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+        left: calc(env(safe-area-inset-left, 0px) + 8px) !important;
+        min-width: 200px !important;
+        max-width: 230px !important;
+        padding: 8px 10px !important;
+        gap: 6px !important;
+      }
+      .hud-lvl-pill { padding: 2px 6px !important; font-size: 0.68rem !important; }
+      .hud-score-chip, .hud-timer-chip { padding: 2px 6px !important; font-size: 0.7rem !important; }
+      .hud-dash-stats { padding: 6px 8px !important; gap: 4px !important; }
+      .hud-col-val { font-size: 0.72rem !important; }
+    }
+
+    
+    /* ═══════════════════════════════════════════════════════════════ */
+    
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* SOLID HIGH-CONTRAST TACTICAL HUD (NO GLASS / NO BLUR)         */
+    /* ═══════════════════════════════════════════════════════════════ */
+    :root {
+      --hud-bg-solid: #0d131f;
+      --hud-panel-solid: #151d2d;
+      --hud-border-solid: #26354a;
+      --hud-border-focus: #3b82f6;
+      --hud-text-primary: #f8fafc;
+      --hud-text-secondary: #94a3b8;
+      --hud-accent-cyan: #38bdf8;
+      --hud-accent-gold: #f59e0b;
+      --hud-accent-green: #10b981;
+      --hud-accent-red: #ef4444;
+      --hud-accent-purple: #c084fc;
+    }
+
+    #player-hud-card {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
+      left: calc(env(safe-area-inset-left, 0px) + 16px) !important;
+      right: auto !important;
+      bottom: auto !important;
+      z-index: 50 !important;
+      width: 275px !important;
+      margin: 0 !important;
+      background: var(--hud-bg-solid) !important;
+      border: 1.5px solid var(--hud-border-solid) !important;
+      border-radius: 12px !important;
+      padding: 12px 14px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      display: none;
+      flex-direction: column !important;
+      gap: 10px !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+      color: var(--hud-text-primary) !important;
+      user-select: none !important;
+    }
+    #gc.on ~ #player-hud-card,
+    #player-hud-card.on {
+      display: flex !important;
+    }
+
+    .hud-dash-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 6px !important;
+    }
+    .hud-lvl-pill {
+      background: #0284c7 !important;
+      color: #ffffff !important;
+      border-radius: 6px !important;
+      padding: 3px 8px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      font-weight: 800 !important;
+      font-size: 0.75rem !important;
+      letter-spacing: 0.05em !important;
+      border: 1px solid #38bdf8 !important;
+    }
+    .hud-lvl-prefix { font-size: 0.65rem !important; opacity: 0.9 !important; }
+    .hud-lvl-num { font-size: 0.85rem !important; font-weight: 900 !important; }
+
+    .hud-score-chip, .hud-timer-chip {
+      background: var(--hud-panel-solid) !important;
+      border: 1px solid var(--hud-border-solid) !important;
+      border-radius: 6px !important;
+      padding: 3px 8px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      font-size: 0.78rem !important;
+      font-weight: 700 !important;
+      color: var(--hud-text-primary) !important;
+    }
+    .hud-chip-icon {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: var(--hud-accent-gold) !important;
+    }
+    .hud-timer-chip .hud-chip-icon {
+      color: var(--hud-accent-cyan) !important;
+    }
+    .hud-chip-val {
+      font-weight: 800 !important;
+      font-family: 'Space Mono', monospace !important;
+    }
+
+    .hud-dash-stats {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 6px !important;
+      background: #070a12 !important;
+      border: 1px solid var(--hud-border-solid) !important;
+      border-radius: 8px !important;
+      padding: 8px 6px !important;
+    }
+    .hud-dash-col {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 3px !important;
+      text-align: center !important;
+      align-items: center !important;
+    }
+    .hud-col-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 3px !important;
+    }
+    .hud-col-icon {
+      display: flex !important;
+      align-items: center !important;
+    }
+    .hud-col-lbl {
+      font-size: 0.58rem !important;
+      font-weight: 800 !important;
+      color: var(--hud-text-secondary) !important;
+      letter-spacing: 0.05em !important;
+      white-space: nowrap !important;
+      text-transform: uppercase !important;
+    }
+    .hud-col-val {
+      font-size: 0.82rem !important;
+      font-weight: 800 !important;
+      font-family: 'Space Mono', monospace !important;
+      letter-spacing: -0.02em !important;
+    }
+    .val-wallet { color: var(--hud-accent-gold) !important; }
+    .val-tokens { color: var(--hud-accent-purple) !important; }
+    .val-cp { color: var(--hud-accent-cyan) !important; }
+
+    .hud-dash-health {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 4px !important;
+    }
+    .hud-health-row {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      font-size: 0.65rem !important;
+      font-weight: 800 !important;
+      color: var(--hud-text-secondary) !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.04em !important;
+    }
+    .hud-health-left {
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+    }
+    .hud-health-score {
+      color: var(--hud-accent-green) !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 3px !important;
+    }
+    .hud-bar-track {
+      width: 100% !important;
+      height: 6px !important;
+      background: #1e293b !important;
+      border-radius: 4px !important;
+      overflow: hidden !important;
+      border: 1px solid #334155 !important;
+    }
+    .hud-bar-fill {
+      height: 100% !important;
+      background: var(--hud-accent-green) !important;
+      border-radius: 3px !important;
+      transition: width 0.25s ease, background 0.25s ease !important;
+    }
+
+    /* TOP-RIGHT OBJECTIVE OVERLAY (SOLID) */
+    #objective-overlay {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      left: auto !important;
+      bottom: auto !important;
+      z-index: 45 !important;
+      max-width: 290px !important;
+      background: var(--hud-bg-solid) !important;
+      border: 1.5px solid var(--hud-border-solid) !important;
+      border-radius: 12px !important;
+      padding: 10px 14px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      color: #ffffff !important;
+      pointer-events: none !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
+    #objective-title {
+      font-size: 0.65rem !important;
+      font-weight: 800 !important;
+      color: var(--hud-accent-cyan) !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+      margin-bottom: 4px !important;
+      text-align: left !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+    }
+    #objective-desc {
+      font-size: 0.78rem !important;
+      font-weight: 600 !important;
+      line-height: 1.35 !important;
+      color: var(--hud-text-primary) !important;
+      text-align: left !important;
+    }
+
+    /* TOP-RIGHT CIVIC & CONTROLS BAR (SOLID) */
+    #civic-controls {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 94px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      top: auto !important;
+      left: auto !important;
+      z-index: 55 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      background: #0d131f !important;
+      border: 1.5px solid #26354a !important;
+      border-radius: 10px !important;
+      padding: 5px 8px !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.7) !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
+    .civic-btn {
+      background: var(--hud-bg-solid) !important;
+      border: 1px solid var(--hud-border-solid) !important;
+      border-radius: 8px !important;
+      padding: 6px 10px !important;
+      color: var(--hud-text-secondary) !important;
+      font-size: 0.72rem !important;
+      font-weight: 700 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      cursor: pointer !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      transition: all 0.2s ease !important;
+    }
+    .civic-btn:hover {
+      border-color: var(--hud-border-focus) !important;
+      color: #ffffff !important;
+      background: var(--hud-panel-solid) !important;
+    }
+    .civic-btn.active {
+      border-color: var(--hud-accent-green) !important;
+      color: var(--hud-accent-green) !important;
+      background: #064e3b !important;
+    }
+    #belt-ind {
+      background: #450a0a !important;
+      border: 1px solid var(--hud-accent-red) !important;
+      color: #fca5a5 !important;
+    }
+    #belt-ind.belt-on {
+      background: #064e3b !important;
+      border: 1px solid var(--hud-accent-green) !important;
+      color: #86efac !important;
+    }
+
+    /* TOP-CENTER SIGNAL HUD & CLOCK (SOLID) */
+    #sig-ind {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      z-index: 45 !important;
+      display: none;
+      align-items: center !important;
+      gap: 10px !important;
+      background: var(--hud-bg-solid) !important;
+      border: 1.5px solid var(--hud-border-solid) !important;
+      border-radius: 24px !important;
+      padding: 6px 16px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      font-weight: 800 !important;
+      font-size: 0.88rem !important;
+      color: #ffffff !important;
+    }
+    #sig-ind.on, #gc.on ~ #sig-ind { display: flex !important; }
+    #sind-lamp {
+      width: 14px !important;
+      height: 14px !important;
+      border-radius: 50% !important;
+      transition: background 0.2s, box-shadow 0.2s !important;
+    }
+    #sind-state {
+      font-weight: 900 !important;
+      letter-spacing: 0.05em !important;
+    }
+    #sind-timer {
+      font-family: 'Space Mono', monospace !important;
+      font-size: 0.95rem !important;
+      font-weight: 800 !important;
+      color: var(--hud-text-primary) !important;
+    }
+    #sind-dist {
+      font-family: 'Space Mono', monospace !important;
+      font-size: 0.75rem !important;
+      color: var(--hud-text-secondary) !important;
+    }
+    #dn-clock {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 52px) !important;
+      left: 50% !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: translateX(-50%) !important;
+      z-index: 44 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      width: auto !important;
+      max-width: max-content !important;
+      white-space: nowrap !important;
+      background: #0d131f !important;
+      border: 1.5px solid #26354a !important;
+      border-radius: 16px !important;
+      padding: 4px 12px !important;
+      font-size: 0.72rem !important;
+      font-weight: 700 !important;
+      color: #f8fafc !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    /* BOTTOM-RIGHT COCKPIT INSTRUMENT POD (SOLID - CLEAR CENTER VIEW) */
+    #spgauge {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 24px) !important;
+      left: auto !important;
+      top: auto !important;
+      z-index: 45 !important;
+    }
+    #boostgauge {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 120px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 24px) !important;
+      left: auto !important;
+      top: auto !important;
+      z-index: 45 !important;
+    }
+
+    /* DOCK GEAR & SPEED CONTROL TO BOTTOM-RIGHT (BESIDE SPEEDOMETER) */
+    #gp {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 130px) !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
+      display: none;
+      flex-direction: row !important;
+      gap: 4px !important;
+      background: var(--hud-bg-solid) !important;
+      padding: 6px !important;
+      border-radius: 10px !important;
+      border: 1.5px solid var(--hud-border-solid) !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    #gp.on, #gc.on ~ #gp { display: flex !important; }
+    .gb {
+      width: 32px !important;
+      height: 32px !important;
+      border-radius: 6px !important;
+      background: var(--hud-panel-solid) !important;
+      border: 1px solid var(--hud-border-solid) !important;
+      color: var(--hud-text-secondary) !important;
+      font-weight: 900 !important;
+      font-size: 0.82rem !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+    }
+    .gb.ag {
+      background: #0284c7 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5) !important;
+    }
+
+    #gread { display: none !important; }
+
+    #speed-ctrl {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 74px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 130px) !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
+      display: none;
+      flex-direction: column !important;
+      gap: 4px !important;
+      background: var(--hud-bg-solid) !important;
+      padding: 6px 8px !important;
+      border-radius: 10px !important;
+      border: 1.5px solid var(--hud-border-solid) !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    #speed-ctrl.on, #gc.on ~ #speed-ctrl { display: flex !important; }
+    .sc-row { display: flex !important; gap: 4px !important; align-items: center !important; }
+    .sc-btn {
+      padding: 4px 8px !important;
+      border-radius: 6px !important;
+      border: 1px solid var(--hud-border-solid) !important;
+      background: var(--hud-panel-solid) !important;
+      color: var(--hud-text-secondary) !important;
+      font-size: 0.68rem !important;
+      font-weight: 800 !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 3px !important;
+      transition: all 0.15s ease !important;
+    }
+    .sc-btn:hover {
+      border-color: var(--hud-border-focus) !important;
+      color: #ffffff !important;
+    }
+    .sc-btn.sc-active {
+      background: #0284c7 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
+    }
+    .sc-adj {
+      width: 24px !important;
+      height: 24px !important;
+      padding: 0 !important;
+      justify-content: center !important;
+      font-size: 0.85rem !important;
+    }
+
+    /* TOP-RIGHT SMARTPHONE INCOMING CALL NOTIFICATION (NON-BLOCKING) */
+    #phone-ring-overlay {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 140px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      left: auto !important;
+      bottom: auto !important;
+      transform: none !important;
+      z-index: 60 !important;
+      background: var(--hud-bg-solid) !important;
+      border: 1.5px solid var(--hud-accent-gold) !important;
+      border-radius: 12px !important;
+      padding: 12px 16px !important;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8), 0 0 16px rgba(245, 158, 11, 0.25) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      display: none;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 8px !important;
+      width: 260px !important;
+      animation: call-pulse 1.2s ease-in-out infinite !important;
+    }
+    @keyframes call-pulse {
+      0%, 100% { border-color: #f59e0b; box-shadow: 0 12px 32px rgba(0,0,0,0.8), 0 0 12px rgba(245,158,11,0.2); }
+      50% { border-color: #fbbf24; box-shadow: 0 12px 32px rgba(0,0,0,0.8), 0 0 24px rgba(245,158,11,0.45); }
+    }
+    .phone-call-header {
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      width: 100% !important;
+    }
+    .phone-call-avatar {
+      width: 34px !important;
+      height: 34px !important;
+      border-radius: 50% !important;
+      background: #1e293b !important;
+      border: 1px solid var(--hud-accent-gold) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: var(--hud-accent-gold) !important;
+    }
+    .phone-call-info {
+      display: flex !important;
+      flex-direction: column !important;
+      text-align: left !important;
+      flex: 1 !important;
+    }
+    .phone-call-title {
+      font-size: 0.72rem !important;
+      font-weight: 800 !important;
+      color: var(--hud-accent-gold) !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+    }
+    .phone-call-caller {
+      font-size: 0.85rem !important;
+      font-weight: 700 !important;
+      color: #ffffff !important;
+    }
+    .phone-call-actions {
+      display: flex !important;
+      gap: 8px !important;
+      width: 100% !important;
+      margin-top: 4px !important;
+    }
+    .phone-btn-ans, .phone-btn-ign {
+      flex: 1 !important;
+      padding: 6px 12px !important;
+      border-radius: 6px !important;
+      font-size: 0.78rem !important;
+      font-weight: 800 !important;
+      cursor: pointer !important;
+      border: none !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 4px !important;
+      transition: filter 0.15s ease !important;
+    }
+    .phone-btn-ans {
+      background: var(--hud-accent-green) !important;
+      color: #ffffff !important;
+    }
+    .phone-btn-ign {
+      background: var(--hud-accent-red) !important;
+      color: #ffffff !important;
+    }
+    .phone-btn-ans:hover, .phone-btn-ign:hover { filter: brightness(1.15) !important; }
+
+    /* TURN HINT (SUBTLE TOP-CENTER STRIP) */
+    #turn-hint, #da {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+      /* TOP-RIGHT UNIFIED STACK */
+    #objective-overlay {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      left: auto !important;
+      bottom: auto !important;
+      z-index: 45 !important;
+      width: 290px !important;
+      max-width: 290px !important;
+      box-sizing: border-box !important;
+      background: #0d131f !important;
+      border: 1.5px solid #26354a !important;
+      border-radius: 12px !important;
+      padding: 10px 14px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      color: #ffffff !important;
+      pointer-events: none !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
+
+    #civic-controls {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 94px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      top: auto !important;
+      left: auto !important;
+      z-index: 55 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      background: #0d131f !important;
+      border: 1.5px solid #26354a !important;
+      border-radius: 10px !important;
+      padding: 5px 8px !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.7) !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
+
+    #civic-controls .civic-btn {
+      background: #151d2d !important;
+      border: 1px solid #26354a !important;
+      color: #e2e8f0 !important;
+      border-radius: 6px !important;
+      padding: 4px 6px !important;
+      font-size: 0.68rem !important;
+      font-weight: 600 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 3px !important;
+      cursor: pointer !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+    }
+    #civic-controls .civic-btn:hover {
+      border-color: #38bdf8 !important;
+      background: #1e293b !important;
+    }
+
+    /* BOTTOM-RIGHT UNIFIED INSTRUMENT CLUSTER */
+    #speed-ctrl {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 72px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 125px) !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
+      width: 230px !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 4px !important;
+      background: #0d131f !important;
+      padding: 6px 8px !important;
+      border-radius: 10px 10px 0 0 !important;
+      border: 1.5px solid #26354a !important;
+      border-bottom: none !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    #gp {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 125px) !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
+      width: 230px !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: space-between !important;
+      gap: 4px !important;
+      background: #0d131f !important;
+      padding: 6px 8px !important;
+      border-radius: 0 0 10px 10px !important;
+      border: 1.5px solid #26354a !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    #gp .gb {
+      flex: 1 !important;
+      text-align: center !important;
+      padding: 6px 0 !important;
+      border-radius: 6px !important;
+      background: #151d2d !important;
+      border: 1px solid #26354a !important;
+      color: #94a3b8 !important;
+      font-weight: 800 !important;
+      font-size: 0.85rem !important;
+      cursor: pointer !important;
+    }
+    #gp .gb.ag {
+      background: #0284c7 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important;
+    }
+  
+    /* =================================================================== */
+    /* 🌟 MASTER HUD, POPUP & CIVIC DOCKING STYLING OVERRIDES 🌟 */
+    /* =================================================================== */
+
+    /* 1. CIVIC CONTROLS POD — Cleanly docked above the bottom-right speed cluster */
+    #civic-controls {
+      position: fixed !important;
+      top: auto !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 94px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      left: auto !important;
+      z-index: 55 !important;
+      width: 280px !important;
+      max-width: 280px !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 5px !important;
+      background: #0d131f !important;
+      border: 1.5px solid #26354a !important;
+      border-radius: 10px !important;
+      padding: 5px 8px !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
+
+    #civic-controls .civic-btn {
+      background: #151d2d !important;
+      border: 1px solid #26354a !important;
+      color: #e2e8f0 !important;
+      border-radius: 6px !important;
+      padding: 4px 7px !important;
+      font-size: 0.72rem !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      white-space: nowrap !important;
+    }
+    #civic-controls .civic-btn:hover {
+      border-color: #38bdf8 !important;
+      background: #1e293b !important;
+    }
+
+    /* 2. PROMINENT TOP-CENTER FLOATING TOAST / NOTIFICATION */
+    #toast {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 20px) !important;
+      left: 50% !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: translateX(-50%) !important;
+      z-index: 100000 !important;
+      max-width: min(92vw, 560px) !important;
+      background: #0f172a !important;
+      border: 2px solid #f59e0b !important;
+      border-radius: 30px !important;
+      padding: 10px 24px !important;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.85), 0 0 24px rgba(245, 158, 11, 0.35) !important;
+      display: none;
+      align-items: center !important;
+      justify-content: center !important;
+      color: #ffffff !important;
+      font-family: var(--sans, 'Inter', sans-serif) !important;
+      font-size: 1.02rem !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.4px !important;
+      text-align: center !important;
+      pointer-events: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    #toast.on {
+      display: flex !important;
+      animation: toastBounceIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+    }
+    @keyframes toastBounceIn {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(0.9); }
+      100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    }
+
+    /* 3. OFF-ROAD WARNING BANNER */
+    #ow {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 78px) !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      bottom: auto !important;
+      right: auto !important;
+      font-size: 0.95rem !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.5px !important;
+      text-transform: uppercase !important;
+      background: #dc2626 !important;
+      border: 2px solid #fecaca !important;
+      color: #ffffff !important;
+      padding: 8px 24px !important;
+      border-radius: 24px !important;
+      z-index: 95000 !important;
+      display: none;
+      box-shadow: 0 8px 24px rgba(220, 38, 38, 0.65) !important;
+      animation: pulseAlert 1s infinite alternate !important;
+    }
+    @keyframes pulseAlert {
+      0% { transform: translateX(-50%) scale(1); box-shadow: 0 4px 16px rgba(220, 38, 38, 0.5); }
+      100% { transform: translateX(-50%) scale(1.05); box-shadow: 0 8px 30px rgba(220, 38, 38, 0.85); }
+    }
+
+    /* 4. CHALLAN NOTICE POPUP STACK */
+    #challan-stack {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 140px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      left: auto !important;
+      bottom: auto !important;
+      z-index: 95000 !important;
+      pointer-events: none !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px !important;
+      width: 270px !important;
+      max-width: 270px !important;
+    }
+
   </style>
 
   <script>
@@ -5274,6 +6626,171 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SSAOShader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"></script>
   <script src="vehicles.js"></script>
+<style>
+    /* ========================================================================= */
+    /* MASTER HUD REORGANIZATION (SOLID MATTE, ZERO GLASS, NO OVERLAPS)          */
+    /* ========================================================================= */
+    :root {
+      --hud-bg-solid: #0d131f;
+      --hud-panel-solid: #151d2d;
+      --hud-border-solid: #26354a;
+      --hud-text-primary: #f8fafc;
+      --hud-text-secondary: #94a3b8;
+    }
+
+    /* TOP-RIGHT STACK: Objective Card + Civic Toolbar */
+    #objective-overlay {
+      position: fixed !important;
+      top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      left: auto !important;
+      bottom: auto !important;
+      z-index: 45 !important;
+      width: 290px !important;
+      max-width: 290px !important;
+      box-sizing: border-box !important;
+      background: #0d131f !important;
+      border: 1.5px solid #26354a !important;
+      border-radius: 12px !important;
+      padding: 10px 14px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      color: #ffffff !important;
+      pointer-events: none !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
+
+    #civic-controls {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 94px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      top: auto !important;
+      left: auto !important;
+      z-index: 55 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      background: #0d131f !important;
+      border: 1.5px solid #26354a !important;
+      border-radius: 10px !important;
+      padding: 5px 8px !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.7) !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
+
+    #civic-controls .civic-btn {
+      background: #151d2d !important;
+      border: 1px solid #26354a !important;
+      color: #e2e8f0 !important;
+      border-radius: 6px !important;
+      padding: 4px 6px !important;
+      font-size: 0.68rem !important;
+      font-weight: 600 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 3px !important;
+      cursor: pointer !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      white-space: nowrap !important;
+    }
+    #civic-controls .civic-btn:hover {
+      border-color: #38bdf8 !important;
+      background: #1e293b !important;
+    }
+
+    /* BOTTOM-RIGHT POD: Speed Controls + Gear Buttons */
+    #speed-ctrl {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 72px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 125px) !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
+      width: 230px !important;
+      max-width: 230px !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 4px !important;
+      background: #0d131f !important;
+      padding: 6px 8px !important;
+      border-radius: 10px 10px 0 0 !important;
+      border: 1.5px solid #26354a !important;
+      border-bottom: none !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    #speed-ctrl .sc-row {
+      display: flex !important;
+      justify-content: space-between !important;
+      gap: 4px !important;
+      width: 100% !important;
+    }
+
+    #speed-ctrl .sc-btn {
+      flex: 1 !important;
+      background: #151d2d !important;
+      border: 1px solid #26354a !important;
+      color: #e2e8f0 !important;
+      border-radius: 6px !important;
+      padding: 4px 6px !important;
+      font-size: 0.7rem !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      text-align: center !important;
+    }
+
+    #gp {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 125px) !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      z-index: 45 !important;
+      width: 230px !important;
+      max-width: 230px !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: space-between !important;
+      gap: 4px !important;
+      background: #0d131f !important;
+      padding: 6px 8px !important;
+      border-radius: 0 0 10px 10px !important;
+      border: 1.5px solid #26354a !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+
+    #gp .gb {
+      flex: 1 !important;
+      text-align: center !important;
+      padding: 6px 0 !important;
+      border-radius: 6px !important;
+      background: #151d2d !important;
+      border: 1px solid #26354a !important;
+      color: #94a3b8 !important;
+      font-weight: 800 !important;
+      font-size: 0.85rem !important;
+      cursor: pointer !important;
+    }
+    #gp .gb.ag {
+      background: #0284c7 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important;
+    }
+</style>
 </head>
 
 <body class="lm">
@@ -5474,15 +6991,75 @@
     style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:20px; font-size:0.85rem; pointer-events:none; z-index:var(--z-hud); display:none; font-family:Inter,sans-serif; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.5s;">
     🖱️ Right-click + drag to look around  •  Click canvas to enter first person
   </div>
-  <div id="hud">
-    <div class="hp">Lv<span class="hv" id="hlv">1</span></div>
-    <div class="hp" id="hobj" style="font-size: 0.85rem; font-weight: 600; text-align: center"></div>
-    <div class="hp">Score<span class="hv" id="hsc">0</span></div>
-  </div>
-  <div id="hudbar">
-    <div class="hb">⏱<span id="htmr">0:00</span></div>
-    <div class="hb">💸<span id="hfin">0</span></div>
-    <div class="hb">✅<span id="hcp">0/0</span></div>
+  
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- UNIFIED REDESIGNED TOP-LEFT PLAYER DASHBOARD CARD -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div id="player-hud-card" class="hud-dashboard-card">
+    <div class="hud-dash-header">
+      <div class="hud-lvl-pill">
+        <span class="hud-lvl-prefix">LVL</span>
+        <span class="hud-lvl-num" id="hlv">1</span>
+      </div>
+      <div class="hud-score-chip">
+        <span class="hud-chip-icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4a2 2 0 0 1-2-2V5h4v4zm12 0h2a2 2 0 0 0 2-2V5h-4v4zM4 5h16v4a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6V5zm6 10v3H8v2h8v-2h-2v-3h-4z"/></svg>
+        </span>
+        <span class="hud-chip-val" id="hsc">0</span>
+      </div>
+      <div class="hud-timer-chip">
+        <span class="hud-chip-icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+        <span class="hud-chip-val" id="htmr">0:00</span>
+      </div>
+    </div>
+
+    <div class="hud-dash-stats">
+      <div class="hud-dash-col">
+        <div class="hud-col-header">
+          <span class="hud-col-icon" style="color:#f59e0b">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          </span>
+          <span class="hud-col-lbl">Wallet</span>
+        </div>
+        <div class="hud-col-val val-wallet" id="hwallet">₹50,000</div>
+      </div>
+      <div class="hud-dash-col">
+        <div class="hud-col-header">
+          <span class="hud-col-icon" style="color:#c084fc">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+          </span>
+          <span class="hud-col-lbl">Tokens</span>
+        </div>
+        <div class="hud-col-val val-tokens" id="mission-tokens">0</div>
+      </div>
+      <div class="hud-dash-col">
+        <div class="hud-col-header">
+          <span class="hud-col-icon" style="color:#38bdf8">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+          </span>
+          <span class="hud-col-lbl">Checkpoints</span>
+        </div>
+        <div class="hud-col-val val-cp" id="hcp">0/0</div>
+      </div>
+    </div>
+
+    <div class="hud-dash-health">
+      <div class="hud-health-row">
+        <div class="hud-health-left">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span class="hud-health-title">Vehicle Health</span>
+        </div>
+        <span class="hud-health-score" id="hfin">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+          ECO 100%
+        </span>
+      </div>
+      <div class="hud-bar-track">
+        <div class="hud-bar-fill" id="hfill" style="width: 100%;"></div>
+      </div>
+    </div>
   </div>
 
   <div id="objective-overlay">
@@ -5597,8 +7174,7 @@
       📋 Tasks</div>
     <div id="task-list" style="display: flex; flex-direction: column; gap: 8px"></div>
   </div>
-  <div id="civic-controls"
-    style="position: fixed; bottom: 16px; right: 20px; z-index: var(--z-controls); display: flex; flex-direction: row; gap: 6px; align-items: center">
+  <div id="civic-controls">
     <div id="btn-seatbelt" class="civic-btn" onclick="window.game && window.game.toggleSeatbelt(this)">
       <div id="sb-icon-wrap" class="sb-icon-wrap">
         <svg id="sb-icon" class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -5667,24 +7243,8 @@
     <div id="sind-dist" style="color: var(--muted); font-size: 0.85rem">--m</div>
   </div>
   <div id="dn-clock">
-    >
     <span id="dn-icon">☀️</span>
     <span id="dn-time">12:00</span>
-  </div>
-  <div id="hwrap">
-    <div class="hl" style="font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em">💰 WALLET</div>
-    <div id="hwallet"
-      style="font-size: 1.05rem; font-weight: 900; color: #ffd54a; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em">
-      ₹50,000</div>
-    <div class="hl" style="font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; margin-top: 4px">🎖️ TOKENS</div>
-    <div id="mission-tokens"
-      style="font-size: 1.05rem; font-weight: 900; color: #b89bff; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em">
-      0</div>
-    <div class="hl" style="font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; margin-top: 4px">🚗 HEALTH
-    </div>
-    <div class="ht">
-      <div class="hf" id="hfill"></div>
-    </div>
   </div>
   <div id="ow">⚠️ OFF ROAD - Return to road!</div>
 
@@ -5725,6 +7285,21 @@
     <button class="gb" data-g="D">D</button>
   </div>
   <div id="gread">GEAR: P</div>
+
+  <!-- Speed Control Cluster -->
+  <div id="speed-ctrl">
+    <div class="sc-row">
+      <button class="sc-btn" id="sc-cruise">🚢 CRUISE<span class="sc-badge" id="sc-badge-cruise"></span></button>
+      <button class="sc-btn" id="sc-limit">🔒 LIMIT<span class="sc-badge" id="sc-badge-limit"></span></button>
+    </div>
+    <div class="sc-row">
+      <button class="sc-btn sc-adj" id="sc-minus">−</button>
+      <button class="sc-btn" id="sc-eco">🌿 ECO</button>
+      <button class="sc-btn sc-active" id="sc-city">🏙 CITY</button>
+      <button class="sc-btn" id="sc-sport">🏎 SPORT</button>
+      <button class="sc-btn sc-adj" id="sc-plus">+</button>
+    </div>
+  </div>
 
   <div id="tc">
     <div style="display: flex; gap: 16px">
@@ -5856,8 +7431,48 @@
   <div id="boost-ready"
     style="position:fixed;right:32px;bottom:130px;z-index:26;font-size:0.7rem;font-family:var(--sans);color:#00f0cc;background:var(--card);border:1px solid #00f0cc;border-radius:12px;padding:4px 10px;display:none;opacity:0;transition:opacity 0.3s;box-shadow:0 0 10px rgba(0,240,204,0.3);">
     Boost Ready</div>
-  <canvas id="mmc" width="160" height="160"
-    style="position: fixed; top: 32px; right: 32px; border-radius: 50%; border: 4px solid var(--card); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); z-index: var(--z-effects); display: none"></canvas>
+  
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- GTA-STYLE STORYLINE MISSION INTRO OVERLAY -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="gta-mission-intro" class="gta-intro-overlay" style="display:none;">
+    <div class="gta-intro-card">
+      <div class="gta-intro-top-row">
+        <div class="gta-module-tag" id="gta-intro-module">MODULE 1 • ANDHERI JUNCTION</div>
+        <div class="gta-reward-tag" id="gta-intro-reward">💰 +₹1,500</div>
+      </div>
+      <h2 class="gta-mission-title" id="gta-intro-title">MISSION: SIGNAL BASICS</h2>
+      
+      <div class="gta-dialogue-box">
+        <div class="gta-avatar" id="gta-intro-avatar">👮</div>
+        <div class="gta-speech">
+          <div class="gta-speaker" id="gta-speaker-name">Constable Patil (Traffic Police)</div>
+          <div class="gta-line" id="gta-speaker-line">"Solid white line ke peechhe ruk jao. Pedestrians pehle, tum baad mein."</div>
+        </div>
+      </div>
+
+      <div class="gta-objectives-section">
+        <div class="gta-obj-heading">MISSION OBJECTIVES</div>
+        <div class="gta-obj-item" id="gta-obj-primary-box">
+          <span class="gta-obj-bullet">🎯</span>
+          <span class="gta-obj-text" id="gta-obj-primary">Wait at red light behind stop line. Let all pedestrians cross fully.</span>
+        </div>
+        <div class="gta-obj-item secondary" id="gta-obj-secondary-box">
+          <span class="gta-obj-bullet">⏱️</span>
+          <span class="gta-obj-text" id="gta-obj-secondary">Follow road lanes and traffic signals.</span>
+        </div>
+      </div>
+
+      <div class="gta-actions">
+        <button class="gta-btn-start" id="gta-btn-start" onclick="window.dismissGtaMissionIntro()">
+          <span>START MISSION</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="mmc" width="180" height="180"></canvas>
 
   <div id="compass-strip" style="
         position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
@@ -6295,8 +7910,6 @@
         <div style="font-size: 0.85rem; color: var(--muted); text-align: right; margin-bottom: 24px" id="br-prog-label">
           0%</div>
         <div id="br-syllabus"></div>
-        <!-- Campaign Progress Panel -->
-        <div id="br-campaign-progress" style="margin-top: 24px; padding: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px;"></div>
       </div>
       <div class="br-r" id="br-content"></div>
     </div>
@@ -6356,7 +7969,8 @@
     </div>
     <div class="lw">
       <div class="stats-body" id="stats-body"></div>
-      <h3 style="margin-top: 40px; font-size: 1.5rem">Achievements</h3>
+      <div id="profile-pledge-box" style="margin-top: 24px;"></div>
+      <h3 style="margin-top: 30px; font-size: 1.5rem">Achievements</h3>
       <div class="bgrid" id="bgrid"></div>
     </div>
   </div>
@@ -6528,24 +8142,26 @@
       }, 500);
     })();
   </script>
-  <script src="start.js"></script>
   <script src="pools.js"></script>
-  <script src="road-graph.js?v=2"></script>
-  <script src="render_core.js?v=2"></script>
-  <script src="safezone-ui.js?v=2"></script>
+  <script src="road-graph.js?v=11"></script>
+  <script src="render_core.js?v=11"></script>
+  <script src="safezone-ui.js?v=11"></script>
   <script src="world-streamer.js"></script>
   <script src="mission-manager.js"></script>
   <script src="scenery-kit.js"></script>
   <script src="collectible-system.js"></script>
   <script src="checkpoint-system.js"></script>
-  <script src="gameplay-recorder.js"></script>
+  <script src="gameplay-recorder.js?v=11"></script>
+  <script src="task-manager.js?v=12"></script>
   <script src="scenario2d.js"></script>
-  <script src="game_core.js?v=20"></script>
-  <script src="npc-ai.js"></script>
-  <script src="traffic-manager.js?v=8"></script>
-  <script src="rule-breaker-profiles.js"></script>
   <script src="course.js"></script>
-  <script src="ui.js?v=2"></script>
+  <script src="traffic-audio.js?v=11"></script>
+  <script src="game_core.js?v=11"></script>
+  <script src="npc-ai.js?v=11"></script>
+  <script src="traffic-manager.js?v=11"></script>
+  <script src="rule-breaker-profiles.js"></script>
+  <script src="ui.js?v=12"></script>
+  <script src="start.js?v=11"></script>
 
   
   <div id="kid-steer"></div>
@@ -6603,7 +8219,7 @@
 
   <script>
     
-    window.KID_MODE = true;
+    window.KID_MODE = localStorage.getItem('traffic_kid_mode') === 'true';
 
     (function () {
       if (!window.KID_MODE) return;
@@ -6818,13 +8434,16 @@
 
 
       window._kidUpdateLevelName = function (name) {
-        $('kid-level-name').textContent = '🏁 ' + name;
+        const el = $('kid-level-name');
+        if (el) el.textContent = '🏁 ' + name;
       };
 
 
       window._kidUpdateTask = function (text, progress, emoji) {
-        $('kid-task-text').textContent = text;
-        if (emoji) $('kid-task-emoji').textContent = emoji;
+        const el = $('kid-task-text');
+        if (el) el.textContent = text;
+        const emoEl = $('kid-task-emoji');
+        if (emoEl && emoji) emoEl.textContent = emoji;
 
         var stars = '';
         var total = 5;
@@ -6832,22 +8451,27 @@
         for (var i = 0; i < total; i++) {
           stars += '<span class="star ' + (i < filled ? 'filled' : '') + '">⭐</span>';
         }
-        $('kid-task-progress').innerHTML = stars;
+        const progEl = $('kid-task-progress');
+        if (progEl) progEl.innerHTML = stars;
       };
 
 
       window._kidShowTutorial = function (emoji, text, arrowDir, targetBtnId) {
-        $('kid-tut-emoji').textContent = emoji || '🚗';
-        $('kid-tut-text').textContent = text || 'Turn the wheel to drive!';
+        const emoEl = $('kid-tut-emoji');
+        if (emoEl) emoEl.textContent = emoji || '🚗';
+        const txtEl = $('kid-tut-text');
+        if (txtEl) txtEl.textContent = text || 'Turn the wheel to drive!';
         const arrow = $('kid-tut-arrow');
-        if (arrowDir === 'left') {
-          arrow.textContent = '👈';
-          arrow.style.display = 'block';
-        } else if (arrowDir === 'right') {
-          arrow.textContent = '👉';
-          arrow.style.display = 'block';
-        } else {
-          arrow.style.display = 'none';
+        if (arrow) {
+          if (arrowDir === 'left') {
+            arrow.textContent = '👈';
+            arrow.style.display = 'block';
+          } else if (arrowDir === 'right') {
+            arrow.textContent = '👉';
+            arrow.style.display = 'block';
+          } else {
+            arrow.style.display = 'none';
+          }
         }
         $('kid-tutorial').style.display = 'flex';
 
@@ -7465,8 +9089,8 @@
 
 <script src="welcome-back.js"></script>
 
-  <!-- Signal HUD Indicator -->
-  <div id="sig-ind" style="position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10000; pointer-events: none; transition: all 0.3s ease;">
+  <!-- Signal HUD Indicator for Syllabus Mode -->
+  <div id="syllabus-sig-ind" style="position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10000; pointer-events: none; transition: all 0.3s ease; display: none;">
     <div style="display: flex; gap: 4px; background: rgba(0,0,0,0.7); padding: 8px 12px; border-radius: 20px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1);">
       <div id="sig-red" class="sig-light" style="width: 16px; height: 16px; border-radius: 50%; background: #330000; border: 2px solid #ef4444; box-shadow: 0 0 0 #ef4444; transition: all 0.3s ease;"></div>
       <div id="sig-yellow" class="sig-light" style="width: 16px; height: 16px; border-radius: 50%; background: #332200; border: 2px solid #f1c40f; box-shadow: 0 0 0 #f1c40f; transition: all 0.3s ease;"></div>
@@ -7563,7 +9187,73 @@
       window.checkSignalState = checkSignalState;
       
       // Start signal checking when game is ready
-      function startSignalMonitoring() {
+      
+    // ── GTA Storyline Mission Intro Dialog Manager ──
+    window.showGtaMissionIntro = function(levelId) {
+      try {
+        const info = (typeof getMissionForLevel === 'function') ? getMissionForLevel(levelId) : null;
+        const overlay = document.getElementById('gta-mission-intro');
+        if (!overlay) return;
+
+        const m = info?.mission;
+        const c = info?.campaign;
+
+        const modEl = document.getElementById('gta-intro-module');
+        if (modEl) modEl.textContent = (c?.name || 'MUMBAI PATROL').toUpperCase();
+
+        const titleEl = document.getElementById('gta-intro-title');
+        if (titleEl) titleEl.textContent = m?.title ? m.title.toUpperCase() : `MISSION ${levelId}`;
+
+        const rewardEl = document.getElementById('gta-intro-reward');
+        if (rewardEl) {
+          const rAmt = m?.rewards?.wallet || m?.reward || 1500;
+          rewardEl.textContent = `💰 +₹${rAmt.toLocaleString()}`;
+        }
+
+        const avatarEl = document.getElementById('gta-intro-avatar');
+        const speakerEl = document.getElementById('gta-speaker-name');
+        const lineEl = document.getElementById('gta-speaker-line');
+
+        if (m?.characterDialogue && m.characterDialogue.length > 0) {
+          const d0 = m.characterDialogue[0];
+          if (speakerEl) speakerEl.textContent = d0.speaker;
+          if (lineEl) lineEl.textContent = d0.line;
+          if (avatarEl) avatarEl.textContent = d0.speaker.includes('Police') || d0.speaker.includes('Patil') ? '👮' : d0.speaker.includes('Dada') ? '👴' : d0.speaker.includes('Ambulance') ? '🚑' : '🚗';
+        } else {
+          if (speakerEl) speakerEl.textContent = 'Constable Patil (Traffic Control)';
+          if (lineEl) lineEl.textContent = m?.storyBeat || m?.briefing || '"Drive safely and follow Mumbai traffic regulations."';
+          if (avatarEl) avatarEl.textContent = '👮';
+        }
+
+        const pObjEl = document.getElementById('gta-obj-primary');
+        if (pObjEl) pObjEl.textContent = m?.objectives?.primary || m?.briefing || 'Complete all checkpoints.';
+
+        const sObjEl = document.getElementById('gta-obj-secondary');
+        if (sObjEl) {
+          if (m?.objectives?.secondary && Array.isArray(m.objectives.secondary) && m.objectives.secondary.length > 0) {
+            sObjEl.textContent = m.objectives.secondary[0];
+          } else {
+            sObjEl.textContent = 'Maintain lane discipline & obey speed limits.';
+          }
+        }
+
+        overlay.style.display = 'flex';
+        overlay.classList.remove('gta-fade-out');
+      } catch (err) {
+        console.warn('[GTA Mission Intro] Error showing intro:', err);
+      }
+    };
+
+    window.dismissGtaMissionIntro = function() {
+      const overlay = document.getElementById('gta-mission-intro');
+      if (!overlay) return;
+      overlay.classList.add('gta-fade-out');
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 350);
+    };
+
+    function startSignalMonitoring() {
         if (signalCheckInterval) clearInterval(signalCheckInterval);
         signalCheckInterval = setInterval(checkSignalState, 100);
       }
@@ -7632,6 +9322,22 @@
         }, 2000);
       }
     })();
+  </script>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('button, .gb, .civic-btn, .sc-btn, .kid-btn');
+        if (btn && window.TrafficAudio) {
+          if (btn.id === 'kid-horn-btn') {
+            window.TrafficAudio.playHorn();
+          } else {
+            window.TrafficAudio.playClick();
+          }
+        }
+      }, { passive: true });
+    });
   </script>
 
 </body>

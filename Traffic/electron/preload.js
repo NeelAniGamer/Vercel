@@ -11,17 +11,30 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// electron/preload.ts
 var preload_exports = {};
 module.exports = __toCommonJS(preload_exports);
 var import_electron = require("electron");
-const electronAPI = {
+var electronAPI = {
+  // Info
   getVersion: () => import_electron.ipcRenderer.invoke("get-app-version"),
   getSavePath: () => import_electron.ipcRenderer.invoke("get-save-path"),
+  isDev: () => import_electron.ipcRenderer.invoke("is-dev"),
+  // Save data
+  exportSave: () => import_electron.ipcRenderer.invoke("export-save"),
+  importSave: () => import_electron.ipcRenderer.invoke("import-save"),
+  // Updates
+  checkUpdates: () => import_electron.ipcRenderer.invoke("check-updates"),
+  installUpdate: () => {
+    import_electron.ipcRenderer.invoke("install-update");
+  },
+  onUpdaterStatus: (callback) => {
+    import_electron.ipcRenderer.on("updater-status", (_e, status) => callback(status));
+  },
+  // Menu actions
   onMenuAction: (callback) => {
-    import_electron.ipcRenderer.on("menu-new-game", () => callback("new-game"));
-    import_electron.ipcRenderer.on("menu-restart", () => callback("restart"));
-    import_electron.ipcRenderer.on("menu-about", () => callback("about"));
-    import_electron.ipcRenderer.on("menu-report-bug", () => callback("report-bug"));
+    import_electron.ipcRenderer.on("menu-action", (_e, action) => callback(action));
   },
   platform: process.platform,
   isElectron: true

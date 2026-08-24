@@ -31,12 +31,12 @@ license: mit
 
 | Aspect | Details |
 |--------|---------|
-| **Primary Deploy** | Static HTML → Vercel (no build step) |
+| **Primary Deploy** | Static HTML → Vercel (no build step; commit to `main`) |
 | **React Bundle** | `npm run build` → esbuild → `dist/Traffic/simulator-bundle.js` |
 | **Auth** | Supabase Google OAuth + Email/Password (two systems) |
 | **3D Engine** | Three.js 0.185 (procedural backgrounds + Traffic simulator) |
-| **PWA** | `manifest.json` + `sw.js` (cache-first, `col-cache-v2`) |
-| **APK** | `version.json` (v1.6, code 7) → `advancedlogiclabs.dpdns.org/COL.apk` |
+| **PWA** | `manifest.json` + `sw.js` (cache-first, `col-cache-v4`) |
+| **APK** | `version.json` (v1.6, code 7) → `/COL.apk` |
 | **CI/CD** | None enforced — no lint, no tests, no typecheck in CI |
 
 ---
@@ -49,54 +49,39 @@ Vercel/
 ├── col-router.js              # Global router — fetches config.json, renders 503/404
 ├── col-ui.js                  # Shared UI (nav, theme toggle, APK updater)
 ├── col-ui.css                 # CSS variables + typography (CoL Design System)
-├── col-auth.js                # Supabase Google OAuth + email/password (497 lines)
+├── col-auth.js                # Supabase Google OAuth + email/password
 ├── col-3d.js                  # Three.js procedural backgrounds (desktop only)
-├── col-achievements.js        # Achievement system
+├── col-achievements.js        # Achievement engine helpers (verify.html, dashboard.html)
 ├── supabase.js                # Minified Supabase SDK v2.108.1
 ├── config.json                # Supabase creds + page status routing (200/503/404/500)
 ├── vercel.json                # cleanUrls, rewrites, redirects
 ├── build.js                   # esbuild bundler for react-src/
 ├── manifest.json              # PWA manifest ("Class Of Learners")
-├── sw.js                      # Service worker (cache-first, 7 core assets)
-├── version.json               # APK version info (v1.6, code 7)
-├── cast-version.json          # Cast app version (v1.1, code 2)
+├── sw.js                      # Service worker (col-cache-v4, 6 core assets)
+├── version.json               # COL APK version info (v1.6, code 7)
+├── cast-version.json          # CastFlow APK version (v1.1, code 2)
 ├── package.json               # React 19, Three.js 0.185, esbuild 0.28, TS 6
 ├── .prettierrc                # No semicolons, single quotes, tab width 2
-├── AGENTS.md                  # Agent rules for this repo
-├── CLAUDE.md                  # Project brief for Claude Code
+├── AGENTS.md / CLAUDE.md      # Agent rules + project brief
 ├── PROJECTS.md                # Project portfolio index
-├── Traffic_Archives_Index.md  # Historical archive index
 ├── robots.txt / sitemap.xml   # SEO
-├── style.css                  # Global styles
+├── style.css / visual.css     # Global styles
+├── logic.js / lvs.js          # Legacy shared logic / Academy level data (scoped)
 ├── global-gesture.js          # Gesture handling
-├── logic.js                   # Shared logic utilities
-├── lvs.js                     # LVS system
+├── COL.apk                    # Android app binary served at /COL.apk
 ├── supabase/                  # Supabase migrations/functions
 ├── react-src/                 # React/TS source for simulator bundle
 │   ├── GamePage.tsx           # Entrypoint → dist/Traffic/simulator-bundle.js
 │   ├── DrivingSimulator.tsx   # Top-level simulator component
 │   ├── types.ts               # Shared TypeScript types
-│   ├── engine/                # Game engine modules
-│   ├── vehicles/              # Vehicle system
-│   ├── hud/                   # HUD components
-│   ├── state/                 # State management
-│   ├── hooks/                 # React hooks
-│   ├── systems/               # Game systems
-│   ├── assets/                # Static assets (textures, models)
-│   ├── audio/                 # Audio files
-│   └── data/                  # Game data files
+│   ├── engine/ vehicles/ hud/ state/ hooks/ systems/
+│   ├── assets/ audio/ data/   # Static assets
 ├── cast/                      # CastFlow PWA (separate mini-app)
-│   ├── CastFlow.html
-│   ├── manifest.json
-│   └── sw.js
-├── dist/                      # Build output (committed — full site copy + Traffic bundle)
-├── .agents/skills/            # 100+ agent skills (3d-game-builder, browser-use, etc.)
-├── .claude/                   # Claude Code settings + skills
-├── .superpowers/              # Superpowers config
-├── .vercel/                   # Vercel CLI cache
+├── Cyberpunk/                 # Asset archive (legacy Traffic.html + models)
+├── dist/                      # Build output (committed — full site copy + bundle)
+├── docs/                      # Specs & plans (superpowers)
+├── my-video/ Terra3D/         # Side projects
 ├── node_modules/              # Dependencies
-├── Cyberpunk/                 # Archived Cyberpunk project
-├── docs/                      # Documentation
 └── Traffic/                   # 3D Driving Simulator sub-app (see below)
 ```
 
@@ -104,34 +89,11 @@ Vercel/
 
 ## Traffic Simulator (`Traffic/`)
 
-A 3D browser-based driving/pedestrian game with Indian city environments, 20+ levels, vehicle physics, pedestrian mode, traffic AI, and course certificates.
+A 3D browser-based driving/pedestrian game with Mumbai-themed environments, 50+ levels, vehicle physics, pedestrian mode, traffic AI, and course certificates. **Two stacks coexist:**
 
-### Modular Architecture (4 Systems)
+### Stack 1 — Legacy Static Game (no build step)
 
-| Module | File | Lines | Purpose |
-|--------|------|-------|---------|
-| **RoadGraph** | `road-graph.js` | ~400 | A* pathfinding, road segments, zones, crosswalks |
-| **RenderCore** | `render_core.js` | 474 | WebGL2 renderer, quality presets (Low/Med/High/Ultra), DRS, LOD |
-| **SafeZoneUI** | `safezone-ui.js` | ~300 | Responsive HUD, mobile detection, safe-area insets |
-| **ThreePools** | `pool.js` | ~350 | Object pooling for vehicles, pedestrians, debris (GC reduction) |
-
-### Integration Points in `game_core.js`
-
-```javascript
-// Constructor (line ~652)
-ThreePools.init(this);
-
-// RenderCore init (line ~719)
-this.renderCore = new RenderCore();
-
-// Level load (line ~2430)
-this.roadGraph = RoadGraph.fromLevelConfig(levelConfig);
-
-// Cleanup (line ~1723)
-ThreePools.releaseAll();
-```
-
-### Traffic Pages
+Plain `<script>` tags, Three.js r128 from CDN. Details in [`Traffic/AGENTS.md`](Traffic/AGENTS.md).
 
 | Page | Purpose |
 |------|---------|
@@ -140,16 +102,32 @@ ThreePools.releaseAll();
 | `TrafficDashboard.html` | Stats, leaderboards |
 | `TrafficSetup.html` | Vehicle/character selection |
 
-### Traffic Assets
+Modular subsystems loaded in strict order (`pools` → `road-graph` → `render_core` → `safezone-ui` → `game_core`):
 
-- `levels/` — 20+ level JSON configs
-- `Models/` — GLB models (vehicles, buildings, props)
-- `textures/` — Texture assets
-- `vehicles.js`, `bus.js`, `lambo.js`, `scenario2d.js` — Game logic modules
+| Module | File | Purpose |
+|--------|------|---------|
+| **ThreePools** | `pools.js` | Object pooling (meshes, vectors, groups) for zero-GC gameplay |
+| **RoadGraph** | `road-graph.js` | Road network nodes/edges, A* pathfinding, building slots |
+| **RenderCore** | `render_core.js` | WebGL renderer, quality presets (Low/Med/High/Ultra), DRS, LOD, bloom |
+| **SafeZoneUI** | `safezone-ui.js` | Responsive HUD layout with safe-area insets, mobile detection |
 
-### Integration Guide
+Other assets: `levels/` (level configs), `Models/` (GLB/FBX), `textures/`, plus generated asset bundles (`cert_assets.js` ~18MB, `env.js`, `auto.js`, `bus.js`, `lambo.js`, `vehicles.js`, `scenario2d.js`) — **do not hand-edit the bundles**.
 
-See [`Traffic/INTEGRATION.md`](Traffic/INTEGRATION.md) for full wiring instructions.
+### Stack 2 — Vite + TypeScript + Electron Port (`mumbai-traffic-hero`)
+
+Source in `Traffic/src/` (entry `index.html` → `src/main.ts`). Commands run from `Traffic/`:
+
+```bash
+npm run dev              # Vite dev server on :5173
+npm run build:web        # typecheck (tsc --noEmit) + build → dist-web/
+npm run typecheck        # tsc --noEmit
+npm run test:smoke       # Playwright smoke test (pw_test.js)
+npm run electron:portable# Electron portable build → dist-electron/
+```
+
+Path aliases: `@engine`, `@systems`, `@game`, `@ui`, `@state`, `@shaders`, `@materials`. Uses Three.js 0.170 + Rapier physics + Zustand + Howler.
+
+> ⚠️ Don't confuse `Traffic/dist/` (Electron build output) with root `dist/` (committed site copy).
 
 ---
 
@@ -192,7 +170,9 @@ See [`Traffic/INTEGRATION.md`](Traffic/INTEGRATION.md) for full wiring instructi
 
 **Order matters:** `col-router.js` → `col-ui.css` → `col-ui.js` → `col-auth.js`
 
-**`col-3d.js`** loads at end of `<body>` on pages needing Three.js backgrounds.
+**`col-3d.js`** loads at end of `<body>` on pages needing Three.js backgrounds (`home`, `about`, `school`, `privacy`, `terms`, `feedback`, `Career`, `Database_Logic`). Skips touch devices.
+
+**`col-achievements.js`** loads after `col-ui.js` on achievement pages (`dashboard.html`, `verify.html`).
 
 **Standalone pages** (`Career.html`, `Database_Logic.html`) only load `col-3d.js`.
 
@@ -205,9 +185,10 @@ See [`Traffic/INTEGRATION.md`](Traffic/INTEGRATION.md) for full wiring instructi
 | **Supabase Auth** (`col-auth.js`) | `col-auth.js`, `supabase.js` | All standard pages |
 | **QR Legacy Auth** | `qr.html` (inline `gSignIn()`) | `qr.html` only |
 
-- `col-auth.js` injects `colAuthModal`/`loginMo` modals, exposes `openLogin()`, `closeMo()`
-- Fires `col-auth-changed` CustomEvent on auth state change
-- Google OAuth Client ID: `500448449044-...` (hardcoded in multiple HTML files)
+- `col-auth.js` injects `colAuthModal`/`loginMo` modals, exposes `openLogin()`, `closeMo()`, `openGlobalLogin()`
+- Fires `col-auth-changed` CustomEvent on auth state change; state flows through `window.supabaseClient` / `window.colUser`
+- Google OAuth Client ID: `500448449044-...` — hardcoded **only** in `col-auth.js` and `qr.html`. Changing it breaks Google sign-in site-wide.
+- `config.json` and `Traffic/config.json` hold separate Supabase creds — never mix or sync them.
 
 ---
 
@@ -221,6 +202,8 @@ See [`Traffic/INTEGRATION.md`](Traffic/INTEGRATION.md) for full wiring instructi
 ---
 
 ## CSS Variables (CoL Design System)
+
+Defined in `col-ui.css`:
 
 ```css
 --void: #070a14;        /* background */
@@ -240,6 +223,8 @@ See [`Traffic/INTEGRATION.md`](Traffic/INTEGRATION.md) for full wiring instructi
 --mono: 'Space Mono';
 ```
 
+Use these tokens — don't invent new colors/fonts.
+
 ---
 
 ## Dual Config Override System
@@ -247,21 +232,22 @@ See [`Traffic/INTEGRATION.md`](Traffic/INTEGRATION.md) for full wiring instructi
 Two layers control page status (200/503/404/500):
 
 1. **`config.json`** — Fetched at runtime by `col-router.js` with cache-busting `?t=` timestamp. Global source of truth.
-2. **Inline Admin Overrides** — HTML pages read `localStorage.col_admin_config` to override status locally.
+2. **Inline Admin Overrides** — HTML pages read `localStorage.col_admin_config` to override status locally (managed by `admin.html`).
 
 ---
 
 ## Build System
 
 ```bash
-# Optional React bundle for Traffic simulator
+# Optional React bundle for Traffic simulator (root)
 npm run build
-# Runs build.js → esbuild bundles react-src/GamePage.tsx → dist/Traffic/simulator-bundle.js
+# Runs build.js → wipes dist/ and regenerates it as a full site copy,
+# then esbuild bundles react-src/GamePage.tsx → dist/Traffic/simulator-bundle.js
 ```
 
-- **No lint, no tests, no typecheck** in CI
-- TypeScript only used in `react-src/` (no root `tsconfig.json`)
-- `dist/` is committed to git (full site copy + Traffic bundle)
+- **No lint, no tests, no typecheck** enforced at root
+- TypeScript only matters in `react-src/` and `Traffic/src/` (no root `tsconfig.json`)
+- `dist/` is committed to git (~3,900 files) — only rebuild when the bundle changed
 
 ---
 
@@ -289,10 +275,12 @@ npm run build
 | Component | File | Details |
 |-----------|------|---------|
 | **Manifest** | `manifest.json` | Name: "Class Of Learners" |
-| **Service Worker** | `sw.js` | Cache: `col-cache-v2`, pre-caches 7 core assets |
-| **APK Version** | `version.json` | v1.6 (code 7), checked by `col-ui.js` |
-| **APK URL** | — | `advancedlogiclabs.dpdns.org/COL.apk` |
-| **Cast App** | `cast/` | Separate PWA with `CastFlow.html` |
+| **Service Worker** | `sw.js` | Cache `col-cache-v4`; pre-caches 6 assets (`/home.html`, `/col-ui.css`, `/col-ui.js`, `/col-router.js`, `/col-auth.js`, `/Icon.png`) |
+| **COL APK Version** | `version.json` | v1.6 (code 7), `apkUrl: "/COL.apk"` — checked by `col-ui.js` for in-app update prompts |
+| **COL APK Binary** | `COL.apk` (repo root) | Served at `/COL.apk` |
+| **Cast App** | `cast/` + `CastFlow.html` | Separate PWA, versioned via `cast-version.json` (v1.1, code 2) |
+
+Bump the SW cache name alongside its `SW_VERSION` date when changing cached assets.
 
 ---
 
@@ -310,28 +298,27 @@ npm run build
 
 Before deleting any file:
 
-1. Search ALL HTML files: `grep -r "filename" *.html`
-2. Check `config.json`, `vercel.json`, and any JS file
-3. Historical archives: `Traffic_Archives_Index.md` indexes old dirs (`Traffic - Major UI Change/`, `Traffic - Major Updates/`)
+1. Search ALL HTML files for references
+2. Check `config.json`, `vercel.json`, and JS files
+3. Remember `build.js` copies nearly everything into `dist/` — check nothing references it there either
+
+---
+
+## Formatting (`.prettierrc`)
+
+No semicolons · single quotes · tab width 2 · no trailing commas · print width 200.
+
+Prettier ignores: `supabase.js`, both `config.json`s, `dist/`, binaries (`*.glb`, `*.webp`, `*.png`, `*.apk`). Not enforced on older files — match the style of the file you're editing.
 
 ---
 
 ## Page Structure Pattern
 
-Every HTML page follows:
+Every standard HTML page follows:
 
-1. `<head>` — shared scripts (deferred), page-specific inline `<style>`
-2. `<body>` — HTML content
+1. `<head>` — shared scripts (deferred, strict order), page-specific inline `<style>`
+2. `<body>` — content
 3. End of `<body>` — page-specific inline `<script>` block
-
----
-
-## Installed Agent Skills (`.agents/skills/`)
-
-Registered in `skills-lock.json`:
-- `browser-use` — CDP browser automation
-- `valyu-best-practices` — Valyu API toolkit
-- 100+ skills: `3d-game-builder`, `3d-game-dev`, `humanizer`, `skill-creator`, etc.
 
 ---
 
@@ -344,6 +331,5 @@ MIT — see [LICENSE](LICENSE)
 ## Links
 
 - **Live Site:** `https://classoflearners.vercel.app` (or custom domain)
-- **APK Download:** `advancedlogiclabs.dpdns.org/COL.apk`
-- **GitHub:** `https://github.com/<org>/<repo>`
+- **APK Download:** `/COL.apk` (self-hosted at repo root)
 - **Vercel Dashboard:** `https://vercel.com/<team>/<project>`

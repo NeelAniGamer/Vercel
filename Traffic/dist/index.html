@@ -6,6 +6,11 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; connect-src 'self' https: wss: data: blob:; font-src 'self' https: data:;" />
   <title>Mumbai Traffic Hero Academy</title>
   <link rel="icon" type="image/png" href="./assets/Icon-nY8OFMj5.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="theme-color" content="#070a14" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -118,6 +123,15 @@
         if (loading) loading.classList.add('hidden');
       }, 500);
     });
+
+    // Register service worker (web only — Electron skips this)
+    if ('serviceWorker' in navigator && !window.electron) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch((err) =>
+          console.warn('[SW] registration failed:', err)
+        );
+      });
+    }
 
     // Error handling
     window.addEventListener('error', (e) => {

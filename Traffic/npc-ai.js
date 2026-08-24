@@ -20,7 +20,7 @@ const NPC_PROFILES = {
     aggression: 0.3,
     patience: 0.7,
     signalCompliance: 0.95,
-    laneDiscipline: 0.9,
+    laneDiscipline: 0.95,
     speedVariance: 0.15,
     overtakeThreshold: 0.6,
     sidewalkProbability: 0.0,
@@ -32,10 +32,10 @@ const NPC_PROFILES = {
     aggression: 0.8,
     patience: 0.3,
     signalCompliance: 0.6,
-    laneDiscipline: 0.5,
+    laneDiscipline: 0.7,
     speedVariance: 0.35,
     overtakeThreshold: 0.3,
-    sidewalkProbability: 0.1,
+    sidewalkProbability: 0.0,
     parkingSkill: 0.5
   },
   reckless_bike: {
@@ -44,10 +44,10 @@ const NPC_PROFILES = {
     aggression: 0.9,
     patience: 0.1,
     signalCompliance: 0.3,
-    laneDiscipline: 0.2,
+    laneDiscipline: 0.6,
     speedVariance: 0.5,
     overtakeThreshold: 0.15,
-    sidewalkProbability: 0.35,
+    sidewalkProbability: 0.0,
     parkingSkill: 0.2
   },
   rulebreaker: {
@@ -56,10 +56,10 @@ const NPC_PROFILES = {
     aggression: 0.6,
     patience: 0.4,
     signalCompliance: 0.25,
-    laneDiscipline: 0.3,
+    laneDiscipline: 0.65,
     speedVariance: 0.4,
     overtakeThreshold: 0.25,
-    sidewalkProbability: 0.25,
+    sidewalkProbability: 0.0,
     parkingSkill: 0.35
   },
   cautious: {
@@ -80,10 +80,10 @@ const NPC_PROFILES = {
     aggression: 0.7,
     patience: 0.2,
     signalCompliance: 0.4,
-    laneDiscipline: 0.35,
+    laneDiscipline: 0.7,
     speedVariance: 0.45,
     overtakeThreshold: 0.2,
-    sidewalkProbability: 0.15,
+    sidewalkProbability: 0.0,
     parkingSkill: 0.3
   },
   elderly: {
@@ -92,7 +92,7 @@ const NPC_PROFILES = {
     aggression: 0.05,
     patience: 0.95,
     signalCompliance: 0.98,
-    laneDiscipline: 0.85,
+    laneDiscipline: 0.92,
     speedVariance: 0.1,
     overtakeThreshold: 0.95,
     sidewalkProbability: 0.0,
@@ -104,10 +104,10 @@ const NPC_PROFILES = {
     aggression: 0.75,
     patience: 0.15,
     signalCompliance: 0.35,
-    laneDiscipline: 0.3,
+    laneDiscipline: 0.7,
     speedVariance: 0.3,
     overtakeThreshold: 0.15,
-    sidewalkProbability: 0.2,
+    sidewalkProbability: 0.0,
     parkingSkill: 0.4
   },
   tourist: {
@@ -116,7 +116,7 @@ const NPC_PROFILES = {
     aggression: 0.2,
     patience: 0.6,
     signalCompliance: 0.85,
-    laneDiscipline: 0.5,
+    laneDiscipline: 0.8,
     speedVariance: 0.2,
     overtakeThreshold: 0.7,
     sidewalkProbability: 0.0,
@@ -193,34 +193,136 @@ class NPCAI {
   _pickNextTarget() {
     if (this.route && this.route.length > 0 && this.routeIndex < this.route.length) {
       this.targetNode = this.route[this.routeIndex];
-      const edge = this.roadGraph.getEdgeTo(this.vehicle.currentNode, this.targetNode);
+      let edge = null;
+      if (this.vehicle.currentNode && this.roadGraph) {
+        edge = this.roadGraph.getEdgeTo(this.vehicle.currentNode, this.targetNode);
+      }
       if (edge) {
         this.currentEdge = edge;
         this.currentLane = this._pickInitialLane(edge);
+        this.vehicle.routeProgress = 0;
         return;
       }
     }
-    
 
-    if (this.trafficManager) {
-      this.targetNode = this.trafficManager._getNextRouteNode(this.vehicle.currentNode);
-      if (this.targetNode) {
-        const edge = this.roadGraph.getEdgeTo(this.vehicle.currentNode, this.targetNode);
-        if (edge) {
-          this.currentEdge = edge;
-          this.currentLane = this._pickInitialLane(edge);
-          this.vehicle.currentNode = this.targetNode;
-          return;
-        }
+    // Connect to adjacent node if available
+    if (this.vehicle.currentNode && this.vehicle.currentNode.neighbors && this.vehicle.currentNode.neighbors.length > 0) {
+      const neighbors = this.vehicle.currentNode.neighbors;
+      const nb = neighbors[Math.floor(Math.random() * neighbors.length)];
+      const edge = this.roadGraph ? this.roadGraph.getEdgeTo(this.vehicle.currentNode, nb) : null;
+      if (edge) {
+        this.targetNode = nb;
+        this.currentEdge = edge;
+        this.currentLane = this._pickInitialLane(edge);
+        this.vehicle.routeProgress = 0;
+        this.state = NPC_STATE.FOLLOW_LANE;
+        return;
       }
     }
-    
+
+    if (this.trafficManager && this.trafficManager._assignRoute) {
+      if (this.trafficManager._assignRoute(this.vehicle)) {
+        return;
+      }
+    }
 
     this.state = NPC_STATE.COMPLETE;
   }
 
+  _advanceRoute() {
+    this.routeIndex++;
+    if (this.targetNode) {
+      this.vehicle.currentNode = this.targetNode;
+    }
+    this._pickNextTarget();
+  }
+
+  _getVehicleAhead() {
+    if (!this.trafficManager || !this.vehicle) return null;
+    const myPos = this.vehicle.position;
+    if (!myPos) return null;
+    const myForward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+    const right = new THREE.Vector3(Math.cos(this.vehicle.rotation.y), 0, -Math.sin(this.vehicle.rotation.y));
+    let closestVeh = null;
+    let closestDist = Infinity;
+    const maxCheckDist = 40;
+
+    // Check other NPC vehicles
+    const vehicles = this.trafficManager.vehicles || [];
+    for (let i = 0; i < vehicles.length; i++) {
+      const v = vehicles[i];
+      if (!v || v === this.vehicle || !v.position) continue;
+      const dx = v.position.x - myPos.x;
+      const dz = v.position.z - myPos.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist > maxCheckDist || dist >= closestDist) continue;
+
+      const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
+      if (forwardDot > 0.65) {
+        const lateral = Math.abs(dx * right.x + dz * right.z);
+        if (lateral < 3.2) {
+          closestDist = dist;
+          closestVeh = v;
+        }
+      }
+    }
+
+    // Check player vehicle
+    const p = this.trafficManager.game?.playerVehicle || this.trafficManager.game?.player;
+    if (p && p.position && p !== this.vehicle) {
+      const dx = p.position.x - myPos.x;
+      const dz = p.position.z - myPos.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist <= maxCheckDist && dist < closestDist) {
+        const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
+        if (forwardDot > 0.65) {
+          const lateral = Math.abs(dx * right.x + dz * right.z);
+          if (lateral < 3.2) {
+            closestDist = dist;
+            closestVeh = p;
+          }
+        }
+      }
+    }
+
+    return closestVeh;
+  }
+
+  _getSignalAhead(signals) {
+    if (!signals || !signals.length || !this.vehicle || !this.vehicle.position) return null;
+    const myPos = this.vehicle.position;
+    const myForward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+    let nearestSignal = null;
+    let nearestDist = Infinity;
+
+    for (let i = 0; i < signals.length; i++) {
+      const sig = signals[i];
+      const pos = sig.pos || sig.position || sig.mesh?.position;
+      if (!pos) continue;
+      const dx = pos.x - myPos.x;
+      const dz = pos.z - myPos.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist > 35 || dist >= nearestDist) continue;
+      const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
+      if (forwardDot > 0.5) {
+        nearestDist = dist;
+        nearestSignal = sig;
+      }
+    }
+    return nearestSignal;
+  }
+
+  _distanceToSignal(signal) {
+    if (!signal || !this.vehicle || !this.vehicle.position) return Infinity;
+    const pos = signal.pos || signal.position || signal.mesh?.position;
+    if (!pos) return Infinity;
+    const dx = pos.x - this.vehicle.position.x;
+    const dz = pos.z - this.vehicle.position.z;
+    return Math.sqrt(dx * dx + dz * dz);
+  }
+
   _pickInitialLane(edge) {
-    const lanes = edge.lanes;
+    const lanes = edge.lanes || 1;
     if (lanes <= 1) return 0;
     if (this.profile.laneDiscipline > 0.8) return 0;
     return Math.floor(Math.random() * lanes);
@@ -270,7 +372,7 @@ class NPCAI {
     }
 
     this._applyPhysics(dt);
-    this._checkTransitions(playerVehicle, signals);
+    this._checkTransitions(playerVehicle, signals, dt);
     this._checkEmergencyAvoidance(playerVehicle);
   }
 
@@ -290,25 +392,41 @@ class NPCAI {
     const aheadVehicle = this._getVehicleAhead();
     const signalAhead = this._getSignalAhead(signals);
 
+    // 1. Red Signal Detection & Braking
     if (signalAhead && signalAhead.state === 'red') {
       const distToSignal = this._distanceToSignal(signalAhead);
-      if (distToSignal < 15) {
-        if (this.profile.signalCompliance < Math.random()) {
+      if (distToSignal < 24) {
+        if (this.profile.signalCompliance < Math.random() && this.isRuleBreaker) {
           this.signalViolation = true;
           this.state = NPC_STATE.FOLLOW_LANE;
         } else {
-          this.state = NPC_STATE.WAIT_SIGNAL;
-          this.waitTimer = 0;
+          this.desiredSpeed = 0;
+          if (distToSignal < 9) {
+            this.state = NPC_STATE.WAIT_SIGNAL;
+            this.waitTimer = 0;
+            this.currentSpeed *= 0.75;
+          }
+          return;
         }
-        return;
       }
     }
 
+    // 2. Lead Vehicle Detection, Follow Distance & Safe Queueing
     if (aheadVehicle) {
       const dist = this.vehicle.position.distanceTo(aheadVehicle.position);
-      if (dist < this.followDistance) {
-        this.desiredSpeed = Math.min(this.desiredSpeed, aheadVehicle.speed * 0.9);
-        if (dist < this.followDistance * 0.5 && this.profile.overtakeThreshold > Math.random() && this.laneChangeCooldown <= 0) {
+      const stopBuffer = 5.5;
+      if (dist < stopBuffer) {
+        // Complete stop behind the vehicle ahead
+        this.desiredSpeed = 0;
+        this.currentSpeed *= 0.75;
+      } else if (dist < this.followDistance) {
+        // Match lead vehicle speed with safe deceleration gradient
+        const leadSpd = aheadVehicle.currentSpeed || aheadVehicle.speed || 0;
+        const distRatio = Math.max(0, (dist - stopBuffer) / (this.followDistance - stopBuffer));
+        this.desiredSpeed = Math.min(this._getTargetSpeed(), leadSpd * distRatio);
+
+        // If stopped or crawling and road has multiple lanes, evaluate on-road overtake
+        if (dist < this.followDistance * 0.65 && this.laneChangeCooldown <= 0 && this.profile.overtakeThreshold > 0.15) {
           this._attemptOvertake(aheadVehicle);
           return;
         }
@@ -341,7 +459,7 @@ class NPCAI {
         this.overtakeTimer = 0;
         this.overtakeTarget = null;
         this.overtakePhase = 0;
-        this.laneChangeCooldown = 3 + Math.random() * 5;
+        this.laneChangeCooldown = 4 + Math.random() * 4;
       }
     }
 
@@ -367,208 +485,99 @@ class NPCAI {
   }
 
   _updateSidewalkDetour(dt) {
-    this.sidewalkTimer += dt;
-    this.desiredSpeed = this._getTargetSpeed() * 0.4;
-    this._steerTowardsTarget(dt);
-
-    if (this.sidewalkTimer > 5 + Math.random() * 10) {
-      this.state = NPC_STATE.FOLLOW_LANE;
-      this.sidewalkTimer = 0;
-    }
+    // Sidewalk detours disabled - return to road lane immediately
+    this.state = NPC_STATE.FOLLOW_LANE;
+    this.sidewalkTimer = 0;
   }
 
   _updatePark(dt) {
-    if (!this.parkingSpot) {
-      this._findParkingSpot();
-      return;
-    }
-
-    const dist = this.vehicle.position.distanceTo(this.parkingSpot.position);
-
-    switch (this.parkingPhase) {
-      case 0:
-        this.desiredSpeed = this._getTargetSpeed() * 0.5;
-        this._steerTowardsSpot(dt);
-        if (dist < 8) this.parkingPhase = 1;
-        break;
-      case 1:
-        this.desiredSpeed = this._getTargetSpeed() * 0.2;
-        this._alignForParking(dt);
-        if (dist < 3) this.parkingPhase = 2;
-        break;
-      case 2:
-        this.desiredSpeed = 0;
-        this.vehicle.velocity.set(0, 0, 0);
-        this.parkingPhase = 3;
-        break;
-      case 3:
-        this.state = NPC_STATE.COMPLETE;
-        break;
-    }
+    this.desiredSpeed = 0;
+    this.currentSpeed *= 0.8;
   }
 
   _updateComplete(dt) {
     this.desiredSpeed = 0;
-    this.vehicle.velocity.lerp(new THREE.Vector3(0, 0, 0), 0.1);
+    this._respawn();
   }
 
   _updateCrash(dt) {
+    this.desiredSpeed = 0;
+    this.currentSpeed = 0;
+    if (!this.crashTimer) this.crashTimer = 0;
     this.crashTimer += dt;
-    this.vehicle.velocity.multiplyScalar(0.95);
-    if (this.crashTimer > 5) {
+    if (this.crashTimer > 6) {
+      this.crashTimer = 0;
       this._respawn();
     }
   }
 
-  _checkTransitions(playerVehicle, signals) {
-    if (this.state === NPC_STATE.CRASH || this.state === NPC_STATE.COMPLETE) return;
-
-    if (this.vehicle.health <= 0) {
-      this.state = NPC_STATE.CRASH;
-      this.crashTimer = 0;
-      return;
-    }
-
-    if (this.routeIndex >= this.route.length) {
-      if (this.profile.parkingSkill > 0.7 && Math.random() < 0.1) {
-        this.state = NPC_STATE.PARK;
-        this.parkingPhase = 0;
-      } else {
-        this.state = NPC_STATE.COMPLETE;
-      }
-      return;
-    }
-
-    const signal = this._getSignalAhead(signals);
-    if (signal && signal.state === 'red') {
-      const dist = this._distanceToSignal(signal);
-      if (dist < 15 && this.state !== NPC_STATE.WAIT_SIGNAL) {
-        if (this.profile.signalCompliance >= Math.random()) {
-          this.state = NPC_STATE.WAIT_SIGNAL;
-        }
-      }
-    }
-
-    if (this.isRuleBreaker && this.profile.sidewalkProbability > Math.random()) {
-      if (this.state === NPC_STATE.FOLLOW_LANE && Math.random() < 0.001 * dt) {
-        this.state = NPC_STATE.SIDEWALK_DETOUR;
-        this.sidewalkTimer = 0;
-      }
-    }
-
-
-    this._ambCheckTimer = (this._ambCheckTimer || 0) + dt;
-    if (this.state === NPC_STATE.FOLLOW_LANE && this._ambCheckTimer > 0.5) {
-      this._ambCheckTimer = 0;
-      if (this._isAmbulanceNearby()) {
-        this.state = NPC_STATE.PULL_OVER;
-        this.pullOverTimer = 0;
-        return;
-      }
-    }
-
-    if (playerVehicle && this._isNearPlayer(playerVehicle)) {
+  _checkTransitions(playerVehicle, signals, dt) {
+    if (playerVehicle) {
       this._reactToPlayer(playerVehicle);
     }
-
-
-    if (this.state === NPC_STATE.FOLLOW_LANE && Math.random() < this.distractChance) {
-      this.state = NPC_STATE.DISTRACTED;
-      this.distractTimer = 0;
-    }
-
-
-    if (this.state === NPC_STATE.FOLLOW_LANE && this.profile.aggression > 0.5) {
-      const ahead = this._getVehicleAhead();
-      if (ahead) {
-        const dist = this.vehicle.position.distanceTo(ahead.position);
-        if (dist < this.followDistance * 0.6 && this.currentSpeed < this.desiredSpeed * 0.5) {
-          this.rageLevel = Math.min(100, this.rageLevel + dt * 35);
-          if (this.rageLevel >= 100) {
-            this.state = NPC_STATE.ROAD_RAGE;
-            this.rageTimer = 0;
-          }
-        } else {
-          this.rageLevel = Math.max(0, this.rageLevel - dt * 10);
-        }
-      }
+    if (this.state === NPC_STATE.FOLLOW_LANE && this._isAmbulanceNearby()) {
+      this.state = NPC_STATE.PULL_OVER;
     }
   }
-
-  _advanceRoute() {
-    this.routeIndex++;
-    this._pickNextTarget();
-  }
-
-  _getVehicleAhead() {
-    if (!this.currentEdge) return null;
-    const vehicles = this.trafficManager.getVehiclesOnEdge(this.currentEdge.id);
-    const forward = this.currentEdge.getForwardVector(this.vehicle.currentNode);
-    let closest = null, minDist = Infinity;
-    vehicles.forEach(v => {
-      if (v === this.vehicle) return;
-      const toV = new THREE.Vector3().subVectors(v.position, this.vehicle.position);
-      const proj = toV.dot(forward);
-      if (proj > 0 && proj < minDist) {
-        minDist = proj;
-        closest = v;
-      }
-    });
-    return closest;
-  }
-
-  _getSignalAhead(signals) {
-    if (!this.currentEdge) return null;
-    const forward = this.currentEdge.getForwardVector(this.vehicle.currentNode);
-    let closest = null, minDist = Infinity;
-    signals.forEach(s => {
-      const toS = new THREE.Vector3().subVectors(s.position, this.vehicle.position);
-      const proj = toS.dot(forward);
-      if (proj > 0 && proj < 100 && proj < minDist) {
-        minDist = proj;
-        closest = s;
-      }
-    });
-    return closest;
-  }
-
-  _distanceToSignal(signal) {
-    return this.vehicle.position.distanceTo(signal.position);
-  }
-
-
 
   _steerTowardsTarget(dt) {
     if (!this.targetNode) return;
     const targetPos = this.targetNode.position.clone();
     targetPos.y = this.vehicle.position.y;
     const toTarget = new THREE.Vector3().subVectors(targetPos, this.vehicle.position);
+    toTarget.y = 0;
     const dist = toTarget.length();
-    if (dist < 5) {
+    if (dist < 5.0) {
       this._advanceRoute();
       return;
     }
-    const desiredDir = toTarget.normalize();
-    const currentDir = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
-    const angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
-    const maxTurn = this.vehicle.stats.turn * dt * 60;
-    const clampedAngle = THREE.MathUtils.clamp(angle, -maxTurn, maxTurn);
+
+    // Look ahead along active lane spline for smooth arc turning
+    let lookTarget = targetPos;
+    if (this.currentEdge) {
+      const progress = Math.min(1.0, (this.vehicle.routeProgress || 0) + 0.12);
+      const lanePoint = this.currentEdge.getLaneCenter(this.currentLane, progress);
+      if (lanePoint) lookTarget = lanePoint;
+    }
+
+    const toWaypoint = new THREE.Vector3().subVectors(lookTarget, this.vehicle.position);
+    toWaypoint.y = 0;
+    const desiredHeading = Math.atan2(toWaypoint.x, toWaypoint.z);
+    let diff = desiredHeading - this.vehicle.rotation.y;
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+
+    const maxTurn = (this.vehicle.stats?.turn || 0.05) * dt * 60 * 1.5;
+    const clampedAngle = THREE.MathUtils.clamp(diff, -maxTurn, maxTurn);
     this.vehicle.rotation.y += clampedAngle;
   }
 
   _maintainLane(dt) {
     if (!this.currentEdge) return;
-    const laneCenter = this.currentEdge.getLaneCenter(this.currentLane, this.vehicle.routeProgress);
+    const progress = Math.max(0, Math.min(1, this.vehicle.routeProgress || 0));
+    const laneCenter = this.currentEdge.getLaneCenter(this.currentLane, progress);
+    if (!laneCenter) return;
+
+    // Smooth PID lateral convergence towards lane center
     const toCenter = new THREE.Vector3().subVectors(laneCenter, this.vehicle.position);
     toCenter.y = 0;
-    const offset = toCenter.length();
-    if (offset > 1.5) {
-      const right = new THREE.Vector3().crossVectors(
-        new THREE.Vector3(0, 1, 0),
-        new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y))
-      );
-      const correction = right.dot(toCenter.normalize()) * dt * 2;
-      this.vehicle.rotation.y += correction;
+    const lateralOffset = toCenter.length();
+    if (lateralOffset > 0.04) {
+      const correctiveSpeed = Math.min(lateralOffset * 4.0, 3.5);
+      const dirNudge = toCenter.normalize();
+      this.vehicle.position.x += dirNudge.x * correctiveSpeed * dt;
+      this.vehicle.position.z += dirNudge.z * correctiveSpeed * dt;
+    }
+
+    // Strict Road Surface Clamping: Vehicle never exceeds asphalt road width
+    const roadWidth = this.currentEdge.width || 14;
+    const roadHalfW = roadWidth / 2 - 1.2;
+    if (this.currentEdge.type === 'v' || Math.abs(this.currentEdge.direction?.z || 0) > 0.7) {
+      const centerX = (this.currentEdge.startNode.position.x + this.currentEdge.endNode.position.x) / 2;
+      this.vehicle.position.x = THREE.MathUtils.clamp(this.vehicle.position.x, centerX - roadHalfW, centerX + roadHalfW);
+    } else {
+      const centerZ = (this.currentEdge.startNode.position.z + this.currentEdge.endNode.position.z) / 2;
+      this.vehicle.position.z = THREE.MathUtils.clamp(this.vehicle.position.z, centerZ - roadHalfW, centerZ + roadHalfW);
     }
   }
 
@@ -592,7 +601,7 @@ class NPCAI {
       if (v === this.vehicle || v === ignoreVehicle) return false;
       if (v.currentLane !== lane) return false;
       const toV = new THREE.Vector3().subVectors(v.position, this.vehicle.position);
-      return toV.dot(forward) > -5 && toV.dot(forward) < 30;
+      return toV.dot(forward) > -8 && toV.dot(forward) < 32;
     });
   }
 
@@ -601,7 +610,7 @@ class NPCAI {
   }
 
   _executeOvertake(dt) {
-    this.desiredSpeed = this._getTargetSpeed() * 1.3;
+    this.desiredSpeed = this._getTargetSpeed() * 1.25;
     this._maintainLane(dt);
   }
 
@@ -609,7 +618,7 @@ class NPCAI {
     if (!this.overtakeTarget) return true;
     const toTarget = new THREE.Vector3().subVectors(this.overtakeTarget.position, this.vehicle.position);
     const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
-    return toTarget.dot(forward) < -5;
+    return toTarget.dot(forward) < -6;
   }
 
   _returnToLane(dt) {
@@ -915,12 +924,14 @@ class NPCAI {
 
   _respawn() {
     this.vehicle.health = 100;
-    this.vehicle.position.set(0, 0.5, 0);
     this.vehicle.velocity.set(0, 0, 0);
     this.currentSpeed = 0;
     this.state = NPC_STATE.IDLE;
     this.routeIndex = 0;
     this.crashTimer = 0;
+    if (this.trafficManager && this.trafficManager._despawnVehicle) {
+      this.trafficManager._despawnVehicle(this.vehicle);
+    }
   }
 
   getDebugInfo() {

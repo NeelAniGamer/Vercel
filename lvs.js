@@ -1,3 +1,8 @@
+// Legacy Academy level data + UI layer.
+// NOTE: Scoped inside an IIFE on purpose — Cyberpunk/Traffic.html loads this file
+// but defines its own inline LVS/BADGES/ui. Exposing globals here would cause
+// "Identifier has already been declared" errors and crash that page.
+;(function () {
 const LVS = [
   {
     "id": 1,
@@ -1084,8 +1089,26 @@ const LVS = [
         document.getElementById('blt').textContent = 'Level ' + lv.id; document.getElementById('bvh').textContent = lv.v;
         const items = [
           { id: 'intro', icon: 'ðŸ“–', label: 'Introduction', sub: 'Course overview' },
-          ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: 'âš–ï¸', label: 'Rule ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
-          { id: 'law', icon: 'ðŸ›ï¸', label: 'Framework', sub: 'Penal provisions' },
+          ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: 'âš–ï¸', label: 'Rule ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
+          { id: 'law', icon: 'ðŸ›ï¸', label: 'Framework', sub: 'Penal provisions' },
           { id: 'theory', icon: 'ðŸ“Š', label: 'Concepts', sub: 'Analytical metrics' },
           { id: 'practical', icon: 'ðŸ“–', label: 'Execution', sub: 'Simulation profile' }
         ];
+        this._sylItems = items; this._sylViewed = new Set(); this._sylLv = lv;
+        const list = document.getElementById('br-syllabus');
+        if (list) {
+          list.innerHTML = '';
+          items.forEach((it) => {
+            const el = document.createElement('div');
+            el.className = 'syl-item'; el.id = 'syl-' + it.id;
+            el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`;
+            el.onclick = () => this.showBriefing(lv.id);
+            list.appendChild(el);
+          });
+        }
+        this.show('screen-briefing');
+      },
+      _selSyl(id) { if (this._sylItems) { const it = this._sylItems.find(i => i.id === id); if (it && !this._sylViewed.has(id)) { this._sylViewed.add(id); const sylEl = document.getElementById('syl-' + id); if (sylEl) sylEl.classList.add('syl-done'); } } }
+    };
+    window.__lvsLegacy = { LVS, BADGES, ui, sfx, save, toast, mob };
+  })();

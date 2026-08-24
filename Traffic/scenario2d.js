@@ -853,7 +853,7 @@
       this.running = false
       if (this.animFrame) cancelAnimationFrame(this.animFrame)
       // Stop ambient sound
-      if (window.sfx) window.sfx.stopAmbient()
+      if (window.sfx && typeof window.sfx.stopAmbient === 'function') window.sfx.stopAmbient()
       if (this.canvas && this.canvas.parentNode) {
         this.canvas.style.transition = 'opacity 0.3s ease'; this.canvas.style.opacity = '0'
         setTimeout(() => { if (this.canvas && this.canvas.parentNode) this.canvas.remove(); this.canvas = null; this.ctx = null; if (this.onComplete) this.onComplete() }, 300)

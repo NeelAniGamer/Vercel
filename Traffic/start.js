@@ -548,16 +548,14 @@ preloadModels(() => {
   const urlParams = new URLSearchParams(window.location.search)
   let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
   let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode') || 'car'
+  let veh = urlParams.get('veh') || localStorage.getItem('traffic_veh') || (mode === 'pedestrian' ? 'pedestrian' : (S.vehicle?.toLowerCase() || 'car'))
 
   const isLevelsScreen = urlParams.get('screen') === 'levels'
 
   if (_isDriving) {
-
-
     if (!isLevelsScreen) {
       document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
     }
-
 
     if (lvId && !isLevelsScreen) {
       let levelObj = window.LVS ? window.LVS.find((l) => l.id == lvId) : null
@@ -568,7 +566,7 @@ preloadModels(() => {
           themeType: 'free_roam',
           name: 'Free Roam City',
           mode: mode || 'car',
-          vehMode: mode || 'car',
+          vehMode: veh || mode || 'car',
           assets: ['cars', 'suburban', 'industrial'],
           noTimer: true,
           noScore: true,
@@ -581,24 +579,26 @@ preloadModels(() => {
       if (levelObj) {
         ui.cur = levelObj
         ui.curMode = mode || 'car'
-        ui.cur.vehMode = ui.curMode
+        ui.cur.vehMode = (mode === 'pedestrian' ? 'pedestrian' : (veh || ui.curMode))
+        levelObj.mode = mode
+        levelObj.vehMode = ui.cur.vehMode
 
         let _drivingRedirected = false
         function _redirectToAcademy() {
           if (_drivingRedirected) return
           _drivingRedirected = true
-          window.location.href = 'Academy.html?screen=levels'
+          console.warn('[Driving] Canvas timeout or level launch issue')
         }
 
         const _startTime = Date.now()
         const _drivingTimeout = setTimeout(function _checkCanvasTimeout() {
           const gc = document.getElementById('gc')
+          const ls = document.getElementById('loading-screen')
+          const isLoading = ls && ls.style.display !== 'none' && !ls.classList.contains('fade-out')
           if (!gc || !gc.classList.contains('on')) {
-
-            if (Date.now() - _startTime < 30000) {
+            if (isLoading || Date.now() - _startTime < 30000) {
               setTimeout(_checkCanvasTimeout, 500)
             } else {
-              console.warn('[Driving] Canvas did not activate within 30s, redirecting to Academy')
               _redirectToAcademy()
             }
           }
@@ -612,7 +612,6 @@ preloadModels(() => {
               return
             }
             window.game.startLevel()
-
 
             const _startCheck = Date.now()
             ;(function _watchCanvas() {
@@ -641,7 +640,6 @@ preloadModels(() => {
           if (!_isMobile && document.documentElement.requestFullscreen && !document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(() => {})
           }
-          // If game isn't ready yet, wait for it (max 5s)
           if (!window.game) {
             var _playWait = setInterval(function() {
               if (window.game) {
@@ -675,10 +673,9 @@ preloadModels(() => {
           if (overlay && overlay.style.display !== 'none') {
             _doStartLevel()
           }
-        }, 5000)
+        }, 1500)
       } else {
-        _drivingRedirected = true
-        window.location.href = 'Academy.html?screen=levels'
+        console.warn('[Driving] Level not found');
       }
     } else {
 

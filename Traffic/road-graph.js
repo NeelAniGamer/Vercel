@@ -165,41 +165,61 @@ class RoadGraph {
   static fromLevelConfig(cfg) {
     const graph = new RoadGraph();
     const nodeMap = new Map();
+    const roads = cfg.roads || [];
 
-    cfg.roads.forEach(r => {
-      const isV = r.type === 'v';
-      const pts = isV
-        ? [{ x: r.x, z: r.z1 }, { x: r.x, z: r.z2 }]
-        : [{ x: r.x1, z: r.z }, { x: r.x2, z: r.z }];
-      pts.forEach(p => {
-        const k = `${Math.round(p.x)},${Math.round(p.z)}`;
-        if (!nodeMap.has(k)) {
-          const node = new RoadNode(`n_${graph.nodes.size}`, p.x, p.z);
-          nodeMap.set(k, node);
-          graph.nodes.set(node.id, node);
+    const getNode = (x, z) => {
+      const k = `${Math.round(x)},${Math.round(z)}`;
+      if (!nodeMap.has(k)) {
+        const node = new RoadNode(`n_${graph.nodes.size}`, x, z);
+        nodeMap.set(k, node);
+        graph.nodes.set(node.id, node);
+      }
+      return nodeMap.get(k);
+    };
+
+    // Precompute all v×h crossing points so overlapping roads connect.
+    const vRoads = roads.filter(r => r.type === 'v');
+    const hRoads = roads.filter(r => r.type === 'h');
+    const crossings = new Map(); // road -> array of crossing coords along its axis
+    vRoads.forEach(v => crossings.set(v, []));
+    hRoads.forEach(h => crossings.set(h, []));
+    vRoads.forEach(v => {
+      hRoads.forEach(h => {
+        // Vertical road: constant x=v.x spanning z1..z2. Horizontal: constant z=h.z spanning x1..x2
+        if (v.x >= Math.min(h.x1, h.x2) && v.x <= Math.max(h.x1, h.x2) &&
+            h.z >= Math.min(v.z1, v.z2) && h.z <= Math.max(v.z1, v.z2)) {
+          crossings.get(v).push(h.z);   // crossing at (v.x, h.z)
+          crossings.get(h).push(v.x);   // crossing at (v.x, h.z)
         }
       });
     });
 
-    cfg.roads.forEach(r => {
+    // Build nodes + edge segments per road (endpoints + sorted crossings)
+    roads.forEach(r => {
       const isV = r.type === 'v';
-      const pts = isV
-        ? [{ x: r.x, z: r.z1 }, { x: r.x, z: r.z2 }]
-        : [{ x: r.x1, z: r.z }, { x: r.x2, z: r.z }];
-      const kA = `${Math.round(pts[0].x)},${Math.round(pts[0].z)}`;
-      const kB = `${Math.round(pts[1].x)},${Math.round(pts[1].z)}`;
-      const nA = nodeMap.get(kA);
-      const nB = nodeMap.get(kB);
-      if (nA && nB) {
-        const edge = new RoadEdge(`e_${nA.id}_${nB.id}`, nA, nB, {
-          lanes: r.lanes || 1,
-          width: r.width || 12,
-          oneWay: r.oneWay || false,
-          speedLimit: r.speedLimit || 50,
-          type: r.roadType || 'arterial'
-        });
-        graph.edges.set(edge.id, edge);
-      }
+      const crs = (crossings.get(r) || []).slice().sort((a, b) => a - b);
+      const lo = isV ? Math.min(r.z1, r.z2) : Math.min(r.x1, r.x2);
+      const hi = isV ? Math.max(r.z1, r.z2) : Math.max(r.x1, r.x2);
+      // Unique sorted station points along the road axis
+      const stations = [lo, ...crs.filter(c => c > lo + 0.5 && c < hi - 0.5), hi]
+        .filter((val, i, arr) => i === 0 || val !== arr[i - 1]);
+      let prevNode = null;
+      stations.forEach(s => {
+        const px = isV ? r.x : s;
+        const pz = isV ? s : r.z;
+        const node = getNode(px, pz);
+        if (prevNode && prevNode !== node) {
+          const edge = new RoadEdge(`e_${prevNode.id}_${node.id}`, prevNode, node, {
+            lanes: r.lanes || 1,
+            width: r.width || 12,
+            oneWay: r.oneWay || false,
+            speedLimit: r.speedLimit || 50,
+            type: r.roadType || 'arterial'
+          });
+          graph.edges.set(edge.id, edge);
+        }
+        prevNode = node;
+      });
     });
 
     graph.edges.forEach(edge => {
@@ -328,7 +348,7 @@ class RoadGraph {
     while (open.size > 0) {
       let current = null, lowest = Infinity;
       open.forEach(n => {
-        const f = fScore.get(n) || Infinity;
+        const f = fScore.has(n) ? fScore.get(n) : Infinity;
         if (f < lowest) { lowest = f; current = n; }
       });
       if (current === endNode) return this._reconstructPath(cameFrom, current);
@@ -338,11 +358,10 @@ class RoadGraph {
         const edge = current.getEdgeTo(neighbor);
         if (!edge) return;
 
-
-
         if (edge.oneWay && edge.nodes[0] !== current) return;
-        const tentative = (gScore.get(current) || Infinity) + edge.length;
-        if (tentative < (gScore.get(neighbor) || Infinity)) {
+        // NOTE: use has() — gScore of exactly 0 is valid (falsy-zero bug made every path fail)
+        const tentative = (gScore.has(current) ? gScore.get(current) : Infinity) + edge.length;
+        if (!gScore.has(neighbor) || tentative < gScore.get(neighbor)) {
           cameFrom.set(neighbor, current);
           gScore.set(neighbor, tentative);
           fScore.set(neighbor, tentative + this._heuristic(neighbor, endNode));

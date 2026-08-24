@@ -1,8 +1,0 @@
-- generic [active]:
-  - generic:
-    - generic: Current Objective
-    - generic: Loading...
-  - text: 🎯
-  - generic:
-    - generic: 🚗
-    - generic: Driving...

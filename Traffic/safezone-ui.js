@@ -133,6 +133,7 @@ class SafeZoneGrid {
         position: relative !important;
         top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
         margin: 0 !important;
+        transform: none !important;
         pointer-events: auto;
         flex-shrink: 0;
         transition: transform 0.15s ease, opacity 0.15s ease, scale 0.15s ease;

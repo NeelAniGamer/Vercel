@@ -127,10 +127,74 @@ window.IndianVehicles = {
     return tex
   },
 
-  buildWheel: function () {
-    const w = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.2, 16), new THREE.MeshToonMaterial({ color: 0x111111, map: this.textures.wheel }))
+  buildWheel: function (scale = 1.0) {
+    const w = new THREE.Mesh(new THREE.CylinderGeometry(0.35 * scale, 0.35 * scale, 0.2 * scale, 16), new THREE.MeshToonMaterial({ color: 0x111111, map: this.textures.wheel }))
     w.rotation.z = Math.PI / 2
     return w
+  },
+
+  buildHeadlight: function (x, y, z) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.15, 0.05), new THREE.MeshBasicMaterial({ map: this.textures.headlight, color: 0xffffff }))
+    m.position.set(x, y, z)
+    return m
+  },
+
+  buildTaillight: function (x, y, z) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.15, 0.05), new THREE.MeshBasicMaterial({ map: this.textures.taillight, color: 0xff3333 }))
+    m.position.set(x, y, z)
+    return m
+  },
+
+  buildIndicator: function (x, y, z) {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.04), new THREE.MeshBasicMaterial({ map: this.textures.indicator, color: 0xffaa00 }))
+    m.position.set(x, y, z)
+    return m
+  },
+
+  addBumper: function (g, w, h, d, z) {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshToonMaterial({ color: 0x222222 }))
+    b.position.set(0, h / 2 + 0.2, z)
+    g.add(b)
+  },
+
+  addFourWheels: function (g, w, l, s = 1.0) {
+    const halfW = w / 2
+    const halfL = l / 3
+    const positions = [
+      [halfW, 0.35 * s, -halfL],
+      [-halfW, 0.35 * s, -halfL],
+      [halfW, 0.35 * s, halfL],
+      [-halfW, 0.35 * s, halfL]
+    ]
+    positions.forEach(([x, y, z]) => {
+      const wh = this.buildWheel(s)
+      wh.position.set(x, y, z)
+      g.add(wh)
+    })
+  },
+
+  addRoofRails: function (g, w, l, y) {
+    const railMat = new THREE.MeshToonMaterial({ color: 0x333333 })
+    ;[-w / 2 + 0.15, w / 2 - 0.15].forEach(x => {
+      const r = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, l * 0.6), railMat)
+      r.position.set(x, y, 0)
+      g.add(r)
+    })
+  },
+
+  addMirror: function (g, x, y, z) {
+    const mirMat = new THREE.MeshToonMaterial({ color: 0x222222 })
+    const m = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.15, 0.1), mirMat)
+    m.position.set(x, y, z)
+    g.add(m)
+  },
+
+  addWipers: function (g, y, z) {
+    const wpMat = new THREE.MeshBasicMaterial({ map: this.textures.wiper, transparent: true })
+    const wp = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.15), wpMat)
+    wp.position.set(0, y, z)
+    wp.rotation.x = Math.PI / 4
+    g.add(wp)
   },
 
   buildVehicle: function (type, colorHex) {
@@ -140,6 +204,7 @@ window.IndianVehicles = {
     const bMat = new THREE.MeshToonMaterial({ color: colorHex })
     const gMat = new THREE.MeshToonMaterial({ color: 0xffffff, map: this.textures.glass, transparent: true, opacity: 0.7 })
     const grMat = new THREE.MeshToonMaterial({ color: 0xffffff, map: this.textures.grille })
+    const chromeMat = new THREE.MeshPhongMaterial({ color: 0xcccccc, specular: 0xffffff, shininess: 80 })
 
     let body, roof
 

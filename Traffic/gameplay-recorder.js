@@ -436,13 +436,18 @@ window.GameplayRecorder = {
     requestAnimationFrame(() => overlay.classList.add('show'));
 
 
+    let continued = false;
     const doClose = () => {
       overlay.classList.remove('show');
       setTimeout(() => overlay.remove(), 300);
+      if (!continued) {
+        continued = true;
+        if (onContinue) onContinue();
+      }
     };
     overlay.querySelector('.dr-backdrop').onclick = doClose;
     overlay.querySelector('.dr-close').onclick = doClose;
-    overlay.querySelector('#dr-continue').onclick = () => { doClose(); if (onContinue) onContinue(); };
+    overlay.querySelector('#dr-continue').onclick = () => doClose();
     document.addEventListener('keydown', function onKey(e) {
       if (e.key === 'Escape') { doClose(); document.removeEventListener('keydown', onKey); }
     });

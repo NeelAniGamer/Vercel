@@ -2,8 +2,8 @@
 
 > **Purpose:** Convert the Traffic Driving Simulator from a static HTML web app into a dual-output project: web (Vercel) + desktop (Electron installer). Both share 100% of the game code.
 >
-> **Status:** Phase 1 — Foundation Complete (builds working)
-> **Last updated:** August 7, 2026
+> **Status:** Phases 1-6 Complete — dual-output pipeline verified (web + desktop)
+> **Last updated:** August 21, 2026
 
 ---
 
@@ -357,7 +357,52 @@ if (window.electron) {
 - [x] `index.html` — new Vite entry
 - [x] Both `vite build --mode web` and `vite build --mode electron` succeed
 
-**Next:** Phase 2 — Migrate remaining systems and start integrating with existing game logic.
+### Phase 2 Complete (System Migrations)
+- [x] `src/systems/RenderCore.ts` — quality presets, DRS, bloom, auto-detect
+- [x] `src/systems/SafeZoneUI.ts` — HUD zones, breakpoints, safe-area insets
+- [x] `src/game/Course.ts` — 13 modules, 53 levels, 4 modes, badges, Mumbai stats
+- [x] `src/game/RuleBreakerProfiles.ts` — 8 violator types with weighted spawning
+
+### Phase 3 Complete (Core Engine Systems)
+- [x] `src/systems/TrafficManager.ts` — NPC spawning, density, platoons, signal pressure
+- [x] `src/systems/NPCAI.ts` — 12-state FSM, 9 driver profiles + PedestrianAI (6 profiles)
+- [x] `src/systems/MissionManager.ts` — 14 mission types, collectibles, CampaignManager
+- [x] `src/systems/GameplayRecorder.ts` — event recording, grading, review modal
+- [x] `src/systems/WorldStreamer.ts` — chunk-based procedural city streaming
+
+### Phase 4 Complete (Bootstrap + UI/Scenario Bridge)
+- [x] `src/bootstrap.ts` — full ASSET_MANIFEST (~150 assets), ASSET_GROUPS, CORE_ASSETS,
+      expandAssets, loadLevelAssets (GLB/GLTF/FBX/OBJ+MTL), preloadModels, confetti
+- [x] `src/game/Scenario2D.ts` — typed bridge over legacy canvas scenario engine
+- [x] `src/ui/index.ts` — typed facade over ui.js (all screens: levels, briefing,
+      quiz, results, certificates, profile, badges) with UIAPI interface
+
+**Bridge pattern note:** scenario2d.js (867 lines of stable canvas drawing) and
+ui.js (4,460 lines of screen code) are imported as side-effect modules and exposed
+through typed APIs. Full line-by-line conversion is deferred to Phase 4b — the
+typed facades give new code a clean import surface today while the proven legacy
+implementations keep working unchanged.
+
+### Phase 5 Complete (Desktop Features)
+- [x] `electron/icons/icon.ico` + `icon.png` — generated from root Icon.png
+- [x] `electron/main.ts` — window state persistence (position/size/maximized, off-screen guard)
+- [x] Auto-updater (electron-updater 6.x → GitHub Releases, hourly checks, auto-install on quit)
+- [x] Save export/import — File menu dialogs, collects `mth4`/`traffic_*`/`col_*` localStorage keys
+- [x] Native menus — File (New Game/Restart/Export/Import), View (Fullscreen/DevTools/Zoom), Help (About/Updates/Bug)
+- [x] Crash log — uncaught exceptions append to userData/crash.log
+- [x] Navigation guard — external links open in system browser
+- [x] `build-electron.js` — esbuild compiles main.ts/preload.ts → CJS for Electron runtime
+- [x] **Packaging verified:** `electron-builder --dir` produces `dist-electron/win-unpacked/Mumbai Traffic Hero.exe`
+
+### Phase 6 Complete (Web Output + PWA)
+- [x] `public/manifest.webmanifest` — fullscreen landscape, theme color, maskable icons
+- [x] `public/sw.js` — cache-first assets, network-first navigation with offline fallback
+- [x] `public/icon-192.png` + `icon-512.png` — generated from root Icon.png
+- [x] SW registration in index.html (skipped in Electron automatically)
+- [x] `npm run build:web` → `dist-web/` ready for Vercel deploy
+
+**Next:** Deploy `dist-web/` to Vercel; create GitHub Releases feed for the desktop auto-updater;
+optional Phase 4b (line-by-line ui.js/scenario2d.js conversion).
 
 ---
 

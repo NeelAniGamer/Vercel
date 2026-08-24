@@ -663,17 +663,214 @@
       
       .tb {
         display: flex;
+        justify-content: center;
         align-items: center;
-        justify-content: space-between;
-        padding: 20px 40px;
-        padding-top: max(20px, env(safe-area-inset-top));
-        border-bottom: 1px solid var(--border);
-        background: var(--card);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        padding: 12px 32px;
+        padding-top: max(12px, env(safe-area-inset-top));
+        border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+        background: var(--card, rgba(13, 17, 26, 0.85));
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: 100;
+        width: 100%;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+      }
+
+      .tb-inner {
+        max-width: 1600px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .tb-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-shrink: 0;
+      }
+
+      .tb-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .tb-logo {
+        height: 38px;
+        width: 38px;
+        border-radius: 10px;
+        object-fit: contain;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        border: 1.5px solid rgba(255, 255, 255, 0.15);
+        transition: transform 0.2s ease;
+      }
+
+      .tb-brand:hover .tb-logo {
+        transform: scale(1.06);
+      }
+
+      .tb-brand-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tb-title {
+        font-family: 'Lora', serif;
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: var(--text, #e8e3d8);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        white-space: nowrap;
+      }
+
+      .tb-sub {
+        font-size: 0.68rem;
+        color: var(--muted, #8891aa);
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .tb-center {
+        flex: 1;
+        max-width: 380px;
+        min-width: 180px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .tb-search-wrap {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
+
+      .tb-search-icon {
+        position: absolute;
+        left: 14px;
+        color: var(--muted, #8891aa);
+        pointer-events: none;
+      }
+
+      .tb-search-wrap input {
+        width: 100%;
+        padding: 8px 36px 8px 36px;
+        border-radius: 20px;
+        border: 1.5px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.25);
+        color: var(--text, #fff);
+        font-size: 0.88rem;
+        font-family: 'Inter', sans-serif;
+        outline: none;
+        transition: all 0.25s ease;
+        backdrop-filter: blur(8px);
+      }
+
+      .tb-search-wrap input:focus {
+        border-color: var(--signal, #f2b84b);
+        background: rgba(0, 0, 0, 0.45);
+        box-shadow: 0 0 16px rgba(242, 184, 75, 0.2);
+      }
+
+      .tb-search-shortcut {
+        position: absolute;
+        right: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+        padding: 2px 6px;
+        font-size: 0.72rem;
+        color: var(--muted, #8891aa);
+        font-family: monospace;
+        pointer-events: none;
+      }
+
+      .tb-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+
+      .tb-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        padding: 0 16px;
+        border-radius: 12px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        user-select: none;
+      }
+
+      .tb-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .tb-btn:active {
+        transform: translateY(0) scale(0.97);
+      }
+
+      .tb-btn-settings {
+        background: rgba(0, 240, 204, 0.08);
+        border: 1.5px solid rgba(0, 240, 204, 0.45);
+        color: #00f0cc;
+      }
+
+      .tb-btn-settings:hover {
+        background: rgba(0, 240, 204, 0.16);
+        box-shadow: 0 6px 18px rgba(0, 240, 204, 0.25);
+      }
+
+      .tb-btn-auth {
+        background: linear-gradient(135deg, rgba(242, 184, 75, 0.18), rgba(251, 191, 36, 0.1));
+        border: 1.5px solid rgba(242, 184, 75, 0.45);
+        color: #f2b84b;
+      }
+
+      .tb-btn-auth:hover {
+        background: linear-gradient(135deg, rgba(242, 184, 75, 0.28), rgba(251, 191, 36, 0.2));
+        box-shadow: 0 6px 18px rgba(242, 184, 75, 0.25);
+      }
+
+      .tb-btn-progress {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1.5px solid rgba(34, 197, 94, 0.35);
+        color: #4ade80;
+        font-weight: 700;
+        cursor: default;
+      }
+
+      .tb-btn-icon {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1.5px solid rgba(255, 255, 255, 0.12);
+        color: var(--text, #fff);
+      }
+
+      .tb-btn-icon:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.25);
       }
 
       .back-btn {
@@ -688,9 +885,10 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        font-size: 0.95rem;
-        padding: 12px 24px;
-        min-height: 48px;
+        font-size: 0.9rem;
+        padding: 8px 18px;
+        min-height: 38px;
+        height: 38px;
         transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
                     background 0.2s ease,
                     border-color 0.2s ease,
@@ -709,6 +907,71 @@
       .back-btn:active {
         transform: translateY(0) scale(0.97);
         transition-duration: 0.1s;
+      }
+
+      @media (max-width: 1180px) {
+        .tb-center {
+          max-width: 260px;
+        }
+        .tb-btn-lbl, .auth-text {
+          display: none;
+        }
+        .tb-btn-settings, .tb-btn-auth {
+          padding: 0 10px;
+        }
+        .tb-sub {
+          display: none;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .tb {
+          padding: 10px 16px;
+        }
+        .tb-inner {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+        }
+        .tb-left {
+          gap: 10px;
+        }
+        .tb-logo {
+          width: 32px;
+          height: 32px;
+        }
+        .tb-title {
+          font-size: 1rem;
+        }
+        .tb-sub {
+          display: none;
+        }
+        .tb-center {
+          order: 3;
+          max-width: 100%;
+          width: 100%;
+          min-width: 100%;
+        }
+        .tb-right {
+          gap: 6px;
+        }
+        .tb-btn {
+          height: 34px;
+          padding: 0 10px;
+          font-size: 0.8rem;
+        }
+        .tb-btn-icon {
+          width: 34px;
+          height: 34px;
+        }
+        .back-btn {
+          height: 34px;
+          min-height: 34px;
+          padding: 6px 12px;
+          font-size: 0.82rem;
+        }
       }
 
       .lw {
@@ -1080,15 +1343,25 @@
       
       .br-w {
         display: flex;
-        max-width: 100%;
-        margin: 40px auto;
-        gap: 40px;
+        max-width: 1440px;
+        margin: 24px auto;
+        gap: 32px;
         width: 100%;
-        padding: 0 40px;
+        padding: 0 32px;
+        align-items: flex-start;
       }
 
       .br-l {
-        flex: 0 0 400px;
+        flex: 0 0 340px;
+        position: sticky;
+        top: 80px;
+        background: var(--card, rgba(13, 17, 26, 0.7));
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+        border-radius: 20px;
+        padding: 20px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
       }
 
       .br-r {
@@ -1097,41 +1370,41 @@
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: 20px;
+        gap: 16px;
         min-width: 0;
-        padding-bottom: 40px;
+        padding-bottom: 60px;
       }
 
-      
-      @media (max-width: 1280px) {
+      @media (max-width: 1200px) {
         .br-l {
-          flex: 0 0 320px;
+          flex: 0 0 300px;
+          padding: 16px;
         }
       }
       
-      
-      @media (max-width: 768px) {
+      @media (max-width: 860px) {
         .br-w {
           flex-direction: column;
-          padding: 0 20px;
-          margin: 20px auto;
-          gap: 24px;
+          padding: 0 16px;
+          margin: 16px auto;
+          gap: 20px;
         }
         .br-l {
+          position: static;
           flex: 1;
           width: 100%;
-          order: 2; 
+          order: 1;
         }
         .br-r {
-          order: 1;
+          order: 2;
         }
       }
 
       .br-prog {
-        background: var(--hover);
+        background: rgba(255, 255, 255, 0.08);
         height: 6px;
         border-radius: 3px;
-        margin: 24px 0 8px;
+        margin: 16px 0 6px;
         overflow: hidden;
       }
 
@@ -1208,15 +1481,17 @@
       
       .level-map-container {
         position: relative;
-        height: calc(100vh - 160px);
-        min-height: 400px;
+        height: calc(100vh - 80px);
+        min-height: 500px;
         overflow: hidden;
         padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         background:
-          radial-gradient(ellipse at 30% 20%, rgba(94,212,245,0.08) 0%, transparent 50%),
-          radial-gradient(ellipse at 70% 80%, rgba(242,184,75,0.06) 0%, transparent 50%),
-          radial-gradient(ellipse at 50% 50%, rgba(52,211,153,0.04) 0%, transparent 60%),
-          var(--bg);
+          radial-gradient(ellipse at 50% 20%, rgba(94,212,245,0.08) 0%, transparent 60%),
+          radial-gradient(ellipse at 50% 80%, rgba(242,184,75,0.06) 0%, transparent 60%),
+          var(--bg, #070a14);
       }
       .map-scroll-area {
         width: 100%;
@@ -1227,87 +1502,113 @@
         scroll-behavior: smooth;
         scrollbar-width: thin;
         scrollbar-color: rgba(255,255,255,0.12) transparent;
-        padding-bottom: 120px;
+        padding-top: 50px;
+        padding-bottom: 140px;
+        display: flex;
+        justify-content: center;
       }
-      .map-scroll-area::-webkit-scrollbar { width: 5px; }
+      .map-scroll-area::-webkit-scrollbar { width: 6px; }
       .map-scroll-area::-webkit-scrollbar-track { background: transparent; }
-      .map-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+      .map-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
       .level-path-svg {
         width: 100%;
-        min-height: 2000px;
+        max-width: 960px;
+        min-width: 320px;
+        height: auto;
         display: block;
         overflow: visible;
+        margin: 0 auto;
       }
 
-      
+      /* Nodes */
       .level-node {
         cursor: pointer;
-        transition: filter 0.3s ease;
+        user-select: none;
       }
-      .level-node:hover { filter: brightness(1.15); }
-      .level-node.locked { cursor: not-allowed; opacity: 0.7; }
-      .level-node.locked:hover { filter: none; }
+      .level-node .node-outer {
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      .level-node:hover .node-outer {
+        transform: scale(1.15);
+      }
+      .level-node.locked {
+        cursor: not-allowed;
+        opacity: 0.85;
+      }
+      .level-node.locked:hover .node-outer {
+        transform: scale(1.04);
+      }
 
-      
+      /* Completed nodes */
       .level-node.completed .node-outer {
-        filter: drop-shadow(0 0 14px rgba(52,211,153,0.5)) drop-shadow(0 4px 10px rgba(0,0,0,0.25));
-        transition: filter 0.3s ease;
+        filter: drop-shadow(0 0 12px rgba(52,211,153,0.6));
       }
       .level-node.completed:hover .node-outer {
-        filter: drop-shadow(0 0 20px rgba(52,211,153,0.7)) drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+        filter: drop-shadow(0 0 20px rgba(52,211,153,0.9));
       }
 
-      
+      /* Current active node */
       .level-node.current .node-outer {
-        filter: drop-shadow(0 0 18px rgba(242,184,75,0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.3));
-        animation: currentPulse 2.2s ease-in-out infinite;
+        filter: drop-shadow(0 0 20px rgba(242,184,75,0.8));
+        animation: currentPulse 2s ease-in-out infinite;
       }
       @keyframes currentPulse {
-        0%,100% { filter: drop-shadow(0 0 14px rgba(242,184,75,0.5)) drop-shadow(0 4px 10px rgba(0,0,0,0.25)); }
-        50% { filter: drop-shadow(0 0 28px rgba(242,184,75,0.85)) drop-shadow(0 4px 16px rgba(0,0,0,0.35)); }
+        0%,100% { filter: drop-shadow(0 0 12px rgba(242,184,75,0.6)); }
+        50% { filter: drop-shadow(0 0 26px rgba(242,184,75,0.95)) drop-shadow(0 0 6px rgba(255,255,255,0.5)); }
       }
       .level-node.current .node-ring {
-        animation: ringRotate 6s linear infinite;
+        animation: ringRotate 8s linear infinite;
+        transform-box: fill-box;
         transform-origin: center;
       }
       @keyframes ringRotate { to { transform: rotate(360deg); } }
 
-      
+      /* Level node labels */
       .level-node-label {
-        font-size: 14px;
-        fill: white;
-        font-weight: 900;
-        font-family: 'Inter', sans-serif;
-        text-anchor: middle;
-        dominant-baseline: central;
-        pointer-events: none;
-      }
-      .level-node-icon {
-        font-size: 20px;
-        text-anchor: middle;
-        dominant-baseline: central;
-        pointer-events: none;
-      }
-
-      
-      .category-marker {
-        pointer-events: none;
-      }
-      .category-marker text {
-        font-family: 'Inter', sans-serif;
+        font-size: 15px;
+        fill: #ffffff;
         font-weight: 800;
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        fill: var(--accent);
-      }
-      .category-marker .cat-emoji {
-        font-size: 28px;
+        font-family: 'Inter', -apple-system, sans-serif;
         text-anchor: middle;
         dominant-baseline: central;
+        pointer-events: none;
       }
 
-      
+      /* Interactive Level Side Tag Card */
+      .level-tag-card {
+        cursor: pointer;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
+      }
+      .level-tag-card:hover {
+        transform: scale(1.06);
+        filter: brightness(1.18);
+      }
+      .level-tag-card rect {
+        transition: stroke 0.2s ease, fill 0.2s ease;
+      }
+      .level-tag-card:hover rect {
+        stroke: rgba(242, 184, 75, 0.8) !important;
+      }
+
+      /* Checkpoint milestone banners */
+      .checkpoint-banner {
+        pointer-events: none;
+        user-select: none;
+      }
+
+      /* Shake animation for locked levels */
+      @keyframes nodeShake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-6px); }
+        40%, 80% { transform: translateX(6px); }
+      }
+      .level-node.shake .node-outer {
+        animation: nodeShake 0.4s ease-in-out;
+      }
+
+      /* Sparkles */
       @keyframes sparkleFloat {
         0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
         20% { opacity: 1; }
@@ -1315,13 +1616,6 @@
       }
       .sparkle-particle {
         animation: sparkleFloat var(--dur, 1.2s) var(--delay, 0s) ease-out forwards;
-      }
-
-      
-      @keyframes mapNodeIn {
-        0% { opacity: 0; transform: scale(0.4); }
-        60% { opacity: 1; transform: scale(1.1); }
-        100% { opacity: 1; transform: scale(1); }
       }
 
       
@@ -1698,360 +1992,796 @@
         .level-map-container { height: calc(100vh - 200px); min-height: 350px; }
         .level-node-label { font-size: 12px; }
         .level-node-icon { font-size: 16px; }
-        .lw { padding: 30px 24px; }
+        .lw { padding: 24px 16px; }
       }
 
       .category-header {
-        font-family: 'Instrument Serif', serif;
-        font-size: 2.5rem;
-        color: var(--yellow);
-        margin-top: 40px;
-        margin-bottom: 24px;
-        padding-bottom: 16px;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.05);
-        text-transform: capitalize;
-        letter-spacing: 0.02em;
-        text-shadow: 0 4px 20px rgba(255, 213, 74, 0.1);
+        font-family: var(--sans, 'Inter'), -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #fff;
+        margin-top: 36px;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        letter-spacing: -0.01em;
       }
 
-      
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 18px;
+        margin-bottom: 32px;
+      }
 
-      
-      .syl-item {
+      /* Level Grid Cards */
+      .level-grid-card {
         position: relative;
-        background: var(--card);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid var(--border);
-        border-radius: 24px;
-        padding: 28px;
+        background: var(--card, rgba(13, 17, 26, 0.7));
+        border: 1.5px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 20px;
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        justify-content: space-between;
+        min-height: 180px;
         cursor: pointer;
-        overflow: hidden;
-        box-shadow:
-          0 8px 32px rgba(0, 0, 0, 0.05),
-          inset 0 1px 1px rgba(255, 255, 255, 0.5);
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        z-index: 1;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        user-select: none;
+      }
+      .level-grid-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(242, 184, 75, 0.5);
+        background: rgba(20, 26, 38, 0.9);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(242, 184, 75, 0.12);
+      }
+      .level-grid-card.syl-done {
+        border-color: rgba(16, 185, 129, 0.25);
+      }
+      .level-grid-card.syl-done:hover {
+        border-color: rgba(16, 185, 129, 0.6);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(16, 185, 129, 0.15);
       }
 
-      
-      .syl-item::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: 24px;
-        padding: 2px;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%);
-        -webkit-mask:
-          linear-gradient(#fff 0 0) content-box,
-          linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        z-index: -1;
-        transition:
-          opacity 0.4s ease,
-          background 0.4s ease;
-        pointer-events: none;
+      .lgc-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
       }
-
-      
-      .syl-item:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow:
-          0 20px 40px rgba(0, 0, 0, 0.1),
-          inset 0 1px 2px rgba(255, 255, 255, 0.8);
-        background: var(--hover);
+      .lgc-pill-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-
-      .syl-item:active {
-        transform: translateY(-4px) scale(1.0);
-        transition-duration: 0.1s;
+      .lgc-icon {
+        font-size: 1.4rem;
+        line-height: 1;
       }
-
-      .syl-item:hover::before {
-        background: linear-gradient(135deg, var(--accent) 0%, var(--green) 100%);
-        opacity: 0.5;
+      .lgc-lesson-num {
+        font-family: monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--signal, #f2b84b);
+        background: rgba(242, 184, 75, 0.12);
+        border: 1px solid rgba(242, 184, 75, 0.25);
+        padding: 3px 8px;
+        border-radius: 6px;
+        text-transform: uppercase;
       }
-
-      
-      .syl-lbl {
-        font-family: 'Lora', serif;
-        font-size: 1.6rem;
-        font-weight: 600;
-        color: var(--text);
-        line-height: 1.2;
-        padding-right: 48px;
-      }
-
-      body.lm .syl-lbl {
-        color: var(--ink);
-      }
-
-      .syl-sub {
-        font-family: 'Inter', sans-serif;
-        font-size: 0.95rem;
-        color: var(--muted2);
-        line-height: 1.6;
-      }
-
-      body.lm .syl-sub {
-        color: #475569;
-      }
-
-      
-      .syl-ck {
-        position: absolute;
-        top: 28px;
-        right: 28px;
-        width: 32px;
-        height: 32px;
+      .lgc-status-indicator {
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
-        border: 2.5px solid rgba(184, 155, 255, 0.4);
-        background: rgba(184, 155, 255, 0.1);
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .lgc-status-indicator.done {
+        background: #10b981;
+        color: #fff;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+      }
+      .lgc-status-indicator.started {
+        background: rgba(56, 189, 248, 0.2);
+        color: #38bdf8;
+        border: 1.5px solid #38bdf8;
+      }
+      .lgc-status-indicator.locked {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--muted, #8891aa);
+        border: 1.5px solid rgba(255, 255, 255, 0.15);
       }
 
-      .syl-item:hover .syl-ck {
-        border-color: rgba(255, 255, 255, 0.6);
-        transform: scale(1.1);
+      .lgc-body {
+        flex: 1;
+        margin-bottom: 14px;
+      }
+      .lgc-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 6px;
+        line-height: 1.35;
+      }
+      .lgc-desc {
+        font-size: 0.82rem;
+        color: var(--muted, #8891aa);
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
       }
 
-      
-      .syl-item.syl-done {
-        background: rgba(0, 240, 204, 0.08);
+      .lgc-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .lgc-badges {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .lgc-status-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+      .lgc-status-badge.done {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+      .lgc-status-badge.started {
+        background: rgba(56, 189, 248, 0.15);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.3);
+      }
+      .lgc-status-badge.locked {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--muted, #8891aa);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .lgc-action-btn {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--signal, #f2b84b);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: transform 0.2s ease;
+      }
+      .level-grid-card:hover .lgc-action-btn {
+        transform: translateX(3px);
       }
 
-      .syl-item.syl-done::before {
-        background: linear-gradient(135deg, rgba(0, 240, 204, 0.6) 0%, rgba(255, 255, 255, 0) 100%);
+      /* High-Definition 2.5D Scenario Simulation Container */
+      .scenario-sim-container {
+        position: relative;
+        width: 100%;
+        height: 290px;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #080d1a;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        user-select: none;
       }
-
-      .syl-item.syl-done .syl-ck {
-        background: #00f0cc;
-        border-color: #00f0cc;
-        box-shadow: 0 0 20px rgba(0, 240, 204, 0.5);
-        animation: pulse-ck 2s ease-in-out infinite;
+      #scenario-sim-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
       }
-
-      .syl-item.syl-done .syl-ck::after {
-        content: '';
+      .sim-hud-top {
         position: absolute;
-        top: 5px;
-        left: 9px;
-        width: 6px;
-        height: 13px;
-        border: solid #ffffff;
-        border-width: 0 3px 3px 0;
-        transform: rotate(45deg);
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        pointer-events: none;
+        z-index: 10;
       }
-
-      
-      .syl-item.syl-started {
-        background: rgba(94, 212, 245, 0.08);
+      .sim-live-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(13, 17, 26, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.68rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 0.8px;
+        backdrop-filter: blur(12px);
       }
-
-      .syl-item.syl-started::before {
-        background: linear-gradient(135deg, rgba(94, 212, 245, 0.6) 0%, rgba(255, 255, 255, 0) 100%);
-      }
-
-      .syl-item.syl-started .syl-ck {
-        background: rgba(94, 212, 245, 0.2);
-        border-color: #5ed4f5;
-        box-shadow: 0 0 14px rgba(94, 212, 245, 0.4);
-      }
-
-      .syl-item.syl-started .syl-ck::after {
-        content: '';
-        position: absolute;
+      .sim-record-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #5ed4f5;
-        box-shadow: 0 0 8px rgba(94, 212, 245, 0.7);
+        background: #ef4444;
+        box-shadow: 0 0 8px #ef4444;
+        animation: simDotPulse 1.2s infinite;
       }
-
-      @keyframes pulse-ck {
-        0%,
-        100% {
-          box-shadow: 0 0 20px rgba(0, 240, 204, 0.5);
-        }
-        50% {
-          box-shadow:
-            0 0 30px rgba(0, 240, 204, 0.8),
-            0 0 40px rgba(0, 240, 204, 0.3);
-        }
+      @keyframes simDotPulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.3; transform: scale(0.85); }
       }
-
-      
-      .syl-badge {
-        display: inline-flex;
+      .sim-condition-pill {
+        background: rgba(13, 17, 26, 0.85);
+        border: 1px solid rgba(242, 184, 75, 0.3);
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--signal, #f2b84b);
+        letter-spacing: 0.4px;
+        backdrop-filter: blur(12px);
+      }
+      .sim-rule-pill {
+        background: rgba(13, 17, 26, 0.85);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #38bdf8;
+        backdrop-filter: blur(12px);
+      }
+      .sim-hud-bottom {
+        position: absolute;
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        display: flex;
         align-items: center;
-        gap: 4px;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.7rem;
-        font-family: 'Space Mono', monospace;
-        font-weight: 600;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        margin-top: 4px;
-        width: fit-content;
-        background: rgba(184, 155, 255, 0.1);
-        border: 1px solid rgba(184, 155, 255, 0.2);
-        color: rgba(184, 155, 255, 0.7);
-        transition: all 0.3s ease;
+        justify-content: space-between;
+        gap: 12px;
+        z-index: 10;
       }
-
-      .syl-item.syl-done .syl-badge {
-        background: rgba(0, 240, 204, 0.12);
-        border-color: rgba(0, 240, 204, 0.3);
-        color: #00f0cc;
-      }
-
-      .syl-item.syl-started .syl-badge {
-        background: rgba(94, 212, 245, 0.12);
-        border-color: rgba(94, 212, 245, 0.3);
-        color: #5ed4f5;
-      }
-
-      .syl-item:not(.syl-done):not(.syl-started) .syl-badge {
-        background: rgba(184, 155, 255, 0.08);
-        border-color: rgba(184, 155, 255, 0.15);
-        color: rgba(184, 155, 255, 0.5);
-      }
-
-      
-      .syl-top {
+      .sim-telemetry-bar {
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 4px;
+        background: rgba(13, 17, 26, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 6px 14px;
+        border-radius: 10px;
+        backdrop-filter: blur(12px);
       }
-
-      .syl-icon {
-        font-size: 2rem;
-        line-height: 1;
-        flex-shrink: 0;
+      .sim-telem-item {
+        display: flex;
+        flex-direction: column;
       }
-
-      .syl-num {
-        font-family: 'Space Mono', monospace;
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 0.06em;
+      .sim-telem-lbl {
+        font-size: 0.6rem;
+        color: var(--muted, #8891aa);
+        font-weight: 700;
+        letter-spacing: 0.5px;
         text-transform: uppercase;
-        padding: 3px 10px;
+      }
+      .sim-telem-val {
+        font-family: monospace;
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: #fff;
+      }
+      .sim-ctrl-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(13, 17, 26, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 6px 12px;
+        border-radius: 10px;
+        backdrop-filter: blur(12px);
+      }
+      .sim-btn {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+      }
+      .sim-btn:hover {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(242, 184, 75, 0.5);
+      }
+      .sim-timeline-wrap {
+        width: 110px;
+        display: flex;
+        align-items: center;
+      }
+      .sim-slider {
+        width: 100%;
+        height: 4px;
+        accent-color: var(--signal, #f2b84b);
+        cursor: pointer;
+      }
+      .sim-alert-banner {
+        position: absolute;
+        top: 48px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-10px);
+        background: rgba(239, 68, 68, 0.9);
+        border: 1px solid #f87171;
+        color: #fff;
+        padding: 6px 16px;
         border-radius: 20px;
-        background: rgba(184, 155, 255, 0.12);
-        border: 1px solid rgba(184, 155, 255, 0.2);
-        color: rgba(184, 155, 255, 0.7);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        z-index: 20;
+      }
+      .sim-alert-banner.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
       }
 
+      
+
+      
+      /* Sidebar Syllabus Items */
+      .syl-item {
+        position: relative;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1.5px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        user-select: none;
+      }
+      .syl-item:hover {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateX(4px);
+      }
+      .syl-item.syl-active {
+        background: rgba(242, 184, 75, 0.12);
+        border-color: var(--signal, #f2b84b);
+        box-shadow: 0 4px 20px rgba(242, 184, 75, 0.15);
+      }
+      .syl-item.syl-active .syl-lbl {
+        color: var(--signal, #f2b84b);
+      }
+      .syl-item.syl-done .syl-ck {
+        background: #10b981;
+        border-color: #34d399;
+      }
+      .syl-item.syl-done .syl-ck::after {
+        content: '✓';
+        color: #fff;
+        font-size: 11px;
+        font-weight: 900;
+      }
+      .syl-ck {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(255, 255, 255, 0.25);
+        background: rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+      }
       .syl-info {
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        margin-top: 4px;
+        gap: 2px;
+        min-width: 0;
+        flex: 1;
+      }
+      .syl-lbl {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--text, #fff);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .syl-sub {
+        font-size: 0.75rem;
+        color: var(--muted, #8891aa);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      .syl-active .syl-sub {
-        display: block;
+      /* Top Breadcrumbs & Topic Stepper */
+      .syl-breadcrumb-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 8px 16px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .syl-crumb-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .syl-crumb-badge {
+        background: rgba(242, 184, 75, 0.15);
+        color: var(--signal, #f2b84b);
+        border: 1px solid rgba(242, 184, 75, 0.35);
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      .syl-crumb-arrow {
+        color: var(--muted, #8891aa);
+      }
+      .syl-crumb-step {
+        color: var(--muted, #8891aa);
+      }
+      .syl-crumb-curr {
+        color: #fff;
+        font-weight: 700;
+      }
+      .syl-crumb-dots {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .syl-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .syl-dot:hover {
+        transform: scale(1.3);
+        background: rgba(255, 255, 255, 0.5);
+      }
+      .syl-dot.active {
+        width: 24px;
+        border-radius: 12px;
+        background: var(--signal, #f2b84b);
+        border-color: var(--signal, #f2b84b);
+        box-shadow: 0 0 10px rgba(242, 184, 75, 0.5);
+      }
+      .syl-dot.done {
+        background: #10b981;
+        border-color: #34d399;
+      }
+
+      /* Curriculum Roadmap / TOC on Overview */
+      .syl-curriculum-index {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 20px 0;
+      }
+      .syl-curriculum-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 18px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .syl-curriculum-row:hover {
+        background: rgba(242, 184, 75, 0.08);
+        border-color: rgba(242, 184, 75, 0.4);
+        transform: translateX(4px);
+      }
+      .syl-cur-num {
+        font-family: monospace;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--signal, #f2b84b);
+        background: rgba(242, 184, 75, 0.12);
+        border-radius: 8px;
+        padding: 4px 8px;
+        margin-right: 14px;
+      }
+      .syl-cur-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .syl-cur-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+      }
+      .syl-cur-desc {
+        font-size: 0.8rem;
+        color: var(--muted, #8891aa);
+      }
+      .syl-cur-btn {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--signal, #f2b84b);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* Unified Footer Navigation */
+      .syl-footer-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 24px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        gap: 12px;
+      }
+      .btn-syl-prev {
+        background: var(--card, rgba(255, 255, 255, 0.05));
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.15));
+        color: var(--text, #fff);
+        padding: 9px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+      }
+      .btn-syl-prev:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      .syl-footer-progress {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--muted, #8891aa);
+        font-family: monospace;
+      }
+      .btn-syl-next {
+        background: var(--signal, #f2b84b);
+        color: #000;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.92rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 16px rgba(242, 184, 75, 0.3);
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .btn-syl-next:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(242, 184, 75, 0.45);
+      }
+      .btn-syl-start {
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(239, 68, 68, 0.35);
+      }
+      .btn-syl-start:hover {
+        box-shadow: 0 8px 28px rgba(239, 68, 68, 0.5);
+      }
         color: var(--text);
         opacity: 0.85;
       }
 
       .bc-card {
-        background: var(--card);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 40px;
-        min-height: 400px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+        background: var(--card, #1a1f2e);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+        border-radius: 18px;
+        padding: 32px 36px;
+        min-height: 380px;
+        max-width: 720px;
+        width: 100%;
+        margin: 0 auto;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        transition: border-color 0.25s ease;
       }
 
       .bc-ttl {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--muted, #94a3b8);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 24px;
+        letter-spacing: 0.08em;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
       .bc-next-btn {
-        margin-top: 40px;
-        padding-top: 24px;
-        border-top: 1px solid var(--border);
-        text-align: right;
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
 
       .bc-next-btn button {
         background: var(--text);
         color: #fff;
         border: none;
-        padding: 12px 24px;
-        border-radius: 30px;
+        padding: 10px 22px;
+        border-radius: 10px;
         font-weight: 600;
         cursor: pointer;
+        transition: all 0.2s;
       }
 
       .stat-row {
         display: flex;
         flex-wrap: wrap;
-        gap: 16px;
-        margin-top: 24px;
+        gap: 14px;
+        margin-top: 20px;
       }
 
       .stat-box {
         flex: 1;
-        background: var(--bg);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 20px;
+        min-width: 120px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+        border-radius: 14px;
+        padding: 16px 12px;
         text-align: center;
       }
 
       .stat-val {
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-family: 'Lora', serif;
-        font-weight: 600;
-        color: var(--text);
+        font-weight: 700;
+        color: var(--text, #fff);
       }
 
       .stat-lbl {
-        font-size: 0.85rem;
-        color: var(--muted);
+        font-size: 0.75rem;
+        color: var(--muted, #94a3b8);
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-top: 4px;
       }
 
       .bc-rule-pill {
-        display: inline-block;
-        background: rgba(217, 119, 87, 0.1);
-        color: var(--accent);
-        font-weight: 600;
-        font-size: 0.85rem;
-        padding: 4px 12px;
+        display: inline-flex;
+        align-items: center;
+        background: rgba(242, 184, 75, 0.15);
+        color: var(--signal, #f2b84b);
+        border: 1px solid rgba(242, 184, 75, 0.3);
+        font-weight: 800;
+        font-size: 0.78rem;
+        padding: 4px 14px;
         border-radius: 20px;
-        margin-bottom: 16px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
       }
 
       .bc-rule-txt {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         font-family: 'Lora', serif;
-        line-height: 1.5;
-        color: var(--text);
+        line-height: 1.4;
+        color: var(--text, #fff);
+        font-weight: 700;
+      }
+
+      .theory-rich-content {
+        text-align: left;
+        max-width: 100%;
+        margin: 0 auto;
+        color: var(--text, #fff);
+      }
+
+      .theory-rich-content h2 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--signal, #f2b84b);
+        margin: 0 0 12px 0;
+        font-family: 'Lora', serif;
+        border-bottom: 1px solid rgba(242, 184, 75, 0.2);
+        padding-bottom: 8px;
+        letter-spacing: 0.02em;
+      }
+
+      .theory-rich-content h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 18px 0 10px 0;
+        padding: 8px 14px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        border-left: 3px solid var(--signal, #f2b84b);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .theory-rich-content p {
+        font-size: 0.95rem;
+        line-height: 1.65;
+        color: rgba(255, 255, 255, 0.88);
+        margin-bottom: 12px;
+      }
+
+      .theory-rich-content ul {
+        background: rgba(242, 184, 75, 0.04);
+        border: 1px solid rgba(242, 184, 75, 0.15);
+        border-radius: 12px;
+        padding: 14px 18px 14px 36px;
+        margin: 14px 0;
+        list-style: none;
+      }
+
+      .theory-rich-content li {
+        position: relative;
+        margin-bottom: 8px;
+        font-size: 0.92rem;
+        color: rgba(255, 255, 255, 0.92);
+        line-height: 1.55;
+      }
+
+      .theory-rich-content li:last-child {
+        margin-bottom: 0;
+      }
+
+      .theory-rich-content li::before {
+        content: '✓';
+        color: var(--signal, #f2b84b);
+        font-weight: 800;
+        position: absolute;
+        left: -22px;
+        top: 0;
       }
 
       .lb {
@@ -4368,13 +5098,20 @@
         left: 40px;
         background: radial-gradient(circle at 45% 40%, #E2E8F0 0%, #94A3B8 50%, #64748B 100%);
       }
-      @media (max-width: 420px) {
-        .hz-toggle { width: 300px; height: 98px; border-radius: 49px; }
-        .hz-orb { width: 76px; height: 76px; left: 14px; }
-        .hz-toggle.night .hz-orb { left: 202px; }
-        .hz-orb::after { width: 48px; height: 48px; top: 6px; left: 10px; }
-        .hz-skyline { height: 26px; }
-        .hz-clouds { transform: scale(0.8); transform-origin: top left; }
+      .tb .hz-toggle {
+        width: 68px !important;
+        height: 34px !important;
+        border-radius: 999px !important;
+        flex-shrink: 0;
+      }
+      .tb .hz-toggle .hz-orb {
+        width: 26px !important;
+        height: 26px !important;
+        top: 4px !important;
+        left: 4px !important;
+      }
+      .tb .hz-toggle.night .hz-orb {
+        left: 38px !important;
       }
 
       /* Fix for mobile controls appearing on screens other than the game */
@@ -4665,9 +5402,13 @@
         </div>
       </div>
 
-      
-      <div style="position: absolute; top: 24px; right: 28px; z-index: 100; display: flex; align-items: center; gap: 14px;">
-        
+       <!-- Top Right Controls -->
+      <div style="position: absolute; top: 24px; right: 28px; z-index: 100; display: flex; align-items: center; gap: 12px;">
+        <button class="top-btn settings-top-btn" id="top-game-settings-btn" onclick="openSettingsModal()" title="Game Settings" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; height: 46px; background: rgba(0, 240, 204, 0.08); border: 1.5px solid rgba(0, 240, 204, 0.6); border-radius: 14px; color: #00f0cc; font-weight: 700; font-size: 0.95rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 4px 16px rgba(0,240,204,0.15); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,240,204,0.3)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 16px rgba(0,240,204,0.15)';">
+          <span style="font-size: 1.15rem;">⚙️</span>
+          <span>Settings</span>
+        </button>
+
         <div class="hz-toggle" onclick="hzToggle()" title="Toggle Light/Dark Theme" style="cursor: pointer;">
           <div class="hz-clouds"></div>
           <div class="hz-stars"></div>
@@ -4676,19 +5417,9 @@
           <div class="hz-orb"></div>
         </div>
 
-        
         <button class="top-btn account-top-btn" id="top-profile-btn" onclick="handleAccountClick()" style="display: inline-flex; align-items: center; gap: 10px; padding: 10px 22px; height: 46px; background: linear-gradient(135deg, rgba(242,184,75,0.22), rgba(251,191,36,0.15)); border: 1.5px solid rgba(242,184,75,0.55); border-radius: 14px; color: #f2b84b; font-weight: 700; font-size: 0.95rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 6px 20px rgba(0,0,0,0.35); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 10px 28px rgba(242,184,75,0.35)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.35)';">
           <span style="font-size: 1.15rem;">👤</span>
           <span id="top-profile-label">Sign In</span>
-        </button>
-      </div>
-
-      
-      <div style="position: absolute; bottom: 28px; left: 28px; z-index: 100;">
-        
-        <button class="top-btn settings-top-btn" id="top-game-settings-btn" onclick="openSettingsModal()" style="display: inline-flex; align-items: center; gap: 12px; padding: 12px 28px; height: 50px; background: rgba(0, 240, 204, 0.08); border: 2px solid #00f0cc; border-radius: 50px; color: #00f0cc; font-weight: 700; font-size: 1.05rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 8px 24px rgba(0,240,204,0.2); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,240,204,0.35)'; this.style.background='rgba(0, 240, 204, 0.16)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 24px rgba(0,240,204,0.2)'; this.style.background='rgba(0, 240, 204, 0.08)';">
-          <span style="font-size: 1.3rem;">⚙️</span>
-          <span>Game Settings</span>
         </button>
       </div>
 
@@ -4753,58 +5484,69 @@
 
     <div id="screen-levels" class="screen">
       <div class="tb">
-        <div style="display: flex; align-items: center; gap: 16px;">
-          <button class="back-btn" onclick="ui.showStart()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
-            Back
-          </button>
-          
-          <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="ui.showStart()">
-            <img src="../Icon.png" alt="Class Of Learners" style="height: 42px; width: 42px; border-radius: 12px; object-fit: contain; box-shadow: 0 4px 14px rgba(0,0,0,0.35); border: 1.5px solid rgba(255,255,255,0.15); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='none';" onerror="this.src='Icon.png'" />
-            <div style="display: flex; flex-direction: column;">
-              <span style="font-family: 'Lora', serif; font-weight: 700; font-size: 1.25rem; color: var(--text, #e8e3d8); letter-spacing: -0.02em; line-height: 1.1; white-space: nowrap;">Traffic Academy</span>
-              <span style="font-size: 0.72rem; color: var(--muted, #8891aa); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;">Class Of Learners</span>
+        <div class="tb-inner">
+          <div class="tb-left">
+            <button class="back-btn" onclick="ui.showStart()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+              Back
+            </button>
+            
+            <div class="tb-brand" onclick="ui.showStart()">
+              <img src="../Icon.png" alt="Class Of Learners" class="tb-logo" onerror="this.src='Icon.png'" />
+              <div class="tb-brand-text">
+                <span class="tb-title">Traffic Academy</span>
+                <span class="tb-sub">Class Of Learners</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div style="display: flex; gap: 12px; align-items: center; width: 100%; justify-content: flex-end;">
-          <input type="text" id="level-search" placeholder="Search levels..." onkeyup="filterLevels()" style="padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: inherit; outline: none; flex: 1; max-width: 300px; font-family: 'Inter', sans-serif;">
-          
-          
-          <div class="hz-toggle" onclick="hzToggle()" title="Toggle Light/Dark Theme" style="cursor: pointer; margin-right: 8px;">
-            <div class="hz-clouds"></div>
-            <div class="hz-stars"></div>
-            <div class="hz-skyline"></div>
-            <div class="hz-windows"></div>
-            <div class="hz-orb"></div>
+          <div class="tb-center">
+            <div class="tb-search-wrap">
+              <svg class="tb-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="level-search" placeholder="Search 54 modules..." onkeyup="filterLevels()" autocomplete="off">
+              <span class="tb-search-shortcut">/</span>
+            </div>
           </div>
 
-          <button
-            class="btn btn-g dynamic-auth-btn"
-            onclick="window.location.href = 'TrafficSetup.html'"
-            style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap"
-          >
-            Sign In
-          </button>
-          <div
-            id="pchip"
-            class="btn btn-g"
-            style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap"
-          >
-            0/52 ✅
+          <div class="tb-right">
+            <button class="tb-btn tb-btn-settings" id="levels-game-settings-btn" onclick="openSettingsModal()" title="Game Settings">
+              <span>⚙️</span>
+              <span class="tb-btn-lbl">Settings</span>
+            </button>
+            
+            <div class="hz-toggle" onclick="hzToggle()" title="Toggle Light/Dark Theme">
+              <div class="hz-clouds"></div>
+              <div class="hz-stars"></div>
+              <div class="hz-skyline"></div>
+              <div class="hz-windows"></div>
+              <div class="hz-orb"></div>
+            </div>
+
+            <button
+              class="tb-btn tb-btn-auth dynamic-auth-btn"
+              onclick="window.location.href = 'TrafficSetup.html'"
+              title="Profile & Dashboard"
+            >
+              <span class="auth-icon">📊</span>
+              <span class="auth-text">Dashboard</span>
+            </button>
+
+            <div id="pchip" class="tb-btn tb-btn-progress" title="Level Completion Progress">
+              0/54 ✅
+            </div>
+
+            <button class="tb-btn tb-btn-icon map-toggle-btn" onclick="toggleLevelView()" title="Toggle Road Map View">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/>
+              </svg>
+            </button>
           </div>
-          <button class="map-toggle-btn" onclick="toggleLevelView()" title="Toggle Map View">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/>
-            </svg>
-          </button>
         </div>
       </div>
 
-      
+      <!-- Map View overlay -->
       <div class="level-map-container" id="level-map" style="display: none;">
         <div class="map-progress" id="map-progress-bar">
           <span class="map-progress-label">Progress</span>
@@ -4823,35 +5565,30 @@
       </div>
 
       <div class="lw" id="lvbody"></div>
-
-      
-      <div style="position: absolute; bottom: 28px; left: 28px; z-index: 100;">
-        <button class="top-btn settings-top-btn" id="levels-game-settings-btn" onclick="openSettingsModal()" style="display: inline-flex; align-items: center; gap: 12px; padding: 12px 28px; height: 50px; background: rgba(0, 240, 204, 0.08); border: 2px solid #00f0cc; border-radius: 50px; color: #00f0cc; font-weight: 700; font-size: 1.05rem; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 8px 24px rgba(0,240,204,0.2); transition: all 0.25s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(0,240,204,0.35)'; this.style.background='rgba(0, 240, 204, 0.16)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 24px rgba(0,240,204,0.2)'; this.style.background='rgba(0, 240, 204, 0.08)';">
-          <span style="font-size: 1.3rem;">⚙️</span>
-          <span>Game Settings</span>
-        </button>
-      </div>
     </div>
 
     <div id="screen-briefing" class="screen">
       <div class="tb">
-        <button class="back-btn" onclick="ui.showLevels()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          Home
-        </button>
-        <div style="font-weight: 700; font-size: 0.95rem; color: var(--text)" id="blt">Level 1</div>
-        <div style="display: flex; gap: 12px; align-items: center">
-          <button
-            class="btn btn-g dynamic-auth-btn"
-            onclick="window.location.href = 'TrafficSetup.html'"
-            style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
-          >
-            Sign In
-          </button>
-          <button class="btn btn-g" onclick="window.openCustomize && window.openCustomize()" style="padding: 8px; font-size: 1rem; min-width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px;" title="Customize Character">🎨</button>
-          <div class="btn" style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px" id="bvh"></div>
+        <div class="tb-inner">
+          <div class="tb-left">
+            <button class="back-btn" onclick="ui.showLevels()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+              Modules
+            </button>
+            <div style="font-weight: 700; font-size: 1.05rem; color: var(--text)" id="blt">Level 1</div>
+          </div>
+          <div class="tb-right">
+            <button
+              class="tb-btn tb-btn-auth dynamic-auth-btn"
+              onclick="window.location.href = 'TrafficSetup.html'"
+            >
+              Sign In
+            </button>
+            <button class="tb-btn" onclick="window.openCustomize && window.openCustomize()" style="padding: 8px 12px; font-size: 1rem;" title="Customize Character">🎨 Customize</button>
+            <div class="tb-btn" id="bvh"></div>
+          </div>
         </div>
       </div>
       <div class="br-w">
@@ -4874,12 +5611,7 @@
           </div>
           <div style="font-size: 0.75rem; color: var(--muted); text-align: right; margin-bottom: 16px" id="br-prog-label">0% Complete</div>
           
-          
-          <div id="br-module-checklist" style="margin-bottom: 20px;"></div>
-          
-          <div id="br-syllabus" style="max-height: 300px; overflow-y: auto;"></div>
-        <!-- Campaign Progress Panel -->
-        <div id="br-campaign-progress" style="margin-top: 20px; padding: 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px;"></div>
+          <div id="br-syllabus" style="display: flex; flex-direction: column; gap: 6px;"></div>
         </div>
         <div class="br-r" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
           <div id="br-content" style="flex: 1; min-width: 0;"></div>
@@ -4889,19 +5621,34 @@
 
     <div id="screen-quiz" class="screen">
       <div class="tb">
-        <button class="back-btn" onclick="ui.showLevels()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          Abort
-        </button>
-        <button
-          class="btn btn-g dynamic-auth-btn"
-          onclick="window.location.href = 'TrafficSetup.html'"
-          style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
-        >
-          Sign In
-        </button>
+        <div class="tb-inner">
+          <div class="tb-left">
+            <button class="back-btn" onclick="ui.abortQuiz()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+              Abort
+            </button>
+            
+            <div class="tb-brand" onclick="ui.abortQuiz()">
+              <img src="../Icon.png" alt="Class Of Learners" class="tb-logo" onerror="this.src='Icon.png'" />
+              <div class="tb-brand-text">
+                <span class="tb-title">Traffic Academy</span>
+                <span class="tb-sub">Class Of Learners</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tb-right">
+            <button
+              class="btn btn-g dynamic-auth-btn"
+              onclick="window.location.href = 'TrafficSetup.html'"
+              style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
+            >
+              Sign In
+            </button>
+          </div>
+        </div>
       </div>
       <div class="qw">
         <h2 style="text-align: center; font-size: 2rem; margin-bottom: 24px">Compliance Check</h2>
@@ -4962,7 +5709,8 @@
       </div>
       <div class="lw">
         <div class="stats-body" id="stats-body"></div>
-        <h3 style="margin-top: 40px; font-size: 1.5rem">Achievements</h3>
+        <div id="profile-pledge-box" style="margin-top: 24px;"></div>
+        <h3 style="margin-top: 30px; font-size: 1.5rem">Achievements</h3>
         <div class="bgrid" id="bgrid"></div>
       </div>
     </div>
@@ -5271,7 +6019,8 @@
       
     </script>
     <script src="wallet-history.js"></script>
-  <script src="ui.js?v=2"></script>
+  <script src="task-manager.js?v=12"></script>
+  <script src="ui.js?v=12"></script>
   <script src="npc-ai.js"></script>
   <script src="traffic-manager.js?v=8"></script>
   <script src="rule-breaker-profiles.js"></script>
@@ -5728,23 +6477,35 @@ function _onbComplete() {
 
         function buildLevelMap() {
           const svg = document.getElementById('level-path-svg')
+          if (!svg) return
           svg.innerHTML = ''
-
 
           let S = {}
           try { S = JSON.parse(localStorage.getItem('mth4') || '{}') } catch(e) {}
           const completed = S.comp || {}
-          const totalLevels = window.LVS?.length || 52
+          
+          const rawLvs = (window.LVS && window.LVS.length) ? window.LVS : []
+          const totalLevels = rawLvs.length || 54
+          
+          // Generate array of 54 levels
+          const allLevels = []
+          for (let i = 0; i < totalLevels; i++) {
+            const match = rawLvs[i] || {}
+            allLevels.push({
+              id: match.id || (i + 1),
+              name: match.name || `Lesson ${i + 1}`,
+              desc: match.desc || '',
+              themeType: match.themeType || 'GENERAL',
+              points: match.points || 100
+            })
+          }
 
-
-          const doneCount = Object.keys(completed).filter(k => completed[k] && completed[k].score > 0).length
+          const doneCount = Object.keys(completed).filter(k => completed[k] && (completed[k].score > 0 || completed[k].completed || completed[k].finalQuiz)).length
           const pct = Math.round((doneCount / totalLevels) * 100)
           const fillEl = document.getElementById('map-progress-fill')
           const countEl = document.getElementById('map-progress-count')
           if (fillEl) fillEl.style.width = pct + '%'
           if (countEl) countEl.textContent = `${doneCount}/${totalLevels} ▾`
-
-
 
           const _catRules = [
             { kw: ['red light', 'signal', 'green light', 'patience'],           name: 'Traffic Signals',     emoji: '🚦', color: '#f59e0b' },
@@ -5762,57 +6523,39 @@ function _onbComplete() {
             { kw: ['grand test', 'final', 'master', 'exam'],                     name: 'Master Driver',       emoji: '👑', color: '#eab308' }
           ]
 
-          function _deriveCategories(lvs) {
-            if (!lvs || !lvs.length) return []
-            const sorted = [...lvs].sort((a, b) => (a.id || 0) - (b.id || 0))
-            const catMap = new Map()
-            sorted.forEach(lv => {
-              const name = (lv.name || '').toLowerCase()
-              let matched = _catRules.find(r => r.kw.some(k => name.includes(k)))
-              if (!matched) matched = { name: 'General', emoji: '📘', color: '#6b7280' }
-              const key = matched.name
-              if (!catMap.has(key)) {
-                catMap.set(key, { name: matched.name, emoji: matched.emoji, start: lv.id, color: matched.color })
-              }
-            })
-
-            return Array.from(catMap.values()).sort((a, b) => a.start - b.start)
+          function _getCategoryForLevel(lv) {
+            const name = (lv.name || '').toLowerCase()
+            let matched = _catRules.find(r => r.kw.some(k => name.includes(k)))
+            if (!matched) matched = { name: 'General Safety', emoji: '📘', color: '#6b7280' }
+            return matched
           }
 
-          const categories = _deriveCategories(window.LVS || [])
-
-
+          // Populate Category Dropdown breakdown
           const pdRowsEl = document.getElementById('pd-rows')
-          if (pdRowsEl && categories.length) {
-
+          if (pdRowsEl) {
             const catLevelMap = new Map()
-            const lvs = window.LVS || []
-            lvs.forEach(lv => {
-              const lvName = (lv.name || '').toLowerCase()
-              const matched = _catRules.find(r => r.kw.some(k => lvName.includes(k))) || { name: 'General', emoji: '📘', color: '#6b7280' }
-              const catKey = matched.name
-              if (!catLevelMap.has(catKey)) catLevelMap.set(catKey, { total: 0, done: 0, emoji: matched.emoji, color: matched.color })
-              const entry = catLevelMap.get(catKey)
+            allLevels.forEach(lv => {
+              const cat = _getCategoryForLevel(lv)
+              if (!catLevelMap.has(cat.name)) catLevelMap.set(cat.name, { total: 0, done: 0, emoji: cat.emoji, color: cat.color })
+              const entry = catLevelMap.get(cat.name)
               entry.total++
-              const lvId = String(lv.id || lv.num || lv.level)
-              if (completed[lvId] && completed[lvId].score > 0) entry.done++
+              const lvId = String(lv.id)
+              if (completed[lvId] && (completed[lvId].score > 0 || completed[lvId].completed || completed[lvId].finalQuiz)) entry.done++
             })
 
             pdRowsEl.innerHTML = ''
             const frag = document.createDocumentFragment()
-            let catIdx = 0, totalCatsDone = 0, totalCatsAll = 0
+            let catIdx = 0
             catLevelMap.forEach((val, key) => {
-              totalCatsDone += val.done
-              totalCatsAll += val.total
-              const pct = val.total > 0 ? Math.round((val.done / val.total) * 100) : 0
+              const rowPct = val.total > 0 ? Math.round((val.done / val.total) * 100) : 0
               const row = document.createElement('div')
               row.className = 'pd-row'
-              row.style.transitionDelay = (catIdx++ * 60) + 'ms'
+              row.style.transitionDelay = (catIdx++ * 40) + 'ms'
               row.innerHTML = `
                 <span class="pd-emoji">${val.emoji}</span>
                 <span class="pd-name">${key}</span>
                 <div class="pd-bar-wrap">
-                  <div class="pd-bar-fill" style="--bar-target:${pct}%;background:${val.color}"></div>
+                  <div class="pd-bar-fill" style="--bar-target:${rowPct}%;background:${val.color}"></div>
                 </div>
                 <span class="pd-count" style="color:${val.color}">${val.done}/${val.total}</span>
               `
@@ -5821,239 +6564,241 @@ function _onbComplete() {
             pdRowsEl.appendChild(frag)
           }
 
-          const pdDropdown = document.getElementById('map-progress-dropdown')
-          if (pdDropdown) {
-            if (!window._closeProgressDropdown) {
-              window._closeProgressDropdown = (e) => {
-                const dd = document.getElementById('map-progress-dropdown')
-                const ct = document.getElementById('map-progress-count')
-                if (dd && !dd.contains(e.target) && e.target !== ct) {
-                  dd.classList.remove('show')
-                }
-              }
-              document.addEventListener('click', window._closeProgressDropdown)
-            }
-          }
-
-
+          // SVG defs & gradients
           const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
           defs.innerHTML = `
             <!-- Node Gradients -->
-            <radialGradient id="gradDone" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#059669"/></radialGradient>
-            <radialGradient id="gradCurrent" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#d97706"/></radialGradient>
-            <radialGradient id="gradLocked" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#4b5563"/><stop offset="100%" stop-color="#1f2937"/></radialGradient>
-            <!-- Path Gradient -->
-            <linearGradient id="gradPathDone" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#34d399" stop-opacity="0.6"/><stop offset="100%" stop-color="#059669" stop-opacity="0.4"/></linearGradient>
-            <linearGradient id="gradPathCurrent" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fbbf24" stop-opacity="0.5"/><stop offset="100%" stop-color="#f59e0b" stop-opacity="0.3"/></linearGradient>
-            <linearGradient id="gradPathFull" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(94,212,245,0.35)"/><stop offset="50%" stop-color="rgba(52,211,153,0.25)"/><stop offset="100%" stop-color="rgba(242,184,75,0.12)"/></linearGradient>
+            <radialGradient id="gradDone" cx="35%" cy="30%" r="65%">
+              <stop offset="0%" stop-color="#34d399"/><stop offset="60%" stop-color="#10b981"/><stop offset="100%" stop-color="#047857"/>
+            </radialGradient>
+            <radialGradient id="gradCurrent" cx="35%" cy="30%" r="65%">
+              <stop offset="0%" stop-color="#fef08a"/><stop offset="50%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/>
+            </radialGradient>
+            <radialGradient id="gradLocked" cx="35%" cy="30%" r="65%">
+              <stop offset="0%" stop-color="#475569"/><stop offset="60%" stop-color="#334155"/><stop offset="100%" stop-color="#1e293b"/>
+            </radialGradient>
+            <!-- Road Gradients -->
+            <linearGradient id="gradRoadDone" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#34d399" stop-opacity="0.85"/>
+              <stop offset="100%" stop-color="#059669" stop-opacity="0.45"/>
+            </linearGradient>
             <!-- Glow Filters -->
-            <filter id="glowDone" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="blur"/><feFlood flood-color="#34d399" flood-opacity="0.5" result="color"/><feComposite in="color" in2="blur" operator="in" result="glow"/><feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            <filter id="glowCurrent" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="blur"/><feFlood flood-color="#fbbf24" flood-opacity="0.6" result="color"/><feComposite in="color" in2="blur" operator="in" result="glow"/><feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            <filter id="shadowNode" x="-30%" y="-20%" width="160%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.35)"/></filter>
-            <!-- Star shape -->
-            <polygon id="star5" points="0,-8 2.4,-3.2 7.6,-2.4 3.8,1.6 4.8,6.8 0,4 -4.8,6.8 -3.8,1.6 -7.6,-2.4 -2.4,-3.2" fill="white" opacity="0.9"/>
+            <filter id="glowDone" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="glowCurrent" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="shadowCard" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.5)"/>
+            </filter>
           `
           svg.appendChild(defs)
 
+          // Center-aligned road coordinate setup
+          const viewBoxWidth = 960
+          const centerX = viewBoxWidth / 2 // Exactly 480 (centered)
+          const startY = 160
+          const stepY = 135
+          const ampX = 190
 
           const nodes = []
-          const svgWidth = Math.min(svg.parentElement.clientWidth || 600, 600)
-          const centerX = svgWidth / 2
-          const startY = 100
-          const stepY = 100
-          const ampX = Math.min(170, svgWidth * 0.28)
-
           for (let i = 0; i < totalLevels; i++) {
-            const x = centerX + Math.sin(i * 0.52) * ampX
+            const lv = allLevels[i]
+            const isRight = (Math.sin(i * 0.6) >= 0)
+            const x = centerX + Math.sin(i * 0.6) * ampX
             const y = startY + i * stepY
-            nodes.push({ id: i + 1, x, y })
+            nodes.push({ id: lv.id, lv, x, y, isRight })
           }
 
+          const maxY = startY + (totalLevels - 1) * stepY + 220
+          svg.setAttribute('viewBox', `0 0 ${viewBoxWidth} ${maxY}`)
+          svg.style.minHeight = `${maxY}px`
 
+          // Ambient Background Tree / City Decorations
           const decoGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
           decoGroup.classList.add('map-decos')
-          const decoSymbols = [
-            { emoji: '☁️', scale: 1.2, opacity: 0.08 },
-            { emoji: '🌳', scale: 0.8, opacity: 0.07 },
-            { emoji: '☁️', scale: 0.9, opacity: 0.06 },
-            { emoji: '🌿', scale: 0.7, opacity: 0.06 },
-            { emoji: '☁️', scale: 1.0, opacity: 0.05 }
-          ]
-          for (let i = 0; i < nodes.length; i += 8) {
-            const d = decoSymbols[i % decoSymbols.length]
-            const offsetX = (Math.sin(i * 1.3) * ampX * 0.8)
+          const decos = ['🌳', '🏢', '🏮', '🌿', '☁️', '🌴', '⛽', '🚦']
+          for (let i = 0; i < nodes.length; i += 3) {
+            const side = (i % 2 === 0 ? 1 : -1)
+            const decoX = centerX + side * (ampX + 160 + (i % 4) * 20)
+            const decoY = startY + i * stepY + 20
             const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-            text.setAttribute('x', centerX + offsetX + (Math.sin(i) * 40))
-            text.setAttribute('y', startY + i * stepY - 40)
-            text.setAttribute('font-size', 28 * d.scale)
-            text.setAttribute('opacity', d.opacity)
-            text.textContent = d.emoji
-            text.style.pointerEvents = 'none'
+            text.setAttribute('x', decoX)
+            text.setAttribute('y', decoY)
+            text.setAttribute('font-size', '24')
+            text.setAttribute('opacity', '0.22')
+            text.style.userSelect = 'none'
+            text.textContent = decos[(i * 3) % decos.length]
             decoGroup.appendChild(text)
           }
           svg.appendChild(decoGroup)
 
-
-          const catMarkers = []
-          categories.forEach(cat => {
-            if (cat.start > totalLevels) return
-            const idx = cat.start - 1
-            const n = nodes[idx]
-            if (!n) return
-            catMarkers.push({ ...n, ...cat })
-          })
-
-          catMarkers.forEach(cm => {
-            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-            g.classList.add('category-marker')
-            g.setAttribute('transform', `translate(${cm.x}, ${cm.y - 42})`)
-
-            const emoji = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-            emoji.classList.add('cat-emoji')
-            emoji.setAttribute('y', '0')
-            emoji.textContent = cm.emoji
-            g.appendChild(emoji)
-
-            const pill = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-            pill.setAttribute('transform', 'translate(0, 22)')
-            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-            label.setAttribute('text-anchor', 'middle')
-            label.setAttribute('y', '0')
-            label.setAttribute('font-size', '9')
-            label.setAttribute('font-weight', '700')
-            label.setAttribute('fill', cm.color)
-            label.setAttribute('opacity', '0.7')
-            label.setAttribute('letter-spacing', '0.06em')
-            label.textContent = cm.name.toUpperCase()
-            pill.appendChild(label)
-            g.appendChild(pill)
-            svg.appendChild(g)
-          })
-
-
-
+          // Build Smooth Bezier Road Path
           let pathD = `M ${nodes[0].x} ${nodes[0].y}`
           for (let i = 1; i < nodes.length; i++) {
             const prev = nodes[i - 1]
             const curr = nodes[i]
             const midY = (prev.y + curr.y) / 2
-
             pathD += ` C ${prev.x} ${midY}, ${curr.x} ${midY}, ${curr.x} ${curr.y}`
           }
 
+          // Layer 1: Road Curbs (outer glow border)
+          const roadCurb = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+          roadCurb.setAttribute('d', pathD)
+          roadCurb.setAttribute('fill', 'none')
+          roadCurb.setAttribute('stroke', 'rgba(255, 255, 255, 0.08)')
+          roadCurb.setAttribute('stroke-width', '58')
+          roadCurb.setAttribute('stroke-linecap', 'round')
+          roadCurb.setAttribute('stroke-linejoin', 'round')
+          svg.appendChild(roadCurb)
 
-          const bgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-          bgPath.setAttribute('d', pathD)
-          bgPath.setAttribute('fill', 'none')
-          bgPath.setAttribute('stroke', 'rgba(255,255,255,0.06)')
-          bgPath.setAttribute('stroke-width', '8')
-          bgPath.setAttribute('stroke-linecap', 'round')
-          bgPath.setAttribute('stroke-linejoin', 'round')
-          svg.appendChild(bgPath)
+          // Layer 2: Road Asphalt Surface
+          const roadAsphalt = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+          roadAsphalt.setAttribute('d', pathD)
+          roadAsphalt.setAttribute('fill', 'none')
+          roadAsphalt.setAttribute('stroke', '#111625')
+          roadAsphalt.setAttribute('stroke-width', '50')
+          roadAsphalt.setAttribute('stroke-linecap', 'round')
+          roadAsphalt.setAttribute('stroke-linejoin', 'round')
+          svg.appendChild(roadAsphalt)
 
+          // Layer 3: Dashed Yellow Lane Markings
+          const roadLane = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+          roadLane.setAttribute('d', pathD)
+          roadLane.setAttribute('fill', 'none')
+          roadLane.setAttribute('stroke', 'rgba(242, 184, 75, 0.38)')
+          roadLane.setAttribute('stroke-width', '3.5')
+          roadLane.setAttribute('stroke-dasharray', '14,14')
+          roadLane.setAttribute('stroke-linecap', 'round')
+          roadLane.setAttribute('stroke-linejoin', 'round')
+          svg.appendChild(roadLane)
 
-          const mainPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-          mainPath.setAttribute('d', pathD)
-          mainPath.setAttribute('fill', 'none')
-          mainPath.setAttribute('stroke', 'url(#gradPathFull)')
-          mainPath.setAttribute('stroke-width', '5')
-          mainPath.setAttribute('stroke-linecap', 'round')
-          mainPath.setAttribute('stroke-linejoin', 'round')
-          svg.appendChild(mainPath)
-
-
+          // Find current active player index
           let currentIdx = 0
           for (let i = 0; i < nodes.length; i++) {
             const lid = nodes[i].id
             const c = completed[lid]
-            if (c && (c.score > 0 || c.finalQuiz || c.completed || c === true)) currentIdx = i + 1
+            if (c && (c.score > 0 || c.completed || c.finalQuiz)) {
+              currentIdx = i + 1
+            }
           }
+          if (currentIdx >= nodes.length) currentIdx = nodes.length - 1
 
+          // Milestone category track
+          let lastCatName = ''
+          const catMarkers = []
+          nodes.forEach((n, i) => {
+            const cat = _getCategoryForLevel(n.lv)
+            if (cat.name !== lastCatName) {
+              lastCatName = cat.name
+              catMarkers.push({ ...n, cat, index: i })
+            }
+          })
 
-          if (currentIdx > 0 && currentIdx < nodes.length) {
-            const segPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-            segPath.setAttribute('d', pathD)
-            segPath.setAttribute('fill', 'none')
-            segPath.setAttribute('stroke', 'url(#gradPathDone)')
-            segPath.setAttribute('stroke-width', '5')
-            segPath.setAttribute('stroke-linecap', 'round')
-            segPath.setAttribute('stroke-linejoin', 'round')
+          // Render Milestone Category Arches
+          catMarkers.forEach(cm => {
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            g.classList.add('checkpoint-banner')
+            g.setAttribute('transform', `translate(${centerX}, ${cm.y - 65})`)
 
-            const totalLen = mainPath.getTotalLength() || 9999
-            segPath.setAttribute('stroke-dasharray', `${totalLen}`)
-            segPath.setAttribute('stroke-dashoffset', `${totalLen}`)
-            segPath.style.animation = `pathDraw 1.5s 0.3s ease-out forwards`
-            svg.appendChild(segPath)
-          }
+            // Backdrop glass pill
+            const pillWidth = 320
+            const pillHeight = 36
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+            rect.setAttribute('x', -pillWidth / 2)
+            rect.setAttribute('y', -pillHeight / 2)
+            rect.setAttribute('width', pillWidth)
+            rect.setAttribute('height', pillHeight)
+            rect.setAttribute('rx', '18')
+            rect.setAttribute('fill', 'rgba(15, 23, 42, 0.92)')
+            rect.setAttribute('stroke', cm.cat.color)
+            rect.setAttribute('stroke-width', '1.5')
+            rect.setAttribute('stroke-opacity', '0.65')
+            rect.setAttribute('filter', 'url(#shadowCard)')
+            g.appendChild(rect)
 
+            // Category text
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            text.setAttribute('x', '0')
+            text.setAttribute('y', '4')
+            text.setAttribute('text-anchor', 'middle')
+            text.setAttribute('font-family', 'Lora, serif')
+            text.setAttribute('font-size', '13')
+            text.setAttribute('font-weight', '700')
+            text.setAttribute('fill', '#f8fafc')
+            text.setAttribute('letter-spacing', '0.02em')
+            text.textContent = `${cm.cat.emoji} ${cm.cat.name.toUpperCase()}`
+            g.appendChild(text)
 
+            svg.appendChild(g)
+          })
+
+          // Render All Level Nodes & Interactive Cards
           nodes.forEach((n, i) => {
             const lvlId = n.id
-            const isDone = !!(completed[lvlId] && (completed[lvlId].score > 0 || completed[lvlId].finalQuiz || completed[lvlId].completed || completed[lvlId] === true))
-            const prevDone = completed[lvlId - 1] && (completed[lvlId - 1].score > 0 || completed[lvlId - 1].finalQuiz || completed[lvlId - 1].completed || completed[lvlId - 1] === true)
-            const isCurrent = !isDone && (lvlId === 1 || prevDone)
+            const isDone = !!(completed[lvlId] && (completed[lvlId].score > 0 || completed[lvlId].completed || completed[lvlId].finalQuiz))
+            const prevDone = (lvlId === 1) || (completed[lvlId - 1] && (completed[lvlId - 1].score > 0 || completed[lvlId - 1].completed || completed[lvlId - 1].finalQuiz))
+            const isCurrent = !isDone && prevDone
             const isLocked = !isDone && !isCurrent
-            const r = isCurrent ? 28 : isDone ? 24 : 21
 
+            const r = isCurrent ? 28 : (isDone ? 24 : 22)
+
+            // Main Level Group (placed at coordinates without CSS scale overriding)
             const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-            g.classList.add('level-node', isDone ? 'completed' : isCurrent ? 'current' : 'locked')
+            g.classList.add('level-node', isDone ? 'completed' : (isCurrent ? 'current' : 'locked'))
             g.setAttribute('transform', `translate(${n.x}, ${n.y})`)
-            g.style.opacity = '0'
-            g.style.animation = `mapNodeIn 0.5s ${i * 0.025}s cubic-bezier(0.34,1.56,0.64,1) forwards`
-            g.onclick = () => {
+            
+            // Interaction handler
+            const triggerLevel = () => {
               if (isLocked) {
-
-                if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
-
-                g.classList.remove('shake');
-                void g.offsetWidth;
-                g.classList.add('shake');
-                g.addEventListener('animationend', () => g.classList.remove('shake'), { once: true });
-
-                _showLockedToast(lvlId);
-                return;
+                if (navigator.vibrate) navigator.vibrate([30, 50, 30])
+                g.classList.remove('shake')
+                void g.offsetWidth
+                g.classList.add('shake')
+                g.addEventListener('animationend', () => g.classList.remove('shake'), { once: true })
+                if (typeof _showLockedToast === 'function') _showLockedToast(lvlId)
+                return
               }
-              if (typeof ui !== 'undefined' && ui.showBriefing) ui.showBriefing(lvlId)
+              if (typeof ui !== 'undefined' && ui.showBriefing) {
+                ui.showBriefing(lvlId)
+              }
             }
 
+            g.onclick = triggerLevel
+
+            // Node Circle Container (Outer)
             const outerG = document.createElementNS('http://www.w3.org/2000/svg', 'g')
             outerG.classList.add('node-outer')
 
+            // Rotating Dashed Ring on Active Level
             if (isCurrent) {
-
               const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
               ring.classList.add('node-ring')
               ring.setAttribute('r', r + 8)
               ring.setAttribute('fill', 'none')
-              ring.setAttribute('stroke', 'rgba(251,191,36,0.25)')
+              ring.setAttribute('stroke', '#f59e0b')
               ring.setAttribute('stroke-width', '2.5')
-              ring.setAttribute('stroke-dasharray', '6,4')
+              ring.setAttribute('stroke-dasharray', '8,5')
               outerG.appendChild(ring)
-
-              const glowRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-              glowRing.setAttribute('r', r + 4)
-              glowRing.setAttribute('fill', 'none')
-              glowRing.setAttribute('stroke', 'rgba(251,191,36,0.12)')
-              glowRing.setAttribute('stroke-width', '3')
-              outerG.appendChild(glowRing)
             }
 
-
+            // Core Node Circle
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
             circle.setAttribute('r', r)
-            circle.setAttribute('fill', isDone ? 'url(#gradDone)' : isCurrent ? 'url(#gradCurrent)' : 'url(#gradLocked)')
-            circle.setAttribute('stroke', isDone ? '#6ee7b7' : isCurrent ? '#fde68a' : '#374151')
-            circle.setAttribute('stroke-width', isDone ? '2.5' : isCurrent ? '3' : '2')
+            circle.setAttribute('fill', isDone ? 'url(#gradDone)' : (isCurrent ? 'url(#gradCurrent)' : 'url(#gradLocked)'))
+            circle.setAttribute('stroke', isDone ? '#6ee7b7' : (isCurrent ? '#fde047' : 'rgba(255,255,255,0.15)'))
+            circle.setAttribute('stroke-width', isDone ? '2.5' : (isCurrent ? '3.5' : '1.5'))
             if (isDone) circle.setAttribute('filter', 'url(#glowDone)')
             else if (isCurrent) circle.setAttribute('filter', 'url(#glowCurrent)')
-            else circle.setAttribute('filter', 'url(#shadowNode)')
             outerG.appendChild(circle)
 
-
+            // Inner Node Content: Checkmark / Star / Lock
             if (isDone) {
-
               const ck = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-              ck.setAttribute('d', `M${-r*0.28},${r*0.05} L${-r*0.05},${r*0.32} L${r*0.32},${-r*0.28}`)
+              ck.setAttribute('d', `M${-r*0.3},${r*0.05} L${-r*0.05},${r*0.32} L${r*0.35},${-r*0.25}`)
               ck.setAttribute('stroke', 'white')
               ck.setAttribute('stroke-width', '3.5')
               ck.setAttribute('fill', 'none')
@@ -6061,74 +6806,103 @@ function _onbComplete() {
               ck.setAttribute('stroke-linejoin', 'round')
               outerG.appendChild(ck)
             } else if (isCurrent) {
-
               const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
               label.classList.add('level-node-label')
+              label.setAttribute('font-size', '16')
+              label.setAttribute('font-weight', '900')
+              label.setAttribute('fill', '#ffffff')
               label.textContent = lvlId
               outerG.appendChild(label)
 
-              const star = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
-              star.setAttribute('points', '0,-40 3.6,-32 10.4,-30 5.4,-24 6.4,-16 0,-20 -6.4,-16 -5.4,-24 -10.4,-30 -3.6,-32')
-              star.setAttribute('fill', '#fbbf24')
-              star.setAttribute('opacity', '0.8')
-              star.style.animation = 'floatSlow 3s ease-in-out infinite'
+              // Star atop current level
+              const star = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+              star.setAttribute('y', -r - 10)
+              star.setAttribute('text-anchor', 'middle')
+              star.setAttribute('font-size', '16')
+              star.textContent = '⭐'
               outerG.appendChild(star)
             } else {
-
               const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
               label.classList.add('level-node-label')
-              label.setAttribute('fill', isLocked ? '#6b7280' : 'white')
-              label.setAttribute('opacity', isLocked ? '0.7' : '1')
+              label.setAttribute('font-size', '14')
+              label.setAttribute('fill', '#94a3b8')
               label.textContent = lvlId
               outerG.appendChild(label)
 
-              if (isLocked) {
-                const lock = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-                lock.setAttribute('y', -r - 8)
-                lock.setAttribute('text-anchor', 'middle')
-                lock.setAttribute('font-size', '12')
-                lock.setAttribute('opacity', '0.35')
-                lock.textContent = '🔒'
-                outerG.appendChild(lock)
-              }
+              const lock = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+              lock.setAttribute('y', -r - 6)
+              lock.setAttribute('text-anchor', 'middle')
+              lock.setAttribute('font-size', '11')
+              lock.setAttribute('opacity', '0.6')
+              lock.textContent = '🔒'
+              outerG.appendChild(lock)
             }
 
             g.appendChild(outerG)
-            svg.appendChild(g)
 
-
-            if (isDone && i < 20) {
-              for (let s = 0; s < 3; s++) {
-                const spark = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-                const angle = (s / 3) * Math.PI * 2 + Math.random() * 0.5
-                const dist = 16 + Math.random() * 10
-                spark.setAttribute('cx', Math.cos(angle) * dist)
-                spark.setAttribute('cy', Math.sin(angle) * dist)
-                spark.setAttribute('r', 1.5 + Math.random() * 1.5)
-                spark.setAttribute('fill', ['#34d399', '#6ee7b7', '#a7f3d0'][s % 3])
-                spark.classList.add('sparkle-particle')
-                spark.style.setProperty('--dx', `${Math.cos(angle) * 20}px`)
-                spark.style.setProperty('--dy', `${Math.sin(angle) * 20}px`)
-                spark.style.setProperty('--dur', `${0.8 + Math.random() * 0.8}s`)
-                spark.style.setProperty('--delay', `${i * 0.03 + s * 0.2}s`)
-                g.appendChild(spark)
-              }
+            // Side Level Card Tag (Offset toward the outside of the road bend)
+            const tagG = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+            tagG.classList.add('level-tag-card')
+            const cardW = 160
+            const cardH = 48
+            const cardX = n.isRight ? (r + 14) : (-r - 14 - cardW)
+            const cardY = -cardH / 2
+            tagG.setAttribute('transform', `translate(${cardX}, ${cardY})`)
+            tagG.onclick = (e) => {
+              e.stopPropagation()
+              triggerLevel()
             }
+
+            // Card Background Rect
+            const cardRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+            cardRect.setAttribute('width', cardW)
+            cardRect.setAttribute('height', cardH)
+            cardRect.setAttribute('rx', '12')
+            cardRect.setAttribute('fill', isDone ? 'rgba(6, 78, 59, 0.85)' : (isCurrent ? 'rgba(120, 53, 15, 0.85)' : 'rgba(15, 23, 42, 0.85)'))
+            cardRect.setAttribute('stroke', isDone ? 'rgba(52, 211, 153, 0.45)' : (isCurrent ? 'rgba(251, 191, 36, 0.7)' : 'rgba(255, 255, 255, 0.1)'))
+            cardRect.setAttribute('stroke-width', isCurrent ? '1.8' : '1.2')
+            cardRect.setAttribute('filter', 'url(#shadowCard)')
+            tagG.appendChild(cardRect)
+
+            // Card Header (LESSON N · STATUS)
+            const tagHdr = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            tagHdr.setAttribute('x', '12')
+            tagHdr.setAttribute('y', '18')
+            tagHdr.setAttribute('font-family', 'Inter, sans-serif')
+            tagHdr.setAttribute('font-size', '9.5')
+            tagHdr.setAttribute('font-weight', '800')
+            tagHdr.setAttribute('letter-spacing', '0.06em')
+            tagHdr.setAttribute('fill', isDone ? '#34d399' : (isCurrent ? '#fde047' : '#94a3b8'))
+            tagHdr.textContent = `LESSON ${lvlId} · ${isDone ? 'COMPLETED' : (isCurrent ? 'ACTIVE' : 'LOCKED')}`
+            tagG.appendChild(tagHdr)
+
+            // Card Title (Truncated if long)
+            const tagTtl = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            tagTtl.setAttribute('x', '12')
+            tagTtl.setAttribute('y', '34')
+            tagTtl.setAttribute('font-family', 'Inter, sans-serif')
+            tagTtl.setAttribute('font-size', '11.5')
+            tagTtl.setAttribute('font-weight', '600')
+            tagTtl.setAttribute('fill', '#f1f5f9')
+            const rawTitle = n.lv.name || `Lesson ${lvlId}`
+            tagTtl.textContent = rawTitle.length > 18 ? (rawTitle.substring(0, 17) + '…') : rawTitle
+            tagG.appendChild(tagTtl)
+
+            g.appendChild(tagG)
+            svg.appendChild(g)
           })
 
-
-          const maxY = Math.max(...nodes.map(n => n.y)) + 180
-          svg.style.minHeight = maxY + 'px'
-        setTimeout(() => {
-          const scrollArea = document.getElementById('map-scroll')
-          if (!scrollArea) return
-          const targetIdx = currentIdx < nodes.length ? currentIdx : 0
-          if (targetIdx >= 0 && nodes[targetIdx]) {
-            const targetY = nodes[targetIdx].y - scrollArea.clientHeight / 2
-            scrollArea.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' })
-          }
-        }, 600)
-      }
+          // Smoothly auto-scroll to current player's level
+          setTimeout(() => {
+            const scrollArea = document.getElementById('map-scroll')
+            if (!scrollArea) return
+            const targetIdx = currentIdx < nodes.length ? currentIdx : 0
+            if (nodes[targetIdx]) {
+              const targetY = nodes[targetIdx].y - (scrollArea.clientHeight / 2)
+              scrollArea.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' })
+            }
+          }, 400)
+        }
 
 
       let _lockedToastEl = null
@@ -6283,15 +7057,19 @@ function _onbComplete() {
       }
 
 
-      const _origBuildSyl = ui._buildSylList.bind(ui);
-      ui._buildSylList = function() {
-        _origBuildSyl();
-        requestAnimationFrame(() => {
-          document.querySelectorAll('.syl-item').forEach((el, i) => {
-            el.style.setProperty('--i', i);
-          });
-        });
-      };
+      window.addEventListener('DOMContentLoaded', () => {
+        if (window.ui && window.ui._buildSylList) {
+          const _origBuildSyl = ui._buildSylList.bind(ui);
+          ui._buildSylList = function() {
+            _origBuildSyl();
+            requestAnimationFrame(() => {
+              document.querySelectorAll('.syl-item, .level-grid-card').forEach((el, i) => {
+                el.style.setProperty('--i', i);
+              });
+            });
+          };
+        }
+      });
     </script>
 
       

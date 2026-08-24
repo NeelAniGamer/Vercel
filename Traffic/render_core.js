@@ -2,7 +2,7 @@
 
 const QUALITY_PRESETS = {
     LOW: {
-        resScale: 0.5,
+        resScale: 0.85,
         shadowRes: 512,
         shadowCascades: 1,
         shadowBias: -0.0005,
@@ -19,15 +19,15 @@ const QUALITY_PRESETS = {
         description: 'Performance mode'
     },
     MED: {
-        resScale: 0.75,
+        resScale: 1.0,
         shadowRes: 1024,
         shadowCascades: 2,
         shadowBias: -0.0003,
         shadowNormalBias: 0.015,
-        bloom: true,
-        bloomThreshold: 0.85,
-        bloomStrength: 0.4,
-        bloomRadius: 0.6,
+        bloom: false,
+        bloomThreshold: 0.9,
+        bloomStrength: 0.2,
+        bloomRadius: 0.4,
         fps: 60,
         textureFilter: THREE.LinearMipmapLinearFilter,
         maxAnisotropy: 4,
@@ -42,9 +42,9 @@ const QUALITY_PRESETS = {
         shadowBias: -0.0001,
         shadowNormalBias: 0.01,
         bloom: true,
-        bloomThreshold: 0.75,
-        bloomStrength: 0.7,
-        bloomRadius: 0.8,
+        bloomThreshold: 0.88,
+        bloomStrength: 0.25,
+        bloomRadius: 0.45,
         fps: 60,
         textureFilter: THREE.LinearMipmapLinearFilter,
         maxAnisotropy: 8,
@@ -53,15 +53,15 @@ const QUALITY_PRESETS = {
         description: 'High Quality'
     },
     ULTRA: {
-        resScale: 1.5,
+        resScale: 1.0,
         shadowRes: 4096,
         shadowCascades: 4,
         shadowBias: -0.00005,
         shadowNormalBias: 0.005,
         bloom: true,
-        bloomThreshold: 0.65,
-        bloomStrength: 1.0,
-        bloomRadius: 1.0,
+        bloomThreshold: 0.86,
+        bloomStrength: 0.30,
+        bloomRadius: 0.5,
         fps: 144,
         textureFilter: THREE.LinearMipmapLinearFilter,
         maxAnisotropy: 16,
@@ -104,7 +104,7 @@ class RenderCore {
 
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 0.55;
+        this.renderer.toneMappingExposure = 0.60;
 
 
         this.renderer.shadowMap.enabled = true;

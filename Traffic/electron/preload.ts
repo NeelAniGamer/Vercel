@@ -1,14 +1,29 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 const electronAPI = {
+  // Info
   getVersion: (): Promise<string> => ipcRenderer.invoke('get-app-version'),
   getSavePath: (): Promise<string> => ipcRenderer.invoke('get-save-path'),
-  onMenuAction: (callback: (action: string) => void) => {
-    ipcRenderer.on('menu-new-game', () => callback('new-game'));
-    ipcRenderer.on('menu-restart', () => callback('restart'));
-    ipcRenderer.on('menu-about', () => callback('about'));
-    ipcRenderer.on('menu-report-bug', () => callback('report-bug'));
+  isDev: (): Promise<boolean> => ipcRenderer.invoke('is-dev'),
+
+  // Save data
+  exportSave: (): Promise<{ ok: boolean; path?: string; cancelled?: boolean }> =>
+    ipcRenderer.invoke('export-save'),
+  importSave: (): Promise<{ ok: boolean; keys?: number; cancelled?: boolean }> =>
+    ipcRenderer.invoke('import-save'),
+
+  // Updates
+  checkUpdates: (): Promise<any> => ipcRenderer.invoke('check-updates'),
+  installUpdate: (): void => { ipcRenderer.invoke('install-update'); },
+  onUpdaterStatus: (callback: (status: { event: string }) => void) => {
+    ipcRenderer.on('updater-status', (_e, status) => callback(status));
   },
+
+  // Menu actions
+  onMenuAction: (callback: (action: string) => void) => {
+    ipcRenderer.on('menu-action', (_e, action) => callback(action));
+  },
+
   platform: process.platform,
   isElectron: true
 };

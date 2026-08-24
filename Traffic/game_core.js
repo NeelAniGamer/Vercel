@@ -17,11 +17,11 @@ window.VEHICLE_STATS = VEHICLE_STATS;
 // fovRange: max additional FOV from speed
 // lerpSmoothing: camera lerp factor (higher = snappier)
 const VEHICLE_CAM = {
-  bike:  { dist: 7,   height: 2.8, lookAhead: 2.5, lookDist: 5, baseFov: 65, fovRange: 18, lerpSmoothing: 7 },
-  car:   { dist: 12,  height: 4.5, lookAhead: 3.5, lookDist: 7, baseFov: 60, fovRange: 15, lerpSmoothing: 6 },
-  bus:   { dist: 18,  height: 6.5, lookAhead: 4.5, lookDist: 10, baseFov: 55, fovRange: 10, lerpSmoothing: 5 },
-  truck: { dist: 16,  height: 6.0, lookAhead: 4.0, lookDist: 9, baseFov: 56, fovRange: 12, lerpSmoothing: 5 },
-  auto:  { dist: 8,   height: 3.0, lookAhead: 2.8, lookDist: 5, baseFov: 64, fovRange: 16, lerpSmoothing: 7 },
+  bike:  { dist: 6,   height: 2.5, lookAhead: 2.0, lookDist: 4, baseFov: 65, fovRange: 18, lerpSmoothing: 7 },
+  car:   { dist: 8,   height: 3.2, lookAhead: 3.0, lookDist: 5, baseFov: 60, fovRange: 15, lerpSmoothing: 6 },
+  bus:   { dist: 14,  height: 5.5, lookAhead: 4.0, lookDist: 8, baseFov: 55, fovRange: 10, lerpSmoothing: 5 },
+  truck: { dist: 12,  height: 5.0, lookAhead: 3.5, lookDist: 7, baseFov: 56, fovRange: 12, lerpSmoothing: 5 },
+  auto:  { dist: 6.5, height: 2.8, lookAhead: 2.5, lookDist: 4, baseFov: 64, fovRange: 16, lerpSmoothing: 7 },
 };
 const VEHICLE_CAM_DEFAULT = VEHICLE_CAM.car;
 
@@ -58,6 +58,7 @@ const PACEJKA = {
     wet_asphalt: {
       pcy1: 1.2, pcy2: 0, pdy1: 0.9, pdy2: 0, pdy3: 0,
       pey1: 0.8, pey2: 0.0, pey3: 0.0, pey4: 0.0, pey5: 0.0,
+      pcx1: 1.45, pdx1: 0.90, pdx2: 0.0, pdx3: 0.0,
       pex1: 0.15, pex2: 0.0, pex3: 0.0, pex4: 0.0,
       pkx1: 18.0, pkx2: 0.0, pkx3: 0.0,
       phx1: 0.0, phx2: 0.0,
@@ -68,7 +69,7 @@ const PACEJKA = {
       rby1: 0.0, rby2: 0.0, rby3: 0.0,
       rcy1: 0.0,
       rey1: 0.0, rey2: 0.0,
-      pky1: -18.0, pky2: 0.0, pky3: 0.0,
+      pky1: 18.0, pky2: 0.0, pky3: 0.0,
       pvy1: 0.0, pvy2: 0.0, pvy3: 0.0, pvy4: 0.0,
       phy1: 0.0, phy2: 0.0, phy3: 0.0,
     },
@@ -76,6 +77,7 @@ const PACEJKA = {
     gravel: {
       pcy1: 1.1, pcy2: 0, pdy1: 0.7, pdy2: 0, pdy3: 0,
       pey1: 0.7, pey2: 0.0, pey3: 0.0, pey4: 0.0, pey5: 0.0,
+      pcx1: 1.35, pdx1: 0.70, pdx2: 0.0, pdx3: 0.0,
       pex1: 0.1, pex2: 0.0, pex3: 0.0, pex4: 0.0,
       pkx1: 12.0, pkx2: 0.0, pkx3: 0.0,
       phx1: 0.0, phx2: 0.0,
@@ -86,7 +88,7 @@ const PACEJKA = {
       rby1: 0.0, rby2: 0.0, rby3: 0.0,
       rcy1: 0.0,
       rey1: 0.0, rey2: 0.0,
-      pky1: -12.0, pky2: 0.0, pky3: 0.0,
+      pky1: 12.0, pky2: 0.0, pky3: 0.0,
       pvy1: 0.0, pvy2: 0.0, pvy3: 0.0, pvy4: 0.0,
       phy1: 0.0, phy2: 0.0, phy3: 0.0,
     }
@@ -136,7 +138,7 @@ const PACEJKA = {
     const dfz = (Fz - Fz0) / Fz0;
 
     // Pure longitudinal
-    const C = c.pex1;
+    const C = c.pcx1;
     const D = (c.pdx1 + c.pdx2 * dfz) * (1 - c.pdx3 * camber * camber) * Fz;
     const BCD = c.pkx1 * Fz0 * (1 + c.pkx2 * dfz) * (1 - c.pkx3 * camber * camber);
     const B = BCD / (C * D + 1e-6);
@@ -931,7 +933,7 @@ class Game {
         this._lateralAccel = 0; this._downforceCoeff = 0; this._brakeFadeFactor = 1.0;
         this.playing = false; this.pause = false; this.lightningTimer = 0; this.thunderSfx = null; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0;
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.pedestrianAIs = []; this.routeIdx = 0; this.retries = 0; this.hits = 0;
-        this.violationsLog = [];
+        this._initViolationsLog();
         this.kidModeActive = false;
         this.lodChunks = [];
         this.gyroOn = false; this.gyroBaseGamma = 0; this._gyroHandler = null;
@@ -962,8 +964,8 @@ class Game {
         this._anchorNodes = []; // Living City Generator: Zoning seeds
         this._dnSkyA = new THREE.Color(); this._dnSkyB = new THREE.Color();
         this._dnFogA = new THREE.Color(); this._dnFogB = new THREE.Color();
-        this._dnDawnSky = new THREE.Color(0xffaa66); this._dnDuskSky = new THREE.Color(0xdd6633);
-        this._dnDawnFog = new THREE.Color(0xaa8855); this._dnDuskFog = new THREE.Color(0x884433);
+        this._dnDawnSky = new THREE.Color(0xf0be88); this._dnDuskSky = new THREE.Color(0x706884);
+        this._dnDawnFog = new THREE.Color(0xd0b080); this._dnDuskFog = new THREE.Color(0x5a546a);
         this._dnDaySky = new THREE.Color();
         this._dnTmp = new THREE.Color(); // reusable temp for dusk multiply
         // Pre-allocated reusable vectors (avoid per-frame GC pressure)
@@ -993,6 +995,21 @@ class Game {
         this._initR(); this._initIn(); this._initG(); this._initVirtualJoystick(); this._loop();
         window.addEventListener('resize', () => this._rsz());
         document.addEventListener('fullscreenchange', () => this._rsz());
+      }
+
+      _initViolationsLog() {
+        this.violationsLog = [];
+        const self = this;
+        const origPush = this.violationsLog.push.bind(this.violationsLog);
+        this.violationsLog.push = function(...items) {
+          const res = origPush(...items);
+          items.forEach(v => {
+            if (self.taskManager && typeof v === 'string' && !v.includes('WARNING') && !v.includes('LOG')) {
+              self.taskManager.showViolationCard(v);
+            }
+          });
+          return res;
+        };
       }
   
   // ─── CUMULATIVE RULES ENGINE ───
@@ -1229,16 +1246,18 @@ class Game {
   
   // Register rules for a completed level
   registerLevelRules(levelId) {
-    if (!window.Game.LEARNED_RULES.has(levelId)) {
-      const rules = window.Game.RULE_DEFINITIONS[levelId] || [];
-      window.Game.LEARNED_RULES.set(levelId, new Set(rules));
+    const G = window.Game || Game;
+    if (G.LEARNED_RULES && !G.LEARNED_RULES.has(levelId)) {
+      const rules = (G.RULE_DEFINITIONS && G.RULE_DEFINITIONS[levelId]) || [];
+      G.LEARNED_RULES.set(levelId, new Set(rules));
       console.log(`[Rules Engine] Registered ${rules.length} rules for Level ${levelId}`);
     }
   }
   
   // Check violation against cumulative rules
   checkCumulativeViolation(ruleId, currentLevelId) {
-    if (window.Game.isRuleLearned(ruleId, currentLevelId)) {
+    const G = window.Game || Game;
+    if (G && typeof G.isRuleLearned === 'function' && G.isRuleLearned(ruleId, currentLevelId)) {
       // Rule was learned in a previous level - strict enforcement
       return { enforce: true, severity: 'challan', message: `Repeated violation: ${ruleId} (learned in earlier level)` };
     }
@@ -1368,23 +1387,12 @@ class Game {
         this.renderCore.setupPostProcessing(innerWidth, innerHeight, isMobile);
         this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
 
-        // PERFORMANCE: Disable expensive bloom on mobile
-        try {
-          if (THREE.EffectComposer && !isMobile) {
-            this.composer = new THREE.EffectComposer(this.renderCore.renderer);
-            this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
-            const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.6, 0.6, 0.85);
-            bloomPass.threshold = 0.82;
-            bloomPass.strength = 0.35;
-            bloomPass.radius = 0.5;
-            this.composer.addPass(bloomPass);
-          } else {
-            this.composer = null; // No post-processing on mobile
-          }
-        } catch(e) { console.warn("Post processing err:", e); }
+        // Post-processing (bloom) handled entirely by RenderCore.
+        // No separate EffectComposer needed here.
+        this.composer = null;
         
         // Cache DOM elements to prevent query overhead per frame
-        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'da-dist', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn', 'dn-clock', 'dn-time', 'dn-icon', 'hsc'];
+        const ids = ['3c', 'gspd', 'garc', 'htmr', 'hfin', 'hfill', 'hcp', 'da', 'da-arrow', 'dal', 'da-dist', 'ow', 'sig-ind', 'sind-lamp', 'sind-state', 'sind-dist', 'sind-timer', 'mmc', 'boostgauge', 'boost-arc', 'boost-pct', 'boost-vignette', 'boost-ready', 'speed-lines', 'phone-gps', 'phone-gps-arrow', 'phone-gps-dist', 'phone-gps-dir', 'phone-gps-obj', 'phone-gps-btn', 'dn-clock', 'dn-time', 'dn-icon', 'hsc', 'hwallet', 'mission-tokens', 'player-hud-card', 'hlv'];
         ids.forEach(id => { this.dom[id] = document.getElementById(id); });
         // ── Immediately size the canvas to the viewport ──
         // Without this initial call the renderer defaults to 300×150 and only
@@ -1425,7 +1433,15 @@ class Game {
             if (e.key.toLowerCase() === 'e') this.toggleTurnSignal(1);
             if (e.key.toLowerCase() === 'm') this.togglePhoneGps();
              if (e.key === 'Escape') this.togglePause();
+             // ── SPEED CONTROLS ──
+             if (e.key.toLowerCase() === 'c') this.toggleCruiseControl && this.toggleCruiseControl();
+             if (e.key.toLowerCase() === 'l') this.toggleSpeedLimiter && this.toggleSpeedLimiter();
+             if (e.key.toLowerCase() === 'z') { const modes = ['ECO','CITY','SPORT']; const i = modes.indexOf(this.driveMode || 'CITY'); this.setDriveMode && this.setDriveMode(modes[(i - 1 + modes.length) % modes.length]); }
+             if (e.key.toLowerCase() === 'x') { const modes = ['ECO','CITY','SPORT']; const i = modes.indexOf(this.driveMode || 'CITY'); this.setDriveMode && this.setDriveMode(modes[(i + 1) % modes.length]); }
+             if (e.key === '+' || e.key === '=') this.adjustCruiseSpeed && this.adjustCruiseSpeed(5);
+             if (e.key === '-') this.adjustCruiseSpeed && this.adjustCruiseSpeed(-5);
          });
+
          window.addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
 
           // Show mobile pause button on touch devices
@@ -1446,25 +1462,10 @@ class Game {
             }
           }
 
-        // Pointer Lock & Mouse Look
+        // Camera always stays in third-person chase mode.
+        // Left/right look is handled by click-drag orbit handlers below.
         this._lastPointerUnlock = 0;
-        if (this.renderCore.renderer && this.renderCore.renderer.domElement) {
-          this.renderCore.renderer.domElement.addEventListener('click', () => {
-            if (this.playing && !this.pause && Date.now() - this._lastPointerUnlock > 500) {
-              try { 
-                const p = this.renderCore.renderer.domElement.requestPointerLock();
-                if (p && p.catch) p.catch(() => {});
-              } catch(e) {}
-            }
-          });
-        }
-        document.addEventListener('pointerlockchange', () => {
-          const locked = document.pointerLockElement === this.renderCore.renderer.domElement;
-          if (!locked && this.isPointerLocked) this._lastPointerUnlock = Date.now();
-          this.isPointerLocked = locked;
-          // Phase 7.4: Trigger smooth camera transition on mode switch
-          if (locked) this._camTransition = 0.4; // 1st→3rd: lerp over 0.4s
-        });
+        this.isPointerLocked = false;
          document.addEventListener('mousemove', (e) => {
            if (this.isPointerLocked) {
              if (this.isPedestrian) {
@@ -1762,7 +1763,26 @@ class Game {
         // this._initMouseSteer();
         this._initMobileHudAutohide();
       }
-      _initG() { document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); }); }
+      _initG() {
+        document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); });
+        // ── SPEED CONTROLS INIT ──
+        this.cruiseControl = false;
+        this.cruiseSpeed = 50; // km/h target
+        this.speedLimiter = false;
+        this.speedLimitCap = 50; // km/h hard cap
+        this.driveMode = 'CITY'; // 'ECO' | 'CITY' | 'SPORT'
+        this._driveModeCapMap = { ECO: 45, CITY: 65, SPORT: 999 };
+        // Wire up speed control HUD buttons
+        const _sc = id => document.getElementById(id);
+        if (_sc('sc-cruise')) _sc('sc-cruise').addEventListener('click', () => this.toggleCruiseControl());
+        if (_sc('sc-limit')) _sc('sc-limit').addEventListener('click', () => this.toggleSpeedLimiter());
+        if (_sc('sc-eco')) _sc('sc-eco').addEventListener('click', () => this.setDriveMode('ECO'));
+        if (_sc('sc-city')) _sc('sc-city').addEventListener('click', () => this.setDriveMode('CITY'));
+        if (_sc('sc-sport')) _sc('sc-sport').addEventListener('click', () => this.setDriveMode('SPORT'));
+        if (_sc('sc-plus')) _sc('sc-plus').addEventListener('click', () => this.adjustCruiseSpeed(5));
+        if (_sc('sc-minus')) _sc('sc-minus').addEventListener('click', () => this.adjustCruiseSpeed(-5));
+      }
+
 
       // Touch-capable is not the same as touch-driven: a Windows laptop with a
       // touchscreen reports maxTouchPoints > 0 while still being a mouse+keyboard
@@ -2234,22 +2254,80 @@ class Game {
         const m = 2;
         this._roadZones = roads.map(r => {
           const isV = r.type === 'v';
-          const halfW = rw + m;
+          const rWidth = r.width || rw || 14;
+          const halfW = (rWidth / 2) + m;
           if (isV) {
-            return { x1: r.x - halfW, x2: r.x + halfW, z1: Math.min(r.z1, r.z2) - m, z2: Math.max(r.z1, r.z2) + m, isV: true };
+            return { x1: r.x - halfW, x2: r.x + halfW, z1: Math.min(r.z1, r.z2) - m, z2: Math.max(r.z1, r.z2) + m, isV: true, width: rWidth, road: r };
           } else {
             const cz = r.z;
-            return { x1: Math.min(r.x1, r.x2) - m, x2: Math.max(r.x1, r.x2) + m, z1: cz - halfW, z2: cz + halfW, isV: false };
+            return { x1: Math.min(r.x1, r.x2) - m, x2: Math.max(r.x1, r.x2) + m, z1: cz - halfW, z2: cz + halfW, isV: false, width: rWidth, road: r };
           }
         });
       }
 
-      _isOnRoad(x, z) {
-        if (!this._roadZones) return false;
-        for (const rz of this._roadZones) {
-          if (x >= rz.x1 && x <= rz.x2 && z >= rz.z1 && z <= rz.z2) return true;
+      _getRoadAndSidewalkStatus(x, z) {
+        const allRoads = (this.roadSegments && this.roadSegments.length > 0) ? this.roadSegments : (this.mapCfg && this.mapCfg.roads ? this.mapCfg.roads : []);
+        if (!allRoads || allRoads.length === 0) {
+          return { onRoad: true, onSidewalk: false, offRoad: false, nearZebra: true, currentRoad: null };
         }
-        return false;
+
+        let onRoad = false;
+        let onSidewalk = false;
+        let matchedRoad = null;
+        const sidewalkWidth = 4.0;
+
+        for (let i = 0; i < allRoads.length; i++) {
+          const r = allRoads[i];
+          const roadHalfW = (r.width || 14) / 2;
+          const minExt = -25;
+          const maxExt = 25;
+
+          if (r.type === 'v') {
+            const zMin = Math.min(r.z1 !== undefined ? r.z1 : -9999, r.z2 !== undefined ? r.z2 : 9999) + minExt;
+            const zMax = Math.max(r.z1 !== undefined ? r.z1 : -9999, r.z2 !== undefined ? r.z2 : 9999) + maxExt;
+            if (z >= zMin && z <= zMax) {
+              const dx = Math.abs(x - r.x);
+              if (dx <= roadHalfW + 0.3) {
+                onRoad = true;
+                matchedRoad = r;
+                break;
+              } else if (dx <= roadHalfW + sidewalkWidth + 0.8) {
+                onSidewalk = true;
+                matchedRoad = r;
+              }
+            }
+          } else {
+            const xMin = Math.min(r.x1 !== undefined ? r.x1 : -9999, r.x2 !== undefined ? r.x2 : 9999) + minExt;
+            const xMax = Math.max(r.x1 !== undefined ? r.x1 : -9999, r.x2 !== undefined ? r.x2 : 9999) + maxExt;
+            if (x >= xMin && x <= xMax) {
+              const dz = Math.abs(z - r.z);
+              if (dz <= roadHalfW + 0.3) {
+                onRoad = true;
+                matchedRoad = r;
+                break;
+              } else if (dz <= roadHalfW + sidewalkWidth + 0.8) {
+                onSidewalk = true;
+                matchedRoad = r;
+              }
+            }
+          }
+        }
+
+        let nearZebra = false;
+        (this.mapCfg?.ints || []).forEach(([ix, iz]) => {
+          if (Math.hypot(x - ix, z - iz) < 14) nearZebra = true;
+        });
+
+        const offRoad = !onRoad && !onSidewalk;
+        return { onRoad, onSidewalk, offRoad, nearZebra, currentRoad: matchedRoad };
+      }
+
+      _isOnRoad(x, z) {
+        return this._getRoadAndSidewalkStatus(x, z).onRoad;
+      }
+
+      _isOnSidewalk(x, z) {
+        return this._getRoadAndSidewalkStatus(x, z).onSidewalk;
       }
 
       _getLaneCenter(x, z) {
@@ -2286,10 +2364,59 @@ class Game {
         document.getElementById('gread').textContent = 'GEAR: ' + g;
         document.querySelectorAll('.gb').forEach(b => b.classList.toggle('ag', b.dataset.g === g));
       }
-      _horn() { 
+
+      // ── SPEED CONTROL METHODS ──
+      toggleCruiseControl() {
+        if (this.isPedestrian) return;
+        this.cruiseControl = !this.cruiseControl;
+        if (this.cruiseControl) {
+          // Snap cruise target to current speed (min 20 km/h)
+          this.cruiseSpeed = Math.max(20, Math.round(Math.abs(this.speed) * 100));
+          toast('🚢 Cruise ON — ' + this.cruiseSpeed + ' km/h', '#4fc3f7');
+        } else {
+          toast('🚢 Cruise OFF', '#90a4ae');
+        }
+        this._updateSpeedCtrlHUD();
+      }
+
+      toggleSpeedLimiter() {
+        if (this.isPedestrian) return;
+        this.speedLimiter = !this.speedLimiter;
+        toast(this.speedLimiter ? ('🔒 Limit ON — ' + this.speedLimitCap + ' km/h') : '🔓 Limit OFF', this.speedLimiter ? '#ffb74d' : '#90a4ae');
+        this._updateSpeedCtrlHUD();
+      }
+
+      setDriveMode(mode) {
+        if (this.isPedestrian) return;
+        this.driveMode = mode;
+        const icons = { ECO: '🌿', CITY: '🏙️', SPORT: '🏎️' };
+        const colors = { ECO: '#66bb6a', CITY: '#4fc3f7', SPORT: '#ef5350' };
+        toast(icons[mode] + ' ' + mode + ' mode — cap ' + (this._driveModeCapMap[mode] < 999 ? this._driveModeCapMap[mode] + ' km/h' : 'unlimited'), colors[mode]);
+        this._updateSpeedCtrlHUD();
+      }
+
+      adjustCruiseSpeed(delta) {
+        if (this.isPedestrian) return;
+        this.cruiseSpeed = Math.max(10, Math.min(180, this.cruiseSpeed + delta));
+        if (this.cruiseControl) toast('🚢 Cruise → ' + this.cruiseSpeed + ' km/h', '#4fc3f7');
+        this._updateSpeedCtrlHUD();
+      }
+
+      _updateSpeedCtrlHUD() {
+        const el = id => document.getElementById(id);
+        if (el('sc-cruise')) el('sc-cruise').classList.toggle('sc-on', this.cruiseControl);
+        if (el('sc-limit')) el('sc-limit').classList.toggle('sc-on', this.speedLimiter);
+        ['ECO','CITY','SPORT'].forEach(m => { if (el('sc-' + m.toLowerCase())) el('sc-' + m.toLowerCase()).classList.toggle('sc-active', this.driveMode === m); });
+        if (el('sc-badge-cruise')) { el('sc-badge-cruise').textContent = this.cruiseSpeed + ''; el('sc-badge-cruise').style.display = this.cruiseControl ? 'inline' : 'none'; }
+        if (el('sc-badge-limit')) { el('sc-badge-limit').textContent = this.speedLimitCap + ''; el('sc-badge-limit').style.display = this.speedLimiter ? 'inline' : 'none'; }
+      }
+
+
+      _horn() {
           this._honkedThisFrame = true;
           if (this.mapCfg && this.mapCfg.isSilenceZone) {
             
+
             // Check cumulative rules for no honking
             const _lvId = (ui.cur ? ui.cur.id : 1);
             const cumCheck = this.checkCumulativeViolation('silence_zone_no_horn', _lvId);
@@ -2299,7 +2426,7 @@ class Game {
               this.score -= 50;
               this.fine += 2000;
               if (window.GameplayRecorder) GameplayRecorder.record('NO_HONKING', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
-              ui.issueChallan('Honking in No-Honking Zone (repeat offense)', 'Sec 190(2) MV Act', '₹2,000', 'Silence Zone Violation');
+              this._triggerPoliceStrobe(); ui.issueChallan('Honking in No-Honking Zone (repeat offense)', 'Sec 190(2) MV Act', '₹2,000', 'Silence Zone Violation');
             } else {
               this.violationsLog.push('NO_HONKING_WARNING');
               toast('⚠️ Honking in silence zone — first warning', '#f2b84b');
@@ -2342,30 +2469,27 @@ class Game {
       }
 
       _updateSuspension(dt) {
-        const cfg = VEHICLE_PACEJKA_CONFIG[this.vehMode] || VEHICLE_PACEJKA_CONFIG.car;
-        // Body roll: caused by lateral acceleration (steering)
-        const lateralAccel = this._lateralAccel || 0;
+        const cfg = (typeof VEHICLE_PACEJKA_CONFIG !== 'undefined' && VEHICLE_PACEJKA_CONFIG[this.vehMode]) || { cg_height: 0.55, maxSpeed: 1.2 };
+        const lateralAccel = isFinite(this._lateralAccel) ? this._lateralAccel : 0;
         const targetRoll = -lateralAccel * 0.03 * (cfg.cg_height || 0.55);
-        this._bodyRoll += (targetRoll - this._bodyRoll) * Math.min(1, dt * 8);
+        this._bodyRoll = (isFinite(this._bodyRoll) ? this._bodyRoll : 0) + (targetRoll - (isFinite(this._bodyRoll) ? this._bodyRoll : 0)) * Math.min(1, dt * 8);
         this._bodyRoll = Math.max(-0.12, Math.min(0.12, this._bodyRoll));
-        // Body pitch: braking = nose dive, accel = nose lift
-        const speed = Math.abs(this.speed);
+        const speed = (typeof this.speed === 'number' && isFinite(this.speed)) ? Math.abs(this.speed) : 0;
         const accel = this.keys['w'] || this.keys['arrowup'];
         const brake = this.keys['s'] || this.keys['arrowdown'];
         let targetPitch = 0;
         if (brake && speed > 0.1) targetPitch = 0.06; // nose dive
-        else if (accel && speed < cfg.maxSpeed) targetPitch = -0.03; // nose lift
-        this._bodyPitch += (targetPitch - this._bodyPitch) * Math.min(1, dt * 6);
+        else if (accel && speed < (cfg.maxSpeed || 1.2)) targetPitch = -0.03; // nose lift
+        this._bodyPitch = (isFinite(this._bodyPitch) ? this._bodyPitch : 0) + (targetPitch - (isFinite(this._bodyPitch) ? this._bodyPitch : 0)) * Math.min(1, dt * 6);
         this._bodyPitch = Math.max(-0.08, Math.min(0.08, this._bodyPitch));
-        // Apply to vehicle mesh
         if (this.playerVehicle) {
           this.playerVehicle.rotation.z = this._bodyRoll;
           this.playerVehicle.rotation.x = this._bodyPitch;
-          // Suspension vertical bounce
           const bounceFreq = 2.5 + speed * 3;
           const bounceAmp = 0.008 * Math.min(speed, 1);
-          this._suspensionY = Math.sin(this.timer * bounceFreq) * bounceAmp;
-          this.playerVehicle.position.y = this._suspensionY + (this._enterState === 'IDLE' && this.isPedestrian ? 0 : 0.2);
+          const t = isFinite(this.timer) ? this.timer : 0;
+          this._suspensionY = Math.sin(t * bounceFreq) * bounceAmp;
+          this.playerVehicle.position.y = (isFinite(this._suspensionY) ? this._suspensionY : 0) + (this._enterState === 'IDLE' && this.isPedestrian ? 0 : 0.2);
         }
       }
 
@@ -2446,6 +2570,341 @@ class Game {
         mark.position.set(x, 0.02, z);
         this.scene.add(mark);
         this._skidMarks.push({ mesh: mark, age: 0, maxAge: 15 });
+      }
+
+
+      // ══════════════════════════════════════════════════════════════════════
+      // COMPREHENSIVE SPECIAL EFFECTS & POLISH ENGINE (VFX & SFX)
+      // ══════════════════════════════════════════════════════════════════════
+      _initVFX() {
+        if (this._vfxInitialized) return;
+        this._vfxInitialized = true;
+
+        this._exhaustParticles = [];
+        this._tireSmokeParticles = [];
+        this._puddleParticles = [];
+        this._checkpointFXList = [];
+        this._blinkerTimer = 0;
+        this._blinkerState = false;
+
+        // Speedlines Overlay Canvas
+        if (!document.getElementById('speedlines-canvas')) {
+          const slCanvas = document.createElement('canvas');
+          slCanvas.id = 'speedlines-canvas';
+          slCanvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:40;opacity:0;transition:opacity 0.2s;';
+          document.body.appendChild(slCanvas);
+          this._slCanvas = slCanvas;
+          this._slCtx = slCanvas.getContext('2d');
+          const resizeSL = () => {
+            if (this._slCanvas) {
+              this._slCanvas.width = window.innerWidth;
+              this._slCanvas.height = window.innerHeight;
+            }
+          };
+          window.addEventListener('resize', resizeSL);
+          resizeSL();
+        }
+
+        // Police Violation Emergency Strobe Overlay
+        if (!document.getElementById('police-strobe-overlay')) {
+          const strobe = document.createElement('div');
+          strobe.id = 'police-strobe-overlay';
+          strobe.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:85;opacity:0;transition:opacity 0.15s;box-shadow:inset 0 0 80px rgba(255,0,0,0.6);';
+          document.body.appendChild(strobe);
+          this._policeStrobeEl = strobe;
+        }
+
+        // Exhaust & Smoke Geometry & Materials
+        this._smokeGeo = new THREE.SphereGeometry(0.2, 6, 6);
+        this._smokeMat = new THREE.MeshBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.5, depthWrite: false });
+        this._flameMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
+        this._flameOrangeMat = new THREE.MeshBasicMaterial({ color: 0xf97316, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
+        this._tireSmokeMat = new THREE.MeshBasicMaterial({ color: 0xe2e8f0, transparent: true, opacity: 0.6, depthWrite: false });
+        this._waterMat = new THREE.MeshBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.7, depthWrite: false });
+      }
+
+      _updateVFX(dt) {
+        if (!this.playing || this.pause) return;
+        this._initVFX();
+
+        const isCar = !this.isPedestrian && this.playerVehicle;
+        const absSpd = Math.abs(this.speed || 0);
+        const speedKmh = absSpd * 100;
+        const isThrottle = !!(this.keys && (this.keys['w'] || this.keys['ArrowUp'] || this._touchThrottle));
+        const isBraking = !!(this.keys && (this.keys['s'] || this.keys['ArrowDown'] || this._touchBrake));
+        const isSteeringLeft = !!(this.keys && (this.keys['a'] || this.keys['ArrowLeft']));
+        const isSteeringRight = !!(this.keys && (this.keys['d'] || this.keys['ArrowRight']));
+
+        // 1. Audio Engine Update
+        if (window.TrafficAudio) {
+          if (isCar) {
+            if (!window.TrafficAudio.isEngineRunning) window.TrafficAudio.startEngine();
+            window.TrafficAudio.updateEngine(this.speed, isThrottle, this.boosting);
+          } else {
+            if (window.TrafficAudio.isEngineRunning) window.TrafficAudio.stopEngine();
+          }
+        }
+
+        // 2. Exhaust Smoke & Nitrous Boost Flame Jets
+        if (isCar) {
+          const pRotY = this.playerVehicle.rotation.y;
+          const cosR = Math.cos(pRotY);
+          const sinR = Math.sin(pRotY);
+          const pPos = this.playerVehicle.position;
+
+          // Exhaust Ports (Rear bumper left & right)
+          const rearDist = -1.8;
+          [-0.45, 0.45].forEach(latOffset => {
+            const exX = pPos.x + rearDist * -sinR + latOffset * cosR;
+            const exY = pPos.y + 0.28;
+            const exZ = pPos.z + rearDist * -cosR + latOffset * sinR;
+
+            // Nitrous Boost Flame Jet
+            if (this.boosting && Math.random() < 0.8) {
+              const flame = new THREE.Mesh(this._smokeGeo, Math.random() > 0.4 ? this._flameMat : this._flameOrangeMat);
+              flame.scale.set(0.6, 0.6, 1.2);
+              flame.position.set(exX + (Math.random()-0.5)*0.1, exY, exZ + (Math.random()-0.5)*0.1);
+              this.scene.add(flame);
+              const flameSpd = 12 + Math.random() * 8;
+              this._exhaustParticles.push({
+                mesh: flame,
+                vx: -sinR * -flameSpd + (Math.random()-0.5)*1.5,
+                vy: (Math.random() - 0.2) * 2,
+                vz: -cosR * -flameSpd + (Math.random()-0.5)*1.5,
+                life: 0.15 + Math.random() * 0.1,
+                age: 0,
+                isFlame: true
+              });
+            } else if ((isThrottle || absSpd > 0.05) && Math.random() < 0.35) {
+              // Normal Exhaust Smoke Puff
+              const smoke = new THREE.Mesh(this._smokeGeo, this._smokeMat);
+              smoke.scale.set(0.3, 0.3, 0.3);
+              smoke.position.set(exX, exY, exZ);
+              this.scene.add(smoke);
+              this._exhaustParticles.push({
+                mesh: smoke,
+                vx: (Math.random() - 0.5) * 0.4 - sinR * -1.5,
+                vy: 0.8 + Math.random() * 0.8,
+                vz: (Math.random() - 0.5) * 0.4 - cosR * -1.5,
+                life: 0.6 + Math.random() * 0.4,
+                age: 0,
+                isFlame: false
+              });
+            }
+          });
+
+          // 3. Tire Smoke & Drift Skid Marks
+          const lateralSlip = Math.abs(this._lateralAccel || 0);
+          const isDrifting = lateralSlip > 0.35 && absSpd > 0.2;
+          const isHardBraking = isBraking && absSpd > 0.3;
+
+          if (isDrifting || isHardBraking) {
+            [-0.7, 0.7].forEach(tOffset => {
+              const tireX = pPos.x + (-1.4) * -sinR + tOffset * cosR;
+              const tireY = pPos.y + 0.08;
+              const tireZ = pPos.z + (-1.4) * -cosR + tOffset * sinR;
+
+              if (Math.random() < 0.5) {
+                const tSmoke = new THREE.Mesh(this._smokeGeo, this._tireSmokeMat);
+                tSmoke.scale.set(0.5, 0.5, 0.5);
+                tSmoke.position.set(tireX + (Math.random()-0.5)*0.2, tireY, tireZ + (Math.random()-0.5)*0.2);
+                this.scene.add(tSmoke);
+                this._tireSmokeParticles.push({
+                  mesh: tSmoke,
+                  vx: (Math.random() - 0.5) * 1.2,
+                  vy: 0.5 + Math.random() * 1.0,
+                  vz: (Math.random() - 0.5) * 1.2,
+                  life: 0.5 + Math.random() * 0.3,
+                  age: 0
+                });
+              }
+
+              // Drop rubber skid mark quad
+              if (this._spawnSkidMark && Math.random() < 0.4) {
+                this._spawnSkidMark(tireX, tireZ, pRotY, 1.2);
+              }
+            });
+
+            if (window.TrafficAudio && Math.random() < 0.2) {
+              window.TrafficAudio.playScreech(Math.min(1.0, lateralSlip * 1.5));
+            }
+          }
+
+          // 4. Dynamic Taillight & Turn Signal Lighting
+          this._blinkerTimer += dt;
+          if (this._blinkerTimer > 0.35) {
+            this._blinkerTimer = 0;
+            this._blinkerState = !this._blinkerState;
+          }
+
+          if (this._playerTaillights) {
+            const brakeColor = isBraking ? 0xff1100 : (this.mapCfg?.isNight ? 0x660a00 : 0x220500);
+            this._playerTaillights.forEach(tl => {
+              if (tl && tl.material) {
+                tl.material.color.setHex(brakeColor);
+                tl.scale.setScalar(isBraking ? 1.4 : 1.0);
+              }
+            });
+          }
+
+          // 5. Dynamic Speedlines
+          if (this._slCtx && this._slCanvas) {
+            const shouldSpeedlines = speedKmh > 55 || this.boosting;
+            const targetOpacity = this.boosting ? 0.85 : Math.min(0.75, (speedKmh - 55) / 50);
+            this._slCanvas.style.opacity = shouldSpeedlines ? targetOpacity : 0;
+
+            if (shouldSpeedlines) {
+              const w = this._slCanvas.width;
+              const h = this._slCanvas.height;
+              const ctx = this._slCtx;
+              ctx.clearRect(0, 0, w, h);
+              ctx.strokeStyle = this.boosting ? 'rgba(56, 189, 248, 0.6)' : 'rgba(255, 255, 255, 0.4)';
+              ctx.lineWidth = this.boosting ? 2.5 : 1.5;
+
+              const cx = w / 2;
+              const cy = h / 2;
+              const numLines = this.boosting ? 35 : Math.floor(15 + (speedKmh - 55) * 0.4);
+
+              for (let i = 0; i < numLines; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r1 = Math.min(w, h) * (0.35 + Math.random() * 0.15);
+                const r2 = Math.min(w, h) * (0.55 + Math.random() * 0.4);
+                ctx.beginPath();
+                ctx.moveTo(cx + Math.cos(angle) * r1, cy + Math.sin(angle) * r1);
+                ctx.lineTo(cx + Math.cos(angle) * r2, cy + Math.sin(angle) * r2);
+                ctx.stroke();
+              }
+            }
+          }
+        }
+
+        // 6. Update Exhaust & Smoke Particles
+        for (let i = this._exhaustParticles.length - 1; i >= 0; i--) {
+          const p = this._exhaustParticles[i];
+          p.age += dt;
+          if (p.age >= p.life) {
+            this.scene.remove(p.mesh);
+            if (p.mesh.geometry) p.mesh.geometry.dispose();
+            this._exhaustParticles.splice(i, 1);
+            continue;
+          }
+          const progress = p.age / p.life;
+          p.mesh.position.x += p.vx * dt;
+          p.mesh.position.y += p.vy * dt;
+          p.mesh.position.z += p.vz * dt;
+          const grow = p.isFlame ? (1.0 + progress * 1.5) : (1.0 + progress * 3.5);
+          p.mesh.scale.setScalar(grow * 0.3);
+          if (p.mesh.material) p.mesh.material.opacity = (1 - progress) * (p.isFlame ? 0.9 : 0.5);
+        }
+
+        // 7. Update Tire Smoke Particles
+        for (let i = this._tireSmokeParticles.length - 1; i >= 0; i--) {
+          const p = this._tireSmokeParticles[i];
+          p.age += dt;
+          if (p.age >= p.life) {
+            this.scene.remove(p.mesh);
+            if (p.mesh.geometry) p.mesh.geometry.dispose();
+            this._tireSmokeParticles.splice(i, 1);
+            continue;
+          }
+          const progress = p.age / p.life;
+          p.mesh.position.x += p.vx * dt;
+          p.mesh.position.y += p.vy * dt;
+          p.mesh.position.z += p.vz * dt;
+          p.mesh.scale.setScalar((1.0 + progress * 4.0) * 0.4);
+          if (p.mesh.material) p.mesh.material.opacity = (1 - progress) * 0.6;
+        }
+
+        // 8. Update Checkpoint Collect Bursts
+        for (let i = this._checkpointFXList.length - 1; i >= 0; i--) {
+          const fx = this._checkpointFXList[i];
+          fx.age += dt;
+          if (fx.age >= fx.life) {
+            this.scene.remove(fx.group);
+            this._checkpointFXList.splice(i, 1);
+            continue;
+          }
+          const prog = fx.age / fx.life;
+          // Expand shockwave ring
+          if (fx.ring) {
+            fx.ring.scale.setScalar(1.0 + prog * 6.0);
+            fx.ring.material.opacity = (1 - prog) * 0.8;
+          }
+          // Disperse gold star particles
+          if (fx.particles) {
+            const pos = fx.particles.geometry.attributes.position.array;
+            for (let j = 0; j < fx.velocities.length; j++) {
+              const v = fx.velocities[j];
+              v.vy -= 9.8 * dt;
+              pos[j*3] += v.vx * dt;
+              pos[j*3+1] += v.vy * dt;
+              pos[j*3+2] += v.vz * dt;
+            }
+            fx.particles.geometry.attributes.position.needsUpdate = true;
+            fx.particles.material.opacity = (1 - prog);
+          }
+        }
+      }
+
+      // ── Trigger Golden Checkpoint Particle Explosion ──
+      _triggerCheckpointBurst(x, y, z) {
+        this._initVFX();
+        const grp = new THREE.Group();
+        grp.position.set(x, y || 1.0, z);
+
+        // Shockwave ring
+        const ringGeo = new THREE.RingGeometry(0.5, 0.9, 24);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0xffd700, side: THREE.DoubleSide, transparent: true, opacity: 0.9, depthWrite: false });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = -Math.PI / 2;
+        grp.add(ring);
+
+        // 30 Golden spark particles
+        const count = 30;
+        const positions = new Float32Array(count * 3);
+        const velocities = [];
+        for (let i = 0; i < count; i++) {
+          positions[i*3] = 0; positions[i*3+1] = 0; positions[i*3+2] = 0;
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.random() * Math.PI;
+          const spd = 4 + Math.random() * 7;
+          velocities.push({
+            vx: Math.sin(phi) * Math.cos(theta) * spd,
+            vy: Math.abs(Math.cos(phi)) * spd + 2,
+            vz: Math.sin(phi) * Math.sin(theta) * spd
+          });
+        }
+        const ptsGeo = new THREE.BufferGeometry();
+        ptsGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        const ptsMat = new THREE.PointsMaterial({ color: 0xffea00, size: 0.35, transparent: true, opacity: 1.0, blending: THREE.AdditiveBlending, depthWrite: false });
+        const pts = new THREE.Points(ptsGeo, ptsMat);
+        grp.add(pts);
+
+        this.scene.add(grp);
+        this._checkpointFXList.push({ group: grp, ring, particles: pts, velocities, life: 0.9, age: 0 });
+
+        if (window.TrafficAudio) window.TrafficAudio.playCheckpoint();
+      }
+
+      // ── Trigger Police Violation Emergency Strobe ──
+      _triggerPoliceStrobe() {
+        this._initVFX();
+        if (!this._policeStrobeEl) return;
+        let count = 0;
+        const interval = setInterval(() => {
+          count++;
+          const isRed = count % 2 === 1;
+          this._policeStrobeEl.style.boxShadow = isRed
+            ? 'inset 0 0 100px rgba(239, 68, 68, 0.7)'
+            : 'inset 0 0 100px rgba(59, 130, 246, 0.7)';
+          this._policeStrobeEl.style.opacity = '1';
+          if (count >= 8) {
+            clearInterval(interval);
+            this._policeStrobeEl.style.opacity = '0';
+          }
+        }, 120);
+
+        if (window.TrafficAudio) window.TrafficAudio.playSiren();
       }
 
       _updateCrashFX(dt) {
@@ -2642,37 +3101,23 @@ class Game {
         this._speedLinesIntensity = Math.min(1, intensity * 1.5);
       }
       startLevel() {
-        // ── 2D Scenario Intro (cinematic canvas animation before gameplay) ──
-        if (window.Scenario2D && ui.cur && ui.cur.id) {
-          window.Scenario2D.play(ui.cur.id, () => {
-            // Promise.resolve(...) wrap: _actualStart is declared async so calling it should
-            // always hand back a real Promise, but on at least one deployment this call site
-            // threw "Cannot read properties of undefined (reading 'catch')" - meaning whatever
-            // ran here returned undefined instead of a Promise (a stale/partially-updated copy
-            // of this file is the most likely explanation). Wrapping in Promise.resolve()
-            // guarantees .catch() never fails regardless. This crash mattered more than it
-            // looked: it fired inside Scenario2D's own completion callback, so scenario2d.js
-            // never got to finish whatever cleanup/handoff it does after calling us (hiding its
-            // 2D canvas, revealing the 3D view) - which is very likely why the 2D scenario
-            // cutout stayed stuck on screen even though the real 3D game underneath had already
-            // loaded and was running fine (HUD, wallet, controls all live).
-            try {
-              Promise.resolve(this._actualStart(ui.cur)).catch(err => this._onActualStartFailed(err));
-            } catch (e) {
-              // If _actualStart throws synchronously (e.g. ui.cur undefined, state corruption),
-              // still route to the error handler so the Scenario2D overlay gets cleaned up.
-              console.error('[Driving] startLevel callback sync error:', e);
-              this._onActualStartFailed(e);
-            }
-          });
-        } else {
-          const cd = document.getElementById('cdown');
-          if (cd) cd.classList.add('on');
-          setTimeout(() => {
-            if (cd) cd.classList.remove('on');
-            Promise.resolve(this._actualStart(ui.cur)).catch(err => this._onActualStartFailed(err));
-          }, 1500);
+        // Clean up any dangling 2D scenario canvas/overlays
+        if (window.Scenario2D && typeof window.Scenario2D.destroy === 'function') {
+          try { window.Scenario2D.destroy(); } catch (e) {}
         }
+        document.querySelectorAll('canvas[style*="z-index: 10000"], canvas[style*="z-index:10000"]').forEach(c => c.remove());
+
+        const cd = document.getElementById('cdown');
+        if (cd) cd.classList.add('on');
+        setTimeout(() => {
+          if (cd) cd.classList.remove('on');
+          try {
+            Promise.resolve(this._actualStart(ui.cur)).catch(err => this._onActualStartFailed(err));
+          } catch (e) {
+            console.error('[Driving] startLevel sync error:', e);
+            this._onActualStartFailed(e);
+          }
+        }, 1200);
       }
       // _actualStart() is async and was previously called without being awaited or caught —
       // any error thrown inside it (bad map config, a failed asset load, etc.) became a
@@ -2684,14 +3129,16 @@ class Game {
       _onActualStartFailed(err) {
         console.error('[Driving] _actualStart() failed for level', ui.cur && ui.cur.id, err);
         this._hideLoading();
-        toast('⚠️ Level failed to load — returning to levels', '#ff3b30');
-        setTimeout(() => { window.location.href = 'Academy.html?screen=levels'; }, 1200);
+        toast('⚠️ Level failed to load', '#ff3b30');
       }
       async _actualStart(lv) {
         // Show loading screen with level name
         this._showLoading(lv.name || 'Level ' + lv.id);
         this._updateLoading(5, 'Resetting game state...');
-        this.mode = lv.mode; this.vehMode = lv.vehMode; this.lvId = lv.id; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0; this.speed = 0; this.routeIdx = 0; this.retries = 0; this.vx = 0; this.vz = 0;
+        this.mode = lv.mode || ui.curMode || 'car';
+        this.vehMode = lv.vehMode || (ui.curMode === 'pedestrian' ? 'pedestrian' : (ui.curMode || 'car'));
+        this.isPedestrian = (this.vehMode === 'pedestrian' || this.mode === 'pedestrian');
+        this.lvId = lv.id; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0; this.speed = 0; this.routeIdx = 0; this.retries = 0; this.vx = 0; this.vz = 0;
         // Start gameplay recording
         if (window.GameplayRecorder) GameplayRecorder.start(lv.id, lv.name || '');
         this.ms = { inSz: false, passed: false, amb: null };
@@ -2709,8 +3156,13 @@ class Game {
         this._camOverride = false;
         this._camSnapped = false;
         this._lastStepTime = 0;
+        this.camYaw = 0; this.camPitch = 0;
+        this.targetCamYaw = 0; this.targetCamPitch = 0;
         this.boostFuel = 100; this.boosting = false; this._wasDepleted = false;
-        this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
+        this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0;
+        const _initFov = this.isPedestrian ? 65 : ((VEHICLE_CAM[this.vehMode] || VEHICLE_CAM_DEFAULT).baseFov);
+        this._camFovTarget = _initFov;
+        if (this.camera) { this.camera.fov = _initFov; this.camera.updateProjectionMatrix(); }
         // ── Reset Enhanced Physics ──
         this._bodyRoll = 0; this._bodyPitch = 0; this._suspensionY = 0;
         this._brakeHeat = 0; this._tireWear = 0;
@@ -2768,16 +3220,23 @@ class Game {
         this._updateLoading(50, 'Building city environment...');
         await new Promise(r => requestAnimationFrame(r));
         this._buildScene(lv.mode);
+        this._buildRouteCheckpoints(this.mapCfg || lv);
         this._updateLoading(80, 'Spawning traffic & pedestrians...');
         await new Promise(r => requestAnimationFrame(r));
         this._updateLoading(100, 'Ready!');
         await new Promise(r => setTimeout(r, 300)); // brief pause so player sees 100%
         this._hideLoading();
-        this.playing = true; this.pause = false; ui.show(null);         const baseTime = this.mapCfg ? this.mapCfg.timeLimit || 120 : 120;
+        this.playing = true; this.pause = false; ui.show(null);
+        this._initViolationsLog();
+        if (window.TaskManager) {
+          this.taskManager = new window.TaskManager(this);
+          this.taskManager.init(this.mapCfg || lv);
+        }
+        const baseTime = this.mapCfg ? this.mapCfg.timeLimit || 120 : 120;
         const ageTimeScale = (typeof ui !== 'undefined' && ui.getAgeScale) ? ui.getAgeScale() : 1.0;
         this.timeLimit = Math.round(baseTime / ageTimeScale);
         const cfg = this.mapCfg || {};
-        ['gc', 'hud', 'hudbar', 'hwrap', 'mobile-controls', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
+        ['gc', 'player-hud-card', 'hud', 'hudbar', 'hwrap', 'mobile-controls', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('on'); });
         // ── HUD Entrance Animations ──
         if (typeof IntersectionObserver === 'undefined' || true) {
           const hudAnims = [
@@ -2801,9 +3260,12 @@ class Game {
         }
         if (this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'flex';
         
-        // Show objective
+        // Show objective & GTA Mission Introduction
         const objDesc = document.getElementById('objective-desc');
         if(objDesc && lv.pract) { objDesc.innerHTML = lv.pract; }
+        if (window.showGtaMissionIntro) {
+          window.showGtaMissionIntro(lv.id || 1);
+        }
         
         if (!cfg.isPedestrian) { 
             ['spgauge', 'gp', 'civic-controls'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'flex'; });
@@ -2830,7 +3292,7 @@ class Game {
         if (mob()) document.getElementById('tc').classList.add('on');
         if (mob()) this._autoGyro();
         if (this._checkOrientation) this._checkOrientation();
-        document.getElementById('hlv').textContent = lv.id; document.getElementById('hobj').textContent = lv.tg; this._uh(); sfx.play('ok');
+        const _hlvEl = document.getElementById('hlv'); if (_hlvEl) _hlvEl.textContent = lv.id; const _hobjEl = document.getElementById('hobj'); if (_hobjEl) _hobjEl.textContent = lv.tg || ''; this._uh(); if (window.sfx && sfx.play) sfx.play('ok');
         if (this._hudShowBrief) this._hudShowBrief();
         
         // Initialize tasks for this level
@@ -2838,22 +3300,17 @@ class Game {
 
         // Register HUD elements with SafeZoneGrid for responsive layout
         if (window.safeZoneGridInstance) {
-          // Register proper UI container elements to prevent layout breaking/overlap
           const SZ = window.safeZoneGridInstance;
-          if (document.getElementById('hud')) SZ.register('hud', document.getElementById('hud'), 'TL', { order: 0, priority: 'high' });
-          if (document.getElementById('hudbar')) SZ.register('hudbar', document.getElementById('hudbar'), 'TL', { order: 1, priority: 'high' });
-          if (document.getElementById('hwrap')) SZ.register('hwrap', document.getElementById('hwrap'), 'TL', { order: 2, priority: 'medium' });
+          if (document.getElementById('player-hud-card')) SZ.register('player-hud', document.getElementById('player-hud-card'), 'TL', { order: 0, priority: 'high' });
           if (document.getElementById('objective-overlay')) SZ.register('objective', document.getElementById('objective-overlay'), 'TR', { order: 0, priority: 'high' });
-          // #task-tracker used to be positioned by hand at top: calc(3vw + 52px), which
-          // assumed a ~52px objective panel — a wrapped objective is ~130px tall, so the
-          // two overlapped. Let the zone stack them instead.
           if (document.getElementById('task-tracker')) SZ.register('tasks', document.getElementById('task-tracker'), 'TR', { order: 1, priority: 'medium' });
-          if (this.dom.mmc) SZ.register('minimap', this.dom.mmc, 'TR', { order: 2, priority: 'high' });
-          if (this.dom['sig-ind']) SZ.register('signal', this.dom['sig-ind'], 'BL', { order: 0, priority: 'high' });
+          if (document.getElementById('civic-controls')) SZ.register('civic', document.getElementById('civic-controls'), 'BR', { order: 2, priority: 'low' });
+          if (this.dom.mmc) SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
+          if (this.dom['sig-ind']) SZ.register('signal', this.dom['sig-ind'], 'TC', { order: 0, priority: 'high' });
+          if (this.dom['dn-clock']) SZ.register('clock', this.dom['dn-clock'], 'TC', { order: 1, priority: 'medium' });
           if (document.getElementById('spgauge')) SZ.register('speedometer', document.getElementById('spgauge'), 'BR', { order: 0, priority: 'high' });
           if (this.dom.boostgauge) SZ.register('boost', this.dom.boostgauge, 'BR', { order: 1, priority: 'high' });
-          if (this.dom.ow) SZ.register('violations', this.dom.ow, 'BR', { order: 2, priority: 'medium' });
-          if (this.dom['dn-clock']) SZ.register('clock', this.dom['dn-clock'], 'TC', { order: 0, priority: 'medium' });
+          if (this.dom.ow) SZ.register('violations', this.dom.ow, 'TC', { order: 2, priority: 'high' });
           if (this.dom.da) SZ.register('direction', this.dom.da, 'BC', { order: 0, priority: 'high' });
           if (this._isMobile) {
             SZ.register('steer', document.getElementById('steer-wheel-container'), 'BL', { order: 10, priority: 'high' });
@@ -2862,10 +3319,17 @@ class Game {
           }
         }
       }
-      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); const cmp = document.getElementById('compass-strip'); if (cmp) cmp.style.display = 'none'; if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; 
+      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'player-hud-card', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); const cmp = document.getElementById('compass-strip'); if (cmp) cmp.style.display = 'none'; if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; 
         
         // Release all pooled objects to prevent memory leaks
         if (window.ThreePools) ThreePools.releaseAll();
+        // Reset enter/exit and camera state to prevent stale overrides on replay
+        this._camOverride = false;
+        this._enterState = 'IDLE';
+        this._camSnapped = false;
+        this.camYaw = 0; this.camPitch = 0;
+        this.targetCamYaw = 0; this.targetCamPitch = 0;
+        if (this.camera) { this.camera.fov = 65; this.camera.updateProjectionMatrix(); }
         // Cleanup crash VFX (Not implemented yet)
         
         // Clean up GPS navigation elements
@@ -2899,6 +3363,7 @@ class Game {
       }
       toggleSeatbelt(btn) {
           this.seatbeltOn = !this.seatbeltOn;
+          if (window.TrafficAudio) window.TrafficAudio.playSeatbelt(this.seatbeltOn);
           const isBike = (this.vehMode === 'bike' || this.vehMode === 'cycle');
           const wrap = document.getElementById('sb-icon-wrap');
           const label = document.getElementById('sb-label');
@@ -3209,7 +3674,7 @@ class Game {
                       const _lvId = (ui.cur ? ui.cur.id : 1);
                       const cumCheck = this.checkCumulativeViolation('mobile_use', _lvId);
                       if (cumCheck.enforce) {
-                        ui.issueChallan('Using Mobile while Driving', 'Sec 184 MV Act', '₹5,000', 'Dangerous Driving');
+                        this._triggerPoliceStrobe(); ui.issueChallan('Using Mobile while Driving', 'Sec 184 MV Act', '₹5,000', 'Dangerous Driving');
                         this.vio++; this.violationsLog.push('MOBILE_USE'); this.score -= 50; this.fine += 5000;
                       } else {
                         this.violationsLog.push('MOBILE_USE_WARNING');
@@ -3611,10 +4076,10 @@ class Game {
         const _lvId = (ui.cur ? ui.cur.id : 1);
         this.registerLevelRules(_lvId);
         
+        if (window.TrafficAudio) window.TrafficAudio.playVictory();
         if (window.confetti) { confetti.init(); confetti.burst(4000); }
         else this._confettiThree();
         // ── LEVEL REWARD CALCULATION ──
-        const _lvId = (ui.cur ? ui.cur.id : 1);
         const _rewards = [2000,2000,2500,2500,3000,3000,3000,3500,3500,4000,4000,4500,4500,5000,6000];
         const _baseRew = _rewards[Math.min(_lvId - 1, 14)];
         const _noViolBonus = this.vio === 0 ? 800 : this.vio <= 2 ? 300 : 0;
@@ -3718,14 +4183,40 @@ class Game {
         } catch(e) { console.warn('Rank notification error:', e); }
 
         setTimeout(() => {
-          _mco.remove();
+          if (_mco && _mco.parentNode) _mco.remove();
+          // Ensure ui.cur is defined
+          if (typeof ui !== 'undefined') {
+            if (!ui.cur) {
+              const curLvId = this._lv || 1;
+              ui.cur = (window.LVS && window.LVS.find(l => l.id == curLvId)) || window.LVS?.[0] || {
+                id: curLvId,
+                name: 'Lesson ' + curLvId,
+                themeType: 'traffic_safety',
+                law: { sec: 'Motor Vehicles Act', off: 'Traffic Violation', fine: '₹500 - ₹2000' }
+              };
+            }
+            ui.curMode = this.vehMode || ui.curMode || 'car';
+          }
           // Show driving review before quiz
-          if (window.GameplayRecorder) {
-            GameplayRecorder.showReview(() => {
-              ui.showQuiz(ui.curMode || 'car', { violations: this.violationsLog });
-            });
-          } else {
-            ui.showQuiz(ui.curMode || 'car', { violations: this.violationsLog });
+          try {
+            if (window.GameplayRecorder && typeof window.GameplayRecorder.showReview === 'function') {
+              GameplayRecorder.showReview(() => {
+                try {
+                  if (typeof ui !== 'undefined' && ui.showQuiz) {
+                    ui.showQuiz(this.vehMode || ui.curMode || 'car', { violations: this.violationsLog || [] });
+                  }
+                } catch(qe) {
+                  console.error('[CompleteLevel] Error in ui.showQuiz:', qe);
+                }
+              });
+            } else if (typeof ui !== 'undefined' && ui.showQuiz) {
+              ui.showQuiz(this.vehMode || ui.curMode || 'car', { violations: this.violationsLog || [] });
+            }
+          } catch(err) {
+            console.error('[CompleteLevel] Error showing review/quiz:', err);
+            if (typeof ui !== 'undefined' && ui.showQuiz) {
+              ui.showQuiz(this.vehMode || ui.curMode || 'car', { violations: this.violationsLog || [] });
+            }
           }
         }, 3500);
       }
@@ -3738,7 +4229,39 @@ class Game {
         }
         
         const M = {
-          1: { name: 'Andheri Junction', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car', npcTypes: ['car', 'car', 'bike', 'auto', 'bus', 'truck', 'car', 'bike', 'taxi', 'car', 'auto', 'car', 'car', 'bike', 'bus', 'car', 'auto', 'truck', 'car', 'car', 'car', 'bike', 'auto', 'car'], roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -140, z2: 20 }, { type: 'v', x: 240, z1: -20, z2: 140 }, { type: 'v', x: 240, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 100, x2: 260 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 100, z2: 260 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -20, z2: 140 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'h', z: -120, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -380, x2: -220 }, { type: 'h', z: -360, x1: -260, x2: 880 }, { type: 'h', z: 120, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -880, z2: 1120 }, { type: 'h', z: 240, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -760, z2: 1240 }, { type: 'h', z: 0, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1000, z2: 1000 }, { type: 'h', z: 240, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -760, z2: 1240 }, { type: 'h', z: -240, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1240, z2: 760 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 240, z: -120 }, { x: 240, z: 0 }, { x: 240, z: 120 }, { x: 240, z: 240 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 120 }, { x: -120, z: 120 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -480, z: -120 }, { x: -480, z: -240 }, { x: -360, z: -240 }, { x: -360, z: -360 }, { x: -240, z: -360 }, { x: -120, z: -360 }], ints: [[240, 0], [0, 240], [-120, -360], [0, 120], [-240, -120], [0, 0], [-360, -240], [120, 240], [240, -120], [-360, -360], [-360, -120], [-120, 0], [240, 240], [-120, 120], [0, -120], [-120, -120], [-480, -240], [120, -120], [-480, -120], [-240, -360], [240, 120]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 218, z1: -120, z2: 0, s: 0.9 }, { x: 262, z1: -120, z2: 0, s: 0.9 }, { x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 }, { x: 218, z1: 120, z2: 240, s: 0.9 }, { x: 262, z1: 120, z2: 240, s: 0.9 }, { x: -22, z1: 120, z2: 240, s: 0.9 }, { x: 22, z1: 120, z2: 240, s: 0.9 }, { x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -502, z1: -240, z2: -120, s: 0.9 }, { x: -458, z1: -240, z2: -120, s: 0.9 }, { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 }], timeLimit: 600, hasGarage: true, assets: ['suburban', 'industrial'] },
+          1: {
+            name: 'Andheri Grand Junction',
+            sky: 0x87b6d8, fog: 650, ground: 0x33691e, amb: 0.85, veh: 'car',
+            npcTypes: ['car','auto','bike','car','bus','truck','taxi','car','auto','bike','car','auto','bus','car','taxi','car','bike','auto','truck','car','car','bike','auto','car'],
+            roads: [
+              // Major North-South Avenues
+              { type: 'v', x: 0, z1: -800, z2: 800, lanes: 4, width: 22, name: 'SV Road Arterial' },
+              { type: 'v', x: 240, z1: -800, z2: 800, lanes: 4, width: 20, name: 'Link Road' },
+              { type: 'v', x: -240, z1: -800, z2: 800, lanes: 4, width: 20, name: 'Western Express' },
+              { type: 'v', x: -480, z1: -800, z2: 800, lanes: 4, width: 20, name: 'Marine Coastal Way' },
+              { type: 'v', x: 480, z1: -800, z2: 800, lanes: 2, width: 14, name: 'East Ring Road' },
+              // Major East-West Cross Streets
+              { type: 'h', z: 0, x1: -800, x2: 800, lanes: 4, width: 20, name: 'Central Boulevard' },
+              { type: 'h', z: -200, x1: -800, x2: 800, lanes: 4, width: 20, name: 'North Grand Avenue' },
+              { type: 'h', z: -400, x1: -800, x2: 800, lanes: 2, width: 14, name: 'Airport Approach' },
+              { type: 'h', z: 200, x1: -800, x2: 800, lanes: 4, width: 20, name: 'South Commercial Expressway' },
+              { type: 'h', z: 400, x1: -800, x2: 800, lanes: 2, width: 14, name: 'Harbor Way' }
+            ],
+            route: [
+              { x: 0, z: 0, desc: 'Start Position' },
+              { x: 0, z: -80, desc: 'Signal Stop Line' },
+              { x: 0, z: -200, desc: 'SV Road Crossing' },
+              { x: 120, z: -200, desc: 'North Link Corridor' },
+              { x: 240, z: -200, desc: 'Destination Finish Gate' }
+            ],
+            ints: [
+              [0, 0], [240, 0], [-240, 0], [-480, 0], [480, 0],
+              [0, -200], [240, -200], [-240, -200], [-480, -200], [480, -200],
+              [0, 200], [240, 200], [-240, 200], [-480, 200], [480, 200],
+              [0, -400], [240, -400], [-240, -400],
+              [0, 400], [240, 400], [-240, 400]
+            ],
+            bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 218, z1: -120, z2: 0, s: 0.9 }, { x: 262, z1: -120, z2: 0, s: 0.9 }, { x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 }, { x: 218, z1: 120, z2: 240, s: 0.9 }, { x: 262, z1: 120, z2: 240, s: 0.9 }, { x: -22, z1: 120, z2: 240, s: 0.9 }, { x: 22, z1: 120, z2: 240, s: 0.9 }, { x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -502, z1: -240, z2: -120, s: 0.9 }, { x: -458, z1: -240, z2: -120, s: 0.9 }, { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 }], timeLimit: 600, hasGarage: true, assets: ['suburban', 'industrial'] },
           2: { name: 'Dadar Junction', sky: 0x9ec5d9, fog: 500, ground: 0x4a6741, amb: 0.85, isPedestrian: true, veh: 'pedestrian', npcTypes: ['car', 'bus', 'auto', 'car', 'bike', 'truck', 'car', 'auto', 'taxi', 'car', 'bus', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'bus', 'truck', 'car', 'auto', 'car', 'car', 'bike'], sidewalkWidth: 5, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -140, z2: 20 }, { type: 'v', x: -240, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -380, x2: -220 }, { type: 'h', z: 120, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -20, z2: 140 }, { type: 'v', x: -600, z1: 100, z2: 260 }, { type: 'v', x: -600, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -860, x2: -700 }, { type: 'h', z: 480, x1: -980, x2: -820 }, { type: 'h', z: 480, x1: -1100, x2: -940 }, { type: 'v', x: -1080, z1: 340, z2: 500 }, { type: 'h', z: 360, x1: -1220, x2: -1060 }, { type: 'v', x: -1200, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -1340, x2: -1180 }, { type: 'h', z: 480, x1: -1460, x2: -1300 }, { type: 'v', x: -1440, z1: 460, z2: 620 }, { type: 'v', x: -1440, z1: 580, z2: 1720 }, { type: 'h', z: 360, x1: -1720, x2: 280 }, { type: 'v', x: -720, z1: -640, z2: 1360 }, { type: 'h', z: 120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -880, z2: 1120 }, { type: 'h', z: 480, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -520, z2: 1480 }, { type: 'h', z: 120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -880, z2: 1120 }, { type: 'h', z: 120, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: -880, z2: 1120 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -240, z: 0 }, { x: -240, z: 120 }, { x: -360, z: 120 }, { x: -480, z: 120 }, { x: -480, z: 0 }, { x: -600, z: 0 }, { x: -600, z: 120 }, { x: -600, z: 240 }, { x: -600, z: 360 }, { x: -720, z: 360 }, { x: -720, z: 480 }, { x: -840, z: 480 }, { x: -960, z: 480 }, { x: -1080, z: 480 }, { x: -1080, z: 360 }, { x: -1200, z: 360 }, { x: -1200, z: 480 }, { x: -1320, z: 480 }, { x: -1440, z: 480 }, { x: -1440, z: 600 }, { x: -1440, z: 720 }], ints: [[-600, 240], [-600, 0], [-1440, 600], [-240, 120], [-240, -120], [-480, 120], [-480, 0], [0, 0], [-1200, 480], [-1080, 360], [-1080, 480], [-1440, 720], [-840, 480], [-1200, 360], [-1320, 480], [-360, 120], [-720, 480], [-120, 0], [-120, -120], [-240, 0], [-720, 360], [-600, 120], [-1440, 480], [-600, 360], [-960, 480]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 }, { x: -262, z1: 0, z2: 120, s: 0.9 }, { x: -218, z1: 0, z2: 120, s: 0.9 }, { x: -502, z1: 0, z2: 120, s: 0.9 }, { x: -458, z1: 0, z2: 120, s: 0.9 }, { x: -622, z1: 0, z2: 120, s: 0.9 }, { x: -578, z1: 0, z2: 120, s: 0.9 }, { x: -622, z1: 120, z2: 240, s: 0.9 }, { x: -578, z1: 120, z2: 240, s: 0.9 }, { x: -622, z1: 240, z2: 360, s: 0.9 }, { x: -578, z1: 240, z2: 360, s: 0.9 }, { x: -742, z1: 360, z2: 480, s: 0.9 }, { x: -698, z1: 360, z2: 480, s: 0.9 }, { x: -1102, z1: 360, z2: 480, s: 0.9 }, { x: -1058, z1: 360, z2: 480, s: 0.9 }, { x: -1222, z1: 360, z2: 480, s: 0.9 }, { x: -1178, z1: 360, z2: 480, s: 0.9 }, { x: -1462, z1: 480, z2: 600, s: 0.9 }, { x: -1418, z1: 480, z2: 600, s: 0.9 }, { x: -1462, z1: 600, z2: 720, s: 0.9 }, { x: -1418, z1: 600, z2: 720, s: 0.9 }], timeLimit: 720, hasGarage: true, assets: ['suburban', 'industrial'] },
           3: { name: 'Bandra Backroads', sky: 0xa8c4d8, fog: 500, ground: 0x3a5a2e, amb: 0.75, veh: 'twowheeler', npcTypes: ['car', 'auto', 'bike', 'cycle', 'auto', 'car', 'taxi', 'bike', 'auto', 'car', 'bike', 'car', 'auto', 'cycle', 'car', 'bike', 'auto', 'car'], roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'h', z: -240, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -620, z2: -460 }, { type: 'v', x: -240, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -380, x2: -220 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'h', z: -720, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -980, z2: -820 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -1220, z2: -1060 }, { type: 'h', z: -1200, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: -1220, z2: -1060 }, { type: 'h', z: -1080, x1: -260, x2: -100 }, { type: 'h', z: -1080, x1: -140, x2: 20 }, { type: 'h', z: -1080, x1: -20, x2: 140 }, { type: 'h', z: -1080, x1: 100, x2: 260 }, { type: 'h', z: -1080, x1: 220, x2: 1360 }, { type: 'h', z: -1080, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -2080, z2: -80 }, { type: 'h', z: -240, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -1240, z2: 760 }, { type: 'h', z: -1080, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -2080, z2: -80 }, { type: 'h', z: -360, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -240, z: -240 }, { x: -240, z: -360 }, { x: -120, z: -360 }, { x: -120, z: -480 }, { x: -240, z: -480 }, { x: -240, z: -600 }, { x: -240, z: -720 }, { x: -360, z: -720 }, { x: -480, z: -720 }, { x: -600, z: -720 }, { x: -600, z: -840 }, { x: -480, z: -840 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -360, z: -1080 }, { x: -360, z: -1200 }, { x: -240, z: -1200 }, { x: -240, z: -1080 }, { x: -120, z: -1080 }, { x: 0, z: -1080 }, { x: 120, z: -1080 }, { x: 240, z: -1080 }, { x: 360, z: -1080 }], ints: [[-240, -240], [-360, -720], [-120, -360], [-480, -960], [0, 0], [-120, -480], [-600, -720], [-240, -480], [120, -240], [120, -1080], [-480, -720], [0, -240], [-480, -1080], [-600, -840], [-240, -1080], [-120, -1080], [240, -1080], [-360, -1080], [-240, -720], [360, -1080], [-360, -1200], [0, -1080], [-240, -1200], [0, -120], [120, -120], [-480, -840], [-240, -360], [-240, -600], [-120, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -262, z1: -360, z2: -240, s: 0.9 }, { x: -218, z1: -360, z2: -240, s: 0.9 }, { x: -142, z1: -480, z2: -360, s: 0.9 }, { x: -98, z1: -480, z2: -360, s: 0.9 }, { x: -262, z1: -600, z2: -480, s: 0.9 }, { x: -218, z1: -600, z2: -480, s: 0.9 }, { x: -262, z1: -720, z2: -600, s: 0.9 }, { x: -218, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -840, z2: -720, s: 0.9 }, { x: -578, z1: -840, z2: -720, s: 0.9 }, { x: -502, z1: -960, z2: -840, s: 0.9 }, { x: -458, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -382, z1: -1200, z2: -1080, s: 0.9 }, { x: -338, z1: -1200, z2: -1080, s: 0.9 }, { x: -262, z1: -1200, z2: -1080, s: 0.9 }, { x: -218, z1: -1200, z2: -1080, s: 0.9 }], timeLimit: 830, hasGarage: true, assets: ['suburban', 'industrial'] },
           4: { name: 'Juhu Boulevard', sky: 0x6fb8e0, fog: 650, ground: 0x2e6b3a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'taxi'], hasBeach: true, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'h', z: -120, x1: -500, x2: -340 }, { type: 'h', z: -120, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -380, z2: -220 }, { type: 'h', z: -240, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -380, z2: -220 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1100, x2: -940 }, { type: 'v', x: -1080, z1: -500, z2: -340 }, { type: 'v', x: -1080, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1220, x2: -1060 }, { type: 'v', x: -1200, z1: -620, z2: -460 }, { type: 'v', x: -1200, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1340, x2: -1180 }, { type: 'h', z: -360, x1: -1460, x2: -1300 }, { type: 'v', x: -1440, z1: -500, z2: -340 }, { type: 'v', x: -1440, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1460, x2: -1300 }, { type: 'v', x: -1320, z1: -620, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1120, z2: 880 }, { type: 'h', z: -120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -480, z: -120 }, { x: -600, z: -120 }, { x: -600, z: -240 }, { x: -480, z: -240 }, { x: -480, z: -360 }, { x: -600, z: -360 }, { x: -720, z: -360 }, { x: -720, z: -240 }, { x: -840, z: -240 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -960, z: -480 }, { x: -960, z: -360 }, { x: -1080, z: -360 }, { x: -1080, z: -480 }, { x: -1080, z: -600 }, { x: -1200, z: -600 }, { x: -1200, z: -480 }, { x: -1200, z: -360 }, { x: -1320, z: -360 }, { x: -1440, z: -360 }, { x: -1440, z: -480 }, { x: -1440, z: -600 }, { x: -1320, z: -600 }, { x: -1320, z: -480 }], ints: [[-840, -240], [-1440, -360], [-480, -360], [-960, -360], [-1440, -600], [-1320, -600], [-960, -480], [-240, -120], [-1080, -600], [0, 0], [-1440, -480], [-1200, -480], [-1200, -360], [-720, -360], [-1080, -480], [-600, -360], [-600, -120], [-1320, -360], [-360, -120], [-120, 0], [-840, -360], [-1320, -480], [-1200, -600], [-120, -120], [-480, -240], [-480, -120], [-1080, -360], [-720, -240], [-840, -480], [-600, -240]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -622, z1: -240, z2: -120, s: 0.9 }, { x: -578, z1: -240, z2: -120, s: 0.9 }, { x: -502, z1: -360, z2: -240, s: 0.9 }, { x: -458, z1: -360, z2: -240, s: 0.9 }, { x: -742, z1: -360, z2: -240, s: 0.9 }, { x: -698, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -360, z2: -240, s: 0.9 }, { x: -818, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -982, z1: -480, z2: -360, s: 0.9 }, { x: -938, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -480, z2: -360, s: 0.9 }, { x: -1058, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -600, z2: -480, s: 0.9 }, { x: -1058, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -600, z2: -480, s: 0.9 }, { x: -1178, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -480, z2: -360, s: 0.9 }, { x: -1178, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -480, z2: -360, s: 0.9 }, { x: -1418, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -600, z2: -480, s: 0.9 }, { x: -1418, z1: -600, z2: -480, s: 0.9 }, { x: -1342, z1: -600, z2: -480, s: 0.9 }, { x: -1298, z1: -600, z2: -480, s: 0.9 }], timeLimit: 940, hasGarage: true, assets: ['suburban', 'industrial'] },
@@ -3812,63 +4335,76 @@ class Game {
         const vt = vehType || 'car';
         this.vehType = vt;
 
-        let pStartX = -40 + 7, pStartZ = -80, pRot = 0;
-        let vStartX = 5, vStartZ = 0, vRotY = 0;
+        let pStartX = 0, pStartZ = 0, pRot = 0;
+        let vStartX = 0, vStartZ = 0, vRotY = 0;
 
-        // Find the longest road segment for spawn (avoid intersections)
-        if (this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
-          // Find the longest straight road section
-          let longestRoad = this.mapCfg.roads[0];
-          let longestLen = 0;
-          for (const r of this.mapCfg.roads) {
-            const len = r.type === 'v' ? Math.abs(r.z2 - r.z1) : Math.abs(r.x2 - r.x1);
-            if (len > longestLen) { longestLen = len; longestRoad = r; }
-          }
-          // Spawn at 1/4 along the longest road (away from intersections)
-          const t = 0.25;
-          if (longestRoad.type === 'v') {
-            const zMid = longestRoad.z1 + (longestRoad.z2 - longestRoad.z1) * t;
-            vStartX = longestRoad.x - 3; // Left side of road (driver side)
-            vStartZ = zMid;
-            vRotY = 0; // Facing +Z
-          } else {
-            const xMid = longestRoad.x1 + (longestRoad.x2 - longestRoad.x1) * t;
-            vStartX = xMid;
-            vStartZ = longestRoad.z - 3;
-            vRotY = Math.PI / 2; // Facing +X
-          }
+        // ── Roadside Garage Starting Spawn Position ──
+        const firstRoad = (this.mapCfg && this.mapCfg.roads && this.mapCfg.roads[0]) || { type: 'v', x: 0, z1: -800, z2: 800, width: 14 };
+        const roadW = firstRoad.width || 14;
+        const swW = (this.mapCfg && this.mapCfg.sidewalkWidth) || (this.mapCfg?.isPedestrian ? 5.5 : 4.0);
+        const roadsideOffset = roadW / 2 + swW + 7.5;
+
+        // Position garage along the first road segment away from the intersection center
+        let garageX = 0, garageZ = 0, garageRotY = 0;
+        if (firstRoad.type === 'v') {
+          garageX = firstRoad.x + roadsideOffset;
+          const zMin = Math.min(firstRoad.z1, firstRoad.z2);
+          const zMax = Math.max(firstRoad.z1, firstRoad.z2);
+          garageZ = Math.max(zMin + 45, Math.min(zMax - 45, -35));
+          garageRotY = -Math.PI / 2; // Facing west towards the road
+        } else {
+          const xMin = Math.min(firstRoad.x1, firstRoad.x2);
+          const xMax = Math.max(firstRoad.x1, firstRoad.x2);
+          garageX = Math.max(xMin + 45, Math.min(xMax - 45, -35));
+          garageZ = firstRoad.z + roadsideOffset;
+          garageRotY = Math.PI; // Facing north towards the road
+        }
+
+        // Build 3D roadside garage and workshop
+        if (!this.mapCfg?.is50km && !this.mapCfg?.useLowPolyCity) {
+          this._buildGarage(garageX, garageZ, garageRotY, roadW, swW);
+          vStartX = garageX;
+          vStartZ = garageZ;
+          vRotY = garageRotY;
         } else if (this.mapCfg && this.mapCfg.route && this.mapCfg.route.length >= 2) {
-          // Fallback: use route but at midpoint, not at intersection
           const p1 = this.mapCfg.route[0];
           const p2 = this.mapCfg.route[1];
-          const mx = (p1.x + p2.x) / 2;
-          const mz = (p1.z + p2.z) / 2;
           const dx = p2.x - p1.x;
           const dz = p2.z - p1.z;
-          const dist = Math.sqrt(dx * dx + dz * dz);
-          if (dist > 0) {
-            const nx = dx / dist;
-            const nz = dz / dist;
-            vStartX = mx - nz * 3;
-            vStartZ = mz + nx * 3;
-            vRotY = Math.atan2(nx, nz);
-          }
+          const dist = Math.hypot(dx, dz);
+          const nx = dist > 0 ? dx / dist : 0;
+          const nz = dist > 0 ? dz / dist : 1;
+          vStartX = p1.x - nz * 2.5;
+          vStartZ = p1.z + nx * 2.5;
+          vRotY = Math.atan2(nx, nz);
+        } else {
+          vStartX = 0;
+          vStartZ = -35;
+          vRotY = 0;
         }
-        // Always position human RIGHT NEXT to the vehicle so F-to-enter works immediately
-        pStartX = vStartX - 2.5;
-        pStartZ = vStartZ;
+
+        // Always position human right beside the vehicle door inside the garage bay
+        pStartX = vStartX - Math.cos(vRotY) * 2.2;
+        pStartZ = vStartZ + Math.sin(vRotY) * 2.2;
         pRot = vRotY;
 
         if (vt === 'pedestrian') {
           this.isPedestrian = true;
-          this.player = _buildHuman(true);
-          this.player.position.set(pStartX, 0, pStartZ);
-          this.player.rotation.y = pRot;
-          this.scene.add(this.player);
+          this.playerCharacter = _buildHuman(true);
+          this.playerCharacter.position.set(pStartX, 0, pStartZ);
+          this.playerCharacter.rotation.y = pRot;
+          this.scene.add(this.playerCharacter);
+          this.player = this.playerCharacter;
+          this.playerVehicle = null;
           this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
+
+          setTimeout(() => {
+              toast('🚶 Pedestrian Mode Active: Use WASD / Arrow Keys to walk safely!', '#34d399', 6000);
+          }, 500);
         } else {
           // Build the vehicle
           this.playerVehicle = _buildVehicle(vt, 0xffffff);
+          this._spawnPos = { x: vStartX, z: vStartZ };
           this.playerVehicle.position.set(vStartX, 0, vStartZ);
           this.playerVehicle.rotation.y = vRotY;
           
@@ -4028,6 +4564,89 @@ class Game {
         }
       }
 
+
+      _buildRouteCheckpoints(cfg) {
+        this.cps = [];
+        const route = (cfg && cfg.route && cfg.route.length > 1) ? cfg.route : [
+          { x: 0, z: 0, desc: 'Start Position' },
+          { x: 0, z: -80, desc: 'Signal Stop Line' },
+          { x: 0, z: -200, desc: 'SV Road Crossing' },
+          { x: 120, z: -200, desc: 'North Link Corridor' },
+          { x: 240, z: -200, desc: 'Destination Finish Gate' }
+        ];
+
+        const numPts = route.length;
+        const indices = [];
+        if (numPts <= 4) {
+          for (let i = 1; i < numPts; i++) indices.push(i);
+        } else {
+          indices.push(1);
+          const step = Math.max(1, Math.floor((numPts - 2) / 3));
+          for (let i = 1 + step; i < numPts - 1; i += step) {
+            if (!indices.includes(i)) indices.push(i);
+          }
+          if (!indices.includes(numPts - 1)) indices.push(numPts - 1);
+        }
+
+        indices.forEach((idx, cpSeq) => {
+          const pt = route[idx];
+          const isFinish = (idx === numPts - 1);
+          const col = isFinish ? 0xffd700 : 0x00f0cc;
+          const cpGroup = this._cp(pt.x, pt.z, col);
+          cpGroup.userData.isFinish = isFinish;
+          cpGroup.userData.cpIndex = cpSeq;
+          cpGroup.userData.desc = pt.desc || (isFinish ? 'Destination Finish Gate' : ('Checkpoint ' + (cpSeq + 1)));
+
+          if (isFinish) {
+            const archGrp = new THREE.Group();
+            const goldMat = new THREE.MeshToonMaterial({ color: 0xffd700, emissive: 0xffaa00, emissiveIntensity: 0.5 });
+
+            [-6, 6].forEach(pOff => {
+              const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.7, 14, 12), goldMat);
+              pillar.position.set(pOff, 7, 0);
+              archGrp.add(pillar);
+              const cap = new THREE.Mesh(new THREE.SphereGeometry(1.2, 12, 12), goldMat);
+              cap.position.set(pOff, 14.5, 0);
+              archGrp.add(cap);
+            });
+
+            const bar = new THREE.Mesh(new THREE.BoxGeometry(13.5, 1.4, 1.4), goldMat);
+            bar.position.set(0, 13, 0);
+            archGrp.add(bar);
+
+            const bCanvas = document.createElement('canvas');
+            bCanvas.width = 512; bCanvas.height = 128;
+            const bCtx = bCanvas.getContext('2d');
+            bCtx.fillStyle = '#0f172a';
+            bCtx.fillRect(0, 0, 512, 128);
+            bCtx.strokeStyle = '#ffd700';
+            bCtx.lineWidth = 8;
+            bCtx.strokeRect(4, 4, 504, 120);
+            bCtx.fillStyle = '#ffd700';
+            bCtx.font = 'bold 44px sans-serif';
+            bCtx.textAlign = 'center';
+            bCtx.fillText('🏁 FINISH DESTINATION', 256, 78);
+
+            const bTex = new THREE.CanvasTexture(bCanvas);
+            const bMat = new THREE.MeshBasicMaterial({ map: bTex, side: THREE.DoubleSide });
+            const bMesh = new THREE.Mesh(new THREE.PlaneGeometry(10, 2.5), bMat);
+            bMesh.position.set(0, 15.5, 0);
+            archGrp.add(bMesh);
+
+            const skyBeam = new THREE.Mesh(
+              new THREE.CylinderGeometry(0.5, 2.0, 100, 16),
+              new THREE.MeshBasicMaterial({ color: 0xffd700, transparent: true, opacity: 0.4, depthWrite: false })
+            );
+            skyBeam.position.set(0, 50, 0);
+            archGrp.add(skyBeam);
+
+            archGrp.position.set(pt.x, 0, pt.z);
+            this.scene.add(archGrp);
+            cpGroup.userData.archGrp = archGrp;
+          }
+        });
+      }
+
       _buildScene(mode) {
         if (typeof initGTex === 'function') initGTex();
         while (this.scene && this.scene.children.length) this.scene.remove(this.scene.children[0]);
@@ -4042,6 +4661,7 @@ class Game {
         const lvId = ui.cur ? ui.cur.id : 1;
         const cfg = this._getMapConfig(lvId);
         this.mapCfg = cfg;
+        this.roadSegments = (cfg && cfg.roads) ? cfg.roads.slice() : [];
         this.timeLimit = cfg.timeLimit || 120; // default; overridden by age-adaptive logic in _actualStart
         this.isPedestrian = (this.vehMode === 'pedestrian') || (!this.vehMode && !!cfg.isPedestrian);
 
@@ -4056,14 +4676,14 @@ class Game {
         } else {
             this.scene.fog = new THREE.Fog(sk, fogNear, fogFar);
         }
-        // Enhanced true color lighting with better contrast and shadows - FIXED EXPOSURE/SATURATION
-        this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.15 : 0.35);
+        // Enhanced true color lighting with balanced contrast and shadows
+        this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.15 : 0.30);
         this.scene.add(this._ambient);
-        this._hemi = new THREE.HemisphereLight(0x87ceeb, 0x8a7560, cfg.isNight ? 0.15 : 0.4);
+        this._hemi = new THREE.HemisphereLight(0x90b8d8, 0x1a1d24, cfg.isNight ? 0.12 : 0.35);
         this._hemi.position.set(0, 1000, 0);
         this.scene.add(this._hemi);
 
-        this._sun = new THREE.DirectionalLight(0xfff5e0, cfg.isNight ? 0.5 : 0.85);
+        this._sun = new THREE.DirectionalLight(0xffffff, cfg.isNight ? 0.4 : 0.85);
         this._sun.position.set(30, 60, 20);
         this._sun.castShadow = true;
         this._sun.shadow.camera.near = 0.5;
@@ -4097,6 +4717,7 @@ class Game {
         }
 
         this._generateAnchorNodes(cfg);
+        this._buildRouteCheckpoints(cfg);
 
         // Build Road Graph from level config (spatial topology for NPC routing, building placement)
         if (window.RoadGraph) {
@@ -4112,6 +4733,74 @@ class Game {
         const RW = cfg.isPedestrian ? 10 : 12;
         this.driveRoute = cfg.route;
         this._initBreadcrumbPath();
+
+        // ── Spawn Route Checkpoints & Grand Finish Destination Gate ──
+        if (cfg && cfg.route && cfg.route.length > 1) {
+          cfg.route.forEach((pt, idx) => {
+            if (idx === 0) return; // skip start spawn point
+            const isFinish = (idx === cfg.route.length - 1);
+            const cpGroup = this._cp(pt.x, pt.z, isFinish ? 0xffd700 : 0x00f0cc);
+            cpGroup.userData.isFinish = isFinish;
+            cpGroup.userData.cpIndex = idx;
+            cpGroup.userData.desc = pt.desc || ('Checkpoint ' + idx);
+
+            // Grand 3D Finish Gate decorations
+            if (isFinish) {
+              const archGrp = new THREE.Group();
+              const goldMat = new THREE.MeshToonMaterial({ color: 0xffd700, emissive: 0xffaa00, emissiveIntensity: 0.4 });
+              const whiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+              // Left & Right Tower Pillars
+              [-6, 6].forEach(pOff => {
+                const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.6, 12, 12), goldMat);
+                pillar.position.set(pOff, 6, 0);
+                archGrp.add(pillar);
+
+                const cap = new THREE.Mesh(new THREE.SphereGeometry(1.0, 12, 12), goldMat);
+                cap.position.set(pOff, 12.5, 0);
+                archGrp.add(cap);
+              });
+
+              // Arch Crossbar
+              const bar = new THREE.Mesh(new THREE.BoxGeometry(13, 1.2, 1.2), goldMat);
+              bar.position.set(0, 11, 0);
+              archGrp.add(bar);
+
+              // 3D Canvas Billboard: "🏁 FINISH DESTINATION"
+              const bCanvas = document.createElement('canvas');
+              bCanvas.width = 512; bCanvas.height = 128;
+              const bCtx = bCanvas.getContext('2d');
+              bCtx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+              bCtx.fillRect(0, 0, 512, 128);
+              bCtx.strokeStyle = '#ffd700';
+              bCtx.lineWidth = 8;
+              bCtx.strokeRect(4, 4, 504, 120);
+              bCtx.fillStyle = '#ffd700';
+              bCtx.font = 'bold 44px sans-serif';
+              bCtx.textAlign = 'center';
+              bCtx.fillText('🏁 FINISH DESTINATION', 256, 78);
+
+              const bTex = new THREE.CanvasTexture(bCanvas);
+              const bMat = new THREE.MeshBasicMaterial({ map: bTex, side: THREE.DoubleSide });
+              const bMesh = new THREE.Mesh(new THREE.PlaneGeometry(10, 2.5), bMat);
+              bMesh.position.set(0, 13.5, 0);
+              archGrp.add(bMesh);
+
+              // Towering Sky Light Pillar
+              const skyBeam = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.4, 1.8, 80, 16),
+                new THREE.MeshBasicMaterial({ color: 0xffd700, transparent: true, opacity: 0.35, depthWrite: false })
+              );
+              skyBeam.position.set(0, 40, 0);
+              archGrp.add(skyBeam);
+
+              archGrp.position.set(pt.x, 0, pt.z);
+              this.scene.add(archGrp);
+              cpGroup.userData.archGrp = archGrp;
+            }
+          });
+        }
+
         
         // NEW: Graph-based road and building generation
         if (!window._toonGrad) {
@@ -4122,10 +4811,10 @@ class Game {
           window._toonGrad.needsUpdate = true;
         }        const tg = window._toonGrad;
         const gs = cfg.is50km ? 8000 : (cfg.useLowPolyCity ? 12000 : 2000);
-        const groundColor = cfg.ground !== undefined ? cfg.ground : 0x4a4a4f;
+        const groundColor = cfg.ground !== undefined ? cfg.ground : 0x3a4838;
         const groundMat = cfg.isBridge
-          ? new THREE.MeshToonMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7, gradientMap: tg })
-          : (cfg.is50km ? new THREE.MeshToonMaterial({ color: 0x444444, gradientMap: tg }) : new THREE.MeshToonMaterial({ color: groundColor, gradientMap: tg }));
+          ? new THREE.MeshLambertMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 })
+          : new THREE.MeshLambertMaterial({ color: groundColor });
         const ground = new THREE.Mesh(new THREE.PlaneGeometry(gs, gs), groundMat);
         ground.rotation.x = -Math.PI / 2;
         this.scene.add(ground);
@@ -4160,6 +4849,8 @@ class Game {
 
         if (this.roadGraph) {
             this._buildRoadsFromGraph(RW);
+            this._buildBarriers(cfg, RW);
+            this._buildTrafficSignals(cfg, RW);
             this._buildBuildingsFromGraph();
         } else {
             // ── Kenney GLB Road Tiles + Sidewalks + Props + Buildings ──
@@ -4168,8 +4859,10 @@ class Game {
             const _intModel = window.PRELOADED_MODELS?.road_intersect;
             const _isPed = cfg.isPedestrian;
             const _swW = _isPed ? 6 : 4;
-            const _roadMat = new THREE.MeshToonMaterial({ color: 0x3d3f45, gradientMap: window._toonGrad || null });
-            const _paveMat = new THREE.MeshToonMaterial({ color: 0xb0b0a0, gradientMap: window._toonGrad || null });
+            const _roadTex = (() => { try { const t = new THREE.TextureLoader().load('textures/road.png'); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1, 8); return t; } catch(e) { return null; } })();
+            const _roadMat = _roadTex ? new THREE.MeshLambertMaterial({ map: _roadTex }) : new THREE.MeshLambertMaterial({ color: 0x25282e });
+            const _paveMat = new THREE.MeshLambertMaterial({ color: 0x767c85 });
+
 
             (cfg.roads || []).forEach(r => {
               const isV = r.type === 'v';
@@ -4227,6 +4920,56 @@ class Game {
                 pb.receiveShadow = true;
                 this.scene.add(pb);
                 this.world.push(pb);
+              });
+
+              // ── Road Lane Markings (White dashed center line & solid edge lines) ──
+              const dashLen = 3.5;
+              const gapLen = 3.5;
+              const stride = dashLen + gapLen;
+              const numDashes = Math.max(1, Math.floor(len / stride));
+              const startMark = (len - numDashes * stride) / 2;
+              const markStart = isV ? Math.min(r.z1, r.z2) + startMark : Math.min(r.x1, r.x2) + startMark;
+              const whiteLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92 });
+              const yellowLineMat = new THREE.MeshBasicMaterial({ color: 0xffb703, transparent: true, opacity: 0.92 });
+
+              // Center divider (Dashed white for 2-lane, double yellow for 4+ lanes)
+              const lanes = r.lanes || (RW >= 18 ? 4 : 2);
+              if (lanes >= 4) {
+                // Double solid yellow lines
+                [-0.25, 0.25].forEach(yOff => {
+                  const dLine = new THREE.Mesh(
+                    isV ? new THREE.PlaneGeometry(0.16, len) : new THREE.PlaneGeometry(len, 0.16),
+                    yellowLineMat
+                  );
+                  dLine.rotation.x = -Math.PI / 2;
+                  dLine.position.set(isV ? cx + yOff : cx, 0.088, isV ? cz : cz + yOff);
+                  this.scene.add(dLine);
+                });
+              } else {
+                // Dashed white center line
+                for (let d = 0; d < numDashes; d++) {
+                  const dashCenter = markStart + d * stride + dashLen / 2;
+                  const dashMesh = new THREE.Mesh(
+                    isV ? new THREE.PlaneGeometry(0.24, dashLen) : new THREE.PlaneGeometry(dashLen, 0.24),
+                    whiteLineMat
+                  );
+                  dashMesh.rotation.x = -Math.PI / 2;
+                  dashMesh.position.set(isV ? cx : dashCenter, 0.088, isV ? dashCenter : cz);
+                  this.scene.add(dashMesh);
+                }
+              }
+
+              // Solid white edge lines (both sides)
+              [-1, 1].forEach(edgeSide => {
+                const edgeX = isV ? cx + edgeSide * (RW / 2 - 0.4) : cx;
+                const edgeZ = isV ? cz : cz + edgeSide * (RW / 2 - 0.4);
+                const edgeLine = new THREE.Mesh(
+                  isV ? new THREE.PlaneGeometry(0.18, len) : new THREE.PlaneGeometry(len, 0.18),
+                  whiteLineMat
+                );
+                edgeLine.rotation.x = -Math.PI / 2;
+                edgeLine.position.set(edgeX, 0.088, edgeZ);
+                this.scene.add(edgeLine);
               });
 
               // Streetlights along the road (sparse for performance)
@@ -4367,10 +5110,28 @@ class Game {
               });
             }
 
+            // ── Dense Urban Building Frontage along all roads ──
+            (cfg.roads || []).forEach(r => {
+              const isV = r.type === 'v';
+              const rWidth = r.width || RW || 20;
+              const bSetback = (rWidth / 2) + _swW + 7.5; // safe distance outside sidewalk
+              const rStart = Math.min(isV ? r.z1 : r.x1, isV ? r.z2 : r.x2) + 24;
+              const rEnd = Math.max(isV ? r.z1 : r.x1, isV ? r.z2 : r.x2) - 24;
+              const bSpacing = 24; // dense building spacing
+
+              for (let coord = rStart; coord < rEnd; coord += bSpacing) {
+                [-1, 1].forEach(side => {
+                  const bx = isV ? r.x + side * bSetback : coord;
+                  const bz = isV ? coord : r.z + side * bSetback;
+                  const rot = isV ? (side > 0 ? -Math.PI / 2 : Math.PI / 2) : (side > 0 ? Math.PI : 0);
+                  _drawBldg(bx, bz, 'normal', rot);
+                });
+              }
+            });
+
             if (cfg.bldg && cfg.bldg.length) {
               cfg.bldg.forEach(b => {
                 const bz = (b.z1 + b.z2) / 2;
-                // Face outward from road center (simple: alternate 0 / PI based on x position)
                 const bRot = b.x > 0 ? Math.PI / 2 : -Math.PI / 2;
                 _drawBldg(b.x, bz, 'normal', bRot);
               });
@@ -4421,15 +5182,15 @@ class Game {
             const saGeo = new THREE.BoxGeometry(10, 40, 10);
             const saMat = new THREE.MeshToonMaterial({ color: 0xe0e0e0 });
             const saBldg = new THREE.Mesh(saGeo, saMat);
-            saBldg.position.set(-30, 20, 0);
+            saBldg.position.set(-45, 20, 35);
             this.scene.add(saBldg);
             this.obstacles.push(saBldg);
             if (!this._landmarks) this._landmarks = [];
-            this._landmarks.push({ name: 'Sneh Asha', x: -30, z: 0, discovered: false });
+            this._landmarks.push({ name: 'Sneh Asha', x: -45, z: 35, discovered: false });
             
             new THREE.TextureLoader().load('sneh-logo.png', tex => {
                 const logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
-                logoMesh.position.set(-24.9, 30, 0);
+                logoMesh.position.set(-39.9, 30, 35);
                 logoMesh.rotation.y = Math.PI / 2;
                 this.scene.add(logoMesh);
             });
@@ -4792,13 +5553,66 @@ class Game {
           tSign.position.set(0, 5.5, 50); this.scene.add(tSign);
         }
 
-        // Construction Zone with Flagman (level 34)
-        if (cfg.hasConstruction) {
-          // Construction barriers
-          for (let cb = 0; cb < 6; cb++) {
-            const barrier = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 0.3), new THREE.MeshToonMaterial({ color: cb % 2 === 0 ? 0xff6600 : 0xffffff }));
-            barrier.position.set(-10 + cb * 4, 0.5, 30 + Math.sin(cb) * 2);
-            this.scene.add(barrier);
+        // Construction Zone with Flagman (level 34, 44)
+        if (cfg.hasConstruction || cfg.themeType === 'construction') {
+          // Create high-detail hazard stripe texture for construction barricades
+          const cCanvas = document.createElement('canvas');
+          cCanvas.width = 256; cCanvas.height = 128;
+          const cCtx = cCanvas.getContext('2d');
+          cCtx.fillStyle = '#f59e0b';
+          cCtx.fillRect(0, 0, 256, 128);
+          cCtx.fillStyle = '#0f172a';
+          for (let x = -128; x < 384; x += 36) {
+            cCtx.beginPath();
+            cCtx.moveTo(x, 0);
+            cCtx.lineTo(x + 28, 128);
+            cCtx.lineTo(x + 48, 128);
+            cCtx.lineTo(x + 20, 0);
+            cCtx.fill();
+          }
+          const cHazardTex = new THREE.CanvasTexture(cCanvas);
+          cHazardTex.wrapS = cHazardTex.wrapT = THREE.RepeatWrapping;
+          cHazardTex.repeat.set(2, 1);
+          const cBarMat = new THREE.MeshLambertMaterial({ map: cHazardTex });
+          const cPostMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+          const cConeMat = new THREE.MeshLambertMaterial({ color: 0xff6600 });
+          const cWhiteMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+
+          // Construction barriers blocking one lane with detour gap
+          for (let cb = 0; cb < 5; cb++) {
+            const bGrp = new THREE.Group();
+            [-0.9, 0.9].forEach(px => {
+              const post = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.1, 8), cPostMat);
+              post.position.set(px, 0.55, 0);
+              bGrp.add(post);
+              const ft = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.1, 0.6), cPostMat);
+              ft.position.set(px, 0.05, 0);
+              bGrp.add(ft);
+            });
+            const board1 = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.35, 0.06), cBarMat);
+            board1.position.set(0, 0.85, 0);
+            bGrp.add(board1);
+            const board2 = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.35, 0.06), cBarMat);
+            board2.position.set(0, 0.4, 0);
+            bGrp.add(board2);
+
+            bGrp.position.set(-6 + cb * 2.8, 0, 25 + Math.sin(cb * 0.8) * 3);
+            bGrp.userData = { halfW: 1.1, halfD: 0.4, isBarrier: true, isObstacle: true };
+            this.scene.add(bGrp);
+            this.obstacles.push(bGrp);
+            this.world.push(bGrp);
+
+            const cone = new THREE.Group();
+            const cBase = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.06, 0.5), cConeMat);
+            cBase.position.y = 0.03; cone.add(cBase);
+            const cBody = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.7, 12), cConeMat);
+            cBody.position.y = 0.38; cone.add(cBody);
+            const cStripe = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.2, 12), cWhiteMat);
+            cStripe.position.y = 0.38; cone.add(cStripe);
+            cone.position.set(-6 + cb * 2.8, 0, 23.5 + Math.sin(cb * 0.8) * 3);
+            cone.userData = { halfW: 0.3, halfD: 0.3, isObstacle: true };
+            this.scene.add(cone);
+            this.obstacles.push(cone);
           }
           // Flagman
           if (cfg.hasFlagman) {
@@ -4874,25 +5688,31 @@ class Game {
           }
           return true;
         });
-        // Parked vehicles — placed on sidewalk/shoulder, NOT on road
+        // Parked vehicles — placed legally parallel along road curb shoulders
         if (!cfg.isPedestrian && cfg.roads && cfg.roads.length > 0) {
-          const sidewalkOffset = 9.5; // roadHalfWidth(6) + sidewalk(2) + carHalfWidth(1.5) = safe offset
-          for (let i = 0; i < 6; i++) {
+          for (let i = 0; i < 10; i++) {
             const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
-            const types = ['car', 'auto', 'bike'];
-            const pcTpl = this._makeNPC(types[i % 3], Math.random() * 0xffffff);
+            const types = ['car', 'auto', 'bike', 'taxi'];
+            const pcTpl = this._makeNPC(types[i % types.length], Math.random() * 0xffffff);
             if (pcTpl) {
               const pc = pcTpl.clone();
               const side = Math.random() > 0.5 ? 1 : -1;
+              const rWidth = seg.width || 20;
+              const shoulderOffset = (rWidth / 2) - 1.4; // parked parallel right against the curb
               if (seg.type === 'v') {
-                pc.position.set(seg.x + side * sidewalkOffset, 0, seg.z1 + Math.random() * (seg.z2 - seg.z1));
-                pc.rotation.y = side > 0 ? Math.PI / 2 : -Math.PI / 2;
+                const zMin = Math.min(seg.z1, seg.z2) + 40;
+                const zMax = Math.max(seg.z1, seg.z2) - 40;
+                pc.position.set(seg.x + side * shoulderOffset, 0, zMin + Math.random() * (zMax - zMin));
+                pc.rotation.y = side > 0 ? 0 : Math.PI; // parallel to road
               } else {
-                pc.position.set(seg.x1 + Math.random() * (seg.x2 - seg.x1), 0, seg.z + side * sidewalkOffset);
-                pc.rotation.y = side > 0 ? 0 : Math.PI;
+                const xMin = Math.min(seg.x1, seg.x2) + 40;
+                const xMax = Math.max(seg.x1, seg.x2) - 40;
+                pc.position.set(xMin + Math.random() * (xMax - xMin), 0, seg.z + side * shoulderOffset);
+                pc.rotation.y = side > 0 ? Math.PI / 2 : -Math.PI / 2; // parallel to road
               }
-              pc.userData = { isParked: true, halfW: 2.5, halfD: 1.5 };
-              this.scene.add(pc); this.obstacles.push(pc);
+              pc.userData = { isParked: true, isVehicle: true, halfW: 1.4, halfD: 2.2, isBuilding: false };
+              this.scene.add(pc);
+              this.obstacles.push(pc);
             }
           }
         }
@@ -4903,13 +5723,16 @@ class Game {
           this.trafficManager = new window.TrafficManager(this);
         }
         if (this.roadGraph) {
-          this.trafficManager.spawnInitialTraffic(this.roadGraph, cfg.route, window.isMobile && window.isMobile() ? 8 : 24, cfg);
+          this.trafficManager.spawnInitialTraffic(this.roadGraph, cfg.route, window.isMobile && window.isMobile() ? 24 : 36, cfg);
         }
       }
        
       // ─── Graph-based road generation ───
       // Builds visual road geometry (tiles, sidewalks, crosswalks) from RoadGraph edges
       // Uses GLB road models when available, falls back to procedural geometry
+
+      // ── Build Level Route Checkpoints & Finish Gate ──
+      this._buildRouteCheckpoints(cfg);
 
       // Initialize player vehicle/pedestrian
       this._pmesh(mode, this.vehMode || cfg.veh);
@@ -4925,13 +5748,17 @@ class Game {
         if (!roadModel) {
           console.warn('[RoadGraph] No road model available, falling back to legacy _buildRoadZones');
           this._buildRoadZones(roadWidth);
+          this._buildBarriers(cfg, roadWidth);
           return;
         }
 
-        // Road material (visible)
-        const roadMat = new THREE.MeshToonMaterial({ color: 0x3d3f45, gradientMap: window._toonGrad });
-        const paveMat = new THREE.MeshToonMaterial({ color: 0xb0b0a0, gradientMap: window._toonGrad });
-        const tactileMat = new THREE.MeshToonMaterial({ color: 0xd4a017, gradientMap: window._toonGrad });
+        // Road material (visible) — use real asphalt texture if available
+        const _rTex = (() => { try { const t = new THREE.TextureLoader().load('textures/road.png'); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1, 8); return t; } catch(e) { return null; } })();
+        const roadMat = _rTex ? new THREE.MeshLambertMaterial({ map: _rTex }) : new THREE.MeshLambertMaterial({ color: 0x25282e });
+        const paveMat = new THREE.MeshLambertMaterial({ color: 0x767c85 });
+        const tactileMat = new THREE.MeshLambertMaterial({ color: 0xd4a017 });
+
+
 
         graph.edges.forEach(edge => {
           const isV = Math.abs(edge.direction.x) < 0.1;
@@ -4996,52 +5823,130 @@ class Game {
             this.world.push(pb);
           });
 
-          // Crosswalks at intersections (nodes with degree >= 3)
+          // ── Road Lane Markings (White dashed center line & solid edge lines) ──
+          const dashLen = 3.5;
+          const gapLen = 3.5;
+          const stride = dashLen + gapLen;
+          const numDashes = Math.max(1, Math.floor(len / stride));
+          const startMark = (len - numDashes * stride) / 2;
+          const markStart = isV ? Math.min(n0.position.z, n1.position.z) + startMark : Math.min(n0.position.x, n1.position.x) + startMark;
+          const whiteLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92 });
+          const yellowLineMat = new THREE.MeshBasicMaterial({ color: 0xffb703, transparent: true, opacity: 0.92 });
+
+          const lanes = edge.lanes || (roadWidth >= 18 ? 4 : 2);
+          if (lanes >= 4) {
+            [-0.25, 0.25].forEach(yOff => {
+              const dLine = new THREE.Mesh(
+                isV ? new THREE.PlaneGeometry(0.16, len) : new THREE.PlaneGeometry(len, 0.16),
+                yellowLineMat
+              );
+              dLine.rotation.x = -Math.PI / 2;
+              dLine.position.set(isV ? cx + yOff : cx, 0.088, isV ? cz : cz + yOff);
+              this.scene.add(dLine);
+            });
+          } else {
+            for (let d = 0; d < numDashes; d++) {
+              const dashCenter = markStart + d * stride + dashLen / 2;
+              const dashMesh = new THREE.Mesh(
+                isV ? new THREE.PlaneGeometry(0.24, dashLen) : new THREE.PlaneGeometry(dashLen, 0.24),
+                whiteLineMat
+              );
+              dashMesh.rotation.x = -Math.PI / 2;
+              dashMesh.position.set(isV ? cx : dashCenter, 0.088, isV ? dashCenter : cz);
+              this.scene.add(dashMesh);
+            }
+          }
+
+          [-1, 1].forEach(edgeSide => {
+            const edgeX = isV ? cx + edgeSide * (roadWidth / 2 - 0.4) : cx;
+            const edgeZ = isV ? cz : cz + edgeSide * (roadWidth / 2 - 0.4);
+            const edgeLine = new THREE.Mesh(
+              isV ? new THREE.PlaneGeometry(0.18, len) : new THREE.PlaneGeometry(len, 0.18),
+              whiteLineMat
+            );
+            edgeLine.rotation.x = -Math.PI / 2;
+            edgeLine.position.set(edgeX, 0.088, edgeZ);
+            this.scene.add(edgeLine);
+          });
+
+          // Realistic Zebra Crossings at intersections (placed before intersection node at stop line)
           const nodeA = edge.nodes[0];
           const nodeB = edge.nodes[1];
+          const zebraMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 });
+          const stopLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 });
+
           [nodeA, nodeB].forEach(node => {
             if (node.edges.length >= 3) {
-              // Zebra crossing on this edge near the intersection
-              const t = node === nodeA ? 0 : 1;
-              const crosswalkLen = 4;
-              const crosswalkW = roadWidth;
-              const crosswalkCount = 5;
-              for (let c = 0; c < crosswalkCount; c++) {
-                const offset = (c - (crosswalkCount - 1) / 2) * (crosswalkLen + 1);
-                const czOffset = isV ? offset : 0;
-                const cxOffset = isV ? 0 : offset;
-                const cw = new THREE.Mesh(
-                  isV ? new THREE.PlaneGeometry(crosswalkW, crosswalkLen) : new THREE.PlaneGeometry(crosswalkLen, crosswalkW),
-                  new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 })
-                );
-                cw.rotation.x = -Math.PI / 2;
-                const nodePos = node.position;
-                cw.position.set(
-                  nodePos.x + cxOffset,
-                  0.03,
-                  nodePos.z + czOffset
-                );
-                this.scene.add(cw);
+              const nodePos = node.position;
+              const stopDist = roadWidth / 2 + 3.0; // Distance from node center to stop line
+              
+              if (isV) {
+                // Vertical Road: Zebra stripes run along Z, arrayed across X
+                const crossZ = nodePos.z + (nodePos.z > cz ? -stopDist : stopDist);
+                const stripeW = 0.5;
+                const stripeL = 3.0;
+                const numStripes = Math.floor((roadWidth - 2) / 1.0);
+                const startX = cx - ((numStripes - 1) * 1.0) / 2;
+                
+                // Individual zebra stripes
+                for (let s = 0; s < numStripes; s++) {
+                  const stripe = new THREE.Mesh(new THREE.PlaneGeometry(stripeW, stripeL), zebraMat);
+                  stripe.rotation.x = -Math.PI / 2;
+                  stripe.position.set(startX + s * 1.0, 0.089, crossZ);
+                  this.scene.add(stripe);
+                }
+                // Solid stop line bar before zebra crossing
+                const stopLineZ = crossZ + (nodePos.z > cz ? -2.0 : 2.0);
+                const stopLine = new THREE.Mesh(new THREE.PlaneGeometry(roadWidth - 1, 0.35), stopLineMat);
+                stopLine.rotation.x = -Math.PI / 2;
+                stopLine.position.set(cx, 0.089, stopLineZ);
+                this.scene.add(stopLine);
+                
+                // Tactile paving at sidewalk ends
+                [-1, 1].forEach(side => {
+                  const tp = new THREE.Mesh(new THREE.BoxGeometry(swW, 0.05, 3.0), tactileMat);
+                  tp.position.set(cx + side * (roadWidth / 2 + swW / 2), 0.08, crossZ);
+                  this.scene.add(tp);
+                });
+              } else {
+                // Horizontal Road: Zebra stripes run along X, arrayed across Z
+                const crossX = nodePos.x + (nodePos.x > cx ? -stopDist : stopDist);
+                const stripeW = 0.5;
+                const stripeL = 3.0;
+                const numStripes = Math.floor((roadWidth - 2) / 1.0);
+                const startZ = cz - ((numStripes - 1) * 1.0) / 2;
+                
+                // Individual zebra stripes
+                for (let s = 0; s < numStripes; s++) {
+                  const stripe = new THREE.Mesh(new THREE.PlaneGeometry(stripeL, stripeW), zebraMat);
+                  stripe.rotation.x = -Math.PI / 2;
+                  stripe.position.set(crossX, 0.089, startZ + s * 1.0);
+                  this.scene.add(stripe);
+                }
+                // Solid stop line bar before zebra crossing
+                const stopLineX = crossX + (nodePos.x > cx ? -2.0 : 2.0);
+                const stopLine = new THREE.Mesh(new THREE.PlaneGeometry(0.35, roadWidth - 1), stopLineMat);
+                stopLine.rotation.x = -Math.PI / 2;
+                stopLine.position.set(stopLineX, 0.089, cz);
+                this.scene.add(stopLine);
+                
+                // Tactile paving at sidewalk ends
+                [-1, 1].forEach(side => {
+                  const tp = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.05, swW), tactileMat);
+                  tp.position.set(crossX, 0.08, cz + side * (roadWidth / 2 + swW / 2));
+                  this.scene.add(tp);
+                });
               }
-              // Tactile paving
-              [-1, 1].forEach(side => {
-                const tp = new THREE.Mesh(
-                  isV ? new THREE.BoxGeometry(2, 0.05, crosswalkW + 2) : new THREE.BoxGeometry(crosswalkW + 2, 0.05, 2),
-                  tactileMat
-                );
-                tp.position.set(
-                  isV ? nodePos.x + side * (roadWidth / 2 + 1) : nodePos.x,
-                  0.04,
-                  isV ? nodePos.z : nodePos.z + side * (roadWidth / 2 + 1)
-                );
-                this.scene.add(tp);
-              });
             }
           });
         });
       }
 
       separateRoadAndBuilding(pos, graph) {
+        if (!pos) return false;
+        if (this._spawnPos && Math.hypot(pos.x - this._spawnPos.x, pos.z - this._spawnPos.z) < 24) {
+          return true;
+        }
         if (!graph || !graph.edges) return false;
         const edges = typeof graph.edges.values === 'function' ? Array.from(graph.edges.values()) : graph.edges;
         for (const edge of edges) {
@@ -5052,8 +5957,7 @@ class Game {
           t = Math.max(0, Math.min(1, t));
           const dist = Math.hypot(a.x + abx * t - pos.x, a.z + abz * t - pos.z);
           const width = edge.width || 12;
-          if (dist < width / 2 + 5) {
-            console.log("the building wont go on top of the road");
+          if (dist < width / 2 + 9.5) {
             return true;
           }
         }
@@ -5063,6 +5967,305 @@ class Game {
       // ─── Graph-based building generation ───
       // Places buildings using RoadGraph's buildingSlots (road-aware, zoned)
       // Uses InstancedMesh for GLB models, falls back to procedural boxes
+
+      // ─── 3D Roadside Garage & Workshop Structure ───
+      _buildGarage(gx, gz, rotY, roadWidth, sidewalkWidth) {
+        if (!this.scene) return;
+        const gGrp = new THREE.Group();
+
+        // Concrete & structural materials
+        const floorMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+        const wallMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
+        const brickMat = new THREE.MeshLambertMaterial({ color: 0x64748b });
+        const steelMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+        const roofMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+        const stripeMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
+        const shutterMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+        const lightMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+        // Signboard canvas texture ("MUMBAI AUTO GARAGE")
+        const sCanvas = document.createElement('canvas');
+        sCanvas.width = 256; sCanvas.height = 64;
+        const sCtx = sCanvas.getContext('2d');
+        sCtx.fillStyle = '#0284c7';
+        sCtx.fillRect(0, 0, 256, 64);
+        sCtx.lineWidth = 4;
+        sCtx.strokeStyle = '#ffffff';
+        sCtx.strokeRect(2, 2, 252, 60);
+        sCtx.fillStyle = '#ffffff';
+        sCtx.font = 'bold 22px sans-serif';
+        sCtx.textAlign = 'center';
+        sCtx.textBaseline = 'middle';
+        sCtx.fillText('🔧 AUTO WORKSHOP', 128, 24);
+        sCtx.font = '14px sans-serif';
+        sCtx.fillText('SERVICE & DEPARTURE BAY', 128, 48);
+        const signTex = new THREE.CanvasTexture(sCanvas);
+        const signMat = new THREE.MeshLambertMaterial({ map: signTex });
+
+        const gW = 11.0; // Width
+        const gD = 13.0; // Depth
+        const gH = 4.8;  // Height
+
+        // 1. Concrete Floor Slab
+        const floor = new THREE.Mesh(new THREE.BoxGeometry(gW, 0.3, gD), floorMat);
+        floor.position.set(0, 0.15, 0);
+        gGrp.add(floor);
+
+        // Driveway apron ramp connecting front of garage to road edge
+        const rampL = (sidewalkWidth || 4.0) + 4.0;
+        const ramp = new THREE.Mesh(new THREE.PlaneGeometry(8.0, rampL), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+        ramp.rotation.x = -Math.PI / 2;
+        ramp.position.set(0, 0.06, gD / 2 + rampL / 2);
+        gGrp.add(ramp);
+
+        // Parking guide lines on floor
+        [-2.0, 2.0].forEach(lx => {
+          const pLine = new THREE.Mesh(new THREE.PlaneGeometry(0.2, gD - 3.0), stripeMat);
+          pLine.rotation.x = -Math.PI / 2;
+          pLine.position.set(lx, 0.31, 0);
+          gGrp.add(pLine);
+        });
+
+        // 2. Back Wall
+        const backWall = new THREE.Mesh(new THREE.BoxGeometry(gW, gH, 0.4), brickMat);
+        backWall.position.set(0, gH / 2, -gD / 2);
+        gGrp.add(backWall);
+
+        // 3. Side Walls (Left & Right)
+        [-1, 1].forEach(side => {
+          const sideWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, gH, gD), wallMat);
+          sideWall.position.set(side * (gW / 2), gH / 2, 0);
+          gGrp.add(sideWall);
+
+          // Steel reinforcement column pillars
+          for (let c = -1; c <= 1; c++) {
+            const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.6, gH + 0.2, 0.6), steelMat);
+            pillar.position.set(side * (gW / 2), (gH + 0.2) / 2, c * (gD / 2 - 0.5));
+            gGrp.add(pillar);
+          }
+        });
+
+        // 4. Roof with Overhang
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(gW + 1.2, 0.3, gD + 1.6), roofMat);
+        roof.position.set(0, gH + 0.15, 0.4);
+        gGrp.add(roof);
+
+        // 5. Overhead Structural Cross-Beams & Lighting
+        [-3.0, 0, 3.0].forEach(bz => {
+          const beam = new THREE.Mesh(new THREE.BoxGeometry(gW - 0.4, 0.25, 0.25), steelMat);
+          beam.position.set(0, gH - 0.2, bz);
+          gGrp.add(beam);
+
+          const fLight = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.08, 0.2), lightMat);
+          fLight.position.set(0, gH - 0.35, bz);
+          gGrp.add(fLight);
+        });
+
+        // 6. Front Entrance Arch & Open Roller Shutter Box
+        const shutterBox = new THREE.Mesh(new THREE.BoxGeometry(gW - 0.8, 0.6, 0.6), shutterMat);
+        shutterBox.position.set(0, gH - 0.3, gD / 2);
+        gGrp.add(shutterBox);
+
+        // Mounted Signboard
+        const signBoard = new THREE.Mesh(new THREE.BoxGeometry(6.0, 1.4, 0.1), signMat);
+        signBoard.position.set(0, gH + 0.9, gD / 2 + 0.6);
+        gGrp.add(signBoard);
+
+        // 7. Interior Workshop Props
+        const workbench = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.9, 1.2), new THREE.MeshLambertMaterial({ color: 0x92400e }));
+        workbench.position.set(-gW / 2 + 1.8, 0.45, -gD / 2 + 1.4);
+        gGrp.add(workbench);
+
+        for (let t = 0; t < 3; t++) {
+          const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.3, 12), new THREE.MeshLambertMaterial({ color: 0x0f172a }));
+          tire.position.set(gW / 2 - 1.4, 0.15 + t * 0.32, -gD / 2 + 1.4);
+          gGrp.add(tire);
+        }
+
+        [0, 0.8].forEach((ox, idx) => {
+          const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 1.0, 12), new THREE.MeshLambertMaterial({ color: idx === 0 ? 0x0284c7 : 0xd97706 }));
+          drum.position.set(-gW / 2 + 1.2 + ox, 0.5, 0);
+          gGrp.add(drum);
+        });
+
+        gGrp.position.set(gx, 0, gz);
+        gGrp.rotation.y = rotY;
+
+        this.scene.add(gGrp);
+        this.world.push(gGrp);
+
+        // Collision boxes for back and side walls
+        const bWallCol = new THREE.Group();
+        bWallCol.position.set(gx - Math.sin(rotY) * (-gD / 2), 0, gz - Math.cos(rotY) * (-gD / 2));
+        bWallCol.rotation.y = rotY;
+        bWallCol.userData = { halfW: gW / 2, halfD: 0.6, isObstacle: true, isBuilding: true };
+        this.obstacles.push(bWallCol);
+
+        [-1, 1].forEach(side => {
+          const sWallCol = new THREE.Group();
+          sWallCol.position.set(gx + Math.cos(rotY) * (side * gW / 2), 0, gz - Math.sin(rotY) * (side * gW / 2));
+          sWallCol.rotation.y = rotY;
+          sWallCol.userData = { halfW: 0.6, halfD: gD / 2, isObstacle: true, isBuilding: true };
+          this.obstacles.push(sWallCol);
+        });
+      }
+
+      // ─── 3D Visual Barriers for Road Terminations & Restricted Boundaries ───
+      _buildBarriers(cfg, roadWidth) {
+        if (!this.scene) return;
+        const allRoads = (cfg && cfg.roads) || [];
+        if (allRoads.length === 0) return;
+
+        // Create procedural crisp high-contrast hazard chevron canvas texture
+        const canvas = document.createElement('canvas');
+        canvas.width = 256; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fbbf24'; // Bright caution yellow
+        ctx.fillRect(0, 0, 256, 128);
+        ctx.fillStyle = '#ffffff'; // White reflective border stripes
+        ctx.fillRect(0, 0, 256, 12);
+        ctx.fillRect(0, 116, 256, 12);
+        ctx.fillStyle = '#0f172a'; // Deep carbon slate hazard stripes
+        for (let x = -128; x < 384; x += 36) {
+          ctx.beginPath();
+          ctx.moveTo(x, 12);
+          ctx.lineTo(x + 28, 116);
+          ctx.lineTo(x + 48, 116);
+          ctx.lineTo(x + 20, 12);
+          ctx.fill();
+        }
+        const hazardTex = new THREE.CanvasTexture(canvas);
+        hazardTex.wrapS = hazardTex.wrapT = THREE.RepeatWrapping;
+        hazardTex.repeat.set(4, 1);
+
+        // Signboard texture ("ROAD CLOSED / ⛔ DO NOT ENTER")
+        const sCanvas = document.createElement('canvas');
+        sCanvas.width = 256; sCanvas.height = 128;
+        const sCtx = sCanvas.getContext('2d');
+        sCtx.fillStyle = '#dc2626';
+        sCtx.fillRect(0, 0, 256, 128);
+        sCtx.lineWidth = 8;
+        sCtx.strokeStyle = '#ffffff';
+        sCtx.strokeRect(6, 6, 244, 116);
+        sCtx.fillStyle = '#ffffff';
+        sCtx.font = 'bold 32px sans-serif';
+        sCtx.textAlign = 'center';
+        sCtx.textBaseline = 'middle';
+        sCtx.fillText('ROAD CLOSED', 128, 45);
+        sCtx.font = 'bold 22px sans-serif';
+        sCtx.fillText('⛔ DO NOT ENTER', 128, 88);
+        const signTex = new THREE.CanvasTexture(sCanvas);
+
+        const barrierMat = new THREE.MeshLambertMaterial({ map: hazardTex });
+        const concreteBaseMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+        const postMat = new THREE.MeshLambertMaterial({ color: 0x64748b });
+        const beaconMat = new THREE.MeshBasicMaterial({ color: 0xff0033 });
+        const signMat = new THREE.MeshLambertMaterial({ map: signTex });
+
+        // Helper to spawn a high-visibility physical 3D Jersey barrier + sign unit
+        const createJerseyBarrier = (x, z, rotY, width) => {
+          const bg = new THREE.Group();
+          
+          // Heavy concrete footing base
+          const base = new THREE.Mesh(new THREE.BoxGeometry(width, 0.45, 0.9), concreteBaseMat);
+          base.position.y = 0.22;
+          bg.add(base);
+
+          // Sloped striped barricade body
+          const body = new THREE.Mesh(new THREE.BoxGeometry(width - 0.1, 0.75, 0.55), barrierMat);
+          body.position.y = 0.75;
+          bg.add(body);
+
+          // Reflective "ROAD CLOSED" signboard mounted in center
+          const signP1 = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.2, 8), postMat);
+          signP1.position.set(-0.8, 1.3, 0); bg.add(signP1);
+          const signP2 = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.2, 8), postMat);
+          signP2.position.set(0.8, 1.3, 0); bg.add(signP2);
+          const signPlate = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.0, 0.08), signMat);
+          signPlate.position.set(0, 1.6, 0.05); bg.add(signPlate);
+
+          // Top flashing hazard beacons
+          const numBeacons = Math.max(2, Math.floor(width / 4));
+          for (let b = 0; b < numBeacons; b++) {
+            const bx = -width / 2 + (b + 0.5) * (width / numBeacons);
+            const beaconHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.2, 8), postMat);
+            beaconHousing.position.set(bx, 1.2, 0); bg.add(beaconHousing);
+            const beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.22, 8), beaconMat);
+            beacon.position.set(bx, 1.35, 0); bg.add(beacon);
+          }
+
+          bg.position.set(x, 0, z);
+          bg.rotation.y = rotY;
+
+          // Set accurate physical collision bounding box
+          const isAlignedX = Math.abs(rotY) < 0.1 || Math.abs(rotY - Math.PI) < 0.1;
+          bg.userData = {
+            halfW: isAlignedX ? width / 2 : 0.85,
+            halfD: isAlignedX ? 0.85 : width / 2,
+            isBarrier: true,
+            isObstacle: true
+          };
+
+          this.scene.add(bg);
+          this.obstacles.push(bg);
+          this.world.push(bg);
+        };
+
+        // Helper to check if a point on road intersects another perpendicular road
+        const isIntersectionConnected = (road, pCoord, isStart) => {
+          const isV = road.type === 'v';
+          const px = isV ? road.x : pCoord;
+          const pz = isV ? pCoord : road.z;
+
+          return allRoads.some(other => {
+            if (other === road) return false;
+            if (isV && other.type === 'h') {
+              const xMin = Math.min(other.x1, other.x2) - 8;
+              const xMax = Math.max(other.x1, other.x2) + 8;
+              return Math.abs(other.z - pz) <= 14 && px >= xMin && px <= xMax;
+            } else if (!isV && other.type === 'v') {
+              const zMin = Math.min(other.z1, other.z2) - 8;
+              const zMax = Math.max(other.z1, other.z2) + 8;
+              return Math.abs(other.x - px) <= 14 && pz >= zMin && pz <= zMax;
+            }
+            return false;
+          });
+        };
+
+        // Place physical textured barriers at every dead end, road terminus, and outer map boundary
+        allRoads.forEach(r => {
+          const isV = r.type === 'v';
+          const rWidth = r.width || roadWidth || 14;
+          const barrierW = rWidth + 4;
+
+          if (isV) {
+            const zMin = Math.min(r.z1, r.z2);
+            const zMax = Math.max(r.z1, r.z2);
+
+            // Min-Z terminus (North boundary / dead-end)
+            if (!isIntersectionConnected(r, zMin, true) || zMin <= -250) {
+              createJerseyBarrier(r.x, zMin + 2.5, 0, barrierW);
+            }
+            // Max-Z terminus (South boundary / dead-end)
+            if (!isIntersectionConnected(r, zMax, false) || zMax >= 250) {
+              createJerseyBarrier(r.x, zMax - 2.5, 0, barrierW);
+            }
+          } else {
+            const xMin = Math.min(r.x1, r.x2);
+            const xMax = Math.max(r.x1, r.x2);
+
+            // Min-X terminus (West boundary / dead-end)
+            if (!isIntersectionConnected(r, xMin, true) || xMin <= -250) {
+              createJerseyBarrier(xMin + 2.5, r.z, Math.PI / 2, barrierW);
+            }
+            // Max-X terminus (East boundary / dead-end)
+            if (!isIntersectionConnected(r, xMax, false) || xMax >= 250) {
+              createJerseyBarrier(xMax - 2.5, r.z, Math.PI / 2, barrierW);
+            }
+          }
+        });
+      }
+
       _buildBuildingsFromGraph() {
         const graph = this.roadGraph;
         const cfg = this.mapCfg;
@@ -5532,30 +6735,139 @@ class Game {
         this.cps.push(group);
         return group;
       }
+
+      _buildTrafficSignals(cfg, RW) {
+        if (!this.sigs) this.sigs = [];
+        const rwHalf = (RW || 12) / 2;
+        const spawnedAt = new Set();
+
+        const addSigAt = (ix, iz) => {
+          const key = Math.round(ix / 10) + ',' + Math.round(iz / 10);
+          if (spawnedAt.has(key)) return;
+          spawnedAt.add(key);
+
+          // Signal 1: Mast arm extending over incoming vertical lane
+          const sig1 = this._sig(ix + rwHalf + 1.2, iz + rwHalf + 1.2);
+          sig1.rotation.y = -Math.PI / 2;
+
+          // Signal 2: Mast arm extending over opposing horizontal lane
+          const sig2 = this._sig(ix - rwHalf - 1.2, iz - rwHalf - 1.2);
+          sig2.rotation.y = Math.PI / 2;
+        };
+
+        // 1. Explicit signals from level config
+        if (cfg && cfg.signals && Array.isArray(cfg.signals)) {
+          cfg.signals.forEach(s => {
+            const sig = this._sig(s.x, s.z);
+            if (s.rotY !== undefined) sig.rotation.y = s.rotY;
+          });
+        }
+
+        // 2. Intersections in cfg.ints
+        if (cfg && cfg.ints && Array.isArray(cfg.ints) && !cfg.is50km) {
+          cfg.ints.forEach(([ix, iz]) => {
+            addSigAt(ix, iz);
+          });
+        }
+
+        // 3. Auto-detected road crossings
+        if (cfg && cfg.roads && Array.isArray(cfg.roads)) {
+          const vRoads = cfg.roads.filter(r => r.type === 'v');
+          const hRoads = cfg.roads.filter(r => r.type === 'h');
+          for (const vr of vRoads) {
+            for (const hr of hRoads) {
+              const hxMin = Math.min(hr.x1, hr.x2);
+              const hxMax = Math.max(hr.x1, hr.x2);
+              const vzMin = Math.min(vr.z1, vr.z2);
+              const vzMax = Math.max(vr.z1, vr.z2);
+              if (vr.x >= hxMin - 10 && vr.x <= hxMax + 10 && hr.z >= vzMin - 10 && hr.z <= vzMax + 10) {
+                addSigAt(vr.x, hr.z);
+              }
+            }
+          }
+        }
+
+        // 4. RoadGraph junction nodes
+        if (this.roadGraph && this.roadGraph.nodes) {
+          const nodes = typeof this.roadGraph.nodes.values === 'function' ? Array.from(this.roadGraph.nodes.values()) : this.roadGraph.nodes;
+          nodes.forEach(n => {
+            if (n.edges && n.edges.length >= 3) {
+              addSigAt(n.position.x, n.position.z);
+            }
+          });
+        }
+      }
+
       _sig(x, z) {
         const g = new THREE.Group();
-        // Main pole - taller Indian-style
-        const p = new THREE.Mesh(new THREE.CylinderGeometry(.08, .12, 4.5, 8), new THREE.MeshToonMaterial({ color: 0x666666 }));
-        p.position.y = 2.25;
-        // Vertical signal head (Indian 3-aspect)
-        const bx = new THREE.Mesh(new THREE.BoxGeometry(.55, 1.5, .35), new THREE.MeshToonMaterial({ color: 0x1a1a1a }));
-        bx.position.y = 4.3;
-        // Visor hoods for each aspect
-        const mkHood = (y) => {
-          const hood = new THREE.Mesh(new THREE.CylinderGeometry(.18, .22, .15, 8, 1, true), new THREE.MeshToonMaterial({ color: 0x222222, side: THREE.DoubleSide }));
-          hood.position.set(0, y, .22); hood.rotation.x = Math.PI / 2;
+        // Base plate
+        const basePlate = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.40, 0.25, 12), new THREE.MeshLambertMaterial({ color: 0x33373d }));
+        basePlate.position.y = 0.125;
+        g.add(basePlate);
+
+        // Main vertical pole - tall Indian gantry style (6.2m)
+        const p = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 6.2, 12), new THREE.MeshLambertMaterial({ color: 0x50565e }));
+        p.position.y = 3.1;
+        g.add(p);
+
+        // Cantilevered overhead mast arm extending over roadway
+        const mastArm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 3.8, 8), new THREE.MeshLambertMaterial({ color: 0x50565e }));
+        mastArm.rotation.z = Math.PI / 2;
+        mastArm.position.set(1.9, 5.8, 0);
+        g.add(mastArm);
+
+        // Mast arm support strut
+        const strut = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.2, 8), new THREE.MeshLambertMaterial({ color: 0x50565e }));
+        strut.rotation.z = Math.PI / 4;
+        strut.position.set(0.8, 5.0, 0);
+        g.add(strut);
+
+        // Primary Overhead Signal Housing (Large 3-aspect head)
+        const bx = new THREE.Mesh(new THREE.BoxGeometry(0.85, 2.3, 0.5), new THREE.MeshLambertMaterial({ color: 0x141619 }));
+        bx.position.set(2.8, 5.4, 0.1);
+        g.add(bx);
+
+        // Visor hoods
+        const mkHood = (xOff, yOff, zOff) => {
+          const hood = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.36, 0.25, 12, 1, true), new THREE.MeshLambertMaterial({ color: 0x141619, side: THREE.DoubleSide }));
+          hood.position.set(xOff, yOff, zOff);
+          hood.rotation.x = Math.PI / 2;
           return hood;
         };
-        const mk = (y, n) => { const s = new THREE.Mesh(new THREE.SphereGeometry(.16), new THREE.MeshBasicMaterial({ color: 0x111111 })); s.position.set(0, y, .18); s.name = n; return s; };
-        // Pedestrian signal pole
-        const ps_pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, 1.8, 8), new THREE.MeshToonMaterial({ color: 0x666666 }));
-        ps_pole.position.set(0, 0.9, 2.2);
-        const ps_box = new THREE.Mesh(new THREE.BoxGeometry(.3, .6, .2), new THREE.MeshToonMaterial({ color: 0x1a1a1a }));
-        ps_box.position.set(0, 1.8, 2.2);
-        const mks = (y, n) => { const s = new THREE.Mesh(new THREE.SphereGeometry(.09), new THREE.MeshBasicMaterial({ color: 0x111111 })); s.position.set(0, y, 2.31); s.name = n; return s; };
-        g.add(ps_pole, ps_box, mks(1.95, 'p_red'), mks(1.65, 'p_green'));
-        g.add(p, bx, mkHood(4.6), mkHood(4.3), mkHood(4.0), mk(4.6, 'red'), mk(4.3, 'yellow'), mk(4.0, 'green'));
-        g.position.set(x, 0, z); this.scene.add(g); this.sigs.push(g);
+
+        // Large Lenses with emissive glow
+        const mk = (xOff, yOff, zOff, n) => {
+          const s = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 16), new THREE.MeshLambertMaterial({ color: 0x111111, emissive: 0x000000 }));
+          s.position.set(xOff, yOff, zOff);
+          s.name = n;
+          return s;
+        };
+
+        g.add(
+          mkHood(2.8, 6.15, 0.35),
+          mkHood(2.8, 5.40, 0.35),
+          mkHood(2.8, 4.65, 0.35),
+          mk(2.8, 6.15, 0.30, 'red'),
+          mk(2.8, 5.40, 0.30, 'yellow'),
+          mk(2.8, 4.65, 0.30, 'green')
+        );
+
+        // Pedestrian signal pole & box (mounted at eye-level on sidewalk side)
+        const ps_pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.2, 8), new THREE.MeshLambertMaterial({ color: 0x50565e }));
+        ps_pole.position.set(-0.6, 1.1, 0);
+        const ps_box = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.85, 0.3), new THREE.MeshLambertMaterial({ color: 0x141619 }));
+        ps_box.position.set(-0.6, 2.1, 0);
+        const mks = (xOff, yOff, zOff, n) => {
+          const s = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), new THREE.MeshLambertMaterial({ color: 0x111111 }));
+          s.position.set(xOff, yOff, zOff);
+          s.name = n;
+          return s;
+        };
+        g.add(ps_pole, ps_box, mks(-0.6, 2.3, 0.16, 'p_red'), mks(-0.6, 1.9, 0.16, 'p_green'));
+
+        g.position.set(x, 0, z);
+        this.scene.add(g);
+        this.sigs.push(g);
         g.userData = { st: 'red', t: Math.random() * 6, rd: 4, gd: 4, yd: 1.5 };
         g.state = g.userData.st; // NPCAI reads signal.state; kept in sync by _usigs
         return g;
@@ -5610,34 +6922,51 @@ class Game {
       }
 
       // ── PATH ARROW INDICATORS ──
-      // Directional chevron arrows placed on the road (vehicle mode) or
-      // sidewalk (pedestrian mode) showing the player where to go.
-      // Enhanced with glow effect and better visibility.
+      // Dynamic directional chevron arrows placed on the road (vehicle mode) or
+      // sidewalk (pedestrian mode) showing the player where to drive/walk for missions.
       _buildArrows() {
-          if (!this.mapCfg || !this.mapCfg.route || this.mapCfg.route.length < 2) { this._arrows = []; return; }
+          // Clean up old arrows
+          if (this._arrows && this._arrows.length) {
+              this._arrows.forEach(a => {
+                  this.scene.remove(a);
+                  a.traverse(c => { if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); });
+              });
+          }
           this._arrows = [];
-          const route = this.mapCfg.route;
-          const arrowColor = this.isPedestrian ? 0xffab40 : 0x00e676;
-          // Enhanced arrow material with glow effect
+
+          let route = Array.isArray(this.mapCfg?.route) && this.mapCfg.route.length >= 2 ? this.mapCfg.route : null;
+          if (!route && this.cps && this.cps.length > 0) {
+              const startPos = this.player ? { x: this.player.position.x, z: this.player.position.z } : { x: (this.mapCfg?.startX || 0), z: (this.mapCfg?.startZ || 0) };
+              route = [startPos, ...this.cps.map(c => ({ x: c.position.x, z: c.position.z }))];
+          } else if (!route && this.mapCfg?.cps && this.mapCfg.cps.length > 0) {
+              route = [{ x: (this.mapCfg.startX || 0), z: (this.mapCfg.startZ || 0) }, ...this.mapCfg.cps.map(c => ({ x: c.x, z: c.z }))];
+          } else if (!route && this.mapCfg?.roads && this.mapCfg.roads.length > 0) {
+              const r0 = this.mapCfg.roads[0];
+              if (r0.type === 'v') route = [{ x: r0.x, z: r0.z1 }, { x: r0.x, z: r0.z2 }];
+              else route = [{ x: r0.x1, z: r0.z }, { x: r0.x2, z: r0.z }];
+          }
+          if (!route || route.length < 2) return;
+
+          const arrowColor = this.isPedestrian ? 0xffaa00 : 0x00f0cc;
           const arrowMat = new THREE.MeshBasicMaterial({
               color: arrowColor,
               transparent: true,
-              opacity: 0.85,
+              opacity: 0.90,
               side: THREE.DoubleSide,
               depthWrite: false
           });
-          // Add glow ring for each arrow cluster
           const glowMat = new THREE.MeshBasicMaterial({
-              color: arrowColor,
+              color: 0xffffff,
               transparent: true,
-              opacity: 0.25,
-              side: THREE.DoubleSide
+              opacity: 0.35,
+              side: THREE.DoubleSide,
+              depthWrite: false
           });
-          // In pedestrian mode, arrows go on the sidewalk (offset left); in vehicle mode, left side of road
-          const cfg = this.mapCfg;
+
+          const cfg = this.mapCfg || {};
           const RW = cfg.isPedestrian ? 10 : 12;
           const swW = cfg.isPedestrian ? 6 : 4;
-          const sideOffset = this.isPedestrian ? -(RW / 2 + swW / 2) : -3.5;
+          const sideOffset = this.isPedestrian ? -(RW / 2 + swW / 2) : -2.8;
 
           for (let i = 0; i < route.length - 1; i++) {
               const a = route[i], b = route[i + 1];
@@ -5647,43 +6976,55 @@ class Game {
               const ang = Math.atan2(dx, dz);
               const nx = -dz / len, nz = dx / len;
 
-              const count = Math.max(2, Math.floor(len / 18));
+              const count = Math.max(2, Math.floor(len / 14));
               for (let j = 0; j < count; j++) {
                   const t = (j + 0.5) / count;
                   const px = a.x + dx * t + nx * sideOffset;
                   const pz = a.z + dz * t + nz * sideOffset;
                   const g = new THREE.Group();
+                  
+                  // Chevron Left Wing
                   const wing1 = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
-                      new THREE.Vector3(0, 0, -1.8), new THREE.Vector3(-1.1, 0, 0.6), new THREE.Vector3(0, 0, -0.2)
+                      new THREE.Vector3(0, 0, -2.0), new THREE.Vector3(-1.3, 0, 0.8), new THREE.Vector3(0, 0, -0.1)
                   ]), arrowMat.clone());
+                  // Chevron Right Wing
                   const wing2 = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
-                      new THREE.Vector3(0, 0, -1.8), new THREE.Vector3(1.1, 0, 0.6), new THREE.Vector3(0, 0, -0.2)
+                      new THREE.Vector3(0, 0, -2.0), new THREE.Vector3(1.3, 0, 0.8), new THREE.Vector3(0, 0, -0.1)
                   ]), arrowMat.clone());
-                  g.add(wing1, wing2);
+                  // Center Core
+                  const core = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
+                      new THREE.Vector3(0, 0, -1.8), new THREE.Vector3(-0.4, 0, 0.2), new THREE.Vector3(0.4, 0, 0.2)
+                  ]), glowMat.clone());
+                  
+                  g.add(wing1, wing2, core);
                   g.rotation.x = -Math.PI / 2;
                   g.rotation.z = -ang;
-                  g.position.set(px, 0.12, pz);
-                  g.userData = { seg: i, baseY: 0.12, ped: !!this.isPedestrian };
+                  g.position.set(px, 0.14, pz);
+                  g.userData = { seg: i, order: j, baseY: 0.14, ped: !!this.isPedestrian };
                   this.scene.add(g);
                   this._arrows.push(g);
               }
           }
       }
 
-      // Called each frame to pulse arrows and hide segments past the next checkpoint
+      // Called each frame to pulse arrows and hide completed segments
       _updateArrows() {
-          if (!this._arrows || !this._arrows.length || !this.cps) return;
-          const nextCP = this.cps.find(c => !c.userData.hit);
-          const nextIdx = nextCP ? this.cps.indexOf(nextCP) : this.cps.length;
-          const pulse = 0.55 + 0.25 * Math.sin(this.timer * 4);
+          if (!this._arrows || !this._arrows.length) return;
+          const nextCP = this.cps && this.cps.length ? this.cps.find(c => !c.userData?.hit && !c.cleared) : null;
+          const nextIdx = nextCP ? this.cps.indexOf(nextCP) : (this.cps ? this.cps.length : 99);
+          const t = this.timer || 0;
           const onRoad = this.isPedestrian && this.player && this._isOnRoad(this.player.position.x, this.player.position.z);
+          
           this._arrows.forEach(a => {
-              const visible = a.userData.seg < nextIdx && !(onRoad && a.userData.ped);
+              const visible = a.userData.seg <= nextIdx && !(onRoad && a.userData.ped);
               a.visible = visible;
               if (visible) {
-                  a.position.y = a.userData.baseY + 0.08 * Math.sin(this.timer * 3 + a.userData.seg);
-                  if (a.children[0] && a.children[0].material) a.children[0].material.opacity = pulse;
-                  if (a.children[1] && a.children[1].material) a.children[1].material.opacity = pulse;
+                  const flowPhase = (t * 3.5 + a.userData.order * 0.6) % (Math.PI * 2);
+                  const pulse = 0.55 + 0.40 * Math.sin(flowPhase);
+                  a.position.y = a.userData.baseY + 0.05 * Math.sin(flowPhase);
+                  a.children.forEach(ch => {
+                      if (ch.material) ch.material.opacity = pulse;
+                  });
               }
           });
       }
@@ -5750,9 +7091,9 @@ class Game {
           // stopped the whole unguarded call chain for that frame. Recover instead of freezing.
           console.error('[Driving] _tickEnterExit() failed, resetting camera/enter-state:', err);
           this._camOverride = false;
-          this._enterState = 'IDLE';
+          this._enterState = 'IDLE'; if (window.TrafficAudio) window.TrafficAudio.playDoorClose();
         }
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); if (this.taskManager) this.taskManager.update(dt); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
         // World streaming update — handle deferred initial load
         if (this._needsInitialStream && this.player && this.player.position) {
           this.worldStreamer.update(this.player.position, 1.0);
@@ -5791,7 +7132,9 @@ class Game {
         if (!this.isPedestrian) {
           this._updateSuspension(dt);
         }
+        if (window.TrafficAudio && this._collidedThisFrame) window.TrafficAudio.playCrash(0.8);
         this._updateCrashFX(dt);
+        this._updateVFX(dt);
 
         // ── Player character animation ──
         const playerChar = this.playerCharacter || (this.isPedestrian ? this.player : null)
@@ -5804,7 +7147,13 @@ class Game {
             playerChar.userData.mixer.update(dt)
           } else if (this.isPedestrian) {
             // Procedural or GLB character: swing limbs
-            this._animateCharacterWalk(playerChar, Math.abs(this.speed), dt)
+            this._animateCharacterWalk(playerChar, Math.abs(this.speed), dt);
+        
+        // Footstep audio when walking on foot
+        if (this.isPedestrian && Math.abs(this.speed) > 0.02 && window.TrafficAudio) {
+          window.TrafficAudio.playFootstep();
+        }
+
           }
         }
 
@@ -5829,7 +7178,7 @@ class Game {
                 const _lvId = (ui.cur ? ui.cur.id : 1);
                 const cumCheck = this.checkCumulativeViolation('wear_safety', _lvId);
                 if (cumCheck.enforce) {
-                  ui.issueChallan((this.vehMode === 'bike' || this.vehMode === 'cycle') ? 'Riding without Helmet' : 'Driving without Seatbelt', 'Sec 194D MV Act', '₹1,000', 'Safety Violation');
+                  this._triggerPoliceStrobe(); ui.issueChallan((this.vehMode === 'bike' || this.vehMode === 'cycle') ? 'Riding without Helmet' : 'Driving without Seatbelt', 'Sec 194D MV Act', '₹1,000', 'Safety Violation');
                   this.vio++; this.violationsLog.push('SAFETY_VIOLATION'); this.score -= 20; this.fine += 1000;
                 } else {
                   this.violationsLog.push('SAFETY_WARNING');
@@ -5844,7 +7193,7 @@ class Game {
             if (this.playerVehicle && this.playerCharacter) {
               if (this.isPedestrian) {
                 const dist = this.player.position.distanceTo(this.playerVehicle.position);
-                if (dist < 3.0) {
+                if (dist < 6.0) { if (window.TrafficAudio) window.TrafficAudio.playDoorOpen();
                   this._enterDir = 1;
                   this._enterTimer = 0;
                   this._enterState = 'WALKING_TO_DOOR';
@@ -5953,6 +7302,26 @@ class Game {
             else this.speed = Math.min(0, this.speed + dragDecel);
           }
 
+          // ── CRUISE CONTROL: auto-throttle to hold cruiseSpeed ──
+          if (this.cruiseControl && !dn && this.gear === 'D') {
+            const target = this.cruiseSpeed / 100; // convert km/h → internal units
+            const err = target - this.speed;
+            if (Math.abs(err) > 0.005) this.speed += Math.sign(err) * Math.min(Math.abs(err), this.accel * 0.5 * dt * 60);
+          }
+          if (this.cruiseControl && dn) this.cruiseControl = false; // braking disengages cruise
+
+          // ── SPEED LIMITER: hard cap ──
+          if (this.speedLimiter && this.speed > 0) {
+            const limCap = this.speedLimitCap / 100;
+            if (this.speed > limCap) this.speed = Math.min(this.speed, limCap);
+          }
+
+          // ── DRIVE MODE CAP ──
+          if (this._driveModeCapMap && this.driveMode && this.speed > 0) {
+            const modeCap = (this._driveModeCapMap[this.driveMode] || 999) / 100;
+            if (this.speed > modeCap) this.speed = modeCap;
+          }
+
           // ── DOWNFORCE GRIP BONUS (computed by _computeAeroForces) ──
           // At high speed, downforce increases effective grip by up to 30%
           if (this._downforceCoeff > 0.01) {
@@ -6034,7 +7403,7 @@ class Game {
             if (this._turnAccum > 1.5 && this.turnSignal === 0 && !this.challanFired.has('no_indicator')) {
               this.challanFired.add('no_indicator');
               if (window.GameplayRecorder) GameplayRecorder.record('NO_INDICATOR', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score });
-              ui.issueChallan('Turning without Indicator', 'Sec 125 MV Act', '₹500', 'Signal Violation');
+              this._triggerPoliceStrobe(); ui.issueChallan('Turning without Indicator', 'Sec 125 MV Act', '₹500', 'Signal Violation');
             toast('💡 TIP: Always use indicators 30 meters before turning. It prevents 40% of lane-change accidents.', '#ffd54a');
               this.vio++; this.violationsLog.push('NO_INDICATOR'); this.score -= 30; this.fine += 500;
               toast('⚠️ Use turn signals! ₹500 fine', '#ff9500');
@@ -6047,90 +7416,9 @@ class Game {
 
           const targetVx = Math.sin(this.player.rotation.y) * this.speed;
           const targetVz = Math.cos(this.player.rotation.y) * this.speed;
-          // ── Pacejka Tire Model Integration ──
-          // Compute tire forces using Pacejka MF 5.2
-          if (!overrideMove && !this.isPedestrian) {
-            const pacejkaConfig = VEHICLE_PACEJKA_CONFIG[this.vehMode] || VEHICLE_PACEJKA_CONFIG.car;
-            const mass = pacejkaConfig.mass;
-            const frontWeightDist = pacejkaConfig.front_weight_dist;
-            const frontTrack = pacejkaConfig.front_track;
-            const rearTrack = pacejkaConfig.rear_track;
-            const wheelbase = pacejkaConfig.wheelbase;
-            const cgHeight = pacejkaConfig.cg_height;
-            
-            // Weight distribution
-            const Fz_front_total = mass * 9.81 * frontWeightDist;
-            const Fz_rear_total = mass * 9.81 * (1 - frontWeightDist);
-            const Fz_front_per_wheel = Fz_front_total / 2;
-            const Fz_rear_per_wheel = Fz_rear_total / 2;
-            
-            // Weight transfer (longitudinal)
-            const longAccel = (targetVx - this.vx) / (dt + 1e-6); // approximate
-            const weightTransfer = mass * longAccel * cgHeight / wheelbase;
-            const Fz_fl = Fz_front_per_wheel - weightTransfer / 2;
-            const Fz_fr = Fz_front_per_wheel - weightTransfer / 2;
-            const Fz_rl = Fz_rear_per_wheel + weightTransfer / 2;
-            const Fz_rr = Fz_rear_per_wheel + weightTransfer / 2;
-            
-            // Lateral acceleration
-            const latAccel = (targetVx - this.vx) / (dt + 1e-6);
-            const latWeightTransfer = mass * latAccel * cgHeight / (frontTrack + rearTrack);
-            const Fz_fl_lat = Fz_fl - latWeightTransfer / 2;
-            const Fz_fr_lat = Fz_fr + latWeightTransfer / 2;
-            const Fz_rl_lat = Fz_rl - latWeightTransfer / 2;
-            const Fz_rr_lat = Fz_rr + latWeightTransfer / 2;
-            
-            // Slip angle (from velocity vector vs heading)
-            const velocityAngle = Math.atan2(this.vx, this.vz);
-            const headingAngle = this.player.rotation.y;
-            const slipAngle = velocityAngle - headingAngle;
-            
-            // Slip ratio (simplified)
-            const wheelSpeed = Math.abs(this.speed);
-            const groundSpeed = Math.hypot(this.vx, this.vz);
-            const slipRatio = groundSpeed > 0.01 ? (wheelSpeed - groundSpeed) / Math.max(groundSpeed, 0.01) : 0;
-            
-            // Surface type
-            const surfaceType = (this.mode === 'rain' || (this.mapCfg && this.mapCfg.hasRain)) ? 'wet_asphalt' : 'dry_asphalt';
-            
-            // Compute combined forces for each wheel using Pacejka
-            const frontLeft = PACEJKA.computeCombinedForce(slipAngle, slipRatio * 0.5, Fz_fl_lat, 0, 'dry_asphalt');
-            const frontRight = PACEJKA.computeCombinedForce(slipAngle, slipRatio * 0.5, Fz_fr_lat, 0, 'dry_asphalt');
-            const rearLeft = PACEJKA.computeCombinedForce(0, slipRatio, Fz_rl_lat, 0, 'dry_asphalt');
-            const rearRight = PACEJKA.computeCombinedForce(0, slipRatio, Fz_rr_lat, 0, 'dry_asphalt');
-            
-            // Sum forces
-            const totalFx = frontLeft.Fx + frontRight.Fx + rearLeft.Fx + rearRight.Fx;
-            const totalFy = frontLeft.Fy + frontRight.Fy + rearLeft.Fy + rearRight.Fy;
-            
-            // Apply forces to velocity
-            const Fx_local = totalFx * Math.cos(this.player.rotation.y) - totalFy * Math.sin(this.player.rotation.y);
-            const Fy_local = totalFx * Math.sin(this.player.rotation.y) + totalFy * Math.cos(this.player.rotation.y);
-            
-            const ax = Fx_local / mass;
-            const ay = Fy_local / mass;
-            
-            this.vx += ax * dt;
-            this.vz += ay * dt;
-            
-            // Update speed from velocity
-            this.speed = Math.hypot(this.vx, this.vz);
-            
-            // Yaw moment (simplified)
-            const yawMoment = (frontLeft.Fy + frontRight.Fy) * wheelbase / 2 * frontWeightDist - 
-                             (rearLeft.Fy + rearRight.Fy) * wheelbase / 2 * (1 - frontWeightDist);
-            const yawAccel = yawMoment / pacejkaConfig.inertia_yaw;
-            this.player.rotation.y += yawAccel * dt;
-          } else {
-        // ── PEDESTRIAN VELOCITY: apply target velocity from inputs ──
-        if (this.isPedestrian) {
-          // targetVx/Vz were computed above from speed + rotation;
-          // assign them to actual velocity with smoothing so pedestrians aren't frozen
           this.vx = targetVx;
           this.vz = targetVz;
-        }
-        
-        this.player.position.x += this.vx; this.player.position.z += this.vz;
+          this.player.position.x += this.vx; this.player.position.z += this.vz;
 
         // ── KID-FIRST: MAGNETIC LANE ASSIST ──
         if (!this.isPedestrian && this.kidModeActive) {
@@ -6146,29 +7434,16 @@ class Game {
         else if (!this.isPedestrian && this.playerVehicle && !this._sbBounce) { this.playerVehicle.position.y = 0; }
 
         // Hard world boundary clamp — prevents floating-point precision loss
-        // Regular maps: roads extend to ~±1500, ground is 2000x2000 → clamp at ±1550
-        // 50km maps: roads extend to ~±25000 → clamp at ±25500
-        // Free roam: streaming world, large boundary → clamp at ±5000 (10km x 10km)
         let _wBound = 1550;
         if (this.mapCfg && this.mapCfg.is50km) _wBound = 25500;
         else if (this.mapCfg && this.mapCfg.useLowPolyCity) _wBound = 5000;
         this.player.position.x = Math.max(-_wBound, Math.min(_wBound, this.player.position.x));
         this.player.position.z = Math.max(-_wBound, Math.min(_wBound, this.player.position.z));
 
-        let validRoadBound = false;
-        this.roadSegments.forEach(r => {
-          if (r.type === 'v' && Math.abs(this.player.position.x - r.x) < 7.5) validRoadBound = true;
-          if (r.type === 'h' && Math.abs(this.player.position.z - r.z) < 7.5) validRoadBound = true;
-        });
+        const surfaceStatus = this._getRoadAndSidewalkStatus(this.player.position.x, this.player.position.z);
         const owEl = this.dom['ow'];
-        if (this.isPedestrian && owEl) owEl.textContent = "⚠️ JAYWALKING - Walk on the sidewalk/zebra crossing!";
-        else if (owEl) owEl.textContent = "⚠️ OFF ROAD - Return to road!";
-        // Find the road segment the player is currently on (used for wrong-side detection)
-        let currentRoad = null;
-        for (const r of this.roadSegments) {
-          if (r.type === 'v' && Math.abs(this.player.position.x - r.x) < 7.5) { currentRoad = r; break; }
-          if (r.type === 'h' && Math.abs(this.player.position.z - r.z) < 7.5) { currentRoad = r; break; }
-        }
+        const currentRoad = surfaceStatus.currentRoad;
+
         if (this.mapCfg && this.mapCfg.hasPuddles && Math.random() < 0.3) { this.player.rotation.y += this.turn * (this.speed > 0 ? 1 : -1) * (Math.random() * 0.5 - 0.25); }
         // Re-normalize after puddle jitter
         if (!this.isPedestrian) {
@@ -6176,26 +7451,50 @@ class Game {
           while (this.player.rotation.y < -Math.PI) this.player.rotation.y += Math.PI * 2;
         }
         if (this.isPedestrian) {
-          let nearZebra = false;
-          (this.mapCfg.ints || []).forEach(([ix, iz]) => { if (Math.abs(this.player.position.x - ix) < 10 && Math.abs(this.player.position.z - iz) < 10) nearZebra = true; });
-          if (validRoadBound && !nearZebra) { if (owEl) owEl.classList.add('on'); this.speed *= .52; this.hp -= this.seatbeltOn ? .36 : .45; this._uh(); } else { if (owEl) owEl.classList.remove('on'); }
+          // Pedestrian: safe on sidewalk or zebra crossing; warn only when jaywalking on active asphalt
+          if (surfaceStatus.onRoad && !surfaceStatus.nearZebra) {
+            if (owEl) {
+              owEl.textContent = "⚠️ JAYWALKING — Walk on the sidewalk or zebra crossing!";
+              owEl.classList.add('on');
+            }
+            this.speed *= 0.85;
+            this.hp = Math.max(0, this.hp - 0.15);
+            this._uh();
+          } else {
+            if (owEl) owEl.classList.remove('on');
+          }
         } else {
-          if (!validRoadBound) { 
-            if (owEl) owEl.classList.add('on'); 
-            this.speed *= .52;
-            this.hp -= this.seatbeltOn ? .36 : .45;
+          // Vehicle: safe on asphalt road; penalty on sidewalk or off-road
+          if (surfaceStatus.onSidewalk) {
+            if (owEl) {
+              owEl.textContent = "⚠️ DRIVING ON SIDEWALK — Keep vehicle on road! Fine ₹500";
+              owEl.classList.add('on');
+            }
+            this.speed *= 0.7;
+            this.hp = Math.max(0, this.hp - (this.seatbeltOn ? 0.25 : 0.4));
 
             if (!this.player.userData.fpCooldown) this.player.userData.fpCooldown = 0;
             this.player.userData.fpCooldown -= dt;
             if (this.player.userData.fpCooldown <= 0 && window.ui && window.ui.issueChallan) {
-                window.ui.issueChallan('Driving on Footpath', 'Sec 177 MV Act', '₹500', 'Reckless Driving');
-                this.player.userData.fpCooldown = 3;
+              if (this._triggerPoliceStrobe) this._triggerPoliceStrobe();
+              ui.issueChallan('Driving on Footpath', 'Sec 177 MV Act', '₹500', 'Reckless Driving');
+              this.player.userData.fpCooldown = 3.5;
             }
-            
+
+            if (this.hp <= 0) this._go("Wrecked on sidewalk"); else this._uh();
+          } else if (surfaceStatus.offRoad && !(this.mapCfg && (this.mapCfg.useLowPolyCity || this.mapCfg.is50km || this.mapCfg.themeType === 'free_roam'))) {
+            if (owEl) {
+              owEl.textContent = "⚠️ OFF ROAD — Return vehicle to road!";
+              owEl.classList.add('on');
+            }
+            this.speed *= 0.52;
+            this.hp = Math.max(0, this.hp - (this.seatbeltOn ? 0.36 : 0.45));
             if (this.hp <= 0) this._go("Drove off-road"); else this._uh();
             if (window.GameplayRecorder) GameplayRecorder.record('OFF_ROAD', { hp: Math.round(this.hp), score: this.score });
-          } else { 
-            if (owEl) owEl.classList.remove('on'); 
+          } else {
+            if (owEl) owEl.classList.remove('on');
+          }
+        }
             
             // Turn signal blink effect
             if (this.turnSignal !== 0) {
@@ -6224,7 +7523,7 @@ class Game {
                     if (!this.player.userData.wwCooldown) this.player.userData.wwCooldown = 0;
                     this.player.userData.wwCooldown -= dt;
                     if (this.player.userData.wwCooldown <= 0 && window.ui && window.ui.issueChallan) {
-                        window.ui.issueChallan('Wrong Side Driving', 'Sec 119 MV Act', '₹1,500', 'Lane Discipline');
+                        if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Wrong Side Driving', 'Sec 119 MV Act', '₹1,500', 'Lane Discipline');
                         this.player.userData.wwCooldown = 4;
                     }
                 }
@@ -6241,10 +7540,10 @@ class Game {
                     const _lvId = (ui.cur ? ui.cur.id : 1);
                     const cumCheck = this.checkCumulativeViolation('speed_limit_adherence', _lvId);
                     if (cumCheck.enforce) {
-                      window.ui.issueChallan('Overspeeding (repeat offense)', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
+                      if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Overspeeding (repeat offense)', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
                       this.vio++; this.violationsLog.push('SPEED_VIOLATION'); this.fine += 1000;
                     } else {
-                      window.ui.issueChallan('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
+                      if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
                       this.violationsLog.push('SPEED_WARNING');
                     }
                     
@@ -6273,7 +7572,7 @@ class Game {
                 if (!this.player.userData.bikeSpdCooldown) this.player.userData.bikeSpdCooldown = 0;
                 this.player.userData.bikeSpdCooldown -= dt;
                 if (this.player.userData.bikeSpdCooldown <= 0 && window.ui && window.ui.issueChallan) {
-                  window.ui.issueChallan('Two-Wheeler Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Safe limit: ' + bikeSafeLimit + ' km/h');
+                  if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Two-Wheeler Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Safe limit: ' + bikeSafeLimit + ' km/h');
                   this.player.userData.bikeSpdCooldown = 5;
                 }
               }
@@ -6312,10 +7611,30 @@ class Game {
                 if (!ringEl) {
                   ringEl = document.createElement('div');
                   ringEl.id = 'phone-ring-overlay';
-                  ringEl.style.cssText = 'position:fixed;top:12%;left:50%;transform:translateX(-50%);background:#1a1a2e;border:3px solid #f2b84b;border-radius:16px;padding:20px 30px;z-index:10002;display:flex;flex-direction:column;align-items:center;gap:12px;animation:ring-pulse 1s ease-in-out infinite;box-shadow:0 0 30px rgba(242,184,75,.4);';
-                  ringEl.innerHTML = '<div style="font-size:36px">📱</div><div style="color:#f2b84b;font-size:18px;font-weight:700">Incoming Call!</div><div style="color:#ccc;font-size:14px">Mom is calling...</div><div style="display:flex;gap:12px;margin-top:8px"><button id="phone-answer" style="background:#34d399;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:700">Answer</button><button id="phone-ignore" style="background:#ef4444;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:16px;cursor:pointer;font-weight:700">Ignore</button></div>';
+                  ringEl.innerHTML = `
+                    <div class="phone-call-header">
+                      <div class="phone-call-avatar">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                      </div>
+                      <div class="phone-call-info">
+                        <div class="phone-call-title">Incoming Call</div>
+                        <div class="phone-call-caller">Mom Calling...</div>
+                      </div>
+                    </div>
+                    <div class="phone-call-actions">
+                      <button id="phone-answer" class="phone-btn-ans">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        Answer
+                      </button>
+                      <button id="phone-ignore" class="phone-btn-ign">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        Ignore
+                      </button>
+                    </div>
+                  `;
                   document.body.appendChild(ringEl);
-                } else { ringEl.style.display = 'flex'; ringEl.style.animation = 'ring-pulse 1s ease-in-out infinite'; }
+                }
+                ringEl.style.display = 'flex';
                 document.getElementById('phone-answer')?.addEventListener('click', () => {
                   ringEl.style.display = 'none'; ringEl.style.animation = 'none';
                   this._phoneRinging = false; this._phoneDismissed = true;
@@ -6326,7 +7645,7 @@ class Game {
                     const _lvId = (ui.cur ? ui.cur.id : 1);
                     const cumCheck = this.checkCumulativeViolation('mobile_use', _lvId);
                     if (cumCheck.enforce) {
-                      window.ui.issueChallan('Distracted Driving - Phone', 'Sec 184 MV Act', '₹1,000', 'Mobile Use');
+                      if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Distracted Driving - Phone', 'Sec 184 MV Act', '₹1,000', 'Mobile Use');
                       this.score -= 25; this.fine += 1000; this.vio++; this.violationsLog.push('MOBILE_USE');
                     } else {
                       this.violationsLog.push('MOBILE_USE_WARNING');
@@ -6410,8 +7729,6 @@ class Game {
               }
             }
             if (this.turnSignal === 0 && this._overtakeCheckDone) this._overtakeCheckDone = false;
-          }
-        }
 
         // ── Animal crossing zones (A) ──
         if (!this.isPedestrian && this.mapCfg?.animalCrossings) {
@@ -6548,7 +7865,7 @@ class Game {
                 this._policeStopActive = false;
                 this._policeStopTimer = 0;
                 if (window.ui && window.ui.issueChallan) {
-                  window.ui.issueChallan('Fleeing Police Checkpoint', 'Sec 186 MV Act', '₹2,000', 'Checkpoint Evasion');
+                  if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Fleeing Police Checkpoint', 'Sec 186 MV Act', '₹2,000', 'Checkpoint Evasion');
                   this.score -= 50; this.fine += 2000; this.vio++; this.violationsLog.push('CHECKPOINT_EVASION');
                 }
                 toast('🚨 You fled the checkpoint! ₹2,000 fine!', '#ef4444');
@@ -6560,8 +7877,6 @@ class Game {
       }
     }
 
-      }
-
       _usigs(dt) {
         let nearestSig = null, nearestDist = 9999;
         this.sigs.forEach(sg => {
@@ -6570,12 +7885,21 @@ class Game {
           d.st = rem < 4 ? 'red' : rem < 5.5 ? 'yellow' : 'green';
           sg.state = d.st; // mirrored for NPCAI._getSignalAhead
           const r = sg.getObjectByName('red'), y = sg.getObjectByName('yellow'), g = sg.getObjectByName('green');
-          if (r) r.material.color.setHex(d.st === 'red' ? 0xff3b30 : 0x220000);
-          if (y) y.material.color.setHex(d.st === 'yellow' ? 0xffd54a : 0x222200);
-          if (g) g.material.color.setHex(d.st === 'green' ? 0x00c851 : 0x002200);
+          if (r) {
+            r.material.color.setHex(d.st === 'red' ? 0xff3b30 : 0x1a0505);
+            if (r.material.emissive) r.material.emissive.setHex(d.st === 'red' ? 0xff2222 : 0x000000);
+          }
+          if (y) {
+            y.material.color.setHex(d.st === 'yellow' ? 0xffd54a : 0x1a1605);
+            if (y.material.emissive) y.material.emissive.setHex(d.st === 'yellow' ? 0xffaa00 : 0x000000);
+          }
+          if (g) {
+            g.material.color.setHex(d.st === 'green' ? 0x00e676 : 0x051a08);
+            if (g.material.emissive) g.material.emissive.setHex(d.st === 'green' ? 0x00c851 : 0x000000);
+          }
           const pr = sg.getObjectByName('p_red'), pg = sg.getObjectByName('p_green');
-          if (pr) pr.material.color.setHex(d.st === 'red' ? 0x220000 : 0xff3b30);
-          if (pg) pg.material.color.setHex(d.st === 'red' ? 0x00c851 : 0x002200);
+          if (pr) pr.material.color.setHex(d.st === 'red' ? 0x1a0505 : 0xff3b30);
+          if (pg) pg.material.color.setHex(d.st === 'red' ? 0x00e676 : 0x051a08);
           // Reset challan flag when signal turns green
           if (d.st === 'green' && prev !== 'green') this.challanFired.delete(sg.uuid);
           // Challan ONCE per red phase per signal
@@ -6588,7 +7912,7 @@ class Game {
             const cumCheck = this.checkCumulativeViolation('red_light_stop', _lvId);
             if (cumCheck.enforce) {
               this.vio++; this.violationsLog.push('RED_LIGHT_VIOLATION'); this.fine += 500;
-              ui.issueChallan('Jumping red signal (repeat offense)', 'Section 119, MV Act', '₹500', 'Junction Sensor');
+              this._triggerPoliceStrobe(); ui.issueChallan('Jumping red signal (repeat offense)', 'Section 119, MV Act', '₹500', 'Junction Sensor');
             } else {
               // First offense - warning
               this.violationsLog.push('RED_LIGHT_WARNING');
@@ -6857,9 +8181,40 @@ class Game {
         if (!this.player || !this.player.position) return;
         // Delegate to TrafficManager for Mumbai-style traffic simulation
         if (this.trafficManager) {
-          // `this.signals` never existed — the signal array is `this.sigs`, so NPCs were
-          // handed an empty list and drove through every red light.
           this.trafficManager.update(dt, this.player, this.sigs || []);
+          // ── Real-time Traffic NPC to Player Physical Collision Pass ──
+          if (this.player && this.trafficManager.vehicles) {
+            const px = this.player.position.x, pz = this.player.position.z;
+            const pR = 1.6;
+            this.trafficManager.vehicles.forEach(v => {
+              if (!v.active || !v.mesh) return;
+              const vx = v.position.x, vz = v.position.z;
+              const dx = px - vx, dz = pz - vz;
+              if (dx * dx + dz * dz < 18) {
+                const overlapX = pR + 1.2 - Math.abs(dx);
+                const overlapZ = pR + 2.0 - Math.abs(dz);
+                if (overlapX > 0 && overlapZ > 0 && !v._justHit) {
+                  v._justHit = true;
+                  setTimeout(() => { v._justHit = false; }, 1200);
+                  const dmg = this.seatbeltOn ? 10 : 20;
+                  this.hp = Math.max(0, this.hp - dmg);
+                  if (this.hp <= 0) this._go('Vehicle Crash');
+                  else this._uh();
+                  this.speed *= -0.3;
+                  this._camShakeAmt = Math.max(this._camShakeAmt, 0.5);
+                  if (overlapX < overlapZ) {
+                    this.player.position.x += (dx > 0 ? overlapX + 0.2 : -(overlapX + 0.2));
+                  } else {
+                    this.player.position.z += (dz > 0 ? overlapZ + 0.2 : -(overlapZ + 0.2));
+                  }
+                  if (window.TrafficAudio) window.TrafficAudio.playCrash(1.4);
+                  toast('💥 CRASH! Hit Traffic Vehicle! HP -' + dmg, '#ef4444', 3000);
+                  this.violationsLog.push('TRAFFIC_COLLISION');
+                  if (window.GameplayRecorder) GameplayRecorder.record('TRAFFIC_HIT', { hp: Math.round(this.hp) });
+                }
+              }
+            });
+          }
           return;
         }
         
@@ -7504,7 +8859,7 @@ class Game {
                n.userData.blockTimer += dt;
                if (n.userData.blockTimer > 3) {
                  if (window.ui && window.ui.issueChallan) {
-                   window.ui.issueChallan('Blocking Emergency Vehicle', 'Sec 194E MV Act', '₹10,000', 'Emergency Priority');
+                   if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Blocking Emergency Vehicle', 'Sec 194E MV Act', '₹10,000', 'Emergency Priority');
                  }
                  n.userData.blockTimer = -10; // Prevent spamming
                }
@@ -7639,8 +8994,8 @@ class Game {
 
         // Spawn new pedestrians dynamically
         const isFestCrowd = this.mapCfg && (this.mapCfg.crowdFestival || this.mapCfg.themeType === 'festival');
-        const maxPeds = isFestCrowd ? (this._isMobile ? 30 : 120) : ((this.mapCfg && this.mapCfg.isPedestrian) ? 30 : 16);
-        const pedSpawnRate = isFestCrowd ? 0.8 : 0.2;
+        const maxPeds = isFestCrowd ? (this._isMobile ? 40 : 140) : ((this.mapCfg && this.mapCfg.isPedestrian) ? 45 : (this._isMobile ? 24 : 48));
+        const pedSpawnRate = isFestCrowd ? 0.9 : 0.6;
         if (this.peds.length < maxPeds && Math.random() < pedSpawnRate && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
           const r = this.mapCfg.roads[Math.floor(Math.random() * this.mapCfg.roads.length)];
           const isV = r.type === 'v';
@@ -7648,9 +9003,9 @@ class Game {
           const rz = isV ? Math.min(r.z1, r.z2) + Math.random() * Math.abs(r.z2 - r.z1) : r.z;
           
           const distToPlayer = Math.hypot(rx - this.player.position.x, rz - this.player.position.z);
-          // Spawn just outside the view radius
-          const spawnMin = isFestCrowd ? 20 : 30;
-          const spawnMax = isFestCrowd ? 180 : 120;
+          // Spawn in a lively activity radius around the player
+          const spawnMin = isFestCrowd ? 15 : 20;
+          const spawnMax = isFestCrowd ? 160 : 95;
           if (distToPlayer > spawnMin && distToPlayer < spawnMax) {
             // Phase 7: Reuse freed pedestrian or create new
             let ped;
@@ -7723,6 +9078,41 @@ class Game {
         // COMPREHENSIVE PEDESTRIAN AI SYSTEM
         // State Machine: IDLE → WALKING → WAITING → CROSSING → FLEEING → ENTERING
         // ═══════════════════════════════════════════════════════════════
+
+        // ── DYNAMIC MUMBAI JAYWALKER HAZARD IN PLAYER'S TRAVEL DIRECTION ──
+        if (!this._jaywalkerCooldown) this._jaywalkerCooldown = 8;
+        this._jaywalkerCooldown -= dt;
+        if (this._jaywalkerCooldown <= 0 && this.player && !this.isPedestrian && Math.abs(this.speed || 0) > 2) {
+          const pFwdX = -Math.sin(this.player.rotation.y);
+          const pFwdZ = -Math.cos(this.player.rotation.y);
+          
+          // Find an eligible pedestrian ahead of player (20m - 45m in forward driving direction)
+          const eligible = this.peds.filter(p => {
+            if (!p || !p.userData || p.userData.aiState === 'crossing' || p.userData.aiState === 'fleeing') return false;
+            const dx = p.position.x - this.player.position.x;
+            const dz = p.position.z - this.player.position.z;
+            const fwdDist = dx * pFwdX + dz * pFwdZ;
+            const latDist = Math.abs(-dx * pFwdZ + dz * pFwdX);
+            return fwdDist > 20 && fwdDist < 45 && latDist < 18;
+          });
+
+          if (eligible.length > 0) {
+            const jay = eligible[Math.floor(Math.random() * eligible.length)];
+            const jud = jay.userData;
+            const otherSide = -jud.side;
+            const crossOffset = otherSide * (jud.targetDist || (18 / 2 + 1.25));
+            jud.aiState = 'crossing';
+            jud.state = 'crossing';
+            jud.spd = 0.55; // Brisk walk across traffic
+            jud.crossTarget = {
+              x: jud.isV ? jud.roadC + crossOffset : jay.position.x,
+              z: jud.isV ? jay.position.z : jud.roadC + crossOffset
+            };
+            jud.crossRoadCenter = jud.roadC;
+            jud.crossTargetDist = Math.abs(crossOffset);
+            this._jaywalkerCooldown = 18 + Math.random() * 12; // 18-30s between jaywalkers
+          }
+        }
 
         // Helper: Check traffic light state for crossing pedestrians
         const _checkTrafficLight = (pedPos, game) => {
@@ -8012,15 +9402,19 @@ class Game {
             return;
           }
 
-          // STATE: WALKING (default)
+          // STATE: WALKING (default: strictly locked to sidewalk centerline)
           ud.aiState = 'walking';
           const walkSpeed = ud.spd * 3.5;
           const moveAmt = walkSpeed * dt;
 
+          // Lock lateral position strictly to sidewalk centerline
+          const targetSidewalk = ud.roadC + (ud.side > 0 ? ud.targetDist : -ud.targetDist);
           if (ud.isV) {
+            p.position.x += (targetSidewalk - p.position.x) * 0.15;
             p.position.z += ud.dir * moveAmt;
             ud.distTraveled += moveAmt;
           } else {
+            p.position.z += (targetSidewalk - p.position.z) * 0.15;
             p.position.x += ud.dir * moveAmt;
             ud.distTraveled += moveAmt;
           }
@@ -8136,13 +9530,13 @@ class Game {
             p.rotation.y = Math.sin(ud.t * 0.5) * 0.3 + (ud.isV ? Math.PI/2 : 0);
           }
 
-          // ── PLAYER COLLISION CHECK (INSTANT FAILURE) ──
-          if (!this.isPedestrian && this.player.position.distanceTo(p.position) < 2.2) {
+          // ── PLAYER COLLISION CHECK (INSTANT FAILURE ON HIT) ──
+          if (!this.isPedestrian && Math.abs(this.speed) > 0.1 && this.player.position.distanceTo(p.position) < 2.2) {
             this.speed = 0;
             this.hp = 0;
-            toast(' HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
+            toast('💥 HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
             this._uh();
-            this._go("Structural Failure");
+            this._go("Hit Pedestrian");
           }
         });
       }
@@ -8187,7 +9581,7 @@ class Game {
               this.violationsLog.push('HONKED_AT_ANIMAL');
               this.score -= 40;
               this.fine += 1000;
-              ui.issueChallan('Honking at an animal on the road', 'Civic Sense', '₹1,000', 'Animals have the right of way — never honk at them');
+              this._triggerPoliceStrobe(); ui.issueChallan('Honking at an animal on the road', 'Civic Sense', '₹1,000', 'Animals have the right of way — never honk at them');
             }
           }
         }
@@ -8201,19 +9595,29 @@ class Game {
           const overlapZ = pR + hd - Math.abs(dz);
           if (overlapX > 0 && overlapZ > 0) {
               this._collidedThisFrame = true;
-              this.hp -= this.seatbeltOn ? 8 : 10;
-              if (this.hp <= 0) this._go('Collided with Barricade');
-              else this._uh();
-              this.speed *= -.2;
-              this._camShakeAmt = Math.max(this._camShakeAmt, 0.35);
+              const dmg = this.seatbeltOn ? 10 : 18;
+              this.hp = Math.max(0, this.hp - dmg);
+              if (this.hp <= 0) {
+                this._go(ud.isVehicle ? 'Vehicle Collision' : 'Collided with Structure');
+              } else {
+                this._uh();
+              }
+              // Elastic bounce response
+              this.speed *= -0.35;
+              this._camShakeAmt = Math.max(this._camShakeAmt, 0.45);
               // Push player out along axis of least penetration
               if (overlapX < overlapZ) {
-                this.player.position.x += (dx > 0 ? overlapX : -overlapX);
+                this.player.position.x += (dx > 0 ? overlapX + 0.15 : -(overlapX + 0.15));
               } else {
-                this.player.position.z += (dz > 0 ? overlapZ : -overlapZ);
+                this.player.position.z += (dz > 0 ? overlapZ + 0.15 : -(overlapZ + 0.15));
               }
-              toast('🚧 Collided with Barricade bounds!', '#ff9500');
-              if (window.GameplayRecorder) GameplayRecorder.record('BARRICADE_HIT', { hp: Math.round(this.hp), score: this.score });
+              if (window.TrafficAudio) window.TrafficAudio.playCrash(1.2);
+              if (ud.isVehicle) {
+                toast('💥 CRASH! Vehicle Collision! HP -' + dmg, '#ef4444', 3000);
+              } else {
+                toast('🚧 CRASH! Structure Collision! HP -' + dmg, '#ef4444', 3000);
+              }
+              if (window.GameplayRecorder) GameplayRecorder.record('COLLISION_HIT', { hp: Math.round(this.hp), score: this.score });
           }
         });
 
@@ -8223,7 +9627,7 @@ class Game {
                     p.userData.splashed = true;
                     this.score -= 50;
                     this.fine += 500;
-                    ui.issueChallan('Splashed water on pedestrians', 'Sec 184 MV Act', '₹500', 'Reckless Driving');
+                    this._triggerPoliceStrobe(); ui.issueChallan('Splashed water on pedestrians', 'Sec 184 MV Act', '₹500', 'Reckless Driving');
             toast('💦 Splashed Water! Too Fast!', '#ff3b30');
             sfx.play('error');
             if (window.GameplayRecorder) GameplayRecorder.record('SPLASH', { score: this.score, fine: this.fine });
@@ -8328,7 +9732,21 @@ class Game {
               cp.position.x = pts[seg][0] + (pts[seg + 1][0] - pts[seg][0]) * segT;
               cp.position.z = pts[seg][1] + (pts[seg + 1][1] - pts[seg][1]) * segT;
           }
-          if (this.player.position.distanceTo(cp.position) < 4.5) { cp.userData.hit = true; cp.visible = false; this.score += 100; hits++; toast('✅ Node Verified!', '#00c851'); sfx.play('ok'); }
+          const hitThreshold = (cp.userData && cp.userData.isFinish) ? 14.0 : 10.0;
+          if (this.player.position.distanceTo(cp.position) < hitThreshold) {
+            cp.userData.hit = true;
+            cp.visible = false;
+            this.score += 100;
+            hits++;
+            const toastMsg = (cp.userData && cp.userData.isFinish) ? '🏁 DESTINATION REACHED!' : `✅ ${cp.userData.desc || 'Checkpoint Passed!'}`;
+            toast(toastMsg, '#00e676');
+            if (window.TrafficAudio && window.TrafficAudio.playCheckpoint) {
+              window.TrafficAudio.playCheckpoint();
+            } else if (typeof sfx !== 'undefined' && sfx.play) {
+              sfx.play('ok');
+            }
+            if (this._triggerCheckpointBurst) this._triggerCheckpointBurst(cp.position.x, cp.position.y, cp.position.z);
+          }
         });
         this.hits = hits;
         if (this.dom['hcp']) this.dom['hcp'].textContent = hits + '/' + this.cps.length;
@@ -8480,77 +9898,86 @@ class Game {
 
         if (this._enterDir === 1) {
           // ══════ ENTERING VEHICLE ══════
+          const walkStart = (this._enterWalkStart && isFinite(this._enterWalkStart.x)) ? this._enterWalkStart : char.position.clone();
+          const walkEnd = (this._enterWalkEnd && isFinite(this._enterWalkEnd.x)) ? this._enterWalkEnd : veh.position.clone();
+
           if (s === 'WALKING_TO_DOOR') {
-            const dur = 1.2;
+            const dur = 0.8;
             const p = Math.min(t / dur, 1);
-            // Smooth approach with deceleration at the end
-            const approachEase = p < 0.7 ? p / 0.7 : 1 - Math.pow(1 - (p - 0.7) / 0.3, 2) * 0.08
-            char.position.lerpVectors(this._enterWalkStart, this._enterWalkEnd, Math.min(approachEase, 1));
+            const approachEase = p * p * (3 - 2 * p);
+            char.position.lerpVectors(walkStart, walkEnd, approachEase);
             char.position.y = 0;
-            const angle = Math.atan2(veh.position.x - char.position.x, veh.position.z - char.position.z);
+            const dx = veh.position.x - char.position.x;
+            const dz = veh.position.z - char.position.z;
+            const angle = (dx !== 0 || dz !== 0) ? Math.atan2(dx, dz) : veh.rotation.y;
             char.rotation.y = angle;
             this._animateCharacterWalk(char, p < 0.85 ? 1.0 : 0.3, dt);
             if (t - this._lastStepTime > 0.3) { this._lastStepTime = t; sfx.play('step'); }
-            // Camera follows character with slight orbit
-            const camAngle = angle + Math.PI + Math.sin(p * Math.PI) * 0.15
-            _camOrbit(char.position, 3.5, 2.5 + Math.sin(p * Math.PI) * 0.2, camAngle, 1.0)
+            const camAngle = angle + Math.PI + Math.sin(p * Math.PI) * 0.15;
+            _camOrbit(char.position, 3.5, 2.5 + Math.sin(p * Math.PI) * 0.2, camAngle, 1.0);
             if (p >= 1) { this._enterState = 'OPENING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
           } else if (s === 'OPENING_DOOR') {
-            const dur = 0.5;
-            const p = Math.min(t / dur, 1);
-            const doorEase = p * p * (3 - 2 * p) // smoothstep
-            if (doorPivot) doorPivot.rotation.y = doorEase * (Math.PI * 0.45)
-            _animPose(char, char.userData, 'reach_handle', doorEase)
-            // Vehicle dips slightly as door opens
-            _vehBounce(veh, this._enterDoorSide, doorEase * 0.5)
-            // Camera stays focused on character
-            const angle = Math.atan2(veh.position.x - char.position.x, veh.position.z - char.position.z)
-            _camOrbit(char.position, 3.0, 2.2, angle + Math.PI, 1.2)
-            if (p >= 1) { this._enterState = 'SITTING_DOWN'; this._enterTimer = 0; }
-          } else if (s === 'SITTING_DOWN') {
-            const dur = 0.8;
-            const p = Math.min(t / dur, 1);
-            const ease = p * p * (3 - 2 * p)
-            const seatLocal = this._v1.set(0, 0.6, 0.2)
-            const seatWorld = veh.localToWorld(seatLocal)
-            char.position.lerpVectors(this._enterWalkEnd, seatWorld, ease)
-            
-            char.scale.setScalar(1 - ease * 0.45)
-            // Body pose: lean forward then settle into seat
-            if (p < 0.5) {
-              _animPose(char, char.userData, 'sit_lean', p * 2)
-            } else {
-              _animPose(char, char.userData, 'sit_settle', (p - 0.5) * 2)
-            }
-            // Vehicle suspension responds to weight
-            _vehBounce(veh, this._enterDoorSide, ease * 1.0)
-            // Camera smoothly transitions to vehicle chase view
-            const cp = ease
-            const camAngle = veh.rotation.y + Math.PI * 0.3
-            this.camera.position.set(
-              veh.position.x * (1 - cp) + this.camera.position.x * cp + Math.sin(camAngle) * 3.5 * (1 - cp * 0.5),
-              2.5 * (1 - cp) + 1.8 * cp,
-              veh.position.z * (1 - cp) + this.camera.position.z * cp + Math.cos(camAngle) * 3.5 * (1 - cp * 0.5)
-            )
-            this.camera.lookAt(veh.position.x, 1.0, veh.position.z)
-            if (p >= 1) { this._enterState = 'CLOSING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
-          } else if (s === 'CLOSING_DOOR') {
             const dur = 0.4;
             const p = Math.min(t / dur, 1);
-            const doorEase = p * p * (3 - 2 * p)
-            if (doorPivot) doorPivot.rotation.y = (1 - doorEase) * (Math.PI * 0.45)
-            // Vehicle settles back to neutral
-            _vehBounce(veh, this._enterDoorSide, (1 - p) * 1.0)
+            const doorEase = p * p * (3 - 2 * p);
+            if (doorPivot) doorPivot.rotation.y = doorEase * (Math.PI * 0.45);
+            _animPose(char, char.userData, 'reach_handle', doorEase);
+            _vehBounce(veh, this._enterDoorSide, doorEase * 0.5);
+            const dx = veh.position.x - char.position.x;
+            const dz = veh.position.z - char.position.z;
+            const angle = (dx !== 0 || dz !== 0) ? Math.atan2(dx, dz) : veh.rotation.y;
+            _camOrbit(char.position, 3.0, 2.2, angle + Math.PI, 1.2);
+            if (p >= 1) { this._enterState = 'SITTING_DOWN'; this._enterTimer = 0; }
+          } else if (s === 'SITTING_DOWN') {
+            const dur = 0.6;
+            const p = Math.min(t / dur, 1);
+            const ease = p * p * (3 - 2 * p);
+            const seatWorld = new THREE.Vector3(0, 0.6, 0.2).applyMatrix4(veh.matrixWorld);
+            char.position.lerpVectors(walkEnd, seatWorld, ease);
+            char.scale.setScalar(1 - ease * 0.45);
+            if (p < 0.5) {
+              _animPose(char, char.userData, 'sit_lean', p * 2);
+            } else {
+              _animPose(char, char.userData, 'sit_settle', (p - 0.5) * 2);
+            }
+            _vehBounce(veh, this._enterDoorSide, ease * 1.0);
+            const camAngle = veh.rotation.y + Math.PI;
+            const _vcamSit = VEHICLE_CAM[this.vehMode] || VEHICLE_CAM_DEFAULT;
+            const orbDist = 3.5 + ease * (_vcamSit.dist - 3.5);
+            const orbHeight = 2.5 + ease * (_vcamSit.height - 2.5);
+            this.camera.position.set(
+              veh.position.x + Math.sin(camAngle) * orbDist,
+              veh.position.y + orbHeight,
+              veh.position.z + Math.cos(camAngle) * orbDist
+            );
+            this.camera.lookAt(veh.position.x, veh.position.y + 1.0, veh.position.z);
+            if (p >= 1) { this._enterState = 'CLOSING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
+          } else if (s === 'CLOSING_DOOR') {
+            const dur = 0.3;
+            const p = Math.min(t / dur, 1);
+            const doorEase = p * p * (3 - 2 * p);
+            if (doorPivot) doorPivot.rotation.y = (1 - doorEase) * (Math.PI * 0.45);
+            _vehBounce(veh, this._enterDoorSide, (1 - p) * 1.0);
             if (p >= 1) {
               this.isPedestrian = false;
               char.position.set(0, 0.6, 0.2);
               char.scale.set(0.55, 0.55, 0.55);
-              _animPose(char, char.userData, 'reset', 1)
-              veh.add(char);
+              _animPose(char, char.userData, 'reset', 1);
+              if (char.parent !== veh) veh.add(char);
+              if (char.userData) {
+                if (char.userData.nametag) char.userData.nametag.visible = false;
+                if (char.userData.nametagGlow) char.userData.nametagGlow.visible = false;
+                if (char.userData.nametagGlowOuter) char.userData.nametagGlowOuter.visible = false;
+              }
               this.player = veh;
               this._camSnapped = false;
               this._camOverride = false;
               this._enterState = 'IDLE';
+              this.camYaw = 0; this.camPitch = 0;
+              this.targetCamYaw = 0; this.targetCamPitch = 0;
+              const _vcamEnter = VEHICLE_CAM[this.vehMode] || VEHICLE_CAM_DEFAULT;
+              this.camera.fov = _vcamEnter.baseFov;
+              this.camera.updateProjectionMatrix();
               const vt = this.vehMode || 'car';
               const rain = window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain);
               const hw = this.mapCfg && this.mapCfg.themeType === 'highway';
@@ -8560,7 +9987,9 @@ class Game {
               this.turn = rain ? vs.turn * 0.65 : vs.turn;
               this.fric = rain ? vs.fric + 0.025 : vs.fric;
               this._grip = rain ? vs.grip * 0.3 : vs.grip;
-              toast(this.seatbeltOn ? '🚗 Entered +10% Speed Bonus!' : '🚗 Entered Vehicle!', this.seatbeltOn ? '#27ae60' : '#00c851');
+              this.setGear('D');
+              this.speed = 0;
+              toast(this.seatbeltOn ? '🚗 Entered +10% Speed Bonus!' : '🚗 Entered Vehicle! (Gear: Drive)', this.seatbeltOn ? '#27ae60' : '#00c851');
             }
           }
         } else {
@@ -8622,6 +10051,12 @@ class Game {
               this._camSnapped = false;
               this._camOverride = false;
               this._enterState = 'IDLE';
+              // Reset camera angles for clean pedestrian view
+              this.camYaw = 0; this.camPitch = 0;
+              this.targetCamYaw = 0; this.targetCamPitch = 0;
+              // Reset FOV from vehicle speed/boost FOV back to default
+              this.camera.fov = 65;
+              this.camera.updateProjectionMatrix();
               this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
               this.setGear('N');
               toast('Exited Vehicle!', '#00c851');
@@ -8815,36 +10250,44 @@ class Game {
           const pitchOffset = (this.camPitch || 0) * 2;
           this._camTarget.set(
               this.player.position.x - Math.sin(rotY) * camDist + Math.sin(rotY) * lookAhead,
-              camHeight - pitchOffset,
+              this.player.position.y + camHeight - pitchOffset,
               this.player.position.z - Math.cos(rotY) * camDist + Math.cos(rotY) * lookAhead
           );
           // ── Camera collision: raycast from player to target ──
           if (this.obstacles && this.obstacles.length > 0) {
             const _pp = this.player.position;
-            this._camRayOrigin.set(_pp.x, _pp.y + (this.isPedestrian ? 1.6 : 1.0), _pp.z);
+            this._camRayOrigin.set(_pp.x, _pp.y + (this.isPedestrian ? 1.6 : 1.2), _pp.z);
             this._camRayVec.subVectors(this._camTarget, this._camRayOrigin);
             const rayLen = this._camRayVec.length();
-            if (rayLen > 0.5) {
+            if (rayLen > 1.0) {
               this._camRay.set(this._camRayOrigin, this._camRayVec.normalize());
               this._camRay.far = rayLen;
-              this._camRay.near = 0.3;
-              // Pre-filter: only test obstacles within ray range + margin
+              this._camRay.near = 1.5; // Avoid intersecting player vehicle chassis
               const _nearObs = [];
               const margin = 5;
               for (let i = 0; i < this.obstacles.length; i++) {
                 const ob = this.obstacles[i];
-                if (!ob || !ob.position) continue;
+                if (!ob || !ob.position || ob === this.playerVehicle || ob === this.playerCharacter || ob === this.player) continue;
                 const odx = ob.position.x - _pp.x, odz = ob.position.z - _pp.z;
                 if (odx * odx + odz * odz < (rayLen + margin) * (rayLen + margin)) _nearObs.push(ob);
               }
               if (_nearObs.length > 0) {
                 const hits = this._camRay.intersectObjects(_nearObs, true);
-                if (hits.length > 0 && hits[0].distance < rayLen) {
+                // Filter out any hit on player hierarchy
+                const validHits = hits.filter(h => {
+                  let p = h.object;
+                  while (p) {
+                    if (p === this.playerVehicle || p === this.playerCharacter || p === this.player) return false;
+                    p = p.parent;
+                  }
+                  return true;
+                });
+                if (validHits.length > 0 && validHits[0].distance < rayLen) {
                   const pullBack = 0.5;
                   const dx = this._camTarget.x - _pp.x;
                   const dz = this._camTarget.z - _pp.z;
                   const d = Math.sqrt(dx * dx + dz * dz) || 1;
-                  const safeDist = Math.max(1.5, hits[0].distance - pullBack);
+                  const safeDist = Math.max(3.0, validHits[0].distance - pullBack);
                   this._camTarget.set(
                     _pp.x + (dx / d) * safeDist,
                     this._camTarget.y,  // preserve intended height
@@ -8874,22 +10317,28 @@ class Game {
           const tiltRoll = this._camTilt || 0;
           this.camera.up.set(0, 1, 0);
           const lookAheadDist = this.isPedestrian ? 3 : _vcam.lookDist;
+          const targetLookY = this.player.position.y + (this.isPedestrian ? 1.4 : 1.0);
           this.camera.lookAt(
             this.player.position.x + Math.sin(rotY) * lookAheadDist + shakeX,
-            1.5 - pitchOffset * 0.3 + shakeY,
+            targetLookY - pitchOffset * 0.3 + shakeY,
             this.player.position.z + Math.cos(rotY) * lookAheadDist
           );
           // Camera tilt: subtle roll based on steering input
           if (tiltRoll !== 0) {
-            const _rollQ = new THREE.Quaternion();
-            _rollQ.setFromAxisAngle(new THREE.Vector3(0, 0, 1), tiltRoll * 0.5);
-            this.camera.quaternion.multiply(_rollQ);
+            if (!this._rollQ) this._rollQ = new THREE.Quaternion();
+            if (!this._rollAxis) this._rollAxis = new THREE.Vector3(0, 0, 1);
+            this._rollQ.setFromAxisAngle(this._rollAxis, tiltRoll * 0.5);
+            this.camera.quaternion.multiply(this._rollQ);
           }
 
-          // ── Speed-based FOV (per-vehicle base + range) ──
-          if (!this.isPedestrian && this.camera.fov !== undefined) {
-            const speedRatio = Math.min(Math.abs(this.speed) / (this.maxSpd || 1.1), 1);
-            this._camFovTarget = _vcam.baseFov + speedRatio * _vcam.fovRange + (this.boosting ? 5 : 0);
+          // ── Dynamic FOV (Speed-based for vehicles, standard 65 for pedestrians) ──
+          if (this.camera.fov !== undefined) {
+            if (!this.isPedestrian) {
+              const speedRatio = Math.min(Math.abs(this.speed) / (this.maxSpd || 1.1), 1);
+              this._camFovTarget = _vcam.baseFov + speedRatio * _vcam.fovRange + (this.boosting ? 5 : 0);
+            } else {
+              this._camFovTarget = 65;
+            }
             if (Math.abs(this.camera.fov - this._camFovTarget) > 0.15) {
               this.camera.fov += (this._camFovTarget - this.camera.fov) * Math.min(1, dt * 4);
               this.camera.updateProjectionMatrix();
@@ -8982,7 +10431,7 @@ class Game {
         }
 
         // ── Tone mapping exposure ──
-        if (this.renderCore.renderer) this.renderCore.renderer.toneMappingExposure = this._dnLerp(0.5, 0.9, sunElev);
+        if (this.renderCore.renderer) this.renderCore.renderer.toneMappingExposure = this._dnLerp(0.42, 0.62, sunElev);
 
         // ── Street lights ──
         const slIntensity = sunElev < 0.3 ? this._dnLerp(0.8, 0, sunElev / 0.3) : 0;
@@ -9023,7 +10472,37 @@ class Game {
         cfg.isNight = nightOn;
       }
       _dnLerp(a, b, t) { return a + (b - a) * Math.min(1, Math.max(0, t)); }
+
+      _updateObjectiveHUD() {
+        const objCard = document.getElementById('objective-overlay');
+        if (!objCard) return;
+
+        const isCar = !this.isPedestrian;
+        const curSig = this.sigs && this.sigs[0];
+        const isGreen = curSig ? (curSig.userData?.st === 'green') : true;
+        const activeCp = this.cps ? this.cps.find(c => !c.userData?.hit) : null;
+        const distToGoal = (activeCp && this.player) ? Math.round(this.player.position.distanceTo(activeCp.position)) : 0;
+        const hits = this.hits || 0;
+        const totalCps = (this.cps && this.cps.length) ? this.cps.length : 1;
+
+        let step1Html = isCar ? '<span style="color:#00e676;">✔ Step 1: In Vehicle [F]</span>' : '<span style="color:#facc15;font-weight:700;">➔ Step 1: Press [F] to enter Car</span>';
+        let step2Html = (isCar && !isGreen) ? '<span style="color:#facc15;font-weight:700;">➔ Step 2: Stop at Red Signal & Wait</span>' : (isGreen ? '<span style="color:#00e676;">✔ Step 2: Signal Green</span>' : '<span style="color:#64748b;">Step 2: Red Signal</span>');
+        let step3Html = (isCar && isGreen)
+          ? `<span style="color:#38bdf8;font-weight:700;">➔ Step 3: Drive to Destination (${distToGoal}m) [${hits}/${totalCps}]</span>`
+          : `<span style="color:#64748b;">Step 3: Reach Destination</span>`;
+
+        objCard.innerHTML = `
+          <div style="font-size:0.75rem;font-weight:800;letter-spacing:1px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;">CURRENT MISSION OBJECTIVES</div>
+          <div style="font-size:0.85rem;line-height:1.4;display:flex;flex-direction:column;gap:4px;">
+            <div>${step1Html}</div>
+            <div>${step2Html}</div>
+            <div>${step3Html}</div>
+          </div>
+        `;
+      }
+
       _uhud() {
+        this._updateObjectiveHUD();
         if (!this.player) return;
         const k = Math.round(Math.abs(this.speed) * 100);
         
@@ -9074,6 +10553,11 @@ class Game {
           // Contextual: show gear only when driving
           const gearPanel = document.getElementById('gp');
           if (gearPanel) gearPanel.style.display = this.isPedestrian ? 'none' : 'flex';
+          const speedCtrlPanel = document.getElementById('speed-ctrl');
+          if (speedCtrlPanel) speedCtrlPanel.style.display = this.isPedestrian ? 'none' : 'flex';
+          // Update speed control HUD badges
+          if (!this.isPedestrian && this._updateSpeedCtrlHUD) this._updateSpeedCtrlHUD();
+
           const gspdEl = this.dom['gspd'];
            if (gspdEl) {
              gspdEl.textContent = k;
@@ -9206,143 +10690,172 @@ class Game {
       _ummap() {
         if (!this.player || !this.player.position) return;
         const mc = this.dom['mmc']; if (!mc || !this.playing) return; mc.classList.add('on');
+        const W = mc.width || 180, H = mc.height || 180, cx = W / 2, cy = H / 2;
+        const ctx = mc.getContext('2d');
+        if (!ctx) return;
 
-        // Compass strip — heading plus distance/direction to the next checkpoint. The corner
-        // minimap already has a small heading line, but this is the dedicated top-of-screen
-        // indicator that was asked for early on and never built.
-        const compassEl = document.getElementById('compass-strip');
-        if (compassEl) {
-          compassEl.style.display = 'flex';
-          const headingSrc = this.isPedestrian ? this.player.rotation.y : (this.playerVehicle ? this.playerVehicle.rotation.y : this.player.rotation.y);
-          let deg = (headingSrc * 180 / Math.PI) % 360;
-          if (deg < 0) deg += 360;
-          const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-          const heading = dirs[Math.round(deg / 45) % 8];
-          const hEl = document.getElementById('compass-heading');
-          if (hEl) hEl.textContent = heading;
-          const arrowEl = document.getElementById('compass-arrow');
-          const distEl = document.getElementById('compass-dist');
-          if (this.cps && this.cps.length > 0 && this.cps[0]) {
-            const cp = this.cps[0];
-            const ddx = cp.position.x - this.player.position.x, ddz = cp.position.z - this.player.position.z;
-            const dist = Math.sqrt(ddx * ddx + ddz * ddz);
-            const targetAngle = Math.atan2(ddx, ddz);
-            const relAngle = targetAngle - headingSrc;
-            if (arrowEl) arrowEl.style.transform = `rotate(${relAngle}rad)`;
-            if (distEl) distEl.textContent = dist < 1000 ? `${Math.round(dist)}m` : `${(dist / 1000).toFixed(1)}km`;
-          } else if (distEl) {
-            distEl.textContent = '';
-          }
-        }
+        ctx.clearRect(0, 0, W, H);
+        // Radar circular clipping
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, cx - 2, 0, Math.PI * 2);
+        ctx.clip();
 
-        // Landmark discovery — a one-time "you've arrived somewhere real" moment for the
-        // monuments that already exist in the scene but were purely decorative background
-        // dressing until now.
-        if (this._landmarks && this._landmarks.length) {
-          this._landmarks.forEach((lm) => {
-            if (lm.discovered) return;
-            const ldx = lm.x - this.player.position.x, ldz = lm.z - this.player.position.z;
-            if (ldx * ldx + ldz * ldz < 2500) { // within 50 units
-              lm.discovered = true;
-              toast(`🏛️ You've reached ${lm.name}`, '#d97706');
-            }
-          });
-        }
+        // Dark slate radar background
+        ctx.fillStyle = '#0a0f18';
+        ctx.fillRect(0, 0, W, H);
 
-        const ctx = mc.getContext('2d'); const W = 112, H = 112, cx = W / 2, cy = H / 2;
+        // Radar grid concentric range rings
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 1;
+        [0.35, 0.70].forEach(rRatio => {
+          ctx.beginPath();
+          ctx.arc(cx, cy, (cx - 2) * rRatio, 0, Math.PI * 2);
+          ctx.stroke();
+        });
 
-        ctx.fillStyle = '#090f16'; ctx.fillRect(0, 0, W, H);
+        // World translation centered on player
         ctx.save();
         ctx.translate(cx, cy);
-        const scale = 0.6;
+        const scale = 0.55;
         ctx.scale(scale, scale);
-        ctx.translate(-this.player.position.x, -this.player.position.z);
+        const px = this.player.position.x, pz = this.player.position.z;
+        ctx.translate(-px, -pz);
 
-        // Plot absolute dynamic road configuration vectors
-        ctx.fillStyle = '#1e222a';
-        this.roadSegments.forEach(r => {
-          if (r.type === 'v') ctx.fillRect(r.x - 6, -600, 12, 1200);
-          else ctx.fillRect(-600, r.z - 6, 1200, 12);
-        });
-
-        // GPS Route line to checkpoint (when phone GPS is on)
-        if (this.phoneGpsOn && this.cps && this.cps.length > 0) {
-            const nextCP = this.cps[0];
-            if (nextCP) {
-                ctx.strokeStyle = '#5dade2';
-                ctx.lineWidth = 4;
-                ctx.setLineDash([8, 6]);
-                ctx.beginPath();
-                ctx.moveTo(this.player.position.x, this.player.position.z);
-                ctx.lineTo(nextCP.position.x, nextCP.position.z);
-                ctx.stroke();
-                ctx.setLineDash([]);
-            }
-        }
-
-        // Checkpoints
-        this.cps.forEach((cp, i) => {
-            ctx.fillStyle = i === 0 ? '#00c851' : 'rgba(0,200,81,0.4)';
-            ctx.beginPath(); ctx.arc(cp.position.x, cp.position.z, 4, 0, Math.PI * 2); ctx.fill();
-        });
-
-        // Track dynamic real-time colors for oncoming signals
-        this.sigs.forEach(s => {
-          ctx.fillStyle = s.userData.st === 'red' ? '#ff3b30' : s.userData.st === 'green' ? '#00c851' : '#ffd54a';
-          ctx.beginPath(); ctx.arc(s.position.x, s.position.z, 5, 0, Math.PI * 2); ctx.fill();
-        });
-
-        // Draw NPC Traffic Tracking Dots
-        ctx.fillStyle = '#3498db';
-        this.npcs.forEach(n => {
-          ctx.fillRect(n.position.x - 2.5, n.position.z - 2.5, 5, 5);
-        });
-
-        // Draw Pedestrians
-        if (this.peds) {
-            ctx.fillStyle = '#e91e63';
-            this.peds.forEach(p => {
-                ctx.fillRect(p.position.x - 1.5, p.position.z - 1.5, 3, 3);
-            });
-        }
-
-        // Landmark markers — small gold diamond, distinct from NPCs/checkpoints
-        if (this._landmarks && this._landmarks.length) {
-          ctx.fillStyle = '#d97706';
-          this._landmarks.forEach((lm) => {
-            ctx.save();
-            ctx.translate(lm.x, lm.z);
-            ctx.rotate(Math.PI / 4);
-            ctx.fillRect(-4, -4, 8, 8);
-            ctx.restore();
+        // 1. Draw Roads (from RoadGraph if available, fallback to roadSegments/mapCfg)
+        if (this.roadGraph && this.roadGraph.edges && this.roadGraph.edges.length > 0) {
+          ctx.strokeStyle = '#222836';
+          ctx.lineCap = 'round';
+          this.roadGraph.edges.forEach(e => {
+            const n0 = e.nodes[0], n1 = e.nodes[1];
+            if (!n0 || !n1) return;
+            const w = (e.lanes || 2) * 6;
+            ctx.lineWidth = w;
+            ctx.beginPath();
+            ctx.moveTo(n0.position.x, n0.position.z);
+            ctx.lineTo(n1.position.x, n1.position.z);
+            ctx.stroke();
+          });
+        } else if (this.roadSegments && this.roadSegments.length > 0) {
+          ctx.fillStyle = '#222836';
+          this.roadSegments.forEach(r => {
+            if (r.type === 'v') ctx.fillRect(r.x - 7, -800, 14, 1600);
+            else ctx.fillRect(-800, r.z - 7, 1600, 14);
+          });
+        } else if (this.mapCfg && this.mapCfg.roads) {
+          ctx.fillStyle = '#222836';
+          this.mapCfg.roads.forEach(r => {
+            const w = r.width || 12;
+            if (r.type === 'v') ctx.fillRect(r.x - w/2, Math.min(r.z1, r.z2), w, Math.abs(r.z2 - r.z1));
+            else ctx.fillRect(Math.min(r.x1, r.x2), r.z - w/2, Math.abs(r.x2 - r.x1), w);
           });
         }
 
-        // Draw Player
-        ctx.fillStyle = '#ffd54a';
-        ctx.beginPath(); ctx.arc(this.player.position.x, this.player.position.z, 5, 0, Math.PI * 2); ctx.fill();
-        // Player direction indicator
-        if (!this.isPedestrian && this.playerVehicle) {
-            const angle = this.playerVehicle.rotation.y;
-            ctx.strokeStyle = '#ffd54a';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(this.player.position.x, this.player.position.z);
-            ctx.lineTo(this.player.position.x + Math.sin(angle) * 12, this.player.position.z + Math.cos(angle) * 12);
-            ctx.stroke();
+        // 2. Active GPS Route Line
+        const activeCP = this.cps && this.cps.length ? this.cps.find(c => !c.userData?.hit && !c.cleared) : null;
+        if (activeCP) {
+          ctx.strokeStyle = '#00f0cc';
+          ctx.lineWidth = 3.5;
+          ctx.setLineDash([6, 5]);
+          ctx.beginPath();
+          ctx.moveTo(px, pz);
+          ctx.lineTo(activeCP.position.x, activeCP.position.z);
+          ctx.stroke();
+          ctx.setLineDash([]);
         }
+
+        // 3. Traffic Signals (Red/Yellow/Green status dots)
+        this.sigs.forEach(s => {
+          const st = s.userData?.st || 'red';
+          ctx.fillStyle = st === 'red' ? '#ff3b30' : st === 'green' ? '#00e676' : '#ffd54a';
+          ctx.beginPath();
+          ctx.arc(s.position.x, s.position.z, 4, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // 4. Checkpoints / Objectives (Pulsing Target Ring)
+        const pulse = (Math.sin((this.timer || 0) * 4) + 1) / 2;
+        this.cps.forEach((cp, i) => {
+          const isNext = (cp === activeCP) || (!activeCP && i === 0);
+          if (isNext) {
+            ctx.fillStyle = 'rgba(0, 240, 204, ' + (0.25 + 0.25 * pulse) + ')';
+            ctx.beginPath();
+            ctx.arc(cp.position.x, cp.position.z, 8 + pulse * 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#00f0cc';
+            ctx.beginPath();
+            ctx.arc(cp.position.x, cp.position.z, 5, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (!cp.cleared && !cp.userData?.hit) {
+            ctx.fillStyle = 'rgba(255, 213, 74, 0.7)';
+            ctx.beginPath();
+            ctx.arc(cp.position.x, cp.position.z, 4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+
+        // 5. NPC Vehicles (Color-coded dots)
+        this.npcs.forEach(n => {
+          const type = n.userData?.npcType || 'car';
+          if (type === 'auto' || type === 'auto_yellow') ctx.fillStyle = '#facc15';
+          else if (type === 'bike' || type === 'splendor' || type === 'activa' || type === 'ktm' || type === 'cycle') ctx.fillStyle = '#a855f7';
+          else if (type === 'bus' || type === 'truck') ctx.fillStyle = '#fb923c';
+          else if (type === 'police' || n.userData?.isRuleBreaker) ctx.fillStyle = '#ef4444';
+          else if (type === 'ambulance') ctx.fillStyle = '#f43f5e';
+          else ctx.fillStyle = '#38bdf8';
+
+          const rot = n.rotation?.y || 0;
+          ctx.save();
+          ctx.translate(n.position.x, n.position.z);
+          ctx.rotate(rot);
+          ctx.fillRect(-2.5, -4, 5, 8);
+          ctx.restore();
+        });
+
+        // 6. Pedestrians (Tiny pink dots)
+        if (this.peds) {
+          ctx.fillStyle = '#ec4899';
+          this.peds.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.position.x, p.position.z, 2, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        }
+
+        // 7. Player Indicator (Bright Directional Arrow)
+        const pRot = this.isPedestrian ? (this.player.rotation?.y || 0) : (this.playerVehicle ? this.playerVehicle.rotation.y : this.player.rotation.y);
+        ctx.save();
+        ctx.translate(px, pz);
+        ctx.rotate(pRot);
+
+        ctx.fillStyle = '#ffd54a';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, -9);
+        ctx.lineTo(6, 6);
+        ctx.lineTo(0, 3);
+        ctx.lineTo(-6, 6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
         ctx.restore();
 
-        // Minimap Borders
-        ctx.strokeStyle = 'rgba(255,255,255,.15)'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(cx, cy, cx - 2, 0, Math.PI * 2); ctx.stroke();
+        ctx.restore(); // Restore world transform
+        ctx.restore(); // Restore clip
 
-        // GPS label
-        if (this.phoneGpsOn) {
-            ctx.fillStyle = '#5dade2';
-            ctx.font = 'bold 9px Inter';
-            ctx.fillText('GPS', 4, 106);
-        }
+        // Glassmorphic Bezel & Cardinal North (N) Indicator
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(cx, cy, cx - 2, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('N', cx, 14);
       }
 
       _buildLowPolyCity() {
@@ -9506,3 +11019,5 @@ class Game {
         setTimeout(() => { btn.innerHTML = origText; btn.style.pointerEvents = "auto"; }, 3000);
       }
     };
+
+    window.Game = Game;

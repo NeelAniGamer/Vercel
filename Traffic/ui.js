@@ -1,14 +1,30 @@
 let _tt = null
-function toast(msg, col = '#ffd54a') {
+function toast(msg, col = '#ffd54a', duration = 3000) {
   const t = document.getElementById('toast'),
     ti = document.getElementById('ti')
+  if (!t || !ti) return
   ti.textContent = msg
-  ti.style.background = col
+  t.style.borderColor = col
+  t.style.boxShadow = `0 12px 36px rgba(0, 0, 0, 0.85), 0 0 24px ${col}55`
   t.classList.add('on')
   clearTimeout(_tt)
-  _tt = setTimeout(() => t.classList.remove('on'), 2500)
+  _tt = setTimeout(() => t.classList.remove('on'), duration)
 }
 const mob = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+
+function save() {
+  try {
+    const sObj = window.S || (typeof S !== 'undefined' ? S : null)
+    if (sObj) {
+      localStorage.setItem('mth4', JSON.stringify(sObj))
+      localStorage.setItem('traffic_save', JSON.stringify(sObj))
+      if (window.supabaseClient && window.colUser) {
+        window.supabaseClient.auth.updateUser({ data: { progress: sObj } }).catch(() => {})
+      }
+    }
+  } catch (e) {}
+}
+window.save = save
 
 
 window.sfx = Object.assign(window.sfx || {}, {
@@ -119,7 +135,7 @@ const CORRECTIVE_QUIZ = {
   'RED_LIGHT_VIOLATION': { q: 'Corrective Check: What is the mandatory action when a signal turns red?', o: ['Stop completely before the stop line', 'Slow down and proceed cautiously', 'Stop only if cars are coming', 'Flash headlights and pass quickly'], a: 0 }
 };
 
-window.ui = Object.assign(window.ui || {}, {
+var ui = window.ui = Object.assign(window.ui || {}, {
   cur: null,
   _sylLv: null,
   cq: [],
@@ -186,10 +202,17 @@ window.ui = Object.assign(window.ui || {}, {
       try { localStorage.setItem('mth4', JSON.stringify(s)) } catch (e) {}
     }
 
-    if (typeof save === 'undefined') {
-      window.save = async () => {
-        try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
-      }
+    var save = window.save = async () => {
+      try {
+        const sObj = window.S || (typeof S !== 'undefined' ? S : null)
+        if (sObj) {
+          localStorage.setItem('mth4', JSON.stringify(sObj))
+          localStorage.setItem('traffic_save', JSON.stringify(sObj))
+          if (window.supabaseClient && window.colUser) {
+            window.supabaseClient.auth.updateUser({ data: { progress: sObj } }).catch(() => {})
+          }
+        }
+      } catch (e) {}
     }
     try {
       if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
@@ -214,6 +237,7 @@ window.ui = Object.assign(window.ui || {}, {
     })
 
     this._buildSylList()
+    this.updateDailyStreak()
 
     const cnameEl = document.getElementById('cname')
     if (cnameEl) {
@@ -622,16 +646,55 @@ window.ui = Object.assign(window.ui || {}, {
           frag = document.createDocumentFragment()
           curGrid = grid
         }
-        const done = S.comp[lv.id] && (S.comp[lv.id].score > 0 || S.comp[lv.id].finalQuiz || S.comp[lv.id].completed || S.comp[lv.id] === true)
-        const started = !done && ((S.started && S.started[lv.id]) || (S.sylViewed && S.sylViewed[lv.id] && S.sylViewed[lv.id].length > 0))
+        const comp = S.comp && S.comp[lv.id]
+        const done = comp && (comp.score > 0 || comp.finalQuiz || comp.completed || comp === true || (comp.modes && Object.keys(comp.modes).length > 0))
+        const started = !done && ((S.started && S.started[lv.id]) || (S.sylViewed && S.sylViewed[lv.id] && S.sylViewed[lv.id].length > 0) || (S.comp && S.comp[lv.id]))
         const statusClass = done ? ' syl-done' : started ? ' syl-started' : ''
-        const div = document.createElement('div')
-        div.className = 'syl-item' + statusClass
+
+        let masteryPill = ''
+        if (done) {
+          const vio = comp.vio !== undefined ? comp.vio : 0
+          const score = comp.score || 0
+          if (vio === 0 && score >= 90) {
+            masteryPill = '<span class="syl-mastery-pill plat" style="background:rgba(184,155,255,0.15);color:#b89bff;border:1px solid rgba(184,155,255,0.3);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:6px;" title="Platinum Mastery">💎 Platinum</span>'
+          } else if (vio === 0) {
+            masteryPill = '<span class="syl-mastery-pill gold" style="background:rgba(255,213,74,0.15);color:#ffd54a;border:1px solid rgba(255,213,74,0.3);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:6px;" title="Gold Mastery">🥇 Gold</span>'
+          } else if (vio <= 1) {
+            masteryPill = '<span class="syl-mastery-pill silver" style="background:rgba(192,192,192,0.15);color:#e2e8f0;border:1px solid rgba(192,192,192,0.3);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:6px;" title="Silver Mastery">🥈 Silver</span>'
+          } else {
+            masteryPill = '<span class="syl-mastery-pill bronze" style="background:rgba(205,127,50,0.15);color:#cd7f32;border:1px solid rgba(205,127,50,0.3);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:6px;" title="Bronze Mastery">🥉 Bronze</span>'
+          }
+        }
+
         const badgeText = done ? '✓ Completed' : started ? '● Started' : '○ Not Started'
-        const badgeColor = done ? '#00f0cc' : started ? '#5ed4f5' : 'rgba(184,155,255,0.5)'
         const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')
-        div.innerHTML = `<div class="syl-ck"></div><div class="syl-top"><span class="syl-icon">${lv.icon}</span><span class="syl-num">Lesson ${lv.id}</span></div><div class="syl-info"><div class="syl-lbl">${cleanName}</div><div class="syl-sub">${lv.ds}</div><div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div></div>`
-        div.onclick = () => ui.showBriefing(lv.id)
+        const statusType = done ? 'done' : (started ? 'started' : 'locked')
+
+        const div = document.createElement('div')
+        div.className = 'level-grid-card' + statusClass
+        div.innerHTML = `
+          <div class="lgc-top">
+            <div class="lgc-pill-wrap">
+              <span class="lgc-icon">${lv.icon || '🚦'}</span>
+              <span class="lgc-lesson-num">Lesson ${lv.id}</span>
+            </div>
+            <div class="lgc-status-indicator ${statusType}">
+              ${done ? '✓' : (started ? '●' : '○')}
+            </div>
+          </div>
+          <div class="lgc-body">
+            <div class="lgc-title">${cleanName}</div>
+            <div class="lgc-desc">${lv.ds || ''}</div>
+          </div>
+          <div class="lgc-footer">
+            <div class="lgc-badges">
+              <span class="lgc-status-badge ${statusType}">${badgeText}</span>
+              ${masteryPill}
+            </div>
+            <div class="lgc-action-btn">${done ? 'Review ↻' : 'Start →'}</div>
+          </div>
+        `
+        div.onclick = () => (window.ui || this).showBriefing(lv.id)
         frag.appendChild(div)
       }
       if (curGrid) curGrid.appendChild(frag)
@@ -930,30 +993,191 @@ _applyAgeTier() {
     }
     if (certNum) certNum.innerText = completedLevels >= totalLevels ? S.certId : '---'
   },
+  getDriverRank(score) {
+    const totalScore = score !== undefined ? score : (S.total || 0)
+    const RANKS = [
+      { min: 0, id: 'learner', name: 'Learner', icon: '🔰', color: '#94a3b8', max: 499 },
+      { min: 500, id: 'cadet', name: 'Cadet', icon: '🚗', color: '#5ed4f5', max: 1999 },
+      { min: 2000, id: 'junior', name: 'Junior Driver', icon: '🏎️', color: '#34d399', max: 4999 },
+      { min: 5000, id: 'captain', name: 'Road Captain', icon: '🛡️', color: '#ffd54a', max: 9999 },
+      { min: 10000, id: 'expert', name: 'Traffic Expert', icon: '⭐', color: '#a855f7', max: 19999 },
+      { min: 20000, id: 'master', name: 'Master Instructor', icon: '👑', color: '#f43f5e', max: Infinity }
+    ]
+    let current = RANKS[0]
+    let next = RANKS[1]
+    for (let i = 0; i < RANKS.length; i++) {
+      if (totalScore >= RANKS[i].min) {
+        current = RANKS[i]
+        next = RANKS[i + 1] || null
+      }
+    }
+    const progress = next
+      ? Math.min(100, Math.round(((totalScore - current.min) / (next.min - current.min)) * 100))
+      : 100
+    const ptsToNext = next ? next.min - totalScore : 0
+    return { current, next, progress, ptsToNext, totalScore }
+  },
+
+  updateDailyStreak() {
+    if (!S.streak) S.streak = { current: 0, best: 0, lastDate: null, freezes: 1 }
+    const today = new Date().toISOString().slice(0, 10)
+    const last = S.streak.lastDate
+
+    if (!last) {
+      S.streak.current = 1
+      S.streak.best = Math.max(1, S.streak.best || 1)
+      S.streak.lastDate = today
+      save()
+    } else if (last !== today) {
+      const lastDate = new Date(last)
+      const curDate = new Date(today)
+      const diffDays = Math.round((curDate - lastDate) / (1000 * 60 * 60 * 24))
+
+      if (diffDays === 1) {
+        S.streak.current = (S.streak.current || 0) + 1
+        S.streak.best = Math.max(S.streak.current, S.streak.best || 0)
+        S.streak.lastDate = today
+        if (S.streak.current % 7 === 0) {
+          S.streak.freezes = (S.streak.freezes || 0) + 1
+          toast('🛡️ 7-Day Milestone! +1 Streak Freeze Token Earned!', '#ffd54a')
+        }
+        save()
+      } else if (diffDays === 2 && (S.streak.freezes > 0 || S.streakShield > 0)) {
+        if (S.streak.freezes > 0) S.streak.freezes--
+        else if (S.streakShield > 0) S.streakShield--
+        S.streak.lastDate = today
+        toast(`🛡️ Streak Freeze saved your ${S.streak.current}-day streak!`, '#5ed4f5')
+        save()
+      } else if (diffDays > 1) {
+        S.streak.current = 1
+        S.streak.lastDate = today
+        save()
+      }
+    }
+    this.renderStreakCounters()
+  },
+
+  renderStreakCounters() {
+    const streakCount = S.streak?.current || 0
+    const freezes = S.streak?.freezes || 0
+    const streakEls = document.querySelectorAll('.nav-streak-counter, #br-streak, #nav-streak')
+    streakEls.forEach((el) => {
+      el.innerHTML = `🔥 ${streakCount} <span style="font-size:0.75rem;opacity:0.8;">(${freezes} 🛡️)</span>`
+      el.title = `Daily Streak: ${streakCount} Days Active | ${freezes} Streak Freeze Tokens Available`
+    })
+  },
+
   showBadges() {
     this.show('screen-badges', { direction: 'forward' })
 
     const statsBody = document.getElementById('stats-body')
     if (statsBody) {
+      const rankInfo = this.getDriverRank()
+      const streak = S.streak || { current: 0, best: 0, freezes: 1 }
+      const doneCount = S.comp ? Object.keys(S.comp).length : 0
+      const totalLevels = typeof LVS !== 'undefined' ? LVS.length : 55
       const startedCount = S.started ? Object.keys(S.started).length : 0
+
+      // Calculate mastery stats
+      let platinumCount = 0,
+        goldCount = 0,
+        silverCount = 0,
+        bronzeCount = 0
+      if (S.comp) {
+        Object.values(S.comp).forEach((c) => {
+          if (c && (c.score > 0 || c.completed || c.finalQuiz)) {
+            const vio = c.vio !== undefined ? c.vio : 0
+            const score = c.score || 0
+            if (vio === 0 && score >= 90) platinumCount++
+            else if (vio === 0) goldCount++
+            else if (vio <= 1) silverCount++
+            else bronzeCount++
+          }
+        })
+      }
+
       statsBody.innerHTML = `
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">COMPLETED LEVELS</div>
-                    <div style="font-weight:700;color:var(--accent);">${Object.keys(S.comp).length}/52</div>
+        <!-- Driver Rank Hero Card -->
+        <div style="background: linear-gradient(135deg, rgba(17,24,39,0.95), rgba(7,10,20,0.95)); border: 2px solid ${rankInfo.current.color}; border-radius: 18px; padding: 20px; margin-bottom: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.4);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 2.5rem;">${rankInfo.current.icon}</span>
+              <div>
+                <div style="font-size: 0.7rem; font-weight: 800; color: ${rankInfo.current.color}; text-transform: uppercase; letter-spacing: 0.1em;">Official Driver Rank</div>
+                <div style="font-size: 1.4rem; font-weight: 800; color: #fff; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em;">${rankInfo.current.name}</div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.2rem; font-weight: 800; color: #ffd54a;">${rankInfo.totalScore.toLocaleString()} XP</div>
+              <div style="font-size: 0.72rem; color: #8891aa;">${rankInfo.next ? rankInfo.ptsToNext.toLocaleString() + ' XP to ' + rankInfo.next.name : 'Max Tier Reached!'}</div>
+            </div>
+          </div>
+          <!-- Rank Progress Bar -->
+          <div style="height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; position: relative;">
+            <div style="height: 100%; width: ${rankInfo.progress}%; background: linear-gradient(90deg, ${rankInfo.current.color}, #00f0cc); border-radius: 4px; transition: width 0.6s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Mastery Tiers Summary -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px;">
+          <div style="background: rgba(184,155,255,0.08); border: 1px solid rgba(184,155,255,0.25); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 1.4rem;">💎</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #b89bff; margin-top: 4px;">${platinumCount}</div>
+            <div style="font-size: 0.65rem; color: #8891aa; text-transform: uppercase; font-weight: 700;">Platinum</div>
+          </div>
+          <div style="background: rgba(255,213,74,0.08); border: 1px solid rgba(255,213,74,0.25); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 1.4rem;">🥇</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #ffd54a; margin-top: 4px;">${goldCount}</div>
+            <div style="font-size: 0.65rem; color: #8891aa; text-transform: uppercase; font-weight: 700;">Gold</div>
+          </div>
+          <div style="background: rgba(192,192,192,0.08); border: 1px solid rgba(192,192,192,0.25); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 1.4rem;">🥈</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #e2e8f0; margin-top: 4px;">${silverCount}</div>
+            <div style="font-size: 0.65rem; color: #8891aa; text-transform: uppercase; font-weight: 700;">Silver</div>
+          </div>
+          <div style="background: rgba(205,127,50,0.08); border: 1px solid rgba(205,127,50,0.25); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 1.4rem;">🥉</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #cd7f32; margin-top: 4px;">${bronzeCount}</div>
+            <div style="font-size: 0.65rem; color: #8891aa; text-transform: uppercase; font-weight: 700;">Bronze</div>
+          </div>
+        </div>
+
+        <!-- Key Driver Metrics -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+            <div style="color: #8891aa; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Daily Streak</div>
+            <div style="font-size: 1.2rem; font-weight: 800; color: #ffd54a; margin-top: 4px;">🔥 ${streak.current} Days <span style="font-size:0.75rem; color:#5ed4f5; font-weight:600;">(${streak.freezes} 🛡️)</span></div>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+            <div style="color: #8891aa; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Wallet Balance</div>
+            <div style="font-size: 1.2rem; font-weight: 800; color: #34d399; margin-top: 4px;">₹${(S.wallet || 0).toLocaleString('en-IN')}</div>
+          </div>
+        </div>
+      `
+    }
+
+    const pledgeBox = document.getElementById('profile-pledge-box')
+    if (pledgeBox) {
+      const hasPledge = S.pledges && S.pledges['general']
+      const pledge = S.pledges ? S.pledges['general'] : null
+      pledgeBox.innerHTML = `
+        <div style="background: linear-gradient(135deg, rgba(94,212,245,0.08), rgba(242,184,75,0.08)); border: 1px solid rgba(242,184,75,0.3); border-radius: 16px; padding: 20px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="font-size: 2.2rem;">🤝</div>
+              <div>
+                <div style="font-weight: 700; font-size: 1.1rem; color: var(--text, #e8e3d8);">Civic Driver's Safety Pledge</div>
+                <div style="font-size: 0.82rem; color: var(--muted, #8891aa); margin-top: 2px;">
+                  ${hasPledge ? `Active Oath: "If ${pledge.if} → Then ${pledge.then}"` : 'Sign your official implementation commitment to practice safe driving.'}
                 </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">STARTED LEVELS</div>
-                    <div style="font-weight:700;color:#0284c7;">${startedCount}/52</div>
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">TOTAL WALLET</div>
-                    <div style="font-weight:700;color:#059669;">₹${S.wallet || 0}</div>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">TOTAL BADGES</div>
-                    <div style="font-weight:700;color:#7c3aed;">${S.badges ? S.badges.length : 0}</div>
-                </div>
-            `
+              </div>
+            </div>
+            <button class="btn btn-p" onclick="ui.showCommitmentPledge('general')" style="padding: 8px 20px; font-size: 0.85rem; font-weight: 700;">
+              ${hasPledge ? '✏️ Update Pledge' : '✍️ Sign Driver Pledge'}
+            </button>
+          </div>
+        </div>
+      `
     }
 
     const bgrid = document.getElementById('bgrid')
@@ -1212,10 +1436,10 @@ if (un) {
 
     const streakEl = document.getElementById('br-streak')
     if (streakEl) {
-      const isActive = S.streak.current > 0
+      const isActive = S.streak && S.streak.current > 0
       streakEl.innerHTML = isActive 
-        ? `🔥 ${S.streak.current} Day Streak ${S.streak.current >= 3 ? '— Don\'t break it!' : ''}`
-        : '🔥 No active streak — Start today!'
+        ? `🔥 ${S.streak.current} Day Streak` 
+        : '🔥 0 Day Streak'
       streakEl.style.background = isActive 
         ? 'linear-gradient(90deg, var(--signal), var(--accent))'
         : 'linear-gradient(90deg, var(--muted), var(--muted2))'
@@ -1224,31 +1448,39 @@ if (un) {
 
     this._initModeTabs(lv)
     
+    const isCompleted = S.comp && S.comp[lv.id] && (S.comp[lv.id].score > 0 || S.comp[lv.id].finalQuiz || S.comp[lv.id].completed || S.comp[lv.id] === true || (S.comp[lv.id].modes && Object.keys(S.comp[lv.id].modes).length > 0))
 
-    this._renderModuleChecklist(lv)
-    
-    const items = [
-      { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
-      ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
-      { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' },
-      { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' },
-      { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' },
-      { id: 'pledge', icon: '🤝', label: 'Pledge', sub: 'Commitment if-then plan' }
-    ]
+    const progFill = document.getElementById('br-prog-fill')
+    const progLabel = document.getElementById('br-prog-label')
+    if (progFill && progLabel) {
+      if (isCompleted) {
+        progFill.style.width = '100%'
+        progLabel.textContent = '100% Complete (Mastered)'
+      } else {
+        const viewedCount = (S.sylViewed && S.sylViewed[lv.id]) ? S.sylViewed[lv.id].length : 0
+        const pct = Math.min(90, Math.round((viewedCount / 4) * 100))
+        progFill.style.width = pct + '%'
+        progLabel.textContent = pct > 0 ? `${pct}% Complete` : '0% Complete'
+      }
+    }
+
+    const items = this._getSyllabusForMode(lv, 'learn')
     this._sylItems = items
-    this._sylViewed = new Set()
+    this._sylViewed = new Set((S.sylViewed && S.sylViewed[lv.id]) ? S.sylViewed[lv.id] : [])
     this._sylLv = lv
     this._lawLang = S.language === 'hi' ? 'hi' : 'en'
     const list = document.getElementById('br-syllabus')
-    list.innerHTML = ''
-    items.forEach((it) => {
-      const el = document.createElement('div')
-      el.className = 'syl-item'
-      el.id = 'syl-' + it.id
-      el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
-      el.onclick = () => this._selSyl(it.id)
-      list.appendChild(el)
-    })
+    if (list) {
+      list.innerHTML = ''
+      items.forEach((it) => {
+        const el = document.createElement('div')
+        el.className = 'syl-item' + (isCompleted || this._sylViewed.has(it.id) ? ' syl-done' : '')
+        el.id = 'syl-' + it.id
+        el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
+        el.onclick = () => this._selSyl(it.id)
+        list.appendChild(el)
+      })
+    }
     this._selSyl('intro')
     this.show('screen-briefing', { direction: 'forward' })
   },
@@ -1261,7 +1493,10 @@ if (un) {
         tab.style.color = 'var(--text)'
         tab.style.background = 'var(--panel)'
         this._currentModeTab = tab.dataset.mode
-        this._updateBriefingForMode(lv, tab.dataset.mode)
+        if (tab.dataset.mode === 'learn') this._selSyl('intro')
+        else if (tab.dataset.mode === 'practice') this._selSyl('practical')
+        else if (tab.dataset.mode === 'chaos') this._selSyl('chaos')
+        else if (tab.dataset.mode === 'exam') this._selSyl('exam')
       }
 
       if (tab.dataset.mode === 'learn') {
@@ -1277,35 +1512,42 @@ if (un) {
     const contentEl = document.getElementById('br-content')
     if (!contentEl) return
     
-
     const syllabusEl = document.getElementById('br-syllabus')
     const items = this._getSyllabusForMode(lv, mode)
     this._sylItems = items
     
-
+    const isCompleted = S.comp && S.comp[lv.id] && (S.comp[lv.id].score > 0 || S.comp[lv.id].finalQuiz || S.comp[lv.id].completed || S.comp[lv.id] === true || (S.comp[lv.id].modes && Object.keys(S.comp[lv.id].modes).length > 0))
     this._sylViewed = new Set((S.sylViewed && S.sylViewed[lv.id]) ? S.sylViewed[lv.id] : [])
     this._sylLv = lv
-    syllabusEl.innerHTML = ''
-    items.forEach((it) => {
-      const el = document.createElement('div')
-      el.className = 'syl-item'
-      el.id = 'syl-' + it.id
-      el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
-      if (this._sylViewed.has(it.id)) {
-        el.classList.add('syl-done')
-      }
-      el.onclick = () => this._selSyl(it.id)
-      syllabusEl.appendChild(el)
-    })
-    
 
-let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
+    const progFill = document.getElementById('br-prog-fill')
+    const progLabel = document.getElementById('br-prog-label')
+    if (progFill && progLabel) {
+      if (isCompleted) {
+        progFill.style.width = '100%'
+        progLabel.textContent = '100% Complete (Mastered)'
+      } else {
+        const viewedCount = this._sylViewed.size
+        const pct = Math.min(90, Math.round((viewedCount / Math.max(1, items.length)) * 100))
+        progFill.style.width = pct + '%'
+        progLabel.textContent = pct > 0 ? `${pct}% Complete` : '0% Complete'
+      }
+    }
+
+    if (syllabusEl) {
+      syllabusEl.innerHTML = ''
+      items.forEach((it) => {
+        const el = document.createElement('div')
+        el.className = 'syl-item' + (isCompleted || this._sylViewed.has(it.id) ? ' syl-done' : '')
+        el.id = 'syl-' + it.id
+        el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
+        el.onclick = () => this._selSyl(it.id)
+        syllabusEl.appendChild(el)
+      })
+    }
+    
+    let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
     this._selSyl(firstUnviewed ? firstUnviewed.id : (items[0]?.id || 'intro'))
-    
-    
-    // Render campaign progress for this module
-    this._renderCampaignProgress(lv)
-    
     
     this._renderRewardsPreview(lv, mode, config)
   },
@@ -1313,16 +1555,12 @@ let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
     const base = [
       { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
       ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
+      { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' },
+      { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' },
+      { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' },
+      { id: 'chaos', icon: '🌪️', label: 'Chaos Run', sub: 'Adaptive Stress Test' },
+      { id: 'exam', icon: '📝', label: 'Assessment', sub: `${window.COURSE?.MODE_CONFIG?.EXAM?.mcqCount || 5} MCQ Questions` }
     ]
-    if (mode === 'learn') {
-      return [...base, { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' }, { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' }, { id: 'pledge', icon: '🤝', label: 'Pledge', sub: 'Commitment if-then plan' }]
-    } else if (mode === 'practice') {
-      return [...base, { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' }]
-    } else if (mode === 'exam') {
-      return [...base, { id: 'exam', icon: '📝', label: 'Assessment', sub: `${window.COURSE?.MODE_CONFIG?.EXAM?.mcqCount || 5} MCQ Questions` }]
-    } else if (mode === 'chaos') {
-      return [...base, { id: 'chaos', icon: '🌪️', label: 'Chaos Run', sub: 'Adaptive Stress Test' }]
-    }
     return base
   },
   _renderModuleChecklist(lv) {
@@ -1598,26 +1836,68 @@ let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
     const progLabel = document.getElementById('br-prog-label')
     if (progFill) progFill.style.width = pct + '%'
     if (progLabel) progLabel.textContent = pct + '%'
-    const rContainer = document.querySelector('.br-r')
-    if (rContainer) {
-      if (id === 'practical') {
-        rContainer.style.marginTop = '45px'
-      } else {
-        rContainer.style.marginTop = '118px'
-      }
-    }
+
     const c = document.getElementById('br-content')
     c.innerHTML = ''
     const card = document.createElement('div')
     card.className = 'bc-card'
+
+    // Add Top Breadcrumb Bar for clear orientation
+    const topicHeaderHTML = this._renderTopicHeader(lv, id, items)
+
     if (id === 'intro') {
-      card.innerHTML = `<div class="bc-ttl">📖 Module Overview</div>
-     <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem, 4vw, 2.5rem);color:var(--yellow);margin-bottom:8px">${lv.name}</div>
-     <div style="font-size:clamp(0.95rem, 2vw, 1.35rem);color:var(--muted2);line-height:1.5;margin-bottom:16px">${lv.ds}</div>
-     <div class="stat-row">
-       <div class="stat-box"><div class="stat-val">${lv.hps.length}</div><div class="stat-lbl">Mandates</div></div>
-       <div class="stat-box"><div class="stat-val">${lv.law.fine}</div><div class="stat-lbl">Penalty</div></div>
-     </div>`
+      const curriculumRows = items.filter(it => it.id !== 'intro').map((it, idx) => {
+        const isDone = this._sylViewed && this._sylViewed.has(it.id)
+        return `
+          <div class="syl-curriculum-row" onclick="ui._selSyl('${it.id}')">
+            <div style="display:flex; align-items:center; min-width:0; flex:1;">
+              <span class="syl-cur-num">${String(idx + 1).padStart(2, '0')}</span>
+              <div class="syl-cur-info">
+                <div class="syl-cur-title">${it.icon} ${it.label}</div>
+                <div class="syl-cur-desc">${it.sub}</div>
+              </div>
+            </div>
+            <div class="syl-cur-btn">
+              ${isDone ? '<span style="color:#10b981;">✓ Viewed</span>' : '<span>Start &rarr;</span>'}
+            </div>
+          </div>
+        `
+      }).join('')
+
+      card.innerHTML = `
+        ${topicHeaderHTML}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div class="bc-ttl" style="margin:0;">📖 Module Overview</div>
+          <span style="background:rgba(255,213,74,0.12); color:var(--signal); border:1px solid rgba(255,213,74,0.3); font-size:0.75rem; font-weight:700; padding:4px 12px; border-radius:20px; text-transform:uppercase;">Level ${lv.id}</span>
+        </div>
+        <div style="font-size:clamp(1.5rem, 3.5vw, 2.1rem); font-weight:800; color:#fff; font-family:'Lora',serif; margin-bottom:10px; line-height:1.25;">${lv.name}</div>
+        <div style="font-size:0.95rem; line-height:1.65; color:rgba(255,255,255,0.85); background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px 20px; margin-bottom:20px;">${lv.ds}</div>
+        
+        <div class="stat-row" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:24px;">
+          <div class="stat-box">
+            <div class="stat-val" style="color:var(--signal);">${lv.hps.length}</div>
+            <div class="stat-lbl">Mandates</div>
+          </div>
+          <div class="stat-box" style="background:rgba(239,68,68,0.08); border-color:rgba(239,68,68,0.2);">
+            <div class="stat-val" style="color:#f87171;">${lv.law?.fine || '₹1,000'}</div>
+            <div class="stat-lbl">Max Penalty</div>
+          </div>
+          <div class="stat-box" style="background:rgba(34,197,94,0.08); border-color:rgba(34,197,94,0.2);">
+            <div class="stat-val" style="color:#4ade80;">+₹2,000</div>
+            <div class="stat-lbl">Bounty Reward</div>
+          </div>
+        </div>
+
+        <div style="font-weight:700; font-size:1.05rem; color:#fff; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+          <span>📚 Curriculum & Syllabus Topics</span>
+          <span style="font-size:0.75rem; color:var(--muted); font-weight:500;">(Tap any topic to jump)</span>
+        </div>
+        <div class="syl-curriculum-index">
+          ${curriculumRows}
+        </div>
+
+        ${this._renderCardFooter(lv, id, items)}
+      `
     } else if (id.startsWith('rule')) {
       const idx = parseInt(id.replace('rule', ''))
       const hp = lv.hps[idx]
@@ -1628,51 +1908,221 @@ let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
         hpTitle = parts[0]
         hpDesc = parts.slice(1).join(':').trim()
       }
-      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">⚖️ Regulatory Requirement</div>
-          <div class="bc-rule-pill" style="display:block; text-align:center; margin:12px auto 20px; padding:6px 16px; background:rgba(242,184,75,0.15); color:var(--signal); border-radius:12px; font-weight:800; font-size:0.9rem; letter-spacing:1.5px; text-transform:uppercase;">Clause ${idx + 1}</div>
-          <div class="bc-rule-txt" style="text-align:center; font-family:'Lora', serif; font-size:clamp(1.6rem, 4vw, 2.4rem); color:var(--ink); line-height:1.3; font-weight:700; max-width:600px; margin:0 auto;">${hpTitle}</div>
-          ${hpDesc ? `<div style="margin-top:20px; text-align:center; font-family:'Inter', sans-serif; font-size:clamp(1rem, 2vw, 1.2rem); color:var(--dim); line-height:1.7; max-width:540px; margin:20px auto 0;">${hpDesc}</div>` : ''}
-          <div class="bc-next-btn" style="display:flex;justify-content:space-between; margin-top:32px; padding-top:20px; border-top:1px solid var(--line);"><button class="btn btn-s" style="background:transparent; border:1px solid var(--line); color:var(--ink);" onclick="ui._selSyl('${idx > 0 ? 'rule' + (idx - 1) : 'intro'}')">${'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>'} Previous</button>${idx < lv.hps.length - 1 ? `<button class="btn" style="background:var(--ink); color:var(--void);" onclick="ui._selSyl('rule${idx + 1}')">Next Clause &rarr;</button>` : `<button class="btn" style="background:var(--signal); color:#000;" onclick="ui._selSyl('law')">Legal Framework &rarr;</button>`}</div>`
+      card.innerHTML = `
+        ${topicHeaderHTML}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <div class="bc-ttl" style="margin:0;">⚖️ Regulatory Mandate</div>
+          <span class="bc-rule-pill">Clause ${idx + 1} of ${lv.hps.length}</span>
+        </div>
+        
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:22px 24px; margin-bottom:20px;">
+          <div class="bc-rule-txt" style="margin-bottom:12px;">${hpTitle}</div>
+          ${hpDesc ? `<div style="font-family:'Inter', sans-serif; font-size:0.95rem; color:rgba(255,255,255,0.85); line-height:1.65; border-left:3px solid var(--signal); padding-left:14px; background:rgba(255,213,74,0.04); padding-top:10px; padding-bottom:10px; border-radius:0 8px 8px 0;">${hpDesc}</div>` : ''}
+        </div>
+        
+        ${this._renderCardFooter(lv, id, items)}
+      `
     } else if (id === 'law') {
       const lawEn = lv.law
       const lawHi = { sec: lv.law.secHi || lv.law.sec, fine: lv.law.fineHi || lv.law.fine, off: lv.law.offHi || lv.law.off }
       this._lawLang = this._lawLang || (S.language === 'hi' ? 'hi' : 'en')
       const d = this._lawLang === 'hi' ? lawHi : lawEn
       const langLabel = this._lawLang === 'hi' ? 'English' : 'हिन्दी'
-      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">🏛️ Statutory Provisions / कानूनी प्रावधान</div>
-          <div style="text-align:center; margin:12px auto;"><button class="btn btn-s" style="background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.1); color:var(--ink); font-size:0.85rem; padding:6px 16px; border-radius:8px;" onclick="ui._lawLang=ui._lawLang==='hi'?'en':'hi'; ui._selSyl('law')">${langLabel}</button></div>
-          <div class="lb" style="text-align:center; margin:16px auto; max-width:500px;"><div class="ls" style="font-size:1.3rem; font-weight:800;">${d.sec}</div><div class="lt" style="font-size:1.1rem; margin-top:8px;">${d.off}</div></div>
-          <div class="fr" style="text-align:center; max-width:400px; margin:20px auto;"><div class="fl" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Fine / जुर्माना</div><div class="fa" style="font-size:2.4rem; font-weight:800;">${d.fine}</div></div>
-     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('rule'+(lv.hps.length-1))"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('theory')">Concepts &rarr;</button></div>`
+      card.innerHTML = `
+        ${topicHeaderHTML}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <div class="bc-ttl" style="margin:0;">🏛️ Statutory Legal Provisions</div>
+          <button class="btn btn-s" style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text); font-size:0.8rem; padding:6px 14px; border-radius:20px; cursor:pointer;" onclick="ui._lawLang=ui._lawLang==='hi'?'en':'hi'; ui._selSyl('law')">🌐 ${langLabel}</button>
+        </div>
+
+        <div style="background:rgba(255,213,74,0.05); border:1px solid rgba(255,213,74,0.2); border-radius:16px; padding:20px 24px; margin-bottom:16px;">
+          <div style="font-size:0.75rem; font-weight:700; color:var(--signal); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Motor Vehicles Act Statutory Mandate</div>
+          <div style="font-size:1.35rem; font-weight:800; color:#fff; font-family:monospace; letter-spacing:0.02em; margin-bottom:8px;">${d.sec}</div>
+          <div style="font-size:1.02rem; color:rgba(255,255,255,0.9); line-height:1.5;">${d.off}</div>
+        </div>
+
+        <div class="fr" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:14px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; color:#fca5a5; text-transform:uppercase; letter-spacing:0.05em;">Statutory Fine / Penalty</div>
+            <div style="font-size:0.82rem; color:rgba(255,255,255,0.7); margin-top:2px;">Issued on automated traffic cameras & traffic police challan</div>
+          </div>
+          <div style="font-size:1.8rem; font-weight:800; color:#ef4444; font-family:'Lora',serif;">${d.fine}</div>
+        </div>
+
+        ${this._renderCardFooter(lv, id, items)}
+      `
     } else if (id === 'theory') {
       const bracket = this.getAgeBracket()
       const isYoung = bracket === 'child' || bracket === 'teen'
       this._theoryLang = this._theoryLang || (S.language === 'hi' ? 'hi' : 'en')
-      const theoryLabel = isYoung ? '📊 Simple Explanation' : '📊 Analytical Model'
-      const theoryHint = isYoung ? '<div style="text-align:center; font-size:0.85rem; color:var(--signal); margin-bottom:8px; font-weight:600;">Easy version for young drivers</div>' : ''
+      const theoryLabel = isYoung ? 'Simple Explanation' : 'Analytical Model & Science'
+      const theoryHint = isYoung ? '<div style="font-size:0.8rem; color:var(--signal); margin-bottom:12px; font-weight:600;">✨ Simplified version for beginner drivers</div>' : ''
       const langLabel = this._theoryLang === 'hi' ? 'English' : 'हिन्दी'
-
 
       let theoryContent = lv.theory || ''
       if (this._theoryLang === 'hi' && lv.theoryHi) {
         theoryContent = lv.theoryHi
       }
 
-      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">${theoryLabel}</div>${theoryHint}
-          <div style="text-align:center; margin:12px auto;"><button class="btn btn-s" style="background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.1); color:var(--ink); font-size:0.85rem; padding:6px 16px; border-radius:8px;" onclick="ui._theoryLang=ui._theoryLang==='hi'?'en':'hi'; ui._selSyl('theory')">${langLabel}</button></div>
-          <div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${theoryContent}</div>
-     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`
+      card.innerHTML = `
+        ${topicHeaderHTML}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <div class="bc-ttl" style="margin:0;">📊 ${theoryLabel}</div>
+          <button class="btn btn-s" style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text); font-size:0.8rem; padding:6px 14px; border-radius:20px; cursor:pointer;" onclick="ui._theoryLang=ui._theoryLang==='hi'?'en':'hi'; ui._selSyl('theory')">🌐 ${langLabel}</button>
+        </div>
+        ${theoryHint}
+        <div class="dw">${this._diag(lv.id)}</div>
+        <div class="theory-rich-content">
+          ${theoryContent}
+        </div>
+        ${this._renderCardFooter(lv, id, items)}
+      `
     } else if (id === 'practical') {
-      const preferredMode = this.curMode
-      const btnsHTML = (lv.modes || ['car'])
+      const availModes = lv.modes || ['car']
+      const preferredMode = this.curMode || availModes[0]
+      const isPedMode = preferredMode === 'pedestrian'
+      const isBikeMode = preferredMode === 'bike'
+
+      // Playable Role Buttons
+      const btnsHTML = availModes
         .map((m) => {
           const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚛', bus: '🚌', pedestrian: '🚶' }
+          const labels = { car: 'Vehicle Driver', bike: 'Two-Wheeler / Bike', pedestrian: 'Pedestrian', auto: 'Auto-Rickshaw', truck: 'Heavy Truck', bus: 'BEST Bus' }
           const isPreferred = m === preferredMode
-          return `<button class="btn" data-mode="${m}" style="flex:1; min-width:80px; text-transform:capitalize; background:${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel, rgba(0,0,0,0.04))'}; border:1px solid ${isPreferred ? 'var(--accent, #D97706)' : 'var(--line, rgba(0,0,0,0.08))'}; color:${isPreferred ? '#fff' : 'var(--ink, #111827)'}; font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--line)'}'" onmouseout="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel)'}'" onclick="ui.selectMode('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}${isPreferred ? ' ✓' : ''}</span></button>`
+          return `<button class="btn" data-mode="${m}" style="flex:1; min-width:110px; text-transform:none; background:${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel, rgba(255,255,255,0.05))'}; border:2px solid ${isPreferred ? 'var(--accent, #D97706)' : 'var(--line, rgba(255,255,255,0.1))'}; color:${isPreferred ? '#fff' : 'var(--ink, #111827)'}; font-weight:700; padding:12px 10px; border-radius:14px; display:flex; flex-direction:column; align-items:center; gap:6px; transition:all 0.2s cubic-bezier(0.16, 1, 0.3, 1); cursor:pointer;" onclick="ui.selectMode('${m}')">
+            <span style="font-size:1.5rem; line-height:1;">${icons[m] || '🚗'}</span>
+            <span style="font-size:0.8rem; font-weight:700;">${labels[m] || m}</span>
+            <span style="font-size:0.65rem; opacity:0.85; text-transform:uppercase; letter-spacing:0.5px;">${isPreferred ? '● Selected Role' : 'Select'}</span>
+          </button>`
         })
         .join('')
-      const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3); font-size:0.9rem;" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`
-      card.innerHTML = `<div class="bc-ttl">🎯 Practical Execution</div>
+
+      // Dynamic Controls based on chosen role
+      let controlsHTML = ''
+      if (isPedMode) {
+        controlsHTML = `
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+             <div style="display:flex; gap:4px;">
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">W</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">A</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">S</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">D</kbd>
+             </div>
+             <span style="font-size:0.85rem; color:var(--dim);">Walk</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SHIFT</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Sprint</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SPACE</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Look / Cross</span>
+          </div>`
+      } else if (isBikeMode) {
+        controlsHTML = `
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+             <div style="display:flex; gap:4px;">
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">W</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">A</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">S</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">D</kbd>
+             </div>
+             <span style="font-size:0.85rem; color:var(--dim);">Steer</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SPACE</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Brake</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">F</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Mount</span>
+          </div>`
+      } else {
+        controlsHTML = `
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+             <div style="display:flex; gap:4px;">
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">W</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">A</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">S</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">D</kbd>
+             </div>
+             <span style="font-size:0.85rem; color:var(--dim);">Drive</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SPACE</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Brake</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">F</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Enter</span>
+          </div>`
+      }
+
+      // Vehicle selection box or Pedestrian summary box
+      let roleDetailHTML = ''
+      if (isPedMode) {
+        roleDetailHTML = `
+          <div style="background:rgba(217,119,6,0.08); border:1px solid rgba(217,119,6,0.2); padding:16px 20px; border-radius:16px; display:flex; align-items:center; gap:16px;">
+            <div style="font-size:2.4rem; line-height:1;">🚶</div>
+            <div style="flex:1;">
+              <div style="font-size:0.95rem; font-weight:700; color:var(--accent, #D97706);">Pedestrian Foot Patrol Active</div>
+              <div style="font-size:0.85rem; color:var(--text, #e2e8f0); margin-top:3px; line-height:1.4;">You will complete this scenario entirely on foot. Walk on designated footpaths, check blind spots before crossing, and obey pedestrian traffic signals. No vehicle required.</div>
+            </div>
+          </div>`
+      } else if (isBikeMode) {
+        const twoWheelers = [
+          { id: 'bike', name: 'Motorcycle', icon: '🏍️' },
+          { id: 'cycle', name: 'Bicycle', icon: '🚲' }
+        ]
+        const currentVeh = (S.vehicle || 'bike').toLowerCase()
+        const selectedId = (currentVeh === 'cycle' || currentVeh === 'bicycle') ? 'cycle' : 'bike'
+
+        roleDetailHTML = `
+          <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+             <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">🏍️ Choose Two-Wheeler Vehicle</div>
+             <div id="br-vehicle-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px;">
+               ${twoWheelers.map(v => {
+                 const sel = selectedId === v.id
+                 const rec = window.COURSE?.getRecommendedVehicle?.(lv.id) === v.id
+                 return `<div style="padding:16px 12px;background:${sel ? 'rgba(242,184,75,0.15)' : 'var(--card, rgba(17,24,39,0.6))'};border:2px solid ${sel ? 'var(--accent, #f2b84b)' : (rec ? 'var(--signal, #5ed4f5)' : 'var(--border, rgba(255,255,255,0.1))')};border-radius:14px;text-align:center;cursor:pointer;transition:all 0.2s ease;"
+                      onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${sel ? 'rgba(242,184,75,0.15)' : 'var(--card, rgba(17,24,39,0.6))'}'"
+                      onclick="ui._selectVehicle('${v.id}')">
+                   <div style="font-size:2rem;line-height:1;">${v.icon}</div>
+                   <div style="font-size:0.9rem;font-weight:700;color:var(--text, #e2e8f0);margin-top:6px;">${v.name}</div>
+                   ${rec ? '<div style="font-size:0.65rem;color:var(--signal, #5ed4f5);font-weight:700;margin-top:3px;">✓ Recommended</div>' : ''}
+                   ${sel ? '<div style="font-size:0.65rem;color:var(--accent, #f2b84b);font-weight:700;margin-top:3px;">● Selected</div>' : ''}
+                 </div>`
+               }).join('')}
+             </div>
+          </div>`
+      } else {
+        const fourWheelers = [
+          { id: 'car', name: 'Sedan', icon: '🚗' },
+          { id: 'taxi', name: 'Kaali-Peeli', icon: '🚖' },
+          { id: 'auto', name: 'Auto-Rickshaw', icon: '🛺' },
+          { id: 'bus', name: 'BEST Bus', icon: '🚌' },
+          { id: 'truck', name: 'Heavy Truck', icon: '🚚' },
+          { id: 'ambulance', name: 'Ambulance', icon: '🚑' },
+          { id: 'police', name: 'Police Jeep', icon: '🚓' }
+        ]
+        const currentVeh = (S.vehicle || 'car').toLowerCase()
+        const isBikeVeh = currentVeh === 'bike' || currentVeh === 'cycle' || currentVeh === 'bicycle' || currentVeh === 'motorcycle'
+        const effectiveVeh = isBikeVeh ? 'car' : currentVeh
+
+        roleDetailHTML = `
+          <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+             <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">🚗 Choose 4-Wheeler / Commercial Vehicle</div>
+             <div id="br-vehicle-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(105px, 1fr)); gap:10px;">
+               ${fourWheelers.map(v => {
+                 const sel = effectiveVeh === v.name?.toLowerCase() || effectiveVeh === v.id
+                 const rec = window.COURSE?.getRecommendedVehicle?.(lv.id) === v.id
+                 return `<div style="padding:12px 8px;background:${sel ? 'rgba(242,184,75,0.15)' : 'var(--card, rgba(17,24,39,0.6))'};border:2px solid ${sel ? 'var(--accent, #f2b84b)' : (rec ? 'var(--signal, #5ed4f5)' : 'var(--border, rgba(255,255,255,0.1))')};border-radius:14px;text-align:center;cursor:pointer;transition:all 0.2s ease;"
+                      onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${sel ? 'rgba(242,184,75,0.15)' : 'var(--card, rgba(17,24,39,0.6))'}'"
+                      onclick="ui._selectVehicle('${v.id}')">
+                   <div style="font-size:1.6rem;line-height:1;">${v.icon || '🚗'}</div>
+                   <div style="font-size:0.82rem;font-weight:700;color:var(--text, #e2e8f0);margin-top:6px;">${v.name || v.id}</div>
+                   ${rec ? '<div style="font-size:0.62rem;color:var(--signal, #5ed4f5);font-weight:700;margin-top:3px;">✓ Recommended</div>' : ''}
+                   ${sel ? '<div style="font-size:0.62rem;color:var(--accent, #f2b84b);font-weight:700;margin-top:3px;">● Selected</div>' : ''}
+                 </div>`
+               }).join('')}
+             </div>
+          </div>`
+      }
+
+      const finalBtnLabel = isPedMode ? 'START PEDESTRIAN RUN 🚶 →' : (isBikeMode ? 'START BIKE RIDE 🏍️ →' : 'START DRIVING TEST 🚗 →')
+      const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3); font-size:0.92rem; border:none; cursor:pointer;" onclick="ui.dispatchStart('${preferredMode}')">${finalBtnLabel}</button>`
+
+      card.innerHTML = `
+      ${topicHeaderHTML}
+      <div class="bc-ttl">🎯 Practical Execution</div>
       <div style="display:flex; flex-direction:column; gap:16px; margin-bottom: 20px;">
         
         <!-- Objective Banner -->
@@ -1684,8 +2134,8 @@ let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
           </div>
         </div>
 
-        <!-- Visual Tutorial -->
-        <div style="position:relative; width:100%; border-radius:16px; overflow:hidden; border:1px solid var(--line, rgba(255,255,255,0.1)); background:var(--void2, rgba(0,0,0,0.2));">
+        <!-- Visual Tutorial 2.5D Simulation -->
+        <div style="position:relative; width:100%; border-radius:20px; overflow:hidden; border:1px solid var(--line, rgba(255,255,255,0.12)); background:#080d1a;">
           ${this._simAnim(lv)}
         </div>
         
@@ -1693,19 +2143,9 @@ let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
         <div style="display:flex; flex-wrap:wrap; gap:16px;">
           
           <!-- Controls -->
-          <div style="flex:1; min-width:240px; background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+          <div style="flex:1.2; min-width:260px; background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
             <div style="color:var(--dim, #6B7280); font-size:0.8rem; font-weight:700; text-transform:uppercase; margin-bottom:12px;">🕹️ Controls</div>
-            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-               <div style="display:flex; gap:4px;">
-                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">W</kbd>
-                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">A</kbd>
-                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">S</kbd>
-                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">D</kbd>
-               </div>
-               <span style="font-size:0.85rem; color:var(--dim);">Drive</span>
-               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SPACE</kbd>
-               <span style="font-size:0.85rem; color:var(--dim);">Brake</span>
-            </div>
+            ${controlsHTML}
           </div>
           
           <!-- Penalty -->
@@ -1720,33 +2160,19 @@ let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
             </div>
           </div>
         </div>
-        
-        <!-- Vehicle Selection -->
+
+        <!-- Playable Role Selector -->
         <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
-           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">🚗 Vehicle</div>
-           <div id="br-vehicle-list" style="display:flex; gap:8px; flex-wrap:wrap;">
-             ${(window.COURSE?.VEHICLES || []).map(v => {
-               const sel = v.id === (S.vehicle?.toLowerCase() || '')
-               const rec = window.COURSE?.getRecommendedVehicle?.(lv.id) === v.id
-               return `<div style="flex:1;min-width:100px;padding:12px;background:${sel ? 'rgba(242,184,75,0.15)' : 'var(--card)'};border:2px solid ${sel ? 'var(--accent)' : (rec ? 'var(--signal)' : 'var(--border)')};border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s;"
-                    onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='${sel ? 'rgba(242,184,75,0.15)' : 'var(--card)'}'"
-                    onclick="ui._selectVehicle('${v.id}')">
-                 <div style="font-size:1.6rem;line-height:1;">${v.icon || '🚗'}</div>
-                 <div style="font-size:0.8rem;font-weight:700;color:var(--text);margin-top:4px;">${v.name || v.id}</div>
-                 ${rec ? '<div style="font-size:0.6rem;color:var(--signal);font-weight:700;margin-top:2px;">✓ Recommended</div>' : ''}
-                 ${sel ? '<div style="font-size:0.6rem;color:var(--accent);font-weight:700;margin-top:2px;">Selected</div>' : ''}
-               </div>`
-             }).join('')}
-           </div>
-        </div>
-        
-        <!-- Practice Modes -->
-        <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
-           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px;">📝 Practice Run (2D Simulation)</div>
+           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px;">🎮 Playable Role / Mode</div>
            <div style="display:flex; gap:10px; flex-wrap:wrap;">${btnsHTML}</div>
         </div>
+
+        <!-- Role Detail: Vehicle Grid (if Driving) or Foot Patrol (if Pedestrian) -->
+        ${roleDetailHTML}
         
-        <div style="font-size:0.8rem;color:var(--accent, #D97706); background:rgba(217,119,6,0.1); padding:10px 16px; border-radius:8px; border-left:3px solid var(--accent, #D97706);">Note: A PERFECT drive (no violations/damage) is required to avoid penalty on retry.</div>
+        <div style="font-size:0.82rem;color:var(--accent, #D97706); background:rgba(217,119,6,0.1); padding:12px 18px; border-radius:10px; border-left:3px solid var(--accent, #D97706); line-height:1.4;">
+          ⚠️ <strong>Performance Standard:</strong> A PERFECT run (no statutory violations or collision damage) is required to clear the practical evaluation and unlock the next lesson.
+        </div>
       </div>
       
       <!-- Launch -->
@@ -1757,448 +2183,867 @@ let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
           ${finalBtn}
         </div>
       </div>`
+    } else if (id === 'chaos') {
+      const chaosVehicles = (window.COURSE?.VEHICLES || [{ id: 'car', name: 'Sedan', icon: '🚗' }]).map(v => {
+        const sel = v.id === (S.vehicle?.toLowerCase() || 'car')
+        const rec = window.COURSE?.getRecommendedVehicle?.(lv.id) === v.id
+        return `<div style="flex:1;min-width:90px;padding:12px;background:${sel ? 'rgba(239,68,68,0.15)' : 'var(--card)'};border:2px solid ${sel ? '#ef4444' : (rec ? 'var(--signal)' : 'var(--border)')};border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s;"
+             onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='${sel ? 'rgba(239,68,68,0.15)' : 'var(--card)'}'"
+             onclick="ui._selectVehicle('${v.id}')">
+          <div style="font-size:1.8rem;margin-bottom:4px;">${v.icon}</div>
+          <div style="font-size:0.8rem;font-weight:700;color:var(--text);">${v.name}</div>
+        </div>`
+      }).join('')
+      const chaosBtn = `<button class="btn" style="background:linear-gradient(90deg, #ef4444, #f59e0b); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(239,68,68,0.4); font-size:0.95rem; border:none; cursor:pointer;" onclick="ui.dispatchStart('chaos')">LAUNCH CHAOS RUN 🌪️ &rarr;</button>`
+      card.innerHTML = `
+      ${topicHeaderHTML}
+      <div class="bc-ttl" style="color:#ef4444;">🌪️ Chaos Run — Adaptive Stress Test</div>
+      <div style="display:flex; flex-direction:column; gap:16px; margin-bottom: 20px;">
+        <div class="pract-banner" style="background:linear-gradient(135deg, rgba(239,68,68,0.1), rgba(245,158,11,0.1)); padding:18px; border-radius:16px; border:1px solid rgba(239,68,68,0.3); display:flex; align-items:center; gap:16px;">
+          <div style="font-size:3.2rem;line-height:1;">🌪️</div>
+          <div style="flex:1;">
+            <div style="font-size:1.4rem;font-family:var(--serif,'Instrument Serif'),serif;font-style:italic;font-weight:700; color:#ef4444;">Adaptive Stress Simulation</div>
+            <div style="font-size:0.95rem;color:var(--text);line-height:1.4;margin-top:4px;">Test your reflexes under peak Mumbai chaos: aggressive overtaking, jaywalking pedestrians, low-grip monsoon puddles, and emergency siren yields.</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+          <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:14px; border-radius:12px;">
+            <div style="font-size:0.8rem; font-weight:700; color:#f59e0b; margin-bottom:4px;">⚡ High Density Traffic</div>
+            <div style="font-size:0.75rem; color:var(--muted);">2x aggressive auto-rickshaws & sudden lane cuts (+50% XP)</div>
+          </div>
+          <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:14px; border-radius:12px;">
+            <div style="font-size:0.8rem; font-weight:700; color:#38bdf8; margin-bottom:4px;">🌧️ Wet Asphalt Monsoon</div>
+            <div style="font-size:0.75rem; color:var(--muted);">Reduced friction and hydroplaning puddles (+25% XP)</div>
+          </div>
+          <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:14px; border-radius:12px;">
+            <div style="font-size:0.8rem; font-weight:700; color:#ef4444; margin-bottom:4px;">🚨 Sudden Emergency Priority</div>
+            <div style="font-size:0.75rem; color:var(--muted);">Yield within 5 seconds or receive statutory fines (+25% XP)</div>
+          </div>
+        </div>
+
+        <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">🚗 Select Vehicle for Chaos Run</div>
+           <div id="br-vehicle-list" style="display:flex; gap:8px; flex-wrap:wrap;">
+             ${chaosVehicles}
+           </div>
+        </div>
+      </div>
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line, rgba(0,0,0,0.1)); padding-top:16px;">
+        <button class="btn btn-s" onclick="ui._selSyl('practical')" style="padding:8px 16px; background:var(--panel); border:1px solid var(--line); color:var(--ink); border-radius:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Practical</button>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+          <div style="font-size:0.75rem; color:var(--dim, #6B7280);">2x XP Multiplier Active</div>
+          ${chaosBtn}
+        </div>
+      </div>`
+    } else if (id === 'exam') {
+      const examBtn = `<button class="btn" style="background:var(--signal); color:#000; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(255,213,74,0.3); font-size:0.95rem; border:none; cursor:pointer;" onclick="ui.showQuiz('exam')">START EXAM 📝 &rarr;</button>`
+      card.innerHTML = `
+      ${topicHeaderHTML}
+      <div class="bc-ttl">📝 Module Assessment & Theory Exam</div>
+      <div style="display:flex; flex-direction:column; gap:16px; margin-bottom: 20px;">
+        <div class="pract-banner" style="background:linear-gradient(135deg, rgba(94,212,245,0.1), rgba(255,213,74,0.1)); padding:18px; border-radius:16px; border:1px solid rgba(255,213,74,0.3); display:flex; align-items:center; gap:16px;">
+          <div style="font-size:3.2rem;line-height:1;">📋</div>
+          <div style="flex:1;">
+            <div style="font-size:1.4rem;font-family:var(--serif,'Instrument Serif'),serif;font-style:italic;font-weight:700; color:var(--signal);">Official Traffic Regulation Assessment</div>
+            <div style="font-size:0.95rem;color:var(--text);line-height:1.4;margin-top:4px;">Test your mastery on statutory Motor Vehicle laws, right-of-way rules, and hazard mitigation for "${lv.name}".</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
+          <div style="background:var(--panel); border:1px solid var(--line); padding:16px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.8rem; font-weight:800; color:var(--signal);">5</div>
+            <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase;">Questions</div>
+          </div>
+          <div style="background:var(--panel); border:1px solid var(--line); padding:16px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.8rem; font-weight:800; color:var(--green);">80%</div>
+            <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase;">Pass Threshold</div>
+          </div>
+          <div style="background:var(--panel); border:1px solid var(--line); padding:16px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.8rem; font-weight:800; color:#38bdf8;">+₹2,500</div>
+            <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase;">Career Bounty</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line, rgba(0,0,0,0.1)); padding-top:16px;">
+        <button class="btn btn-s" onclick="ui._selSyl('chaos')" style="padding:8px 16px; background:var(--panel); border:1px solid var(--line); color:var(--ink); border-radius:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Chaos Run</button>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+          <div style="font-size:0.75rem; color:var(--dim);">Official Certification Credit</div>
+          ${examBtn}
+        </div>
+      </div>`
     }
     c.appendChild(card)
     if (id === 'practical') {
-
       requestAnimationFrame(() => this._initBriefingArt(lv))
     }
+  },
+  _renderTopicHeader(lv, currentId, items) {
+    const currentIndex = items.findIndex(it => it.id === currentId)
+    const currentItem = items[currentIndex] || items[0]
+    return `
+      <div class="syl-breadcrumb-bar">
+        <div class="syl-crumb-left">
+          <span class="syl-crumb-badge">Module ${lv.id}</span>
+          <span class="syl-crumb-arrow">&rsaquo;</span>
+          <span class="syl-crumb-step">Step ${currentIndex + 1} of ${items.length}</span>
+          <span class="syl-crumb-arrow">&rsaquo;</span>
+          <span class="syl-crumb-curr">${currentItem.icon} ${currentItem.label}</span>
+        </div>
+        <div class="syl-crumb-dots">
+          ${items.map((item, idx) => {
+            const isDone = this._sylViewed && this._sylViewed.has(item.id)
+            const isCurr = item.id === currentId
+            return `<div class="syl-dot ${isCurr ? 'active' : (isDone ? 'done' : '')}" onclick="ui._selSyl('${item.id}')" title="${item.label}"></div>`
+          }).join('')}
+        </div>
+      </div>
+    `
+  },
+  _renderCardFooter(lv, currentId, items) {
+    const currentIndex = items.findIndex(it => it.id === currentId)
+    const prevItem = items[currentIndex - 1]
+    const nextItem = items[currentIndex + 1]
+
+    return `
+      <div class="syl-footer-nav">
+        ${prevItem 
+          ? `<button class="btn btn-syl-prev" onclick="ui._selSyl('${prevItem.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> ${prevItem.label}</button>`
+          : `<div></div>`
+        }
+        <div class="syl-footer-progress">
+          <span>Topic ${currentIndex + 1} of ${items.length}</span>
+        </div>
+        ${nextItem
+          ? `<button class="btn btn-syl-next" onclick="ui._selSyl('${nextItem.id}')">${nextItem.label} &rarr;</button>`
+          : `<button class="btn btn-syl-next btn-syl-start" onclick="ui.dispatchStart()">🚀 Start Practical Test &rarr;</button>`
+        }
+      </div>
+    `
   },
   _diag(id) {
     const lv = LVS.find((l) => l.id === id)
     if (!lv) return ''
-    return `<div style="background:${lv.gr};border-radius:14px;padding:clamp(16px, 2.5vw, 24px) clamp(16px, 3vw, 30px);margin-bottom:16px;display:flex;align-items:center;gap:clamp(12px, 3vw, 24px)">
-     <div style="font-size:clamp(2.5rem, 5vw, 4.5rem)">${lv.icon}</div>
-     <div>
-       <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem, 2.5vw, 2rem);color:#fff;letter-spacing:.05em">${lv.name}</div>
-       <div style="font-size:clamp(0.8rem, 1.5vw, 1.1rem);color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em">${lv.v} · Fine: ${lv.law.fine}</div>
-     </div></div>`
+    const themeLabel = (lv.themeType || 'traffic_safety').replace(/_/g, ' ')
+    const fineText = lv.law?.fine || '₹500 - ₹2000'
+    const bgGradient = lv.gr || 'linear-gradient(135deg, #1e293b, #0f172a)'
+    return `
+      <div style="background:${bgGradient};border:1px solid rgba(255,255,255,0.15);box-shadow:0 8px 24px rgba(0,0,0,0.35);border-radius:16px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:18px;">
+        <div style="font-size:2.8rem;line-height:1;background:rgba(0,0,0,0.25);width:60px;height:60px;border-radius:14px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);flex-shrink:0;">${lv.icon || '🚦'}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:1.3rem;font-weight:700;color:#fff;letter-spacing:0.02em;margin-bottom:6px;font-family:var(--sans,'Inter'),sans-serif;">${lv.name}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <span style="background:rgba(255,255,255,0.15);color:#fff;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.05em;border:1px solid rgba(255,255,255,0.2);">🚦 ${themeLabel}</span>
+            <span style="background:rgba(239,68,68,0.2);color:#fca5a5;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.03em;border:1px solid rgba(239,68,68,0.3);">💰 Fine: ${fineText}</span>
+          </div>
+        </div>
+      </div>
+    `
   },
   _simAnim(lv) {
-    return `<div id="briefing-canvas-wrap" style="position:relative; width:100%; height:clamp(200px, 32vw, 280px); border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); background:#1a1f2e;">
-          <div style="position:absolute; top:12px; left:12px; color:var(--muted2, #6B7280); font-size:0.7rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(255,255,255,0.75); padding:6px 14px; border-radius:8px; letter-spacing:1.2px; backdrop-filter:blur(8px); border:1px solid rgba(0,0,0,0.06); font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>
-        </div>`
+    const isNight = lv.themeType?.includes('night') || false;
+    const isRain = lv.themeType?.includes('rain') || lv.themeType?.includes('monsoon') || lv.themeType?.includes('puddle');
+    const conditionText = isNight ? '🌙 NIGHT · LOW VISIBILITY' : (isRain ? '🌧️ MONSOON · WET GRIP (0.65μ)' : '☀️ DAYLIGHT · DRY ROAD');
+    const ruleText = lv.law?.fine ? `💰 PENALTY: ${lv.law.fine}` : '🚦 TRAFFIC REGULATION';
+
+    return `
+      <div id="briefing-canvas-wrap" class="scenario-sim-container">
+        <canvas id="scenario-sim-canvas"></canvas>
+        <div class="sim-hud-top">
+          <div class="sim-live-badge">
+            <span class="sim-record-dot"></span>
+            <span>LIVE SCENARIO SIM</span>
+          </div>
+          <div class="sim-condition-pill" id="sim-condition-pill">${conditionText}</div>
+          <div class="sim-rule-pill" id="sim-rule-pill">${ruleText}</div>
+        </div>
+        <div class="sim-alert-banner" id="sim-alert-banner">🚨 RED LIGHT CAMERA VIOLATION — ₹1000 FINE</div>
+        <div class="sim-hud-bottom">
+          <div class="sim-telemetry-bar">
+            <div class="sim-telem-item">
+              <span class="sim-telem-lbl">SPEED</span>
+              <span class="sim-telem-val" id="sim-speed-val">42 km/h</span>
+            </div>
+            <div class="sim-telem-item">
+              <span class="sim-telem-lbl">BRAKING</span>
+              <span class="sim-telem-val" id="sim-brake-val">0%</span>
+            </div>
+            <div class="sim-telem-item">
+              <span class="sim-telem-lbl">STATUS</span>
+              <span class="sim-telem-val" id="sim-status-val" style="color:#10b981;">CRUISING</span>
+            </div>
+          </div>
+          <div class="sim-ctrl-bar">
+            <button class="sim-btn" id="sim-play-btn" title="Play/Pause" onclick="ui._simTogglePlay()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button class="sim-btn" id="sim-speed-btn" title="Playback Speed" onclick="ui._simToggleSpeed()">1x</button>
+            <button class="sim-btn" id="sim-reset-btn" title="Restart" onclick="ui._simRestart()">↺</button>
+            <div class="sim-timeline-wrap">
+              <input type="range" min="0" max="100" value="0" class="sim-slider" id="sim-timeline" oninput="ui._simSeek(this.value)">
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  _simState: { isPlaying: true, speed: 1.0, time: 0, duration: 8.0 },
+  _simTogglePlay() {
+    this._simState.isPlaying = !this._simState.isPlaying;
+    const btn = document.getElementById('sim-play-btn');
+    if (btn) {
+      btn.innerHTML = this._simState.isPlaying 
+        ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>' 
+        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    }
+  },
+  _simToggleSpeed() {
+    const speeds = [1.0, 2.0, 0.5];
+    const idx = (speeds.indexOf(this._simState.speed) + 1) % speeds.length;
+    this._simState.speed = speeds[idx];
+    const btn = document.getElementById('sim-speed-btn');
+    if (btn) btn.textContent = this._simState.speed + 'x';
+  },
+  _simRestart() {
+    this._simState.time = 0;
+  },
+  _simSeek(val) {
+    this._simState.time = (parseFloat(val) / 100) * this._simState.duration;
   },
   _initBriefingArt(lv) {
-    const wrap = document.getElementById('briefing-canvas-wrap');
-    if (!wrap) return;
-    const theme = lv.themeType || 'default';
-
-
-    const road = (w, l, b) => `position:absolute; bottom:${b||40}px; left:${l||0}; width:${w||'100%'}; height:60px; background:#3d3f45; border-top:4px solid #fff; border-bottom:4px solid #fff;`;
-    const zebra = `position:absolute; top:0; left:50%; transform:translateX(-50%); width:60px; height:60px; background:repeating-linear-gradient(90deg,#fff 0,#fff 10px,transparent 10px,transparent 20px);`;
-    const sidewalk = `position:absolute; bottom:100px; left:0; width:100%; height:18px; background:#6b7280;`;
-    const nightBg = `background:rgba(0,0,30,0.35);`;
-    const badge = `<div style="position:absolute;top:12px;left:12px;color:var(--muted2,#6B7280);font-size:.7rem;font-weight:800;opacity:.9;z-index:10;background:rgba(255,255,255,.75);padding:6px 14px;border-radius:8px;letter-spacing:1.2px;backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.06);font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>`;
-
-
-    const K = `
-      @keyframes ba{from{left:-15%}to{left:115%}}
-      @keyframes ab{from{left:115%}to{left:-15%}}
-      @keyframes ped{0%{left:15%}100%{left:70%}}
-      @keyframes ped2{0%{left:70%}100%{left:15%}}
-      @keyframes carStop{0%{left:85%}40%{left:62%}100%{left:62%}}
-      @keyframes carStopR{0%{right:85%}40%{right:62%}100%{right:62%}}
-      @keyframes pullOver{0%{transform:translateY(0)}40%{transform:translateY(-8px)}100%{transform:translateY(-8px)}}
-      @keyframes slow{from{left:-20%}to{left:120%}}
-      @keyframes weave{0%{left:30%;transform:translateY(0)}25%{left:50%;transform:translateY(-6px)}50%{left:35%;transform:translateY(4px)}75%{left:55%;transform:translateY(-4px)}100%{left:30%;transform:translateY(0)}}
-      @keyframes rain{0%{top:-20px;opacity:1}100%{top:220px;opacity:.3}}
-      @keyframes splash{0%{transform:scaleX(1)}50%{transform:scaleX(1.6)}100%{transform:scaleX(1)}}
-      @keyframes flash{0%,100%{opacity:1}50%{opacity:.3}}
-      @keyframes siren{0%,100%{color:#f44}50%{color:#48f}}
-      @keyframes fogPulse{0%{opacity:.5}100%{opacity:.85}}
-      @keyframes wiper{0%{transform:rotate(-30deg)}50%{transform:rotate(30deg)}100%{transform:rotate(-30deg)}}
-      @keyframes sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
-      @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-      @keyframes drift{0%{transform:translateX(0)}50%{transform:translateX(6px)}100%{transform:translateX(0)}}
-      @keyframes honk{0%,80%,100%{opacity:0}85%{opacity:1}95%{opacity:1}}
-      @keyframes merge{0%{left:20%}50%{left:42%}100%{left:20%}}
-    `;
-
-
-    const A = {};
-
-
-    A.pedestrian_courtesy = () => `
-      <div style="${road()}">${`<div style="${zebra}"></div>`}</div>
-      <div style="position:absolute;top:30%;left:10%;width:28px;height:64px;background:#222;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:4px 0;">
-        <div style="width:16px;height:16px;border-radius:50%;background:#f33;box-shadow:0 0 6px #f33;"></div>
-        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
-        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
-      </div>
-      <div style="position:absolute;top:20px;right:40px;font-size:4rem;">🏫</div>
-      <div style="position:absolute;bottom:55px;left:20%;font-size:1.8rem;animation:ped 3.5s infinite alternate;">🚶</div>
-      <div style="position:absolute;bottom:58px;left:26%;font-size:1.4rem;animation:ped 2.8s infinite alternate;">🚶‍♀️</div>
-      <div style="position:absolute;bottom:50px;font-size:2.4rem;animation:carStop 4s infinite ease-out;">🚗</div>`;
-
-
-    A.ambulance_priority = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;font-size:2.6rem;animation:ab 3.5s infinite linear;">🚑<span style="position:absolute;top:-18px;left:8px;font-size:.9rem;animation:flash .4s infinite;">🚨</span></div>
-      <div style="position:absolute;bottom:48px;left:35%;font-size:2rem;animation:pullOver 4s infinite ease-out;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:58%;font-size:2rem;animation:pullOver 4s infinite ease-out .6s;">🚕</div>`;
-
-
-    A.market_street = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;top:30px;left:8%;font-size:2.8rem;">🎪</div>
-      <div style="position:absolute;top:30px;left:30%;font-size:2.8rem;">🏪</div>
-      <div style="position:absolute;top:30px;left:52%;font-size:2.8rem;">🛒</div>
-      <div style="position:absolute;bottom:48px;font-size:2rem;animation:slow 6s infinite linear;">🛺</div>
-      <div style="position:absolute;bottom:48px;left:45%;font-size:1.8rem;animation:slow 7s infinite linear -2s;">🚗</div>
-      <div style="position:absolute;bottom:105px;left:18%;font-size:1.3rem;animation:ped 3s infinite alternate;">🚶</div>
-      <div style="position:absolute;bottom:105px;left:62%;font-size:1.3rem;animation:ped2 3.2s infinite alternate;">🚶‍♀️</div>`;
-
-
-    A.street_parking = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;bottom:42px;left:12%;width:45px;height:18px;background:#2a2d35;border:2px dashed #888;border-radius:4px;"></div>
-      <div style="position:absolute;bottom:42px;left:30%;width:45px;height:18px;background:#2a2d35;border:2px dashed #888;border-radius:4px;"></div>
-      <div style="position:absolute;bottom:44px;left:13%;font-size:1.6rem;">🚙</div>
-      <div style="position:absolute;bottom:44px;left:31%;font-size:1.6rem;">🚗</div>
-      <div style="position:absolute;bottom:104px;left:50%;font-size:2.2rem;animation:carStop 5s infinite ease-out;">🚗</div>
-      <div style="position:absolute;top:30px;right:30px;font-size:2.4rem;">🅿️</div>`;
-
-
-    A.puddle_etiquette = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;left:42%;width:70px;height:20px;background:rgba(80,140,255,.45);border-radius:50%;animation:splash 2s infinite;"></div>
-      ${[15,30,50,65,80].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:14px;background:rgba(120,180,255,.5);border-radius:0 0 2px 2px;animation:rain .8s infinite linear ${x*.02}s;"></div>`).join('')}
-      <div style="position:absolute;bottom:48px;left:15%;font-size:2.2rem;animation:slow 5s infinite linear;">🚗</div>
-      <div style="position:absolute;top:25px;right:40px;font-size:2rem;">🌧️</div>`;
-
-
-    A.respectful_parking = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;top:20px;right:30px;font-size:3.5rem;">🏥</div>
-      <div style="position:absolute;bottom:42px;left:20%;width:50px;height:18px;background:#2a2d35;border:2px solid #4a4; border-radius:4px;"></div>
-      <div style="position:absolute;bottom:44px;left:21%;font-size:1.5rem;">🚗</div>
-      <div style="position:absolute;bottom:58px;left:28%;font-size:1.2rem;color:#4a4;">✓</div>
-      <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:slow 5s infinite linear;">🚑</div>`;
-
-
-    A.silent_zone = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;top:15px;left:30%;font-size:3.5rem;">🏥</div>
-      <div style="position:absolute;top:20px;left:58%;font-size:2.5rem;">🔇</div>
-      <div style="position:absolute;bottom:48px;left:45%;font-size:2rem;animation:slow 7s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:104px;left:32%;font-size:1.5rem;opacity:.4;">📢</div>
-      <div style="position:absolute;bottom:110px;left:38%;font-size:1rem;color:#f66;">✕</div>`;
-
-
-    A.no_honking = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;top:15px;left:20%;font-size:3rem;">📚</div>
-      <div style="position:absolute;top:15px;right:25%;font-size:3rem;">🛕</div>
-      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;border-radius:50%;border:4px solid #f44;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:rgba(255,0,0,.08);">🔇</div>
-      <div style="position:absolute;bottom:48px;left:30%;font-size:2rem;animation:slow 6s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:65px;left:38%;font-size:1rem;animation:honk 3s infinite;">💬HONK</div>`;
-
-
-    A.festival = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;top:25px;left:10%;font-size:2.5rem;">🎪</div>
-      <div style="position:absolute;top:25px;right:20%;font-size:2.5rem;">🪔</div>
-      <div style="position:absolute;top:20px;left:40%;font-size:1.8rem;">🎉</div>
-      <div style="position:absolute;top:30px;left:55%;font-size:1.5rem;animation:bounce 1.5s infinite;">🎊</div>
-      <div style="position:absolute;bottom:105px;left:15%;font-size:1.2rem;animation:drift 2s infinite;">🚶</div>
-      <div style="position:absolute;bottom:105px;left:35%;font-size:1.2rem;animation:drift 2.5s infinite .3s;">🚶‍♀️</div>
-      <div style="position:absolute;bottom:105px;left:55%;font-size:1.2rem;animation:drift 1.8s infinite .6s;">🚶</div>
-      <div style="position:absolute;bottom:105px;left:72%;font-size:1.2rem;animation:drift 2.2s infinite .9s;">🚶‍♂️</div>
-      <div style="position:absolute;bottom:48px;font-size:2rem;animation:slow 8s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:35%;font-size:1.8rem;animation:slow 9s infinite linear -3s;">🛺</div>`;
-
-
-    A.signal_jump = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;top:30%;left:42%;width:36px;height:80px;background:#222;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;">
-        <div style="width:20px;height:20px;border-radius:50%;background:#f33;box-shadow:0 0 8px #f33;"></div>
-        <div style="width:20px;height:20px;border-radius:50%;background:#555;"></div>
-        <div style="width:20px;height:20px;border-radius:50%;background:#555;"></div>
-      </div>
-      <div style="position:absolute;bottom:48px;font-size:2.4rem;animation:ba 2.5s infinite linear;">🚗<span style="position:absolute;top:-12px;right:-5px;font-size:1rem;">⚡</span></div>
-      <div style="position:absolute;bottom:110px;left:48%;font-size:1.5rem;animation:flash .6s infinite;">❗</div>`;
-
-
-    A.road_rage = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;left:30%;font-size:2.2rem;animation:ba 3s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:22%;font-size:2rem;animation:ba 2.8s infinite linear .2s;">🚕</div>
-      <div style="position:absolute;bottom:80px;left:28%;font-size:1.8rem;animation:bounce .5s infinite;">😡</div>
-      <div style="position:absolute;bottom:85px;left:36%;font-size:1.2rem;color:#f44;">❗❗</div>`;
-
-
-    A.rain_driving = () => `
-      <div style="${road()};background:#2d2f35;"></div>
-      ${[10,18,26,34,42,50,58,66,74,82].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:18px;background:rgba(100,160,255,.5);border-radius:0 0 2px 2px;animation:rain .6s infinite linear ${x*.015}s;"></div>`).join('')}
-      <div style="position:absolute;bottom:48px;left:35%;font-size:2.4rem;">🚗</div>
-      <div style="position:absolute;bottom:54px;left:37%;width:12px;height:6px;background:rgba(255,255,150,.7);border-radius:2px;"></div>
-      <div style="position:absolute;bottom:54px;left:52%;width:12px;height:6px;background:rgba(255,255,150,.7);border-radius:2px;"></div>
-      <div style="position:absolute;bottom:60px;left:42%;width:2px;height:16px;background:#fff;transform-origin:bottom;animation:wiper 1.5s infinite;"></div>
-      <div style="position:absolute;top:20px;right:30px;font-size:2rem;">⛈️</div>`;
-
-
-    A.pedestrian_priority = () => `
-      <div style="${road()}">${`<div style="${zebra}"></div>`}</div>
-      <div style="position:absolute;top:25%;left:42%;width:30px;height:60px;background:#222;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:4px 0;">
-        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
-        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
-        <div style="width:16px;height:16px;border-radius:50%;background:#4f4;box-shadow:0 0 6px #4f4;"></div>
-      </div>
-      <div style="position:absolute;bottom:55px;left:45%;font-size:2rem;animation:ped 4s infinite alternate;">🚶</div>
-      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:carStop 5s infinite ease-out;">🚗</div>`;
-
-
-    A.signs = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:100px;left:15%;width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:32px solid #fc0;transform:rotate(0deg);"></div>
-      <div style="position:absolute;bottom:108px;left:19%;font-size:.7rem;font-weight:900;color:#000;">40</div>
-      <div style="position:absolute;bottom:100px;left:45%;width:34px;height:34px;background:#f44;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#fff;font-weight:900;">STOP</div>
-      <div style="position:absolute;bottom:100px;right:18%;width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:28px solid #fc0;transform:rotate(90deg);"></div>
-      <div style="position:absolute;bottom:108px;right:20%;font-size:.6rem;">⚠️</div>
-      <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>`;
-
-
-    A.animals = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;left:45%;font-size:2.8rem;">🐄</div>
-      <div style="position:absolute;bottom:55px;left:55%;font-size:1rem;">🪰</div>
-      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:carStop 4s infinite ease-out;">🚗</div>
-      <div style="position:absolute;top:25px;left:25%;font-size:2rem;">🌾</div>
-      <div style="position:absolute;top:25px;right:25%;font-size:2rem;">🌾</div>`;
-
-
-    A.narrow_street = () => `
-      <div style="${road('45%',null,null)}"></div>
-      <div style="position:absolute;bottom:40px;left:55%;width:45%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;"></div>
-      <div style="position:absolute;bottom:100px;left:2%;font-size:2.5rem;">🏠</div>
-      <div style="position:absolute;bottom:100px;left:18%;font-size:2.5rem;">🏘️</div>
-      <div style="position:absolute;bottom:100px;right:5%;font-size:2.5rem;">🏠</div>
-      <div style="position:absolute;bottom:100px;right:20%;font-size:2.5rem;">🏘️</div>
-      <div style="position:absolute;bottom:48px;left:42%;font-size:1.8rem;animation:ba 6s infinite linear;">🚗</div>`;
-
-
-    A.parking_rules = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;bottom:42px;left:12%;width:48px;height:18px;background:#2a2d35;border:2px solid #4a4;border-radius:4px;"></div>
-      <div style="position:absolute;bottom:44px;left:13%;font-size:1.4rem;">🚗</div>
-      <div style="position:absolute;bottom:56px;left:18%;font-size:.9rem;color:#4a4;">✓</div>
-      <div style="position:absolute;bottom:42px;left:35%;width:48px;height:18px;background:#2a2d35;border:2px dashed #f44;border-radius:4px;"></div>
-      <div style="position:absolute;bottom:44px;left:36%;font-size:1.4rem;transform:rotate(8deg);">🚙</div>
-      <div style="position:absolute;bottom:56px;left:41%;font-size:.9rem;color:#f44;">✗</div>
-      <div style="position:absolute;top:25px;right:30px;font-size:2.5rem;">🅿️</div>
-      <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:slow 6s infinite linear;">🚗</div>`;
-
-
-    A.auto_dance = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;left:25%;font-size:2rem;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;">🚕</div>
-      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:weave 4s infinite ease-in-out;">🛺</div>`;
-
-
-    A.toll = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:40px;left:48%;width:50px;height:65px;background:#555;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;">
-        <div style="width:20px;height:24px;background:#333;border-radius:3px;"></div>
-      </div>
-      <div style="position:absolute;bottom:70px;left:51%;font-size:1.3rem;">💳</div>
-      <div style="position:absolute;bottom:48px;left:25%;font-size:2rem;animation:carStop 5s infinite ease-out;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:5%;font-size:1.8rem;animation:slow 8s infinite linear -3s;">🚙</div>
-      <div style="position:absolute;bottom:48px;left:-10%;font-size:1.8rem;animation:slow 9s infinite linear -5s;">🚕</div>`;
-
-
-    A.blind_corner = () => `
-      <div style="position:absolute;bottom:40px;left:0;width:55%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 30px 30px 0;"></div>
-      <div style="position:absolute;bottom:40px;right:0;width:50%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:30px 0 0 30px;transform:rotate(-15deg);transform-origin:left center;"></div>
-      <div style="position:absolute;bottom:110px;left:42%;font-size:2rem;">⚠️</div>
-      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
-      <div style="position:absolute;top:25px;right:30px;font-size:1.5rem;">👁️‍🗨️</div>`;
-
-
-    A.hill_driving = () => `
-      <div style="position:absolute;bottom:30px;left:0;width:110%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;transform:rotate(-8deg);transform-origin:left bottom;"></div>
-      <div style="position:absolute;top:10px;right:20%;font-size:4rem;">⛰️</div>
-      <div style="position:absolute;top:25px;left:15%;font-size:3rem;">🏔️</div>
-      <div style="position:absolute;bottom:68px;left:20%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>`;
-
-
-    A.bus_stop = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;bottom:100px;left:20%;width:70px;height:30px;background:#555;border-radius:4px 4px 0 0;border-bottom:3px solid #888;"></div>
-      <div style="position:absolute;bottom:105px;left:22%;font-size:1rem;">🪑</div>
-      <div style="position:absolute;bottom:100px;left:33%;font-size:1rem;animation:drift 2s infinite;">🚶</div>
-      <div style="position:absolute;bottom:100px;left:38%;font-size:1rem;animation:drift 2.5s infinite .4s;">🚶‍♀️</div>
-      <div style="position:absolute;bottom:48px;left:18%;font-size:2.4rem;animation:slow 6s infinite linear;">🚌</div>
-      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>`;
-
-
-    A.construction = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:52px;left:35%;width:30px;height:10px;background:repeating-linear-gradient(90deg,#f90 0,#f90 6px,#fff 6px,#fff 12px);border-radius:2px;"></div>
-      <div style="position:absolute;bottom:52px;left:50%;width:30px;height:10px;background:repeating-linear-gradient(90deg,#f90 0,#f90 6px,#fff 6px,#fff 12px);border-radius:2px;"></div>
-      <div style="position:absolute;bottom:58px;left:40%;font-size:1.8rem;">🚧</div>
-      <div style="position:absolute;bottom:100px;left:45%;font-size:1.8rem;">👷</div>
-      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:108px;left:55%;font-size:1.2rem;">➡️</div>`;
-
-
-    A.one_way = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:55px;left:40%;font-size:3rem;opacity:.3;">➡️</div>
-      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:ba 4s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ab 3.5s infinite linear;">🚙</div>
-      <div style="position:absolute;bottom:80px;left:62%;font-size:1.2rem;color:#f44;">⚠️</div>
-      <div style="position:absolute;top:25px;left:30%;font-size:1.5rem;">➡️</div>
-      <div style="position:absolute;top:25px;left:50%;font-size:1.5rem;">ONE WAY</div>`;
-
-
-    A.hospital_quiet = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:100px;left:0;width:100%;height:18px;border:2px dashed rgba(100,150,255,.4);background:rgba(100,150,255,.05);"></div>
-      <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:3.5rem;">🏥</div>
-      <div style="position:absolute;top:15px;right:20%;font-size:2rem;">🤫</div>
-      <div style="position:absolute;bottom:48px;left:40%;font-size:2rem;animation:slow 7s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:70px;left:50%;font-size:1rem;opacity:.5;">🔇 SILENCE ZONE</div>`;
-
-
-    A.cyclist = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:100px;left:0;width:100%;height:4px;background:repeating-linear-gradient(90deg,#4a4 0,#4a4 12px,transparent 12px,transparent 18px);"></div>
-      <div style="position:absolute;bottom:105px;left:40%;font-size:1.8rem;animation:ba 6s infinite linear;">🚲</div>
-      <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:108px;left:60%;font-size:.9rem;color:#4a4;">BIKE LANE</div>`;
-
-
-    A.grand_test = () => `
-      <div style="${road()}"></div>
-      <div style="${road('50%','50%',100)};transform:rotate(90deg);transform-origin:left bottom;height:50px;"></div>
-      <div style="position:absolute;top:15px;left:50%;transform:translateX(-50%);font-size:3.5rem;">🏆</div>
-      <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:30%;font-size:1.8rem;animation:ba 5s infinite linear -1s;">🚌</div>
-      <div style="position:absolute;bottom:140px;left:52%;font-size:1.5rem;animation:ab 6s infinite linear;">🛺</div>
-      <div style="position:absolute;top:20px;right:25%;font-size:1.5rem;">🥇</div>`;
-
-
-    A.night_monsoon = () => `
-      <div style="${road()};background:#2a2d35;"></div>
-      <div style="position:absolute;inset:0;background:rgba(0,0,30,.4);pointer-events:none;"></div>
-      <div style="position:absolute;bottom:48px;left:42%;width:80px;height:22px;background:rgba(60,120,255,.5);border-radius:50%;animation:splash 1.5s infinite;"></div>
-      ${[12,24,36,48,60,72,84].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:20px;background:rgba(100,160,255,.6);border-radius:0 0 2px 2px;animation:rain .5s infinite linear ${x*.01}s;"></div>`).join('')}
-      <div style="position:absolute;bottom:46px;left:18%;font-size:1.6rem;line-height:1;">🚗</div>
-      <div style="position:absolute;bottom:54px;left:22%;width:14px;height:7px;background:rgba(255,255,150,.8);border-radius:2px;"></div>
-      <div style="position:absolute;bottom:54px;left:36%;width:14px;height:7px;background:rgba(255,255,150,.8);border-radius:2px;"></div>
-      <div style="position:absolute;top:15px;right:30px;font-size:2rem;">🌙</div>
-      <div style="position:absolute;top:30px;left:40%;font-size:2rem;animation:flash 2s infinite;">⚡</div>`;
-
-
-    A.wrong_side = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:68px;left:0;width:100%;height:2px;background:repeating-linear-gradient(90deg,#fc0 0,#fc0 12px,transparent 12px,transparent 20px);"></div>
-      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:ba 4s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:72px;left:60%;font-size:2rem;animation:ab 3.5s infinite linear;">🚙</div>
-      <div style="position:absolute;bottom:85px;left:48%;font-size:1.5rem;color:#f44;animation:flash .5s infinite;">⚠️</div>`;
-
-
-    A.highway_merge = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:98px;left:0;width:22%;height:18px;background:#3d3f45;border-top:2px solid #fff;border-bottom:2px solid #fff;border-radius:0 0 10px 0;"></div>
-      <div style="position:absolute;bottom:100px;left:20%;font-size:.85rem;opacity:.7;">↘️</div>
-      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:merge 4s infinite ease-in-out;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ba 4s infinite linear;">🚕</div>`;
-
-
-    A.zero_visibility = () => `
-      <div style="${road()};background:#4a4d55;"></div>
-      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(200,200,210,.8) 0%,rgba(200,200,210,.3) 40%,transparent 70%);animation:fogPulse 4s infinite alternate;pointer-events:none;"></div>
-      <div style="position:absolute;bottom:48px;left:40%;font-size:2rem;opacity:.35;">🚗</div>
-      <div style="position:absolute;bottom:54px;left:42%;width:10px;height:5px;background:rgba(255,255,150,.5);border-radius:2px;opacity:.4;"></div>
-      <div style="position:absolute;bottom:54px;left:54%;width:10px;height:5px;background:rgba(255,255,150,.5);border-radius:2px;opacity:.4;"></div>
-      <div style="position:absolute;top:20px;right:30px;font-size:2rem;opacity:.4;">👻</div>`;
-
-
-    A.mountain = () => `
-      <div style="position:absolute;bottom:40px;left:0;width:45%;height:50px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 20px 20px 0;"></div>
-      <div style="position:absolute;bottom:55px;left:40%;width:50px;height:40px;background:#3d3f45;border:4px solid #fff;border-radius:50%;border-left-color:transparent;border-bottom-color:transparent;transform:rotate(-45deg);"></div>
-      <div style="position:absolute;bottom:80px;left:55%;width:45%;height:50px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:20px 0 0 20px;transform:rotate(8deg);"></div>
-      <div style="position:absolute;top:5px;right:15%;font-size:3.5rem;">🏔️</div>
-      <div style="position:absolute;top:10px;left:10%;font-size:3rem;">⛰️</div>
-      <div style="position:absolute;bottom:48px;left:10%;font-size:1.8rem;animation:ba 5s infinite linear;">🚗</div>`;
-
-
-    A.rural = () => `
-      <div style="position:absolute;bottom:40px;left:0;width:100%;height:60px;background:repeating-linear-gradient(90deg,#8B7355 0,#8B7355 4px,#9B8365 4px,#9B8365 8px);border-top:3px solid #6B5335;border-bottom:3px solid #6B5335;"></div>
-      <div style="position:absolute;bottom:100px;left:0;width:100%;height:30px;background:#5a7a3a;"></div>
-      <div style="position:absolute;bottom:105px;left:10%;font-size:1.5rem;">🌾</div>
-      <div style="position:absolute;bottom:105px;left:30%;font-size:1.5rem;">🌾</div>
-      <div style="position:absolute;bottom:105px;right:20%;font-size:1.5rem;">🌾</div>
-      <div style="position:absolute;bottom:48px;left:50%;font-size:2.2rem;">🐄</div>
-      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 6s infinite linear;">🚗</div>`;
-
-
-    A.multi_modal = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;left:10%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:30%;font-size:1.8rem;animation:ba 5s infinite linear -1s;">🛺</div>
-      <div style="position:absolute;bottom:48px;left:55%;font-size:1.6rem;animation:ba 4.5s infinite linear -.5s;">🚲</div>
-      <div style="position:absolute;bottom:104px;left:40%;font-size:1.4rem;animation:ped 3s infinite alternate;">🚶</div>
-      <div style="position:absolute;bottom:48px;left:70%;font-size:2.2rem;animation:ba 5.5s infinite linear -2s;">🚌</div>
-      <div style="position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:1.5rem;">🌪️</div>`;
-
-
-    A.lane_discipline = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:68px;left:0;width:100%;height:3px;background:repeating-linear-gradient(90deg,#fff 0,#fff 14px,transparent 14px,transparent 22px);"></div>
-      <div style="position:absolute;bottom:48px;left:20%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:56px;left:22%;font-size:.9rem;color:#4a4;">✓</div>
-      <div style="position:absolute;bottom:60px;left:55%;font-size:2rem;animation:ba 4.5s infinite linear -.5s;transform:translateY(-3px);">🚙</div>
-      <div style="position:absolute;bottom:72px;left:58%;font-size:.9rem;color:#f44;">✗</div>`;
-
-
-    A.driving_school = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;top:15px;left:20%;font-size:3rem;">🏫</div>
-      <div style="position:absolute;bottom:48px;left:35%;font-size:2rem;animation:slow 5s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:66px;left:38%;width:18px;height:18px;background:#fff;border:2px solid #f00;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:#f00;">L</div>
-      <div style="position:absolute;bottom:42px;left:55%;font-size:1.2rem;">🚧</div>
-      <div style="position:absolute;bottom:42px;left:65%;font-size:1.2rem;">🚧</div>
-      <div style="position:absolute;bottom:42px;left:75%;font-size:1.2rem;">🚧</div>
-      <div style="position:absolute;top:20px;right:25%;font-size:2rem;">🎓</div>`;
-
-
-    A.intersection = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:40px;left:45%;width:60px;height:100%;background:#3d3f45;border-left:4px solid #fff;border-right:4px solid #fff;"></div>
-      <div style="position:absolute;top:30%;left:42%;width:36px;height:80px;background:#222;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;z-index:2;">
-        <div style="width:18px;height:18px;border-radius:50%;background:#555;"></div>
-        <div style="width:18px;height:18px;border-radius:50%;background:#fc0;box-shadow:0 0 6px #fc0;"></div>
-        <div style="width:18px;height:18px;border-radius:50%;background:#555;"></div>
-      </div>
-      <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:30%;font-size:1.8rem;animation:ba 6s infinite linear -2s;">🚕</div>`;
-    A.signals = A.intersection;
-    A.raving = A.festival;
-    A.market = A.market_street;
-    A.school = A.driving_school;
-    A.hospital = A.hospital_quiet;
-    A.emergency = A.ambulance_priority;
-
-
-    A._default = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;font-size:2.4rem;animation:ba 4s infinite linear;">🚗</div>`;
-
-
-    const artFn = A[theme] || A._default;
-    const artHTML = artFn();
-
-    wrap.innerHTML = badge + artHTML + `<style>${K}</style>`;
+    if (this._simAnimId) {
+      cancelAnimationFrame(this._simAnimId);
+      this._simAnimId = null;
+    }
+    const canvas = document.getElementById('scenario-sim-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    this._simState.isPlaying = true;
+    this._simState.speed = 1.0;
+    this._simState.time = 0;
+    this._simState.duration = 8.0;
+
+    const themeType = (lv.themeType || '').toLowerCase();
+    const isNight = themeType.includes('night');
+    const isRain = themeType.includes('rain') || themeType.includes('monsoon') || themeType.includes('puddle');
+    const isEmergency = themeType.includes('ambulance') || themeType.includes('emergency');
+    const isSignal = themeType.includes('signal') || themeType.includes('intersection');
+    const isParking = themeType.includes('parking');
+    const isSchool = themeType.includes('school') || themeType.includes('pedestrian') || themeType.includes('courtesy');
+
+    // Generate persistent rain streaks
+    const rainDrops = [];
+    for (let i = 0; i < 70; i++) {
+      rainDrops.push({
+        x: Math.random() * 1000,
+        y: Math.random() * 300,
+        speed: 600 + Math.random() * 300,
+        length: 12 + Math.random() * 10
+      });
+    }
+
+    let lastTimestamp = performance.now();
+
+    const renderFrame = (now) => {
+      const dt = Math.min((now - lastTimestamp) / 1000, 0.1);
+      lastTimestamp = now;
+
+      if (this._simState.isPlaying) {
+        this._simState.time += dt * this._simState.speed;
+        if (this._simState.time >= this._simState.duration) {
+          this._simState.time = 0;
+        }
+      }
+
+      const wrap = canvas.parentElement;
+      if (!wrap) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
+
+      if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const t = this._simState.time;
+      const progress = t / this._simState.duration;
+
+      // Update Slider
+      const slider = document.getElementById('sim-timeline');
+      if (slider && document.activeElement !== slider) {
+        slider.value = (progress * 100).toFixed(1);
+      }
+
+      // 1. SKY & BACKDROP
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.7);
+      if (isNight) {
+        skyGrad.addColorStop(0, '#040711');
+        skyGrad.addColorStop(1, '#0c1427');
+      } else if (isRain) {
+        skyGrad.addColorStop(0, '#1a2233');
+        skyGrad.addColorStop(1, '#2c374d');
+      } else {
+        skyGrad.addColorStop(0, '#0a192f');
+        skyGrad.addColorStop(1, '#1e293b');
+      }
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Distant Stars (Night)
+      if (isNight) {
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        for (let i = 0; i < 30; i++) {
+          const sx = (i * 37) % w;
+          const sy = (i * 23) % (h * 0.45);
+          ctx.fillRect(sx, sy, 1.5, 1.5);
+        }
+      }
+
+      // Mumbai Skyline Silhouette
+      ctx.fillStyle = isNight ? '#070b14' : '#111827';
+      ctx.beginPath();
+      ctx.moveTo(0, h * 0.55);
+      const skyline = [
+        [0.05, 0.42], [0.08, 0.42], [0.08, 0.52], [0.15, 0.52], [0.18, 0.35],
+        [0.22, 0.35], [0.25, 0.55], [0.32, 0.48], [0.38, 0.48], [0.42, 0.32],
+        [0.48, 0.32], [0.52, 0.54], [0.60, 0.40], [0.68, 0.40], [0.72, 0.55],
+        [0.80, 0.38], [0.85, 0.38], [0.88, 0.52], [0.95, 0.45], [1.0, 0.55]
+      ];
+      skyline.forEach(([px, py]) => ctx.lineTo(w * px, h * py));
+      ctx.lineTo(w, h * 0.6);
+      ctx.lineTo(0, h * 0.6);
+      ctx.fill();
+
+      // Bandra-Worli Sea Link Cable Towers in background
+      ctx.strokeStyle = isNight ? 'rgba(56, 189, 248, 0.25)' : 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 1.5;
+      const towerX = w * 0.78;
+      const towerY = h * 0.28;
+      ctx.beginPath();
+      ctx.moveTo(towerX - 25, h * 0.55);
+      ctx.lineTo(towerX, towerY);
+      ctx.lineTo(towerX + 25, h * 0.55);
+      // Cables
+      for (let c = 1; c <= 4; c++) {
+        ctx.moveTo(towerX, towerY + c * 10);
+        ctx.lineTo(towerX - c * 20, h * 0.55);
+        ctx.moveTo(towerX, towerY + c * 10);
+        ctx.lineTo(towerX + c * 20, h * 0.55);
+      }
+      ctx.stroke();
+
+      // 2. SIDEWALK & ROAD INFRASTRUCTURE
+      const roadTop = h * 0.58;
+      const roadHeight = h * 0.32;
+      const roadBottom = roadTop + roadHeight;
+      const sidewalkHeight = 16;
+      const sidewalkTop = roadTop - sidewalkHeight;
+
+      // Sidewalk Pavement
+      ctx.fillStyle = '#2b3240';
+      ctx.fillRect(0, sidewalkTop, w, sidewalkHeight);
+      ctx.fillStyle = '#374151';
+      ctx.fillRect(0, sidewalkTop, w, 2);
+
+      // Curb Stones (Alternating Yellow & Black hazard blocks)
+      const curbSize = 24;
+      for (let x = 0; x < w; x += curbSize) {
+        ctx.fillStyle = Math.floor(x / curbSize) % 2 === 0 ? '#f59e0b' : '#1e293b';
+        ctx.fillRect(x, roadTop - 4, curbSize, 4);
+      }
+
+      // Asphalt Road Surface
+      const roadGrad = ctx.createLinearGradient(0, roadTop, 0, roadBottom);
+      roadGrad.addColorStop(0, isRain ? '#181e29' : '#1e2430');
+      roadGrad.addColorStop(1, isRain ? '#10141c' : '#141822');
+      ctx.fillStyle = roadGrad;
+      ctx.fillRect(0, roadTop, w, roadHeight);
+
+      // Pavement Texture / Wet Gloss Sheen
+      if (isRain) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+        ctx.fillRect(0, roadTop, w, roadHeight * 0.4);
+      }
+
+      // Road Edge Solid White Lines
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.fillRect(0, roadTop + 2, w, 3);
+      ctx.fillRect(0, roadBottom - 4, w, 3);
+
+      // Road Center Dashed Yellow Lines
+      ctx.fillStyle = '#f59e0b';
+      const dashW = 28;
+      const gapW = 20;
+      const centerLineY = roadTop + roadHeight / 2;
+      for (let x = 0; x < w; x += dashW + gapW) {
+        ctx.fillRect(x, centerLineY - 1.5, dashW, 3);
+      }
+
+      // Zebra Crosswalk (Centered at 50%)
+      const crossX = w * 0.52;
+      const crossW = 90;
+      const numStripes = 6;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+      for (let s = 0; s < numStripes; s++) {
+        const stripeY = roadTop + 6 + s * ((roadHeight - 12) / numStripes);
+        ctx.fillRect(crossX - crossW / 2, stripeY, crossW, (roadHeight - 12) / numStripes - 6);
+      }
+
+      // Stop Line Before Crosswalk
+      const stopLineX = crossX - crossW / 2 - 14;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(stopLineX, roadTop + 2, 4, roadHeight / 2 - 4);
+      ctx.font = '800 10px monospace';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.fillText('STOP', stopLineX - 32, roadTop + roadHeight * 0.28);
+
+      // Street Lamp Pole with Volumetric Glow
+      const lampX = w * 0.22;
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(lampX, roadTop);
+      ctx.lineTo(lampX, roadTop - 65);
+      ctx.lineTo(lampX + 18, roadTop - 75);
+      ctx.stroke();
+
+      // Lamp Light Cone
+      const lampCone = ctx.createRadialGradient(lampX + 18, roadTop - 75, 5, lampX + 18, roadTop, 90);
+      lampCone.addColorStop(0, 'rgba(254, 240, 138, 0.35)');
+      lampCone.addColorStop(1, 'rgba(254, 240, 138, 0)');
+      ctx.fillStyle = lampCone;
+      ctx.beginPath();
+      ctx.moveTo(lampX + 18, roadTop - 75);
+      ctx.lineTo(lampX - 45, roadTop + 40);
+      ctx.lineTo(lampX + 80, roadTop + 40);
+      ctx.closePath();
+      ctx.fill();
+
+      // Traffic Signal
+      const signalX = stopLineX + 8;
+      const signalY = roadTop - 50;
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(signalX - 8, signalY - 25, 16, 44);
+      ctx.strokeStyle = '#334155';
+      ctx.strokeRect(signalX - 8, signalY - 25, 16, 44);
+
+      // Signal State Logic
+      let signalColor = 'green';
+      if (isSignal || isSchool) {
+        if (t < 3.5) signalColor = 'green';
+        else if (t < 4.2) signalColor = 'yellow';
+        else if (t < 7.2) signalColor = 'red';
+        else signalColor = 'green';
+      }
+
+      // Draw 3 Signal Bulbs
+      const bulbs = [
+        { color: '#ef4444', active: signalColor === 'red', y: signalY - 16 },
+        { color: '#f59e0b', active: signalColor === 'yellow', y: signalY - 3 },
+        { color: '#10b981', active: signalColor === 'green', y: signalY + 10 }
+      ];
+
+      bulbs.forEach(b => {
+        ctx.beginPath();
+        ctx.arc(signalX, b.y, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = b.active ? b.color : '#0f172a';
+        ctx.fill();
+        if (b.active) {
+          ctx.beginPath();
+          ctx.arc(signalX, b.y, 10, 0, Math.PI * 2);
+          ctx.fillStyle = b.color + '44';
+          ctx.fill();
+        }
+      });
+
+      // 3. DRAW VECTOR VEHICLES
+      function drawVectorCar(cx, cy, color, isBraking, headlightsOn, turnSignal) {
+        ctx.save();
+        ctx.translate(cx, cy);
+
+        // Ground Drop Shadow
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.beginPath();
+        ctx.ellipse(0, 10, 36, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Headlight Beams (Left to Right)
+        if (headlightsOn) {
+          const hlGrad = ctx.createLinearGradient(30, 0, 110, 0);
+          hlGrad.addColorStop(0, 'rgba(254, 240, 138, 0.55)');
+          hlGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
+          ctx.fillStyle = hlGrad;
+          ctx.beginPath();
+          ctx.moveTo(32, 2);
+          ctx.lineTo(120, -14);
+          ctx.lineTo(120, 18);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // Car Main Body (Lower)
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.roundRect(-32, -4, 64, 16, [4, 6, 2, 2]);
+        ctx.fill();
+
+        // Car Roof / Cabin
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.roundRect(-16, -14, 34, 12, [6, 8, 0, 0]);
+        ctx.fill();
+
+        // Glass Windows
+        ctx.fillStyle = isNight ? '#1e293b' : '#93c5fd';
+        ctx.beginPath();
+        ctx.roundRect(-13, -12, 14, 8, [3, 2, 0, 0]);
+        ctx.roundRect(3, -12, 12, 8, [2, 4, 0, 0]);
+        ctx.fill();
+
+        // Wheels (Front & Rear)
+        ;[-18, 18].forEach(wx => {
+          ctx.fillStyle = '#111827';
+          ctx.beginPath();
+          ctx.arc(wx, 11, 7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#94a3b8';
+          ctx.beginPath();
+          ctx.arc(wx, 11, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Headlights
+        ctx.fillStyle = headlightsOn ? '#fef08a' : '#cbd5e1';
+        ctx.fillRect(30, 0, 3, 5);
+
+        // Taillights / Brake Lights
+        ctx.fillStyle = isBraking ? '#ef4444' : '#991b1b';
+        ctx.fillRect(-33, 0, 3, 5);
+        if (isBraking) {
+          ctx.beginPath();
+          ctx.arc(-32, 2, 8, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+          ctx.fill();
+        }
+
+        // Amber Turn Signal
+        if (turnSignal && Math.floor(now / 250) % 2 === 0) {
+          ctx.fillStyle = '#f59e0b';
+          ctx.fillRect(28, 6, 4, 3);
+          ctx.fillRect(-30, 6, 4, 3);
+        }
+
+        ctx.restore();
+      }
+
+      function drawAmbulance(ax, ay) {
+        ctx.save();
+        ctx.translate(ax, ay);
+
+        // Drop shadow
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.beginPath();
+        ctx.ellipse(0, 12, 42, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Headlight Beams
+        const hlGrad = ctx.createLinearGradient(35, 0, 140, 0);
+        hlGrad.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+        hlGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = hlGrad;
+        ctx.beginPath();
+        ctx.moveTo(38, 2);
+        ctx.lineTo(140, -18);
+        ctx.lineTo(140, 24);
+        ctx.closePath();
+        ctx.fill();
+
+        // Ambulance White Body
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.roundRect(-38, -16, 76, 26, [6, 10, 3, 3]);
+        ctx.fill();
+
+        // Fluorescent Red Emergency Stripe
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(-38, 0, 76, 6);
+
+        // Red Medical Cross
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(-12, -10, 10, 3);
+        ctx.fillRect(-8.5, -13.5, 3, 10);
+
+        // Windshield
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.roundRect(14, -14, 18, 11, [2, 6, 0, 0]);
+        ctx.fill();
+
+        // Flashing Dual Siren Lightbar (Red / Blue)
+        const flashPhase = Math.floor(now / 120) % 2 === 0;
+        ctx.fillStyle = flashPhase ? '#ef4444' : '#3b82f6';
+        ctx.fillRect(-4, -21, 6, 5);
+        ctx.fillStyle = flashPhase ? '#3b82f6' : '#ef4444';
+        ctx.fillRect(4, -21, 6, 5);
+
+        // Ambient Siren Glow Flash
+        const sirenGlow = ctx.createRadialGradient(0, -20, 4, 0, -20, 60);
+        sirenGlow.addColorStop(0, flashPhase ? 'rgba(239, 68, 68, 0.45)' : 'rgba(59, 130, 246, 0.45)');
+        sirenGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = sirenGlow;
+        ctx.beginPath();
+        ctx.arc(0, -20, 60, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Wheels
+        ;[-22, 22].forEach(wx => {
+          ctx.fillStyle = '#111827';
+          ctx.beginPath();
+          ctx.arc(wx, 12, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#e2e8f0';
+          ctx.beginPath();
+          ctx.arc(wx, 12, 4, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        ctx.restore();
+      }
+
+      function drawPedestrian(px, py, stride, hasBackpack, hasUmbrella) {
+        ctx.save();
+        ctx.translate(px, py);
+
+        // Drop shadow
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.beginPath();
+        ctx.ellipse(0, 8, 8, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Moving Legs
+        const legAngle = Math.sin(stride) * 0.45;
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2.5;
+        // Left leg
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(Math.sin(legAngle) * 8, 7);
+        ctx.stroke();
+        // Right leg
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-Math.sin(legAngle) * 8, 7);
+        ctx.stroke();
+
+        // Torso / Shirt
+        ctx.fillStyle = hasBackpack ? '#3b82f6' : '#f59e0b';
+        ctx.beginPath();
+        ctx.roundRect(-4, -12, 8, 12, 2);
+        ctx.fill();
+
+        // Backpack
+        if (hasBackpack) {
+          ctx.fillStyle = '#ef4444';
+          ctx.fillRect(-6, -10, 3, 8);
+        }
+
+        // Head
+        ctx.fillStyle = '#fed7aa';
+        ctx.beginPath();
+        ctx.arc(0, -16, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Hair / Cap
+        ctx.fillStyle = '#451a03';
+        ctx.beginPath();
+        ctx.arc(0, -18, 3.5, Math.PI, Math.PI * 2);
+        ctx.fill();
+
+        // Umbrella (Rain)
+        if (hasUmbrella) {
+          ctx.fillStyle = '#ec4899';
+          ctx.beginPath();
+          ctx.arc(0, -23, 11, Math.PI, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#94a3b8';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(0, -23);
+          ctx.lineTo(0, -13);
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      // 4. SCENARIO SIMULATION LOGIC
+      let carX = 0;
+      let carSpeed = 42;
+      let isBraking = false;
+      let statusText = 'CRUISING';
+      let statusColor = '#10b981';
+      let brakePercent = 0;
+      const speedValEl = document.getElementById('sim-speed-val');
+      const brakeValEl = document.getElementById('sim-brake-val');
+      const statusValEl = document.getElementById('sim-status-val');
+      const alertEl = document.getElementById('sim-alert-banner');
+
+      if (isEmergency) {
+        // AMBULANCE CORRIDOR SCENARIO
+        const ambX = ((t * 1.6) / this._simState.duration) * (w + 140) - 70;
+        const playerYieldX = w * 0.45;
+        const playerLaneY = roadTop + roadHeight * 0.28 + (t > 2.0 && t < 6.0 ? 18 : 0);
+        const playerBraking = t > 2.0 && t < 4.5;
+        const playerTurnSignal = t > 1.8 && t < 5.5;
+
+        drawAmbulance(ambX, roadTop + roadHeight * 0.28);
+        drawVectorCar(playerYieldX, playerLaneY, '#3b82f6', playerBraking, true, playerTurnSignal);
+        drawVectorCar(w * 0.85, roadTop + roadHeight * 0.72, '#eab308', false, true, false);
+
+        carSpeed = playerBraking ? 18 : 38;
+        brakePercent = playerBraking ? 65 : 0;
+        statusText = playerTurnSignal ? 'YIELDING TO AMBULANCE 🚑' : 'CLEAR CORRIDOR';
+        statusColor = '#f59e0b';
+
+        if (alertEl) {
+          alertEl.textContent = '🚨 STATUTORY PRIORITY: YIELD TO EMERGENCY VEHICLES';
+          alertEl.classList.toggle('show', t > 1.5 && t < 5.5);
+        }
+      } else if (isSignal) {
+        // TRAFFIC SIGNAL & CAMERA ENFORCEMENT
+        const stopTargetX = stopLineX - 40;
+        if (t < 3.0) {
+          carX = ((t / 3.0) * (stopTargetX + 60)) - 60;
+          carSpeed = 40;
+          isBraking = false;
+          statusText = 'APPROACHING SIGNAL';
+          statusColor = '#38bdf8';
+        } else if (t < 7.0) {
+          carX = stopTargetX;
+          carSpeed = 0;
+          isBraking = true;
+          brakePercent = 100;
+          statusText = 'STOPPED AT RED LIGHT 🛑';
+          statusColor = '#ef4444';
+        } else {
+          const leaveT = (t - 7.0) / 1.0;
+          carX = stopTargetX + leaveT * (w - stopTargetX + 80);
+          carSpeed = Math.round(leaveT * 40);
+          isBraking = false;
+          statusText = 'GREEN SIGNAL · PROCEEDING';
+          statusColor = '#10b981';
+        }
+
+        drawVectorCar(carX, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+
+        // Violator NPC car running red light at t=4.5s
+        if (t > 3.8 && t < 6.8) {
+          const npcX = ((t - 3.8) / 3.0) * (w + 100) - 50;
+          drawVectorCar(npcX, roadTop + roadHeight * 0.72, '#ef4444', false, true, false);
+          
+          // Camera Flash Trigger
+          if (t > 4.6 && t < 4.9) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillRect(0, 0, w, h);
+          }
+          if (alertEl) {
+            alertEl.textContent = '🚨 RED LIGHT RUNNER CAPTURED — ₹1,000 FINE';
+            alertEl.classList.toggle('show', t > 4.7 && t < 6.8);
+          }
+        } else if (alertEl) {
+          alertEl.classList.remove('show');
+        }
+      } else {
+        // PEDESTRIAN COURTESY & SCHOOL ZONE (Default)
+        const stopTargetX = stopLineX - 42;
+        if (t < 2.5) {
+          carX = (t / 2.5) * (stopTargetX + 60) - 60;
+          carSpeed = Math.round(40 - (t / 2.5) * 15);
+          isBraking = t > 1.2;
+          brakePercent = isBraking ? 50 : 0;
+          statusText = 'APPROACHING CROSSWALK';
+          statusColor = '#38bdf8';
+        } else if (t < 6.5) {
+          carX = stopTargetX;
+          carSpeed = 0;
+          isBraking = true;
+          brakePercent = 90;
+          statusText = 'YIELDING TO PEDESTRIANS 🚶';
+          statusColor = '#10b981';
+        } else {
+          const leaveT = (t - 6.5) / 1.5;
+          carX = stopTargetX + leaveT * (w - stopTargetX + 80);
+          carSpeed = Math.round(leaveT * 36);
+          isBraking = false;
+          brakePercent = 0;
+          statusText = 'CROSSWALK CLEAR · ACCELERATING';
+          statusColor = '#10b981';
+        }
+
+        drawVectorCar(carX, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+
+        // Animated Pedestrians Crossing
+        if (t > 1.8 && t < 7.2) {
+          const pedProg = (t - 1.8) / 5.4;
+          const pedY = sidewalkTop + pedProg * (roadHeight + 8);
+          drawPedestrian(crossX - 18, pedY, t * 10, isSchool, isRain);
+          drawPedestrian(crossX + 16, pedY - 14, t * 9, isSchool, isRain);
+        } else {
+          // Waiting at curb
+          drawPedestrian(crossX - 18, sidewalkTop + 6, 0, isSchool, isRain);
+        }
+
+        if (alertEl) alertEl.classList.remove('show');
+      }
+
+      // 5. WEATHER EFFECTS (Rain & Splash Particles)
+      if (isRain) {
+        ctx.strokeStyle = 'rgba(186, 230, 253, 0.65)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        rainDrops.forEach(r => {
+          r.y += r.speed * dt;
+          r.x -= r.speed * dt * 0.35; // Angled rain
+          if (r.y > h) {
+            r.y = -10;
+            r.x = Math.random() * (w + 100);
+            // Road impact splash ripple
+            if (r.y > roadTop) {
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+              ctx.beginPath();
+              ctx.ellipse(r.x, roadTop + Math.random() * roadHeight, 4, 1.5, 0, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          ctx.moveTo(r.x, r.y);
+          ctx.lineTo(r.x - 4, r.y + r.length);
+        });
+        ctx.stroke();
+      }
+
+      // Update Telemetry HUD
+      if (speedValEl) speedValEl.textContent = `${carSpeed} km/h`;
+      if (brakeValEl) brakeValEl.textContent = `${brakePercent}%`;
+      if (statusValEl) {
+        statusValEl.textContent = statusText;
+        statusValEl.style.color = statusColor;
+      }
+
+      ctx.restore();
+
+      this._simAnimId = requestAnimationFrame(renderFrame);
+    };
+
+    this._simAnimId = requestAnimationFrame(renderFrame);
   },
   _disposeBriefingScene() {
     if (this._bScene) {
@@ -2437,81 +3282,137 @@ let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
     if (lv) this._selSyl('practical')
   },
   selectMode(mode) {
-
     this.curMode = mode
-
-    const practBtns = document.querySelectorAll('#br-content .btn[data-mode]')
-    practBtns.forEach(btn => {
-      const btnMode = btn.dataset.mode
-      if (btnMode === mode) {
-        btn.style.background = 'var(--accent, #D97706)'
-        btn.style.color = '#fff'
-        btn.style.borderColor = 'var(--accent, #D97706)'
-      } else {
-        btn.style.background = 'var(--panel, rgba(0,0,0,0.04))'
-        btn.style.color = 'var(--ink, #111827)'
-        btn.style.borderColor = 'var(--line, rgba(0,0,0,0.08))'
-      }
-    })
+    const lv = this.cur
+    if (lv) this._selSyl('practical')
   },
   dispatchStart(mode) {
-
-    if (!mode) {
-      const lv = this.cur
-      const availModes = lv.modes || ['car']
-      mode = (S.vehicle === 'Bike' && availModes.includes('bike')) ? 'bike'
-        : (S.vehicle === 'Car' && availModes.includes('car')) ? 'car'
-        : this.curMode || availModes[0]
-    }
-    const lv = this.cur
+    const lv = this.cur || (window.LVS && window.LVS[0]) || { id: 1 }
+    const availModes = lv.modes || ['car']
+    const chosenMode = mode || this.curMode || availModes[0]
+    
+    this.curMode = chosenMode
     localStorage.setItem('traffic_lv', lv.id)
-    localStorage.setItem('traffic_mode', mode)
-    window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`
-  },
-showQuiz(mode, perf = null) {
-    mode = mode || ui.curMode || 'car'
-    let qs = this.cur.quiz && this.cur.quiz[mode] ? this.cur.quiz[mode] : this.cur.quiz ? this.cur.quiz.car : null
+    localStorage.setItem('traffic_mode', chosenMode)
 
+    let vehParam = 'car'
+    if (chosenMode === 'pedestrian') {
+      vehParam = 'pedestrian'
+    } else if (chosenMode === 'bike') {
+      vehParam = 'bike'
+    } else if (chosenMode === 'chaos') {
+      vehParam = (S.vehicle || 'car').toLowerCase()
+    } else if (S.vehicle) {
+      vehParam = S.vehicle.toLowerCase()
+    }
+
+    localStorage.setItem('traffic_veh', vehParam)
+    window.location.href = `Driving.html?lv=${lv.id}&mode=${chosenMode}&veh=${vehParam}`
+  },
+  abortQuiz() {
+    const quizEl = document.getElementById('screen-quiz')
+    if (quizEl) {
+      quizEl.classList.remove('active')
+      quizEl.style.display = ''
+      quizEl.style.opacity = ''
+      quizEl.style.pointerEvents = ''
+    }
+    const lv = this.cur || (window.LVS && window.LVS.find(l => l.id == (this.qst?.lvId || 1))) || window.LVS?.[0]
+    if (lv && lv.id) {
+      this.showBriefing(lv.id, 'exam')
+    } else {
+      this.showLevels()
+    }
+  },
+  showQuiz(mode, perf = null) {
+    mode = mode || ui.curMode || (window.game && window.game.vehMode) || 'car';
+    ui.curMode = mode;
+
+    // Ensure this.cur is always a valid level object
+    if (!this.cur) {
+      const curLvId = (window.game && window.game._lv) || 1;
+      this.cur = (window.LVS && window.LVS.find(l => l.id == curLvId)) || window.LVS?.[0] || {
+        id: curLvId,
+        name: 'Lesson ' + curLvId,
+        themeType: 'traffic_safety',
+        law: { sec: 'Motor Vehicles Act', off: 'Traffic Violation', fine: '₹500 - ₹2000' }
+      };
+    }
+    const lv = this.cur;
+    const lawSec = (lv.law && lv.law.sec) || 'Motor Vehicles Act';
+    const lawOff = (lv.law && lv.law.off) || 'Traffic Violation';
+    const lawFine = (lv.law && lv.law.fine) || '₹500 - ₹2000';
+    const themeName = (lv.themeType || 'traffic_safety').replace(/_/g, ' ');
+
+    let qs = lv.quiz && lv.quiz[mode] ? [...lv.quiz[mode]] : lv.quiz && lv.quiz.car ? [...lv.quiz.car] : null;
 
     if (perf && perf.violations && perf.violations.length > 0) {
       const tag = perf.violations[0];
-      const correction = CORRECTIVE_QUIZ[tag];
+      const correction = typeof CORRECTIVE_QUIZ !== 'undefined' ? CORRECTIVE_QUIZ[tag] : null;
       if (correction) {
         if (!qs) qs = [];
-        qs = [...qs, correction];
+        qs = [...qs, { ...correction, o: [...correction.o] }];
       }
     }
 
     // Use AdaptiveQuiz engine for syllabus-based + violation-based questions
-    const adaptiveQuiz = new AdaptiveQuiz(this.cur.id, perf);
-    const adaptiveQuestions = adaptiveQuiz.generateQuiz(5);
+    let adaptiveQuestions = [];
+    try {
+      if (typeof AdaptiveQuiz !== 'undefined') {
+        const adaptiveQuiz = new AdaptiveQuiz(lv.id || 1, perf);
+        adaptiveQuestions = adaptiveQuiz.generateQuiz(3) || [];
+      }
+    } catch(aqe) {
+      console.warn('[Quiz] Adaptive quiz generation error:', aqe);
+    }
     
     if (!qs || qs.length === 0) {
       qs = [
-        { q: `What is the primary rule for this scenario: ${this.cur.name}?`, o: [this.cur.law.sec, 'Speed up', 'Ignore signals', 'Honk loudly'], a: 0 },
-        { q: `What is the penalty for ${this.cur.law.off}?`, o: [this.cur.law.fine, '₹100', 'No fine', 'Warning'], a: 0 },
-        { q: `If you fail to follow ${this.cur.themeType.replace('_', ' ')} rules, what happens?`, o: ['Accidents and fines', 'Nothing', 'You get a reward', 'Traffic speeds up'], a: 0 }
-      ]
+        { q: `What is the primary traffic rule for "${lv.name || 'this scenario'}"?`, o: [lawSec + ' compliance and caution', 'Accelerate fast through intersections', 'Ignore traffic signals when late', 'Honk aggressively to clear the way'], a: 0 },
+        { q: `What is the legal penalty for ${lawOff}?`, o: [`Fine of ${lawFine} and penalty points`, '₹50 instant cash reward', 'No penalty if you apologize', 'Verbal warning only'], a: 0 },
+        { q: `What is the safe procedure in ${themeName} conditions?`, o: ['Maintain safe following distance and obey signs', 'Speed up to cross early', 'Overtake vehicles on blind turns', 'Drive on the sidewalk to avoid traffic'], a: 0 }
+      ];
     }
     
-    // Merge adaptive questions with base questions
-    qs = [...adaptiveQuestions, ...qs];
-
-    qs.forEach((q) => {
-      const c = q.o[q.a]
-      const rIdx = Math.floor(Math.random() * 4)
-      q.o[q.a] = q.o[rIdx]
-      q.o[rIdx] = c
-      q.a = rIdx
-    })
-
-    this.qst = { qs: qs, cur: 0, pass: 0, mode: mode }
-    if (qs.length === 0) {
-      this._fq()
-      return
+    // Merge adaptive questions with base questions if available
+    if (adaptiveQuestions.length > 0) {
+      qs = [...adaptiveQuestions, ...qs];
     }
-    this._rq()
-    this.show('screen-quiz', { direction: 'forward' })
+
+    // Ensure all questions are well-formed (deep-cloned options, valid 4 choices)
+    const validQuestions = [];
+    qs.forEach((rawQ) => {
+      if (!rawQ || !rawQ.q || !Array.isArray(rawQ.o) || rawQ.o.length < 2) return;
+      const q = {
+        q: String(rawQ.q),
+        o: rawQ.o.map(opt => String(opt || '')),
+        a: typeof rawQ.a === 'number' ? rawQ.a : 0
+      };
+      while (q.o.length < 4) q.o.push('None of the above');
+      q.o = q.o.slice(0, 4);
+      
+      // Shuffle options and update answer index
+      const correctText = q.o[q.a];
+      const rIdx = Math.floor(Math.random() * 4);
+      q.o[q.a] = q.o[rIdx];
+      q.o[rIdx] = correctText;
+      q.a = rIdx;
+      validQuestions.push(q);
+    });
+
+    this.qst = { qs: validQuestions.slice(0, 5), cur: 0, pass: 0, mode: mode };
+    if (this.qst.qs.length === 0) {
+      this._fq();
+      return;
+    }
+
+    // Hide game canvas and pause game loop
+    const gc = document.getElementById('gc');
+    if (gc) gc.classList.remove('on');
+    if (window.game) window.game.playing = false;
+
+    this._rq();
+    this.show('screen-quiz', { direction: 'forward', instant: true });
   },
   _rq() {
     const s = this.qst,
@@ -2556,26 +3457,23 @@ showQuiz(mode, perf = null) {
       return
     }
     if (s.mode === 'final') {
-      this.showResults(game?.fs || 100, game?.fst || { vio: 0 })
+      this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 })
     } else {
-      const lv = this.cur
-      if (!S.comp[lv.id]) S.comp[lv.id] = {}
-      if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
-      S.comp[lv.id].modes[s.mode] = true
+      const lv = this.cur || (window.LVS && window.LVS.find(l => l.id == (this.qst?.lvId || 1))) || window.LVS?.[0]
+      if (lv && lv.id) {
+        if (!S.comp[lv.id]) S.comp[lv.id] = {}
+        if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
+        S.comp[lv.id].modes[s.mode || 'practice'] = true
+        S.comp[lv.id].completed = true
+        S.comp[lv.id].finalQuiz = true
 
-
-
-
-      const requiredModes = lv.modes || [s.mode]
-      const allModesDone = requiredModes.every((m) => S.comp[lv.id].modes[m])
-      if (allModesDone && !S.comp[lv.id].finalQuiz) {
-        const finalScore = game?.fs || 100
+        const finalScore = window.game?.fs || 100
         const prevScore = S.comp[lv.id].score || 0
         S.comp[lv.id].score = Math.max(finalScore, prevScore)
         S.comp[lv.id].time = Date.now()
-        S.comp[lv.id].finalQuiz = true
-        S.total += finalScore
+        S.total = (S.total || 0) + finalScore
         if (lv.badge && !S.badges.includes(lv.badge.id)) S.badges.push(lv.badge.id)
+
         const completedCount = Object.keys(S.comp).length
         if (completedCount >= 10 && !S.badges.includes('level_10')) S.badges.push('level_10')
         if (completedCount >= 20 && !S.badges.includes('level_20')) S.badges.push('level_20')
@@ -2584,18 +3482,12 @@ showQuiz(mode, perf = null) {
         if (completedCount >= 52 && !S.badges.includes('level_52')) S.badges.push('level_52')
         if (completedCount >= 52 && !S.badges.includes('traffic_hero')) S.badges.push('traffic_hero')
 
-
-
-
-
-        const vioCount = game?.fst?.vio || 0
+        const vioCount = window.game?.fst?.vio || 0
         const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
         S.civicScore = (S.civicScore || 0) + civicGain
 
-
-
         if (!S.violationHistory) S.violationHistory = {}
-        ;(game?.violationsLog || []).forEach((v) => {
+        ;(window.game?.violationsLog || []).forEach((v) => {
           S.violationHistory[v] = (S.violationHistory[v] || 0) + 1
         })
         const tiers = [
@@ -2612,12 +3504,12 @@ showQuiz(mode, perf = null) {
         })
       }
       save()
-      toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851')
+      toast(`✅ ${(s.mode || 'practice').charAt(0).toUpperCase() + (s.mode || 'practice').slice(1)} quiz passed!`, '#00c851')
       if (window.location.pathname.toLowerCase().includes('driving')) {
-        window.location.href = 'Academy.html'
+        this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 });
       } else {
         if (typeof SCENARIOS !== 'undefined') {
-          const sc = SCENARIOS.find(x => x.levelRef === lv.id)
+          const sc = SCENARIOS.find(x => x.levelRef === lv?.id)
           if (sc) {
             this.show2D(sc.id)
             return
@@ -2626,20 +3518,25 @@ showQuiz(mode, perf = null) {
             return
           }
         }
-        window.location.href = `Driving.html?lv=${lv.id}&mode=${s.mode}`
+        this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 });
       }
     }
   },
   showResults(score, stats) {
-    const lv = this.cur,
-      prev = S.comp[lv.id]?.score || 0
-    S.comp[lv.id] = { ...S.comp[lv.id], score: Math.max(score, prev), time: Date.now(), finalQuiz: true }
-    S.total += score
+    const lv = this.cur || (window.LVS && window.LVS[0])
+    if (lv && lv.id) {
+      const prev = S.comp[lv.id]?.score || 0
+      S.comp[lv.id] = { ...S.comp[lv.id], score: Math.max(score, prev), time: Date.now(), finalQuiz: true, completed: true }
+      if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
+      S.comp[lv.id].modes.learn = true
+      S.comp[lv.id].modes.practice = true
+      S.total = (S.total || 0) + score
+    }
     const vioCount = stats?.vio || 0
     const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
     S.civicScore = (S.civicScore || 0) + civicGain
     if (!S.violationHistory) S.violationHistory = {}
-    ;(stats?.violations || game?.violationsLog || []).forEach((v) => {
+    ;(stats?.violations || window.game?.violationsLog || []).forEach((v) => {
       S.violationHistory[v] = (S.violationHistory[v] || 0) + 1
     })
     ;[
@@ -2692,18 +3589,22 @@ showQuiz(mode, perf = null) {
     }
 
     save()
-    document.getElementById('rico').textContent = score > 200 ? '🌟' : '⭐'
-    document.getElementById('rtit').textContent = 'Level Complete!'
-    document.getElementById('rsub').textContent = lv.name + ' 🔄 Well done!'
-    
+    const rico = document.getElementById('rico')
+    if (rico) rico.textContent = score > 200 ? '🌟' : '⭐'
+    const rtit = document.getElementById('rtit')
+    if (rtit) rtit.textContent = 'Level Complete!'
+    const rsub = document.getElementById('rsub')
+    if (rsub) rsub.textContent = (lv.name || 'Lesson') + ' 🔄 Well done!'
+
     // Generate and store certificate data for sharing
-    const certData = this._generateCertificateData(lv, score, stats);
-    window.LAST_CERTIFICATE = certData;
-    document.getElementById('rcard').innerHTML =
-      `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 52</span></div>
+    const certData = this._generateCertificateData(lv, score, stats)
+    window.LAST_CERTIFICATE = certData
+    const rcard = document.getElementById('rcard')
+    if (rcard) {
+      rcard.innerHTML = `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 52</span></div>
 ${stats.reward ? `<div class="rr"><span class="rl" style="color:var(--green, #059669)">Level Reward</span><span class="rv" style="color:var(--green, #059669)">+₹${stats.reward.toLocaleString('en-IN')}</span></div>` : ''}
 ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines Deducted</span><span class="rv" style="color:#ff3b30">-₹${stats.fineAmt.toLocaleString('en-IN')}</span></div>` : ''}
-<div class="rr" style="margin-top:10px; border-top:1px solid var(--line, rgba(0,0,0,0.15)); padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:var(--accent, #b45309); font-weight:700;">₹${S.wallet.toLocaleString('en-IN')}</span></div>
+<div class="rr" style="margin-top:10px; border-top:1px solid var(--line, rgba(0,0,0,0.15)); padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:var(--accent, #b45309); font-weight:700;">₹${(S.wallet || 0).toLocaleString('en-IN')}</span></div>
 <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
   <button class="btn btn-p" onclick="ui.downloadCertificate()" style="flex: 1; min-width: 140px;">
     📥 Download Certificate
@@ -2712,8 +3613,10 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     🔗 Share Certificate
   </button>
 </div>`
-    document.getElementById('ro').classList.add('on')
-    sfx.play('win')
+    }
+    const ro = document.getElementById('ro')
+    if (ro) ro.classList.add('on')
+    if (window.sfx && typeof window.sfx.play === 'function') sfx.play('win')
   },
   issueChallan(off, sec, amt, loc, cb) {
     this.cq.push({ off, sec, amt, loc, cb })
@@ -3123,25 +4026,27 @@ const _buildVehicle = (type, col) => {
 
   if (window.PRELOADED_MODELS) {
 
-    if (type === 'car' && window.PRELOADED_MODELS['lowpoly_cars'] && Math.random() < 0.4) {
-      const lpRoot = window.PRELOADED_MODELS['lowpoly_cars']
+    // Safe curated model lookup
+    let modelKey = type
+    const keysForType = Object.keys(window.PRELOADED_MODELS).filter((k) => k === type || k.startsWith(type + '_'))
+    if (keysForType.length > 0) {
+      modelKey = keysForType[Math.floor(Math.random() * keysForType.length)]
+    }
 
-      const cars = []
-      lpRoot.traverse(c => { if (c.isGroup && c.children.length > 0) cars.push(c) })
-      if (cars.length > 0) {
-        baseModel = cars[Math.floor(Math.random() * cars.length)].clone()
-        s = 2.0
+    if (window.PRELOADED_MODELS[modelKey]) {
+      baseModel = window.PRELOADED_MODELS[modelKey].clone()
+      if (type === 'bus' || type === 'truck') s = 2.5
+      else if (type === 'auto' || type === 'bike') s = 1.5
+      else s = 2.0
 
-        baseModel.traverse((child) => {
-          if (child.isMesh && child.material) {
-            const n = child.name.toLowerCase()
-            if (n.includes('body') || n.includes('paint') || n.includes('chassis') || (!n.includes('wheel') && !n.includes('glass') && !n.includes('window'))) {
-              child.material = child.material.clone()
-              child.material.color.setHex(col)
-            }
+      baseModel.traverse((child) => {
+        if (child.isMesh && child.material) {
+          if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
+            child.material = child.material.clone()
+            child.material.color.setHex(col)
           }
-        })
-      }
+        }
+      })
     }
 
 
@@ -3225,6 +4130,11 @@ const _buildVehicle = (type, col) => {
 
     g.type = type
     return g
+  }
+
+  if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+    const iv = window.IndianVehicles.buildVehicle(type, col);
+    if (iv) return iv;
   }
 
   const g = new THREE.Group()

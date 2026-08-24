@@ -1,35 +1,59 @@
 
 
 const VEHICLE_VARIETY_WEIGHTS = {
-  car: 0.35,
-  bike: 0.25,
-  auto: 0.15,
-  bus: 0.10,
-  truck: 0.08,
-  taxi: 0.05,
-  ambulance: 0.02
+  car: 0.14,
+  wagonr: 0.08,
+  sedan: 0.08,
+  suv: 0.08,
+  creta: 0.06,
+  innova: 0.05,
+  taxi: 0.07,
+  auto: 0.12,
+  auto_yellow: 0.04,
+  bike: 0.08,
+  splendor: 0.06,
+  activa: 0.06,
+  ktm: 0.02,
+  bus: 0.04,
+  truck: 0.03,
+  ace: 0.03,
+  police: 0.01,
+  ambulance: 0.01
 };
 
 const VEHICLE_CLASS_LANE_ACCESS = {
   car: ['car', 'bus'],
-  bike: ['bike', 'car', 'bus'],
+  wagonr: ['car', 'bus'],
+  sedan: ['car', 'bus'],
+  city: ['car', 'bus'],
+  suv: ['car', 'bus'],
+  creta: ['car', 'bus'],
+  innova: ['car', 'bus'],
+  taxi: ['car', 'bus'],
   auto: ['car', 'bus'],
+  auto_yellow: ['car', 'bus'],
+  bike: ['bike', 'car', 'bus'],
+  splendor: ['bike', 'car', 'bus'],
+  activa: ['bike', 'car', 'bus'],
+  ktm: ['bike', 'car', 'bus'],
+  cycle: ['bike', 'car'],
   bus: ['bus'],
   truck: ['bus', 'car'],
-  taxi: ['car', 'bus'],
+  ace: ['car', 'bus'],
+  police: ['car', 'bus'],
   ambulance: ['bus', 'car']
 };
 
 const RULE_BREAKER_PROBABILITY = 0.20;
 const PLATOON_SIZE = 3;
 const PLATOON_GAP = 8;
-const BASE_NPC_COUNT = 16;
-const MAX_NPC_COUNT = 48;
-const MOBILE_NPC_COUNT = 16;
-const SPAWN_RADIUS = 400;
-const SPAWN_MIN_GAP = 20;
-const SPAWN_MAX_GAP = 60;
-const DENSITY_INCREASE_PER_MIN = 0.05;
+const BASE_NPC_COUNT = 36;
+const MAX_NPC_COUNT = 80;
+const MOBILE_NPC_COUNT = 24;
+const SPAWN_RADIUS = 180;
+const SPAWN_MIN_GAP = 12;
+const SPAWN_MAX_GAP = 45;
+const DENSITY_INCREASE_PER_MIN = 0.08;
 const SIGNAL_ACCUMULATION_RATE = 5;
 const MAX_SIGNAL_ACCUMULATION = 12;
 
@@ -97,14 +121,14 @@ class TrafficManager {
 
   _updateDensity(dt) {
     this.lastDensityUpdate += dt;
-    if (this.lastDensityUpdate >= 10) {
+    if (this.lastDensityUpdate >= 4) {
       this.lastDensityUpdate = 0;
-      const targetDensity = Math.min(getBaseNPCCount() * (1 + this.densityMultiplier * 2), getMaxNPCCount());
+      const targetDensity = Math.min(getBaseNPCCount() * (1 + this.densityMultiplier * 1.5), getMaxNPCCount());
       const currentCount = this.vehicles.filter(v => v.active).length;
       
-      if (currentCount < targetDensity * 0.8) {
+      if (currentCount < targetDensity) {
         this.densityMultiplier = Math.min(2.0, this.densityMultiplier + DENSITY_INCREASE_PER_MIN);
-        this._spawnBatch(Math.ceil((targetDensity - currentCount) * 0.3));
+        this._spawnBatch(Math.ceil((targetDensity - currentCount) * 0.6));
       } else if (currentCount > targetDensity * 1.2) {
         this.densityMultiplier = Math.max(0.5, this.densityMultiplier - DENSITY_INCREASE_PER_MIN);
       }
@@ -130,7 +154,7 @@ class TrafficManager {
   }
 
   _manageVehicleLifecycle(playerVehicle) {
-    const despawnDist = 400;
+    const despawnDist = 250;
     const playerPos = playerVehicle?.position || new THREE.Vector3();
     
     this.vehicles.forEach((vehicle, index) => {
@@ -203,7 +227,11 @@ class TrafficManager {
       this.levelNpcIndex++;
     } else {
 
-      type = this._pickVehicleType();
+      if (this.levelNpcTypes && this.levelNpcTypes.length > 0 && Math.random() < 0.5) {
+        type = this.levelNpcTypes[Math.floor(Math.random() * this.levelNpcTypes.length)];
+      } else {
+        type = this._pickVehicleType();
+      }
       isRuleBreaker = Math.random() < RULE_BREAKER_PROBABILITY && this.ruleBreakerCount / Math.max(1, this.totalSpawned) < RULE_BREAKER_PROBABILITY;
       profileKey = isRuleBreaker
         ? this._pickProfileKey('reckless_bike', 'rulebreaker', 'aggressive')
@@ -227,7 +255,7 @@ class TrafficManager {
     vehicle.currentEdge = spawnPoint.edge;
     vehicle.currentLane = spawnPoint.lane;
     vehicle.routeProgress = 0;
-    vehicle.targetNode = this._getNextRouteNode(vehicle.currentNode);
+    vehicle.targetNode = spawnPoint.edge ? spawnPoint.edge.getOther(spawnPoint.node) : this._getNextRouteNode(vehicle.currentNode);
     vehicle.active = true;
     vehicle.health = 100;
     vehicle.mesh.position.copy(vehicle.position);
@@ -238,7 +266,6 @@ class TrafficManager {
     vehicle.npcAI.trafficManager = this;
     vehicle.profile = vehicle.npcAI.profile;
     vehicle.isRuleBreaker = isRuleBreaker;
-
 
     if (route) {
       const resolvedRoute = this._resolveRouteNodes(route);
@@ -257,6 +284,9 @@ class TrafficManager {
     this.vehicles.push(vehicle);
     this.game.scene.add(vehicle.mesh);
     if (this.game.npcs) this.game.npcs.push(vehicle.mesh);
+    if (this.game.obstacles && !this.game.obstacles.includes(vehicle.mesh)) {
+      this.game.obstacles.push(vehicle.mesh);
+    }
 
     this._maybeFormPlatoon(vehicle);
 
@@ -266,12 +296,21 @@ class TrafficManager {
 
   _assignRoute(vehicle) {
     if (!this.roadGraph || !vehicle.npcAI || !vehicle.currentNode) return false;
-    const dest = this._pickDestinationNode(vehicle.currentNode);
-    if (!dest) return false;
-    const path = this.roadGraph.findPath(vehicle.currentNode, dest);
-    if (!path || path.length < 2) return false;
-
-    vehicle.npcAI.setRoute(path.slice(1));
+    // Try several random destinations until A* finds a valid path
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const dest = this._pickDestinationNode(vehicle.currentNode);
+      if (!dest) break;
+      const path = this.roadGraph.findPath(vehicle.currentNode, dest);
+      if (path && path.length >= 2) {
+        vehicle.npcAI.setRoute(path.slice(1));
+        return true;
+      }
+    }
+    // Fallback: drive to any direct neighbor so vehicle always has a valid route
+    const neighbors = vehicle.currentNode.neighbors || [];
+    if (!neighbors.length) return false;
+    const nb = neighbors[Math.floor(Math.random() * neighbors.length)];
+    vehicle.npcAI.setRoute([nb]);
     return true;
   }
 
@@ -310,11 +349,24 @@ class TrafficManager {
   _pickColorForType(type) {
     const colors = {
       car: [0x224488, 0x882222, 0x228833, 0x888888, 0x443366, 0x995522, 0x226688, 0x882266],
+      wagonr: [0x3a6073, 0x8e9eab, 0x5d4157, 0xa8c0ff, 0x3f2b96, 0xe0eafc],
+      sedan: [0x1e3c72, 0x2a5298, 0x2c3e50, 0x4ca1af, 0xb20a2c, 0x525252],
+      city: [0x1e3c72, 0x2a5298, 0x2c3e50, 0x4ca1af, 0xb20a2c],
+      suv: [0x1f4037, 0x990000, 0x232526, 0x414345, 0x3a6073, 0x141e30],
+      creta: [0x990000, 0x232526, 0x414345, 0x1f4037, 0x3a6073],
+      innova: [0xd4d3dd, 0x525252, 0x24243e, 0x3f2b96, 0x4b6cb7],
       bike: [0x111111, 0xcc0000, 0x0000cc, 0xcc8800, 0x222222, 0xcccccc],
-      auto: [0x2e8b57, 0x228b22, 0x3cb371, 0x20b2aa],
-      bus: [0xcc2222, 0x0044aa, 0xcc8800, 0x0066cc],
-      truck: [0x884400, 0x556633, 0x333333, 0x664422],
+      splendor: [0x111111, 0x8b0000, 0x00008b, 0x222222],
+      activa: [0xcc2222, 0xeeeeee, 0x333333, 0x224488, 0x888888, 0x995522],
+      ktm: [0xff6600, 0x111111, 0xeeeeee],
+      cycle: [0x00aa00, 0xcc0000, 0x0088cc, 0xffaa00],
+      auto: [0x2e8b57, 0x228b22, 0x3cb371, 0x20b2aa, 0x1b4d3e],
+      auto_yellow: [0xffd700, 0xffaa00, 0x222222],
+      bus: [0xcc2222, 0x0044aa, 0xcc8800, 0x0066cc, 0x2e7d32],
+      truck: [0x884400, 0x556633, 0x333333, 0x664422, 0xbf360c],
+      ace: [0xeeeeee, 0x2980b9, 0xd35400, 0x27ae60],
       taxi: [0xffcc00, 0xffaa00, 0xffff00],
+      police: [0x1a237e, 0xffffff],
       ambulance: [0xffffff]
     };
     const palette = colors[type] || colors.car;
@@ -353,13 +405,12 @@ class TrafficManager {
     return vehicle;
   }
 
-
-
-
   _createVehicleMesh(type, color) {
     let mesh = null;
     try {
-      if (this.game && typeof this.game._makeNPC === 'function') {
+      if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+        mesh = window.IndianVehicles.buildVehicle(type, color);
+      } else if (this.game && typeof this.game._makeNPC === 'function') {
         mesh = this.game._makeNPC(type, color);
       } else if (typeof window._buildVehicle === 'function') {
         mesh = window._buildVehicle(type, color);
@@ -373,10 +424,15 @@ class TrafficManager {
       mesh.add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 3.5), new THREE.MeshToonMaterial({ color: color })));
     }
 
+    const isHeavy = type === 'bus' || type === 'truck';
+    const isTwoWheeler = type === 'bike' || type === 'activa' || type === 'splendor' || type === 'ktm' || type === 'cycle';
     mesh.userData = mesh.userData || {};
     mesh.userData.npcType = type;
     mesh.userData.isTrafficManagerVehicle = true;
-
+    mesh.userData.isObstacle = true;
+    mesh.userData.isVehicle = true;
+    mesh.userData.halfW = isHeavy ? 1.5 : (isTwoWheeler ? 0.6 : 1.15);
+    mesh.userData.halfD = isHeavy ? 4.5 : (isTwoWheeler ? 1.1 : 2.2);
 
     if (!mesh.userData.materials) {
       let body = null;
@@ -408,6 +464,9 @@ class TrafficManager {
     if (this.game.npcs) {
       this.game.npcs = this.game.npcs.filter(n => n !== vehicle.mesh);
     }
+    if (this.game.obstacles) {
+      this.game.obstacles = this.game.obstacles.filter(o => o !== vehicle.mesh);
+    }
     
     if (this.vehiclePools.has(vehicle.type)) {
       this.vehiclePools.get(vehicle.type).push(vehicle);
@@ -424,6 +483,10 @@ class TrafficManager {
       const idx = this.game.npcs.indexOf(vehicle.mesh);
       if (idx > -1) this.game.npcs.splice(idx, 1);
     }
+    if (this.game.obstacles) {
+      const oIdx = this.game.obstacles.indexOf(vehicle.mesh);
+      if (oIdx > -1) this.game.obstacles.splice(oIdx, 1);
+    }
     if (vehicle.isRuleBreaker) this.ruleBreakerCount--;
     this._returnToPool(vehicle);
     this.vehicles = this.vehicles.filter(v => v !== vehicle);
@@ -434,24 +497,20 @@ class TrafficManager {
 
     let edge = null;
     let startNode = null;
+    const player = this.game && this.game.player && this.game.player.position;
 
+    const candidates = this._spawnCandidateEdges();
+    if (candidates.length > 0) {
+      // Select edges within 15m - 180m of the player so traffic is lively and visible
+      const nearPlayerEdges = player
+        ? candidates.filter(e => {
+            const d = this._distanceToEdge(e, player);
+            return d >= 15 && d <= SPAWN_RADIUS;
+          })
+        : candidates;
 
-    if (Array.isArray(this.mainRoute) && this.mainRoute.length >= 2) {
-      const startIdx = Math.floor(Math.random() * (this.mainRoute.length - 1));
-      const a = this.mainRoute[startIdx];
-      const b = this.mainRoute[startIdx + 1];
-      if (a && typeof a.getEdgeTo === 'function') {
-        edge = a.getEdgeTo(b);
-        if (edge) startNode = a;
-      }
-    }
-
-
-
-    if (!edge) {
-      const candidates = this._spawnCandidateEdges();
-      if (!candidates.length) return null;
-      edge = candidates[Math.floor(Math.random() * candidates.length)];
+      const pool = nearPlayerEdges.length ? nearPlayerEdges : candidates;
+      edge = pool[Math.floor(Math.random() * pool.length)];
       startNode = Math.random() < 0.5 ? edge.startNode : edge.endNode;
     }
 
@@ -463,23 +522,13 @@ class TrafficManager {
     const forward = edge.getForwardVector(startNode);
     const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
 
-    let offset;
-    const isPedMode = this.levelConfig && this.levelConfig.isPedestrian;
-
-    if (isPedMode) {
-      // In pedestrian mode, spawn NPCs on the sidewalk/footpath, not on road
-      const roadHalfWidth = edge.width / 2;
-      const sidewalkWidth = this.levelConfig.sidewalkWidth || 3;
-      const side = Math.random() > 0.5 ? 1 : -1;
-      offset = side * (roadHalfWidth + sidewalkWidth + 1.5);
-    } else {
-      // In driving mode, spawn NPCs in traffic lanes
-      const offsets = edge.getLaneOffsets();
-      const laneCount = Math.max(1, edge.lanes || 1);
-      const lane = Math.floor(Math.random() * laneCount);
-      const dirBase = startNode === edge.startNode ? laneCount : 0;
-      offset = offsets[dirBase + lane] !== undefined ? offsets[dirBase + lane] : 0;
-    }
+    // Vehicles always drive IN LANES on the road (even in pedestrian levels —
+    // road traffic is exactly what pedestrians must be taught to navigate around)
+    const offsets = edge.getLaneOffsets();
+    const laneCount = Math.max(1, edge.lanes || 1);
+    const lane = Math.floor(Math.random() * laneCount);
+    const dirBase = startNode === edge.startNode ? laneCount : 0;
+    const offset = offsets[dirBase + lane] !== undefined ? offsets[dirBase + lane] : 0;
 
     pos.addScaledVector(right, offset);
     pos.y = 0.5;
@@ -489,7 +538,7 @@ class TrafficManager {
       rotation: Math.atan2(forward.x, forward.z),
       node: startNode,
       edge: edge,
-      lane: 0
+      lane: lane
     };
   }
 
