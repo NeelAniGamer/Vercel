@@ -189,9 +189,9 @@ try {
   if (isAndroid && !isWebView && !hasPrompted) {
     sessionStorage.setItem('col_app_prompted', 'true')
 
-    var popup = document.createElement('div')
+    var hasBotNav = document.querySelector('.mobile-bottom-nav')
     popup.style.position = 'fixed'
-    popup.style.bottom = '20px'
+    popup.style.bottom = hasBotNav ? '75px' : '20px'
     popup.style.left = '20px'
     popup.style.right = '20px'
     popup.style.backgroundColor = 'var(--panel, #111827)'

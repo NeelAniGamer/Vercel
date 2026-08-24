@@ -2279,6 +2279,11 @@ if (un) {
     if (id === 'practical') {
       requestAnimationFrame(() => this._initBriefingArt(lv))
     }
+    if (window.innerWidth <= 860 && id !== 'intro') {
+      setTimeout(() => {
+        c.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 50)
+    }
   },
   _renderTopicHeader(lv, currentId, items) {
     const currentIndex = items.findIndex(it => it.id === currentId)
