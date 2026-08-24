@@ -4809,14 +4809,16 @@ class Game {
           window._toonGrad.minFilter = THREE.NearestFilter;
           window._toonGrad.magFilter = THREE.NearestFilter;
           window._toonGrad.needsUpdate = true;
-        }        const tg = window._toonGrad;
-        const gs = cfg.is50km ? 8000 : (cfg.useLowPolyCity ? 12000 : 2000);
+        }        const gs = 16000;
         const groundColor = cfg.ground !== undefined ? cfg.ground : 0x3a4838;
         const groundMat = cfg.isBridge
           ? new THREE.MeshLambertMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 })
           : new THREE.MeshLambertMaterial({ color: groundColor });
         const ground = new THREE.Mesh(new THREE.PlaneGeometry(gs, gs), groundMat);
         ground.rotation.x = -Math.PI / 2;
+        ground.position.set(0, -0.05, 0);
+        ground.receiveShadow = true;
+        ground.userData = { noLod: true, isGround: true };
         this.scene.add(ground);
 
         // Load low-poly city models for free_roam level
@@ -6013,10 +6015,24 @@ class Game {
 
         // Driveway apron ramp connecting front of garage to road edge
         const rampL = (sidewalkWidth || 4.0) + 4.0;
-        const ramp = new THREE.Mesh(new THREE.PlaneGeometry(8.0, rampL), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+        const ramp = new THREE.Mesh(new THREE.PlaneGeometry(8.5, rampL), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
         ramp.rotation.x = -Math.PI / 2;
         ramp.position.set(0, 0.06, gD / 2 + rampL / 2);
         gGrp.add(ramp);
+
+        // Flank safety railings on left & right borders, leaving wide 8.0m open driveway in front
+        [-4.2, 4.2].forEach(sideX => {
+          const dRail = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, rampL), steelMat);
+          dRail.position.set(sideX, 0.65, gD / 2 + rampL / 2);
+          gGrp.add(dRail);
+
+          for (let p = 0; p <= 2; p++) {
+            const pz = gD / 2 + (p / 2) * rampL;
+            const dPost = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.7, 8), stripeMat);
+            dPost.position.set(sideX, 0.35, pz);
+            gGrp.add(dPost);
+          }
+        });
 
         // Parking guide lines on floor
         [-2.0, 2.0].forEach(lx => {
@@ -7031,40 +7047,47 @@ class Game {
 
       _updateLights(dt) {
         if (!this.playing || this.pause) return;
-        const lights = [...(this._streetLights || []), ...(this._windowLights || [])];
-        if (!lights.length) return;
+        this._lightFrame = (this._lightFrame || 0) + 1;
+        if (this._lightFrame % 15 !== 0) return; // Update light culling ~4 times a second, not 60 fps
+        const streetL = this._streetLights;
+        const winL = this._windowLights;
+        if ((!streetL || !streetL.length) && (!winL || !winL.length)) return;
 
         const pPos = this.player ? this.player.position : null;
-        if (!pPos) return
-        const candidates = lights.map(l => ({
-          l,
-          distSq: pPos.distanceToSquared(l.position)
-        }));
+        if (!pPos) return;
+        const px = pPos.x, pz = pPos.z;
 
-        candidates.sort((a, b) => a.distSq - b.distSq);
-
-        for (let i = 0; i < candidates.length; i++) {
-          candidates[i].l.visible = i < 8;
+        if (streetL) {
+          for (let i = 0; i < streetL.length; i++) {
+            const l = streetL[i];
+            const dx = l.position.x - px, dz = l.position.z - pz;
+            l.visible = (dx * dx + dz * dz) < 6400; // 80m radius
+          }
+        }
+        if (winL) {
+          for (let i = 0; i < winL.length; i++) {
+            const l = winL[i];
+            const dx = l.position.x - px, dz = l.position.z - pz;
+            l.visible = (dx * dx + dz * dz) < 6400; // 80m radius
+          }
         }
       }
 
       _loop() {
-        // PERFORMANCE: Frame rate capping to prevent excessive CPU/GPU usage
-        const now = performance.now();
-        const isLowEnd = this._isMobile && (navigator.deviceMemory || 8) < 6;
-        const frameInterval = isLowEnd ? 1000 / 30 : 1000 / 60;
-        const elapsed = now - (this._lastFrame || 0);
-        if (elapsed < frameInterval) {
-          requestAnimationFrame(() => this._loop());
+        requestAnimationFrame(() => this._loop());
+        if (!this.playing || this.pause) {
+          if (this.renderCore && this.scene && this.camera) this.renderCore.render(this.scene, this.camera);
           return;
         }
-        this._lastFrame = now - (elapsed % frameInterval);
-
-        requestAnimationFrame(() => this._loop()); if (!this.playing || this.pause) { if (this.renderCore && this.scene && this.camera) this.renderCore.render(this.scene, this.camera); return; }
-        const dt = Math.min(this.clock.getDelta(), .033); this.timer += dt;
+        const dt = Math.min(this.clock.getDelta(), .033);
+        this.timer += dt;
         this._honkedThisFrame = false;
         // ── Hitstop: freeze physics on hard impact ──
-        if (this._hitstopTimer > 0) { this._hitstopTimer -= dt; if (this.renderCore && this.scene && this.camera) this.renderCore.render(this.scene, this.camera); return; }
+        if (this._hitstopTimer > 0) {
+          this._hitstopTimer -= dt;
+          if (this.renderCore && this.scene && this.camera) this.renderCore.render(this.scene, this.camera);
+          return;
+        }
         this._collidedThisFrame = false;
         
         // Use RenderCore quality settings for dynamic budgets
@@ -7968,7 +7991,7 @@ class Game {
         const visDist = baseDist * lodMult;
         const fogDist = (this._isMobile ? 200 : 350) * lodMult;
         this._lodChildren.forEach(child => {
-          if (!child.position || child.userData.noLod) return;
+          if (!child.position || child.userData?.noLod || child.userData?.isGround) return;
           const dx = child.position.x - px, dz = child.position.z - pz;
           const d = Math.sqrt(dx * dx + dz * dz);
           const shouldShow = d < visDist;
