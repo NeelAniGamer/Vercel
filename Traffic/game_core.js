@@ -6096,7 +6096,7 @@ class Game {
 
         // Collision boxes for back and side walls
         const bWallCol = new THREE.Group();
-        bWallCol.position.set(gx - Math.sin(rotY) * (-gD / 2), 0, gz - Math.cos(rotY) * (-gD / 2));
+        bWallCol.position.set(gx + Math.sin(rotY) * (-gD / 2), 0, gz + Math.cos(rotY) * (-gD / 2));
         bWallCol.rotation.y = rotY;
         bWallCol.userData = { halfW: gW / 2, halfD: 0.6, isObstacle: true, isBuilding: true };
         this.obstacles.push(bWallCol);
@@ -9591,8 +9591,22 @@ class Game {
           if (dx * dx + dz * dz > 400) return;
           const ud = o.userData || {};
           const hw = ud.halfW || 1.6, hd = ud.halfD || 1.6;
-          const overlapX = pR + hw - Math.abs(dx);
-          const overlapZ = pR + hd - Math.abs(dz);
+
+          let overlapX = 0, overlapZ = 0;
+          let localX = dx, localZ = dz;
+          const rotY = o.rotation ? o.rotation.y : 0;
+          if (Math.abs(rotY) > 0.01) {
+            const cos = Math.cos(-rotY);
+            const sin = Math.sin(-rotY);
+            localX = cos * dx - sin * dz;
+            localZ = sin * dx + cos * dz;
+            overlapX = pR + hw - Math.abs(localX);
+            overlapZ = pR + hd - Math.abs(localZ);
+          } else {
+            overlapX = pR + hw - Math.abs(dx);
+            overlapZ = pR + hd - Math.abs(dz);
+          }
+
           if (overlapX > 0 && overlapZ > 0) {
               this._collidedThisFrame = true;
               const dmg = this.seatbeltOn ? 10 : 18;
@@ -9605,12 +9619,28 @@ class Game {
               // Elastic bounce response
               this.speed *= -0.35;
               this._camShakeAmt = Math.max(this._camShakeAmt, 0.45);
-              // Push player out along axis of least penetration
-              if (overlapX < overlapZ) {
-                this.player.position.x += (dx > 0 ? overlapX + 0.15 : -(overlapX + 0.15));
+
+              // Push player out along axis of least penetration in world space
+              if (Math.abs(rotY) > 0.01) {
+                const cosW = Math.cos(rotY);
+                const sinW = Math.sin(rotY);
+                if (overlapX < overlapZ) {
+                  const pushLX = (localX > 0 ? overlapX + 0.15 : -(overlapX + 0.15));
+                  this.player.position.x += cosW * pushLX;
+                  this.player.position.z -= sinW * pushLX;
+                } else {
+                  const pushLZ = (localZ > 0 ? overlapZ + 0.15 : -(overlapZ + 0.15));
+                  this.player.position.x += sinW * pushLZ;
+                  this.player.position.z += cosW * pushLZ;
+                }
               } else {
-                this.player.position.z += (dz > 0 ? overlapZ + 0.15 : -(overlapZ + 0.15));
+                if (overlapX < overlapZ) {
+                  this.player.position.x += (dx > 0 ? overlapX + 0.15 : -(overlapX + 0.15));
+                } else {
+                  this.player.position.z += (dz > 0 ? overlapZ + 0.15 : -(overlapZ + 0.15));
+                }
               }
+
               if (window.TrafficAudio) window.TrafficAudio.playCrash(1.2);
               if (ud.isVehicle) {
                 toast('💥 CRASH! Vehicle Collision! HP -' + dmg, '#ef4444', 3000);

@@ -368,6 +368,13 @@
         document.body.appendChild(drawer)
       }
       this.containerEl = drawer
+
+      // Hide legacy overlay and redundant objective card to prevent overlapping
+      const objOverlay = document.getElementById('objective-overlay')
+      if (objOverlay) objOverlay.style.display = 'none'
+      const legacyTracker = document.getElementById('task-tracker')
+      if (legacyTracker) legacyTracker.style.display = 'none'
+
       this._updateHUDDrawer()
     }
 
@@ -599,7 +606,31 @@
         .vfc-ack-btn:hover { background: #dc2626; }
 
         @media (max-width: 768px) {
-          .task-hud-drawer { top: 60px; right: 10px; width: 260px; }
+          .task-hud-drawer {
+            top: calc(env(safe-area-inset-top, 0px) + 54px);
+            right: 8px;
+            width: 240px;
+            max-width: calc(100vw - 16px);
+            border-radius: 12px;
+          }
+          .task-drawer-header {
+            padding: 6px 10px;
+          }
+          .tdh-left { font-size: 0.68rem; gap: 6px; }
+          .tdh-right { font-size: 0.68rem; gap: 6px; }
+          .task-drawer-body {
+            padding: 6px 8px;
+            gap: 4px;
+            max-height: 200px;
+          }
+          .task-row {
+            padding: 5px 6px;
+            border-radius: 8px;
+            gap: 6px;
+          }
+          .task-name { font-size: 0.72rem; }
+          .task-desc { font-size: 0.62rem; }
+          .task-xp { font-size: 0.62rem; padding: 2px 5px; }
           .violation-feedback-card { bottom: 16px; right: 16px; left: 16px; width: auto; }
         }
       `
