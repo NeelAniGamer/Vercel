@@ -4694,63 +4694,130 @@
         .partner-badges {
           display: none !important;
         }
+        .brand-header {
+          margin-bottom: 14px !important;
+          gap: 4px !important;
+        }
+        .brand-header img {
+          height: 36px !important;
+        }
+        .brand-header div {
+          font-size: 0.7rem !important;
+        }
+        .brand-header > div:last-child {
+          font-size: 0.7rem !important;
+          margin-top: 4px !important;
+        }
         
         .sc > div[style*="font-size: 6rem"],
         .sc .st {
-          font-size: clamp(1.8rem, 5vw, 3rem) !important;
-          margin-bottom: 12px !important;
+          font-size: clamp(1.4rem, 4.5vw, 2.2rem) !important;
+          margin-bottom: 8px !important;
         }
         .sc > div:first-of-type > div[style*="6rem"] {
-          font-size: clamp(1.8rem, 5vw, 3rem) !important;
+          font-size: clamp(1.4rem, 4.5vw, 2.2rem) !important;
         }
         
         .sc {
-          padding: clamp(20px, 4vw, 40px) 16px !important;
-          padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+          padding: 16px 12px !important;
+          padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px)) !important;
         }
         
         .su {
-          font-size: clamp(0.85rem, 2.2vw, 1rem) !important;
-          margin-bottom: 20px !important;
+          font-size: clamp(0.78rem, 2vw, 0.88rem) !important;
+          margin-bottom: 14px !important;
           padding: 0 4px !important;
-          line-height: 1.5 !important;
+          line-height: 1.4 !important;
+          max-width: 95% !important;
         }
         
         .pls {
-          gap: 10px !important;
-          margin-bottom: 16px !important;
+          gap: 8px !important;
+          margin-top: 18px !important;
+          margin-bottom: 12px !important;
         }
         .sc .btn,
         .sc .btn-p {
-          min-height: 44px;
-          padding: 10px 22px;
-          font-size: 0.85rem;
+          min-height: 40px;
+          padding: 10px 20px;
+          font-size: 0.88rem;
+          border-radius: 10px;
+        }
+        #enter-academy-btn {
+          font-size: 0.95rem !important;
+          padding: 11px 28px !important;
+          min-width: 140px !important;
         }
         .back-btn,
         .btn-g,
         .btn-danger {
-          min-height: 44px;
+          min-height: 38px;
         }
         #academy-sign-in-btn {
-          padding: 12px 24px !important;
-          min-height: 44px !important;
+          padding: 10px 20px !important;
+          min-height: 40px !important;
         }
         .nav-user-profile {
-          padding: 8px 16px 8px 8px !important;
-          min-height: 44px !important;
+          padding: 6px 12px 6px 6px !important;
+          min-height: 40px !important;
         }
         
         #steer-wheel-container {
-          width: 90px !important;
-          height: 90px !important;
+          width: 76px !important;
+          height: 76px !important;
+          border-width: 2px !important;
+          margin-left: 10px !important;
         }
         #steer-wheel {
-          width: 90px !important;
-          height: 90px !important;
+          width: 76px !important;
+          height: 76px !important;
         }
         .mc-btn {
-          width: 56px !important;
-          height: 56px !important;
+          width: 44px !important;
+          height: 44px !important;
+          font-size: 14px !important;
+          border-radius: 12px !important;
+        }
+        #mobile-controls {
+          padding: 6px 12px calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+        }
+        #hud {
+          top: 6px !important;
+          left: 6px !important;
+          gap: 4px !important;
+        }
+        .hp {
+          padding: 2px 6px !important;
+          font-size: 0.62rem !important;
+          border-radius: 4px !important;
+        }
+        #hudbar {
+          top: 6px !important;
+          gap: 4px !important;
+        }
+        .hb {
+          padding: 2px 6px !important;
+          font-size: 0.62rem !important;
+          border-radius: 4px !important;
+        }
+        #hwrap {
+          top: 6px !important;
+          right: 6px !important;
+          padding: 2px 6px !important;
+          gap: 4px !important;
+        }
+        #hwallet {
+          font-size: 0.72rem !important;
+        }
+        #tc {
+          bottom: 8px !important;
+          gap: 8px !important;
+        }
+        .db {
+          width: 38px !important;
+          height: 38px !important;
+          font-size: 0.95rem !important;
+          border-radius: 10px !important;
         }
       }
 
@@ -6239,13 +6306,13 @@
 
       
     </script>
-    <script src="wallet-history.js"></script>
-  <script src="task-manager.js?v=12"></script>
-  <script src="ui.js?v=12"></script>
-  <script src="npc-ai.js"></script>
-  <script src="traffic-manager.js?v=8"></script>
-  <script src="rule-breaker-profiles.js"></script>
-    <script src="scenario2d.js"></script>
+    <script src="wallet-history.js?v=16"></script>
+    <script src="task-manager.js?v=16"></script>
+    <script src="ui.js?v=16"></script>
+    <script src="npc-ai.js?v=16"></script>
+    <script src="traffic-manager.js?v=16"></script>
+    <script src="rule-breaker-profiles.js?v=16"></script>
+    <script src="scenario2d.js?v=16"></script>
     <script>
       
       function filterLevels() {

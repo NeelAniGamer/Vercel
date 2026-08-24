@@ -389,8 +389,8 @@ class NPCAI {
       return;
     }
 
-    const aheadVehicle = this._getVehicleAhead();
-    const signalAhead = this._getSignalAhead(signals);
+    const aheadVehicle = (typeof this._getVehicleAhead === 'function') ? this._getVehicleAhead() : null;
+    const signalAhead = (typeof this._getSignalAhead === 'function') ? this._getSignalAhead(signals) : null;
 
     // 1. Red Signal Detection & Braking
     if (signalAhead && signalAhead.state === 'red') {
