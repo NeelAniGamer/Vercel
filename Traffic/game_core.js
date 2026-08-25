@@ -4715,7 +4715,11 @@ class Game {
         // Enhanced true color lighting with balanced contrast and shadows
         this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.15 : 0.30);
         this.scene.add(this._ambient);
-        this._hemi = new THREE.HemisphereLight(0x90b8d8, 0x1a1d24, cfg.isNight ? 0.12 : 0.35);
+        this._hemi = new THREE.HemisphereLight(
+          0x90b8d8, // sky tint (blue)
+          0x4a6a3a, // ground tint — warm green, prevents blue bleed onto ground plane
+          cfg.isNight ? 0.10 : 0.25
+        );
         this._hemi.position.set(0, 1000, 0);
         this.scene.add(this._hemi);
 
