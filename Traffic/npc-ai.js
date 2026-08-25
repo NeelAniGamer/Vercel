@@ -265,11 +265,24 @@ class NPCAI {
       if (dist > maxCheckDist || dist >= closestDist) continue;
 
       const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
-      if (forwardDot > 0.65) {
+      if (forwardDot > 0.60) {
         const lateral = Math.abs(dx * right.x + dz * right.z);
-        if (lateral < 3.2) {
+        // Heading alignment check: are we driving in the same general direction?
+        const vRot = v.rotation ? v.rotation.y : (v.mesh ? v.mesh.rotation.y : 0);
+        const vForwardX = Math.sin(vRot), vForwardZ = Math.cos(vRot);
+        const headingDot = myForward.x * vForwardX + myForward.z * vForwardZ;
+
+        // Same-lane trailing vehicle
+        if (headingDot > 0.4 && lateral < 2.8) {
           closestDist = dist;
           closestVeh = v;
+        } else if (dist < 4.0 && lateral < 2.4) {
+          // Cross-traffic emergency clearance only when very close
+          // If stuck for >2s in deadlock, allow the vehicle to squeeze past
+          if ((this._stuckTimer || 0) < 2.5 || dist < 2.2) {
+            closestDist = dist;
+            closestVeh = v;
+          }
         }
       }
     }
@@ -282,7 +295,7 @@ class NPCAI {
       const dist = Math.sqrt(dx * dx + dz * dz);
       if (dist <= maxCheckDist && dist < closestDist) {
         const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
-        if (forwardDot > 0.65) {
+        if (forwardDot > 0.60) {
           const lateral = Math.abs(dx * right.x + dz * right.z);
           if (lateral < 3.2) {
             closestDist = dist;
@@ -390,37 +403,39 @@ class NPCAI {
     this._checkTransitions(playerVehicle, signals, dt);
     this._checkEmergencyAvoidance(playerVehicle);
 
-    // ── Stuck detection (only for FOLLOW_LANE, not waiting/parked/crashed) ──
-    const exemptStuck = this.state === NPC_STATE.WAIT_SIGNAL
-      || this.state === NPC_STATE.PARK
-      || this.state === NPC_STATE.CRASH
-      || this.state === NPC_STATE.COMPLETE
-      || this.state === NPC_STATE.BUS_STOP;
-    if (!exemptStuck && this.vehicle && this.vehicle.position) {
+    // ── High-Reliability Anti-Deadlock & Stuck Detection ──
+    // Never allow an NPC to remain permanently frozen at intersections or signals
+    const isExempt = (this.state === NPC_STATE.PARK || this.state === NPC_STATE.CRASH || this.state === NPC_STATE.COMPLETE);
+    const isWaitingValidSignal = (this.state === NPC_STATE.WAIT_SIGNAL && this.waitTimer < 5.0);
+
+    if (!isExempt && !isWaitingValidSignal && this.vehicle && this.vehicle.position) {
       this._stuckCheckTimer += dt;
-      if (this._stuckCheckTimer >= 3) {
+      if (this._stuckCheckTimer >= 1.5) {
         this._stuckCheckTimer = 0;
         const vx = this.vehicle.position.x, vz = this.vehicle.position.z;
-        const moved = Math.hypot(vx - this._stuckLastX, vz - this._stuckLastZ);
-        if (moved < 2.0) {
-          this._stuckTimer += 3;
+        const moved = Math.hypot(vx - (this._stuckLastX || vx), vz - (this._stuckLastZ || vz));
+        if (moved < 0.8) {
+          this._stuckTimer = (this._stuckTimer || 0) + 1.5;
         } else {
           this._stuckTimer = 0;
         }
         this._stuckLastX = vx;
         this._stuckLastZ = vz;
 
-        if (this._stuckTimer >= 8 && this._stuckTimer < 14) {
-          // First escape attempt: try to advance route or force lane follow reset
-          if (this.route && this.route.length > 0) {
-            this.routeIndex = Math.min(this.routeIndex + 1, this.route.length - 1);
+        // Phase 1: Un-stuck recovery (at 4 seconds) — force green light / clear route / nudge forward
+        if (this._stuckTimer >= 4.0 && this._stuckTimer < 7.0) {
+          this.state = NPC_STATE.FOLLOW_LANE;
+          this.waitTimer = 0;
+          this.signalViolation = false;
+          this._committedToIntersection = true;
+          if (this.route && this.route.length > 0 && this.routeIndex < this.route.length - 1) {
+            this.routeIndex++;
             this._pickNextTarget();
           }
-          this.state = NPC_STATE.FOLLOW_LANE;
-          this.desiredSpeed = this._getTargetSpeed ? this._getTargetSpeed() : 8;
-          this.currentSpeed = 2;
-        } else if (this._stuckTimer >= 14) {
-          // Second escape: full respawn
+          this.desiredSpeed = Math.max(6.0, this._getTargetSpeed ? this._getTargetSpeed() : 8.0);
+          this.currentSpeed = Math.max(this.currentSpeed, 3.5);
+        } else if (this._stuckTimer >= 7.0) {
+          // Phase 2: Full clean respawn to guarantee zero traffic jams
           this._stuckTimer = 0;
           this._respawn();
         }
@@ -539,15 +554,14 @@ class NPCAI {
     this.waitTimer += dt;
     this.desiredSpeed = 0;
     const signal = this._getSignalAhead(signals);
-    if (signal && signal.state === 'green') {
+    // If no signal ahead, or signal is green, or red phase expired (max red is 4.0s in game_core)
+    if (!signal || signal.state === 'green' || this.waitTimer > 4.5) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.waitTimer = 0;
       this.signalViolation = false;
-    } else if (this.waitTimer > 30 && this.profile.patience < 0.3) {
-      if (Math.random() < 0.02 * dt) {
-        this.signalViolation = true;
-        this.state = NPC_STATE.FOLLOW_LANE;
-      }
+    } else if (this.waitTimer > 3.0 && this.profile.patience < 0.4) {
+      this.signalViolation = true;
+      this.state = NPC_STATE.FOLLOW_LANE;
     }
   }
 
@@ -636,15 +650,17 @@ class NPCAI {
       this.vehicle.position.z += dirNudge.z * correctiveSpeed * dt;
     }
 
-    // Strict Road Surface Clamping: Vehicle never exceeds asphalt road width
-    const roadWidth = this.currentEdge.width || 14;
-    const roadHalfW = roadWidth / 2 - 1.2;
-    if (this.currentEdge.type === 'v' || Math.abs(this.currentEdge.direction?.z || 0) > 0.7) {
-      const centerX = (this.currentEdge.startNode.position.x + this.currentEdge.endNode.position.x) / 2;
-      this.vehicle.position.x = THREE.MathUtils.clamp(this.vehicle.position.x, centerX - roadHalfW, centerX + roadHalfW);
-    } else {
-      const centerZ = (this.currentEdge.startNode.position.z + this.currentEdge.endNode.position.z) / 2;
-      this.vehicle.position.z = THREE.MathUtils.clamp(this.vehicle.position.z, centerZ - roadHalfW, centerZ + roadHalfW);
+    // Strict Road Surface Clamping (applied along straight mid-sections, relaxed in junction turn zones)
+    if (progress > 0.12 && progress < 0.88) {
+      const roadWidth = this.currentEdge.width || 14;
+      const roadHalfW = roadWidth / 2 - 1.2;
+      if (this.currentEdge.type === 'v' || Math.abs(this.currentEdge.direction?.z || 0) > 0.7) {
+        const centerX = (this.currentEdge.startNode.position.x + this.currentEdge.endNode.position.x) / 2;
+        this.vehicle.position.x = THREE.MathUtils.clamp(this.vehicle.position.x, centerX - roadHalfW, centerX + roadHalfW);
+      } else {
+        const centerZ = (this.currentEdge.startNode.position.z + this.currentEdge.endNode.position.z) / 2;
+        this.vehicle.position.z = THREE.MathUtils.clamp(this.vehicle.position.z, centerZ - roadHalfW, centerZ + roadHalfW);
+      }
     }
   }
 

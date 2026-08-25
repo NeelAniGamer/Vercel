@@ -163,6 +163,22 @@ class TrafficManager {
       const dist = vehicle.position.distanceTo(playerPos);
       if (dist > despawnDist) {
         this._despawnVehicle(vehicle);
+        return;
+      }
+
+      // Anti-gridlock watchdog: track prolonged stops
+      if (vehicle.npcAI) {
+        const curSpd = vehicle.npcAI.currentSpeed || vehicle.speed || 0;
+        if (curSpd < 0.25 && vehicle.npcAI.state !== 'PARK') {
+          vehicle._stoppedSeconds = (vehicle._stoppedSeconds || 0) + 0.05;
+          // If stopped in an intersection jam for > 6s, force despawn/respawn to dissolve pileups
+          if (vehicle._stoppedSeconds > 6.0) {
+            vehicle._stoppedSeconds = 0;
+            this._despawnVehicle(vehicle);
+          }
+        } else {
+          vehicle._stoppedSeconds = 0;
+        }
       }
     });
   }
