@@ -2271,6 +2271,14 @@ class Game {
           return { onRoad: true, onSidewalk: false, offRoad: false, nearZebra: true, currentRoad: null };
         }
 
+        // ── Garage & Driveway Zone: 100% Permitted Zone (No sidewalk/offroad penalties) ──
+        if (this._garageActive && this._garageX !== undefined) {
+          const dGarage = Math.hypot(x - this._garageX, z - this._garageZ);
+          if (dGarage <= 24) {
+            return { onRoad: true, onSidewalk: false, offRoad: false, nearZebra: true, inGarageDriveway: true, currentRoad: allRoads[0] };
+          }
+        }
+
         let onRoad = false;
         let onSidewalk = false;
         let matchedRoad = null;
@@ -3305,7 +3313,26 @@ class Game {
           if (document.getElementById('objective-overlay')) SZ.register('objective', document.getElementById('objective-overlay'), 'TR', { order: 0, priority: 'high' });
           if (document.getElementById('task-tracker')) SZ.register('tasks', document.getElementById('task-tracker'), 'TR', { order: 1, priority: 'medium' });
           if (document.getElementById('civic-controls')) SZ.register('civic', document.getElementById('civic-controls'), 'BR', { order: 2, priority: 'low' });
-          if (this.dom.mmc) SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
+          if (this.dom.mmc) {
+            SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
+            // Tap/click minimap → open fullscreen map
+            this.dom.mmc.addEventListener('click', () => {
+              const ov = document.getElementById('fs-map-overlay');
+              if (ov) { ov.classList.add('active'); this._fsMapOpen = true; this._drawFullscreenMap(); }
+            });
+          }
+          // Fullscreen map close button + Escape key
+          const fsClose = document.getElementById('fs-map-close');
+          if (fsClose) fsClose.addEventListener('click', () => {
+            const ov = document.getElementById('fs-map-overlay');
+            if (ov) { ov.classList.remove('active'); this._fsMapOpen = false; }
+          });
+          document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && this._fsMapOpen) {
+              const ov = document.getElementById('fs-map-overlay');
+              if (ov) { ov.classList.remove('active'); this._fsMapOpen = false; }
+            }
+          });
           if (this.dom['sig-ind']) SZ.register('signal', this.dom['sig-ind'], 'TC', { order: 0, priority: 'high' });
           if (this.dom['dn-clock']) SZ.register('clock', this.dom['dn-clock'], 'TC', { order: 1, priority: 'medium' });
           if (document.getElementById('spgauge')) SZ.register('speedometer', document.getElementById('spgauge'), 'BR', { order: 0, priority: 'high' });
@@ -4360,6 +4387,11 @@ class Game {
           garageRotY = Math.PI; // Facing north towards the road
         }
 
+        this._garageX = garageX;
+        this._garageZ = garageZ;
+        this._garageRotY = garageRotY;
+        this._garageActive = !this.mapCfg?.is50km && !this.mapCfg?.useLowPolyCity;
+
         // Build 3D roadside garage and workshop
         if (!this.mapCfg?.is50km && !this.mapCfg?.useLowPolyCity) {
           this._buildGarage(garageX, garageZ, garageRotY, roadW, swW);
@@ -4667,14 +4699,18 @@ class Game {
 
         const sk = cfg.sky;
         this.scene.background = new THREE.Color(sk);
-        const fogDist = cfg.fog || 200;
+        // Fog pushed far out so the green ground plane is visible across the full map.
+        // Previous values (fogNear=30-70, fogFar=120-250) blended the ground into sky blue.
         const lowPerf = this._isMobile || this._isLowGPU;
-        const fogNear = lowPerf ? Math.min(fogDist * 0.35, 50) : fogDist * 0.35;
-        const fogFar = lowPerf ? Math.min(fogDist * 1.2, 250) : fogDist * 1.2;
+        const baseFogNear = lowPerf ? 300 : 500;
+        const baseFogFar  = lowPerf ? 900 : 1500;
         if (cfg.mode === 'rain' || cfg.hasRain) {
-            this.scene.fog = new THREE.Fog(sk, fogNear * 0.3, fogFar * 0.5);
+          // Rain: deliberately shorter visibility
+          this.scene.fog = new THREE.Fog(sk, lowPerf ? 60 : 90, lowPerf ? 280 : 420);
+        } else if (cfg.isNight) {
+          this.scene.fog = new THREE.Fog(sk, lowPerf ? 80 : 120, lowPerf ? 350 : 550);
         } else {
-            this.scene.fog = new THREE.Fog(sk, fogNear, fogFar);
+          this.scene.fog = new THREE.Fog(sk, baseFogNear, baseFogFar);
         }
         // Enhanced true color lighting with balanced contrast and shadows
         this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.15 : 0.30);
@@ -4854,6 +4890,8 @@ class Game {
             this._buildBarriers(cfg, RW);
             this._buildTrafficSignals(cfg, RW);
             this._buildBuildingsFromGraph();
+            this._buildParksAndTrees();
+            this._buildBusStops();
         } else {
             // ── Kenney GLB Road Tiles + Sidewalks + Props + Buildings ──
             const _roadKey = window.PRELOADED_MODELS?.road_avenue ? 'road_avenue' : 'road_straight';
@@ -6288,12 +6326,31 @@ class Game {
         if (!graph || !graph.buildingSlots?.length) return;
 
         const bMats = [
-          new THREE.MeshToonMaterial({ color: 0xd9cfc4, gradientMap: window._toonGrad }),
-          new THREE.MeshToonMaterial({ color: 0xc4b8a8, gradientMap: window._toonGrad }),
-          new THREE.MeshToonMaterial({ color: 0xb0a898, gradientMap: window._toonGrad }),
-          new THREE.MeshToonMaterial({ color: 0xd4c8b8, gradientMap: window._toonGrad })
+          // Warm creams and tans
+          new THREE.MeshToonMaterial({ color: 0xf5e6d3, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xe8d5b7, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xd4b896, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xc9a87a, gradientMap: window._toonGrad }),
+          // Warm pinks and reds (Mumbai chawl colours)
+          new THREE.MeshToonMaterial({ color: 0xe8b4a0, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xd4907a, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xc47c6a, gradientMap: window._toonGrad }),
+          // Muted blues and greens (government buildings)
+          new THREE.MeshToonMaterial({ color: 0xb8c8d8, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0x9ab0c0, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xa8c8a8, gradientMap: window._toonGrad }),
+          // Yellows and ochres (South Mumbai heritage)
+          new THREE.MeshToonMaterial({ color: 0xf0d878, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xe8c850, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0xd8b840, gradientMap: window._toonGrad }),
+          // Dark urban concrete
+          new THREE.MeshToonMaterial({ color: 0x9a9a8a, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0x8a8878, gradientMap: window._toonGrad }),
+          new THREE.MeshToonMaterial({ color: 0x7a7868, gradientMap: window._toonGrad })
         ];
+        const roofColors = [0x8B4513, 0x2d5016, 0x1a3a5c, 0x6b3a2a, 0x4a4a4a, 0xb8860b, 0x3a6b3a, 0x8b1a1a];
         const winMat = new THREE.MeshBasicMaterial({ color: 0x304050 });
+
 
         const instancedData = {};
         const modelKeys = window.PRELOADED_MODELS 
@@ -6378,36 +6435,63 @@ class Game {
             return;
           }
 
-          // Fallback: procedural box building
+          // Fallback: procedural box building with variety
           const g = new THREE.Group();
           const mat = bMats[Math.floor(Math.random() * bMats.length)];
-          const bh = 16 + Math.random() * 16;
-          const bw = 10 + Math.random() * 10;
-          const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 14), mat);
+          const roofColor = roofColors[Math.floor(Math.random() * roofColors.length)];
+
+          // Varied heights: low shops (6-12), medium flats (14-22), towers (24-44)
+          const heightClass = Math.random();
+          const bh = heightClass < 0.3 ? 6 + Math.random() * 6
+                   : heightClass < 0.7 ? 14 + Math.random() * 8
+                   : 24 + Math.random() * 20;
+          const bw = 8 + Math.random() * 14;
+          const bd = 10 + Math.random() * 6;
+
+          const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), mat);
           bMesh.position.y = bh / 2;
+          bMesh.castShadow = true;
+          bMesh.receiveShadow = true;
           g.add(bMesh);
 
-          if (cfg.isNight && !cfg.is50km) {
-            const lWinMat = new THREE.MeshBasicMaterial({ color: 0xffdd88 });
-            const winRows = Math.floor(bh / 4);
-            const winCols = Math.floor(bw / 3.5);
+          // Flat roof slab with colour variation
+          const roofMat = new THREE.MeshToonMaterial({ color: roofColor, gradientMap: window._toonGrad });
+          const roofMesh = new THREE.Mesh(new THREE.BoxGeometry(bw + 0.4, 0.6, bd + 0.4), roofMat);
+          roofMesh.position.y = bh + 0.3;
+          g.add(roofMesh);
+
+          // Daytime window grid (small dark panels)
+          if (!cfg.is50km) {
+            const winDayMat = new THREE.MeshBasicMaterial({ color: cfg.isNight ? 0xffdd88 : 0x3a5a78 });
+            const winRows = Math.max(1, Math.floor(bh / 4));
+            const winCols = Math.max(1, Math.floor(bw / 3.5));
             for (let wr = 0; wr < winRows; wr++) {
               for (let wc = 0; wc < winCols; wc++) {
-                if (Math.random() > 0.55) continue;
-                const wMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.6), lWinMat);
-                wMesh.position.set(-bw / 2 + 2 + wc * 3.5, 3 + wr * 4, 7.01);
+                if (cfg.isNight ? Math.random() > 0.55 : Math.random() > 0.25) continue;
+                const wMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.8), winDayMat);
+                wMesh.position.set(-bw / 2 + 2 + wc * 3.5, 3 + wr * 4, bd / 2 + 0.02);
                 g.add(wMesh);
                 const wMesh2 = wMesh.clone();
-                wMesh2.position.z = -7.01;
+                wMesh2.position.z = -(bd / 2 + 0.02);
                 wMesh2.rotation.y = Math.PI;
                 g.add(wMesh2);
               }
             }
           }
-          
+
+          // Commercial awning for short buildings
+          if (type === 'shop' || (heightClass < 0.4 && Math.random() > 0.4)) {
+            const awningColors = [0xcc2222, 0x1a6633, 0x224488, 0xcc8800, 0x662266];
+            const awMat = new THREE.MeshToonMaterial({ color: awningColors[Math.floor(Math.random() * awningColors.length)], gradientMap: window._toonGrad });
+            const awMesh = new THREE.Mesh(new THREE.BoxGeometry(bw + 1, 0.3, 2.5), awMat);
+            awMesh.position.set(0, Math.min(bh * 0.35, 4), bd / 2 + 1.2);
+            awMesh.rotation.x = -0.12;
+            g.add(awMesh);
+          }
+
           g.position.set(pos.x, 0, pos.z);
           g.rotation.y = rot;
-          g.userData = { isBuilding: true, halfW: bw / 2, halfD: 7 };
+          g.userData = { isBuilding: true, halfW: bw / 2, halfD: bd / 2 };
           this.scene.add(g);
           this.obstacles.push(g);
           slot.occupied = true;
@@ -6461,6 +6545,202 @@ class Game {
             });
           });
         }
+      }
+
+      _buildParksAndTrees() {
+        const graph = this.roadGraph;
+        if (!graph) return;
+        const cfg = this.mapCfg || {};
+
+        const grassMat  = new THREE.MeshToonMaterial({ color: 0x4caf50, gradientMap: window._toonGrad });
+        const trunkMat  = new THREE.MeshToonMaterial({ color: 0x5d4037, gradientMap: window._toonGrad });
+        const fenceMat  = new THREE.MeshToonMaterial({ color: 0x795548, gradientMap: window._toonGrad });
+        const benchMat  = new THREE.MeshToonMaterial({ color: 0x6d4c41, gradientMap: window._toonGrad });
+        const pathMat   = new THREE.MeshToonMaterial({ color: 0xd7ccc8, gradientMap: window._toonGrad });
+        const treeColors = [0x33691e, 0x2e7d32, 0x1b5e20, 0x4caf50, 0x558b2f, 0x43a047];
+
+        const makeTree = (x, z, scale) => {
+          scale = scale || (0.9 + Math.random() * 0.5);
+          const g = new THREE.Group();
+          const h = (3 + Math.random() * 3) * scale;
+          const r = (1.5 + Math.random() * 1.5) * scale;
+          const tc = treeColors[Math.floor(Math.random() * treeColors.length)];
+          const fol = new THREE.MeshToonMaterial({ color: tc, gradientMap: window._toonGrad });
+          const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2 * scale, 0.3 * scale, h * 0.45, 6), trunkMat);
+          trunk.position.y = h * 0.225;
+          g.add(trunk);
+          const c1 = new THREE.Mesh(new THREE.ConeGeometry(r, h * 0.7, 7), fol);
+          c1.position.y = h * 0.55;
+          g.add(c1);
+          const c2 = new THREE.Mesh(new THREE.ConeGeometry(r * 0.65, h * 0.5, 7), fol);
+          c2.position.y = h * 0.85;
+          g.add(c2);
+          g.position.set(x, 0, z);
+          g.rotation.y = Math.random() * Math.PI * 2;
+          this.scene.add(g);
+        };
+
+        // ── Parks at 8% of unoccupied building slots ──
+        const slots = graph.buildingSlots ? graph.buildingSlots.filter(s => !s.occupied) : [];
+        const parkCount = Math.min(5, Math.max(2, Math.floor(slots.length * 0.08)));
+        const step = Math.max(1, Math.floor(slots.length / (parkCount + 1)));
+        for (let pi = 0; pi < parkCount; pi++) {
+          const slot = slots[step * (pi + 1)];
+          if (!slot) continue;
+          slot.occupied = true;
+          const pos = slot.getWorldPosition();
+          const rot = slot.getRotation();
+          const pw = 18 + Math.random() * 10;
+          const pd = 16 + Math.random() * 8;
+
+          // Grass base
+          const base = new THREE.Mesh(new THREE.BoxGeometry(pw, 0.15, pd), grassMat);
+          base.position.set(pos.x, 0.08, pos.z);
+          base.rotation.y = rot;
+          this.scene.add(base);
+
+          // Walking path
+          const path = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.2, pd - 2), pathMat);
+          path.position.set(pos.x, 0.12, pos.z);
+          path.rotation.y = rot;
+          this.scene.add(path);
+
+          // Bench
+          const seat = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.2, 0.6), benchMat);
+          seat.position.set(pos.x + 3, 0.7, pos.z + 2);
+          this.scene.add(seat);
+          const back = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.8, 0.15), benchMat);
+          back.position.set(pos.x + 3, 1.1, pos.z + 2.3);
+          this.scene.add(back);
+
+          // Simple fence on 4 sides
+          const fH = 1.2;
+          [[-pw/2+0.08, 0], [pw/2-0.08, 0], [0, -pd/2+0.08], [0, pd/2-0.08]].forEach(([ox, oz], i) => {
+            const isX = i < 2;
+            const fm = new THREE.Mesh(new THREE.BoxGeometry(isX ? 0.15 : pw, fH, isX ? pd : 0.15), fenceMat);
+            fm.position.set(pos.x + ox, fH / 2, pos.z + oz);
+            fm.rotation.y = rot;
+            this.scene.add(fm);
+          });
+
+          // Trees inside park
+          for (let t = 0; t < 3 + Math.floor(Math.random() * 4); t++) {
+            makeTree(pos.x + (Math.random()-0.5)*(pw-4), pos.z + (Math.random()-0.5)*(pd-4), 0.85 + Math.random()*0.5);
+          }
+        }
+
+        // ── Roadside trees along road graph edges ──
+        const edgeList = typeof graph.getEdgeList === 'function'
+          ? graph.getEdgeList()
+          : (graph.edges ? Array.from(graph.edges.values ? graph.edges.values() : []) : []);
+
+        edgeList.forEach(edge => {
+          if (!edge.nodes || edge.nodes.length < 2) return;
+          const a = edge.nodes[0].position;
+          const b = edge.nodes[1].position;
+          const len = Math.hypot(b.x - a.x, b.z - a.z);
+          if (len < 24) return;
+          const rhw = ((edge.width || 14) / 2) + 5.5;
+          const nx = (b.z - a.z) / len;
+          const nz = -(b.x - a.x) / len;
+          const spacing = 24 + Math.random() * 12;
+          const n = Math.floor(len / spacing);
+          for (let t = 0; t < n; t++) {
+            const tt = (t + 0.5) / n;
+            const cx = a.x + (b.x - a.x) * tt;
+            const cz = a.z + (b.z - a.z) * tt;
+            const off = rhw + 1.2 + Math.random() * 2;
+            if (Math.random() > 0.3) makeTree(cx + nx * off + (Math.random()-0.5)*1.5, cz + nz * off + (Math.random()-0.5)*1.5);
+            if (Math.random() > 0.3) makeTree(cx - nx * off + (Math.random()-0.5)*1.5, cz - nz * off + (Math.random()-0.5)*1.5);
+          }
+        });
+      }
+
+      _buildBusStops() {
+        const graph = this.roadGraph;
+        if (!graph) return;
+        this.busStops = [];
+
+        const shelterMat  = new THREE.MeshToonMaterial({ color: 0x1565c0, gradientMap: window._toonGrad }); // BEST bus blue
+        const roofMat     = new THREE.MeshToonMaterial({ color: 0x0d47a1, gradientMap: window._toonGrad });
+        const poleMat     = new THREE.MeshToonMaterial({ color: 0x78909c, gradientMap: window._toonGrad });
+        const benchMat    = new THREE.MeshToonMaterial({ color: 0x4e342e, gradientMap: window._toonGrad });
+        const markingMat  = new THREE.MeshBasicMaterial({ color: 0xf9a825 }); // yellow road marking
+
+        // Collect arterial edges (lanes >= 2) and pick 3-5 spots
+        const edgeList = typeof graph.getEdgeList === 'function'
+          ? graph.getEdgeList()
+          : (graph.edges ? Array.from(graph.edges.values ? graph.edges.values() : []) : []);
+
+        const arterials = edgeList.filter(e => (e.lanes || 1) >= 2 && e.nodes && e.nodes.length >= 2);
+        const stopCount = Math.min(5, Math.max(3, Math.floor(arterials.length * 0.18)));
+        const step = Math.max(1, Math.floor(arterials.length / (stopCount + 1)));
+
+        for (let si = 0; si < stopCount; si++) {
+          const edge = arterials[step * (si + 1)];
+          if (!edge) continue;
+          const a = edge.nodes[0].position;
+          const b = edge.nodes[1].position;
+          const len = Math.hypot(b.x - a.x, b.z - a.z);
+          if (len < 30) continue;
+
+          // Place stop at 35% along the edge, offset to the left curb
+          const t   = 0.35 + Math.random() * 0.3;
+          const cx  = a.x + (b.x - a.x) * t;
+          const cz  = a.z + (b.z - a.z) * t;
+          const nx  = (b.z - a.z) / len;  // perpendicular
+          const nz  = -(b.x - a.x) / len;
+          const curb = ((edge.width || 14) / 2) + 2.5;
+          const sx  = cx + nx * curb;
+          const sz  = cz + nz * curb;
+          const rot = Math.atan2(b.x - a.x, b.z - a.z);
+
+          const g = new THREE.Group();
+          g.position.set(sx, 0, sz);
+          g.rotation.y = rot;
+
+          // Back panel
+          const back = new THREE.Mesh(new THREE.BoxGeometry(4, 2.5, 0.12), shelterMat);
+          back.position.set(0, 1.25, -0.06);
+          g.add(back);
+
+          // Roof
+          const roof = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.14, 1.5), roofMat);
+          roof.position.set(0, 2.6, 0.7);
+          g.add(roof);
+
+          // Left + right side panels
+          [-1.95, 1.95].forEach(px => {
+            const side = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.5, 1.3), shelterMat);
+            side.position.set(px, 1.25, 0.6);
+            g.add(side);
+          });
+
+          // Two support poles
+          [-1.6, 1.6].forEach(px => {
+            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.6, 6), poleMat);
+            pole.position.set(px, 1.3, 1.35);
+            g.add(pole);
+          });
+
+          // Bench inside shelter
+          const seat = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.14, 0.45), benchMat);
+          seat.position.set(0, 0.52, 0.2);
+          g.add(seat);
+          const legs = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.4, 0.1), benchMat);
+          legs.position.set(0, 0.2, 0.2);
+          g.add(legs);
+
+          // Road marking strip (yellow)
+          const marking = new THREE.Mesh(new THREE.BoxGeometry(4, 0.06, 10), markingMat);
+          marking.position.set(0, 0.04, -7);
+          g.add(marking);
+
+          this.scene.add(g);
+          this.busStops.push({ x: sx, z: sz, rot });
+        }
+
+        console.log(`[BusStops] Built ${this.busStops.length} bus stops`);
       }
 
       _makeTower(x, z, w = 10, d = 10) {
@@ -7081,6 +7361,7 @@ class Game {
         }
         const dt = Math.min(this.clock.getDelta(), .033);
         this.timer += dt;
+        if (this._spawnInvulnerable > 0) this._spawnInvulnerable -= dt;
         this._honkedThisFrame = false;
         // ── Hitstop: freeze physics on hard impact ──
         if (this._hitstopTimer > 0) {
@@ -8211,6 +8492,7 @@ class Game {
             const pR = 1.6;
             this.trafficManager.vehicles.forEach(v => {
               if (!v.active || !v.mesh) return;
+              if (this._spawnInvulnerable > 0) return;
               const vx = v.position.x, vz = v.position.z;
               const dx = px - vx, dz = pz - vz;
               if (dx * dx + dz * dz < 18) {
@@ -10026,6 +10308,7 @@ class Game {
               this._camSnapped = false;
               this._camOverride = false;
               this._enterState = 'IDLE';
+              this._spawnInvulnerable = 3.5; // Departure grace period
               this.camYaw = 0; this.camPitch = 0;
               this.targetCamYaw = 0; this.targetCamPitch = 0;
               const _vcamEnter = VEHICLE_CAM[this.vehMode] || VEHICLE_CAM_DEFAULT;
@@ -10740,6 +11023,179 @@ class Game {
           }
         }
       }
+      _drawFullscreenMap() {
+        const fc = document.getElementById('fs-map-canvas');
+        if (!fc) return;
+        const ctx = fc.getContext('2d');
+        if (!ctx) return;
+
+        const W = fc.width, H = fc.height;
+        ctx.clearRect(0, 0, W, H);
+
+        // Background
+        ctx.fillStyle = '#0a0f1a';
+        ctx.fillRect(0, 0, W, H);
+
+        const player = this.player;
+        const graph  = this.roadGraph;
+        const cfg    = this.mapCfg;
+        if (!player || !graph) return;
+
+        // Compute map world bounds
+        let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
+        if (graph.nodes) {
+          const nodes = Array.from(graph.nodes.values ? graph.nodes.values() : []);
+          nodes.forEach(n => {
+            if (n.position.x < minX) minX = n.position.x;
+            if (n.position.x > maxX) maxX = n.position.x;
+            if (n.position.z < minZ) minZ = n.position.z;
+            if (n.position.z > maxZ) maxZ = n.position.z;
+          });
+        }
+        if (minX === Infinity) { minX = -500; maxX = 500; minZ = -500; maxZ = 500; }
+        const pad = 60;
+        const worldW = maxX - minX || 1;
+        const worldH = maxZ - minZ || 1;
+        const scaleX = (W - pad * 2) / worldW;
+        const scaleZ = (H - pad * 2) / worldH;
+        const scale  = Math.min(scaleX, scaleZ);
+        const offX   = (W - worldW * scale) / 2 - minX * scale;
+        const offZ   = (H - worldH * scale) / 2 - minZ * scale;
+
+        const wx = x => x * scale + offX;
+        const wz = z => z * scale + offZ;
+
+        // ── Roads ──
+        const edges = typeof graph.getEdgeList === 'function'
+          ? graph.getEdgeList()
+          : (graph.edges ? Array.from(graph.edges.values ? graph.edges.values() : []) : []);
+
+        edges.forEach(edge => {
+          if (!edge.nodes || edge.nodes.length < 2) return;
+          const a = edge.nodes[0].position, b = edge.nodes[1].position;
+          const lw = Math.max(2, (edge.width || 14) * scale * 0.7);
+          ctx.strokeStyle = '#1e2a3a';
+          ctx.lineWidth = lw + 2;
+          ctx.beginPath(); ctx.moveTo(wx(a.x), wz(a.z)); ctx.lineTo(wx(b.x), wz(b.z)); ctx.stroke();
+          ctx.strokeStyle = '#2d4060';
+          ctx.lineWidth = lw;
+          ctx.beginPath(); ctx.moveTo(wx(a.x), wz(a.z)); ctx.lineTo(wx(b.x), wz(b.z)); ctx.stroke();
+          // Centre dashed lane divider
+          ctx.strokeStyle = 'rgba(255,220,80,0.25)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([6, 8]);
+          ctx.beginPath(); ctx.moveTo(wx(a.x), wz(a.z)); ctx.lineTo(wx(b.x), wz(b.z)); ctx.stroke();
+          ctx.setLineDash([]);
+        });
+
+        // ── Parks ──
+        if (graph.buildingSlots) {
+          graph.buildingSlots.forEach(slot => {
+            if (!slot._isPark) return;
+            const p = slot.getWorldPosition();
+            ctx.fillStyle = 'rgba(76, 175, 80, 0.35)';
+            ctx.fillRect(wx(p.x) - 6, wz(p.z) - 5, 12, 10);
+          });
+        }
+
+        // ── Traffic Signals ──
+        (this.sigs || []).forEach(sig => {
+          const sp = sig.pos || sig.position || sig.mesh?.position;
+          if (!sp) return;
+          const col = sig.state === 'red' ? '#ff3b30' : sig.state === 'green' ? '#00e676' : '#ffd54a';
+          ctx.beginPath();
+          ctx.arc(wx(sp.x), wz(sp.z), 5, 0, Math.PI * 2);
+          ctx.fillStyle = col;
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        });
+
+        // ── Bus Stops ──
+        (this.busStops || []).forEach(bs => {
+          ctx.fillStyle = '#1565c0';
+          ctx.fillRect(wx(bs.x) - 5, wz(bs.z) - 5, 10, 10);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 8px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('B', wx(bs.x), wz(bs.z) + 3);
+        });
+
+        // ── Route line: player → checkpoint → destination ──
+        const checkpts = this._checkpoints || (cfg && cfg.checkpoints) || [];
+        const dest = checkpts.find(c => !c.reached) || checkpts[checkpts.length - 1];
+        if (dest) {
+          ctx.strokeStyle = '#00f0cc';
+          ctx.lineWidth = 3;
+          ctx.setLineDash([10, 6]);
+          ctx.shadowColor = '#00f0cc';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.moveTo(wx(player.position.x), wz(player.position.z));
+          ctx.lineTo(wx(dest.x), wz(dest.z));
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.shadowBlur = 0;
+
+          // Destination pin
+          ctx.fillStyle = '#00f0cc';
+          ctx.beginPath();
+          ctx.arc(wx(dest.x), wz(dest.z), 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 9px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('✦', wx(dest.x), wz(dest.z) + 3);
+        }
+
+        // ── NPC vehicles ──
+        const npcColors = { bus: '#fb923c', truck: '#fb923c', bike: '#a855f7', activa: '#a855f7', splendor: '#a855f7', auto: '#facc15', police: '#ef4444', ambulance: '#f43f5e' };
+        (this.trafficManager?.vehicles || []).forEach(v => {
+          if (!v.active) return;
+          const col = npcColors[v.type] || '#38bdf8';
+          ctx.fillStyle = col;
+          ctx.beginPath();
+          ctx.arc(wx(v.position.x), wz(v.position.z), 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // ── Player arrow ──
+        const px = wx(player.position.x), pz = wz(player.position.z);
+        const angle = player.rotation ? -(player.rotation.y) : 0;
+        ctx.save();
+        ctx.translate(px, pz);
+        ctx.rotate(angle);
+        ctx.fillStyle = '#ffd54a';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, -10);
+        ctx.lineTo(-6, 8);
+        ctx.lineTo(0, 4);
+        ctx.lineTo(6, 8);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Pulsing halo
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = '#ffd54a';
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.restore();
+
+        // ── Compass ──
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.font = 'bold 13px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('N', W / 2, 20);
+        ctx.fillText('S', W / 2, H - 8);
+        ctx.fillText('W', 14, H / 2 + 4);
+        ctx.fillText('E', W - 14, H / 2 + 4);
+      }
+
       _ummap() {
         if (!this.player || !this.player.position) return;
         const mc = this.dom['mmc']; if (!mc || !this.playing) return; mc.classList.add('on');

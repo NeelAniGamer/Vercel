@@ -2599,6 +2599,77 @@
       z-index: 45 !important;
       display: block !important;
       background: #0a0f18 !important;
+      cursor: pointer !important;
+      transition: box-shadow 0.2s, transform 0.2s !important;
+    }
+    #mmc:hover {
+      box-shadow: 0 10px 40px rgba(0, 240, 204, 0.4), inset 0 0 20px rgba(0, 240, 204, 0.25) !important;
+      transform: scale(1.06) !important;
+    }
+
+    /* ── Fullscreen Map Overlay ── */
+    #fs-map-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 8, 18, 0.93);
+      z-index: 9990;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      backdrop-filter: blur(8px);
+    }
+    #fs-map-overlay.active { display: flex; }
+    #fs-map-title {
+      color: #00f0cc;
+      font-family: 'Space Mono', monospace, sans-serif;
+      font-size: 14px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+    #fs-map-canvas {
+      border-radius: 16px;
+      border: 2px solid rgba(0, 240, 204, 0.3);
+      box-shadow: 0 0 60px rgba(0, 240, 204, 0.15);
+      background: #0a0f1a;
+      max-width: 90vw;
+      max-height: 80vh;
+    }
+    #fs-map-close {
+      margin-top: 16px;
+      background: rgba(0, 240, 204, 0.12);
+      color: #00f0cc;
+      border: 1px solid rgba(0, 240, 204, 0.4);
+      border-radius: 8px;
+      padding: 8px 28px;
+      font-family: 'Space Mono', monospace, sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #fs-map-close:hover { background: rgba(0, 240, 204, 0.25); }
+    #fs-map-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .fs-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: rgba(255,255,255,0.65);
+      font-family: monospace;
+      font-size: 11px;
+    }
+    .fs-legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
 
     @media (max-width: 768px) {
@@ -7475,6 +7546,21 @@
 
   <canvas id="mmc" width="180" height="180"></canvas>
 
+  <!-- Fullscreen Map Overlay -->
+  <div id="fs-map-overlay">
+    <div id="fs-map-title">▶ CITY MAP</div>
+    <canvas id="fs-map-canvas" width="900" height="700"></canvas>
+    <div id="fs-map-legend">
+      <div class="fs-legend-item"><div class="fs-legend-dot" style="background:#ffd54a"></div> You</div>
+      <div class="fs-legend-item"><div class="fs-legend-dot" style="background:#00f0cc"></div> Route / Destination</div>
+      <div class="fs-legend-item"><div class="fs-legend-dot" style="background:#38bdf8"></div> Traffic</div>
+      <div class="fs-legend-item"><div class="fs-legend-dot" style="background:#ff3b30"></div> Red Signal</div>
+      <div class="fs-legend-item"><div class="fs-legend-dot" style="background:#4caf50"></div> Parks</div>
+      <div class="fs-legend-item"><div class="fs-legend-dot" style="background:#1565c0"></div> Bus Stop</div>
+    </div>
+    <button id="fs-map-close">✕ CLOSE MAP</button>
+  </div>
+
   <div id="compass-strip" style="
         position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
         z-index: var(--z-effects); display: none;
@@ -8143,26 +8229,26 @@
       }, 500);
     })();
   </script>
-  <script src="pools.js?v=18"></script>
-  <script src="road-graph.js?v=18"></script>
-  <script src="render_core.js?v=18"></script>
-  <script src="safezone-ui.js?v=18"></script>
-  <script src="world-streamer.js?v=18"></script>
-  <script src="mission-manager.js?v=18"></script>
-  <script src="scenery-kit.js?v=18"></script>
-  <script src="collectible-system.js?v=18"></script>
-  <script src="checkpoint-system.js?v=18"></script>
-  <script src="gameplay-recorder.js?v=18"></script>
-  <script src="task-manager.js?v=18"></script>
-  <script src="scenario2d.js?v=18"></script>
-  <script src="course.js?v=18"></script>
-  <script src="traffic-audio.js?v=18"></script>
-  <script src="game_core.js?v=18"></script>
-  <script src="npc-ai.js?v=18"></script>
-  <script src="traffic-manager.js?v=18"></script>
-  <script src="rule-breaker-profiles.js?v=18"></script>
-  <script src="ui.js?v=18"></script>
-  <script src="start.js?v=18"></script>
+  <script src="pools.js?v=20"></script>
+  <script src="road-graph.js?v=20"></script>
+  <script src="render_core.js?v=20"></script>
+  <script src="safezone-ui.js?v=20"></script>
+  <script src="world-streamer.js?v=20"></script>
+  <script src="mission-manager.js?v=20"></script>
+  <script src="scenery-kit.js?v=20"></script>
+  <script src="collectible-system.js?v=20"></script>
+  <script src="checkpoint-system.js?v=20"></script>
+  <script src="gameplay-recorder.js?v=20"></script>
+  <script src="task-manager.js?v=20"></script>
+  <script src="scenario2d.js?v=20"></script>
+  <script src="course.js?v=20"></script>
+  <script src="traffic-audio.js?v=20"></script>
+  <script src="game_core.js?v=20"></script>
+  <script src="npc-ai.js?v=20"></script>
+  <script src="traffic-manager.js?v=20"></script>
+  <script src="rule-breaker-profiles.js?v=20"></script>
+  <script src="ui.js?v=20"></script>
+  <script src="start.js?v=20"></script>
 
   
   <div id="kid-steer"></div>

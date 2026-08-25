@@ -10,7 +10,8 @@ const NPC_STATE = {
   PULL_OVER: 'PULL_OVER',
   EMERGENCY_BRAKE: 'EMERGENCY_BRAKE',
   DISTRACTED: 'DISTRACTED',
-  ROAD_RAGE: 'ROAD_RAGE'
+  ROAD_RAGE: 'ROAD_RAGE',
+  BUS_STOP: 'BUS_STOP'
 };
 
 const NPC_PROFILES = {
@@ -179,6 +180,12 @@ class NPCAI {
 
     this.rageTimer = 0;
     this.rageLevel = 0;
+
+    // Stuck detection
+    this._stuckCheckTimer = 0;
+    this._stuckTimer = 0;
+    this._stuckLastX = 0;
+    this._stuckLastZ = 0;
   }
 
   init() {}
@@ -369,11 +376,56 @@ class NPCAI {
       case NPC_STATE.ROAD_RAGE:
         this._updateRoadRage(dt);
         break;
+      case NPC_STATE.BUS_STOP:
+        this._updateBusStop(dt);
+        break;
+    }
+
+    // Bus-type vehicles check for approaching bus stops
+    if (this.state === NPC_STATE.FOLLOW_LANE && this.vehicle?.userData?.type === 'bus') {
+      this._checkBusStop();
     }
 
     this._applyPhysics(dt);
     this._checkTransitions(playerVehicle, signals, dt);
     this._checkEmergencyAvoidance(playerVehicle);
+
+    // ── Stuck detection (only for FOLLOW_LANE, not waiting/parked/crashed) ──
+    const exemptStuck = this.state === NPC_STATE.WAIT_SIGNAL
+      || this.state === NPC_STATE.PARK
+      || this.state === NPC_STATE.CRASH
+      || this.state === NPC_STATE.COMPLETE
+      || this.state === NPC_STATE.BUS_STOP;
+    if (!exemptStuck && this.vehicle && this.vehicle.position) {
+      this._stuckCheckTimer += dt;
+      if (this._stuckCheckTimer >= 3) {
+        this._stuckCheckTimer = 0;
+        const vx = this.vehicle.position.x, vz = this.vehicle.position.z;
+        const moved = Math.hypot(vx - this._stuckLastX, vz - this._stuckLastZ);
+        if (moved < 2.0) {
+          this._stuckTimer += 3;
+        } else {
+          this._stuckTimer = 0;
+        }
+        this._stuckLastX = vx;
+        this._stuckLastZ = vz;
+
+        if (this._stuckTimer >= 8 && this._stuckTimer < 14) {
+          // First escape attempt: try to advance route or force lane follow reset
+          if (this.route && this.route.length > 0) {
+            this.routeIndex = Math.min(this.routeIndex + 1, this.route.length - 1);
+            this._pickNextTarget();
+          }
+          this.state = NPC_STATE.FOLLOW_LANE;
+          this.desiredSpeed = this._getTargetSpeed ? this._getTargetSpeed() : 8;
+          this.currentSpeed = 2;
+        } else if (this._stuckTimer >= 14) {
+          // Second escape: full respawn
+          this._stuckTimer = 0;
+          this._respawn();
+        }
+      }
+    }
   }
 
   _updateIdle(dt) {
@@ -392,16 +444,27 @@ class NPCAI {
     const aheadVehicle = (typeof this._getVehicleAhead === 'function') ? this._getVehicleAhead() : null;
     const signalAhead = (typeof this._getSignalAhead === 'function') ? this._getSignalAhead(signals) : null;
 
-    // 1. Red Signal Detection & Braking
+    // 1. Red Signal Detection & Braking (stop-line aware)
     if (signalAhead && signalAhead.state === 'red') {
       const distToSignal = this._distanceToSignal(signalAhead);
-      if (distToSignal < 24) {
+      // Stop line is 8m before the signal position.
+      // If NPC is already past the stop line (dist < 8m) → committed, continue through.
+      if (this._committedToIntersection) {
+        // Already committed — keep going until well past signal
+        if (distToSignal > 12) this._committedToIntersection = false;
+        // fall through to normal driving below
+      } else if (distToSignal < 8) {
+        // Just crossed the stop line as it turned red → commit and continue
+        this._committedToIntersection = true;
+        // fall through — don't brake
+      } else if (distToSignal < 24) {
         if (this.profile.signalCompliance < Math.random() && this.isRuleBreaker) {
           this.signalViolation = true;
           this.state = NPC_STATE.FOLLOW_LANE;
         } else {
           this.desiredSpeed = 0;
           if (distToSignal < 9) {
+            this._committedToIntersection = false;
             this.state = NPC_STATE.WAIT_SIGNAL;
             this.waitTimer = 0;
             this.currentSpeed *= 0.75;
@@ -409,7 +472,11 @@ class NPCAI {
           return;
         }
       }
+    } else {
+      // Signal is green or no signal — clear committed flag
+      if (this._committedToIntersection) this._committedToIntersection = false;
     }
+
 
     // 2. Lead Vehicle Detection, Follow Distance & Safe Queueing
     if (aheadVehicle) {
@@ -751,6 +818,159 @@ class NPCAI {
     }
   }
 
+  // ── BUS STOP LOGIC ──────────────────────────────────────────────────────────
+
+  _checkBusStop() {
+    if (!this.vehicle || !this.vehicle.position) return;
+    const stops = this.trafficManager?.game?.busStops;
+    if (!stops || !stops.length) return;
+    if (this._busStopCooldowns == null) this._busStopCooldowns = {};
+
+    const myPos = this.vehicle.position;
+    const myFwd = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+
+    for (let i = 0; i < stops.length; i++) {
+      const bs = stops[i];
+      if (this._busStopCooldowns[i]) continue; // already visited this stop recently
+      const dx = bs.x - myPos.x, dz = bs.z - myPos.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist > 18) continue;
+      const fwd = (dx * myFwd.x + dz * myFwd.z) / (dist || 1);
+      if (fwd < 0.3) continue; // stop is behind us
+
+      // Approaching bus stop — begin docking
+      this._currentBusStopIdx = i;
+      this._busStopTimer = 0;
+      this._busStopDuration = 5 + Math.random() * 4; // 5-9 seconds
+      this._busStopCooldowns[i] = true;
+      setTimeout(() => { if (this._busStopCooldowns) this._busStopCooldowns[i] = false; }, 90000); // re-enable after 90s
+      this.state = NPC_STATE.BUS_STOP;
+      this._busPassengers = [];
+      this._passengerSpawned = false;
+      return;
+    }
+  }
+
+  _updateBusStop(dt) {
+    this._busStopTimer += dt;
+    this.desiredSpeed = 0;
+    this.currentSpeed = Math.max(0, this.currentSpeed - 4 * dt); // decelerate
+
+    // Spawn passengers at 1.5s mark
+    if (!this._passengerSpawned && this._busStopTimer >= 1.5) {
+      this._passengerSpawned = true;
+      this._spawnBusPassengers();
+    }
+
+    // Clear passengers at 75% of dwell time
+    if (this._passengerSpawned && this._busStopTimer >= this._busStopDuration * 0.75) {
+      this._despawnBusPassengers();
+    }
+
+    // Resume after full dwell time
+    if (this._busStopTimer >= this._busStopDuration) {
+      this.state = NPC_STATE.FOLLOW_LANE;
+      this.desiredSpeed = this._getTargetSpeed ? this._getTargetSpeed() : 6;
+    }
+  }
+
+  _spawnBusPassengers() {
+    if (!this.vehicle || !this.vehicle.position) return;
+    const scene = this.trafficManager?.game?.scene;
+    if (!scene) return;
+
+    const THREE_local = window.THREE || (typeof THREE !== 'undefined' ? THREE : null);
+    if (!THREE_local) return;
+
+    const boardCount   = 2 + Math.floor(Math.random() * 3); // 2–4 boarding
+    const alightCount  = 1 + Math.floor(Math.random() * 3); // 1–3 alighting
+    const skinColors   = [0xf5cba7, 0xe0a96d, 0xc68642, 0x8d5524, 0x603813];
+    const clothColors  = [0x3498db, 0xe74c3c, 0x2ecc71, 0x9b59b6, 0xf39c12, 0x1abc9c, 0xe67e22];
+
+    const toonGrad = window._toonGrad;
+
+    const makePassenger = (x, z, standing) => {
+      const g = new THREE_local.Group();
+      const skin = skinColors[Math.floor(Math.random() * skinColors.length)];
+      const cloth = clothColors[Math.floor(Math.random() * clothColors.length)];
+      const clothMat = new THREE_local.MeshToonMaterial({ color: cloth, gradientMap: toonGrad });
+      const skinMat  = new THREE_local.MeshToonMaterial({ color: skin,  gradientMap: toonGrad });
+
+      // Torso
+      const torso = new THREE_local.Mesh(new THREE_local.BoxGeometry(0.5, 0.65, 0.3), clothMat);
+      torso.position.y = 0.9;
+      g.add(torso);
+      // Head
+      const head = new THREE_local.Mesh(new THREE_local.SphereGeometry(0.22, 8, 6), skinMat);
+      head.position.y = 1.45;
+      g.add(head);
+      // Legs
+      [-0.13, 0.13].forEach(lx => {
+        const leg = new THREE_local.Mesh(new THREE_local.BoxGeometry(0.2, 0.55, 0.25), clothMat);
+        leg.position.set(lx, 0.35, 0);
+        g.add(leg);
+      });
+      // Arms
+      [-0.32, 0.32].forEach(ax => {
+        const arm = new THREE_local.Mesh(new THREE_local.BoxGeometry(0.18, 0.52, 0.2), clothMat);
+        arm.position.set(ax, 0.88, 0);
+        g.add(arm);
+      });
+
+      g.position.set(x, 0, z);
+      g.rotation.y = Math.random() * Math.PI * 2;
+      g.userData = { isBusPassenger: true };
+      scene.add(g);
+      this._busPassengers.push(g);
+
+      // Animate: walk toward/away from bus
+      const busX = this.vehicle.position.x, busZ = this.vehicle.position.z;
+      const targetX = standing ? busX + (Math.random()-0.5)*2 : x + (Math.random()-0.5)*4 + 4;
+      const targetZ = standing ? busZ + (Math.random()-0.5)*2 : z + (Math.random()-0.5)*4 + 4;
+      const walkDist = Math.hypot(targetX - x, targetZ - z);
+      const walkDur  = 1.5 + walkDist / 3;
+      const startTime = performance.now();
+
+      const animate = () => {
+        if (!g.parent) return;
+        const elapsed = (performance.now() - startTime) / 1000;
+        const t = Math.min(elapsed / walkDur, 1);
+        g.position.x = x + (targetX - x) * t;
+        g.position.z = z + (targetZ - z) * t;
+        // Bob
+        g.position.y = Math.abs(Math.sin(elapsed * 4)) * 0.06;
+        if (t < 1) requestAnimationFrame(animate);
+        else if (standing) {
+          // Boarding passenger disappears into bus
+          if (g.parent) scene.remove(g);
+        }
+      };
+      requestAnimationFrame(animate);
+    };
+
+    const vpos = this.vehicle.position;
+    const side = 4; // passengers appear beside the bus
+    // Alighting passengers come from bus door
+    for (let i = 0; i < alightCount; i++) {
+      makePassenger(vpos.x + (Math.random()-0.5)*2, vpos.z + side + i*1.2, false);
+    }
+    // Boarding passengers come from sidewalk
+    for (let i = 0; i < boardCount; i++) {
+      makePassenger(vpos.x + (Math.random()-0.5)*3, vpos.z + side + 3 + i*1.2, true);
+    }
+  }
+
+  _despawnBusPassengers() {
+    const scene = this.trafficManager?.game?.scene;
+    if (!scene) return;
+    (this._busPassengers || []).forEach(p => {
+      if (p.parent) scene.remove(p);
+    });
+    this._busPassengers = [];
+  }
+
+  // ── END BUS STOP LOGIC ──────────────────────────────────────────────────────
+
   _isAmbulanceNearby() {
     if (!this.trafficManager || !this.trafficManager.vehicles) return false;
     const myPos = this.vehicle.position;
@@ -829,12 +1049,16 @@ class NPCAI {
     }
 
 
-    if (dist < 12 && this.currentSpeed > 2) {
+    if (dist < 20) {
       const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
       const toPlayer = new THREE.Vector3().subVectors(player.position, this.vehicle.position);
       const proj = toPlayer.dot(forward);
-      if (proj > 0 && proj < 10) {
-        this.desiredSpeed = Math.min(this.desiredSpeed, this.currentSpeed * 0.5);
+      if (proj > 0 && proj < 16) {
+        this.desiredSpeed = Math.min(this.desiredSpeed, Math.max(0, (proj - 4) * 0.7));
+        if (proj < 7) {
+          this.state = (window.NPC_STATE && window.NPC_STATE.YIELD) || 'YIELD';
+          this.currentSpeed = Math.max(0, this.currentSpeed * 0.6);
+        }
       }
     }
 

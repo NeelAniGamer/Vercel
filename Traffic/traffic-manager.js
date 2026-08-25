@@ -501,11 +501,16 @@ class TrafficManager {
 
     const candidates = this._spawnCandidateEdges();
     if (candidates.length > 0) {
-      // Select edges within 15m - 180m of the player so traffic is lively and visible
+      // Select edges within 30m - 180m of the player so traffic is lively, but leaving garage driveway clear
       const nearPlayerEdges = player
         ? candidates.filter(e => {
             const d = this._distanceToEdge(e, player);
-            return d >= 15 && d <= SPAWN_RADIUS;
+            const gx = this.game ? this.game._garageX : undefined;
+            const gz = this.game ? this.game._garageZ : undefined;
+            const dGarage = (gx !== undefined && gz !== undefined)
+              ? Math.hypot(e.nodes[0].position.x - gx, e.nodes[0].position.z - gz)
+              : Infinity;
+            return d >= 28 && d <= SPAWN_RADIUS && dGarage >= 32;
           })
         : candidates;
 
