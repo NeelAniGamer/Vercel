@@ -6455,161 +6455,13 @@
       transform: none !important;
     }
 
-    #civic-controls {
-      position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 160px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 14px) !important;
-      top: auto !important;
-      left: auto !important;
-      z-index: 55 !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 5px !important;
-      background: #0d131f !important;
-      border: 1.5px solid #26354a !important;
-      border-radius: 10px !important;
-      padding: 5px 8px !important;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.7) !important;
-      margin: 0 !important;
-      transform: none !important;
-    }
+    /* Clean separator */
 
-    #civic-controls .civic-btn {
-      background: #151d2d !important;
-      border: 1px solid #26354a !important;
-      color: #e2e8f0 !important;
-      border-radius: 6px !important;
-      padding: 4px 6px !important;
-      font-size: 0.68rem !important;
-      font-weight: 600 !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 3px !important;
-      cursor: pointer !important;
-      box-shadow: none !important;
-      backdrop-filter: none !important;
-    }
-    #civic-controls .civic-btn:hover {
-      border-color: #38bdf8 !important;
-      background: #1e293b !important;
-    }
-
-    /* BOTTOM-RIGHT UNIFIED INSTRUMENT CLUSTER */
-    #speed-ctrl {
-      position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 72px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 125px) !important;
-      left: auto !important;
-      top: auto !important;
-      transform: none !important;
-      z-index: 45 !important;
-      width: 230px !important;
-      box-sizing: border-box !important;
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 4px !important;
-      background: #0d131f !important;
-      padding: 6px 8px !important;
-      border-radius: 10px 10px 0 0 !important;
-      border: 1.5px solid #26354a !important;
-      border-bottom: none !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-    }
-
-    #gp {
-      position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 125px) !important;
-      left: auto !important;
-      top: auto !important;
-      transform: none !important;
-      z-index: 45 !important;
-      width: 230px !important;
-      box-sizing: border-box !important;
-      display: flex !important;
-      flex-direction: row !important;
-      justify-content: space-between !important;
-      gap: 4px !important;
-      background: #0d131f !important;
-      padding: 6px 8px !important;
-      border-radius: 0 0 10px 10px !important;
-      border: 1.5px solid #26354a !important;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-    }
-
-    #gp .gb {
-      flex: 1 !important;
-      text-align: center !important;
-      padding: 6px 0 !important;
-      border-radius: 6px !important;
-      background: #151d2d !important;
-      border: 1px solid #26354a !important;
-      color: #94a3b8 !important;
-      font-weight: 800 !important;
-      font-size: 0.85rem !important;
-      cursor: pointer !important;
-    }
-    #gp .gb.ag {
-      background: #0284c7 !important;
-      border-color: #38bdf8 !important;
-      color: #ffffff !important;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important;
-    }
   
     /* =================================================================== */
     /* 🌟 MASTER HUD, POPUP & CIVIC DOCKING STYLING OVERRIDES 🌟 */
     /* =================================================================== */
 
-    /* 1. CIVIC CONTROLS POD — Cleanly docked above the bottom-right speed cluster */
-    #civic-controls {
-      position: fixed !important;
-      top: auto !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 160px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
-      left: auto !important;
-      z-index: 55 !important;
-      width: 280px !important;
-      max-width: 280px !important;
-      box-sizing: border-box !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      gap: 5px !important;
-      background: #0d131f !important;
-      border: 1.5px solid #26354a !important;
-      border-radius: 10px !important;
-      padding: 5px 8px !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      margin: 0 !important;
-      transform: none !important;
-    }
-
-    #civic-controls .civic-btn {
-      background: #151d2d !important;
-      border: 1px solid #26354a !important;
-      color: #e2e8f0 !important;
-      border-radius: 6px !important;
-      padding: 4px 7px !important;
-      font-size: 0.72rem !important;
-      font-weight: 700 !important;
-      cursor: pointer !important;
-      transition: all 0.15s ease !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 4px !important;
-      white-space: nowrap !important;
-    }
-    #civic-controls .civic-btn:hover {
-      border-color: #38bdf8 !important;
-      background: #1e293b !important;
-    }
 
     /* 2. PROMINENT TOP-CENTER FLOATING TOAST / NOTIFICATION */
     #toast {
@@ -6772,21 +6624,28 @@
       transform: none !important;
     }
 
+    /* 1. CIVIC CONTROLS POD — Auto-fit pill with zero overflow */
     #civic-controls {
       position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 160px) !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 174px) !important;
       right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
       top: auto !important;
       left: auto !important;
       z-index: 55 !important;
-      display: flex !important;
+      width: auto !important;
+      max-width: calc(100vw - 32px) !important;
+      box-sizing: border-box !important;
+      display: inline-flex !important;
+      flex-wrap: nowrap !important;
       align-items: center !important;
-      gap: 5px !important;
+      gap: 6px !important;
       background: #0d131f !important;
       border: 1.5px solid #26354a !important;
-      border-radius: 10px !important;
-      padding: 5px 8px !important;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.7) !important;
+      border-radius: 12px !important;
+      padding: 6px 8px !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
       margin: 0 !important;
       transform: none !important;
     }
@@ -6795,45 +6654,45 @@
       background: #151d2d !important;
       border: 1px solid #26354a !important;
       color: #e2e8f0 !important;
-      border-radius: 6px !important;
-      padding: 4px 6px !important;
-      font-size: 0.68rem !important;
-      font-weight: 600 !important;
-      display: flex !important;
+      border-radius: 8px !important;
+      padding: 5px 8px !important;
+      font-size: 0.74rem !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+      display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      gap: 3px !important;
-      cursor: pointer !important;
-      box-shadow: none !important;
-      backdrop-filter: none !important;
+      gap: 5px !important;
       white-space: nowrap !important;
+      flex-shrink: 0 !important;
     }
     #civic-controls .civic-btn:hover {
       border-color: #38bdf8 !important;
       background: #1e293b !important;
     }
 
-    /* BOTTOM-RIGHT POD: Speed Controls + Gear Buttons */
+    /* BOTTOM-RIGHT POD: Speed Controls (Cruise/Modes) + Gear Selector (P R N D) */
     #speed-ctrl {
       position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 72px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 125px) !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 74px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
       left: auto !important;
       top: auto !important;
       transform: none !important;
       z-index: 45 !important;
-      width: 230px !important;
-      max-width: 230px !important;
+      width: 290px !important;
+      max-width: 290px !important;
       box-sizing: border-box !important;
       display: flex !important;
       flex-direction: column !important;
-      gap: 4px !important;
+      gap: 6px !important;
       background: #0d131f !important;
-      padding: 6px 8px !important;
-      border-radius: 10px 10px 0 0 !important;
+      padding: 8px 10px 6px 10px !important;
+      border-radius: 12px 12px 0 0 !important;
       border: 1.5px solid #26354a !important;
       border-bottom: none !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75) !important;
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
     }
@@ -6841,7 +6700,7 @@
     #speed-ctrl .sc-row {
       display: flex !important;
       justify-content: space-between !important;
-      gap: 4px !important;
+      gap: 5px !important;
       width: 100% !important;
     }
 
@@ -6850,34 +6709,55 @@
       background: #151d2d !important;
       border: 1px solid #26354a !important;
       color: #e2e8f0 !important;
-      border-radius: 6px !important;
-      padding: 4px 6px !important;
-      font-size: 0.7rem !important;
-      font-weight: 700 !important;
+      border-radius: 8px !important;
+      padding: 6px 4px !important;
+      font-size: 0.74rem !important;
+      font-weight: 800 !important;
       cursor: pointer !important;
       text-align: center !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 4px !important;
+      white-space: nowrap !important;
+      transition: all 0.15s ease !important;
+    }
+    #speed-ctrl .sc-btn.sc-adj {
+      flex: 0 0 32px !important;
+      font-size: 1rem !important;
+    }
+    #speed-ctrl .sc-btn:hover {
+      border-color: #38bdf8 !important;
+      background: #1e293b !important;
+    }
+    #speed-ctrl .sc-btn.sc-active {
+      background: #0284c7 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
     }
 
     #gp {
       position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 125px) !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
       left: auto !important;
       top: auto !important;
       transform: none !important;
       z-index: 45 !important;
-      width: 230px !important;
-      max-width: 230px !important;
+      width: 290px !important;
+      max-width: 290px !important;
       box-sizing: border-box !important;
       display: flex !important;
       flex-direction: row !important;
       justify-content: space-between !important;
-      gap: 4px !important;
+      gap: 6px !important;
       background: #0d131f !important;
-      padding: 6px 8px !important;
-      border-radius: 0 0 10px 10px !important;
+      padding: 0px 10px 8px 10px !important;
+      border-radius: 0 0 12px 12px !important;
       border: 1.5px solid #26354a !important;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+      border-top: none !important;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.75) !important;
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
     }
@@ -6885,21 +6765,27 @@
     #gp .gb {
       flex: 1 !important;
       text-align: center !important;
-      padding: 6px 0 !important;
-      border-radius: 6px !important;
+      padding: 7px 0 !important;
+      border-radius: 8px !important;
       background: #151d2d !important;
       border: 1px solid #26354a !important;
       color: #94a3b8 !important;
       font-weight: 800 !important;
-      font-size: 0.85rem !important;
+      font-size: 0.92rem !important;
       cursor: pointer !important;
+      transition: all 0.15s ease !important;
+    }
+    #gp .gb:hover {
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
     }
     #gp .gb.ag {
       background: #0284c7 !important;
       border-color: #38bdf8 !important;
       color: #ffffff !important;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.5) !important;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.55) !important;
     }
+
 </style>
 </head>
 
@@ -8271,26 +8157,26 @@
       }, 500);
     })();
   </script>
-  <script src="pools.js?v=22"></script>
-  <script src="road-graph.js?v=22"></script>
-  <script src="render_core.js?v=22"></script>
-  <script src="safezone-ui.js?v=22"></script>
-  <script src="world-streamer.js?v=22"></script>
-  <script src="mission-manager.js?v=22"></script>
-  <script src="scenery-kit.js?v=22"></script>
-  <script src="collectible-system.js?v=22"></script>
-  <script src="checkpoint-system.js?v=22"></script>
-  <script src="gameplay-recorder.js?v=22"></script>
-  <script src="task-manager.js?v=22"></script>
-  <script src="scenario2d.js?v=22"></script>
-  <script src="course.js?v=22"></script>
-  <script src="traffic-audio.js?v=22"></script>
-  <script src="game_core.js?v=22"></script>
-  <script src="npc-ai.js?v=22"></script>
-  <script src="traffic-manager.js?v=22"></script>
-  <script src="rule-breaker-profiles.js?v=22"></script>
-  <script src="ui.js?v=22"></script>
-  <script src="start.js?v=22"></script>
+  <script src="pools.js?v=23"></script>
+  <script src="road-graph.js?v=23"></script>
+  <script src="render_core.js?v=23"></script>
+  <script src="safezone-ui.js?v=23"></script>
+  <script src="world-streamer.js?v=23"></script>
+  <script src="mission-manager.js?v=23"></script>
+  <script src="scenery-kit.js?v=23"></script>
+  <script src="collectible-system.js?v=23"></script>
+  <script src="checkpoint-system.js?v=23"></script>
+  <script src="gameplay-recorder.js?v=23"></script>
+  <script src="task-manager.js?v=23"></script>
+  <script src="scenario2d.js?v=23"></script>
+  <script src="course.js?v=23"></script>
+  <script src="traffic-audio.js?v=23"></script>
+  <script src="game_core.js?v=23"></script>
+  <script src="npc-ai.js?v=23"></script>
+  <script src="traffic-manager.js?v=23"></script>
+  <script src="rule-breaker-profiles.js?v=23"></script>
+  <script src="ui.js?v=23"></script>
+  <script src="start.js?v=23"></script>
 
   
   <div id="kid-steer"></div>
