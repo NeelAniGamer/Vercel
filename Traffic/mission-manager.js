@@ -687,6 +687,8 @@ class SchoolPatrolMission extends Mission {
   getProgressPercent() {
     return (this.data.speedersCaught / this.data.targetSpeeders) * 100;
   }
+}
+
 class PassengerPickupMission extends Mission {
   constructor(config = {}) {
     super('PASSENGER_PICKUP', {

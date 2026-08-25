@@ -3721,9 +3721,10 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       }
       if (game.playing) game.pause = false
       this.cbusy = false
-setTimeout(() => this._nc(), 80)
-    }, 500)
-  _addChallanCard(offText, amtText) {
+        setTimeout(() => this._nc(), 80);
+      }, 500);
+    },
+    _addChallanCard(offText, amtText) {
     const stack = document.getElementById('challan-stack');
     if (!stack) return;
     stack.classList.add('on');
