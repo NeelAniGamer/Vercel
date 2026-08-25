@@ -85,6 +85,12 @@ const MISSION_TYPES = {
     label: 'School Zone Patrol',
     description: 'Enforce school zone speed limits',
   },
+  PASSENGER_PICKUP: {
+    id: 'passenger_pickup',
+    icon: '🚖',
+    label: 'Passenger Transit',
+    description: 'Pick up and drop off passengers across Mumbai',
+  },
 };
 
 const COLLECTIBLE_TYPES = {
@@ -681,6 +687,124 @@ class SchoolPatrolMission extends Mission {
   getProgressPercent() {
     return (this.data.speedersCaught / this.data.targetSpeeders) * 100;
   }
+class PassengerPickupMission extends Mission {
+  constructor(config = {}) {
+    super('PASSENGER_PICKUP', {
+      target: 1,
+      reward: config.reward || 6500,
+      tokenReward: config.tokenReward || 65,
+      data: {
+        stage: 'DRIVE_TO_PICKUP',
+        pickupSpot: config.data?.pickupSpot || { x: 0, z: -80, name: 'Bus Shelter #1' },
+        dropoffSpot: config.data?.dropoffSpot || { x: 0, z: 180, name: 'Metro Central' },
+        passengerMesh: null,
+        passengerName: config.data?.passengerName || 'Priya (Commuter)',
+        dialogue: config.data?.dialogue || 'Thanks for stopping! Please drop me at the Central Station.',
+        dwellTimer: 0,
+        ...config.data
+      },
+      ...config
+    });
+  }
+
+  update(playerPos, playerRot, dt, speed, game) {
+    if (this.status !== 'active') return;
+    const stage = this.data.stage;
+    const g = game || (window.game);
+
+    // Spawn 3D Waiting Passenger Mesh if not yet spawned
+    if (!this.data.passengerMesh && g && g.scene) {
+      this._spawnWaitingPassenger(g);
+    }
+
+    if (stage === 'DRIVE_TO_PICKUP') {
+      const pSpot = this.data.pickupSpot;
+      const dist = Math.hypot(playerPos.x - pSpot.x, playerPos.z - pSpot.z);
+      this.data.currentDistance = dist;
+
+      if (dist < 8.0 && Math.abs(speed || 0) < 0.25) {
+        // Player stopped at pickup spot!
+        this.data.stage = 'BOARDING';
+        this.data.dwellTimer = 0;
+        if (typeof toast === 'function') {
+          toast(`🙋 ${this.data.passengerName}: "${this.data.dialogue}"`, '#00f0cc', 4500);
+        }
+        if (window.sfx && window.sfx.play) window.sfx.play('ok');
+      }
+    } else if (stage === 'BOARDING') {
+      this.data.dwellTimer += dt;
+      // Animate passenger walking towards car
+      if (this.data.passengerMesh) {
+        const pm = this.data.passengerMesh;
+        const dx = playerPos.x - pm.position.x;
+        const dz = playerPos.z - pm.position.z;
+        pm.position.x += dx * dt * 1.8;
+        pm.position.z += dz * dt * 1.8;
+        pm.position.y = 0.05 + Math.abs(Math.sin(this.data.dwellTimer * 8)) * 0.1;
+      }
+
+      if (this.data.dwellTimer >= 2.2) {
+        // Passenger entered vehicle
+        if (this.data.passengerMesh && this.data.passengerMesh.parent && g && g.scene) {
+          g.scene.remove(this.data.passengerMesh);
+          this.data.passengerMesh = null;
+        }
+        this.data.stage = 'DRIVE_TO_DROPOFF';
+        if (typeof toast === 'function') {
+          toast(`🚘 Passenger on board! Destination: ${this.data.dropoffSpot.name}`, '#fbbf24', 4500);
+        }
+      }
+    } else if (stage === 'DRIVE_TO_DROPOFF') {
+      const dSpot = this.data.dropoffSpot;
+      const dist = Math.hypot(playerPos.x - dSpot.x, playerPos.z - dSpot.z);
+      this.data.currentDistance = dist;
+
+      if (dist < 8.5 && Math.abs(speed || 0) < 0.25) {
+        // Safe Drop-off complete!
+        this.data.stage = 'COMPLETED';
+        this.status = 'completed';
+        if (typeof toast === 'function') {
+          toast(`🎉 Dropped off ${this.data.passengerName}! +₹${this.reward} Bonus`, '#34d399', 5000);
+        }
+        if (window.sfx && window.sfx.play) window.sfx.play('win');
+        if (this.onComplete) this.onComplete(this);
+      }
+    }
+  }
+
+  _spawnWaitingPassenger(g) {
+    const pSpot = this.data.pickupSpot;
+    const group = new THREE.Group();
+    const mat = new THREE.MeshToonMaterial({ color: 0x3b82f6 });
+    const skinMat = new THREE.MeshToonMaterial({ color: 0xf5cba7 });
+
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.35), mat);
+    body.position.y = 0.85;
+    group.add(body);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.24, 8, 6), skinMat);
+    head.position.y = 1.45;
+    group.add(head);
+
+    // Glowing halo on the ground
+    const ringGeo = new THREE.RingGeometry(1.5, 2.2, 16);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f0cc, side: THREE.DoubleSide, transparent: true, opacity: 0.75 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.05;
+    group.add(ring);
+
+    group.position.set(pSpot.x, 0, pSpot.z);
+    g.scene.add(group);
+    this.data.passengerMesh = group;
+  }
+
+  getProgressPercent() {
+    if (this.data.stage === 'DRIVE_TO_PICKUP') return 25;
+    if (this.data.stage === 'BOARDING') return 50;
+    if (this.data.stage === 'DRIVE_TO_DROPOFF') return 75;
+    if (this.data.stage === 'COMPLETED') return 100;
+    return 0;
+  }
 }
 
 class MissionManager {
@@ -731,6 +855,7 @@ class MissionManager {
     // Driving missions
     if (!levelConfig.isPedestrian) {
       specialMissions.push(
+        this.createPassengerPickupMission(levelConfig),
         this.createEscortMission(levelConfig),
         this.createChaseMission(levelConfig),
         this.createParkingMission(levelConfig),
@@ -1033,6 +1158,42 @@ class MissionManager {
     });
   }
 
+  createPassengerPickupMission(levelConfig) {
+    if (levelConfig.isPedestrian) return null;
+    const roads = levelConfig.roads || [];
+    if (roads.length === 0) return null;
+
+    const r1 = roads[0];
+    const r2 = roads[roads.length - 1] || r1;
+    const isV1 = r1.type === 'v';
+    const isV2 = r2.type === 'v';
+
+    const pX = isV1 ? r1.x - 4 : (r1.x1 + r1.x2) / 2;
+    const pZ = isV1 ? (r1.z1 + r1.z2) / 2 : r1.z - 4;
+    const dX = isV2 ? r2.x + 4 : Math.min(r2.x1, r2.x2) + 25;
+    const dZ = isV2 ? Math.max(r2.z1, r2.z2) - 25 : r2.z + 4;
+
+    const stories = [
+      { name: 'Rohan (Student)', pickup: 'Bus Stop #1', dropoff: 'Metro Station West', text: 'Hey, I am getting late for college! Can you drop me at the station?' },
+      { name: 'Dr. Priya (Doctor)', pickup: 'South Community Clinic', dropoff: 'City Trauma Center', text: 'Urgent hospital duty! Please drive safely to the medical center.' },
+      { name: 'Ananya (Tourist)', pickup: 'Gateway Heritage Spot', dropoff: 'Marine Drive Viewpoint', text: 'Hello! I would love to visit the sea-facing promenade.' }
+    ];
+    const item = stories[Math.floor(Math.random() * stories.length)];
+
+    return new PassengerPickupMission({
+      target: 1,
+      reward: 6500,
+      tokenReward: 65,
+      data: {
+        pickupSpot: { x: pX, z: pZ, name: item.pickup },
+        dropoffSpot: { x: dX, z: dZ, name: item.dropoff },
+        passengerName: item.name,
+        dialogue: item.text
+      }
+    });
+  }
+
+
   _generateParkingSpot(levelConfig) {
     const roads = levelConfig.roads || [];
     if (roads.length === 0) return null;
@@ -1205,6 +1366,8 @@ class MissionManager {
         mission.update(playerPos, ambulancePos, pedPositions, dt);
       } else if (mission.type === 'SCHOOL_PATROL' && mission.update) {
         mission.update(playerPos, vehiclePositions, dt);
+      } else if (mission.type === 'PASSENGER_PICKUP' && mission.update) {
+        mission.update(playerPos, playerRot, dt, speed, this.game);
       }
 
       // Grant tokens when mission completes

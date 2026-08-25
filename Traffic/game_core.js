@@ -2272,9 +2272,9 @@ class Game {
         }
 
         // ── Garage & Driveway Zone: 100% Permitted Zone (No sidewalk/offroad penalties) ──
-        if (this._garageActive && this._garageX !== undefined) {
+        if (this._garageX !== undefined && this._garageZ !== undefined) {
           const dGarage = Math.hypot(x - this._garageX, z - this._garageZ);
-          if (dGarage <= 24) {
+          if (dGarage <= 36) {
             return { onRoad: true, onSidewalk: false, offRoad: false, nearZebra: true, inGarageDriveway: true, currentRoad: allRoads[0] };
           }
         }
@@ -6297,11 +6297,11 @@ class Game {
             const zMax = Math.max(r.z1, r.z2);
 
             // Min-Z terminus (North boundary / dead-end)
-            if (!isIntersectionConnected(r, zMin, true) || zMin <= -250) {
+            if (!isIntersectionConnected(r, zMin, true)) {
               createJerseyBarrier(r.x, zMin + 2.5, 0, barrierW);
             }
             // Max-Z terminus (South boundary / dead-end)
-            if (!isIntersectionConnected(r, zMax, false) || zMax >= 250) {
+            if (!isIntersectionConnected(r, zMax, false)) {
               createJerseyBarrier(r.x, zMax - 2.5, 0, barrierW);
             }
           } else {
@@ -6309,11 +6309,11 @@ class Game {
             const xMax = Math.max(r.x1, r.x2);
 
             // Min-X terminus (West boundary / dead-end)
-            if (!isIntersectionConnected(r, xMin, true) || xMin <= -250) {
+            if (!isIntersectionConnected(r, xMin, true)) {
               createJerseyBarrier(xMin + 2.5, r.z, Math.PI / 2, barrierW);
             }
             // Max-X terminus (East boundary / dead-end)
-            if (!isIntersectionConnected(r, xMax, false) || xMax >= 250) {
+            if (!isIntersectionConnected(r, xMax, false)) {
               createJerseyBarrier(xMax - 2.5, r.z, Math.PI / 2, barrierW);
             }
           }
@@ -6553,41 +6553,25 @@ class Game {
         const cfg = this.mapCfg || {};
 
         const grassMat  = new THREE.MeshToonMaterial({ color: 0x4caf50, gradientMap: window._toonGrad });
-        const trunkMat  = new THREE.MeshToonMaterial({ color: 0x5d4037, gradientMap: window._toonGrad });
-        const fenceMat  = new THREE.MeshToonMaterial({ color: 0x795548, gradientMap: window._toonGrad });
         const benchMat  = new THREE.MeshToonMaterial({ color: 0x6d4c41, gradientMap: window._toonGrad });
         const pathMat   = new THREE.MeshToonMaterial({ color: 0xd7ccc8, gradientMap: window._toonGrad });
-        const treeColors = [0x33691e, 0x2e7d32, 0x1b5e20, 0x4caf50, 0x558b2f, 0x43a047];
 
-        const makeTree = (x, z, scale) => {
-          scale = scale || (0.9 + Math.random() * 0.5);
-          const g = new THREE.Group();
-          const h = (3 + Math.random() * 3) * scale;
-          const r = (1.5 + Math.random() * 1.5) * scale;
-          const tc = treeColors[Math.floor(Math.random() * treeColors.length)];
-          const fol = new THREE.MeshToonMaterial({ color: tc, gradientMap: window._toonGrad });
-          const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2 * scale, 0.3 * scale, h * 0.45, 6), trunkMat);
-          trunk.position.y = h * 0.225;
-          g.add(trunk);
-          const c1 = new THREE.Mesh(new THREE.ConeGeometry(r, h * 0.7, 7), fol);
-          c1.position.y = h * 0.55;
-          g.add(c1);
-          const c2 = new THREE.Mesh(new THREE.ConeGeometry(r * 0.65, h * 0.5, 7), fol);
-          c2.position.y = h * 0.85;
-          g.add(c2);
-          g.position.set(x, 0, z);
-          g.rotation.y = Math.random() * Math.PI * 2;
-          this.scene.add(g);
-        };
+        const trunkMat  = new THREE.MeshToonMaterial({ color: 0x5d4037, gradientMap: window._toonGrad });
+        const folMat1   = new THREE.MeshToonMaterial({ color: 0x2e7d32, gradientMap: window._toonGrad });
+        const folMat2   = new THREE.MeshToonMaterial({ color: 0x43a047, gradientMap: window._toonGrad });
 
-        // ── Parks at 8% of unoccupied building slots ──
+        const treeInstances = [];
+
+        // ── 1. Parks at unoccupied building slots ──
         const slots = graph.buildingSlots ? graph.buildingSlots.filter(s => !s.occupied) : [];
         const parkCount = Math.min(5, Math.max(2, Math.floor(slots.length * 0.08)));
         const step = Math.max(1, Math.floor(slots.length / (parkCount + 1)));
+
         for (let pi = 0; pi < parkCount; pi++) {
           const slot = slots[step * (pi + 1)];
           if (!slot) continue;
           slot.occupied = true;
+          slot._isPark = true;
           const pos = slot.getWorldPosition();
           const rot = slot.getRotation();
           const pw = 18 + Math.random() * 10;
@@ -6597,39 +6581,36 @@ class Game {
           const base = new THREE.Mesh(new THREE.BoxGeometry(pw, 0.15, pd), grassMat);
           base.position.set(pos.x, 0.08, pos.z);
           base.rotation.y = rot;
+          base.receiveShadow = true;
+          base.userData = { noLod: true };
           this.scene.add(base);
 
           // Walking path
           const path = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.2, pd - 2), pathMat);
           path.position.set(pos.x, 0.12, pos.z);
           path.rotation.y = rot;
+          path.userData = { noLod: true };
           this.scene.add(path);
 
-          // Bench
+          // Park benches
           const seat = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.2, 0.6), benchMat);
           seat.position.set(pos.x + 3, 0.7, pos.z + 2);
           this.scene.add(seat);
-          const back = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.8, 0.15), benchMat);
-          back.position.set(pos.x + 3, 1.1, pos.z + 2.3);
-          this.scene.add(back);
-
-          // Simple fence on 4 sides
-          const fH = 1.2;
-          [[-pw/2+0.08, 0], [pw/2-0.08, 0], [0, -pd/2+0.08], [0, pd/2-0.08]].forEach(([ox, oz], i) => {
-            const isX = i < 2;
-            const fm = new THREE.Mesh(new THREE.BoxGeometry(isX ? 0.15 : pw, fH, isX ? pd : 0.15), fenceMat);
-            fm.position.set(pos.x + ox, fH / 2, pos.z + oz);
-            fm.rotation.y = rot;
-            this.scene.add(fm);
-          });
 
           // Trees inside park
-          for (let t = 0; t < 3 + Math.floor(Math.random() * 4); t++) {
-            makeTree(pos.x + (Math.random()-0.5)*(pw-4), pos.z + (Math.random()-0.5)*(pd-4), 0.85 + Math.random()*0.5);
+          const numTrees = 3 + Math.floor(Math.random() * 3);
+          for (let t = 0; t < numTrees; t++) {
+            const tx = pos.x + (Math.random() - 0.5) * (pw - 4);
+            const tz = pos.z + (Math.random() - 0.5) * (pd - 4);
+            treeInstances.push({
+              x: tx, z: tz,
+              scale: 0.9 + Math.random() * 0.4,
+              rot: Math.random() * Math.PI * 2
+            });
           }
         }
 
-        // ── Roadside trees along road graph edges ──
+        // ── 2. Roadside trees along road edges ──
         const edgeList = typeof graph.getEdgeList === 'function'
           ? graph.getEdgeList()
           : (graph.edges ? Array.from(graph.edges.values ? graph.edges.values() : []) : []);
@@ -6643,18 +6624,89 @@ class Game {
           const rhw = ((edge.width || 14) / 2) + 5.5;
           const nx = (b.z - a.z) / len;
           const nz = -(b.x - a.x) / len;
-          const spacing = 24 + Math.random() * 12;
+          const spacing = 28 + Math.random() * 10;
           const n = Math.floor(len / spacing);
           for (let t = 0; t < n; t++) {
             const tt = (t + 0.5) / n;
             const cx = a.x + (b.x - a.x) * tt;
             const cz = a.z + (b.z - a.z) * tt;
-            const off = rhw + 1.2 + Math.random() * 2;
-            if (Math.random() > 0.3) makeTree(cx + nx * off + (Math.random()-0.5)*1.5, cz + nz * off + (Math.random()-0.5)*1.5);
-            if (Math.random() > 0.3) makeTree(cx - nx * off + (Math.random()-0.5)*1.5, cz - nz * off + (Math.random()-0.5)*1.5);
+            const off = rhw + 1.2 + Math.random() * 1.5;
+            if (Math.random() > 0.25) {
+              treeInstances.push({
+                x: cx + nx * off + (Math.random() - 0.5) * 1.2,
+                z: cz + nz * off + (Math.random() - 0.5) * 1.2,
+                scale: 0.85 + Math.random() * 0.4,
+                rot: Math.random() * Math.PI * 2
+              });
+            }
+            if (Math.random() > 0.25) {
+              treeInstances.push({
+                x: cx - nx * off + (Math.random() - 0.5) * 1.2,
+                z: cz - nz * off + (Math.random() - 0.5) * 1.2,
+                scale: 0.85 + Math.random() * 0.4,
+                rot: Math.random() * Math.PI * 2
+              });
+            }
           }
         });
+
+        // ── 3. Batch render ALL trees in 3 GPU InstancedMesh draw calls ──
+        const count = treeInstances.length;
+        if (count === 0) return;
+
+        const trunkGeo = new THREE.CylinderGeometry(0.2, 0.3, 1.8, 6);
+        const cone1Geo = new THREE.ConeGeometry(1.6, 2.6, 7);
+        const cone2Geo = new THREE.ConeGeometry(1.1, 2.0, 7);
+
+        const instTrunk = new THREE.InstancedMesh(trunkGeo, trunkMat, count);
+        const instCone1 = new THREE.InstancedMesh(cone1Geo, folMat1, count);
+        const instCone2 = new THREE.InstancedMesh(cone2Geo, folMat2, count);
+
+        instTrunk.castShadow = false;
+        instTrunk.receiveShadow = false;
+        instTrunk.userData = { noLod: true };
+
+        instCone1.castShadow = false;
+        instCone1.receiveShadow = false;
+        instCone1.userData = { noLod: true };
+
+        instCone2.castShadow = false;
+        instCone2.receiveShadow = false;
+        instCone2.userData = { noLod: true };
+
+        const dummy = new THREE.Object3D();
+
+        treeInstances.forEach((inst, i) => {
+          const s = inst.scale;
+          // Trunk matrix
+          dummy.position.set(inst.x, 0.9 * s, inst.z);
+          dummy.rotation.set(0, inst.rot, 0);
+          dummy.scale.set(s, s, s);
+          dummy.updateMatrix();
+          instTrunk.setMatrixAt(i, dummy.matrix);
+
+          // Lower foliage cone
+          dummy.position.set(inst.x, 2.2 * s, inst.z);
+          dummy.updateMatrix();
+          instCone1.setMatrixAt(i, dummy.matrix);
+
+          // Upper foliage cone
+          dummy.position.set(inst.x, 3.4 * s, inst.z);
+          dummy.updateMatrix();
+          instCone2.setMatrixAt(i, dummy.matrix);
+        });
+
+        instTrunk.instanceMatrix.needsUpdate = true;
+        instCone1.instanceMatrix.needsUpdate = true;
+        instCone2.instanceMatrix.needsUpdate = true;
+
+        this.scene.add(instTrunk);
+        this.scene.add(instCone1);
+        this.scene.add(instCone2);
+
+        console.log(`[Performance] Batched ${count} trees into 3 InstancedMeshes (3 draw calls)`);
       }
+
 
       _buildBusStops() {
         const graph = this.roadGraph;
@@ -8283,10 +8335,12 @@ class Game {
 
       // ── Google Maps-style animated GPS navigation path ──
       // Dashed animated line on the ground with flowing chevrons
+      // ── GTA / Forza-style animated 3D GPS navigation road path ──
+      // Prominent glowing chevrons and road ribbons flowing along the target lane
       _initBreadcrumbPath() {
         // Clean up any previous GPS elements
         if (this._gpsFlowChevrons) {
-          this._gpsFlowChevrons.forEach(c => { this.scene.remove(c); c.children.forEach(ch => { ch.geometry?.dispose(); ch.material?.dispose(); }); });
+          this._gpsFlowChevrons.forEach(c => { this.scene.remove(c); c.traverse(ch => { ch.geometry?.dispose(); ch.material?.dispose(); }); });
         }
         if (this._gpsTurnLabels) {
           this._gpsTurnLabels.forEach(l => { this.scene.remove(l); l.material?.map?.dispose(); l.material?.dispose(); });
@@ -8296,101 +8350,115 @@ class Game {
         this._gpsTurnSprites = {};
 
         if (!this.driveRoute || this.driveRoute.length < 2) return;
-        const points = this.driveRoute.map(p => new THREE.Vector3(p.x, 0.12, p.z));
-        // Pedestrian mode: offset path to sidewalk (left side of road) — same logic as _buildArrows
+        const points = this.driveRoute.map(p => new THREE.Vector3(p.x, 0.14, p.z));
         const cfg = this.mapCfg;
         const RW = cfg && cfg.isPedestrian ? 10 : 12;
         const swW = cfg && cfg.isPedestrian ? 6 : 4;
         const pedOffset = this.isPedestrian ? -(RW / 2 + swW / 2) : 0;
         const pointsOffset = points.map(p => new THREE.Vector3(p.x + pedOffset, p.y, p.z));
-        // Interpolate long segments with intermediate waypoints for tight corners
+
         const interpolated = [points[0]];
         for (let i = 1; i < points.length; i++) {
           const a = points[i - 1], b = points[i];
           const segLen = a.distanceTo(b);
-          const steps = Math.max(1, Math.floor(segLen / 120));
+          const steps = Math.max(1, Math.floor(segLen / 40));
           for (let s = 1; s <= steps; s++) interpolated.push(new THREE.Vector3().lerpVectors(a, b, s / steps));
         }
-        // Interpolate long segments for tighter corners (pedestrian offset path)
+
         const interpolatedOffset = [pointsOffset[0]];
         for (let i = 1; i < pointsOffset.length; i++) {
           const a = pointsOffset[i - 1], b = pointsOffset[i];
           const segLen = a.distanceTo(b);
-          const steps = Math.max(1, Math.floor(segLen / 120));
+          const steps = Math.max(1, Math.floor(segLen / 40));
           for (let s = 1; s <= steps; s++) interpolatedOffset.push(new THREE.Vector3().lerpVectors(a, b, s / steps));
         }
+
         this._breadcrumbCurve = new THREE.CatmullRomCurve3(this.isPedestrian ? interpolatedOffset : interpolated, false, 'catmullrom', 0.1);
         const resolution = 2000;
         const curvePoints = this._breadcrumbCurve.getPoints(resolution);
         const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
-        // Google Maps-style blue dashed line
+        
+        // High-visibility glowing cyan road ribbon
         const material = new THREE.LineBasicMaterial({
-          color: 0x4285f4,
+          color: 0x00f0cc,
           transparent: true,
-          opacity: 0.7,
-          linewidth: 2
+          opacity: 0.85,
+          linewidth: 3
         });
         this._breadcrumbPath = new THREE.Line(geometry, material);
         this._breadcrumbPath.visible = false;
         this.scene.add(this._breadcrumbPath);
 
-        // Create animated flow chevrons along the path
-        const chevronCount = Math.min(40, Math.floor(points.length * 3));
+        // Create large, crisp GTA-style animated 3D flow chevrons along the road
+        const chevronCount = Math.min(60, Math.floor(points.length * 5));
         const chevMat = new THREE.MeshBasicMaterial({
-          color: 0xffffff, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false
+          color: 0x00f0cc,
+          transparent: true,
+          opacity: 0.9,
+          side: THREE.DoubleSide,
+          depthWrite: false
         });
+        const chevBorderMat = new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0.95,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+
+        // 3D Chevron Arrow Geometry (Wide, high-visibility 2.2m arrow)
+        const arrowGeo = new THREE.BufferGeometry();
+        // Triangle 1 (left wing) & Triangle 2 (right wing)
+        const verts = new Float32Array([
+          0, 0, -1.6,   -1.2, 0, 0.6,   0, 0, -0.4,
+          0, 0, -1.6,    0, 0, -0.4,    1.2, 0, 0.6
+        ]);
+        arrowGeo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+
         for (let i = 0; i < chevronCount; i++) {
           const g = new THREE.Group();
-          const wing1 = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(0, 0, -1.0), new THREE.Vector3(-0.6, 0, 0.3), new THREE.Vector3(0, 0, -0.1)
-          ]), chevMat.clone());
-          const wing2 = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
-            new THREE.Vector3(0, 0, -1.0), new THREE.Vector3(0.6, 0, 0.3), new THREE.Vector3(0, 0, -0.1)
-          ]), chevMat.clone());
-          g.add(wing1, wing2);
-          g.rotation.x = -Math.PI / 2;
-          g.scale.setScalar(0.8);
+          const mainMesh = new THREE.Mesh(arrowGeo, chevMat.clone());
+          g.add(mainMesh);
+
+          g.scale.set(1.6, 1, 1.6);
+          g.position.y = 0.16;
           g.visible = false;
-          const tVal = i / chevronCount;
-          const bp = this._breadcrumbCurve.getPointAt(tVal);
-          // Compute rotation from direction of travel at this point
-          const nextT = Math.min(tVal + 0.01, 1.0);
-          const prevT2 = Math.max(tVal - 0.01, 0.0);
-          let pA = this._breadcrumbCurve.getPointAt(prevT2);
-          let pB = this._breadcrumbCurve.getPointAt(nextT);
-          // Guard against degenerate case at curve start where prevT2 === nextT
-          if (pA.distanceTo(pB) < 0.001) { pB = this._breadcrumbCurve.getPointAt(Math.min(tVal + 0.02, 1.0)); }
-          const rotY = Math.atan2(pA.x - pB.x, pA.z - pB.z);
-          g.userData = { t: tVal, basePos: { x: bp.x, z: bp.z }, baseRotY: rotY };
-          g.rotation.y = rotY;
+          g.userData = { isGpsChevron: true, index: i };
           this.scene.add(g);
           this._gpsFlowChevrons.push(g);
         }
 
-        // Pre-build turn indicator sprites for each corner (avoid per-frame allocation)
-        const route = this.mapCfg.route;
+        // Turn indicator sprites for corners
+        const route = this.mapCfg.route || [];
         for (let i = 1; i < route.length - 1; i++) {
           const prev = route[i - 1], curr = route[i], next = route[i + 1];
           const d1x = curr.x - prev.x, d1z = curr.z - prev.z;
           const d2x = next.x - curr.x, d2z = next.z - curr.z;
           const cross = d1x * d2z - d1z * d2x;
-          if (Math.abs(cross) < 100) continue;
-          // Determine turn direction based on cross product
-          const turnDir = cross > 0 ? '→ TURN RIGHT' : '← TURN LEFT';
+          if (Math.abs(cross) < 80) continue;
+
+          const turnDir = cross > 0 ? '▶ TURN RIGHT' : '◀ TURN LEFT';
           const canvas = document.createElement('canvas');
-          canvas.width = 256; canvas.height = 64;
+          canvas.width = 256; canvas.height = 72;
           const ctx = canvas.getContext('2d');
-          ctx.fillStyle = 'rgba(0,0,0,0.7)';
-          ctx.fillRect(0, 0, 256, 64);
-          ctx.fillStyle = '#4285f4';
-          ctx.font = 'bold 28px Arial';
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+          ctx.beginPath();
+          ctx.roundRect(4, 4, 248, 64, 12);
+          ctx.fill();
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = '#00f0cc';
+          ctx.stroke();
+
+          ctx.fillStyle = '#00f0cc';
+          ctx.font = 'bold 24px monospace';
           ctx.textAlign = 'center';
-          ctx.fillText(turnDir, 128, 42);
+          ctx.fillText(turnDir, 128, 44);
+
           const tex = new THREE.CanvasTexture(canvas);
           const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0 });
           const sprite = new THREE.Sprite(spriteMat);
-          sprite.position.set(curr.x, 3.5, curr.z);
-          sprite.scale.set(6, 1.5, 1);
+          sprite.position.set(curr.x, 3.8, curr.z);
+          sprite.scale.set(6.5, 1.8, 1);
           sprite.visible = false;
           this.scene.add(sprite);
           this._gpsTurnLabels.push(sprite);
@@ -8399,15 +8467,14 @@ class Game {
       }
 
       _updateBreadcrumbPath(dt) {
-        if (!this._breadcrumbPath) return;
-        // Show GPS path when playing (works for both vehicle AND pedestrian modes)
+        if (!this._breadcrumbPath || !this._breadcrumbCurve) return;
         if (!this.playing || this.pause) {
           this._breadcrumbPath.visible = false;
           if (this._gpsFlowChevrons) this._gpsFlowChevrons.forEach(c => c.visible = false);
           if (this._gpsTurnLabels) this._gpsTurnLabels.forEach(l => { l.visible = false; l.material.opacity = 0; });
           return;
         }
-        const nextCP = this.cps.find(c => !c.userData.hit);
+        const nextCP = this.cps ? this.cps.find(c => !c.userData?.hit && !c.cleared) : null;
         if (!nextCP) {
           this._breadcrumbPath.visible = false;
           if (this._gpsFlowChevrons) this._gpsFlowChevrons.forEach(c => c.visible = false);
@@ -8418,11 +8485,11 @@ class Game {
         const playerPos = this.player.position;
         const cpPos = nextCP.position;
         let startT = 0, minDist = Infinity;
-        const samples = 100;
+        const samples = 80;
         for (let i = 0; i <= samples; i++) {
           const t = i / samples;
           const p = this._breadcrumbCurve.getPointAt(t);
-          const d = p.distanceTo(playerPos);
+          const d = Math.hypot(p.x - playerPos.x, p.z - playerPos.z);
           if (d < minDist) { minDist = d; startT = t; }
         }
         let endT = 1.0;
@@ -8430,7 +8497,7 @@ class Game {
         for (let i = 0; i <= samples; i++) {
           const t = i / samples;
           const p = this._breadcrumbCurve.getPointAt(t);
-          const d = p.distanceTo(cpPos);
+          const d = Math.hypot(p.x - cpPos.x, p.z - cpPos.z);
           if (d < minDist) { minDist = d; endT = t; }
         }
         const resolution = 2000;
@@ -8439,47 +8506,49 @@ class Game {
         const count = Math.max(0, endIndex - startIndex);
         this._breadcrumbPath.geometry.setDrawRange(startIndex, count);
 
-        // Animate flow chevrons moving along the path
+        // Animate flow chevrons moving forward along the path towards next waypoint
         if (this._gpsFlowChevrons) {
+          const numChevs = this._gpsFlowChevrons.length;
+          const visRange = Math.max(0.01, endT - startT);
+
           this._gpsFlowChevrons.forEach((ch, i) => {
-            // Flow animation: chevrons move along path within visible range
-            const visRange = Math.max(0.001, endT - startT);
-            const flowOffset = ((this.timer * 0.08 + i * 0.025) % visRange);
-            const animT = startT + flowOffset;
+            const flowOffset = (((this.timer || 0) * 0.12 + (i / numChevs) * visRange) % visRange);
+            const animT = Math.min(Math.max(startT + flowOffset, 0), 1);
             if (animT < startT || animT > endT) { ch.visible = false; return; }
-            ch.visible = true;
-            // Position on curve at animated position
+
             const pos = this._breadcrumbCurve.getPointAt(animT);
-            ch.position.copy(pos);
-            ch.position.y = 0.18 + 0.04 * Math.sin(this.timer * 5 + i * 0.3);
-            // Rotation from precomputed direction
-            if (ch.userData.baseRotY != null) ch.rotation.y = ch.userData.baseRotY;
-            // Pulsing opacity for flowing effect
-            const pulse = 0.6 + 0.3 * Math.sin(this.timer * 6 + i * 0.5);
-            const dist = Math.hypot(pos.x - playerPos.x, pos.z - playerPos.z);
-            const fade = dist < 10 ? 0.25 : dist < 40 ? pulse : 0.3;
-            ch.children.forEach(c => { if (c.material) c.material.opacity = fade; });
+            const nextT = Math.min(animT + 0.015, 1.0);
+            const nextPos = this._breadcrumbCurve.getPointAt(nextT);
+            const rotY = Math.atan2(nextPos.x - pos.x, nextPos.z - pos.z);
+
+            ch.position.set(pos.x, 0.16 + 0.03 * Math.sin((this.timer || 0) * 6 + i), pos.z);
+            ch.rotation.y = rotY;
+            ch.visible = true;
+
+            const distToPlayer = Math.hypot(pos.x - playerPos.x, pos.z - playerPos.z);
+            const alpha = distToPlayer < 8 ? 0.35 : distToPlayer < 70 ? 0.95 : 0.4;
+            ch.children.forEach(c => { if (c.material) c.material.opacity = alpha; });
           });
         }
 
-        // Show/hide pre-built turn sprites based on player proximity (no per-frame allocation)
+        // Show/hide corner turn notifications based on distance
         if (this._gpsTurnSprites) {
-          const route = this.mapCfg.route;
+          const route = this.mapCfg.route || [];
           Object.keys(this._gpsTurnSprites).forEach(idx => {
             const sprite = this._gpsTurnSprites[idx];
             const corner = route[parseInt(idx)];
+            if (!corner) return;
             const dist = Math.hypot(playerPos.x - corner.x, playerPos.z - corner.z);
-            if (dist < 50) {
+            if (dist < 60) {
               sprite.visible = true;
-              sprite.material.opacity = dist < 15 ? 0.95 : 0.5;
+              sprite.material.opacity = dist < 20 ? 0.95 : 0.55;
             } else {
               sprite.visible = false;
             }
           });
         }
-
-        // Note: direction arrow HUD (da, da-arrow, dal, da-dist) is owned by _ucps — don't duplicate here
       }
+
 
       _unpcs(dt) {
         if (!this.player || !this.player.position) return;
@@ -11260,18 +11329,69 @@ class Game {
           });
         }
 
-        // 2. Active GPS Route Line
+        // 2. Active GTA-Style GPS Road Route Outline
         const activeCP = this.cps && this.cps.length ? this.cps.find(c => !c.userData?.hit && !c.cleared) : null;
         if (activeCP) {
-          ctx.strokeStyle = '#00f0cc';
-          ctx.lineWidth = 3.5;
-          ctx.setLineDash([6, 5]);
-          ctx.beginPath();
-          ctx.moveTo(px, pz);
-          ctx.lineTo(activeCP.position.x, activeCP.position.z);
-          ctx.stroke();
-          ctx.setLineDash([]);
+          const route = (this.mapCfg && this.mapCfg.route) || (this.driveRoute) || [];
+          let waypoints = [];
+          if (route && route.length >= 2) {
+            waypoints = [{ x: px, z: pz }];
+            let started = false;
+            for (let r = 0; r < route.length; r++) {
+              const pt = route[r];
+              const distToPt = Math.hypot(pt.x - activeCP.position.x, pt.z - activeCP.position.z);
+              const distFromPlayer = Math.hypot(pt.x - px, pt.z - pz);
+              if (!started && distFromPlayer > 15) {
+                waypoints.push(pt);
+                started = true;
+              } else if (started) {
+                waypoints.push(pt);
+                if (distToPt < 18) break;
+              }
+            }
+            waypoints.push({ x: activeCP.position.x, z: activeCP.position.z });
+          } else {
+            waypoints = [{ x: px, z: pz }, { x: activeCP.position.x, z: activeCP.position.z }];
+          }
+
+          if (waypoints.length >= 2) {
+            // 2A. Outer Road Outline Glow (Purple/Magenta border like GTA / Google Maps)
+            ctx.strokeStyle = 'rgba(168, 85, 247, 0.75)';
+            ctx.lineWidth = 10;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(waypoints[0].x, waypoints[0].z);
+            for (let w = 1; w < waypoints.length; w++) {
+              ctx.lineTo(waypoints[w].x, waypoints[w].z);
+            }
+            ctx.stroke();
+
+            // 2B. Inner Vibrant Cyan GPS Core
+            ctx.strokeStyle = '#00f0cc';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(waypoints[0].x, waypoints[0].z);
+            for (let w = 1; w < waypoints.length; w++) {
+              ctx.lineTo(waypoints[w].x, waypoints[w].z);
+            }
+            ctx.stroke();
+
+            // 2C. Animated dashed center pulse
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([8, 6]);
+            ctx.lineDashOffset = -((this.timer || 0) * 24);
+            ctx.beginPath();
+            ctx.moveTo(waypoints[0].x, waypoints[0].z);
+            for (let w = 1; w < waypoints.length; w++) {
+              ctx.lineTo(waypoints[w].x, waypoints[w].z);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
         }
+
 
         // 3. Traffic Signals (Red/Yellow/Green status dots)
         this.sigs.forEach(s => {

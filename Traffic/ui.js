@@ -3723,6 +3723,33 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       this.cbusy = false
 setTimeout(() => this._nc(), 80)
     }, 500)
+  _addChallanCard(offText, amtText) {
+    const stack = document.getElementById('challan-stack');
+    if (!stack) return;
+    stack.classList.add('on');
+    const card = document.createElement('div');
+    card.className = 'challan-card';
+    card.innerHTML = `
+      <div class="cc-header">
+        <span class="cc-badge">🚨 E-CHALLAN</span>
+        <span class="cc-amt">${amtText || '₹500'}</span>
+      </div>
+      <div class="cc-off">${offText || 'Traffic Violation'}</div>
+    `;
+    stack.appendChild(card);
+    while (stack.children.length > 3) {
+      stack.removeChild(stack.children[0]);
+    }
+    setTimeout(() => {
+      if (card.parentNode) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(60px)';
+        setTimeout(() => {
+          if (card.parentNode) card.parentNode.removeChild(card);
+          if (stack.children.length === 0) stack.classList.remove('on');
+        }, 300);
+      }
+    }, 4500);
   },
   
   // ─── CERTIFICATE GENERATION ───
