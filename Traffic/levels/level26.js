@@ -23,6 +23,7 @@ window.LVS.push({
   scenarioType: 'cars_only',
   npcDensity: 'light',
   startOutside: true,
+  hasCow: true,
   tasks: [
     { id: 'stop_cow', text: 'Stop for cow', type: 'stop', target: 'cow', done: false },
     { id: 'no_honk', text: 'Do not honk at cow', type: 'avoid', target: 'honk', done: false },

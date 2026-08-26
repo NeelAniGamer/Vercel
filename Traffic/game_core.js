@@ -1,10 +1,11 @@
 // ── Per-vehicle handling profiles ──
 const VEHICLE_STATS = {
-  bike:      { maxSpd: 1.35, accel: 0.058, fric: 0.935, turn: 0.082, grip: 0.48 },
-  car:       { maxSpd: 1.10, accel: 0.045, fric: 0.945, turn: 0.065, grip: 0.62 },
-  bus:       { maxSpd: 0.80, accel: 0.028, fric: 0.965, turn: 0.036, grip: 0.44 },
-  truck:     { maxSpd: 0.90, accel: 0.033, fric: 0.960, turn: 0.042, grip: 0.50 },
-  auto:      { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.072, grip: 0.40 },
+  bike:        { maxSpd: 1.35, accel: 0.058, fric: 0.935, turn: 0.088, grip: 0.48 },
+  car:         { maxSpd: 1.10, accel: 0.045, fric: 0.945, turn: 0.080, grip: 0.62 },
+  car_highway: { maxSpd: 1.25, accel: 0.052, fric: 0.948, turn: 0.080, grip: 0.65 },
+  bus:         { maxSpd: 0.80, accel: 0.028, fric: 0.965, turn: 0.045, grip: 0.44 },
+  truck:       { maxSpd: 0.90, accel: 0.033, fric: 0.960, turn: 0.050, grip: 0.50 },
+  auto:        { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.082, grip: 0.40 },
 };
 window.VEHICLE_STATS = VEHICLE_STATS;
 
@@ -38,6 +39,7 @@ const PACEJKA = {
       pcy1: 1.3, pcy2: 0, pdy1: 1.1, pdy2: 0, pdy3: 0,
       pey1: 0.9, pey2: 0.0, pey3: 0.0, pey4: 0.0, pey5: 0.0,
       // Pure longitudinal (Fx0)
+      pcx1: 1.55, pdx1: 1.10, pdx2: 0.0, pdx3: 0.0,
       pex1: 0.2, pex2: 0.0, pex3: 0.0, pex4: 0.0,
       pkx1: 22.0, pkx2: 0.0, pkx3: 0.0,
       phx1: 0.0, phx2: 0.0,
@@ -50,7 +52,7 @@ const PACEJKA = {
       rcy1: 0.0,
       rey1: 0.0, rey2: 0.0,
       // Load dependency
-      pky1: -22.0, pky2: 0.0, pky3: 0.0,
+      pky1: 22.0, pky2: 0.0, pky3: 0.0,
       pvy1: 0.0, pvy2: 0.0, pvy3: 0.0, pvy4: 0.0,
       phy1: 0.0, phy2: 0.0, phy3: 0.0,
     },
@@ -2274,8 +2276,17 @@ class Game {
         // ── Garage & Driveway Zone: 100% Permitted Zone (No sidewalk/offroad penalties) ──
         if (this._garageX !== undefined && this._garageZ !== undefined) {
           const dGarage = Math.hypot(x - this._garageX, z - this._garageZ);
-          if (dGarage <= 36) {
+          if (dGarage <= 40) {
             return { onRoad: true, onSidewalk: false, offRoad: false, nearZebra: true, inGarageDriveway: true, currentRoad: allRoads[0] };
+          }
+        }
+
+        // ── Intersection & Zebra Crossings: 100% Permitted Road / Safe Crossing Zone ──
+        const ints = (this.mapCfg?.ints || []);
+        for (let i = 0; i < ints.length; i++) {
+          const [ix, iz] = ints[i];
+          if (Math.hypot(x - ix, z - iz) <= 24) {
+            return { onRoad: true, onSidewalk: false, offRoad: false, nearZebra: true, currentRoad: allRoads[0] };
           }
         }
 
@@ -2295,11 +2306,12 @@ class Game {
             const zMax = Math.max(r.z1 !== undefined ? r.z1 : -9999, r.z2 !== undefined ? r.z2 : 9999) + maxExt;
             if (z >= zMin && z <= zMax) {
               const dx = Math.abs(x - r.x);
-              if (dx <= roadHalfW + 0.3) {
+              if (dx <= roadHalfW + 0.5) {
                 onRoad = true;
+                onSidewalk = false;
                 matchedRoad = r;
                 break;
-              } else if (dx <= roadHalfW + sidewalkWidth + 0.8) {
+              } else if (!onRoad && dx <= roadHalfW + sidewalkWidth + 0.8) {
                 onSidewalk = true;
                 matchedRoad = r;
               }
@@ -2309,11 +2321,12 @@ class Game {
             const xMax = Math.max(r.x1 !== undefined ? r.x1 : -9999, r.x2 !== undefined ? r.x2 : 9999) + maxExt;
             if (x >= xMin && x <= xMax) {
               const dz = Math.abs(z - r.z);
-              if (dz <= roadHalfW + 0.3) {
+              if (dz <= roadHalfW + 0.5) {
                 onRoad = true;
+                onSidewalk = false;
                 matchedRoad = r;
                 break;
-              } else if (dz <= roadHalfW + sidewalkWidth + 0.8) {
+              } else if (!onRoad && dz <= roadHalfW + sidewalkWidth + 0.8) {
                 onSidewalk = true;
                 matchedRoad = r;
               }
@@ -2321,13 +2334,8 @@ class Game {
           }
         }
 
-        let nearZebra = false;
-        (this.mapCfg?.ints || []).forEach(([ix, iz]) => {
-          if (Math.hypot(x - ix, z - iz) < 14) nearZebra = true;
-        });
-
         const offRoad = !onRoad && !onSidewalk;
-        return { onRoad, onSidewalk, offRoad, nearZebra, currentRoad: matchedRoad };
+        return { onRoad, onSidewalk, offRoad, nearZebra: false, currentRoad: matchedRoad };
       }
 
       _isOnRoad(x, z) {
@@ -2387,10 +2395,16 @@ class Game {
         this._updateSpeedCtrlHUD();
       }
 
-      toggleSpeedLimiter() {
+      toggleSpeedLimiter(forceState) {
         if (this.isPedestrian) return;
-        this.speedLimiter = !this.speedLimiter;
-        toast(this.speedLimiter ? ('🔒 Limit ON — ' + this.speedLimitCap + ' km/h') : '🔓 Limit OFF', this.speedLimiter ? '#ffb74d' : '#90a4ae');
+        this.speedLimiter = typeof forceState === 'boolean' ? forceState : !this.speedLimiter;
+        if (this.speedLimiter) {
+          const maxInternal = (this.speedLimitCap || 50) / 100;
+          if (Math.abs(this.speed) > maxInternal) {
+            this.speed = Math.sign(this.speed) * maxInternal;
+          }
+        }
+        toast(this.speedLimiter ? ('🔒 Speed Governor ON — Capped at ' + this.speedLimitCap + ' km/h') : '🔓 Speed Governor OFF — Unlimited', this.speedLimiter ? '#00e676' : '#90a4ae');
         this._updateSpeedCtrlHUD();
       }
 
@@ -2417,6 +2431,30 @@ class Game {
         ['ECO','CITY','SPORT'].forEach(m => { if (el('sc-' + m.toLowerCase())) el('sc-' + m.toLowerCase()).classList.toggle('sc-active', this.driveMode === m); });
         if (el('sc-badge-cruise')) { el('sc-badge-cruise').textContent = this.cruiseSpeed + ''; el('sc-badge-cruise').style.display = this.cruiseControl ? 'inline' : 'none'; }
         if (el('sc-badge-limit')) { el('sc-badge-limit').textContent = this.speedLimitCap + ''; el('sc-badge-limit').style.display = this.speedLimiter ? 'inline' : 'none'; }
+        
+        // Update speed limit road sign badge if present
+        const slBadge = el('speed-limit-badge');
+        if (slBadge) {
+          slBadge.style.display = this.isPedestrian ? 'none' : 'flex';
+          const slVal = el('sl-val');
+          if (slVal) slVal.textContent = this.speedLimitCap || 50;
+          const slGov = el('sl-gov-tag');
+          if (slGov) {
+            if (this.speedLimiter) {
+              slGov.textContent = '🔒 ON';
+              slGov.style.background = '#00e676';
+              slGov.style.color = '#000';
+              slBadge.style.borderColor = '#00e676';
+              slBadge.style.boxShadow = '0 0 16px rgba(0,230,118,0.8), 0 4px 16px rgba(0,0,0,0.6)';
+            } else {
+              slGov.textContent = 'GOV [L]';
+              slGov.style.background = '#333';
+              slGov.style.color = '#fff';
+              slBadge.style.borderColor = '#cc0000';
+              slBadge.style.boxShadow = '0 4px 16px rgba(0,0,0,0.6)';
+            }
+          }
+        }
       }
 
 
@@ -3346,7 +3384,7 @@ class Game {
           }
         }
       }
-      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; ['gc', 'player-hud-card', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); const cmp = document.getElementById('compass-strip'); if (cmp) cmp.style.display = 'none'; if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; 
+      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; const slb = document.getElementById('speed-limit-badge'); if (slb) slb.style.display = 'none'; ['gc', 'player-hud-card', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); const cmp = document.getElementById('compass-strip'); if (cmp) cmp.style.display = 'none'; if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; 
         
         // Release all pooled objects to prevent memory leaks
         if (window.ThreePools) ThreePools.releaseAll();
@@ -4301,7 +4339,7 @@ class Game {
           11: { name: 'Sion Hospital', sky: 0x0a0f1d, fog: 500, ground: 0x1a2a1d, amb: 0.35, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'taxi', 'car', 'auto', 'bike', 'car', 'auto', 'car', 'bike', 'auto', 'car', 'taxi', 'car'], isNight: true, hasSilentZone: true, silentZ1: 0, silentZ2: 250, roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'v', x: 0, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: 100, x2: 260 }, { type: 'h', z: -360, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -140, x2: 20 }, { type: 'h', z: -600, x1: -20, x2: 140 }, { type: 'h', z: -600, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -740, z2: -580 }, { type: 'v', x: 360, z1: -620, z2: -460 }, { type: 'h', z: -480, x1: 220, x2: 380 }, { type: 'h', z: -480, x1: -880, x2: 260 }, { type: 'h', z: -360, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1360, z2: 640 }, { type: 'h', z: 0, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1000, z2: 1000 }, { type: 'h', z: -600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1600, z2: 400 }, { type: 'h', z: -600, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1600, z2: 400 }, { type: 'h', z: -240, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1240, z2: 760 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 0, z: -240 }, { x: 120, z: -240 }, { x: 240, z: -240 }, { x: 240, z: -360 }, { x: 120, z: -360 }, { x: 0, z: -360 }, { x: 0, z: -480 }, { x: -120, z: -480 }, { x: -120, z: -600 }, { x: 0, z: -600 }, { x: 120, z: -600 }, { x: 240, z: -600 }, { x: 240, z: -720 }, { x: 360, z: -720 }, { x: 360, z: -600 }, { x: 360, z: -480 }, { x: 240, z: -480 }, { x: 120, z: -480 }], ints: [[240, -360], [0, -600], [240, -480], [240, -240], [120, -600], [0, 0], [-120, -480], [120, -240], [-120, -600], [0, -240], [0, -480], [360, -480], [120, -360], [360, -720], [120, -480], [360, -600], [0, -120], [240, -600], [240, -720], [0, -360]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: -22, z1: -240, z2: -120, s: 0.9 }, { x: 22, z1: -240, z2: -120, s: 0.9 }, { x: 218, z1: -360, z2: -240, s: 0.9 }, { x: 262, z1: -360, z2: -240, s: 0.9 }, { x: -22, z1: -480, z2: -360, s: 0.9 }, { x: 22, z1: -480, z2: -360, s: 0.9 }, { x: -142, z1: -600, z2: -480, s: 0.9 }, { x: -98, z1: -600, z2: -480, s: 0.9 }, { x: 218, z1: -720, z2: -600, s: 0.9 }, { x: 262, z1: -720, z2: -600, s: 0.9 }, { x: 338, z1: -720, z2: -600, s: 0.9 }, { x: 382, z1: -720, z2: -600, s: 0.9 }, { x: 338, z1: -600, z2: -480, s: 0.9 }, { x: 382, z1: -600, z2: -480, s: 0.9 }], timeLimit: 1710, hasGarage: true, assets: ['suburban', 'industrial'] },
           12: { name: 'Dharavi', sky: 0x8aafca, fog: 450, ground: 0x3a5228, amb: 0.7, veh: 'twowheeler', npcTypes: ['auto', 'bike', 'cycle', 'auto', 'car', 'bike', 'cycle', 'taxi', 'auto', 'car', 'bike', 'auto', 'car', 'cycle', 'auto', 'bike'], roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -380, z2: -220 }, { type: 'v', x: -120, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -140, x2: 20 }, { type: 'h', z: -840, x1: -260, x2: -100 }, { type: 'h', z: -840, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'h', z: -720, x1: -380, x2: 760 }, { type: 'h', z: -600, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1600, z2: 400 }, { type: 'h', z: -240, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1240, z2: 760 }, { type: 'h', z: -120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1120, z2: 880 }, { type: 'h', z: -480, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1480, z2: 520 }, { type: 'h', z: -840, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -1840, z2: 160 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -240, z: 0 }, { x: -240, z: -120 }, { x: -120, z: -120 }, { x: 0, z: -120 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -120, z: -360 }, { x: -120, z: -480 }, { x: -240, z: -480 }, { x: -240, z: -600 }, { x: -120, z: -600 }, { x: -120, z: -720 }, { x: 0, z: -720 }, { x: 0, z: -840 }, { x: -120, z: -840 }, { x: -240, z: -840 }, { x: -360, z: -840 }, { x: -360, z: -720 }, { x: -240, z: -720 }], ints: [[-240, -840], [0, -840], [-360, -840], [-360, -720], [-120, -360], [-240, -120], [0, 0], [-120, -480], [-240, -480], [-120, -600], [-120, -720], [0, -240], [-240, -720], [-120, -840], [-120, 0], [0, -120], [-120, -120], [-240, 0], [0, -720], [-240, -600], [-120, -240]], bldg: [{ x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 }, { x: -22, z1: -240, z2: -120, s: 0.9 }, { x: 22, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -360, z2: -240, s: 0.9 }, { x: -98, z1: -360, z2: -240, s: 0.9 }, { x: -142, z1: -480, z2: -360, s: 0.9 }, { x: -98, z1: -480, z2: -360, s: 0.9 }, { x: -262, z1: -600, z2: -480, s: 0.9 }, { x: -218, z1: -600, z2: -480, s: 0.9 }, { x: -142, z1: -720, z2: -600, s: 0.9 }, { x: -98, z1: -720, z2: -600, s: 0.9 }, { x: -22, z1: -840, z2: -720, s: 0.9 }, { x: 22, z1: -840, z2: -720, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }], timeLimit: 1820, hasGarage: true, assets: ['suburban', 'industrial'] },
           13: { name: 'Linking Road', sky: 0x7a9eb5, fog: 550, ground: 0x346a2e, amb: 0.75, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'car', 'taxi', 'auto', 'bike', 'car', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'bike'], hasCheckpoint: true, checkpointZ: 0, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'v', x: 120, z1: -20, z2: 140 }, { type: 'v', x: 120, z1: 100, z2: 260 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'v', x: 120, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 460, z2: 620 }, { type: 'v', x: 240, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 100, x2: 260 }, { type: 'h', z: 720, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 580, z2: 740 }, { type: 'v', x: 0, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -140, x2: 20 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 340, z2: 500 }, { type: 'v', x: -240, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 460, z2: 620 }, { type: 'v', x: -360, z1: 580, z2: 740 }, { type: 'v', x: -360, z1: 700, z2: 860 }, { type: 'v', x: -360, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 940, z2: 1100 }, { type: 'h', z: 1080, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 1060, z2: 1220 }, { type: 'h', z: 1200, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: 1180, z2: 1340 }, { type: 'v', x: -720, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: 1300, z2: 1460 }, { type: 'h', z: 1320, x1: -620, x2: -460 }, { type: 'h', z: 1320, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 1180, z2: 1340 }, { type: 'h', z: 1200, x1: -1480, x2: -340 }, { type: 'h', z: 480, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -520, z2: 1480 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 480, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -520, z2: 1480 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 120, z: 120 }, { x: 120, z: 240 }, { x: 120, z: 360 }, { x: 120, z: 480 }, { x: 240, z: 480 }, { x: 240, z: 600 }, { x: 240, z: 720 }, { x: 120, z: 720 }, { x: 0, z: 720 }, { x: 0, z: 600 }, { x: 0, z: 480 }, { x: -120, z: 480 }, { x: -240, z: 480 }, { x: -240, z: 360 }, { x: -240, z: 240 }, { x: -360, z: 240 }, { x: -360, z: 360 }, { x: -480, z: 360 }, { x: -480, z: 480 }, { x: -360, z: 480 }, { x: -360, z: 600 }, { x: -360, z: 720 }, { x: -360, z: 840 }, { x: -360, z: 960 }, { x: -480, z: 960 }, { x: -480, z: 1080 }, { x: -600, z: 1080 }, { x: -600, z: 1200 }, { x: -720, z: 1200 }, { x: -720, z: 1320 }, { x: -720, z: 1440 }, { x: -600, z: 1440 }, { x: -600, z: 1320 }, { x: -480, z: 1320 }, { x: -360, z: 1320 }, { x: -360, z: 1200 }, { x: -480, z: 1200 }], ints: [[-480, 1320], [-360, 240], [-240, 480], [-720, 1320], [120, 360], [-360, 1200], [-360, 960], [0, 0], [-480, 480], [-360, 1320], [-720, 1200], [-720, 1440], [120, 240], [-600, 1440], [-360, 480], [-480, 360], [-600, 1080], [240, 720], [0, 600], [-240, 360], [120, 480], [-240, 240], [-480, 960], [-480, 1080], [120, 0], [120, 120], [-600, 1200], [-480, 1200], [-600, 1320], [240, 480], [240, 600], [-360, 720], [0, 720], [-120, 480], [-360, 840], [0, 480], [120, 720], [-360, 360], [-360, 600]], bldg: [{ x: 98, z1: 0, z2: 120, s: 0.9 }, { x: 142, z1: 0, z2: 120, s: 0.9 }, { x: 98, z1: 120, z2: 240, s: 0.9 }, { x: 142, z1: 120, z2: 240, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: 98, z1: 360, z2: 480, s: 0.9 }, { x: 142, z1: 360, z2: 480, s: 0.9 }, { x: 218, z1: 480, z2: 600, s: 0.9 }, { x: 262, z1: 480, z2: 600, s: 0.9 }, { x: 218, z1: 600, z2: 720, s: 0.9 }, { x: 262, z1: 600, z2: 720, s: 0.9 }, { x: -22, z1: 600, z2: 720, s: 0.9 }, { x: 22, z1: 600, z2: 720, s: 0.9 }, { x: -22, z1: 480, z2: 600, s: 0.9 }, { x: 22, z1: 480, z2: 600, s: 0.9 }, { x: -262, z1: 360, z2: 480, s: 0.9 }, { x: -218, z1: 360, z2: 480, s: 0.9 }, { x: -262, z1: 240, z2: 360, s: 0.9 }, { x: -218, z1: 240, z2: 360, s: 0.9 }, { x: -382, z1: 240, z2: 360, s: 0.9 }, { x: -338, z1: 240, z2: 360, s: 0.9 }, { x: -502, z1: 360, z2: 480, s: 0.9 }, { x: -458, z1: 360, z2: 480, s: 0.9 }, { x: -382, z1: 480, z2: 600, s: 0.9 }, { x: -338, z1: 480, z2: 600, s: 0.9 }, { x: -382, z1: 600, z2: 720, s: 0.9 }, { x: -338, z1: 600, z2: 720, s: 0.9 }, { x: -382, z1: 720, z2: 840, s: 0.9 }, { x: -338, z1: 720, z2: 840, s: 0.9 }, { x: -382, z1: 840, z2: 960, s: 0.9 }, { x: -338, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 960, z2: 1080, s: 0.9 }, { x: -458, z1: 960, z2: 1080, s: 0.9 }, { x: -622, z1: 1080, z2: 1200, s: 0.9 }, { x: -578, z1: 1080, z2: 1200, s: 0.9 }, { x: -742, z1: 1200, z2: 1320, s: 0.9 }, { x: -698, z1: 1200, z2: 1320, s: 0.9 }, { x: -742, z1: 1320, z2: 1440, s: 0.9 }, { x: -698, z1: 1320, z2: 1440, s: 0.9 }, { x: -622, z1: 1320, z2: 1440, s: 0.9 }, { x: -578, z1: 1320, z2: 1440, s: 0.9 }, { x: -382, z1: 1200, z2: 1320, s: 0.9 }, { x: -338, z1: 1200, z2: 1320, s: 0.9 }], timeLimit: 1930, hasGarage: true, assets: ['suburban', 'industrial', 'construction'] },
-          14: { name: 'Bandra-Worli Sea Link', sky: 0x4a90d9, fog: 750, ground: 0x1a5a8a, amb: 0.9, veh: 'car_highway', npcTypes: ['car', 'car', 'car', 'truck', 'car', 'car', 'bus', 'car', 'car', 'car', 'car', 'car', 'car', 'car', 'taxi', 'car', 'car', 'car', 'car', 'bus', 'car', 'car', 'car', 'car', 'car', 'car', 'car', 'car'], isBridge: true, speedMin: 40, speedMax: 80, roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -260, z2: -100 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'h', z: 0, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -140, z2: 20 }, { type: 'v', x: -360, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -500, x2: -340 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'h', z: -240, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -260, z2: -100 }, { type: 'h', z: -120, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -980, x2: -820 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -860, x2: -700 }, { type: 'h', z: -480, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -620, z2: -460 }, { type: 'v', x: -480, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -500, x2: -340 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -980, z2: -820 }, { type: 'h', z: -960, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -620, x2: -460 }, { type: 'h', z: -1080, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -1100, z2: -940 }, { type: 'v', x: -720, z1: -980, z2: -820 }, { type: 'v', x: -720, z1: -860, z2: -700 }, { type: 'v', x: -720, z1: -740, z2: -580 }, { type: 'h', z: -600, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: -1720, z2: -580 }, { type: 'h', z: -240, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1240, z2: 760 }, { type: 'h', z: 0, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1000, z2: 1000 }, { type: 'h', z: -840, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1840, z2: 160 }, { type: 'h', z: -480, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1480, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -120, z: -120 }, { x: -120, z: 0 }, { x: -240, z: 0 }, { x: -360, z: 0 }, { x: -360, z: -120 }, { x: -360, z: -240 }, { x: -480, z: -240 }, { x: -600, z: -240 }, { x: -720, z: -240 }, { x: -720, z: -120 }, { x: -840, z: -120 }, { x: -840, z: -240 }, { x: -960, z: -240 }, { x: -960, z: -360 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -720, z: -480 }, { x: -600, z: -480 }, { x: -600, z: -360 }, { x: -480, z: -360 }, { x: -360, z: -360 }, { x: -360, z: -480 }, { x: -480, z: -480 }, { x: -480, z: -600 }, { x: -480, z: -720 }, { x: -360, z: -720 }, { x: -360, z: -840 }, { x: -480, z: -840 }, { x: -600, z: -840 }, { x: -600, z: -960 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -600, z: -1080 }, { x: -720, z: -1080 }, { x: -720, z: -960 }, { x: -720, z: -840 }, { x: -720, z: -720 }, { x: -720, z: -600 }, { x: -600, z: -600 }, { x: -600, z: -720 }], ints: [[-600, -1080], [-840, -240], [-360, 0], [-360, -840], [-480, -360], [-600, -600], [-960, -240], [-960, -360], [-360, -720], [-720, -120], [-480, -960], [0, 0], [-720, -480], [-720, -600], [-600, -720], [-480, -600], [-480, -480], [120, -240], [-720, -1080], [-360, -240], [-480, -720], [0, -240], [-480, -1080], [-360, -480], [-600, -840], [-720, -840], [-720, -960], [-600, -360], [-360, -360], [-360, -120], [-120, 0], [-840, -360], [-720, -720], [0, -120], [-120, -120], [-480, -240], [-240, 0], [120, -120], [-840, -120], [-600, -960], [-480, -840], [-720, -240], [-120, -240], [-600, -480], [-840, -480], [-600, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -240, z2: -120, s: 0.9 }, { x: -98, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 }, { x: -742, z1: -240, z2: -120, s: 0.9 }, { x: -698, z1: -240, z2: -120, s: 0.9 }, { x: -862, z1: -240, z2: -120, s: 0.9 }, { x: -818, z1: -240, z2: -120, s: 0.9 }, { x: -982, z1: -360, z2: -240, s: 0.9 }, { x: -938, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 }, { x: -382, z1: -480, z2: -360, s: 0.9 }, { x: -338, z1: -480, z2: -360, s: 0.9 }, { x: -502, z1: -600, z2: -480, s: 0.9 }, { x: -458, z1: -600, z2: -480, s: 0.9 }, { x: -502, z1: -720, z2: -600, s: 0.9 }, { x: -458, z1: -720, z2: -600, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }, { x: -622, z1: -960, z2: -840, s: 0.9 }, { x: -578, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -742, z1: -1080, z2: -960, s: 0.9 }, { x: -698, z1: -1080, z2: -960, s: 0.9 }, { x: -742, z1: -960, z2: -840, s: 0.9 }, { x: -698, z1: -960, z2: -840, s: 0.9 }, { x: -742, z1: -840, z2: -720, s: 0.9 }, { x: -698, z1: -840, z2: -720, s: 0.9 }, { x: -742, z1: -720, z2: -600, s: 0.9 }, { x: -698, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 }], timeLimit: 2040, hasGarage: true, assets: ['suburban', 'industrial'] },
+          14: { name: 'Bandra-Worli Sea Link', sky: 0x4a90d9, fog: 750, ground: 0x33691e, amb: 0.9, veh: 'car_highway', npcTypes: ['car', 'car', 'car', 'truck', 'car', 'car', 'bus', 'car', 'car', 'car', 'car', 'car', 'car', 'car', 'taxi', 'car', 'car', 'car', 'car', 'bus', 'car', 'car', 'car', 'car', 'car', 'car', 'car', 'car'], isBridge: false, speedMin: 40, speedMax: 80, roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -260, z2: -100 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'h', z: 0, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -140, z2: 20 }, { type: 'v', x: -360, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -500, x2: -340 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'h', z: -240, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -260, z2: -100 }, { type: 'h', z: -120, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -980, x2: -820 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -860, x2: -700 }, { type: 'h', z: -480, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -620, z2: -460 }, { type: 'v', x: -480, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -500, x2: -340 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -980, z2: -820 }, { type: 'h', z: -960, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -620, x2: -460 }, { type: 'h', z: -1080, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -1100, z2: -940 }, { type: 'v', x: -720, z1: -980, z2: -820 }, { type: 'v', x: -720, z1: -860, z2: -700 }, { type: 'v', x: -720, z1: -740, z2: -580 }, { type: 'h', z: -600, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: -1720, z2: -580 }, { type: 'h', z: -240, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1240, z2: 760 }, { type: 'h', z: 0, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1000, z2: 1000 }, { type: 'h', z: -840, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1840, z2: 160 }, { type: 'h', z: -480, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1480, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -120, z: -120 }, { x: -120, z: 0 }, { x: -240, z: 0 }, { x: -360, z: 0 }, { x: -360, z: -120 }, { x: -360, z: -240 }, { x: -480, z: -240 }, { x: -600, z: -240 }, { x: -720, z: -240 }, { x: -720, z: -120 }, { x: -840, z: -120 }, { x: -840, z: -240 }, { x: -960, z: -240 }, { x: -960, z: -360 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -720, z: -480 }, { x: -600, z: -480 }, { x: -600, z: -360 }, { x: -480, z: -360 }, { x: -360, z: -360 }, { x: -360, z: -480 }, { x: -480, z: -480 }, { x: -480, z: -600 }, { x: -480, z: -720 }, { x: -360, z: -720 }, { x: -360, z: -840 }, { x: -480, z: -840 }, { x: -600, z: -840 }, { x: -600, z: -960 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -600, z: -1080 }, { x: -720, z: -1080 }, { x: -720, z: -960 }, { x: -720, z: -840 }, { x: -720, z: -720 }, { x: -720, z: -600 }, { x: -600, z: -600 }, { x: -600, z: -720 }], ints: [[-600, -1080], [-840, -240], [-360, 0], [-360, -840], [-480, -360], [-600, -600], [-960, -240], [-960, -360], [-360, -720], [-720, -120], [-480, -960], [0, 0], [-720, -480], [-720, -600], [-600, -720], [-480, -600], [-480, -480], [120, -240], [-720, -1080], [-360, -240], [-480, -720], [0, -240], [-480, -1080], [-360, -480], [-600, -840], [-720, -840], [-720, -960], [-600, -360], [-360, -360], [-360, -120], [-120, 0], [-840, -360], [-720, -720], [0, -120], [-120, -120], [-480, -240], [-240, 0], [120, -120], [-840, -120], [-600, -960], [-480, -840], [-720, -240], [-120, -240], [-600, -480], [-840, -480], [-600, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -240, z2: -120, s: 0.9 }, { x: -98, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 }, { x: -742, z1: -240, z2: -120, s: 0.9 }, { x: -698, z1: -240, z2: -120, s: 0.9 }, { x: -862, z1: -240, z2: -120, s: 0.9 }, { x: -818, z1: -240, z2: -120, s: 0.9 }, { x: -982, z1: -360, z2: -240, s: 0.9 }, { x: -938, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 }, { x: -382, z1: -480, z2: -360, s: 0.9 }, { x: -338, z1: -480, z2: -360, s: 0.9 }, { x: -502, z1: -600, z2: -480, s: 0.9 }, { x: -458, z1: -600, z2: -480, s: 0.9 }, { x: -502, z1: -720, z2: -600, s: 0.9 }, { x: -458, z1: -720, z2: -600, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }, { x: -622, z1: -960, z2: -840, s: 0.9 }, { x: -578, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -742, z1: -1080, z2: -960, s: 0.9 }, { x: -698, z1: -1080, z2: -960, s: 0.9 }, { x: -742, z1: -960, z2: -840, s: 0.9 }, { x: -698, z1: -960, z2: -840, s: 0.9 }, { x: -742, z1: -840, z2: -720, s: 0.9 }, { x: -698, z1: -840, z2: -720, s: 0.9 }, { x: -742, z1: -720, z2: -600, s: 0.9 }, { x: -698, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 }], timeLimit: 2040, hasGarage: true, assets: ['suburban', 'industrial'] },
           15: { name: 'South Mumbai Circuit', sky: 0x7ab5d0, fog: 700, ground: 0x2e6b32, amb: 0.8, veh: 'car', npcTypes: ['car', 'bus', 'auto', 'bike', 'truck', 'car', 'cycle', 'auto', 'car', 'bus', 'bike', 'car', 'taxi', 'auto', 'car', 'bus', 'bike', 'car', 'auto', 'taxi', 'car', 'bus', 'auto', 'bike', 'car', 'truck', 'car', 'auto', 'car', 'bus'], roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'h', z: 120, x1: -20, x2: 140 }, { type: 'h', z: 120, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 100, z2: 260 }, { type: 'v', x: 240, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: 340, z2: 500 }, { type: 'v', x: -120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -20, x2: 140 }, { type: 'h', z: 480, x1: 100, x2: 260 }, { type: 'h', z: 480, x1: 220, x2: 380 }, { type: 'h', z: 480, x1: 340, x2: 500 }, { type: 'h', z: 480, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 580, z2: 740 }, { type: 'v', x: 720, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 580, x2: 740 }, { type: 'h', z: 840, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: 700, z2: 860 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 340, x2: 500 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 580, z2: 740 }, { type: 'v', x: 120, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -260, x2: -100 }, { type: 'h', z: 840, x1: -380, x2: -220 }, { type: 'h', z: 840, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 940, z2: 1100 }, { type: 'v', x: -360, z1: 1060, z2: 1220 }, { type: 'v', x: -360, z1: 1180, z2: 1340 }, { type: 'v', x: -360, z1: 1300, z2: 1460 }, { type: 'v', x: -360, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -380, x2: -220 }, { type: 'h', z: 1560, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: 1420, z2: 1580 }, { type: 'h', z: 1440, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -20, x2: 140 }, { type: 'h', z: 1560, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 1420, z2: 1580 }, { type: 'h', z: 1440, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 1300, z2: 1460 }, { type: 'v', x: 120, z1: 1180, z2: 1340 }, { type: 'h', z: 1200, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 1180, z2: 1340 }, { type: 'h', z: 1320, x1: 220, x2: 380 }, { type: 'h', z: 1320, x1: 340, x2: 500 }, { type: 'h', z: 1320, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: 580, x2: 740 }, { type: 'v', x: 600, z1: 1540, z2: 1700 }, { type: 'v', x: 600, z1: 1660, z2: 1820 }, { type: 'v', x: 600, z1: 1780, z2: 1940 }, { type: 'v', x: 600, z1: 1900, z2: 2060 }, { type: 'v', x: 600, z1: 2020, z2: 2180 }, { type: 'h', z: 2160, x1: 580, x2: 740 }, { type: 'h', z: 2160, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: 2140, z2: 2300 }, { type: 'v', x: 840, z1: 2260, z2: 2420 }, { type: 'h', z: 2400, x1: 700, x2: 860 }, { type: 'v', x: 720, z1: 2380, z2: 2540 }, { type: 'v', x: 720, z1: 2500, z2: 3640 }, { type: 'h', z: 840, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -160, z2: 1840 }, { type: 'h', z: 1560, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: 560, z2: 2560 }, { type: 'h', z: 120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -280, z2: 1720 }, { type: 'h', z: 480, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -520, z2: 1480 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: 120 }, { x: 0, z: 120 }, { x: 120, z: 120 }, { x: 240, z: 120 }, { x: 240, z: 240 }, { x: 240, z: 360 }, { x: 120, z: 360 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 360 }, { x: -120, z: 360 }, { x: -120, z: 480 }, { x: -120, z: 600 }, { x: 0, z: 600 }, { x: 0, z: 480 }, { x: 120, z: 480 }, { x: 240, z: 480 }, { x: 360, z: 480 }, { x: 480, z: 480 }, { x: 600, z: 480 }, { x: 600, z: 600 }, { x: 720, z: 600 }, { x: 720, z: 720 }, { x: 720, z: 840 }, { x: 600, z: 840 }, { x: 480, z: 840 }, { x: 480, z: 720 }, { x: 480, z: 600 }, { x: 360, z: 600 }, { x: 240, z: 600 }, { x: 120, z: 600 }, { x: 120, z: 720 }, { x: 120, z: 840 }, { x: 0, z: 840 }, { x: 0, z: 960 }, { x: -120, z: 960 }, { x: -120, z: 840 }, { x: -240, z: 840 }, { x: -360, z: 840 }, { x: -480, z: 840 }, { x: -480, z: 960 }, { x: -360, z: 960 }, { x: -360, z: 1080 }, { x: -360, z: 1200 }, { x: -360, z: 1320 }, { x: -360, z: 1440 }, { x: -360, z: 1560 }, { x: -240, z: 1560 }, { x: -120, z: 1560 }, { x: -120, z: 1440 }, { x: 0, z: 1440 }, { x: 0, z: 1560 }, { x: 120, z: 1560 }, { x: 240, z: 1560 }, { x: 240, z: 1440 }, { x: 120, z: 1440 }, { x: 120, z: 1320 }, { x: 120, z: 1200 }, { x: 240, z: 1200 }, { x: 240, z: 1320 }, { x: 360, z: 1320 }, { x: 480, z: 1320 }, { x: 600, z: 1320 }, { x: 600, z: 1440 }, { x: 720, z: 1440 }, { x: 720, z: 1560 }, { x: 600, z: 1560 }, { x: 600, z: 1680 }, { x: 600, z: 1800 }, { x: 600, z: 1920 }, { x: 600, z: 2040 }, { x: 600, z: 2160 }, { x: 720, z: 2160 }, { x: 840, z: 2160 }, { x: 840, z: 2280 }, { x: 840, z: 2400 }, { x: 720, z: 2400 }, { x: 720, z: 2520 }, { x: 720, z: 2640 }], ints: [[-120, 960], [480, 840], [-360, 960], [840, 2160], [120, 1200], [360, 600], [840, 2280], [120, 600], [600, 1320], [-360, 1080], [0, 1560], [0, 480], [600, 1920], [0, 240], [240, 1200], [720, 1560], [-120, 360], [720, 720], [120, 360], [120, 1440], [480, 720], [720, 2160], [120, 240], [360, 480], [120, 1560], [-240, 840], [240, 1560], [120, 480], [240, 1440], [600, 840], [-480, 960], [480, 1320], [240, 240], [720, 840], [0, 360], [0, 1440], [240, 480], [240, 600], [120, 1320], [600, 1440], [240, 120], [-360, 840], [-360, 1560], [600, 1800], [360, 1320], [600, 2160], [-360, 1200], [0, 120], [600, 1560], [-360, 1320], [720, 2640], [600, 2040], [720, 600], [-120, 120], [120, 120], [-120, 600], [-120, 840], [240, 1320], [240, 360], [-240, 1560], [480, 480], [600, 600], [120, 840], [0, 0], [0, 840], [-120, 1560], [600, 1680], [600, 480], [0, 960], [720, 2520], [720, 1440], [0, 600], [-120, 0], [720, 2400], [-120, 1440], [-360, 1440], [480, 600], [-120, 480], [120, 720], [-480, 840], [840, 2400]], bldg: [{ x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 }, { x: 218, z1: 120, z2: 240, s: 0.9 }, { x: 262, z1: 120, z2: 240, s: 0.9 }, { x: 218, z1: 240, z2: 360, s: 0.9 }, { x: 262, z1: 240, z2: 360, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 240, z2: 360, s: 0.9 }, { x: 22, z1: 240, z2: 360, s: 0.9 }, { x: -142, z1: 360, z2: 480, s: 0.9 }, { x: -98, z1: 360, z2: 480, s: 0.9 }, { x: -142, z1: 480, z2: 600, s: 0.9 }, { x: -98, z1: 480, z2: 600, s: 0.9 }, { x: -22, z1: 480, z2: 600, s: 0.9 }, { x: 22, z1: 480, z2: 600, s: 0.9 }, { x: 578, z1: 480, z2: 600, s: 0.9 }, { x: 622, z1: 480, z2: 600, s: 0.9 }, { x: 698, z1: 600, z2: 720, s: 0.9 }, { x: 742, z1: 600, z2: 720, s: 0.9 }, { x: 698, z1: 720, z2: 840, s: 0.9 }, { x: 742, z1: 720, z2: 840, s: 0.9 }, { x: 458, z1: 720, z2: 840, s: 0.9 }, { x: 502, z1: 720, z2: 840, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 600, z2: 720, s: 0.9 }, { x: 142, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 720, z2: 840, s: 0.9 }, { x: 142, z1: 720, z2: 840, s: 0.9 }, { x: -22, z1: 840, z2: 960, s: 0.9 }, { x: 22, z1: 840, z2: 960, s: 0.9 }, { x: -142, z1: 840, z2: 960, s: 0.9 }, { x: -98, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 840, z2: 960, s: 0.9 }, { x: -458, z1: 840, z2: 960, s: 0.9 }, { x: -382, z1: 960, z2: 1080, s: 0.9 }, { x: -338, z1: 960, z2: 1080, s: 0.9 }, { x: -382, z1: 1080, z2: 1200, s: 0.9 }, { x: -338, z1: 1080, z2: 1200, s: 0.9 }, { x: -382, z1: 1200, z2: 1320, s: 0.9 }, { x: -338, z1: 1200, z2: 1320, s: 0.9 }, { x: -382, z1: 1320, z2: 1440, s: 0.9 }, { x: -338, z1: 1320, z2: 1440, s: 0.9 }, { x: -382, z1: 1440, z2: 1560, s: 0.9 }, { x: -338, z1: 1440, z2: 1560, s: 0.9 }, { x: -142, z1: 1440, z2: 1560, s: 0.9 }, { x: -98, z1: 1440, z2: 1560, s: 0.9 }, { x: -22, z1: 1440, z2: 1560, s: 0.9 }, { x: 22, z1: 1440, z2: 1560, s: 0.9 }, { x: 218, z1: 1440, z2: 1560, s: 0.9 }, { x: 262, z1: 1440, z2: 1560, s: 0.9 }, { x: 98, z1: 1320, z2: 1440, s: 0.9 }, { x: 142, z1: 1320, z2: 1440, s: 0.9 }, { x: 98, z1: 1200, z2: 1320, s: 0.9 }, { x: 142, z1: 1200, z2: 1320, s: 0.9 }, { x: 218, z1: 1200, z2: 1320, s: 0.9 }, { x: 262, z1: 1200, z2: 1320, s: 0.9 }, { x: 578, z1: 1320, z2: 1440, s: 0.9 }, { x: 622, z1: 1320, z2: 1440, s: 0.9 }, { x: 698, z1: 1440, z2: 1560, s: 0.9 }, { x: 742, z1: 1440, z2: 1560, s: 0.9 }, { x: 578, z1: 1560, z2: 1680, s: 0.9 }, { x: 622, z1: 1560, z2: 1680, s: 0.9 }, { x: 578, z1: 1680, z2: 1800, s: 0.9 }, { x: 622, z1: 1680, z2: 1800, s: 0.9 }, { x: 578, z1: 1800, z2: 1920, s: 0.9 }, { x: 622, z1: 1800, z2: 1920, s: 0.9 }, { x: 578, z1: 1920, z2: 2040, s: 0.9 }, { x: 622, z1: 1920, z2: 2040, s: 0.9 }, { x: 578, z1: 2040, z2: 2160, s: 0.9 }, { x: 622, z1: 2040, z2: 2160, s: 0.9 }, { x: 818, z1: 2160, z2: 2280, s: 0.9 }, { x: 862, z1: 2160, z2: 2280, s: 0.9 }, { x: 818, z1: 2280, z2: 2400, s: 0.9 }, { x: 862, z1: 2280, z2: 2400, s: 0.9 }, { x: 698, z1: 2400, z2: 2520, s: 0.9 }, { x: 742, z1: 2400, z2: 2520, s: 0.9 }, { x: 698, z1: 2520, z2: 2640, s: 0.9 }, { x: 742, z1: 2520, z2: 2640, s: 0.9 }], timeLimit: 2300, hasGarage: true, assets: ['suburban', 'industrial'] }
         };
         
@@ -4499,36 +4537,9 @@ class Game {
         return v;
       }
 
-      // ── VEHICLE BEACON — scene-level glowing pillar + floating arrow above the player's car ──
+      // ── VEHICLE BEACON (DISABLED PER USER REQUEST) ──
       _createVehicleBeacon() {
-        // Clean up any previous beacon first
         this._destroyVehicleBeacon();
-        if (!this.playerVehicle || !this.scene) return;
-        const beacon = new THREE.Group();
-        // Glowing vertical pillar
-        const pillarGeo = new THREE.CylinderGeometry(0.15, 0.15, 8, 8);
-        const pillarMat = new THREE.MeshBasicMaterial({ color: 0x5ed4f5, transparent: true, opacity: 0.6, depthWrite: false });
-        const pillar = new THREE.Mesh(pillarGeo, pillarMat);
-        pillar.position.set(0, 4, 0);
-        beacon.add(pillar);
-        // Floating diamond arrow above
-        const arrowGeo = new THREE.OctahedronGeometry(0.6, 0);
-        const arrowMat = new THREE.MeshBasicMaterial({ color: 0xf1c40f, transparent: true, opacity: 0.85, depthWrite: false });
-        const arrow = new THREE.Mesh(arrowGeo, arrowMat);
-        arrow.position.set(0, 9, 0);
-        arrow.scale.set(1, 1.5, 1);
-        beacon.add(arrow);
-        // Ring at base
-        const ringGeo = new THREE.RingGeometry(1.5, 2.0, 32);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x5ed4f5, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.rotation.x = -Math.PI / 2;
-        ring.position.set(0, 0.1, 0);
-        beacon.add(ring);
-        beacon.userData = { pillar, arrow, ring };
-        // Add to scene (not playerVehicle) to avoid frustum-culling conflicts
-        this.scene.add(beacon);
-        this._vehicleBeacon = beacon;
       }
 
       _destroyVehicleBeacon() {
@@ -4542,33 +4553,7 @@ class Game {
         }
       }
 
-      _updateVehicleBeacon(dt) {
-        if (!this._vehicleBeacon || !this.playerVehicle) return;
-        const b = this._vehicleBeacon.userData;
-        if (!b) return;
-        const t = this.timer || 0;
-        // Position beacon at vehicle's world position each frame
-        this._vehicleBeacon.position.copy(this.playerVehicle.position);
-        // Pulse the pillar opacity
-        if (b.pillar && b.pillar.material) {
-          b.pillar.material.opacity = 0.3 + 0.3 * Math.sin(t * 3);
-        }
-        // Spin and bob the arrow
-        if (b.arrow) {
-          b.arrow.rotation.y = t * 2;
-          b.arrow.position.y = 9 + Math.sin(t * 2) * 0.8;
-          if (b.arrow.material) b.arrow.material.opacity = 0.6 + 0.3 * Math.sin(t * 4);
-        }
-        // Expand/contract ring
-        if (b.ring) {
-          const s = 1 + 0.15 * Math.sin(t * 2.5);
-          b.ring.scale.set(s, s, 1);
-          if (b.ring.material) b.ring.material.opacity = 0.2 + 0.2 * Math.sin(t * 3);
-        }
-        // Show beacon only when player is on foot (pedestrian mode)
-        const showBeacon = this.isPedestrian && this.playerVehicle;
-        this._vehicleBeacon.visible = !!showBeacon;
-      }
+      _updateVehicleBeacon(dt) {}
 
       // 🚦 INDIAN STREET ENVIRONMENT ARCHITECTURE 🚦
       _getZoneAt(x, z) {
@@ -4691,11 +4676,25 @@ class Game {
         if (this.scene) this.scene.children.filter(c => c.userData?.isNPC).forEach(c => { c.visible = false; c.children.length = 0; this._npcFree.push(c); });
 
         const lvId = ui.cur ? ui.cur.id : 1;
-        const cfg = this._getMapConfig(lvId);
+        const baseMapCfg = this._getMapConfig(lvId) || {};
+        const cfg = Object.assign({}, baseMapCfg, ui.cur || {});
         this.mapCfg = cfg;
         this.roadSegments = (cfg && cfg.roads) ? cfg.roads.slice() : [];
         this.timeLimit = cfg.timeLimit || 120; // default; overridden by age-adaptive logic in _actualStart
         this.isPedestrian = (this.vehMode === 'pedestrian') || (!this.vehMode && !!cfg.isPedestrian);
+
+        // ── SYNC SPEED LIMITER CAP WITH LEVEL RULES ──
+        const levelSpeedLimit = cfg.speedLimit || (cfg.hasSchool ? 25 : (cfg.isRural ? 25 : (cfg.hasHospital ? 30 : (cfg.isHighway ? 80 : 50))));
+        this.mapCfg.speedLimit = levelSpeedLimit;
+        this.speedLimitCap = levelSpeedLimit;
+        this.cruiseSpeed = Math.min(this.cruiseSpeed || 40, levelSpeedLimit);
+        // Automatically activate Speed Limiter if in a speed-restricted level
+        if (cfg.hasSchool || cfg.hasHospital || cfg.isRural || cfg.speedLimit) {
+          this.speedLimiter = true;
+          if (window.toast) toast('🔒 Speed Governor Active — Capped at ' + levelSpeedLimit + ' km/h (Press L to toggle)', '#00e676', 4000);
+        } else {
+          this.speedLimiter = false;
+        }
 
         const sk = cfg.sky;
         this.scene.background = new THREE.Color(sk);
@@ -4850,7 +4849,7 @@ class Game {
           window._toonGrad.magFilter = THREE.NearestFilter;
           window._toonGrad.needsUpdate = true;
         }        const gs = 16000;
-        const groundColor = cfg.ground !== undefined ? cfg.ground : 0x3a4838;
+        const groundColor = (cfg.ground !== undefined && !cfg.isBridge) ? cfg.ground : (cfg.isBridge ? 0x1a5a8a : 0x33691e);
         const groundMat = cfg.isBridge
           ? new THREE.MeshLambertMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 })
           : new THREE.MeshLambertMaterial({ color: groundColor });
@@ -5076,27 +5075,29 @@ class Game {
                 intTile.traverse(c => {
                   if (c.isMesh) { c.castShadow = false; c.receiveShadow = false; c.material = _roadMat; }
                 });
-                intTile.position.set(ix, 0.1, iz);
+                intTile.position.set(ix, 0.08, iz);
                 this.scene.add(intTile);
 
                 // Crosswalk markings: white striped plates across the intersection
                 const _cwLen = RW * 0.4;
-                const _cwMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 });
-                // 4 stripes across intersection (alternating directions for crosswalk look)
+                const _cwMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92 });
+                // Clean road-surface stripes across intersection
                 [-1, 0, 1].forEach(off => {
                   // Horizontal stripe
                   const cwH = new THREE.Mesh(
-                    new THREE.BoxGeometry(_cwLen, 0.02, 1.2),
+                    new THREE.PlaneGeometry(_cwLen, 1.2),
                     _cwMat
                   );
-                  cwH.position.set(ix + off * 3, 0.12, iz);
+                  cwH.rotation.x = -Math.PI / 2;
+                  cwH.position.set(ix + off * 3, 0.089, iz);
                   this.scene.add(cwH);
                   // Vertical stripe
                   const cwV = new THREE.Mesh(
-                    new THREE.BoxGeometry(1.2, 0.02, _cwLen),
+                    new THREE.PlaneGeometry(1.2, _cwLen),
                     _cwMat
                   );
-                  cwV.position.set(ix, 0.12, iz + off * 3);
+                  cwV.rotation.x = -Math.PI / 2;
+                  cwV.position.set(ix, 0.089, iz + off * 3);
                   this.scene.add(cwV);
                 });
               });
@@ -5158,17 +5159,33 @@ class Game {
             (cfg.roads || []).forEach(r => {
               const isV = r.type === 'v';
               const rWidth = r.width || RW || 20;
-              const bSetback = (rWidth / 2) + _swW + 7.5; // safe distance outside sidewalk
+              const bSetback = (rWidth / 2) + _swW + 12.0; // safe distance outside sidewalk
               const rStart = Math.min(isV ? r.z1 : r.x1, isV ? r.z2 : r.x2) + 24;
               const rEnd = Math.max(isV ? r.z1 : r.x1, isV ? r.z2 : r.x2) - 24;
-              const bSpacing = 24; // dense building spacing
+              const bSpacing = 28; // safe building spacing
 
               for (let coord = rStart; coord < rEnd; coord += bSpacing) {
                 [-1, 1].forEach(side => {
                   const bx = isV ? r.x + side * bSetback : coord;
                   const bz = isV ? coord : r.z + side * bSetback;
                   const rot = isV ? (side > 0 ? -Math.PI / 2 : Math.PI / 2) : (side > 0 ? Math.PI : 0);
-                  _drawBldg(bx, bz, 'normal', rot);
+
+                  // Ensure building does not collide with ANY road or intersection
+                  const hitsRoad = (cfg.roads || []).some(other => {
+                    const oIsV = other.type === 'v';
+                    const oW = (other.width || RW || 20) / 2 + 6.0;
+                    if (oIsV) {
+                      return Math.abs(bx - other.x) < oW && bz >= Math.min(other.z1, other.z2) - 8 && bz <= Math.max(other.z1, other.z2) + 8;
+                    } else {
+                      return Math.abs(bz - other.z) < oW && bx >= Math.min(other.x1, other.x2) - 8 && bx <= Math.max(other.x1, other.x2) + 8;
+                    }
+                  });
+                  const nearInt = (cfg.ints || []).some(([ix, iz]) => Math.abs(bx - ix) < 22 && Math.abs(bz - iz) < 22);
+                  const nearGarage = this._garageX !== undefined && Math.hypot(bx - this._garageX, bz - this._garageZ) < 20;
+
+                  if (!hitsRoad && !nearInt && !nearGarage) {
+                    _drawBldg(bx, bz, 'normal', rot);
+                  }
                 });
               }
             });
@@ -5279,26 +5296,35 @@ class Game {
         
         // ── THEME-SPECIFIC ELEMENTS ──
         if (cfg.themeType === 'pedestrian_courtesy') {
-            // Spawn extra pedestrians crossing
-            for (let i = 0; i < 8; i++) {
+            // Spawn extra pedestrians along sidewalks safely
+            for (let i = 0; i < 6; i++) {
                 const ped = _buildHuman();
-                ped.position.set((Math.random() - 0.5) * 20, 0, (Math.random() - 0.5) * 20);
-                const vx = (Math.random() > 0.5 ? 1 : -1) * 0.05;
+                const side = i % 2 === 0 ? 1 : -1;
+                const offsetZ = -80 - i * 40;
+                ped.position.set(side * 8, 0, offsetZ);
                 ped.userData = {
-                    t: Math.random() * 10, spd: Math.abs(vx),
-                    isV: true, dir: Math.sign(vx), startZ: ped.position.z, roadC: ped.position.x,
-                    state: 'crossing', side: 1, targetDist: 20
+                    t: Math.random() * 10, spd: 0.02,
+                    isV: true, dir: -side, startZ: offsetZ, roadC: 0,
+                    state: 'waiting', side: side, targetDist: 16
                 };
-        this.scene.add(ped);
-        this.peds.push(ped);
-        // Attach PedestrianAI for intelligent behavior
-        if (typeof PedestrianAI !== 'undefined') {
-          const pedAI = new PedestrianAI(ped, this.trafficManager);
-          this.pedestrianAIs.push(pedAI);
-          ped._pedAI = pedAI;
-        }
-    }
-} else if (cfg.themeType === 'respectful_parking') {
+                // In night levels, give pedestrians bright reflective clothing
+                if (cfg.isNight) {
+                    ped.traverse(ch => {
+                        if (ch.material) {
+                            ch.material.color = new THREE.Color(0xfef08a);
+                        }
+                    });
+                }
+                this.scene.add(ped);
+                this.peds.push(ped);
+                // Attach PedestrianAI for intelligent behavior
+                if (typeof PedestrianAI !== 'undefined') {
+                  const pedAI = new PedestrianAI(ped, this.trafficManager);
+                  this.pedestrianAIs.push(pedAI);
+                  ped._pedAI = pedAI;
+                }
+            }
+        } else if (cfg.themeType === 'respectful_parking') {
             // Spawn parked cars on SIDES of road (sidewalk/parking strip), not on road
             for (let i = 0; i < 15; i++) {
                 const carTpl = this._makeNPC('car', 0x999999);
@@ -5514,22 +5540,158 @@ class Game {
         }
 
         if (cfg.hasSchool) {
-          // School building
-          const school = new THREE.Mesh(new THREE.BoxGeometry(18, 8, 12), new THREE.MeshToonMaterial({ color: 0xd4ac0d }));
-          school.position.set(-40, 4, -80); this.scene.add(school); this.obstacles.push(school);
-          // School sign
-          const sign = new THREE.Mesh(new THREE.BoxGeometry(3, 1.5, .1), new THREE.MeshToonMaterial({ color: 0xffff00 }));
-          sign.position.set(0, 2.5, -60); this.scene.add(sign);
-          // School children pedestrians with PedestrianAI (child profile)
-          for (let i = 0; i < 6; i++) {
-            const child = _buildHuman();
-            child.position.set(-40 + (Math.random() - 0.5) * 20, 0, -60 + (Math.random() - 0.5) * 10);
-            child.userData = { spd: 0, state: 'waiting', t: Math.random() * 5, isV: false, dir: 1, side: 1 };
-            this.scene.add(child); this.peds.push(child);
+          const sGrp = new THREE.Group();
+          const schoolX = -26, schoolZ = 70;
+
+          // 1. Main School Building (2-Story Colonial Brick & Cream Architecture)
+          const bldgMat = new THREE.MeshLambertMaterial({ color: 0xb91c1c }); // Crimson brick
+          const trimMat = new THREE.MeshLambertMaterial({ color: 0xfef08a }); // Cream trim
+          const roofMat = new THREE.MeshLambertMaterial({ color: 0x1e293b }); // Slate roof
+          const winMat = new THREE.MeshToonMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.75 });
+
+          // Central Wing & Clock Tower
+          const mainWing = new THREE.Mesh(new THREE.BoxGeometry(26, 12, 16), bldgMat);
+          mainWing.position.set(0, 6, 0); sGrp.add(mainWing);
+          const tower = new THREE.Mesh(new THREE.BoxGeometry(8, 7, 8), trimMat);
+          tower.position.set(0, 15.5, 0); sGrp.add(tower);
+          const clockDome = new THREE.Mesh(new THREE.ConeGeometry(5, 5, 8), roofMat);
+          clockDome.position.set(0, 21.5, 0); sGrp.add(clockDome);
+
+          // Left and Right Classroom Wings
+          [-17, 17].forEach(wx => {
+            const wing = new THREE.Mesh(new THREE.BoxGeometry(12, 10, 14), bldgMat);
+            wing.position.set(wx, 5, 0); sGrp.add(wing);
+            const wRoof = new THREE.Mesh(new THREE.BoxGeometry(13, 1.5, 15), roofMat);
+            wRoof.position.set(wx, 10.75, 0); sGrp.add(wRoof);
+          });
+
+          // School Windows
+          for (let f = 0; f < 2; f++) {
+            for (let w = -4; w <= 4; w++) {
+              if (w === 0 && f === 0) continue; // Entrance archway
+              const win = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.0), winMat);
+              win.position.set(w * 3.2, 3.5 + f * 4.5, 8.05);
+              sGrp.add(win);
+            }
+          }
+
+          // 2. High-DPI School Name Signboard Banner
+          const sCanvas = document.createElement('canvas');
+          sCanvas.width = 512; sCanvas.height = 128;
+          const sCtx = sCanvas.getContext('2d');
+          sCtx.fillStyle = '#facc15'; sCtx.fillRect(0, 0, 512, 128);
+          sCtx.lineWidth = 8; sCtx.strokeStyle = '#dc2626'; sCtx.strokeRect(4, 4, 504, 120);
+          sCtx.fillStyle = '#1e293b'; sCtx.font = 'bold 36px sans-serif'; sCtx.textAlign = 'center';
+          sCtx.fillText('🏫 ST. XAVIER HIGH SCHOOL', 256, 48);
+          sCtx.fillStyle = '#dc2626'; sCtx.font = 'bold 26px sans-serif';
+          sCtx.fillText('⚠️ CAUTION: SCHOOL ZONE (MAX 20 KM/H)', 256, 92);
+          const schoolSignTex = new THREE.CanvasTexture(sCanvas);
+          const schoolSign = new THREE.Mesh(new THREE.BoxGeometry(16, 4, 0.4), new THREE.MeshLambertMaterial({ map: schoolSignTex }));
+          schoolSign.position.set(0, 11, 8.3); sGrp.add(schoolSign);
+
+          // Boundary wall and school gate
+          const wallMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+          const gateMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+          [-16, 16].forEach(wx => {
+            const wall = new THREE.Mesh(new THREE.BoxGeometry(14, 2.2, 0.5), wallMat);
+            wall.position.set(wx, 1.1, 13); sGrp.add(wall);
+          });
+          // Gate pillars
+          [-7, 7].forEach(px => {
+            const pillar = new THREE.Mesh(new THREE.BoxGeometry(1.2, 3.5, 1.2), trimMat);
+            pillar.position.set(px, 1.75, 13); sGrp.add(pillar);
+          });
+
+          sGrp.position.set(schoolX, 0, schoolZ);
+          sGrp.rotation.y = Math.PI / 2; // Facing the road
+          this.scene.add(sGrp);
+          this.world.push(sGrp);
+
+          // School building collision obstacle
+          const schoolCol = new THREE.Group();
+          schoolCol.position.set(schoolX, 0, schoolZ);
+          schoolCol.userData = { halfW: 16, halfD: 24, isObstacle: true, isBuilding: true };
+          this.obstacles.push(schoolCol);
+
+          // 3. Parked Yellow School Bus outside the school gate
+          const schoolBus = typeof window.IndianVehicles !== 'undefined' ? window.IndianVehicles.buildVehicle('bus', 0xfacc15) : _buildVehicle('bus', 0xfacc15);
+          if (schoolBus) {
+            schoolBus.position.set(-8.5, 0, schoolZ - 18);
+            schoolBus.rotation.y = 0; // Parked parallel to road
+            schoolBus.userData = { halfW: 1.4, halfD: 5.0, isObstacle: true, isVehicle: true };
+            this.scene.add(schoolBus);
+            this.obstacles.push(schoolBus);
+          }
+
+          // 4. Zebra Crossing Markings across the road right in front of School Gate
+          const zMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+          for (let s = -3; s <= 3; s++) {
+            const stripe = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 9.0), zMat);
+            stripe.rotation.x = -Math.PI / 2;
+            stripe.position.set(s * 1.5, 0.03, schoolZ);
+            this.scene.add(stripe);
+          }
+
+          // 5. School Crossing Guard with Stop Sign
+          const guard = _buildHuman(false, { skin: 0xc68642, shirt: 0xf97316, pants: 0x1e293b, hair: 0x111111 });
+          guard.position.set(-7.5, 0, schoolZ);
+          guard.rotation.y = Math.PI / 2;
+          // Add Stop Sign in hand
+          const stopSign = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.05, 8), new THREE.MeshBasicMaterial({ color: 0xdc2626 }));
+          stopSign.rotation.x = Math.PI / 2;
+          stopSign.position.set(0.6, 1.4, 0.3);
+          guard.add(stopSign);
+          const stopPole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.8, 8), new THREE.MeshLambertMaterial({ color: 0x64748b }));
+          stopPole.position.set(0.6, 0.9, 0.3);
+          guard.add(stopPole);
+          guard.userData = { isGuard: true, isObstacle: true, halfW: 0.5, halfD: 0.5 };
+          this.scene.add(guard);
+          this.peds.push(guard);
+
+          // 6. School Children in Uniforms Crossing the Zebra Crossing
+          const uniformShirts = [0xf8fafc, 0xe0f2fe]; // White / light sky-blue uniform shirts
+          const uniformPants = [0x1e3a8a, 0x1e293b];  // Navy blue shorts / skirts
+          for (let i = 0; i < 8; i++) {
+            const uApp = {
+              skin: [0xd4a574, 0xc68642, 0x8d5524, 0xf1c27d][i % 4],
+              shirt: uniformShirts[i % uniformShirts.length],
+              pants: uniformPants[i % uniformPants.length],
+              hair: 0x1a1a1a
+            };
+            const child = _buildHuman(false, uApp);
+            // Child scale
+            child.scale.set(0.72, 0.72, 0.72);
+            // Add colorful student backpack
+            const bagMat = new THREE.MeshToonMaterial({ color: [0xef4444, 0x3b82f6, 0x10b981, 0x8b5cf6, 0xf59e0b][i % 5] });
+            const bag = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.45, 0.22), bagMat);
+            bag.position.set(0, 1.15, -0.22);
+            child.add(bag);
+
+            // Stagger spawn along and across the zebra crossing
+            const startX = (i % 2 === 0) ? -7.0 - (i * 0.8) : 7.0 + (i * 0.8);
+            const targetX = (i % 2 === 0) ? 7.5 : -7.5;
+            child.position.set(startX, 0, schoolZ + ((i % 3) - 1) * 2.2);
+            child.rotation.y = (i % 2 === 0) ? Math.PI / 2 : -Math.PI / 2;
+            child.userData = {
+              spd: 0.025 + Math.random() * 0.015,
+              state: 'crossing',
+              startX: startX,
+              targetX: targetX,
+              crossingZ: schoolZ + ((i % 3) - 1) * 2.2,
+              isChild: true,
+              isObstacle: true,
+              halfW: 0.35,
+              halfD: 0.35
+            };
+            this.scene.add(child);
+            this.peds.push(child);
+
             if (typeof PedestrianAI !== 'undefined') {
               const childAI = new PedestrianAI(child, this.trafficManager);
-              childAI.profileKey = 'child'; childAI.profile = PED_PROFILES.child;
-              this.pedestrianAIs.push(childAI); child._pedAI = childAI;
+              childAI.profileKey = 'child';
+              childAI.profile = PED_PROFILES.child || { maxSpeed: 1.0, lookDistance: 12, complianceRate: 0.6 };
+              this.pedestrianAIs.push(childAI);
+              child._pedAI = childAI;
             }
           }
         }
@@ -5700,35 +5862,66 @@ class Game {
           this.npcs.push(cycle);
         }
 
-        // Bollards and barricades
-        const bCount = cfg.isPedestrian ? 2 : 6;
-        for (let i = 0; i < bCount; i++) {
-          if (!cfg.roads || cfg.roads.length === 0) break;
-          const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
-          const bx = seg.type === 'v' ? seg.x + (Math.random() > .5 ? 10 : -10) : seg.x1 + Math.random() * (seg.x2 - seg.x1);
-          const bz = seg.type === 'v' ? seg.z1 + Math.random() * (seg.z2 - seg.z1) : seg.z + (Math.random() > .5 ? 10 : -10);
-          // Big red-white striped barricade
-          const barG = new THREE.Group();
-          const bp1 = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, 1.5, 8), new THREE.MeshToonMaterial({ color: 0xff3300 }));
-          bp1.position.set(-0.5, 0.75, 0); barG.add(bp1);
-          const bp2 = bp1.clone(); bp2.position.set(0.5, 0.75, 0); barG.add(bp2);
-          const bBar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.25, 0.15), new THREE.MeshToonMaterial({ color: 0xffffff }));
-          bBar.position.set(0, 1.3, 0); barG.add(bBar);
-          const rSt = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.25, 0.16), new THREE.MeshToonMaterial({ color: 0xff0000 }));
-          rSt.position.set(0, 1.3, 0); barG.add(rSt);
-          const bBar2 = bBar.clone(); bBar2.position.set(0, 0.9, 0); barG.add(bBar2);
-          barG.position.set(bx, 0, bz);
-          barG.userData = { halfW: 0.7, halfD: 0.15 };
-          this.scene.add(barG); this.obstacles.push(barG);
+        // ── 16 Dedicated Scenario Builders ──
+        if (cfg.hasElderlyCrossing) this._buildElderlyCrossing(cfg);
+        if (cfg.isParkingChallenge) this._buildParkingScenario(cfg);
+        if (cfg.hasAmbulanceBehind) this._buildAmbulanceScenario(cfg);
+        if (cfg.isNarrowStreet) this._buildNarrowGully(cfg);
+        if (cfg.hasBlindCorner) this._buildBlindCorner(cfg);
+        if (cfg.hasHillPhysics) this._buildHillTerrain(cfg);
+        if (cfg.isRural) this._buildRuralRoad(cfg);
+        if (cfg.isOneWay) this._buildOneWayStreet(cfg);
+        if (cfg.hasSignQuiz || cfg.themeType === 'signs') this._buildSignRecognition(cfg);
+        if (cfg.hasConstruction) this._buildConstructionMaze(cfg);
+        if (cfg.hasCow || cfg.hasDog) this._buildCattleObstacle(cfg);
+        if (cfg.hasHospital && !this._hospitalBuilt) { this._buildHospitalZone(cfg); this._hospitalBuilt = true; }
+        if (cfg.crowdFestival) this._buildFestivalScene(cfg);
+        if (cfg.isHighway) this._buildHighwaySystem(cfg);
+        if (cfg.hasLibrary) this._buildLibrary(cfg);
+        if (cfg.hasTollBooth && !cfg.isBridge) this._buildTollPlaza(cfg);
+
+        // Bollards and barricades — only spawn on construction / pedestrian training levels
+        if (cfg.hasConstruction || cfg.isPedestrian) {
+          const bCount = cfg.isPedestrian ? 2 : 4;
+          const routePoints = (cfg.route && cfg.route.length > 0) ? cfg.route : [{ x: 0, z: 0 }];
+          for (let i = 0; i < bCount; i++) {
+            if (!cfg.roads || cfg.roads.length === 0) break;
+            const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
+            const rWidth = seg.width || 20;
+            // Place strictly on sidewalk shoulder / curb edge, never in middle of driving lane
+            const sideOffset = (rWidth / 2) + 1.2;
+            const bx = seg.type === 'v' ? seg.x + (i % 2 === 0 ? sideOffset : -sideOffset) : seg.x1 + 10 + Math.random() * Math.max(10, (seg.x2 - seg.x1) - 20);
+            const bz = seg.type === 'v' ? seg.z1 + 10 + Math.random() * Math.max(10, (seg.z2 - seg.z1) - 20) : seg.z + (i % 2 === 0 ? sideOffset : -sideOffset);
+            
+            // Do not place within 18m of ANY route waypoint or finish gate
+            const nearRoute = routePoints.some(rp => Math.hypot(bx - rp.x, bz - rp.z) < 18);
+            if (nearRoute) continue;
+
+            // Big red-white striped barricade
+            const barG = new THREE.Group();
+            const bp1 = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, 1.5, 8), new THREE.MeshToonMaterial({ color: 0xff3300 }));
+            bp1.position.set(-0.5, 0.75, 0); barG.add(bp1);
+            const bp2 = bp1.clone(); bp2.position.set(0.5, 0.75, 0); barG.add(bp2);
+            const bBar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.25, 0.15), new THREE.MeshToonMaterial({ color: 0xffffff }));
+            bBar.position.set(0, 1.3, 0); barG.add(bBar);
+            const rSt = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.25, 0.16), new THREE.MeshToonMaterial({ color: 0xff0000 }));
+            rSt.position.set(0, 1.3, 0); barG.add(rSt);
+            const bBar2 = bBar.clone(); bBar2.position.set(0, 0.9, 0); barG.add(bBar2);
+            barG.position.set(bx, 0, bz);
+            barG.userData = { halfW: 0.7, halfD: 0.15 };
+            this.scene.add(barG); this.obstacles.push(barG);
+          }
         }
-        // Remove barricades/parked vehicles within 15 units of player start (keep buildings)
-        const pStart = cfg.route && cfg.route[0] ? cfg.route[0] : { x: 0, z: -200 };
+
+        // Remove any non-building obstacles within 18 units of ANY route waypoint or finish gate
+        const allRoutePts = (cfg.route && cfg.route.length > 0) ? cfg.route : [{ x: 0, z: 0 }];
         this.obstacles = this.obstacles.filter(ob => {
-          const dx = ob.position.x - pStart.x;
-          const dz = ob.position.z - (pStart.z - 20);
-          if (Math.sqrt(dx * dx + dz * dz) < 15) {
-            // Only remove non-building obstacles (barricades, parked vehicles)
-            if (!ob.userData.isBuilding) { this.scene.remove(ob); return false; }
+          if (ob.userData && ob.userData.isBuilding) return true; // keep buildings
+          const obX = ob.position.x, obZ = ob.position.z;
+          const isBlockingRoute = allRoutePts.some(rp => Math.hypot(obX - rp.x, obZ - rp.z) < 18);
+          if (isBlockingRoute) {
+            this.scene.remove(ob);
+            return false;
           }
           return true;
         });
@@ -6001,7 +6194,8 @@ class Game {
           t = Math.max(0, Math.min(1, t));
           const dist = Math.hypot(a.x + abx * t - pos.x, a.z + abz * t - pos.z);
           const width = edge.width || 12;
-          if (dist < width / 2 + 9.5) {
+          // Must stay outside road half-width + full sidewalk (6m) + building half-width (11m) + buffer (1m)
+          if (dist < width / 2 + 18.0) {
             return true;
           }
         }
@@ -6012,138 +6206,1019 @@ class Game {
       // Places buildings using RoadGraph's buildingSlots (road-aware, zoned)
       // Uses InstancedMesh for GLB models, falls back to procedural boxes
 
-      // ─── 3D Roadside Garage & Workshop Structure ───
+      // ─── Clean Modern Roadside Parking Bay (Level 14 Style) ───
+      _buildElderlyCrossing(cfg) {
+        const root = this.scene;
+        const baseX = cfg.elderlyCrossX || 0;
+        const baseZ = cfg.elderlyCrossZ || 20;
+        
+        // Zebra crossing stripes on road
+        for (let i = -3; i <= 3; i++) {
+          const stripeG = new THREE.PlaneGeometry(0.8, 6);
+          const stripeM = new THREE.MeshLambertMaterial({ color: 0xffffff });
+          const stripe = new THREE.Mesh(stripeG, stripeM);
+          stripe.rotation.x = -Math.PI / 2;
+          stripe.position.set(baseX + i * 1.2, 0.02, baseZ);
+          root.add(stripe);
+        }
+        
+        // Warning signs on both sides
+        const signColors = [0xffd700, 0xff8c00];
+        [-8, 8].forEach((side, idx) => {
+          const poleG = new THREE.CylinderGeometry(0.04, 0.04, 2.5, 6);
+          const poleM = new THREE.MeshLambertMaterial({ color: 0x888888 });
+          const pole = new THREE.Mesh(poleG, poleM);
+          pole.position.set(baseX + side, 1.25, baseZ);
+          root.add(pole);
+          
+          const signG = new THREE.PlaneGeometry(1.0, 1.0);
+          const canvas = document.createElement('canvas');
+          canvas.width = 128; canvas.height = 128;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#ffcc00';
+          ctx.beginPath(); ctx.moveTo(64,4); ctx.lineTo(124,124); ctx.lineTo(4,124); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = '#cc0000'; ctx.lineWidth = 6; ctx.stroke();
+          ctx.font = 'bold 36px Arial'; ctx.fillStyle = '#000'; ctx.textAlign = 'center';
+          ctx.fillText('🚶', 64, 80);
+          const signM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true });
+          const sign = new THREE.Mesh(signG, signM);
+          sign.position.set(baseX + side, 2.7, baseZ);
+          root.add(sign);
+        });
+        
+        // Elderly pedestrian group
+        const elderGroup = new THREE.Group();
+        elderGroup.position.set(baseX - 6, 0, baseZ);
+        
+        // Body
+        const bodyG = new THREE.CylinderGeometry(0.18, 0.22, 0.9, 8);
+        const bodyM = new THREE.MeshLambertMaterial({ color: 0xf5f0e1 }); // cream kurta
+        const body = new THREE.Mesh(bodyG, bodyM);
+        body.position.y = 0.75;
+        elderGroup.add(body);
+        
+        // Head
+        const headG = new THREE.SphereGeometry(0.22, 12, 8);
+        const headM = new THREE.MeshLambertMaterial({ color: 0xdeb887 });
+        const head = new THREE.Mesh(headG, headM);
+        head.position.y = 1.65;
+        elderGroup.add(head);
+        
+        // Silver hair
+        const hairG = new THREE.SphereGeometry(0.24, 10, 6);
+        const hairM = new THREE.MeshLambertMaterial({ color: 0xd4d4d4 });
+        const hair = new THREE.Mesh(hairG, hairM);
+        hair.position.set(0, 0.08, 0);
+        hair.scale.set(1, 0.6, 1);
+        head.add(hair);
+        
+        // Spectacles
+        const specM = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+        [-0.1, 0.1].forEach(sx => {
+          const frameG = new THREE.TorusGeometry(0.06, 0.008, 6, 12);
+          const frame = new THREE.Mesh(frameG, specM);
+          frame.position.set(sx, 0, 0.22);
+          frame.rotation.y = Math.PI / 2;
+          head.add(frame);
+        });
+        
+        // Walking stick
+        const stickG = new THREE.CylinderGeometry(0.02, 0.025, 1.1, 6);
+        const stickM = new THREE.MeshLambertMaterial({ color: 0x5C3317 });
+        const stick = new THREE.Mesh(stickG, stickM);
+        stick.position.set(0.35, 0.3, 0);
+        stick.rotation.z = 0.15;
+        elderGroup.add(stick);
+        
+        // Curved handle
+        const handleG = new THREE.TorusGeometry(0.05, 0.02, 6, 8, Math.PI);
+        const handle = new THREE.Mesh(handleG, stickM);
+        handle.position.set(0.38, 0.88, 0);
+        handle.rotation.z = Math.PI / 2;
+        elderGroup.add(handle);
+        
+        root.add(elderGroup);
+        
+        // Store reference for animation
+        this._elderlyPed = {
+          group: elderGroup,
+          startX: baseX - 6,
+          endX: baseX + 6,
+          speed: 0.6, // very slow, m/s
+          direction: 1,
+          stick: stick
+        };
+      }
+
+      _buildTollPlaza(cfg) {
+        const root = this.scene;
+        const tx = cfg.tollX || 0;
+        const tz = cfg.tollZ || 60;
+        
+        // Canopy
+        const canopyG = new THREE.BoxGeometry(28, 0.4, 8);
+        const canopyM = new THREE.MeshLambertMaterial({ color: 0x3a7cb8 });
+        const canopy = new THREE.Mesh(canopyG, canopyM);
+        canopy.position.set(tx, 6.2, tz);
+        root.add(canopy);
+        
+        // Canopy pillars
+        [-12, -4, 4, 12].forEach(px => {
+          const pillarG = new THREE.CylinderGeometry(0.2, 0.2, 6, 8);
+          const pillarM = new THREE.MeshLambertMaterial({ color: 0x888888 });
+          const pillar = new THREE.Mesh(pillarG, pillarM);
+          pillar.position.set(tx + px, 3, tz);
+          root.add(pillar);
+        });
+        
+        // Toll booths (3 lanes)
+        [-8, 0, 8].forEach((laneX, idx) => {
+          const boothG = new THREE.BoxGeometry(3.5, 3.5, 4);
+          const boothM = new THREE.MeshLambertMaterial({ color: idx === 0 ? 0x22aa44 : 0xddbb22 });
+          const booth = new THREE.Mesh(boothG, boothM);
+          booth.position.set(tx + laneX, 1.75, tz + 1);
+          root.add(booth);
+          this.obstacles.push({ mesh: booth, box: new THREE.Box3().setFromObject(booth) });
+          
+          // Lane sign
+          const canvas = document.createElement('canvas');
+          canvas.width = 256; canvas.height = 128;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = idx === 0 ? '#22aa44' : '#ddbb22';
+          ctx.fillRect(0, 0, 256, 128);
+          ctx.font = 'bold 40px Arial'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+          ctx.fillText(idx === 0 ? '🏷️ FASTAG' : (idx === 1 ? '💵 CASH' : '💵 CASH'), 128, 80);
+          const signG = new THREE.PlaneGeometry(3, 1.5);
+          const signM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) });
+          const sign = new THREE.Mesh(signG, signM);
+          sign.position.set(tx + laneX, 5.8, tz - 1);
+          root.add(sign);
+          
+          // Boom barrier (horizontal bar)
+          const barrierG = new THREE.BoxGeometry(4.5, 0.15, 0.15);
+          const barrierM = new THREE.MeshLambertMaterial({ color: 0xff2222 });
+          const barrier = new THREE.Mesh(barrierG, barrierM);
+          barrier.position.set(tx + laneX + 2.25, 2.5, tz - 2);
+          root.add(barrier);
+          if (!this._tollBarriers) this._tollBarriers = [];
+          this._tollBarriers.push({ bar: barrier, pivotX: tx + laneX, open: false, angle: 0 });
+        });
+      }
+
+      _buildBlindCorner(cfg) {
+        const root = this.scene;
+        const cx = cfg.cornerX || 30;
+        const cz = cfg.cornerZ || 30;
+        
+        // Convex mirror on pole
+        const poleG = new THREE.CylinderGeometry(0.05, 0.05, 3, 8);
+        const poleM = new THREE.MeshLambertMaterial({ color: 0x666666 });
+        const pole = new THREE.Mesh(poleG, poleM);
+        pole.position.set(cx + 5, 1.5, cz);
+        root.add(pole);
+        
+        // Mirror dome (slightly flattened sphere for convex mirror)
+        const mirrorG = new THREE.SphereGeometry(0.7, 16, 12);
+        const mirrorM = new THREE.MeshLambertMaterial({ color: 0xd0d0d0, emissive: 0x222222 });
+        const mirror = new THREE.Mesh(mirrorG, mirrorM);
+        mirror.scale.set(1, 0.25, 1);
+        mirror.position.set(cx + 5, 3.3, cz);
+        mirror.rotation.x = -0.3;
+        root.add(mirror);
+        
+        // Mirror frame ring
+        const frameG = new THREE.TorusGeometry(0.72, 0.06, 8, 24);
+        const frameM = new THREE.MeshLambertMaterial({ color: 0xff6600 });
+        const frame = new THREE.Mesh(frameG, frameM);
+        frame.position.copy(mirror.position);
+        frame.rotation.x = mirror.rotation.x;
+        root.add(frame);
+        
+        // Warning sign
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.moveTo(64,4); ctx.lineTo(124,124); ctx.lineTo(4,124); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#cc0000'; ctx.lineWidth = 6; ctx.stroke();
+        ctx.font = 'bold 24px Arial'; ctx.fillStyle = '#000'; ctx.textAlign = 'center';
+        ctx.fillText('BLIND', 64, 60);
+        ctx.fillText('CORNER', 64, 85);
+        ctx.fillText('📯 HONK', 64, 110);
+        const wSignG = new THREE.PlaneGeometry(1.2, 1.2);
+        const wSignM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true });
+        const wSign = new THREE.Mesh(wSignG, wSignM);
+        wSign.position.set(cx + 6.5, 2.8, cz);
+        root.add(wSign);
+        
+        // Guardrail along corner edge
+        for (let i = 0; i < 6; i++) {
+          const railG = new THREE.BoxGeometry(0.1, 1.2, 2);
+          const railM = new THREE.MeshLambertMaterial({ color: i % 2 === 0 ? 0xcc0000 : 0xffffff });
+          const rail = new THREE.Mesh(railG, railM);
+          rail.position.set(cx + 6 + i * 2, 0.6, cz - 2 - i * 1.5);
+          root.add(rail);
+        }
+      }
+
+      _buildCattleObstacle(cfg) {
+        const root = this.scene;
+        const cx = cfg.cattleX || 0;
+        const cz = cfg.cattleZ || 30;
+        
+        // Try to use preloaded cow GLB
+        if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['animal_cow']) {
+          const cow = window.PRELOADED_MODELS['animal_cow'].scene.clone();
+          cow.scale.setScalar(1.2);
+          cow.position.set(cx + 2, 0, cz);
+          cow.rotation.y = Math.PI * 0.3;
+          root.add(cow);
+          // Collision proxy
+          const cowBox = new THREE.Mesh(
+            new THREE.BoxGeometry(1.5, 1.4, 2.5),
+            new THREE.MeshLambertMaterial({ visible: false })
+          );
+          cowBox.position.copy(cow.position);
+          cowBox.position.y = 0.7;
+          this.obstacles.push({ mesh: cowBox, box: new THREE.Box3().setFromObject(cowBox), isCow: true });
+          
+          // Cow wander AI
+          if (!this._cattle) this._cattle = [];
+          this._cattle.push({ mesh: cow, waitTimer: 20 + Math.random() * 15, moved: false, startZ: cz, targetZ: cz + 8 });
+        } else {
+          // Procedural fallback cow
+          const cowGroup = new THREE.Group();
+          cowGroup.position.set(cx + 2, 0, cz);
+          const bodyG = new THREE.BoxGeometry(1.4, 0.9, 2.2);
+          const bodyM = new THREE.MeshLambertMaterial({ color: 0xd2a679 });
+          const body = new THREE.Mesh(bodyG, bodyM); body.position.y = 0.9; cowGroup.add(body);
+          const headG = new THREE.BoxGeometry(0.6, 0.6, 0.8);
+          const head = new THREE.Mesh(headG, bodyM); head.position.set(0, 1.4, 1.2); cowGroup.add(head);
+          // Legs
+          [[-0.45,-0.8],[-0.45,0.6],[0.45,-0.8],[0.45,0.6]].forEach(([lx,lz]) => {
+            const legG = new THREE.CylinderGeometry(0.1, 0.1, 0.8, 6);
+            const leg = new THREE.Mesh(legG, bodyM); leg.position.set(lx, 0.4, lz); cowGroup.add(leg);
+          });
+          root.add(cowGroup);
+          if (!this._cattle) this._cattle = [];
+          this._cattle.push({ mesh: cowGroup, waitTimer: 20 + Math.random() * 15, moved: false, startZ: cz, targetZ: cz + 8 });
+        }
+        
+        // Dog (if flag set)
+        if (cfg.hasDog && window.PRELOADED_MODELS && window.PRELOADED_MODELS['animal_dog']) {
+          const dog = window.PRELOADED_MODELS['animal_dog'].scene.clone();
+          dog.scale.setScalar(0.8);
+          dog.position.set(cx - 4, 0, cz + 5);
+          dog.rotation.y = Math.PI * 0.7;
+          root.add(dog);
+        }
+        
+        // No-honk sign nearby
+        const nh = this._addTrafficSign ? this._addTrafficSign(cx + 6, cz, 'NO_HONK', 0) : null;
+      }
+
+      _buildHospitalZone(cfg) {
+        const root = this.scene;
+        const hx = cfg.hospitalX || -20;
+        const hz = cfg.hospitalZ || 0;
+        
+        // Main hospital building
+        const buildG = new THREE.BoxGeometry(18, 12, 10);
+        const buildM = new THREE.MeshLambertMaterial({ color: 0xfafafa });
+        const build = new THREE.Mesh(buildG, buildM);
+        build.position.set(hx, 6, hz);
+        root.add(build);
+        this.obstacles.push({ mesh: build, box: new THREE.Box3().setFromObject(build), isBuilding: true });
+        
+        // Red cross on facade
+        const crossM = new THREE.MeshLambertMaterial({ color: 0xcc0000 });
+        const crossH = new THREE.Mesh(new THREE.BoxGeometry(4, 1.2, 0.3), crossM);
+        crossH.position.set(hx, 9, hz - 5.2);
+        root.add(crossH);
+        const crossV = new THREE.Mesh(new THREE.BoxGeometry(1.2, 4, 0.3), crossM);
+        crossV.position.set(hx, 9, hz - 5.2);
+        root.add(crossV);
+        
+        // Hospital signboard
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#003366';
+        ctx.fillRect(0, 0, 512, 128);
+        ctx.font = 'bold 36px Arial'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
+        ctx.fillText('🏥 CITY HOSPITAL', 256, 50);
+        ctx.font = '24px Arial'; ctx.fillStyle = '#ffdd00';
+        ctx.fillText('🔇 SILENCE ZONE — NO HONKING', 256, 95);
+        const signG = new THREE.PlaneGeometry(8, 2);
+        const signM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) });
+        const sign = new THREE.Mesh(signG, signM);
+        sign.position.set(hx, 11.5, hz - 5.2);
+        root.add(sign);
+        
+        // Ambulance parked at entrance (use GLB if available)
+        if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['ambulance']) {
+          const amb = window.PRELOADED_MODELS['ambulance'].scene.clone();
+          amb.scale.setScalar(1.0);
+          amb.position.set(hx + 8, 0, hz - 2);
+          amb.rotation.y = Math.PI / 2;
+          root.add(amb);
+        }
+        
+        // Silence zone road markings
+        for (let i = -2; i <= 2; i++) {
+          const canvas2 = document.createElement('canvas');
+          canvas2.width = 256; canvas2.height = 256;
+          const ctx2 = canvas2.getContext('2d');
+          ctx2.fillStyle = 'rgba(255,255,255,0.9)';
+          ctx2.beginPath(); ctx2.arc(128, 128, 120, 0, Math.PI * 2); ctx2.fill();
+          ctx2.strokeStyle = '#cc0000'; ctx2.lineWidth = 12; ctx2.stroke();
+          ctx2.font = 'bold 28px Arial'; ctx2.fillStyle = '#cc0000'; ctx2.textAlign = 'center';
+          ctx2.fillText('NO', 128, 100);
+          ctx2.fillText('HONKING', 128, 135);
+          // Red slash through circle
+          ctx2.strokeStyle = '#cc0000'; ctx2.lineWidth = 16;
+          ctx2.beginPath(); ctx2.moveTo(20, 20); ctx2.lineTo(236, 236); ctx2.stroke();
+          const markG = new THREE.PlaneGeometry(3, 3);
+          const markM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas2), transparent: true });
+          const mark = new THREE.Mesh(markG, markM);
+          mark.rotation.x = -Math.PI / 2;
+          mark.position.set(hx + i * 6, 0.03, hz - 8);
+          root.add(mark);
+        }
+      }
+
+      _buildFestivalScene(cfg) {
+        const root = this.scene;
+        const fx = cfg.festX || 0;
+        const fz = cfg.festZ || 40;
+        const isNight = cfg.isNight || false;
+        
+        // Grand entrance archway (toran)
+        const archM = new THREE.MeshLambertMaterial({ color: 0xd4850a });
+        // Left pillar
+        const lPillarG = new THREE.CylinderGeometry(0.5, 0.5, 8, 8);
+        const lPillar = new THREE.Mesh(lPillarG, archM);
+        lPillar.position.set(fx - 8, 4, fz);
+        root.add(lPillar);
+        // Right pillar
+        const rPillar = lPillar.clone();
+        rPillar.position.set(fx + 8, 4, fz);
+        root.add(rPillar);
+        // Arch beam
+        const beamG = new THREE.BoxGeometry(18, 1.5, 1);
+        const beam = new THREE.Mesh(beamG, archM);
+        beam.position.set(fx, 8, fz);
+        root.add(beam);
+        
+        // Marigold garland decorations
+        const garlandM = new THREE.MeshLambertMaterial({ color: 0xff8c00, emissive: isNight ? 0x441100 : 0x000000 });
+        for (let i = -7; i <= 7; i += 2) {
+          const flowerG = new THREE.SphereGeometry(0.2, 6, 4);
+          const flower = new THREE.Mesh(flowerG, garlandM);
+          const t = (i + 7) / 14;
+          flower.position.set(fx + i, 7.5 - Math.sin(t * Math.PI) * 1.5, fz);
+          root.add(flower);
+        }
+        
+        // Festival light strings
+        if (cfg.hasFestivalLights) {
+          const lightM = new THREE.MeshLambertMaterial({
+            color: 0xffff44,
+            emissive: 0xffaa00,
+            emissiveIntensity: isNight ? 2.5 : 0.8
+          });
+          for (let i = -10; i <= 10; i += 4) {
+            const bulbG = new THREE.SphereGeometry(0.15, 6, 4);
+            const bulb = new THREE.Mesh(bulbG, lightM.clone());
+            bulb.material.color.setHSL(i / 20 + 0.5, 1, 0.5);
+            bulb.position.set(fx + i, 5, fz + 2);
+            root.add(bulb);
+            if (isNight) {
+              const pLight = new THREE.PointLight(0xffaa00, 0.4, 8);
+              pLight.position.copy(bulb.position);
+              root.add(pLight);
+            }
+          }
+        }
+        
+        // Music vehicle (decorated truck)
+        if (cfg.hasMusicVehicle && window.PRELOADED_MODELS && window.PRELOADED_MODELS['truck']) {
+          const truck = window.PRELOADED_MODELS['truck'].scene.clone();
+          truck.scale.setScalar(0.9);
+          truck.position.set(fx - 15, 0, fz + 5);
+          truck.rotation.y = Math.PI / 2;
+          // Paint it festive
+          truck.traverse(c => { if (c.isMesh && c.material) { c.material = c.material.clone(); c.material.color.set(0xff4400); } });
+          root.add(truck);
+        }
+        
+        // Police volunteer
+        if (cfg.hasPoliceVolunteer) {
+          const volGroup = new THREE.Group();
+          volGroup.position.set(fx, 0, fz - 8);
+          const volBodyG = new THREE.CylinderGeometry(0.18, 0.22, 0.9, 8);
+          const volBodyM = new THREE.MeshLambertMaterial({ color: 0xaaff00 }); // fluorescent vest
+          volGroup.add(new THREE.Mesh(volBodyG, volBodyM)).position.y = 0.75;
+          const volHeadG = new THREE.SphereGeometry(0.2, 10, 8);
+          const volHead = new THREE.Mesh(volHeadG, new THREE.MeshLambertMaterial({ color: 0xdeb887 }));
+          volHead.position.y = 1.6;
+          volGroup.add(volHead);
+          // White cap
+          const capG = new THREE.CylinderGeometry(0.22, 0.22, 0.12, 10);
+          const cap = new THREE.Mesh(capG, new THREE.MeshLambertMaterial({ color: 0xffffff }));
+          cap.position.y = 0.12;
+          volHead.add(cap);
+          root.add(volGroup);
+          this._festivalVolunteer = volGroup;
+        }
+      }
+
+      _buildHighwaySystem(cfg) {
+        const root = this.scene;
+        const hx = cfg.highwayX || 0;
+        const hzStart = cfg.highwayZStart || 100;
+        const hzEnd = cfg.highwayZEnd || 400;
+        const lanes = 3;
+        const laneWidth = 4;
+        const totalWidth = lanes * laneWidth * 2; // bidirectional
+        
+        // On-ramp (acceleration lane)
+        const rampG = new THREE.PlaneGeometry(6, 60);
+        const rampM = new THREE.MeshLambertMaterial({ color: 0x333340 });
+        const ramp = new THREE.Mesh(rampG, rampM);
+        ramp.rotation.x = -Math.PI / 2;
+        ramp.position.set(hx + totalWidth / 2 + 3, 0.01, hzStart + 30);
+        root.add(ramp);
+        
+        // Main highway surface
+        const hwG = new THREE.PlaneGeometry(totalWidth, hzEnd - hzStart);
+        const hwM = new THREE.MeshLambertMaterial({ color: 0x2a2a35 });
+        const hw = new THREE.Mesh(hwG, hwM);
+        hw.rotation.x = -Math.PI / 2;
+        hw.position.set(hx, 0.01, (hzStart + hzEnd) / 2);
+        root.add(hw);
+        
+        // Lane markings
+        for (let lane = -lanes + 1; lane < lanes; lane++) {
+          for (let z = hzStart; z < hzEnd; z += 12) {
+            const dashG = new THREE.PlaneGeometry(0.2, 6);
+            const dashM = new THREE.MeshLambertMaterial({ color: lane === 0 ? 0xffff00 : 0xffffff });
+            const dash = new THREE.Mesh(dashG, dashM);
+            dash.rotation.x = -Math.PI / 2;
+            dash.position.set(hx + lane * laneWidth, 0.02, z + 3);
+            root.add(dash);
+          }
+        }
+        
+        // Overhead highway signs
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#004400';
+        ctx.fillRect(0, 0, 512, 128);
+        ctx.font = 'bold 40px Arial'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
+        ctx.fillText('← MUMBAI — PUNE →', 256, 75);
+        const hwSignG = new THREE.PlaneGeometry(10, 2.5);
+        const hwSignM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) });
+        const hwSign = new THREE.Mesh(hwSignG, hwSignM);
+        hwSign.position.set(hx, 7, hzStart + 20);
+        root.add(hwSign);
+        
+        // Central median barrier
+        const medianG = new THREE.BoxGeometry(0.6, 1.0, hzEnd - hzStart);
+        const medianM = new THREE.MeshLambertMaterial({ color: 0xcccccc });
+        const median = new THREE.Mesh(medianG, medianM);
+        median.position.set(hx, 0.5, (hzStart + hzEnd) / 2);
+        root.add(median);
+        
+        // Off-ramp
+        const offrampG = new THREE.PlaneGeometry(6, 60);
+        const offramp = new THREE.Mesh(offrampG, rampM);
+        offramp.rotation.x = -Math.PI / 2;
+        offramp.position.set(hx - totalWidth / 2 - 3, 0.01, hzEnd - 30);
+        root.add(offramp);
+        
+        // Speed sign
+        if (this._addTrafficSign) this._addTrafficSign(hx + totalWidth / 2 + 8, hzStart, 'SPEED_80', 0);
+      }
+
+      _buildParkingScenario(cfg) {
+        const root = this.scene;
+        const type = cfg.parkingType || 'street';
+        const px = cfg.parkX || 15;
+        const pz = cfg.parkZ || 0;
+        
+        const drawParkingBay = (x, z, rotY, legal, label) => {
+          // Bay surface
+          const bayG = new THREE.PlaneGeometry(3.2, 5.5);
+          const bayM = new THREE.MeshLambertMaterial({ color: legal ? 0x1a3a6a : 0x4a0000 });
+          const bay = new THREE.Mesh(bayG, bayM);
+          bay.rotation.x = -Math.PI / 2;
+          bay.rotation.z = rotY;
+          bay.position.set(x, 0.02, z);
+          root.add(bay);
+          
+          // Bay lines
+          [-1.6, 1.6].forEach(side => {
+            const lineG = new THREE.PlaneGeometry(0.1, 5.5);
+            const lineM = new THREE.MeshLambertMaterial({ color: legal ? 0xffffff : 0xff2222 });
+            const line = new THREE.Mesh(lineG, lineM);
+            line.rotation.x = -Math.PI / 2;
+            line.rotation.z = rotY;
+            line.position.set(x + side * Math.cos(rotY), 0.03, z + side * Math.sin(rotY));
+            root.add(line);
+          });
+          
+          // P sign or No Parking sign
+          const canvas = document.createElement('canvas');
+          canvas.width = 128; canvas.height = 128;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = legal ? '#1a3a6a' : '#cc0000';
+          ctx.beginPath(); ctx.arc(64, 64, 60, 0, Math.PI * 2); ctx.fill();
+          ctx.font = 'bold 72px Arial'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+          ctx.fillText(legal ? 'P' : '🚫', 64, 85);
+          if (label) { ctx.font = 'bold 18px Arial'; ctx.fillText(label, 64, 118); }
+          const signG = new THREE.PlaneGeometry(0.8, 0.8);
+          const signM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true });
+          const pSign = new THREE.Mesh(signG, signM);
+          
+          const poleG = new THREE.CylinderGeometry(0.03, 0.03, 2, 6);
+          const poleM = new THREE.MeshLambertMaterial({ color: 0x888888 });
+          const ppole = new THREE.Mesh(poleG, poleM);
+          ppole.position.set(x + 1.8, 1, z - 2);
+          root.add(ppole);
+          pSign.position.set(0, 1.3, 0);
+          ppole.add(pSign);
+          
+          if (legal) {
+            // Register as parking zone
+            if (!this._parkingZones) this._parkingZones = [];
+            this._parkingZones.push({ x, z, width: 3.2, depth: 5.5, occupied: false });
+          }
+        };
+        
+        if (type === 'street') {
+          // 2 legal spots, 3 illegal spots
+          drawParkingBay(px, pz, 0, true, 'LEGAL');
+          drawParkingBay(px, pz + 7, 0, true, 'LEGAL');
+          drawParkingBay(px - 20, pz, 0, false, 'NO PARK');
+          
+        } else if (type === 'hospital') {
+          // Legal spots far from hospital
+          drawParkingBay(px + 25, pz, 0, true, 'VISITOR');
+          drawParkingBay(px + 25, pz + 7, 0, true, 'VISITOR');
+          // No-parking zone near hospital
+          const canvas3 = document.createElement('canvas');
+          canvas3.width = 512; canvas3.height = 128;
+          const ctx3 = canvas3.getContext('2d');
+          ctx3.fillStyle = '#cc0000';
+          ctx3.fillRect(0, 0, 512, 128);
+          ctx3.font = 'bold 32px Arial'; ctx3.fillStyle = '#fff'; ctx3.textAlign = 'center';
+          ctx3.fillText('🚫 NO PARKING WITHIN 100m OF HOSPITAL', 256, 75);
+          const noG = new THREE.PlaneGeometry(8, 2);
+          const noM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas3) });
+          const noSign = new THREE.Mesh(noG, noM);
+          noSign.position.set(px, 3, pz - 5);
+          root.add(noSign);
+          
+        } else if (type === 'residential') {
+          // Residential gate
+          const gateM = new THREE.MeshLambertMaterial({ color: 0x444444 });
+          [-4, 4].forEach(side => {
+            const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.8, 4, 0.8), gateM);
+            pillar.position.set(px + side, 2, pz - 8);
+            root.add(pillar);
+            this.obstacles.push({ mesh: pillar, box: new THREE.Box3().setFromObject(pillar) });
+          });
+          const gateBar = new THREE.Mesh(new THREE.BoxGeometry(8, 0.3, 0.2), new THREE.MeshLambertMaterial({ color: 0xdd8800 }));
+          gateBar.position.set(px, 3.5, pz - 8);
+          root.add(gateBar);
+          // Visitor parking inside
+          drawParkingBay(px, pz + 5, 0, true, 'VISITOR');
+          // Security cabin
+          const cabinG = new THREE.BoxGeometry(2, 2.5, 2);
+          const cabinM = new THREE.MeshLambertMaterial({ color: 0x8B8B6B });
+          const cabin = new THREE.Mesh(cabinG, cabinM);
+          cabin.position.set(px + 6, 1.25, pz - 8);
+          root.add(cabin);
+          
+        } else if (type === 'commercial') {
+          // Shopping area with fire hydrant no-park zone + legal spots
+          drawParkingBay(px + 10, pz, 0, true, 'SHOPPING');
+          drawParkingBay(px + 10, pz + 7, 0, true, 'SHOPPING');
+          // Red curb zone (already has fire hydrant from _buildScene hasFire Hydrant)
+          const redCurbG = new THREE.PlaneGeometry(12, 0.5);
+          const redCurbM = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+          const redCurb = new THREE.Mesh(redCurbG, redCurbM);
+          redCurb.rotation.x = -Math.PI / 2;
+          redCurb.position.set(px - 5, 0.03, pz + 2);
+          root.add(redCurb);
+        }
+      }
+
+      _buildNarrowGully(cfg) {
+        const root = this.scene;
+        const gx = cfg.gullyX || 0;
+        const gz = cfg.gullyZ || 20;
+        const length = cfg.gullyLength || 80;
+        
+        // Parked vehicles on both sides blocking the lane
+        const parkedTypes = ['car', 'auto'];
+        const parkPositions = [-5, 15, 35, 55];
+        parkPositions.forEach((zOff, i) => {
+          const side = i % 2 === 0 ? -4 : 4;
+          const vType = parkedTypes[i % 2];
+          if (window.PRELOADED_MODELS && window.PRELOADED_MODELS[vType]) {
+            const v = window.PRELOADED_MODELS[vType].scene.clone();
+            v.scale.setScalar(0.85);
+            v.position.set(gx + side, 0, gz + zOff);
+            v.rotation.y = side > 0 ? Math.PI : 0;
+            root.add(v);
+          } else {
+            // Fallback box
+            const vG = new THREE.BoxGeometry(1.6, 1.4, 3.8);
+            const vM = new THREE.MeshLambertMaterial({ color: [0x2244aa, 0xcc2222, 0x228844][i % 3] });
+            const vMesh = new THREE.Mesh(vG, vM);
+            vMesh.position.set(gx + side, 0.7, gz + zOff);
+            root.add(vMesh);
+          }
+        });
+        
+        // Pull-over bays (widened cutouts)
+        [20, 55].forEach(zOff => {
+          const bayG = new THREE.PlaneGeometry(3, 8);
+          const bayM = new THREE.MeshLambertMaterial({ color: 0x555566 });
+          const bay = new THREE.Mesh(bayG, bayM);
+          bay.rotation.x = -Math.PI / 2;
+          bay.position.set(gx - 5, 0.015, gz + zOff);
+          root.add(bay);
+          // Pull-over sign
+          const poleG = new THREE.CylinderGeometry(0.04, 0.04, 2.5, 6);
+          const ppole = new THREE.Mesh(poleG, new THREE.MeshLambertMaterial({ color: 0x888888 }));
+          ppole.position.set(gx - 7, 1.25, gz + zOff);
+          root.add(ppole);
+          const canvas = document.createElement('canvas');
+          canvas.width = 128; canvas.height = 128;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#00aaff'; ctx.fillRect(0, 0, 128, 128);
+          ctx.font = 'bold 20px Arial'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+          ctx.fillText('PULL', 64, 55); ctx.fillText('OVER', 64, 80); ctx.fillText('BAY', 64, 105);
+          const sG = new THREE.PlaneGeometry(0.8, 0.8);
+          const sM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) });
+          const s = new THREE.Mesh(sG, sM);
+          s.position.set(0, 1.5, 0); ppole.add(s);
+        });
+      }
+
+      _buildLibrary(cfg) {
+        const root = this.scene;
+        const lx = cfg.libraryX || -18;
+        const lz = cfg.libraryZ || 0;
+        
+        // Library building
+        const libG = new THREE.BoxGeometry(14, 8, 8);
+        const libM = new THREE.MeshLambertMaterial({ color: 0xc8b8a2 }); // stone color
+        const lib = new THREE.Mesh(libG, libM);
+        lib.position.set(lx, 4, lz);
+        root.add(lib);
+        this.obstacles.push({ mesh: lib, box: new THREE.Box3().setFromObject(lib), isBuilding: true });
+        
+        // Arched entrance
+        const archG = new THREE.TorusGeometry(1.5, 0.4, 8, 16, Math.PI);
+        const archM = new THREE.MeshLambertMaterial({ color: 0x8B7355 });
+        const arch = new THREE.Mesh(archG, archM);
+        arch.position.set(lx, 3, lz - 4.2);
+        root.add(arch);
+        
+        // Library signboard
+        const canvas = document.createElement('canvas');
+        canvas.width = 512; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#2c1810';
+        ctx.fillRect(0, 0, 512, 128);
+        ctx.font = 'bold 40px Arial'; ctx.fillStyle = '#f5d485'; ctx.textAlign = 'center';
+        ctx.fillText('📚 PUBLIC LIBRARY', 256, 55);
+        ctx.font = '24px Arial'; ctx.fillStyle = '#ff8888';
+        ctx.fillText('🔇 SILENCE ZONE — NO HONKING', 256, 95);
+        const sG = new THREE.PlaneGeometry(6, 1.5);
+        const sM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) });
+        const s = new THREE.Mesh(sG, sM);
+        s.position.set(lx, 7.5, lz - 4.2);
+        root.add(s);
+      }
+
+      _buildAmbulanceScenario(cfg) {
+        const root = this.scene;
+        const ambX = cfg.ambX || 0;
+        const ambZ = cfg.ambZ || -40;
+        
+        const ambGroup = new THREE.Group();
+        ambGroup.position.set(ambX, 0, ambZ);
+        
+        let ambMesh;
+        if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['ambulance']) {
+          ambMesh = window.PRELOADED_MODELS['ambulance'].scene.clone();
+          ambMesh.scale.setScalar(1.0);
+          ambGroup.add(ambMesh);
+        } else if (window.IndianVehicles && window.IndianVehicles.ambulance) {
+          ambMesh = window.IndianVehicles.ambulance();
+          ambGroup.add(ambMesh);
+        } else {
+          const body = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.0, 4.8), new THREE.MeshLambertMaterial({ color: 0xf5f5f5 }));
+          body.position.y = 1.1;
+          ambGroup.add(body);
+        }
+        
+        const strobeG = new THREE.BoxGeometry(1.2, 0.2, 0.4);
+        const strobeM = new THREE.MeshLambertMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 2.0 });
+        const strobe = new THREE.Mesh(strobeG, strobeM);
+        strobe.position.set(0, 2.3, 0.4);
+        ambGroup.add(strobe);
+        
+        const redLight = new THREE.PointLight(0xff0000, 2.0, 15);
+        redLight.position.set(-0.5, 2.5, 0.4);
+        ambGroup.add(redLight);
+        const blueLight = new THREE.PointLight(0x0044ff, 2.0, 15);
+        blueLight.position.set(0.5, 2.5, 0.4);
+        ambGroup.add(blueLight);
+        
+        root.add(ambGroup);
+        
+        this._activeAmbulance = {
+          group: ambGroup,
+          strobeMesh: strobe,
+          redLight: redLight,
+          blueLight: blueLight,
+          speed: cfg.isHighway ? 25.0 : (cfg.isNarrowStreet ? 6.0 : 12.0),
+          delay: cfg.ambulanceDelay || 5,
+          active: true,
+          strobeTimer: 0
+        };
+      }
+
+      _buildHillTerrain(cfg) {
+        const root = this.scene;
+        const hx = cfg.hillX || 0;
+        const hz = cfg.hillZ || 0;
+        
+        const mtnMat = new THREE.MeshLambertMaterial({ color: 0x4a5d3f });
+        for (let i = -4; i <= 4; i++) {
+          const coneG = new THREE.ConeGeometry(40 + Math.abs(i) * 10, 60 + Math.random() * 30, 8);
+          const cone = new THREE.Mesh(coneG, mtnMat);
+          cone.position.set(hx + i * 55, 20, hz - 120 + Math.sin(i) * 30);
+          root.add(cone);
+        }
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.moveTo(64,4); ctx.lineTo(124,124); ctx.lineTo(4,124); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = '#cc0000'; ctx.lineWidth = 8; ctx.stroke();
+        ctx.font = 'bold 20px Arial'; ctx.fillStyle = '#000'; ctx.textAlign = 'center';
+        ctx.fillText('STEEP', 64, 60);
+        ctx.fillText('HILL', 64, 82);
+        ctx.fillText('LOW GEAR', 64, 105);
+        const signG = new THREE.PlaneGeometry(1.4, 1.4);
+        const signM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true });
+        const sign = new THREE.Mesh(signG, signM);
+        sign.position.set(hx + 8, 2.5, hz - 15);
+        root.add(sign);
+        
+        for (let z = -60; z <= 60; z += 6) {
+          const rail = new THREE.Mesh(
+            new THREE.BoxGeometry(0.12, 0.9, 5.5),
+            new THREE.MeshLambertMaterial({ color: 0xeeeeee })
+          );
+          rail.position.set(hx + 7.5, 0.45, hz + z);
+          root.add(rail);
+        }
+      }
+
+      _buildRuralRoad(cfg) {
+        const root = this.scene;
+        const rx = cfg.ruralX || 0;
+        const rz = cfg.ruralZ || 0;
+        
+        const dirtMat = new THREE.MeshLambertMaterial({ color: 0x8B7355 });
+        const dirtRoad = new THREE.Mesh(new THREE.PlaneGeometry(12, 200), dirtMat);
+        dirtRoad.rotation.x = -Math.PI / 2;
+        dirtRoad.position.set(rx, 0.015, rz);
+        root.add(dirtRoad);
+        
+        for (let i = -6; i <= 6; i++) {
+          const potG = new THREE.CircleGeometry(0.8 + Math.random() * 0.6, 8);
+          const potM = new THREE.MeshLambertMaterial({ color: 0x5a4a35 });
+          const pothole = new THREE.Mesh(potG, potM);
+          pothole.rotation.x = -Math.PI / 2;
+          pothole.position.set(rx + (Math.random() - 0.5) * 6, 0.02, rz + i * 15 + (Math.random() - 0.5) * 5);
+          root.add(pothole);
+        }
+        
+        [-14, 14].forEach((side) => {
+          for (let z = -40; z <= 40; z += 35) {
+            const hutG = new THREE.Group();
+            hutG.position.set(rx + side, 0, rz + z);
+            const wall = new THREE.Mesh(new THREE.BoxGeometry(6, 3, 5), new THREE.MeshLambertMaterial({ color: 0xc89d6c }));
+            wall.position.y = 1.5; hutG.add(wall);
+            const roof = new THREE.Mesh(new THREE.ConeGeometry(4.5, 2.5, 4), new THREE.MeshLambertMaterial({ color: 0x9b763a }));
+            roof.position.y = 4.2; roof.rotation.y = Math.PI / 4; hutG.add(roof);
+            root.add(hutG);
+            this.obstacles.push({ mesh: wall, box: new THREE.Box3().setFromObject(wall), isBuilding: true });
+          }
+        });
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = 256; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffaa00'; ctx.fillRect(0, 0, 256, 128);
+        ctx.font = 'bold 30px Arial'; ctx.fillStyle = '#000'; ctx.textAlign = 'center';
+        ctx.fillText('🌾 VILLAGE ROAD', 128, 55);
+        ctx.font = '22px Arial';
+        ctx.fillText('MAX 25 KM/H', 128, 95);
+        const sign = new THREE.Mesh(
+          new THREE.PlaneGeometry(3, 1.5),
+          new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) })
+        );
+        sign.position.set(rx + 8, 2.5, rz - 30);
+        root.add(sign);
+      }
+
+      _buildOneWayStreet(cfg) {
+        const root = this.scene;
+        const ox = cfg.oneWayX || 0;
+        const oz = cfg.oneWayZ || 0;
+        
+        for (let z = -50; z <= 50; z += 25) {
+          const arrowCanvas = document.createElement('canvas');
+          arrowCanvas.width = 128; arrowCanvas.height = 256;
+          const ctx = arrowCanvas.getContext('2d');
+          ctx.fillStyle = 'rgba(255,255,255,0.9)';
+          ctx.beginPath();
+          ctx.moveTo(64, 20); ctx.lineTo(110, 100); ctx.lineTo(80, 100);
+          ctx.lineTo(80, 230); ctx.lineTo(48, 230); ctx.lineTo(48, 100);
+          ctx.lineTo(18, 100); ctx.closePath(); ctx.fill();
+          const arrowM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(arrowCanvas), transparent: true });
+          const arrow = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 4.0), arrowM);
+          arrow.rotation.x = -Math.PI / 2;
+          arrow.position.set(ox, 0.025, oz + z);
+          root.add(arrow);
+        }
+        
+        [-8, 8].forEach(side => {
+          const canvas = document.createElement('canvas');
+          canvas.width = 256; canvas.height = 128;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#0044aa'; ctx.fillRect(0, 0, 256, 128);
+          ctx.font = 'bold 36px Arial'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
+          ctx.fillText('ONE WAY ➔', 128, 75);
+          const sign = new THREE.Mesh(
+            new THREE.PlaneGeometry(2.5, 1.25),
+            new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) })
+          );
+          sign.position.set(ox + side, 2.5, oz - 40);
+          root.add(sign);
+        });
+      }
+
+      _buildSignRecognition(cfg) {
+        const root = this.scene;
+        const sx = cfg.signX || 0;
+        const sz = cfg.signZ || 10;
+        
+        const manCanvas = document.createElement('canvas');
+        manCanvas.width = 128; manCanvas.height = 128;
+        const ctx1 = manCanvas.getContext('2d');
+        ctx1.fillStyle = '#0055cc'; ctx1.beginPath(); ctx1.arc(64, 64, 60, 0, Math.PI*2); ctx1.fill();
+        ctx1.strokeStyle = '#ffffff'; ctx1.lineWidth = 6; ctx1.stroke();
+        ctx1.fillStyle = '#ffffff'; ctx1.font = 'bold 44px Arial'; ctx1.textAlign = 'center';
+        ctx1.fillText('⬅', 64, 80);
+        const manSign = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(manCanvas), transparent: true }));
+        manSign.position.set(sx - 8, 2.5, sz - 20); root.add(manSign);
+        
+        const cauCanvas = document.createElement('canvas');
+        cauCanvas.width = 128; cauCanvas.height = 128;
+        const ctx2 = cauCanvas.getContext('2d');
+        ctx2.fillStyle = '#ffffff'; ctx2.beginPath(); ctx2.moveTo(64,4); ctx2.lineTo(124,124); ctx2.lineTo(4,124); ctx2.closePath(); ctx2.fill();
+        ctx2.strokeStyle = '#cc0000'; ctx2.lineWidth = 8; ctx2.stroke();
+        ctx2.fillStyle = '#000'; ctx2.font = 'bold 36px Arial'; ctx2.textAlign = 'center';
+        ctx2.fillText('⚠', 64, 90);
+        const cauSign = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(cauCanvas), transparent: true }));
+        cauSign.position.set(sx + 8, 2.5, sz); root.add(cauSign);
+        
+        const infoCanvas = document.createElement('canvas');
+        infoCanvas.width = 256; infoCanvas.height = 128;
+        const ctx3 = infoCanvas.getContext('2d');
+        ctx3.fillStyle = '#008844'; ctx3.fillRect(0, 0, 256, 128);
+        ctx3.strokeStyle = '#ffffff'; ctx3.lineWidth = 6; ctx3.strokeRect(4,4,248,120);
+        ctx3.fillStyle = '#ffffff'; ctx3.font = 'bold 28px Arial'; ctx3.textAlign = 'center';
+        ctx3.fillText('CITY CENTER', 128, 55);
+        ctx3.font = '20px Arial'; ctx3.fillText('2.5 KM ➔', 128, 90);
+        const infoSign = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.2), new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(infoCanvas) }));
+        infoSign.position.set(sx - 8, 2.5, sz + 20); root.add(infoSign);
+      }
+
+      _buildConstructionMaze(cfg) {
+        const root = this.scene;
+        const cx = cfg.constX || 0;
+        const cz = cfg.constZ || 30;
+        
+        const barMat = new THREE.MeshLambertMaterial({ color: 0xff6600 });
+        const whiteMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+        
+        const offsets = [
+          { x: -3, z: 0, rot: 0.2 },
+          { x: 3, z: 15, rot: -0.2 },
+          { x: -2, z: 30, rot: 0.15 },
+          { x: 2, z: 45, rot: -0.15 }
+        ];
+        
+        offsets.forEach((o, idx) => {
+          const barG = new THREE.Group();
+          barG.position.set(cx + o.x, 0, cz + o.z);
+          barG.rotation.y = o.rot;
+          
+          const body = new THREE.Mesh(new THREE.BoxGeometry(4.0, 1.2, 0.6), idx % 2 === 0 ? barMat : whiteMat);
+          body.position.y = 0.6; barG.add(body);
+          
+          const beacon = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.25, 8), new THREE.MeshLambertMaterial({ color: 0xffaa00, emissive: 0xff8800, emissiveIntensity: 1.5 }));
+          beacon.position.set(0, 1.35, 0); barG.add(beacon);
+          
+          root.add(barG);
+          this.obstacles.push({ mesh: body, box: new THREE.Box3().setFromObject(body) });
+        });
+        
+        if (cfg.hasFlagman) {
+          const flagman = new THREE.Group();
+          flagman.position.set(cx + 6, 0, cz - 10);
+          
+          const fBody = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.9, 8), new THREE.MeshLambertMaterial({ color: 0xff8800 }));
+          fBody.position.y = 0.75; flagman.add(fBody);
+          const fHead = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 8), new THREE.MeshLambertMaterial({ color: 0xdeb887 }));
+          fHead.position.y = 1.6; flagman.add(fHead);
+          const hat = new THREE.Mesh(new THREE.SphereGeometry(0.24, 8, 6), new THREE.MeshLambertMaterial({ color: 0xffdd00 }));
+          hat.position.y = 1.7; hat.scale.set(1, 0.5, 1); flagman.add(hat);
+          
+          const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.2, 6), new THREE.MeshLambertMaterial({ color: 0x888888 }));
+          stick.position.set(-0.3, 1.2, 0.4); stick.rotation.z = 0.4; flagman.add(stick);
+          const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.4), new THREE.MeshLambertMaterial({ color: 0xcc0000, side: THREE.DoubleSide }));
+          flag.position.set(-0.55, 1.55, 0.4); flagman.add(flag);
+          
+          root.add(flagman);
+          this._flagman = { group: flagman, stick: stick, flag: flag };
+        }
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = 256; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ff6600'; ctx.fillRect(0, 0, 256, 128);
+        ctx.font = 'bold 26px Arial'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
+        ctx.fillText('🚧 ROAD WORK', 128, 50);
+        ctx.fillText('DETOUR AHEAD', 128, 90);
+        const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 1.5), new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) }));
+        sign.position.set(cx - 7, 2.5, cz - 15);
+        root.add(sign);
+      }
+
       _buildGarage(gx, gz, rotY, roadWidth, sidewalkWidth) {
         if (!this.scene) return;
         const gGrp = new THREE.Group();
 
-        // Concrete & structural materials
-        const floorMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
-        const wallMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
-        const brickMat = new THREE.MeshLambertMaterial({ color: 0x64748b });
-        const steelMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
-        const roofMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
-        const stripeMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
-        const shutterMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
-        const lightMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const floorMat = new THREE.MeshLambertMaterial({ color: 0x222a38 });
+        const curbMat = new THREE.MeshLambertMaterial({ color: 0xfacc15 });
+        const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-        // Signboard canvas texture ("MUMBAI AUTO GARAGE")
-        const sCanvas = document.createElement('canvas');
-        sCanvas.width = 256; sCanvas.height = 64;
-        const sCtx = sCanvas.getContext('2d');
-        sCtx.fillStyle = '#0284c7';
-        sCtx.fillRect(0, 0, 256, 64);
-        sCtx.lineWidth = 4;
-        sCtx.strokeStyle = '#ffffff';
-        sCtx.strokeRect(2, 2, 252, 60);
-        sCtx.fillStyle = '#ffffff';
-        sCtx.font = 'bold 22px sans-serif';
-        sCtx.textAlign = 'center';
-        sCtx.textBaseline = 'middle';
-        sCtx.fillText('🔧 AUTO WORKSHOP', 128, 24);
-        sCtx.font = '14px sans-serif';
-        sCtx.fillText('SERVICE & DEPARTURE BAY', 128, 48);
-        const signTex = new THREE.CanvasTexture(sCanvas);
-        const signMat = new THREE.MeshLambertMaterial({ map: signTex });
+        const gW = 6.0; // Width
+        const gD = 8.0; // Depth
 
-        const gW = 11.0; // Width
-        const gD = 13.0; // Depth
-        const gH = 4.8;  // Height
-
-        // 1. Concrete Floor Slab
-        const floor = new THREE.Mesh(new THREE.BoxGeometry(gW, 0.3, gD), floorMat);
-        floor.position.set(0, 0.15, 0);
+        // 1. Clean Asphalt / Concrete Parking Pad
+        const floor = new THREE.Mesh(new THREE.BoxGeometry(gW, 0.08, gD), floorMat);
+        floor.position.set(0, 0.04, 0);
         gGrp.add(floor);
 
-        // Driveway apron ramp connecting front of garage to road edge
-        const rampL = (sidewalkWidth || 4.0) + 4.0;
-        const ramp = new THREE.Mesh(new THREE.PlaneGeometry(8.5, rampL), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+        // 2. Driveway ramp connection
+        const rampL = (sidewalkWidth || 4.0) + 1.0;
+        const ramp = new THREE.Mesh(new THREE.PlaneGeometry(gW, rampL), floorMat);
         ramp.rotation.x = -Math.PI / 2;
-        ramp.position.set(0, 0.06, gD / 2 + rampL / 2);
+        ramp.position.set(0, 0.05, gD / 2 + rampL / 2);
         gGrp.add(ramp);
 
-        // Flank safety railings on left & right borders, leaving wide 8.0m open driveway in front
-        [-4.2, 4.2].forEach(sideX => {
-          const dRail = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, rampL), steelMat);
-          dRail.position.set(sideX, 0.65, gD / 2 + rampL / 2);
-          gGrp.add(dRail);
-
-          for (let p = 0; p <= 2; p++) {
-            const pz = gD / 2 + (p / 2) * rampL;
-            const dPost = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.7, 8), stripeMat);
-            dPost.position.set(sideX, 0.35, pz);
-            gGrp.add(dPost);
-          }
+        // 3. Crisp Yellow Curb Border on sides and rear
+        [-gW / 2, gW / 2].forEach(sx => {
+          const sideCurb = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, gD), curbMat);
+          sideCurb.position.set(sx, 0.1, 0);
+          gGrp.add(sideCurb);
         });
+        const rearCurb = new THREE.Mesh(new THREE.BoxGeometry(gW + 0.2, 0.2, 0.2), curbMat);
+        rearCurb.position.set(0, 0.1, -gD / 2);
+        gGrp.add(rearCurb);
 
-        // Parking guide lines on floor
-        [-2.0, 2.0].forEach(lx => {
-          const pLine = new THREE.Mesh(new THREE.PlaneGeometry(0.2, gD - 3.0), stripeMat);
+        // 4. White painted parking stall lines
+        [-1.8, 1.8].forEach(lx => {
+          const pLine = new THREE.Mesh(new THREE.PlaneGeometry(0.15, gD - 1.5), lineMat);
           pLine.rotation.x = -Math.PI / 2;
-          pLine.position.set(lx, 0.31, 0);
+          pLine.position.set(lx, 0.09, 0);
           gGrp.add(pLine);
-        });
-
-        // 2. Back Wall
-        const backWall = new THREE.Mesh(new THREE.BoxGeometry(gW, gH, 0.4), brickMat);
-        backWall.position.set(0, gH / 2, -gD / 2);
-        gGrp.add(backWall);
-
-        // 3. Side Walls (Left & Right)
-        [-1, 1].forEach(side => {
-          const sideWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, gH, gD), wallMat);
-          sideWall.position.set(side * (gW / 2), gH / 2, 0);
-          gGrp.add(sideWall);
-
-          // Steel reinforcement column pillars
-          for (let c = -1; c <= 1; c++) {
-            const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.6, gH + 0.2, 0.6), steelMat);
-            pillar.position.set(side * (gW / 2), (gH + 0.2) / 2, c * (gD / 2 - 0.5));
-            gGrp.add(pillar);
-          }
-        });
-
-        // 4. Roof with Overhang
-        const roof = new THREE.Mesh(new THREE.BoxGeometry(gW + 1.2, 0.3, gD + 1.6), roofMat);
-        roof.position.set(0, gH + 0.15, 0.4);
-        gGrp.add(roof);
-
-        // 5. Overhead Structural Cross-Beams & Lighting
-        [-3.0, 0, 3.0].forEach(bz => {
-          const beam = new THREE.Mesh(new THREE.BoxGeometry(gW - 0.4, 0.25, 0.25), steelMat);
-          beam.position.set(0, gH - 0.2, bz);
-          gGrp.add(beam);
-
-          const fLight = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.08, 0.2), lightMat);
-          fLight.position.set(0, gH - 0.35, bz);
-          gGrp.add(fLight);
-        });
-
-        // 6. Front Entrance Arch & Open Roller Shutter Box
-        const shutterBox = new THREE.Mesh(new THREE.BoxGeometry(gW - 0.8, 0.6, 0.6), shutterMat);
-        shutterBox.position.set(0, gH - 0.3, gD / 2);
-        gGrp.add(shutterBox);
-
-        // Mounted Signboard
-        const signBoard = new THREE.Mesh(new THREE.BoxGeometry(6.0, 1.4, 0.1), signMat);
-        signBoard.position.set(0, gH + 0.9, gD / 2 + 0.6);
-        gGrp.add(signBoard);
-
-        // 7. Interior Workshop Props
-        const workbench = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.9, 1.2), new THREE.MeshLambertMaterial({ color: 0x92400e }));
-        workbench.position.set(-gW / 2 + 1.8, 0.45, -gD / 2 + 1.4);
-        gGrp.add(workbench);
-
-        for (let t = 0; t < 3; t++) {
-          const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.3, 12), new THREE.MeshLambertMaterial({ color: 0x0f172a }));
-          tire.position.set(gW / 2 - 1.4, 0.15 + t * 0.32, -gD / 2 + 1.4);
-          gGrp.add(tire);
-        }
-
-        [0, 0.8].forEach((ox, idx) => {
-          const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 1.0, 12), new THREE.MeshLambertMaterial({ color: idx === 0 ? 0x0284c7 : 0xd97706 }));
-          drum.position.set(-gW / 2 + 1.2 + ox, 0.5, 0);
-          gGrp.add(drum);
         });
 
         gGrp.position.set(gx, 0, gz);
@@ -6151,21 +7226,6 @@ class Game {
 
         this.scene.add(gGrp);
         this.world.push(gGrp);
-
-        // Collision boxes for back and side walls
-        const bWallCol = new THREE.Group();
-        bWallCol.position.set(gx + Math.sin(rotY) * (-gD / 2), 0, gz + Math.cos(rotY) * (-gD / 2));
-        bWallCol.rotation.y = rotY;
-        bWallCol.userData = { halfW: gW / 2, halfD: 0.6, isObstacle: true, isBuilding: true };
-        this.obstacles.push(bWallCol);
-
-        [-1, 1].forEach(side => {
-          const sWallCol = new THREE.Group();
-          sWallCol.position.set(gx + Math.cos(rotY) * (side * gW / 2), 0, gz - Math.sin(rotY) * (side * gW / 2));
-          sWallCol.rotation.y = rotY;
-          sWallCol.userData = { halfW: 0.6, halfD: gD / 2, isObstacle: true, isBuilding: true };
-          this.obstacles.push(sWallCol);
-        });
       }
 
       // ─── 3D Visual Barriers for Road Terminations & Restricted Boundaries ───
@@ -7273,9 +8333,7 @@ class Game {
           this.speedBreakers.push(bump);
       }
 
-      // ── PATH ARROW INDICATORS ──
-      // Dynamic directional chevron arrows placed on the road (vehicle mode) or
-      // sidewalk (pedestrian mode) showing the player where to drive/walk for missions.
+      // ── PATH ARROW INDICATORS (DISABLED PER USER REQUEST) ──
       _buildArrows() {
           // Clean up old arrows
           if (this._arrows && this._arrows.length) {
@@ -7285,100 +8343,13 @@ class Game {
               });
           }
           this._arrows = [];
-
-          let route = Array.isArray(this.mapCfg?.route) && this.mapCfg.route.length >= 2 ? this.mapCfg.route : null;
-          if (!route && this.cps && this.cps.length > 0) {
-              const startPos = this.player ? { x: this.player.position.x, z: this.player.position.z } : { x: (this.mapCfg?.startX || 0), z: (this.mapCfg?.startZ || 0) };
-              route = [startPos, ...this.cps.map(c => ({ x: c.position.x, z: c.position.z }))];
-          } else if (!route && this.mapCfg?.cps && this.mapCfg.cps.length > 0) {
-              route = [{ x: (this.mapCfg.startX || 0), z: (this.mapCfg.startZ || 0) }, ...this.mapCfg.cps.map(c => ({ x: c.x, z: c.z }))];
-          } else if (!route && this.mapCfg?.roads && this.mapCfg.roads.length > 0) {
-              const r0 = this.mapCfg.roads[0];
-              if (r0.type === 'v') route = [{ x: r0.x, z: r0.z1 }, { x: r0.x, z: r0.z2 }];
-              else route = [{ x: r0.x1, z: r0.z }, { x: r0.x2, z: r0.z }];
-          }
-          if (!route || route.length < 2) return;
-
-          const arrowColor = this.isPedestrian ? 0xffaa00 : 0x00f0cc;
-          const arrowMat = new THREE.MeshBasicMaterial({
-              color: arrowColor,
-              transparent: true,
-              opacity: 0.90,
-              side: THREE.DoubleSide,
-              depthWrite: false
-          });
-          const glowMat = new THREE.MeshBasicMaterial({
-              color: 0xffffff,
-              transparent: true,
-              opacity: 0.35,
-              side: THREE.DoubleSide,
-              depthWrite: false
-          });
-
-          const cfg = this.mapCfg || {};
-          const RW = cfg.isPedestrian ? 10 : 12;
-          const swW = cfg.isPedestrian ? 6 : 4;
-          const sideOffset = this.isPedestrian ? -(RW / 2 + swW / 2) : -2.8;
-
-          for (let i = 0; i < route.length - 1; i++) {
-              const a = route[i], b = route[i + 1];
-              const dx = b.x - a.x, dz = b.z - a.z;
-              const len = Math.sqrt(dx * dx + dz * dz);
-              if (len < 1) continue;
-              const ang = Math.atan2(dx, dz);
-              const nx = -dz / len, nz = dx / len;
-
-              const count = Math.max(2, Math.floor(len / 14));
-              for (let j = 0; j < count; j++) {
-                  const t = (j + 0.5) / count;
-                  const px = a.x + dx * t + nx * sideOffset;
-                  const pz = a.z + dz * t + nz * sideOffset;
-                  const g = new THREE.Group();
-                  
-                  // Chevron Left Wing
-                  const wing1 = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
-                      new THREE.Vector3(0, 0, -2.0), new THREE.Vector3(-1.3, 0, 0.8), new THREE.Vector3(0, 0, -0.1)
-                  ]), arrowMat.clone());
-                  // Chevron Right Wing
-                  const wing2 = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
-                      new THREE.Vector3(0, 0, -2.0), new THREE.Vector3(1.3, 0, 0.8), new THREE.Vector3(0, 0, -0.1)
-                  ]), arrowMat.clone());
-                  // Center Core
-                  const core = new THREE.Mesh(new THREE.BufferGeometry().setFromPoints([
-                      new THREE.Vector3(0, 0, -1.8), new THREE.Vector3(-0.4, 0, 0.2), new THREE.Vector3(0.4, 0, 0.2)
-                  ]), glowMat.clone());
-                  
-                  g.add(wing1, wing2, core);
-                  g.rotation.x = -Math.PI / 2;
-                  g.rotation.z = -ang;
-                  g.position.set(px, 0.14, pz);
-                  g.userData = { seg: i, order: j, baseY: 0.14, ped: !!this.isPedestrian };
-                  this.scene.add(g);
-                  this._arrows.push(g);
-              }
-          }
       }
 
       // Called each frame to pulse arrows and hide completed segments
       _updateArrows() {
-          if (!this._arrows || !this._arrows.length) return;
-          const nextCP = this.cps && this.cps.length ? this.cps.find(c => !c.userData?.hit && !c.cleared) : null;
-          const nextIdx = nextCP ? this.cps.indexOf(nextCP) : (this.cps ? this.cps.length : 99);
-          const t = this.timer || 0;
-          const onRoad = this.isPedestrian && this.player && this._isOnRoad(this.player.position.x, this.player.position.z);
-          
-          this._arrows.forEach(a => {
-              const visible = a.userData.seg <= nextIdx && !(onRoad && a.userData.ped);
-              a.visible = visible;
-              if (visible) {
-                  const flowPhase = (t * 3.5 + a.userData.order * 0.6) % (Math.PI * 2);
-                  const pulse = 0.55 + 0.40 * Math.sin(flowPhase);
-                  a.position.y = a.userData.baseY + 0.05 * Math.sin(flowPhase);
-                  a.children.forEach(ch => {
-                      if (ch.material) ch.material.opacity = pulse;
-                  });
-              }
-          });
+          if (this._arrows && this._arrows.length) {
+              this._arrows.forEach(a => { a.visible = false; });
+          }
       }
 
       _updateLights(dt) {
@@ -7454,6 +8425,49 @@ class Game {
           this._enterState = 'IDLE'; if (window.TrafficAudio) window.TrafficAudio.playDoorClose();
         }
         this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); if (this.taskManager) this.taskManager.update(dt); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
+        if (this._cattle) {
+          this._cattle.forEach(c => {
+            c.waitTimer -= dt;
+            if (c.waitTimer <= 0 && !c.moved) {
+              c.moved = true;
+            }
+            if (c.moved && c.mesh.position.z < c.targetZ) {
+              c.mesh.position.z += 0.5 * dt;
+            }
+          });
+        }
+        if (this._elderlyPed) {
+          const ep = this._elderlyPed;
+          ep.group.position.x += ep.speed * ep.direction * dt;
+          if (ep.group.position.x >= ep.endX) ep.direction = -1;
+          if (ep.group.position.x <= ep.startX) ep.direction = 1;
+          // Walking stick bob
+          if (ep.stick) ep.stick.rotation.z = 0.15 + Math.sin(Date.now() * 0.003) * 0.08;
+        }
+        if (this._activeAmbulance) {
+          const a = this._activeAmbulance;
+          a.strobeTimer = (a.strobeTimer || 0) + dt * 8;
+          const isRed = Math.sin(a.strobeTimer) > 0;
+          if (a.redLight) a.redLight.intensity = isRed ? 2.5 : 0.2;
+          if (a.blueLight) a.blueLight.intensity = isRed ? 0.2 : 2.5;
+          if (a.active && a.group) {
+            a.group.position.z += a.speed * dt;
+          }
+        }
+        if (this._flagman && this._flagman.stick) {
+          this._flagman.stick.rotation.z = 0.4 + Math.sin(Date.now() * 0.005) * 0.3;
+        }
+        if (this._tollBarriers) {
+          this._tollBarriers.forEach(tb => {
+            if (this.player && Math.hypot(this.player.position.x - tb.pivotX, this.player.position.z - tb.bar.position.z) < 15) {
+              tb.open = true;
+            }
+            if (tb.open && tb.angle < Math.PI / 2) {
+              tb.angle = Math.min(Math.PI / 2, tb.angle + dt * 2);
+              tb.bar.rotation.z = tb.angle;
+            }
+          });
+        }
         // World streaming update — handle deferred initial load
         if (this._needsInitialStream && this.player && this.player.position) {
           this.worldStreamer.update(this.player.position, 1.0);
@@ -7467,25 +8481,26 @@ class Game {
 
         // Mission and collectible update
         if (this.missionManager && this.player && this.missionManager.active) {
-          const extra = {
-            playerRot: this.player.rotation.y,
-            speed: Math.abs(this.speed),
-            lateralG: this._lateralAccel || 0,
-            longitudinalG: this._longitudinalAccel || 0,
-            hitPothole: this._hitPotholeThisFrame || false,
-            lastPos: this._lastPlayerPos || null,
-            leadVehiclePos: this._leadVehiclePos || null,
-            targetVehiclePos: this._targetVehiclePos || null,
-            pursuerPositions: this._pursuerPositions || [],
-            childrenGroups: this._childrenGroups || [],
-            violations: this._sidewalkViolations || [],
-            ambulancePos: this._ambulancePos || null,
-            pedPositions: this.peds?.map(p => ({ x: p.position.x, z: p.position.z })) || [],
-            vehiclePositions: this.npcs?.map(n => ({ x: n.position.x, z: n.position.z, speed: n.userData?.spd || 0, caught: n.caught })) || [],
-            intersections: this._intersections || []
-          };
-          this.missionManager.update(this.player.position, dt, this.timer, extra);
-          this._lastPlayerPos = this.player.position.clone();
+          if (!this._missionExtra) this._missionExtra = {};
+          const ex = this._missionExtra;
+          ex.playerRot = this.player.rotation.y;
+          ex.speed = Math.abs(this.speed);
+          ex.lateralG = this._lateralAccel || 0;
+          ex.longitudinalG = this._longitudinalAccel || 0;
+          ex.hitPothole = this._hitPotholeThisFrame || false;
+          ex.lastPos = this._lastPlayerPos || null;
+          ex.leadVehiclePos = this._leadVehiclePos || null;
+          ex.targetVehiclePos = this._targetVehiclePos || null;
+          ex.pursuerPositions = this._pursuerPositions || [];
+          ex.childrenGroups = this._childrenGroups || [];
+          ex.violations = this._sidewalkViolations || [];
+          ex.ambulancePos = this._ambulancePos || null;
+          ex.pedPositions = this.peds;
+          ex.vehiclePositions = this.npcs;
+          ex.intersections = this._intersections || [];
+          this.missionManager.update(this.player.position, dt, this.timer, ex);
+          if (!this._lastPlayerPos) this._lastPlayerPos = new THREE.Vector3();
+          this._lastPlayerPos.copy(this.player.position);
           this._hitPotholeThisFrame = false;
         }
         // ── Suspension (after input, needs steering data) ──
@@ -7670,10 +8685,11 @@ class Game {
           }
           if (this.cruiseControl && dn) this.cruiseControl = false; // braking disengages cruise
 
-          // ── SPEED LIMITER: hard cap ──
-          if (this.speedLimiter && this.speed > 0) {
-            const limCap = this.speedLimitCap / 100;
-            if (this.speed > limCap) this.speed = Math.min(this.speed, limCap);
+          // ── SPEED LIMITER / GOVERNOR: hard cap ──
+          if (this.speedLimiter && this.speed !== 0) {
+            const limCap = (this.speedLimitCap || 50) / 100;
+            if (this.speed > limCap) this.speed = limCap;
+            else if (this.speed < -limCap * 0.5) this.speed = -limCap * 0.5;
           }
 
           // ── DRIVE MODE CAP ──
@@ -7729,9 +8745,9 @@ class Game {
 
         if (!overrideMove) {
           let tAmt = 0;
-          // Speed-proportional steering with per-vehicle turn rate
-          if (Math.abs(this.speed) > .01 && !this.isPedestrian) {
-            const sf = Math.max(0.40, 1 - Math.abs(this.speed) * 0.40);
+          // Speed-proportional steering with responsive per-vehicle turn rate
+          if (Math.abs(this.speed) > .005 && !this.isPedestrian) {
+            const sf = Math.max(0.60, 1 - Math.abs(this.speed) * 0.25);
             const effTurn = this.turn * sf;
             if (lt) tAmt = 1;
             else if (rt) tAmt = -1;
@@ -7866,26 +8882,31 @@ class Game {
             }
             
             // Check Wrong-side driving
-            if (currentRoad && !this.isPedestrian && Math.abs(this.speed) > 0.15) {
+            if (currentRoad && !this.isPedestrian && Math.abs(this.speed) > 0.15 && (!this._spawnInvulnerable || this._spawnInvulnerable <= 0)) {
                 let wrongWay = false;
                 let nearInt = false;
                 (this.mapCfg.ints || []).forEach(([ix, iz]) => {
-                    if (Math.abs(this.player.position.x - ix) < 25 && Math.abs(this.player.position.z - iz) < 25) nearInt = true;
+                    if (Math.abs(this.player.position.x - ix) < 30 && Math.abs(this.player.position.z - iz) < 30) nearInt = true;
                 });
-                if (!nearInt) {
+                const nearGarage = this._garageX !== undefined && Math.hypot(this.player.position.x - this._garageX, this.player.position.z - this._garageZ) < 40;
+                if (!nearInt && !nearGarage) {
                     if (currentRoad.type === 'v') {
-                        if (Math.sign(this.player.position.x - currentRoad.x) !== Math.sign(this.vz) && Math.abs(this.vz) > 0.05) wrongWay = true;
+                        if (Math.sign(this.player.position.x - currentRoad.x) === Math.sign(this.vz) && Math.abs(this.vz) > 0.05) wrongWay = true;
                     } else {
                         if (Math.sign(this.player.position.z - currentRoad.z) === Math.sign(this.vx) && Math.abs(this.vx) > 0.05) wrongWay = true;
                     }
                 }
                 if (wrongWay) {
-                    if (!this.player.userData.wwCooldown) this.player.userData.wwCooldown = 0;
+                    this.player.userData.wwTimer = (this.player.userData.wwTimer || 0) + dt;
+                    if (!this.player.userData.wwCooldown) this.player.userData.wwCooldown = 5;
                     this.player.userData.wwCooldown -= dt;
-                    if (this.player.userData.wwCooldown <= 0 && window.ui && window.ui.issueChallan) {
+                    if (this.player.userData.wwCooldown <= 0 && this.player.userData.wwTimer >= 2.5 && window.ui && window.ui.issueChallan) {
                         if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Wrong Side Driving', 'Sec 119 MV Act', '₹1,500', 'Lane Discipline');
-                        this.player.userData.wwCooldown = 4;
+                        this.player.userData.wwCooldown = 5;
+                        this.player.userData.wwTimer = 0;
                     }
+                } else {
+                    this.player.userData.wwTimer = 0;
                 }
             }
 
@@ -8317,24 +9338,22 @@ class Game {
       _updateDynamicLOD(lodMult = 1) {
         if (!this.player) return;
         this._lodFrame = (this._lodFrame || 0) + 1;
-        if (this._lodFrame % 20 !== 0) return; // ~3x/sec at 60fps, not every frame
+        if (this._lodFrame % 30 !== 0) return; // ~2x/sec at 60fps
         const px = this.player.position.x, pz = this.player.position.z;
-        if (!this._lodChildren) this._lodChildren = this.scene.children.filter(c => c.isMesh || c.isInstancedMesh);
-        // Rebuild the candidate list occasionally too, in case new objects were added since
-        // (e.g. NPCs, obstacles) — cheap relative to the distance pass itself.
-        if (this._lodFrame % 300 === 0) this._lodChildren = this.scene.children.filter(c => c.isMesh || c.isInstancedMesh);
-        // Scale visibility distance by platform — desktop gets more range
-        const baseDist = this._isMobile ? 400 : 600;
-        const visDist = baseDist * lodMult;
-        const fogDist = (this._isMobile ? 200 : 350) * lodMult;
-        this._lodChildren.forEach(child => {
-          if (!child.position || child.userData?.noLod || child.userData?.isGround) return;
+        if (!this._lodChildren || this._lodFrame % 300 === 0) {
+          this._lodChildren = this.scene.children.filter(c => c.isMesh || c.isInstancedMesh);
+        }
+        const baseDist = this._isMobile ? 350 : 500;
+        const visDistSq = (baseDist * lodMult) * (baseDist * lodMult);
+        const len = this._lodChildren.length;
+        for (let i = 0; i < len; i++) {
+          const child = this._lodChildren[i];
+          if (!child || !child.position || child.userData?.noLod || child.userData?.isGround) continue;
           const dx = child.position.x - px, dz = child.position.z - pz;
-          const d = Math.sqrt(dx * dx + dz * dz);
-          const shouldShow = d < visDist;
+          const dSq = dx * dx + dz * dz;
+          const shouldShow = dSq < visDistSq;
           if (child.visible !== shouldShow) child.visible = shouldShow;
-          if (child.material && 'fog' in child.material) child.material.fog = d < fogDist;
-        });
+        }
       }
 
       // ── Google Maps-style animated GPS navigation path ──
@@ -8342,7 +9361,10 @@ class Game {
       // ── GTA / Forza-style animated 3D GPS navigation road path ──
       // Prominent glowing chevrons and road ribbons flowing along the target lane
       _initBreadcrumbPath() {
-        // Clean up any previous GPS elements
+        if (this._breadcrumbPath) {
+          this.scene.remove(this._breadcrumbPath);
+          this._breadcrumbPath = null;
+        }
         if (this._gpsFlowChevrons) {
           this._gpsFlowChevrons.forEach(c => { this.scene.remove(c); c.traverse(ch => { ch.geometry?.dispose(); ch.material?.dispose(); }); });
         }
@@ -8352,205 +9374,12 @@ class Game {
         this._gpsFlowChevrons = [];
         this._gpsTurnLabels = [];
         this._gpsTurnSprites = {};
-
-        if (!this.driveRoute || this.driveRoute.length < 2) return;
-        const points = this.driveRoute.map(p => new THREE.Vector3(p.x, 0.14, p.z));
-        const cfg = this.mapCfg;
-        const RW = cfg && cfg.isPedestrian ? 10 : 12;
-        const swW = cfg && cfg.isPedestrian ? 6 : 4;
-        const pedOffset = this.isPedestrian ? -(RW / 2 + swW / 2) : 0;
-        const pointsOffset = points.map(p => new THREE.Vector3(p.x + pedOffset, p.y, p.z));
-
-        const interpolated = [points[0]];
-        for (let i = 1; i < points.length; i++) {
-          const a = points[i - 1], b = points[i];
-          const segLen = a.distanceTo(b);
-          const steps = Math.max(1, Math.floor(segLen / 40));
-          for (let s = 1; s <= steps; s++) interpolated.push(new THREE.Vector3().lerpVectors(a, b, s / steps));
-        }
-
-        const interpolatedOffset = [pointsOffset[0]];
-        for (let i = 1; i < pointsOffset.length; i++) {
-          const a = pointsOffset[i - 1], b = pointsOffset[i];
-          const segLen = a.distanceTo(b);
-          const steps = Math.max(1, Math.floor(segLen / 40));
-          for (let s = 1; s <= steps; s++) interpolatedOffset.push(new THREE.Vector3().lerpVectors(a, b, s / steps));
-        }
-
-        this._breadcrumbCurve = new THREE.CatmullRomCurve3(this.isPedestrian ? interpolatedOffset : interpolated, false, 'catmullrom', 0.1);
-        const resolution = 2000;
-        const curvePoints = this._breadcrumbCurve.getPoints(resolution);
-        const geometry = new THREE.BufferGeometry().setFromPoints(curvePoints);
-        
-        // High-visibility glowing cyan road ribbon
-        const material = new THREE.LineBasicMaterial({
-          color: 0x00f0cc,
-          transparent: true,
-          opacity: 0.85,
-          linewidth: 3
-        });
-        this._breadcrumbPath = new THREE.Line(geometry, material);
-        this._breadcrumbPath.visible = false;
-        this.scene.add(this._breadcrumbPath);
-
-        // Create large, crisp GTA-style animated 3D flow chevrons along the road
-        const chevronCount = Math.min(60, Math.floor(points.length * 5));
-        const chevMat = new THREE.MeshBasicMaterial({
-          color: 0x00f0cc,
-          transparent: true,
-          opacity: 0.9,
-          side: THREE.DoubleSide,
-          depthWrite: false
-        });
-        const chevBorderMat = new THREE.MeshBasicMaterial({
-          color: 0xffffff,
-          transparent: true,
-          opacity: 0.95,
-          side: THREE.DoubleSide,
-          depthWrite: false
-        });
-
-        // 3D Chevron Arrow Geometry (Wide, high-visibility 2.2m arrow)
-        const arrowGeo = new THREE.BufferGeometry();
-        // Triangle 1 (left wing) & Triangle 2 (right wing)
-        const verts = new Float32Array([
-          0, 0, -1.6,   -1.2, 0, 0.6,   0, 0, -0.4,
-          0, 0, -1.6,    0, 0, -0.4,    1.2, 0, 0.6
-        ]);
-        arrowGeo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
-
-        for (let i = 0; i < chevronCount; i++) {
-          const g = new THREE.Group();
-          const mainMesh = new THREE.Mesh(arrowGeo, chevMat.clone());
-          g.add(mainMesh);
-
-          g.scale.set(1.6, 1, 1.6);
-          g.position.y = 0.16;
-          g.visible = false;
-          g.userData = { isGpsChevron: true, index: i };
-          this.scene.add(g);
-          this._gpsFlowChevrons.push(g);
-        }
-
-        // Turn indicator sprites for corners
-        const route = this.mapCfg.route || [];
-        for (let i = 1; i < route.length - 1; i++) {
-          const prev = route[i - 1], curr = route[i], next = route[i + 1];
-          const d1x = curr.x - prev.x, d1z = curr.z - prev.z;
-          const d2x = next.x - curr.x, d2z = next.z - curr.z;
-          const cross = d1x * d2z - d1z * d2x;
-          if (Math.abs(cross) < 80) continue;
-
-          const turnDir = cross > 0 ? '▶ TURN RIGHT' : '◀ TURN LEFT';
-          const canvas = document.createElement('canvas');
-          canvas.width = 256; canvas.height = 72;
-          const ctx = canvas.getContext('2d');
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
-          ctx.beginPath();
-          ctx.roundRect(4, 4, 248, 64, 12);
-          ctx.fill();
-          ctx.lineWidth = 3;
-          ctx.strokeStyle = '#00f0cc';
-          ctx.stroke();
-
-          ctx.fillStyle = '#00f0cc';
-          ctx.font = 'bold 24px monospace';
-          ctx.textAlign = 'center';
-          ctx.fillText(turnDir, 128, 44);
-
-          const tex = new THREE.CanvasTexture(canvas);
-          const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true, opacity: 0 });
-          const sprite = new THREE.Sprite(spriteMat);
-          sprite.position.set(curr.x, 3.8, curr.z);
-          sprite.scale.set(6.5, 1.8, 1);
-          sprite.visible = false;
-          this.scene.add(sprite);
-          this._gpsTurnLabels.push(sprite);
-          this._gpsTurnSprites[i] = sprite;
-        }
       }
 
       _updateBreadcrumbPath(dt) {
-        if (!this._breadcrumbPath || !this._breadcrumbCurve) return;
-        if (!this.playing || this.pause) {
-          this._breadcrumbPath.visible = false;
-          if (this._gpsFlowChevrons) this._gpsFlowChevrons.forEach(c => c.visible = false);
-          if (this._gpsTurnLabels) this._gpsTurnLabels.forEach(l => { l.visible = false; l.material.opacity = 0; });
-          return;
-        }
-        const nextCP = this.cps ? this.cps.find(c => !c.userData?.hit && !c.cleared) : null;
-        if (!nextCP) {
-          this._breadcrumbPath.visible = false;
-          if (this._gpsFlowChevrons) this._gpsFlowChevrons.forEach(c => c.visible = false);
-          if (this._gpsTurnLabels) this._gpsTurnLabels.forEach(l => { l.visible = false; l.material.opacity = 0; });
-          return;
-        }
-        this._breadcrumbPath.visible = true;
-        const playerPos = this.player.position;
-        const cpPos = nextCP.position;
-        let startT = 0, minDist = Infinity;
-        const samples = 80;
-        for (let i = 0; i <= samples; i++) {
-          const t = i / samples;
-          const p = this._breadcrumbCurve.getPointAt(t);
-          const d = Math.hypot(p.x - playerPos.x, p.z - playerPos.z);
-          if (d < minDist) { minDist = d; startT = t; }
-        }
-        let endT = 1.0;
-        minDist = Infinity;
-        for (let i = 0; i <= samples; i++) {
-          const t = i / samples;
-          const p = this._breadcrumbCurve.getPointAt(t);
-          const d = Math.hypot(p.x - cpPos.x, p.z - cpPos.z);
-          if (d < minDist) { minDist = d; endT = t; }
-        }
-        const resolution = 2000;
-        const startIndex = Math.floor(startT * resolution);
-        const endIndex = Math.floor(endT * resolution);
-        const count = Math.max(0, endIndex - startIndex);
-        this._breadcrumbPath.geometry.setDrawRange(startIndex, count);
-
-        // Animate flow chevrons moving forward along the path towards next waypoint
-        if (this._gpsFlowChevrons) {
-          const numChevs = this._gpsFlowChevrons.length;
-          const visRange = Math.max(0.01, endT - startT);
-
-          this._gpsFlowChevrons.forEach((ch, i) => {
-            const flowOffset = (((this.timer || 0) * 0.12 + (i / numChevs) * visRange) % visRange);
-            const animT = Math.min(Math.max(startT + flowOffset, 0), 1);
-            if (animT < startT || animT > endT) { ch.visible = false; return; }
-
-            const pos = this._breadcrumbCurve.getPointAt(animT);
-            const nextT = Math.min(animT + 0.015, 1.0);
-            const nextPos = this._breadcrumbCurve.getPointAt(nextT);
-            const rotY = Math.atan2(nextPos.x - pos.x, nextPos.z - pos.z);
-
-            ch.position.set(pos.x, 0.16 + 0.03 * Math.sin((this.timer || 0) * 6 + i), pos.z);
-            ch.rotation.y = rotY;
-            ch.visible = true;
-
-            const distToPlayer = Math.hypot(pos.x - playerPos.x, pos.z - playerPos.z);
-            const alpha = distToPlayer < 8 ? 0.35 : distToPlayer < 70 ? 0.95 : 0.4;
-            ch.children.forEach(c => { if (c.material) c.material.opacity = alpha; });
-          });
-        }
-
-        // Show/hide corner turn notifications based on distance
-        if (this._gpsTurnSprites) {
-          const route = this.mapCfg.route || [];
-          Object.keys(this._gpsTurnSprites).forEach(idx => {
-            const sprite = this._gpsTurnSprites[idx];
-            const corner = route[parseInt(idx)];
-            if (!corner) return;
-            const dist = Math.hypot(playerPos.x - corner.x, playerPos.z - corner.z);
-            if (dist < 60) {
-              sprite.visible = true;
-              sprite.material.opacity = dist < 20 ? 0.95 : 0.55;
-            } else {
-              sprite.visible = false;
-            }
-          });
-        }
+        if (this._breadcrumbPath) this._breadcrumbPath.visible = false;
+        if (this._gpsFlowChevrons) this._gpsFlowChevrons.forEach(c => c.visible = false);
+        if (this._gpsTurnLabels) this._gpsTurnLabels.forEach(l => { l.visible = false; });
       }
 
 
@@ -9129,7 +9958,7 @@ class Game {
               let diff = targetYaw - n.rotation.y;
               while (diff < -Math.PI) diff += Math.PI * 2;
               while (diff > Math.PI) diff -= Math.PI * 2;
-              const turnSpeed = Math.max(0.1, n.userData.spd * 0.5);
+              const turnSpeed = Math.min(1.0, dt * 60 * Math.max(0.1, n.userData.spd * 0.5));
               n.rotation.y += diff * turnSpeed;
               
               // Move forward in the direction the car is ACTUALLY facing to prevent crab-walking
@@ -9158,14 +9987,16 @@ class Game {
                 
                 if (n.userData.txZ !== undefined) {
                   n.userData.txZ = Math.max(-6, Math.min(6, n.userData.txZ));
-                  n.position.z += (n.userData.txZ - n.position.z) * 0.15;
+                  const latBlend = 1 - Math.exp(-dt * 9.0);
+                  n.position.z += (n.userData.txZ - n.position.z) * latBlend;
                   
                   let yawT = (n.userData.dir === 1) ? Math.PI / 2 : -Math.PI / 2;
                   yawT -= (n.userData.txZ - n.position.z) * 0.1 * n.userData.dir;
                   let diff = yawT - n.rotation.y;
                   while (diff < -Math.PI) diff += Math.PI * 2;
                   while (diff > Math.PI) diff -= Math.PI * 2;
-                  n.rotation.y += diff * 0.2;
+                  const yawBlend = 1 - Math.exp(-dt * 12.0);
+                  n.rotation.y += diff * yawBlend;
                 }
 
                 n.position.x += n.userData.spd * 35 * dt * n.userData.dir; 
@@ -9191,18 +10022,20 @@ class Game {
                     const dForward = Math.abs(other.position.z - n.position.z);
                     if (dLateral < 2.2 && dForward < 5) {
                       const push = (other.position.x - n.position.x) > 0 ? -0.12 : 0.12;
-                      n.userData.txX += push;
+                      if (n.userData.txX !== undefined) n.userData.txX += push;
                     }
                   }
                 });
                 n.userData.txX = Math.max(-6, Math.min(6, n.userData.txX));
-                n.position.x += (n.userData.txX - n.position.x) * 0.15;
+                const latBlend = 1 - Math.exp(-dt * 9.0);
+                n.position.x += (n.userData.txX - n.position.x) * latBlend;
                 let yawT = Math.atan2(n.userData.txX - n.position.x, 8) * 0.5;
                 if (n.userData.dir === -1) yawT += Math.PI;
                 let diff = yawT - n.rotation.y;
                 while (diff < -Math.PI) diff += Math.PI * 2;
                 while (diff > Math.PI) diff -= Math.PI * 2;
-                n.rotation.y += diff * 0.2;
+                const yawBlend = 1 - Math.exp(-dt * 12.0);
+                n.rotation.y += diff * yawBlend;
                 n.position.z += n.userData.spd * 35 * dt * n.userData.dir;
                 if (n.position.z > n.userData.maxPos && n.userData.dir === 1) {
                   n.userData._wrapT = 1.2;
@@ -9585,12 +10418,32 @@ class Game {
         // MAIN PEDESTRIAN UPDATE LOOP
         // ═══════════════════════════════════════════════════════════════
         this.peds.forEach(p => {
+          const ud = p.userData;
+          if (!ud) return;
+
+          if (ud.isChild) {
+            ud.t = (ud.t || 0) + dt * (ud.spd || 0.03);
+            const targetX = ud.targetX || 7.5;
+            const dirX = targetX > p.position.x ? 1 : -1;
+            p.position.x += dirX * (ud.spd || 0.03) * 60 * dt;
+            p.rotation.y = dirX > 0 ? Math.PI / 2 : -Math.PI / 2;
+            if (Math.abs(p.position.x - targetX) < 0.4) {
+              ud.targetX = targetX > 0 ? -7.5 : 7.5;
+            }
+            const lLeg = p.children && p.children.find(c => c.name === 'lLeg');
+            const rLeg = p.children && p.children.find(c => c.name === 'rLeg');
+            if (lLeg && rLeg) {
+              lLeg.rotation.x = Math.sin(ud.t * 8) * 0.45;
+              rLeg.rotation.x = -Math.sin(ud.t * 8) * 0.45;
+            }
+            return;
+          }
+
           // Initialize pedestrian AI state if needed
           p.userData.aiState = p.userData.aiState || 'walking'; // walking, idle, waiting, crossing, fleeing, exiting, entering
           p.userData.t += dt * p.userData.spd;
 
           const isPoliceVolunteer = p.userData.isPoliceVolunteer;
-          const ud = p.userData;
 
           // ── BOUNDARY ENFORCEMENT: Keep pedestrians on sidewalks AND within world ──
           // Enforce lateral bounds (sidewalk width)
@@ -9909,7 +10762,7 @@ class Game {
           }
 
           // ── PLAYER COLLISION CHECK (INSTANT FAILURE ON HIT) ──
-          if (!this.isPedestrian && Math.abs(this.speed) > 0.1 && this.player.position.distanceTo(p.position) < 2.2) {
+          if (!this.isPedestrian && Math.abs(this.speed) > 0.1 && (!this._spawnInvulnerable || this._spawnInvulnerable <= 0) && this.player.position.distanceTo(p.position) < 2.0) {
             this.speed = 0;
             this.hp = 0;
             toast('💥 HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
@@ -10159,25 +11012,8 @@ class Game {
         this.hits = hits;
         if (this.dom['hcp']) this.dom['hcp'].textContent = hits + '/' + this.cps.length;
 
-        // Realtime GPS Arrow Target Tracking
-        const nextNode = this.cps.find(c => !c.userData.hit); const da = this.dom['da'];
-        if (nextNode && this.playing) {
-          if (da) { da.style.display = 'flex'; da.classList.add('on'); }
-          const dx = nextNode.position.x - this.player.position.x, dz = nextNode.position.z - this.player.position.z;
-          const dist = Math.round(Math.hypot(dx, dz));
-          // FIX: use atan2(dx,dz) not atan2(dx,-dz) for correct forward direction
-          let rel = Math.atan2(dx, dz) - this.player.rotation.y;
-          while (rel < -Math.PI) rel += Math.PI * 2; while (rel > Math.PI) rel -= Math.PI * 2;
-          const deg = rel * 180 / Math.PI;
-          // Rotate the arrow using CSS transform (negative for correct direction)
-          const arrowEl = this.dom['da-arrow'];
-          if (arrowEl) arrowEl.style.transform = 'rotate(' + Math.round(-deg) + 'deg)';
-          // Update direction text
-          const dirText = Math.abs(deg) < 20 ? 'GO STRAIGHT' : deg > 0 ? 'TURN RIGHT' : 'TURN LEFT';
-          if (this.dom['dal']) this.dom['dal'].textContent = dirText;
-          // Update distance in the new da-dist element
-          if (this.dom['da-dist']) this.dom['da-dist'].textContent = dist + 'm';
-        } else if (da) { da.style.display = 'none'; da.classList.remove('on'); }
+        const da = this.dom['da'];
+        if (da) { da.style.display = 'none'; da.classList.remove('on'); }
 
         if (hits >= this.cps.length && this.cps.length > 0) this.completeLevel();
       }
@@ -10191,7 +11027,7 @@ class Game {
         while (rel < -Math.PI) rel += Math.PI * 2; while (rel > Math.PI) rel -= Math.PI * 2;
         const deg = rel * 180 / Math.PI;
         const arrow = this.dom['phone-gps-arrow'];
-        if (arrow) arrow.style.transform = 'rotate(' + Math.round(-deg) + 'deg)';
+        if (arrow) arrow.style.transform = 'rotate(' + Math.round(deg) + 'deg)';
         if (this.dom['phone-gps-dist']) this.dom['phone-gps-dist'].textContent = dist + 'm';
         const dirText = Math.abs(deg) < 20 ? 'STRAIGHT' : deg > 0 ? 'TURN RIGHT' : 'TURN LEFT';
         if (this.dom['phone-gps-dir']) this.dom['phone-gps-dir'].textContent = dirText;
@@ -10378,15 +11214,33 @@ class Game {
                 if (char.userData.nametagGlowOuter) char.userData.nametagGlowOuter.visible = false;
               }
               this.player = veh;
-              this._camSnapped = false;
+              this._camSnapped = true;
               this._camOverride = false;
               this._enterState = 'IDLE';
-              this._spawnInvulnerable = 3.5; // Departure grace period
+              this._spawnInvulnerable = 6.0; // 6s Departure grace period
+              if (this.player.userData) {
+                this.player.userData.wwCooldown = 5.0;
+                this.player.userData.wwTimer = 0;
+              }
               this.camYaw = 0; this.camPitch = 0;
               this.targetCamYaw = 0; this.targetCamPitch = 0;
               const _vcamEnter = VEHICLE_CAM[this.vehMode] || VEHICLE_CAM_DEFAULT;
               this.camera.fov = _vcamEnter.baseFov;
               this.camera.updateProjectionMatrix();
+              // Snap camera immediately behind the vehicle looking forward
+              const rotY = veh.rotation.y;
+              const camDist = _vcamEnter.dist;
+              const camHeight = _vcamEnter.height;
+              this.camera.position.set(
+                veh.position.x - Math.sin(rotY) * camDist,
+                veh.position.y + camHeight,
+                veh.position.z - Math.cos(rotY) * camDist
+              );
+              this.camera.lookAt(
+                veh.position.x + Math.sin(rotY) * (_vcamEnter.lookDist || 8),
+                veh.position.y + 1.0,
+                veh.position.z + Math.cos(rotY) * (_vcamEnter.lookDist || 8)
+              );
               const vt = this.vehMode || 'car';
               const rain = window.gameWeather === 'Rain' || (this.mapCfg && this.mapCfg.hasRain);
               const hw = this.mapCfg && this.mapCfg.themeType === 'highway';
@@ -10478,12 +11332,15 @@ class Game {
       _animateCharacterWalk(character, speed, dt) {
         if (!character) return
         const ud = character.userData
-        // FBX animated characters: blend idle ↔ run weights
-        if (ud.isFBXAnimated && ud.mixer) {
+        // FBX / GLB animated characters: blend idle ↔ run weights
+        if ((ud.isFBXAnimated || ud.isGLB) && (ud.mixer || ud._mixer)) {
+          const m = ud.mixer || ud._mixer
           const walkW = Math.min(Math.abs(speed) * 3, 1)
-          if (ud.idleAction) ud.idleAction.setEffectiveWeight(1 - walkW)
-          if (ud.runAction) ud.runAction.setEffectiveWeight(walkW)
-          ud.mixer.update(dt)
+          const idleA = ud.idleAction || ud._idleAction
+          const walkA = ud.runAction || ud._walkAction
+          if (idleA) idleA.setEffectiveWeight(1 - walkW)
+          if (walkA) walkA.setEffectiveWeight(walkW)
+          m.update(dt)
           return
         }
         // GLB / procedural characters: swing legs + arms + body bob
@@ -10917,18 +11774,32 @@ class Game {
         
         if (!this.warnEl) {
             this.warnEl = document.createElement('div');
-            this.warnEl.style.cssText = 'position:fixed; bottom:25%; left:50%; transform:translateX(-50%); font-family: "Bebas Neue", var(--sans, sans-serif); font-size:2.2rem; letter-spacing:2px; color:#ffffff; background:rgba(20,20,25,0.9); box-shadow:0 8px 32px rgba(0,0,0,0.5); padding:16px 32px; border-radius:16px; border:2px solid rgba(255,255,255,0.2); z-index:9999; display:none; pointer-events:none; text-align:center; transition:opacity 0.2s; text-transform:uppercase;';
+            this.warnEl.style.cssText = 'position:fixed; bottom:22%; left:50%; transform:translateX(-50%); font-family:"Inter", -apple-system, BlinkMacSystemFont, sans-serif; z-index:9999; display:none; pointer-events:none; text-align:center; transition:opacity 0.2s, transform 0.2s;';
             document.body.appendChild(this.warnEl);
         }
+        const speedLimitKmh = this.mapCfg && this.mapCfg.speedLimit ? this.mapCfg.speedLimit : (this.speedLimitCap || 50);
+
         let warnMsg = '';
-        if (k > 80) warnMsg = '⚠️ OVERSPEEDING';
-        else if (k > 50 && Math.abs(this.player.rotation.y - (this.lastRotY || this.player.rotation.y)) > 0.06) warnMsg = '⚠️ SHARP CORNER';
+        if (k > speedLimitKmh) {
+          warnMsg = `
+            <div style="background:rgba(220, 38, 38, 0.95); border:2px solid #fca5a5; border-radius:30px; padding:10px 22px; color:#ffffff; font-weight:800; font-size:0.95rem; letter-spacing:0.5px; box-shadow:0 10px 30px rgba(220, 38, 38, 0.6); display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.2rem;">⚠️</span>
+              <span>OVERSPEEDING (${k}/${speedLimitKmh} KM/H) — PRESS <kbd style="background:#fff; color:#b91c1c; padding:2px 8px; border-radius:5px; font-weight:900; box-shadow:0 2px 0 #991b1b; font-family:'Space Mono', monospace; font-size:0.9rem;">L</kbd> TO LIMIT</span>
+            </div>
+          `;
+        } else if (k > 50 && Math.abs(this.player.rotation.y - (this.lastRotY || this.player.rotation.y)) > 0.06) {
+          warnMsg = `
+            <div style="background:rgba(245, 158, 11, 0.95); border:2px solid #fde68a; border-radius:30px; padding:8px 20px; color:#0f172a; font-weight:800; font-size:0.92rem; letter-spacing:0.5px; box-shadow:0 8px 24px rgba(245, 158, 11, 0.5); display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.2rem;">⚠️</span>
+              <span>SHARP CORNER — SLOW DOWN</span>
+            </div>
+          `;
+        }
         this.lastRotY = this.player.rotation.y;
 
         if (warnMsg) {
-            this.warnEl.textContent = warnMsg;
+            this.warnEl.innerHTML = warnMsg;
             this.warnEl.style.display = 'block';
-            this.warnEl.style.color = '#ff3b30';
             if (!this.warnEl.classList.contains('flash')) { this.warnEl.classList.add('flash'); }
         } else {
             // ── Interaction Hint ──
@@ -10940,10 +11811,13 @@ class Game {
               const dist = this.player.position.distanceTo(this.playerVehicle.position);
               const mcEnter = document.getElementById('mc-enter');
               if (dist < 5) {
-                this.warnEl.textContent = '🚗 PRESS [F] TO ENTER CAR';
+                this.warnEl.innerHTML = `
+                  <div style="background:linear-gradient(135deg, rgba(13, 19, 31, 0.95), rgba(21, 29, 45, 0.95)); border:2px solid #f59e0b; border-radius:30px; padding:10px 22px; color:#ffffff; font-weight:800; font-size:0.98rem; letter-spacing:0.4px; box-shadow:0 12px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.35); display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.3rem;">🚗</span>
+                    <span>PRESS <kbd style="background:linear-gradient(180deg, #f59e0b, #d97706); color:#070a14; padding:3px 10px; border-radius:6px; font-weight:900; box-shadow:0 3px 0 #92400e; margin:0 4px; font-family:'Space Mono', monospace; font-size:0.95rem;">F</kbd> TO ENTER CAR</span>
+                  </div>
+                `;
                 this.warnEl.style.display = 'block';
-                this.warnEl.style.color = '#f1c40f';
-                if (!this.warnEl.classList.contains('flash')) { this.warnEl.classList.add('flash'); }
                 if (mcEnter) mcEnter.style.display = 'flex';
               } else {
                 this.warnEl.style.display = 'none';
@@ -10964,21 +11838,53 @@ class Game {
           if (gearPanel) gearPanel.style.display = this.isPedestrian ? 'none' : 'flex';
           const speedCtrlPanel = document.getElementById('speed-ctrl');
           if (speedCtrlPanel) speedCtrlPanel.style.display = this.isPedestrian ? 'none' : 'flex';
+          
+          // Dynamic Speed Limit Road Sign Governor Badge
+          let slBadge = document.getElementById('speed-limit-badge');
+          if (!slBadge && !this.isPedestrian) {
+            slBadge = document.createElement('div');
+            slBadge.id = 'speed-limit-badge';
+            slBadge.title = 'Speed Governor (Click or press [L] to toggle)';
+            slBadge.style.cssText = 'position:fixed; bottom:24px; right:112px; width:48px; height:48px; border-radius:50%; background:#ffffff; border:4px solid #cc0000; box-shadow:0 4px 16px rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; user-select:none; z-index:9998; transition:transform 0.15s, box-shadow 0.2s; font-family:"Bebas Neue", var(--sans, sans-serif);';
+            slBadge.innerHTML = `<span id="sl-val" style="font-size:20px; font-weight:bold; color:#111; line-height:1;">${speedLimitKmh}</span><span style="font-size:7px; font-weight:800; color:#cc0000; line-height:1; letter-spacing:0.5px;">KM/H</span><div id="sl-gov-tag" style="position:absolute; top:-12px; background:#555; color:#fff; font-size:8px; font-weight:800; padding:1px 5px; border-radius:4px; box-shadow:0 2px 4px rgba(0,0,0,0.4); text-transform:uppercase; letter-spacing:0.5px;">GOV [L]</div>`;
+            slBadge.onclick = () => {
+              if (this.toggleSpeedLimiter) this.toggleSpeedLimiter();
+            };
+            document.body.appendChild(slBadge);
+          }
+          if (slBadge) {
+            slBadge.style.display = this.isPedestrian ? 'none' : 'flex';
+            const slVal = document.getElementById('sl-val');
+            if (slVal) slVal.textContent = speedLimitKmh;
+            const slGov = document.getElementById('sl-gov-tag');
+            if (slGov) {
+              if (this.speedLimiter) {
+                slGov.textContent = '🔒 ON';
+                slGov.style.background = '#00e676';
+                slGov.style.color = '#000';
+                slBadge.style.borderColor = '#00e676';
+                slBadge.style.boxShadow = '0 0 16px rgba(0,230,118,0.8), 0 4px 16px rgba(0,0,0,0.6)';
+              } else {
+                slGov.textContent = 'GOV [L]';
+                slGov.style.background = '#333';
+                slGov.style.color = '#fff';
+                slBadge.style.borderColor = '#cc0000';
+                slBadge.style.boxShadow = '0 4px 16px rgba(0,0,0,0.6)';
+              }
+            }
+          }
+
           // Update speed control HUD badges
           if (!this.isPedestrian && this._updateSpeedCtrlHUD) this._updateSpeedCtrlHUD();
 
           const gspdEl = this.dom['gspd'];
-           if (gspdEl) {
-             gspdEl.textContent = k;
-            // Colour by speed zone — respect level speedLimit if set
-            const speedLimitKmh = this.mapCfg && this.mapCfg.speedLimit ? this.mapCfg.speedLimit : 80;
-            const speedLimit = speedLimitKmh / 3.6;
+          if (gspdEl) {
+            gspdEl.textContent = k;
             let spCol = '#00c851';
-            if (k > speedLimit * 1.2) spCol = '#ff3b30'; // Red: 20%+ over limit
-            else if (k > speedLimit) spCol = '#ff9500'; // Orange: over limit
-            else if (k > speedLimit * 0.8) spCol = '#ffd54a'; // Yellow: approaching limit
-            // Flash red when over speed limit (alternates every 400ms)
-            if (k > speedLimit && Math.floor(Date.now() / 400) % 2 === 0) spCol = '#ff3b30';
+            if (k > speedLimitKmh * 1.15) spCol = '#ff3b30'; // Red: 15%+ over limit
+            else if (k > speedLimitKmh) spCol = '#ff9500';   // Orange: over limit
+            else if (k > speedLimitKmh * 0.85) spCol = '#ffd54a'; // Yellow: approaching limit
+            if (k > speedLimitKmh && Math.floor(Date.now() / 400) % 2 === 0) spCol = '#ff3b30';
             gspdEl.style.fill = spCol;
           }
         const arc = this.dom['garc'];

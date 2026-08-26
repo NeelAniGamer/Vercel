@@ -66,13 +66,20 @@ window.ASSET_MANIFEST = {}
 
 
   M.char_f_a = glb(charKit + 'character-female-a.glb'); M.char_f_b = glb(charKit + 'character-female-b.glb'); M.char_f_c = glb(charKit + 'character-female-c.glb')
+  M.char_f_d = glb(charKit + 'character-female-d.glb'); M.char_f_e = glb(charKit + 'character-female-e.glb'); M.char_f_f = glb(charKit + 'character-female-f.glb')
   M.char_m_a = glb(charKit + 'character-male-a.glb'); M.char_m_b = glb(charKit + 'character-male-b.glb'); M.char_m_c = glb(charKit + 'character-male-c.glb')
+  M.char_m_d = glb(charKit + 'character-male-d.glb'); M.char_m_e = glb(charKit + 'character-male-e.glb'); M.char_m_f = glb(charKit + 'character-male-f.glb')
+  M.char_aid_cane = glb(charKit + 'aid-cane.glb')
+
 
 
   const animPacks = ['survivors','retro','protagonists']
   animPacks.forEach(pack => {
-    const base = 'Models/kenney_animated-characters-' + pack + '/Model/characterMedium.fbx'
-    M['anim_' + pack] = fbx(base)
+    const baseDir = 'Models/kenney_animated-characters-' + pack + '/'
+    M['anim_' + pack] = fbx(baseDir + 'Model/characterMedium.fbx')
+    M['anim_' + pack + '_idle'] = fbx(baseDir + 'Animations/idle.fbx')
+    M['anim_' + pack + '_run'] = fbx(baseDir + 'Animations/run.fbx')
+    M['anim_' + pack + '_jump'] = fbx(baseDir + 'Animations/jump.fbx')
   })
 
 
@@ -230,8 +237,10 @@ window.ASSET_GROUPS = {
 window.CORE_ASSETS = [
   'car','taxi','police','bus','truck','auto','bike',
   'road_straight','road_intersect','road_cross','road_cross_path','road_intersect_path','road_bend','road_crossing','road_roundabout','road_avenue',
-  'char_f_a','char_f_b','char_f_c','char_m_a','char_m_b','char_m_c',
-  'tree_small','tree_large','animal_dog'
+  'char_f_a','char_f_b','char_f_c','char_f_d','char_f_e','char_f_f',
+  'char_m_a','char_m_b','char_m_c','char_m_d','char_m_e','char_m_f',
+  'char_aid_cane',
+  'tree_small','tree_large','animal_dog','animal_cow'
 ]
 
 

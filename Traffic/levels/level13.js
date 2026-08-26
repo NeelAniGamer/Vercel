@@ -29,6 +29,7 @@ window.LVS.push({
   hasRain: true,
   isNight: true,
   startOutside: true,
+  hasPuddles: true,
   tasks: [
     { id: 'use_headlights', text: 'Use headlights to scan puddles', type: 'toggle', target: 'headlights', done: false },
     { id: 'slow_night', text: 'Drive slowly in dark rain', type: 'avoid', target: 'speed_night', done: false },

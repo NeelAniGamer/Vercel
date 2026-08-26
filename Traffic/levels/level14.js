@@ -27,7 +27,10 @@ window.LVS.push({
   scenarioType: 'mixed',
   npcDensity: 'moderate',
   isNight: true,
+  isBridge: false,
+  ground: 0x33691e,
   startOutside: true,
+  hasElderlyCrossing: true,
   tasks: [
     { id: 'dip_headlights', text: 'Dip headlights for oncoming traffic', type: 'toggle', target: 'headlights', done: false },
     { id: 'yield_elderly', text: 'Wait for elderly to cross', type: 'stop', target: 'stationary', done: false },

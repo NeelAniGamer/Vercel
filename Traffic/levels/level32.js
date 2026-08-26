@@ -23,6 +23,8 @@ window.LVS.push({
   scenarioType: 'cars_only',
   npcDensity: 'light',
   startOutside: true,
+  hasHillPhysics: true,
+  hasBlindCorner: true,
   tasks: [
     { id: 'low_gear', text: 'Use low gear uphill', type: 'toggle', target: 'gear', done: false },
     { id: 'honk_bend', text: 'Honk at hairpin bend', type: 'toggle', target: 'honk', done: false },

@@ -7,9 +7,10 @@ window.LVS.push({
   col: '#e74c3c',
   ds: 'In busy Mumbai streets, finding legal parking is a challenge. NPCs routinely double-park and block footpaths.',
   hps: [
-    'School zones have a 20 km/h speed limit — reduce speed well before entering.',
-    'Children may dart out from between parked cars without looking.',
-    'Activate your hazard lights to warn NPCs behind you.'
+    'Look for blue P signs or painted parking zones',
+    'Never park on yellow curbs, bus stops, or near driveways',
+    'After parking, walk to your destination — do not double-park',
+    'Keep 5 metres clear of fire hydrants at all times'
   ],
   law: {
     sec: 'MV Act Section 122',
@@ -25,6 +26,8 @@ window.LVS.push({
   mode: 'practical',
   themeType: 'street_parking',
   startOutside: true,
+  isParkingChallenge: true,
+  parkingType: "street",
   tasks: [
     { id: 'find_spot', text: 'Find legal parking spot', type: 'reach', target: 'parking_spot', done: false },
     { id: 'park_legal', text: 'Park in designated zone', type: 'stop', target: 'parking_zone', done: false },

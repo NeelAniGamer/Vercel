@@ -21,6 +21,8 @@ window.LVS.push({
   mode: 'practical',
   themeType: 'construction',
   startOutside: true,
+  hasConstruction: true,
+  hasFlagman: true,
   tasks: [
     { id: 'slow_zone', text: 'Slow to 20 km/h', type: 'avoid', target: 'speed', done: false },
     { id: 'avoid_workers', text: 'Avoid workers', type: 'avoid', target: 'worker_hit', done: false },

@@ -23,6 +23,7 @@ window.LVS.push({
   scenarioType: 'cars_only',
   npcDensity: 'moderate',
   startOutside: true,
+  isOneWay: true,
   tasks: [
     { id: 'correct_entry', text: 'Enter from correct end', type: 'reach', target: 'one_way_entry', done: false },
     { id: 'follow_flow', text: 'Follow traffic flow', type: 'reach', target: 'one_way_flow', done: false },

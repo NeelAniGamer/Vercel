@@ -541,12 +541,15 @@ window.IndianVehicles = {
       const wMat = new THREE.MeshToonMaterial({ color: 0xffffff })
       body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 3.8), wMat)
       body.position.y = 0.6
+      g.add(body)
+
       roof = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 1.8), gMat)
       roof.position.set(0, 1.3, 0)
-
+      g.add(roof)
 
       const sign = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.4), new THREE.MeshToonMaterial({ color: 0xffd700 }))
       sign.position.set(0, 1.75, 0)
+      g.add(sign)
 
 
       const hood = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 1.0), wMat)
@@ -838,40 +841,34 @@ window.IndianVehicles = {
     }
 
     else if (type === 'tractor') {
-      const tractorMat = new THREE.MeshPhongMaterial({ color: 0x228B22 })
+      const tractorMat = new THREE.MeshToonMaterial({ color: 0x228B22 })
 
-
-      body = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.0, 2.5), tractorMat)
-      body.position.y = 0.9
+      body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 3.2), tractorMat)
+      body.position.y = 0.75
       g.add(body)
 
-
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.5), gMat)
-      cabin.position.set(0, 2.0, -0.3)
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, 1.4), gMat)
+      cabin.position.set(0, 1.6, 0.4)
       g.add(cabin)
 
-
-      const hood = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 1.2), tractorMat)
-      hood.position.set(0, 1.2, -1.5)
+      const hood = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.6, 1.5), tractorMat)
+      hood.position.set(0, 0.95, -0.9)
       g.add(hood)
 
-
-      const exhaust = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.5, 8), new THREE.MeshPhongMaterial({ color: 0x333333 }))
-      exhaust.position.set(0.6, 1.8, -1.0)
+      const exhaust = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.2, 8), new THREE.MeshPhongMaterial({ color: 0x333333 }))
+      exhaust.position.set(0.55, 1.5, -0.6)
       g.add(exhaust)
 
-
-      const w1 = this.buildWheel(1.4)
-      w1.position.set(-0.7, 0.5, 0.8)
-      const w2 = this.buildWheel(1.4)
-      w2.position.set(0.7, 0.5, 0.8)
+      const w1 = this.buildWheel(1.1)
+      w1.position.set(-0.85, 0.5, 0.8)
+      const w2 = this.buildWheel(1.1)
+      w2.position.set(0.85, 0.5, 0.8)
       g.add(w1, w2)
 
-
-      const w3 = this.buildWheel(0.7)
-      w3.position.set(-0.5, 0.35, -1.0)
-      const w4 = this.buildWheel(0.7)
-      w4.position.set(0.5, 0.35, -1.0)
+      const w3 = this.buildWheel(0.75)
+      w3.position.set(-0.75, 0.35, -1.0)
+      const w4 = this.buildWheel(0.75)
+      w4.position.set(0.75, 0.35, -1.0)
       g.add(w3, w4)
     }
 
@@ -927,18 +924,6 @@ window.IndianVehicles = {
     }
 
     g.type = type
-
-
-
-    if (type === 'splendor' || type === 'bike' || type === 'twowheeler' ||
-        type === 'activa' || type === 'scooter' || type === 'cycle') {
-      g.scale.set(0.6, 0.6, 0.6)
-    } else if (type === 'truck' || type === 'eicher') {
-      g.scale.set(1.5, 1.5, 1.5)
-    } else if (type === 'bus' || type === 'msrtc') {
-      g.scale.set(1.7, 1.7, 1.7)
-    }
-
     return g
   }
 }

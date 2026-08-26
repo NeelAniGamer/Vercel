@@ -166,15 +166,25 @@ class TrafficManager {
         return;
       }
 
-      // Anti-gridlock watchdog: track prolonged stops
+      // Anti-gridlock watchdog: track prolonged stops and smoothly un-jam without visible despawning
       if (vehicle.npcAI) {
         const curSpd = vehicle.npcAI.currentSpeed || vehicle.speed || 0;
         if (curSpd < 0.25 && vehicle.npcAI.state !== 'PARK') {
           vehicle._stoppedSeconds = (vehicle._stoppedSeconds || 0) + 0.05;
-          // If stopped in an intersection jam for > 6s, force despawn/respawn to dissolve pileups
-          if (vehicle._stoppedSeconds > 6.0) {
+          // If far away from player (>90m) and stuck for >15s, quietly recycle
+          if (dist > 90 && vehicle._stoppedSeconds > 15.0) {
             vehicle._stoppedSeconds = 0;
             this._despawnVehicle(vehicle);
+          } else if (vehicle._stoppedSeconds > 4.0) {
+            // Near player: smoothly un-stick by nudging lane and restoring flow
+            vehicle.npcAI.state = 'FOLLOW_LANE';
+            vehicle.npcAI.waitTimer = 0;
+            vehicle.npcAI._committedToIntersection = true;
+            vehicle.npcAI.desiredSpeed = Math.max(vehicle.npcAI.desiredSpeed || 0, 5.0);
+            vehicle.npcAI.currentSpeed = Math.max(vehicle.npcAI.currentSpeed || 0, 3.0);
+            if (vehicle._stoppedSeconds > 8.0) {
+              vehicle._stoppedSeconds = 0;
+            }
           }
         } else {
           vehicle._stoppedSeconds = 0;
@@ -423,13 +433,19 @@ class TrafficManager {
 
   _createVehicleMesh(type, color) {
     let mesh = null;
+    const colHex = (typeof color === 'number') ? color : 0x3498db;
     try {
-      if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
-        mesh = window.IndianVehicles.buildVehicle(type, color);
-      } else if (this.game && typeof this.game._makeNPC === 'function') {
-        mesh = this.game._makeNPC(type, color);
-      } else if (typeof window._buildVehicle === 'function') {
-        mesh = window._buildVehicle(type, color);
+      if (typeof window._buildVehicle === 'function') {
+        mesh = window._buildVehicle(type, colHex);
+      }
+      if (!mesh && typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+        mesh = window.IndianVehicles.buildVehicle(type, colHex);
+      }
+      if (!mesh && this.game && typeof this.game._makeNPC === 'function') {
+        mesh = this.game._makeNPC(type, colHex);
+      }
+      if (!mesh && typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+        mesh = window.IndianVehicles.buildVehicle('car', colHex);
       }
     } catch (e) {
       console.warn('[TrafficManager] vehicle mesh factory failed for "' + type + '"', e);
@@ -437,7 +453,26 @@ class TrafficManager {
 
     if (!mesh) {
       mesh = new THREE.Group();
-      mesh.add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 3.5), new THREE.MeshToonMaterial({ color: color })));
+      const bMat = new THREE.MeshToonMaterial({ color: colHex });
+      const gMat = new THREE.MeshToonMaterial({ color: 0x1e293b, transparent: true, opacity: 0.8 });
+      const wMat = new THREE.MeshToonMaterial({ color: 0x111111 });
+
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.55, 3.6), bMat);
+      body.position.y = 0.45;
+      mesh.add(body);
+
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.48, 1.8), gMat);
+      cabin.position.set(0, 0.88, -0.1);
+      mesh.add(cabin);
+
+      ;[-0.82, 0.82].forEach(x => {
+        ;[-1.1, 1.1].forEach(z => {
+          const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.22, 10), wMat);
+          wh.rotation.z = Math.PI / 2;
+          wh.position.set(x, 0.32, z);
+          mesh.add(wh);
+        });
+      });
     }
 
     const isHeavy = type === 'bus' || type === 'truck';
@@ -548,7 +583,7 @@ class TrafficManager {
     const offsets = edge.getLaneOffsets();
     const laneCount = Math.max(1, edge.lanes || 1);
     const lane = Math.floor(Math.random() * laneCount);
-    const dirBase = startNode === edge.startNode ? laneCount : 0;
+    const dirBase = startNode === edge.startNode ? 0 : laneCount;
     const offset = offsets[dirBase + lane] !== undefined ? offsets[dirBase + lane] : 0;
 
     pos.addScaledVector(right, offset);

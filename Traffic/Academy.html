@@ -5402,6 +5402,376 @@
       #mobile-controls:not(.on) {
         display: none !important;
       }
+
+      /* ═══════════════════════════════════════════════════════════════ */
+      /* PULL TO REFRESH INDICATOR                                      */
+      /* ═══════════════════════════════════════════════════════════════ */
+      #pull-to-refresh-indicator {
+        position: fixed;
+        top: -80px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100000;
+        background: var(--card, #0f172a);
+        border: 1.5px solid var(--border, #26354a);
+        border-radius: 30px;
+        padding: 8px 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        pointer-events: none;
+        transition: transform 0.2s ease, opacity 0.2s ease, top 0.2s ease;
+        opacity: 0;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text, #f8fafc);
+      }
+      #pull-to-refresh-indicator.ptr-visible {
+        opacity: 1;
+      }
+      #pull-to-refresh-indicator.ptr-refreshing {
+        top: calc(env(safe-area-inset-top, 0px) + 20px);
+        opacity: 1;
+      }
+      .ptr-icon-wrap {
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .ptr-arrow {
+        width: 18px;
+        height: 18px;
+        transition: transform 0.2s ease;
+        color: var(--signal, #f2b84b);
+      }
+      .ptr-arrow.ptr-flip {
+        transform: rotate(180deg);
+        color: #10b981;
+      }
+      .ptr-spinner {
+        display: none;
+        width: 18px;
+        height: 18px;
+        border: 2.5px solid rgba(242, 184, 75, 0.25);
+        border-top-color: var(--signal, #f2b84b);
+        border-radius: 50%;
+        animation: ptrSpin 0.7s linear infinite;
+      }
+      #pull-to-refresh-indicator.ptr-refreshing .ptr-spinner {
+        display: block;
+      }
+      #pull-to-refresh-indicator.ptr-refreshing .ptr-arrow {
+        display: none;
+      }
+      @keyframes ptrSpin { to { transform: rotate(360deg); } }
+
+      /* ═══════════════════════════════════════════════════════════════ */
+      /* MASTER INTERACTIVE ACADEMY & SIMULATOR TUTORIAL OVERLAY        */
+      /* ═══════════════════════════════════════════════════════════════ */
+      #academy-tutorial-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100010;
+        background: rgba(4, 7, 15, 0.88);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(10px, 2.5vw, 24px);
+        box-sizing: border-box;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+      #academy-tutorial-overlay.on {
+        display: flex;
+        animation: tutFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes tutFadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+      .tut-modal-card {
+        background: linear-gradient(145deg, #0d131f, #151d2d);
+        border: 1.5px solid rgba(242, 184, 75, 0.35);
+        border-radius: 24px;
+        width: 100%;
+        max-width: 980px;
+        max-height: min(92vh, 860px);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(242, 184, 75, 0.12);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+      }
+      .tut-header {
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(13, 19, 31, 0.9);
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .tut-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .tut-badge {
+        background: linear-gradient(135deg, #f2b84b, #d97706);
+        color: #070a14;
+        font-size: 0.72rem;
+        font-weight: 900;
+        padding: 4px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .tut-h1 {
+        font-family: 'Lora', serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin: 0;
+      }
+      .tut-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .tut-skip-btn {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #94a3b8;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .tut-skip-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: #ef4444;
+        color: #fca5a5;
+      }
+      .tut-progress-bar-container {
+        width: 100%;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        position: relative;
+      }
+      .tut-progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f2b84b, #38bdf8);
+        transition: width 0.3s ease;
+      }
+      .tut-steps-pills {
+        display: flex;
+        gap: 6px;
+        padding: 10px 24px;
+        background: rgba(8, 12, 20, 0.6);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .tut-steps-pills::-webkit-scrollbar { display: none; }
+      .tut-step-pill {
+        padding: 5px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.04);
+        color: #94a3b8;
+        font-size: 0.74rem;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s ease;
+      }
+      .tut-step-pill.active {
+        background: rgba(242, 184, 75, 0.15);
+        border-color: rgba(242, 184, 75, 0.45);
+        color: #f2b84b;
+      }
+      .tut-step-pill.completed {
+        border-color: rgba(16, 185, 129, 0.35);
+        color: #86efac;
+      }
+      .tut-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .tut-slide {
+        display: none;
+        flex-direction: column;
+        gap: 20px;
+        animation: slideFade 0.25s ease-out;
+      }
+      .tut-slide.active {
+        display: flex;
+      }
+      @keyframes slideFade {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .tut-visual-card {
+        background: #080c14;
+        border: 1.5px solid #1f2a3c;
+        border-radius: 16px;
+        padding: 16px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+      }
+      .tut-annotated-wrap {
+        position: relative;
+        width: 100%;
+        border-radius: 12px;
+        background: #0f172a;
+        border: 1px solid #26354a;
+        overflow: hidden;
+        padding: 16px;
+        box-sizing: border-box;
+      }
+      .tut-pin {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #f2b84b;
+        color: #070a14;
+        font-weight: 900;
+        font-size: 0.82rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 12px rgba(242, 184, 75, 0.85), 0 2px 6px rgba(0,0,0,0.5);
+        z-index: 10;
+        cursor: pointer;
+        animation: pinBounce 2s infinite ease-in-out;
+      }
+      @keyframes pinBounce {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.15); box-shadow: 0 0 18px rgba(242, 184, 75, 1); }
+      }
+      .tut-legend-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 12px;
+      }
+      .tut-legend-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 12px 14px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        transition: all 0.15s ease;
+      }
+      .tut-legend-item:hover {
+        background: rgba(242, 184, 75, 0.08);
+        border-color: rgba(242, 184, 75, 0.3);
+        transform: translateY(-1px);
+      }
+      .tut-legend-num {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #f2b84b;
+        color: #070a14;
+        font-size: 0.76rem;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .tut-legend-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .tut-legend-title {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #f8fafc;
+      }
+      .tut-legend-desc {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        line-height: 1.45;
+      }
+      .tut-footer {
+        padding: 16px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(13, 19, 31, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .tut-dots {
+        display: flex;
+        gap: 6px;
+      }
+      .tut-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: all 0.2s ease;
+      }
+      .tut-dot.active {
+        width: 20px;
+        border-radius: 4px;
+        background: #f2b84b;
+      }
+      .tut-nav-btns {
+        display: flex;
+        gap: 10px;
+      }
+      .tut-btn-prev, .tut-btn-next {
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+      }
+      .tut-btn-prev {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #e2e8f0;
+      }
+      .tut-btn-prev:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .tut-btn-next {
+        background: linear-gradient(135deg, #f2b84b, #d97706);
+        border: none;
+        color: #070a14;
+        box-shadow: 0 4px 14px rgba(242, 184, 75, 0.4);
+      }
+      .tut-btn-next:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+      }
     </style>
 
     <style>
@@ -5551,6 +5921,17 @@
   </head>
 
   <body class="lm">
+    <!-- Pull To Refresh Gesture Visual Indicator -->
+    <div id="pull-to-refresh-indicator">
+      <div class="ptr-icon-wrap">
+        <svg class="ptr-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+        <div class="ptr-spinner"></div>
+      </div>
+      <span class="ptr-text" id="ptr-text">Pull down to refresh...</span>
+    </div>
+
     <div
       id="loading-screen"
       style="
@@ -5687,6 +6068,11 @@
         </div>
 
         <div class="start-controls">
+          <button class="top-btn guide-top-btn" onclick="openAcademyTutorial()" title="Interactive Academy Guide & Tutorial" style="background:rgba(242, 184, 75, 0.14); border-color:rgba(242, 184, 75, 0.4); color:#f2b84b;">
+            <span style="font-size:1.15rem;">📖</span>
+            <span class="btn-lbl">Guide</span>
+          </button>
+
           <button class="top-btn settings-top-btn" id="top-game-settings-btn" onclick="openSettingsModal()" title="Game Settings">
             <span style="font-size:1.15rem;">⚙️</span>
             <span class="btn-lbl">Settings</span>
@@ -5795,6 +6181,11 @@
           </div>
 
           <div class="tb-right">
+            <button class="tb-btn tb-btn-guide" onclick="openAcademyTutorial()" title="Interactive Academy Guide & Tutorial" style="background:rgba(242, 184, 75, 0.12); border-color:rgba(242, 184, 75, 0.35); color:#f2b84b;">
+              <span>📖</span>
+              <span class="tb-btn-lbl">Guide</span>
+            </button>
+
             <button class="tb-btn tb-btn-settings" id="levels-game-settings-btn" onclick="openSettingsModal()" title="Game Settings">
               <span>⚙️</span>
               <span class="tb-btn-lbl">Settings</span>
@@ -6306,13 +6697,13 @@
 
       
     </script>
-    <script src="wallet-history.js?v=25"></script>
-    <script src="task-manager.js?v=25"></script>
-    <script src="ui.js?v=25"></script>
-    <script src="npc-ai.js?v=25"></script>
-    <script src="traffic-manager.js?v=25"></script>
-    <script src="rule-breaker-profiles.js?v=25"></script>
-    <script src="scenario2d.js?v=25"></script>
+    <script src="wallet-history.js?v=20260825_5"></script>
+    <script src="task-manager.js?v=20260825_5"></script>
+    <script src="ui.js?v=20260825_5"></script>
+    <script src="npc-ai.js?v=20260825_5"></script>
+    <script src="traffic-manager.js?v=20260825_5"></script>
+    <script src="rule-breaker-profiles.js?v=20260825_5"></script>
+    <script src="scenario2d.js?v=20260825_5"></script>
     <script>
       
       function filterLevels() {
@@ -7654,6 +8045,9 @@ function _onbComplete() {
 
         
         <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+          <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left; background:rgba(242,184,75,0.1); border-color:rgba(242,184,75,0.3); color:#f2b84b;" onclick="document.getElementById('game-settings-modal').style.display='none'; openAcademyTutorial();">
+            📖 Open Interactive Guide / Tutorial
+          </button>
           <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left;" onclick="document.getElementById('game-settings-modal').style.display='none'; if(window.openCustomize) window.openCustomize();">
             🎨 Customize Character
           </button>
@@ -7878,6 +8272,613 @@ function _onbComplete() {
       <span style="color: rgba(242,184,75,0.5);">Tip:</span> Stop at red. Yield to pedestrians. Proceed on green.
     </div>
   </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- MASTER ACADEMY & SIMULATOR INTERACTIVE TUTORIAL OVERLAY        -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="academy-tutorial-overlay">
+    <div class="tut-modal-card">
+      
+      <!-- Tutorial Header -->
+      <div class="tut-header">
+        <div class="tut-title-wrap">
+          <span class="tut-badge" id="tut-step-badge">Step 1 of 8</span>
+          <h2 class="tut-h1" id="tut-step-h1">Academy Hub & Controls</h2>
+        </div>
+        <div class="tut-header-actions">
+          <button class="tut-skip-btn" onclick="skipAcademyTutorial()">✕ Skip Tutorial</button>
+        </div>
+      </div>
+
+      <!-- Tutorial Progress Bar -->
+      <div class="tut-progress-bar-container">
+        <div class="tut-progress-bar-fill" id="tut-progress-fill" style="width: 12.5%;"></div>
+      </div>
+
+      <!-- Step Navigation Pills -->
+      <div class="tut-steps-pills" id="tut-steps-pills">
+        <button class="tut-step-pill active" onclick="selectTutorialStep(0)">1. Academy Hub</button>
+        <button class="tut-step-pill" onclick="selectTutorialStep(1)">2. Curriculum (52+)</button>
+        <button class="tut-step-pill" onclick="selectTutorialStep(2)">3. Briefing & Modes</button>
+        <button class="tut-step-pill" onclick="selectTutorialStep(3)">4. Cockpit & HUD</button>
+        <button class="tut-step-pill" onclick="selectTutorialStep(4)">5. Compliance Quizzes</button>
+        <button class="tut-step-pill" onclick="selectTutorialStep(5)">6. Profile & Badges</button>
+        <button class="tut-step-pill" onclick="selectTutorialStep(6)">7. Official Certificate</button>
+        <button class="tut-step-pill" onclick="selectTutorialStep(7)">8. Gestures & Refresh</button>
+      </div>
+
+      <!-- Tutorial Body Slides -->
+      <div class="tut-body" id="tut-slides-container">
+
+        <!-- SLIDE 1: Academy Hub & Top Bar -->
+        <div class="tut-slide active" data-step="0">
+          <div class="tut-visual-card">
+            <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
+              <img src="tut_1_hub.png" alt="Academy Hub Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <div class="tut-pin" style="top:27%; left:67%;" title="Day/Night Theme Toggle">1</div>
+              <div class="tut-pin" style="top:27%; left:62%;" title="Game Settings">2</div>
+              <div class="tut-pin" style="top:27%; left:72%;" title="Account & Cloud Sync">3</div>
+              <div class="tut-pin" style="top:44%; left:50%; transform:translateX(-50%);" title="Official Partner Badges">4</div>
+              <div class="tut-pin" style="top:64%; left:50%; transform:translateX(-50%);" title="Get Started Button">5</div>
+            </div>
+          </div>
+          <div class="tut-legend-grid">
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">1</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Day/Night Horizon Toggle</span>
+                <span class="tut-legend-desc">Click the animated sun & skyline orb to toggle between daylight learning mode and nighttime driving mode.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">2</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Settings & Audio Controls</span>
+                <span class="tut-legend-desc">Configure sound FX volume, ambient city traffic audio, gyroscope calibration, and graphics quality presets.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">3</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Account & Cloud Sync</span>
+                <span class="tut-legend-desc">Sign in with Google or Email via Supabase to safely persist completed lessons, reward tokens, and certificates.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">4</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Police & NGO Partner Badges</span>
+                <span class="tut-legend-desc">Curriculum co-created with Mumbai Traffic Police and Sneh Asha Foundation to reflect authentic Indian traffic rules.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">5</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Enter Academy & APK Download</span>
+                <span class="tut-legend-desc">Tap 'Get Started' to explore all 52+ training modules or download the dedicated Android APK for offline practice.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2: 52+ Modules Browser -->
+        <div class="tut-slide" data-step="1">
+          <div class="tut-visual-card">
+            <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
+              <img src="tut_2_curriculum.png" alt="Curriculum 52+ Modules Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <div class="tut-pin" style="top:3%; left:50%; transform:translateX(-50%);" title="Search Bar">1</div>
+              <div class="tut-pin" style="top:11%; left:20%;" title="Standard & Grade Selector">2</div>
+              <div class="tut-pin" style="top:45%; left:30%;" title="Module Cards & Difficulty">3</div>
+              <div class="tut-pin" style="top:16%; left:50%; transform:translateX(-50%);" title="Category Filter Chips">4</div>
+              <div class="tut-pin" style="top:3%; right:5%;" title="Road Map View Toggle">5</div>
+            </div>
+          </div>
+          <div class="tut-legend-grid">
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">1</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Instant Keyword Search</span>
+                <span class="tut-legend-desc">Type any topic or shortcut (press <kbd style="background:#1e293b; padding:1px 5px; border-radius:4px; font-size:0.7rem;">/</kbd>) to instantly find matching road scenarios.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">2</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Grade & Standard Filter</span>
+                <span class="tut-legend-desc">Adapts scenarios and legal complexity from Primary School (Std 1–4) up to Secondary School (Std 5–10).</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">3</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Module Card Anatomy</span>
+                <span class="tut-legend-desc">Cards indicate difficulty rating, title, road location, and completion state (Locked 🔒, Active ⏳, or Completed ✅).</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">4</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Category Filter Pills</span>
+                <span class="tut-legend-desc">Quickly filter by specific categories like Traffic Lights, Pedestrian Safety, Emergency Vehicles, and Parking.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">5</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">2D Connected Road Map</span>
+                <span class="tut-legend-desc">Switch from grid view to Mumbai's interactive connected road graph to trace your driving journey across the city!</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 3: Lesson Briefing & 4 Modes -->
+        <div class="tut-slide" data-step="2">
+          <div class="tut-visual-card">
+            <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
+              <img src="tut_3_briefing.png" alt="Lesson Briefing Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <div class="tut-pin" style="top:12%; left:22%;" title="Learn Mode Tab">1</div>
+              <div class="tut-pin" style="top:12%; left:40%;" title="Practice Mode Tab">2</div>
+              <div class="tut-pin" style="top:12%; left:58%;" title="Exam Mode Tab">3</div>
+              <div class="tut-pin" style="top:12%; left:76%;" title="Chaos Mode Tab">4</div>
+              <div class="tut-pin" style="top:42%; left:50%; transform:translateX(-50%);" title="Scenario Preview Canvas & Telemetry">5</div>
+            </div>
+          </div>
+          <div class="tut-legend-grid">
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">1</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">📖 Learn Mode</span>
+                <span class="tut-legend-desc">Study the official traffic rule syllabus, fines, and legal sections with interactive audio voiceover.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">2</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">🚗 Practice Mode</span>
+                <span class="tut-legend-desc">Hands-on guided driving simulator scenario with instructor assistance and zero penalties.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">3</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">📝 Exam Mode</span>
+                <span class="tut-legend-desc">Official compliance evaluation under strict time limits. Violations issue e-challans and reduce passing score!</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">4</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">🌪️ Chaos Mode</span>
+                <span class="tut-legend-desc">Extreme Mumbai driving challenges: aggressive taxis, jaywalkers, potholed roads, and sudden obstacles.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">5</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Live 2.5D Scenario Preview</span>
+                <span class="tut-legend-desc">Preview vehicle positioning, signal cycle, and mission objectives before starting the scenario.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 4: 3D Driving Simulator Cockpit & HUD -->
+        <div class="tut-slide" data-step="3">
+          <div class="tut-visual-card">
+            <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
+              <img src="tut_4_simulator.png" alt="3D Driving Simulator Real Cockpit HUD" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <div class="tut-pin" style="top:5%; left:6%;" title="Player Dashboard & Health">1</div>
+              <div class="tut-pin" style="top:5%; left:50%; transform:translateX(-50%);" title="Signal HUD Lamp & Countdown">2</div>
+              <div class="tut-pin" style="top:5%; right:6%;" title="Objectives & Tasks Stack">3</div>
+              <div class="tut-pin" style="top:22%; right:6%;" title="Consolidated E-Challan Box (Click to View History)">4</div>
+              <div class="tut-pin" style="bottom:18%; right:6%;" title="Cockpit Cluster & P-R-N-D Gears">5</div>
+              <div class="tut-pin" style="bottom:4%; right:6%;" title="Civic Controls Bar">6</div>
+              <div class="tut-pin" style="top:50%; left:50%; transform:translate(-50%, -50%);" title="Press [F] Enter Vehicle Prompt">7</div>
+              <div class="tut-pin" style="bottom:6%; left:6%;" title="Driving Controls (WASD / Touch Pedals)">8</div>
+            </div>
+          </div>
+          <div class="tut-legend-grid">
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">1</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Player HUD Card</span>
+                <span class="tut-legend-desc">Monitors score, timer, earned wallet ₹, checkpoint progress, and vehicle Eco health.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">2</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Traffic Signal HUD</span>
+                <span class="tut-legend-desc">Shows signal state, phase countdown, and junction distance. Red light jump = immediate challan!</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">3</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Objective & Task Stack</span>
+                <span class="tut-legend-desc">Cleanly auto-flowing stack with zero overlapping elements to keep your mission checklist crystal clear.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">4</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Consolidated E-Challan Box</span>
+                <span class="tut-legend-desc">All fines consolidate in one compact alert badge. Click it anytime to open the full <strong>Violation History Modal</strong>!</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">5</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Unified Cockpit & P R N D</span>
+                <span class="tut-legend-desc">Integrated pod above civic controls. Select Drive Modes (ECO/CITY/SPORT), cruise control, and gears with no clipped buttons.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">6</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Bottom Civic Controls Bar</span>
+                <span class="tut-legend-desc">One-click buttons for Seatbelt (<kbd>B</kbd>), Left/Right Indicators (<kbd>Q</kbd>/<kbd>E</kbd>), Phone (<kbd>V</kbd>), Gyro, and Kid Mode.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">7</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Glowing [F] Enter Vehicle Prompt</span>
+                <span class="tut-legend-desc">Pulsing gold glassmorphic prompt when near your car or bike. Press <kbd>F</kbd> on keyboard or tap button on mobile.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">8</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Controls & Physics</span>
+                <span class="tut-legend-desc"><kbd>W</kbd>/<kbd>S</kbd> for Throttle/Reverse, <kbd>A</kbd>/<kbd>D</kbd> for Steering, <kbd>Space</kbd> for Handbrake, <kbd>L</kbd> for Speed Governor.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 5: Compliance Quizzes & Scoring -->
+        <div class="tut-slide" data-step="4">
+          <div class="tut-visual-card">
+            <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
+              <img src="tut_5_quiz.png" alt="Compliance Quiz Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <div class="tut-pin" style="top:18%; left:50%; transform:translateX(-50%);" title="Traffic Situation Question">1</div>
+              <div class="tut-pin" style="top:48%; left:50%; transform:translateX(-50%);" title="Interactive Option Choices">2</div>
+              <div class="tut-pin" style="top:78%; left:50%; transform:translateX(-50%);" title="MV Act Citations & Fines">3</div>
+            </div>
+          </div>
+          <div class="tut-legend-grid">
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">1</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Scenario Context & Questions</span>
+                <span class="tut-legend-desc">Real junction situations formulated by Mumbai Police testing judgment, right-of-way, and speed sense.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">2</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Instant Interactive Feedback</span>
+                <span class="tut-legend-desc">Compliant options illuminate green with points; unlawful choices highlight red with fine details.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">3</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">MV Act Legal Citations</span>
+                <span class="tut-legend-desc">Every explanation quotes the Motor Vehicles Act 2019 section numbers and official fine penalties.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 6: Driver Profile & Badges -->
+        <div class="tut-slide" data-step="5">
+          <div class="tut-visual-card">
+            <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
+              <img src="tut_6_profile.png" alt="Driver Profile & Badges Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <div class="tut-pin" style="top:22%; left:50%; transform:translateX(-50%);" title="Clean Distance & Fines Saved Stats">1</div>
+              <div class="tut-pin" style="top:58%; left:50%; transform:translateX(-50%);" title="12 Unlockable Achievement Badges">2</div>
+            </div>
+          </div>
+          <div class="tut-legend-grid">
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">1</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Driver Statistics & Fines Saved</span>
+                <span class="tut-legend-desc">Live calculation of your accident-free distance, tokens earned, and real monetary fines avoided.</span>
+              </div>
+            </div>
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">2</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">12 Unlockable Achievement Badges</span>
+                <span class="tut-legend-desc">Earn prestigious badges as you master challenging scenarios, night driving, and monsoon safety.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 7: Official Certificate & QR -->
+        <div class="tut-slide" data-step="6">
+          <div class="tut-visual-card">
+            <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
+              <img src="tut_7_certificate.png" alt="Official Police Certificate Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <div class="tut-pin" style="top:78%; right:14%;" title="Joint Commissioner of Police Seal">1</div>
+              <div class="tut-pin" style="top:78%; left:14%;" title="Unique Verification Reference ID & QR">2</div>
+              <div class="tut-pin" style="top:8%; right:10%;" title="Download Official PDF">3</div>
+            </div>
+          </div>
+          <div class="tut-legend-grid">
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">1</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Official Verification & High-Res PDF</span>
+                <span class="tut-legend-desc">Completing the curriculum generates an authorized digital certificate with cloud QR code & instant PDF download!</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 8: Gestures & Pull-To-Refresh -->
+        <div class="tut-slide" data-step="7">
+          <div class="tut-visual-card">
+            <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
+              <img src="tut_8_mobile.png" alt="Mobile & Pull to Refresh Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <div class="tut-pin" style="top:6%; left:50%; transform:translateX(-50%);" title="Pull Down Gesture Indicator">1</div>
+            </div>
+          </div>
+          <div class="tut-legend-grid">
+            <div class="tut-legend-item">
+              <span class="tut-legend-num">1</span>
+              <div class="tut-legend-content">
+                <span class="tut-legend-title">Pull-To-Refresh Gesture</span>
+                <span class="tut-legend-desc">Touch and drag downwards from the top of the screen on mobile or desktop to refresh all Academy data in real-time.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tutorial Footer -->
+      <div class="tut-footer">
+        <div class="tut-dots" id="tut-dots">
+          <div class="tut-dot active"></div>
+          <div class="tut-dot"></div>
+          <div class="tut-dot"></div>
+          <div class="tut-dot"></div>
+          <div class="tut-dot"></div>
+          <div class="tut-dot"></div>
+          <div class="tut-dot"></div>
+          <div class="tut-dot"></div>
+        </div>
+        <div class="tut-nav-btns">
+          <button class="tut-btn-prev" id="tut-prev-btn" onclick="prevTutorialStep()" style="display: none;">← Previous</button>
+          <button class="tut-btn-next" id="tut-next-btn" onclick="nextTutorialStep()">Next Step &rarr;</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tutorial Engine & Pull-to-Refresh Controller Script -->
+  <script>
+    (function() {
+      let currentTutorialStep = 0;
+      const totalTutorialSteps = 8;
+      const stepTitles = [
+        "Academy Hub & Controls",
+        "Curriculum & 52+ Modules",
+        "Lesson Briefing & 4 Modes",
+        "3D Cockpit Simulator HUD",
+        "Compliance Quizzes & Law",
+        "Driver Profile & Badges",
+        "Official Police Certificate",
+        "Gestures & Pull-To-Refresh"
+      ];
+
+      window.openAcademyTutorial = function(stepIndex = 0) {
+        const overlay = document.getElementById('academy-tutorial-overlay');
+        if (!overlay) return;
+        currentTutorialStep = Math.max(0, Math.min(totalTutorialSteps - 1, stepIndex));
+        renderTutorialStep();
+        overlay.classList.add('on');
+      };
+
+      window.closeAcademyTutorial = function() {
+        const overlay = document.getElementById('academy-tutorial-overlay');
+        if (overlay) overlay.classList.remove('on');
+        localStorage.setItem('traffic_academy_tutorial_seen', 'true');
+      };
+
+      window.skipAcademyTutorial = function() {
+        closeAcademyTutorial();
+      };
+
+      window.selectTutorialStep = function(stepIndex) {
+        currentTutorialStep = stepIndex;
+        renderTutorialStep();
+      };
+
+      window.nextTutorialStep = function() {
+        if (currentTutorialStep < totalTutorialSteps - 1) {
+          currentTutorialStep++;
+          renderTutorialStep();
+        } else {
+          closeAcademyTutorial();
+        }
+      };
+
+      window.prevTutorialStep = function() {
+        if (currentTutorialStep > 0) {
+          currentTutorialStep--;
+          renderTutorialStep();
+        }
+      };
+
+      function renderTutorialStep() {
+        // Update badge & title
+        const badge = document.getElementById('tut-step-badge');
+        const h1 = document.getElementById('tut-step-h1');
+        if (badge) badge.textContent = `Step ${currentTutorialStep + 1} of ${totalTutorialSteps}`;
+        if (h1) h1.textContent = stepTitles[currentTutorialStep];
+
+        // Update progress bar
+        const fill = document.getElementById('tut-progress-fill');
+        if (fill) fill.style.width = `${((currentTutorialStep + 1) / totalTutorialSteps) * 100}%`;
+
+        // Update step pills
+        const pills = document.querySelectorAll('.tut-step-pill');
+        pills.forEach((p, idx) => {
+          p.classList.toggle('active', idx === currentTutorialStep);
+          p.classList.toggle('completed', idx < currentTutorialStep);
+        });
+
+        // Update slides
+        const slides = document.querySelectorAll('.tut-slide');
+        slides.forEach((s, idx) => {
+          s.classList.toggle('active', idx === currentTutorialStep);
+        });
+
+        // Update dots
+        const dots = document.querySelectorAll('.tut-dot');
+        dots.forEach((d, idx) => {
+          d.classList.toggle('active', idx === currentTutorialStep);
+        });
+
+        // Update prev / next buttons
+        const prevBtn = document.getElementById('tut-prev-btn');
+        const nextBtn = document.getElementById('tut-next-btn');
+        if (prevBtn) prevBtn.style.display = currentTutorialStep > 0 ? 'inline-flex' : 'none';
+        if (nextBtn) {
+          if (currentTutorialStep === totalTutorialSteps - 1) {
+            nextBtn.innerHTML = 'Finish & Start Driving 🎉';
+            nextBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+          } else {
+            nextBtn.innerHTML = 'Next Step &rarr;';
+            nextBtn.style.background = 'linear-gradient(135deg, #f2b84b, #d97706)';
+          }
+        }
+      }
+
+      // Keyboard navigation for tutorial
+      document.addEventListener('keydown', function(e) {
+        const overlay = document.getElementById('academy-tutorial-overlay');
+        if (!overlay || !overlay.classList.contains('on')) return;
+        if (e.key === 'ArrowRight' || e.key === 'Enter') {
+          nextTutorialStep();
+        } else if (e.key === 'ArrowLeft') {
+          prevTutorialStep();
+        } else if (e.key === 'Escape') {
+          closeAcademyTutorial();
+        }
+      });
+
+      // Auto-launch check for new users or signup redirect
+      document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isSignup = urlParams.get('signup') === '1' || sessionStorage.getItem('just_signed_up') === 'true';
+        const isTutorialRequested = urlParams.get('tutorial') === '1';
+        const hasSeenTutorial = localStorage.getItem('traffic_academy_tutorial_seen') === 'true';
+
+        if (isSignup || isTutorialRequested || !hasSeenTutorial) {
+          sessionStorage.removeItem('just_signed_up');
+          setTimeout(() => {
+            openAcademyTutorial(0);
+          }, 800);
+        }
+      });
+
+      // ─── PULL TO REFRESH ENGINE ───
+      function initPullToRefresh() {
+        const ptr = document.getElementById('pull-to-refresh-indicator');
+        const arrow = ptr ? ptr.querySelector('.ptr-arrow') : null;
+        const ptrText = document.getElementById('ptr-text');
+        if (!ptr) return;
+
+        let startY = 0;
+        let currentY = 0;
+        let isPulling = false;
+        let isRefreshing = false;
+        const threshold = 70;
+
+        function onTouchStart(e) {
+          if (window.scrollY > 5 || isRefreshing) return;
+          startY = e.touches ? e.touches[0].clientY : e.clientY;
+          isPulling = true;
+        }
+
+        function onTouchMove(e) {
+          if (!isPulling || isRefreshing) return;
+          currentY = e.touches ? e.touches[0].clientY : e.clientY;
+          const diff = currentY - startY;
+
+          if (diff > 0 && window.scrollY <= 5) {
+            const pullDist = Math.min(diff * 0.45, 95);
+            ptr.classList.add('ptr-visible');
+            ptr.style.top = `calc(env(safe-area-inset-top, 0px) + ${Math.max(-80, -80 + pullDist * 1.2)}px)`;
+
+            if (pullDist >= threshold * 0.45) {
+              if (arrow) arrow.classList.add('ptr-flip');
+              if (ptrText) ptrText.textContent = 'Release to refresh...';
+            } else {
+              if (arrow) arrow.classList.remove('ptr-flip');
+              if (ptrText) ptrText.textContent = 'Pull down to refresh...';
+            }
+          }
+        }
+
+        function onTouchEnd() {
+          if (!isPulling || isRefreshing) return;
+          isPulling = false;
+          const diff = currentY - startY;
+
+          if (diff * 0.45 >= threshold * 0.45 && window.scrollY <= 5) {
+            triggerRefresh();
+          } else {
+            resetPTR();
+          }
+        }
+
+        function triggerRefresh() {
+          isRefreshing = true;
+          ptr.classList.add('ptr-refreshing');
+          if (ptrText) ptrText.textContent = 'Syncing Academy Data...';
+
+          setTimeout(() => {
+            // Re-sync UI state
+            if (window.ui && typeof window.ui.renderLevels === 'function') window.ui.renderLevels();
+            if (typeof updateAccountButton === 'function') updateAccountButton();
+            if (ptrText) ptrText.textContent = 'Up to Date! ✅';
+
+            setTimeout(() => {
+              resetPTR();
+              isRefreshing = false;
+            }, 600);
+          }, 800);
+        }
+
+        function resetPTR() {
+          ptr.classList.remove('ptr-visible', 'ptr-refreshing');
+          ptr.style.top = '-80px';
+          if (arrow) arrow.classList.remove('ptr-flip');
+          if (ptrText) ptrText.textContent = 'Pull down to refresh...';
+        }
+
+        window.addEventListener('touchstart', onTouchStart, { passive: true });
+        window.addEventListener('touchmove', onTouchMove, { passive: true });
+        window.addEventListener('touchend', onTouchEnd, { passive: true });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPullToRefresh);
+      } else {
+        initPullToRefresh();
+      }
+    })();
+  </script>
 
 </body>
 </html>

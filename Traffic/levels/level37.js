@@ -22,8 +22,11 @@ window.LVS.push({
   themeType: 'hospital_quiet',
   scenarioType: 'cars_only',
   npcDensity: 'light',
-  hasHospital: true,
   startOutside: true,
+  hasHospital: true,
+  hasSilentZone: true,
+  silentZ1: -50,
+  silentZ2: 30,
   tasks: [
     { id: 'no_honk', text: 'No honking in zone', type: 'avoid', target: 'honk', done: false },
     { id: 'slow_zone', text: 'Drive slowly', type: 'avoid', target: 'speed', done: false },

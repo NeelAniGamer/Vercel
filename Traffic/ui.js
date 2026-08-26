@@ -12,7 +12,7 @@ function toast(msg, col = '#ffd54a', duration = 3000) {
 }
 const mob = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
-function save() {
+window.save = async function () {
   try {
     const sObj = window.S || (typeof S !== 'undefined' ? S : null)
     if (sObj) {
@@ -24,7 +24,6 @@ function save() {
     }
   } catch (e) {}
 }
-window.save = save
 
 
 window.sfx = Object.assign(window.sfx || {}, {
@@ -202,7 +201,7 @@ var ui = window.ui = Object.assign(window.ui || {}, {
       try { localStorage.setItem('mth4', JSON.stringify(s)) } catch (e) {}
     }
 
-    var save = window.save = async () => {
+    window.save = async () => {
       try {
         const sObj = window.S || (typeof S !== 'undefined' ? S : null)
         if (sObj) {
@@ -2347,12 +2346,46 @@ if (un) {
       </div>
     `
   },
-  _simAnim(lv) {
-    const isNight = lv.themeType?.includes('night') || false;
-    const isRain = lv.themeType?.includes('rain') || lv.themeType?.includes('monsoon') || lv.themeType?.includes('puddle');
-    const conditionText = isNight ? '🌙 NIGHT · LOW VISIBILITY' : (isRain ? '🌧️ MONSOON · WET GRIP (0.65μ)' : '☀️ DAYLIGHT · DRY ROAD');
-    const ruleText = lv.law?.fine ? `💰 PENALTY: ${lv.law.fine}` : '🚦 TRAFFIC REGULATION';
+  _getScenarioMeta(lv) {
+    const theme = String(lv?.themeType || '').toLowerCase();
+    const id = String(lv?.id || '').toLowerCase();
+    const name = String(lv?.name || '').toLowerCase();
 
+    let key = 'grand_test';
+    if (theme.includes('ambulance') || name.includes('ambulance')) key = 'ambulance_priority';
+    else if (theme.includes('signal') || name.includes('red light') || name.includes('signal')) key = 'signal_jump';
+    else if (theme.includes('puddle') || theme.includes('puddle_etiquette')) key = 'puddle_etiquette';
+    else if (theme.includes('parking') || theme.includes('market_street') || name.includes('parking')) key = 'street_parking';
+    else if (theme.includes('silent') || theme.includes('no_honk') || theme.includes('quiet') || name.includes('silence') || name.includes('library') || name.includes('temple')) key = 'silent_zone';
+    else if (theme.includes('festival') || name.includes('festival') || name.includes('parade')) key = 'festival';
+    else if (theme.includes('rage') || name.includes('road rage')) key = 'road_rage';
+    else if (theme.includes('sign') || name.includes('sign')) key = 'signs';
+    else if (theme.includes('animal') || theme.includes('cow') || name.includes('cow')) key = 'animals';
+    else if (theme.includes('narrow') || theme.includes('rural') || name.includes('narrow') || name.includes('kacha')) key = 'narrow_street';
+    else if (theme.includes('auto') || theme.includes('multi_modal') || name.includes('auto')) key = 'auto_dance';
+    else if (theme.includes('toll') || name.includes('toll')) key = 'toll';
+    else if (theme.includes('blind') || theme.includes('mountain') || name.includes('blind') || name.includes('mountain')) key = 'blind_corner';
+    else if (theme.includes('hill') || name.includes('hill')) key = 'hill_driving';
+    else if (theme.includes('bus') || name.includes('bus')) key = 'bus_stop';
+    else if (theme.includes('construction') || name.includes('construction')) key = 'construction';
+    else if (theme.includes('wrong') || theme.includes('one_way') || name.includes('one-way') || name.includes('wrong-side')) key = 'one_way';
+    else if (theme.includes('cyclist') || name.includes('cyclist') || name.includes('cycle')) key = 'cyclist';
+    else if (theme.includes('merge') || theme.includes('lane') || name.includes('merge') || name.includes('lane discipline')) key = 'highway_merge';
+    else if (theme.includes('zero_vis') || theme.includes('night_monsoon') || name.includes('zero visibility')) key = 'zero_visibility';
+    else if (theme.includes('rain') || name.includes('heavy rain')) key = 'puddle_etiquette';
+    else if (theme.includes('pedestrian') || theme.includes('school') || name.includes('pedestrian') || name.includes('crossing')) key = 'pedestrian_courtesy';
+    else if (theme.includes('grand') || theme.includes('driving_school') || theme.includes('free_roam') || name.includes('grand') || name.includes('instructor') || name.includes('free roam')) key = 'grand_test';
+
+    const isNight = theme.includes('night') || key === 'zero_visibility';
+    const isRain = theme.includes('rain') || theme.includes('monsoon') || key === 'puddle_etiquette' || key === 'zero_visibility';
+    const conditionText = isNight ? '🌙 NIGHT · LOW VISIBILITY' : (isRain ? '🌧️ MONSOON · WET ROAD (0.65μ)' : '☀️ DAYLIGHT · DRY ASPHALT');
+    const ruleText = lv.law?.fine ? `💰 PENALTY: ${lv.law.fine}` : '🚦 MOTOR VEHICLES ACT COMPLIANCE';
+
+    return { key, isNight, isRain, conditionText, ruleText };
+  },
+
+  _simAnim(lv) {
+    const meta = this._getScenarioMeta(lv);
     return `
       <div id="briefing-canvas-wrap" class="scenario-sim-container">
         <canvas id="scenario-sim-canvas"></canvas>
@@ -2361,15 +2394,15 @@ if (un) {
             <span class="sim-record-dot"></span>
             <span>LIVE SCENARIO SIM</span>
           </div>
-          <div class="sim-condition-pill" id="sim-condition-pill">${conditionText}</div>
-          <div class="sim-rule-pill" id="sim-rule-pill">${ruleText}</div>
+          <div class="sim-condition-pill" id="sim-condition-pill">${meta.conditionText}</div>
+          <div class="sim-rule-pill" id="sim-rule-pill">${meta.ruleText}</div>
         </div>
-        <div class="sim-alert-banner" id="sim-alert-banner">🚨 RED LIGHT CAMERA VIOLATION — ₹1000 FINE</div>
+        <div class="sim-alert-banner" id="sim-alert-banner">🚨 STATUTORY COMPLIANCE REQUIRED</div>
         <div class="sim-hud-bottom">
           <div class="sim-telemetry-bar">
             <div class="sim-telem-item">
               <span class="sim-telem-lbl">SPEED</span>
-              <span class="sim-telem-val" id="sim-speed-val">42 km/h</span>
+              <span class="sim-telem-val" id="sim-speed-val">40 km/h</span>
             </div>
             <div class="sim-telem-item">
               <span class="sim-telem-lbl">BRAKING</span>
@@ -2394,6 +2427,7 @@ if (un) {
       </div>
     `
   },
+
   _simState: { isPlaying: true, speed: 1.0, time: 0, duration: 8.0 },
   _simTogglePlay() {
     this._simState.isPlaying = !this._simState.isPlaying;
@@ -2417,6 +2451,7 @@ if (un) {
   _simSeek(val) {
     this._simState.time = (parseFloat(val) / 100) * this._simState.duration;
   },
+
   _initBriefingArt(lv) {
     if (this._simAnimId) {
       cancelAnimationFrame(this._simAnimId);
@@ -2432,17 +2467,14 @@ if (un) {
     this._simState.time = 0;
     this._simState.duration = 8.0;
 
-    const themeType = (lv.themeType || '').toLowerCase();
-    const isNight = themeType.includes('night');
-    const isRain = themeType.includes('rain') || themeType.includes('monsoon') || themeType.includes('puddle');
-    const isEmergency = themeType.includes('ambulance') || themeType.includes('emergency');
-    const isSignal = themeType.includes('signal') || themeType.includes('intersection');
-    const isParking = themeType.includes('parking');
-    const isSchool = themeType.includes('school') || themeType.includes('pedestrian') || themeType.includes('courtesy');
+    const meta = this._getScenarioMeta(lv);
+    const scenarioKey = meta.key;
+    const isNight = meta.isNight;
+    const isRain = meta.isRain;
 
     // Generate persistent rain streaks
     const rainDrops = [];
-    for (let i = 0; i < 70; i++) {
+    for (let i = 0; i < 75; i++) {
       rainDrops.push({
         x: Math.random() * 1000,
         y: Math.random() * 300,
@@ -2488,7 +2520,7 @@ if (un) {
         slider.value = (progress * 100).toFixed(1);
       }
 
-      // 1. SKY & BACKDROP
+      // ── 1. SKY & BACKDROP ──
       const skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.7);
       if (isNight) {
         skyGrad.addColorStop(0, '#040711');
@@ -2496,6 +2528,12 @@ if (un) {
       } else if (isRain) {
         skyGrad.addColorStop(0, '#1a2233');
         skyGrad.addColorStop(1, '#2c374d');
+      } else if (scenarioKey === 'festival') {
+        skyGrad.addColorStop(0, '#1e1b4b');
+        skyGrad.addColorStop(1, '#3b0764');
+      } else if (scenarioKey === 'blind_corner' || scenarioKey === 'hill_driving') {
+        skyGrad.addColorStop(0, '#0284c7');
+        skyGrad.addColorStop(1, '#bae6fd');
       } else {
         skyGrad.addColorStop(0, '#0a192f');
         skyGrad.addColorStop(1, '#1e293b');
@@ -2503,9 +2541,8 @@ if (un) {
       ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, w, h);
 
-      // Distant Stars (Night)
-      if (isNight) {
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      if (isNight || scenarioKey === 'festival') {
+        ctx.fillStyle = 'rgba(255,255,255,0.75)';
         for (let i = 0; i < 30; i++) {
           const sx = (i * 37) % w;
           const sy = (i * 23) % (h * 0.45);
@@ -2513,40 +2550,49 @@ if (un) {
         }
       }
 
-      // Mumbai Skyline Silhouette
-      ctx.fillStyle = isNight ? '#070b14' : '#111827';
-      ctx.beginPath();
-      ctx.moveTo(0, h * 0.55);
-      const skyline = [
-        [0.05, 0.42], [0.08, 0.42], [0.08, 0.52], [0.15, 0.52], [0.18, 0.35],
-        [0.22, 0.35], [0.25, 0.55], [0.32, 0.48], [0.38, 0.48], [0.42, 0.32],
-        [0.48, 0.32], [0.52, 0.54], [0.60, 0.40], [0.68, 0.40], [0.72, 0.55],
-        [0.80, 0.38], [0.85, 0.38], [0.88, 0.52], [0.95, 0.45], [1.0, 0.55]
-      ];
-      skyline.forEach(([px, py]) => ctx.lineTo(w * px, h * py));
-      ctx.lineTo(w, h * 0.6);
-      ctx.lineTo(0, h * 0.6);
-      ctx.fill();
+      // Mountain / Skyline Silhouette
+      if (scenarioKey === 'blind_corner' || scenarioKey === 'hill_driving') {
+        // Mountain Backdrop
+        ctx.fillStyle = '#334155';
+        ctx.beginPath();
+        ctx.moveTo(0, h * 0.6);
+        ctx.lineTo(w * 0.25, h * 0.25);
+        ctx.lineTo(w * 0.5, h * 0.48);
+        ctx.lineTo(w * 0.75, h * 0.2);
+        ctx.lineTo(w, h * 0.6);
+        ctx.fill();
+      } else {
+        // City Skyline
+        ctx.fillStyle = isNight ? '#070b14' : '#111827';
+        ctx.beginPath();
+        ctx.moveTo(0, h * 0.55);
+        const skyline = [
+          [0.05, 0.42], [0.08, 0.42], [0.08, 0.52], [0.15, 0.52], [0.18, 0.35],
+          [0.22, 0.35], [0.25, 0.55], [0.32, 0.48], [0.38, 0.48], [0.42, 0.32],
+          [0.48, 0.32], [0.52, 0.54], [0.60, 0.40], [0.68, 0.40], [0.72, 0.55],
+          [0.80, 0.38], [0.85, 0.38], [0.88, 0.52], [0.95, 0.45], [1.0, 0.55]
+        ];
+        skyline.forEach(([px, py]) => ctx.lineTo(w * px, h * py));
+        ctx.lineTo(w, h * 0.6);
+        ctx.lineTo(0, h * 0.6);
+        ctx.fill();
 
-      // Bandra-Worli Sea Link Cable Towers in background
-      ctx.strokeStyle = isNight ? 'rgba(56, 189, 248, 0.25)' : 'rgba(255, 255, 255, 0.15)';
-      ctx.lineWidth = 1.5;
-      const towerX = w * 0.78;
-      const towerY = h * 0.28;
-      ctx.beginPath();
-      ctx.moveTo(towerX - 25, h * 0.55);
-      ctx.lineTo(towerX, towerY);
-      ctx.lineTo(towerX + 25, h * 0.55);
-      // Cables
-      for (let c = 1; c <= 4; c++) {
-        ctx.moveTo(towerX, towerY + c * 10);
-        ctx.lineTo(towerX - c * 20, h * 0.55);
-        ctx.moveTo(towerX, towerY + c * 10);
-        ctx.lineTo(towerX + c * 20, h * 0.55);
+        // Sea Link Bridge Cables
+        if (scenarioKey === 'ambulance_priority' || scenarioKey === 'toll' || scenarioKey === 'highway_merge') {
+          ctx.strokeStyle = isNight ? 'rgba(56, 189, 248, 0.25)' : 'rgba(255, 255, 255, 0.15)';
+          ctx.lineWidth = 1.5;
+          const towerX = w * 0.78, towerY = h * 0.28;
+          ctx.beginPath();
+          ctx.moveTo(towerX - 25, h * 0.55); ctx.lineTo(towerX, towerY); ctx.lineTo(towerX + 25, h * 0.55);
+          for (let c = 1; c <= 4; c++) {
+            ctx.moveTo(towerX, towerY + c * 10); ctx.lineTo(towerX - c * 20, h * 0.55);
+            ctx.moveTo(towerX, towerY + c * 10); ctx.lineTo(towerX + c * 20, h * 0.55);
+          }
+          ctx.stroke();
+        }
       }
-      ctx.stroke();
 
-      // 2. SIDEWALK & ROAD INFRASTRUCTURE
+      // ── 2. ROADWAY & INFRASTRUCTURE ──
       const roadTop = h * 0.58;
       const roadHeight = h * 0.32;
       const roadBottom = roadTop + roadHeight;
@@ -2566,171 +2612,72 @@ if (un) {
         ctx.fillRect(x, roadTop - 4, curbSize, 4);
       }
 
-      // Asphalt Road Surface
+      // Asphalt Surface
       const roadGrad = ctx.createLinearGradient(0, roadTop, 0, roadBottom);
       roadGrad.addColorStop(0, isRain ? '#181e29' : '#1e2430');
       roadGrad.addColorStop(1, isRain ? '#10141c' : '#141822');
       ctx.fillStyle = roadGrad;
       ctx.fillRect(0, roadTop, w, roadHeight);
 
-      // Pavement Texture / Wet Gloss Sheen
-      if (isRain) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-        ctx.fillRect(0, roadTop, w, roadHeight * 0.4);
-      }
-
       // Road Edge Solid White Lines
       ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
       ctx.fillRect(0, roadTop + 2, w, 3);
       ctx.fillRect(0, roadBottom - 4, w, 3);
 
-      // Road Center Dashed Yellow Lines
+      // Center Dashed Lines
       ctx.fillStyle = '#f59e0b';
-      const dashW = 28;
-      const gapW = 20;
+      const dashW = 28, gapW = 20;
       const centerLineY = roadTop + roadHeight / 2;
       for (let x = 0; x < w; x += dashW + gapW) {
         ctx.fillRect(x, centerLineY - 1.5, dashW, 3);
       }
 
-      // Zebra Crosswalk (Centered at 50%)
-      const crossX = w * 0.52;
-      const crossW = 90;
-      const numStripes = 6;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
-      for (let s = 0; s < numStripes; s++) {
-        const stripeY = roadTop + 6 + s * ((roadHeight - 12) / numStripes);
-        ctx.fillRect(crossX - crossW / 2, stripeY, crossW, (roadHeight - 12) / numStripes - 6);
-      }
-
-      // Stop Line Before Crosswalk
-      const stopLineX = crossX - crossW / 2 - 14;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(stopLineX, roadTop + 2, 4, roadHeight / 2 - 4);
-      ctx.font = '800 10px monospace';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-      ctx.fillText('STOP', stopLineX - 32, roadTop + roadHeight * 0.28);
-
-      // Street Lamp Pole with Volumetric Glow
-      const lampX = w * 0.22;
-      ctx.strokeStyle = '#475569';
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(lampX, roadTop);
-      ctx.lineTo(lampX, roadTop - 65);
-      ctx.lineTo(lampX + 18, roadTop - 75);
-      ctx.stroke();
-
-      // Lamp Light Cone
-      const lampCone = ctx.createRadialGradient(lampX + 18, roadTop - 75, 5, lampX + 18, roadTop, 90);
-      lampCone.addColorStop(0, 'rgba(254, 240, 138, 0.35)');
-      lampCone.addColorStop(1, 'rgba(254, 240, 138, 0)');
-      ctx.fillStyle = lampCone;
-      ctx.beginPath();
-      ctx.moveTo(lampX + 18, roadTop - 75);
-      ctx.lineTo(lampX - 45, roadTop + 40);
-      ctx.lineTo(lampX + 80, roadTop + 40);
-      ctx.closePath();
-      ctx.fill();
-
-      // Traffic Signal
-      const signalX = stopLineX + 8;
-      const signalY = roadTop - 50;
-      ctx.fillStyle = '#1e293b';
-      ctx.fillRect(signalX - 8, signalY - 25, 16, 44);
-      ctx.strokeStyle = '#334155';
-      ctx.strokeRect(signalX - 8, signalY - 25, 16, 44);
-
-      // Signal State Logic
-      let signalColor = 'green';
-      if (isSignal || isSchool) {
-        if (t < 3.5) signalColor = 'green';
-        else if (t < 4.2) signalColor = 'yellow';
-        else if (t < 7.2) signalColor = 'red';
-        else signalColor = 'green';
-      }
-
-      // Draw 3 Signal Bulbs
-      const bulbs = [
-        { color: '#ef4444', active: signalColor === 'red', y: signalY - 16 },
-        { color: '#f59e0b', active: signalColor === 'yellow', y: signalY - 3 },
-        { color: '#10b981', active: signalColor === 'green', y: signalY + 10 }
-      ];
-
-      bulbs.forEach(b => {
-        ctx.beginPath();
-        ctx.arc(signalX, b.y, 4.5, 0, Math.PI * 2);
-        ctx.fillStyle = b.active ? b.color : '#0f172a';
-        ctx.fill();
-        if (b.active) {
-          ctx.beginPath();
-          ctx.arc(signalX, b.y, 10, 0, Math.PI * 2);
-          ctx.fillStyle = b.color + '44';
-          ctx.fill();
-        }
-      });
-
-      // 3. DRAW VECTOR VEHICLES
-      function drawVectorCar(cx, cy, color, isBraking, headlightsOn, turnSignal) {
+      // ── 3. VECTOR DRAWING PRIMITIVES ──
+      function drawVectorCar(cx, cy, color, isBraking, headlightsOn, turnSignal, rollAngle, isPolice) {
         ctx.save();
         ctx.translate(cx, cy);
+        if (rollAngle) ctx.rotate(rollAngle);
 
-        // Ground Drop Shadow
         ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
         ctx.beginPath();
         ctx.ellipse(0, 10, 36, 6, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Headlight Beams (Left to Right)
         if (headlightsOn) {
           const hlGrad = ctx.createLinearGradient(30, 0, 110, 0);
           hlGrad.addColorStop(0, 'rgba(254, 240, 138, 0.55)');
           hlGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
           ctx.fillStyle = hlGrad;
           ctx.beginPath();
-          ctx.moveTo(32, 2);
-          ctx.lineTo(120, -14);
-          ctx.lineTo(120, 18);
-          ctx.closePath();
-          ctx.fill();
+          ctx.moveTo(32, 2); ctx.lineTo(120, -14); ctx.lineTo(120, 18); ctx.closePath(); ctx.fill();
         }
 
-        // Car Main Body (Lower)
         ctx.fillStyle = color;
         ctx.beginPath();
         ctx.roundRect(-32, -4, 64, 16, [4, 6, 2, 2]);
         ctx.fill();
 
-        // Car Roof / Cabin
         ctx.fillStyle = '#0f172a';
         ctx.beginPath();
         ctx.roundRect(-16, -14, 34, 12, [6, 8, 0, 0]);
         ctx.fill();
 
-        // Glass Windows
         ctx.fillStyle = isNight ? '#1e293b' : '#93c5fd';
         ctx.beginPath();
         ctx.roundRect(-13, -12, 14, 8, [3, 2, 0, 0]);
         ctx.roundRect(3, -12, 12, 8, [2, 4, 0, 0]);
         ctx.fill();
 
-        // Wheels (Front & Rear)
         ;[-18, 18].forEach(wx => {
           ctx.fillStyle = '#111827';
-          ctx.beginPath();
-          ctx.arc(wx, 11, 7, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(wx, 11, 7, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#94a3b8';
-          ctx.beginPath();
-          ctx.arc(wx, 11, 3.5, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(wx, 11, 3.5, 0, Math.PI * 2); ctx.fill();
         });
 
-        // Headlights
         ctx.fillStyle = headlightsOn ? '#fef08a' : '#cbd5e1';
         ctx.fillRect(30, 0, 3, 5);
 
-        // Taillights / Brake Lights
         ctx.fillStyle = isBraking ? '#ef4444' : '#991b1b';
         ctx.fillRect(-33, 0, 3, 5);
         if (isBraking) {
@@ -2740,159 +2687,205 @@ if (un) {
           ctx.fill();
         }
 
-        // Amber Turn Signal
-        if (turnSignal && Math.floor(now / 250) % 2 === 0) {
+        if (turnSignal && Math.floor(now / 220) % 2 === 0) {
           ctx.fillStyle = '#f59e0b';
           ctx.fillRect(28, 6, 4, 3);
           ctx.fillRect(-30, 6, 4, 3);
         }
-
         ctx.restore();
       }
 
       function drawAmbulance(ax, ay) {
         ctx.save();
         ctx.translate(ax, ay);
-
-        // Drop shadow
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.beginPath();
-        ctx.ellipse(0, 12, 42, 8, 0, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.ellipse(0, 12, 42, 8, 0, 0, Math.PI * 2); ctx.fill();
 
-        // Headlight Beams
         const hlGrad = ctx.createLinearGradient(35, 0, 140, 0);
         hlGrad.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
         hlGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
         ctx.fillStyle = hlGrad;
-        ctx.beginPath();
-        ctx.moveTo(38, 2);
-        ctx.lineTo(140, -18);
-        ctx.lineTo(140, 24);
-        ctx.closePath();
-        ctx.fill();
+        ctx.beginPath(); ctx.moveTo(38, 2); ctx.lineTo(140, -18); ctx.lineTo(140, 24); ctx.closePath(); ctx.fill();
 
-        // Ambulance White Body
         ctx.fillStyle = '#f8fafc';
-        ctx.beginPath();
-        ctx.roundRect(-38, -16, 76, 26, [6, 10, 3, 3]);
-        ctx.fill();
-
-        // Fluorescent Red Emergency Stripe
+        ctx.beginPath(); ctx.roundRect(-38, -16, 76, 26, [6, 10, 3, 3]); ctx.fill();
         ctx.fillStyle = '#ef4444';
         ctx.fillRect(-38, 0, 76, 6);
+        ctx.fillRect(-12, -10, 10, 3); ctx.fillRect(-8.5, -13.5, 3, 10);
 
-        // Red Medical Cross
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(-12, -10, 10, 3);
-        ctx.fillRect(-8.5, -13.5, 3, 10);
-
-        // Windshield
         ctx.fillStyle = '#38bdf8';
-        ctx.beginPath();
-        ctx.roundRect(14, -14, 18, 11, [2, 6, 0, 0]);
-        ctx.fill();
+        ctx.beginPath(); ctx.roundRect(14, -14, 18, 11, [2, 6, 0, 0]); ctx.fill();
 
-        // Flashing Dual Siren Lightbar (Red / Blue)
         const flashPhase = Math.floor(now / 120) % 2 === 0;
         ctx.fillStyle = flashPhase ? '#ef4444' : '#3b82f6';
         ctx.fillRect(-4, -21, 6, 5);
         ctx.fillStyle = flashPhase ? '#3b82f6' : '#ef4444';
         ctx.fillRect(4, -21, 6, 5);
 
-        // Ambient Siren Glow Flash
         const sirenGlow = ctx.createRadialGradient(0, -20, 4, 0, -20, 60);
         sirenGlow.addColorStop(0, flashPhase ? 'rgba(239, 68, 68, 0.45)' : 'rgba(59, 130, 246, 0.45)');
         sirenGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
         ctx.fillStyle = sirenGlow;
-        ctx.beginPath();
-        ctx.arc(0, -20, 60, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(0, -20, 60, 0, Math.PI * 2); ctx.fill();
 
-        // Wheels
         ;[-22, 22].forEach(wx => {
           ctx.fillStyle = '#111827';
-          ctx.beginPath();
-          ctx.arc(wx, 12, 8, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(wx, 12, 8, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#e2e8f0';
-          ctx.beginPath();
-          ctx.arc(wx, 12, 4, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.beginPath(); ctx.arc(wx, 12, 4, 0, Math.PI * 2); ctx.fill();
+        });
+        ctx.restore();
+      }
+
+      function drawAutoRickshaw(rx, ry, isWobbling) {
+        ctx.save();
+        ctx.translate(rx, ry);
+        if (isWobbling) ctx.rotate(Math.sin(now * 0.015) * 0.06);
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.beginPath(); ctx.ellipse(0, 9, 24, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Yellow canopy, green body (Mumbai auto colors)
+        ctx.fillStyle = '#eab308';
+        ctx.beginPath(); ctx.roundRect(-20, -18, 40, 14, [8, 8, 0, 0]); ctx.fill();
+        ctx.fillStyle = '#16a34a';
+        ctx.beginPath(); ctx.roundRect(-22, -4, 44, 12, [2, 4, 2, 2]); ctx.fill();
+
+        ctx.fillStyle = '#93c5fd';
+        ctx.beginPath(); ctx.roundRect(4, -14, 12, 8, [2, 4, 0, 0]); ctx.fill();
+
+        ;[-12, 14].forEach(wx => {
+          ctx.fillStyle = '#111827';
+          ctx.beginPath(); ctx.arc(wx, 8, 6, 0, Math.PI * 2); ctx.fill();
+        });
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(20, -2, 3, 4);
+        ctx.restore();
+      }
+
+      function drawBus(bx, by, isDoorOpen) {
+        ctx.save();
+        ctx.translate(bx, by);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.beginPath(); ctx.ellipse(0, 14, 55, 7, 0, 0, Math.PI * 2); ctx.fill();
+
+        // BEST Red Bus Body
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath(); ctx.roundRect(-52, -26, 104, 38, [6, 10, 2, 2]); ctx.fill();
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(-52, -6, 104, 4); // Yellow stripe
+
+        // Windows
+        ctx.fillStyle = '#93c5fd';
+        for (let i = 0; i < 4; i++) {
+          ctx.fillRect(-42 + i * 22, -22, 16, 12);
+        }
+        ctx.beginPath(); ctx.roundRect(36, -22, 12, 14, [2, 4, 0, 0]); ctx.fill();
+
+        ;[-32, 32].forEach(wx => {
+          ctx.fillStyle = '#111827';
+          ctx.beginPath(); ctx.arc(wx, 13, 9, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#cbd5e1';
+          ctx.beginPath(); ctx.arc(wx, 13, 4.5, 0, Math.PI * 2); ctx.fill();
+        });
+        ctx.restore();
+      }
+
+      function drawCow(cx, cy, isChewing) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.beginPath(); ctx.ellipse(0, 8, 22, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Cow Body (White with black spots)
+        ctx.fillStyle = '#f1f5f9';
+        ctx.beginPath(); ctx.roundRect(-18, -12, 36, 18, 6); ctx.fill();
+        ctx.fillStyle = '#334155';
+        ctx.beginPath(); ctx.arc(-4, -6, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(8, -4, 4, 0, Math.PI * 2); ctx.fill();
+
+        // Cow Head
+        ctx.fillStyle = '#f1f5f9';
+        ctx.beginPath(); ctx.arc(18, -10 + (isChewing ? Math.sin(now * 0.01) * 1.5 : 0), 6.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fca5a5';
+        ctx.beginPath(); ctx.ellipse(22, -9, 3, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Horns
+        ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(16, -15); ctx.lineTo(13, -19); ctx.moveTo(19, -15); ctx.lineTo(21, -19); ctx.stroke();
+
+        ;[-10, -3, 6, 12].forEach(lx => {
+          ctx.fillStyle = '#e2e8f0'; ctx.fillRect(lx, 6, 3, 4);
+        });
+        ctx.restore();
+      }
+
+      function drawCyclist(cx, cy, pedalPhase) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.beginPath(); ctx.ellipse(0, 8, 16, 3, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Wheels
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+        ;[-14, 14].forEach(wx => {
+          ctx.beginPath(); ctx.arc(wx, 2, 7, 0, Math.PI * 2); ctx.stroke();
         });
 
+        // Frame
+        ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-14, 2); ctx.lineTo(-2, -6); ctx.lineTo(10, -6); ctx.lineTo(14, 2);
+        ctx.lineTo(0, 2); ctx.lineTo(-2, -6);
+        ctx.stroke();
+
+        // Rider
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath(); ctx.roundRect(-4, -18, 8, 11, 2); ctx.fill();
+        ctx.fillStyle = '#fed7aa';
+        ctx.beginPath(); ctx.arc(2, -22, 3.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#eab308'; // Delivery bag
+        ctx.fillRect(-8, -17, 4, 7);
         ctx.restore();
       }
 
-      function drawPedestrian(px, py, stride, hasBackpack, hasUmbrella) {
+      function drawPedestrian(px, py, stride, hasBackpack, hasUmbrella, isChild) {
         ctx.save();
         ctx.translate(px, py);
+        const scale = isChild ? 0.75 : 1.0;
+        ctx.scale(scale, scale);
 
-        // Drop shadow
         ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-        ctx.beginPath();
-        ctx.ellipse(0, 8, 8, 3, 0, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.ellipse(0, 8, 8, 3, 0, 0, Math.PI * 2); ctx.fill();
 
-        // Moving Legs
         const legAngle = Math.sin(stride) * 0.45;
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 2.5;
-        // Left leg
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(Math.sin(legAngle) * 8, 7);
-        ctx.stroke();
-        // Right leg
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(-Math.sin(legAngle) * 8, 7);
-        ctx.stroke();
+        ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.sin(legAngle) * 8, 7); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-Math.sin(legAngle) * 8, 7); ctx.stroke();
 
-        // Torso / Shirt
         ctx.fillStyle = hasBackpack ? '#3b82f6' : '#f59e0b';
-        ctx.beginPath();
-        ctx.roundRect(-4, -12, 8, 12, 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.roundRect(-4, -12, 8, 12, 2); ctx.fill();
 
-        // Backpack
         if (hasBackpack) {
-          ctx.fillStyle = '#ef4444';
-          ctx.fillRect(-6, -10, 3, 8);
+          ctx.fillStyle = '#ef4444'; ctx.fillRect(-6, -10, 3, 8);
         }
 
-        // Head
         ctx.fillStyle = '#fed7aa';
-        ctx.beginPath();
-        ctx.arc(0, -16, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Hair / Cap
+        ctx.beginPath(); ctx.arc(0, -16, 4, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = '#451a03';
-        ctx.beginPath();
-        ctx.arc(0, -18, 3.5, Math.PI, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(0, -18, 3.5, Math.PI, Math.PI * 2); ctx.fill();
 
-        // Umbrella (Rain)
         if (hasUmbrella) {
           ctx.fillStyle = '#ec4899';
-          ctx.beginPath();
-          ctx.arc(0, -23, 11, Math.PI, Math.PI * 2);
-          ctx.fill();
-          ctx.strokeStyle = '#94a3b8';
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.moveTo(0, -23);
-          ctx.lineTo(0, -13);
-          ctx.stroke();
+          ctx.beginPath(); ctx.arc(0, -23, 11, Math.PI, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(0, -23); ctx.lineTo(0, -13); ctx.stroke();
         }
-
         ctx.restore();
       }
 
-      // 4. SCENARIO SIMULATION LOGIC
-      let carX = 0;
-      let carSpeed = 42;
+      // ── 4. SCENARIO DISPATCH & SIMULATION TIMELINES ──
+      let carSpeed = 40;
       let isBraking = false;
       let statusText = 'CRUISING';
       let statusColor = '#10b981';
@@ -2902,140 +2895,542 @@ if (un) {
       const statusValEl = document.getElementById('sim-status-val');
       const alertEl = document.getElementById('sim-alert-banner');
 
-      if (isEmergency) {
-        // AMBULANCE CORRIDOR SCENARIO
-        const ambX = ((t * 1.6) / this._simState.duration) * (w + 140) - 70;
-        const playerYieldX = w * 0.45;
-        const playerLaneY = roadTop + roadHeight * 0.28 + (t > 2.0 && t < 6.0 ? 18 : 0);
-        const playerBraking = t > 2.0 && t < 4.5;
-        const playerTurnSignal = t > 1.8 && t < 5.5;
-
-        drawAmbulance(ambX, roadTop + roadHeight * 0.28);
-        drawVectorCar(playerYieldX, playerLaneY, '#3b82f6', playerBraking, true, playerTurnSignal);
-        drawVectorCar(w * 0.85, roadTop + roadHeight * 0.72, '#eab308', false, true, false);
-
-        carSpeed = playerBraking ? 18 : 38;
-        brakePercent = playerBraking ? 65 : 0;
-        statusText = playerTurnSignal ? 'YIELDING TO AMBULANCE 🚑' : 'CLEAR CORRIDOR';
-        statusColor = '#f59e0b';
-
+      // Helper to trigger alert banner
+      const showAlert = (msg, active) => {
         if (alertEl) {
-          alertEl.textContent = '🚨 STATUTORY PRIORITY: YIELD TO EMERGENCY VEHICLES';
-          alertEl.classList.toggle('show', t > 1.5 && t < 5.5);
+          alertEl.textContent = msg;
+          alertEl.classList.toggle('show', active);
         }
-      } else if (isSignal) {
-        // TRAFFIC SIGNAL & CAMERA ENFORCEMENT
-        const stopTargetX = stopLineX - 40;
-        if (t < 3.0) {
-          carX = ((t / 3.0) * (stopTargetX + 60)) - 60;
-          carSpeed = 40;
-          isBraking = false;
-          statusText = 'APPROACHING SIGNAL';
-          statusColor = '#38bdf8';
-        } else if (t < 7.0) {
-          carX = stopTargetX;
-          carSpeed = 0;
-          isBraking = true;
-          brakePercent = 100;
-          statusText = 'STOPPED AT RED LIGHT 🛑';
-          statusColor = '#ef4444';
-        } else {
-          const leaveT = (t - 7.0) / 1.0;
-          carX = stopTargetX + leaveT * (w - stopTargetX + 80);
-          carSpeed = Math.round(leaveT * 40);
-          isBraking = false;
-          statusText = 'GREEN SIGNAL · PROCEEDING';
-          statusColor = '#10b981';
-        }
+      };
 
-        drawVectorCar(carX, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+      switch(scenarioKey) {
 
-        // Violator NPC car running red light at t=4.5s
-        if (t > 3.8 && t < 6.8) {
-          const npcX = ((t - 3.8) / 3.0) * (w + 100) - 50;
-          drawVectorCar(npcX, roadTop + roadHeight * 0.72, '#ef4444', false, true, false);
-          
-          // Camera Flash Trigger
-          if (t > 4.6 && t < 4.9) {
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.fillRect(0, 0, w, h);
+        case 'signal_jump': {
+          // RED LIGHT CAMERA ENFORCEMENT
+          const stopLineX = w * 0.52;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(stopLineX, roadTop + 2, 4, roadHeight / 2 - 4);
+          ctx.font = '800 10px monospace';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.fillText('STOP', stopLineX - 32, roadTop + roadHeight * 0.28);
+
+          // Traffic Signal
+          const signalX = stopLineX + 10, signalY = roadTop - 48;
+          ctx.fillStyle = '#1e293b'; ctx.fillRect(signalX - 8, signalY - 24, 16, 42);
+          const sigState = (t < 3.0) ? 'yellow' : (t < 6.8 ? 'red' : 'green');
+          [{ c: '#ef4444', a: sigState === 'red', y: signalY - 16 },
+           { c: '#f59e0b', a: sigState === 'yellow', y: signalY - 3 },
+           { c: '#10b981', a: sigState === 'green', y: signalY + 10 }].forEach(b => {
+            ctx.beginPath(); ctx.arc(signalX, b.y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = b.a ? b.c : '#0f172a'; ctx.fill();
+            if (b.a) { ctx.beginPath(); ctx.arc(signalX, b.y, 8, 0, Math.PI * 2); ctx.fillStyle = b.c + '44'; ctx.fill(); }
+          });
+
+          // Player Car stopping before line
+          let px = 0;
+          if (t < 2.5) {
+            px = (t / 2.5) * (stopLineX - 90) - 40;
+            carSpeed = Math.round(40 - (t / 2.5) * 35);
+            isBraking = t > 1.0; brakePercent = isBraking ? 70 : 0;
+            statusText = 'APPROACHING RED LIGHT'; statusColor = '#38bdf8';
+          } else if (t < 6.8) {
+            px = stopLineX - 45; carSpeed = 0; isBraking = true; brakePercent = 100;
+            statusText = 'STOPPED AT RED LIGHT 🛑'; statusColor = '#ef4444';
+          } else {
+            const lt = (t - 6.8) / 1.2; px = (stopLineX - 45) + lt * (w * 0.6);
+            carSpeed = Math.round(lt * 38); isBraking = false; brakePercent = 0;
+            statusText = 'GREEN LIGHT · PROCEEDING'; statusColor = '#10b981';
           }
-          if (alertEl) {
-            alertEl.textContent = '🚨 RED LIGHT RUNNER CAPTURED — ₹1,000 FINE';
-            alertEl.classList.toggle('show', t > 4.7 && t < 6.8);
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+
+          // Violator NPC car running red light at t=4.2s
+          if (t > 3.5 && t < 6.5) {
+            const nx = ((t - 3.5) / 3.0) * (w + 120) - 60;
+            drawVectorCar(nx, roadTop + roadHeight * 0.72, '#ef4444', false, true, false);
+            if (t > 4.4 && t < 4.7) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.fillRect(0, 0, w, h); } // Flash
+            showAlert('🚨 RED LIGHT RUNNER CAPTURED ON CAMERA — ₹1,000 FINE', t > 4.5 && t < 6.5);
+          } else { showAlert('', false); }
+          break;
+        }
+
+        case 'street_parking': {
+          // PARALLEL PARKING IN EMPTY BAY
+          const bayX = w * 0.48, bayY = roadTop + roadHeight * 0.28;
+          ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+          ctx.strokeRect(bayX - 35, bayY - 14, 70, 28); ctx.setLineDash([]);
+          ctx.fillStyle = 'rgba(34, 197, 94, 0.15)'; ctx.fillRect(bayX - 35, bayY - 14, 70, 28);
+
+          // Parked cars front and rear
+          drawVectorCar(bayX - 85, bayY, '#94a3b8', false, false, false);
+          drawVectorCar(bayX + 85, bayY, '#64748b', false, false, false);
+
+          let px = 0, py = bayY, roll = 0, rev = false;
+          if (t < 2.2) {
+            px = (t / 2.2) * (bayX + 80) - 50; py = bayY + 20;
+            carSpeed = 18; statusText = 'PULLING AHEAD OF BAY'; statusColor = '#38bdf8';
+          } else if (t < 5.5) {
+            const pt = (t - 2.2) / 3.3; rev = true; isBraking = true; brakePercent = 40;
+            px = (bayX + 80) - pt * 80;
+            py = (bayY + 20) - pt * 20;
+            roll = -Math.sin(pt * Math.PI) * 0.25;
+            carSpeed = 6; statusText = 'REVERSING INTO PARKING SLOT'; statusColor = '#f59e0b';
+          } else {
+            px = bayX; py = bayY; carSpeed = 0; isBraking = true; brakePercent = 100;
+            statusText = 'PARKED PERFECTLY IN BAY ✅'; statusColor = '#10b981';
           }
-        } else if (alertEl) {
-          alertEl.classList.remove('show');
-        }
-      } else {
-        // PEDESTRIAN COURTESY & SCHOOL ZONE (Default)
-        const stopTargetX = stopLineX - 42;
-        if (t < 2.5) {
-          carX = (t / 2.5) * (stopTargetX + 60) - 60;
-          carSpeed = Math.round(40 - (t / 2.5) * 15);
-          isBraking = t > 1.2;
-          brakePercent = isBraking ? 50 : 0;
-          statusText = 'APPROACHING CROSSWALK';
-          statusColor = '#38bdf8';
-        } else if (t < 6.5) {
-          carX = stopTargetX;
-          carSpeed = 0;
-          isBraking = true;
-          brakePercent = 90;
-          statusText = 'YIELDING TO PEDESTRIANS 🚶';
-          statusColor = '#10b981';
-        } else {
-          const leaveT = (t - 6.5) / 1.5;
-          carX = stopTargetX + leaveT * (w - stopTargetX + 80);
-          carSpeed = Math.round(leaveT * 36);
-          isBraking = false;
-          brakePercent = 0;
-          statusText = 'CROSSWALK CLEAR · ACCELERATING';
-          statusColor = '#10b981';
+          drawVectorCar(px, py, '#3b82f6', isBraking, true, rev, roll);
+          showAlert('✅ PARALLEL PARKING COMPLETE — LEGAL SPOT', t > 5.5);
+          break;
         }
 
-        drawVectorCar(carX, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+        case 'ambulance_priority': {
+          // AMBULANCE CORRIDOR YIELD
+          const ambX = ((t * 1.6) / this._simState.duration) * (w + 140) - 70;
+          const playerYieldX = w * 0.45;
+          const playerLaneY = roadTop + roadHeight * 0.28 + (t > 2.0 && t < 6.0 ? 18 : 0);
+          const playerBraking = t > 2.0 && t < 4.5;
+          const playerTurnSignal = t > 1.8 && t < 5.5;
 
-        // Animated Pedestrians Crossing
-        if (t > 1.8 && t < 7.2) {
-          const pedProg = (t - 1.8) / 5.4;
-          const pedY = sidewalkTop + pedProg * (roadHeight + 8);
-          drawPedestrian(crossX - 18, pedY, t * 10, isSchool, isRain);
-          drawPedestrian(crossX + 16, pedY - 14, t * 9, isSchool, isRain);
-        } else {
-          // Waiting at curb
-          drawPedestrian(crossX - 18, sidewalkTop + 6, 0, isSchool, isRain);
+          drawAmbulance(ambX, roadTop + roadHeight * 0.28);
+          drawVectorCar(playerYieldX, playerLaneY, '#3b82f6', playerBraking, true, playerTurnSignal);
+          drawVectorCar(w * 0.85, roadTop + roadHeight * 0.72, '#eab308', false, true, false);
+
+          carSpeed = playerBraking ? 18 : 38; brakePercent = playerBraking ? 65 : 0;
+          statusText = playerTurnSignal ? 'YIELDING TO AMBULANCE 🚑' : 'CLEAR CORRIDOR'; statusColor = '#f59e0b';
+          showAlert('🚨 STATUTORY PRIORITY: YIELD TO EMERGENCY VEHICLES (SEC 194E)', t > 1.5 && t < 5.5);
+          break;
         }
 
-        if (alertEl) alertEl.classList.remove('show');
+        case 'puddle_etiquette': {
+          // MONSOON PUDDLE SLOWDOWN (NO SPLASH)
+          const puddleX = w * 0.52, puddleY = roadTop + roadHeight * 0.28;
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
+          ctx.beginPath(); ctx.ellipse(puddleX, puddleY + 4, 45, 8, 0, 0, Math.PI * 2); ctx.fill();
+
+          // Pedestrian on sidewalk with umbrella
+          drawPedestrian(puddleX + 10, sidewalkTop + 6, t * 6, false, true);
+
+          let px = 0;
+          if (t < 3.0) {
+            px = (t / 3.0) * (puddleX - 60) - 50;
+            carSpeed = Math.round(42 - (t / 3.0) * 30);
+            isBraking = t > 1.0; brakePercent = isBraking ? 75 : 0;
+            statusText = 'SLOWING DOWN FOR PUDDLE'; statusColor = '#38bdf8';
+          } else if (t < 5.5) {
+            const pt = (t - 3.0) / 2.5; px = (puddleX - 60) + pt * 120;
+            carSpeed = 12; isBraking = false; brakePercent = 0;
+            statusText = 'GENTLE ROLL · ZERO SPLASH 💧'; statusColor = '#10b981';
+          } else {
+            const lt = (t - 5.5) / 2.5; px = (puddleX + 60) + lt * (w * 0.5);
+            carSpeed = Math.round(12 + lt * 28);
+            statusText = 'ACCELERATING SAFELY PAST PUDDLE'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+          showAlert('💧 COURTEOUS DRIVING: REDUCE SPEED NEAR PUDDLES & PEDESTRIANS', t > 2.0 && t < 6.0);
+          break;
+        }
+
+        case 'silent_zone': {
+          // HOSPITAL / SILENT ZONE (NO HONKING)
+          const signX = w * 0.38, signY = roadTop - 45;
+          ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(signX, signY, 16, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3.5; ctx.stroke();
+          ctx.font = '700 12px sans-serif'; ctx.fillStyle = '#1e293b'; ctx.fillText('📯', signX - 7, signY + 4);
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(signX - 11, signY - 11); ctx.lineTo(signX + 11, signY + 11); ctx.stroke();
+
+          // Sound Decibel Gauge
+          const isHonking = t > 3.2 && t < 5.8;
+          const dB = isHonking ? 98 : 35;
+          ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.roundRect(w * 0.65, roadTop - 50, 110, 28, 6); ctx.fill();
+          ctx.font = '700 10px monospace'; ctx.fillStyle = isHonking ? '#ef4444' : '#10b981';
+          ctx.fillText(`AUDIO: ${dB} dB ${isHonking ? '⚠️ HONK!' : '🟢 QUIET'}`, w * 0.67, roadTop - 32);
+
+          const px = ((t / this._simState.duration) * (w + 120)) - 60;
+          carSpeed = 32; isBraking = false;
+          statusText = isHonking ? 'VIOLATION DETECTED BEHIND' : 'SILENT CRUISE · 35 dB (QUIET)';
+          statusColor = isHonking ? '#ef4444' : '#10b981';
+
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', false, true, false);
+          if (isHonking) drawVectorCar(px - 90, roadTop + roadHeight * 0.28, '#ef4444', false, true, false);
+          showAlert('🔇 SILENT ZONE: HONKING PROHIBITED NEAR HOSPITALS/SCHOOLS (SEC 194F)', isHonking);
+          break;
+        }
+
+        case 'festival': {
+          // FESTIVAL PROCESSION CROWD
+          const px = ((t / this._simState.duration) * (w * 0.4)) + w * 0.05;
+          carSpeed = 8; isBraking = Math.sin(t * 3) > 0.4; brakePercent = isBraking ? 40 : 0;
+          statusText = 'FESTIVAL PROCESSION · HAZARD LIGHTS ON'; statusColor = '#f59e0b';
+
+          // Decorative lanterns and marigolds
+          for (let x = 20; x < w; x += 60) {
+            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(x, roadTop - 40, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)'; ctx.beginPath(); ctx.moveTo(x - 30, roadTop - 45); ctx.lineTo(x + 30, roadTop - 45); ctx.stroke();
+          }
+
+          // Procession crowd moving slowly across
+          for (let i = 0; i < 5; i++) {
+            drawPedestrian(w * 0.45 + i * 22, roadTop + 8 + (i % 2) * 16, t * 4, false, false);
+          }
+
+          drawVectorCar(px, roadTop + roadHeight * 0.65, '#3b82f6', isBraking, true, true);
+          showAlert('🎉 FESTIVAL CROWD: CRAWL AT LOW SPEED (8 KM/H) & KEEP HAZARD LIGHTS ON', true);
+          break;
+        }
+
+        case 'road_rage': {
+          // DEFENSIVE DRIVING / TAILGATER PASS
+          const rageX = ((t / this._simState.duration) * (w + 180)) - 80;
+          const playerLaneY = roadTop + roadHeight * 0.28 + (t > 2.5 ? 18 : 0);
+          const isSignaling = t > 1.8 && t < 4.0;
+
+          drawVectorCar(rageX, roadTop + roadHeight * 0.28, '#dc2626', false, true, false); // Aggressive Red Tailgater
+          drawVectorCar(w * 0.4, playerLaneY, '#3b82f6', false, true, isSignaling); // Player merging left
+
+          carSpeed = 38; statusText = isSignaling ? 'SIGNALING LEFT · LETTING TAILGATER PASS' : 'DEFENSIVE LANE POSITION'; statusColor = '#10b981';
+          showAlert('🛡️ DEFENSIVE DRIVING: NEVER BRAKE-CHECK; LET AGGRESSIVE DRIVERS PASS', t > 1.5 && t < 5.0);
+          break;
+        }
+
+        case 'signs': {
+          // ROAD SIGN RECOGNITION HUD
+          const signX = w * 0.5, signY = roadTop - 50;
+          // Speed Limit 40 sign
+          ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(signX, signY, 18, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4; ctx.stroke();
+          ctx.font = '800 13px sans-serif'; ctx.fillStyle = '#1e293b'; ctx.fillText('40', signX - 8, signY + 5);
+
+          // HUD Scan Target Reticle
+          const isScanning = t > 2.0 && t < 5.5;
+          if (isScanning) {
+            ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.setLineDash([4, 2]);
+            ctx.strokeRect(signX - 24, signY - 24, 48, 48); ctx.setLineDash([]);
+            ctx.font = '700 9px monospace'; ctx.fillStyle = '#10b981';
+            ctx.fillText('SPEED LIMIT 40 ✓', signX - 35, signY - 30);
+          }
+
+          const px = ((t / this._simState.duration) * (w + 120)) - 60;
+          carSpeed = 38; statusText = isScanning ? 'SIGN IDENTIFIED · LIMIT 40 KM/H' : 'CRUISING WITHIN LIMIT'; statusColor = '#10b981';
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', false, true, false);
+          showAlert('📋 MANDATORY TRAFFIC SIGN: SPEED LIMIT 40 KM/H ENFORCED (SEC 112)', isScanning);
+          break;
+        }
+
+        case 'animals': {
+          // SACRED COWS / ANIMALS ON ROAD
+          const cowX = w * 0.52, cowY = roadTop + roadHeight * 0.32;
+          drawCow(cowX, cowY, true);
+
+          let px = 0, py = roadTop + roadHeight * 0.28, sig = false;
+          if (t < 2.5) {
+            px = (t / 2.5) * (cowX - 80) - 40; carSpeed = Math.round(40 - (t / 2.5) * 30);
+            isBraking = t > 1.0; brakePercent = isBraking ? 60 : 0;
+            statusText = 'SPOTTING CATTLE AHEAD · SLOWING'; statusColor = '#38bdf8';
+          } else if (t < 5.5) {
+            const pt = (t - 2.5) / 3.0; sig = true;
+            px = (cowX - 80) + pt * 160;
+            py = roadTop + roadHeight * 0.28 + Math.sin(pt * Math.PI) * 20; // Wide arc
+            carSpeed = 12; isBraking = false; brakePercent = 0;
+            statusText = 'GENTLE BYPASS AROUND ANIMALS (NO HORN)'; statusColor = '#10b981';
+          } else {
+            const lt = (t - 5.5) / 2.5; px = (cowX + 80) + lt * (w * 0.4);
+            carSpeed = Math.round(12 + lt * 26);
+            statusText = 'RESUMING CRUISE SAFELY'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, py, '#3b82f6', isBraking, true, sig);
+          showAlert('🐄 ANIMAL HAZARD: DECELERATE GENTLY WITHOUT HONKING TO PREVENT STARTLE', t > 1.5 && t < 5.5);
+          break;
+        }
+
+        case 'narrow_street': {
+          // NARROW STREET / PASSING BAY YIELD
+          const bayX = w * 0.38;
+          ctx.fillStyle = '#374151'; ctx.fillRect(bayX - 40, sidewalkTop, 80, sidewalkHeight); // Passing bay cutout
+
+          let px = 0, py = roadTop + roadHeight * 0.28;
+          if (t < 2.5) {
+            px = (t / 2.5) * (bayX) - 50; py = roadTop + roadHeight * 0.28 - (t / 2.5) * 12;
+            carSpeed = 15; statusText = 'PULLING INTO PASSING BAY'; statusColor = '#38bdf8';
+          } else if (t < 5.5) {
+            px = bayX; py = roadTop + roadHeight * 0.28 - 12;
+            carSpeed = 0; isBraking = true; brakePercent = 100;
+            statusText = 'YIELDING TO ONCOMING AUTO-RICKSHAW'; statusColor = '#10b981';
+          } else {
+            const lt = (t - 5.5) / 2.5; px = bayX + lt * (w * 0.5); py = roadTop + roadHeight * 0.28;
+            carSpeed = 24; isBraking = false;
+            statusText = 'BOTTLENECK CLEARED · MOVING OUT'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, py, '#3b82f6', isBraking, true, false);
+
+          // Oncoming Auto-Rickshaw passing through narrow lane
+          const autoX = (w + 40) - (t / this._simState.duration) * (w + 100);
+          drawAutoRickshaw(autoX, roadTop + roadHeight * 0.32, true);
+          showAlert('↔️ NARROW STREET: PULL INTO PASSING BAY TO LET ONCOMING TRAFFIC PASS', t > 2.0 && t < 5.5);
+          break;
+        }
+
+        case 'auto_dance': {
+          // AUTO-RICKSHAW SUDDEN LANE CUT
+          const autoX = w * 0.45 + (t * 20) % (w * 0.4);
+          const autoCutY = roadTop + roadHeight * 0.72 - (t > 2.0 && t < 4.5 ? 18 : 0);
+          drawAutoRickshaw(autoX, autoCutY, true);
+
+          const playerBraking = t > 2.0 && t < 4.5;
+          carSpeed = playerBraking ? 18 : 36; brakePercent = playerBraking ? 70 : 0;
+          statusText = playerBraking ? 'AUTO CUTTING LANE · 3-SEC BUFFER ACTIVE' : 'MAINTAINING SAFE FOLLOWING DISTANCE';
+          statusColor = playerBraking ? '#ef4444' : '#10b981';
+
+          drawVectorCar(w * 0.25, roadTop + roadHeight * 0.28, '#3b82f6', playerBraking, true, false);
+          showAlert('🛺 ERRATIC VEHICLE TRAFFIC: MAINTAIN 3-SECOND BUFFER FOR SUDDEN TURNS', playerBraking);
+          break;
+        }
+
+        case 'toll': {
+          // FASTag TOLL PLAZA RFID SCAN
+          const tollX = w * 0.55, tollY = roadTop - 60;
+          // Toll Canopy
+          ctx.fillStyle = '#0284c7'; ctx.fillRect(tollX - 45, tollY, 90, 16);
+          ctx.fillStyle = '#0f172a'; ctx.fillRect(tollX - 40, tollY + 16, 8, 48);
+          ctx.fillRect(tollX + 32, tollY + 16, 8, 48);
+
+          // Boom Barrier Arm
+          const isBarrierOpen = t > 4.0;
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(tollX + 32, roadTop + 10);
+          if (isBarrierOpen) ctx.lineTo(tollX + 32, roadTop - 40); // Up
+          else ctx.lineTo(tollX - 35, roadTop + 10); // Down
+          ctx.stroke();
+
+          // Green Laser RFID scan beam
+          const isScanning = t > 2.2 && t < 3.8;
+          if (isScanning) {
+            ctx.strokeStyle = 'rgba(34, 197, 94, 0.8)'; ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(tollX, tollY + 16); ctx.lineTo(w * 0.38, roadTop + roadHeight * 0.28); ctx.stroke();
+          }
+
+          let px = 0;
+          if (t < 2.5) {
+            px = (t / 2.5) * (tollX - 70) - 40; carSpeed = 25; isBraking = true; brakePercent = 30;
+            statusText = 'APPROACHING FASTag LANE'; statusColor = '#38bdf8';
+          } else if (t < 4.0) {
+            px = tollX - 70; carSpeed = 10; isBraking = true; brakePercent = 50;
+            statusText = 'FASTag RFID SCANNING... 📡'; statusColor = '#f59e0b';
+          } else {
+            const lt = (t - 4.0) / 4.0; px = (tollX - 70) + lt * (w * 0.6);
+            carSpeed = Math.round(15 + lt * 30); isBraking = false; brakePercent = 0;
+            statusText = 'TOLL CLEARED · ₹100 PAID ✓'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+          showAlert('💳 FASTag TOLL PLAZA: PROCEED AT 20 KM/H FOR AUTOMATIC RFID SCAN', t > 1.5 && t < 4.5);
+          break;
+        }
+
+        case 'blind_corner': {
+          // BLIND CORNER & CONVEX MIRROR
+          const mirrorX = w * 0.5, mirrorY = roadTop - 40;
+          ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.arc(mirrorX, mirrorY, 18, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3.5; ctx.stroke();
+          ctx.font = '700 9px sans-serif'; ctx.fillStyle = '#0f172a'; ctx.fillText('TRUCK', mirrorX - 14, mirrorY + 3);
+
+          const px = ((t / this._simState.duration) * (w + 100)) - 50;
+          carSpeed = 22; isBraking = t > 2.0 && t < 4.5; brakePercent = isBraking ? 55 : 0;
+          statusText = isBraking ? 'BLIND CURVE · CHECKING CONVEX MIRROR' : 'HUGGING LEFT EDGE · SAFE PASS';
+          statusColor = isBraking ? '#f59e0b' : '#10b981';
+
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+          showAlert('🪞 BLIND CORNER: SOUND SHORT HORN TAP & CHECK CONVEX MIRROR BEFORE BEND', t > 1.5 && t < 5.0);
+          break;
+        }
+
+        case 'hill_driving': {
+          // HILL START (ZERO ROLLBACK)
+          const px = w * 0.35 + (t > 4.0 ? ((t - 4.0) / 4.0) * (w * 0.5) : 0);
+          const isHillStop = t < 4.0;
+          carSpeed = isHillStop ? 0 : Math.round(((t - 4.0) / 4.0) * 30);
+          isBraking = isHillStop; brakePercent = isHillStop ? 100 : 0;
+          statusText = isHillStop ? 'HANDBRAKE APPLIED ON INCLINE (100%)' : 'CLUTCH RELEASE · ZERO ROLLBACK ACHIEVED';
+          statusColor = isHillStop ? '#ef4444' : '#10b981';
+
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+          showAlert('⛰️ HILL DRIVING: PREVENT ROLLBACK USING HANDBRAKE & SMOOTH CLUTCH COORDINATION', true);
+          break;
+        }
+
+        case 'bus_stop': {
+          // BEST BUS STOP QUEUEING
+          const busX = w * 0.55, busY = roadTop + roadHeight * 0.28;
+          drawBus(busX, busY, true);
+
+          // Commuters boarding
+          drawPedestrian(busX - 25, sidewalkTop + 6, t * 4, true, false);
+
+          let px = 0;
+          if (t < 2.5) {
+            px = (t / 2.5) * (busX - 90) - 40; carSpeed = Math.round(35 - (t / 2.5) * 30);
+            isBraking = t > 1.0; brakePercent = isBraking ? 70 : 0;
+            statusText = 'APPROACHING STOPPED BUS'; statusColor = '#38bdf8';
+          } else if (t < 6.5) {
+            px = busX - 85; carSpeed = 0; isBraking = true; brakePercent = 100;
+            statusText = 'WAITING BEHIND BUS · NO DANGEROUS OVERTAKE'; statusColor = '#10b981';
+          } else {
+            const lt = (t - 6.5) / 1.5; px = (busX - 85) + lt * (w * 0.5);
+            carSpeed = Math.round(lt * 32); isBraking = false; brakePercent = 0;
+            statusText = 'BUS MOVING · FOLLOWING IN LANE'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+          showAlert('🚌 BUS STOP COURTESY: NEVER OVERTAKE BLINDLY INTO ONCOMING TRAFFIC', t > 2.0 && t < 6.5);
+          break;
+        }
+
+        case 'construction': {
+          // CONSTRUCTION DETOUR & TRAFFIC CONES
+          const coneX = w * 0.5;
+          for (let i = 0; i < 4; i++) {
+            const cx = coneX + i * 25, cy = roadTop + roadHeight * 0.28;
+            ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.moveTo(cx, cy - 14); ctx.lineTo(cx - 7, cy + 6); ctx.lineTo(cx + 7, cy + 6); ctx.fill();
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(cx - 4, cy - 4, 8, 3);
+          }
+
+          const px = ((t / this._simState.duration) * (w + 120)) - 60;
+          const py = roadTop + roadHeight * 0.28 + (px > coneX - 70 && px < coneX + 110 ? 18 : 0);
+          carSpeed = 22; isBraking = px > coneX - 70 && px < coneX + 110; brakePercent = isBraking ? 40 : 0;
+          statusText = isBraking ? 'CONSTRUCTION DETOUR · SPEED 22 KM/H' : 'CRUISING PAST WORK ZONE'; statusColor = '#f59e0b';
+
+          drawVectorCar(px, py, '#3b82f6', isBraking, true, isBraking);
+          showAlert('🚧 WORK ZONE: SLOW DOWN & FOLLOW SINGLE-LANE DETOUR ARROWS', true);
+          break;
+        }
+
+        case 'one_way': {
+          // ONE-WAY COMPLIANCE & WRONG-SIDE HAZARD
+          const signX = w * 0.45, signY = roadTop - 45;
+          // No Entry Sign
+          ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(signX, signY, 18, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(signX - 12, signY - 3.5, 24, 7);
+
+          const px = ((t / this._simState.duration) * (w + 120)) - 60;
+          carSpeed = 35; isBraking = false; statusText = 'STRICT ONE-WAY FLOW · PROPER LANE'; statusColor = '#10b981';
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', false, true, false);
+
+          if (t > 2.5 && t < 5.5) {
+            const wrongX = (w * 0.8) - ((t - 2.5) / 3.0) * (w * 0.5);
+            drawVectorCar(wrongX, roadTop + roadHeight * 0.72, '#ef4444', false, true, true);
+            showAlert('⛔ WRONG-SIDE DRIVING VIOLATION — ₹5,000 FINE & LICENSE SUSPENSION', true);
+          } else { showAlert('', false); }
+          break;
+        }
+
+        case 'cyclist': {
+          // CYCLIST 1.5M CLEARANCE BUFFER
+          const cyclistX = w * 0.5;
+          drawCyclist(cyclistX, roadTop + roadHeight * 0.22, t * 12);
+
+          const px = ((t / this._simState.duration) * (w + 120)) - 60;
+          const py = roadTop + roadHeight * 0.28 + (px > cyclistX - 80 && px < cyclistX + 80 ? 18 : 0);
+          const isBuffer = px > cyclistX - 80 && px < cyclistX + 80;
+          carSpeed = 32; statusText = isBuffer ? '1.5M CYCLIST CLEARANCE GIVEN' : 'CRUISING'; statusColor = '#10b981';
+
+          drawVectorCar(px, py, '#3b82f6', false, true, isBuffer);
+          showAlert('🚴 CYCLIST SAFETY: PROVIDE AT LEAST 1.5 METERS BUFFER WHEN OVERTAKING', isBuffer);
+          break;
+        }
+
+        case 'highway_merge': {
+          // HIGHWAY ACCELERATION MERGE
+          const px = ((t / this._simState.duration) * (w + 140)) - 70;
+          const py = roadTop + roadHeight * 0.72 - (t > 3.0 ? 18 : 0);
+          carSpeed = Math.round(35 + (t / this._simState.duration) * 30);
+          statusText = t > 3.0 ? 'MERGED INTO HIGHWAY STREAM (65 KM/H)' : 'ACCELERATING ON SLIP RAMP'; statusColor = '#10b981';
+
+          // Passing highway truck
+          drawVectorCar(w * 0.7, roadTop + roadHeight * 0.28, '#475569', false, true, false);
+          drawVectorCar(px, py, '#3b82f6', false, true, t > 2.0 && t < 4.0);
+          showAlert('🛣️ HIGHWAY MERGE: MATCH HIGHWAY SPEED & MERGE SMOOTHLY INTO GAP', true);
+          break;
+        }
+
+        case 'zero_visibility': {
+          // ZERO VISIBILITY MONSOON / NIGHT FOG
+          const px = ((t / this._simState.duration) * (w + 100)) - 50;
+          carSpeed = 24; isBraking = false;
+          statusText = 'LOW BEAM & HAZARDS · FOG GUIDANCE'; statusColor = '#f59e0b';
+
+          // Swirling mist fog overlay
+          ctx.fillStyle = 'rgba(203, 213, 225, 0.25)';
+          ctx.beginPath(); ctx.ellipse(w * 0.5, roadTop + 10, w * 0.6, 40, 0, 0, Math.PI * 2); ctx.fill();
+
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', false, true, true);
+          showAlert('🌫️ ZERO VISIBILITY: USE LOW-BEAM HEADLIGHTS & HAZARD LIGHTS; DO NOT TAILGATE', true);
+          break;
+        }
+
+        case 'pedestrian_courtesy':
+        case 'grand_test':
+        default: {
+          // PEDESTRIAN COURTESY & SCHOOL ZONE
+          const crossX = w * 0.52, crossW = 90, stopTargetX = crossX - crossW / 2 - 42;
+          const numStripes = 6;
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+          for (let s = 0; s < numStripes; s++) {
+            const stripeY = roadTop + 6 + s * ((roadHeight - 12) / numStripes);
+            ctx.fillRect(crossX - crossW / 2, stripeY, crossW, (roadHeight - 12) / numStripes - 6);
+          }
+
+          const stopLineX = crossX - crossW / 2 - 14;
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(stopLineX, roadTop + 2, 4, roadHeight / 2 - 4);
+          ctx.font = '800 10px monospace'; ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.fillText('STOP', stopLineX - 32, roadTop + roadHeight * 0.28);
+
+          let px = 0;
+          if (t < 2.5) {
+            px = (t / 2.5) * (stopTargetX + 60) - 60;
+            carSpeed = Math.round(40 - (t / 2.5) * 15);
+            isBraking = t > 1.2; brakePercent = isBraking ? 50 : 0;
+            statusText = 'APPROACHING CROSSWALK'; statusColor = '#38bdf8';
+          } else if (t < 6.5) {
+            px = stopTargetX; carSpeed = 0; isBraking = true; brakePercent = 90;
+            statusText = 'YIELDING TO PEDESTRIANS 🚶'; statusColor = '#10b981';
+          } else {
+            const leaveT = (t - 6.5) / 1.5; px = stopTargetX + leaveT * (w - stopTargetX + 80);
+            carSpeed = Math.round(leaveT * 36); isBraking = false; brakePercent = 0;
+            statusText = 'CROSSWALK CLEAR · ACCELERATING'; statusColor = '#10b981';
+          }
+
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+
+          if (t > 1.8 && t < 7.2) {
+            const pedProg = (t - 1.8) / 5.4;
+            const pedY = sidewalkTop + pedProg * (roadHeight + 8);
+            drawPedestrian(crossX - 18, pedY, t * 10, true, isRain, true);
+            drawPedestrian(crossX + 16, pedY - 14, t * 9, true, isRain, true);
+          } else {
+            drawPedestrian(crossX - 18, sidewalkTop + 6, 0, true, isRain, true);
+          }
+          showAlert('🚸 PEDESTRIAN PRIORITY: ALWAYS YIELD TO PEDESTRIANS AT ZEBRA CROSSINGS', t > 1.8 && t < 6.5);
+          break;
+        }
       }
 
-      // 5. WEATHER EFFECTS (Rain & Splash Particles)
+      // ── 5. WEATHER EFFECTS (Rain & Splashes) ──
       if (isRain) {
-        ctx.strokeStyle = 'rgba(186, 230, 253, 0.65)';
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = 'rgba(186, 230, 253, 0.65)'; ctx.lineWidth = 1.2;
         ctx.beginPath();
         rainDrops.forEach(r => {
-          r.y += r.speed * dt;
-          r.x -= r.speed * dt * 0.35; // Angled rain
+          r.y += r.speed * dt; r.x -= r.speed * dt * 0.35;
           if (r.y > h) {
-            r.y = -10;
-            r.x = Math.random() * (w + 100);
-            // Road impact splash ripple
+            r.y = -10; r.x = Math.random() * (w + 100);
             if (r.y > roadTop) {
               ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-              ctx.beginPath();
-              ctx.ellipse(r.x, roadTop + Math.random() * roadHeight, 4, 1.5, 0, 0, Math.PI * 2);
-              ctx.fill();
+              ctx.beginPath(); ctx.ellipse(r.x, roadTop + Math.random() * roadHeight, 4, 1.5, 0, 0, Math.PI * 2); ctx.fill();
             }
           }
-          ctx.moveTo(r.x, r.y);
-          ctx.lineTo(r.x - 4, r.y + r.length);
+          ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - 4, r.y + r.length);
         });
         ctx.stroke();
       }
 
-      // Update Telemetry HUD
+      // ── 6. TELEMETRY HUD UPDATE ──
       if (speedValEl) speedValEl.textContent = `${carSpeed} km/h`;
       if (brakeValEl) brakeValEl.textContent = `${brakePercent}%`;
       if (statusValEl) {
@@ -3044,7 +3439,6 @@ if (un) {
       }
 
       ctx.restore();
-
       this._simAnimId = requestAnimationFrame(renderFrame);
     };
 
@@ -3623,6 +4017,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     if (ro) ro.classList.add('on')
     if (window.sfx && typeof window.sfx.play === 'function') sfx.play('win')
   },
+  challanHistory: [],
   issueChallan(off, sec, amt, loc, cb) {
     this.cq.push({ off, sec, amt, loc, cb })
     if (!this.cbusy) this._nc()
@@ -3635,6 +4030,13 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     this.cbusy = true
     const c = this.cq.shift()
     try {
+      const cId = 'MTP/2026/' + (Math.floor(Math.random() * 90000) + 10000)
+      const cTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      const challanItem = { id: cId, off: c.off, sec: c.sec, amt: c.amt, loc: c.loc || '📍 Mumbai', time: cTime }
+      if (!this.challanHistory) this.challanHistory = []
+      this.challanHistory.push(challanItem)
+      this._updateChallanSummaryBox()
+
       const vf = document.getElementById('vflash')
       if (vf) {
         vf.classList.remove('flash')
@@ -3642,7 +4044,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
         vf.classList.add('flash')
       }
       const cnumEl = document.getElementById('cnum')
-      if (cnumEl) cnumEl.textContent = 'MTP/2026/' + (Math.floor(Math.random() * 90000) + 10000)
+      if (cnumEl) cnumEl.textContent = cId
       const coffEl = document.getElementById('coff')
       if (coffEl) coffEl.textContent = c.off
       const clawEl = document.getElementById('claw')
@@ -3663,6 +4065,26 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
         setTimeout(() => this._nc(), 100)
       }
     }
+  },
+  _updateChallanSummaryBox() {
+    const csb = document.getElementById('challan-summary-box')
+    if (!csb) return
+    const totalCount = (this.challanHistory || []).length
+    if (totalCount === 0) {
+      csb.style.display = 'none'
+      return
+    }
+    csb.style.display = 'flex'
+    let totalAmt = 0
+    this.challanHistory.forEach(item => {
+      const num = parseInt(String(item.amt || '').replace(/[^0-9]/g, '')) || 500
+      totalAmt += num
+    })
+    const latest = this.challanHistory[this.challanHistory.length - 1]
+    const titleEl = document.getElementById('csb-title')
+    const subEl = document.getElementById('csb-sub')
+    if (titleEl) titleEl.textContent = '🚨 ' + (latest ? latest.off : 'E-Challan')
+    if (subEl) subEl.textContent = `${totalCount} Violation${totalCount > 1 ? 's' : ''} (₹${totalAmt.toLocaleString('en-IN')})`
   },
   dismissChallan() {
     const cov = document.getElementById('cov')
@@ -3699,20 +4121,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     }
 
     if (cov) cov.classList.remove('on')
-
-    setTimeout(() => {
-      try {
-        const stack = document.getElementById('challan-stack')
-        if (stack) stack.classList.add('on')
-        const coffEl = document.getElementById('coff')
-        const camtEl = document.getElementById('camt')
-        const offText = coffEl ? coffEl.textContent : ''
-        const amtText = camtEl ? camtEl.textContent : ''
-        if (ui._addChallanCard) ui._addChallanCard(offText, amtText)
-      } catch (e) {
-        console.warn('Challan card error:', e)
-      }
-    }, 300)
+    this._updateChallanSummaryBox()
 
     setTimeout(() => {
       if (this._ccb) {
@@ -3721,36 +4130,45 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       }
       if (game.playing) game.pause = false
       this.cbusy = false
-        setTimeout(() => this._nc(), 80);
-      }, 500);
-    },
-    _addChallanCard(offText, amtText) {
-    const stack = document.getElementById('challan-stack');
-    if (!stack) return;
-    stack.classList.add('on');
-    const card = document.createElement('div');
-    card.className = 'challan-card';
-    card.innerHTML = `
-      <div class="cc-header">
-        <span class="cc-badge">🚨 E-CHALLAN</span>
-        <span class="cc-amt">${amtText || '₹500'}</span>
-      </div>
-      <div class="cc-off">${offText || 'Traffic Violation'}</div>
-    `;
-    stack.appendChild(card);
-    while (stack.children.length > 3) {
-      stack.removeChild(stack.children[0]);
-    }
-    setTimeout(() => {
-      if (card.parentNode) {
-        card.style.opacity = '0';
-        card.style.transform = 'translateX(60px)';
-        setTimeout(() => {
-          if (card.parentNode) card.parentNode.removeChild(card);
-          if (stack.children.length === 0) stack.classList.remove('on');
-        }, 300);
+      setTimeout(() => this._nc(), 80)
+    }, 500)
+  },
+  openChallanHistoryModal() {
+    const modal = document.getElementById('challan-history-modal')
+    if (!modal) return
+    const list = document.getElementById('chm-list')
+    const totalValEl = document.getElementById('chm-total-val')
+    const history = this.challanHistory || []
+
+    let totalAmt = 0
+    if (list) {
+      if (history.length === 0) {
+        list.innerHTML = '<div class="chm-empty">No violations recorded yet. Keep driving safely!</div>'
+      } else {
+        list.innerHTML = history.map((item, idx) => {
+          const num = parseInt(String(item.amt || '').replace(/[^0-9]/g, '')) || 500
+          totalAmt += num
+          return `
+            <div class="chm-item">
+              <div class="chm-item-header">
+                <span class="chm-item-off">#${idx + 1}. ${item.off}</span>
+                <span class="chm-item-amt">${item.amt || '₹500'}</span>
+              </div>
+              <div class="chm-item-meta">
+                <span>📜 ${item.sec || 'Traffic Regulation'}</span>
+                <span>⏰ ${item.time || ''} • ${item.loc || 'Mumbai'}</span>
+              </div>
+            </div>
+          `
+        }).join('')
       }
-    }, 4500);
+    }
+    if (totalValEl) totalValEl.textContent = '₹' + totalAmt.toLocaleString('en-IN')
+    modal.classList.add('on')
+  },
+  closeChallanHistoryModal() {
+    const modal = document.getElementById('challan-history-modal')
+    if (modal) modal.classList.remove('on')
   },
   
   // ─── CERTIFICATE GENERATION ───
@@ -4171,10 +4589,17 @@ const _buildVehicle = (type, col) => {
   }
 
   const g = new THREE.Group()
+  g.type = type
+
   switch (type) {
     case 'car':
-    case 'taxi': {
-      const isT = type === 'taxi'
+    case 'taxi':
+    case 'cab':
+    case 'sedan':
+    case 'wagonr':
+    case 'city':
+    case 'car_highway': {
+      const isT = type === 'taxi' || type === 'cab'
       const bodyM = new THREE.MeshToonMaterial({ color: isT ? 0xffd54a : col })
       const glassM = new THREE.MeshToonMaterial({ color: 0x1a2e4a, transparent: true, opacity: 0.75 })
       const wheelM = new THREE.MeshToonMaterial({ color: 0x111111 })
@@ -4246,7 +4671,8 @@ const _buildVehicle = (type, col) => {
       g.userData.doorPivotR = dpRPC
       break
     }
-    case 'bus': {
+    case 'bus':
+    case 'msrtc': {
       const bM = new THREE.MeshToonMaterial({ color: col || 0xe74c3c })
       const gM = new THREE.MeshToonMaterial({ color: 0x88bbdd, transparent: true, opacity: 0.6 })
       const wM = new THREE.MeshToonMaterial({ color: 0x111111 })
@@ -4280,7 +4706,8 @@ const _buildVehicle = (type, col) => {
       })
       break
     }
-    case 'auto': {
+    case 'auto':
+    case 'auto_yellow': {
       const aM = new THREE.MeshToonMaterial({ color: 0xffd54a })
       const sM = new THREE.MeshToonMaterial({ color: 0x111111 })
       const wM = new THREE.MeshToonMaterial({ color: 0x111111 })
@@ -4309,7 +4736,11 @@ const _buildVehicle = (type, col) => {
       g.add(fw)
       break
     }
-    case 'truck': {
+    case 'truck':
+    case 'eicher':
+    case 'ace':
+    case 'scv':
+    case 'dumper': {
       const cM = new THREE.MeshToonMaterial({ color: col || 0x1565c0 })
       const contM = new THREE.MeshToonMaterial({ color: 0xeeeeee })
       const gM2 = new THREE.MeshToonMaterial({ color: 0x88ccff, transparent: true, opacity: 0.6 })
@@ -4343,7 +4774,13 @@ const _buildVehicle = (type, col) => {
       })
       break
     }
-    case 'bike': {
+    case 'bike':
+    case 'splendor':
+    case 'activa':
+    case 'scooter':
+    case 'twowheeler':
+    case 'ktm':
+    case 'sportbike': {
       const bkM = new THREE.MeshToonMaterial({ color: col })
       const wkM = new THREE.MeshToonMaterial({ color: 0x111111 })
       const frame = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.38, 1.9), bkM)
@@ -4367,7 +4804,12 @@ const _buildVehicle = (type, col) => {
       g.add(wr)
       break
     }
-    case 'suv': {
+    case 'suv':
+    case 'creta':
+    case 'innova':
+    case 'mpv':
+    case 'police':
+    case 'ambulance': {
       const suvM = new THREE.MeshToonMaterial({ color: col })
       const gS = new THREE.MeshToonMaterial({ color: 0x1a3a5a, transparent: true, opacity: 0.7 })
       const wS = new THREE.MeshToonMaterial({ color: 0x111111 })
@@ -4412,8 +4854,29 @@ const _buildVehicle = (type, col) => {
       break
     }
     default: {
+      const bMat = new THREE.MeshToonMaterial({ color: col || 0x3498db })
+      const gMat = new THREE.MeshToonMaterial({ color: 0x1a2e4a, transparent: true, opacity: 0.75 })
+      const wMat = new THREE.MeshToonMaterial({ color: 0x111111 })
 
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 3.5), new THREE.MeshToonMaterial({ color: col })))
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 3.8), bMat)
+      body.position.y = 0.42
+      g.add(body)
+
+      const cab = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.44, 1.9), gMat)
+      cab.position.set(0, 0.84, 0.08)
+      g.add(cab)
+
+      ;[
+        [0.85, 0, 1.25],
+        [-0.85, 0, 1.25],
+        [0.85, 0, -1.25],
+        [-0.85, 0, -1.25]
+      ].forEach(([x, , z]) => {
+        const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.2, 8), wMat)
+        wh.rotation.z = Math.PI / 2
+        wh.position.set(x, 0.3, z)
+        g.add(wh)
+      })
     }
   }
   return g
@@ -4421,8 +4884,195 @@ const _buildVehicle = (type, col) => {
 
 const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
-  const sk = isPlayer ? 1.0 : 0.92
+  const app = (isPlayer && (() => { try { return JSON.parse(localStorage.getItem('traffic_appearance')) } catch(e){} return null })()) || appearance || {}
+  const variant = app.variant || 'normal' // 'normal'|'elderly'|'child'|'guard'|'volunteer'|'worker'|'commuter'
+  const sk = isPlayer ? 1.0 : (variant === 'child' ? 0.72 : 0.92)
 
+  const PM = window.PRELOADED_MODELS || {}
+
+  // ── FBX-First Animated Character Model ───────────────────────────────────
+  const fbxKey = app.animPack ? 'anim_' + app.animPack : 'anim_protagonists';
+  const fbxChar = PM[fbxKey] || PM['anim_retro'] || PM['anim_survivors'];
+  if (fbxChar && typeof THREE.AnimationMixer !== 'undefined' && variant === 'normal') {
+    try {
+      const fbxScene = fbxChar.clone ? fbxChar.clone(true) : fbxChar;
+      fbxScene.scale.setScalar(sk * 0.012);
+      fbxScene.rotation.y = Math.PI;
+      g.add(fbxScene);
+
+      const mixer = new THREE.AnimationMixer(fbxScene);
+      const idleFBX = PM[fbxKey + '_idle'] || PM['anim_protagonists_idle'];
+      const runFBX = PM[fbxKey + '_run'] || PM['anim_protagonists_run'];
+      let idleAction = null;
+      let runAction = null;
+
+      if (idleFBX && idleFBX.animations && idleFBX.animations.length > 0) {
+        idleAction = mixer.clipAction(idleFBX.animations[0]);
+        idleAction.play();
+      } else if (fbxChar.animations && fbxChar.animations.length > 0) {
+        idleAction = mixer.clipAction(fbxChar.animations[0]);
+        idleAction.play();
+      }
+      if (runFBX && runFBX.animations && runFBX.animations.length > 0) {
+        runAction = mixer.clipAction(runFBX.animations[0]);
+        runAction.play();
+      }
+
+      const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6*sk, 1.8*sk, 0.6*sk), new THREE.MeshBasicMaterial({ visible: false }));
+      hb.position.y = 0.9 * sk;
+      g.add(hb);
+
+      const shadowBlob = new THREE.Mesh(new THREE.CircleGeometry(0.3*sk, 12), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 }));
+      shadowBlob.rotation.x = -Math.PI/2; shadowBlob.position.y = 0.01;
+      g.add(shadowBlob);
+
+      g.userData = {
+        isFBXAnimated: true,
+        variant,
+        isPlayer,
+        _sk: sk,
+        shadowBlob,
+        mixer: mixer,
+        idleAction: idleAction,
+        runAction: runAction,
+        t: Math.random() * 10,
+        spd: 1.5,
+        dir: 1
+      };
+      return g;
+    } catch (e) {
+      console.warn('FBX character instantiation fallback:', e);
+    }
+  }
+
+  // ── GLB-First Character Model ─────────────────────────────────────────────
+  // Pick appropriate Kenney mini-character GLB based on variant / appearance
+  const maleKeys = ['char_m_a','char_m_b','char_m_c','char_m_d','char_m_e','char_m_f']
+  const femaleKeys = ['char_f_a','char_f_b','char_f_c','char_f_d','char_f_e','char_f_f']
+  const isFemale = app.gender === 'female' || (!isPlayer && Math.random() < 0.45)
+  const charKeys = isFemale ? femaleKeys : maleKeys
+  const preferredKey = isPlayer ? (isFemale ? 'char_f_a' : 'char_m_a') : charKeys[Math.floor(Math.random() * charKeys.length)]
+  const charGLB = PM[preferredKey]
+
+  if (charGLB && charGLB.scene) {
+    // ── GLB path: clone the Kenney character, scale to world units ─────────
+    const charScene = charGLB.scene.clone(true)
+    charScene.scale.setScalar(sk * 1.15) // Kenney chars are ~1.7 world units tall at scale 1.15
+    charScene.rotation.y = Math.PI // face forward by default
+
+    // Apply toon-style colour tint based on variant
+    const variantColors = {
+      normal:    { shirt: app.shirt || (isPlayer ? 0xe74c3c : [0x3498db,0x2ecc71,0x9b59b6,0xe67e22,0xe74c3c][Math.floor(Math.random()*5)]) },
+      elderly:   { shirt: 0xf5f0e1, pants: 0xe8dcc8 }, // cream kurta + dhoti
+      child:     { shirt: 0xffffff, pants: 0x1a237e }, // school uniform: white + navy
+      guard:     { shirt: 0xff8c00, pants: 0x1a1a1a }, // orange vest
+      volunteer: { shirt: 0xaaff00, pants: 0x1a1a1a }, // fluorescent vest
+      worker:    { shirt: 0xff8c00, pants: 0x333333 }, // safety vest
+      commuter:  { shirt: 0x34495e, pants: 0x2c3e50 }, // formal
+    }
+    const vc = variantColors[variant] || variantColors.normal
+    charScene.traverse(c => {
+      if (!c.isMesh) return
+      const nm = c.name.toLowerCase()
+      if (nm.includes('shirt') || nm.includes('top') || nm.includes('torso') || nm.includes('body')) {
+        c.material = c.material.clone()
+        c.material.color.setHex(vc.shirt || 0x3498db)
+      }
+      if (vc.pants && (nm.includes('pant') || nm.includes('leg') || nm.includes('bottom'))) {
+        c.material = c.material.clone()
+        c.material.color.setHex(vc.pants)
+      }
+      c.castShadow = true
+      c.receiveShadow = true
+    })
+
+    g.add(charScene)
+
+    // ── AnimationMixer setup ────────────────────────────────────────────────
+    if (charGLB.animations && charGLB.animations.length > 0) {
+      const mixer = new THREE.AnimationMixer(charScene)
+      const walkClip = charGLB.animations.find(a => /walk/i.test(a.name)) || charGLB.animations[0]
+      const idleClip = charGLB.animations.find(a => /idle/i.test(a.name))
+      const walkAction = mixer.clipAction(walkClip)
+      const idleAction = idleClip ? mixer.clipAction(idleClip) : null
+      walkAction.play()
+      g.userData._mixer = mixer
+      g.userData._walkAction = walkAction
+      g.userData._idleAction = idleAction
+      // Slow gait for elderly
+      if (variant === 'elderly') walkAction.timeScale = 0.4
+      if (variant === 'child') walkAction.timeScale = 1.3
+    }
+
+    // ── Elderly-specific: attach aid-cane GLB accessory ─────────────────────
+    if (variant === 'elderly') {
+      charScene.scale.setScalar(sk * 1.05) // elderly slightly shorter
+      if (PM.char_aid_cane && PM.char_aid_cane.scene) {
+        const cane = PM.char_aid_cane.scene.clone(true)
+        cane.scale.setScalar(sk * 1.15)
+        cane.position.set(0.22 * sk, 0, 0)
+        g.add(cane)
+      } else {
+        // Procedural cane fallback
+        const stickM = new THREE.MeshLambertMaterial({ color: 0x5C3317 })
+        const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.025*sk, 0.03*sk, 1.1*sk, 6), stickM)
+        stick.position.set(0.32*sk, 0.55*sk, 0.05*sk)
+        stick.rotation.z = 0.15
+        g.add(stick)
+        const handle = new THREE.Mesh(new THREE.TorusGeometry(0.05*sk, 0.02*sk, 6, 8, Math.PI), stickM)
+        handle.position.set(0.32*sk, 1.12*sk, 0.05*sk)
+        handle.rotation.z = Math.PI/2
+        g.add(handle)
+      }
+    }
+
+    // ── Guard/Volunteer: attach stop sign prop ────────────────────────────
+    if (variant === 'guard') {
+      const cv = document.createElement('canvas'); cv.width = 128; cv.height = 128
+      const cx2 = cv.getContext('2d')
+      cx2.fillStyle = '#cc0000'; cx2.beginPath()
+      for(let i=0;i<8;i++){const a=Math.PI/8+i*Math.PI/4;cx2.lineTo(64+52*Math.cos(a),64+52*Math.sin(a))}
+      cx2.closePath(); cx2.fill()
+      cx2.font='bold 28px Arial'; cx2.fillStyle='#fff'; cx2.textAlign='center'; cx2.fillText('STOP',64,72)
+      const signMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.4*sk, 0.4*sk), new THREE.MeshLambertMaterial({map:new THREE.CanvasTexture(cv),side:THREE.DoubleSide}))
+      signMesh.position.set(0.42*sk, 1.3*sk, 0)
+      const poleM2 = new THREE.Mesh(new THREE.CylinderGeometry(0.02*sk,0.02*sk,1.4*sk,6), new THREE.MeshLambertMaterial({color:0x888888}))
+      poleM2.position.set(0.42*sk, 0.7*sk, 0)
+      g.add(poleM2); g.add(signMesh)
+    }
+
+    // ── Collision hitbox (invisible) ────────────────────────────────────────
+    const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6*sk, 1.8*sk, 0.6*sk), new THREE.MeshBasicMaterial({ visible: false }))
+    hb.position.y = 0.9 * sk
+    g.add(hb)
+
+    // ── Shadow blob ──────────────────────────────────────────────────────────
+    const shadowBlob = new THREE.Mesh(new THREE.CircleGeometry(0.3*sk, 12), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 }))
+    shadowBlob.rotation.x = -Math.PI/2; shadowBlob.position.y = 0.01
+    g.add(shadowBlob)
+
+    g.userData = {
+      isGLB: true,
+      variant,
+      isPlayer,
+      _sk: sk,
+      shadowBlob,
+      t: Math.random() * 10,
+      spd: variant==='elderly' ? 0.7 : (variant==='child' ? 2.2 : 1.5 + Math.random()*1.5),
+      dir: Math.random() > 0.5 ? 1 : -1,
+      startZ: 0,
+      idlePhase: Math.random() * Math.PI * 2,
+      blinkTimer: Math.random() * 4 + 2,
+      _mixer,
+    }
+    // Set _mixer properly (was declared inside block)
+    g.userData._mixer = g.userData._mixer || null
+
+    return g
+  }
+
+  // ── FALLBACK: Procedural model (if GLBs not loaded yet) ───────────────────
+  const sk_orig = sk
 
 
   const npcSkins = [0xd4a574, 0xc68642, 0x8d5524, 0xf1c27d, 0xffdbac, 0xe0ac69]
@@ -4430,12 +5080,6 @@ const _buildHuman = (isPlayer = false, appearance) => {
   const npcPants = [0x555555, 0x2c3e50, 0x444444, 0x3d3d3d, 0x2d2d2d]
   const npcHairs = [0x1a1a1a, 0x3d2b1f, 0x654321, 0x8B4513, 0x2c1810, 0xb5651d]
 
-
-  let savedAppear = null
-  if (isPlayer) {
-    try { savedAppear = JSON.parse(localStorage.getItem('traffic_appearance')) } catch (e) {}
-  }
-  const app = (isPlayer && savedAppear) || appearance || {}
 
 
   const skinColor = isPlayer ? (app.skin || 0xd4a574) : npcSkins[Math.floor(Math.random() * npcSkins.length)]
@@ -5019,28 +5663,13 @@ const _buildHuman = (isPlayer = false, appearance) => {
     ringOuter.rotation.x = Math.PI / 2
     g.add(ringOuter)
 
-
-    const arrowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.35 })
-    ;[-1, 1].forEach(s => {
-      const ar = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.09, 4), arrowMat)
-      ar.position.set(s * 0.52 * sk, 0.1 * sk, 0)
-      ar.rotation.z = s * Math.PI / 2
-      g.add(ar)
-    })
-
-    const fwdAr = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.08, 4), arrowMat)
-    fwdAr.position.set(0, 0.08 * sk, 0.5 * sk)
-    fwdAr.rotation.x = Math.PI / 2
-    g.add(fwdAr)
-
-
     const nameTxt = (typeof S !== 'undefined' && S?.name) || 'Player'
     const _nametagRankTiers = [
-      { min: 0, name: 'Rookie', icon: '🔰', color: '#94a3b8' },
-      { min: 5000, name: 'Bronze', icon: '🥉', color: '#cd7f32' },
-      { min: 15000, name: 'Silver', icon: '🥈', color: '#c0c0c0' },
-      { min: 30000, name: 'Gold', icon: '🥇', color: '#ffd54a' },
-      { min: 50000, name: 'Platinum', icon: '💎', color: '#b89bff' },
+      { min: 0, name: 'Rookie', icon: '🔰', color: '#38bdf8' },
+      { min: 5000, name: 'Bronze', icon: '🥉', color: '#fb923c' },
+      { min: 15000, name: 'Silver', icon: '🥈', color: '#cbd5e1' },
+      { min: 30000, name: 'Gold', icon: '🥇', color: '#facc15' },
+      { min: 50000, name: 'Platinum', icon: '💎', color: '#c084fc' },
       { min: 100000, name: 'Hero', icon: '🏆', color: '#34d399' }
     ]
     const _getNametagRank = (score) => {
@@ -5050,82 +5679,52 @@ const _buildHuman = (isPlayer = false, appearance) => {
     }
     const _playerScore = (typeof S !== 'undefined' && S?.total) || 0
     const _rank = _getNametagRank(_playerScore)
-    const _nextRank = _nametagRankTiers.find(r => r.min > _playerScore)
-    const _xpPct = _nextRank ? Math.min(1, (_playerScore - _rank.min) / (_nextRank.min - _rank.min)) : 1
 
+    // Render modern high-DPI sleek glassmorphism badge
     const canvas = document.createElement('canvas')
-    canvas.width = 512; canvas.height = 140
+    canvas.width = 512; canvas.height = 128
     const ctx = canvas.getContext('2d')
 
-    ctx.fillStyle = 'rgba(0, 15, 10, 0.75)'
-    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 132, 14); ctx.fill() } else { ctx.fillRect(4, 4, 504, 132) }
+    // Glass pill background
+    ctx.clearRect(0, 0, 512, 128)
+    ctx.fillStyle = 'rgba(10, 17, 32, 0.86)'
+    if (ctx.roundRect) { ctx.roundRect(8, 8, 496, 112, 28); ctx.fill() } else { ctx.fillRect(8, 8, 496, 112) }
 
-    ctx.strokeStyle = _rank.color + '88'
-    ctx.lineWidth = 2.5
-    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 132, 14); ctx.stroke() }
+    // Vibrant accent border
+    ctx.strokeStyle = _rank.color
+    ctx.lineWidth = 3.5
+    if (ctx.roundRect) { ctx.roundRect(8, 8, 496, 112, 28); ctx.stroke() }
 
-    ctx.font = '28px serif'
-    ctx.textAlign = 'left'
+    // Rank icon badge circle
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
+    ctx.beginPath()
+    ctx.arc(68, 64, 38, 0, Math.PI * 2)
+    ctx.fill()
+
+    ctx.font = '36px serif'
+    ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText(_rank.icon, 20, 38)
+    ctx.fillText(_rank.icon, 68, 64)
 
-    ctx.fillStyle = _rank.color
-    ctx.font = 'bold 11px Inter, sans-serif'
-    ctx.textAlign = 'left'
-    ctx.fillText(_rank.name.toUpperCase(), 52, 28)
-
+    // Player Name
     ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 30px Inter, sans-serif'
-    ctx.fillText(nameTxt, 52, 55)
-
-    const barX = 20, barY = 78, barW = 472, barH = 10
-
-    ctx.fillStyle = 'rgba(255,255,255,0.08)'
-    if (ctx.roundRect) { ctx.roundRect(barX, barY, barW, barH, 5); ctx.fill() } else { ctx.fillRect(barX, barY, barW, barH) }
-
-    if (_xpPct > 0) {
-      const barGrad = ctx.createLinearGradient(barX, 0, barX + barW * _xpPct, 0)
-      barGrad.addColorStop(0, _rank.color)
-      barGrad.addColorStop(1, _nextRank ? _nextRank.color : _rank.color)
-      ctx.fillStyle = barGrad
-      if (ctx.roundRect) { ctx.roundRect(barX, barY, Math.max(4, barW * _xpPct), barH, 5); ctx.fill() } else { ctx.fillRect(barX, barY, Math.max(4, barW * _xpPct), barH) }
-    }
-
-    ctx.fillStyle = 'rgba(255,255,255,0.5)'
-    ctx.font = '10px Inter, sans-serif'
+    ctx.font = 'bold 32px Inter, system-ui, sans-serif'
     ctx.textAlign = 'left'
-    ctx.fillText(_playerScore.toLocaleString() + ' XP', barX, barY + 24)
-    ctx.textAlign = 'right'
-    ctx.fillText(_nextRank ? (_nextRank.min - _playerScore).toLocaleString() + ' to ' + _nextRank.name : 'MAX RANK', barX + barW, barY + 24)
+    ctx.textBaseline = 'alphabetic'
+    ctx.fillText(nameTxt.substring(0, 16), 125, 54)
+
+    // Subtitle Rank & XP
+    ctx.fillStyle = _rank.color
+    ctx.font = 'bold 18px Inter, system-ui, sans-serif'
+    ctx.fillText(_rank.name.toUpperCase() + ' · ' + _playerScore.toLocaleString() + ' XP', 125, 92)
+
     const tex = new THREE.CanvasTexture(canvas)
     tex.minFilter = THREE.LinearFilter
-    nametag = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }))
-    nametag.position.set(0, 2.45 * sk, 0)
-    nametag.scale.set(1.4, 0.38, 1)
+    nametag = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: true, depthWrite: false }))
+    nametag.position.set(0, 2.15 * sk, 0)
+    nametag.scale.set(0.72, 0.18, 1)
     g.add(nametag)
 
-    const _rankColorObj = new THREE.Color(_rank.color)
-    nametagGlow = new THREE.Mesh(
-      new THREE.RingGeometry(0.25 * sk, 0.30 * sk, 24),
-      new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthTest: false })
-    )
-    nametagGlow.position.set(0, 2.45 * sk, -0.01)
-    nametagGlow.rotation.x = -Math.PI / 2
-    g.add(nametagGlow)
-
-    nametagGlowOuter = new THREE.Mesh(
-      new THREE.RingGeometry(0.32 * sk, 0.35 * sk, 24),
-      new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthTest: false })
-    )
-    nametagGlowOuter.position.set(0, 2.45 * sk, -0.015)
-    nametagGlowOuter.rotation.x = -Math.PI / 2
-    g.add(nametagGlowOuter)
-
-
-    const glowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.04, side: THREE.BackSide })
-    const glowBody = new THREE.Mesh(new THREE.CylinderGeometry(0.38 * sk, 0.32 * sk, 1.6 * sk, 12), glowMat)
-    glowBody.position.y = 0.9 * sk
-    g.add(glowBody)
   }
 
 

@@ -30,6 +30,8 @@ window.LVS.push({
   silentZ2: 80,
   scenarioType: 'cars_only',
   startOutside: true,
+  isParkingChallenge: true,
+  parkingType: "hospital",
   tasks: [
     { id: 'avoid_hospital', text: 'Do not park within 100m of hospital', type: 'avoid', target: 'hospital_zone', done: false },
     { id: 'find_legal', text: 'Find parking 100m+ away', type: 'reach', target: 'parking_spot', done: false },

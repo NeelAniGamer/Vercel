@@ -27,6 +27,8 @@ window.LVS.push({
   scenarioType: 'emergency',
   npcDensity: 'moderate',
   startOutside: true,
+  hasAmbulanceBehind: true,
+  ambulanceDelay: 15,
   tasks: [
     { id: 'pull_over', text: 'Pull over left immediately', type: 'reach', target: 'left_side', done: false },
     { id: 'stop_complete', text: 'Stop completely', type: 'stop', target: 'stationary', done: false },

@@ -21,6 +21,8 @@ window.LVS.push({
   mode: 'practical',
   themeType: 'mountain',
   startOutside: true,
+  hasBlindCorner: true,
+  hasHillPhysics: true,
   tasks: [
     { id: 'lower_gear', text: 'Use lower gear downhill', type: 'avoid', target: 'brake_overheat', done: false },
     { id: 'horn_curves', text: 'Honk at blind curves', type: 'avoid', target: 'curve_collision', done: false },

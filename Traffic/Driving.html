@@ -20,7 +20,7 @@
     if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
     if (!S.comp) S.comp = {}
     if (!S.badges) S.badges = []
-    function save() { try { localStorage.setItem('mth4', JSON.stringify(S)) } catch(e) {} }
+    window.save = function() { try { localStorage.setItem('mth4', JSON.stringify(S)) } catch(e) {} }
 
     const _oldFetch = window.fetch
     window.fetch = function () {
@@ -6617,18 +6617,26 @@
   <script src="vehicles.js"></script>
 <style>
     /* ========================================================================= */
+    /* ========================================================================= */
     /* MASTER HUD REORGANIZATION (SOLID MATTE, ZERO GLASS, NO OVERLAPS)          */
     /* ========================================================================= */
     :root {
       --hud-bg-solid: #0d131f;
       --hud-panel-solid: #151d2d;
       --hud-border-solid: #26354a;
+      --hud-border-focus: #38bdf8;
       --hud-text-primary: #f8fafc;
       --hud-text-secondary: #94a3b8;
+      --hud-accent-cyan: #38bdf8;
+      --hud-accent-gold: #f59e0b;
+      --hud-accent-red: #ef4444;
+      --hud-accent-green: #10b981;
     }
 
-    /* TOP-RIGHT STACK: Objective Card + Tasks below it */
-    #objective-overlay {
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* 1. TOP-RIGHT UNIFIED HUD STACK (Auto-flowing flex column)       */
+    /* ═══════════════════════════════════════════════════════════════ */
+    #top-right-hud-stack {
       position: fixed !important;
       top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
       right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
@@ -6636,127 +6644,153 @@
       bottom: auto !important;
       z-index: 45 !important;
       width: 290px !important;
-      max-width: 290px !important;
-      box-sizing: border-box !important;
-      background: #0d131f !important;
-      border: 1.5px solid #26354a !important;
-      border-radius: 12px !important;
-      padding: 10px 14px !important;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      color: #ffffff !important;
+      max-width: calc(100vw - 32px) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
       pointer-events: none !important;
       margin: 0 !important;
       transform: none !important;
     }
 
-    /* TASK TRACKER — sits below the objective card with an 8px gap */
-    #task-tracker {
-      position: fixed !important;
-      top: calc(env(safe-area-inset-top, 0px) + 140px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+    #objective-overlay {
+      position: relative !important;
+      top: auto !important;
+      right: auto !important;
       left: auto !important;
       bottom: auto !important;
-      z-index: 45 !important;
-      width: 290px !important;
-      max-width: 290px !important;
-      max-height: 40vh !important;
+      width: 100% !important;
+      max-width: 100% !important;
       box-sizing: border-box !important;
-      overflow-y: auto !important;
-      background: #0d131f !important;
-      border: 1.5px solid #26354a !important;
+      background: var(--hud-bg-solid, #0d131f) !important;
+      border: 1.5px solid var(--hud-border-solid, #26354a) !important;
       border-radius: 12px !important;
       padding: 10px 14px !important;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
       color: #ffffff !important;
+      pointer-events: auto !important;
       margin: 0 !important;
       transform: none !important;
     }
 
-    /* 1. CIVIC CONTROLS POD — Auto-fit pill with zero overflow */
-    #civic-controls {
-      position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 174px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+    #task-tracker {
+      position: relative !important;
       top: auto !important;
+      right: auto !important;
       left: auto !important;
-      z-index: 55 !important;
-      width: auto !important;
-      max-width: calc(100vw - 32px) !important;
+      bottom: auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      max-height: 35vh !important;
       box-sizing: border-box !important;
-      display: inline-flex !important;
-      flex-wrap: nowrap !important;
-      align-items: center !important;
-      gap: 6px !important;
-      background: #0d131f !important;
-      border: 1.5px solid #26354a !important;
+      overflow-y: auto !important;
+      background: var(--hud-bg-solid, #0d131f) !important;
+      border: 1.5px solid var(--hud-border-solid, #26354a) !important;
       border-radius: 12px !important;
-      padding: 6px 8px !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75) !important;
+      padding: 10px 14px !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
+      color: #ffffff !important;
+      pointer-events: auto !important;
       margin: 0 !important;
       transform: none !important;
     }
 
-    #civic-controls .civic-btn {
-      background: #151d2d !important;
-      border: 1px solid #26354a !important;
-      color: #e2e8f0 !important;
-      border-radius: 8px !important;
-      padding: 5px 8px !important;
-      font-size: 0.74rem !important;
-      font-weight: 700 !important;
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* 2. CONSOLIDATED E-CHALLAN SUMMARY BOX (Single neat card)       */
+    /* ═══════════════════════════════════════════════════════════════ */
+    #challan-summary-box {
+      position: relative !important;
+      top: auto !important;
+      right: auto !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      background: linear-gradient(135deg, #1c1012, #2a1114) !important;
+      border: 1.5px solid #ef4444 !important;
+      border-radius: 10px !important;
+      padding: 8px 12px !important;
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.25) !important;
+      color: #ffffff !important;
       cursor: pointer !important;
-      transition: all 0.15s ease !important;
-      display: inline-flex !important;
+      pointer-events: auto !important;
+      display: none;
       align-items: center !important;
-      justify-content: center !important;
-      gap: 5px !important;
-      white-space: nowrap !important;
-      flex-shrink: 0 !important;
+      justify-content: space-between !important;
+      gap: 6px !important;
+      font-family: 'Inter', sans-serif !important;
+      transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+      animation: challanNoticePulse 2s infinite !important;
     }
-    #civic-controls .civic-btn:hover {
-      border-color: #38bdf8 !important;
-      background: #1e293b !important;
+    #challan-summary-box:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.45) !important;
+      border-color: #f87171 !important;
+    }
+    @keyframes challanNoticePulse {
+      0%, 100% { box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25); }
+      50% { box-shadow: 0 6px 22px rgba(239, 68, 68, 0.5); }
+    }
+    .csb-left {
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+    }
+    .csb-icon { font-size: 1.1rem !important; }
+    .csb-info { display: flex !important; flex-direction: column !important; text-align: left !important; }
+    .csb-title { font-size: 0.72rem !important; font-weight: 800 !important; color: #f87171 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; }
+    .csb-sub { font-size: 0.78rem !important; font-weight: 700 !important; color: #fecaca !important; }
+    .csb-btn {
+      background: #dc2626 !important;
+      color: #ffffff !important;
+      font-size: 0.68rem !important;
+      font-weight: 800 !important;
+      padding: 4px 8px !important;
+      border-radius: 6px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      white-space: nowrap !important;
     }
 
-    /* BOTTOM-RIGHT POD: Speed Controls (Cruise/Modes) + Gear Selector (P R N D) */
-    #speed-ctrl {
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* 3. BOTTOM-RIGHT UNIFIED COCKPIT DRIVE CLUSTER & GEAR SELECTOR   */
+    /* ═══════════════════════════════════════════════════════════════ */
+    #cockpit-drive-cluster {
       position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 74px) !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 64px) !important;
       right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
       left: auto !important;
       top: auto !important;
-      transform: none !important;
       z-index: 45 !important;
       width: 290px !important;
       max-width: 290px !important;
       box-sizing: border-box !important;
-      display: flex !important;
+      display: none;
       flex-direction: column !important;
       gap: 6px !important;
       background: #0d131f !important;
-      padding: 8px 10px 6px 10px !important;
-      border-radius: 12px 12px 0 0 !important;
+      padding: 8px 10px !important;
+      border-radius: 12px !important;
       border: 1.5px solid #26354a !important;
-      border-bottom: none !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75) !important;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.8) !important;
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
     }
+    #gc.on ~ #cockpit-drive-cluster,
+    #cockpit-drive-cluster.on {
+      display: flex !important;
+    }
 
-    #speed-ctrl .sc-row {
+    .sc-row {
       display: flex !important;
       justify-content: space-between !important;
       gap: 5px !important;
       width: 100% !important;
     }
 
-    #speed-ctrl .sc-btn {
+    .sc-btn {
       flex: 1 !important;
       background: #151d2d !important;
       border: 1px solid #26354a !important;
@@ -6774,46 +6808,35 @@
       white-space: nowrap !important;
       transition: all 0.15s ease !important;
     }
-    #speed-ctrl .sc-btn.sc-adj {
-      flex: 0 0 32px !important;
+    .sc-btn.sc-adj {
+      flex: 0 0 30px !important;
       font-size: 1rem !important;
     }
-    #speed-ctrl .sc-btn:hover {
+    .sc-btn:hover {
       border-color: #38bdf8 !important;
       background: #1e293b !important;
     }
-    #speed-ctrl .sc-btn.sc-active {
+    .sc-btn.sc-active {
       background: #0284c7 !important;
       border-color: #38bdf8 !important;
       color: #ffffff !important;
       box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
     }
 
+    /* P R N D Gear Selector Row */
     #gp {
-      position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
-      left: auto !important;
-      top: auto !important;
-      transform: none !important;
-      z-index: 45 !important;
-      width: 290px !important;
-      max-width: 290px !important;
-      box-sizing: border-box !important;
       display: flex !important;
       flex-direction: row !important;
       justify-content: space-between !important;
-      gap: 6px !important;
-      background: #0d131f !important;
-      padding: 0px 10px 8px 10px !important;
-      border-radius: 0 0 12px 12px !important;
-      border: 1.5px solid #26354a !important;
-      border-top: none !important;
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.75) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
+      gap: 5px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
     }
-
     #gp .gb {
       flex: 1 !important;
       text-align: center !important;
@@ -6822,7 +6845,7 @@
       background: #151d2d !important;
       border: 1px solid #26354a !important;
       color: #94a3b8 !important;
-      font-weight: 800 !important;
+      font-weight: 900 !important;
       font-size: 0.92rem !important;
       cursor: pointer !important;
       transition: all 0.15s ease !important;
@@ -6835,7 +6858,199 @@
       background: #0284c7 !important;
       border-color: #38bdf8 !important;
       color: #ffffff !important;
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.55) !important;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.55) !important;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* 4. BOTTOM CIVIC CONTROLS (Belt, Turn signals, Phone, Gyro, Kid)*/
+    /* ═══════════════════════════════════════════════════════════════ */
+    #civic-controls {
+      position: fixed !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      top: auto !important;
+      left: auto !important;
+      z-index: 55 !important;
+      width: 290px !important;
+      max-width: calc(100vw - 32px) !important;
+      box-sizing: border-box !important;
+      display: none;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 4px !important;
+      background: #0d131f !important;
+      border: 1.5px solid #26354a !important;
+      border-radius: 10px !important;
+      padding: 4px 6px !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
+    #gc.on ~ #civic-controls,
+    #civic-controls.on {
+      display: flex !important;
+    }
+
+    #civic-controls .civic-btn {
+      background: #151d2d !important;
+      border: 1px solid #26354a !important;
+      color: #e2e8f0 !important;
+      border-radius: 6px !important;
+      padding: 5px 6px !important;
+      font-size: 0.72rem !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 3px !important;
+      white-space: nowrap !important;
+      flex: 1 !important;
+    }
+    #civic-controls .civic-btn:hover {
+      border-color: #38bdf8 !important;
+      background: #1e293b !important;
+    }
+    #civic-controls #btn-seatbelt.belt-on {
+      background: #064e3b !important;
+      border-color: #10b981 !important;
+      color: #86efac !important;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* 5. CHALLAN HISTORY MODAL                                       */
+    /* ═══════════════════════════════════════════════════════════════ */
+    #challan-history-modal {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 100005 !important;
+      background: rgba(4, 7, 15, 0.82) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      display: none;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 16px !important;
+      box-sizing: border-box !important;
+    }
+    #challan-history-modal.on {
+      display: flex !important;
+    }
+    .chm-dialog {
+      background: #0d131f !important;
+      border: 1.5px solid #ef4444 !important;
+      border-radius: 16px !important;
+      width: 100% !important;
+      max-width: 520px !important;
+      max-height: 85vh !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(239, 68, 68, 0.25) !important;
+      animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+    }
+    @keyframes modalPop {
+      0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .chm-header {
+      background: linear-gradient(135deg, #7f1d1d, #991b1b) !important;
+      color: #ffffff !important;
+      padding: 14px 18px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    }
+    .chm-header-left {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+    }
+    .chm-title { font-size: 1.05rem !important; font-weight: 800 !important; letter-spacing: 0.5px !important; }
+    .chm-close-btn {
+      background: rgba(255, 255, 255, 0.15) !important;
+      border: none !important;
+      color: #ffffff !important;
+      width: 28px !important;
+      height: 28px !important;
+      border-radius: 50% !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 1rem !important;
+      font-weight: bold !important;
+    }
+    .chm-body {
+      padding: 14px 18px !important;
+      overflow-y: auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px !important;
+      background: #0a0f1a !important;
+    }
+    .chm-empty {
+      padding: 30px 20px !important;
+      text-align: center !important;
+      color: #94a3b8 !important;
+      font-size: 0.9rem !important;
+    }
+    .chm-item {
+      background: #111928 !important;
+      border: 1px solid #1f2a3c !important;
+      border-left: 4px solid #ef4444 !important;
+      border-radius: 8px !important;
+      padding: 10px 14px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 4px !important;
+    }
+    .chm-item-header {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+    }
+    .chm-item-off { font-weight: 800 !important; font-size: 0.88rem !important; color: #f87171 !important; }
+    .chm-item-amt { font-weight: 900 !important; font-family: 'Space Mono', monospace !important; color: #fbbf24 !important; font-size: 0.95rem !important; }
+    .chm-item-meta {
+      display: flex !important;
+      justify-content: space-between !important;
+      font-size: 0.72rem !important;
+      color: #94a3b8 !important;
+    }
+    .chm-footer {
+      background: #0d131f !important;
+      padding: 12px 18px !important;
+      border-top: 1px solid #1f2a3c !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+    }
+    .chm-total {
+      font-size: 0.85rem !important;
+      font-weight: 700 !important;
+      color: #e2e8f0 !important;
+    }
+    .chm-total-val {
+      color: #fbbf24 !important;
+      font-weight: 900 !important;
+      font-family: 'Space Mono', monospace !important;
+      font-size: 1.1rem !important;
+    }
+    .chm-dismiss-btn {
+      background: #dc2626 !important;
+      border: none !important;
+      color: #ffffff !important;
+      padding: 8px 16px !important;
+      border-radius: 8px !important;
+      font-weight: 800 !important;
+      font-size: 0.82rem !important;
+      cursor: pointer !important;
+      letter-spacing: 0.4px !important;
     }
 
 </style>
@@ -7110,9 +7325,26 @@
     </div>
   </div>
 
-  <div id="objective-overlay">
-    <div id="objective-title">Current Objective</div>
-    <div id="objective-desc">Loading...</div>
+  <!-- Top-Right Unified Auto-Flowing HUD Stack (Zero Overlaps) -->
+  <div id="top-right-hud-stack">
+    <div id="objective-overlay">
+      <div id="objective-title">Current Objective</div>
+      <div id="objective-desc">Loading...</div>
+    </div>
+    <div id="task-tracker">
+      <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--yellow, #f59e0b); font-weight: 800; margin-bottom: 8px">📋 Tasks</div>
+      <div id="task-list" style="display: flex; flex-direction: column; gap: 6px"></div>
+    </div>
+    <div id="challan-summary-box" onclick="window.ui && window.ui.openChallanHistoryModal && window.ui.openChallanHistoryModal()">
+      <div class="csb-left">
+        <span class="csb-icon">🚨</span>
+        <div class="csb-info">
+          <span class="csb-title" id="csb-title">E-Challan Notice</span>
+          <span class="csb-sub" id="csb-sub">1 Violation (₹500)</span>
+        </div>
+      </div>
+      <span class="csb-btn">View ▾</span>
+    </div>
   </div>
 
   <div id="gyro-calibrate-overlay">
@@ -7216,12 +7448,7 @@
     </div>
   </div>
 
-  <div id="task-tracker">
-    <div
-      style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--yellow); font-weight: 800; margin-bottom: 10px">
-      📋 Tasks</div>
-    <div id="task-list" style="display: flex; flex-direction: column; gap: 8px"></div>
-  </div>
+
   <div id="civic-controls">
     <div id="btn-seatbelt" class="civic-btn" onclick="window.game && window.game.toggleSeatbelt(this)">
       <div id="sb-icon-wrap" class="sb-icon-wrap">
@@ -7326,28 +7553,29 @@
     <div id="phone-gps-obj">Objective</div>
   </div>
 
-  <div id="gp">
-    <button class="gb ag" data-g="P">P</button>
-    <button class="gb" data-g="R">R</button>
-    <button class="gb" data-g="N">N</button>
-    <button class="gb" data-g="D">D</button>
-  </div>
-  <div id="gread">GEAR: P</div>
-
-  <!-- Speed Control Cluster -->
-  <div id="speed-ctrl">
-    <div class="sc-row">
-      <button class="sc-btn" id="sc-cruise">🚢 CRUISE<span class="sc-badge" id="sc-badge-cruise"></span></button>
-      <button class="sc-btn" id="sc-limit">🔒 LIMIT<span class="sc-badge" id="sc-badge-limit"></span></button>
+  <!-- Unified Cockpit Drive Cluster & Gear Selector -->
+  <div id="cockpit-drive-cluster">
+    <div id="speed-ctrl" style="display:flex; flex-direction:column; gap:5px; width:100%; padding:0; background:transparent; border:none; box-shadow:none;">
+      <div class="sc-row">
+        <button class="sc-btn" id="sc-cruise">🚢 CRUISE<span class="sc-badge" id="sc-badge-cruise"></span></button>
+        <button class="sc-btn" id="sc-limit">🔒 LIMIT<span class="sc-badge" id="sc-badge-limit"></span></button>
+      </div>
+      <div class="sc-row">
+        <button class="sc-btn sc-adj" id="sc-minus">−</button>
+        <button class="sc-btn" id="sc-eco">🌿 ECO</button>
+        <button class="sc-btn sc-active" id="sc-city">🏙 CITY</button>
+        <button class="sc-btn" id="sc-sport">🏎 SPORT</button>
+        <button class="sc-btn sc-adj" id="sc-plus">+</button>
+      </div>
     </div>
-    <div class="sc-row">
-      <button class="sc-btn sc-adj" id="sc-minus">−</button>
-      <button class="sc-btn" id="sc-eco">🌿 ECO</button>
-      <button class="sc-btn sc-active" id="sc-city">🏙 CITY</button>
-      <button class="sc-btn" id="sc-sport">🏎 SPORT</button>
-      <button class="sc-btn sc-adj" id="sc-plus">+</button>
+    <div id="gp">
+      <button class="gb ag" data-g="P">P</button>
+      <button class="gb" data-g="R">R</button>
+      <button class="gb" data-g="N">N</button>
+      <button class="gb" data-g="D">D</button>
     </div>
   </div>
+  <div id="gread" style="display:none;">GEAR: P</div>
 
   <div id="tc">
     <div style="display: flex; gap: 16px">
@@ -8209,26 +8437,26 @@
       }, 500);
     })();
   </script>
-  <script src="pools.js?v=25"></script>
-  <script src="road-graph.js?v=25"></script>
-  <script src="render_core.js?v=25"></script>
-  <script src="safezone-ui.js?v=25"></script>
-  <script src="world-streamer.js?v=25"></script>
-  <script src="mission-manager.js?v=25"></script>
-  <script src="scenery-kit.js?v=25"></script>
-  <script src="collectible-system.js?v=25"></script>
-  <script src="checkpoint-system.js?v=25"></script>
-  <script src="gameplay-recorder.js?v=25"></script>
-  <script src="task-manager.js?v=25"></script>
-  <script src="scenario2d.js?v=25"></script>
-  <script src="course.js?v=25"></script>
-  <script src="traffic-audio.js?v=25"></script>
-  <script src="game_core.js?v=25"></script>
-  <script src="npc-ai.js?v=25"></script>
-  <script src="traffic-manager.js?v=25"></script>
-  <script src="rule-breaker-profiles.js?v=25"></script>
-  <script src="ui.js?v=25"></script>
-  <script src="start.js?v=25"></script>
+  <script src="pools.js?v=20260825_5"></script>
+  <script src="road-graph.js?v=20260825_5"></script>
+  <script src="render_core.js?v=20260825_5"></script>
+  <script src="safezone-ui.js?v=20260825_5"></script>
+  <script src="world-streamer.js?v=20260825_5"></script>
+  <script src="mission-manager.js?v=20260825_5"></script>
+  <script src="scenery-kit.js?v=20260825_5"></script>
+  <script src="collectible-system.js?v=20260825_5"></script>
+  <script src="checkpoint-system.js?v=20260825_5"></script>
+  <script src="gameplay-recorder.js?v=20260825_5"></script>
+  <script src="task-manager.js?v=20260825_5"></script>
+  <script src="scenario2d.js?v=20260825_5"></script>
+  <script src="course.js?v=20260825_5"></script>
+  <script src="traffic-audio.js?v=20260825_5"></script>
+  <script src="game_core.js?v=20260825_5"></script>
+  <script src="npc-ai.js?v=20260825_5"></script>
+  <script src="traffic-manager.js?v=20260825_5"></script>
+  <script src="rule-breaker-profiles.js?v=20260825_5"></script>
+  <script src="ui.js?v=20260825_5"></script>
+  <script src="start.js?v=20260825_5"></script>
 
   
   <div id="kid-steer"></div>
@@ -9424,14 +9652,33 @@
         const oo = document.getElementById('objective-overlay');
         if (oo) ro.observe(oo);
       }
-      // Also re-position on a short interval for the first few seconds (catches show/hide transitions)
-      let checks = 0;
-      const iv = setInterval(() => {
-        stackTaskBelowObjective();
-        if (++checks > 20) clearInterval(iv);
-      }, 250);
     });
   </script>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- CHALLAN VIOLATION HISTORY MODAL                                -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="challan-history-modal">
+    <div class="chm-dialog">
+      <div class="chm-header">
+        <div class="chm-header-left">
+          <span style="font-size:1.3rem;">🚨</span>
+          <div>
+            <div class="chm-title">Traffic Violation Record</div>
+            <div style="font-size:0.72rem; color:rgba(255,255,255,0.8);">Official E-Challan History (Mumbai Traffic Police)</div>
+          </div>
+        </div>
+        <button class="chm-close-btn" onclick="window.ui && window.ui.closeChallanHistoryModal && window.ui.closeChallanHistoryModal()">✕</button>
+      </div>
+      <div class="chm-body" id="chm-list">
+        <div class="chm-empty">No violations recorded yet. Keep driving safely!</div>
+      </div>
+      <div class="chm-footer">
+        <div class="chm-total">Total Fine Incurred: <span class="chm-total-val" id="chm-total-val">₹0</span></div>
+        <button class="chm-dismiss-btn" onclick="window.ui && window.ui.closeChallanHistoryModal && window.ui.closeChallanHistoryModal()">Close Log</button>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>

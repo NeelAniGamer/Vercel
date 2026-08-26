@@ -21,6 +21,9 @@ window.LVS.push({
   mode: 'practical',
   themeType: 'zero_visibility',
   startOutside: true,
+  isNight: true,
+  hasFog: true,
+  hasRain: true,
   tasks: [
     { id: 'fog_lights', text: 'Use fog lights', type: 'avoid', target: 'wrong_lights', done: false },
     { id: 'crawl', text: 'Crawl at minimum speed', type: 'avoid', target: 'speed', done: false },

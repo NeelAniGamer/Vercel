@@ -945,7 +945,7 @@
               
               <p class="remote-auth-subtitle" style="margin-top: 24px;">Don't have an account yet? <a onclick="switchTab('signup')" style="cursor:pointer; color:var(--signal);">Sign up now</a></p>
               
-              <button class="remote-btn-primary" id="auth-dashboard-btn" style="display: none; margin-top: 15px; background: transparent; border: 1px solid var(--em); color: var(--em)" onclick="window.location.href = 'TrafficDashboard.html'">Go to Dashboard &rarr;</button>
+              <button class="remote-btn-primary" id="auth-dashboard-btn" style="display: none; margin-top: 15px; background: transparent; border: 1px solid var(--em); color: var(--em)" onclick="window.location.href = 'Academy.html'">Go to Academy Hub &rarr;</button>
             </div>
 
             
@@ -1090,9 +1090,9 @@
             class="btn-submit btn-outline"
             id="setup-dashboard-btn"
             style="display: none; margin-top: 15px; border-color: var(--em); color: var(--em)"
-            onclick="window.location.href = 'TrafficDashboard.html'"
+            onclick="window.location.href = 'Academy.html'"
           >
-            Go to Dashboard &rarr;
+            Go to Academy Hub &rarr;
           </button>
         </form>
       </div>
@@ -2013,7 +2013,8 @@
           if (returnTo && /^[a-zA-Z0-9_-]+\.html$/.test(returnTo)) {
             window.location.href = returnTo;
           } else {
-            window.location.href = 'TrafficDashboard.html';
+            sessionStorage.setItem('just_signed_up', 'true');
+            window.location.href = 'Academy.html?signup=1';
           }
         }, 500)
       })

@@ -137,7 +137,9 @@ class BuildingSlot {
     const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0));
     const sideMult = this.side === 'left' ? 1 : -1;
     const roadHalfWidth = this.segment.edge.width / 2;
-    return p.add(right.multiplyScalar(sideMult * (roadHalfWidth + this.depth / 2 + 2)));
+    // Setback includes road half width + full sidewalk width (6m) + building half-footprint (11m) + lawn buffer (4m)
+    const setback = roadHalfWidth + 21.0 + (this.depth || 15) * 0.15;
+    return p.add(right.multiplyScalar(sideMult * setback));
   }
 
   getRotation() {

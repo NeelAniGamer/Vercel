@@ -23,6 +23,7 @@ window.LVS.push({
   hasTollBooth: true,
   scenarioType: 'highway',
   startOutside: true,
+  isHighway: true,
   tasks: [
     { id: 'slow_toll', text: 'Slow down at toll plaza', type: 'avoid', target: 'speed', done: false },
     { id: 'choose_lane', text: 'Choose correct lane', type: 'reach', target: 'toll_lane', done: false },

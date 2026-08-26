@@ -28,6 +28,7 @@ window.LVS.push({
   npcDensity: 'moderate',
   hasRain: true,
   startOutside: true,
+  hasPuddles: true,
   tasks: [
     { id: 'slow_puddle', text: 'Slow down before puddle', type: 'avoid', target: 'speed_puddle', done: false },
     { id: 'no_splash', text: 'Pass without splashing pedestrians', type: 'avoid', target: 'pedestrian', done: false },
