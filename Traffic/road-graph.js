@@ -237,7 +237,7 @@ class RoadGraph {
   }
 
   buildBuildingSlots(cfg) {
-    const buildSpacing = cfg.is50km ? 280 : 60;
+    const buildSpacing = cfg.is50km ? 280 : 10;
     this.segments.forEach(seg => {
       const slotCount = Math.max(1, Math.floor(seg.length / buildSpacing));
       ['left', 'right'].forEach(side => {
@@ -245,7 +245,8 @@ class RoadGraph {
           const t = (s + 0.5) / slotCount;
           const pos = seg.getPointAt(t);
           const zone = this.getZoneAt(pos.x, pos.z);
-          const depth = 15 + Math.random() * 20;
+          const roadHalfW = (seg.width || 20) / 2;
+          const depth = roadHalfW + 10 + Math.random() * 4;
           const slot = new BuildingSlot(seg, side, t, depth, zone);
           this.buildingSlots.push(slot);
         }

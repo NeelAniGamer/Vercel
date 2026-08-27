@@ -365,15 +365,28 @@
         drawer = document.createElement('div')
         drawer.id = 'sz-task-drawer'
         drawer.className = 'task-hud-drawer'
-        document.body.appendChild(drawer)
+        const trStack = document.getElementById('top-right-hud-stack')
+        const csb = document.getElementById('challan-summary-box')
+        if (trStack) {
+          if (csb && csb.parentNode === trStack) trStack.insertBefore(drawer, csb)
+          else trStack.appendChild(drawer)
+        } else {
+          document.body.appendChild(drawer)
+        }
       }
       this.containerEl = drawer
 
       // Hide legacy overlay and redundant objective card to prevent overlapping
       const objOverlay = document.getElementById('objective-overlay')
-      if (objOverlay) objOverlay.style.display = 'none'
+      if (objOverlay) {
+        objOverlay.style.setProperty('display', 'none', 'important')
+        objOverlay.classList.remove('on')
+      }
       const legacyTracker = document.getElementById('task-tracker')
-      if (legacyTracker) legacyTracker.style.display = 'none'
+      if (legacyTracker) {
+        legacyTracker.style.setProperty('display', 'none', 'important')
+        legacyTracker.classList.remove('on')
+      }
 
       this._updateHUDDrawer()
     }
@@ -435,20 +448,22 @@
       style.textContent = `
         /* ── Task HUD Drawer ── */
         .task-hud-drawer {
-          position: fixed;
-          top: 70px;
-          right: 20px;
-          width: 300px;
-          max-width: calc(100vw - 40px);
-          background: rgba(7, 10, 20, 0.88);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 16px;
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          z-index: 1000;
-          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+          position: relative;
+          top: auto;
+          right: auto;
+          width: 100%;
+          max-width: 100%;
+          background: #0d131f;
+          border: 1.5px solid #26354a;
+          border-radius: 12px;
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+          z-index: 45;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
           font-family: var(--sans, 'Inter'), sans-serif;
           overflow: hidden;
+          box-sizing: border-box;
+          pointer-events: auto;
           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .task-drawer-header {

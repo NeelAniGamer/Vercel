@@ -143,6 +143,8 @@ class RenderCore {
             console.log(`RenderCore: Using saved quality preset from localStorage: ${savedQuality}`);
             this.setQuality(savedQuality);
             this.setAutoQuality(false);
+            // DPR-aware resScale correction even for saved presets (720p→2K)
+            this._applyDPRCorrection();
             return;
         }
         let score = 2;
@@ -196,8 +198,40 @@ class RenderCore {
 
         if (msPerFrame > 33) finalPreset = 'LOW';
 
-        console.log(`RenderCore: Auto-detected quality: ${finalPreset} (score: ${score})`);
+        // ── 720p→2K correction: mobile DPR + viewport size ──
+        const vw = window.innerWidth;
+        const dpr = window.devicePixelRatio || 1;
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || vw <= 767;
+        if (isMobile) {
+            // 720p budget phones (360w @3x): force LOW, 1080p mid: cap at MED, 2K tablets allow HIGH
+            if (vw <= 389 && dpr >= 2.8) finalPreset = 'LOW';
+            else if (vw <= 479 && finalPreset === 'ULTRA') finalPreset = 'HIGH';
+            else if (vw <= 599 && finalPreset === 'ULTRA') finalPreset = 'HIGH';
+        }
+        // High-DPI desktop 2K: allow ULTRA but with resScale correction
+        console.log(`RenderCore: Auto-detected quality: ${finalPreset} (score: ${score}, vw:${vw}, dpr:${dpr.toFixed(1)})`);
         this.setQuality(finalPreset);
+        this._applyDPRCorrection();
+    }
+
+    _applyDPRCorrection() {
+        // Keep fill-rate sane on high-DPI mobiles: effective res = preset.resScale * dprFactor
+        const dpr = window.devicePixelRatio || 1;
+        const vw = window.innerWidth;
+        const isMobile = vw <= 767 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (!isMobile || dpr <= 1.5) return;
+        const preset = QUALITY_PRESETS[this.currentPreset];
+        if (!preset) return;
+        // 720p@3x: multiply by 0.62 → ~0.52 effective; 1080p@2.6x: 0.71; 2K tablet@2x: 0.82
+        const dprFactor = dpr >= 3 ? 0.62 : dpr >= 2.5 ? 0.71 : dpr >= 2 ? 0.82 : 1;
+        const corrected = Math.max(0.5, Math.min(1, preset.resScale * dprFactor));
+        if (Math.abs(corrected - preset.resScale) > 0.02) {
+            console.log(`RenderCore: DPR correction resScale ${preset.resScale} → ${corrected.toFixed(2)} (dpr ${dpr.toFixed(1)})`);
+            // Store corrected without mutating preset
+            this._dprResScale = corrected;
+        } else {
+            this._dprResScale = null;
+        }
     }
 
     
@@ -217,7 +251,7 @@ class RenderCore {
         if (!this.renderer || !this.canvas) return;
 
         const preset = this.getPreset();
-        const scale = preset.resScale;
+        const scale = this._dprResScale != null ? this._dprResScale : preset.resScale;
 
         const width = Math.floor(this.canvas.width * scale);
         const height = Math.floor(this.canvas.height * scale);
@@ -301,9 +335,9 @@ class RenderCore {
         if (!this.renderer) return;
 
         const preset = this.getPreset();
-        const scale = preset.resScale;
+        const scale = this._dprResScale != null ? this._dprResScale : preset.resScale;
 
-        if (scale === 1.0) {
+        if (scale === 1.0 && this._dprResScale == null) {
 
             this.renderer.render(scene, camera);
         } else {

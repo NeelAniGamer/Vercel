@@ -29,37 +29,150 @@
     })
   }
 
-  // 2. Mobile Menu & In-App Updater
+  // 2. Mobile Menu & In-App Updater — Engineered for 720p→2K
   var mmb = document.getElementById('mmb'),
     nl = document.getElementById('navLinks')
   if (mmb) {
     mmb.innerHTML = '<span class="m-line"></span><span class="m-line"></span><span class="m-line"></span>'
+    mmb.setAttribute('aria-label', 'Toggle navigation menu')
+    mmb.setAttribute('aria-expanded', 'false')
     if (nl) {
+      // — Helper: lock body scroll without layout shift —
+      var _lockY = 0
+      function lockNav() {
+        _lockY = window.scrollY
+        var sb = window.innerWidth - document.documentElement.clientWidth
+        if (sb > 0) document.documentElement.style.setProperty('--scrollbar-comp', sb + 'px')
+        document.body.classList.add('nav-lock')
+        document.body.style.top = '-' + _lockY + 'px'
+        document.body.style.position = 'fixed'
+        document.body.style.width = '100%'
+        mmb.setAttribute('aria-expanded', 'true')
+        nl.setAttribute('aria-hidden', 'false')
+      }
+      function unlockNav() {
+        document.body.classList.remove('nav-lock')
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.width = ''
+        document.documentElement.style.removeProperty('--scrollbar-comp')
+        window.scrollTo(0, _lockY)
+        mmb.setAttribute('aria-expanded', 'false')
+        nl.setAttribute('aria-hidden', 'true')
+      }
+      function isNavOpen() {
+        return nl.classList.contains('active')
+      }
+
       mmb.addEventListener('click', function () {
+        var willOpen = !nl.classList.contains('active')
         nl.classList.toggle('active')
         mmb.classList.toggle('active')
+        if (willOpen) lockNav()
+        else unlockNav()
       })
 
       // Close mobile menu when a standard link is clicked
       nl.querySelectorAll('.nav-link').forEach(function (link) {
         link.addEventListener('click', function () {
-          nl.classList.remove('active')
-          mmb.classList.remove('active')
+          if (isNavOpen()) {
+            nl.classList.remove('active')
+            mmb.classList.remove('active')
+            unlockNav()
+          }
         })
       })
 
-      // Mobile dropdown toggle
+      // Close on backdrop click (tap outside inner content)
+      nl.addEventListener('click', function (e) {
+        if (e.target === nl && isNavOpen()) {
+          nl.classList.remove('active')
+          mmb.classList.remove('active')
+          unlockNav()
+        }
+      })
+
+      // Close on Escape
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isNavOpen()) {
+          nl.classList.remove('active')
+          mmb.classList.remove('active')
+          unlockNav()
+        }
+      })
+
+      // Swipe to close (left swipe)
+      var _sx = 0
+      nl.addEventListener(
+        'touchstart',
+        function (e) {
+          _sx = e.touches[0].clientX
+        },
+        { passive: true }
+      )
+      nl.addEventListener(
+        'touchend',
+        function (e) {
+          var dx = e.changedTouches[0].clientX - _sx
+          if (dx > 80 && isNavOpen()) {
+            nl.classList.remove('active')
+            mmb.classList.remove('active')
+            unlockNav()
+          }
+        },
+        { passive: true }
+      )
+
+      // Mobile dropdown toggle (accordion, no propagation to drawer close)
       var dropdowns = nl.querySelectorAll('.dropdown')
       dropdowns.forEach(function (dd) {
         var btn = dd.querySelector('.dropdown-btn')
         if (btn) {
+          btn.setAttribute('aria-expanded', 'false')
           btn.addEventListener('click', function (e) {
             e.preventDefault()
             e.stopPropagation()
+            var willOpen = !dd.classList.contains('active')
+            // close others (accordion)
+            dropdowns.forEach(function (o) {
+              if (o !== dd) {
+                o.classList.remove('active')
+                var b = o.querySelector('.dropdown-btn')
+                if (b) b.setAttribute('aria-expanded', 'false')
+              }
+            })
             dd.classList.toggle('active')
+            btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false')
           })
         }
       })
+
+      // Inject bottom thumb bar for mobile (auto)
+      try {
+        if (!document.querySelector('.col-bottom-bar') && window.innerWidth <= 900) {
+          var bar = document.createElement('nav')
+          bar.className = 'col-bottom-bar'
+          bar.setAttribute('aria-label', 'Primary')
+          var path = (location.pathname.split('/').pop() || 'home').replace('.html', '')
+          function act(h) {
+            return path === h || (h === 'home' && (path === '' || path === 'index')) ? ' class="act"' : ''
+          }
+          bar.innerHTML =
+            '<a href="/"' +
+            act('home') +
+            '><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a>' +
+            '<a href="about"' +
+            act('about') +
+            '><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><span>About</span></a>' +
+            '<a href="school"' +
+            act('school') +
+            '><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg><span>School</span></a>' +
+            '<a href="download"' +
+            act('download') +
+            '><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Download</span></a>'
+          document.body.appendChild(bar)
+        }
+      } catch (e) {}
 
       // In-App Update Button (Version Aware)
       try {
@@ -180,7 +293,7 @@ window.addEventListener('col-apk-verified', function (e) {
   } catch (e) {}
 })
 
-// 5. Mobile App Download Popup
+// 5. Mobile App Download Popup — fixed popup var + uses new bottom bar
 try {
   var isAndroid = /Android/i.test(navigator.userAgent)
   var isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent)
@@ -189,7 +302,9 @@ try {
   if (isAndroid && !isWebView && !hasPrompted) {
     sessionStorage.setItem('col_app_prompted', 'true')
 
-    var hasBotNav = document.querySelector('.mobile-bottom-nav')
+    var popup = document.createElement('div')
+    popup.id = 'colAppPopup'
+    var hasBotNav = document.querySelector('.col-bottom-bar') || document.querySelector('.mobile-bottom-nav')
     popup.style.position = 'fixed'
     popup.style.bottom = hasBotNav ? '75px' : '20px'
     popup.style.left = '20px'

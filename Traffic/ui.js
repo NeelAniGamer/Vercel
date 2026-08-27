@@ -4473,113 +4473,142 @@ const initGTex = () => {
 const _buildVehicle = (type, col) => {
   let baseModel = null
   let s = 1.0
-  let rotY = 0
+  const normalizedType = (type || 'car').toLowerCase()
 
-  if (window.PRELOADED_MODELS) {
+  // 1. Authentic Indian Two-Wheelers (Bikes, Scooters, Cycles)
+  if (['bike', 'splendor', 'activa', 'scooter', 'cycle', 'bicycle', 'twowheeler'].includes(normalizedType)) {
+    if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+      const bikeModel = window.IndianVehicles.buildVehicle(normalizedType === 'bike' ? 'splendor' : normalizedType, col)
+      if (bikeModel) {
+        bikeModel.type = normalizedType
+        bikeModel.userData = bikeModel.userData || {}
+        bikeModel.userData.halfW = 0.45
+        bikeModel.userData.halfD = 0.95
+        return bikeModel
+      }
+    }
+  }
 
-    // Safe curated model lookup
-    let modelKey = type
-    const keysForType = Object.keys(window.PRELOADED_MODELS).filter((k) => k === type || k.startsWith(type + '_'))
-    if (keysForType.length > 0) {
-      modelKey = keysForType[Math.floor(Math.random() * keysForType.length)]
+  // 2. Authentic Indian Auto-Rickshaw (Mumbai CNG / Black & Yellow)
+  if (['auto', 'rickshaw', 'auto_yellow', 'bajaj'].includes(normalizedType)) {
+    if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+      const autoModel = window.IndianVehicles.buildVehicle('auto', col || 0x2e8b57)
+      if (autoModel) {
+        autoModel.type = 'auto'
+        autoModel.userData = autoModel.userData || {}
+        autoModel.userData.halfW = 0.75
+        autoModel.userData.halfD = 1.3
+        return autoModel
+      }
+    }
+  }
+
+  // 3. Authentic Mumbai BEST & School Buses
+  if (['bus', 'school_bus', 'best_bus', 'double_decker'].includes(normalizedType)) {
+    if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+      const busModel = window.IndianVehicles.buildVehicle('bus', col || 0xcc2222)
+      if (busModel) {
+        busModel.type = 'bus'
+        busModel.userData = busModel.userData || {}
+        busModel.userData.halfW = 1.35
+        busModel.userData.halfD = 4.75
+        return busModel
+      }
+    }
+  }
+
+  // 4. Supercar / Lamborghini
+  if (normalizedType === 'lambo') {
+    if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['lambo']) {
+      baseModel = window.PRELOADED_MODELS['lambo'].clone()
+      s = 0.85
+    } else if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['car_race-future']) {
+      baseModel = window.PRELOADED_MODELS['car_race-future'].clone()
+      s = 0.88
+    }
+  }
+
+  // 5. Rich Variety from Kenney Car Kit GLB Models
+  if (!baseModel && window.PRELOADED_MODELS) {
+    const carPool = [
+      'car', 'taxi', 'police', 'ambulance', 'suv', 'suv_luxury', 'sedan_sports',
+      'hatchback_sports', 'race_future', 'race', 'van', 'delivery', 'delivery_flat',
+      'truck', 'truck_flat', 'garbage_truck', 'firetruck', 'tractor',
+      'car_suv', 'car_suv-luxury', 'car_sedan-sports', 'car_hatchback-sports',
+      'car_race-future', 'car_race', 'car_kart-oobi', 'truck_firetruck', 'truck_garbage-truck'
+    ]
+
+    let candidateKeys = []
+    if (normalizedType === 'taxi' || normalizedType === 'cab') {
+      candidateKeys = ['taxi', 'car']
+    } else if (normalizedType === 'police') {
+      candidateKeys = ['police', 'car_sedan-sports']
+    } else if (normalizedType === 'ambulance') {
+      candidateKeys = ['ambulance', 'van']
+    } else if (normalizedType === 'truck') {
+      candidateKeys = ['truck', 'truck_flat', 'truck_garbage-truck', 'truck_firetruck', 'delivery', 'van']
+    } else if (normalizedType === 'suv' || normalizedType === 'creta') {
+      candidateKeys = ['suv', 'suv_luxury', 'car_suv', 'car_suv-luxury']
+    } else if (normalizedType === 'sedan' || normalizedType === 'car') {
+      candidateKeys = ['car', 'sedan_sports', 'hatchback_sports', 'suv', 'race_future', 'car_sedan-sports', 'car_hatchback-sports']
+    } else {
+      candidateKeys = [normalizedType]
     }
 
-    if (window.PRELOADED_MODELS[modelKey]) {
-      baseModel = window.PRELOADED_MODELS[modelKey].clone()
-      if (type === 'bus' || type === 'truck') s = 2.5
-      else if (type === 'auto' || type === 'bike') s = 1.5
-      else s = 2.0
+    const available = candidateKeys.filter(k => window.PRELOADED_MODELS[k])
+    const chosenKey = available.length ? available[Math.floor(Math.random() * available.length)] : (window.PRELOADED_MODELS['car'] ? 'car' : null)
 
+    if (chosenKey && window.PRELOADED_MODELS[chosenKey]) {
+      baseModel = window.PRELOADED_MODELS[chosenKey].clone()
+      
+      // Determine normalized scale based on vehicle type
+      if (chosenKey.includes('truck') || chosenKey.includes('firetruck') || chosenKey.includes('garbage')) {
+        s = 0.95
+      } else if (chosenKey.includes('suv') || chosenKey.includes('van') || chosenKey.includes('delivery')) {
+        s = 0.90
+      } else {
+        s = 0.85
+      }
+
+      const paintColor = col || (chosenKey === 'taxi' ? 0xffd54a : (chosenKey === 'police' ? 0x1e3a8a : 0x3b82f6))
       baseModel.traverse((child) => {
-        if (child.isMesh && child.material) {
-          if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
-            child.material = child.material.clone()
-            child.material.color.setHex(col)
+        if (child.isMesh) {
+          child.castShadow = true
+          child.receiveShadow = true
+          if (child.material) {
+            const matName = (child.material.name || child.name || '').toLowerCase()
+            if (matName.includes('body') || matName.includes('paint') || matName.includes('chassis') || matName.includes('primary')) {
+              child.material = child.material.clone()
+              child.material.color.setHex(paintColor)
+            }
           }
         }
       })
     }
-
-
-    if (!baseModel) {
-      let modelKey = type
-      const keysForType = Object.keys(window.PRELOADED_MODELS).filter((k) => k === type || k.startsWith(type + '_'))
-      if (keysForType.length > 0) {
-        modelKey = keysForType[Math.floor(Math.random() * keysForType.length)]
-      }
-
-      if (window.PRELOADED_MODELS[modelKey]) {
-        baseModel = window.PRELOADED_MODELS[modelKey].clone()
-        if (type === 'bus' || type === 'truck') s = 2.5
-        else if (type === 'auto' || type === 'bike') s = 1.5
-        else s = 2.0
-
-        baseModel.traverse((child) => {
-          if (child.isMesh && child.material) {
-
-            if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
-              child.material = child.material.clone()
-              child.material.color.setHex(col)
-            }
-          }
-        })
-      }
-    }
   }
 
-  if (!baseModel && type === 'bike' && window.PRELOADED_MODELS && window.PRELOADED_MODELS['auto']) {
-    baseModel = window.PRELOADED_MODELS['auto'].clone()
-    s = 1.0
-  }
-
+  // If GLB model is ready, assemble clean container group with correct extents
   if (baseModel) {
     const g = new THREE.Group()
     baseModel.scale.set(s, s, s)
-    baseModel.rotation.y = rotY
-    baseModel.position.y = 0
-
-
-    const hw = type === 'bus' || type === 'truck' ? 1.8 : 1.2
-    const hl = type === 'bus' || type === 'truck' ? 5.5 : 2.8
-    const hbGeo = new THREE.BoxGeometry(hw, 2, hl)
-    const hbMat = new THREE.MeshBasicMaterial({ visible: false })
-    const hb = new THREE.Mesh(hbGeo, hbMat)
-    hb.position.y = 1
-
+    baseModel.position.set(0, 0, 0)
     g.add(baseModel)
-    g.add(hb)
 
+    const isHeavy = normalizedType.includes('truck') || normalizedType.includes('bus')
+    const hw = isHeavy ? 1.35 : 0.95
+    const hl = isHeavy ? 4.2 : 2.1
+    g.userData = { halfW: hw, halfD: hl }
 
-    const doorGeoGLB = new THREE.BoxGeometry(0.06, 0.5, 1.0)
+    // Clean interactive door anchors for player entry
+    const dpL = new THREE.Group()
+    dpL.position.set(hw, 0.9, 0.3)
+    const dpR = new THREE.Group()
+    dpR.position.set(-hw, 0.9, 0.3)
+    g.add(dpL, dpR)
+    g.userData.doorPivotL = dpL
+    g.userData.doorPivotR = dpR
 
-    let bodyColGLB = col || 0x888888
-    baseModel.traverse((child) => {
-      if (child.isMesh && child.material && child.material.color) {
-        const n = child.name.toLowerCase()
-        if (n.includes('body') || n.includes('paint') || n.includes('chassis'))
-          bodyColGLB = child.material.color.getHex()
-      }
-    })
-    const doorMatGLB = new THREE.MeshToonMaterial({ color: bodyColGLB })
-    const doorWGLB = hw * 0.95
-
-    const dpLGLB = new THREE.Group()
-    dpLGLB.position.set(doorWGLB, 1.0, 0.5)
-    const dmLGLB = new THREE.Mesh(doorGeoGLB, doorMatGLB.clone())
-    dmLGLB.position.set(0, 0, -0.5)
-    dpLGLB.add(dmLGLB)
-    g.add(dpLGLB)
-
-    const dpRGLB = new THREE.Group()
-    dpRGLB.position.set(-doorWGLB, 1.0, 0.5)
-    const dmRGLB = new THREE.Mesh(doorGeoGLB, doorMatGLB.clone())
-    dmRGLB.position.set(0, 0, -0.5)
-    dpRGLB.add(dmRGLB)
-    g.add(dpRGLB)
-    g.userData.doorPivotL = dpLGLB
-    g.userData.doorPivotR = dpRGLB
-
-    g.type = type
+    g.type = normalizedType
     return g
   }
 

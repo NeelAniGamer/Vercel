@@ -1,40 +1,49 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 14,
-  icon: '🌙',
-  name: 'Lesson 14 - Night Crossing',
+  icon: '🚲',
+  name: 'Lesson 14 - Cycle Track',
   modes: ['pedestrian', 'car', 'bike'],
-  col: '#e74c3c',
-  ds: 'It is late at night. Visibility is poor. An elderly person with a walking stick is slowly crossing at an unmarked crossing point. NPCs are speeding past — do not follow them.',
+  col: '#27ae60',
+  ds: 'It is evening on Carter Road. A 2-metre green cycle track runs alongside the road. Delivery cyclists, fitness riders and kids use it daily. Cars are parking over bollards — clear them and keep the track safe.',
   hps: [
-    'Use your headlights properly — dip them for oncoming traffic.',
-    'At unmarked crossings, pedestrians still have the right of way.',
-    'Reduce speed at night — reaction times are halved in low visibility.'
+    'Cycle tracks are for cyclists only — never park or drive on them.',
+    'Give cyclists at least 1 metre of space when passing.',
+    'Issue challans to any vehicle parked on the cycle track.'
   ],
   law: {
-    sec: 'MV Act Section 128',
-    fine: '₹1000 - ₹3000',
-    off: 'Failing to Yield at Night',
-    secHi: 'मोटर वाहन अधिनियम धारा 128',
-    fineHi: '₹1000 - ₹3000',
-    offHi: 'रात में रास्ता न देना'
+    sec: 'MV Act Section 177',
+    fine: '₹1000',
+    off: 'Obstruction of Cycle Track',
+    secHi: 'मोटर वाहन अधिनियम धारा 177',
+    fineHi: '₹1000',
+    offHi: 'साइकिल ट्रैक में बाधा'
   },
   theory:
-    '<h2>Night Crossing</h2><p>Raat ko India mein driving karna bahut mushkil hai. Roads andheri hain, gaadiyan tez chal rahi hain, aur log dark kapdon mein sadak cross kar rahe hain — yeh recipe hai disaster ki!</p><p>Ek buzurg stick leke slowly cross kar raha hai — unhe tumhari gaadi dikh bhi nahi sakti, sun bhi nahi sakti. NPC tez ja rahe hain — ek unhe touch kar sakta hai!</p><h3>🌙 Kya karna hai?</h3><ul><li>Buzurg slowly cross kar raha hai — ruk jao, poori tarah cross hone do!</li><li>NPC tez ja rahe hain — unki mat suno.</li><li>Headlights dikh rahe hain, lekin shadows mein khatna chhupa hai — dheere jao.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>MV Act Section 128 kehta hai — raat mein extreme caution zaroori hai. Pedestrian ko kisi bhi crossing pe (marked ya unmarked) rukna padega — ₹1000 se ₹3000 fine!</p>',
-  pract: 'Slow down, use headlights responsibly, and wait for the elderly person to cross completely.',
+    '<h2>Cycle Track Respect</h2><p>Carter Road pe ek 2-metre green cycle track hai — bollards se road se alag. Delivery boys, fitness riders, aur bachche sab use karte hain. Lekin cars "bas 5 minute ke liye" park kar deti hain — aur cyclists sadak pe aa jaate hain!</p><p>Aaj tumhara kaam hai track clear karna, challans dena, aur kids ke cycling group ko safely guide karna.</p><h3>🚲 Kya karna hai?</h3><ul><li>Track pe khadi gaadi ko hatao — challan kato!</li><li>Cyclists ko main road pe aane se rok do.</li><li>Kids ke group ke saath chalo jaab tak woh safe hain.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>MV Act Section 177 — cycle track pe parking: ₹1,000 fine. Repeat offenders: towing + 2x fine.</p>',
+  pract: 'Patrol the cycle track, clear parked vehicles, and escort the kids cycling group safely to the end.',
   mode: 'practical',
-  themeType: 'pedestrian_courtesy',
-  scenarioType: 'mixed',
+  themeType: 'cycle_track',
+  scenarioType: 'patrol',
   npcDensity: 'moderate',
-  isNight: true,
+  isNight: false,
+  sky: 0x87ceeb,
+  fog: 600,
+  amb: 0.88,
   isBridge: false,
-  ground: 0x33691e,
-  startOutside: true,
-  hasElderlyCrossing: true,
+  ground: 0x3a6b30,
+  startOutside: false,
+  hasCycleTrack: true,
+  maxCrossingPeds: 3,
+  pedCrossingInterval: 9.0,
   tasks: [
-    { id: 'dip_headlights', text: 'Dip headlights for oncoming traffic', type: 'toggle', target: 'headlights', done: false },
-    { id: 'yield_elderly', text: 'Wait for elderly to cross', type: 'stop', target: 'stationary', done: false },
-    { id: 'no_speed', text: 'Do not speed at night', type: 'avoid', target: 'speed_night', done: false }
+    { id: 'clear_parked_car_1', text: 'Clear parked car blocking cycle track (1/4)', type: 'interact', target: 'parked_car', done: false },
+    { id: 'clear_parked_car_2', text: 'Clear parked car blocking cycle track (2/4)', type: 'interact', target: 'parked_car', done: false },
+    { id: 'clear_parked_car_3', text: 'Clear parked car blocking cycle track (3/4)', type: 'interact', target: 'parked_car', done: false },
+    { id: 'clear_parked_car_4', text: 'Issue 4th challan for track parking (4/4)', type: 'interact', target: 'parked_car', done: false },
+    { id: 'escort_cyclists', text: 'Guide kids cycling group safely (6 cyclists)', type: 'escort', target: 'cyclists', done: false },
+    { id: 'zero_road_cyclists', text: 'Keep all cyclists on track — none on main road', type: 'avoid', target: 'cyclist_road', done: false }
   ],
   assets: ['suburban', 'industrial']
 })
+

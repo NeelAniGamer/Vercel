@@ -10,25 +10,27 @@ import { RuleBreakerProfile, pickRuleBreakerType } from '@game/RuleBreakerProfil
 import { arbitrateDeadlock } from './NPCAI';
 
 const VEHICLE_VARIETY_WEIGHTS: Record<string, number> = {
-  car: 0.35, bike: 0.25, auto: 0.15, bus: 0.10,
-  truck: 0.08, taxi: 0.05, ambulance: 0.02
+  car: 0.18, bike: 0.16, auto: 0.15, bus: 0.08,
+  truck: 0.08, taxi: 0.10, suv: 0.10, splendor: 0.08,
+  police: 0.04, ambulance: 0.03
 };
 
 const VEHICLE_CLASS_LANE_ACCESS: Record<string, string[]> = {
   car: ['car', 'bus'], bike: ['bike', 'car', 'bus'], auto: ['car', 'bus'],
   bus: ['bus'], truck: ['bus', 'car'], taxi: ['car', 'bus'],
-  ambulance: ['bus', 'car']
+  suv: ['car', 'bus'], splendor: ['bike', 'car', 'bus'],
+  police: ['car', 'bus'], ambulance: ['bus', 'car']
 };
 
 const RULE_BREAKER_PROBABILITY = 0.20;
 const PLATOON_SIZE = 3;
 const PLATOON_GAP = 8;
-const BASE_NPC_COUNT = 16;
-const MAX_NPC_COUNT = 48;
-const MOBILE_NPC_COUNT = 16;
-const SPAWN_RADIUS = 400;
-const SPAWN_MIN_GAP = 20;
-const SPAWN_MAX_GAP = 60;
+const BASE_NPC_COUNT = 75;
+const MAX_NPC_COUNT = 110;
+const MOBILE_NPC_COUNT = 40;
+const SPAWN_RADIUS = 260;
+const SPAWN_MIN_GAP = 10;
+const SPAWN_MAX_GAP = 35;
 const DENSITY_INCREASE_PER_MIN = 0.05;
 const SIGNAL_ACCUMULATION_RATE = 5;
 const MAX_SIGNAL_ACCUMULATION = 12;
@@ -441,7 +443,10 @@ export class TrafficManager {
     const all = typeof this.roadGraph!.getEdgeList === 'function' ? this.roadGraph!.getEdgeList() : Array.from(this.roadGraph!.edges.values());
     const player = this.game && this.game.player && this.game.player.position;
     if (!player || all.length === 0) return all;
-    const near = all.filter(e => this._distanceToEdge(e, player) < SPAWN_RADIUS);
+    const near = all.filter(e => {
+      const d = this._distanceToEdge(e, player);
+      return d >= 65 && d < SPAWN_RADIUS;
+    });
     return near.length ? near : all;
   }
 

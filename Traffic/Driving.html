@@ -40,6 +40,7 @@
   </script>
   <script defer src="../col-router.js"></script>
   <link rel="stylesheet" href="../col-ui.css" />
+  <link rel="stylesheet" href="traffic-mobile.css" />
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -6263,102 +6264,7 @@
       z-index: 45 !important;
     }
 
-    /* DOCK GEAR & SPEED CONTROL TO BOTTOM-RIGHT (BESIDE SPEEDOMETER) */
-    #gp {
-      position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 24px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 130px) !important;
-      left: auto !important;
-      top: auto !important;
-      transform: none !important;
-      z-index: 45 !important;
-      display: none;
-      flex-direction: row !important;
-      gap: 4px !important;
-      background: var(--hud-bg-solid) !important;
-      padding: 6px !important;
-      border-radius: 10px !important;
-      border: 1.5px solid var(--hud-border-solid) !important;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-    }
-    #gp.on, #gc.on ~ #gp { display: flex !important; }
-    .gb {
-      width: 32px !important;
-      height: 32px !important;
-      border-radius: 6px !important;
-      background: var(--hud-panel-solid) !important;
-      border: 1px solid var(--hud-border-solid) !important;
-      color: var(--hud-text-secondary) !important;
-      font-weight: 900 !important;
-      font-size: 0.82rem !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      cursor: pointer !important;
-      transition: all 0.15s ease !important;
-    }
-    .gb.ag {
-      background: #0284c7 !important;
-      border-color: #38bdf8 !important;
-      color: #ffffff !important;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5) !important;
-    }
-
     #gread { display: none !important; }
-
-    #speed-ctrl {
-      position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 74px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 130px) !important;
-      left: auto !important;
-      top: auto !important;
-      transform: none !important;
-      z-index: 45 !important;
-      display: none;
-      flex-direction: column !important;
-      gap: 4px !important;
-      background: var(--hud-bg-solid) !important;
-      padding: 6px 8px !important;
-      border-radius: 10px !important;
-      border: 1.5px solid var(--hud-border-solid) !important;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-    }
-    #speed-ctrl.on, #gc.on ~ #speed-ctrl { display: flex !important; }
-    .sc-row { display: flex !important; gap: 4px !important; align-items: center !important; }
-    .sc-btn {
-      padding: 4px 8px !important;
-      border-radius: 6px !important;
-      border: 1px solid var(--hud-border-solid) !important;
-      background: var(--hud-panel-solid) !important;
-      color: var(--hud-text-secondary) !important;
-      font-size: 0.68rem !important;
-      font-weight: 800 !important;
-      cursor: pointer !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 3px !important;
-      transition: all 0.15s ease !important;
-    }
-    .sc-btn:hover {
-      border-color: var(--hud-border-focus) !important;
-      color: #ffffff !important;
-    }
-    .sc-btn.sc-active {
-      background: #0284c7 !important;
-      border-color: #38bdf8 !important;
-      color: #ffffff !important;
-    }
-    .sc-adj {
-      width: 24px !important;
-      height: 24px !important;
-      padding: 0 !important;
-      justify-content: center !important;
-      font-size: 0.85rem !important;
-    }
 
     /* TOP-RIGHT SMARTPHONE INCOMING CALL NOTIFICATION (NON-BLOCKING) */
     #phone-ring-overlay {

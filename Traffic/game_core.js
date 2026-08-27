@@ -18,11 +18,11 @@ window.VEHICLE_STATS = VEHICLE_STATS;
 // fovRange: max additional FOV from speed
 // lerpSmoothing: camera lerp factor (higher = snappier)
 const VEHICLE_CAM = {
-  bike:  { dist: 6,   height: 2.5, lookAhead: 2.0, lookDist: 4, baseFov: 65, fovRange: 18, lerpSmoothing: 7 },
-  car:   { dist: 8,   height: 3.2, lookAhead: 3.0, lookDist: 5, baseFov: 60, fovRange: 15, lerpSmoothing: 6 },
-  bus:   { dist: 14,  height: 5.5, lookAhead: 4.0, lookDist: 8, baseFov: 55, fovRange: 10, lerpSmoothing: 5 },
-  truck: { dist: 12,  height: 5.0, lookAhead: 3.5, lookDist: 7, baseFov: 56, fovRange: 12, lerpSmoothing: 5 },
-  auto:  { dist: 6.5, height: 2.8, lookAhead: 2.5, lookDist: 4, baseFov: 64, fovRange: 16, lerpSmoothing: 7 },
+  bike:  { dist: 7.2,  height: 3.8, lookAhead: 2.5, lookDist: 5.0, baseFov: 66, fovRange: 18, lerpSmoothing: 7 },
+  car:   { dist: 9.5,  height: 4.8, lookAhead: 3.5, lookDist: 6.5, baseFov: 62, fovRange: 15, lerpSmoothing: 6 },
+  bus:   { dist: 16.5, height: 7.5, lookAhead: 5.0, lookDist: 9.0, baseFov: 56, fovRange: 10, lerpSmoothing: 5 },
+  truck: { dist: 15.0, height: 7.0, lookAhead: 4.5, lookDist: 8.5, baseFov: 58, fovRange: 12, lerpSmoothing: 5 },
+  auto:  { dist: 8.2,  height: 4.2, lookAhead: 3.0, lookDist: 5.2, baseFov: 65, fovRange: 16, lerpSmoothing: 7 },
 };
 const VEHICLE_CAM_DEFAULT = VEHICLE_CAM.car;
 
@@ -2498,6 +2498,141 @@ class Game {
       // ══════════════════════════════════════════════════════════════════════
       // ENHANCED PHYSICS: Aerodynamics, Suspension, Brake Heat, Skid Marks
       // ══════════════════════════════════════════════════════════════════════
+      _computeDynamicWeightTransfer(ax, ay) {
+        const cfg = (typeof VEHICLE_PACEJKA_CONFIG !== 'undefined' && VEHICLE_PACEJKA_CONFIG[this.vehMode]) || VEHICLE_PACEJKA_CONFIG.car || { mass: 1400, wheelbase: 2.7, track_width: 1.5, cg_height: 0.55, front_weight_dist: 0.58 };
+        const g = 9.81;
+        const totalWeight = (cfg.mass || 1400) * g;
+        const wb = cfg.wheelbase || 2.7;
+        const tw = cfg.track_width || 1.5;
+        const cgH = cfg.cg_height || 0.55;
+        const fDist = cfg.front_weight_dist || 0.58;
+
+        const staticFront = totalWeight * (1 - fDist);
+        const staticRear = totalWeight * fDist;
+
+        // Longitudinal weight transfer (brake dive shifts weight forward; accel shifts rearward)
+        const deltaLong = ((cfg.mass || 1400) * ax * cgH) / wb;
+        const frontTotal = Math.max(totalWeight * 0.1, Math.min(totalWeight * 0.85, staticFront - deltaLong));
+        const rearTotal = Math.max(totalWeight * 0.1, Math.min(totalWeight * 0.85, staticRear + deltaLong));
+
+        // Lateral weight transfer (roll load shift)
+        const deltaLatF = (frontTotal * Math.abs(ay) * cgH) / (tw * g);
+        const deltaLatR = (rearTotal * Math.abs(ay) * cgH) / (tw * g);
+        const latSign = Math.sign(ay) || 0;
+
+        this._wheelLoads = {
+          FL: Math.max(50, (frontTotal * 0.5) - (deltaLatF * 0.5 * latSign)),
+          FR: Math.max(50, (frontTotal * 0.5) + (deltaLatF * 0.5 * latSign)),
+          RL: Math.max(50, (rearTotal * 0.5) - (deltaLatR * 0.5 * latSign)),
+          RR: Math.max(50, (rearTotal * 0.5) + (deltaLatR * 0.5 * latSign)),
+          frontTotal,
+          rearTotal
+        };
+        return this._wheelLoads;
+      }
+
+      _computeVehicleDynamics(dt, tAmt, isBraking, isThrottling, isRev) {
+        const cfg = (typeof VEHICLE_PACEJKA_CONFIG !== 'undefined' && VEHICLE_PACEJKA_CONFIG[this.vehMode]) || VEHICLE_PACEJKA_CONFIG.car || { mass: 1400, wheelbase: 2.7, track_width: 1.5, cg_height: 0.55, front_weight_dist: 0.58, inertia_yaw: 2800 };
+        const speedMs = this.speed * 30; // internal speed unit to m/s
+        const absSpd = Math.abs(this.speed);
+
+        // Clean standstill state (zero jitter/shaking when car is stopped)
+        if (absSpd <= 0.005) {
+          this._yawRate = 0;
+          this._localVy = 0;
+          this._lateralAccel = 0;
+          this._longitudinalAccel = 0;
+          this._bodyRoll = 0;
+          this._bodyPitch = 0;
+          this._steerAngle = 0;
+          this._alphaF = 0;
+          this._alphaR = 0;
+          this._absActive = false;
+          this._tcsActive = false;
+          this._engineRPM = 850;
+          if (this.playerVehicle) {
+            this.playerVehicle.rotation.z = 0;
+            this.playerVehicle.rotation.x = 0;
+          }
+          return { effBrake: isBraking ? 1.0 : 0.0 };
+        }
+
+        const safeVx = Math.max(0.3, Math.abs(speedMs));
+        
+        // Steering angle in radians
+        const maxSteer = (this.turn || 0.08) * 4.5;
+        const steerAngle = tAmt * maxSteer * (isRev ? -1 : 1);
+        this._steerAngle = steerAngle;
+
+        // Current lateral velocity in vehicle frame and yaw rate
+        const vy = this._localVy || 0;
+        const yawRate = this._yawRate || 0;
+        const wb = cfg.wheelbase || 2.7;
+        const lf = wb * (1 - (cfg.front_weight_dist || 0.58));
+        const lr = wb * (cfg.front_weight_dist || 0.58);
+
+        // 1. Slip Angles (alpha)
+        const frontLatV = vy + (lf * yawRate);
+        const rearLatV = vy - (lr * yawRate);
+        const alphaF = steerAngle - Math.atan2(frontLatV, safeVx);
+        const alphaR = -Math.atan2(rearLatV, safeVx);
+        this._alphaF = alphaF;
+        this._alphaR = alphaR;
+
+        // 2. Surface condition
+        let surfaceType = 'dry_asphalt';
+        if (this.mode === 'rain' || (this.mapCfg && this.mapCfg.hasRain)) surfaceType = 'wet_asphalt';
+        if (this.mapCfg && this.mapCfg.isGravel) surfaceType = 'gravel';
+
+        // 3. Dynamic Normal Loads (Fz)
+        const loads = this._computeDynamicWeightTransfer(this._longitudinalAccel || 0, this._lateralAccel || 0);
+
+        // 4. Pacejka Lateral Forces (Fy)
+        const Fy_F = PACEJKA ? (PACEJKA.computeLateralForce(alphaF, loads.frontTotal, 0, surfaceType).Fy) : (Math.sin(alphaF) * loads.frontTotal * 0.9);
+        const Fy_R = PACEJKA ? (PACEJKA.computeLateralForce(alphaR, loads.rearTotal, 0, surfaceType).Fy) : (Math.sin(alphaR) * loads.rearTotal * 0.9);
+
+        // 5. Active Driver Assists: ABS & TCS
+        let effBrake = isBraking ? 1.0 : 0.0;
+        this._absActive = false;
+        if (isBraking && Math.abs(alphaF) > 0.15 && Math.abs(this.speed) > 0.4) {
+          this._absActive = true;
+          effBrake *= 0.75; // ABS pulse retains front lateral turning force
+        }
+
+        this._tcsActive = false;
+        if (isThrottling && (surfaceType === 'wet_asphalt' || surfaceType === 'gravel') && Math.abs(this.speed) < 0.3) {
+          this._tcsActive = true;
+        }
+
+        // 6. Dynamic Yaw Acceleration & Moment of Inertia
+        const Iz = cfg.inertia_yaw || 2800;
+        const yawTorque = (Fy_F * lf * Math.cos(steerAngle)) - (Fy_R * lr);
+        const yawAccel = yawTorque / Iz;
+
+        if (Math.abs(this.speed) > 0.005) {
+          this._yawRate = (yawRate + yawAccel * dt) * Math.pow(0.92, dt * 60);
+          // Apply yaw rate to player rotation
+          const yawDelta = (this._yawRate * dt) + (tAmt * (this.turn || 0.08) * Math.max(0.4, 1 - Math.abs(this.speed)*0.2) * Math.sign(this.speed) * dt * 30);
+          this.player.rotation.y += yawDelta;
+          while (this.player.rotation.y > Math.PI) this.player.rotation.y -= Math.PI * 2;
+          while (this.player.rotation.y < -Math.PI) this.player.rotation.y += Math.PI * 2;
+        } else {
+          this._yawRate = 0;
+          this._localVy = 0;
+        }
+
+        // 7. Update lateral chassis velocity vy
+        const totalLatForce = (Fy_F * Math.cos(steerAngle)) + Fy_R;
+        const latAccel = (totalLatForce / (cfg.mass || 1400)) - (speedMs * (this._yawRate || 0));
+        this._localVy = (vy + latAccel * dt) * Math.pow(0.85, dt * 60);
+        this._lateralAccel = latAccel;
+
+        // 8. Engine RPM
+        this._engineRPM = Math.min(6500, Math.max(850, 850 + Math.abs(speedMs) * 110));
+
+        return { effBrake };
+      }
+
       _computeAeroForces(dt) {
         const speed = Math.abs(this.speed);
         const speedMs = speed * 30; // game-units to approx m/s
@@ -2516,11 +2651,22 @@ class Game {
 
       _updateSuspension(dt) {
         const cfg = (typeof VEHICLE_PACEJKA_CONFIG !== 'undefined' && VEHICLE_PACEJKA_CONFIG[this.vehMode]) || { cg_height: 0.55, maxSpeed: 1.2 };
+        const speed = (typeof this.speed === 'number' && isFinite(this.speed)) ? Math.abs(this.speed) : 0;
+        if (speed < 0.01) {
+          this._bodyRoll = 0;
+          this._bodyPitch = 0;
+          this._suspensionY = 0;
+          if (this.playerVehicle) {
+            this.playerVehicle.rotation.z = 0;
+            this.playerVehicle.rotation.x = 0;
+            this.playerVehicle.position.y = (this._enterState === 'IDLE' && this.isPedestrian ? 0 : 0.2);
+          }
+          return;
+        }
         const lateralAccel = isFinite(this._lateralAccel) ? this._lateralAccel : 0;
         const targetRoll = -lateralAccel * 0.03 * (cfg.cg_height || 0.55);
         this._bodyRoll = (isFinite(this._bodyRoll) ? this._bodyRoll : 0) + (targetRoll - (isFinite(this._bodyRoll) ? this._bodyRoll : 0)) * Math.min(1, dt * 8);
         this._bodyRoll = Math.max(-0.12, Math.min(0.12, this._bodyRoll));
-        const speed = (typeof this.speed === 'number' && isFinite(this.speed)) ? Math.abs(this.speed) : 0;
         const accel = this.keys['w'] || this.keys['arrowup'];
         const brake = this.keys['s'] || this.keys['arrowdown'];
         let targetPitch = 0;
@@ -4330,7 +4476,139 @@ class Game {
           2: { name: 'Dadar Junction', sky: 0x9ec5d9, fog: 500, ground: 0x4a6741, amb: 0.85, isPedestrian: true, veh: 'pedestrian', npcTypes: ['car', 'bus', 'auto', 'car', 'bike', 'truck', 'car', 'auto', 'taxi', 'car', 'bus', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'bus', 'truck', 'car', 'auto', 'car', 'car', 'bike'], sidewalkWidth: 5, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -140, z2: 20 }, { type: 'v', x: -240, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -380, x2: -220 }, { type: 'h', z: 120, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -20, z2: 140 }, { type: 'v', x: -600, z1: 100, z2: 260 }, { type: 'v', x: -600, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -860, x2: -700 }, { type: 'h', z: 480, x1: -980, x2: -820 }, { type: 'h', z: 480, x1: -1100, x2: -940 }, { type: 'v', x: -1080, z1: 340, z2: 500 }, { type: 'h', z: 360, x1: -1220, x2: -1060 }, { type: 'v', x: -1200, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -1340, x2: -1180 }, { type: 'h', z: 480, x1: -1460, x2: -1300 }, { type: 'v', x: -1440, z1: 460, z2: 620 }, { type: 'v', x: -1440, z1: 580, z2: 1720 }, { type: 'h', z: 360, x1: -1720, x2: 280 }, { type: 'v', x: -720, z1: -640, z2: 1360 }, { type: 'h', z: 120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -880, z2: 1120 }, { type: 'h', z: 480, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -520, z2: 1480 }, { type: 'h', z: 120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -880, z2: 1120 }, { type: 'h', z: 120, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: -880, z2: 1120 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -240, z: 0 }, { x: -240, z: 120 }, { x: -360, z: 120 }, { x: -480, z: 120 }, { x: -480, z: 0 }, { x: -600, z: 0 }, { x: -600, z: 120 }, { x: -600, z: 240 }, { x: -600, z: 360 }, { x: -720, z: 360 }, { x: -720, z: 480 }, { x: -840, z: 480 }, { x: -960, z: 480 }, { x: -1080, z: 480 }, { x: -1080, z: 360 }, { x: -1200, z: 360 }, { x: -1200, z: 480 }, { x: -1320, z: 480 }, { x: -1440, z: 480 }, { x: -1440, z: 600 }, { x: -1440, z: 720 }], ints: [[-600, 240], [-600, 0], [-1440, 600], [-240, 120], [-240, -120], [-480, 120], [-480, 0], [0, 0], [-1200, 480], [-1080, 360], [-1080, 480], [-1440, 720], [-840, 480], [-1200, 360], [-1320, 480], [-360, 120], [-720, 480], [-120, 0], [-120, -120], [-240, 0], [-720, 360], [-600, 120], [-1440, 480], [-600, 360], [-960, 480]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 }, { x: -262, z1: 0, z2: 120, s: 0.9 }, { x: -218, z1: 0, z2: 120, s: 0.9 }, { x: -502, z1: 0, z2: 120, s: 0.9 }, { x: -458, z1: 0, z2: 120, s: 0.9 }, { x: -622, z1: 0, z2: 120, s: 0.9 }, { x: -578, z1: 0, z2: 120, s: 0.9 }, { x: -622, z1: 120, z2: 240, s: 0.9 }, { x: -578, z1: 120, z2: 240, s: 0.9 }, { x: -622, z1: 240, z2: 360, s: 0.9 }, { x: -578, z1: 240, z2: 360, s: 0.9 }, { x: -742, z1: 360, z2: 480, s: 0.9 }, { x: -698, z1: 360, z2: 480, s: 0.9 }, { x: -1102, z1: 360, z2: 480, s: 0.9 }, { x: -1058, z1: 360, z2: 480, s: 0.9 }, { x: -1222, z1: 360, z2: 480, s: 0.9 }, { x: -1178, z1: 360, z2: 480, s: 0.9 }, { x: -1462, z1: 480, z2: 600, s: 0.9 }, { x: -1418, z1: 480, z2: 600, s: 0.9 }, { x: -1462, z1: 600, z2: 720, s: 0.9 }, { x: -1418, z1: 600, z2: 720, s: 0.9 }], timeLimit: 720, hasGarage: true, assets: ['suburban', 'industrial'] },
           3: { name: 'Bandra Backroads', sky: 0xa8c4d8, fog: 500, ground: 0x3a5a2e, amb: 0.75, veh: 'twowheeler', npcTypes: ['car', 'auto', 'bike', 'cycle', 'auto', 'car', 'taxi', 'bike', 'auto', 'car', 'bike', 'car', 'auto', 'cycle', 'car', 'bike', 'auto', 'car'], roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'h', z: -240, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -620, z2: -460 }, { type: 'v', x: -240, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -380, x2: -220 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'h', z: -720, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -980, z2: -820 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -1220, z2: -1060 }, { type: 'h', z: -1200, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: -1220, z2: -1060 }, { type: 'h', z: -1080, x1: -260, x2: -100 }, { type: 'h', z: -1080, x1: -140, x2: 20 }, { type: 'h', z: -1080, x1: -20, x2: 140 }, { type: 'h', z: -1080, x1: 100, x2: 260 }, { type: 'h', z: -1080, x1: 220, x2: 1360 }, { type: 'h', z: -1080, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -2080, z2: -80 }, { type: 'h', z: -240, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -1240, z2: 760 }, { type: 'h', z: -1080, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -2080, z2: -80 }, { type: 'h', z: -360, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -240, z: -240 }, { x: -240, z: -360 }, { x: -120, z: -360 }, { x: -120, z: -480 }, { x: -240, z: -480 }, { x: -240, z: -600 }, { x: -240, z: -720 }, { x: -360, z: -720 }, { x: -480, z: -720 }, { x: -600, z: -720 }, { x: -600, z: -840 }, { x: -480, z: -840 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -360, z: -1080 }, { x: -360, z: -1200 }, { x: -240, z: -1200 }, { x: -240, z: -1080 }, { x: -120, z: -1080 }, { x: 0, z: -1080 }, { x: 120, z: -1080 }, { x: 240, z: -1080 }, { x: 360, z: -1080 }], ints: [[-240, -240], [-360, -720], [-120, -360], [-480, -960], [0, 0], [-120, -480], [-600, -720], [-240, -480], [120, -240], [120, -1080], [-480, -720], [0, -240], [-480, -1080], [-600, -840], [-240, -1080], [-120, -1080], [240, -1080], [-360, -1080], [-240, -720], [360, -1080], [-360, -1200], [0, -1080], [-240, -1200], [0, -120], [120, -120], [-480, -840], [-240, -360], [-240, -600], [-120, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -262, z1: -360, z2: -240, s: 0.9 }, { x: -218, z1: -360, z2: -240, s: 0.9 }, { x: -142, z1: -480, z2: -360, s: 0.9 }, { x: -98, z1: -480, z2: -360, s: 0.9 }, { x: -262, z1: -600, z2: -480, s: 0.9 }, { x: -218, z1: -600, z2: -480, s: 0.9 }, { x: -262, z1: -720, z2: -600, s: 0.9 }, { x: -218, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -840, z2: -720, s: 0.9 }, { x: -578, z1: -840, z2: -720, s: 0.9 }, { x: -502, z1: -960, z2: -840, s: 0.9 }, { x: -458, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -382, z1: -1200, z2: -1080, s: 0.9 }, { x: -338, z1: -1200, z2: -1080, s: 0.9 }, { x: -262, z1: -1200, z2: -1080, s: 0.9 }, { x: -218, z1: -1200, z2: -1080, s: 0.9 }], timeLimit: 830, hasGarage: true, assets: ['suburban', 'industrial'] },
           4: { name: 'Juhu Boulevard', sky: 0x6fb8e0, fog: 650, ground: 0x2e6b3a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'taxi'], hasBeach: true, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'h', z: -120, x1: -500, x2: -340 }, { type: 'h', z: -120, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -380, z2: -220 }, { type: 'h', z: -240, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -380, z2: -220 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1100, x2: -940 }, { type: 'v', x: -1080, z1: -500, z2: -340 }, { type: 'v', x: -1080, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1220, x2: -1060 }, { type: 'v', x: -1200, z1: -620, z2: -460 }, { type: 'v', x: -1200, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1340, x2: -1180 }, { type: 'h', z: -360, x1: -1460, x2: -1300 }, { type: 'v', x: -1440, z1: -500, z2: -340 }, { type: 'v', x: -1440, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1460, x2: -1300 }, { type: 'v', x: -1320, z1: -620, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1120, z2: 880 }, { type: 'h', z: -120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -480, z: -120 }, { x: -600, z: -120 }, { x: -600, z: -240 }, { x: -480, z: -240 }, { x: -480, z: -360 }, { x: -600, z: -360 }, { x: -720, z: -360 }, { x: -720, z: -240 }, { x: -840, z: -240 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -960, z: -480 }, { x: -960, z: -360 }, { x: -1080, z: -360 }, { x: -1080, z: -480 }, { x: -1080, z: -600 }, { x: -1200, z: -600 }, { x: -1200, z: -480 }, { x: -1200, z: -360 }, { x: -1320, z: -360 }, { x: -1440, z: -360 }, { x: -1440, z: -480 }, { x: -1440, z: -600 }, { x: -1320, z: -600 }, { x: -1320, z: -480 }], ints: [[-840, -240], [-1440, -360], [-480, -360], [-960, -360], [-1440, -600], [-1320, -600], [-960, -480], [-240, -120], [-1080, -600], [0, 0], [-1440, -480], [-1200, -480], [-1200, -360], [-720, -360], [-1080, -480], [-600, -360], [-600, -120], [-1320, -360], [-360, -120], [-120, 0], [-840, -360], [-1320, -480], [-1200, -600], [-120, -120], [-480, -240], [-480, -120], [-1080, -360], [-720, -240], [-840, -480], [-600, -240]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -622, z1: -240, z2: -120, s: 0.9 }, { x: -578, z1: -240, z2: -120, s: 0.9 }, { x: -502, z1: -360, z2: -240, s: 0.9 }, { x: -458, z1: -360, z2: -240, s: 0.9 }, { x: -742, z1: -360, z2: -240, s: 0.9 }, { x: -698, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -360, z2: -240, s: 0.9 }, { x: -818, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -982, z1: -480, z2: -360, s: 0.9 }, { x: -938, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -480, z2: -360, s: 0.9 }, { x: -1058, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -600, z2: -480, s: 0.9 }, { x: -1058, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -600, z2: -480, s: 0.9 }, { x: -1178, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -480, z2: -360, s: 0.9 }, { x: -1178, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -480, z2: -360, s: 0.9 }, { x: -1418, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -600, z2: -480, s: 0.9 }, { x: -1418, z1: -600, z2: -480, s: 0.9 }, { x: -1342, z1: -600, z2: -480, s: 0.9 }, { x: -1298, z1: -600, z2: -480, s: 0.9 }], timeLimit: 940, hasGarage: true, assets: ['suburban', 'industrial'] },
-          5: { name: 'Parel School Zone', sky: 0x95c0d4, fog: 500, ground: 0x447a3e, amb: 0.8, veh: 'bus', npcTypes: ['car', 'auto', 'cycle', 'bike', 'auto', 'car', 'taxi', 'car', 'auto', 'bike', 'car', 'cycle', 'auto', 'car', 'bus', 'car', 'auto', 'car'], hasSchool: true, speedLimit: 30, isSilenceZone: true, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -260, z2: -100 }, { type: 'v', x: -360, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -500, x2: -340 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -500, z2: -340 }, { type: 'v', x: -600, z1: -620, z2: -460 }, { type: 'v', x: -600, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -620, x2: -460 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'v', x: -360, z1: -980, z2: -820 }, { type: 'v', x: -360, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -380, x2: -220 }, { type: 'h', z: -1080, x1: -260, x2: -100 }, { type: 'h', z: -1080, x1: -140, x2: 20 }, { type: 'h', z: -1080, x1: -20, x2: 140 }, { type: 'h', z: -1080, x1: 100, x2: 260 }, { type: 'h', z: -1080, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -1100, z2: -940 }, { type: 'v', x: 360, z1: -980, z2: -820 }, { type: 'v', x: 360, z1: -860, z2: -700 }, { type: 'v', x: 360, z1: -740, z2: -580 }, { type: 'h', z: -600, x1: 340, x2: 500 }, { type: 'h', z: -600, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: -620, z2: -460 }, { type: 'h', z: -480, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: 340, x2: 500 }, { type: 'v', x: 360, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: 220, x2: 380 }, { type: 'v', x: 240, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -880, x2: 260 }, { type: 'h', z: -360, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -1360, z2: 640 }, { type: 'h', z: -1080, x1: -640, x2: 1360 }, { type: 'v', x: 360, z1: -2080, z2: -80 }, { type: 'h', z: -120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1120, z2: 880 }, { type: 'h', z: -360, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1360, z2: 640 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -360, z: -240 }, { x: -360, z: -360 }, { x: -480, z: -360 }, { x: -600, z: -360 }, { x: -600, z: -480 }, { x: -600, z: -600 }, { x: -600, z: -720 }, { x: -480, z: -720 }, { x: -360, z: -720 }, { x: -360, z: -840 }, { x: -360, z: -960 }, { x: -360, z: -1080 }, { x: -240, z: -1080 }, { x: -120, z: -1080 }, { x: 0, z: -1080 }, { x: 120, z: -1080 }, { x: 240, z: -1080 }, { x: 360, z: -1080 }, { x: 360, z: -960 }, { x: 360, z: -840 }, { x: 360, z: -720 }, { x: 360, z: -600 }, { x: 480, z: -600 }, { x: 600, z: -600 }, { x: 600, z: -480 }, { x: 480, z: -480 }, { x: 480, z: -360 }, { x: 360, z: -360 }, { x: 360, z: -480 }, { x: 240, z: -480 }, { x: 240, z: -600 }, { x: 120, z: -600 }], ints: [[360, -360], [600, -600], [-360, -840], [-480, -360], [-600, -600], [480, -600], [240, -480], [-360, -720], [120, -600], [-240, -120], [0, 0], [-600, -720], [-360, -240], [120, -1080], [-240, -1080], [-480, -720], [360, -840], [480, -480], [-120, -1080], [360, -480], [-600, -360], [240, -1080], [-360, -1080], [-360, -360], [360, -1080], [360, -720], [-360, -120], [-120, 0], [-360, -960], [600, -480], [480, -360], [0, -1080], [360, -600], [-120, -120], [240, -600], [360, -960], [-600, -480]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 }, { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 }, { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 }, { x: -622, z1: -600, z2: -480, s: 0.9 }, { x: -578, z1: -600, z2: -480, s: 0.9 }, { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }, { x: -382, z1: -960, z2: -840, s: 0.9 }, { x: -338, z1: -960, z2: -840, s: 0.9 }, { x: -382, z1: -1080, z2: -960, s: 0.9 }, { x: -338, z1: -1080, z2: -960, s: 0.9 }, { x: 338, z1: -1080, z2: -960, s: 0.9 }, { x: 382, z1: -1080, z2: -960, s: 0.9 }, { x: 338, z1: -960, z2: -840, s: 0.9 }, { x: 382, z1: -960, z2: -840, s: 0.9 }, { x: 338, z1: -840, z2: -720, s: 0.9 }, { x: 382, z1: -840, z2: -720, s: 0.9 }, { x: 338, z1: -720, z2: -600, s: 0.9 }, { x: 382, z1: -720, z2: -600, s: 0.9 }, { x: 578, z1: -600, z2: -480, s: 0.9 }, { x: 622, z1: -600, z2: -480, s: 0.9 }, { x: 458, z1: -480, z2: -360, s: 0.9 }, { x: 502, z1: -480, z2: -360, s: 0.9 }, { x: 338, z1: -480, z2: -360, s: 0.9 }, { x: 382, z1: -480, z2: -360, s: 0.9 }, { x: 218, z1: -600, z2: -480, s: 0.9 }, { x: 262, z1: -600, z2: -480, s: 0.9 }], timeLimit: 1050, hasGarage: true, assets: ['suburban', 'industrial'] },
+          5: {
+            name: 'Parel School Zone',
+            sky: 0x95c0d4,
+            fog: 600,
+            ground: 0x447a3e,
+            amb: 0.85,
+            veh: 'car',
+            npcTypes: ['car', 'auto', 'cycle', 'bike', 'auto', 'car', 'taxi', 'car', 'auto', 'bike', 'car', 'cycle', 'auto', 'car', 'bus', 'car', 'auto', 'car', 'truck', 'bus'],
+            hasSchool: true,
+            speedLimit: 25,
+            isSilenceZone: true,
+            roads: [
+              // Major Long Continuous East-West Avenues (Generous Multi-lane Corridors)
+              { type: 'h', z: 0, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'St. Xavier School Boulevard' },
+              { type: 'h', z: -120, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Parel Commercial Crossway' },
+              { type: 'h', z: -240, x1: -1200, x2: 1200, lanes: 2, width: 18, name: 'Market Central Lane' },
+              { type: 'h', z: -360, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Dr. Ambedkar Arterial Marg' },
+              { type: 'h', z: -480, x1: -1200, x2: 1200, lanes: 2, width: 18, name: 'Lalbaug Commercial Lane' },
+              { type: 'h', z: -600, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Cotton Green Boulevard' },
+              { type: 'h', z: -720, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Sewri Ring Road' },
+              { type: 'h', z: -1080, x1: -1200, x2: 1200, lanes: 4, width: 30, name: 'North Marine Grand Avenue' },
+              // Major Long Continuous North-South Avenues
+              { type: 'v', x: -120, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Parel West Avenue' },
+              { type: 'v', x: -360, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Hospital North Corridor' },
+              { type: 'v', x: -600, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Currey Road Link' },
+              { type: 'v', x: 0, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Central Tram Avenue' },
+              { type: 'v', x: 240, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Lower Parel Link' },
+              { type: 'v', x: 360, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'East Commercial Avenue' },
+              { type: 'v', x: 480, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Harbor Connection' },
+              { type: 'v', x: 600, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Grand Trunk Expressway' }
+            ],
+            route: [
+              { x: -35, z: 0 },
+              { x: -65, z: 0 },
+              { x: -120, z: 0 },
+              { x: -120, z: -120 },
+              { x: -240, z: -120 },
+              { x: -360, z: -120 },
+              { x: -360, z: -240 },
+              { x: -360, z: -360 },
+              { x: -480, z: -360 },
+              { x: -600, z: -360 },
+              { x: -600, z: -480 },
+              { x: -600, z: -600 },
+              { x: -600, z: -720 },
+              { x: -480, z: -720 },
+              { x: -360, z: -720 },
+              { x: -360, z: -840 },
+              { x: -360, z: -960 },
+              { x: -360, z: -1080 },
+              { x: -240, z: -1080 },
+              { x: -120, z: -1080 },
+              { x: 0, z: -1080 },
+              { x: 120, z: -1080 },
+              { x: 240, z: -1080 },
+              { x: 360, z: -1080 },
+              { x: 360, z: -960 },
+              { x: 360, z: -840 },
+              { x: 360, z: -720 },
+              { x: 360, z: -600 },
+              { x: 480, z: -600 },
+              { x: 600, z: -600 },
+              { x: 600, z: -480 },
+              { x: 480, z: -480 },
+              { x: 480, z: -360 },
+              { x: 360, z: -360 },
+              { x: 360, z: -480 },
+              { x: 240, z: -480 },
+              { x: 240, z: -600 },
+              { x: 120, z: -600 }
+            ],
+            ints: [
+              [-120, 0], [-360, 0], [-600, 0], [0, 0], [240, 0], [360, 0], [480, 0], [600, 0],
+              [-120, -120], [-360, -120], [-600, -120], [0, -120], [240, -120], [360, -120], [480, -120], [600, -120],
+              [-120, -240], [-360, -240], [-600, -240], [0, -240], [240, -240], [360, -240], [480, -240], [600, -240],
+              [-120, -360], [-360, -360], [-600, -360], [0, -360], [240, -360], [360, -360], [480, -360], [600, -360],
+              [-120, -480], [-360, -480], [-600, -480], [0, -480], [240, -480], [360, -480], [480, -480], [600, -480],
+              [-120, -600], [-360, -600], [-600, -600], [0, -600], [240, -600], [360, -600], [480, -600], [600, -600],
+              [-120, -720], [-360, -720], [-600, -720], [0, -720], [240, -720], [360, -720], [480, -720], [600, -720],
+              [-120, -1080], [-360, -1080], [-600, -1080], [0, -1080], [240, -1080], [360, -1080], [480, -1080], [600, -1080]
+            ],
+            bldg: [
+              // Flanking St. Xavier School Boulevard (Z = 0)
+              { x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 },
+              { x: -22, z1: 0, z2: 120, s: 0.9 }, { x: 22, z1: 0, z2: 120, s: 0.9 },
+              { x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 },
+              { x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 },
+              { x: 338, z1: 0, z2: 120, s: 0.9 }, { x: 382, z1: 0, z2: 120, s: 0.9 },
+              { x: 458, z1: 0, z2: 120, s: 0.9 }, { x: 502, z1: 0, z2: 120, s: 0.9 },
+              { x: 578, z1: 0, z2: 120, s: 0.9 }, { x: 622, z1: 0, z2: 120, s: 0.9 },
+              // Flanking Parel West Avenue (X = -120)
+              { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 },
+              { x: -142, z1: -240, z2: -120, s: 0.9 }, { x: -98, z1: -240, z2: -120, s: 0.9 },
+              { x: -142, z1: -360, z2: -240, s: 0.9 }, { x: -98, z1: -360, z2: -240, s: 0.9 },
+              // Flanking Parel Commercial Crossway (Z = -120)
+              { x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 },
+              { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 },
+              { x: -502, z1: -120, z2: 0, s: 0.9 }, { x: -458, z1: -120, z2: 0, s: 0.9 },
+              // Flanking Dr. Ambedkar Marg (X = -360)
+              { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 },
+              { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 },
+              { x: -382, z1: -480, z2: -360, s: 0.9 }, { x: -338, z1: -480, z2: -360, s: 0.9 },
+              // Flanking Lalbaug Arterial (Z = -360)
+              { x: -502, z1: -360, z2: -240, s: 0.9 }, { x: -458, z1: -360, z2: -240, s: 0.9 },
+              { x: -622, z1: -360, z2: -240, s: 0.9 }, { x: -578, z1: -360, z2: -240, s: 0.9 },
+              // Flanking Currey Road Corridor (X = -600)
+              { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 },
+              { x: -622, z1: -600, z2: -480, s: 0.9 }, { x: -578, z1: -600, z2: -480, s: 0.9 },
+              { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 },
+              // Flanking Sewri Ring Road & North Loop (Z = -720 to -1080)
+              { x: -502, z1: -720, z2: -600, s: 0.9 }, { x: -458, z1: -720, z2: -600, s: 0.9 },
+              { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 },
+              { x: -382, z1: -960, z2: -840, s: 0.9 }, { x: -338, z1: -960, z2: -840, s: 0.9 },
+              { x: -382, z1: -1080, z2: -960, s: 0.9 }, { x: -338, z1: -1080, z2: -960, s: 0.9 },
+              { x: -262, z1: -1080, z2: -960, s: 0.9 }, { x: -218, z1: -1080, z2: -960, s: 0.9 },
+              { x: -142, z1: -1080, z2: -960, s: 0.9 }, { x: -98, z1: -1080, z2: -960, s: 0.9 },
+              { x: -22, z1: -1080, z2: -960, s: 0.9 }, { x: 22, z1: -1080, z2: -960, s: 0.9 },
+              { x: 98, z1: -1080, z2: -960, s: 0.9 }, { x: 142, z1: -1080, z2: -960, s: 0.9 },
+              { x: 218, z1: -1080, z2: -960, s: 0.9 }, { x: 262, z1: -1080, z2: -960, s: 0.9 },
+              { x: 338, z1: -1080, z2: -960, s: 0.9 }, { x: 382, z1: -1080, z2: -960, s: 0.9 },
+              // East Side Avenues (X = 360, 480, 600)
+              { x: 338, z1: -960, z2: -840, s: 0.9 }, { x: 382, z1: -960, z2: -840, s: 0.9 },
+              { x: 338, z1: -840, z2: -720, s: 0.9 }, { x: 382, z1: -840, z2: -720, s: 0.9 },
+              { x: 338, z1: -720, z2: -600, s: 0.9 }, { x: 382, z1: -720, z2: -600, s: 0.9 },
+              { x: 578, z1: -600, z2: -480, s: 0.9 }, { x: 622, z1: -600, z2: -480, s: 0.9 },
+              { x: 458, z1: -480, z2: -360, s: 0.9 }, { x: 502, z1: -480, z2: -360, s: 0.9 },
+              { x: 338, z1: -480, z2: -360, s: 0.9 }, { x: 382, z1: -480, z2: -360, s: 0.9 },
+              { x: 218, z1: -600, z2: -480, s: 0.9 }, { x: 262, z1: -600, z2: -480, s: 0.9 }
+            ],
+            timeLimit: 1200,
+            hasGarage: true,
+            assets: ['suburban', 'industrial']
+          },
           6: { name: 'Matunga Rail Corridor', sky: 0x7fafc4, fog: 600, ground: 0x3a6130, amb: 0.7, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'car', 'auto', 'taxi', 'car', 'auto', 'bike', 'car', 'truck', 'auto', 'car', 'car', 'bike', 'car', 'auto'], hasRailway: true, railZ: [0], hasMetro: true, hasMountain: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'v', x: 120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'h', z: -120, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: 340, x2: 500 }, { type: 'v', x: 480, z1: -260, z2: -100 }, { type: 'v', x: 480, z1: -140, z2: 20 }, { type: 'v', x: 480, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: -20, z2: 140 }, { type: 'v', x: 720, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 700, x2: 860 }, { type: 'h', z: 240, x1: 820, x2: 980 }, { type: 'h', z: 240, x1: 940, x2: 1100 }, { type: 'v', x: 1080, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 940, x2: 1100 }, { type: 'v', x: 960, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 940, x2: 1100 }, { type: 'h', z: 480, x1: 1060, x2: 1220 }, { type: 'v', x: 1200, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 1060, x2: 1220 }, { type: 'v', x: 1080, z1: 580, z2: 740 }, { type: 'v', x: 1080, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 940, x2: 1100 }, { type: 'v', x: 960, z1: 700, z2: 860 }, { type: 'h', z: 720, x1: 820, x2: 980 }, { type: 'v', x: 840, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 820, x2: 1960 }, { type: 'h', z: 0, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -1000, z2: 1000 }, { type: 'h', z: 120, x1: -400, x2: 1600 }, { type: 'v', x: 600, z1: -880, z2: 1120 }, { type: 'h', z: 120, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -160, x2: 1840 }, { type: 'v', x: 840, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: 80, x2: 2080 }, { type: 'v', x: 1080, z1: -280, z2: 1720 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 120, z: -120 }, { x: 240, z: -120 }, { x: 360, z: -120 }, { x: 360, z: -240 }, { x: 480, z: -240 }, { x: 480, z: -120 }, { x: 480, z: 0 }, { x: 480, z: 120 }, { x: 600, z: 120 }, { x: 600, z: 0 }, { x: 720, z: 0 }, { x: 720, z: 120 }, { x: 720, z: 240 }, { x: 840, z: 240 }, { x: 960, z: 240 }, { x: 1080, z: 240 }, { x: 1080, z: 360 }, { x: 960, z: 360 }, { x: 960, z: 480 }, { x: 1080, z: 480 }, { x: 1200, z: 480 }, { x: 1200, z: 600 }, { x: 1080, z: 600 }, { x: 1080, z: 720 }, { x: 1080, z: 840 }, { x: 960, z: 840 }, { x: 960, z: 720 }, { x: 840, z: 720 }, { x: 840, z: 600 }, { x: 960, z: 600 }], ints: [[600, 0], [360, -120], [480, -120], [720, 120], [960, 720], [960, 480], [480, 120], [0, 0], [480, -240], [720, 0], [840, 720], [960, 840], [240, -120], [360, -240], [960, 360], [1080, 840], [120, 0], [840, 600], [600, 120], [1080, 720], [1080, 360], [1200, 480], [960, 240], [1080, 480], [120, -120], [1080, 240], [1080, 600], [480, 0], [720, 240], [960, 600], [1200, 600], [840, 240]], bldg: [{ x: 98, z1: -120, z2: 0, s: 0.9 }, { x: 142, z1: -120, z2: 0, s: 0.9 }, { x: 338, z1: -240, z2: -120, s: 0.9 }, { x: 382, z1: -240, z2: -120, s: 0.9 }, { x: 458, z1: -240, z2: -120, s: 0.9 }, { x: 502, z1: -240, z2: -120, s: 0.9 }, { x: 458, z1: -120, z2: 0, s: 0.9 }, { x: 502, z1: -120, z2: 0, s: 0.9 }, { x: 458, z1: 0, z2: 120, s: 0.9 }, { x: 502, z1: 0, z2: 120, s: 0.9 }, { x: 578, z1: 0, z2: 120, s: 0.9 }, { x: 622, z1: 0, z2: 120, s: 0.9 }, { x: 698, z1: 0, z2: 120, s: 0.9 }, { x: 742, z1: 0, z2: 120, s: 0.9 }, { x: 698, z1: 120, z2: 240, s: 0.9 }, { x: 742, z1: 120, z2: 240, s: 0.9 }, { x: 1058, z1: 240, z2: 360, s: 0.9 }, { x: 1102, z1: 240, z2: 360, s: 0.9 }, { x: 938, z1: 360, z2: 480, s: 0.9 }, { x: 982, z1: 360, z2: 480, s: 0.9 }, { x: 1178, z1: 480, z2: 600, s: 0.9 }, { x: 1222, z1: 480, z2: 600, s: 0.9 }, { x: 1058, z1: 600, z2: 720, s: 0.9 }, { x: 1102, z1: 600, z2: 720, s: 0.9 }, { x: 1058, z1: 720, z2: 840, s: 0.9 }, { x: 1102, z1: 720, z2: 840, s: 0.9 }, { x: 938, z1: 720, z2: 840, s: 0.9 }, { x: 982, z1: 720, z2: 840, s: 0.9 }, { x: 818, z1: 600, z2: 720, s: 0.9 }, { x: 862, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1160, hasGarage: true, assets: ['suburban', 'industrial', 'trains'] },
           7: { name: 'Marine Drive', sky: 0x4a90d9, fog: 700, ground: 0x1a6b5a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'car', 'bike', 'car', 'car', 'bus', 'auto', 'taxi', 'car', 'bike', 'car', 'auto'], hasOcean: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'h', z: 0, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 340, x2: 500 }, { type: 'h', z: 240, x1: 460, x2: 620 }, { type: 'h', z: 240, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 100, z2: 260 }, { type: 'v', x: 720, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: -20, z2: 140 }, { type: 'v', x: 840, z1: 100, z2: 260 }, { type: 'v', x: 840, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 700, x2: 860 }, { type: 'h', z: 360, x1: 580, x2: 740 }, { type: 'h', z: 360, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: 340, z2: 500 }, { type: 'v', x: 480, z1: 460, z2: 620 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 340, x2: 500 }, { type: 'v', x: 360, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 460, z2: 620 }, { type: 'v', x: 120, z1: 340, z2: 500 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 220, z2: 380 }, { type: 'v', x: 0, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -140, x2: 20 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 460, z2: 620 }, { type: 'v', x: -240, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: -500, x2: -340 }, { type: 'h', z: 840, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 820, z2: 980 }, { type: 'v', x: -600, z1: 940, z2: 1100 }, { type: 'h', z: 1080, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 940, z2: 1100 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 940, z2: 2080 }, { type: 'h', z: 600, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -400, z2: 1600 }, { type: 'h', z: 600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -400, z2: 1600 }, { type: 'h', z: 480, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -520, z2: 1480 }, { type: 'h', z: 720, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -280, z2: 1720 }, { type: 'h', z: 1080, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: 80, z2: 2080 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 240, z: 0 }, { x: 240, z: 120 }, { x: 360, z: 120 }, { x: 360, z: 240 }, { x: 480, z: 240 }, { x: 600, z: 240 }, { x: 720, z: 240 }, { x: 720, z: 120 }, { x: 720, z: 0 }, { x: 840, z: 0 }, { x: 840, z: 120 }, { x: 840, z: 240 }, { x: 840, z: 360 }, { x: 720, z: 360 }, { x: 600, z: 360 }, { x: 480, z: 360 }, { x: 480, z: 480 }, { x: 480, z: 600 }, { x: 480, z: 720 }, { x: 360, z: 720 }, { x: 360, z: 600 }, { x: 240, z: 600 }, { x: 120, z: 600 }, { x: 120, z: 480 }, { x: 120, z: 360 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 360 }, { x: 0, z: 480 }, { x: -120, z: 480 }, { x: -240, z: 480 }, { x: -240, z: 600 }, { x: -240, z: 720 }, { x: -360, z: 720 }, { x: -360, z: 840 }, { x: -480, z: 840 }, { x: -600, z: 840 }, { x: -600, z: 960 }, { x: -600, z: 1080 }, { x: -480, z: 1080 }, { x: -480, z: 960 }, { x: -360, z: 960 }, { x: -360, z: 1080 }], ints: [[240, 0], [840, 0], [0, 240], [360, 240], [-600, 960], [-240, 480], [720, 120], [120, 360], [360, 120], [-360, 960], [0, 0], [720, 0], [480, 720], [840, 360], [840, 120], [120, 240], [480, 240], [-600, 840], [-600, 1080], [360, 600], [-240, 720], [-240, 600], [120, 600], [120, 480], [-480, 1080], [-480, 960], [120, 0], [0, 360], [240, 600], [-360, 720], [600, 360], [480, 360], [360, 720], [480, 600], [600, 240], [-120, 480], [720, 240], [240, 120], [480, 480], [-360, 840], [720, 360], [0, 480], [-360, 1080], [-480, 840], [840, 240]], bldg: [{ x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 }, { x: 338, z1: 120, z2: 240, s: 0.9 }, { x: 382, z1: 120, z2: 240, s: 0.9 }, { x: 698, z1: 120, z2: 240, s: 0.9 }, { x: 742, z1: 120, z2: 240, s: 0.9 }, { x: 698, z1: 0, z2: 120, s: 0.9 }, { x: 742, z1: 0, z2: 120, s: 0.9 }, { x: 818, z1: 0, z2: 120, s: 0.9 }, { x: 862, z1: 0, z2: 120, s: 0.9 }, { x: 818, z1: 120, z2: 240, s: 0.9 }, { x: 862, z1: 120, z2: 240, s: 0.9 }, { x: 818, z1: 240, z2: 360, s: 0.9 }, { x: 862, z1: 240, z2: 360, s: 0.9 }, { x: 458, z1: 360, z2: 480, s: 0.9 }, { x: 502, z1: 360, z2: 480, s: 0.9 }, { x: 458, z1: 480, z2: 600, s: 0.9 }, { x: 502, z1: 480, z2: 600, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 338, z1: 600, z2: 720, s: 0.9 }, { x: 382, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 480, z2: 600, s: 0.9 }, { x: 142, z1: 480, z2: 600, s: 0.9 }, { x: 98, z1: 360, z2: 480, s: 0.9 }, { x: 142, z1: 360, z2: 480, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 240, z2: 360, s: 0.9 }, { x: 22, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 360, z2: 480, s: 0.9 }, { x: 22, z1: 360, z2: 480, s: 0.9 }, { x: -262, z1: 480, z2: 600, s: 0.9 }, { x: -218, z1: 480, z2: 600, s: 0.9 }, { x: -262, z1: 600, z2: 720, s: 0.9 }, { x: -218, z1: 600, z2: 720, s: 0.9 }, { x: -382, z1: 720, z2: 840, s: 0.9 }, { x: -338, z1: 720, z2: 840, s: 0.9 }, { x: -622, z1: 840, z2: 960, s: 0.9 }, { x: -578, z1: 840, z2: 960, s: 0.9 }, { x: -622, z1: 960, z2: 1080, s: 0.9 }, { x: -578, z1: 960, z2: 1080, s: 0.9 }, { x: -502, z1: 960, z2: 1080, s: 0.9 }, { x: -458, z1: 960, z2: 1080, s: 0.9 }, { x: -382, z1: 960, z2: 1080, s: 0.9 }, { x: -338, z1: 960, z2: 1080, s: 0.9 }], timeLimit: 1270, hasGarage: true, assets: ['suburban', 'industrial'] },
           8: { name: 'Byculla', sky: 0x7a9eb5, fog: 550, ground: 0x345a2a, amb: 0.7, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'auto', 'car', 'truck', 'car', 'taxi', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'car', 'bike', 'auto', 'car', 'taxi', 'car', 'car', 'auto'], hasEmergency: true, roads: [{ type: 'v', x: 0, z1: -1000, z2: 140 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'h', z: 120, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -140, z2: 20 }, { type: 'h', z: 0, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -260, x2: -100 }, { type: 'h', z: 360, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 580, z2: 740 }, { type: 'v', x: 240, z1: 700, z2: 860 }, { type: 'v', x: 240, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -20, x2: 140 }, { type: 'h', z: 840, x1: -140, x2: 20 }, { type: 'h', z: 840, x1: -260, x2: -100 }, { type: 'h', z: 840, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'h', z: 960, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 700, z2: 860 }, { type: 'v', x: -480, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -620, x2: -460 }, { type: 'h', z: 480, x1: -500, x2: -340 }, { type: 'h', z: 480, x1: -380, x2: -220 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: -20, x2: 1120 }, { type: 'h', z: 120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 840, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -160, z2: 1840 }, { type: 'h', z: 960, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -40, z2: 1960 }, { type: 'h', z: 600, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -400, z2: 1600 }], route: [{ x: 0, z: 0 }, { x: 0, z: 120 }, { x: -120, z: 120 }, { x: -240, z: 120 }, { x: -240, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -360, z: 0 }, { x: -480, z: 0 }, { x: -480, z: 120 }, { x: -360, z: 120 }, { x: -360, z: 240 }, { x: -240, z: 240 }, { x: -240, z: 360 }, { x: -120, z: 360 }, { x: 0, z: 360 }, { x: 0, z: 480 }, { x: 120, z: 480 }, { x: 120, z: 600 }, { x: 240, z: 600 }, { x: 240, z: 720 }, { x: 240, z: 840 }, { x: 240, z: 960 }, { x: 120, z: 960 }, { x: 120, z: 840 }, { x: 0, z: 840 }, { x: -120, z: 840 }, { x: -240, z: 840 }, { x: -360, z: 840 }, { x: -360, z: 960 }, { x: -480, z: 960 }, { x: -600, z: 960 }, { x: -600, z: 840 }, { x: -480, z: 840 }, { x: -480, z: 720 }, { x: -480, z: 600 }, { x: -600, z: 600 }, { x: -600, z: 480 }, { x: -480, z: 480 }, { x: -360, z: 480 }, { x: -240, z: 480 }, { x: -120, z: 480 }, { x: -120, z: 600 }, { x: 0, z: 600 }, { x: 0, z: 720 }, { x: 120, z: 720 }], ints: [[-120, 360], [-360, 240], [240, 960], [120, 960], [-360, 0], [-600, 960], [-240, 120], [-600, 600], [-240, 480], [-480, 720], [0, 120], [-240, -120], [-480, 120], [-480, 0], [0, 0], [120, 840], [-360, 960], [-480, 480], [-480, 600], [0, 840], [-600, 840], [-360, 480], [-240, 840], [240, 720], [-360, 120], [-240, 360], [0, 600], [120, 600], [120, 480], [-240, 240], [-480, 960], [-360, -120], [-120, 0], [-120, 120], [0, 360], [-120, 600], [-120, -120], [240, 600], [-240, 0], [240, 840], [-120, 840], [0, 720], [-120, 480], [-600, 480], [-360, 840], [0, 480], [120, 720], [-480, 840]], bldg: [{ x: -22, z1: 0, z2: 120, s: 0.9 }, { x: 22, z1: 0, z2: 120, s: 0.9 }, { x: -262, z1: 0, z2: 120, s: 0.9 }, { x: -218, z1: 0, z2: 120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 }, { x: -502, z1: 0, z2: 120, s: 0.9 }, { x: -458, z1: 0, z2: 120, s: 0.9 }, { x: -382, z1: 120, z2: 240, s: 0.9 }, { x: -338, z1: 120, z2: 240, s: 0.9 }, { x: -262, z1: 240, z2: 360, s: 0.9 }, { x: -218, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 360, z2: 480, s: 0.9 }, { x: 22, z1: 360, z2: 480, s: 0.9 }, { x: 98, z1: 480, z2: 600, s: 0.9 }, { x: 142, z1: 480, z2: 600, s: 0.9 }, { x: 218, z1: 600, z2: 720, s: 0.9 }, { x: 262, z1: 600, z2: 720, s: 0.9 }, { x: 218, z1: 720, z2: 840, s: 0.9 }, { x: 262, z1: 720, z2: 840, s: 0.9 }, { x: 218, z1: 840, z2: 960, s: 0.9 }, { x: 262, z1: 840, z2: 960, s: 0.9 }, { x: 98, z1: 840, z2: 960, s: 0.9 }, { x: 142, z1: 840, z2: 960, s: 0.9 }, { x: -382, z1: 840, z2: 960, s: 0.9 }, { x: -338, z1: 840, z2: 960, s: 0.9 }, { x: -622, z1: 840, z2: 960, s: 0.9 }, { x: -578, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 720, z2: 840, s: 0.9 }, { x: -458, z1: 720, z2: 840, s: 0.9 }, { x: -502, z1: 600, z2: 720, s: 0.9 }, { x: -458, z1: 600, z2: 720, s: 0.9 }, { x: -622, z1: 480, z2: 600, s: 0.9 }, { x: -578, z1: 480, z2: 600, s: 0.9 }, { x: -142, z1: 480, z2: 600, s: 0.9 }, { x: -98, z1: 480, z2: 600, s: 0.9 }, { x: -22, z1: 600, z2: 720, s: 0.9 }, { x: 22, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1380, hasGarage: true, assets: ['suburban', 'industrial', 'emergency'] },
@@ -5541,36 +5819,37 @@ class Game {
 
         if (cfg.hasSchool) {
           const sGrp = new THREE.Group();
-          const schoolX = -26, schoolZ = 70;
+          const schoolX = -65, schoolZ = -30;
 
           // 1. Main School Building (2-Story Colonial Brick & Cream Architecture)
           const bldgMat = new THREE.MeshLambertMaterial({ color: 0xb91c1c }); // Crimson brick
           const trimMat = new THREE.MeshLambertMaterial({ color: 0xfef08a }); // Cream trim
           const roofMat = new THREE.MeshLambertMaterial({ color: 0x1e293b }); // Slate roof
+          const steelMat = new THREE.MeshLambertMaterial({ color: 0x334155 }); // Steel pole
           const winMat = new THREE.MeshToonMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.75 });
 
           // Central Wing & Clock Tower
-          const mainWing = new THREE.Mesh(new THREE.BoxGeometry(26, 12, 16), bldgMat);
-          mainWing.position.set(0, 6, 0); sGrp.add(mainWing);
-          const tower = new THREE.Mesh(new THREE.BoxGeometry(8, 7, 8), trimMat);
-          tower.position.set(0, 15.5, 0); sGrp.add(tower);
-          const clockDome = new THREE.Mesh(new THREE.ConeGeometry(5, 5, 8), roofMat);
-          clockDome.position.set(0, 21.5, 0); sGrp.add(clockDome);
+          const mainWing = new THREE.Mesh(new THREE.BoxGeometry(28, 13, 16), bldgMat);
+          mainWing.position.set(0, 6.5, 0); sGrp.add(mainWing);
+          const tower = new THREE.Mesh(new THREE.BoxGeometry(8, 8, 8), trimMat);
+          tower.position.set(0, 16.5, 0); sGrp.add(tower);
+          const clockDome = new THREE.Mesh(new THREE.ConeGeometry(5.5, 6, 8), roofMat);
+          clockDome.position.set(0, 23.5, 0); sGrp.add(clockDome);
 
           // Left and Right Classroom Wings
-          [-17, 17].forEach(wx => {
-            const wing = new THREE.Mesh(new THREE.BoxGeometry(12, 10, 14), bldgMat);
-            wing.position.set(wx, 5, 0); sGrp.add(wing);
-            const wRoof = new THREE.Mesh(new THREE.BoxGeometry(13, 1.5, 15), roofMat);
-            wRoof.position.set(wx, 10.75, 0); sGrp.add(wRoof);
+          [-19, 19].forEach(wx => {
+            const wing = new THREE.Mesh(new THREE.BoxGeometry(14, 11, 14), bldgMat);
+            wing.position.set(wx, 5.5, 0); sGrp.add(wing);
+            const wRoof = new THREE.Mesh(new THREE.BoxGeometry(15, 1.6, 15), roofMat);
+            wRoof.position.set(wx, 11.8, 0); sGrp.add(wRoof);
           });
 
           // School Windows
           for (let f = 0; f < 2; f++) {
-            for (let w = -4; w <= 4; w++) {
+            for (let w = -5; w <= 5; w++) {
               if (w === 0 && f === 0) continue; // Entrance archway
-              const win = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 2.0), winMat);
-              win.position.set(w * 3.2, 3.5 + f * 4.5, 8.05);
+              const win = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 2.2), winMat);
+              win.position.set(w * 3.4, 3.8 + f * 4.8, 8.05);
               sGrp.add(win);
             }
           }
@@ -5586,72 +5865,115 @@ class Game {
           sCtx.fillStyle = '#dc2626'; sCtx.font = 'bold 26px sans-serif';
           sCtx.fillText('⚠️ CAUTION: SCHOOL ZONE (MAX 20 KM/H)', 256, 92);
           const schoolSignTex = new THREE.CanvasTexture(sCanvas);
-          const schoolSign = new THREE.Mesh(new THREE.BoxGeometry(16, 4, 0.4), new THREE.MeshLambertMaterial({ map: schoolSignTex }));
-          schoolSign.position.set(0, 11, 8.3); sGrp.add(schoolSign);
+          const schoolSign = new THREE.Mesh(new THREE.BoxGeometry(18, 4.2, 0.4), new THREE.MeshLambertMaterial({ map: schoolSignTex }));
+          schoolSign.position.set(0, 11.5, 8.3); sGrp.add(schoolSign);
 
-          // Boundary wall and school gate
+          // Boundary wall and school gate facing road (Z = 0)
           const wallMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
-          const gateMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
-          [-16, 16].forEach(wx => {
-            const wall = new THREE.Mesh(new THREE.BoxGeometry(14, 2.2, 0.5), wallMat);
-            wall.position.set(wx, 1.1, 13); sGrp.add(wall);
+          [-18, 18].forEach(wx => {
+            const wall = new THREE.Mesh(new THREE.BoxGeometry(15, 2.4, 0.5), wallMat);
+            wall.position.set(wx, 1.2, 12.5); sGrp.add(wall);
           });
           // Gate pillars
-          [-7, 7].forEach(px => {
-            const pillar = new THREE.Mesh(new THREE.BoxGeometry(1.2, 3.5, 1.2), trimMat);
-            pillar.position.set(px, 1.75, 13); sGrp.add(pillar);
+          [-8, 8].forEach(px => {
+            const pillar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 3.8, 1.4), trimMat);
+            pillar.position.set(px, 1.9, 12.5); sGrp.add(pillar);
           });
 
+          // School flag pole
+          const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 12, 8), new THREE.MeshLambertMaterial({ color: 0xe2e8f0 }));
+          pole.position.set(-6, 6, 10); sGrp.add(pole);
+          const flag = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.2), new THREE.MeshBasicMaterial({ color: 0xf97316 }));
+          flag.position.set(-5.0, 11, 10); sGrp.add(flag);
+
           sGrp.position.set(schoolX, 0, schoolZ);
-          sGrp.rotation.y = Math.PI / 2; // Facing the road
+          sGrp.rotation.y = 0; // Facing south towards road at Z = 0
           this.scene.add(sGrp);
           this.world.push(sGrp);
 
           // School building collision obstacle
           const schoolCol = new THREE.Group();
           schoolCol.position.set(schoolX, 0, schoolZ);
-          schoolCol.userData = { halfW: 16, halfD: 24, isObstacle: true, isBuilding: true };
+          schoolCol.userData = { halfW: 24, halfD: 16, isObstacle: true, isBuilding: true };
           this.obstacles.push(schoolCol);
 
-          // 3. Parked Yellow School Bus outside the school gate
+          // 3. Parked Yellow School Bus outside the school gate along curbside
           const schoolBus = typeof window.IndianVehicles !== 'undefined' ? window.IndianVehicles.buildVehicle('bus', 0xfacc15) : _buildVehicle('bus', 0xfacc15);
           if (schoolBus) {
-            schoolBus.position.set(-8.5, 0, schoolZ - 18);
-            schoolBus.rotation.y = 0; // Parked parallel to road
-            schoolBus.userData = { halfW: 1.4, halfD: 5.0, isObstacle: true, isVehicle: true };
+            schoolBus.position.set(schoolX + 18, 0, -6.8);
+            schoolBus.rotation.y = Math.PI / 2; // Parked parallel to road along Z = -6.8
+            schoolBus.userData = { halfW: 4.5, halfD: 1.5, isObstacle: true, isVehicle: true };
             this.scene.add(schoolBus);
             this.obstacles.push(schoolBus);
           }
 
-          // 4. Zebra Crossing Markings across the road right in front of School Gate
+          // 4. Zebra Crossing Markings across the road right in front of School Gate (X = -65)
           const zMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-          for (let s = -3; s <= 3; s++) {
-            const stripe = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 9.0), zMat);
+          for (let s = -5; s <= 5; s++) {
+            const stripe = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 11.0), zMat);
             stripe.rotation.x = -Math.PI / 2;
-            stripe.position.set(s * 1.5, 0.03, schoolZ);
+            stripe.position.set(schoolX + (s * 1.6), 0.03, 0);
             this.scene.add(stripe);
           }
 
-          // 5. School Crossing Guard with Stop Sign
+          // 5. School Crossing Guard with Stop Sign on the North Sidewalk
           const guard = _buildHuman(false, { skin: 0xc68642, shirt: 0xf97316, pants: 0x1e293b, hair: 0x111111 });
-          guard.position.set(-7.5, 0, schoolZ);
-          guard.rotation.y = Math.PI / 2;
+          guard.position.set(schoolX - 2, 0, -6.5);
+          guard.rotation.y = Math.PI; // Facing incoming traffic from east
           // Add Stop Sign in hand
-          const stopSign = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.05, 8), new THREE.MeshBasicMaterial({ color: 0xdc2626 }));
+          const stopSign = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 0.06, 8), new THREE.MeshBasicMaterial({ color: 0xdc2626 }));
           stopSign.rotation.x = Math.PI / 2;
-          stopSign.position.set(0.6, 1.4, 0.3);
+          stopSign.position.set(0.7, 1.5, 0.4);
           guard.add(stopSign);
-          const stopPole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.8, 8), new THREE.MeshLambertMaterial({ color: 0x64748b }));
-          stopPole.position.set(0.6, 0.9, 0.3);
+          const stopPole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.0, 8), new THREE.MeshLambertMaterial({ color: 0x64748b }));
+          stopPole.position.set(0.7, 1.0, 0.4);
           guard.add(stopPole);
-          guard.userData = { isGuard: true, isObstacle: true, halfW: 0.5, halfD: 0.5 };
+          guard.userData = { isGuard: true, isObstacle: true, halfW: 0.6, halfD: 0.6 };
           this.scene.add(guard);
           this.peds.push(guard);
 
-          // 6. School Children in Uniforms Crossing the Zebra Crossing
-          const uniformShirts = [0xf8fafc, 0xe0f2fe]; // White / light sky-blue uniform shirts
+          // 6. Roadside School Zone Warning Blinkers & Signs (Both directions)
+          [-30, -100].forEach((signX, sIdx) => {
+            const post = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4.0, 8), steelMat);
+            post.position.set(signX, 2.0, -7.5);
+            this.scene.add(post);
+
+            const sCanv = document.createElement('canvas');
+            sCanv.width = 256; sCanv.height = 256;
+            const cCtx = sCanv.getContext('2d');
+            cCtx.fillStyle = '#facc15'; cCtx.fillRect(0, 0, 256, 256);
+            cCtx.lineWidth = 10; cCtx.strokeStyle = '#dc2626'; cCtx.strokeRect(6, 6, 244, 244);
+            cCtx.fillStyle = '#dc2626'; cCtx.font = 'bold 70px sans-serif'; cCtx.textAlign = 'center';
+            cCtx.fillText('20', 128, 100);
+            cCtx.fillStyle = '#1e293b'; cCtx.font = 'bold 30px sans-serif';
+            cCtx.fillText('KM/H', 128, 145);
+            cCtx.fillText('SCHOOL', 128, 190);
+            cCtx.fillText('ZONE', 128, 230);
+            const signPlate = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 0.1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sCanv) }));
+            signPlate.position.set(signX, 3.2, -7.5);
+            signPlate.rotation.y = sIdx === 0 ? Math.PI / 2 : -Math.PI / 2;
+            this.scene.add(signPlate);
+
+            // Flashing amber caution beacon
+            const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 8), new THREE.MeshBasicMaterial({ color: 0xf59e0b }));
+            beacon.position.set(signX, 4.2, -7.5);
+            this.scene.add(beacon);
+          });
+
+          // 7. Stationary & Snack Stall ("Vidyarthi Book Depot & Chai Stall")
+          const stallGrp = new THREE.Group();
+          const stallBody = new THREE.Mesh(new THREE.BoxGeometry(4.5, 2.8, 3.0), new THREE.MeshLambertMaterial({ color: 0x0284c7 }));
+          stallBody.position.set(0, 1.4, 0); stallGrp.add(stallBody);
+          const canopy = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.2, 3.6), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
+          canopy.position.set(0, 2.9, 0.2); stallGrp.add(canopy);
+          stallGrp.position.set(schoolX - 22, 0, -11.5);
+          this.scene.add(stallGrp);
+          this.world.push(stallGrp);
+
+          // 8. 14+ School Children in Uniforms with Backpacks
+          const uniformShirts = [0xf8fafc, 0xe0f2fe]; // White / sky-blue shirts
           const uniformPants = [0x1e3a8a, 0x1e293b];  // Navy blue shorts / skirts
-          for (let i = 0; i < 8; i++) {
+          for (let i = 0; i < 14; i++) {
             const uApp = {
               skin: [0xd4a574, 0xc68642, 0x8d5524, 0xf1c27d][i % 4],
               shirt: uniformShirts[i % uniformShirts.length],
@@ -5659,30 +5981,47 @@ class Game {
               hair: 0x1a1a1a
             };
             const child = _buildHuman(false, uApp);
-            // Child scale
             child.scale.set(0.72, 0.72, 0.72);
-            // Add colorful student backpack
-            const bagMat = new THREE.MeshToonMaterial({ color: [0xef4444, 0x3b82f6, 0x10b981, 0x8b5cf6, 0xf59e0b][i % 5] });
-            const bag = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.45, 0.22), bagMat);
+            // Colorful backpack
+            const bagMat = new THREE.MeshToonMaterial({ color: [0xef4444, 0x3b82f6, 0x10b981, 0x8b5cf6, 0xf59e0b, 0xec4899][i % 6] });
+            const bag = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.48, 0.24), bagMat);
             bag.position.set(0, 1.15, -0.22);
             child.add(bag);
 
-            // Stagger spawn along and across the zebra crossing
-            const startX = (i % 2 === 0) ? -7.0 - (i * 0.8) : 7.0 + (i * 0.8);
-            const targetX = (i % 2 === 0) ? 7.5 : -7.5;
-            child.position.set(startX, 0, schoolZ + ((i % 3) - 1) * 2.2);
-            child.rotation.y = (i % 2 === 0) ? Math.PI / 2 : -Math.PI / 2;
-            child.userData = {
-              spd: 0.025 + Math.random() * 0.015,
-              state: 'crossing',
-              startX: startX,
-              targetX: targetX,
-              crossingZ: schoolZ + ((i % 3) - 1) * 2.2,
-              isChild: true,
-              isObstacle: true,
-              halfW: 0.35,
-              halfD: 0.35
-            };
+            let startX, startZ, targetX, targetZ;
+            if (i < 8) {
+              // Active zebra crossing students (crossing North <-> South across Z = 0)
+              startX = schoolX - 4.5 + (i * 1.3);
+              startZ = (i % 2 === 0) ? -7.0 : 7.0;
+              targetX = startX;
+              targetZ = (i % 2 === 0) ? 7.5 : -7.5;
+              child.position.set(startX, 0, startZ);
+              child.rotation.y = (i % 2 === 0) ? 0 : Math.PI;
+              child.userData = {
+                spd: 0.024 + Math.random() * 0.016,
+                state: 'crossing',
+                startX, startZ, targetX, targetZ,
+                crossingZ: startZ,
+                isChild: true,
+                isObstacle: true,
+                halfW: 0.35, halfD: 0.35
+              };
+            } else if (i < 11) {
+              // Students walking along the sidewalk towards the school bus
+              startX = schoolX + 5 + (i - 8) * 3.5;
+              startZ = -7.2;
+              child.position.set(startX, 0, startZ);
+              child.rotation.y = Math.PI / 2;
+              child.userData = { spd: 0.02, state: 'sidewalk', isChild: true, halfW: 0.35, halfD: 0.35 };
+            } else {
+              // Students standing by school gate chatting
+              startX = schoolX - 3.5 + (i - 11) * 2.5;
+              startZ = -14.0;
+              child.position.set(startX, 0, startZ);
+              child.rotation.y = (i % 2 === 0) ? Math.PI / 4 : -Math.PI / 4;
+              child.userData = { spd: 0, state: 'idle', isChild: true, halfW: 0.35, halfD: 0.35 };
+            }
+
             this.scene.add(child);
             this.peds.push(child);
 
@@ -5954,25 +6293,22 @@ class Game {
           }
         }
       
-      // Initialize TrafficManager for Mumbai-style traffic
+      // ── Build Level Route Checkpoints & Finish Gate ──
+      this._buildRouteCheckpoints(cfg);
+
+      // Initialize player vehicle/pedestrian first so traffic spawns around player
+      this._pmesh(mode, this.vehMode || cfg.veh);
+
+      // Initialize TrafficManager for lively Mumbai-style traffic
       if (!cfg.isPedestrian && window.TrafficManager) {
         if (!this.trafficManager) {
           this.trafficManager = new window.TrafficManager(this);
         }
         if (this.roadGraph) {
-          this.trafficManager.spawnInitialTraffic(this.roadGraph, cfg.route, window.isMobile && window.isMobile() ? 24 : 36, cfg);
+          const initCount = window.isMobile && window.isMobile() ? 40 : 75;
+          this.trafficManager.spawnInitialTraffic(this.roadGraph, cfg.route, initCount, cfg);
         }
       }
-       
-      // ─── Graph-based road generation ───
-      // Builds visual road geometry (tiles, sidewalks, crosswalks) from RoadGraph edges
-      // Uses GLB road models when available, falls back to procedural geometry
-
-      // ── Build Level Route Checkpoints & Finish Gate ──
-      this._buildRouteCheckpoints(cfg);
-
-      // Initialize player vehicle/pedestrian
-      this._pmesh(mode, this.vehMode || cfg.veh);
       }
       _buildRoadsFromGraph(roadWidth) {
         const graph = this.roadGraph;
@@ -7184,41 +7520,176 @@ class Game {
         if (!this.scene) return;
         const gGrp = new THREE.Group();
 
-        const floorMat = new THREE.MeshLambertMaterial({ color: 0x222a38 });
-        const curbMat = new THREE.MeshLambertMaterial({ color: 0xfacc15 });
-        const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const floorMat = new THREE.MeshLambertMaterial({ color: 0x1e293b }); // Polished dark industrial concrete
+        const wallMat = new THREE.MeshLambertMaterial({ color: 0xb45309 }); // Warm industrial brick
+        const steelMat = new THREE.MeshLambertMaterial({ color: 0x334155 }); // Industrial steel
+        const roofMat = new THREE.MeshLambertMaterial({ color: 0x475569 }); // Corrugated steel roof
+        const liftMat = new THREE.MeshLambertMaterial({ color: 0x0284c7 }); // Hydraulic blue
+        const accentMat = new THREE.MeshLambertMaterial({ color: 0xfacc15 }); // Safety yellow
+        const redToolMat = new THREE.MeshLambertMaterial({ color: 0xdc2626 }); // Tool chest red
+        const drumGreenMat = new THREE.MeshLambertMaterial({ color: 0x15803d }); // Castrol green
+        const drumOrangeMat = new THREE.MeshLambertMaterial({ color: 0xea580c }); // Gulf orange
 
-        const gW = 6.0; // Width
-        const gD = 8.0; // Depth
+        const gW = 12.0; // Wide 2-bay workshop width
+        const gD = 14.0; // Depth
+        const gH = 5.5;  // Height
 
-        // 1. Clean Asphalt / Concrete Parking Pad
-        const floor = new THREE.Mesh(new THREE.BoxGeometry(gW, 0.08, gD), floorMat);
-        floor.position.set(0, 0.04, 0);
+        // 1. Concrete Workshop Floor & Driveway Apron
+        const floor = new THREE.Mesh(new THREE.BoxGeometry(gW, 0.12, gD), floorMat);
+        floor.position.set(0, 0.06, 0);
         gGrp.add(floor);
 
-        // 2. Driveway ramp connection
-        const rampL = (sidewalkWidth || 4.0) + 1.0;
-        const ramp = new THREE.Mesh(new THREE.PlaneGeometry(gW, rampL), floorMat);
-        ramp.rotation.x = -Math.PI / 2;
-        ramp.position.set(0, 0.05, gD / 2 + rampL / 2);
+        // Driveway ramp connecting garage bay across sidewalk to road asphalt
+        const rampL = (sidewalkWidth || 4.0) + 2.5;
+        const ramp = new THREE.Mesh(new THREE.BoxGeometry(gW - 0.4, 0.08, rampL), floorMat);
+        ramp.position.set(0, 0.04, gD / 2 + rampL / 2);
         gGrp.add(ramp);
 
-        // 3. Crisp Yellow Curb Border on sides and rear
-        [-gW / 2, gW / 2].forEach(sx => {
-          const sideCurb = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, gD), curbMat);
-          sideCurb.position.set(sx, 0.1, 0);
-          gGrp.add(sideCurb);
-        });
-        const rearCurb = new THREE.Mesh(new THREE.BoxGeometry(gW + 0.2, 0.2, 0.2), curbMat);
-        rearCurb.position.set(0, 0.1, -gD / 2);
-        gGrp.add(rearCurb);
+        // Yellow safety hazard stripes at bay entrance
+        const entranceStripe = new THREE.Mesh(new THREE.BoxGeometry(gW, 0.14, 0.4), accentMat);
+        entranceStripe.position.set(0, 0.07, gD / 2);
+        gGrp.add(entranceStripe);
 
-        // 4. White painted parking stall lines
-        [-1.8, 1.8].forEach(lx => {
-          const pLine = new THREE.Mesh(new THREE.PlaneGeometry(0.15, gD - 1.5), lineMat);
-          pLine.rotation.x = -Math.PI / 2;
-          pLine.position.set(lx, 0.09, 0);
-          gGrp.add(pLine);
+        // 2. Structural Steel I-Beam Columns (4 corners & center)
+        const colPositions = [
+          [-gW / 2 + 0.3, -gD / 2 + 0.3],
+          [gW / 2 - 0.3, -gD / 2 + 0.3],
+          [-gW / 2 + 0.3, gD / 2 - 0.3],
+          [gW / 2 - 0.3, gD / 2 - 0.3]
+        ];
+        colPositions.forEach(([cx, cz]) => {
+          const col = new THREE.Mesh(new THREE.BoxGeometry(0.5, gH, 0.5), steelMat);
+          col.position.set(cx, gH / 2, cz);
+          gGrp.add(col);
+        });
+
+        // 3. Walls: Solid Back Brick Wall & Half-Glass Side Walls
+        const backWall = new THREE.Mesh(new THREE.BoxGeometry(gW, gH, 0.4), wallMat);
+        backWall.position.set(0, gH / 2, -gD / 2 + 0.2);
+        gGrp.add(backWall);
+
+        [-gW / 2 + 0.2, gW / 2 - 0.2].forEach(wx => {
+          // Brick base side wall
+          const sideWallBase = new THREE.Mesh(new THREE.BoxGeometry(0.4, 2.2, gD), wallMat);
+          sideWallBase.position.set(wx, 1.1, 0);
+          gGrp.add(sideWallBase);
+          // Industrial glass windows upper section
+          const sideGlass = new THREE.Mesh(new THREE.BoxGeometry(0.2, gH - 2.4, gD - 1.2), new THREE.MeshToonMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.55 }));
+          sideGlass.position.set(wx, 2.2 + (gH - 2.4) / 2, 0);
+          gGrp.add(sideGlass);
+        });
+
+        // 4. Sloped Industrial Workshop Roof & Steel Trusses
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(gW + 1.2, 0.35, gD + 1.6), roofMat);
+        roof.position.set(0, gH + 0.2, 0.4);
+        roof.rotation.x = -0.04;
+        gGrp.add(roof);
+
+        // Front Fascia Overhang
+        const fascia = new THREE.Mesh(new THREE.BoxGeometry(gW + 1.4, 1.4, 0.5), steelMat);
+        fascia.position.set(0, gH + 0.3, gD / 2 + 0.4);
+        gGrp.add(fascia);
+
+        // 5. High-DPI Glowing Neon / LED Signboard
+        const sCanvas = document.createElement('canvas');
+        sCanvas.width = 512; sCanvas.height = 128;
+        const sCtx = sCanvas.getContext('2d');
+        sCtx.fillStyle = '#0f172a'; sCtx.fillRect(0, 0, 512, 128);
+        sCtx.lineWidth = 6; sCtx.strokeStyle = '#facc15'; sCtx.strokeRect(4, 4, 504, 120);
+        sCtx.fillStyle = '#facc15'; sCtx.font = 'bold 34px sans-serif'; sCtx.textAlign = 'center';
+        sCtx.fillText('⚡ MUMBAI SPEED MOTORS ⚡', 256, 48);
+        sCtx.fillStyle = '#38bdf8'; sCtx.font = 'bold 22px sans-serif';
+        sCtx.fillText('🔧 24x7 AUTO WORKSHOP & SERVICE 🚗', 256, 92);
+        const signTex = new THREE.CanvasTexture(sCanvas);
+        const signMesh = new THREE.Mesh(new THREE.BoxGeometry(gW - 1.5, 1.2, 0.1), new THREE.MeshBasicMaterial({ map: signTex }));
+        signMesh.position.set(0, gH + 0.3, gD / 2 + 0.68);
+        gGrp.add(signMesh);
+
+        // 6. Hydraulic 2-Post Vehicle Lift (Left Service Bay)
+        const liftX = -3.2, liftZ = -1.5;
+        [-1.7, 1.7].forEach(lx => {
+          const post = new THREE.Mesh(new THREE.BoxGeometry(0.35, 3.8, 0.4), liftMat);
+          post.position.set(liftX + lx, 1.9, liftZ);
+          gGrp.add(post);
+          const basePlate = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, 0.8), accentMat);
+          basePlate.position.set(liftX + lx, 0.05, liftZ);
+          gGrp.add(basePlate);
+        });
+        const liftArmL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.15, 2.6), accentMat);
+        liftArmL.position.set(liftX - 1.4, 0.8, liftZ);
+        gGrp.add(liftArmL);
+        const liftArmR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.15, 2.6), accentMat);
+        liftArmR.position.set(liftX + 1.4, 0.8, liftZ);
+        gGrp.add(liftArmR);
+
+        // 7. Professional Red Mechanic Tool Cabinet & Workbench (Back Wall)
+        const toolChest = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.6, 0.9), redToolMat);
+        toolChest.position.set(2.8, 0.8, -gD / 2 + 1.0);
+        gGrp.add(toolChest);
+        // Chrome handles
+        for (let dr = 0; dr < 4; dr++) {
+          const handle = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.06, 0.08), new THREE.MeshBasicMaterial({ color: 0xf8fafc }));
+          handle.position.set(2.8, 0.35 + dr * 0.35, -gD / 2 + 1.48);
+          gGrp.add(handle);
+        }
+
+        // Heavy Wooden / Steel Workbench
+        const bench = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.1, 1.0), new THREE.MeshLambertMaterial({ color: 0x78350f }));
+        bench.position.set(-1.5, 0.55, -gD / 2 + 1.0);
+        gGrp.add(bench);
+        // Bench Vise
+        const vise = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.35, 0.4), steelMat);
+        vise.position.set(-2.6, 1.25, -gD / 2 + 1.0);
+        gGrp.add(vise);
+        // Diagnostic Monitor
+        const mon = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.45, 0.1), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+        mon.position.set(-1.2, 1.4, -gD / 2 + 0.8);
+        gGrp.add(mon);
+
+        // 8. Stacks of 55-Gallon Oil Drums & Lubricant Barrels
+        const drumGeo = new THREE.CylinderGeometry(0.42, 0.42, 1.1, 12);
+        const drum1 = new THREE.Mesh(drumGeo, drumGreenMat);
+        drum1.position.set(4.8, 0.55, -gD / 2 + 1.2);
+        gGrp.add(drum1);
+        const drum2 = new THREE.Mesh(drumGeo, drumOrangeMat);
+        drum2.position.set(4.8, 0.55, -gD / 2 + 2.3);
+        gGrp.add(drum2);
+        const drum3 = new THREE.Mesh(drumGeo, drumGreenMat);
+        drum3.position.set(4.8, 1.65, -gD / 2 + 1.7);
+        gGrp.add(drum3);
+
+        // 9. Steel Tire Rack with Spare Tires
+        const rackX = 4.8, rackZ = 1.0;
+        const rackFrame = new THREE.Mesh(new THREE.BoxGeometry(0.8, 2.8, 3.2), steelMat);
+        rackFrame.position.set(rackX, 1.4, rackZ);
+        gGrp.add(rackFrame);
+        for (let tr = 0; tr < 3; tr++) {
+          const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.35, 12), new THREE.MeshLambertMaterial({ color: 0x111827 }));
+          tire.rotation.x = Math.PI / 2;
+          tire.position.set(rackX, 0.6 + tr * 0.9, rackZ - 0.8 + tr * 0.8);
+          gGrp.add(tire);
+        }
+
+        // 10. Overhead Warm Workshop Lighting Fixtures
+        [-2.5, 2.5].forEach(lx => {
+          const lightBar = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.1, 0.3), new THREE.MeshBasicMaterial({ color: 0xfef08a }));
+          lightBar.position.set(lx, gH - 0.3, 0);
+          gGrp.add(lightBar);
+        });
+
+        // 11. Obstacles for walls and equipment so player doesn't drive through back walls
+        const obsBack = new THREE.Group();
+        obsBack.position.set(0, 0, -gD / 2);
+        obsBack.userData = { halfW: gW / 2, halfD: 1.2, isObstacle: true, isBuilding: true };
+        gGrp.add(obsBack);
+        this.obstacles.push(obsBack);
+
+        [-gW / 2, gW / 2].forEach(sx => {
+          const obsSide = new THREE.Group();
+          obsSide.position.set(sx, 0, 0);
+          obsSide.userData = { halfW: 0.6, halfD: gD / 2, isObstacle: true, isBuilding: true };
+          gGrp.add(obsSide);
+          this.obstacles.push(obsSide);
         });
 
         gGrp.position.set(gx, 0, gz);
@@ -7494,7 +7965,8 @@ class Game {
 
           if (key && modelKeys.length > 0) {
             if (!instancedData[key]) instancedData[key] = [];
-            instancedData[key].push({ x: pos.x, z: pos.z, r: rot, s: 10.5 });
+            const bScale = (type === 'house' || type === 'shop') ? 3.8 : ((type === 'tower' || type === 'skyscraper') ? 6.0 : 4.5);
+            instancedData[key].push({ x: pos.x, z: pos.z, r: rot, s: bScale });
             slot.occupied = true;
             return;
           }
@@ -7504,13 +7976,13 @@ class Game {
           const mat = bMats[Math.floor(Math.random() * bMats.length)];
           const roofColor = roofColors[Math.floor(Math.random() * roofColors.length)];
 
-          // Varied heights: low shops (6-12), medium flats (14-22), towers (24-44)
+          // Varied heights: low households (5-8m), medium flats/chawls (10-16m), commercial (18-28m)
           const heightClass = Math.random();
-          const bh = heightClass < 0.3 ? 6 + Math.random() * 6
-                   : heightClass < 0.7 ? 14 + Math.random() * 8
-                   : 24 + Math.random() * 20;
-          const bw = 8 + Math.random() * 14;
-          const bd = 10 + Math.random() * 6;
+          const bh = heightClass < 0.4 ? 5 + Math.random() * 4
+                   : heightClass < 0.8 ? 10 + Math.random() * 6
+                   : 18 + Math.random() * 12;
+          const bw = 7 + Math.random() * 4;
+          const bd = 8 + Math.random() * 4;
 
           const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), mat);
           bMesh.position.y = bh / 2;
@@ -7520,8 +7992,8 @@ class Game {
 
           // Flat roof slab with colour variation
           const roofMat = new THREE.MeshToonMaterial({ color: roofColor, gradientMap: window._toonGrad });
-          const roofMesh = new THREE.Mesh(new THREE.BoxGeometry(bw + 0.4, 0.6, bd + 0.4), roofMat);
-          roofMesh.position.y = bh + 0.3;
+          const roofMesh = new THREE.Mesh(new THREE.BoxGeometry(bw + 0.3, 0.5, bd + 0.3), roofMat);
+          roofMesh.position.y = bh + 0.25;
           g.add(roofMesh);
 
           // Daytime window grid (small dark panels)
@@ -8158,13 +8630,17 @@ class Game {
           if (spawnedAt.has(key)) return;
           spawnedAt.add(key);
 
-          // Signal 1: Mast arm extending over incoming vertical lane
+          // Signal 1: Mast arm extending over incoming vertical lane (Phase 0: North-South)
           const sig1 = this._sig(ix + rwHalf + 1.2, iz + rwHalf + 1.2);
           sig1.rotation.y = -Math.PI / 2;
+          sig1.userData = { axis: 'v', phaseOffset: 0, st: 'green', t: 0, rd: 7.5, gd: 6.0, yd: 1.5 };
+          sig1.state = 'green';
 
-          // Signal 2: Mast arm extending over opposing horizontal lane
+          // Signal 2: Mast arm extending over opposing horizontal lane (Phase 1: East-West, shifted by 7.5s)
           const sig2 = this._sig(ix - rwHalf - 1.2, iz - rwHalf - 1.2);
           sig2.rotation.y = Math.PI / 2;
+          sig2.userData = { axis: 'h', phaseOffset: 7.5, st: 'red', t: 0, rd: 7.5, gd: 6.0, yd: 1.5 };
+          sig2.state = 'red';
         };
 
         // 1. Explicit signals from level config
@@ -8668,6 +9144,7 @@ class Game {
           if (isRev) { this.speed = Math.max(this.speed, -cap); } else { this.speed = Math.min(this.speed, cap); }
           // Frame-rate independent friction: pow(fric, dt*60) makes 0.945 feel identical at 30fps and 120fps
           this.speed *= Math.pow(this.fric, dt * 60);
+          if (Math.abs(this.speed) < 0.001 && !up && !dn) this.speed = 0;
 
           // ── AERODYNAMIC DRAG (computed by _computeAeroForces) ──
           // _aeroDrag already includes speed², so we only apply it as a deceleration force
@@ -8745,22 +9222,22 @@ class Game {
 
         if (!overrideMove) {
           let tAmt = 0;
-          // Speed-proportional steering with responsive per-vehicle turn rate
-          if (Math.abs(this.speed) > .005 && !this.isPedestrian) {
-            const sf = Math.max(0.60, 1 - Math.abs(this.speed) * 0.25);
-            const effTurn = this.turn * sf;
-            if (lt) tAmt = 1;
-            else if (rt) tAmt = -1;
-            else if (this.gyroOn) tAmt = -window.gyroSteering;
-            else if (window.analogSteering) tAmt = -window.analogSteering;
-            if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * Math.sign(this.speed) * dt * 60;
-            // Normalize yaw to [-PI, PI] to prevent extreme accumulation
+          if (lt) tAmt = 1;
+          else if (rt) tAmt = -1;
+          else if (this.gyroOn) tAmt = -window.gyroSteering;
+          else if (window.analogSteering) tAmt = -window.analogSteering;
+
+          // ── Dual-Track Dynamic Physics & Pacejka Yaw Calculations ──
+          if (!this.isPedestrian) {
+            this._computeVehicleDynamics(dt, tAmt, dn, up, isRev);
+          } else if (Math.abs(this.speed) > .005) {
+            // Pedestrian rotational turning
+            const effTurn = (this.turn || 0.08);
+            if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * dt * 60;
             while (this.player.rotation.y > Math.PI) this.player.rotation.y -= Math.PI * 2;
             while (this.player.rotation.y < -Math.PI) this.player.rotation.y += Math.PI * 2;
           }
-          // ── Lateral acceleration for suspension body roll (smoothed) ──
-          const targetLateral = tAmt * Math.abs(this.speed) * 0.8;
-          this._lateralAccel = (this._lateralAccel || 0) + (targetLateral - (this._lateralAccel || 0)) * Math.min(1, dt * 10);
+
           if (this.gyroOn) this._checkGyroAutoRecal(tAmt);
           // Camera tilt: smooth follow of lateral input, scaled by speed
           const tiltTarget = -tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04);
@@ -8790,8 +9267,11 @@ class Game {
             this._turnAccumDir = 0;
           }
 
-          const targetVx = Math.sin(this.player.rotation.y) * this.speed;
-          const targetVz = Math.cos(this.player.rotation.y) * this.speed;
+          // Chassis motion vector with lateral slip velocity support
+          const yaw = this.player.rotation.y;
+          const vy = (this._localVy && !this.isPedestrian) ? this._localVy * 0.033 : 0;
+          const targetVx = Math.sin(yaw) * this.speed + Math.cos(yaw) * vy;
+          const targetVz = Math.cos(yaw) * this.speed - Math.sin(yaw) * vy;
           this.vx = targetVx;
           this.vz = targetVz;
           this.player.position.x += this.vx; this.player.position.z += this.vz;
@@ -9261,9 +9741,14 @@ class Game {
       _usigs(dt) {
         let nearestSig = null, nearestDist = 9999;
         this.sigs.forEach(sg => {
-          const d = sg.userData; d.t += dt; const rem = d.t % 9.5;
+          const d = sg.userData;
+          d.t = (d.t || 0) + dt;
+          const cycle = 15.0; // 15s synchronized cycle: 6s Green, 1.5s Yellow, 7.5s Red
+          const localTime = (d.t + (d.phaseOffset || 0)) % cycle;
           const prev = d.st;
-          d.st = rem < 4 ? 'red' : rem < 5.5 ? 'yellow' : 'green';
+          if (localTime < 6.0) d.st = 'green';
+          else if (localTime < 7.5) d.st = 'yellow';
+          else d.st = 'red';
           sg.state = d.st; // mirrored for NPCAI._getSignalAhead
           const r = sg.getObjectByName('red'), y = sg.getObjectByName('yellow'), g = sg.getObjectByName('green');
           if (r) {
@@ -10196,6 +10681,7 @@ class Game {
             this.peds[i] = this.peds[this.peds.length - 1]; this.peds.pop();
             continue;
           }
+          if (p.userData?.isChild || p.userData?.isGuard || p.userData?.noDespawn) continue;
           const despawnDist = isFest ? 200 : 100;
           if (p.position.distanceTo(this.player.position) > despawnDist) {
             this.scene.remove(p);
@@ -11595,7 +12081,7 @@ class Game {
           const tiltRoll = this._camTilt || 0;
           this.camera.up.set(0, 1, 0);
           const lookAheadDist = this.isPedestrian ? 3 : _vcam.lookDist;
-          const targetLookY = this.player.position.y + (this.isPedestrian ? 1.4 : 1.0);
+          const targetLookY = this.player.position.y + (this.isPedestrian ? 1.4 : 0.8);
           this.camera.lookAt(
             this.player.position.x + Math.sin(rotY) * lookAheadDist + shakeX,
             targetLookY - pitchOffset * 0.3 + shakeY,
@@ -11857,7 +12343,7 @@ class Game {
             slBadge = document.createElement('div');
             slBadge.id = 'speed-limit-badge';
             slBadge.title = 'Speed Governor (Click or press [L] to toggle)';
-            slBadge.style.cssText = 'position:fixed; bottom:24px; right:112px; width:48px; height:48px; border-radius:50%; background:#ffffff; border:4px solid #cc0000; box-shadow:0 4px 16px rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; user-select:none; z-index:9998; transition:transform 0.15s, box-shadow 0.2s; font-family:"Bebas Neue", var(--sans, sans-serif);';
+            slBadge.style.cssText = 'position:fixed; bottom:calc(env(safe-area-inset-bottom, 0px) + 160px); right:calc(env(safe-area-inset-right, 0px) + 16px); width:48px; height:48px; border-radius:50%; background:#ffffff; border:4px solid #cc0000; box-shadow:0 6px 20px rgba(0,0,0,0.7); display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; user-select:none; z-index:50; transition:transform 0.15s, box-shadow 0.2s; font-family:"Bebas Neue", var(--sans, sans-serif);';
             slBadge.innerHTML = `<span id="sl-val" style="font-size:20px; font-weight:bold; color:#111; line-height:1;">${speedLimitKmh}</span><span style="font-size:7px; font-weight:800; color:#cc0000; line-height:1; letter-spacing:0.5px;">KM/H</span><div id="sl-gov-tag" style="position:absolute; top:-12px; background:#555; color:#fff; font-size:8px; font-weight:800; padding:1px 5px; border-radius:4px; box-shadow:0 2px 4px rgba(0,0,0,0.4); text-transform:uppercase; letter-spacing:0.5px;">GOV [L]</div>`;
             slBadge.onclick = () => {
               if (this.toggleSpeedLimiter) this.toggleSpeedLimiter();

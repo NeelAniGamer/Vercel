@@ -1,22 +1,26 @@
 
 
 const VEHICLE_VARIETY_WEIGHTS = {
-  car: 0.14,
-  wagonr: 0.08,
-  sedan: 0.08,
-  suv: 0.08,
-  creta: 0.06,
-  innova: 0.05,
-  taxi: 0.07,
+  car: 0.10,
+  wagonr: 0.06,
+  sedan: 0.06,
+  sedan_sports: 0.05,
+  hatchback_sports: 0.05,
+  suv: 0.07,
+  suv_luxury: 0.04,
+  creta: 0.04,
+  innova: 0.04,
+  taxi: 0.08,
   auto: 0.12,
   auto_yellow: 0.04,
   bike: 0.08,
   splendor: 0.06,
   activa: 0.06,
-  ktm: 0.02,
+  cycle: 0.03,
   bus: 0.04,
   truck: 0.03,
-  ace: 0.03,
+  delivery: 0.02,
+  van: 0.02,
   police: 0.01,
   ambulance: 0.01
 };
@@ -25,8 +29,11 @@ const VEHICLE_CLASS_LANE_ACCESS = {
   car: ['car', 'bus'],
   wagonr: ['car', 'bus'],
   sedan: ['car', 'bus'],
+  sedan_sports: ['car', 'bus'],
+  hatchback_sports: ['car', 'bus'],
   city: ['car', 'bus'],
   suv: ['car', 'bus'],
+  suv_luxury: ['car', 'bus'],
   creta: ['car', 'bus'],
   innova: ['car', 'bus'],
   taxi: ['car', 'bus'],
@@ -39,6 +46,8 @@ const VEHICLE_CLASS_LANE_ACCESS = {
   cycle: ['bike', 'car'],
   bus: ['bus'],
   truck: ['bus', 'car'],
+  delivery: ['car', 'bus'],
+  van: ['car', 'bus'],
   ace: ['car', 'bus'],
   police: ['car', 'bus'],
   ambulance: ['bus', 'car']
@@ -47,12 +56,12 @@ const VEHICLE_CLASS_LANE_ACCESS = {
 const RULE_BREAKER_PROBABILITY = 0.20;
 const PLATOON_SIZE = 3;
 const PLATOON_GAP = 8;
-const BASE_NPC_COUNT = 36;
-const MAX_NPC_COUNT = 80;
-const MOBILE_NPC_COUNT = 24;
-const SPAWN_RADIUS = 180;
-const SPAWN_MIN_GAP = 12;
-const SPAWN_MAX_GAP = 45;
+const BASE_NPC_COUNT = 75;
+const MAX_NPC_COUNT = 110;
+const MOBILE_NPC_COUNT = 40;
+const SPAWN_RADIUS = 260;
+const SPAWN_MIN_GAP = 10;
+const SPAWN_MAX_GAP = 35;
 const DENSITY_INCREASE_PER_MIN = 0.08;
 const SIGNAL_ACCUMULATION_RATE = 5;
 const MAX_SIGNAL_ACCUMULATION = 12;
@@ -154,7 +163,7 @@ class TrafficManager {
   }
 
   _manageVehicleLifecycle(playerVehicle) {
-    const despawnDist = 250;
+    const despawnDist = 320;
     const playerPos = playerVehicle?.position || new THREE.Vector3();
     
     this.vehicles.forEach((vehicle, index) => {
@@ -552,7 +561,7 @@ class TrafficManager {
 
     const candidates = this._spawnCandidateEdges();
     if (candidates.length > 0) {
-      // Select edges within 30m - 180m of the player so traffic is lively, but leaving garage driveway clear
+      // Select edges within 65m - 220m of the player so traffic is lively, but never popping into direct view
       const nearPlayerEdges = player
         ? candidates.filter(e => {
             const d = this._distanceToEdge(e, player);
@@ -561,7 +570,7 @@ class TrafficManager {
             const dGarage = (gx !== undefined && gz !== undefined)
               ? Math.hypot(e.nodes[0].position.x - gx, e.nodes[0].position.z - gz)
               : Infinity;
-            return d >= 28 && d <= SPAWN_RADIUS && dGarage >= 32;
+            return d >= 65 && d <= (typeof SPAWN_RADIUS !== 'undefined' ? SPAWN_RADIUS : 220) && dGarage >= 40;
           })
         : candidates;
 

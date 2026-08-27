@@ -11,36 +11,111 @@ const SAFE_ZONES = {
   MR: { x: 'right', y: 'center', stack: 'vertical', gap: 10, priority: 'low' }
 };
 
+/* ── Fluid 720p→2K breakpoints (replaces coarse 3-way) ── */
 const BREAKPOINTS = {
-  mobile: { max: 767, name: 'mobile' },
+  xs: { max: 359, name: 'xs' },           // 720p small budget (320-359)
+  sm: { min: 360, max: 389, name: 'sm' }, // 720p standard (360-389)
+  md: { min: 390, max: 411, name: 'md' }, // 1080p base (390-411)
+  lg: { min: 412, max: 479, name: 'lg' }, // 1080p+ phablet (412-479)
+  xl: { min: 480, max: 599, name: 'xl' }, // 1440p phone / Fold
+  '2k-sm': { min: 600, max: 767, name: '2k-sm' }, // 2K small tablet
   tablet: { min: 768, max: 1023, name: 'tablet' },
-  desktop: { min: 1024, name: 'desktop' }
+  desktop: { min: 1024, max: 1439, name: 'desktop' },
+  '2k': { min: 1440, max: 1919, name: '2k' },
+  '2k-xl': { min: 1920, name: '2k-xl' },
+  // legacy aliases for compatibility
+  mobile: { max: 767, name: 'mobile' }
 };
 
 const ZONE_PRESETS = {
+  xs: {
+    TL: { scale: 0.72, maxItems: 2, compact: true },
+    TR: { scale: 0.72, maxItems: 2, compact: true },
+    BL: { scale: 0.70, maxItems: 2, compact: true },
+    BR: { scale: 0.70, maxItems: 2, compact: true },
+    TC: { scale: 0.78, maxItems: 2, compact: true },
+    BC: { scale: 0.90, maxItems: 3, compact: true }
+  },
+  sm: {
+    TL: { scale: 0.78, maxItems: 2, compact: true },
+    TR: { scale: 0.78, maxItems: 2, compact: true },
+    BL: { scale: 0.74, maxItems: 2, compact: true },
+    BR: { scale: 0.74, maxItems: 2, compact: true },
+    TC: { scale: 0.82, maxItems: 2, compact: true },
+    BC: { scale: 0.95, maxItems: 3, compact: true }
+  },
+  md: {
+    TL: { scale: 0.82, maxItems: 2, compact: true },
+    TR: { scale: 0.82, maxItems: 2, compact: true },
+    BL: { scale: 0.78, maxItems: 2, compact: true },
+    BR: { scale: 0.78, maxItems: 2, compact: true },
+    TC: { scale: 0.86, maxItems: 3, compact: true },
+    BC: { scale: 0.98, maxItems: 3, compact: true }
+  },
+  lg: {
+    TL: { scale: 0.86, maxItems: 3, compact: true },
+    TR: { scale: 0.86, maxItems: 3, compact: true },
+    BL: { scale: 0.82, maxItems: 2, compact: true },
+    BR: { scale: 0.82, maxItems: 2, compact: true },
+    TC: { scale: 0.90, maxItems: 3, compact: true },
+    BC: { scale: 1.0, maxItems: 4, compact: true }
+  },
+  xl: {
+    TL: { scale: 0.90, maxItems: 3, compact: true },
+    TR: { scale: 0.90, maxItems: 3, compact: true },
+    BL: { scale: 0.86, maxItems: 3, compact: true },
+    BR: { scale: 0.86, maxItems: 3, compact: true },
+    TC: { scale: 0.94, maxItems: 4, compact: true },
+    BC: { scale: 1.02, maxItems: 4, compact: false }
+  },
+  '2k-sm': {
+    TL: { scale: 0.94, maxItems: 4, compact: true },
+    TR: { scale: 0.94, maxItems: 4, compact: true },
+    BL: { scale: 0.90, maxItems: 3, compact: true },
+    BR: { scale: 0.90, maxItems: 3, compact: true },
+    TC: { scale: 0.98, maxItems: 4, compact: false },
+    BC: { scale: 1.05, maxItems: 4, compact: false }
+  },
+  tablet: {
+    TL: { scale: 0.96, maxItems: 4, compact: true },
+    TR: { scale: 0.96, maxItems: 4, compact: true },
+    BL: { scale: 0.92, maxItems: 3, compact: true },
+    BR: { scale: 0.92, maxItems: 3, compact: true },
+    TC: { scale: 1.0, maxItems: 5, compact: true },
+    BC: { scale: 1.06, maxItems: 4, compact: false }
+  },
   desktop: {
     TL: { scale: 1.0, maxItems: 6, compact: false },
     TR: { scale: 1.0, maxItems: 6, compact: false },
     BL: { scale: 1.0, maxItems: 4, compact: false },
     BR: { scale: 1.0, maxItems: 4, compact: false },
     TC: { scale: 1.0, maxItems: 8, compact: false },
-    BC: { scale: 1.0, maxItems: 5, compact: false }
+    BC: { scale: 1.08, maxItems: 5, compact: false }
   },
-  tablet: {
-    TL: { scale: 0.9, maxItems: 4, compact: true },
-    TR: { scale: 0.9, maxItems: 4, compact: true },
-    BL: { scale: 0.85, maxItems: 3, compact: true },
-    BR: { scale: 0.85, maxItems: 3, compact: true },
-    TC: { scale: 0.9, maxItems: 5, compact: true },
-    BC: { scale: 0.9, maxItems: 4, compact: true }
+  '2k': {
+    TL: { scale: 1.06, maxItems: 6, compact: false },
+    TR: { scale: 1.06, maxItems: 6, compact: false },
+    BL: { scale: 1.04, maxItems: 5, compact: false },
+    BR: { scale: 1.04, maxItems: 5, compact: false },
+    TC: { scale: 1.08, maxItems: 8, compact: false },
+    BC: { scale: 1.14, maxItems: 6, compact: false }
   },
+  '2k-xl': {
+    TL: { scale: 1.12, maxItems: 7, compact: false },
+    TR: { scale: 1.12, maxItems: 7, compact: false },
+    BL: { scale: 1.10, maxItems: 6, compact: false },
+    BR: { scale: 1.10, maxItems: 6, compact: false },
+    TC: { scale: 1.14, maxItems: 9, compact: false },
+    BC: { scale: 1.18, maxItems: 7, compact: false }
+  },
+  // legacy fallback
   mobile: {
-    TL: { scale: 0.8, maxItems: 2, compact: true },
-    TR: { scale: 0.8, maxItems: 2, compact: true },
-    BL: { scale: 0.75, maxItems: 2, compact: true },
-    BR: { scale: 0.75, maxItems: 2, compact: true },
-    TC: { scale: 0.85, maxItems: 3, compact: true },
-    BC: { scale: 1.0, maxItems: 4, compact: true }
+    TL: { scale: 0.82, maxItems: 2, compact: true },
+    TR: { scale: 0.82, maxItems: 2, compact: true },
+    BL: { scale: 0.78, maxItems: 2, compact: true },
+    BR: { scale: 0.78, maxItems: 2, compact: true },
+    TC: { scale: 0.86, maxItems: 3, compact: true },
+    BC: { scale: 0.98, maxItems: 3, compact: true }
   }
 };
 
@@ -205,15 +280,35 @@ class SafeZoneGrid {
 
   _detectBreakpoint() {
     const w = window.innerWidth;
+    const dpr = window.devicePixelRatio || 1;
+    // DPR-aware effective width: high-DPI 720p@3x renders denser — treat as slightly smaller to keep HUD readable
+    const effW = dpr >= 3 ? w * 0.94 : dpr >= 2.5 ? w * 0.97 : w;
     let bp = 'desktop';
-    if (w <= BREAKPOINTS.mobile.max) bp = 'mobile';
-    else if (w <= BREAKPOINTS.tablet.max) bp = 'tablet';
+    if (effW <= 359) bp = 'xs';
+    else if (effW <= 389) bp = 'sm';
+    else if (effW <= 411) bp = 'md';
+    else if (effW <= 479) bp = 'lg';
+    else if (effW <= 599) bp = 'xl';
+    else if (effW <= 767) bp = '2k-sm';
+    else if (effW <= 1023) bp = 'tablet';
+    else if (effW <= 1439) bp = 'desktop';
+    else if (effW <= 1919) bp = '2k';
+    else bp = '2k-xl';
+
+    // Orientation tweak: landscape on phones squeezes vertical space — bump down one tier
+    if (window.innerHeight < 500 && window.innerWidth > window.innerHeight && bp !== 'xs') {
+      const order = ['xs','sm','md','lg','xl','2k-sm','tablet','desktop','2k','2k-xl'];
+      const idx = order.indexOf(bp);
+      if (idx > 0) bp = order[idx - 1];
+    }
 
     if (bp !== this.currentBreakpoint) {
       this.currentBreakpoint = bp;
       this._applyBreakpointStyles();
       this._reflowAllZones();
     }
+    // Always re-apply DPR-scaled HUD variable for CSS
+    document.documentElement.style.setProperty('--hud-dpr', dpr.toFixed(2));
   }
 
   _applyBreakpointStyles() {
@@ -369,9 +464,18 @@ class SafeZoneGrid {
 
   static getBreakpoint() {
     const w = window.innerWidth;
-    if (w <= 767) return 'mobile';
-    if (w <= 1023) return 'tablet';
-    return 'desktop';
+    const dpr = window.devicePixelRatio || 1;
+    const effW = dpr >= 3 ? w * 0.94 : w;
+    if (effW <= 359) return 'xs';
+    if (effW <= 389) return 'sm';
+    if (effW <= 411) return 'md';
+    if (effW <= 479) return 'lg';
+    if (effW <= 599) return 'xl';
+    if (effW <= 767) return '2k-sm';
+    if (effW <= 1023) return 'tablet';
+    if (effW <= 1439) return 'desktop';
+    if (effW <= 1919) return '2k';
+    return '2k-xl';
   }
 
 

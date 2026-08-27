@@ -889,6 +889,7 @@ class NPCAI {
     if (!signals || !signals.length || !this.vehicle || !this.vehicle.position) return null;
     const myPos = this.vehicle.position;
     const myForward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+    const myRight = new THREE.Vector3(Math.cos(this.vehicle.rotation.y), 0, -Math.sin(this.vehicle.rotation.y));
     let nearestSignal = null;
     let nearestDist = Infinity;
 
@@ -900,8 +901,21 @@ class NPCAI {
       const dz = pos.z - myPos.z;
       const dist = Math.sqrt(dx * dx + dz * dz);
       if (dist > 35 || dist >= nearestDist) continue;
+
       const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
-      if (forwardDot > 0.5) {
+      // Signal must be in front of us within road cone (forwardDot > 0.65)
+      if (forwardDot > 0.65) {
+        // Lateral check: Signal must be near our driving corridor (within 10m)
+        const lateral = Math.abs(dx * myRight.x + dz * myRight.z);
+        if (lateral > 10.0) continue;
+
+        // Axis Matching: Match vehicle road axis ('v' vs 'h') with signal's control axis
+        const isVehicleVertical = Math.abs(myForward.z) > Math.abs(myForward.x);
+        if (sig.userData && sig.userData.axis) {
+          if (isVehicleVertical && sig.userData.axis !== 'v') continue;
+          if (!isVehicleVertical && sig.userData.axis !== 'h') continue;
+        }
+
         nearestDist = dist;
         nearestSignal = sig;
       }
@@ -921,8 +935,12 @@ class NPCAI {
   _pickInitialLane(edge) {
     const lanes = edge.lanes || 1;
     if (lanes <= 1) return 0;
+    // Preserve current lane if valid to prevent sudden lateral teleport/jump
+    if (this.currentLane !== undefined && this.currentLane < lanes) {
+      return this.currentLane;
+    }
     if (this.profile.laneDiscipline > 0.8) return 0;
-    return Math.floor(Math.random() * lanes);
+    return Math.min(this.currentLane || 0, lanes - 1);
   }
 
   update(dt, playerVehicle, signals) {
@@ -1065,29 +1083,34 @@ class NPCAI {
     let virtualObstacleDist = Infinity;
 
     // 1. Red Signal Detection & Virtual Obstacle (stop-line aware)
-    if (signalAhead && signalAhead.state === 'red') {
+    if (signalAhead && (signalAhead.state === 'red' || signalAhead.state === 'yellow')) {
       const distToSignal = this._distanceToSignal(signalAhead);
       const egoHalfD = (this.vehicle?.mesh?.userData?.halfD) || 2.2;
-      const distToStopLine = Math.max(0.1, (distToSignal - 6.0) - egoHalfD);
+      const distToStopLine = Math.max(0.1, (distToSignal - 5.5) - egoHalfD);
 
       if (this._committedToIntersection) {
-        if (distToSignal > 12) this._committedToIntersection = false;
+        // Once inside or passing junction, continue clearing across intersection without stalling
+        if (distToSignal > 16.0) this._committedToIntersection = false;
       } else if (distToSignal < 6.0) {
+        // Within 6m of intersection center — commit to clearing through
         this._committedToIntersection = true;
-      } else if (distToSignal < 45.0) {
+      } else if (distToSignal < 40.0) {
         if (this.profile.signalCompliance < Math.random() && this.isRuleBreaker) {
           this.signalViolation = true;
+          this._committedToIntersection = true;
         } else {
           virtualObstacleDist = distToStopLine;
-          if (distToSignal < 7.5 && this.currentSpeed < 0.3) {
-            this._committedToIntersection = false;
+          if (distToSignal < 7.0 && this.currentSpeed < 0.4) {
             this.state = NPC_STATE.WAIT_SIGNAL;
             this.waitTimer = 0;
           }
         }
       }
     } else {
-      if (this._committedToIntersection) this._committedToIntersection = false;
+      if (this._committedToIntersection) {
+        const distToSignal = signalAhead ? this._distanceToSignal(signalAhead) : 20;
+        if (distToSignal > 12.0) this._committedToIntersection = false;
+      }
     }
 
     // 2. Pedestrian Crosswalk & Jaywalking Obstacle Detection
@@ -1213,16 +1236,22 @@ class NPCAI {
     this.waitTimer += dt;
     this.desiredSpeed = 0;
     const signal = this._getSignalAhead(signals);
-    const stopDist = signal ? Math.max(0.1, this._distanceToSignal(signal) - 6.0) : 0.1;
+    const stopDist = signal ? Math.max(0.1, this._distanceToSignal(signal) - 5.5) : 0.1;
     this.currentAcceleration = this.calculateIDMAcceleration(null, Infinity, 0, stopDist);
 
-    if (!signal || signal.state === 'green' || this.waitTimer > 4.5) {
+    if (!signal || signal.state === 'green' || this.waitTimer > 5.5) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.waitTimer = 0;
       this.signalViolation = false;
-    } else if (this.waitTimer > 3.0 && this.profile.patience < 0.4) {
+      this._committedToIntersection = true;
+      this.desiredSpeed = this._getTargetSpeed ? this._getTargetSpeed() : 7.0;
+      this.currentSpeed = Math.max(this.currentSpeed, 2.5);
+    } else if (this.waitTimer > 3.5 && this.profile.patience < 0.4) {
       this.signalViolation = true;
       this.state = NPC_STATE.FOLLOW_LANE;
+      this._committedToIntersection = true;
+      this.desiredSpeed = 5.0;
+      this.currentSpeed = Math.max(this.currentSpeed, 2.0);
     }
   }
 
@@ -1239,6 +1268,13 @@ class NPCAI {
   _updateComplete(dt) {
     this.desiredSpeed = 0;
     this.currentAcceleration = -(this.idmParams?.b || 2.0);
+    // Seamlessly re-assign new route if road graph is active
+    if (this.trafficManager && typeof this.trafficManager._assignRoute === 'function') {
+      if (this.trafficManager._assignRoute(this.vehicle)) {
+        this.state = NPC_STATE.FOLLOW_LANE;
+        return;
+      }
+    }
     this._respawn();
   }
 

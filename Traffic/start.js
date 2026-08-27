@@ -45,13 +45,26 @@ window.ASSET_MANIFEST = {}
   function obj(p, m) { return { path: p, fmt: 'obj', mtl: m || null } }
 
 
-  M.car = glb(carKit + 'sedan.glb'); M.taxi = glb(carKit + 'taxi.glb'); M.police = glb(carKit + 'police.glb')
-  M.bus = glb(carKit + 'delivery.glb'); M.truck = glb(carKit + 'truck.glb'); M.auto = glb(carKit + 'van.glb'); M.bike = glb(carKit + 'race.glb')
-
-
-  M.ambulance = glb(carKit + 'ambulance.glb')
-  ;['hatchback-sports','suv','suv-luxury','race-future','sedan-sports','kart-oobi','kart-oodi','kart-ooli','kart-oopi','kart-oozi','tractor','tractor-police','tractor-shovel'].forEach(c => { M['car_'+c] = glb(carKit + c + '.glb') })
-  ;['firetruck','garbage-truck','truck-flat'].forEach(t => { M['truck_'+t] = glb(carKit + t + '.glb') })
+  M.car = glb(carKit + 'sedan.glb');
+  M.taxi = glb(carKit + 'taxi.glb');
+  M.police = glb(carKit + 'police.glb');
+  M.ambulance = glb(carKit + 'ambulance.glb');
+  M.van = glb(carKit + 'van.glb');
+  M.delivery = glb(carKit + 'delivery.glb');
+  M.delivery_flat = glb(carKit + 'delivery-flat.glb');
+  M.truck = glb(carKit + 'truck.glb');
+  M.truck_flat = glb(carKit + 'truck-flat.glb');
+  M.firetruck = glb(carKit + 'firetruck.glb');
+  M.garbage_truck = glb(carKit + 'garbage-truck.glb');
+  M.suv = glb(carKit + 'suv.glb');
+  M.suv_luxury = glb(carKit + 'suv-luxury.glb');
+  M.sedan_sports = glb(carKit + 'sedan-sports.glb');
+  M.hatchback_sports = glb(carKit + 'hatchback-sports.glb');
+  M.race_future = glb(carKit + 'race-future.glb');
+  M.race = glb(carKit + 'race.glb');
+  M.tractor = glb(carKit + 'tractor.glb');
+  ;['hatchback-sports','suv','suv-luxury','race-future','sedan-sports','kart-oobi','kart-oodi','kart-ooli','kart-oopi','kart-oozi','tractor','tractor-police','tractor-shovel'].forEach(c => { M['car_'+c] = glb(carKit + c + '.glb') });
+  ;['firetruck','garbage-truck','truck-flat'].forEach(t => { M['truck_'+t] = glb(carKit + t + '.glb') });
 
 
   M.lowpoly_cars = fbx('Models/uploads_files_3354643_LowPoly_Cars_01_fbx.FBX')
@@ -235,7 +248,7 @@ window.ASSET_GROUPS = {
 
 
 window.CORE_ASSETS = [
-  'car','taxi','police','bus','truck','auto','bike',
+  'car','taxi','police','ambulance','bus','truck','auto','bike','cars','trucks','emergency',
   'road_straight','road_intersect','road_cross','road_cross_path','road_intersect_path','road_bend','road_crossing','road_roundabout','road_avenue',
   'char_f_a','char_f_b','char_f_c','char_f_d','char_f_e','char_f_f',
   'char_m_a','char_m_b','char_m_c','char_m_d','char_m_e','char_m_f',
