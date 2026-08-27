@@ -100,7 +100,7 @@ class TrafficManager {
     this._updateSignalAccumulation(dt, signals);
     this._manageVehicleLifecycle(playerVehicle);
     this._updateEdgeIndex();
-    
+    this._checkDeadlocks(dt, playerVehicle);
 
     const COMPLETE = (window.NPC_STATE && window.NPC_STATE.COMPLETE) || 'COMPLETE';
     this.vehicles.slice().forEach(vehicle => {
@@ -675,6 +675,19 @@ class TrafficManager {
     return this.edgeVehicles.get(edgeId) || [];
   }
 
+  getVehiclesInRadius(pos, radius) {
+    if (!pos) return [];
+    const rSq = radius * radius;
+    return this.vehicles.filter(v => {
+      if (!v.active) return false;
+      const vPos = v.position || (v.mesh && v.mesh.position);
+      if (!vPos) return false;
+      const dx = vPos.x - pos.x;
+      const dz = vPos.z - pos.z;
+      return (dx * dx + dz * dz) <= rSq;
+    });
+  }
+
   getAvailableParkingSpots(position, radius) {
     return this.parkingSpots
       .filter(s => !s.occupied && s.position.distanceTo(position) < radius)
@@ -704,6 +717,98 @@ class TrafficManager {
 
   setAudio(audio) {
     this.audio = audio;
+  }
+
+  propagateHornReaction(sourcePos, sourceVehicle, radius = 15.0) {
+    if (!sourcePos) return;
+    const nearby = this.getVehiclesInRadius(sourcePos, radius);
+    nearby.forEach(v => {
+      if (v !== sourceVehicle && v.active && v.npcAI && typeof v.npcAI.receiveHornAlert === 'function') {
+        v.npcAI.receiveHornAlert(sourcePos, sourceVehicle);
+      }
+    });
+  }
+
+  handleDeadlockResolution(stalledVehicle) {
+    if (!stalledVehicle || !stalledVehicle.active || !stalledVehicle.npcAI) return;
+    const pos = stalledVehicle.position || (stalledVehicle.mesh && stalledVehicle.mesh.position);
+    if (!pos) return;
+    const stalledGroup = this.getVehiclesInRadius(pos, 25.0).filter(v => {
+      if (!v.active || !v.npcAI) return false;
+      const spd = v.npcAI.currentSpeed || v.speed || 0;
+      return spd < 0.15;
+    });
+
+    if (stalledGroup.length === 0) stalledGroup.push(stalledVehicle);
+
+    const maxStuckTime = stalledGroup.reduce((max, v) => Math.max(max, v._stuckTimer || 0), stalledVehicle._stuckTimer || 3.5);
+    const arbitrateFn = typeof arbitrateDeadlock === 'function' ? arbitrateDeadlock : (typeof window !== 'undefined' && window.arbitrateDeadlock ? window.arbitrateDeadlock : null);
+    
+    if (!arbitrateFn) return;
+
+    const arbitration = arbitrateFn(stalledGroup.map(v => ({
+      id: v.id || v.type || 'veh',
+      type: v.type || v.userData?.npcType || 'car',
+      aggression: v.npcAI?.profile?.aggression || 0.5,
+      arrivalTimeMs: v._stallStartTime || Date.now()
+    })), maxStuckTime);
+
+    if (arbitration.resolved && arbitration.phase === 1) {
+      const winner = stalledGroup.find(v => (v.id || v.type || 'veh') === arbitration.grantedVehicleId) || stalledVehicle;
+      if (winner && winner.npcAI) {
+        winner.npcAI._committedToIntersection = true;
+        winner.npcAI.state = (typeof window !== 'undefined' && window.NPC_STATE && window.NPC_STATE.FOLLOW_LANE) || 'FOLLOW_LANE';
+        winner.npcAI.desiredSpeed = Math.max(5.0, winner.npcAI._getTargetSpeed ? winner.npcAI._getTargetSpeed() : 7.0);
+        winner.npcAI.currentSpeed = Math.max(winner.npcAI.currentSpeed, 3.5);
+        winner.npcAI.waitTimer = 0;
+        winner.npcAI.signalViolation = false;
+        winner._stuckTimer = 0;
+      }
+      stalledGroup.forEach(v => {
+        if (v !== winner && v.npcAI) {
+          v.npcAI.state = (typeof window !== 'undefined' && window.NPC_STATE && window.NPC_STATE.YIELD) || 'YIELD';
+          v.npcAI.currentAcceleration = -(v.npcAI.idmParams?.b || 2.0);
+        }
+      });
+    } else if (arbitration.resolved && arbitration.phase === 2) {
+      const playerPos = this.game?.playerVehicle?.position || this.game?.player?.position;
+      stalledGroup.forEach(v => {
+        const dist = playerPos && v.position ? v.position.distanceTo(playerPos) : 100;
+        if (dist > 80) {
+          this._despawnVehicle(v);
+          this._spawnSingleVehicle();
+        } else if (v.npcAI) {
+          v._stuckTimer = 0;
+          v.npcAI.state = (typeof window !== 'undefined' && window.NPC_STATE && window.NPC_STATE.FOLLOW_LANE) || 'FOLLOW_LANE';
+          v.npcAI._committedToIntersection = true;
+          v.npcAI.desiredSpeed = 6.0;
+          v.npcAI.currentSpeed = 4.0;
+        }
+      });
+    }
+  }
+
+  _checkDeadlocks(dt, playerVehicle) {
+    if (!this.vehicles || this.vehicles.length === 0) return;
+
+    for (let i = 0; i < this.vehicles.length; i++) {
+      const v = this.vehicles[i];
+      if (!v.active || !v.npcAI) continue;
+      const st = v.npcAI.state;
+      if (st === 'PARK' || st === 'CRASH' || st === 'COMPLETE') continue;
+
+      const spd = v.npcAI.currentSpeed || v.speed || 0;
+      if (spd < 0.15 && (st !== 'WAIT_SIGNAL' || v.npcAI.waitTimer > 4.5)) {
+        if (!v._stallStartTime) v._stallStartTime = Date.now();
+        v._stuckTimer = (v._stuckTimer || 0) + dt;
+        if (v._stuckTimer >= 3.5) {
+          this.handleDeadlockResolution(v);
+        }
+      } else {
+        v._stuckTimer = 0;
+        v._stallStartTime = null;
+      }
+    }
   }
 
   getDebugInfo() {

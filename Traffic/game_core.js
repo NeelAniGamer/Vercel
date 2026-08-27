@@ -10165,6 +10165,14 @@ class Game {
         }
         // Update PedestrianAI instances for intelligent behavior
         if (typeof PedestrianAI !== 'undefined') {
+          for (let i = 0; i < this.peds.length; i++) {
+            const p = this.peds[i];
+            if (p && !p._pedAI) {
+              const ai = new PedestrianAI(p, this.trafficManager);
+              this.pedestrianAIs.push(ai);
+              p._pedAI = ai;
+            }
+          }
           for (let i = this.pedestrianAIs.length - 1; i >= 0; i--) {
             const ai = this.pedestrianAIs[i];
             if (!ai || !ai.ped || !ai.ped.visible) continue;
@@ -10420,6 +10428,10 @@ class Game {
         this.peds.forEach(p => {
           const ud = p.userData;
           if (!ud) return;
+          if (p._pedAI) {
+            // Cleanly delegated to PedestrianAI instance - avoid conflicting position overwrites
+            return;
+          }
 
           if (ud.isChild) {
             ud.t = (ud.t || 0) + dt * (ud.spd || 0.03);
