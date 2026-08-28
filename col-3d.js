@@ -1,4 +1,4 @@
-﻿// col-3d.js — Interactive 3D Worlds for Class Of Learners
+// col-3d.js — Interactive 3D Worlds for Class Of Learners
 // Philosophy: The 3D scene IS the interface. Click, drag, explore.
 // Not background decoration — navigable space.
 
@@ -11,8 +11,16 @@
 
   function waitForThree(cb) {
     if (typeof THREE !== 'undefined') { cb(); return }
+    if (!document.querySelector('script[src*="three"]')) {
+      var s = document.createElement('script')
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
+      s.async = true
+      s.onload = function () { cb() }
+      document.head.appendChild(s)
+      return
+    }
     var n = 0, iv = setInterval(function () {
-      if (++n > 50 || typeof THREE !== 'undefined') { clearInterval(iv); if (typeof THREE !== 'undefined') cb() }
+      if (++n > 60 || typeof THREE !== 'undefined') { clearInterval(iv); if (typeof THREE !== 'undefined') cb() }
     }, 100)
   }
 
@@ -43,11 +51,12 @@
     var camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 500)
     camera.position.set(0, 0, 60)
 
-    // ─── Input State ───
+    // ─── Input State & Physics ───
     var mouseX = 0, mouseY = 0
     var _pmx = 0, _pmy = 0
     var mouseDown = false
     var dragStartX = 0, dragStartY = 0
+    var dragVelX = 0, dragVelY = 0
     var raycaster = new THREE.Raycaster()
     var mouseVec = new THREE.Vector2()
     var currentHovered = null
@@ -61,8 +70,10 @@
       if (mouseDown) {
         var dx = e.clientX - dragStartX
         var dy = e.clientY - dragStartY
-        cameraTarget.rotY += dx * 0.005
-        cameraTarget.rotX = Math.max(-0.5, Math.min(0.5, cameraTarget.rotX + dy * 0.003))
+        dragVelX = dx * 0.004
+        dragVelY = dy * 0.0025
+        cameraTarget.rotY += dragVelX
+        cameraTarget.rotX = Math.max(-0.55, Math.min(0.55, cameraTarget.rotX + dragVelY))
         dragStartX = e.clientX
         dragStartY = e.clientY
       }
@@ -73,6 +84,7 @@
       mouseDown = true
       dragStartX = e.clientX
       dragStartY = e.clientY
+      dragVelX = 0; dragVelY = 0
       canvas.style.cursor = 'grabbing'
     })
 
@@ -220,27 +232,44 @@
         scene.add(root)
 
         // Central core
-        var coreGeo = new THREE.IcosahedronGeometry(2, 3)
+        var coreGeo = new THREE.IcosahedronGeometry(2.2, 3)
         var coreMat = new THREE.MeshBasicMaterial({ color: pal().signal })
         trackTheme(coreMat, 'signal')
         var core = new THREE.Mesh(coreGeo, coreMat)
         root.add(core)
+
+        // Outer faceted wireframe core cage
+        var cageGeo = new THREE.IcosahedronGeometry(3.6, 1)
+        var cageMat = new THREE.MeshBasicMaterial({ color: pal().signal, wireframe: true, transparent: true, opacity: 0.28 })
+        trackTheme(cageMat, 'signal')
+        var cage = new THREE.Mesh(cageGeo, cageMat)
+        root.add(cage)
 
         // Core glow
         var glowCvs = document.createElement('canvas')
         glowCvs.width = glowCvs.height = 256
         var gctx = glowCvs.getContext('2d')
         var grd = gctx.createRadialGradient(128, 128, 0, 128, 128, 128)
-        grd.addColorStop(0, 'rgba(242,184,75,0.4)')
-        grd.addColorStop(0.5, 'rgba(242,184,75,0.08)')
+        grd.addColorStop(0, 'rgba(255,255,255,0.9)')
+        grd.addColorStop(0.2, 'rgba(242,184,75,0.55)')
+        grd.addColorStop(0.5, 'rgba(242,184,75,0.12)')
         grd.addColorStop(1, 'rgba(242,184,75,0)')
         gctx.fillStyle = grd
         gctx.fillRect(0, 0, 256, 256)
         var glowTex = new THREE.CanvasTexture(glowCvs)
-        var glowMat = new THREE.SpriteMaterial({ map: glowTex, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.5 })
+        var glowMat = new THREE.SpriteMaterial({ map: glowTex, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.65 })
         var glow = new THREE.Sprite(glowMat)
-        glow.scale.set(16, 16, 1)
+        glow.scale.set(18, 18, 1)
         root.add(glow)
+
+        // Energy connecting beams
+        var beamMat = new THREE.LineBasicMaterial({ color: pal().signal, transparent: true, opacity: 0.12 })
+        trackTheme(beamMat, 'signal')
+        var beamPositions = new Float32Array(6 * 2 * 3)
+        var beamGeo = new THREE.BufferGeometry()
+        beamGeo.setAttribute('position', new THREE.BufferAttribute(beamPositions, 3))
+        var beams = new THREE.LineSegments(beamGeo, beamMat)
+        root.add(beams)
 
         // Six project nodes
         var projectNodes = [
@@ -259,8 +288,8 @@
           var angle = (i / projectNodes.length) * Math.PI * 2
 
           // Orbit ring
-          var orbitGeo = new THREE.TorusGeometry(p.radius, 0.02, 6, 100)
-          var orbitMat = new THREE.MeshBasicMaterial({ color: pal()[p.key], transparent: true, opacity: 0.08 })
+          var orbitGeo = new THREE.TorusGeometry(p.radius, 0.025, 6, 120)
+          var orbitMat = new THREE.MeshBasicMaterial({ color: pal()[p.key], transparent: true, opacity: 0.12 })
           trackTheme(orbitMat, p.key)
           var orbit = new THREE.Mesh(orbitGeo, orbitMat)
           orbit.rotation.x = Math.PI * 0.5
@@ -268,20 +297,28 @@
           root.add(orbit)
 
           // Planet body
-          var planetSize = 1.0
-          if (p.key === 'signal') planetSize = 1.4
-          if (p.key === 'ion') planetSize = 1.2
-          var planetGeo = new THREE.IcosahedronGeometry(planetSize, 1)
+          var planetSize = 1.1
+          if (p.key === 'signal') planetSize = 1.5
+          if (p.key === 'ion') planetSize = 1.3
+          var planetGeo = new THREE.IcosahedronGeometry(planetSize, 2)
           var planetMat = new THREE.MeshBasicMaterial({ color: pal()[p.key] })
           trackTheme(planetMat, p.key)
           var planet = new THREE.Mesh(planetGeo, planetMat)
           planet.position.set(Math.cos(angle) * p.radius, p.y, Math.sin(angle) * p.radius)
           root.add(planet)
 
+          // Planet nested orbital ring
+          var pRingGeo = new THREE.TorusGeometry(planetSize * 1.6, 0.02, 4, 32)
+          var pRingMat = new THREE.MeshBasicMaterial({ color: pal()[p.key], transparent: true, opacity: 0.35 })
+          trackTheme(pRingMat, p.key)
+          var pRing = new THREE.Mesh(pRingGeo, pRingMat)
+          pRing.rotation.x = Math.PI * 0.3
+          planet.add(pRing)
+
           // Planet glow sprite
-          var pGlowMat = new THREE.SpriteMaterial({ map: glowTex, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.3 })
+          var pGlowMat = new THREE.SpriteMaterial({ map: glowTex, transparent: true, blending: THREE.AdditiveBlending, opacity: 0.45 })
           var pGlow = new THREE.Sprite(pGlowMat)
-          pGlow.scale.set(planetSize * 5, planetSize * 5, 1)
+          pGlow.scale.set(planetSize * 5.5, planetSize * 5.5, 1)
           pGlow.position.copy(planet.position)
           root.add(pGlow)
 
@@ -289,7 +326,7 @@
           window.__col3d.registerClickable(planet, p.page,
             function () {
               planetMat.color.setHex(whiteHex)
-              pGlowMat.opacity = 0.7
+              pGlowMat.opacity = 0.85
               planet.scale.set(1.4, 1.4, 1.4)
               var tip = document.getElementById('ntip')
               if (tip) {
@@ -301,18 +338,20 @@
             },
             function () {
               planetMat.color.setHex(pal()[p.key])
-              pGlowMat.opacity = 0.3
+              pGlowMat.opacity = 0.45
               planet.scale.set(1, 1, 1)
               var tip = document.getElementById('ntip')
               if (tip) { tip.style.opacity = '0' }
             }
           )
 
-          nodeObjects.push({ data: p, planet: planet, glow: pGlow, glowMat: pGlowMat, orbit: orbit, angle: angle, mat: planetMat })
+          nodeObjects.push({ data: p, planet: planet, glow: pGlow, glowMat: pGlowMat, orbit: orbit, angle: angle, mat: planetMat, ring: pRing })
         })
 
-        // Background dust
-        scene.add(createDust('dim', 500, 50, 150))
+        // Multi-layered starfield
+        scene.add(createDust('dim', 400, 40, 180))
+        scene.add(createDust('signal', 120, 25, 110))
+        scene.add(createDust('ion', 100, 30, 130))
 
         // Click handler -> navigate
         window.__col3d.onClick(function (page) {
@@ -345,37 +384,55 @@
         new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
 
         return function (t) {
-          // Orbit nodes
-          nodeObjects.forEach(function (n) {
+          // Update energy beams & planets
+          var bPos = beamGeo.attributes.position.array
+          nodeObjects.forEach(function (n, idx) {
             n.angle += n.data.speed * 0.01
             n.planet.position.x = Math.cos(n.angle) * n.data.radius
             n.planet.position.z = Math.sin(n.angle) * n.data.radius
-            n.planet.position.y = n.data.y + Math.sin(t * 0.5 + n.data.radius) * 0.3
+            n.planet.position.y = n.data.y + Math.sin(t * 0.5 + n.data.radius) * 0.35
             n.glow.position.copy(n.planet.position)
             n.planet.rotation.y = t * 0.2
             n.planet.rotation.x = t * 0.1
+            n.ring.rotation.z = t * 0.4
+
+            // Beam from core to planet
+            var bIdx = idx * 6
+            bPos[bIdx] = 0; bPos[bIdx+1] = 0; bPos[bIdx+2] = 0
+            bPos[bIdx+3] = n.planet.position.x; bPos[bIdx+4] = n.planet.position.y; bPos[bIdx+5] = n.planet.position.z
           })
+          beamGeo.attributes.position.needsUpdate = true
 
-          // Core breathing
-          var breathe = 1 + Math.sin(t * 0.8) * 0.04
+          // Core & cage breathing
+          var breathe = 1 + Math.sin(t * 0.8) * 0.05
           core.scale.set(breathe, breathe, breathe)
-          core.rotation.y = t * 0.05
-          glow.scale.set(15 + Math.sin(t * 0.8) * 2, 15 + Math.sin(t * 0.8) * 2, 1)
+          core.rotation.y = t * 0.06
+          cage.scale.set(1 + Math.sin(t * 0.5) * 0.03, 1 + Math.sin(t * 0.5) * 0.03, 1 + Math.sin(t * 0.5) * 0.03)
+          cage.rotation.y = -t * 0.08
+          cage.rotation.x = t * 0.04
+          glow.scale.set(18 + Math.sin(t * 0.8) * 2.5, 18 + Math.sin(t * 0.8) * 2.5, 1)
 
-          // Drag rotation
-          if (!mouseDown) cameraTarget.rotY += 0.0003
-          cameraTarget.rotX += (_pmy * 0.15 - cameraTarget.rotX) * 0.008
+          // Drag inertia & auto orbit
+          if (!mouseDown) {
+            dragVelX *= 0.93
+            dragVelY *= 0.93
+            cameraTarget.rotY += dragVelX + 0.0003
+            cameraTarget.rotX = Math.max(-0.55, Math.min(0.55, cameraTarget.rotX + dragVelY))
+          }
+          cameraTarget.rotX += (_pmy * 0.12 - cameraTarget.rotX) * 0.008
 
           // Hover from HTML cards
           var hover = window.__col3d.hover
           nodeObjects.forEach(function (n) {
             if (n.planet !== currentHovered) {
-              var targetScale = 1 + hover * 0.15
+              var targetScale = 1 + hover * 0.18
               n.planet.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.05)
             }
           })
 
           // Scroll: dolly out as user reads
+          var maxScroll = (document.documentElement.scrollHeight - window.innerHeight) || 1
+          var scrollProgress = Math.max(0, Math.min(1, window.scrollY / maxScroll))
           cameraTarget.z = 50 + scrollProgress * 20
 
           // Camera easing

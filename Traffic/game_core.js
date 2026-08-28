@@ -4617,7 +4617,56 @@ class Game {
           11: { name: 'Sion Hospital', sky: 0x0a0f1d, fog: 500, ground: 0x1a2a1d, amb: 0.35, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'taxi', 'car', 'auto', 'bike', 'car', 'auto', 'car', 'bike', 'auto', 'car', 'taxi', 'car'], isNight: true, hasSilentZone: true, silentZ1: 0, silentZ2: 250, roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'v', x: 0, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: 100, x2: 260 }, { type: 'h', z: -360, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -140, x2: 20 }, { type: 'h', z: -600, x1: -20, x2: 140 }, { type: 'h', z: -600, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -740, z2: -580 }, { type: 'v', x: 360, z1: -620, z2: -460 }, { type: 'h', z: -480, x1: 220, x2: 380 }, { type: 'h', z: -480, x1: -880, x2: 260 }, { type: 'h', z: -360, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1360, z2: 640 }, { type: 'h', z: 0, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1000, z2: 1000 }, { type: 'h', z: -600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -1600, z2: 400 }, { type: 'h', z: -600, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1600, z2: 400 }, { type: 'h', z: -240, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1240, z2: 760 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 0, z: -240 }, { x: 120, z: -240 }, { x: 240, z: -240 }, { x: 240, z: -360 }, { x: 120, z: -360 }, { x: 0, z: -360 }, { x: 0, z: -480 }, { x: -120, z: -480 }, { x: -120, z: -600 }, { x: 0, z: -600 }, { x: 120, z: -600 }, { x: 240, z: -600 }, { x: 240, z: -720 }, { x: 360, z: -720 }, { x: 360, z: -600 }, { x: 360, z: -480 }, { x: 240, z: -480 }, { x: 120, z: -480 }], ints: [[240, -360], [0, -600], [240, -480], [240, -240], [120, -600], [0, 0], [-120, -480], [120, -240], [-120, -600], [0, -240], [0, -480], [360, -480], [120, -360], [360, -720], [120, -480], [360, -600], [0, -120], [240, -600], [240, -720], [0, -360]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: -22, z1: -240, z2: -120, s: 0.9 }, { x: 22, z1: -240, z2: -120, s: 0.9 }, { x: 218, z1: -360, z2: -240, s: 0.9 }, { x: 262, z1: -360, z2: -240, s: 0.9 }, { x: -22, z1: -480, z2: -360, s: 0.9 }, { x: 22, z1: -480, z2: -360, s: 0.9 }, { x: -142, z1: -600, z2: -480, s: 0.9 }, { x: -98, z1: -600, z2: -480, s: 0.9 }, { x: 218, z1: -720, z2: -600, s: 0.9 }, { x: 262, z1: -720, z2: -600, s: 0.9 }, { x: 338, z1: -720, z2: -600, s: 0.9 }, { x: 382, z1: -720, z2: -600, s: 0.9 }, { x: 338, z1: -600, z2: -480, s: 0.9 }, { x: 382, z1: -600, z2: -480, s: 0.9 }], timeLimit: 1710, hasGarage: true, assets: ['suburban', 'industrial'] },
           12: { name: 'Dharavi', sky: 0x8aafca, fog: 450, ground: 0x3a5228, amb: 0.7, veh: 'twowheeler', npcTypes: ['auto', 'bike', 'cycle', 'auto', 'car', 'bike', 'cycle', 'taxi', 'auto', 'car', 'bike', 'auto', 'car', 'cycle', 'auto', 'bike'], roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -380, z2: -220 }, { type: 'v', x: -120, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -140, x2: 20 }, { type: 'h', z: -840, x1: -260, x2: -100 }, { type: 'h', z: -840, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'h', z: -720, x1: -380, x2: 760 }, { type: 'h', z: -600, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1600, z2: 400 }, { type: 'h', z: -240, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1240, z2: 760 }, { type: 'h', z: -120, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1120, z2: 880 }, { type: 'h', z: -480, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1480, z2: 520 }, { type: 'h', z: -840, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -1840, z2: 160 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -240, z: 0 }, { x: -240, z: -120 }, { x: -120, z: -120 }, { x: 0, z: -120 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -120, z: -360 }, { x: -120, z: -480 }, { x: -240, z: -480 }, { x: -240, z: -600 }, { x: -120, z: -600 }, { x: -120, z: -720 }, { x: 0, z: -720 }, { x: 0, z: -840 }, { x: -120, z: -840 }, { x: -240, z: -840 }, { x: -360, z: -840 }, { x: -360, z: -720 }, { x: -240, z: -720 }], ints: [[-240, -840], [0, -840], [-360, -840], [-360, -720], [-120, -360], [-240, -120], [0, 0], [-120, -480], [-240, -480], [-120, -600], [-120, -720], [0, -240], [-240, -720], [-120, -840], [-120, 0], [0, -120], [-120, -120], [-240, 0], [0, -720], [-240, -600], [-120, -240]], bldg: [{ x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 }, { x: -22, z1: -240, z2: -120, s: 0.9 }, { x: 22, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -360, z2: -240, s: 0.9 }, { x: -98, z1: -360, z2: -240, s: 0.9 }, { x: -142, z1: -480, z2: -360, s: 0.9 }, { x: -98, z1: -480, z2: -360, s: 0.9 }, { x: -262, z1: -600, z2: -480, s: 0.9 }, { x: -218, z1: -600, z2: -480, s: 0.9 }, { x: -142, z1: -720, z2: -600, s: 0.9 }, { x: -98, z1: -720, z2: -600, s: 0.9 }, { x: -22, z1: -840, z2: -720, s: 0.9 }, { x: 22, z1: -840, z2: -720, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }], timeLimit: 1820, hasGarage: true, assets: ['suburban', 'industrial'] },
           13: { name: 'Linking Road', sky: 0x7a9eb5, fog: 550, ground: 0x346a2e, amb: 0.75, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'car', 'taxi', 'auto', 'bike', 'car', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'bike'], hasCheckpoint: true, checkpointZ: 0, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'v', x: 120, z1: -20, z2: 140 }, { type: 'v', x: 120, z1: 100, z2: 260 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'v', x: 120, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 460, z2: 620 }, { type: 'v', x: 240, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 100, x2: 260 }, { type: 'h', z: 720, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 580, z2: 740 }, { type: 'v', x: 0, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -140, x2: 20 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 340, z2: 500 }, { type: 'v', x: -240, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 460, z2: 620 }, { type: 'v', x: -360, z1: 580, z2: 740 }, { type: 'v', x: -360, z1: 700, z2: 860 }, { type: 'v', x: -360, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 940, z2: 1100 }, { type: 'h', z: 1080, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 1060, z2: 1220 }, { type: 'h', z: 1200, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: 1180, z2: 1340 }, { type: 'v', x: -720, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: 1300, z2: 1460 }, { type: 'h', z: 1320, x1: -620, x2: -460 }, { type: 'h', z: 1320, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 1180, z2: 1340 }, { type: 'h', z: 1200, x1: -1480, x2: -340 }, { type: 'h', z: 480, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -520, z2: 1480 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 480, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -520, z2: 1480 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 120, z: 120 }, { x: 120, z: 240 }, { x: 120, z: 360 }, { x: 120, z: 480 }, { x: 240, z: 480 }, { x: 240, z: 600 }, { x: 240, z: 720 }, { x: 120, z: 720 }, { x: 0, z: 720 }, { x: 0, z: 600 }, { x: 0, z: 480 }, { x: -120, z: 480 }, { x: -240, z: 480 }, { x: -240, z: 360 }, { x: -240, z: 240 }, { x: -360, z: 240 }, { x: -360, z: 360 }, { x: -480, z: 360 }, { x: -480, z: 480 }, { x: -360, z: 480 }, { x: -360, z: 600 }, { x: -360, z: 720 }, { x: -360, z: 840 }, { x: -360, z: 960 }, { x: -480, z: 960 }, { x: -480, z: 1080 }, { x: -600, z: 1080 }, { x: -600, z: 1200 }, { x: -720, z: 1200 }, { x: -720, z: 1320 }, { x: -720, z: 1440 }, { x: -600, z: 1440 }, { x: -600, z: 1320 }, { x: -480, z: 1320 }, { x: -360, z: 1320 }, { x: -360, z: 1200 }, { x: -480, z: 1200 }], ints: [[-480, 1320], [-360, 240], [-240, 480], [-720, 1320], [120, 360], [-360, 1200], [-360, 960], [0, 0], [-480, 480], [-360, 1320], [-720, 1200], [-720, 1440], [120, 240], [-600, 1440], [-360, 480], [-480, 360], [-600, 1080], [240, 720], [0, 600], [-240, 360], [120, 480], [-240, 240], [-480, 960], [-480, 1080], [120, 0], [120, 120], [-600, 1200], [-480, 1200], [-600, 1320], [240, 480], [240, 600], [-360, 720], [0, 720], [-120, 480], [-360, 840], [0, 480], [120, 720], [-360, 360], [-360, 600]], bldg: [{ x: 98, z1: 0, z2: 120, s: 0.9 }, { x: 142, z1: 0, z2: 120, s: 0.9 }, { x: 98, z1: 120, z2: 240, s: 0.9 }, { x: 142, z1: 120, z2: 240, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: 98, z1: 360, z2: 480, s: 0.9 }, { x: 142, z1: 360, z2: 480, s: 0.9 }, { x: 218, z1: 480, z2: 600, s: 0.9 }, { x: 262, z1: 480, z2: 600, s: 0.9 }, { x: 218, z1: 600, z2: 720, s: 0.9 }, { x: 262, z1: 600, z2: 720, s: 0.9 }, { x: -22, z1: 600, z2: 720, s: 0.9 }, { x: 22, z1: 600, z2: 720, s: 0.9 }, { x: -22, z1: 480, z2: 600, s: 0.9 }, { x: 22, z1: 480, z2: 600, s: 0.9 }, { x: -262, z1: 360, z2: 480, s: 0.9 }, { x: -218, z1: 360, z2: 480, s: 0.9 }, { x: -262, z1: 240, z2: 360, s: 0.9 }, { x: -218, z1: 240, z2: 360, s: 0.9 }, { x: -382, z1: 240, z2: 360, s: 0.9 }, { x: -338, z1: 240, z2: 360, s: 0.9 }, { x: -502, z1: 360, z2: 480, s: 0.9 }, { x: -458, z1: 360, z2: 480, s: 0.9 }, { x: -382, z1: 480, z2: 600, s: 0.9 }, { x: -338, z1: 480, z2: 600, s: 0.9 }, { x: -382, z1: 600, z2: 720, s: 0.9 }, { x: -338, z1: 600, z2: 720, s: 0.9 }, { x: -382, z1: 720, z2: 840, s: 0.9 }, { x: -338, z1: 720, z2: 840, s: 0.9 }, { x: -382, z1: 840, z2: 960, s: 0.9 }, { x: -338, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 960, z2: 1080, s: 0.9 }, { x: -458, z1: 960, z2: 1080, s: 0.9 }, { x: -622, z1: 1080, z2: 1200, s: 0.9 }, { x: -578, z1: 1080, z2: 1200, s: 0.9 }, { x: -742, z1: 1200, z2: 1320, s: 0.9 }, { x: -698, z1: 1200, z2: 1320, s: 0.9 }, { x: -742, z1: 1320, z2: 1440, s: 0.9 }, { x: -698, z1: 1320, z2: 1440, s: 0.9 }, { x: -622, z1: 1320, z2: 1440, s: 0.9 }, { x: -578, z1: 1320, z2: 1440, s: 0.9 }, { x: -382, z1: 1200, z2: 1320, s: 0.9 }, { x: -338, z1: 1200, z2: 1320, s: 0.9 }], timeLimit: 1930, hasGarage: true, assets: ['suburban', 'industrial', 'construction'] },
-          14: { name: 'Bandra-Worli Sea Link', sky: 0x4a90d9, fog: 750, ground: 0x33691e, amb: 0.9, veh: 'car_highway', npcTypes: ['car', 'car', 'car', 'truck', 'car', 'car', 'bus', 'car', 'car', 'car', 'car', 'car', 'car', 'car', 'taxi', 'car', 'car', 'car', 'car', 'bus', 'car', 'car', 'car', 'car', 'car', 'car', 'car', 'car'], isBridge: false, speedMin: 40, speedMax: 80, roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: -260, z2: -100 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'h', z: 0, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -140, z2: 20 }, { type: 'v', x: -360, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -500, x2: -340 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'h', z: -240, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -260, z2: -100 }, { type: 'h', z: -120, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -980, x2: -820 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -860, x2: -700 }, { type: 'h', z: -480, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -620, z2: -460 }, { type: 'v', x: -480, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -500, x2: -340 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -980, z2: -820 }, { type: 'h', z: -960, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -620, x2: -460 }, { type: 'h', z: -1080, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -1100, z2: -940 }, { type: 'v', x: -720, z1: -980, z2: -820 }, { type: 'v', x: -720, z1: -860, z2: -700 }, { type: 'v', x: -720, z1: -740, z2: -580 }, { type: 'h', z: -600, x1: -740, x2: -580 }, { type: 'v', x: -600, z1: -1720, z2: -580 }, { type: 'h', z: -240, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1240, z2: 760 }, { type: 'h', z: 0, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1000, z2: 1000 }, { type: 'h', z: -840, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1840, z2: 160 }, { type: 'h', z: -480, x1: -1480, x2: 520 }, { type: 'v', x: -480, z1: -1480, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -120, z: -120 }, { x: -120, z: 0 }, { x: -240, z: 0 }, { x: -360, z: 0 }, { x: -360, z: -120 }, { x: -360, z: -240 }, { x: -480, z: -240 }, { x: -600, z: -240 }, { x: -720, z: -240 }, { x: -720, z: -120 }, { x: -840, z: -120 }, { x: -840, z: -240 }, { x: -960, z: -240 }, { x: -960, z: -360 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -720, z: -480 }, { x: -600, z: -480 }, { x: -600, z: -360 }, { x: -480, z: -360 }, { x: -360, z: -360 }, { x: -360, z: -480 }, { x: -480, z: -480 }, { x: -480, z: -600 }, { x: -480, z: -720 }, { x: -360, z: -720 }, { x: -360, z: -840 }, { x: -480, z: -840 }, { x: -600, z: -840 }, { x: -600, z: -960 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -600, z: -1080 }, { x: -720, z: -1080 }, { x: -720, z: -960 }, { x: -720, z: -840 }, { x: -720, z: -720 }, { x: -720, z: -600 }, { x: -600, z: -600 }, { x: -600, z: -720 }], ints: [[-600, -1080], [-840, -240], [-360, 0], [-360, -840], [-480, -360], [-600, -600], [-960, -240], [-960, -360], [-360, -720], [-720, -120], [-480, -960], [0, 0], [-720, -480], [-720, -600], [-600, -720], [-480, -600], [-480, -480], [120, -240], [-720, -1080], [-360, -240], [-480, -720], [0, -240], [-480, -1080], [-360, -480], [-600, -840], [-720, -840], [-720, -960], [-600, -360], [-360, -360], [-360, -120], [-120, 0], [-840, -360], [-720, -720], [0, -120], [-120, -120], [-480, -240], [-240, 0], [120, -120], [-840, -120], [-600, -960], [-480, -840], [-720, -240], [-120, -240], [-600, -480], [-840, -480], [-600, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -240, z2: -120, s: 0.9 }, { x: -98, z1: -240, z2: -120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 }, { x: -742, z1: -240, z2: -120, s: 0.9 }, { x: -698, z1: -240, z2: -120, s: 0.9 }, { x: -862, z1: -240, z2: -120, s: 0.9 }, { x: -818, z1: -240, z2: -120, s: 0.9 }, { x: -982, z1: -360, z2: -240, s: 0.9 }, { x: -938, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 }, { x: -382, z1: -480, z2: -360, s: 0.9 }, { x: -338, z1: -480, z2: -360, s: 0.9 }, { x: -502, z1: -600, z2: -480, s: 0.9 }, { x: -458, z1: -600, z2: -480, s: 0.9 }, { x: -502, z1: -720, z2: -600, s: 0.9 }, { x: -458, z1: -720, z2: -600, s: 0.9 }, { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 }, { x: -622, z1: -960, z2: -840, s: 0.9 }, { x: -578, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -742, z1: -1080, z2: -960, s: 0.9 }, { x: -698, z1: -1080, z2: -960, s: 0.9 }, { x: -742, z1: -960, z2: -840, s: 0.9 }, { x: -698, z1: -960, z2: -840, s: 0.9 }, { x: -742, z1: -840, z2: -720, s: 0.9 }, { x: -698, z1: -840, z2: -720, s: 0.9 }, { x: -742, z1: -720, z2: -600, s: 0.9 }, { x: -698, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 }], timeLimit: 2040, hasGarage: true, assets: ['suburban', 'industrial'] },
+          14: {
+            name: 'Lesson 14 - Night Crossing',
+            sky: 0x060814,
+            fog: 400,
+            ground: 0x142014,
+            amb: 0.15,
+            veh: 'car',
+            isNight: true,
+            hasNightCrossing: true,
+            hasElderlyCrossing: true,
+            hasCrosswalks: true,
+            elderlyCrossX: 0,
+            elderlyCrossZ: -50,
+            npcTypes: ['car', 'taxi', 'auto', 'car', 'bike', 'bus', 'car', 'auto', 'car', 'bike', 'taxi', 'car'],
+            roads: [
+              { type: 'v', x: 0, z1: -800, z2: 800, lanes: 4, width: 26, name: 'SV Road Arterial (Night)' },
+              { type: 'v', x: 240, z1: -800, z2: 800, lanes: 4, width: 24, name: 'Link Road North' },
+              { type: 'v', x: -240, z1: -800, z2: 800, lanes: 4, width: 24, name: 'Western Express' },
+              { type: 'h', z: 0, x1: -800, x2: 800, lanes: 4, width: 24, name: 'Carter Promenade Crossway' },
+              { type: 'h', z: -120, x1: -800, x2: 800, lanes: 4, width: 24, name: 'Station Road Night Market' },
+              { type: 'h', z: -240, x1: -800, x2: 800, lanes: 4, width: 24, name: 'Hospital Approach Corridor' },
+              { type: 'h', z: 120, x1: -800, x2: 800, lanes: 2, width: 16, name: 'South Promenade Way' }
+            ],
+            route: [
+              { x: 0, z: 0, desc: 'Start at Night' },
+              { x: 0, z: -50, desc: 'Unmarked Elderly Crossing' },
+              { x: 0, z: -120, desc: 'Station Road Junction' },
+              { x: 120, z: -120, desc: 'Night Market Pedestrian Crossing' },
+              { x: 240, z: -120, desc: 'Link Road Turn' },
+              { x: 240, z: -240, desc: 'Illuminated Zebra Crossing' },
+              { x: 120, z: -240, desc: 'Hospital Road Corridor' },
+              { x: 0, z: -240, desc: 'Final Destination Gate' }
+            ],
+            ints: [
+              [0, 0], [240, 0], [-240, 0],
+              [0, -120], [240, -120], [-240, -120],
+              [0, -240], [240, -240], [-240, -240],
+              [0, 120], [240, 120], [-240, 120]
+            ],
+            bldg: [
+              { x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 },
+              { x: 218, z1: -120, z2: 0, s: 0.9 }, { x: 262, z1: -120, z2: 0, s: 0.9 },
+              { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 },
+              { x: -22, z1: -240, z2: -120, s: 0.9 }, { x: 22, z1: -240, z2: -120, s: 0.9 },
+              { x: 218, z1: -240, z2: -120, s: 0.9 }, { x: 262, z1: -240, z2: -120, s: 0.9 }
+            ],
+            timeLimit: 300,
+            hasGarage: true,
+            assets: ['suburban', 'industrial']
+          },
           15: { name: 'South Mumbai Circuit', sky: 0x7ab5d0, fog: 700, ground: 0x2e6b32, amb: 0.8, veh: 'car', npcTypes: ['car', 'bus', 'auto', 'bike', 'truck', 'car', 'cycle', 'auto', 'car', 'bus', 'bike', 'car', 'taxi', 'auto', 'car', 'bus', 'bike', 'car', 'auto', 'taxi', 'car', 'bus', 'auto', 'bike', 'car', 'truck', 'car', 'auto', 'car', 'bus'], roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'h', z: 120, x1: -20, x2: 140 }, { type: 'h', z: 120, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 100, z2: 260 }, { type: 'v', x: 240, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: 340, z2: 500 }, { type: 'v', x: -120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -20, x2: 140 }, { type: 'h', z: 480, x1: 100, x2: 260 }, { type: 'h', z: 480, x1: 220, x2: 380 }, { type: 'h', z: 480, x1: 340, x2: 500 }, { type: 'h', z: 480, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 580, z2: 740 }, { type: 'v', x: 720, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 580, x2: 740 }, { type: 'h', z: 840, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: 700, z2: 860 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 340, x2: 500 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 580, z2: 740 }, { type: 'v', x: 120, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -260, x2: -100 }, { type: 'h', z: 840, x1: -380, x2: -220 }, { type: 'h', z: 840, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 940, z2: 1100 }, { type: 'v', x: -360, z1: 1060, z2: 1220 }, { type: 'v', x: -360, z1: 1180, z2: 1340 }, { type: 'v', x: -360, z1: 1300, z2: 1460 }, { type: 'v', x: -360, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -380, x2: -220 }, { type: 'h', z: 1560, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: 1420, z2: 1580 }, { type: 'h', z: 1440, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -20, x2: 140 }, { type: 'h', z: 1560, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 1420, z2: 1580 }, { type: 'h', z: 1440, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 1300, z2: 1460 }, { type: 'v', x: 120, z1: 1180, z2: 1340 }, { type: 'h', z: 1200, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 1180, z2: 1340 }, { type: 'h', z: 1320, x1: 220, x2: 380 }, { type: 'h', z: 1320, x1: 340, x2: 500 }, { type: 'h', z: 1320, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: 580, x2: 740 }, { type: 'v', x: 600, z1: 1540, z2: 1700 }, { type: 'v', x: 600, z1: 1660, z2: 1820 }, { type: 'v', x: 600, z1: 1780, z2: 1940 }, { type: 'v', x: 600, z1: 1900, z2: 2060 }, { type: 'v', x: 600, z1: 2020, z2: 2180 }, { type: 'h', z: 2160, x1: 580, x2: 740 }, { type: 'h', z: 2160, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: 2140, z2: 2300 }, { type: 'v', x: 840, z1: 2260, z2: 2420 }, { type: 'h', z: 2400, x1: 700, x2: 860 }, { type: 'v', x: 720, z1: 2380, z2: 2540 }, { type: 'v', x: 720, z1: 2500, z2: 3640 }, { type: 'h', z: 840, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -160, z2: 1840 }, { type: 'h', z: 1560, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: 560, z2: 2560 }, { type: 'h', z: 120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -280, z2: 1720 }, { type: 'h', z: 480, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -520, z2: 1480 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: 120 }, { x: 0, z: 120 }, { x: 120, z: 120 }, { x: 240, z: 120 }, { x: 240, z: 240 }, { x: 240, z: 360 }, { x: 120, z: 360 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 360 }, { x: -120, z: 360 }, { x: -120, z: 480 }, { x: -120, z: 600 }, { x: 0, z: 600 }, { x: 0, z: 480 }, { x: 120, z: 480 }, { x: 240, z: 480 }, { x: 360, z: 480 }, { x: 480, z: 480 }, { x: 600, z: 480 }, { x: 600, z: 600 }, { x: 720, z: 600 }, { x: 720, z: 720 }, { x: 720, z: 840 }, { x: 600, z: 840 }, { x: 480, z: 840 }, { x: 480, z: 720 }, { x: 480, z: 600 }, { x: 360, z: 600 }, { x: 240, z: 600 }, { x: 120, z: 600 }, { x: 120, z: 720 }, { x: 120, z: 840 }, { x: 0, z: 840 }, { x: 0, z: 960 }, { x: -120, z: 960 }, { x: -120, z: 840 }, { x: -240, z: 840 }, { x: -360, z: 840 }, { x: -480, z: 840 }, { x: -480, z: 960 }, { x: -360, z: 960 }, { x: -360, z: 1080 }, { x: -360, z: 1200 }, { x: -360, z: 1320 }, { x: -360, z: 1440 }, { x: -360, z: 1560 }, { x: -240, z: 1560 }, { x: -120, z: 1560 }, { x: -120, z: 1440 }, { x: 0, z: 1440 }, { x: 0, z: 1560 }, { x: 120, z: 1560 }, { x: 240, z: 1560 }, { x: 240, z: 1440 }, { x: 120, z: 1440 }, { x: 120, z: 1320 }, { x: 120, z: 1200 }, { x: 240, z: 1200 }, { x: 240, z: 1320 }, { x: 360, z: 1320 }, { x: 480, z: 1320 }, { x: 600, z: 1320 }, { x: 600, z: 1440 }, { x: 720, z: 1440 }, { x: 720, z: 1560 }, { x: 600, z: 1560 }, { x: 600, z: 1680 }, { x: 600, z: 1800 }, { x: 600, z: 1920 }, { x: 600, z: 2040 }, { x: 600, z: 2160 }, { x: 720, z: 2160 }, { x: 840, z: 2160 }, { x: 840, z: 2280 }, { x: 840, z: 2400 }, { x: 720, z: 2400 }, { x: 720, z: 2520 }, { x: 720, z: 2640 }], ints: [[-120, 960], [480, 840], [-360, 960], [840, 2160], [120, 1200], [360, 600], [840, 2280], [120, 600], [600, 1320], [-360, 1080], [0, 1560], [0, 480], [600, 1920], [0, 240], [240, 1200], [720, 1560], [-120, 360], [720, 720], [120, 360], [120, 1440], [480, 720], [720, 2160], [120, 240], [360, 480], [120, 1560], [-240, 840], [240, 1560], [120, 480], [240, 1440], [600, 840], [-480, 960], [480, 1320], [240, 240], [720, 840], [0, 360], [0, 1440], [240, 480], [240, 600], [120, 1320], [600, 1440], [240, 120], [-360, 840], [-360, 1560], [600, 1800], [360, 1320], [600, 2160], [-360, 1200], [0, 120], [600, 1560], [-360, 1320], [720, 2640], [600, 2040], [720, 600], [-120, 120], [120, 120], [-120, 600], [-120, 840], [240, 1320], [240, 360], [-240, 1560], [480, 480], [600, 600], [120, 840], [0, 0], [0, 840], [-120, 1560], [600, 1680], [600, 480], [0, 960], [720, 2520], [720, 1440], [0, 600], [-120, 0], [720, 2400], [-120, 1440], [-360, 1440], [480, 600], [-120, 480], [120, 720], [-480, 840], [840, 2400]], bldg: [{ x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 }, { x: 218, z1: 120, z2: 240, s: 0.9 }, { x: 262, z1: 120, z2: 240, s: 0.9 }, { x: 218, z1: 240, z2: 360, s: 0.9 }, { x: 262, z1: 240, z2: 360, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 240, z2: 360, s: 0.9 }, { x: 22, z1: 240, z2: 360, s: 0.9 }, { x: -142, z1: 360, z2: 480, s: 0.9 }, { x: -98, z1: 360, z2: 480, s: 0.9 }, { x: -142, z1: 480, z2: 600, s: 0.9 }, { x: -98, z1: 480, z2: 600, s: 0.9 }, { x: -22, z1: 480, z2: 600, s: 0.9 }, { x: 22, z1: 480, z2: 600, s: 0.9 }, { x: 578, z1: 480, z2: 600, s: 0.9 }, { x: 622, z1: 480, z2: 600, s: 0.9 }, { x: 698, z1: 600, z2: 720, s: 0.9 }, { x: 742, z1: 600, z2: 720, s: 0.9 }, { x: 698, z1: 720, z2: 840, s: 0.9 }, { x: 742, z1: 720, z2: 840, s: 0.9 }, { x: 458, z1: 720, z2: 840, s: 0.9 }, { x: 502, z1: 720, z2: 840, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 600, z2: 720, s: 0.9 }, { x: 142, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 720, z2: 840, s: 0.9 }, { x: 142, z1: 720, z2: 840, s: 0.9 }, { x: -22, z1: 840, z2: 960, s: 0.9 }, { x: 22, z1: 840, z2: 960, s: 0.9 }, { x: -142, z1: 840, z2: 960, s: 0.9 }, { x: -98, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 840, z2: 960, s: 0.9 }, { x: -458, z1: 840, z2: 960, s: 0.9 }, { x: -382, z1: 960, z2: 1080, s: 0.9 }, { x: -338, z1: 960, z2: 1080, s: 0.9 }, { x: -382, z1: 1080, z2: 1200, s: 0.9 }, { x: -338, z1: 1080, z2: 1200, s: 0.9 }, { x: -382, z1: 1200, z2: 1320, s: 0.9 }, { x: -338, z1: 1200, z2: 1320, s: 0.9 }, { x: -382, z1: 1320, z2: 1440, s: 0.9 }, { x: -338, z1: 1320, z2: 1440, s: 0.9 }, { x: -382, z1: 1440, z2: 1560, s: 0.9 }, { x: -338, z1: 1440, z2: 1560, s: 0.9 }, { x: -142, z1: 1440, z2: 1560, s: 0.9 }, { x: -98, z1: 1440, z2: 1560, s: 0.9 }, { x: -22, z1: 1440, z2: 1560, s: 0.9 }, { x: 22, z1: 1440, z2: 1560, s: 0.9 }, { x: 218, z1: 1440, z2: 1560, s: 0.9 }, { x: 262, z1: 1440, z2: 1560, s: 0.9 }, { x: 98, z1: 1320, z2: 1440, s: 0.9 }, { x: 142, z1: 1320, z2: 1440, s: 0.9 }, { x: 98, z1: 1200, z2: 1320, s: 0.9 }, { x: 142, z1: 1200, z2: 1320, s: 0.9 }, { x: 218, z1: 1200, z2: 1320, s: 0.9 }, { x: 262, z1: 1200, z2: 1320, s: 0.9 }, { x: 578, z1: 1320, z2: 1440, s: 0.9 }, { x: 622, z1: 1320, z2: 1440, s: 0.9 }, { x: 698, z1: 1440, z2: 1560, s: 0.9 }, { x: 742, z1: 1440, z2: 1560, s: 0.9 }, { x: 578, z1: 1560, z2: 1680, s: 0.9 }, { x: 622, z1: 1560, z2: 1680, s: 0.9 }, { x: 578, z1: 1680, z2: 1800, s: 0.9 }, { x: 622, z1: 1680, z2: 1800, s: 0.9 }, { x: 578, z1: 1800, z2: 1920, s: 0.9 }, { x: 622, z1: 1800, z2: 1920, s: 0.9 }, { x: 578, z1: 1920, z2: 2040, s: 0.9 }, { x: 622, z1: 1920, z2: 2040, s: 0.9 }, { x: 578, z1: 2040, z2: 2160, s: 0.9 }, { x: 622, z1: 2040, z2: 2160, s: 0.9 }, { x: 818, z1: 2160, z2: 2280, s: 0.9 }, { x: 862, z1: 2160, z2: 2280, s: 0.9 }, { x: 818, z1: 2280, z2: 2400, s: 0.9 }, { x: 862, z1: 2280, z2: 2400, s: 0.9 }, { x: 698, z1: 2400, z2: 2520, s: 0.9 }, { x: 742, z1: 2400, z2: 2520, s: 0.9 }, { x: 698, z1: 2520, z2: 2640, s: 0.9 }, { x: 742, z1: 2520, z2: 2640, s: 0.9 }], timeLimit: 2300, hasGarage: true, assets: ['suburban', 'industrial'] }
         };
         
@@ -4756,32 +4805,32 @@ class Game {
           this.playerVehicle.position.set(vStartX, 0, vStartZ);
           this.playerVehicle.rotation.y = vRotY;
           
-          if (this.mapCfg && this.mapCfg.isNight) {
-            this.hL = new THREE.SpotLight(0xffffee, 2.5, 150, Math.PI / 5, 0.5, 1);
-            this.hL.position.set(1.5, 1.5, 3);
-            this.hL.target.position.set(1.5, -0.5, 25);
-            this.hR = new THREE.SpotLight(0xffffee, 2.5, 150, Math.PI / 5, 0.5, 1);
-            this.hR.position.set(-1.5, 1.5, 3);
-            this.hR.target.position.set(-1.5, -0.5, 25);
-            this.playerVehicle.add(this.hL);
-            this.playerVehicle.add(this.hL.target);
-            this.playerVehicle.add(this.hR);
-            this.playerVehicle.add(this.hR.target);
-            // ── PLAYER TAILLIGHTS ──
-            const tlGeo = new THREE.SphereGeometry(0.15, 6, 6);
-            const tlMat = new THREE.MeshBasicMaterial({ color: 0xff2200 });
-            const ptlL = new THREE.Mesh(tlGeo, tlMat); ptlL.position.set(1.2, 1, -2.8);
-            const ptlR = new THREE.Mesh(tlGeo, tlMat); ptlR.position.set(-1.2, 1, -2.8);
-            this.playerVehicle.add(ptlL); this.playerVehicle.add(ptlR);
-            this._playerTaillights = [ptlL, ptlR]; // store ref for brake glow
-            // Visible headlight cone meshes (semi-transparent yellow glow)
-            const coneGeo = new THREE.ConeGeometry(3, 20, 12, 1, true);
-            const coneMat = new THREE.MeshBasicMaterial({ color: 0xffffcc, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false });
-            const coneL = new THREE.Mesh(coneGeo, coneMat); coneL.position.set(1.5, 0.5, 13); coneL.rotation.x = Math.PI / 2;
-            const coneR = new THREE.Mesh(coneGeo.clone(), coneMat.clone()); coneR.position.set(-1.5, 0.5, 13); coneR.rotation.x = Math.PI / 2;
-            this.playerVehicle.add(coneL); this.playerVehicle.add(coneR);
-            this._headlightCones = [coneL, coneR];
-          }
+          // ── PLAYER HEADLIGHTS & TAILLIGHTS ──
+          const isNight = this.mapCfg && this.mapCfg.isNight;
+          this.hL = new THREE.SpotLight(0xfffaed, isNight ? 3.2 : 0, 180, Math.PI / 4.5, 0.5, 1.2);
+          this.hL.position.set(0.65, 0.8, 2.2);
+          this.hL.target.position.set(0.65, -0.2, 35);
+          this.hR = new THREE.SpotLight(0xfffaed, isNight ? 3.2 : 0, 180, Math.PI / 4.5, 0.5, 1.2);
+          this.hR.position.set(-0.65, 0.8, 2.2);
+          this.hR.target.position.set(-0.65, -0.2, 35);
+          this.playerVehicle.add(this.hL);
+          this.playerVehicle.add(this.hL.target);
+          this.playerVehicle.add(this.hR);
+          this.playerVehicle.add(this.hR.target);
+          // ── PLAYER TAILLIGHTS ──
+          const tlGeo = new THREE.SphereGeometry(0.12, 6, 6);
+          const tlMat = new THREE.MeshBasicMaterial({ color: 0xff1100 });
+          const ptlL = new THREE.Mesh(tlGeo, tlMat); ptlL.position.set(0.65, 0.8, -2.2);
+          const ptlR = new THREE.Mesh(tlGeo, tlMat); ptlR.position.set(-0.65, 0.8, -2.2);
+          this.playerVehicle.add(ptlL); this.playerVehicle.add(ptlR);
+          this._playerTaillights = [ptlL, ptlR];
+          // Visible headlight cone meshes (semi-transparent warm glow)
+          const coneGeo = new THREE.ConeGeometry(2.5, 25, 12, 1, true);
+          const coneMat = new THREE.MeshBasicMaterial({ color: 0xffffcc, transparent: true, opacity: isNight ? 0.10 : 0.0, side: THREE.DoubleSide, depthWrite: false });
+          const coneL = new THREE.Mesh(coneGeo, coneMat); coneL.position.set(0.65, 0.5, 14.5); coneL.rotation.x = Math.PI / 2;
+          const coneR = new THREE.Mesh(coneGeo.clone(), coneMat.clone()); coneR.position.set(-0.65, 0.5, 14.5); coneR.rotation.x = Math.PI / 2;
+          this.playerVehicle.add(coneL); this.playerVehicle.add(coneR);
+          this._headlightCones = [coneL, coneR];
           let profileStr = localStorage.getItem('traffic_profile');
           let profile = profileStr ? JSON.parse(profileStr) : {};
           let username = profile.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || 'Anonymous';
@@ -6203,6 +6252,7 @@ class Game {
 
         // ── 16 Dedicated Scenario Builders ──
         if (cfg.hasElderlyCrossing) this._buildElderlyCrossing(cfg);
+        if (cfg.hasNightCrossing || (cfg.isNight && cfg.id === 14)) this._buildNightCrossings(cfg);
         if (cfg.isParkingChallenge) this._buildParkingScenario(cfg);
         if (cfg.hasAmbulanceBehind) this._buildAmbulanceScenario(cfg);
         if (cfg.isNarrowStreet) this._buildNarrowGully(cfg);
@@ -6638,12 +6688,132 @@ class Game {
         // Store reference for animation
         this._elderlyPed = {
           group: elderGroup,
-          startX: baseX - 6,
-          endX: baseX + 6,
+          startX: baseX - 8,
+          endX: baseX + 8,
           speed: 0.6, // very slow, m/s
           direction: 1,
           stick: stick
         };
+      }
+
+      _buildNightCrossings(cfg) {
+        const root = this.scene;
+        const crossings = [
+          { x: 0, z: -50, axis: 'h', label: 'Unmarked Elderly Crossing', width: 26, hasElderly: true },
+          { x: 60, z: -120, axis: 'v', label: 'Night Market Crossing', width: 24, pedCount: 3 },
+          { x: 120, z: -180, axis: 'h', label: 'Mid-Block Crossing', width: 24, pedCount: 3 },
+          { x: 180, z: -240, axis: 'v', label: 'Hospital Approach Zebra Crossing', width: 24, pedCount: 4 },
+          { x: -120, z: -60, axis: 'h', label: 'West Link Crossing', width: 22, pedCount: 2 }
+        ];
+
+        this._nightCrossingZones = [];
+
+        crossings.forEach(cr => {
+          const isV = cr.axis === 'v';
+          const halfW = cr.width / 2;
+
+          // 1. Zebra crossing stripes with reflective emissive white tint
+          const stripeMat = new THREE.MeshToonMaterial({
+            color: 0xffffff,
+            emissive: 0x444444,
+            gradientMap: window._toonGrad
+          });
+          for (let i = -4; i <= 4; i++) {
+            const stripeG = new THREE.PlaneGeometry(isV ? 5 : 0.9, isV ? 0.9 : 5);
+            const stripe = new THREE.Mesh(stripeG, stripeMat);
+            stripe.rotation.x = -Math.PI / 2;
+            stripe.position.set(
+              isV ? cr.x : cr.x + i * 1.5,
+              0.025,
+              isV ? cr.z + i * 1.5 : cr.z
+            );
+            root.add(stripe);
+          }
+
+          // 2. Streetlight directly over the zebra crossing illuminating pedestrians
+          const poleMat = new THREE.MeshToonMaterial({ color: 0x334155, gradientMap: window._toonGrad });
+          const lightPole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 6.5, 8), poleMat);
+          const poleSide = isV ? cr.x + (halfW + 1.5) : cr.x + (halfW + 1.5);
+          lightPole.position.set(isV ? cr.x : poleSide, 3.25, isV ? cr.z + (halfW + 1.5) : cr.z);
+          root.add(lightPole);
+
+          const spot = new THREE.SpotLight(0xfffaed, 3.5, 40, Math.PI / 4, 0.6, 1.2);
+          spot.position.set(isV ? cr.x : poleSide, 6.5, isV ? cr.z + (halfW + 1.5) : cr.z);
+          spot.target.position.set(cr.x, 0, cr.z);
+          root.add(spot);
+          root.add(spot.target);
+          if (this._streetLights) this._streetLights.push(spot);
+
+          // 3. Warning Crossing Signs on sidewalks
+          [-halfW - 2, halfW + 2].forEach(sideOffset => {
+            const signPole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.8, 6), poleMat);
+            signPole.position.set(isV ? cr.x : cr.x + sideOffset, 1.4, isV ? cr.z + sideOffset : cr.z);
+            root.add(signPole);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 128; canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffcc00';
+            ctx.beginPath(); ctx.moveTo(64, 8); ctx.lineTo(120, 120); ctx.lineTo(8, 120); ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = '#d97706'; ctx.lineWidth = 6; ctx.stroke();
+            ctx.font = 'bold 42px Arial'; ctx.fillStyle = '#000'; ctx.textAlign = 'center';
+            ctx.fillText('🚶', 64, 85);
+
+            const signMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true }));
+            signMesh.position.set(isV ? cr.x : cr.x + sideOffset, 2.7, isV ? cr.z + sideOffset : cr.z);
+            if (isV) signMesh.rotation.y = Math.PI / 2;
+            root.add(signMesh);
+          });
+
+          // 4. Spawn active animated crossing pedestrians
+          const pedCount = cr.pedCount || (cr.hasElderly ? 2 : 3);
+          for (let pIdx = 0; pIdx < pedCount; pIdx++) {
+            const ped = _buildHuman();
+            const startSide = pIdx % 2 === 0 ? 1 : -1;
+            const pX = isV ? cr.x + (Math.random() - 0.5) * 3 : cr.x + startSide * (halfW + 1.0);
+            const pZ = isV ? cr.z + startSide * (halfW + 1.0) : cr.z + (Math.random() - 0.5) * 3;
+            ped.position.set(pX, 0, pZ);
+
+            // Give evening pedestrians distinctive nighttime clothes
+            const isReflective = pIdx === 0;
+            const pedCol = isReflective ? 0xfef08a : (pIdx === 1 ? 0xe2e8f0 : 0x38bdf8);
+            ped.traverse(ch => {
+              if (ch.isMesh && ch.material) {
+                ch.material = ch.material.clone();
+                ch.material.color = new THREE.Color(pedCol);
+                if (isReflective) ch.material.emissive = new THREE.Color(0x333311);
+              }
+            });
+
+            // Crossing state
+            const targetX = isV ? pX : cr.x - startSide * (halfW + 1.5);
+            const targetZ = isV ? cr.z - startSide * (halfW + 1.5) : pZ;
+            ped.userData = {
+              aiState: 'crossing',
+              state: 'crossing',
+              t: Math.random() * 10,
+              spd: 0.28 + Math.random() * 0.15,
+              isV: !isV,
+              dir: -startSide,
+              crossTarget: { x: targetX, z: targetZ },
+              crossRoadCenter: isV ? cr.z : cr.x,
+              crossTargetDist: halfW + 1.5,
+              side: startSide,
+              destDist: 20,
+              distTraveled: 0
+            };
+
+            root.add(ped);
+            this.peds.push(ped);
+            if (typeof PedestrianAI !== 'undefined') {
+              const pedAI = new PedestrianAI(ped, this.trafficManager);
+              pedAI.state = PED_STATE.CROSSING;
+              pedAI.target = new THREE.Vector3(targetX, 0, targetZ);
+              this.pedestrianAIs.push(pedAI);
+              ped._pedAI = pedAI;
+            }
+          }
+        });
       }
 
       _buildTollPlaza(cfg) {
@@ -8915,10 +9085,11 @@ class Game {
         if (this._elderlyPed) {
           const ep = this._elderlyPed;
           ep.group.position.x += ep.speed * ep.direction * dt;
+          ep.group.rotation.y = ep.direction > 0 ? Math.PI / 2 : -Math.PI / 2;
           if (ep.group.position.x >= ep.endX) ep.direction = -1;
           if (ep.group.position.x <= ep.startX) ep.direction = 1;
           // Walking stick bob
-          if (ep.stick) ep.stick.rotation.z = 0.15 + Math.sin(Date.now() * 0.003) * 0.08;
+          if (ep.stick) ep.stick.rotation.z = (ep.direction > 0 ? 0.15 : -0.15) + Math.sin(Date.now() * 0.003) * 0.08;
         }
         if (this._activeAmbulance) {
           const a = this._activeAmbulance;
@@ -11830,6 +12001,10 @@ class Game {
       _animateCharacterWalk(character, speed, dt) {
         if (!character) return
         const ud = character.userData
+        if (ud && ud.isMinecraft && typeof ud.update === 'function') {
+          ud.update(dt, speed);
+          return;
+        }
         // FBX / GLB animated characters: blend idle ↔ run weights
         if ((ud.isFBXAnimated || ud.isGLB) && (ud.mixer || ud._mixer)) {
           const m = ud.mixer || ud._mixer
@@ -12151,43 +12326,62 @@ class Game {
       }
       _updateDayNight(dt) {
         if (!this.player || !this.player.position) return;
-        if (!this.dayNightCycle || !this.mapCfg) return;
-        const CYCLE = 300;
-        this.timeOfDay = (this.timeOfDay + dt / CYCLE) % 1;
-        const t = this.timeOfDay;
+        if (!this.mapCfg) return;
         const cfg = this.mapCfg;
 
-        // Sun elevation: sinusoidal arc, 0 at night, 1 at peak noon
-        const sunAngle = t * Math.PI * 2 - Math.PI / 2;
-        const sunElev = Math.max(0, Math.sin(sunAngle));
-
-        // Dawn/dusk accent factors (peaks at 0.25 and 0.75)
-        const dawnF = Math.max(0, 1 - Math.abs(t - 0.25) * 8);
-        const duskF = Math.max(0, 1 - Math.abs(t - 0.75) * 8);
+        let t, sunElev, dawnF, duskF, sunAngle;
+        if (cfg.isNight) {
+          t = 0.85;
+          sunAngle = t * Math.PI * 2 - Math.PI / 2;
+          sunElev = 0;
+          dawnF = 0;
+          duskF = 0;
+        } else if (this.dayNightCycle) {
+          const CYCLE = 300;
+          this.timeOfDay = (this.timeOfDay + dt / CYCLE) % 1;
+          t = this.timeOfDay;
+          sunAngle = t * Math.PI * 2 - Math.PI / 2;
+          sunElev = Math.max(0, Math.sin(sunAngle));
+          dawnF = Math.max(0, 1 - Math.abs(t - 0.25) * 8);
+          duskF = Math.max(0, 1 - Math.abs(t - 0.75) * 8);
+        } else {
+          t = this.timeOfDay || 0.4;
+          sunAngle = t * Math.PI * 2 - Math.PI / 2;
+          sunElev = Math.max(0, Math.sin(sunAngle));
+          dawnF = Math.max(0, 1 - Math.abs(t - 0.25) * 8);
+          duskF = Math.max(0, 1 - Math.abs(t - 0.75) * 8);
+        }
 
         // ── Sky color ──
-        this._dnDaySky.setHex(cfg.sky || 0x87b6d8);
-        this._dnSkyA.copy(this._dnSkyB).setHex(0x0a0a12).lerp(this._dnDaySky, sunElev);
+        const nightSkyHex = cfg.isNight ? (cfg.sky || 0x060814) : 0x0a0a12;
+        this._dnDaySky.setHex(cfg.isNight ? (cfg.sky || 0x060814) : (cfg.sky || 0x87b6d8));
+        this._dnSkyA.copy(this._dnSkyB).setHex(nightSkyHex).lerp(this._dnDaySky, sunElev);
         this._dnSkyB.copy(this._dnDawnSky).multiplyScalar(dawnF).add(this._dnTmp.copy(this._dnDuskSky).multiplyScalar(duskF));
         this.scene.background.copy(this._dnSkyA).add(this._dnSkyB);
 
         // ── Fog color ──
-        this._dnFogA.copy(this._dnFogB).setHex(0x0a0a12).lerp(this._dnDaySky, sunElev);
+        this._dnFogA.copy(this._dnFogB).setHex(nightSkyHex).lerp(this._dnDaySky, sunElev);
         this._dnFogB.copy(this._dnDawnFog).multiplyScalar(dawnF).add(this._dnTmp.copy(this._dnDuskFog).multiplyScalar(duskF));
-        if (this.scene.fog) this.scene.fog.color.copy(this._dnFogA).add(this._dnFogB);
+        if (this.scene.fog) {
+          this.scene.fog.color.copy(this._dnFogA).add(this._dnFogB);
+          if (cfg.isNight) {
+            this.scene.fog.near = 80;
+            this.scene.fog.far = 420;
+          }
+        }
 
         // ── Ambient light ──
-        if (this._ambient) this._ambient.intensity = this._dnLerp(0.08, cfg.amb || 0.35, sunElev);
+        if (this._ambient) this._ambient.intensity = cfg.isNight ? (cfg.amb || 0.15) : this._dnLerp(0.08, cfg.amb || 0.35, sunElev);
 
         // ── Hemisphere light ──
-        if (this._hemi) this._hemi.intensity = this._dnLerp(0.08, 0.45, sunElev);
+        if (this._hemi) this._hemi.intensity = cfg.isNight ? 0.10 : this._dnLerp(0.08, 0.45, sunElev);
 
         // ── Sun intensity ──
-        if (this._sun) this._sun.intensity = this._dnLerp(0.05, 1.2, sunElev);
+        if (this._sun) this._sun.intensity = cfg.isNight ? 0.05 : this._dnLerp(0.05, 1.2, sunElev);
 
         // ── Moon (opposite to sun) ──
         if (this._moon && this.player) {
-          this._moon.intensity = this._dnLerp(0.4, 0, sunElev);
+          this._moon.intensity = cfg.isNight ? 0.6 : this._dnLerp(0.4, 0, sunElev);
           const moonAngle = sunAngle + Math.PI;
           const mx = Math.cos(moonAngle) * 50;
           const my = Math.abs(Math.sin(moonAngle)) * 40 + 5;
@@ -12195,45 +12389,45 @@ class Game {
         }
 
         // ── Tone mapping exposure ──
-        if (this.renderCore.renderer) this.renderCore.renderer.toneMappingExposure = this._dnLerp(0.42, 0.62, sunElev);
+        if (this.renderCore && this.renderCore.renderer) {
+          this.renderCore.renderer.toneMappingExposure = cfg.isNight ? 0.55 : this._dnLerp(0.42, 0.62, sunElev);
+        }
 
         // ── Street lights ──
-        const slIntensity = sunElev < 0.3 ? this._dnLerp(0.8, 0, sunElev / 0.3) : 0;
+        const slIntensity = cfg.isNight ? 1.0 : (sunElev < 0.3 ? this._dnLerp(0.8, 0, sunElev / 0.3) : 0);
         for (let i = 0; i < this._streetLights.length; i++) this._streetLights[i].intensity = slIntensity;
 
         // ── Building window glow ──
-        const wlOn = sunElev < 0.4;
-        const wlIntensity = wlOn ? this._dnLerp(0.6, 0, sunElev / 0.4) : 0;
+        const wlIntensity = cfg.isNight ? 0.8 : (sunElev < 0.4 ? this._dnLerp(0.6, 0, sunElev / 0.4) : 0);
         for (let i = 0; i < this._windowLights.length; i++) this._windowLights[i].intensity = wlIntensity;
 
         // ── Player headlights ──
         if (this.hL && this.hR) {
-          const hlI = this._dnLerp(2.5, 0, sunElev);
+          const hlI = cfg.isNight ? (this.highBeamOn ? 4.5 : 3.2) : this._dnLerp(2.5, 0, sunElev);
           this.hL.intensity = hlI; this.hR.intensity = hlI;
+          this.hL.distance = cfg.isNight ? (this.highBeamOn ? 320 : 180) : (this.highBeamOn ? 300 : 150);
+          this.hR.distance = cfg.isNight ? (this.highBeamOn ? 320 : 180) : (this.highBeamOn ? 300 : 150);
         }
         if (this._headlightCones) {
-          const coneA = this._dnLerp(0.08, 0, sunElev);
+          const coneA = cfg.isNight ? (this.highBeamOn ? 0.16 : 0.10) : this._dnLerp(0.08, 0, sunElev);
           for (let i = 0; i < this._headlightCones.length; i++) this._headlightCones[i].material.opacity = coneA;
         }
 
-        // ── NPC headlights/taillights: toggle on day/night transition ──
-        const nightOn = sunElev < 0.2;
+        // ── NPC headlights/taillights ──
+        const nightOn = cfg.isNight || sunElev < 0.2;
         if (nightOn !== this._lastNpcLightState && this.npcs) {
           this._lastNpcLightState = nightOn;
           for (let ni = 0; ni < this.npcs.length; ni++) {
             const nv = this.npcs[ni];
             for (let ci = 0; ci < nv.children.length; ci++) {
               const c = nv.children[ci];
-              if (c.isSpotLight) c.intensity = nightOn ? 1.2 : 0;
+              if (c.isSpotLight) c.intensity = nightOn ? 1.8 : 0;
               if (c.isMesh && c.material && c.material.color && c.material.color.r > 0.8 && c.material.color.g < 0.2) {
                 c.visible = nightOn;
               }
             }
           }
         }
-
-        // ── Sync isNight for other systems (rain, NPC headlights) ──
-        cfg.isNight = nightOn;
       }
       _dnLerp(a, b, t) { return a + (b - a) * Math.min(1, Math.max(0, t)); }
 

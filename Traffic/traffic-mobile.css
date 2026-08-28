@@ -32,8 +32,12 @@
 /* ─────────────────────────────────────────────────────────────────
    1. ROOT — Fluid type, viewport, safe-area
    ───────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  html {
+    font-size: clamp(14px, calc(3.4vw + 1px), 16px);
+  }
+}
 html {
-  font-size: clamp(14px, 3.4vw + 1px, 17px);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }

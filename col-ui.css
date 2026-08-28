@@ -50,27 +50,7 @@ body {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
-/* Enforce capitalization without performance-killing universal selectors */
-body {
-  text-transform: capitalize;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-a,
-span,
-button,
-input,
-label,
-li,
-.nav-link,
-.btn {
-  text-transform: capitalize !important;
-}
+
 code,
 pre,
 .tech-tag,

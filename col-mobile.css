@@ -1,428 +1,138 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   col-mobile.css — Engineered Mobile UI/UX for Class Of Learners
-   Coverage: 720p (360×720) → 1080p (412×915) → 1440p (480×960) → 2K (600×1280+)
-   Philosophy: Fluid, thumb-friendly, high-DPI crisp, low-end graceful.
-   Load AFTER col-ui.css: <link rel="stylesheet" href="col-mobile.css" />
-   Version: 1.0 — 2026-08-27
-   ═══════════════════════════════════════════════════════════════════════ */
+   col-mobile.css — Mobile UI/UX & Responsive Styles for Class Of Learners
+   Coverage: Small Mobile (320-380px) → Standard Mobile (390-480px) → Phablet/Tablet (600-900px)
+   Philosophy: Clean responsive behavior, touch-friendly, safe areas, no desktop zoom.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ─────────────────────────────────────────────────────────────────
-   0. DESIGN TOKENS — Fluid & Resolution Aware
+   1. BASE & TOUCH ESSENTIALS
    ───────────────────────────────────────────────────────────────── */
 :root {
-  /* — Fluid Spacing (8pt base, vw + clamp) — */
-  --s-1: clamp(4px, 1.1vw, 8px);
-  --s-2: clamp(8px, 2vw, 12px);
-  --s-3: clamp(12px, 3vw, 18px);
-  --s-4: clamp(16px, 4vw, 24px);
-  --s-5: clamp(20px, 5vw, 32px);
-  --s-6: clamp(24px, 6vw, 40px);
-  --s-7: clamp(32px, 8vw, 56px);
-  --s-8: clamp(40px, 10vw, 80px);
-
-  /* — Fluid Radii — */
-  --r-sm: clamp(8px, 2vw, 12px);
-  --r-md: clamp(12px, 3vw, 18px);
-  --r-lg: clamp(18px, 4.5vw, 24px);
-  --r-pill: 999px;
-
-  /* — Fluid Type Scale (major second, viewport-tuned) — */
-  --fs-10: clamp(0.62rem, 1.6vw, 0.7rem);
-  --fs-12: clamp(0.68rem, 1.9vw, 0.78rem);
-  --fs-14: clamp(0.78rem, 2.2vw, 0.88rem);
-  --fs-16: clamp(0.88rem, 2.6vw, 1rem);
-  --fs-18: clamp(0.95rem, 3vw, 1.15rem);
-  --fs-20: clamp(1.05rem, 3.4vw, 1.35rem);
-  --fs-24: clamp(1.25rem, 4.2vw, 1.65rem);
-  --fs-28: clamp(1.45rem, 5vw, 2rem);
-  --fs-32: clamp(1.7rem, 6vw, 2.4rem);
-  --fs-40: clamp(2rem, 7.5vw, 3.3rem);
-  --fs-48: clamp(2.2rem, 8.5vw, 4rem);
-  --fs-56: clamp(2.4rem, 9.5vw, 5rem);
-  --fs-72: clamp(2.8rem, 11vw, 6.4rem);
-
-  /* — Container — */
-  --container-max: min(1360px, 92vw);
-  --container-pad: clamp(16px, 5vw, 32px);
-  --content-width: min(68ch, 92vw);
-
-  /* — Touch — */
   --tap-min: 44px;
   --tap-opt: 48px;
   --tap-lg: 52px;
-
-  /* — Elevation (reduce on low-end) — */
-  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.18);
-  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.28);
-  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.45);
-  --shadow-glow: 0 0 0 1px var(--line), 0 12px 32px rgba(0, 0, 0, 0.35);
-
-  /* — Motion — */
+  --r-pill: 999px;
   --dur-fast: 160ms;
   --dur-med: 280ms;
   --dur-slow: 420ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ─────────────────────────────────────────────────────────────────
-   1. BASE — Viewport, Safe Area, Font Smoothing, Tap
-   ───────────────────────────────────────────────────────────────── */
 html {
-  /* Fluid root: 14px @320 → 16px @390 → 17.5px @600 → 18px @1440 */
-  font-size: clamp(14px, 3.6vw + 2px, 18px);
-  /* Prevent iOS font boost */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  /* Smooth but not on low-end */
-  scroll-behavior: smooth;
-  scrollbar-gutter: stable;
 }
 
 body {
-  /* Dynamic viewport fixes address bar jump (Chrome/Safari) */
-  min-height: 100dvh;
-  /* Safe area for notches */
   padding-left: env(safe-area-inset-left, 0);
   padding-right: env(safe-area-inset-right, 0);
-  /* Prevent horizontal jiggle */
-  overflow-x: clip;
-  /* Better text rendering on OLED */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  /* Prevent pull-to-refresh conflict with drawer */
-  overscroll-behavior-y: contain;
 }
 
-/* Lock scroll when drawer/open modal — added by JS */
+/* Lock scroll when mobile drawer / modal is open */
 body.nav-lock,
 body.modal-lock {
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: none;
-  /* Compensate for scrollbar disappearance */
-  padding-right: var(--scrollbar-comp, 0px);
 }
 
-/* iOS: inputs must be >=16px to prevent zoom */
+/* iOS zoom prevention on inputs */
 input,
 select,
 textarea {
-  font-size: max(16px, var(--fs-16));
+  font-size: max(16px, 1rem);
 }
 
-/* Remove double-tap delay & add feedback */
-a,
-button,
-[role='button'] {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-a:active,
-button:active {
-  transform: scale(0.98);
-}
-@media (prefers-reduced-motion: reduce) {
-  a:active,
-  button:active {
-    transform: none;
-  }
-}
-
-/* Focus visible for keyboard, hidden for touch */
-:focus-visible {
-  outline: 2px solid var(--signal);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-:focus:not(:focus-visible) {
-  outline: none;
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   2. CONTAINER & LAYOUT — Fluid grid that breathes 720p→2K
-   ───────────────────────────────────────────────────────────────── */
-.fi,
-.hc,
-.ahc,
-.section,
-.ps,
-.vp-section,
-.hero .hc,
-.stats-grid,
-.mission-grid,
-.team-grid,
-.pgrid {
-  /* Ensure containers never exceed viewport with safe padding */
-  max-width: var(--container-max);
-  margin-inline: auto;
-  padding-inline: var(--container-pad);
-}
-
-/* Content width for readable line length */
-.sdesc,
-.hlede,
-.ssb,
-.mentor-desc,
-.tm-bio,
-.mc-desc {
-  max-width: var(--content-width);
-  text-wrap: pretty;
-}
-
-/* Generic section rhythm — fluid */
-.section,
-.ps,
-.vp-section {
-  padding-block: clamp(48px, 12vw, 130px);
-}
-
-/* Grids: intrinsic, no media query jumps — CSS Grid + container queries */
-.pgrid,
-.team-grid,
-.vp-grid,
-.mission-grid,
-.stats-grid,
-.features-grid,
-.gallery-grid,
-.file-grid {
-  display: grid;
-  gap: clamp(14px, 3.2vw, 24px);
-  /* Prevent overflow */
-  min-width: 0;
-}
-
-/* 720p: 1 col | 600+: 2 col | 1024+: 3 col — but fluid via auto-fit where possible */
-.pgrid {
-  grid-template-columns: 1fr;
-}
-.team-grid {
-  grid-template-columns: 1fr;
-}
-.vp-grid {
-  grid-template-columns: 1fr;
-}
-.mission-grid {
-  grid-template-columns: 1fr;
-}
-.stats-grid {
-  grid-template-columns: 1fr 1fr;
-}
-.file-grid {
-  grid-template-columns: 1fr;
-}
-
-/* Opt-in container queries for cards (modern browsers) */
-@supports (container-type: inline-size) {
-  .pc,
-  .tm,
-  .vp-card,
-  .mission-card,
-  .feature-card {
-    container-type: inline-size;
-    container-name: card;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   3. TYPOGRAPHY — Fluid, legible, no layout shift
-   ───────────────────────────────────────────────────────────────── */
-h1,
-.hero h1,
-.about-hero h1 {
-  font-size: var(--fs-72);
-  line-height: 0.98;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-  /* Avoid widows */
-  max-width: 14ch;
-}
-
-h2,
-.st {
-  font-size: var(--fs-40);
-  line-height: 1.08;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-
-h3,
-.pname,
-.tm-name,
-.mc-title {
-  font-size: var(--fs-24);
-  line-height: 1.18;
-}
-
-p,
-.pdesc,
-.sdesc,
-.vp-desc {
-  font-size: var(--fs-16);
-  line-height: 1.72;
-}
-
-/* Eyebrows / labels */
-.sey,
-.hey,
-.lid {
-  font-size: var(--fs-10);
-  letter-spacing: 0.28em;
-  line-height: 1;
-}
-
-/* Keep capitalize but improve spacing on mobile */
-@media (max-width: 600px) {
-  body {
-    text-transform: none;
-  }
-  h1,
-  h2,
-  h3,
-  p,
+/* Touch feedback */
+@media (pointer: coarse) {
   a,
-  span,
   button,
-  label,
-  li,
-  .nav-link,
-  .btn {
-    text-transform: none !important;
+  [role='button'] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
-  /* Re-apply capitalize only to headings if desired */
-  h1,
-  h2,
-  h3 {
-    text-transform: capitalize !important;
+  .cd,
+  .cr {
+    display: none !important;
   }
+}
+
+/* Text overflow safety */
+p,
+li,
+span,
+a,
+h1,
+h2,
+h3,
+h4 {
+  overflow-wrap: break-word;
+}
+pre,
+code {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   4. NAVIGATION — Pill + Drawer + Bottom Thumb Bar
+   2. MOBILE NAVIGATION & DRAWER (<= 900px)
    ───────────────────────────────────────────────────────────────── */
-
-/* — Top Pill — Morphs gracefully across 720p→2K — */
-.top-nav {
-  /* Use logical properties for RTL safety */
-  inset-inline: clamp(10px, 3vw, 16px);
-  inset-block-start: max(8px, env(safe-area-inset-top, 0px));
-  width: auto;
-  max-width: min(calc(100% - 20px), 1360px);
-  margin-inline: auto;
-  padding: clamp(8px, 2.2vw, 14px) clamp(14px, 3.5vw, 24px);
-  gap: clamp(8px, 2vw, 14px);
-  border-radius: var(--r-pill);
-  /* Performance: promote */
-  will-change: transform;
-  transform: translateZ(0);
-  contain: layout style paint;
-  /* Backdrop performance: only blur when supported + not low-end */
-  backdrop-filter: blur(18px) saturate(1.25);
-  -webkit-backdrop-filter: blur(18px) saturate(1.25);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-md);
-}
-
-/* On scroll: compact */
-.top-nav.s {
-  padding-block: clamp(6px, 1.6vw, 10px);
-  box-shadow: var(--shadow-lg);
-}
-
-/* Brand — fluid */
-.brand-logo {
-  height: clamp(24px, 6vw, 32px) !important;
-  width: auto;
-  border-radius: 8px;
-}
-.brand-name {
-  font-size: clamp(0.62rem, 2vw, 0.78rem) !important;
-  letter-spacing: 0.18em !important;
-  /* Hide on very narrow 320-359 to save space */
-}
-@media (max-width: 359px) {
-  .brand-name {
-    display: none;
-  }
-}
-@media (min-width: 360px) and (max-width: 389px) {
-  .brand-name {
-    font-size: 0.68rem !important;
-    letter-spacing: 0.14em !important;
-  }
-}
-
-/* Nav links — desktop remains row, mobile becomes drawer (handled below) */
-.nav-links {
-  gap: clamp(10px, 2.2vw, 18px);
-}
-
-/* — Hamburger — 48px tap, animated — */
-.mmb {
-  width: var(--tap-opt) !important;
-  height: var(--tap-opt) !important;
-  min-width: var(--tap-opt);
-  min-height: var(--tap-opt);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  transition:
-    background var(--dur-fast) var(--ease-out),
-    transform var(--dur-fast) var(--ease-out);
-}
-.mmb:active {
-  transform: scale(0.92);
-}
-.m-line {
-  display: block;
-  width: 18px;
-  height: 2px;
-  background: currentColor;
-  border-radius: 2px;
-  transition:
-    transform var(--dur-med) var(--ease-spring),
-    opacity var(--dur-fast) var(--ease-out);
-  transform-origin: center;
-}
-.mmb.active .m-line:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
-}
-.mmb.active .m-line:nth-child(2) {
-  opacity: 0;
-  transform: scaleX(0);
-}
-.mmb.active .m-line:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
-}
-
-/* — Drawer — Full-screen, spring, safe-area aware — */
-.nav-links {
-  /* Desktop default */
-}
 @media (max-width: 900px) {
+  /* Hamburger button */
   .mmb {
     display: flex !important;
+    width: var(--tap-opt);
+    height: var(--tap-opt);
+    min-width: var(--tap-opt);
+    min-height: var(--tap-opt);
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--panel, #111827);
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+    color: var(--ink, #e8e3d8);
+    cursor: pointer;
+    z-index: 1002;
+    transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+  }
+  .mmb:active {
+    transform: scale(0.92);
+  }
+  .m-line {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform var(--dur-med) var(--ease-spring), opacity var(--dur-fast) var(--ease-out);
+    transform-origin: center;
+  }
+  .mmb.active .m-line:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .mmb.active .m-line:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  .mmb.active .m-line:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
   }
 
-  /* Drawer panel */
+  /* Mobile Nav Drawer */
   .nav-links {
     position: fixed !important;
     inset: 0 !important;
     width: 100vw !important;
     height: 100dvh !important;
-    height: 100svh !important;
-    background: var(--panel) !important;
+    background: var(--panel, #070a14) !important;
     flex-direction: column !important;
     justify-content: flex-start !important;
     align-items: stretch !important;
-    padding: calc(env(safe-area-inset-top, 0px) + 84px) clamp(18px, 5vw, 28px) calc(env(safe-area-inset-bottom, 0px) + 88px) !important;
-    gap: 0 !important;
+    padding: calc(env(safe-area-inset-top, 0px) + 76px) 24px calc(env(safe-area-inset-bottom, 0px) + 84px) !important;
+    gap: 4px !important;
     overflow-y: auto !important;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
@@ -430,10 +140,7 @@ p,
     visibility: hidden;
     pointer-events: none;
     transform: translateX(100%);
-    transition:
-      transform var(--dur-slow) var(--ease-out),
-      opacity var(--dur-med) var(--ease-out),
-      visibility 0s linear var(--dur-slow);
+    transition: transform var(--dur-slow) var(--ease-out), opacity var(--dur-med) var(--ease-out), visibility 0s linear var(--dur-slow);
     z-index: 1001;
     flex-wrap: nowrap !important;
     border: none !important;
@@ -447,94 +154,48 @@ p,
     transform: translateX(0);
     transition-delay: 0s;
   }
-  /* Backdrop behind drawer */
-  .nav-links::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.52);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: -1;
-    opacity: 0;
-    transition: opacity var(--dur-med) var(--ease-out);
-    pointer-events: none;
-  }
-  .nav-links.active::before {
-    opacity: 1;
-  }
 
-  /* Staggered entrance — each child slides + fades */
-  .nav-links > * {
-    opacity: 0;
-    transform: translateX(20px);
-    transition:
-      opacity var(--dur-med) var(--ease-out),
-      transform var(--dur-med) var(--ease-out);
-  }
-  .nav-links.active > * {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  .nav-links.active > :nth-child(1) {
-    transition-delay: 60ms;
-  }
-  .nav-links.active > :nth-child(2) {
-    transition-delay: 90ms;
-  }
-  .nav-links.active > :nth-child(3) {
-    transition-delay: 120ms;
-  }
-  .nav-links.active > :nth-child(4) {
-    transition-delay: 150ms;
-  }
-  .nav-links.active > :nth-child(5) {
-    transition-delay: 180ms;
-  }
-  .nav-links.active > :nth-child(6) {
-    transition-delay: 210ms;
-  }
-  .nav-links.active > :nth-child(7) {
-    transition-delay: 240ms;
-  }
-  .nav-links.active > :nth-child(8) {
-    transition-delay: 270ms;
-  }
-
-  /* Row style — 48px tap */
+  /* Nav link rows inside mobile drawer */
   .nav-links .nav-link,
   .nav-links .dropdown {
     display: flex;
     align-items: center;
     gap: 14px;
     min-height: var(--tap-opt);
-    padding: 14px 12px;
-    font-size: var(--fs-18) !important;
-    color: var(--ink) !important;
-    border-bottom: 1px solid var(--line);
+    padding: 12px 14px;
+    font-size: 1.05rem;
+    color: var(--ink, #e8e3d8);
+    border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
     width: 100%;
+    text-decoration: none;
   }
   .nav-links .nav-link svg,
   .nav-links .dropdown-btn svg {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
-    stroke: var(--dim);
+    stroke: var(--dim, #8891aa);
   }
   .nav-links .nav-link.act {
-    color: var(--signal) !important;
-  }
-  .nav-links .nav-link.act svg {
-    stroke: var(--signal);
+    color: var(--signal, #f2b84b) !important;
   }
 
-  /* Dropdown accordion */
+  /* Dropdown accordion in drawer */
+  .nav-links .dropdown {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+  }
   .nav-links .dropdown-btn {
     width: 100%;
     justify-content: space-between;
-    padding: 0;
-    font-size: var(--fs-18) !important;
+    padding: 12px 14px;
+    font-size: 1.05rem;
     min-height: var(--tap-opt);
+    color: var(--ink, #e8e3d8);
+    background: none;
+    border: none;
+    cursor: pointer;
   }
   .nav-links .dropdown-content {
     position: static !important;
@@ -542,94 +203,79 @@ p,
     opacity: 0;
     max-height: 0;
     overflow: hidden;
-    margin: 0 0 0 34px;
+    margin: 0 0 8px 24px;
     padding: 0 !important;
     visibility: hidden;
     pointer-events: none;
-    transition:
-      max-height var(--dur-med) var(--ease-out),
-      opacity var(--dur-fast) var(--ease-out),
-      visibility 0s linear var(--dur-med);
+    transition: max-height var(--dur-med) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
   }
   .nav-links .dropdown.active .dropdown-content {
     opacity: 1;
-    max-height: 420px;
-    padding-top: 8px !important;
+    max-height: 480px;
     visibility: visible;
     pointer-events: auto;
   }
   .nav-links .dropdown-content-inner {
     background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid var(--line) !important;
-    border-radius: var(--r-md) !important;
+    border: 1px solid var(--line, rgba(255, 255, 255, 0.08)) !important;
+    border-radius: 12px !important;
     padding: 6px !important;
-    box-shadow: none !important;
-  }
-  body.lm .nav-links .dropdown-content-inner {
-    background: rgba(0, 0, 0, 0.04) !important;
   }
   .nav-links .dropdown-content a {
-    font-size: var(--fs-16) !important;
-    padding: 12px 14px !important;
-    border-radius: 10px;
-    min-height: 44px;
+    font-size: 0.95rem !important;
+    padding: 10px 14px !important;
+    border-radius: 8px;
+    min-height: 40px;
+    color: var(--ink, #e8e3d8);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
-  /* Bottom actions inside drawer — pinned near bottom with safe area */
+  /* Drawer Bottom Controls */
   .nav-links > .hz-toggle {
-    margin-top: auto !important;
+    margin-top: 16px !important;
     align-self: center;
-    transform: scale(1.05);
   }
   .nav-links > .nav-login-btn,
   .nav-links > .nav-user-profile,
   .nav-links > .nav-dl-btn {
     width: 100%;
-    min-height: var(--tap-lg);
+    min-height: var(--tap-opt);
     justify-content: center;
-    font-size: var(--fs-16) !important;
-    border-radius: var(--r-md);
-    margin-top: 12px;
+    font-size: 1rem;
+    border-radius: 12px;
+    margin-top: 10px;
   }
 
-  /* Hide desktop download, show mobile */
   .desktop-dl {
     display: none !important;
   }
   .mobile-dl {
     display: flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    background: var(--signal);
-    color: #0a0500 !important;
-    font-weight: 800;
-    box-shadow: 0 8px 20px rgba(242, 184, 75, 0.22);
   }
-}
 
-/* — Bottom Thumb Bar — Appears only on mobile, thumb-reachable — */
-.col-bottom-bar {
-  display: none;
-}
-@media (max-width: 900px) {
+  /* ─────────────────────────────────────────────────────────────────
+     3. MOBILE FLOATING BOTTOM THUMB BAR
+     ───────────────────────────────────────────────────────────────── */
   .col-bottom-bar {
     display: flex;
     position: fixed;
     left: 50%;
     bottom: max(12px, env(safe-area-inset-bottom, 0px));
     transform: translateX(-50%);
-    width: min(calc(100vw - 20px), 420px);
-    background: var(--panel);
-    border: 1px solid var(--lineb);
+    width: min(calc(100vw - 24px), 420px);
+    background: var(--panel, rgba(17, 24, 39, 0.95));
+    border: 1px solid var(--lineb, rgba(255, 255, 255, 0.16));
     border-radius: var(--r-pill);
     padding: 6px;
     gap: 4px;
     z-index: 999;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(18px) saturate(1.2);
     -webkit-backdrop-filter: blur(18px) saturate(1.2);
     align-items: center;
@@ -642,18 +288,16 @@ p,
     align-items: center;
     justify-content: center;
     gap: 3px;
-    min-height: 48px;
-    padding: 6px 4px;
+    min-height: 46px;
+    padding: 4px;
     border-radius: var(--r-pill);
-    color: var(--dim);
-    font-size: 0.62rem;
+    color: var(--dim, #8891aa);
+    font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    transition:
-      background var(--dur-fast) var(--ease-out),
-      color var(--dur-fast) var(--ease-out);
     text-decoration: none;
+    transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
   }
   .col-bottom-bar a svg {
     width: 20px;
@@ -666,17 +310,16 @@ p,
   .col-bottom-bar a:active,
   .col-bottom-bar a:hover {
     background: rgba(242, 184, 75, 0.14);
-    color: var(--signal);
+    color: var(--signal, #f2b84b);
   }
   .col-bottom-bar a.act svg {
-    stroke: var(--signal);
+    stroke: var(--signal, #f2b84b);
   }
 
-  /* Add bottom padding to body so content not hidden behind bar */
+  /* Safe padding so bottom bar does not obscure page content */
   body {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
   }
-  /* Hide bottom bar when drawer open */
   body.nav-lock .col-bottom-bar {
     opacity: 0;
     pointer-events: none;
@@ -685,341 +328,88 @@ p,
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   5. HERO — Cinematic → Thumb-friendly
+   4. RESPONSIVE HERO & SECTION TUNING
    ───────────────────────────────────────────────────────────────── */
-.hero,
-.about-hero,
-.game-hero {
-  min-height: 100dvh;
-  min-height: 100svh;
-  /* Prevent iOS 100vh bug */
-  padding-top: calc(env(safe-area-inset-top, 0px) + 88px);
-  padding-bottom: clamp(24px, 6vw, 48px);
-}
-
-/* Hide heavy 3D on low-end / small / low-battery */
-@media (max-width: 640px), (max-height: 600px) and (orientation: landscape) {
-  #orrery,
-  #constellation,
-  #cosmos,
-  #bgCanvas,
-  #schoolBg,
-  #webgl-canvas {
-    display: none !important;
+@media (max-width: 768px) {
+  .hero,
+  .about-hero {
+    min-height: auto;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 72px);
+    padding-bottom: 36px;
   }
-  .hvig,
-  .hvigb {
-    /* Replace with static gradient */
-    background: radial-gradient(120% 80% at 50% 0%, rgba(242, 184, 75, 0.08) 0%, transparent 55%), linear-gradient(to bottom, var(--void) 0%, var(--void) 100%) !important;
+  .hero h1,
+  .about-hero h1 {
+    font-size: clamp(2rem, 8vw, 3.2rem) !important;
+    line-height: 1.05 !important;
   }
-}
-
-.hc,
-.ahc {
-  padding: clamp(24px, 6vw, 52px) var(--container-pad) clamp(32px, 8vw, 80px) !important;
-  contain: layout style;
-}
-
-/* Hero type — fluid but capped for readability */
-.hero h1,
-.about-hero h1,
-.game-hero h1 {
-  font-size: var(--fs-56) !important;
-  max-width: 13ch;
-  line-height: 0.96 !important;
-}
-.hlede,
-.sdesc {
-  font-size: var(--fs-18) !important;
-  line-height: 1.65 !important;
-  max-width: 42ch;
-}
-
-/* CTA — stack on narrow, side-by-side on wider */
-.hcta,
-.hero-cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: clamp(20px, 5vw, 36px);
-}
-.btn-p,
-.btn-g,
-.btn-download,
-.btn-demo {
-  min-height: var(--tap-opt);
-  padding: 14px 22px;
-  font-size: var(--fs-16);
-  font-weight: 700;
-  border-radius: var(--r-pill);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex: 1 1 auto;
-  min-width: min(160px, 100%);
-  transition:
-    transform var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-fast) var(--ease-out),
-    background var(--dur-fast) var(--ease-out);
-  touch-action: manipulation;
-}
-.btn-p:active,
-.btn-g:active,
-.btn-download:active {
-  transform: scale(0.97);
-}
-@media (max-width: 480px) {
+  .hlede,
+  .sdesc {
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+  }
   .hcta,
   .hero-cta {
+    display: flex;
     flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 24px;
   }
   .btn-p,
   .btn-g,
   .btn-download,
   .btn-demo {
     width: 100%;
+    min-height: 48px;
+    justify-content: center;
   }
-  .hero h1,
-  .about-hero h1 {
-    font-size: var(--fs-48) !important;
-  }
-}
-
-/* Scroll indicator — hide on short viewports */
-@media (max-height: 700px) {
   .sci,
   .scl,
   .hst {
     display: none !important;
   }
-}
 
-/* ─────────────────────────────────────────────────────────────────
-   6. CARDS & GRIDS — Fluid, tactile, no hover traps
-   ───────────────────────────────────────────────────────────────── */
-
-/* Base card — elevated, pressable */
-.pc,
-.tm,
-.vp-card,
-.mission-card,
-.feature-card,
-.snapshot-card,
-.stat,
-.mentor-card,
-.info-banner {
-  border-radius: var(--r-md) !important;
-  border: 1px solid var(--line) !important;
-  background: rgba(255, 255, 255, 0.035) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition:
-    transform var(--dur-med) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-med) var(--ease-out),
-    background var(--dur-fast) var(--ease-out);
-  will-change: transform;
-  contain: layout style paint;
-}
-
-/* Remove hover lift on touch, use active press */
-@media (pointer: coarse) {
-  .pc:hover,
-  .tm:hover,
-  .vp-card:hover,
-  .mission-card:hover {
-    transform: none !important;
-    box-shadow: none !important;
+  /* Section padding */
+  .section,
+  .ps,
+  .vp-section {
+    padding-block: 48px !important;
   }
-  .pc:active,
-  .tm:active,
-  .vp-card:active {
-    transform: scale(0.98) !important;
-    border-color: var(--lineb) !important;
-  }
-}
 
-/* Card content — fluid padding */
-.pc {
-  padding: clamp(18px, 4vw, 32px) !important;
-}
-.pb {
-  padding: clamp(16px, 3.5vw, 26px) clamp(14px, 3vw, 28px) 12px !important;
-}
-.pf {
-  padding: 0 clamp(14px, 3vw, 28px) clamp(16px, 3.5vw, 26px) !important;
-}
-.vp-card {
-  padding: clamp(20px, 4vw, 40px) clamp(16px, 3.5vw, 30px) !important;
-}
-.tm {
-  padding: clamp(20px, 4.5vw, 44px) clamp(16px, 3.5vw, 32px) clamp(18px, 4vw, 36px) !important;
-}
-
-/* Media — maintain aspect, not fixed height jumps */
-.pv {
-  height: auto !important;
-  aspect-ratio: 16 / 10;
-  max-height: 300px;
-}
-.pc.feat .pv {
-  aspect-ratio: 16 / 9;
-  max-height: 360px;
-}
-.pv img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Grids progressive */
-@media (min-width: 600px) {
-  .pgrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .team-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .vp-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .mission-grid {
-    grid-template-columns: repeat(2, 1fr);
+  /* Cards & Grids on Mobile */
+  .pgrid,
+  .team-grid,
+  .vp-grid,
+  .mission-grid,
+  .file-grid,
+  .features-grid,
+  .gallery-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
   }
   .stats-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
   }
-  .file-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .features-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (min-width: 900px) {
-  .pgrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .pgrid .pc.feat {
-    grid-column: span 2;
-  }
-  .pgrid .pc.feat:last-child:nth-child(odd) {
-    grid-column: span 3;
-  }
-  .team-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .vp-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .file-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (min-width: 1200px) {
-  .pgrid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-  .pgrid .pc.feat {
-    grid-column: span 3;
-  }
-  .pgrid .pc:not(.feat) {
-    grid-column: span 2;
-  }
-}
 
-/* 2K: allow more breathing, larger cards */
-@media (min-width: 1440px) {
-  .ps,
-  .section,
-  .vp-section {
-    max-width: 1440px;
+  /* Footer on mobile */
+  .sf {
+    padding: 32px 20px max(24px, env(safe-area-inset-bottom, 0px)) !important;
   }
-  .pc,
-  .tm,
-  .vp-card {
-    border-radius: var(--r-lg) !important;
-  }
-}
-@media (min-width: 1920px) {
-  :root {
-    --container-max: 1520px;
-  }
-  html {
-    font-size: 19px;
-  }
-}
-@media (min-width: 2560px) {
-  :root {
-    --container-max: 1680px;
-  }
-  html {
-    font-size: 20px;
-  }
-}
-
-/* Tags — wrap, not overflow */
-.ptags,
-.tm-tags,
-.tech-tags {
-  gap: 6px !important;
-  flex-wrap: wrap;
-}
-.tag,
-.tech-tag {
-  font-size: var(--fs-10) !important;
-  padding: 6px 10px !important;
-  border-radius: 8px !important;
-  white-space: nowrap;
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   7. BUTTONS & CONTROLS — Thumb-first
-   ───────────────────────────────────────────────────────────────── */
-button,
-.btn,
-.nav-dl-btn,
-.nav-login-btn,
-.ms,
-.msk,
-.gbtn {
-  min-height: var(--tap-min);
-  min-width: var(--tap-min);
-}
-
-/* Download Hub cards — on mobile, stack buttons */
-@media (max-width: 600px) {
-  .file-grid .pc div[style*='display: flex'] {
+  .fi {
     flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
   }
-  .card-checkbox-wrapper {
-    padding: 14px 12px !important;
-  }
-  .card-checkbox-wrapper label {
-    font-size: var(--fs-14) !important;
-    text-align: center;
+  .fl {
+    gap: 12px 18px !important;
+    flex-wrap: wrap;
   }
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   8. FORMS & MODALS — Full-screen on mobile, centered on 2K
+   5. MOBILE MODALS & BOTTOM SHEET (<= 480px)
    ───────────────────────────────────────────────────────────────── */
-.mo {
-  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
-}
-.md {
-  width: min(calc(100vw - 32px), 440px) !important;
-  max-height: min(88dvh, 720px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  border-radius: var(--r-lg) !important;
-  margin: auto;
-}
 @media (max-width: 480px) {
   .mo {
     align-items: flex-end !important;
@@ -1028,463 +418,38 @@ button,
   .md {
     width: 100% !important;
     max-width: 100% !important;
-    border-radius: var(--r-lg) var(--r-lg) 0 0 !important;
-    max-height: 92dvh;
-    transform: translateY(100%) !important;
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 90dvh;
+    transform: translateY(100%);
+    transition: transform 0.3s var(--ease-out);
   }
   .mo.open .md {
     transform: translateY(0) !important;
   }
 }
-.mhd {
-  padding: clamp(18px, 4vw, 30px) !important;
-}
-.mbd {
-  padding: clamp(16px, 4vw, 30px) !important;
-}
-.mi {
-  min-height: var(--tap-opt);
-  font-size: 16px !important; /* prevent zoom */
-  padding: 14px 16px !important;
-  border-radius: 12px !important;
-}
-
-/* Toast — bottom, safe area */
-.toast {
-  left: 50% !important;
-  right: auto !important;
-  bottom: max(16px, env(safe-area-inset-bottom, 0px)) !important;
-  transform: translateX(-50%) translateY(12px) !important;
-  max-width: min(calc(100vw - 24px), 420px);
-  text-align: center;
-  border-radius: var(--r-md) !important;
-  font-size: var(--fs-14) !important;
-  z-index: 4000 !important;
-}
-.toast.show {
-  transform: translateX(-50%) translateY(0) !important;
-}
-@media (min-width: 768px) {
-  .toast {
-    left: auto !important;
-    right: 16px !important;
-    transform: translateY(12px) !important;
-  }
-  .toast.show {
-    transform: translateY(0) !important;
-  }
-}
 
 /* ─────────────────────────────────────────────────────────────────
-   9. FOOTER — Stack, breathe
+   6. 3D & CANVAS GUARDS ON MOBILE
    ───────────────────────────────────────────────────────────────── */
-.sf {
-  padding: clamp(28px, 6vw, 48px) var(--container-pad) max(24px, env(safe-area-inset-bottom, 0px)) !important;
-}
-.fi {
-  gap: clamp(14px, 3vw, 22px) !important;
-}
-@media (max-width: 768px) {
-  .fi {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    text-align: left;
-  }
-  .fl {
-    gap: 14px 18px !important;
-  }
-  .fl a {
-    min-height: 32px;
-    display: inline-flex;
-    align-items: center;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   10. UTILITIES — Performance, Accessibility, Safe Area
-   ───────────────────────────────────────────────────────────────── */
-
-/* Content visibility for long lists (performance on low-end) */
-.pgrid,
-.team-grid,
-.vp-grid {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 800px;
-}
-
-/* Reduce motion for users who prefer it + low-end devices */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Low-end 720p budget phones: reduce blur & shadows */
-@media (max-width: 390px) {
-  .top-nav,
-  .pc,
-  .tm,
-  .vp-card {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-  .pc,
-  .tm,
-  .vp-card {
-    box-shadow: var(--shadow-sm) !important;
-  }
-}
-
-/* High-DPI crisp borders (2x, 3x) */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .pc,
-  .tm,
-  .vp-card,
-  .top-nav,
-  .col-bottom-bar {
-    border-width: 0.5px;
-  }
-}
-@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
-  :root {
-    --line: rgba(255, 255, 255, 0.1);
-    --lineb: rgba(255, 255, 255, 0.18);
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   11. RESOLUTION-TUNED OVERRIDES — 720p → 2K
-   ───────────────────────────────────────────────────────────────── */
-
-/* 720p — 320-374 (small budget like Galaxy A03, Redmi) */
-@media (min-width: 320px) and (max-width: 374px) {
-  :root {
-    --container-pad: 14px;
-  }
-  .hero h1,
-  .about-hero h1 {
-    font-size: clamp(1.9rem, 8vw, 2.6rem) !important;
-  }
-  .pname {
-    font-size: 1.25rem !important;
-  }
-  .pc {
-    padding: 16px !important;
-  }
-  .stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .stat {
-    padding: 18px 12px !important;
-  }
-  .stat-num {
-    font-size: 1.8rem !important;
-  }
-}
-
-/* 720p Standard — 375-413 (iPhone SE, Pixel 5, most 720p logical) */
-@media (min-width: 375px) and (max-width: 413px) {
-  :root {
-    --container-pad: 16px;
-  }
-  .hero h1,
-  .about-hero h1 {
-    font-size: var(--fs-48) !important;
-  }
-}
-
-/* 1080p — 414-479 (iPhone 14/15, Pixel 7, S23 logical 412) */
-@media (min-width: 414px) and (max-width: 479px) {
-  :root {
-    --container-pad: 18px;
-  }
-  .hero h1 {
-    font-size: clamp(2.4rem, 8vw, 3.2rem) !important;
-  }
-  .pgrid {
-    gap: 16px;
-  }
-}
-
-/* 1080p+ / Phablet — 480-599 (larger phones,Fold inner preview) */
-@media (min-width: 480px) and (max-width: 599px) {
-  :root {
-    --container-pad: 20px;
-  }
-  .hero h1 {
-    font-size: clamp(2.6rem, 7vw, 3.6rem) !important;
-  }
-  .pgrid,
-  .team-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Tablet-ish 2K — 600-767 (iPad Mini, 2K tablets portrait) */
-@media (min-width: 600px) and (max-width: 767px) {
-  .hero h1 {
-    font-size: clamp(3rem, 6vw, 4rem) !important;
-  }
-  .top-nav {
-    border-radius: 18px !important;
-  }
-}
-
-/* 768-900 — Small laptop / large tablet */
-@media (min-width: 768px) and (max-width: 900px) {
-  .top-nav {
-    inset-inline: 12px;
-    padding: 10px 18px;
-  }
-  .hero h1 {
-    font-size: clamp(3.2rem, 5.5vw, 4.6rem) !important;
-  }
-}
-
-/* 2K — 1440-1919 (QHD displays, large tablets landscape) */
-@media (min-width: 1440px) and (max-width: 1919px) {
-  html {
-    font-size: 17.5px;
-  }
-  .hero h1 {
-    font-size: clamp(4rem, 4.5vw, 6.4rem) !important;
-  }
-  .pc .pv {
-    aspect-ratio: 16/10;
-  }
-}
-
-/* 2K+ — 1920-2560 (Desktop 2K, but also mobile 2K landscape) */
-@media (min-width: 1920px) {
-  html {
-    font-size: 18px;
-  }
-  .top-nav {
-    max-width: 1600px;
-  }
-  .hero h1 {
-    font-size: 6.2rem !important;
-  }
-  .section,
-  .ps,
-  .vp-section {
-    padding-block: 140px;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   12. ORIENTATION & FOLDABLE
-   ───────────────────────────────────────────────────────────────── */
-@media (orientation: landscape) and (max-height: 600px) {
-  .hero,
-  .about-hero {
-    min-height: 100svh;
-    padding-block: 72px 24px;
-  }
-  .hero h1,
-  .about-hero h1 {
-    font-size: clamp(1.8rem, 4.5vw, 2.8rem) !important;
-    max-width: 18ch;
-  }
-  .hlede {
-    display: none;
-  }
-  .hcta {
-    margin-top: 12px;
-  }
-  .sci,
-  .hst {
-    display: none !important;
-  }
-  .col-bottom-bar {
-    bottom: 8px;
-    padding: 4px;
-  }
-  .col-bottom-bar a {
-    min-height: 40px;
-    font-size: 0.58rem;
-  }
-}
-
-/* Foldable — when width > 600 and aspect near square */
-@media (min-width: 600px) and (max-width: 900px) and (min-height: 600px) {
-  .pgrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   13. ACCESSIBILITY & PERFORMANCE POLISH
-   ───────────────────────────────────────────────────────────────── */
-
-/* Larger tap for a11y */
-@media (pointer: coarse) {
-  a,
-  button,
-  .nav-link,
-  .dropdown-btn,
-  .pc {
-    min-height: 44px;
-  }
-}
-
-/* Ensure images don't cause CLS */
-img {
-  max-width: 100%;
-  height: auto;
-  /* Reserve space */
-  content-visibility: auto;
-}
-img[width][height] {
-  aspect-ratio: attr(width) / attr(height);
-}
-
-/* Loader — respect safe area */
-.loader {
-  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
-}
-
-/* Hide custom cursor on touch (already) */
-@media (pointer: coarse) {
-  .cd,
-  .cr {
+@media (max-width: 640px) {
+  #orrery,
+  #constellation,
+  #cosmos,
+  #bgCanvas,
+  #schoolBg,
+  #webgl-canvas {
     display: none !important;
   }
 }
 
-/* Scrollbar — thin on mobile */
+/* Thin scrollbars on touch devices */
 @media (max-width: 900px) {
   ::-webkit-scrollbar {
     width: 4px;
     height: 4px;
   }
   ::-webkit-scrollbar-thumb {
-    border-width: 1px;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   14. LEGACY PAGE SHIMS — Ensure solar/ati/etc inherit mobile sensibly
-   ───────────────────────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .game-hero {
-    padding: 120px 16px 40px !important;
-  }
-  .game-hero h1 {
-    font-size: var(--fs-40) !important;
-    letter-spacing: -1px !important;
-  }
-  .game-hero p {
-    font-size: var(--fs-16) !important;
-  }
-  .features-grid,
-  .gallery-grid {
-    width: 94% !important;
-    margin: 40px auto 40px !important;
-    gap: 16px !important;
-  }
-  .feature-card {
-    padding: 24px 18px !important;
-  }
-  .engine-container {
-    width: 94% !important;
-    height: 62dvh !important;
-    min-height: 420px !important;
-    margin-bottom: 40px !important;
-    border-radius: var(--r-lg) !important;
-  }
-  .gesture-grid {
-    width: 100% !important;
-    gap: 10px !important;
-  }
-  .gesture-card {
-    padding: 10px 14px !important;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   15. PRINT & PWA STANDALONE — Notch & status bar
-   ───────────────────────────────────────────────────────────────── */
-@media (display-mode: standalone) {
-  .top-nav {
-    top: max(12px, env(safe-area-inset-top, 0px));
-  }
-  body {
-    /* PWA standalone often has no browser chrome — extend background */
-    background: var(--void);
-  }
-}
-
-@media print {
-  .top-nav,
-  .col-bottom-bar,
-  .mmb,
-  #orrery,
-  #constellation,
-  .loader,
-  .toast,
-  .mo {
-    display: none !important;
-  }
-  body {
-    padding: 0 !important;
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   16. UTIL: Prevent horizontal scroll from long words/code
-   ───────────────────────────────────────────────────────────────── */
-p,
-li,
-span,
-a,
-h1,
-h2,
-h3,
-h4 {
-  overflow-wrap: break-word;
-  word-break: break-word;
-}
-pre,
-code {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  max-width: 100%;
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   17. FIN — Micro-interactions
-   ───────────────────────────────────────────────────────────────── */
-@media (prefers-reduced-motion: no-preference) {
-  .pc,
-  .tm,
-  .vp-card {
-    /* Subtle entrance when visible */
-    animation: card-in 0.6s var(--ease-out) both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 22%;
-  }
-  @keyframes card-in {
-    from {
-      opacity: 0;
-      transform: translateY(14px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  /* Disable on low-end */
-  @media (max-width: 390px) {
-    .pc,
-    .tm,
-    .vp-card {
-      animation: none;
-    }
+    background: var(--lineb, rgba(255, 255, 255, 0.16));
+    border-radius: 4px;
   }
 }
