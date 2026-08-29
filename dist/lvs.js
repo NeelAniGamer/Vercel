@@ -1,3 +1,8 @@
+// Legacy Academy level data + UI layer.
+// NOTE: Scoped inside an IIFE on purpose — Cyberpunk/Traffic.html loads this file
+// but defines its own inline LVS/BADGES/ui. Exposing globals here would cause
+// "Identifier has already been declared" errors and crash that page.
+;(function () {
 const LVS = [
   {
     "id": 1,
@@ -15,7 +20,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 119, Motor Vehicles Act 1988",
-      "fine": "â‚¹500",
+      "fine": "₹500",
       "off": "Jumping automated signals"
     },
     "theory": "Automated signal synchronization patterns direct city flow constraints efficiently.",
@@ -34,9 +39,9 @@ const LVS = [
         {
           "q": "What is the fine for running a red light?",
           "o": [
-            "â‚¹100",
-            "â‚¹500",
-            "â‚¹2,000"
+            "₹100",
+            "₹500",
+            "₹2,000"
           ],
           "a": 1
         },
@@ -63,9 +68,9 @@ const LVS = [
         {
           "q": "What is the fine for running a red light?",
           "o": [
-            "â‚¹100",
-            "â‚¹500",
-            "â‚¹2,000"
+            "₹100",
+            "₹500",
+            "₹2,000"
           ],
           "a": 1
         },
@@ -92,9 +97,9 @@ const LVS = [
         {
           "q": "What is the fine for running a red light?",
           "o": [
-            "â‚¹100",
-            "â‚¹500",
-            "â‚¹2,000"
+            "₹100",
+            "₹500",
+            "₹2,000"
           ],
           "a": 1
         },
@@ -129,7 +134,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 140, Motor Vehicles Act 1988",
-      "fine": "â‚¹100",
+      "fine": "₹100",
       "off": "Failure to yield at crosswalk markings"
     },
     "theory": "Pedestrian safety grids reduce vehicle conflict metrics inside highly dense urban zones.",
@@ -176,9 +181,9 @@ const LVS = [
   },
   {
     "id": 3,
-    "icon": "â›‘ï¸",
+    "icon": "🪖",
     "name": "Helmet Security",
-    "v": "ðŸï¸ Two-Wheeler",
+    "v": "🛵 Two-Wheeler",
     "col": "#f39c12",
     "gr": "linear-gradient(135deg,#d68910,#f39c12)",
     "tg": "Protective Safety Gear",
@@ -189,7 +194,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 194D, Motor Vehicles Act 1988",
-      "fine": "â‚¹1,000",
+      "fine": "₹1,000",
       "off": "Operating two-wheeler without protective headgear"
     },
     "theory": "Fastened safety headgear mitigates impact severity metrics significantly.",
@@ -261,7 +266,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 194B, Motor Vehicles Act 1988",
-      "fine": "â‚¹1,000",
+      "fine": "₹1,000",
       "off": "Driving without wearing a seat belt"
     },
     "theory": "Restraint systems prevent structural collision trajectory deviations during deceleration events.",
@@ -321,7 +326,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 112, Motor Vehicles Act 1988",
-      "fine": "â‚¹2,000",
+      "fine": "₹2,000",
       "off": "Exceeding speed limit near schools"
     },
     "theory": "School speed zones protect variable pedestrian trajectories from collision energy transfers.",
@@ -381,7 +386,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 131, Motor Vehicles Act 1988",
-      "fine": "â‚¹1,000",
+      "fine": "₹1,000",
       "off": "Bypassing active railway crossing safety barriers"
     },
     "theory": "Heavy rail rolling stock components require extended deceleration paths; you must stop completely.",
@@ -441,7 +446,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 184, Motor Vehicles Act 1988",
-      "fine": "â‚¹1,000",
+      "fine": "₹1,000",
       "off": "Operating motor vehicle while using handheld communication arrays"
     },
     "theory": "Attentional load shifting to mobile devices degrades real-time visual tracking reaction matrices.",
@@ -501,7 +506,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 194E, Motor Vehicles Act 1988",
-      "fine": "â‚¹10,000",
+      "fine": "₹10,000",
       "off": "Blocking an ambulance or fire truck"
     },
     "theory": "Unobstructed transport vectors significantly minimize destination arrival time variables for trauma units.",
@@ -511,9 +516,9 @@ const LVS = [
         {
           "q": "What is the regulatory penalty for blocking ambulances and fire trucks?",
           "o": [
-            "â‚¹500",
-            "â‚¹2,000",
-            "An official e-challan of â‚¹10,000"
+            "₹500",
+            "₹2,000",
+            "An official e-challan of ₹10,000"
           ],
           "a": 2
         }
@@ -522,9 +527,9 @@ const LVS = [
         {
           "q": "What is the regulatory penalty for blocking ambulances and fire trucks?",
           "o": [
-            "â‚¹500",
-            "â‚¹2,000",
-            "An official e-challan of â‚¹10,000"
+            "₹500",
+            "₹2,000",
+            "An official e-challan of ₹10,000"
           ],
           "a": 2
         }
@@ -533,9 +538,9 @@ const LVS = [
         {
           "q": "What is the regulatory penalty for blocking ambulances and fire trucks?",
           "o": [
-            "â‚¹500",
-            "â‚¹2,000",
-            "An official e-challan of â‚¹10,000"
+            "₹500",
+            "₹2,000",
+            "An official e-challan of ₹10,000"
           ],
           "a": 2
         }
@@ -561,7 +566,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 184, Motor Vehicles Act 1988",
-      "fine": "â‚¹1,500",
+      "fine": "₹1,500",
       "off": "Reckless operation under extreme atmospheric visibility constraints"
     },
     "theory": "Fluid layer buildup disrupts physical contact patches between tire threads and asphalt surfaces.",
@@ -681,7 +686,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 190(2), Motor Vehicles Act 1988",
-      "fine": "â‚¹2,000",
+      "fine": "₹2,000",
       "off": "Honking in a no-honk zone"
     },
     "theory": "High decibel emissions elevate physiological stress profiles within patient recovery spaces.",
@@ -741,7 +746,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 128, Motor Vehicles Act 1988",
-      "fine": "â‚¹1,000",
+      "fine": "₹1,000",
       "off": "Triple riding or exceeding payload index on two-wheelers"
     },
     "theory": "Excess mass distributions alter the center of gravity coordinates, causing rolling stability failures.",
@@ -813,7 +818,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 185, Motor Vehicles Act 1988",
-      "fine": "â‚¹10,000",
+      "fine": "₹10,000",
       "off": "Driving under influence of alcohol or drugs"
     },
     "theory": "Chemical tracking shows neural processing speed dropping by 30%, which extends stopping distance rules.",
@@ -873,7 +878,7 @@ const LVS = [
     ],
     "law": {
       "sec": "Section 112, Motor Vehicles Act 1988",
-      "fine": "â‚¹2,000",
+      "fine": "₹2,000",
       "off": "Breaking speed limits on highways"
     },
     "theory": "Velocity boundaries avoid traffic accumulation waves and catastrophic impact energy profiles.",
@@ -1032,8 +1037,8 @@ const LVS = [
     },
 
       cur: null, qst: null, cq: [], cbusy: false, _ccb: null,
-      adminUnlock() { LVS.forEach(l => { if (!S.comp[l.id]) S.comp[l.id] = { score: 500, time: Date.now() } }); BADGES.forEach(b => { if (!S.badges.includes(b.id)) S.badges.push(b.id) }); S.total += 7500; save(); toast('ðŸ”“ Developer Unlock Triggered!', '#00c851'); this.showLevels(); },
-      hardReset() { if (confirm('Reset all progress?')) { S.comp = {}; S.badges = []; S.total = 0; save(); toast('âš ï¸ Progress Reset!', '#ff3b30'); this.showStart(); } },
+      adminUnlock() { LVS.forEach(l => { if (!S.comp[l.id]) S.comp[l.id] = { score: 500, time: Date.now() } }); BADGES.forEach(b => { if (!S.badges.includes(b.id)) S.badges.push(b.id) }); S.total += 7500; save(); toast('🔓 Developer Unlock Triggered!', '#00c851'); this.showLevels(); },
+      hardReset() { if (confirm('Reset all progress?')) { S.comp = {}; S.badges = []; S.total = 0; save(); toast('⚠️ï¸ Progress Reset!', '#ff3b30'); this.showStart(); } },
       show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); if (id) document.getElementById(id).classList.add('active'); },
       showStart() { this.show('ss'); this._rain(); if (!S.name || S.name === 'Traffic Hero') { setTimeout(() => this.showProfile(), 1000); } },
       showNameDlg() { document.getElementById('name-dlg').classList.add('on'); setTimeout(() => { const i = document.getElementById('name-input'); if (i) i.focus(); }, 200); },
@@ -1061,8 +1066,8 @@ const LVS = [
       showLevels() { this.show('screen-levels'); this._bldLvs(); },
       _bldLvs() {
         const body = document.getElementById('lvbody'); body.innerHTML = '';
-        const done = Object.keys(S.comp).length; document.getElementById('pchip').textContent = done + '/15 âœ…';
-        const secs = [{ t: 'ðŸ”° Beginner Modules', ids: [1, 2, 3, 4] }, { t: 'ðŸ”° Intermediate Corridors', ids: [5, 6, 7, 8, 9] }, { t: 'ðŸ”° Advanced Systems', ids: [10, 11, 12, 13] }, { t: 'ðŸŽ“ Expert Gauntlets', ids: [14, 15] }];
+        const done = Object.keys(S.comp).length; document.getElementById('pchip').textContent = done + '/15 ✅';
+        const secs = [{ t: '🔰 Beginner Modules', ids: [1, 2, 3, 4] }, { t: '🔰 Intermediate Corridors', ids: [5, 6, 7, 8, 9] }, { t: '🔰 Advanced Systems', ids: [10, 11, 12, 13] }, { t: '🎓 Expert Gauntlets', ids: [14, 15] }];
         secs.forEach(sec => {
           const sh = document.createElement('div'); sh.className = 'sec-hdr'; sh.textContent = sec.t; body.appendChild(sh);
           const tr = document.createElement('div'); tr.className = 'lv-track';
@@ -1071,7 +1076,7 @@ const LVS = [
             const un = idx === 0 || S.comp[LVS[idx - 1].id]; const cm = !!S.comp[lv.id]; const ip = !cm && idx > 0 && S.comp[LVS[idx - 1].id];
             const c = document.createElement('div'); c.className = 'lcard' + (cm ? ' done' : '') + (un ? '' : ' lk');
             c.innerHTML = `<div class="lbar" style="background:${lv.gr}"></div>
-        <div class="lct"><div class="lico" style="background:${lv.gr}">${un ? lv.icon : 'ðŸ”’'}</div><div class="lst ${cm ? 'sdk' : ip ? 'sip' : 'sns'}">${cm ? 'âœ… Done' : ip ? 'â–¶ï¸ Start' : 'ðŸ”’ Locked'}</div></div>
+        <div class="lct"><div class="lico" style="background:${lv.gr}">${un ? lv.icon : '🔒'}</div><div class="lst ${cm ? 'sdk' : ip ? 'sip' : 'sns'}">${cm ? '✅ Done' : ip ? '▶️ Start' : '🔒 Locked'}</div></div>
         <div class="lnum">Module ${lv.id}</div><div class="lnm">${lv.name}</div><div class="ltg">${lv.tg}</div>
         <div class="lmt"><span class="lvc">${lv.v}</span><span class="lfi">${lv.law.fine}</span></div>`;
             if (un) { c.onclick = () => this.showBriefing(lv.id); }
@@ -1083,9 +1088,27 @@ const LVS = [
         const lv = LVS.find(l => l.id === lid); this.cur = lv;
         document.getElementById('blt').textContent = 'Level ' + lv.id; document.getElementById('bvh').textContent = lv.v;
         const items = [
-          { id: 'intro', icon: 'ðŸ“–', label: 'Introduction', sub: 'Course overview' },
-          ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: 'âš–ï¸', label: 'Rule ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
-          { id: 'law', icon: 'ðŸ›ï¸', label: 'Framework', sub: 'Penal provisions' },
-          { id: 'theory', icon: 'ðŸ“Š', label: 'Concepts', sub: 'Analytical metrics' },
-          { id: 'practical', icon: 'ðŸ“–', label: 'Execution', sub: 'Simulation profile' }
+          { id: 'intro', icon: '📖', label: 'Introduction', sub: 'Course overview' },
+          ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Rule ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
+          { id: 'law', icon: '🛡️', label: 'Framework', sub: 'Penal provisions' },
+          { id: 'theory', icon: '📊', label: 'Concepts', sub: 'Analytical metrics' },
+          { id: 'practical', icon: '📖', label: 'Execution', sub: 'Simulation profile' }
         ];
+        this._sylItems = items; this._sylViewed = new Set(); this._sylLv = lv;
+        const list = document.getElementById('br-syllabus');
+        if (list) {
+          list.innerHTML = '';
+          items.forEach((it) => {
+            const el = document.createElement('div');
+            el.className = 'syl-item'; el.id = 'syl-' + it.id;
+            el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`;
+            el.onclick = () => this.showBriefing(lv.id);
+            list.appendChild(el);
+          });
+        }
+        this.show('screen-briefing');
+      },
+      _selSyl(id) { if (this._sylItems) { const it = this._sylItems.find(i => i.id === id); if (it && !this._sylViewed.has(id)) { this._sylViewed.add(id); const sylEl = document.getElementById('syl-' + id); if (sylEl) sylEl.classList.add('syl-done'); } } }
+    };
+    window.__lvsLegacy = { LVS, BADGES, ui, sfx, save, toast, mob };
+  })();

@@ -1,19 +1,34 @@
 let _tt = null
-function toast(msg, col = '#ffd54a') {
+function toast(msg, col = '#ffd54a', duration = 3000) {
   const t = document.getElementById('toast'),
     ti = document.getElementById('ti')
+  if (!t || !ti) return
   ti.textContent = msg
-  ti.style.background = col
+  t.style.borderColor = col
+  t.style.boxShadow = `0 12px 36px rgba(0, 0, 0, 0.85), 0 0 24px ${col}55`
   t.classList.add('on')
   clearTimeout(_tt)
-  _tt = setTimeout(() => t.classList.remove('on'), 2500)
+  _tt = setTimeout(() => t.classList.remove('on'), duration)
 }
 const mob = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
-// 🚦 SOUND FX 🚦 (Phase 7.5: audio categories)
+window.save = async function () {
+  try {
+    const sObj = window.S || (typeof S !== 'undefined' ? S : null)
+    if (sObj) {
+      localStorage.setItem('mth4', JSON.stringify(sObj))
+      localStorage.setItem('traffic_save', JSON.stringify(sObj))
+      if (window.supabaseClient && window.colUser) {
+        window.supabaseClient.auth.updateUser({ data: { progress: sObj } }).catch(() => {})
+      }
+    }
+  } catch (e) {}
+}
+
+
 window.sfx = Object.assign(window.sfx || {}, {
   _c: null,
-  vol: { sfx: 1, ui: 1, env: 1 }, // volume multipliers: car sounds, UI sounds, environmental
+  vol: { sfx: 1, ui: 1, env: 1 },
   _cat: { horn: 'sfx', brake: 'sfx', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
   init() {
     if (this._c) return
@@ -46,13 +61,69 @@ window.sfx = Object.assign(window.sfx || {}, {
       o.frequency.setValueAtTime(pp.f, this._c.currentTime)
       g.gain.setValueAtTime(pp.v * catVol, this._c.currentTime)
       g.gain.exponentialRampToValueAtTime(0.001, this._c.currentTime + pp.d)
-      o.start()
-      o.stop(this._c.currentTime + pp.d)
-    } catch (e) {}
-  }
+       o.start()
+       o.stop(this._c.currentTime + pp.d)
+     } catch (e) {}
+   },
+   // Ambient sound generators (procedural)
+   _ambNodes: null,
+   startAmbient(type) {
+     this.stopAmbient()
+     if (!this._c || this.vol.env <= 0) return
+     try {
+       const ctx = this._c
+       this._ambNodes = {}
+       const masterGain = ctx.createGain()
+       masterGain.gain.value = 0.06 * this.vol.env
+       masterGain.connect(ctx.destination)
+       this._ambNodes.master = masterGain
+       if (type === 'rain' || type === 'urban' || type === 'highway' || type === 'siren' || type === 'school') {
+         const bufferSize = ctx.sampleRate * 2
+         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+         const data = buffer.getChannelData(0)
+         for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3
+         const noise = ctx.createBufferSource()
+         noise.buffer = buffer; noise.loop = true
+         const filter = ctx.createBiquadFilter()
+         filter.type = 'lowpass'; filter.frequency.value = type === 'rain' ? 3000 : 1500
+         noise.connect(filter); filter.connect(masterGain)
+         noise.start()
+         this._ambNodes.noise = noise; this._ambNodes.filter = filter
+       }
+       if (type === 'night') {
+         const osc = ctx.createOscillator()
+         osc.type = 'sine'; osc.frequency.value = 4200
+         const gain = ctx.createGain(); gain.gain.value = 0.015
+         const lfo = ctx.createOscillator(); lfo.frequency.value = 8
+         const lfoGain = ctx.createGain(); lfoGain.gain.value = 0.01
+         lfo.connect(lfoGain); lfoGain.connect(gain.gain)
+         osc.connect(gain); gain.connect(masterGain)
+         osc.start(); lfo.start()
+         this._ambNodes.osc = osc; this._ambNodes.lfo = lfo
+       }
+       if (type === 'festival') {
+         const osc = ctx.createOscillator()
+         osc.type = 'sine'; osc.frequency.value = 80
+         const gain = ctx.createGain(); gain.gain.value = 0.025
+         const lfo = ctx.createOscillator(); lfo.frequency.value = 2
+         const lfoGain = ctx.createGain(); lfoGain.gain.value = 0.02
+         lfo.connect(lfoGain); lfoGain.connect(gain.gain)
+         osc.connect(gain); gain.connect(masterGain)
+         osc.start(); lfo.start()
+         this._ambNodes.osc = osc; this._ambNodes.lfo = lfo
+       }
+     } catch (e) {}
+   },
+   stopAmbient() {
+     if (!this._ambNodes) return
+     try {
+       Object.values(this._ambNodes).forEach(n => { if (n.stop) n.stop(); if (n.disconnect) n.disconnect() })
+     } catch (e) {}
+     this._ambNodes = null
+   }
 });
 
-// 🚦 UI INTERACTION LOGIC LAYER 🚦
+
 const CORRECTIVE_QUIZ = {
   'NO_HONKING': { q: 'Corrective Check: What is the rule for honking in silence zones?', o: ['It is strictly prohibited and carries a fine.', 'Honking is allowed once', 'Only honk if traffic is slow', 'Honk to warn pedestrians'], a: 0 },
   'MOBILE_USE': { q: 'Corrective Check: Why is phone use prohibited while driving?', o: ['It causes distraction and significantly increases accident risk.', 'It is only banned on highways', 'It is allowed if using a speaker', 'It only affects the vehicle speed'], a: 0 },
@@ -63,7 +134,7 @@ const CORRECTIVE_QUIZ = {
   'RED_LIGHT_VIOLATION': { q: 'Corrective Check: What is the mandatory action when a signal turns red?', o: ['Stop completely before the stop line', 'Slow down and proceed cautiously', 'Stop only if cars are coming', 'Flash headlights and pass quickly'], a: 0 }
 };
 
-window.ui = Object.assign(window.ui || {}, {
+var ui = window.ui = Object.assign(window.ui || {}, {
   cur: null,
   _sylLv: null,
   cq: [],
@@ -86,7 +157,7 @@ window.ui = Object.assign(window.ui || {}, {
   },
   async hardReset() {
     if (confirm('Reset all progress?')) {
-      S = { comp: {}, badges: [], total: 0, name: null, wallet: 50000 }
+      S = { comp: {}, badges: [], total: 0, name: null, wallet: 50000, civicScore: 0 }
       try {
         localStorage.removeItem('mth4')
       } catch (e) {}
@@ -107,25 +178,40 @@ window.ui = Object.assign(window.ui || {}, {
     }
   },
   init() {
-    // Ensure S is always initialized before any other code runs
+
+
+
+
+
+
     if (typeof S === 'undefined') {
+      let s = null
       try {
         const raw = localStorage.getItem('mth4')
-        if (raw) S = JSON.parse(raw)
+        if (raw) s = JSON.parse(raw)
       } catch (e) {}
-      if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null }
-      if (!S.comp) S.comp = {}
-      if (!S.badges) S.badges = []
-      if (!S.studentId) {
-        S.studentId = window.colUser?.uid || 'STU-' + Math.floor(100000 + Math.random() * 900000)
-        try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
+      if (!s || typeof s !== 'object') s = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null, civicScore: 0 }
+      if (!s.comp) s.comp = {}
+      if (!s.badges) s.badges = []
+      if (!s.civicScore) s.civicScore = 0
+      if (!s.studentId) {
+        s.studentId = window.colUser?.uid || 'STU-' + Math.floor(100000 + Math.random() * 900000)
       }
+      window.S = s
+      try { localStorage.setItem('mth4', JSON.stringify(s)) } catch (e) {}
     }
-    // Fallback save if course.js hasn't loaded
-    if (typeof save === 'undefined') {
-      window.save = async () => {
-        try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
-      }
+
+    window.save = async () => {
+      try {
+        const sObj = window.S || (typeof S !== 'undefined' ? S : null)
+        if (sObj) {
+          localStorage.setItem('mth4', JSON.stringify(sObj))
+          localStorage.setItem('traffic_save', JSON.stringify(sObj))
+          if (window.supabaseClient && window.colUser) {
+            window.supabaseClient.auth.updateUser({ data: { progress: sObj } }).catch(() => {})
+          }
+        }
+      } catch (e) {}
     }
     try {
       if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
@@ -133,12 +219,10 @@ window.ui = Object.assign(window.ui || {}, {
     const urlParams = new URLSearchParams(window.location.search)
     const screenParam = urlParams.get('screen')
     const lvParam = urlParams.get('lv')
-    if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
-      document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
-    } else if (lvParam) {
-      this.showBriefing(lvParam)
-    } else if (screenParam === 'levels') {
+    if (screenParam === 'levels') {
       this.showLevels()
+    } else if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
+      document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
     } else {
       this.show('ss', { instant: true })
     }
@@ -152,6 +236,7 @@ window.ui = Object.assign(window.ui || {}, {
     })
 
     this._buildSylList()
+    this.updateDailyStreak()
 
     const cnameEl = document.getElementById('cname')
     if (cnameEl) {
@@ -163,48 +248,48 @@ window.ui = Object.assign(window.ui || {}, {
     }
     this._applyAgeTier()
     
-    // Initialize micro-interactions (ripples, magnetic hover, tactile press)
+
     this.initMicroInteractions();
     
-    // Listen for reduced-motion changes while page is open
+
     if (window.matchMedia) {
       const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
       mq.addEventListener('change', (e) => { this._prefersReducedMotion = e.matches })
     }
   },
-  // ── Smooth Screen Transition System ──
+
   _transitioning: false,
   _transitionTimer: null,
   _lastScreen: null,
   
-  // Screen depth map: deeper screens slide up from below, shallower slide up
+
   _screenDepth: { 'ss': 0, 'screen-levels': 1, 'screen-briefing': 2, 'screen-quiz': 3, 'screen-badges': 2, 'screen-certificate': 2, 'screen-2d': 4 },
   
-  // Screen navigation history for back detection
+
   _screenHistory: [],
-  // Pending target queue: if user clicks during transition, queue it
+
   _pendingTarget: null,
-  // Detect prefers-reduced-motion for instant transitions
+
   _prefersReducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false,
-  // Micro-interaction observer for dynamically added elements
+
   _miObserver: null,
 
-  // ════════════════════════════════════════════════════════════════
-  // 🎛️ CENTRALIZED MICRO-INTERACTION SYSTEM
-  // Ripple clicks, magnetic hovers, tactile press, card tilt
-  // ════════════════════════════════════════════════════════════════
 
-  /** Initialize all micro-interactions. Called once from init(). */
+
+
+
+
+  
   initMicroInteractions() {
     if (this._miInited) return;
     this._miInited = true;
     const isMobile = mob();
 
-    // Skip all animations under reduced-motion
+
     const reducedMotion = this._prefersReducedMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
 
-    // ── Inject ripple keyframe if not already in stylesheet ──
+
     if (!document.getElementById('mi-keyframes')) {
       const style = document.createElement('style');
       style.id = 'mi-keyframes';
@@ -217,7 +302,7 @@ window.ui = Object.assign(window.ui || {}, {
       document.head.appendChild(style);
     }
 
-    // ── 1. Ripple Click Effect ──
+
     const rippleSelector = '.btn, .back-btn, .syl-item, .lcard:not(.lk), .mode-tab';
     document.addEventListener('pointerdown', (e) => {
       const target = e.target.closest(rippleSelector);
@@ -243,7 +328,7 @@ window.ui = Object.assign(window.ui || {}, {
       setTimeout(() => ripple.remove(), 550);
     }, { passive: true });
 
-    // ── 2. Tactile Press Feedback (desktop only) ──
+
     if (!isMobile) {
       document.addEventListener('pointerdown', (e) => {
         const el = e.target.closest('.btn, .back-btn');
@@ -260,14 +345,14 @@ window.ui = Object.assign(window.ui || {}, {
       }, { passive: true });
     }
 
-    // ── 3. Card Tilt on Hover (desktop only, event delegation) ──
+
     if (!isMobile) {
       let _tiltCard = null;
       const tiltSelector = '.lcard:not(.lk), .wh-card, .lp-card';
       document.addEventListener('pointermove', (e) => {
         const card = e.target.closest(tiltSelector);
         if (card !== _tiltCard) {
-          // Leaving previous card
+
           if (_tiltCard) {
             _tiltCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
             _tiltCard.style.transform = '';
@@ -292,7 +377,7 @@ window.ui = Object.assign(window.ui || {}, {
       }, { passive: true });
     }
 
-    // ── 4. Syllabus Item Active Glow ──
+
     document.addEventListener('pointerdown', (e) => {
       const item = e.target.closest('.syl-item');
       if (!item) return;
@@ -309,7 +394,7 @@ window.ui = Object.assign(window.ui || {}, {
       }, 100);
     }, { passive: true });
 
-    // ── 5. Tab Switch Bounce ──
+
     document.addEventListener('pointerdown', (e) => {
       const tab = e.target.closest('.mode-tab');
       if (!tab) return;
@@ -325,11 +410,7 @@ window.ui = Object.assign(window.ui || {}, {
     }, { passive: true });
   },
 
-  /**
-   * Smooth screen transition with crossfade.
-   * @param {string} id - Target screen element id
-   * @param {object} opts - { instant: bool, direction: 'forward'|'back'|'up'|'scale' }
-   */
+  
   show(id, opts = {}) {
     if (this._transitioning && !opts.instant) {
       this._pendingTarget = { id, opts };
@@ -339,10 +420,10 @@ window.ui = Object.assign(window.ui || {}, {
     const target = id ? document.getElementById(id) : null;
     const currentActive = document.querySelector('.screen.active:not(.screen-exiting)');
     
-    // Same screen? No-op
+
     if (currentActive && currentActive.id === id && !opts.instant) return;
     
-    // If reduced motion is preferred, force instant
+
     if (this._prefersReducedMotion && !opts.instant) opts.instant = true;
     
     if (id && id !== null && document.fullscreenElement) {
@@ -352,7 +433,7 @@ window.ui = Object.assign(window.ui || {}, {
       this._disposeBriefingScene()
     }
     
-    // Determine transition direction
+
     let direction = opts.direction;
     if (!direction && currentActive && id) {
       const fromDepth = this._screenDepth[currentActive.id] ?? 1;
@@ -361,7 +442,7 @@ window.ui = Object.assign(window.ui || {}, {
     }
     direction = direction || 'fade';
     
-    // Instant transition: skip animation entirely
+
     if (opts.instant) {
       document.querySelectorAll('.screen').forEach((s) => {
         s.classList.remove('active', 'screen-exiting', 'screen-entering',
@@ -379,15 +460,15 @@ window.ui = Object.assign(window.ui || {}, {
       return;
     }
     
-    // Track history for back detection
+
     this._screenHistory.push(currentActive?.id || null);
     if (this._screenHistory.length > 10) this._screenHistory.shift();
     
-    // Set transitioning state
+
     this._transitioning = true;
     clearTimeout(this._transitionTimer);
     
-    // If there's a current screen, animate it out
+
     if (currentActive && currentActive.id !== id) {
       const exitClass = 'screen-exiting';
       const exitVariant = {
@@ -398,19 +479,20 @@ window.ui = Object.assign(window.ui || {}, {
         'fade': ''
       }[direction] || '';
       
-      // Apply exit animation
+
       currentActive.classList.add(exitClass);
       if (exitVariant) currentActive.classList.add(exitVariant);
       
-      // After exit animation completes, clean up and show new screen
-      const exitDuration = 250; // matches CSS 0.25s
+
+      const exitDuration = 250;
       setTimeout(() => {
-        currentActive.classList.remove('active', exitClass, exitVariant);
+        currentActive.classList.remove('active', 'screen-animate-in', exitClass);
+        if (exitVariant) currentActive.classList.remove(exitVariant);
         currentActive.style.opacity = '';
         currentActive.style.transform = '';
         currentActive.style.pointerEvents = '';
         
-        // Now show the new screen
+
         if (target) {
           const enterClass = {
             'forward': 'screen-entering-forward',
@@ -420,14 +502,15 @@ window.ui = Object.assign(window.ui || {}, {
             'fade': 'screen-entering'
           }[direction] || 'screen-entering';
           
-          target.classList.add('active', enterClass);
+
+          target.classList.add('active', 'screen-animate-in', enterClass);
           
-          // Clean up entering class after animation completes
-          const enterDuration = 400; // matches CSS 0.4s
+
+          const enterDuration = 520;
           this._transitionTimer = setTimeout(() => {
-            target.classList.remove(enterClass);
+            target.classList.remove('screen-animate-in', enterClass);
             this._transitioning = false;
-            // Process pending target if any
+
             if (this._pendingTarget) {
               const pending = this._pendingTarget;
               this._pendingTarget = null;
@@ -439,7 +522,7 @@ window.ui = Object.assign(window.ui || {}, {
         }
       }, exitDuration);
     } else {
-      // No current screen - just enter
+
       if (target) {
         const enterClass = {
           'forward': 'screen-entering-forward',
@@ -449,30 +532,31 @@ window.ui = Object.assign(window.ui || {}, {
           'fade': 'screen-entering'
         }[direction] || 'screen-entering';
         
-        target.classList.add('active', enterClass);
+
+        target.classList.add('active', 'screen-animate-in', enterClass);
         this._transitionTimer = setTimeout(() => {
-          target.classList.remove(enterClass);
+          target.classList.remove('screen-animate-in', enterClass);
           this._transitioning = false;
-          // Process pending target if any
+
           if (this._pendingTarget) {
             const pending = this._pendingTarget;
             this._pendingTarget = null;
             this.show(pending.id, pending.opts);
           }
-        }, 400);
+        }, 520);
       } else {
         this._transitioning = false;
       }
     }
   },
   
-  /** Show screen going backward (back button) */
+  
   showBack(id) {
-    this._screenHistory.pop(); // remove current from history
+    this._screenHistory.pop();
     this.show(id, { direction: 'back' });
   },
   _buildSylList() {
-    // S should already be initialized from init(), but ensure it exists
+
     if (typeof S === 'undefined') {
       try {
         const raw = localStorage.getItem('mth4')
@@ -561,17 +645,55 @@ window.ui = Object.assign(window.ui || {}, {
           frag = document.createDocumentFragment()
           curGrid = grid
         }
-        const done = S.comp[lv.id]
-        const started = S.started && S.started[lv.id]
+        const comp = S.comp && S.comp[lv.id]
+        const done = comp && (comp.score > 0 || comp.finalQuiz || comp.completed || comp === true || (comp.modes && Object.keys(comp.modes).length > 0))
+        const started = !done && ((S.started && S.started[lv.id]) || (S.sylViewed && S.sylViewed[lv.id] && S.sylViewed[lv.id].length > 0) || (S.comp && S.comp[lv.id]))
         const statusClass = done ? ' syl-done' : started ? ' syl-started' : ''
-        const div = document.createElement('div')
-        div.className = 'syl-item' + statusClass
+
+        let masteryPill = ''
+        if (done) {
+          const vio = comp.vio !== undefined ? comp.vio : 0
+          const score = comp.score || 0
+          if (vio === 0 && score >= 90) {
+            masteryPill = '<span class="syl-mastery-pill plat" style="background:rgba(184,155,255,0.15);color:#b89bff;border:1px solid rgba(184,155,255,0.3);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:6px;" title="Platinum Mastery">💎 Platinum</span>'
+          } else if (vio === 0) {
+            masteryPill = '<span class="syl-mastery-pill gold" style="background:rgba(255,213,74,0.15);color:#ffd54a;border:1px solid rgba(255,213,74,0.3);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:6px;" title="Gold Mastery">🥇 Gold</span>'
+          } else if (vio <= 1) {
+            masteryPill = '<span class="syl-mastery-pill silver" style="background:rgba(192,192,192,0.15);color:#e2e8f0;border:1px solid rgba(192,192,192,0.3);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:6px;" title="Silver Mastery">🥈 Silver</span>'
+          } else {
+            masteryPill = '<span class="syl-mastery-pill bronze" style="background:rgba(205,127,50,0.15);color:#cd7f32;border:1px solid rgba(205,127,50,0.3);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:6px;" title="Bronze Mastery">🥉 Bronze</span>'
+          }
+        }
+
         const badgeText = done ? '✓ Completed' : started ? '● Started' : '○ Not Started'
-        const badgeColor = done ? '#00f0cc' : started ? '#5ed4f5' : 'rgba(184,155,255,0.5)'
         const cleanName = lv.name.replace(/^Lesson\s+\d+\s*[-–]\s*/i, '')
-        div.innerHTML = `<div class="syl-ck"></div><div class="syl-top"><span class="syl-icon">${lv.icon}</span><span class="syl-num">Lesson ${lv.id}</span></div><div class="syl-info"><div class="syl-lbl">${cleanName}</div><div class="syl-sub">${lv.ds}</div><div class="syl-badge" style="background:${badgeColor}18;color:${badgeColor};border:1px solid ${badgeColor}30">${badgeText}</div></div>`
-        div.style.animationDelay = `${idx * 0.08}s`
-        div.onclick = () => ui.showBriefing(lv.id)
+        const statusType = done ? 'done' : (started ? 'started' : 'locked')
+
+        const div = document.createElement('div')
+        div.className = 'level-grid-card' + statusClass
+        div.innerHTML = `
+          <div class="lgc-top">
+            <div class="lgc-pill-wrap">
+              <span class="lgc-icon">${lv.icon || '🚦'}</span>
+              <span class="lgc-lesson-num">Lesson ${lv.id}</span>
+            </div>
+            <div class="lgc-status-indicator ${statusType}">
+              ${done ? '✓' : (started ? '●' : '○')}
+            </div>
+          </div>
+          <div class="lgc-body">
+            <div class="lgc-title">${cleanName}</div>
+            <div class="lgc-desc">${lv.ds || ''}</div>
+          </div>
+          <div class="lgc-footer">
+            <div class="lgc-badges">
+              <span class="lgc-status-badge ${statusType}">${badgeText}</span>
+              ${masteryPill}
+            </div>
+            <div class="lgc-action-btn">${done ? 'Review ↻' : 'Start →'}</div>
+          </div>
+        `
+        div.onclick = () => (window.ui || this).showBriefing(lv.id)
         frag.appendChild(div)
       }
       if (curGrid) curGrid.appendChild(frag)
@@ -580,11 +702,33 @@ window.ui = Object.assign(window.ui || {}, {
     if (queue.length) requestAnimationFrame(flush)
   },
   showLevels() {
+    if (window.location.pathname.toLowerCase().includes('driving')) {
+      window.location.href = 'Academy.html?screen=levels'
+      return
+    }
     const currentActive = document.querySelector('.screen.active:not(.screen-exiting)')
-    const direction = (currentActive?.id === 'ss') ? 'forward' : 'fade'
-    // Build level cards FIRST before showing screen, so animations sync properly
-    this._bldLvs()
-    this.show('screen-levels', { direction })
+    if (currentActive && currentActive.id === 'screen-levels') {
+      requestAnimationFrame(() => this._buildSylList())
+      return
+    }
+
+
+    const fromStart = currentActive?.id === 'ss'
+    const levelsEl = document.getElementById('screen-levels')
+    if (fromStart) {
+      this.show('screen-levels', { instant: true })
+
+      if (levelsEl) {
+        requestAnimationFrame(() => {
+          levelsEl.classList.add('screen-animate-in')
+          setTimeout(() => levelsEl.classList.remove('screen-animate-in'), 520)
+        })
+      }
+    } else {
+      this.show('screen-levels', { direction: 'fade' })
+    }
+
+    requestAnimationFrame(() => this._buildSylList())
   },
   showNamePrompt() {
     const dlg = document.getElementById('name-prompt-dlg')
@@ -633,12 +777,12 @@ window.ui = Object.assign(window.ui || {}, {
     if (langEl) S.language = langEl.value
     save()
     
-    // Also persist vehicle preference to localStorage for Execution tab default
+
     const localUser = JSON.parse(localStorage.getItem('traffic_local_user') || '{}')
     localUser.vehicle = v
     localStorage.setItem('traffic_local_user', JSON.stringify(localUser))
     
-    // Sync to Supabase if logged in
+
     if (window.supabaseClient && window.colUser) {
       window.supabaseClient.from('user_profiles').upsert({
         user_id: window.colUser.id,
@@ -665,12 +809,12 @@ window.ui = Object.assign(window.ui || {}, {
     return 'senior'
   },
   getGradeTier() {
-    // Map standard (grade) to tier - Std 1-10
+
     const grade = S.grade || 5
-    if (grade <= 3) return 'grade-low'      // Std 1-3: Very childish
-    if (grade <= 6) return 'grade-mid'       // Std 4-6: Childish but more text
-    if (grade <= 9) return 'grade-high'      // Std 7-9: Teen - normal
-    return 'grade-max'                         // Std 10: Young adult
+    if (grade <= 3) return 'grade-low'
+    if (grade <= 6) return 'grade-mid'
+    if (grade <= 9) return 'grade-high'
+    return 'grade-max'
   },
   getGradeConfig() {
     const tier = this.getGradeTier()
@@ -687,22 +831,70 @@ window.ui = Object.assign(window.ui || {}, {
     const scale = { child: 0.7, teen: 0.85, young: 1.0, adult: 1.0, senior: 0.9 }
     return scale[b] || 1.0
   },
-  _applyAgeTier() {
+_applyAgeTier() {
     const tier = this.getAgeBracket()
     const gradeTier = this.getGradeTier()
     document.body.dataset.ageTier = tier
     document.body.dataset.gradeTier = gradeTier
 
-    // Default grade if not set
+
     if (!S.grade) S.grade = 5
 
     this._applyGradeUI()
+  },
+
+  // ─── PUBLIC: Apply config-driven age tier ───
+  async applyAgeTier(tier) {
+    // Fetch age config if not cached
+    if (!window.AGE_CONFIG) {
+      try {
+        const resp = await fetch('age-config.json');
+        window.AGE_CONFIG = await resp.json();
+      } catch (e) {
+        console.warn('Could not load age-config.json, using defaults');
+        window.AGE_CONFIG = {
+          ui: { child: { buttonScale: 1.5, fontSize: 1.3, sounds: true, animations: 'bounce' },
+               teen: { buttonScale: 1.15, fontSize: 1.1, sounds: true, animations: 'smooth' },
+               adult: { buttonScale: 1.0, fontSize: 1.0, sounds: false, animations: 'minimal' } },
+          gameplay: { child: { timeLimitMult: 2.0, npcDensityMult: 0.3, autoBrake: true, ghostCar: true },
+                      teen: { timeLimitMult: 1.2, npcDensityMult: 0.7, autoBrake: false, ghostCar: true },
+                      adult: { timeLimitMult: 1.0, npcDensityMult: 1.0, autoBrake: false, ghostCar: false } }
+        };
+      }
+    }
+
+    const cfg = window.AGE_CONFIG;
+    const uiCfg = cfg.ui[tier] || cfg.ui.adult;
+    const gameCfg = cfg.gameplay[tier] || cfg.gameplay.adult;
+    const root = document.documentElement;
+
+    // Apply UI config
+    root.style.setProperty('--btn-scale', uiCfg.buttonScale || 1);
+    root.style.setProperty('--ui-font-size', uiCfg.fontSize + 'rem' || '1rem');
+    
+    // Store tier on body for CSS
+    document.body.dataset.ageTier = tier;
+    
+    // Apply sound settings
+    if (window.sfx) {
+      window.sfx.vol.sfx = uiCfg.sounds ? 1 : 0;
+      window.sfx.vol.ui = uiCfg.sounds ? 1 : 0;
+    }
+    
+    // Apply gameplay config globally
+    window.GAME_CONFIG = { ...window.GAME_CONFIG, ...gameCfg };
+    
+    // Apply CSS class for tier-specific styling
+    document.body.classList.remove('age-child', 'age-teen', 'age-adult');
+    document.body.classList.add('age-' + tier);
+    
+    toast(`🎯 Age tier applied: ${tier}`, '#5ed4f5');
   },
   _applyGradeUI() {
     const cfg = this.getGradeConfig()
     const root = document.documentElement
 
-    // Apply button size
+
     if (cfg.buttonSize === 'large') {
       root.style.setProperty('--btn-scale', '1.3')
       root.style.setProperty('--btn-padding', '20px 30px')
@@ -714,7 +906,7 @@ window.ui = Object.assign(window.ui || {}, {
       root.style.setProperty('--btn-padding', '10px 16px')
     }
 
-    // Apply font size
+
     if (cfg.fontSize === 'large') {
       root.style.setProperty('--ui-font-size', '1.2rem')
     } else if (cfg.fontSize === 'medium') {
@@ -745,7 +937,7 @@ window.ui = Object.assign(window.ui || {}, {
     const cScoreLbl = document.getElementById('cscore')
     const cdownloadBtn = document.getElementById('cdownload')
 
-    // Check if user is logged in (via local or Supabase)
+
     const localData = localStorage.getItem('traffic_local_user')
     const isLoggedIn = localData || (window.colUser && window.colUser.user)
 
@@ -770,7 +962,7 @@ window.ui = Object.assign(window.ui || {}, {
       }
     }
 
-    // Default behavior - Main certificate
+
     if (cTitle) cTitle.innerText = 'Traffic Hero Certification'
     if (cIcon) cIcon.style.display = 'none'
 
@@ -787,7 +979,7 @@ window.ui = Object.assign(window.ui || {}, {
     }
     let avgScore = count > 0 ? totalScore / count : 0
 
-    // Show progress toward certificate
+
     if (completedLevels >= totalLevels) {
       if (cStat) cStat.innerText = `COMPLETED WITH ${Math.round(avgScore)}% PROFICIENCY`
       if (cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`
@@ -795,35 +987,196 @@ window.ui = Object.assign(window.ui || {}, {
     } else {
       if (cStat) cStat.innerText = `IN PROGRESS: ${completedLevels}/${totalLevels} levels completed`
       if (cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`
-      // Enable download for logged-in users even if not complete
+
       if (cdownloadBtn) cdownloadBtn.style.display = isLoggedIn ? 'flex' : 'none'
     }
     if (certNum) certNum.innerText = completedLevels >= totalLevels ? S.certId : '---'
   },
+  getDriverRank(score) {
+    const totalScore = score !== undefined ? score : (S.total || 0)
+    const RANKS = [
+      { min: 0, id: 'learner', name: 'Learner', icon: '🔰', color: '#94a3b8', max: 499 },
+      { min: 500, id: 'cadet', name: 'Cadet', icon: '🚗', color: '#5ed4f5', max: 1999 },
+      { min: 2000, id: 'junior', name: 'Junior Driver', icon: '🏎️', color: '#34d399', max: 4999 },
+      { min: 5000, id: 'captain', name: 'Road Captain', icon: '🛡️', color: '#ffd54a', max: 9999 },
+      { min: 10000, id: 'expert', name: 'Traffic Expert', icon: '⭐', color: '#a855f7', max: 19999 },
+      { min: 20000, id: 'master', name: 'Master Instructor', icon: '👑', color: '#f43f5e', max: Infinity }
+    ]
+    let current = RANKS[0]
+    let next = RANKS[1]
+    for (let i = 0; i < RANKS.length; i++) {
+      if (totalScore >= RANKS[i].min) {
+        current = RANKS[i]
+        next = RANKS[i + 1] || null
+      }
+    }
+    const progress = next
+      ? Math.min(100, Math.round(((totalScore - current.min) / (next.min - current.min)) * 100))
+      : 100
+    const ptsToNext = next ? next.min - totalScore : 0
+    return { current, next, progress, ptsToNext, totalScore }
+  },
+
+  updateDailyStreak() {
+    if (!S.streak) S.streak = { current: 0, best: 0, lastDate: null, freezes: 1 }
+    const today = new Date().toISOString().slice(0, 10)
+    const last = S.streak.lastDate
+
+    if (!last) {
+      S.streak.current = 1
+      S.streak.best = Math.max(1, S.streak.best || 1)
+      S.streak.lastDate = today
+      save()
+    } else if (last !== today) {
+      const lastDate = new Date(last)
+      const curDate = new Date(today)
+      const diffDays = Math.round((curDate - lastDate) / (1000 * 60 * 60 * 24))
+
+      if (diffDays === 1) {
+        S.streak.current = (S.streak.current || 0) + 1
+        S.streak.best = Math.max(S.streak.current, S.streak.best || 0)
+        S.streak.lastDate = today
+        if (S.streak.current % 7 === 0) {
+          S.streak.freezes = (S.streak.freezes || 0) + 1
+          toast('🛡️ 7-Day Milestone! +1 Streak Freeze Token Earned!', '#ffd54a')
+        }
+        save()
+      } else if (diffDays === 2 && (S.streak.freezes > 0 || S.streakShield > 0)) {
+        if (S.streak.freezes > 0) S.streak.freezes--
+        else if (S.streakShield > 0) S.streakShield--
+        S.streak.lastDate = today
+        toast(`🛡️ Streak Freeze saved your ${S.streak.current}-day streak!`, '#5ed4f5')
+        save()
+      } else if (diffDays > 1) {
+        S.streak.current = 1
+        S.streak.lastDate = today
+        save()
+      }
+    }
+    this.renderStreakCounters()
+  },
+
+  renderStreakCounters() {
+    const streakCount = S.streak?.current || 0
+    const freezes = S.streak?.freezes || 0
+    const streakEls = document.querySelectorAll('.nav-streak-counter, #br-streak, #nav-streak')
+    streakEls.forEach((el) => {
+      el.innerHTML = `🔥 ${streakCount} <span style="font-size:0.75rem;opacity:0.8;">(${freezes} 🛡️)</span>`
+      el.title = `Daily Streak: ${streakCount} Days Active | ${freezes} Streak Freeze Tokens Available`
+    })
+  },
+
   showBadges() {
     this.show('screen-badges', { direction: 'forward' })
 
     const statsBody = document.getElementById('stats-body')
     if (statsBody) {
+      const rankInfo = this.getDriverRank()
+      const streak = S.streak || { current: 0, best: 0, freezes: 1 }
+      const doneCount = S.comp ? Object.keys(S.comp).length : 0
+      const totalLevels = typeof LVS !== 'undefined' ? LVS.length : 55
       const startedCount = S.started ? Object.keys(S.started).length : 0
+
+      // Calculate mastery stats
+      let platinumCount = 0,
+        goldCount = 0,
+        silverCount = 0,
+        bronzeCount = 0
+      if (S.comp) {
+        Object.values(S.comp).forEach((c) => {
+          if (c && (c.score > 0 || c.completed || c.finalQuiz)) {
+            const vio = c.vio !== undefined ? c.vio : 0
+            const score = c.score || 0
+            if (vio === 0 && score >= 90) platinumCount++
+            else if (vio === 0) goldCount++
+            else if (vio <= 1) silverCount++
+            else bronzeCount++
+          }
+        })
+      }
+
       statsBody.innerHTML = `
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">COMPLETED LEVELS</div>
-                    <div style="font-weight:700;color:var(--accent);">${Object.keys(S.comp).length}/52</div>
+        <!-- Driver Rank Hero Card -->
+        <div style="background: linear-gradient(135deg, rgba(17,24,39,0.95), rgba(7,10,20,0.95)); border: 2px solid ${rankInfo.current.color}; border-radius: 18px; padding: 20px; margin-bottom: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.4);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 2.5rem;">${rankInfo.current.icon}</span>
+              <div>
+                <div style="font-size: 0.7rem; font-weight: 800; color: ${rankInfo.current.color}; text-transform: uppercase; letter-spacing: 0.1em;">Official Driver Rank</div>
+                <div style="font-size: 1.4rem; font-weight: 800; color: #fff; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em;">${rankInfo.current.name}</div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.2rem; font-weight: 800; color: #ffd54a;">${rankInfo.totalScore.toLocaleString()} XP</div>
+              <div style="font-size: 0.72rem; color: #8891aa;">${rankInfo.next ? rankInfo.ptsToNext.toLocaleString() + ' XP to ' + rankInfo.next.name : 'Max Tier Reached!'}</div>
+            </div>
+          </div>
+          <!-- Rank Progress Bar -->
+          <div style="height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; position: relative;">
+            <div style="height: 100%; width: ${rankInfo.progress}%; background: linear-gradient(90deg, ${rankInfo.current.color}, #00f0cc); border-radius: 4px; transition: width 0.6s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Mastery Tiers Summary -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px;">
+          <div style="background: rgba(184,155,255,0.08); border: 1px solid rgba(184,155,255,0.25); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 1.4rem;">💎</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #b89bff; margin-top: 4px;">${platinumCount}</div>
+            <div style="font-size: 0.65rem; color: #8891aa; text-transform: uppercase; font-weight: 700;">Platinum</div>
+          </div>
+          <div style="background: rgba(255,213,74,0.08); border: 1px solid rgba(255,213,74,0.25); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 1.4rem;">🥇</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #ffd54a; margin-top: 4px;">${goldCount}</div>
+            <div style="font-size: 0.65rem; color: #8891aa; text-transform: uppercase; font-weight: 700;">Gold</div>
+          </div>
+          <div style="background: rgba(192,192,192,0.08); border: 1px solid rgba(192,192,192,0.25); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 1.4rem;">🥈</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #e2e8f0; margin-top: 4px;">${silverCount}</div>
+            <div style="font-size: 0.65rem; color: #8891aa; text-transform: uppercase; font-weight: 700;">Silver</div>
+          </div>
+          <div style="background: rgba(205,127,50,0.08); border: 1px solid rgba(205,127,50,0.25); border-radius: 12px; padding: 12px; text-align: center;">
+            <div style="font-size: 1.4rem;">🥉</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: #cd7f32; margin-top: 4px;">${bronzeCount}</div>
+            <div style="font-size: 0.65rem; color: #8891aa; text-transform: uppercase; font-weight: 700;">Bronze</div>
+          </div>
+        </div>
+
+        <!-- Key Driver Metrics -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+            <div style="color: #8891aa; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Daily Streak</div>
+            <div style="font-size: 1.2rem; font-weight: 800; color: #ffd54a; margin-top: 4px;">🔥 ${streak.current} Days <span style="font-size:0.75rem; color:#5ed4f5; font-weight:600;">(${streak.freezes} 🛡️)</span></div>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+            <div style="color: #8891aa; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;">Wallet Balance</div>
+            <div style="font-size: 1.2rem; font-weight: 800; color: #34d399; margin-top: 4px;">₹${(S.wallet || 0).toLocaleString('en-IN')}</div>
+          </div>
+        </div>
+      `
+    }
+
+    const pledgeBox = document.getElementById('profile-pledge-box')
+    if (pledgeBox) {
+      const hasPledge = S.pledges && S.pledges['general']
+      const pledge = S.pledges ? S.pledges['general'] : null
+      pledgeBox.innerHTML = `
+        <div style="background: linear-gradient(135deg, rgba(94,212,245,0.08), rgba(242,184,75,0.08)); border: 1px solid rgba(242,184,75,0.3); border-radius: 16px; padding: 20px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="font-size: 2.2rem;">🤝</div>
+              <div>
+                <div style="font-weight: 700; font-size: 1.1rem; color: var(--text, #e8e3d8);">Civic Driver's Safety Pledge</div>
+                <div style="font-size: 0.82rem; color: var(--muted, #8891aa); margin-top: 2px;">
+                  ${hasPledge ? `Active Oath: "If ${pledge.if} → Then ${pledge.then}"` : 'Sign your official implementation commitment to practice safe driving.'}
                 </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">STARTED LEVELS</div>
-                    <div style="font-weight:700;color:#0284c7;">${startedCount}/52</div>
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">TOTAL WALLET</div>
-                    <div style="font-weight:700;color:#059669;">₹${S.wallet || 0}</div>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <div style="color:var(--muted, #475569);font-size:0.9rem;font-weight:600;">TOTAL BADGES</div>
-                    <div style="font-weight:700;color:#7c3aed;">${S.badges ? S.badges.length : 0}</div>
-                </div>
-            `
+              </div>
+            </div>
+            <button class="btn btn-p" onclick="ui.showCommitmentPledge('general')" style="padding: 8px 20px; font-size: 0.85rem; font-weight: 700;">
+              ${hasPledge ? '✏️ Update Pledge' : '✍️ Sign Driver Pledge'}
+            </button>
+          </div>
+        </div>
+      `
     }
 
     const bgrid = document.getElementById('bgrid')
@@ -851,7 +1204,7 @@ window.ui = Object.assign(window.ui || {}, {
         toast('Certificate not ready. Please wait a moment.', '#ff9500')
         return
       }
-      // Temporarily remove CSS transform so html2pdf captures at true size (avoids blank second page)
+
       const prevWrapperOverflow = wrapper.style.overflow
       const prevWrapperJustify = wrapper.style.justifyContent
       const prevWrapperMargin = wrapper.style.margin
@@ -860,7 +1213,7 @@ window.ui = Object.assign(window.ui || {}, {
       const prevCrtWidth = crt.style.width
       const prevCrtPageBreak = crt.style.pageBreakInside
       const prevCrtBreakInside = crt.style.breakInside
-      // Helper to restore all overridden styles
+
       const restoreStyles = () => {
         wrapper.style.overflow = prevWrapperOverflow
         wrapper.style.justifyContent = prevWrapperJustify
@@ -917,7 +1270,7 @@ window.ui = Object.assign(window.ui || {}, {
     this.show('ss', { direction: 'back' })
     this._rain()
     
-    // Update Get Started button if user has already made progress
+
     let hasStarted = false;
     if (S.completed && S.completed.length > 0) hasStarted = true;
     if (S.started && Object.keys(S.started).length > 0) hasStarted = true;
@@ -997,11 +1350,11 @@ window.ui = Object.assign(window.ui || {}, {
         const cm = !!isDone(lv.id)
         const ip = !cm && un
         
-        // Calculate progress for this level (0, 50, 100)
+
         let levelProgress = 0
         if (cm) levelProgress = 100
         else if (ip && S.comp[lv.id]) {
-          // In progress - check which sub-modules are done
+
           const subModules = ['intro', ...lv.hps.map((_, i) => 'rule' + i), 'law', 'theory', 'practical']
           let doneSubs = 0
           subModules.forEach(sm => {
@@ -1038,15 +1391,9 @@ window.ui = Object.assign(window.ui || {}, {
             </div>
           </div>
         `
-        if (un) {
-          c.onclick = async () => {
-            // Show premium level preview before briefing
-            if (window.game && window.game._showLevelPreview) {
-              const proceed = await window.game._showLevelPreview(lv);
-              if (proceed) this.showBriefing(lv.id);
-            } else {
-              this.showBriefing(lv.id);
-            }
+if (un) {
+          c.onclick = () => {
+            ui.showSyllabus(lv.id);
           }
         }
         tr.appendChild(c)
@@ -1054,7 +1401,7 @@ window.ui = Object.assign(window.ui || {}, {
       body.appendChild(tr)
     })
     
-    // Initialize progress rings after DOM insertion
+
     setTimeout(() => {
       if (window.TrafficCharts) {
         document.querySelectorAll('.level-progress-ring').forEach(canvas => {
@@ -1069,70 +1416,70 @@ window.ui = Object.assign(window.ui || {}, {
     }, 50)
   },
   showBriefing(lid) {
-    const lv = (typeof LVS !== 'undefined' ? LVS : window.LVS || []).find((l) => l.id == lid)
-    if (!lv) {
-      this.showLevels()
-      return
-    }
+    const lv = LVS.find((l) => l.id === lid)
     this.cur = lv
     const availModes = lv.modes || ['car']
     const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
       : S.vehicle === 'Car' && availModes.includes('car') ? 'car'
       : availModes[0]
     this.curMode = preferred
-    localStorage.setItem('traffic_lv', lv.id)
-    localStorage.setItem('traffic_mode', preferred)
     if (history.replaceState) {
       history.replaceState(null, '', `?screen=levels&lv=${lv.id}`)
     }
     document.getElementById('blt').textContent = 'Level ' + lv.id
     document.getElementById('bvh').textContent = lv.v
     
-    // Initialize streak if not present
+
     if (!S.streak) S.streak = { current: 0, best: 0, lastDate: null }
     
-    // Update streak display with loss aversion framing
+
     const streakEl = document.getElementById('br-streak')
     if (streakEl) {
-      const isActive = S.streak.current > 0
+      const isActive = S.streak && S.streak.current > 0
       streakEl.innerHTML = isActive 
-        ? `🔥 ${S.streak.current} Day Streak ${S.streak.current >= 3 ? '— Don\'t break it!' : ''}`
-        : '🔥 No active streak — Start today!'
+        ? `🔥 ${S.streak.current} Day Streak` 
+        : '🔥 0 Day Streak'
       streakEl.style.background = isActive 
         ? 'linear-gradient(90deg, var(--signal), var(--accent))'
         : 'linear-gradient(90deg, var(--muted), var(--muted2))'
     }
     
-    // Build mode tabs
+
     this._initModeTabs(lv)
     
-    // Build module progress checklist (Zeigarnik effect)
-    this._renderModuleChecklist(lv)
-    
-    // Render pledge card into right panel
-    this._renderPledgeCard(lv)
-    
-    const items = [
-      { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
-      ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
-      { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' },
-      { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' },
-      { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' }
-    ]
+    const isCompleted = S.comp && S.comp[lv.id] && (S.comp[lv.id].score > 0 || S.comp[lv.id].finalQuiz || S.comp[lv.id].completed || S.comp[lv.id] === true || (S.comp[lv.id].modes && Object.keys(S.comp[lv.id].modes).length > 0))
+
+    const progFill = document.getElementById('br-prog-fill')
+    const progLabel = document.getElementById('br-prog-label')
+    if (progFill && progLabel) {
+      if (isCompleted) {
+        progFill.style.width = '100%'
+        progLabel.textContent = '100% Complete (Mastered)'
+      } else {
+        const viewedCount = (S.sylViewed && S.sylViewed[lv.id]) ? S.sylViewed[lv.id].length : 0
+        const pct = Math.min(90, Math.round((viewedCount / 4) * 100))
+        progFill.style.width = pct + '%'
+        progLabel.textContent = pct > 0 ? `${pct}% Complete` : '0% Complete'
+      }
+    }
+
+    const items = this._getSyllabusForMode(lv, 'learn')
     this._sylItems = items
-    this._sylViewed = new Set()
+    this._sylViewed = new Set((S.sylViewed && S.sylViewed[lv.id]) ? S.sylViewed[lv.id] : [])
     this._sylLv = lv
     this._lawLang = S.language === 'hi' ? 'hi' : 'en'
     const list = document.getElementById('br-syllabus')
-    list.innerHTML = ''
-    items.forEach((it) => {
-      const el = document.createElement('div')
-      el.className = 'syl-item'
-      el.id = 'syl-' + it.id
-      el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
-      el.onclick = () => this._selSyl(it.id)
-      list.appendChild(el)
-    })
+    if (list) {
+      list.innerHTML = ''
+      items.forEach((it) => {
+        const el = document.createElement('div')
+        el.className = 'syl-item' + (isCompleted || this._sylViewed.has(it.id) ? ' syl-done' : '')
+        el.id = 'syl-' + it.id
+        el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
+        el.onclick = () => this._selSyl(it.id)
+        list.appendChild(el)
+      })
+    }
     this._selSyl('intro')
     this.show('screen-briefing', { direction: 'forward' })
   },
@@ -1145,9 +1492,12 @@ window.ui = Object.assign(window.ui || {}, {
         tab.style.color = 'var(--text)'
         tab.style.background = 'var(--panel)'
         this._currentModeTab = tab.dataset.mode
-        this._updateBriefingForMode(lv, tab.dataset.mode)
+        if (tab.dataset.mode === 'learn') this._selSyl('intro')
+        else if (tab.dataset.mode === 'practice') this._selSyl('practical')
+        else if (tab.dataset.mode === 'chaos') this._selSyl('chaos')
+        else if (tab.dataset.mode === 'exam') this._selSyl('exam')
       }
-      // Set initial active state
+
       if (tab.dataset.mode === 'learn') {
         tab.classList.add('active')
         tab.style.color = 'var(--text)'
@@ -1161,48 +1511,55 @@ window.ui = Object.assign(window.ui || {}, {
     const contentEl = document.getElementById('br-content')
     if (!contentEl) return
     
-    // Update syllabus based on mode
     const syllabusEl = document.getElementById('br-syllabus')
     const items = this._getSyllabusForMode(lv, mode)
     this._sylItems = items
     
-    // Initialize from saved progress if available
+    const isCompleted = S.comp && S.comp[lv.id] && (S.comp[lv.id].score > 0 || S.comp[lv.id].finalQuiz || S.comp[lv.id].completed || S.comp[lv.id] === true || (S.comp[lv.id].modes && Object.keys(S.comp[lv.id].modes).length > 0))
     this._sylViewed = new Set((S.sylViewed && S.sylViewed[lv.id]) ? S.sylViewed[lv.id] : [])
     this._sylLv = lv
-    syllabusEl.innerHTML = ''
-    items.forEach((it) => {
-      const el = document.createElement('div')
-      el.className = 'syl-item'
-      el.id = 'syl-' + it.id
-      el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
-      if (this._sylViewed.has(it.id)) {
-        el.classList.add('syl-done')
+
+    const progFill = document.getElementById('br-prog-fill')
+    const progLabel = document.getElementById('br-prog-label')
+    if (progFill && progLabel) {
+      if (isCompleted) {
+        progFill.style.width = '100%'
+        progLabel.textContent = '100% Complete (Mastered)'
+      } else {
+        const viewedCount = this._sylViewed.size
+        const pct = Math.min(90, Math.round((viewedCount / Math.max(1, items.length)) * 100))
+        progFill.style.width = pct + '%'
+        progLabel.textContent = pct > 0 ? `${pct}% Complete` : '0% Complete'
       }
-      el.onclick = () => this._selSyl(it.id)
-      syllabusEl.appendChild(el)
-    })
+    }
+
+    if (syllabusEl) {
+      syllabusEl.innerHTML = ''
+      items.forEach((it) => {
+        const el = document.createElement('div')
+        el.className = 'syl-item' + (isCompleted || this._sylViewed.has(it.id) ? ' syl-done' : '')
+        el.id = 'syl-' + it.id
+        el.innerHTML = `<div class="syl-ck" id="sylck-${it.id}"></div><div class="syl-info"><div class="syl-lbl">${it.icon} ${it.label}</div><div class="syl-sub">${it.sub}</div></div>`
+        el.onclick = () => this._selSyl(it.id)
+        syllabusEl.appendChild(el)
+      })
+    }
     
-    // Auto-select the first item that hasn't been viewed, or the first item if all viewed
     let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
     this._selSyl(firstUnviewed ? firstUnviewed.id : (items[0]?.id || 'intro'))
     
-    // Update rewards preview
     this._renderRewardsPreview(lv, mode, config)
   },
   _getSyllabusForMode(lv, mode) {
     const base = [
       { id: 'intro', icon: '📖', label: 'Overview', sub: 'Mission Briefing' },
       ...lv.hps.map((hp, i) => ({ id: 'rule' + i, icon: '⚖️', label: 'Guideline ' + (i + 1), sub: hp.split(':')[0].substring(0, 24) })),
+      { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' },
+      { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' },
+      { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' },
+      { id: 'chaos', icon: '🌪️', label: 'Chaos Run', sub: 'Adaptive Stress Test' },
+      { id: 'exam', icon: '📝', label: 'Assessment', sub: `${window.COURSE?.MODE_CONFIG?.EXAM?.mcqCount || 5} MCQ Questions` }
     ]
-    if (mode === 'learn') {
-      return [...base, { id: 'law', icon: '🏛️', label: 'Legal Penalty', sub: 'Statutory Consequences' }, { id: 'theory', icon: '📊', label: 'Science', sub: 'Traffic Theory' }]
-    } else if (mode === 'practice') {
-      return [...base, { id: 'practical', icon: '🎯', label: 'Execution', sub: 'Driving Test' }]
-    } else if (mode === 'exam') {
-      return [...base, { id: 'exam', icon: '📝', label: 'Assessment', sub: `${window.COURSE?.MODE_CONFIG?.EXAM?.mcqCount || 5} MCQ Questions` }]
-    } else if (mode === 'chaos') {
-      return [...base, { id: 'chaos', icon: '🌪️', label: 'Chaos Run', sub: 'Adaptive Stress Test' }]
-    }
     return base
   },
   _renderModuleChecklist(lv) {
@@ -1231,6 +1588,77 @@ window.ui = Object.assign(window.ui || {}, {
     html += '</div>'
     container.innerHTML = html
   },
+  _renderCampaignProgress(lv) {
+    const campaignManager = window.game?.campaignManager
+    if (!campaignManager || !window.getCampaignsForModule) return
+    
+    const campaigns = window.getCampaignsForModule(lv.module?.id || 1)
+    if (!campaigns || campaigns.length === 0) return
+    
+    const campaign = campaigns[0]
+    const progress = campaignManager.getCampaignProgress(campaign.id)
+    if (!progress) return
+    
+    const container = document.getElementById('br-campaign-progress')
+    if (!container) return
+    
+    const { campaign: c, completedCount, totalMissions, currentMission, unlocked, progressPercent } = progress
+    
+    if (!unlocked) {
+      container.innerHTML = `
+        <div style="padding:16px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:12px;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:8px;">🔒</div>
+          <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">CAMPAIGN LOCKED</div>
+          <div style="font-size:0.85rem;color:var(--text);">${c.prerequisite ? 'Complete ' + window.getCampaign(c.prerequisite)?.name + ' first' : 'Requirements not met'}</div>
+        </div>
+      `
+      return
+    }
+    
+    const missionsHtml = c.missions.map((m, i) => {
+      const status = i < completedCount ? 'completed' : 
+                     (currentMission && m.levelId === currentMission.levelId ? 'current' : 'pending')
+      const statusIcon = status === 'completed' ? '✅' : status === 'current' ? '▶️' : '⏳'
+      const statusColor = status === 'completed' ? 'var(--green)' : status === 'current' ? 'var(--signal)' : 'var(--muted)'
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;transition:all 0.2s;">
+          <div style="font-size:1.2rem;flex-shrink:0;">${statusIcon}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.85rem;font-weight:600;color:var(--text);">${m.title}</div>
+            <div style="font-size:0.7rem;color:var(--muted);margin-top:2px;">${m.briefing}</div>
+          </div>
+          <div style="font-size:0.7rem;font-weight:700;color:${statusColor};text-transform:uppercase;letter-spacing:0.03em;">${status}</div>
+        </div>
+      `
+    }).join('')
+    
+    container.innerHTML = `
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:2rem;">${c.icon}</div>
+            <div>
+              <div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;">CAMPAIGN</div>
+              <div style="font-size:1.1rem;font-weight:800;color:var(--text);font-family:'Bebas Neue',sans-serif;letter-spacing:0.02em;">${c.name}</div>
+            </div>
+          </div>
+          <div style="font-size:0.85rem;font-weight:700;color:var(--signal);">${Math.round(progressPercent)}%</div>
+        </div>
+        <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${progressPercent}%;background:linear-gradient(90deg,var(--signal),var(--accent));border-radius:3px;transition:width 0.5s ease;"></div>
+        </div>
+        <div style="margin-top:16px;max-height:300px;overflow-y:auto;padding-right:8px;">
+          ${missionsHtml}
+        </div>
+        ${progress.completed ? `
+          <div style="margin-top:16px;padding:16px;background:rgba(255,213,74,0.15);border:1px solid rgba(255,213,74,0.4);border-radius:12px;text-align:center;">
+            <div style="font-size:2rem;margin-bottom:8px;">🏆</div>
+            <div style="font-size:1rem;font-weight:800;color:var(--signal);font-family:'Bebas Neue',sans-serif;">CAMPAIGN COMPLETE!</div>
+            <div style="font-size:0.85rem;color:var(--muted);margin-top:4px;">Rewards: ${c.rewards.wallet?.toLocaleString()}₹ + ${c.rewards.xp?.toLocaleString()} XP + Badge</div>
+          </div>
+        ` : ''}
+    `
+  },
   _renderRewardsPreview(lv, mode, config) {
     const contentEl = document.getElementById('br-content')
     if (!contentEl) return
@@ -1238,9 +1666,9 @@ window.ui = Object.assign(window.ui || {}, {
     const xp = config.xpBase || 0
     const streakBonus = config.streakBonus || 0
     const badge = config.badge
-    const mysteryChance = 0.15 // 15% variable reinforcement
+    const mysteryChance = 0.15
     
-    // Check if this is practical mode - inject rewards panel
+
     const existingCard = contentEl.querySelector('.bc-card')
     if (existingCard && mode === 'practice') {
       const rewardsHtml = `
@@ -1301,7 +1729,7 @@ window.ui = Object.assign(window.ui || {}, {
     S.pledges[levelId] = { if: ifStatement, then: thenStatement, created: Date.now() }
     save()
     toast('🤝 Pledge saved! Your if-then plan is set.', '#5ED4F5')
-    // Refresh the pledge card to show completed state
+
     const lv = LVS.find(l => l.id === levelId)
     if (lv) this._renderPledgeCard(lv)
   },
@@ -1337,6 +1765,32 @@ window.ui = Object.assign(window.ui || {}, {
     const lv = this._sylLv,
       items = this._sylItems
     if (!lv) return
+
+
+    if (id === 'pledge') {
+      document.querySelectorAll('.syl-item').forEach((el) => el.classList.remove('syl-active'))
+      const el = document.getElementById('syl-' + id)
+      if (el) el.classList.add('syl-active')
+      this.showCommitmentPledge(lv.id)
+      if (!this._sylViewed.has(id)) {
+        this._sylViewed.add(id)
+        if (!S.sylViewed) S.sylViewed = {}
+        if (!S.sylViewed[lv.id]) S.sylViewed[lv.id] = []
+        if (!S.sylViewed[lv.id].includes(id)) {
+          S.sylViewed[lv.id].push(id)
+        }
+        if (typeof save === 'function') save()
+        const sylEl = document.getElementById('syl-' + id)
+        if (sylEl) sylEl.classList.add('syl-done')
+      }
+      const pct = Math.round((this._sylViewed.size / items.length) * 100)
+      const progFill = document.getElementById('br-prog-fill')
+      const progLabel = document.getElementById('br-prog-label')
+      if (progFill) progFill.style.width = pct + '%'
+      if (progLabel) progLabel.textContent = pct + '%'
+      return
+    }
+
     this._disposeBriefingScene()
     ui.curMode = ui.curMode || (lv.modes ? lv.modes[0] : 'car')
     document.querySelectorAll('.syl-item').forEach((el) => el.classList.remove('syl-active'))
@@ -1345,44 +1799,104 @@ window.ui = Object.assign(window.ui || {}, {
     if (!this._sylViewed.has(id)) {
       this._sylViewed.add(id)
       
-      // Persist syllabus progress to S
+
       if (!S.sylViewed) S.sylViewed = {}
       if (!S.sylViewed[lv.id]) S.sylViewed[lv.id] = []
       if (!S.sylViewed[lv.id].includes(id)) {
         S.sylViewed[lv.id].push(id)
-        if (typeof save === 'function') save()
       }
+      
+      if (!S.started) S.started = {}
+      S.started[lv.id] = true
+
+
+      const allViewed = items.every(it => S.sylViewed[lv.id].includes(it.id))
+      if (allViewed || id === 'practical' || id === 'exam') {
+        if (!S.comp) S.comp = {}
+        if (!S.comp[lv.id]) {
+          S.comp[lv.id] = { score: 100, time: Date.now(), finalQuiz: true, modes: { learn: true } }
+        } else {
+          S.comp[lv.id].score = Math.max(S.comp[lv.id].score || 0, 100)
+          S.comp[lv.id].finalQuiz = true
+          if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
+          S.comp[lv.id].modes.learn = true
+        }
+      }
+
+      if (typeof save === 'function') save()
 
       const sylEl = document.getElementById('syl-' + id)
       if (sylEl) sylEl.classList.add('syl-done')
     }
     
-    // Always update progress bar
+
     const pct = Math.round((this._sylViewed.size / items.length) * 100)
     const progFill = document.getElementById('br-prog-fill')
     const progLabel = document.getElementById('br-prog-label')
     if (progFill) progFill.style.width = pct + '%'
     if (progLabel) progLabel.textContent = pct + '%'
-    const rContainer = document.querySelector('.br-r')
-    if (rContainer) {
-      if (id === 'practical') {
-        rContainer.style.marginTop = '45px'
-      } else {
-        rContainer.style.marginTop = '118px'
-      }
-    }
+
     const c = document.getElementById('br-content')
     c.innerHTML = ''
     const card = document.createElement('div')
     card.className = 'bc-card'
+
+    // Add Top Breadcrumb Bar for clear orientation
+    const topicHeaderHTML = this._renderTopicHeader(lv, id, items)
+
     if (id === 'intro') {
-      card.innerHTML = `<div class="bc-ttl">📖 Module Overview</div>
-     <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem, 4vw, 2.5rem);color:var(--yellow);margin-bottom:8px">${lv.name}</div>
-     <div style="font-size:clamp(0.95rem, 2vw, 1.35rem);color:var(--muted2);line-height:1.5;margin-bottom:16px">${lv.ds}</div>
-     <div class="stat-row">
-       <div class="stat-box"><div class="stat-val">${lv.hps.length}</div><div class="stat-lbl">Mandates</div></div>
-       <div class="stat-box"><div class="stat-val">${lv.law.fine}</div><div class="stat-lbl">Penalty</div></div>
-     </div>`
+      const curriculumRows = items.filter(it => it.id !== 'intro').map((it, idx) => {
+        const isDone = this._sylViewed && this._sylViewed.has(it.id)
+        return `
+          <div class="syl-curriculum-row" onclick="ui._selSyl('${it.id}')">
+            <div style="display:flex; align-items:center; min-width:0; flex:1;">
+              <span class="syl-cur-num">${String(idx + 1).padStart(2, '0')}</span>
+              <div class="syl-cur-info">
+                <div class="syl-cur-title">${it.icon} ${it.label}</div>
+                <div class="syl-cur-desc">${it.sub}</div>
+              </div>
+            </div>
+            <div class="syl-cur-btn">
+              ${isDone ? '<span style="color:#10b981;">✓ Viewed</span>' : '<span>Start &rarr;</span>'}
+            </div>
+          </div>
+        `
+      }).join('')
+
+      card.innerHTML = `
+        ${topicHeaderHTML}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div class="bc-ttl" style="margin:0;">📖 Module Overview</div>
+          <span style="background:rgba(255,213,74,0.12); color:var(--signal); border:1px solid rgba(255,213,74,0.3); font-size:0.75rem; font-weight:700; padding:4px 12px; border-radius:20px; text-transform:uppercase;">Level ${lv.id}</span>
+        </div>
+        <div style="font-size:clamp(1.5rem, 3.5vw, 2.1rem); font-weight:800; color:#fff; font-family:'Lora',serif; margin-bottom:10px; line-height:1.25;">${lv.name}</div>
+        <div style="font-size:0.95rem; line-height:1.65; color:rgba(255,255,255,0.85); background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px 20px; margin-bottom:20px;">${lv.ds}</div>
+        
+        <div class="stat-row" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:24px;">
+          <div class="stat-box">
+            <div class="stat-val" style="color:var(--signal);">${lv.hps.length}</div>
+            <div class="stat-lbl">Mandates</div>
+          </div>
+          <div class="stat-box" style="background:rgba(239,68,68,0.08); border-color:rgba(239,68,68,0.2);">
+            <div class="stat-val" style="color:#f87171;">${lv.law?.fine || '₹1,000'}</div>
+            <div class="stat-lbl">Max Penalty</div>
+          </div>
+          <div class="stat-box" style="background:rgba(34,197,94,0.08); border-color:rgba(34,197,94,0.2);">
+            <div class="stat-val" style="color:#4ade80;">+₹2,000</div>
+            <div class="stat-lbl">Bounty Reward</div>
+          </div>
+        </div>
+
+        <div style="font-weight:700; font-size:1.05rem; color:#fff; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+          <span>📚 Curriculum & Syllabus Topics</span>
+          <span style="font-size:0.75rem; color:var(--muted); font-weight:500;">(Tap any topic to jump)</span>
+        </div>
+        <div class="syl-curriculum-index">
+          ${curriculumRows}
+        </div>
+
+        ${this._renderCardFooter(lv, id, items)}
+      `
     } else if (id.startsWith('rule')) {
       const idx = parseInt(id.replace('rule', ''))
       const hp = lv.hps[idx]
@@ -1393,51 +1907,221 @@ window.ui = Object.assign(window.ui || {}, {
         hpTitle = parts[0]
         hpDesc = parts.slice(1).join(':').trim()
       }
-      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">⚖️ Regulatory Requirement</div>
-          <div class="bc-rule-pill" style="display:block; text-align:center; margin:12px auto 20px; padding:6px 16px; background:rgba(242,184,75,0.15); color:var(--signal); border-radius:12px; font-weight:800; font-size:0.9rem; letter-spacing:1.5px; text-transform:uppercase;">Clause ${idx + 1}</div>
-          <div class="bc-rule-txt" style="text-align:center; font-family:'Lora', serif; font-size:clamp(1.6rem, 4vw, 2.4rem); color:var(--ink); line-height:1.3; font-weight:700; max-width:600px; margin:0 auto;">${hpTitle}</div>
-          ${hpDesc ? `<div style="margin-top:20px; text-align:center; font-family:'Inter', sans-serif; font-size:clamp(1rem, 2vw, 1.2rem); color:var(--dim); line-height:1.7; max-width:540px; margin:20px auto 0;">${hpDesc}</div>` : ''}
-          <div class="bc-next-btn" style="display:flex;justify-content:space-between; margin-top:32px; padding-top:20px; border-top:1px solid var(--line);"><button class="btn btn-s" style="background:transparent; border:1px solid var(--line); color:var(--ink);" onclick="ui._selSyl('${idx > 0 ? 'rule' + (idx - 1) : 'intro'}')">${'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>'} Previous</button>${idx < lv.hps.length - 1 ? `<button class="btn" style="background:var(--ink); color:var(--void);" onclick="ui._selSyl('rule${idx + 1}')">Next Clause &rarr;</button>` : `<button class="btn" style="background:var(--signal); color:#000;" onclick="ui._selSyl('law')">Legal Framework &rarr;</button>`}</div>`
+      card.innerHTML = `
+        ${topicHeaderHTML}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <div class="bc-ttl" style="margin:0;">⚖️ Regulatory Mandate</div>
+          <span class="bc-rule-pill">Clause ${idx + 1} of ${lv.hps.length}</span>
+        </div>
+        
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:22px 24px; margin-bottom:20px;">
+          <div class="bc-rule-txt" style="margin-bottom:12px;">${hpTitle}</div>
+          ${hpDesc ? `<div style="font-family:'Inter', sans-serif; font-size:0.95rem; color:rgba(255,255,255,0.85); line-height:1.65; border-left:3px solid var(--signal); padding-left:14px; background:rgba(255,213,74,0.04); padding-top:10px; padding-bottom:10px; border-radius:0 8px 8px 0;">${hpDesc}</div>` : ''}
+        </div>
+        
+        ${this._renderCardFooter(lv, id, items)}
+      `
     } else if (id === 'law') {
       const lawEn = lv.law
       const lawHi = { sec: lv.law.secHi || lv.law.sec, fine: lv.law.fineHi || lv.law.fine, off: lv.law.offHi || lv.law.off }
       this._lawLang = this._lawLang || (S.language === 'hi' ? 'hi' : 'en')
       const d = this._lawLang === 'hi' ? lawHi : lawEn
       const langLabel = this._lawLang === 'hi' ? 'English' : 'हिन्दी'
-      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">🏛️ Statutory Provisions / कानूनी प्रावधान</div>
-          <div style="text-align:center; margin:12px auto;"><button class="btn btn-s" style="background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.1); color:var(--ink); font-size:0.85rem; padding:6px 16px; border-radius:8px;" onclick="ui._lawLang=ui._lawLang==='hi'?'en':'hi'; ui._selSyl('law')">${langLabel}</button></div>
-          <div class="lb" style="text-align:center; margin:16px auto; max-width:500px;"><div class="ls" style="font-size:1.3rem; font-weight:800;">${d.sec}</div><div class="lt" style="font-size:1.1rem; margin-top:8px;">${d.off}</div></div>
-          <div class="fr" style="text-align:center; max-width:400px; margin:20px auto;"><div class="fl" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Fine / जुर्माना</div><div class="fa" style="font-size:2.4rem; font-weight:800;">${d.fine}</div></div>
-     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('rule'+(lv.hps.length-1))"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('theory')">Concepts &rarr;</button></div>`
+      card.innerHTML = `
+        ${topicHeaderHTML}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <div class="bc-ttl" style="margin:0;">🏛️ Statutory Legal Provisions</div>
+          <button class="btn btn-s" style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text); font-size:0.8rem; padding:6px 14px; border-radius:20px; cursor:pointer;" onclick="ui._lawLang=ui._lawLang==='hi'?'en':'hi'; ui._selSyl('law')">🌐 ${langLabel}</button>
+        </div>
+
+        <div style="background:rgba(255,213,74,0.05); border:1px solid rgba(255,213,74,0.2); border-radius:16px; padding:20px 24px; margin-bottom:16px;">
+          <div style="font-size:0.75rem; font-weight:700; color:var(--signal); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">Motor Vehicles Act Statutory Mandate</div>
+          <div style="font-size:1.35rem; font-weight:800; color:#fff; font-family:monospace; letter-spacing:0.02em; margin-bottom:8px;">${d.sec}</div>
+          <div style="font-size:1.02rem; color:rgba(255,255,255,0.9); line-height:1.5;">${d.off}</div>
+        </div>
+
+        <div class="fr" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:14px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div>
+            <div style="font-size:0.75rem; font-weight:700; color:#fca5a5; text-transform:uppercase; letter-spacing:0.05em;">Statutory Fine / Penalty</div>
+            <div style="font-size:0.82rem; color:rgba(255,255,255,0.7); margin-top:2px;">Issued on automated traffic cameras & traffic police challan</div>
+          </div>
+          <div style="font-size:1.8rem; font-weight:800; color:#ef4444; font-family:'Lora',serif;">${d.fine}</div>
+        </div>
+
+        ${this._renderCardFooter(lv, id, items)}
+      `
     } else if (id === 'theory') {
       const bracket = this.getAgeBracket()
       const isYoung = bracket === 'child' || bracket === 'teen'
       this._theoryLang = this._theoryLang || (S.language === 'hi' ? 'hi' : 'en')
-      const theoryLabel = isYoung ? '📊 Simple Explanation' : '📊 Analytical Model'
-      const theoryHint = isYoung ? '<div style="text-align:center; font-size:0.85rem; color:var(--signal); margin-bottom:8px; font-weight:600;">Easy version for young drivers</div>' : ''
+      const theoryLabel = isYoung ? 'Simple Explanation' : 'Analytical Model & Science'
+      const theoryHint = isYoung ? '<div style="font-size:0.8rem; color:var(--signal); margin-bottom:12px; font-weight:600;">✨ Simplified version for beginner drivers</div>' : ''
       const langLabel = this._theoryLang === 'hi' ? 'English' : 'हिन्दी'
 
-      // Get theory content based on language
       let theoryContent = lv.theory || ''
       if (this._theoryLang === 'hi' && lv.theoryHi) {
         theoryContent = lv.theoryHi
       }
 
-      card.innerHTML = `<div class="bc-ttl" style="text-align:center;">${theoryLabel}</div>${theoryHint}
-          <div style="text-align:center; margin:12px auto;"><button class="btn btn-s" style="background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.1); color:var(--ink); font-size:0.85rem; padding:6px 16px; border-radius:8px;" onclick="ui._theoryLang=ui._theoryLang==='hi'?'en':'hi'; ui._selSyl('theory')">${langLabel}</button></div>
-          <div class="dw">${this._diag(lv.id)}</div><div style="text-align:center; font-size:clamp(1rem, 2.2vw, 1.3rem);line-height:1.7;color:var(--muted2);margin:16px auto; max-width:580px; font-family:'Lora', serif;">${theoryContent}</div>
-     <div class="bc-next-btn" style="display:flex;justify-content:space-between;"><button class="btn btn-s" onclick="ui._selSyl('law')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button><button onclick="ui._selSyl('practical')">Execution &rarr;</button></div>`
+      card.innerHTML = `
+        ${topicHeaderHTML}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+          <div class="bc-ttl" style="margin:0;">📊 ${theoryLabel}</div>
+          <button class="btn btn-s" style="background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text); font-size:0.8rem; padding:6px 14px; border-radius:20px; cursor:pointer;" onclick="ui._theoryLang=ui._theoryLang==='hi'?'en':'hi'; ui._selSyl('theory')">🌐 ${langLabel}</button>
+        </div>
+        ${theoryHint}
+        <div class="dw">${this._diag(lv.id)}</div>
+        <div class="theory-rich-content">
+          ${theoryContent}
+        </div>
+        ${this._renderCardFooter(lv, id, items)}
+      `
     } else if (id === 'practical') {
-      const preferredMode = this.curMode
-      const btnsHTML = (lv.modes || ['car'])
+      const availModes = lv.modes || ['car']
+      const preferredMode = this.curMode || availModes[0]
+      const isPedMode = preferredMode === 'pedestrian'
+      const isBikeMode = preferredMode === 'bike'
+
+      // Playable Role Buttons
+      const btnsHTML = availModes
         .map((m) => {
           const icons = { car: '🚗', bike: '🏍️', auto: '🛺', truck: '🚛', bus: '🚌', pedestrian: '🚶' }
+          const labels = { car: 'Vehicle Driver', bike: 'Two-Wheeler / Bike', pedestrian: 'Pedestrian', auto: 'Auto-Rickshaw', truck: 'Heavy Truck', bus: 'BEST Bus' }
           const isPreferred = m === preferredMode
-          return `<button class="btn" data-mode="${m}" style="flex:1; min-width:80px; text-transform:capitalize; background:${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel, rgba(0,0,0,0.04))'}; border:1px solid ${isPreferred ? 'var(--accent, #D97706)' : 'var(--line, rgba(0,0,0,0.08))'}; color:${isPreferred ? '#fff' : 'var(--ink, #111827)'}; font-weight:700; padding:10px 8px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; transition:0.2s;" onmouseover="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--line)'}'" onmouseout="this.style.background='${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel)'}'" onclick="ui.selectMode('${m}')"><span style="font-size:1.3rem;">${icons[m] || '🚗'}</span><span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px;">${m}${isPreferred ? ' ✓' : ''}</span></button>`
+          return `<button class="btn" data-mode="${m}" style="flex:1; min-width:110px; text-transform:none; background:${isPreferred ? 'var(--accent, #D97706)' : 'var(--panel, rgba(255,255,255,0.05))'}; border:2px solid ${isPreferred ? 'var(--accent, #D97706)' : 'var(--line, rgba(255,255,255,0.1))'}; color:${isPreferred ? '#fff' : 'var(--ink, #111827)'}; font-weight:700; padding:12px 10px; border-radius:14px; display:flex; flex-direction:column; align-items:center; gap:6px; transition:all 0.2s cubic-bezier(0.16, 1, 0.3, 1); cursor:pointer;" onclick="ui.selectMode('${m}')">
+            <span style="font-size:1.5rem; line-height:1;">${icons[m] || '🚗'}</span>
+            <span style="font-size:0.8rem; font-weight:700;">${labels[m] || m}</span>
+            <span style="font-size:0.65rem; opacity:0.85; text-transform:uppercase; letter-spacing:0.5px;">${isPreferred ? '● Selected Role' : 'Select'}</span>
+          </button>`
         })
         .join('')
-      const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3); font-size:0.9rem;" onclick="ui.dispatchStart()">START MODULE &rarr;</button>`
-      card.innerHTML = `<div class="bc-ttl">🎯 Practical Execution</div>
+
+      // Dynamic Controls based on chosen role
+      let controlsHTML = ''
+      if (isPedMode) {
+        controlsHTML = `
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+             <div style="display:flex; gap:4px;">
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">W</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">A</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">S</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">D</kbd>
+             </div>
+             <span style="font-size:0.85rem; color:var(--dim);">Walk</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SHIFT</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Sprint</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SPACE</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Look / Cross</span>
+          </div>`
+      } else if (isBikeMode) {
+        controlsHTML = `
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+             <div style="display:flex; gap:4px;">
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">W</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">A</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">S</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">D</kbd>
+             </div>
+             <span style="font-size:0.85rem; color:var(--dim);">Steer</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SPACE</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Brake</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">F</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Mount</span>
+          </div>`
+      } else {
+        controlsHTML = `
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+             <div style="display:flex; gap:4px;">
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">W</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">A</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">S</kbd>
+               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">D</kbd>
+             </div>
+             <span style="font-size:0.85rem; color:var(--dim);">Drive</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SPACE</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Brake</span>
+             <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.2)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">F</kbd>
+             <span style="font-size:0.85rem; color:var(--dim);">Enter</span>
+          </div>`
+      }
+
+      // Vehicle selection box or Pedestrian summary box
+      let roleDetailHTML = ''
+      if (isPedMode) {
+        roleDetailHTML = `
+          <div style="background:rgba(217,119,6,0.08); border:1px solid rgba(217,119,6,0.2); padding:16px 20px; border-radius:16px; display:flex; align-items:center; gap:16px;">
+            <div style="font-size:2.4rem; line-height:1;">🚶</div>
+            <div style="flex:1;">
+              <div style="font-size:0.95rem; font-weight:700; color:var(--accent, #D97706);">Pedestrian Foot Patrol Active</div>
+              <div style="font-size:0.85rem; color:var(--text, #e2e8f0); margin-top:3px; line-height:1.4;">You will complete this scenario entirely on foot. Walk on designated footpaths, check blind spots before crossing, and obey pedestrian traffic signals. No vehicle required.</div>
+            </div>
+          </div>`
+      } else if (isBikeMode) {
+        const twoWheelers = [
+          { id: 'bike', name: 'Motorcycle', icon: '🏍️' },
+          { id: 'cycle', name: 'Bicycle', icon: '🚲' }
+        ]
+        const currentVeh = (S.vehicle || 'bike').toLowerCase()
+        const selectedId = (currentVeh === 'cycle' || currentVeh === 'bicycle') ? 'cycle' : 'bike'
+
+        roleDetailHTML = `
+          <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+             <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">🏍️ Choose Two-Wheeler Vehicle</div>
+             <div id="br-vehicle-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px;">
+               ${twoWheelers.map(v => {
+                 const sel = selectedId === v.id
+                 const rec = window.COURSE?.getRecommendedVehicle?.(lv.id) === v.id
+                 return `<div style="padding:16px 12px;background:${sel ? 'rgba(242,184,75,0.15)' : 'var(--card, rgba(17,24,39,0.6))'};border:2px solid ${sel ? 'var(--accent, #f2b84b)' : (rec ? 'var(--signal, #5ed4f5)' : 'var(--border, rgba(255,255,255,0.1))')};border-radius:14px;text-align:center;cursor:pointer;transition:all 0.2s ease;"
+                      onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${sel ? 'rgba(242,184,75,0.15)' : 'var(--card, rgba(17,24,39,0.6))'}'"
+                      onclick="ui._selectVehicle('${v.id}')">
+                   <div style="font-size:2rem;line-height:1;">${v.icon}</div>
+                   <div style="font-size:0.9rem;font-weight:700;color:var(--text, #e2e8f0);margin-top:6px;">${v.name}</div>
+                   ${rec ? '<div style="font-size:0.65rem;color:var(--signal, #5ed4f5);font-weight:700;margin-top:3px;">✓ Recommended</div>' : ''}
+                   ${sel ? '<div style="font-size:0.65rem;color:var(--accent, #f2b84b);font-weight:700;margin-top:3px;">● Selected</div>' : ''}
+                 </div>`
+               }).join('')}
+             </div>
+          </div>`
+      } else {
+        const fourWheelers = [
+          { id: 'car', name: 'Sedan', icon: '🚗' },
+          { id: 'taxi', name: 'Kaali-Peeli', icon: '🚖' },
+          { id: 'auto', name: 'Auto-Rickshaw', icon: '🛺' },
+          { id: 'bus', name: 'BEST Bus', icon: '🚌' },
+          { id: 'truck', name: 'Heavy Truck', icon: '🚚' },
+          { id: 'ambulance', name: 'Ambulance', icon: '🚑' },
+          { id: 'police', name: 'Police Jeep', icon: '🚓' }
+        ]
+        const currentVeh = (S.vehicle || 'car').toLowerCase()
+        const isBikeVeh = currentVeh === 'bike' || currentVeh === 'cycle' || currentVeh === 'bicycle' || currentVeh === 'motorcycle'
+        const effectiveVeh = isBikeVeh ? 'car' : currentVeh
+
+        roleDetailHTML = `
+          <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+             <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">🚗 Choose 4-Wheeler / Commercial Vehicle</div>
+             <div id="br-vehicle-list" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(105px, 1fr)); gap:10px;">
+               ${fourWheelers.map(v => {
+                 const sel = effectiveVeh === v.name?.toLowerCase() || effectiveVeh === v.id
+                 const rec = window.COURSE?.getRecommendedVehicle?.(lv.id) === v.id
+                 return `<div style="padding:12px 8px;background:${sel ? 'rgba(242,184,75,0.15)' : 'var(--card, rgba(17,24,39,0.6))'};border:2px solid ${sel ? 'var(--accent, #f2b84b)' : (rec ? 'var(--signal, #5ed4f5)' : 'var(--border, rgba(255,255,255,0.1))')};border-radius:14px;text-align:center;cursor:pointer;transition:all 0.2s ease;"
+                      onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='${sel ? 'rgba(242,184,75,0.15)' : 'var(--card, rgba(17,24,39,0.6))'}'"
+                      onclick="ui._selectVehicle('${v.id}')">
+                   <div style="font-size:1.6rem;line-height:1;">${v.icon || '🚗'}</div>
+                   <div style="font-size:0.82rem;font-weight:700;color:var(--text, #e2e8f0);margin-top:6px;">${v.name || v.id}</div>
+                   ${rec ? '<div style="font-size:0.62rem;color:var(--signal, #5ed4f5);font-weight:700;margin-top:3px;">✓ Recommended</div>' : ''}
+                   ${sel ? '<div style="font-size:0.62rem;color:var(--accent, #f2b84b);font-weight:700;margin-top:3px;">● Selected</div>' : ''}
+                 </div>`
+               }).join('')}
+             </div>
+          </div>`
+      }
+
+      const finalBtnLabel = isPedMode ? 'START PEDESTRIAN RUN 🚶 →' : (isBikeMode ? 'START BIKE RIDE 🏍️ →' : 'START DRIVING TEST 🚗 →')
+      const finalBtn = `<button class="btn" style="background:var(--accent, #D97706); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(217,119,6,0.3); font-size:0.92rem; border:none; cursor:pointer;" onclick="ui.dispatchStart('${preferredMode}')">${finalBtnLabel}</button>`
+
+      card.innerHTML = `
+      ${topicHeaderHTML}
+      <div class="bc-ttl">🎯 Practical Execution</div>
       <div style="display:flex; flex-direction:column; gap:16px; margin-bottom: 20px;">
         
         <!-- Objective Banner -->
@@ -1449,8 +2133,8 @@ window.ui = Object.assign(window.ui || {}, {
           </div>
         </div>
 
-        <!-- Visual Tutorial -->
-        <div style="position:relative; width:100%; border-radius:16px; overflow:hidden; border:1px solid var(--line, rgba(255,255,255,0.1)); background:var(--void2, rgba(0,0,0,0.2));">
+        <!-- Visual Tutorial 2.5D Simulation -->
+        <div style="position:relative; width:100%; border-radius:20px; overflow:hidden; border:1px solid var(--line, rgba(255,255,255,0.12)); background:#080d1a;">
           ${this._simAnim(lv)}
         </div>
         
@@ -1458,19 +2142,9 @@ window.ui = Object.assign(window.ui || {}, {
         <div style="display:flex; flex-wrap:wrap; gap:16px;">
           
           <!-- Controls -->
-          <div style="flex:1; min-width:240px; background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+          <div style="flex:1.2; min-width:260px; background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
             <div style="color:var(--dim, #6B7280); font-size:0.8rem; font-weight:700; text-transform:uppercase; margin-bottom:12px;">🕹️ Controls</div>
-            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-               <div style="display:flex; gap:4px;">
-                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">W</kbd>
-                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">A</kbd>
-                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">S</kbd>
-                 <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">D</kbd>
-               </div>
-               <span style="font-size:0.85rem; color:var(--dim);">Drive</span>
-               <kbd style="padding:4px 8px; background:var(--void, rgba(0,0,0,0.1)); border-radius:4px; font-weight:bold; font-size:0.8rem; border:1px solid var(--line, rgba(255,255,255,0.1)); color:var(--ink);">SPACE</kbd>
-               <span style="font-size:0.85rem; color:var(--dim);">Brake</span>
-            </div>
+            ${controlsHTML}
           </div>
           
           <!-- Penalty -->
@@ -1485,33 +2159,19 @@ window.ui = Object.assign(window.ui || {}, {
             </div>
           </div>
         </div>
-        
-        <!-- Vehicle Selection -->
+
+        <!-- Playable Role Selector -->
         <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
-           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">🚗 Vehicle</div>
-           <div id="br-vehicle-list" style="display:flex; gap:8px; flex-wrap:wrap;">
-             ${(window.COURSE?.VEHICLES || []).map(v => {
-               const sel = v.id === (S.vehicle?.toLowerCase() || '')
-               const rec = window.COURSE?.getRecommendedVehicle?.(lv.id) === v.id
-               return `<div style="flex:1;min-width:100px;padding:12px;background:${sel ? 'rgba(242,184,75,0.15)' : 'var(--card)'};border:2px solid ${sel ? 'var(--accent)' : (rec ? 'var(--signal)' : 'var(--border)')};border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s;"
-                    onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='${sel ? 'rgba(242,184,75,0.15)' : 'var(--card)'}'"
-                    onclick="ui._selectVehicle('${v.id}')">
-                 <div style="font-size:1.6rem;line-height:1;">${v.icon || '🚗'}</div>
-                 <div style="font-size:0.8rem;font-weight:700;color:var(--text);margin-top:4px;">${v.name || v.id}</div>
-                 ${rec ? '<div style="font-size:0.6rem;color:var(--signal);font-weight:700;margin-top:2px;">✓ Recommended</div>' : ''}
-                 ${sel ? '<div style="font-size:0.6rem;color:var(--accent);font-weight:700;margin-top:2px;">Selected</div>' : ''}
-               </div>`
-             }).join('')}
-           </div>
-        </div>
-        
-        <!-- Practice Modes -->
-        <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
-           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px;">📝 Practice Run (2D Simulation)</div>
+           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px;">🎮 Playable Role / Mode</div>
            <div style="display:flex; gap:10px; flex-wrap:wrap;">${btnsHTML}</div>
         </div>
+
+        <!-- Role Detail: Vehicle Grid (if Driving) or Foot Patrol (if Pedestrian) -->
+        ${roleDetailHTML}
         
-        <div style="font-size:0.8rem;color:var(--accent, #D97706); background:rgba(217,119,6,0.1); padding:10px 16px; border-radius:8px; border-left:3px solid var(--accent, #D97706);">Note: A PERFECT drive (no violations/damage) is required to avoid penalty on retry.</div>
+        <div style="font-size:0.82rem;color:var(--accent, #D97706); background:rgba(217,119,6,0.1); padding:12px 18px; border-radius:10px; border-left:3px solid var(--accent, #D97706); line-height:1.4;">
+          ⚠️ <strong>Performance Standard:</strong> A PERFECT run (no statutory violations or collision damage) is required to clear the practical evaluation and unlock the next lesson.
+        </div>
       </div>
       
       <!-- Launch -->
@@ -1522,448 +2182,1267 @@ window.ui = Object.assign(window.ui || {}, {
           ${finalBtn}
         </div>
       </div>`
+    } else if (id === 'chaos') {
+      const chaosVehicles = (window.COURSE?.VEHICLES || [{ id: 'car', name: 'Sedan', icon: '🚗' }]).map(v => {
+        const sel = v.id === (S.vehicle?.toLowerCase() || 'car')
+        const rec = window.COURSE?.getRecommendedVehicle?.(lv.id) === v.id
+        return `<div style="flex:1;min-width:90px;padding:12px;background:${sel ? 'rgba(239,68,68,0.15)' : 'var(--card)'};border:2px solid ${sel ? '#ef4444' : (rec ? 'var(--signal)' : 'var(--border)')};border-radius:12px;text-align:center;cursor:pointer;transition:all 0.2s;"
+             onmouseover="this.style.background='var(--hover)'" onmouseout="this.style.background='${sel ? 'rgba(239,68,68,0.15)' : 'var(--card)'}'"
+             onclick="ui._selectVehicle('${v.id}')">
+          <div style="font-size:1.8rem;margin-bottom:4px;">${v.icon}</div>
+          <div style="font-size:0.8rem;font-weight:700;color:var(--text);">${v.name}</div>
+        </div>`
+      }).join('')
+      const chaosBtn = `<button class="btn" style="background:linear-gradient(90deg, #ef4444, #f59e0b); color:#fff; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(239,68,68,0.4); font-size:0.95rem; border:none; cursor:pointer;" onclick="ui.dispatchStart('chaos')">LAUNCH CHAOS RUN 🌪️ &rarr;</button>`
+      card.innerHTML = `
+      ${topicHeaderHTML}
+      <div class="bc-ttl" style="color:#ef4444;">🌪️ Chaos Run — Adaptive Stress Test</div>
+      <div style="display:flex; flex-direction:column; gap:16px; margin-bottom: 20px;">
+        <div class="pract-banner" style="background:linear-gradient(135deg, rgba(239,68,68,0.1), rgba(245,158,11,0.1)); padding:18px; border-radius:16px; border:1px solid rgba(239,68,68,0.3); display:flex; align-items:center; gap:16px;">
+          <div style="font-size:3.2rem;line-height:1;">🌪️</div>
+          <div style="flex:1;">
+            <div style="font-size:1.4rem;font-family:var(--serif,'Instrument Serif'),serif;font-style:italic;font-weight:700; color:#ef4444;">Adaptive Stress Simulation</div>
+            <div style="font-size:0.95rem;color:var(--text);line-height:1.4;margin-top:4px;">Test your reflexes under peak Mumbai chaos: aggressive overtaking, jaywalking pedestrians, low-grip monsoon puddles, and emergency siren yields.</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+          <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:14px; border-radius:12px;">
+            <div style="font-size:0.8rem; font-weight:700; color:#f59e0b; margin-bottom:4px;">⚡ High Density Traffic</div>
+            <div style="font-size:0.75rem; color:var(--muted);">2x aggressive auto-rickshaws & sudden lane cuts (+50% XP)</div>
+          </div>
+          <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:14px; border-radius:12px;">
+            <div style="font-size:0.8rem; font-weight:700; color:#38bdf8; margin-bottom:4px;">🌧️ Wet Asphalt Monsoon</div>
+            <div style="font-size:0.75rem; color:var(--muted);">Reduced friction and hydroplaning puddles (+25% XP)</div>
+          </div>
+          <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:14px; border-radius:12px;">
+            <div style="font-size:0.8rem; font-weight:700; color:#ef4444; margin-bottom:4px;">🚨 Sudden Emergency Priority</div>
+            <div style="font-size:0.75rem; color:var(--muted);">Yield within 5 seconds or receive statutory fines (+25% XP)</div>
+          </div>
+        </div>
+
+        <div style="background:var(--panel, rgba(255,255,255,0.05)); border:1px solid var(--line, rgba(255,255,255,0.1)); padding:16px; border-radius:16px;">
+           <div style="font-size:0.8rem; color:var(--dim, #9CA3AF); text-transform:uppercase; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;">🚗 Select Vehicle for Chaos Run</div>
+           <div id="br-vehicle-list" style="display:flex; gap:8px; flex-wrap:wrap;">
+             ${chaosVehicles}
+           </div>
+        </div>
+      </div>
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line, rgba(0,0,0,0.1)); padding-top:16px;">
+        <button class="btn btn-s" onclick="ui._selSyl('practical')" style="padding:8px 16px; background:var(--panel); border:1px solid var(--line); color:var(--ink); border-radius:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Practical</button>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+          <div style="font-size:0.75rem; color:var(--dim, #6B7280);">2x XP Multiplier Active</div>
+          ${chaosBtn}
+        </div>
+      </div>`
+    } else if (id === 'exam') {
+      const examBtn = `<button class="btn" style="background:var(--signal); color:#000; font-weight:bold; padding:12px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(255,213,74,0.3); font-size:0.95rem; border:none; cursor:pointer;" onclick="ui.showQuiz('exam')">START EXAM 📝 &rarr;</button>`
+      card.innerHTML = `
+      ${topicHeaderHTML}
+      <div class="bc-ttl">📝 Module Assessment & Theory Exam</div>
+      <div style="display:flex; flex-direction:column; gap:16px; margin-bottom: 20px;">
+        <div class="pract-banner" style="background:linear-gradient(135deg, rgba(94,212,245,0.1), rgba(255,213,74,0.1)); padding:18px; border-radius:16px; border:1px solid rgba(255,213,74,0.3); display:flex; align-items:center; gap:16px;">
+          <div style="font-size:3.2rem;line-height:1;">📋</div>
+          <div style="flex:1;">
+            <div style="font-size:1.4rem;font-family:var(--serif,'Instrument Serif'),serif;font-style:italic;font-weight:700; color:var(--signal);">Official Traffic Regulation Assessment</div>
+            <div style="font-size:0.95rem;color:var(--text);line-height:1.4;margin-top:4px;">Test your mastery on statutory Motor Vehicle laws, right-of-way rules, and hazard mitigation for "${lv.name}".</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
+          <div style="background:var(--panel); border:1px solid var(--line); padding:16px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.8rem; font-weight:800; color:var(--signal);">5</div>
+            <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase;">Questions</div>
+          </div>
+          <div style="background:var(--panel); border:1px solid var(--line); padding:16px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.8rem; font-weight:800; color:var(--green);">80%</div>
+            <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase;">Pass Threshold</div>
+          </div>
+          <div style="background:var(--panel); border:1px solid var(--line); padding:16px; border-radius:12px; text-align:center;">
+            <div style="font-size:1.8rem; font-weight:800; color:#38bdf8;">+₹2,500</div>
+            <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase;">Career Bounty</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line, rgba(0,0,0,0.1)); padding-top:16px;">
+        <button class="btn btn-s" onclick="ui._selSyl('chaos')" style="padding:8px 16px; background:var(--panel); border:1px solid var(--line); color:var(--ink); border-radius:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px; margin-right:4px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Chaos Run</button>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+          <div style="font-size:0.75rem; color:var(--dim);">Official Certification Credit</div>
+          ${examBtn}
+        </div>
+      </div>`
     }
     c.appendChild(card)
     if (id === 'practical') {
-      // Use 2D CSS Art instead of 3D Scene
       requestAnimationFrame(() => this._initBriefingArt(lv))
     }
+    if (window.innerWidth <= 860 && id !== 'intro') {
+      setTimeout(() => {
+        c.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 50)
+    }
+  },
+  _renderTopicHeader(lv, currentId, items) {
+    const currentIndex = items.findIndex(it => it.id === currentId)
+    const currentItem = items[currentIndex] || items[0]
+    return `
+      <div class="syl-breadcrumb-bar">
+        <div class="syl-crumb-left">
+          <span class="syl-crumb-badge">Module ${lv.id}</span>
+          <span class="syl-crumb-arrow">&rsaquo;</span>
+          <span class="syl-crumb-step">Step ${currentIndex + 1} of ${items.length}</span>
+          <span class="syl-crumb-arrow">&rsaquo;</span>
+          <span class="syl-crumb-curr">${currentItem.icon} ${currentItem.label}</span>
+        </div>
+        <div class="syl-crumb-dots">
+          ${items.map((item, idx) => {
+            const isDone = this._sylViewed && this._sylViewed.has(item.id)
+            const isCurr = item.id === currentId
+            return `<div class="syl-dot ${isCurr ? 'active' : (isDone ? 'done' : '')}" onclick="ui._selSyl('${item.id}')" title="${item.label}"></div>`
+          }).join('')}
+        </div>
+      </div>
+    `
+  },
+  _renderCardFooter(lv, currentId, items) {
+    const currentIndex = items.findIndex(it => it.id === currentId)
+    const prevItem = items[currentIndex - 1]
+    const nextItem = items[currentIndex + 1]
+
+    return `
+      <div class="syl-footer-nav">
+        ${prevItem 
+          ? `<button class="btn btn-syl-prev" onclick="ui._selSyl('${prevItem.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> ${prevItem.label}</button>`
+          : `<div></div>`
+        }
+        <div class="syl-footer-progress">
+          <span>Topic ${currentIndex + 1} of ${items.length}</span>
+        </div>
+        ${nextItem
+          ? `<button class="btn btn-syl-next" onclick="ui._selSyl('${nextItem.id}')">${nextItem.label} &rarr;</button>`
+          : `<button class="btn btn-syl-next btn-syl-start" onclick="ui.dispatchStart()">🚀 Start Practical Test &rarr;</button>`
+        }
+      </div>
+    `
   },
   _diag(id) {
     const lv = LVS.find((l) => l.id === id)
     if (!lv) return ''
-    return `<div style="background:${lv.gr};border-radius:14px;padding:clamp(16px, 2.5vw, 24px) clamp(16px, 3vw, 30px);margin-bottom:16px;display:flex;align-items:center;gap:clamp(12px, 3vw, 24px)">
-     <div style="font-size:clamp(2.5rem, 5vw, 4.5rem)">${lv.icon}</div>
-     <div>
-       <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem, 2.5vw, 2rem);color:#fff;letter-spacing:.05em">${lv.name}</div>
-       <div style="font-size:clamp(0.8rem, 1.5vw, 1.1rem);color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em">${lv.v} · Fine: ${lv.law.fine}</div>
-     </div></div>`
+    const themeLabel = (lv.themeType || 'traffic_safety').replace(/_/g, ' ')
+    const fineText = lv.law?.fine || '₹500 - ₹2000'
+    const bgGradient = lv.gr || 'linear-gradient(135deg, #1e293b, #0f172a)'
+    return `
+      <div style="background:${bgGradient};border:1px solid rgba(255,255,255,0.15);box-shadow:0 8px 24px rgba(0,0,0,0.35);border-radius:16px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:18px;">
+        <div style="font-size:2.8rem;line-height:1;background:rgba(0,0,0,0.25);width:60px;height:60px;border-radius:14px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);flex-shrink:0;">${lv.icon || '🚦'}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:1.3rem;font-weight:700;color:#fff;letter-spacing:0.02em;margin-bottom:6px;font-family:var(--sans,'Inter'),sans-serif;">${lv.name}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <span style="background:rgba(255,255,255,0.15);color:#fff;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:0.05em;border:1px solid rgba(255,255,255,0.2);">🚦 ${themeLabel}</span>
+            <span style="background:rgba(239,68,68,0.2);color:#fca5a5;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.03em;border:1px solid rgba(239,68,68,0.3);">💰 Fine: ${fineText}</span>
+          </div>
+        </div>
+      </div>
+    `
   },
+  _getScenarioMeta(lv) {
+    const theme = String(lv?.themeType || '').toLowerCase();
+    const id = String(lv?.id || '').toLowerCase();
+    const name = String(lv?.name || '').toLowerCase();
+
+    let key = 'grand_test';
+    if (theme.includes('ambulance') || name.includes('ambulance')) key = 'ambulance_priority';
+    else if (theme.includes('signal') || name.includes('red light') || name.includes('signal')) key = 'signal_jump';
+    else if (theme.includes('puddle') || theme.includes('puddle_etiquette')) key = 'puddle_etiquette';
+    else if (theme.includes('parking') || theme.includes('market_street') || name.includes('parking')) key = 'street_parking';
+    else if (theme.includes('silent') || theme.includes('no_honk') || theme.includes('quiet') || name.includes('silence') || name.includes('library') || name.includes('temple')) key = 'silent_zone';
+    else if (theme.includes('festival') || name.includes('festival') || name.includes('parade')) key = 'festival';
+    else if (theme.includes('rage') || name.includes('road rage')) key = 'road_rage';
+    else if (theme.includes('sign') || name.includes('sign')) key = 'signs';
+    else if (theme.includes('animal') || theme.includes('cow') || name.includes('cow')) key = 'animals';
+    else if (theme.includes('narrow') || theme.includes('rural') || name.includes('narrow') || name.includes('kacha')) key = 'narrow_street';
+    else if (theme.includes('auto') || theme.includes('multi_modal') || name.includes('auto')) key = 'auto_dance';
+    else if (theme.includes('toll') || name.includes('toll')) key = 'toll';
+    else if (theme.includes('blind') || theme.includes('mountain') || name.includes('blind') || name.includes('mountain')) key = 'blind_corner';
+    else if (theme.includes('hill') || name.includes('hill')) key = 'hill_driving';
+    else if (theme.includes('bus') || name.includes('bus')) key = 'bus_stop';
+    else if (theme.includes('construction') || name.includes('construction')) key = 'construction';
+    else if (theme.includes('wrong') || theme.includes('one_way') || name.includes('one-way') || name.includes('wrong-side')) key = 'one_way';
+    else if (theme.includes('cyclist') || name.includes('cyclist') || name.includes('cycle')) key = 'cyclist';
+    else if (theme.includes('merge') || theme.includes('lane') || name.includes('merge') || name.includes('lane discipline')) key = 'highway_merge';
+    else if (theme.includes('zero_vis') || theme.includes('night_monsoon') || name.includes('zero visibility')) key = 'zero_visibility';
+    else if (theme.includes('rain') || name.includes('heavy rain')) key = 'puddle_etiquette';
+    else if (theme.includes('pedestrian') || theme.includes('school') || name.includes('pedestrian') || name.includes('crossing')) key = 'pedestrian_courtesy';
+    else if (theme.includes('grand') || theme.includes('driving_school') || theme.includes('free_roam') || name.includes('grand') || name.includes('instructor') || name.includes('free roam')) key = 'grand_test';
+
+    const isNight = theme.includes('night') || key === 'zero_visibility';
+    const isRain = theme.includes('rain') || theme.includes('monsoon') || key === 'puddle_etiquette' || key === 'zero_visibility';
+    const conditionText = isNight ? '🌙 NIGHT · LOW VISIBILITY' : (isRain ? '🌧️ MONSOON · WET ROAD (0.65μ)' : '☀️ DAYLIGHT · DRY ASPHALT');
+    const ruleText = lv.law?.fine ? `💰 PENALTY: ${lv.law.fine}` : '🚦 MOTOR VEHICLES ACT COMPLIANCE';
+
+    return { key, isNight, isRain, conditionText, ruleText };
+  },
+
   _simAnim(lv) {
-    return `<div id="briefing-canvas-wrap" style="position:relative; width:100%; height:clamp(200px, 32vw, 280px); border-radius:20px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); background:#1a1f2e;">
-          <div style="position:absolute; top:12px; left:12px; color:var(--muted2, #6B7280); font-size:0.7rem; font-weight:800; opacity:0.9; z-index:10; background:rgba(255,255,255,0.75); padding:6px 14px; border-radius:8px; letter-spacing:1.2px; backdrop-filter:blur(8px); border:1px solid rgba(0,0,0,0.06); font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>
-        </div>`
+    const meta = this._getScenarioMeta(lv);
+    return `
+      <div id="briefing-canvas-wrap" class="scenario-sim-container">
+        <canvas id="scenario-sim-canvas"></canvas>
+        <div class="sim-hud-top">
+          <div class="sim-live-badge">
+            <span class="sim-record-dot"></span>
+            <span>LIVE SCENARIO SIM</span>
+          </div>
+          <div class="sim-condition-pill" id="sim-condition-pill">${meta.conditionText}</div>
+          <div class="sim-rule-pill" id="sim-rule-pill">${meta.ruleText}</div>
+        </div>
+        <div class="sim-alert-banner" id="sim-alert-banner">🚨 STATUTORY COMPLIANCE REQUIRED</div>
+        <div class="sim-hud-bottom">
+          <div class="sim-telemetry-bar">
+            <div class="sim-telem-item">
+              <span class="sim-telem-lbl">SPEED</span>
+              <span class="sim-telem-val" id="sim-speed-val">40 km/h</span>
+            </div>
+            <div class="sim-telem-item">
+              <span class="sim-telem-lbl">BRAKING</span>
+              <span class="sim-telem-val" id="sim-brake-val">0%</span>
+            </div>
+            <div class="sim-telem-item">
+              <span class="sim-telem-lbl">STATUS</span>
+              <span class="sim-telem-val" id="sim-status-val" style="color:#10b981;">CRUISING</span>
+            </div>
+          </div>
+          <div class="sim-ctrl-bar">
+            <button class="sim-btn" id="sim-play-btn" title="Play/Pause" onclick="ui._simTogglePlay()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button class="sim-btn" id="sim-speed-btn" title="Playback Speed" onclick="ui._simToggleSpeed()">1x</button>
+            <button class="sim-btn" id="sim-reset-btn" title="Restart" onclick="ui._simRestart()">↺</button>
+            <div class="sim-timeline-wrap">
+              <input type="range" min="0" max="100" value="0" class="sim-slider" id="sim-timeline" oninput="ui._simSeek(this.value)">
+            </div>
+          </div>
+        </div>
+      </div>
+    `
   },
+
+  _simState: { isPlaying: true, speed: 1.0, time: 0, duration: 8.0 },
+  _simTogglePlay() {
+    this._simState.isPlaying = !this._simState.isPlaying;
+    const btn = document.getElementById('sim-play-btn');
+    if (btn) {
+      btn.innerHTML = this._simState.isPlaying 
+        ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>' 
+        : '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+    }
+  },
+  _simToggleSpeed() {
+    const speeds = [1.0, 2.0, 0.5];
+    const idx = (speeds.indexOf(this._simState.speed) + 1) % speeds.length;
+    this._simState.speed = speeds[idx];
+    const btn = document.getElementById('sim-speed-btn');
+    if (btn) btn.textContent = this._simState.speed + 'x';
+  },
+  _simRestart() {
+    this._simState.time = 0;
+  },
+  _simSeek(val) {
+    this._simState.time = (parseFloat(val) / 100) * this._simState.duration;
+  },
+
   _initBriefingArt(lv) {
-    const wrap = document.getElementById('briefing-canvas-wrap');
-    if (!wrap) return;
-    const theme = lv.themeType || 'default';
+    if (this._simAnimId) {
+      cancelAnimationFrame(this._simAnimId);
+      this._simAnimId = null;
+    }
+    const canvas = document.getElementById('scenario-sim-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    // ── Shared CSS building blocks ──
-    const road = (w, l, b) => `position:absolute; bottom:${b||40}px; left:${l||0}; width:${w||'100%'}; height:60px; background:#3d3f45; border-top:4px solid #fff; border-bottom:4px solid #fff;`;
-    const zebra = `position:absolute; top:0; left:50%; transform:translateX(-50%); width:60px; height:60px; background:repeating-linear-gradient(90deg,#fff 0,#fff 10px,transparent 10px,transparent 20px);`;
-    const sidewalk = `position:absolute; bottom:100px; left:0; width:100%; height:18px; background:#6b7280;`;
-    const nightBg = `background:rgba(0,0,30,0.35);`;
-    const badge = `<div style="position:absolute;top:12px;left:12px;color:var(--muted2,#6B7280);font-size:.7rem;font-weight:800;opacity:.9;z-index:10;background:rgba(255,255,255,.75);padding:6px 14px;border-radius:8px;letter-spacing:1.2px;backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,.06);font-family:'Space Mono',monospace;">🎬 SCENARIO DEMO</div>`;
+    this._simState.isPlaying = true;
+    this._simState.speed = 1.0;
+    this._simState.time = 0;
+    this._simState.duration = 8.0;
 
-    // ── Keyframes (collected, injected once) ──
-    const K = `
-      @keyframes ba{from{left:-15%}to{left:115%}}
-      @keyframes ab{from{left:115%}to{left:-15%}}
-      @keyframes ped{0%{left:15%}100%{left:70%}}
-      @keyframes ped2{0%{left:70%}100%{left:15%}}
-      @keyframes carStop{0%{left:85%}40%{left:62%}100%{left:62%}}
-      @keyframes carStopR{0%{right:85%}40%{right:62%}100%{right:62%}}
-      @keyframes pullOver{0%{transform:translateY(0)}40%{transform:translateY(-8px)}100%{transform:translateY(-8px)}}
-      @keyframes slow{from{left:-20%}to{left:120%}}
-      @keyframes weave{0%{left:30%;transform:translateY(0)}25%{left:50%;transform:translateY(-6px)}50%{left:35%;transform:translateY(4px)}75%{left:55%;transform:translateY(-4px)}100%{left:30%;transform:translateY(0)}}
-      @keyframes rain{0%{top:-20px;opacity:1}100%{top:220px;opacity:.3}}
-      @keyframes splash{0%{transform:scaleX(1)}50%{transform:scaleX(1.6)}100%{transform:scaleX(1)}}
-      @keyframes flash{0%,100%{opacity:1}50%{opacity:.3}}
-      @keyframes siren{0%,100%{color:#f44}50%{color:#48f}}
-      @keyframes fogPulse{0%{opacity:.5}100%{opacity:.85}}
-      @keyframes wiper{0%{transform:rotate(-30deg)}50%{transform:rotate(30deg)}100%{transform:rotate(-30deg)}}
-      @keyframes sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
-      @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-      @keyframes drift{0%{transform:translateX(0)}50%{transform:translateX(6px)}100%{transform:translateX(0)}}
-      @keyframes honk{0%,80%,100%{opacity:0}85%{opacity:1}95%{opacity:1}}
-      @keyframes merge{0%{left:20%}50%{left:42%}100%{left:20%}}
-    `;
+    const meta = this._getScenarioMeta(lv);
+    const scenarioKey = meta.key;
+    const isNight = meta.isNight;
+    const isRain = meta.isRain;
 
-    // ── Theme art map ──
-    const A = {};
+    // Generate persistent rain streaks
+    const rainDrops = [];
+    for (let i = 0; i < 75; i++) {
+      rainDrops.push({
+        x: Math.random() * 1000,
+        y: Math.random() * 300,
+        speed: 600 + Math.random() * 300,
+        length: 12 + Math.random() * 10
+      });
+    }
 
-    // 1. PEDESTRIAN COURTESY — school zone, zebra crossing, traffic light, walking peds, car braking
-    A.pedestrian_courtesy = () => `
-      <div style="${road()}">${`<div style="${zebra}"></div>`}</div>
-      <div style="position:absolute;top:30%;left:10%;width:28px;height:64px;background:#222;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:4px 0;">
-        <div style="width:16px;height:16px;border-radius:50%;background:#f33;box-shadow:0 0 6px #f33;"></div>
-        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
-        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
-      </div>
-      <div style="position:absolute;top:20px;right:40px;font-size:4rem;">🏫</div>
-      <div style="position:absolute;bottom:55px;left:20%;font-size:1.8rem;animation:ped 3.5s infinite alternate;">🚶</div>
-      <div style="position:absolute;bottom:58px;left:26%;font-size:1.4rem;animation:ped 2.8s infinite alternate;">🚶‍♀️</div>
-      <div style="position:absolute;bottom:50px;font-size:2.4rem;animation:carStop 4s infinite ease-out;">🚗</div>`;
+    let lastTimestamp = performance.now();
 
-    // 2. AMBULANCE PRIORITY — ambulance rushing, cars pulling over
-    A.ambulance_priority = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;font-size:2.6rem;animation:ab 3.5s infinite linear;">🚑<span style="position:absolute;top:-18px;left:8px;font-size:.9rem;animation:flash .4s infinite;">🚨</span></div>
-      <div style="position:absolute;bottom:48px;left:35%;font-size:2rem;animation:pullOver 4s infinite ease-out;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:58%;font-size:2rem;animation:pullOver 4s infinite ease-out .6s;">🚕</div>`;
+    const renderFrame = (now) => {
+      const dt = Math.min((now - lastTimestamp) / 1000, 0.1);
+      lastTimestamp = now;
 
-    // 3. MARKET STREET — market tents, auto, pedestrians
-    A.market_street = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;top:30px;left:8%;font-size:2.8rem;">🎪</div>
-      <div style="position:absolute;top:30px;left:30%;font-size:2.8rem;">🏪</div>
-      <div style="position:absolute;top:30px;left:52%;font-size:2.8rem;">🛒</div>
-      <div style="position:absolute;bottom:48px;font-size:2rem;animation:slow 6s infinite linear;">🛺</div>
-      <div style="position:absolute;bottom:48px;left:45%;font-size:1.8rem;animation:slow 7s infinite linear -2s;">🚗</div>
-      <div style="position:absolute;bottom:105px;left:18%;font-size:1.3rem;animation:ped 3s infinite alternate;">🚶</div>
-      <div style="position:absolute;bottom:105px;left:62%;font-size:1.3rem;animation:ped2 3.2s infinite alternate;">🚶‍♀️</div>`;
+      if (this._simState.isPlaying) {
+        this._simState.time += dt * this._simState.speed;
+        if (this._simState.time >= this._simState.duration) {
+          this._simState.time = 0;
+        }
+      }
 
-    // 4. STREET PARKING — cars parked, one pulling into spot
-    A.street_parking = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;bottom:42px;left:12%;width:45px;height:18px;background:#2a2d35;border:2px dashed #888;border-radius:4px;"></div>
-      <div style="position:absolute;bottom:42px;left:30%;width:45px;height:18px;background:#2a2d35;border:2px dashed #888;border-radius:4px;"></div>
-      <div style="position:absolute;bottom:44px;left:13%;font-size:1.6rem;">🚙</div>
-      <div style="position:absolute;bottom:44px;left:31%;font-size:1.6rem;">🚗</div>
-      <div style="position:absolute;bottom:104px;left:50%;font-size:2.2rem;animation:carStop 5s infinite ease-out;">🚗</div>
-      <div style="position:absolute;top:30px;right:30px;font-size:2.4rem;">🅿️</div>`;
+      const wrap = canvas.parentElement;
+      if (!wrap) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
 
-    // 5. PUDDLE ETIQUETTE — rain, puddle, car driving carefully around
-    A.puddle_etiquette = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;left:42%;width:70px;height:20px;background:rgba(80,140,255,.45);border-radius:50%;animation:splash 2s infinite;"></div>
-      ${[15,30,50,65,80].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:14px;background:rgba(120,180,255,.5);border-radius:0 0 2px 2px;animation:rain .8s infinite linear ${x*.02}s;"></div>`).join('')}
-      <div style="position:absolute;bottom:48px;left:15%;font-size:2.2rem;animation:slow 5s infinite linear;">🚗</div>
-      <div style="position:absolute;top:25px;right:40px;font-size:2rem;">🌧️</div>`;
+      if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+      }
 
-    // 6. RESPECTFUL PARKING — hospital nearby, car parked neatly, green check
-    A.respectful_parking = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;top:20px;right:30px;font-size:3.5rem;">🏥</div>
-      <div style="position:absolute;bottom:42px;left:20%;width:50px;height:18px;background:#2a2d35;border:2px solid #4a4; border-radius:4px;"></div>
-      <div style="position:absolute;bottom:44px;left:21%;font-size:1.5rem;">🚗</div>
-      <div style="position:absolute;bottom:58px;left:28%;font-size:1.2rem;color:#4a4;">✓</div>
-      <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:slow 5s infinite linear;">🚑</div>`;
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
 
-    // 7. SILENT ZONE — hospital, mute symbol, car creeping
-    A.silent_zone = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;top:15px;left:30%;font-size:3.5rem;">🏥</div>
-      <div style="position:absolute;top:20px;left:58%;font-size:2.5rem;">🔇</div>
-      <div style="position:absolute;bottom:48px;left:45%;font-size:2rem;animation:slow 7s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:104px;left:32%;font-size:1.5rem;opacity:.4;">📢</div>
-      <div style="position:absolute;bottom:110px;left:38%;font-size:1rem;color:#f66;">✕</div>`;
+      const t = this._simState.time;
+      const progress = t / this._simState.duration;
 
-    // 8. NO HONKING — muted speaker, library/temple, no-honk sign
-    A.no_honking = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;top:15px;left:20%;font-size:3rem;">📚</div>
-      <div style="position:absolute;top:15px;right:25%;font-size:3rem;">🛕</div>
-      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;border-radius:50%;border:4px solid #f44;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:rgba(255,0,0,.08);">🔇</div>
-      <div style="position:absolute;bottom:48px;left:30%;font-size:2rem;animation:slow 6s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:65px;left:38%;font-size:1rem;animation:honk 3s infinite;">💬HONK</div>`;
+      // Update Slider
+      const slider = document.getElementById('sim-timeline');
+      if (slider && document.activeElement !== slider) {
+        slider.value = (progress * 100).toFixed(1);
+      }
 
-    // 9. FESTIVAL — bunting, decorations, crowd, slow traffic
-    A.festival = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;top:25px;left:10%;font-size:2.5rem;">🎪</div>
-      <div style="position:absolute;top:25px;right:20%;font-size:2.5rem;">🪔</div>
-      <div style="position:absolute;top:20px;left:40%;font-size:1.8rem;">🎉</div>
-      <div style="position:absolute;top:30px;left:55%;font-size:1.5rem;animation:bounce 1.5s infinite;">🎊</div>
-      <div style="position:absolute;bottom:105px;left:15%;font-size:1.2rem;animation:drift 2s infinite;">🚶</div>
-      <div style="position:absolute;bottom:105px;left:35%;font-size:1.2rem;animation:drift 2.5s infinite .3s;">🚶‍♀️</div>
-      <div style="position:absolute;bottom:105px;left:55%;font-size:1.2rem;animation:drift 1.8s infinite .6s;">🚶</div>
-      <div style="position:absolute;bottom:105px;left:72%;font-size:1.2rem;animation:drift 2.2s infinite .9s;">🚶‍♂️</div>
-      <div style="position:absolute;bottom:48px;font-size:2rem;animation:slow 8s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:35%;font-size:1.8rem;animation:slow 9s infinite linear -3s;">🛺</div>`;
+      // ── 1. SKY & BACKDROP ──
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.7);
+      if (isNight) {
+        skyGrad.addColorStop(0, '#040711');
+        skyGrad.addColorStop(1, '#0c1427');
+      } else if (isRain) {
+        skyGrad.addColorStop(0, '#1a2233');
+        skyGrad.addColorStop(1, '#2c374d');
+      } else if (scenarioKey === 'festival') {
+        skyGrad.addColorStop(0, '#1e1b4b');
+        skyGrad.addColorStop(1, '#3b0764');
+      } else if (scenarioKey === 'blind_corner' || scenarioKey === 'hill_driving') {
+        skyGrad.addColorStop(0, '#0284c7');
+        skyGrad.addColorStop(1, '#bae6fd');
+      } else {
+        skyGrad.addColorStop(0, '#0a192f');
+        skyGrad.addColorStop(1, '#1e293b');
+      }
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, w, h);
 
-    // 10. SIGNAL JUMP — traffic light red, car zooming past
-    A.signal_jump = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;top:30%;left:42%;width:36px;height:80px;background:#222;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;">
-        <div style="width:20px;height:20px;border-radius:50%;background:#f33;box-shadow:0 0 8px #f33;"></div>
-        <div style="width:20px;height:20px;border-radius:50%;background:#555;"></div>
-        <div style="width:20px;height:20px;border-radius:50%;background:#555;"></div>
-      </div>
-      <div style="position:absolute;bottom:48px;font-size:2.4rem;animation:ba 2.5s infinite linear;">🚗<span style="position:absolute;top:-12px;right:-5px;font-size:1rem;">⚡</span></div>
-      <div style="position:absolute;bottom:110px;left:48%;font-size:1.5rem;animation:flash .6s infinite;">❗</div>`;
+      if (isNight || scenarioKey === 'festival') {
+        ctx.fillStyle = 'rgba(255,255,255,0.75)';
+        for (let i = 0; i < 30; i++) {
+          const sx = (i * 37) % w;
+          const sy = (i * 23) % (h * 0.45);
+          ctx.fillRect(sx, sy, 1.5, 1.5);
+        }
+      }
 
-    // 11. ROAD RAGE — two cars close, angry emoji, swerving
-    A.road_rage = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;left:30%;font-size:2.2rem;animation:ba 3s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:22%;font-size:2rem;animation:ba 2.8s infinite linear .2s;">🚕</div>
-      <div style="position:absolute;bottom:80px;left:28%;font-size:1.8rem;animation:bounce .5s infinite;">😡</div>
-      <div style="position:absolute;bottom:85px;left:36%;font-size:1.2rem;color:#f44;">❗❗</div>`;
+      // Mountain / Skyline Silhouette
+      if (scenarioKey === 'blind_corner' || scenarioKey === 'hill_driving') {
+        // Mountain Backdrop
+        ctx.fillStyle = '#334155';
+        ctx.beginPath();
+        ctx.moveTo(0, h * 0.6);
+        ctx.lineTo(w * 0.25, h * 0.25);
+        ctx.lineTo(w * 0.5, h * 0.48);
+        ctx.lineTo(w * 0.75, h * 0.2);
+        ctx.lineTo(w, h * 0.6);
+        ctx.fill();
+      } else {
+        // City Skyline
+        ctx.fillStyle = isNight ? '#070b14' : '#111827';
+        ctx.beginPath();
+        ctx.moveTo(0, h * 0.55);
+        const skyline = [
+          [0.05, 0.42], [0.08, 0.42], [0.08, 0.52], [0.15, 0.52], [0.18, 0.35],
+          [0.22, 0.35], [0.25, 0.55], [0.32, 0.48], [0.38, 0.48], [0.42, 0.32],
+          [0.48, 0.32], [0.52, 0.54], [0.60, 0.40], [0.68, 0.40], [0.72, 0.55],
+          [0.80, 0.38], [0.85, 0.38], [0.88, 0.52], [0.95, 0.45], [1.0, 0.55]
+        ];
+        skyline.forEach(([px, py]) => ctx.lineTo(w * px, h * py));
+        ctx.lineTo(w, h * 0.6);
+        ctx.lineTo(0, h * 0.6);
+        ctx.fill();
 
-    // 12. RAIN DRIVING — heavy rain, headlights, wiper
-    A.rain_driving = () => `
-      <div style="${road()};background:#2d2f35;"></div>
-      ${[10,18,26,34,42,50,58,66,74,82].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:18px;background:rgba(100,160,255,.5);border-radius:0 0 2px 2px;animation:rain .6s infinite linear ${x*.015}s;"></div>`).join('')}
-      <div style="position:absolute;bottom:48px;left:35%;font-size:2.4rem;">🚗</div>
-      <div style="position:absolute;bottom:54px;left:37%;width:12px;height:6px;background:rgba(255,255,150,.7);border-radius:2px;"></div>
-      <div style="position:absolute;bottom:54px;left:52%;width:12px;height:6px;background:rgba(255,255,150,.7);border-radius:2px;"></div>
-      <div style="position:absolute;bottom:60px;left:42%;width:2px;height:16px;background:#fff;transform-origin:bottom;animation:wiper 1.5s infinite;"></div>
-      <div style="position:absolute;top:20px;right:30px;font-size:2rem;">⛈️</div>`;
+        // Sea Link Bridge Cables
+        if (scenarioKey === 'ambulance_priority' || scenarioKey === 'toll' || scenarioKey === 'highway_merge') {
+          ctx.strokeStyle = isNight ? 'rgba(56, 189, 248, 0.25)' : 'rgba(255, 255, 255, 0.15)';
+          ctx.lineWidth = 1.5;
+          const towerX = w * 0.78, towerY = h * 0.28;
+          ctx.beginPath();
+          ctx.moveTo(towerX - 25, h * 0.55); ctx.lineTo(towerX, towerY); ctx.lineTo(towerX + 25, h * 0.55);
+          for (let c = 1; c <= 4; c++) {
+            ctx.moveTo(towerX, towerY + c * 10); ctx.lineTo(towerX - c * 20, h * 0.55);
+            ctx.moveTo(towerX, towerY + c * 10); ctx.lineTo(towerX + c * 20, h * 0.55);
+          }
+          ctx.stroke();
+        }
+      }
 
-    // 13. PEDESTRIAN PRIORITY — zebra crossing, ped walking, car stopped, green signal
-    A.pedestrian_priority = () => `
-      <div style="${road()}">${`<div style="${zebra}"></div>`}</div>
-      <div style="position:absolute;top:25%;left:42%;width:30px;height:60px;background:#222;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:4px 0;">
-        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
-        <div style="width:16px;height:16px;border-radius:50%;background:#555;"></div>
-        <div style="width:16px;height:16px;border-radius:50%;background:#4f4;box-shadow:0 0 6px #4f4;"></div>
-      </div>
-      <div style="position:absolute;bottom:55px;left:45%;font-size:2rem;animation:ped 4s infinite alternate;">🚶</div>
-      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:carStop 5s infinite ease-out;">🚗</div>`;
+      // ── 2. ROADWAY & INFRASTRUCTURE ──
+      const roadTop = h * 0.58;
+      const roadHeight = h * 0.32;
+      const roadBottom = roadTop + roadHeight;
+      const sidewalkHeight = 16;
+      const sidewalkTop = roadTop - sidewalkHeight;
 
-    // 14. SIGNS — road with multiple traffic signs
-    A.signs = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:100px;left:15%;width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:32px solid #fc0;transform:rotate(0deg);"></div>
-      <div style="position:absolute;bottom:108px;left:19%;font-size:.7rem;font-weight:900;color:#000;">40</div>
-      <div style="position:absolute;bottom:100px;left:45%;width:34px;height:34px;background:#f44;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#fff;font-weight:900;">STOP</div>
-      <div style="position:absolute;bottom:100px;right:18%;width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:28px solid #fc0;transform:rotate(90deg);"></div>
-      <div style="position:absolute;bottom:108px;right:20%;font-size:.6rem;">⚠️</div>
-      <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>`;
+      // Sidewalk Pavement
+      ctx.fillStyle = '#2b3240';
+      ctx.fillRect(0, sidewalkTop, w, sidewalkHeight);
+      ctx.fillStyle = '#374151';
+      ctx.fillRect(0, sidewalkTop, w, 2);
 
-    // 15. ANIMALS — cow on road, car stopped
-    A.animals = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;left:45%;font-size:2.8rem;">🐄</div>
-      <div style="position:absolute;bottom:55px;left:55%;font-size:1rem;">🪰</div>
-      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:carStop 4s infinite ease-out;">🚗</div>
-      <div style="position:absolute;top:25px;left:25%;font-size:2rem;">🌾</div>
-      <div style="position:absolute;top:25px;right:25%;font-size:2rem;">🌾</div>`;
+      // Curb Stones (Alternating Yellow & Black hazard blocks)
+      const curbSize = 24;
+      for (let x = 0; x < w; x += curbSize) {
+        ctx.fillStyle = Math.floor(x / curbSize) % 2 === 0 ? '#f59e0b' : '#1e293b';
+        ctx.fillRect(x, roadTop - 4, curbSize, 4);
+      }
 
-    // 16. NARROW STREET — buildings close, car squeezing through
-    A.narrow_street = () => `
-      <div style="${road('45%',null,null)}"></div>
-      <div style="position:absolute;bottom:40px;left:55%;width:45%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;"></div>
-      <div style="position:absolute;bottom:100px;left:2%;font-size:2.5rem;">🏠</div>
-      <div style="position:absolute;bottom:100px;left:18%;font-size:2.5rem;">🏘️</div>
-      <div style="position:absolute;bottom:100px;right:5%;font-size:2.5rem;">🏠</div>
-      <div style="position:absolute;bottom:100px;right:20%;font-size:2.5rem;">🏘️</div>
-      <div style="position:absolute;bottom:48px;left:42%;font-size:1.8rem;animation:ba 6s infinite linear;">🚗</div>`;
+      // Asphalt Surface
+      const roadGrad = ctx.createLinearGradient(0, roadTop, 0, roadBottom);
+      roadGrad.addColorStop(0, isRain ? '#181e29' : '#1e2430');
+      roadGrad.addColorStop(1, isRain ? '#10141c' : '#141822');
+      ctx.fillStyle = roadGrad;
+      ctx.fillRect(0, roadTop, w, roadHeight);
 
-    // 17. PARKING RULES — marked bays, one correct, one wrong
-    A.parking_rules = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;bottom:42px;left:12%;width:48px;height:18px;background:#2a2d35;border:2px solid #4a4;border-radius:4px;"></div>
-      <div style="position:absolute;bottom:44px;left:13%;font-size:1.4rem;">🚗</div>
-      <div style="position:absolute;bottom:56px;left:18%;font-size:.9rem;color:#4a4;">✓</div>
-      <div style="position:absolute;bottom:42px;left:35%;width:48px;height:18px;background:#2a2d35;border:2px dashed #f44;border-radius:4px;"></div>
-      <div style="position:absolute;bottom:44px;left:36%;font-size:1.4rem;transform:rotate(8deg);">🚙</div>
-      <div style="position:absolute;bottom:56px;left:41%;font-size:.9rem;color:#f44;">✗</div>
-      <div style="position:absolute;top:25px;right:30px;font-size:2.5rem;">🅿️</div>
-      <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:slow 6s infinite linear;">🚗</div>`;
+      // Road Edge Solid White Lines
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.fillRect(0, roadTop + 2, w, 3);
+      ctx.fillRect(0, roadBottom - 4, w, 3);
 
-    // 18. AUTO DANCE — auto-rickshaw weaving between cars
-    A.auto_dance = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;left:25%;font-size:2rem;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;">🚕</div>
-      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:weave 4s infinite ease-in-out;">🛺</div>`;
+      // Center Dashed Lines
+      ctx.fillStyle = '#f59e0b';
+      const dashW = 28, gapW = 20;
+      const centerLineY = roadTop + roadHeight / 2;
+      for (let x = 0; x < w; x += dashW + gapW) {
+        ctx.fillRect(x, centerLineY - 1.5, dashW, 3);
+      }
 
-    // 19. TOLL — toll booth, car stopped, queue
-    A.toll = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:40px;left:48%;width:50px;height:65px;background:#555;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;">
-        <div style="width:20px;height:24px;background:#333;border-radius:3px;"></div>
-      </div>
-      <div style="position:absolute;bottom:70px;left:51%;font-size:1.3rem;">💳</div>
-      <div style="position:absolute;bottom:48px;left:25%;font-size:2rem;animation:carStop 5s infinite ease-out;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:5%;font-size:1.8rem;animation:slow 8s infinite linear -3s;">🚙</div>
-      <div style="position:absolute;bottom:48px;left:-10%;font-size:1.8rem;animation:slow 9s infinite linear -5s;">🚕</div>`;
+      // ── 3. VECTOR DRAWING PRIMITIVES ──
+      function drawVectorCar(cx, cy, color, isBraking, headlightsOn, turnSignal, rollAngle, isPolice) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        if (rollAngle) ctx.rotate(rollAngle);
 
-    // 20. BLIND CORNER — curved road, warning sign, car approaching
-    A.blind_corner = () => `
-      <div style="position:absolute;bottom:40px;left:0;width:55%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 30px 30px 0;"></div>
-      <div style="position:absolute;bottom:40px;right:0;width:50%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:30px 0 0 30px;transform:rotate(-15deg);transform-origin:left center;"></div>
-      <div style="position:absolute;bottom:110px;left:42%;font-size:2rem;">⚠️</div>
-      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
-      <div style="position:absolute;top:25px;right:30px;font-size:1.5rem;">👁️‍🗨️</div>`;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.beginPath();
+        ctx.ellipse(0, 10, 36, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
 
-    // 21. HILL DRIVING — inclined road, mountain backdrop, car climbing
-    A.hill_driving = () => `
-      <div style="position:absolute;bottom:30px;left:0;width:110%;height:60px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;transform:rotate(-8deg);transform-origin:left bottom;"></div>
-      <div style="position:absolute;top:10px;right:20%;font-size:4rem;">⛰️</div>
-      <div style="position:absolute;top:25px;left:15%;font-size:3rem;">🏔️</div>
-      <div style="position:absolute;bottom:68px;left:20%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>`;
+        if (headlightsOn) {
+          const hlGrad = ctx.createLinearGradient(30, 0, 110, 0);
+          hlGrad.addColorStop(0, 'rgba(254, 240, 138, 0.55)');
+          hlGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
+          ctx.fillStyle = hlGrad;
+          ctx.beginPath();
+          ctx.moveTo(32, 2); ctx.lineTo(120, -14); ctx.lineTo(120, 18); ctx.closePath(); ctx.fill();
+        }
 
-    // 22. BUS STOP — bus shelter, bus stopped, passengers waiting
-    A.bus_stop = () => `
-      <div style="${road()}"></div>
-      <div style="${sidewalk}"></div>
-      <div style="position:absolute;bottom:100px;left:20%;width:70px;height:30px;background:#555;border-radius:4px 4px 0 0;border-bottom:3px solid #888;"></div>
-      <div style="position:absolute;bottom:105px;left:22%;font-size:1rem;">🪑</div>
-      <div style="position:absolute;bottom:100px;left:33%;font-size:1rem;animation:drift 2s infinite;">🚶</div>
-      <div style="position:absolute;bottom:100px;left:38%;font-size:1rem;animation:drift 2.5s infinite .4s;">🚶‍♀️</div>
-      <div style="position:absolute;bottom:48px;left:18%;font-size:2.4rem;animation:slow 6s infinite linear;">🚌</div>
-      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>`;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.roundRect(-32, -4, 64, 16, [4, 6, 2, 2]);
+        ctx.fill();
 
-    // 23. CONSTRUCTION — barricades, worker, car detouring
-    A.construction = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:52px;left:35%;width:30px;height:10px;background:repeating-linear-gradient(90deg,#f90 0,#f90 6px,#fff 6px,#fff 12px);border-radius:2px;"></div>
-      <div style="position:absolute;bottom:52px;left:50%;width:30px;height:10px;background:repeating-linear-gradient(90deg,#f90 0,#f90 6px,#fff 6px,#fff 12px);border-radius:2px;"></div>
-      <div style="position:absolute;bottom:58px;left:40%;font-size:1.8rem;">🚧</div>
-      <div style="position:absolute;bottom:100px;left:45%;font-size:1.8rem;">👷</div>
-      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:108px;left:55%;font-size:1.2rem;">➡️</div>`;
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.roundRect(-16, -14, 34, 12, [6, 8, 0, 0]);
+        ctx.fill();
 
-    // 24. ONE WAY — road with big arrow, wrong-way car
-    A.one_way = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:55px;left:40%;font-size:3rem;opacity:.3;">➡️</div>
-      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:ba 4s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ab 3.5s infinite linear;">🚙</div>
-      <div style="position:absolute;bottom:80px;left:62%;font-size:1.2rem;color:#f44;">⚠️</div>
-      <div style="position:absolute;top:25px;left:30%;font-size:1.5rem;">➡️</div>
-      <div style="position:absolute;top:25px;left:50%;font-size:1.5rem;">ONE WAY</div>`;
+        ctx.fillStyle = isNight ? '#1e293b' : '#93c5fd';
+        ctx.beginPath();
+        ctx.roundRect(-13, -12, 14, 8, [3, 2, 0, 0]);
+        ctx.roundRect(3, -12, 12, 8, [2, 4, 0, 0]);
+        ctx.fill();
 
-    // 25. HOSPITAL QUIET — hospital zone, silence markings
-    A.hospital_quiet = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:100px;left:0;width:100%;height:18px;border:2px dashed rgba(100,150,255,.4);background:rgba(100,150,255,.05);"></div>
-      <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:3.5rem;">🏥</div>
-      <div style="position:absolute;top:15px;right:20%;font-size:2rem;">🤫</div>
-      <div style="position:absolute;bottom:48px;left:40%;font-size:2rem;animation:slow 7s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:70px;left:50%;font-size:1rem;opacity:.5;">🔇 SILENCE ZONE</div>`;
+        ;[-18, 18].forEach(wx => {
+          ctx.fillStyle = '#111827';
+          ctx.beginPath(); ctx.arc(wx, 11, 7, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#94a3b8';
+          ctx.beginPath(); ctx.arc(wx, 11, 3.5, 0, Math.PI * 2); ctx.fill();
+        });
 
-    // 26. CYCLIST — bike lane, cyclist, car maintaining distance
-    A.cyclist = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:100px;left:0;width:100%;height:4px;background:repeating-linear-gradient(90deg,#4a4 0,#4a4 12px,transparent 12px,transparent 18px);"></div>
-      <div style="position:absolute;bottom:105px;left:40%;font-size:1.8rem;animation:ba 6s infinite linear;">🚲</div>
-      <div style="position:absolute;bottom:48px;left:55%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:108px;left:60%;font-size:.9rem;color:#4a4;">BIKE LANE</div>`;
+        ctx.fillStyle = headlightsOn ? '#fef08a' : '#cbd5e1';
+        ctx.fillRect(30, 0, 3, 5);
 
-    // 27. GRAND TEST — trophy, multiple vehicles, complex
-    A.grand_test = () => `
-      <div style="${road()}"></div>
-      <div style="${road('50%','50%',100)};transform:rotate(90deg);transform-origin:left bottom;height:50px;"></div>
-      <div style="position:absolute;top:15px;left:50%;transform:translateX(-50%);font-size:3.5rem;">🏆</div>
-      <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:30%;font-size:1.8rem;animation:ba 5s infinite linear -1s;">🚌</div>
-      <div style="position:absolute;bottom:140px;left:52%;font-size:1.5rem;animation:ab 6s infinite linear;">🛺</div>
-      <div style="position:absolute;top:20px;right:25%;font-size:1.5rem;">🥇</div>`;
+        ctx.fillStyle = isBraking ? '#ef4444' : '#991b1b';
+        ctx.fillRect(-33, 0, 3, 5);
+        if (isBraking) {
+          ctx.beginPath();
+          ctx.arc(-32, 2, 8, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+          ctx.fill();
+        }
 
-    // 28. NIGHT MONSOON — night overlay, heavy rain, lightning, puddle
-    A.night_monsoon = () => `
-      <div style="${road()};background:#2a2d35;"></div>
-      <div style="position:absolute;inset:0;background:rgba(0,0,30,.4);pointer-events:none;"></div>
-      <div style="position:absolute;bottom:48px;left:42%;width:80px;height:22px;background:rgba(60,120,255,.5);border-radius:50%;animation:splash 1.5s infinite;"></div>
-      ${[12,24,36,48,60,72,84].map(x=>`<div style="position:absolute;left:${x}%;width:2px;height:20px;background:rgba(100,160,255,.6);border-radius:0 0 2px 2px;animation:rain .5s infinite linear ${x*.01}s;"></div>`).join('')}
-      <div style="position:absolute;bottom:46px;left:18%;font-size:1.6rem;line-height:1;">🚗</div>
-      <div style="position:absolute;bottom:54px;left:22%;width:14px;height:7px;background:rgba(255,255,150,.8);border-radius:2px;"></div>
-      <div style="position:absolute;bottom:54px;left:36%;width:14px;height:7px;background:rgba(255,255,150,.8);border-radius:2px;"></div>
-      <div style="position:absolute;top:15px;right:30px;font-size:2rem;">🌙</div>
-      <div style="position:absolute;top:30px;left:40%;font-size:2rem;animation:flash 2s infinite;">⚡</div>`;
+        if (turnSignal && Math.floor(now / 220) % 2 === 0) {
+          ctx.fillStyle = '#f59e0b';
+          ctx.fillRect(28, 6, 4, 3);
+          ctx.fillRect(-30, 6, 4, 3);
+        }
+        ctx.restore();
+      }
 
-    // 29. WRONG SIDE — car on wrong lane, head-on, danger
-    A.wrong_side = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:68px;left:0;width:100%;height:2px;background:repeating-linear-gradient(90deg,#fc0 0,#fc0 12px,transparent 12px,transparent 20px);"></div>
-      <div style="position:absolute;bottom:48px;font-size:2.2rem;animation:ba 4s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:72px;left:60%;font-size:2rem;animation:ab 3.5s infinite linear;">🚙</div>
-      <div style="position:absolute;bottom:85px;left:48%;font-size:1.5rem;color:#f44;animation:flash .5s infinite;">⚠️</div>`;
+      function drawAmbulance(ax, ay) {
+        ctx.save();
+        ctx.translate(ax, ay);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.beginPath(); ctx.ellipse(0, 12, 42, 8, 0, 0, Math.PI * 2); ctx.fill();
 
-    // 30. HIGHWAY MERGE — two lanes merging, car merging
-    A.highway_merge = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:98px;left:0;width:22%;height:18px;background:#3d3f45;border-top:2px solid #fff;border-bottom:2px solid #fff;border-radius:0 0 10px 0;"></div>
-      <div style="position:absolute;bottom:100px;left:20%;font-size:.85rem;opacity:.7;">↘️</div>
-      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:merge 4s infinite ease-in-out;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:60%;font-size:2rem;animation:ba 4s infinite linear;">🚕</div>`;
+        const hlGrad = ctx.createLinearGradient(35, 0, 140, 0);
+        hlGrad.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+        hlGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = hlGrad;
+        ctx.beginPath(); ctx.moveTo(38, 2); ctx.lineTo(140, -18); ctx.lineTo(140, 24); ctx.closePath(); ctx.fill();
 
-    // 31. ZERO VISIBILITY — fog, barely visible car
-    A.zero_visibility = () => `
-      <div style="${road()};background:#4a4d55;"></div>
-      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(200,200,210,.8) 0%,rgba(200,200,210,.3) 40%,transparent 70%);animation:fogPulse 4s infinite alternate;pointer-events:none;"></div>
-      <div style="position:absolute;bottom:48px;left:40%;font-size:2rem;opacity:.35;">🚗</div>
-      <div style="position:absolute;bottom:54px;left:42%;width:10px;height:5px;background:rgba(255,255,150,.5);border-radius:2px;opacity:.4;"></div>
-      <div style="position:absolute;bottom:54px;left:54%;width:10px;height:5px;background:rgba(255,255,150,.5);border-radius:2px;opacity:.4;"></div>
-      <div style="position:absolute;top:20px;right:30px;font-size:2rem;opacity:.4;">👻</div>`;
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath(); ctx.roundRect(-38, -16, 76, 26, [6, 10, 3, 3]); ctx.fill();
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(-38, 0, 76, 6);
+        ctx.fillRect(-12, -10, 10, 3); ctx.fillRect(-8.5, -13.5, 3, 10);
 
-    // 32. MOUNTAIN — winding road, hairpin, car navigating
-    A.mountain = () => `
-      <div style="position:absolute;bottom:40px;left:0;width:45%;height:50px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:0 20px 20px 0;"></div>
-      <div style="position:absolute;bottom:55px;left:40%;width:50px;height:40px;background:#3d3f45;border:4px solid #fff;border-radius:50%;border-left-color:transparent;border-bottom-color:transparent;transform:rotate(-45deg);"></div>
-      <div style="position:absolute;bottom:80px;left:55%;width:45%;height:50px;background:#3d3f45;border-top:4px solid #fff;border-bottom:4px solid #fff;border-radius:20px 0 0 20px;transform:rotate(8deg);"></div>
-      <div style="position:absolute;top:5px;right:15%;font-size:3.5rem;">🏔️</div>
-      <div style="position:absolute;top:10px;left:10%;font-size:3rem;">⛰️</div>
-      <div style="position:absolute;bottom:48px;left:10%;font-size:1.8rem;animation:ba 5s infinite linear;">🚗</div>`;
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath(); ctx.roundRect(14, -14, 18, 11, [2, 6, 0, 0]); ctx.fill();
 
-    // 33. RURAL — dirt road, wheat fields, cow
-    A.rural = () => `
-      <div style="position:absolute;bottom:40px;left:0;width:100%;height:60px;background:repeating-linear-gradient(90deg,#8B7355 0,#8B7355 4px,#9B8365 4px,#9B8365 8px);border-top:3px solid #6B5335;border-bottom:3px solid #6B5335;"></div>
-      <div style="position:absolute;bottom:100px;left:0;width:100%;height:30px;background:#5a7a3a;"></div>
-      <div style="position:absolute;bottom:105px;left:10%;font-size:1.5rem;">🌾</div>
-      <div style="position:absolute;bottom:105px;left:30%;font-size:1.5rem;">🌾</div>
-      <div style="position:absolute;bottom:105px;right:20%;font-size:1.5rem;">🌾</div>
-      <div style="position:absolute;bottom:48px;left:50%;font-size:2.2rem;">🐄</div>
-      <div style="position:absolute;bottom:48px;left:15%;font-size:2rem;animation:ba 6s infinite linear;">🚗</div>`;
+        const flashPhase = Math.floor(now / 120) % 2 === 0;
+        ctx.fillStyle = flashPhase ? '#ef4444' : '#3b82f6';
+        ctx.fillRect(-4, -21, 6, 5);
+        ctx.fillStyle = flashPhase ? '#3b82f6' : '#ef4444';
+        ctx.fillRect(4, -21, 6, 5);
 
-    // 34. MULTI MODAL — mixed traffic: car, auto, cyclist, ped, bus
-    A.multi_modal = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;left:10%;font-size:2rem;animation:ba 4s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:30%;font-size:1.8rem;animation:ba 5s infinite linear -1s;">🛺</div>
-      <div style="position:absolute;bottom:48px;left:55%;font-size:1.6rem;animation:ba 4.5s infinite linear -.5s;">🚲</div>
-      <div style="position:absolute;bottom:104px;left:40%;font-size:1.4rem;animation:ped 3s infinite alternate;">🚶</div>
-      <div style="position:absolute;bottom:48px;left:70%;font-size:2.2rem;animation:ba 5.5s infinite linear -2s;">🚌</div>
-      <div style="position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:1.5rem;">🌪️</div>`;
+        const sirenGlow = ctx.createRadialGradient(0, -20, 4, 0, -20, 60);
+        sirenGlow.addColorStop(0, flashPhase ? 'rgba(239, 68, 68, 0.45)' : 'rgba(59, 130, 246, 0.45)');
+        sirenGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = sirenGlow;
+        ctx.beginPath(); ctx.arc(0, -20, 60, 0, Math.PI * 2); ctx.fill();
 
-    // 35. LANE DISCIPLINE — dashed center, one car correct, one straddling
-    A.lane_discipline = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:68px;left:0;width:100%;height:3px;background:repeating-linear-gradient(90deg,#fff 0,#fff 14px,transparent 14px,transparent 22px);"></div>
-      <div style="position:absolute;bottom:48px;left:20%;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:56px;left:22%;font-size:.9rem;color:#4a4;">✓</div>
-      <div style="position:absolute;bottom:60px;left:55%;font-size:2rem;animation:ba 4.5s infinite linear -.5s;transform:translateY(-3px);">🚙</div>
-      <div style="position:absolute;bottom:72px;left:58%;font-size:.9rem;color:#f44;">✗</div>`;
+        ;[-22, 22].forEach(wx => {
+          ctx.fillStyle = '#111827';
+          ctx.beginPath(); ctx.arc(wx, 12, 8, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#e2e8f0';
+          ctx.beginPath(); ctx.arc(wx, 12, 4, 0, Math.PI * 2); ctx.fill();
+        });
+        ctx.restore();
+      }
 
-    // 36. DRIVING SCHOOL — L plate, instructor car, cones, classroom
-    A.driving_school = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;top:15px;left:20%;font-size:3rem;">🏫</div>
-      <div style="position:absolute;bottom:48px;left:35%;font-size:2rem;animation:slow 5s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:66px;left:38%;width:18px;height:18px;background:#fff;border:2px solid #f00;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:#f00;">L</div>
-      <div style="position:absolute;bottom:42px;left:55%;font-size:1.2rem;">🚧</div>
-      <div style="position:absolute;bottom:42px;left:65%;font-size:1.2rem;">🚧</div>
-      <div style="position:absolute;bottom:42px;left:75%;font-size:1.2rem;">🚧</div>
-      <div style="position:absolute;top:20px;right:25%;font-size:2rem;">🎓</div>`;
+      function drawAutoRickshaw(rx, ry, isWobbling) {
+        ctx.save();
+        ctx.translate(rx, ry);
+        if (isWobbling) ctx.rotate(Math.sin(now * 0.015) * 0.06);
 
-    // 37. INTERSECTION / SIGNALS — crossroad, traffic light, car through
-    A.intersection = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:40px;left:45%;width:60px;height:100%;background:#3d3f45;border-left:4px solid #fff;border-right:4px solid #fff;"></div>
-      <div style="position:absolute;top:30%;left:42%;width:36px;height:80px;background:#222;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:space-around;padding:6px 0;z-index:2;">
-        <div style="width:18px;height:18px;border-radius:50%;background:#555;"></div>
-        <div style="width:18px;height:18px;border-radius:50%;background:#fc0;box-shadow:0 0 6px #fc0;"></div>
-        <div style="width:18px;height:18px;border-radius:50%;background:#555;"></div>
-      </div>
-      <div style="position:absolute;bottom:48px;font-size:2rem;animation:ba 5s infinite linear;">🚗</div>
-      <div style="position:absolute;bottom:48px;left:30%;font-size:1.8rem;animation:ba 6s infinite linear -2s;">🚕</div>`;
-    A.signals = A.intersection;
-    A.raving = A.festival;
-    A.market = A.market_street;
-    A.school = A.driving_school;
-    A.hospital = A.hospital_quiet;
-    A.emergency = A.ambulance_priority;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+        ctx.beginPath(); ctx.ellipse(0, 9, 24, 5, 0, 0, Math.PI * 2); ctx.fill();
 
-    // DEFAULT — generic car driving across
-    A._default = () => `
-      <div style="${road()}"></div>
-      <div style="position:absolute;bottom:48px;font-size:2.4rem;animation:ba 4s infinite linear;">🚗</div>`;
+        // Yellow canopy, green body (Mumbai auto colors)
+        ctx.fillStyle = '#eab308';
+        ctx.beginPath(); ctx.roundRect(-20, -18, 40, 14, [8, 8, 0, 0]); ctx.fill();
+        ctx.fillStyle = '#16a34a';
+        ctx.beginPath(); ctx.roundRect(-22, -4, 44, 12, [2, 4, 2, 2]); ctx.fill();
 
-    // ── Resolve and render ──
-    const artFn = A[theme] || A._default;
-    const artHTML = artFn();
+        ctx.fillStyle = '#93c5fd';
+        ctx.beginPath(); ctx.roundRect(4, -14, 12, 8, [2, 4, 0, 0]); ctx.fill();
 
-    wrap.innerHTML = badge + artHTML + `<style>${K}</style>`;
+        ;[-12, 14].forEach(wx => {
+          ctx.fillStyle = '#111827';
+          ctx.beginPath(); ctx.arc(wx, 8, 6, 0, Math.PI * 2); ctx.fill();
+        });
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(20, -2, 3, 4);
+        ctx.restore();
+      }
+
+      function drawBus(bx, by, isDoorOpen) {
+        ctx.save();
+        ctx.translate(bx, by);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.beginPath(); ctx.ellipse(0, 14, 55, 7, 0, 0, Math.PI * 2); ctx.fill();
+
+        // BEST Red Bus Body
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath(); ctx.roundRect(-52, -26, 104, 38, [6, 10, 2, 2]); ctx.fill();
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(-52, -6, 104, 4); // Yellow stripe
+
+        // Windows
+        ctx.fillStyle = '#93c5fd';
+        for (let i = 0; i < 4; i++) {
+          ctx.fillRect(-42 + i * 22, -22, 16, 12);
+        }
+        ctx.beginPath(); ctx.roundRect(36, -22, 12, 14, [2, 4, 0, 0]); ctx.fill();
+
+        ;[-32, 32].forEach(wx => {
+          ctx.fillStyle = '#111827';
+          ctx.beginPath(); ctx.arc(wx, 13, 9, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#cbd5e1';
+          ctx.beginPath(); ctx.arc(wx, 13, 4.5, 0, Math.PI * 2); ctx.fill();
+        });
+        ctx.restore();
+      }
+
+      function drawCow(cx, cy, isChewing) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.beginPath(); ctx.ellipse(0, 8, 22, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Cow Body (White with black spots)
+        ctx.fillStyle = '#f1f5f9';
+        ctx.beginPath(); ctx.roundRect(-18, -12, 36, 18, 6); ctx.fill();
+        ctx.fillStyle = '#334155';
+        ctx.beginPath(); ctx.arc(-4, -6, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(8, -4, 4, 0, Math.PI * 2); ctx.fill();
+
+        // Cow Head
+        ctx.fillStyle = '#f1f5f9';
+        ctx.beginPath(); ctx.arc(18, -10 + (isChewing ? Math.sin(now * 0.01) * 1.5 : 0), 6.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fca5a5';
+        ctx.beginPath(); ctx.ellipse(22, -9, 3, 2.5, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Horns
+        ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(16, -15); ctx.lineTo(13, -19); ctx.moveTo(19, -15); ctx.lineTo(21, -19); ctx.stroke();
+
+        ;[-10, -3, 6, 12].forEach(lx => {
+          ctx.fillStyle = '#e2e8f0'; ctx.fillRect(lx, 6, 3, 4);
+        });
+        ctx.restore();
+      }
+
+      function drawCyclist(cx, cy, pedalPhase) {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.beginPath(); ctx.ellipse(0, 8, 16, 3, 0, 0, Math.PI * 2); ctx.fill();
+
+        // Wheels
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+        ;[-14, 14].forEach(wx => {
+          ctx.beginPath(); ctx.arc(wx, 2, 7, 0, Math.PI * 2); ctx.stroke();
+        });
+
+        // Frame
+        ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-14, 2); ctx.lineTo(-2, -6); ctx.lineTo(10, -6); ctx.lineTo(14, 2);
+        ctx.lineTo(0, 2); ctx.lineTo(-2, -6);
+        ctx.stroke();
+
+        // Rider
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath(); ctx.roundRect(-4, -18, 8, 11, 2); ctx.fill();
+        ctx.fillStyle = '#fed7aa';
+        ctx.beginPath(); ctx.arc(2, -22, 3.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#eab308'; // Delivery bag
+        ctx.fillRect(-8, -17, 4, 7);
+        ctx.restore();
+      }
+
+      function drawPedestrian(px, py, stride, hasBackpack, hasUmbrella, isChild) {
+        ctx.save();
+        ctx.translate(px, py);
+        const scale = isChild ? 0.75 : 1.0;
+        ctx.scale(scale, scale);
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.beginPath(); ctx.ellipse(0, 8, 8, 3, 0, 0, Math.PI * 2); ctx.fill();
+
+        const legAngle = Math.sin(stride) * 0.45;
+        ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.sin(legAngle) * 8, 7); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-Math.sin(legAngle) * 8, 7); ctx.stroke();
+
+        ctx.fillStyle = hasBackpack ? '#3b82f6' : '#f59e0b';
+        ctx.beginPath(); ctx.roundRect(-4, -12, 8, 12, 2); ctx.fill();
+
+        if (hasBackpack) {
+          ctx.fillStyle = '#ef4444'; ctx.fillRect(-6, -10, 3, 8);
+        }
+
+        ctx.fillStyle = '#fed7aa';
+        ctx.beginPath(); ctx.arc(0, -16, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#451a03';
+        ctx.beginPath(); ctx.arc(0, -18, 3.5, Math.PI, Math.PI * 2); ctx.fill();
+
+        if (hasUmbrella) {
+          ctx.fillStyle = '#ec4899';
+          ctx.beginPath(); ctx.arc(0, -23, 11, Math.PI, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(0, -23); ctx.lineTo(0, -13); ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // ── 4. SCENARIO DISPATCH & SIMULATION TIMELINES ──
+      let carSpeed = 40;
+      let isBraking = false;
+      let statusText = 'CRUISING';
+      let statusColor = '#10b981';
+      let brakePercent = 0;
+      const speedValEl = document.getElementById('sim-speed-val');
+      const brakeValEl = document.getElementById('sim-brake-val');
+      const statusValEl = document.getElementById('sim-status-val');
+      const alertEl = document.getElementById('sim-alert-banner');
+
+      // Helper to trigger alert banner
+      const showAlert = (msg, active) => {
+        if (alertEl) {
+          alertEl.textContent = msg;
+          alertEl.classList.toggle('show', active);
+        }
+      };
+
+      switch(scenarioKey) {
+
+        case 'signal_jump': {
+          // RED LIGHT CAMERA ENFORCEMENT
+          const stopLineX = w * 0.52;
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(stopLineX, roadTop + 2, 4, roadHeight / 2 - 4);
+          ctx.font = '800 10px monospace';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.fillText('STOP', stopLineX - 32, roadTop + roadHeight * 0.28);
+
+          // Traffic Signal
+          const signalX = stopLineX + 10, signalY = roadTop - 48;
+          ctx.fillStyle = '#1e293b'; ctx.fillRect(signalX - 8, signalY - 24, 16, 42);
+          const sigState = (t < 3.0) ? 'yellow' : (t < 6.8 ? 'red' : 'green');
+          [{ c: '#ef4444', a: sigState === 'red', y: signalY - 16 },
+           { c: '#f59e0b', a: sigState === 'yellow', y: signalY - 3 },
+           { c: '#10b981', a: sigState === 'green', y: signalY + 10 }].forEach(b => {
+            ctx.beginPath(); ctx.arc(signalX, b.y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = b.a ? b.c : '#0f172a'; ctx.fill();
+            if (b.a) { ctx.beginPath(); ctx.arc(signalX, b.y, 8, 0, Math.PI * 2); ctx.fillStyle = b.c + '44'; ctx.fill(); }
+          });
+
+          // Player Car stopping before line
+          let px = 0;
+          if (t < 2.5) {
+            px = (t / 2.5) * (stopLineX - 90) - 40;
+            carSpeed = Math.round(40 - (t / 2.5) * 35);
+            isBraking = t > 1.0; brakePercent = isBraking ? 70 : 0;
+            statusText = 'APPROACHING RED LIGHT'; statusColor = '#38bdf8';
+          } else if (t < 6.8) {
+            px = stopLineX - 45; carSpeed = 0; isBraking = true; brakePercent = 100;
+            statusText = 'STOPPED AT RED LIGHT 🛑'; statusColor = '#ef4444';
+          } else {
+            const lt = (t - 6.8) / 1.2; px = (stopLineX - 45) + lt * (w * 0.6);
+            carSpeed = Math.round(lt * 38); isBraking = false; brakePercent = 0;
+            statusText = 'GREEN LIGHT · PROCEEDING'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+
+          // Violator NPC car running red light at t=4.2s
+          if (t > 3.5 && t < 6.5) {
+            const nx = ((t - 3.5) / 3.0) * (w + 120) - 60;
+            drawVectorCar(nx, roadTop + roadHeight * 0.72, '#ef4444', false, true, false);
+            if (t > 4.4 && t < 4.7) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.fillRect(0, 0, w, h); } // Flash
+            showAlert('🚨 RED LIGHT RUNNER CAPTURED ON CAMERA — ₹1,000 FINE', t > 4.5 && t < 6.5);
+          } else { showAlert('', false); }
+          break;
+        }
+
+        case 'street_parking': {
+          // PARALLEL PARKING IN EMPTY BAY
+          const bayX = w * 0.48, bayY = roadTop + roadHeight * 0.28;
+          ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+          ctx.strokeRect(bayX - 35, bayY - 14, 70, 28); ctx.setLineDash([]);
+          ctx.fillStyle = 'rgba(34, 197, 94, 0.15)'; ctx.fillRect(bayX - 35, bayY - 14, 70, 28);
+
+          // Parked cars front and rear
+          drawVectorCar(bayX - 85, bayY, '#94a3b8', false, false, false);
+          drawVectorCar(bayX + 85, bayY, '#64748b', false, false, false);
+
+          let px = 0, py = bayY, roll = 0, rev = false;
+          if (t < 2.2) {
+            px = (t / 2.2) * (bayX + 80) - 50; py = bayY + 20;
+            carSpeed = 18; statusText = 'PULLING AHEAD OF BAY'; statusColor = '#38bdf8';
+          } else if (t < 5.5) {
+            const pt = (t - 2.2) / 3.3; rev = true; isBraking = true; brakePercent = 40;
+            px = (bayX + 80) - pt * 80;
+            py = (bayY + 20) - pt * 20;
+            roll = -Math.sin(pt * Math.PI) * 0.25;
+            carSpeed = 6; statusText = 'REVERSING INTO PARKING SLOT'; statusColor = '#f59e0b';
+          } else {
+            px = bayX; py = bayY; carSpeed = 0; isBraking = true; brakePercent = 100;
+            statusText = 'PARKED PERFECTLY IN BAY ✅'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, py, '#3b82f6', isBraking, true, rev, roll);
+          showAlert('✅ PARALLEL PARKING COMPLETE — LEGAL SPOT', t > 5.5);
+          break;
+        }
+
+        case 'ambulance_priority': {
+          // AMBULANCE CORRIDOR YIELD
+          const ambX = ((t * 1.6) / this._simState.duration) * (w + 140) - 70;
+          const playerYieldX = w * 0.45;
+          const playerLaneY = roadTop + roadHeight * 0.28 + (t > 2.0 && t < 6.0 ? 18 : 0);
+          const playerBraking = t > 2.0 && t < 4.5;
+          const playerTurnSignal = t > 1.8 && t < 5.5;
+
+          drawAmbulance(ambX, roadTop + roadHeight * 0.28);
+          drawVectorCar(playerYieldX, playerLaneY, '#3b82f6', playerBraking, true, playerTurnSignal);
+          drawVectorCar(w * 0.85, roadTop + roadHeight * 0.72, '#eab308', false, true, false);
+
+          carSpeed = playerBraking ? 18 : 38; brakePercent = playerBraking ? 65 : 0;
+          statusText = playerTurnSignal ? 'YIELDING TO AMBULANCE 🚑' : 'CLEAR CORRIDOR'; statusColor = '#f59e0b';
+          showAlert('🚨 STATUTORY PRIORITY: YIELD TO EMERGENCY VEHICLES (SEC 194E)', t > 1.5 && t < 5.5);
+          break;
+        }
+
+        case 'puddle_etiquette': {
+          // MONSOON PUDDLE SLOWDOWN (NO SPLASH)
+          const puddleX = w * 0.52, puddleY = roadTop + roadHeight * 0.28;
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
+          ctx.beginPath(); ctx.ellipse(puddleX, puddleY + 4, 45, 8, 0, 0, Math.PI * 2); ctx.fill();
+
+          // Pedestrian on sidewalk with umbrella
+          drawPedestrian(puddleX + 10, sidewalkTop + 6, t * 6, false, true);
+
+          let px = 0;
+          if (t < 3.0) {
+            px = (t / 3.0) * (puddleX - 60) - 50;
+            carSpeed = Math.round(42 - (t / 3.0) * 30);
+            isBraking = t > 1.0; brakePercent = isBraking ? 75 : 0;
+            statusText = 'SLOWING DOWN FOR PUDDLE'; statusColor = '#38bdf8';
+          } else if (t < 5.5) {
+            const pt = (t - 3.0) / 2.5; px = (puddleX - 60) + pt * 120;
+            carSpeed = 12; isBraking = false; brakePercent = 0;
+            statusText = 'GENTLE ROLL · ZERO SPLASH 💧'; statusColor = '#10b981';
+          } else {
+            const lt = (t - 5.5) / 2.5; px = (puddleX + 60) + lt * (w * 0.5);
+            carSpeed = Math.round(12 + lt * 28);
+            statusText = 'ACCELERATING SAFELY PAST PUDDLE'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+          showAlert('💧 COURTEOUS DRIVING: REDUCE SPEED NEAR PUDDLES & PEDESTRIANS', t > 2.0 && t < 6.0);
+          break;
+        }
+
+        case 'silent_zone': {
+          // HOSPITAL / SILENT ZONE (NO HONKING)
+          const signX = w * 0.38, signY = roadTop - 45;
+          ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(signX, signY, 16, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3.5; ctx.stroke();
+          ctx.font = '700 12px sans-serif'; ctx.fillStyle = '#1e293b'; ctx.fillText('📯', signX - 7, signY + 4);
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(signX - 11, signY - 11); ctx.lineTo(signX + 11, signY + 11); ctx.stroke();
+
+          // Sound Decibel Gauge
+          const isHonking = t > 3.2 && t < 5.8;
+          const dB = isHonking ? 98 : 35;
+          ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.roundRect(w * 0.65, roadTop - 50, 110, 28, 6); ctx.fill();
+          ctx.font = '700 10px monospace'; ctx.fillStyle = isHonking ? '#ef4444' : '#10b981';
+          ctx.fillText(`AUDIO: ${dB} dB ${isHonking ? '⚠️ HONK!' : '🟢 QUIET'}`, w * 0.67, roadTop - 32);
+
+          const px = ((t / this._simState.duration) * (w + 120)) - 60;
+          carSpeed = 32; isBraking = false;
+          statusText = isHonking ? 'VIOLATION DETECTED BEHIND' : 'SILENT CRUISE · 35 dB (QUIET)';
+          statusColor = isHonking ? '#ef4444' : '#10b981';
+
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', false, true, false);
+          if (isHonking) drawVectorCar(px - 90, roadTop + roadHeight * 0.28, '#ef4444', false, true, false);
+          showAlert('🔇 SILENT ZONE: HONKING PROHIBITED NEAR HOSPITALS/SCHOOLS (SEC 194F)', isHonking);
+          break;
+        }
+
+        case 'festival': {
+          // FESTIVAL PROCESSION CROWD
+          const px = ((t / this._simState.duration) * (w * 0.4)) + w * 0.05;
+          carSpeed = 8; isBraking = Math.sin(t * 3) > 0.4; brakePercent = isBraking ? 40 : 0;
+          statusText = 'FESTIVAL PROCESSION · HAZARD LIGHTS ON'; statusColor = '#f59e0b';
+
+          // Decorative lanterns and marigolds
+          for (let x = 20; x < w; x += 60) {
+            ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(x, roadTop - 40, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)'; ctx.beginPath(); ctx.moveTo(x - 30, roadTop - 45); ctx.lineTo(x + 30, roadTop - 45); ctx.stroke();
+          }
+
+          // Procession crowd moving slowly across
+          for (let i = 0; i < 5; i++) {
+            drawPedestrian(w * 0.45 + i * 22, roadTop + 8 + (i % 2) * 16, t * 4, false, false);
+          }
+
+          drawVectorCar(px, roadTop + roadHeight * 0.65, '#3b82f6', isBraking, true, true);
+          showAlert('🎉 FESTIVAL CROWD: CRAWL AT LOW SPEED (8 KM/H) & KEEP HAZARD LIGHTS ON', true);
+          break;
+        }
+
+        case 'road_rage': {
+          // DEFENSIVE DRIVING / TAILGATER PASS
+          const rageX = ((t / this._simState.duration) * (w + 180)) - 80;
+          const playerLaneY = roadTop + roadHeight * 0.28 + (t > 2.5 ? 18 : 0);
+          const isSignaling = t > 1.8 && t < 4.0;
+
+          drawVectorCar(rageX, roadTop + roadHeight * 0.28, '#dc2626', false, true, false); // Aggressive Red Tailgater
+          drawVectorCar(w * 0.4, playerLaneY, '#3b82f6', false, true, isSignaling); // Player merging left
+
+          carSpeed = 38; statusText = isSignaling ? 'SIGNALING LEFT · LETTING TAILGATER PASS' : 'DEFENSIVE LANE POSITION'; statusColor = '#10b981';
+          showAlert('🛡️ DEFENSIVE DRIVING: NEVER BRAKE-CHECK; LET AGGRESSIVE DRIVERS PASS', t > 1.5 && t < 5.0);
+          break;
+        }
+
+        case 'signs': {
+          // ROAD SIGN RECOGNITION HUD
+          const signX = w * 0.5, signY = roadTop - 50;
+          // Speed Limit 40 sign
+          ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(signX, signY, 18, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4; ctx.stroke();
+          ctx.font = '800 13px sans-serif'; ctx.fillStyle = '#1e293b'; ctx.fillText('40', signX - 8, signY + 5);
+
+          // HUD Scan Target Reticle
+          const isScanning = t > 2.0 && t < 5.5;
+          if (isScanning) {
+            ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.setLineDash([4, 2]);
+            ctx.strokeRect(signX - 24, signY - 24, 48, 48); ctx.setLineDash([]);
+            ctx.font = '700 9px monospace'; ctx.fillStyle = '#10b981';
+            ctx.fillText('SPEED LIMIT 40 ✓', signX - 35, signY - 30);
+          }
+
+          const px = ((t / this._simState.duration) * (w + 120)) - 60;
+          carSpeed = 38; statusText = isScanning ? 'SIGN IDENTIFIED · LIMIT 40 KM/H' : 'CRUISING WITHIN LIMIT'; statusColor = '#10b981';
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', false, true, false);
+          showAlert('📋 MANDATORY TRAFFIC SIGN: SPEED LIMIT 40 KM/H ENFORCED (SEC 112)', isScanning);
+          break;
+        }
+
+        case 'animals': {
+          // SACRED COWS / ANIMALS ON ROAD
+          const cowX = w * 0.52, cowY = roadTop + roadHeight * 0.32;
+          drawCow(cowX, cowY, true);
+
+          let px = 0, py = roadTop + roadHeight * 0.28, sig = false;
+          if (t < 2.5) {
+            px = (t / 2.5) * (cowX - 80) - 40; carSpeed = Math.round(40 - (t / 2.5) * 30);
+            isBraking = t > 1.0; brakePercent = isBraking ? 60 : 0;
+            statusText = 'SPOTTING CATTLE AHEAD · SLOWING'; statusColor = '#38bdf8';
+          } else if (t < 5.5) {
+            const pt = (t - 2.5) / 3.0; sig = true;
+            px = (cowX - 80) + pt * 160;
+            py = roadTop + roadHeight * 0.28 + Math.sin(pt * Math.PI) * 20; // Wide arc
+            carSpeed = 12; isBraking = false; brakePercent = 0;
+            statusText = 'GENTLE BYPASS AROUND ANIMALS (NO HORN)'; statusColor = '#10b981';
+          } else {
+            const lt = (t - 5.5) / 2.5; px = (cowX + 80) + lt * (w * 0.4);
+            carSpeed = Math.round(12 + lt * 26);
+            statusText = 'RESUMING CRUISE SAFELY'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, py, '#3b82f6', isBraking, true, sig);
+          showAlert('🐄 ANIMAL HAZARD: DECELERATE GENTLY WITHOUT HONKING TO PREVENT STARTLE', t > 1.5 && t < 5.5);
+          break;
+        }
+
+        case 'narrow_street': {
+          // NARROW STREET / PASSING BAY YIELD
+          const bayX = w * 0.38;
+          ctx.fillStyle = '#374151'; ctx.fillRect(bayX - 40, sidewalkTop, 80, sidewalkHeight); // Passing bay cutout
+
+          let px = 0, py = roadTop + roadHeight * 0.28;
+          if (t < 2.5) {
+            px = (t / 2.5) * (bayX) - 50; py = roadTop + roadHeight * 0.28 - (t / 2.5) * 12;
+            carSpeed = 15; statusText = 'PULLING INTO PASSING BAY'; statusColor = '#38bdf8';
+          } else if (t < 5.5) {
+            px = bayX; py = roadTop + roadHeight * 0.28 - 12;
+            carSpeed = 0; isBraking = true; brakePercent = 100;
+            statusText = 'YIELDING TO ONCOMING AUTO-RICKSHAW'; statusColor = '#10b981';
+          } else {
+            const lt = (t - 5.5) / 2.5; px = bayX + lt * (w * 0.5); py = roadTop + roadHeight * 0.28;
+            carSpeed = 24; isBraking = false;
+            statusText = 'BOTTLENECK CLEARED · MOVING OUT'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, py, '#3b82f6', isBraking, true, false);
+
+          // Oncoming Auto-Rickshaw passing through narrow lane
+          const autoX = (w + 40) - (t / this._simState.duration) * (w + 100);
+          drawAutoRickshaw(autoX, roadTop + roadHeight * 0.32, true);
+          showAlert('↔️ NARROW STREET: PULL INTO PASSING BAY TO LET ONCOMING TRAFFIC PASS', t > 2.0 && t < 5.5);
+          break;
+        }
+
+        case 'auto_dance': {
+          // AUTO-RICKSHAW SUDDEN LANE CUT
+          const autoX = w * 0.45 + (t * 20) % (w * 0.4);
+          const autoCutY = roadTop + roadHeight * 0.72 - (t > 2.0 && t < 4.5 ? 18 : 0);
+          drawAutoRickshaw(autoX, autoCutY, true);
+
+          const playerBraking = t > 2.0 && t < 4.5;
+          carSpeed = playerBraking ? 18 : 36; brakePercent = playerBraking ? 70 : 0;
+          statusText = playerBraking ? 'AUTO CUTTING LANE · 3-SEC BUFFER ACTIVE' : 'MAINTAINING SAFE FOLLOWING DISTANCE';
+          statusColor = playerBraking ? '#ef4444' : '#10b981';
+
+          drawVectorCar(w * 0.25, roadTop + roadHeight * 0.28, '#3b82f6', playerBraking, true, false);
+          showAlert('🛺 ERRATIC VEHICLE TRAFFIC: MAINTAIN 3-SECOND BUFFER FOR SUDDEN TURNS', playerBraking);
+          break;
+        }
+
+        case 'toll': {
+          // FASTag TOLL PLAZA RFID SCAN
+          const tollX = w * 0.55, tollY = roadTop - 60;
+          // Toll Canopy
+          ctx.fillStyle = '#0284c7'; ctx.fillRect(tollX - 45, tollY, 90, 16);
+          ctx.fillStyle = '#0f172a'; ctx.fillRect(tollX - 40, tollY + 16, 8, 48);
+          ctx.fillRect(tollX + 32, tollY + 16, 8, 48);
+
+          // Boom Barrier Arm
+          const isBarrierOpen = t > 4.0;
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(tollX + 32, roadTop + 10);
+          if (isBarrierOpen) ctx.lineTo(tollX + 32, roadTop - 40); // Up
+          else ctx.lineTo(tollX - 35, roadTop + 10); // Down
+          ctx.stroke();
+
+          // Green Laser RFID scan beam
+          const isScanning = t > 2.2 && t < 3.8;
+          if (isScanning) {
+            ctx.strokeStyle = 'rgba(34, 197, 94, 0.8)'; ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(tollX, tollY + 16); ctx.lineTo(w * 0.38, roadTop + roadHeight * 0.28); ctx.stroke();
+          }
+
+          let px = 0;
+          if (t < 2.5) {
+            px = (t / 2.5) * (tollX - 70) - 40; carSpeed = 25; isBraking = true; brakePercent = 30;
+            statusText = 'APPROACHING FASTag LANE'; statusColor = '#38bdf8';
+          } else if (t < 4.0) {
+            px = tollX - 70; carSpeed = 10; isBraking = true; brakePercent = 50;
+            statusText = 'FASTag RFID SCANNING... 📡'; statusColor = '#f59e0b';
+          } else {
+            const lt = (t - 4.0) / 4.0; px = (tollX - 70) + lt * (w * 0.6);
+            carSpeed = Math.round(15 + lt * 30); isBraking = false; brakePercent = 0;
+            statusText = 'TOLL CLEARED · ₹100 PAID ✓'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+          showAlert('💳 FASTag TOLL PLAZA: PROCEED AT 20 KM/H FOR AUTOMATIC RFID SCAN', t > 1.5 && t < 4.5);
+          break;
+        }
+
+        case 'blind_corner': {
+          // BLIND CORNER & CONVEX MIRROR
+          const mirrorX = w * 0.5, mirrorY = roadTop - 40;
+          ctx.fillStyle = '#e2e8f0'; ctx.beginPath(); ctx.arc(mirrorX, mirrorY, 18, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 3.5; ctx.stroke();
+          ctx.font = '700 9px sans-serif'; ctx.fillStyle = '#0f172a'; ctx.fillText('TRUCK', mirrorX - 14, mirrorY + 3);
+
+          const px = ((t / this._simState.duration) * (w + 100)) - 50;
+          carSpeed = 22; isBraking = t > 2.0 && t < 4.5; brakePercent = isBraking ? 55 : 0;
+          statusText = isBraking ? 'BLIND CURVE · CHECKING CONVEX MIRROR' : 'HUGGING LEFT EDGE · SAFE PASS';
+          statusColor = isBraking ? '#f59e0b' : '#10b981';
+
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+          showAlert('🪞 BLIND CORNER: SOUND SHORT HORN TAP & CHECK CONVEX MIRROR BEFORE BEND', t > 1.5 && t < 5.0);
+          break;
+        }
+
+        case 'hill_driving': {
+          // HILL START (ZERO ROLLBACK)
+          const px = w * 0.35 + (t > 4.0 ? ((t - 4.0) / 4.0) * (w * 0.5) : 0);
+          const isHillStop = t < 4.0;
+          carSpeed = isHillStop ? 0 : Math.round(((t - 4.0) / 4.0) * 30);
+          isBraking = isHillStop; brakePercent = isHillStop ? 100 : 0;
+          statusText = isHillStop ? 'HANDBRAKE APPLIED ON INCLINE (100%)' : 'CLUTCH RELEASE · ZERO ROLLBACK ACHIEVED';
+          statusColor = isHillStop ? '#ef4444' : '#10b981';
+
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+          showAlert('⛰️ HILL DRIVING: PREVENT ROLLBACK USING HANDBRAKE & SMOOTH CLUTCH COORDINATION', true);
+          break;
+        }
+
+        case 'bus_stop': {
+          // BEST BUS STOP QUEUEING
+          const busX = w * 0.55, busY = roadTop + roadHeight * 0.28;
+          drawBus(busX, busY, true);
+
+          // Commuters boarding
+          drawPedestrian(busX - 25, sidewalkTop + 6, t * 4, true, false);
+
+          let px = 0;
+          if (t < 2.5) {
+            px = (t / 2.5) * (busX - 90) - 40; carSpeed = Math.round(35 - (t / 2.5) * 30);
+            isBraking = t > 1.0; brakePercent = isBraking ? 70 : 0;
+            statusText = 'APPROACHING STOPPED BUS'; statusColor = '#38bdf8';
+          } else if (t < 6.5) {
+            px = busX - 85; carSpeed = 0; isBraking = true; brakePercent = 100;
+            statusText = 'WAITING BEHIND BUS · NO DANGEROUS OVERTAKE'; statusColor = '#10b981';
+          } else {
+            const lt = (t - 6.5) / 1.5; px = (busX - 85) + lt * (w * 0.5);
+            carSpeed = Math.round(lt * 32); isBraking = false; brakePercent = 0;
+            statusText = 'BUS MOVING · FOLLOWING IN LANE'; statusColor = '#10b981';
+          }
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+          showAlert('🚌 BUS STOP COURTESY: NEVER OVERTAKE BLINDLY INTO ONCOMING TRAFFIC', t > 2.0 && t < 6.5);
+          break;
+        }
+
+        case 'construction': {
+          // CONSTRUCTION DETOUR & TRAFFIC CONES
+          const coneX = w * 0.5;
+          for (let i = 0; i < 4; i++) {
+            const cx = coneX + i * 25, cy = roadTop + roadHeight * 0.28;
+            ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.moveTo(cx, cy - 14); ctx.lineTo(cx - 7, cy + 6); ctx.lineTo(cx + 7, cy + 6); ctx.fill();
+            ctx.fillStyle = '#ffffff'; ctx.fillRect(cx - 4, cy - 4, 8, 3);
+          }
+
+          const px = ((t / this._simState.duration) * (w + 120)) - 60;
+          const py = roadTop + roadHeight * 0.28 + (px > coneX - 70 && px < coneX + 110 ? 18 : 0);
+          carSpeed = 22; isBraking = px > coneX - 70 && px < coneX + 110; brakePercent = isBraking ? 40 : 0;
+          statusText = isBraking ? 'CONSTRUCTION DETOUR · SPEED 22 KM/H' : 'CRUISING PAST WORK ZONE'; statusColor = '#f59e0b';
+
+          drawVectorCar(px, py, '#3b82f6', isBraking, true, isBraking);
+          showAlert('🚧 WORK ZONE: SLOW DOWN & FOLLOW SINGLE-LANE DETOUR ARROWS', true);
+          break;
+        }
+
+        case 'one_way': {
+          // ONE-WAY COMPLIANCE & WRONG-SIDE HAZARD
+          const signX = w * 0.45, signY = roadTop - 45;
+          // No Entry Sign
+          ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(signX, signY, 18, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(signX - 12, signY - 3.5, 24, 7);
+
+          const px = ((t / this._simState.duration) * (w + 120)) - 60;
+          carSpeed = 35; isBraking = false; statusText = 'STRICT ONE-WAY FLOW · PROPER LANE'; statusColor = '#10b981';
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', false, true, false);
+
+          if (t > 2.5 && t < 5.5) {
+            const wrongX = (w * 0.8) - ((t - 2.5) / 3.0) * (w * 0.5);
+            drawVectorCar(wrongX, roadTop + roadHeight * 0.72, '#ef4444', false, true, true);
+            showAlert('⛔ WRONG-SIDE DRIVING VIOLATION — ₹5,000 FINE & LICENSE SUSPENSION', true);
+          } else { showAlert('', false); }
+          break;
+        }
+
+        case 'cyclist': {
+          // CYCLIST 1.5M CLEARANCE BUFFER
+          const cyclistX = w * 0.5;
+          drawCyclist(cyclistX, roadTop + roadHeight * 0.22, t * 12);
+
+          const px = ((t / this._simState.duration) * (w + 120)) - 60;
+          const py = roadTop + roadHeight * 0.28 + (px > cyclistX - 80 && px < cyclistX + 80 ? 18 : 0);
+          const isBuffer = px > cyclistX - 80 && px < cyclistX + 80;
+          carSpeed = 32; statusText = isBuffer ? '1.5M CYCLIST CLEARANCE GIVEN' : 'CRUISING'; statusColor = '#10b981';
+
+          drawVectorCar(px, py, '#3b82f6', false, true, isBuffer);
+          showAlert('🚴 CYCLIST SAFETY: PROVIDE AT LEAST 1.5 METERS BUFFER WHEN OVERTAKING', isBuffer);
+          break;
+        }
+
+        case 'highway_merge': {
+          // HIGHWAY ACCELERATION MERGE
+          const px = ((t / this._simState.duration) * (w + 140)) - 70;
+          const py = roadTop + roadHeight * 0.72 - (t > 3.0 ? 18 : 0);
+          carSpeed = Math.round(35 + (t / this._simState.duration) * 30);
+          statusText = t > 3.0 ? 'MERGED INTO HIGHWAY STREAM (65 KM/H)' : 'ACCELERATING ON SLIP RAMP'; statusColor = '#10b981';
+
+          // Passing highway truck
+          drawVectorCar(w * 0.7, roadTop + roadHeight * 0.28, '#475569', false, true, false);
+          drawVectorCar(px, py, '#3b82f6', false, true, t > 2.0 && t < 4.0);
+          showAlert('🛣️ HIGHWAY MERGE: MATCH HIGHWAY SPEED & MERGE SMOOTHLY INTO GAP', true);
+          break;
+        }
+
+        case 'zero_visibility': {
+          // ZERO VISIBILITY MONSOON / NIGHT FOG
+          const px = ((t / this._simState.duration) * (w + 100)) - 50;
+          carSpeed = 24; isBraking = false;
+          statusText = 'LOW BEAM & HAZARDS · FOG GUIDANCE'; statusColor = '#f59e0b';
+
+          // Swirling mist fog overlay
+          ctx.fillStyle = 'rgba(203, 213, 225, 0.25)';
+          ctx.beginPath(); ctx.ellipse(w * 0.5, roadTop + 10, w * 0.6, 40, 0, 0, Math.PI * 2); ctx.fill();
+
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', false, true, true);
+          showAlert('🌫️ ZERO VISIBILITY: USE LOW-BEAM HEADLIGHTS & HAZARD LIGHTS; DO NOT TAILGATE', true);
+          break;
+        }
+
+        case 'pedestrian_courtesy':
+        case 'grand_test':
+        default: {
+          // PEDESTRIAN COURTESY & SCHOOL ZONE
+          const crossX = w * 0.52, crossW = 90, stopTargetX = crossX - crossW / 2 - 42;
+          const numStripes = 6;
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+          for (let s = 0; s < numStripes; s++) {
+            const stripeY = roadTop + 6 + s * ((roadHeight - 12) / numStripes);
+            ctx.fillRect(crossX - crossW / 2, stripeY, crossW, (roadHeight - 12) / numStripes - 6);
+          }
+
+          const stopLineX = crossX - crossW / 2 - 14;
+          ctx.fillStyle = '#ffffff'; ctx.fillRect(stopLineX, roadTop + 2, 4, roadHeight / 2 - 4);
+          ctx.font = '800 10px monospace'; ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.fillText('STOP', stopLineX - 32, roadTop + roadHeight * 0.28);
+
+          let px = 0;
+          if (t < 2.5) {
+            px = (t / 2.5) * (stopTargetX + 60) - 60;
+            carSpeed = Math.round(40 - (t / 2.5) * 15);
+            isBraking = t > 1.2; brakePercent = isBraking ? 50 : 0;
+            statusText = 'APPROACHING CROSSWALK'; statusColor = '#38bdf8';
+          } else if (t < 6.5) {
+            px = stopTargetX; carSpeed = 0; isBraking = true; brakePercent = 90;
+            statusText = 'YIELDING TO PEDESTRIANS 🚶'; statusColor = '#10b981';
+          } else {
+            const leaveT = (t - 6.5) / 1.5; px = stopTargetX + leaveT * (w - stopTargetX + 80);
+            carSpeed = Math.round(leaveT * 36); isBraking = false; brakePercent = 0;
+            statusText = 'CROSSWALK CLEAR · ACCELERATING'; statusColor = '#10b981';
+          }
+
+          drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', isBraking, true, false);
+
+          if (t > 1.8 && t < 7.2) {
+            const pedProg = (t - 1.8) / 5.4;
+            const pedY = sidewalkTop + pedProg * (roadHeight + 8);
+            drawPedestrian(crossX - 18, pedY, t * 10, true, isRain, true);
+            drawPedestrian(crossX + 16, pedY - 14, t * 9, true, isRain, true);
+          } else {
+            drawPedestrian(crossX - 18, sidewalkTop + 6, 0, true, isRain, true);
+          }
+          showAlert('🚸 PEDESTRIAN PRIORITY: ALWAYS YIELD TO PEDESTRIANS AT ZEBRA CROSSINGS', t > 1.8 && t < 6.5);
+          break;
+        }
+      }
+
+      // ── 5. WEATHER EFFECTS (Rain & Splashes) ──
+      if (isRain) {
+        ctx.strokeStyle = 'rgba(186, 230, 253, 0.65)'; ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        rainDrops.forEach(r => {
+          r.y += r.speed * dt; r.x -= r.speed * dt * 0.35;
+          if (r.y > h) {
+            r.y = -10; r.x = Math.random() * (w + 100);
+            if (r.y > roadTop) {
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+              ctx.beginPath(); ctx.ellipse(r.x, roadTop + Math.random() * roadHeight, 4, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+            }
+          }
+          ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - 4, r.y + r.length);
+        });
+        ctx.stroke();
+      }
+
+      // ── 6. TELEMETRY HUD UPDATE ──
+      if (speedValEl) speedValEl.textContent = `${carSpeed} km/h`;
+      if (brakeValEl) brakeValEl.textContent = `${brakePercent}%`;
+      if (statusValEl) {
+        statusValEl.textContent = statusText;
+        statusValEl.style.color = statusColor;
+      }
+
+      ctx.restore();
+      this._simAnimId = requestAnimationFrame(renderFrame);
+    };
+
+    this._simAnimId = requestAnimationFrame(renderFrame);
   },
   _disposeBriefingScene() {
     if (this._bScene) {
@@ -2197,80 +3676,142 @@ window.ui = Object.assign(window.ui || {}, {
     S.vehicle = vehicleId.charAt(0).toUpperCase() + vehicleId.slice(1)
     save()
     toast(`✅ Vehicle set to ${vehicleId}`, '#34d399')
-    // Re-render the practical section to show updated selection
+
     const lv = this.cur
     if (lv) this._selSyl('practical')
   },
   selectMode(mode) {
-    // Just select the mode — don't open quiz yet
     this.curMode = mode
-    // Update the mode buttons visual state using data-mode attribute
-    const practBtns = document.querySelectorAll('#br-content .btn[data-mode]')
-    practBtns.forEach(btn => {
-      const btnMode = btn.dataset.mode
-      if (btnMode === mode) {
-        btn.style.background = 'var(--accent, #D97706)'
-        btn.style.color = '#fff'
-        btn.style.borderColor = 'var(--accent, #D97706)'
-      } else {
-        btn.style.background = 'var(--panel, rgba(0,0,0,0.04))'
-        btn.style.color = 'var(--ink, #111827)'
-        btn.style.borderColor = 'var(--line, rgba(0,0,0,0.08))'
-      }
-    })
+    const lv = this.cur
+    if (lv) this._selSyl('practical')
   },
   dispatchStart(mode) {
-    // Use preferred vehicle from setup if mode not explicitly passed
-    if (!mode) {
-      const lv = this.cur
-      const availModes = lv.modes || ['car']
-      mode = (S.vehicle === 'Bike' && availModes.includes('bike')) ? 'bike'
-        : (S.vehicle === 'Car' && availModes.includes('car')) ? 'car'
-        : this.curMode || availModes[0]
-    }
-    const lv = this.cur
+    const lv = this.cur || (window.LVS && window.LVS[0]) || { id: 1 }
+    const availModes = lv.modes || ['car']
+    const chosenMode = mode || this.curMode || availModes[0]
+    
+    this.curMode = chosenMode
     localStorage.setItem('traffic_lv', lv.id)
-    localStorage.setItem('traffic_mode', mode)
-    window.location.href = `Driving.html?lv=${lv.id}&mode=${mode}`
+    localStorage.setItem('traffic_mode', chosenMode)
+
+    let vehParam = 'car'
+    if (chosenMode === 'pedestrian') {
+      vehParam = 'pedestrian'
+    } else if (chosenMode === 'bike') {
+      vehParam = 'bike'
+    } else if (chosenMode === 'chaos') {
+      vehParam = (S.vehicle || 'car').toLowerCase()
+    } else if (S.vehicle) {
+      vehParam = S.vehicle.toLowerCase()
+    }
+
+    localStorage.setItem('traffic_veh', vehParam)
+    window.location.href = `Driving.html?lv=${lv.id}&mode=${chosenMode}&veh=${vehParam}`
+  },
+  abortQuiz() {
+    const quizEl = document.getElementById('screen-quiz')
+    if (quizEl) {
+      quizEl.classList.remove('active')
+      quizEl.style.display = ''
+      quizEl.style.opacity = ''
+      quizEl.style.pointerEvents = ''
+    }
+    const lv = this.cur || (window.LVS && window.LVS.find(l => l.id == (this.qst?.lvId || 1))) || window.LVS?.[0]
+    if (lv && lv.id) {
+      this.showBriefing(lv.id, 'exam')
+    } else {
+      this.showLevels()
+    }
   },
   showQuiz(mode, perf = null) {
-    mode = mode || ui.curMode || 'car'
-    let qs = this.cur.quiz && this.cur.quiz[mode] ? this.cur.quiz[mode] : this.cur.quiz ? this.cur.quiz.car : null
+    mode = mode || ui.curMode || (window.game && window.game.vehMode) || 'car';
+    ui.curMode = mode;
 
-    // Adaptive Logic: Inject corrective question if violations occurred
+    // Ensure this.cur is always a valid level object
+    if (!this.cur) {
+      const curLvId = (window.game && window.game._lv) || 1;
+      this.cur = (window.LVS && window.LVS.find(l => l.id == curLvId)) || window.LVS?.[0] || {
+        id: curLvId,
+        name: 'Lesson ' + curLvId,
+        themeType: 'traffic_safety',
+        law: { sec: 'Motor Vehicles Act', off: 'Traffic Violation', fine: '₹500 - ₹2000' }
+      };
+    }
+    const lv = this.cur;
+    const lawSec = (lv.law && lv.law.sec) || 'Motor Vehicles Act';
+    const lawOff = (lv.law && lv.law.off) || 'Traffic Violation';
+    const lawFine = (lv.law && lv.law.fine) || '₹500 - ₹2000';
+    const themeName = (lv.themeType || 'traffic_safety').replace(/_/g, ' ');
+
+    let qs = lv.quiz && lv.quiz[mode] ? [...lv.quiz[mode]] : lv.quiz && lv.quiz.car ? [...lv.quiz.car] : null;
+
     if (perf && perf.violations && perf.violations.length > 0) {
-      const tag = perf.violations[0]; // Use the first recorded violation
-      const correction = CORRECTIVE_QUIZ[tag];
+      const tag = perf.violations[0];
+      const correction = typeof CORRECTIVE_QUIZ !== 'undefined' ? CORRECTIVE_QUIZ[tag] : null;
       if (correction) {
         if (!qs) qs = [];
-        qs = [...qs, correction];
+        qs = [...qs, { ...correction, o: [...correction.o] }];
       }
     }
 
+    // Use AdaptiveQuiz engine for syllabus-based + violation-based questions
+    let adaptiveQuestions = [];
+    try {
+      if (typeof AdaptiveQuiz !== 'undefined') {
+        const adaptiveQuiz = new AdaptiveQuiz(lv.id || 1, perf);
+        adaptiveQuestions = adaptiveQuiz.generateQuiz(3) || [];
+      }
+    } catch(aqe) {
+      console.warn('[Quiz] Adaptive quiz generation error:', aqe);
+    }
+    
     if (!qs || qs.length === 0) {
       qs = [
-        { q: `What is the primary rule for this scenario: ${this.cur.name}?`, o: [this.cur.law.sec, 'Speed up', 'Ignore signals', 'Honk loudly'], a: 0 },
-        { q: `What is the penalty for ${this.cur.law.off}?`, o: [this.cur.law.fine, '₹100', 'No fine', 'Warning'], a: 0 },
-        { q: `If you fail to follow ${this.cur.themeType.replace('_', ' ')} rules, what happens?`, o: ['Accidents and fines', 'Nothing', 'You get a reward', 'Traffic speeds up'], a: 0 }
-      ]
+        { q: `What is the primary traffic rule for "${lv.name || 'this scenario'}"?`, o: [lawSec + ' compliance and caution', 'Accelerate fast through intersections', 'Ignore traffic signals when late', 'Honk aggressively to clear the way'], a: 0 },
+        { q: `What is the legal penalty for ${lawOff}?`, o: [`Fine of ${lawFine} and penalty points`, '₹50 instant cash reward', 'No penalty if you apologize', 'Verbal warning only'], a: 0 },
+        { q: `What is the safe procedure in ${themeName} conditions?`, o: ['Maintain safe following distance and obey signs', 'Speed up to cross early', 'Overtake vehicles on blind turns', 'Drive on the sidewalk to avoid traffic'], a: 0 }
+      ];
+    }
+    
+    // Merge adaptive questions with base questions if available
+    if (adaptiveQuestions.length > 0) {
+      qs = [...adaptiveQuestions, ...qs];
     }
 
-    // Shuffle options for all questions
-    qs.forEach((q) => {
-      const c = q.o[q.a]
-      const rIdx = Math.floor(Math.random() * 4)
-      q.o[q.a] = q.o[rIdx]
-      q.o[rIdx] = c
-      q.a = rIdx
-    })
+    // Ensure all questions are well-formed (deep-cloned options, valid 4 choices)
+    const validQuestions = [];
+    qs.forEach((rawQ) => {
+      if (!rawQ || !rawQ.q || !Array.isArray(rawQ.o) || rawQ.o.length < 2) return;
+      const q = {
+        q: String(rawQ.q),
+        o: rawQ.o.map(opt => String(opt || '')),
+        a: typeof rawQ.a === 'number' ? rawQ.a : 0
+      };
+      while (q.o.length < 4) q.o.push('None of the above');
+      q.o = q.o.slice(0, 4);
+      
+      // Shuffle options and update answer index
+      const correctText = q.o[q.a];
+      const rIdx = Math.floor(Math.random() * 4);
+      q.o[q.a] = q.o[rIdx];
+      q.o[rIdx] = correctText;
+      q.a = rIdx;
+      validQuestions.push(q);
+    });
 
-    this.qst = { qs: qs, cur: 0, pass: 0, mode: mode }
-    if (qs.length === 0) {
-      this._fq()
-      return
+    this.qst = { qs: validQuestions.slice(0, 5), cur: 0, pass: 0, mode: mode };
+    if (this.qst.qs.length === 0) {
+      this._fq();
+      return;
     }
-    this._rq()
-    this.show('screen-quiz', { direction: 'forward' })
+
+    // Hide game canvas and pause game loop
+    const gc = document.getElementById('gc');
+    if (gc) gc.classList.remove('on');
+    if (window.game) window.game.playing = false;
+
+    this._rq();
+    this.show('screen-quiz', { direction: 'forward', instant: true });
   },
   _rq() {
     const s = this.qst,
@@ -2315,26 +3856,23 @@ window.ui = Object.assign(window.ui || {}, {
       return
     }
     if (s.mode === 'final') {
-      this.showResults(game?.fs || 100, game?.fst || { vio: 0 })
+      this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 })
     } else {
-      const lv = this.cur
-      if (!S.comp[lv.id]) S.comp[lv.id] = {}
-      if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
-      S.comp[lv.id].modes[s.mode] = true
-      // A level only used to count as "complete" (isDone() / certificate progress) if a
-      // mode called 'final' had run its quiz — but nothing in the game ever set mode to
-      // 'final', so no level could ever be marked complete. Fix: once every mode this
-      // level requires has had its quiz passed, mark the level itself complete right here.
-      const requiredModes = lv.modes || [s.mode]
-      const allModesDone = requiredModes.every((m) => S.comp[lv.id].modes[m])
-      if (allModesDone && !S.comp[lv.id].finalQuiz) {
-        const finalScore = game?.fs || 100
+      const lv = this.cur || (window.LVS && window.LVS.find(l => l.id == (this.qst?.lvId || 1))) || window.LVS?.[0]
+      if (lv && lv.id) {
+        if (!S.comp[lv.id]) S.comp[lv.id] = {}
+        if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
+        S.comp[lv.id].modes[s.mode || 'practice'] = true
+        S.comp[lv.id].completed = true
+        S.comp[lv.id].finalQuiz = true
+
+        const finalScore = window.game?.fs || 100
         const prevScore = S.comp[lv.id].score || 0
         S.comp[lv.id].score = Math.max(finalScore, prevScore)
         S.comp[lv.id].time = Date.now()
-        S.comp[lv.id].finalQuiz = true
-        S.total += finalScore
+        S.total = (S.total || 0) + finalScore
         if (lv.badge && !S.badges.includes(lv.badge.id)) S.badges.push(lv.badge.id)
+
         const completedCount = Object.keys(S.comp).length
         if (completedCount >= 10 && !S.badges.includes('level_10')) S.badges.push('level_10')
         if (completedCount >= 20 && !S.badges.includes('level_20')) S.badges.push('level_20')
@@ -2343,18 +3881,12 @@ window.ui = Object.assign(window.ui || {}, {
         if (completedCount >= 52 && !S.badges.includes('level_52')) S.badges.push('level_52')
         if (completedCount >= 52 && !S.badges.includes('traffic_hero')) S.badges.push('traffic_hero')
 
-        // Civic score — a persistent reputation number separate from per-level score,
-        // rewarding clean driving over time rather than just "did you pass." Doesn't
-        // penalize mistakes (this is a learning tool for kids, not a punishment system) —
-        // clean runs just earn more than rough ones.
-        const vioCount = game?.fst?.vio || 0
+        const vioCount = window.game?.fst?.vio || 0
         const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
         S.civicScore = (S.civicScore || 0) + civicGain
-        // Track which specific violation types occur, across levels, so a parent/teacher can
-        // see a real pattern ("keeps forgetting to signal") instead of just a raw count —
-        // this was previously discarded every level, nothing kept a history of it at all.
+
         if (!S.violationHistory) S.violationHistory = {}
-        ;(game?.violationsLog || []).forEach((v) => {
+        ;(window.game?.violationsLog || []).forEach((v) => {
           S.violationHistory[v] = (S.violationHistory[v] || 0) + 1
         })
         const tiers = [
@@ -2371,12 +3903,12 @@ window.ui = Object.assign(window.ui || {}, {
         })
       }
       save()
-      toast(`✅ ${s.mode.charAt(0).toUpperCase() + s.mode.slice(1)} quiz passed!`, '#00c851')
+      toast(`✅ ${(s.mode || 'practice').charAt(0).toUpperCase() + (s.mode || 'practice').slice(1)} quiz passed!`, '#00c851')
       if (window.location.pathname.toLowerCase().includes('driving')) {
-        window.location.href = 'Academy.html?screen=levels'
+        this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 });
       } else {
         if (typeof SCENARIOS !== 'undefined') {
-          const sc = SCENARIOS.find(x => x.levelRef === lv.id)
+          const sc = SCENARIOS.find(x => x.levelRef === lv?.id)
           if (sc) {
             this.show2D(sc.id)
             return
@@ -2385,20 +3917,25 @@ window.ui = Object.assign(window.ui || {}, {
             return
           }
         }
-        window.location.href = `Driving.html?lv=${lv.id}&mode=${s.mode}`
+        this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 });
       }
     }
   },
   showResults(score, stats) {
-    const lv = this.cur,
-      prev = S.comp[lv.id]?.score || 0
-    S.comp[lv.id] = { ...S.comp[lv.id], score: Math.max(score, prev), time: Date.now(), finalQuiz: true }
-    S.total += score
+    const lv = this.cur || (window.LVS && window.LVS[0])
+    if (lv && lv.id) {
+      const prev = S.comp[lv.id]?.score || 0
+      S.comp[lv.id] = { ...S.comp[lv.id], score: Math.max(score, prev), time: Date.now(), finalQuiz: true, completed: true }
+      if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
+      S.comp[lv.id].modes.learn = true
+      S.comp[lv.id].modes.practice = true
+      S.total = (S.total || 0) + score
+    }
     const vioCount = stats?.vio || 0
     const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
     S.civicScore = (S.civicScore || 0) + civicGain
     if (!S.violationHistory) S.violationHistory = {}
-    ;(stats?.violations || game?.violationsLog || []).forEach((v) => {
+    ;(stats?.violations || window.game?.violationsLog || []).forEach((v) => {
       S.violationHistory[v] = (S.violationHistory[v] || 0) + 1
     })
     ;[
@@ -2422,7 +3959,7 @@ window.ui = Object.assign(window.ui || {}, {
     if (!S.badges.includes('signal_master') && Object.keys(S.comp).length >= 5 && !stats.vio) S.badges.push('signal_master')
     if (S.badges.includes('traffic_hero') && !S.badges.includes('smart_citizen')) S.badges.push('smart_citizen')
 
-    // Check for level group badges
+
     const completedCount = Object.keys(S.comp).length
     if (completedCount >= 10 && !S.badges.includes('level_10')) S.badges.push('level_10')
     if (completedCount >= 20 && !S.badges.includes('level_20')) S.badges.push('level_20')
@@ -2431,7 +3968,7 @@ window.ui = Object.assign(window.ui || {}, {
     if (completedCount >= 52 && !S.badges.includes('level_52')) S.badges.push('level_52')
     if (completedCount >= 52 && !S.badges.includes('traffic_hero')) S.badges.push('traffic_hero')
 
-    // Check for category badges based on level themeType
+
     const themeTypes = {
       pedestrian_expert: ['pedestrian_courtesy', 'pedestrian_priority', 'pedestrian', 'crosswalk'],
       night_driver: ['night', 'night_driving', 'night_monsoon', 'blind_corner', 'zero_visibility'],
@@ -2440,7 +3977,7 @@ window.ui = Object.assign(window.ui || {}, {
       parking_master: ['parking', 'street_parking', 'respectful_parking', 'parking_rules']
     }
 
-    // Check if all levels of a category are completed
+
     for (const [badgeId, themes] of Object.entries(themeTypes)) {
       if (S.badges.includes(badgeId)) continue
       const categoryLevels = LVS.filter(l => themes.some(t => (l.themeType || '').includes(t)))
@@ -2451,17 +3988,36 @@ window.ui = Object.assign(window.ui || {}, {
     }
 
     save()
-    document.getElementById('rico').textContent = score > 200 ? '🌟' : '⭐'
-    document.getElementById('rtit').textContent = 'Level Complete!'
-    document.getElementById('rsub').textContent = lv.name + ' 🔄 Well done!'
-    document.getElementById('rcard').innerHTML =
-      `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 52</span></div>
+    const rico = document.getElementById('rico')
+    if (rico) rico.textContent = score > 200 ? '🌟' : '⭐'
+    const rtit = document.getElementById('rtit')
+    if (rtit) rtit.textContent = 'Level Complete!'
+    const rsub = document.getElementById('rsub')
+    if (rsub) rsub.textContent = (lv.name || 'Lesson') + ' 🔄 Well done!'
+
+    // Generate and store certificate data for sharing
+    const certData = this._generateCertificateData(lv, score, stats)
+    window.LAST_CERTIFICATE = certData
+    const rcard = document.getElementById('rcard')
+    if (rcard) {
+      rcard.innerHTML = `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 52</span></div>
 ${stats.reward ? `<div class="rr"><span class="rl" style="color:var(--green, #059669)">Level Reward</span><span class="rv" style="color:var(--green, #059669)">+₹${stats.reward.toLocaleString('en-IN')}</span></div>` : ''}
 ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines Deducted</span><span class="rv" style="color:#ff3b30">-₹${stats.fineAmt.toLocaleString('en-IN')}</span></div>` : ''}
-<div class="rr" style="margin-top:10px; border-top:1px solid var(--line, rgba(0,0,0,0.15)); padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:var(--accent, #b45309); font-weight:700;">₹${S.wallet.toLocaleString('en-IN')}</span></div>`
-    document.getElementById('ro').classList.add('on')
-    sfx.play('win')
+<div class="rr" style="margin-top:10px; border-top:1px solid var(--line, rgba(0,0,0,0.15)); padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:var(--accent, #b45309); font-weight:700;">₹${(S.wallet || 0).toLocaleString('en-IN')}</span></div>
+<div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+  <button class="btn btn-p" onclick="ui.downloadCertificate()" style="flex: 1; min-width: 140px;">
+    📥 Download Certificate
+  </button>
+  <button class="btn btn-g" onclick="ui.shareCertificate()" style="flex: 1; min-width: 140px;">
+    🔗 Share Certificate
+  </button>
+</div>`
+    }
+    const ro = document.getElementById('ro')
+    if (ro) ro.classList.add('on')
+    if (window.sfx && typeof window.sfx.play === 'function') sfx.play('win')
   },
+  challanHistory: [],
   issueChallan(off, sec, amt, loc, cb) {
     this.cq.push({ off, sec, amt, loc, cb })
     if (!this.cbusy) this._nc()
@@ -2473,83 +4029,311 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     }
     this.cbusy = true
     const c = this.cq.shift()
-    const vf = document.getElementById('vflash')
-    if (vf) {
-      vf.classList.remove('flash')
-      void vf.offsetWidth
-      vf.classList.add('flash')
+    try {
+      const cId = 'MTP/2026/' + (Math.floor(Math.random() * 90000) + 10000)
+      const cTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      const challanItem = { id: cId, off: c.off, sec: c.sec, amt: c.amt, loc: c.loc || '📍 Mumbai', time: cTime }
+      if (!this.challanHistory) this.challanHistory = []
+      this.challanHistory.push(challanItem)
+      this._updateChallanSummaryBox()
+
+      const vf = document.getElementById('vflash')
+      if (vf) {
+        vf.classList.remove('flash')
+        void vf.offsetWidth
+        vf.classList.add('flash')
+      }
+      const cnumEl = document.getElementById('cnum')
+      if (cnumEl) cnumEl.textContent = cId
+      const coffEl = document.getElementById('coff')
+      if (coffEl) coffEl.textContent = c.off
+      const clawEl = document.getElementById('claw')
+      if (clawEl) clawEl.textContent = c.sec
+      const camtEl = document.getElementById('camt')
+      if (camtEl) camtEl.textContent = c.amt
+      const locEl = document.getElementById('cloc')
+      if (locEl) locEl.textContent = c.loc || '📍 Mumbai'
+      const covEl = document.getElementById('cov')
+      if (covEl) covEl.classList.add('on')
+      this._ccb = c.cb || null
+      if (game.playing) game.pause = true
+      sfx.play('challan')
+    } catch (e) {
+      console.warn('Challan display error:', e)
+      this.cbusy = false
+      if (this.cq.length > 0) {
+        setTimeout(() => this._nc(), 100)
+      }
     }
-    document.getElementById('cnum').textContent = 'MTP/2026/' + (Math.floor(Math.random() * 90000) + 10000)
-    document.getElementById('coff').textContent = c.off
-    document.getElementById('claw').textContent = c.sec
-    document.getElementById('camt').textContent = c.amt
-    const locEl = document.getElementById('cloc')
-    if (locEl) locEl.textContent = c.loc || '📍 Mumbai'
-    document.getElementById('cov').classList.add('on')
-    this._ccb = c.cb || null
-    if (game.playing) game.pause = true
-    sfx.play('challan')
+  },
+  _updateChallanSummaryBox() {
+    const csb = document.getElementById('challan-summary-box')
+    if (!csb) return
+    const totalCount = (this.challanHistory || []).length
+    if (totalCount === 0) {
+      csb.style.display = 'none'
+      return
+    }
+    csb.style.display = 'flex'
+    let totalAmt = 0
+    this.challanHistory.forEach(item => {
+      const num = parseInt(String(item.amt || '').replace(/[^0-9]/g, '')) || 500
+      totalAmt += num
+    })
+    const latest = this.challanHistory[this.challanHistory.length - 1]
+    const titleEl = document.getElementById('csb-title')
+    const subEl = document.getElementById('csb-sub')
+    if (titleEl) titleEl.textContent = '🚨 ' + (latest ? latest.off : 'E-Challan')
+    if (subEl) subEl.textContent = `${totalCount} Violation${totalCount > 1 ? 's' : ''} (₹${totalAmt.toLocaleString('en-IN')})`
   },
   dismissChallan() {
     const cov = document.getElementById('cov')
     const cvc = document.getElementById('cvc-main')
 
-    // Create clone for animation
-    const rect = cvc.getBoundingClientRect()
-    const clone = cvc.cloneNode(true)
-    clone.id = ''
-    clone.style.position = 'fixed'
-    clone.style.top = rect.top + 'px'
-    clone.style.left = rect.left + 'px'
-    clone.style.width = rect.width + 'px'
-    clone.style.height = rect.height + 'px'
-    clone.style.margin = '0'
-    clone.style.zIndex = getComputedStyle(document.documentElement).getPropertyValue('--z-modal').trim() || '100001'
-    clone.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-    document.body.appendChild(clone)
+    if (cvc) {
+      try {
+        const rect = cvc.getBoundingClientRect()
+        const clone = cvc.cloneNode(true)
+        clone.id = ''
+        clone.style.position = 'fixed'
+        clone.style.top = rect.top + 'px'
+        clone.style.left = rect.left + 'px'
+        clone.style.width = rect.width + 'px'
+        clone.style.height = rect.height + 'px'
+        clone.style.margin = '0'
+        clone.style.zIndex = getComputedStyle(document.documentElement).getPropertyValue('--z-modal').trim() || '100001'
+        clone.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+        document.body.appendChild(clone)
 
-    // Hide original immediately
-    cov.classList.remove('on')
+        setTimeout(() => {
+          clone.style.transform = 'scale(0.2)'
+          clone.style.top = window.innerHeight - 150 + 'px'
+          clone.style.left = window.innerWidth - 150 + 'px'
+          clone.style.opacity = '0'
+        }, 20)
 
-    // Trigger animation
+        setTimeout(() => {
+          clone.remove()
+        }, 500)
+      } catch (e) {
+        console.warn('Challan animation error:', e)
+      }
+    }
+
+    if (cov) cov.classList.remove('on')
+    this._updateChallanSummaryBox()
+
     setTimeout(() => {
-      clone.style.transform = 'scale(0.2)'
-      clone.style.top = window.innerHeight - 150 + 'px'
-      clone.style.left = window.innerWidth - 150 + 'px'
-      clone.style.opacity = '0'
-    }, 20)
-
-    // Create corner card
-    setTimeout(() => {
-      const stack = document.getElementById('challan-stack')
-      stack.classList.add('on')
-      const offText = document.getElementById('coff').textContent
-      const amtText = document.getElementById('camt').textContent
-      ui._addChallanCard(offText, amtText)
-    }, 300)
-
-    // Cleanup and continue
-    setTimeout(() => {
-      clone.remove()
       if (this._ccb) {
         this._ccb()
         this._ccb = null
       }
       if (game.playing) game.pause = false
+      this.cbusy = false
       setTimeout(() => this._nc(), 80)
     }, 500)
   },
+  openChallanHistoryModal() {
+    const modal = document.getElementById('challan-history-modal')
+    if (!modal) return
+    const list = document.getElementById('chm-list')
+    const totalValEl = document.getElementById('chm-total-val')
+    const history = this.challanHistory || []
+
+    let totalAmt = 0
+    if (list) {
+      if (history.length === 0) {
+        list.innerHTML = '<div class="chm-empty">No violations recorded yet. Keep driving safely!</div>'
+      } else {
+        list.innerHTML = history.map((item, idx) => {
+          const num = parseInt(String(item.amt || '').replace(/[^0-9]/g, '')) || 500
+          totalAmt += num
+          return `
+            <div class="chm-item">
+              <div class="chm-item-header">
+                <span class="chm-item-off">#${idx + 1}. ${item.off}</span>
+                <span class="chm-item-amt">${item.amt || '₹500'}</span>
+              </div>
+              <div class="chm-item-meta">
+                <span>📜 ${item.sec || 'Traffic Regulation'}</span>
+                <span>⏰ ${item.time || ''} • ${item.loc || 'Mumbai'}</span>
+              </div>
+            </div>
+          `
+        }).join('')
+      }
+    }
+    if (totalValEl) totalValEl.textContent = '₹' + totalAmt.toLocaleString('en-IN')
+    modal.classList.add('on')
+  },
+  closeChallanHistoryModal() {
+    const modal = document.getElementById('challan-history-modal')
+    if (modal) modal.classList.remove('on')
+  },
+  
+  // ─── CERTIFICATE GENERATION ───
+  _generateCertificateData(lv, score, stats) {
+    const now = new Date();
+    const certId = 'MTH-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+    return {
+      id: certId,
+      levelId: lv.id,
+      levelName: lv.name,
+      moduleName: lv.module?.name || 'Unknown',
+      score: Math.round(score),
+      violations: stats?.vio || 0,
+      date: now.toISOString(),
+      dateFormatted: now.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+      studentName: S?.name || 'Traffic Hero',
+      studentId: S?.studentId || 'STU-' + Math.floor(100000 + Math.random() * 900000),
+      civicScore: S?.civicScore || 0,
+      wallet: S?.wallet || 50000,
+      badge: lv.badge?.id || null,
+      verificationUrl: `${window.location.origin}/verify-cert.html?id=${certId}`
+    };
+  },
+  
+  downloadCertificate() {
+    if (!window.LAST_CERTIFICATE) {
+      toast('No certificate data available', '#ef4444');
+      return;
+    }
+    
+    const cert = window.LAST_CERTIFICATE;
+    const element = document.createElement('div');
+    element.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;padding:40px;background:white;color:#1a1a2e;font-family:"Inter",sans-serif;';
+    element.innerHTML = this._getCertificateHTML(cert);
+    document.body.appendChild(element);
+    
+    const opt = {
+      margin: 0,
+      filename: `Traffic_Academy_Certificate_${cert.id}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'px', format: 'a4', orientation: 'landscape' }
+    };
+    
+    if (window.html2pdf) {
+      window.html2pdf().set(opt).from(element).save().then(() => {
+        element.remove();
+        toast('📥 Certificate downloaded!', '#34d399');
+      }).catch(() => {
+        element.remove();
+        toast('❌ Download failed', '#ef4444');
+      });
+    } else {
+      element.remove();
+      toast('❌ PDF library not loaded', '#ef4444');
+    }
+  },
+  
+  shareCertificate() {
+    if (!window.LAST_CERTIFICATE) {
+      toast('No certificate to share', '#ef4444');
+      return;
+    }
+    
+    const cert = window.LAST_CERTIFICATE;
+    const shareUrl = cert.verificationUrl;
+    const shareText = `🏆 I earned the "${cert.levelName}" certificate from Mumbai Traffic Hero Academy! Score: ${cert.score}/100 | Civic Score: ${cert.civicScore} | Verify: ${shareUrl}`;
+    
+    if (navigator.share) {
+      navigator.share({ title: 'My Traffic Academy Certificate', text: shareText, url: shareUrl })
+        .then(() => toast('✅ Shared!', '#34d399'))
+        .catch(() => {});
+    } else {
+      // Copy to clipboard fallback
+      navigator.clipboard.writeText(shareText).then(() => {
+        toast('🔗 Certificate link copied to clipboard!', '#34d399');
+      }).catch(() => {
+        prompt('Copy this link to share:', shareText);
+      });
+    }
+  },
+  
+  _getCertificateHTML(cert) {
+    return `
+      <div style="border: 4px solid #f2b84b; border-radius: 20px; padding: 40px; max-width: 720px; margin: 0 auto; background: linear-gradient(135deg, #fff 0%, #fef9f0 100%);">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #f2b84b; padding-bottom: 20px;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 16px;">
+            <img src="../Icon.png" alt="CoL" style="height: 60px;" onerror="this.style.display='none'">
+            <img src="mumbai-police-logo.png" alt="MTP" style="height: 60px;" onerror="this.style.display='none'">
+          </div>
+          <h1 style="font-family: 'Instrument Serif', serif; font-size: 2.5rem; color: #1a1a2e; margin: 0 0 8px; font-weight: 700;">Certificate of Completion</h1>
+          <p style="font-size: 1.1rem; color: #666; margin: 0;">Mumbai Traffic Hero Academy</p>
+        </div>
+        
+        <!-- Certificate ID -->
+        <div style="text-align: center; margin-bottom: 24px; font-family: 'Space Mono', monospace; font-size: 0.85rem; color: #888;">
+          Certificate ID: <strong style="color: #f2b84b;">${cert.id}</strong>
+        </div>
+        
+        <!-- Recipient -->
+        <div style="background: #f8fafc; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center;">
+          <p style="font-size: 0.85rem; color: #888; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 0.1em;">Awarded to</p>
+          <p style="font-family: 'Instrument Serif', serif; font-size: 2rem; color: #1a1a2e; font-weight: 700; margin: 0 0 4px;">${cert.studentName}</p>
+          <p style="font-size: 0.85rem; color: #888; margin: 0;">Student ID: ${cert.studentId}</p>
+        </div>
+        
+        <!-- Achievement -->
+        <div style="background: linear-gradient(135deg, #f2b84b 0%, #f59e0b 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: center; color: #1a1a2e;">
+          <p style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 8px;">Successfully Completed</p>
+          <p style="font-family: 'Instrument Serif', serif; font-size: 1.8rem; font-weight: 700; margin: 0 0 4px;">${cert.levelName}</p>
+          <p style="font-size: 1rem; opacity: 0.9; margin: 0;">${cert.moduleName} — Level ${cert.levelId}</p>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+          <div style="background: #f0fdf4; border-radius: 12px; padding: 16px; text-align: center;">
+            <p style="font-size: 2rem; font-weight: 800; color: #059669; margin: 0; font-family: 'Space Mono', monospace;">${cert.score}/100</p>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase;">Score</p>
+          </div>
+          <div style="background: #fff7ed; border-radius: 12px; padding: 16px; text-align: center;">
+            <p style="font-size: 2rem; font-weight: 800; color: #d97706; margin: 0; font-family: 'Space Mono', monospace;">${cert.violations === 0 ? 'Perfect' : cert.violations}</p>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase;">Violations</p>
+          </div>
+          <div style="background: #eff6ff; border-radius: 12px; padding: 16px; text-align: center;">
+            <p style="font-size: 2rem; font-weight: 800; color: #2563eb; margin: 0; font-family: 'Space Mono', monospace;">${cert.civicScore}</p>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase;">Civic Score</p>
+          </div>
+          <div style="background: #fafafa; border-radius: 12px; padding: 16px; text-align: center;">
+            <p style="font-size: 1.5rem; font-weight: 800; color: #f2b84b; margin: 0; font-family: 'Space Mono', monospace;">₹${cert.wallet.toLocaleString('en-IN')}</p>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase;">Wallet</p>
+          </div>
+        </div>
+        
+        <!-- Date & Verification -->
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; text-align: center; font-size: 0.85rem; color: #666;">
+          <p style="margin: 0 0 8px;">Completed on <strong>${cert.dateFormatted}</strong></p>
+          <p style="margin: 0 0 8px;">Verify at: <a href="${cert.verificationUrl}" style="color: #f2b84b; text-decoration: none;">${cert.verificationUrl}</a></p>
+          <p style="margin: 0; font-size: 0.75rem;">© ${new Date().getFullYear()} Mumbai Traffic Hero Academy — Class Of Learners</p>
+        </div>
+        
+        <!-- Badge if earned -->
+        ${cert.badge ? `
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed #e5e7eb; text-align: center;">
+          <span style="font-size: 2.5rem;">${BADGES.find(b => b.id === cert.badge)?.icon || '🏅'}</span>
+          <p style="margin: 8px 0 0; font-weight: 700; color: #f2b84b;">${BADGES.find(b => b.id === cert.badge)?.name || 'Special Badge'}</p>
+        </div>` : ''}
+      </div>
+    `;
+  },
+
   show2D(scenarioId) {
-    const sc = (typeof SCENARIOS !== 'undefined') ? SCENARIOS.find(s => s.id === scenarioId) : null
-    if (!sc) return
-    this._cur2D = sc
-    document.getElementById('s2d-title').textContent = sc.icon + ' ' + sc.name
-    this.show('screen-2d')
+    const sc = (typeof SCENARIOS !== 'undefined') ? SCENARIOS[scenarioId] : null;
+    if (!sc) {
+      console.warn('[ui] Scenario not found:', scenarioId);
+      return;
+    }
+    this._cur2D = { ...sc, id: scenarioId };
+    document.getElementById('s2d-title').textContent = (sc.icon || '🚦') + ' ' + (sc.headline || sc.name || scenarioId);
+    this.show('screen-2d');
     setTimeout(() => {
       if (typeof initScenario2D === 'function') {
-        initScenario2D('scenario2d-container', scenarioId)
+        initScenario2D('scenario2d-container', scenarioId);
       }
-    }, 100)
+    }, 100);
   },
   exit2D() {
     if (typeof destroyScenario2D === 'function') destroyScenario2D()
@@ -2568,8 +4352,8 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
   }
 });
 
-// 🚦 PROCEDURAL ENGINE AND SCENARIO ARRAYS 🚦
-// Texture Generator
+
+
 const _genTex = (type) => {
   if (type === 'asphalt') {
     const tex = new THREE.TextureLoader().load('textures/road.png')
@@ -2653,14 +4437,14 @@ const _genTex = (type) => {
     ctx.fillStyle = '#ffffff'
     ctx.fillRect(0, 0, 256, 256)
     ctx.fillStyle = '#000000'
-    ctx.fillRect(32, 32, 192, 64) // windshield
-    ctx.fillRect(32, 160, 192, 64) // rear window
+    ctx.fillRect(32, 32, 192, 64)
+    ctx.fillRect(32, 160, 192, 64)
     ctx.fillStyle = '#c0392b'
     ctx.fillRect(16, 220, 64, 36)
-    ctx.fillRect(176, 220, 64, 36) // taillights
+    ctx.fillRect(176, 220, 64, 36)
     ctx.fillStyle = '#f1c40f'
     ctx.fillRect(16, 0, 64, 32)
-    ctx.fillRect(176, 0, 64, 32) // headlights
+    ctx.fillRect(176, 0, 64, 32)
   }
   const tex = new THREE.CanvasTexture(c)
   tex.wrapS = THREE.RepeatWrapping
@@ -2689,134 +4473,177 @@ const initGTex = () => {
 const _buildVehicle = (type, col) => {
   let baseModel = null
   let s = 1.0
-  let rotY = 0
+  const normalizedType = (type || 'car').toLowerCase()
 
-  if (window.PRELOADED_MODELS) {
-    // For 'car' type, sometimes use LowPoly Cars FBX instead of GLB variants
-    if (type === 'car' && window.PRELOADED_MODELS['lowpoly_cars'] && Math.random() < 0.4) {
-      const lpRoot = window.PRELOADED_MODELS['lowpoly_cars']
-      // FBX multi-mesh: pick a random child car body
-      const cars = []
-      lpRoot.traverse(c => { if (c.isGroup && c.children.length > 0) cars.push(c) })
-      if (cars.length > 0) {
-        baseModel = cars[Math.floor(Math.random() * cars.length)].clone()
-        s = 3.2
-        // Apply color to body meshes
-        baseModel.traverse((child) => {
-          if (child.isMesh && child.material) {
-            const n = child.name.toLowerCase()
-            if (n.includes('body') || n.includes('paint') || n.includes('chassis') || (!n.includes('wheel') && !n.includes('glass') && !n.includes('window'))) {
-              child.material = child.material.clone()
-              child.material.color.setHex(col)
-            }
-          }
-        })
-      }
-    }
-
-    // Default: GLB variant pool
-    if (!baseModel) {
-      let modelKey = type
-      const keysForType = Object.keys(window.PRELOADED_MODELS).filter((k) => k === type || k.startsWith(type + '_'))
-      if (keysForType.length > 0) {
-        modelKey = keysForType[Math.floor(Math.random() * keysForType.length)]
-      }
-
-      if (window.PRELOADED_MODELS[modelKey]) {
-        baseModel = window.PRELOADED_MODELS[modelKey].clone()
-        if (type === 'bus' || type === 'truck') s = 4.0
-        else if (type === 'auto' || type === 'bike') s = 2.5
-        else s = 3.2
-
-        baseModel.traverse((child) => {
-          if (child.isMesh && child.material) {
-            // Kenney models usually use materials like "paint", "body", "color"
-            if (child.name.toLowerCase().includes('body') || child.name.toLowerCase().includes('paint') || (child.material.name && child.material.name.toLowerCase().includes('paint'))) {
-              child.material = child.material.clone()
-              child.material.color.setHex(col)
-            }
-          }
-        })
+  // 1. Authentic Indian Two-Wheelers (Bikes, Scooters, Cycles)
+  if (['bike', 'splendor', 'activa', 'scooter', 'cycle', 'bicycle', 'twowheeler'].includes(normalizedType)) {
+    if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+      const bikeModel = window.IndianVehicles.buildVehicle(normalizedType === 'bike' ? 'splendor' : normalizedType, col)
+      if (bikeModel) {
+        bikeModel.type = normalizedType
+        bikeModel.userData = bikeModel.userData || {}
+        bikeModel.userData.halfW = 0.45
+        bikeModel.userData.halfD = 0.95
+        return bikeModel
       }
     }
   }
 
-  if (!baseModel && type === 'bike' && window.PRELOADED_MODELS && window.PRELOADED_MODELS['auto']) {
-    baseModel = window.PRELOADED_MODELS['auto'].clone()
-    s = 1.0
+  // 2. Authentic Indian Auto-Rickshaw (Mumbai CNG / Black & Yellow)
+  if (['auto', 'rickshaw', 'auto_yellow', 'bajaj'].includes(normalizedType)) {
+    if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+      const autoModel = window.IndianVehicles.buildVehicle('auto', col || 0x2e8b57)
+      if (autoModel) {
+        autoModel.type = 'auto'
+        autoModel.userData = autoModel.userData || {}
+        autoModel.userData.halfW = 0.75
+        autoModel.userData.halfD = 1.3
+        return autoModel
+      }
+    }
   }
 
+  // 3. Authentic Mumbai BEST & School Buses
+  if (['bus', 'school_bus', 'best_bus', 'double_decker'].includes(normalizedType)) {
+    if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+      const busModel = window.IndianVehicles.buildVehicle('bus', col || 0xcc2222)
+      if (busModel) {
+        busModel.type = 'bus'
+        busModel.userData = busModel.userData || {}
+        busModel.userData.halfW = 1.35
+        busModel.userData.halfD = 4.75
+        return busModel
+      }
+    }
+  }
+
+  // 4. Supercar / Lamborghini
+  if (normalizedType === 'lambo') {
+    if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['lambo']) {
+      baseModel = window.PRELOADED_MODELS['lambo'].clone()
+      s = 0.85
+    } else if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['car_race-future']) {
+      baseModel = window.PRELOADED_MODELS['car_race-future'].clone()
+      s = 0.88
+    }
+  }
+
+  // 5. Rich Variety from Kenney Car Kit GLB Models
+  if (!baseModel && window.PRELOADED_MODELS) {
+    const carPool = [
+      'car', 'taxi', 'police', 'ambulance', 'suv', 'suv_luxury', 'sedan_sports',
+      'hatchback_sports', 'race_future', 'race', 'van', 'delivery', 'delivery_flat',
+      'truck', 'truck_flat', 'garbage_truck', 'firetruck', 'tractor',
+      'car_suv', 'car_suv-luxury', 'car_sedan-sports', 'car_hatchback-sports',
+      'car_race-future', 'car_race', 'car_kart-oobi', 'truck_firetruck', 'truck_garbage-truck'
+    ]
+
+    let candidateKeys = []
+    if (normalizedType === 'taxi' || normalizedType === 'cab') {
+      candidateKeys = ['taxi', 'car']
+    } else if (normalizedType === 'police') {
+      candidateKeys = ['police', 'car_sedan-sports']
+    } else if (normalizedType === 'ambulance') {
+      candidateKeys = ['ambulance', 'van']
+    } else if (normalizedType === 'truck') {
+      candidateKeys = ['truck', 'truck_flat', 'truck_garbage-truck', 'truck_firetruck', 'delivery', 'van']
+    } else if (normalizedType === 'suv' || normalizedType === 'creta') {
+      candidateKeys = ['suv', 'suv_luxury', 'car_suv', 'car_suv-luxury']
+    } else if (normalizedType === 'sedan' || normalizedType === 'car') {
+      candidateKeys = ['car', 'sedan_sports', 'hatchback_sports', 'suv', 'race_future', 'car_sedan-sports', 'car_hatchback-sports']
+    } else {
+      candidateKeys = [normalizedType]
+    }
+
+    const available = candidateKeys.filter(k => window.PRELOADED_MODELS[k])
+    const chosenKey = available.length ? available[Math.floor(Math.random() * available.length)] : (window.PRELOADED_MODELS['car'] ? 'car' : null)
+
+    if (chosenKey && window.PRELOADED_MODELS[chosenKey]) {
+      baseModel = window.PRELOADED_MODELS[chosenKey].clone()
+      
+      // Determine normalized scale based on vehicle type
+      if (chosenKey.includes('truck') || chosenKey.includes('firetruck') || chosenKey.includes('garbage')) {
+        s = 0.95
+      } else if (chosenKey.includes('suv') || chosenKey.includes('van') || chosenKey.includes('delivery')) {
+        s = 0.90
+      } else {
+        s = 0.85
+      }
+
+      const paintColor = col || (chosenKey === 'taxi' ? 0xffd54a : (chosenKey === 'police' ? 0x1e3a8a : 0x3b82f6))
+      baseModel.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true
+          child.receiveShadow = true
+          if (child.material) {
+            const matName = (child.material.name || child.name || '').toLowerCase()
+            if (matName.includes('body') || matName.includes('paint') || matName.includes('chassis') || matName.includes('primary')) {
+              child.material = child.material.clone()
+              child.material.color.setHex(paintColor)
+            }
+          }
+        }
+      })
+    }
+  }
+
+  // If GLB model is ready, assemble clean container group with correct extents
   if (baseModel) {
     const g = new THREE.Group()
     baseModel.scale.set(s, s, s)
-    baseModel.rotation.y = rotY
-    baseModel.position.y = 0
-
-    // Add an invisible hitbox for collisions
-    const hw = type === 'bus' || type === 'truck' ? 1.8 : 1.2
-    const hl = type === 'bus' || type === 'truck' ? 5.5 : 2.8
-    const hbGeo = new THREE.BoxGeometry(hw, 2, hl)
-    const hbMat = new THREE.MeshBasicMaterial({ visible: false })
-    const hb = new THREE.Mesh(hbGeo, hbMat)
-    hb.position.y = 1
-
+    baseModel.position.set(0, 0, 0)
     g.add(baseModel)
-    g.add(hb)
 
-    // ── GTA-style door pivots (GLB cars) ──
-    const doorGeoGLB = new THREE.BoxGeometry(0.06, 0.5, 1.0)
-    // Find body color from model materials for door overlay
-    let bodyColGLB = col || 0x888888
-    baseModel.traverse((child) => {
-      if (child.isMesh && child.material && child.material.color) {
-        const n = child.name.toLowerCase()
-        if (n.includes('body') || n.includes('paint') || n.includes('chassis'))
-          bodyColGLB = child.material.color.getHex()
-      }
-    })
-    const doorMatGLB = new THREE.MeshToonMaterial({ color: bodyColGLB })
-    const doorWGLB = hw * 0.95
-    // Left door — hinge at front edge
-    const dpLGLB = new THREE.Group()
-    dpLGLB.position.set(doorWGLB, 1.0, 0.5)
-    const dmLGLB = new THREE.Mesh(doorGeoGLB, doorMatGLB.clone())
-    dmLGLB.position.set(0, 0, -0.5)
-    dpLGLB.add(dmLGLB)
-    g.add(dpLGLB)
-    // Right door — hinge at front edge
-    const dpRGLB = new THREE.Group()
-    dpRGLB.position.set(-doorWGLB, 1.0, 0.5)
-    const dmRGLB = new THREE.Mesh(doorGeoGLB, doorMatGLB.clone())
-    dmRGLB.position.set(0, 0, -0.5)
-    dpRGLB.add(dmRGLB)
-    g.add(dpRGLB)
-    g.userData.doorPivotL = dpLGLB
-    g.userData.doorPivotR = dpRGLB
+    const isHeavy = normalizedType.includes('truck') || normalizedType.includes('bus')
+    const hw = isHeavy ? 1.35 : 0.95
+    const hl = isHeavy ? 4.2 : 2.1
+    g.userData = { halfW: hw, halfD: hl }
 
-    g.type = type
+    // Clean interactive door anchors for player entry
+    const dpL = new THREE.Group()
+    dpL.position.set(hw, 0.9, 0.3)
+    const dpR = new THREE.Group()
+    dpR.position.set(-hw, 0.9, 0.3)
+    g.add(dpL, dpR)
+    g.userData.doorPivotL = dpL
+    g.userData.doorPivotR = dpR
+
+    g.type = normalizedType
     return g
   }
 
+  if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
+    const iv = window.IndianVehicles.buildVehicle(type, col);
+    if (iv) return iv;
+  }
+
   const g = new THREE.Group()
+  g.type = type
+
   switch (type) {
     case 'car':
-    case 'taxi': {
-      const isT = type === 'taxi'
+    case 'taxi':
+    case 'cab':
+    case 'sedan':
+    case 'wagonr':
+    case 'city':
+    case 'car_highway': {
+      const isT = type === 'taxi' || type === 'cab'
       const bodyM = new THREE.MeshToonMaterial({ color: isT ? 0xffd54a : col })
       const glassM = new THREE.MeshToonMaterial({ color: 0x1a2e4a, transparent: true, opacity: 0.75 })
       const wheelM = new THREE.MeshToonMaterial({ color: 0x111111 })
       const rimM = new THREE.MeshToonMaterial({ color: 0xcccccc })
       const hlM = new THREE.MeshBasicMaterial({ color: 0xffffcc })
       const tlM = new THREE.MeshBasicMaterial({ color: 0xff0000 })
-      // Chassis
+
       const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 3.8), bodyM)
       body.position.y = 0.42
       g.add(body)
-      // Cabin
+
       const cab = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.44, 1.9), bodyM)
       cab.position.set(0, 0.84, 0.08)
       g.add(cab)
-      // Windshield
+
       const ws = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.4), glassM)
       ws.position.set(0, 0.84, 1.02)
       ws.rotation.x = Math.PI / 5
@@ -2825,7 +4652,7 @@ const _buildVehicle = (type, col) => {
       rs.position.set(0, 0.84, -0.85)
       rs.rotation.x = -Math.PI / 5
       g.add(rs)
-      // 4 Wheels
+
       ;[
         [0.85, 0, 1.25],
         [-0.85, 0, 1.25],
@@ -2841,7 +4668,7 @@ const _buildVehicle = (type, col) => {
         rim.position.set(x, 0.3, z)
         g.add(rim)
       })
-      // Headlights & taillights
+
       ;[
         [0.55, 0.45, 1.92, hlM],
         [-0.55, 0.45, 1.92, hlM],
@@ -2852,17 +4679,17 @@ const _buildVehicle = (type, col) => {
         l.position.set(x, y, z)
         g.add(l)
       })
-      // ── GTA-style door pivots (procedural car) ──
+
       const doorGeoPC = new THREE.BoxGeometry(0.04, 0.38, 0.85)
       const doorMatPC = bodyM.clone()
-      // Left door — hinge at front edge (B-pillar)
+
       const dpLPC = new THREE.Group()
       dpLPC.position.set(0.82, 0.65, 0.4)
       const dmLPC = new THREE.Mesh(doorGeoPC, doorMatPC.clone())
       dmLPC.position.set(0, 0, -0.425)
       dpLPC.add(dmLPC)
       g.add(dpLPC)
-      // Right door — hinge at front edge
+
       const dpRPC = new THREE.Group()
       dpRPC.position.set(-0.82, 0.65, 0.4)
       const dmRPC = new THREE.Mesh(doorGeoPC, doorMatPC.clone())
@@ -2873,8 +4700,9 @@ const _buildVehicle = (type, col) => {
       g.userData.doorPivotR = dpRPC
       break
     }
-    case 'bus': {
-      const bM = new THREE.MeshToonMaterial({ color: col || 0xe74c3c }) // BEST bus red
+    case 'bus':
+    case 'msrtc': {
+      const bM = new THREE.MeshToonMaterial({ color: col || 0xe74c3c })
       const gM = new THREE.MeshToonMaterial({ color: 0x88bbdd, transparent: true, opacity: 0.6 })
       const wM = new THREE.MeshToonMaterial({ color: 0x111111 })
       const bdy = new THREE.Mesh(new THREE.BoxGeometry(2.3, 2.2, 8.0), bM)
@@ -2907,7 +4735,8 @@ const _buildVehicle = (type, col) => {
       })
       break
     }
-    case 'auto': {
+    case 'auto':
+    case 'auto_yellow': {
       const aM = new THREE.MeshToonMaterial({ color: 0xffd54a })
       const sM = new THREE.MeshToonMaterial({ color: 0x111111 })
       const wM = new THREE.MeshToonMaterial({ color: 0x111111 })
@@ -2920,7 +4749,7 @@ const _buildVehicle = (type, col) => {
       const hood = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 1.4), aM)
       hood.position.set(0, 0.85, -0.1)
       g.add(hood)
-      // 3 wheels: 2 rear + 1 front
+
       ;[
         [-0.58, 0, 0.72],
         [0.58, 0, 0.72]
@@ -2936,7 +4765,11 @@ const _buildVehicle = (type, col) => {
       g.add(fw)
       break
     }
-    case 'truck': {
+    case 'truck':
+    case 'eicher':
+    case 'ace':
+    case 'scv':
+    case 'dumper': {
       const cM = new THREE.MeshToonMaterial({ color: col || 0x1565c0 })
       const contM = new THREE.MeshToonMaterial({ color: 0xeeeeee })
       const gM2 = new THREE.MeshToonMaterial({ color: 0x88ccff, transparent: true, opacity: 0.6 })
@@ -2970,7 +4803,13 @@ const _buildVehicle = (type, col) => {
       })
       break
     }
-    case 'bike': {
+    case 'bike':
+    case 'splendor':
+    case 'activa':
+    case 'scooter':
+    case 'twowheeler':
+    case 'ktm':
+    case 'sportbike': {
       const bkM = new THREE.MeshToonMaterial({ color: col })
       const wkM = new THREE.MeshToonMaterial({ color: 0x111111 })
       const frame = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.38, 1.9), bkM)
@@ -2994,7 +4833,12 @@ const _buildVehicle = (type, col) => {
       g.add(wr)
       break
     }
-    case 'suv': {
+    case 'suv':
+    case 'creta':
+    case 'innova':
+    case 'mpv':
+    case 'police':
+    case 'ambulance': {
       const suvM = new THREE.MeshToonMaterial({ color: col })
       const gS = new THREE.MeshToonMaterial({ color: 0x1a3a5a, transparent: true, opacity: 0.7 })
       const wS = new THREE.MeshToonMaterial({ color: 0x111111 })
@@ -3039,825 +4883,773 @@ const _buildVehicle = (type, col) => {
       break
     }
     default: {
-      // Fallback: simple colored box
-      g.add(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 3.5), new THREE.MeshToonMaterial({ color: col })))
+      const bMat = new THREE.MeshToonMaterial({ color: col || 0x3498db })
+      const gMat = new THREE.MeshToonMaterial({ color: 0x1a2e4a, transparent: true, opacity: 0.75 })
+      const wMat = new THREE.MeshToonMaterial({ color: 0x111111 })
+
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 3.8), bMat)
+      body.position.y = 0.42
+      g.add(body)
+
+      const cab = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.44, 1.9), gMat)
+      cab.position.set(0, 0.84, 0.08)
+      g.add(cab)
+
+      ;[
+        [0.85, 0, 1.25],
+        [-0.85, 0, 1.25],
+        [0.85, 0, -1.25],
+        [-0.85, 0, -1.25]
+      ].forEach(([x, , z]) => {
+        const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.2, 8), wMat)
+        wh.rotation.z = Math.PI / 2
+        wh.position.set(x, 0.3, z)
+        g.add(wh)
+      })
     }
   }
   return g
 }
 
+/**
+ * Character Studio & High-Fidelity Human Model Implementation for UI.js
+ */
+
+/**
+ * Character Studio & High-Fidelity Human Model Implementation for UI.js
+ */
+
 const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
-  const sk = isPlayer ? 1.0 : 0.92
+  const app = (isPlayer && (() => { try { return JSON.parse(localStorage.getItem('traffic_appearance')) } catch(e){} return null })()) || appearance || {}
+  const variant = app.variant || 'normal' // 'normal'|'elderly'|'child'|'guard'|'volunteer'|'worker'|'commuter'
+  const sk = isPlayer ? 1.0 : (variant === 'child' ? 0.72 : 0.92)
 
-  // ═══ NPC: USE KENNY GLB CHARACTER MODELS ═══
-  // For NPCs, use preloaded GLB models instead of procedural generation
-  if (!isPlayer && window.PRELOADED_MODELS) {
-    const charKeys = ['char_f_a', 'char_f_b', 'char_f_c', 'char_m_a', 'char_m_b', 'char_m_c']
-    const availableChars = charKeys.filter(k => window.PRELOADED_MODELS[k])
-    if (availableChars.length > 0) {
-      const charKey = availableChars[Math.floor(Math.random() * availableChars.length)]
-      const glbModel = window.PRELOADED_MODELS[charKey].clone()
-      
-      // Scale to match procedural NPC size (0.92)
-      glbModel.scale.set(0.92, 0.92, 0.92)
-      glbModel.position.y = 0
-      
-      // Apply random color variation to clothing materials
-      glbModel.traverse((child) => {
-        if (child.isMesh && child.material) {
-          const mats = Array.isArray(child.material) ? child.material : [child.material]
-          mats.forEach(mat => {
-            if (mat.color && mat.name && (
-              mat.name.toLowerCase().includes('shirt') ||
-              mat.name.toLowerCase().includes('pants') ||
-              mat.name.toLowerCase().includes('torso') ||
-              mat.name.toLowerCase().includes('leg') ||
-              mat.name.toLowerCase().includes('arm') ||
-              mat.name.toLowerCase().includes('sleeve')
-            )) {
-              mat.color.setHex([
-                0x3498db, 0x2ecc71, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xe74c3c, 0x34495e,
-                0x555555, 0x2c3e50, 0x444444, 0x3d3d3d
-              ][Math.floor(Math.random() * 11)])
-            }
-          })
+  // ── Minecraft Engine Support ─────────────────────────────────────────────
+  if (app.charType === 'minecraft' && typeof window._buildMinecraftHuman === 'function') {
+    return window._buildMinecraftHuman(isPlayer, app)
+  }
+
+  const PM = window.PRELOADED_MODELS || {}
+
+  // ── FBX-First Animated Character Model (NPCs only) ────────────────────────
+  if (!isPlayer) {
+    const fbxKey = app.animPack ? 'anim_' + app.animPack : 'anim_protagonists';
+    const fbxChar = PM[fbxKey] || PM['anim_retro'] || PM['anim_survivors'];
+    if (fbxChar && typeof THREE.AnimationMixer !== 'undefined' && variant === 'normal') {
+      try {
+        const fbxScene = fbxChar.clone ? fbxChar.clone(true) : fbxChar;
+        fbxScene.scale.setScalar(sk * 0.012);
+        fbxScene.rotation.y = Math.PI;
+        g.add(fbxScene);
+
+        const mixer = new THREE.AnimationMixer(fbxScene);
+        const idleFBX = PM[fbxKey + '_idle'] || PM['anim_protagonists_idle'];
+        const runFBX = PM[fbxKey + '_run'] || PM['anim_protagonists_run'];
+        let idleAction = null;
+        let runAction = null;
+
+        if (idleFBX && idleFBX.animations && idleFBX.animations.length > 0) {
+          idleAction = mixer.clipAction(idleFBX.animations[0]);
+          idleAction.play();
+        } else if (fbxChar.animations && fbxChar.animations.length > 0) {
+          idleAction = mixer.clipAction(fbxChar.animations[0]);
+          idleAction.play();
         }
+        if (runFBX && runFBX.animations && runFBX.animations.length > 0) {
+          runAction = mixer.clipAction(runFBX.animations[0]);
+          runAction.play();
+        }
+
+        const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6*sk, 1.8*sk, 0.6*sk), new THREE.MeshBasicMaterial({ visible: false }));
+        hb.position.y = 0.9 * sk;
+        g.add(hb);
+
+        const shadowBlob = new THREE.Mesh(new THREE.CircleGeometry(0.3*sk, 12), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 }));
+        shadowBlob.rotation.x = -Math.PI/2; shadowBlob.position.y = 0.01;
+        g.add(shadowBlob);
+
+        g.userData = {
+          isFBXAnimated: true,
+          variant,
+          isPlayer,
+          _sk: sk,
+          shadowBlob,
+          mixer: mixer,
+          idleAction: idleAction,
+          runAction: runAction,
+          t: Math.random() * 10,
+          spd: 1.5,
+          dir: 1
+        };
+        return g;
+      } catch (e) {
+        console.warn('FBX character instantiation fallback:', e);
+      }
+    }
+
+    // ── GLB-First Character Model (NPCs) ──────────────────────────────────
+    const maleKeys = ['char_m_a','char_m_b','char_m_c','char_m_d','char_m_e','char_m_f']
+    const femaleKeys = ['char_f_a','char_f_b','char_f_c','char_f_d','char_f_e','char_f_f']
+    const isFemale = app.gender === 'female' || Math.random() < 0.45
+    const charKeys = isFemale ? femaleKeys : maleKeys
+    const preferredKey = charKeys[Math.floor(Math.random() * charKeys.length)]
+    const charGLB = PM[preferredKey]
+
+    if (charGLB && charGLB.scene) {
+      const charScene = charGLB.scene.clone(true)
+      charScene.scale.setScalar(sk * 1.15)
+      charScene.rotation.y = Math.PI
+
+      const variantColors = {
+        normal:    { shirt: app.shirt || [0x3498db,0x2ecc71,0x9b59b6,0xe67e22,0xe74c3c][Math.floor(Math.random()*5)] },
+        elderly:   { shirt: 0xf5f0e1, pants: 0xe8dcc8 },
+        child:     { shirt: 0xffffff, pants: 0x1a237e },
+        guard:     { shirt: 0xff8c00, pants: 0x1a1a1a },
+        volunteer: { shirt: 0xaaff00, pants: 0x1a1a1a },
+        worker:    { shirt: 0xff8c00, pants: 0x333333 },
+        commuter:  { shirt: 0x34495e, pants: 0x2c3e50 },
+      }
+      const vc = variantColors[variant] || variantColors.normal
+      charScene.traverse(c => {
+        if (!c.isMesh) return
+        const nm = c.name.toLowerCase()
+        if (nm.includes('shirt') || nm.includes('top') || nm.includes('torso') || nm.includes('body')) {
+          c.material = c.material.clone()
+          c.material.color.setHex(vc.shirt || 0x3498db)
+        }
+        if (vc.pants && (nm.includes('pant') || nm.includes('leg') || nm.includes('bottom'))) {
+          c.material = c.material.clone()
+          c.material.color.setHex(vc.pants)
+        }
+        c.castShadow = true
+        c.receiveShadow = true
       })
 
-      // Enable shadows
-      glbModel.traverse(c => {
-        if (c.isMesh) {
-          c.castShadow = true
-          c.receiveShadow = true
-          c.frustumCulled = false
-        }
-      })
+      g.add(charScene)
 
-      // Add GLB model FIRST so it's children[0] for animation fallback
-      g.add(glbModel)
+      if (charGLB.animations && charGLB.animations.length > 0) {
+        const mixer = new THREE.AnimationMixer(charScene)
+        const walkClip = charGLB.animations.find(a => /walk/i.test(a.name)) || charGLB.animations[0]
+        const idleClip = charGLB.animations.find(a => /idle/i.test(a.name))
+        const walkAction = mixer.clipAction(walkClip)
+        const idleAction = idleClip ? mixer.clipAction(idleClip) : null
+        walkAction.play()
+        g.userData._mixer = mixer
+        g.userData._walkAction = walkAction
+        g.userData._idleAction = idleAction
+        if (variant === 'elderly') walkAction.timeScale = 0.4
+        if (variant === 'child') walkAction.timeScale = 1.3
+      }
 
-      // Add hitbox for collision (same as procedural)
-      const hb = new THREE.Mesh(
-        new THREE.BoxGeometry(0.6 * 0.92, 1.8 * 0.92, 0.6 * 0.92),
-        new THREE.MeshBasicMaterial({ visible: false })
-      )
-      hb.position.y = 0.9 * 0.92
+      const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6*sk, 1.8*sk, 0.6*sk), new THREE.MeshBasicMaterial({ visible: false }))
+      hb.position.y = 0.9 * sk
       g.add(hb)
 
-      // Add ground shadow blob
-      const shadowGeo = new THREE.CircleGeometry(0.3 * 0.92, 16)
-      const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.2, depthWrite: false })
-      const shadowBlob = new THREE.Mesh(shadowGeo, shadowMat)
-      shadowBlob.rotation.x = -Math.PI / 2
-      shadowBlob.position.y = 0.01
+      const shadowBlob = new THREE.Mesh(new THREE.CircleGeometry(0.3*sk, 12), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 }))
+      shadowBlob.rotation.x = -Math.PI/2; shadowBlob.position.y = 0.01
       g.add(shadowBlob)
 
-      // Store reference for animation system
-      // For GLB models, don't set specific body part refs - let the animation system
-      // fall back to character.children[0] which will be the GLB model (first child)
       g.userData = {
+        isGLB: true,
+        variant,
         isPlayer: false,
-        _sk: 0.92,
-        glbModel: true,
-        modelKey: charKey,
-        // Shadow blob reference
-        shadowBlob: shadowBlob,
-        // Keep existing animation timing properties
+        _sk: sk,
+        shadowBlob,
         t: Math.random() * 10,
-        spd: 1.5 + Math.random() * 1.5,
+        spd: variant==='elderly' ? 0.7 : (variant==='child' ? 2.2 : 1.5 + Math.random()*1.5),
         dir: Math.random() > 0.5 ? 1 : -1,
         startZ: 0,
         idlePhase: Math.random() * Math.PI * 2,
-        blinkTimer: Math.random() * 4 + Math.random() * 3
+        blinkTimer: Math.random() * 4 + 2,
+        _mixer: g.userData._mixer || null
       }
       return g
     }
   }
 
-  // ═══ FALLBACK / PLAYER: PROCEDURAL MODEL ═══
-  // NPC VARIATION - Random skin tones, shirt colors, and hair for NPCs
+  // ── HIGH-FIDELITY AAA STYLIZED 3D CHARACTER MODEL ─────────────────────────
   const npcSkins = [0xd4a574, 0xc68642, 0x8d5524, 0xf1c27d, 0xffdbac, 0xe0ac69]
   const npcShirts = [0x3498db, 0x2ecc71, 0x9b59b6, 0xe67e22, 0x1abc9c, 0xe74c3c, 0x34495e]
   const npcPants = [0x555555, 0x2c3e50, 0x444444, 0x3d3d3d, 0x2d2d2d]
   const npcHairs = [0x1a1a1a, 0x3d2b1f, 0x654321, 0x8B4513, 0x2c1810, 0xb5651d]
 
-  // Load saved player appearance or use defaults
-  let savedAppear = null
-  if (isPlayer) {
-    try { savedAppear = JSON.parse(localStorage.getItem('traffic_appearance')) } catch (e) {}
-  }
-  const app = (isPlayer && savedAppear) || appearance || {}
-
-  // Pick random variation for NPCs, use saved/customized for player
   const skinColor = isPlayer ? (app.skin || 0xd4a574) : npcSkins[Math.floor(Math.random() * npcSkins.length)]
-  const shirtColor = isPlayer ? (app.shirt || 0xe74c3c) : npcShirts[Math.floor(Math.random() * npcShirts.length)]
-  const shirtDk = new THREE.Color(shirtColor).multiplyScalar(0.8).getHex()
-  const pantsColor = isPlayer ? (app.pants || 0x2c3e50) : npcPants[Math.floor(Math.random() * npcPants.length)]
-  const pantsDk = new THREE.Color(pantsColor).multiplyScalar(0.8).getHex()
+  const skinColorDk = new THREE.Color(skinColor).multiplyScalar(0.88).getHex()
   const hairColor = isPlayer ? (app.hair || 0x1a1a1a) : npcHairs[Math.floor(Math.random() * npcHairs.length)]
+  const hairHighlight = isPlayer ? (app.hairHighlight || 0x3498db) : hairColor
+  const shirtColor = isPlayer ? (app.shirt || 0xe74c3c) : npcShirts[Math.floor(Math.random() * npcShirts.length)]
+  const shirtAccent = isPlayer ? (app.shirtAccent || 0xffffff) : 0xffffff
+  const shirtDk = new THREE.Color(shirtColor).multiplyScalar(0.75).getHex()
+  const pantsColor = isPlayer ? (app.pants || 0x2c3e50) : npcPants[Math.floor(Math.random() * npcPants.length)]
+  const pantsDk = new THREE.Color(pantsColor).multiplyScalar(0.78).getHex()
+  const shoeColor = isPlayer ? (app.shoes || 0x1a1a1a) : 0x222222
+  const eyeColor = isPlayer ? (app.eyeColor || 0x4a90d9) : 0x3d2b1f
 
-  // ── Materials ──
-  const SKIN = new THREE.MeshToonMaterial({ color: skinColor })
-  const SKIN2 = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.92).getHex() })
-  const HAIR = new THREE.MeshToonMaterial({ color: hairColor })
-  const SHIRT = new THREE.MeshToonMaterial({ color: shirtColor })
-  const SHIRT_DK = new THREE.MeshToonMaterial({ color: shirtDk })
-  const PANTS = new THREE.MeshToonMaterial({ color: pantsColor })
-  const PANTS_DK = new THREE.MeshToonMaterial({ color: pantsDk })
-  const SHOES = new THREE.MeshToonMaterial({ color: isPlayer ? 0x1a1a1a : 0x222222 })
-  const SHOE_SOLE = new THREE.MeshToonMaterial({ color: 0x333333 })
+  const tGrad = window._toonGrad || null
+  const SKIN = new THREE.MeshToonMaterial({ color: skinColor, gradientMap: tGrad })
+  const SKIN2 = new THREE.MeshToonMaterial({ color: skinColorDk, gradientMap: tGrad })
+  const HAIR = new THREE.MeshToonMaterial({ color: hairColor, gradientMap: tGrad })
+  const HAIR_HI = new THREE.MeshToonMaterial({ color: hairHighlight, gradientMap: tGrad })
+  const SHIRT = new THREE.MeshToonMaterial({ color: shirtColor, gradientMap: tGrad })
+  const SHIRT_ACC = new THREE.MeshToonMaterial({ color: shirtAccent, gradientMap: tGrad })
+  const SHIRT_DK = new THREE.MeshToonMaterial({ color: shirtDk, gradientMap: tGrad })
+  const PANTS = new THREE.MeshToonMaterial({ color: pantsColor, gradientMap: tGrad })
+  const PANTS_DK = new THREE.MeshToonMaterial({ color: pantsDk, gradientMap: tGrad })
+  const SHOES = new THREE.MeshToonMaterial({ color: shoeColor, gradientMap: tGrad })
+  const SHOE_SOLE = new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: tGrad })
   const EYE_W = new THREE.MeshToonMaterial({ color: 0xffffff })
-  const EYE_P = new THREE.MeshToonMaterial({ color: 0x2c1810 })
-  const EYE_IRIS = new THREE.MeshToonMaterial({ color: isPlayer ? 0x4a90d9 : 0x3d2b1f })
+  const EYE_P = new THREE.MeshToonMaterial({ color: 0x111111 })
+  const EYE_IRIS = new THREE.MeshToonMaterial({ color: eyeColor })
   const MOUTH = new THREE.MeshToonMaterial({ color: 0x8b4513 })
+  const LIP_M = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.92).getHex() })
   const NOSE_M = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.95).getHex() })
-  const EAR_INNER = new THREE.MeshToonMaterial({ color: 0xc4956a })
-  const BELT = new THREE.MeshToonMaterial({ color: 0x3d2b1f })
-  const BELT_BUCKLE = new THREE.MeshToonMaterial({ color: 0xc0c0c0, emissive: 0xc0c0c0, emissiveIntensity: 0.1 })
-  const BAG = new THREE.MeshToonMaterial({ color: isPlayer ? 0xf39c12 : 0x8e44ad, emissive: isPlayer ? 0xf39c12 : 0x8e44ad, emissiveIntensity: 0.05 })
-  const BAG_DK = new THREE.MeshToonMaterial({ color: isPlayer ? 0xe67e22 : 0x7d3c98 })
-  const BAG_STRAP = new THREE.MeshToonMaterial({ color: 0x555555 })
-  const JOINT = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.88).getHex() })
-  const WRIST = new THREE.MeshToonMaterial({ color: 0xdddddd })
-  const LIP_COLOR = new THREE.MeshToonMaterial({ color: 0xb5651d })
-  const CAP = new THREE.MeshToonMaterial({ color: isPlayer ? 0xe74c3c : shirtColor })
-  const CAP_BRIM = new THREE.MeshToonMaterial({ color: isPlayer ? 0xc0392b : shirtDk })
+  const EAR_INNER = new THREE.MeshToonMaterial({ color: new THREE.Color(skinColor).multiplyScalar(0.82).getHex() })
+  const BELT = new THREE.MeshToonMaterial({ color: 0x222222 })
+  const METALLIC = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.25 })
+  const SILVER = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, metalness: 0.9, roughness: 0.2 })
+  const OLED = new THREE.MeshBasicMaterial({ color: 0x00f0cc })
+  const REFLECTIVE = new THREE.MeshBasicMaterial({ color: 0xe8e8e8 })
 
-  function limb(rT, rB, h, mat, segs) {
-    return new THREE.Mesh(new THREE.CylinderGeometry(rT, rB, h, segs || 10, 1), mat)
+  function limb(rT, rB, h, mat, segs = 12) {
+    return new THREE.Mesh(new THREE.CylinderGeometry(rT, rB, h, segs, 1), mat)
+  }
+  function jointSphere(r, mat, segs = 12) {
+    return new THREE.Mesh(new THREE.SphereGeometry(r, segs, segs), mat)
   }
 
-  function jointSphere(r, mat) {
-    return new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), mat)
-  }
-
-  // ═══ HEAD ═══
+  // ─── 1. HEAD & FACE ──────────────────────────────────────────────
   const headGroup = new THREE.Group()
   headGroup.position.y = 1.72 * sk
 
-  // Skull — slightly ovoid
-  const skull = new THREE.Mesh(new THREE.SphereGeometry(0.28 * sk, 16, 12), SKIN)
-  skull.scale.set(1, 1.05, 0.95)
+  // Sculpted skull & jaw
+  const skull = new THREE.Mesh(new THREE.SphereGeometry(0.28 * sk, 20, 16), SKIN)
+  skull.scale.set(1, 1.05, 0.96)
   headGroup.add(skull)
 
-  // Jaw / chin
-  const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.20 * sk, 12, 8), SKIN2)
-  jaw.position.set(0, -0.18 * sk, 0.10 * sk)
-  jaw.scale.set(0.85, 0.55, 0.75)
+  const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.21 * sk, 16, 12), SKIN2)
+  jaw.position.set(0, -0.17 * sk, 0.10 * sk)
+  jaw.scale.set(0.86, 0.58, 0.78)
   headGroup.add(jaw)
 
-  // Chin bump
-  const chin = new THREE.Mesh(new THREE.SphereGeometry(0.04 * sk, 8, 6), SKIN)
-  chin.position.set(0, -0.24 * sk, 0.16 * sk)
+  const chin = new THREE.Mesh(new THREE.SphereGeometry(0.045 * sk, 10, 8), SKIN)
+  chin.position.set(0, -0.24 * sk, 0.17 * sk)
   headGroup.add(chin)
 
-  // ── Hair (layered for volume) ──
-  const hairBack = new THREE.Mesh(new THREE.SphereGeometry(0.30 * sk, 12, 10), HAIR)
-  hairBack.position.set(0, 0.05 * sk, -0.04 * sk)
-  hairBack.scale.set(0.98, 0.55, 0.98)
-  headGroup.add(hairBack)
-  const hairTop = new THREE.Mesh(new THREE.SphereGeometry(0.26 * sk, 10, 8), HAIR)
-  hairTop.position.set(0, 0.14 * sk, -0.01 * sk)
-  hairTop.scale.set(0.88, 0.38, 0.92)
-  headGroup.add(hairTop)
-  // Side hair tufts
+  // Ears
   ;[-1, 1].forEach(s => {
-    const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.08 * sk, 8, 6), HAIR)
-    tuft.position.set(s * 0.22 * sk, 0.0 * sk, -0.06 * sk)
-    tuft.scale.set(0.5, 0.7, 0.6)
-    headGroup.add(tuft)
-  })
-
-  // ── Eyes (white + iris + pupil + eyelids) ──
-  const _eyeLids = []
-  ;[-1, 1].forEach(s => {
-    // Eye white
-    const ew = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 10, 8), EYE_W)
-    ew.position.set(s * 0.105 * sk, 0.04 * sk, 0.23 * sk)
-    ew.scale.set(1, 0.85, 0.6)
-    headGroup.add(ew)
-    // Iris
-    const iris = new THREE.Mesh(new THREE.SphereGeometry(0.028 * sk, 8, 6), EYE_IRIS)
-    iris.position.set(s * 0.105 * sk, 0.035 * sk, 0.255 * sk)
-    headGroup.add(iris)
-    // Pupil
-    const ep = new THREE.Mesh(new THREE.SphereGeometry(0.015 * sk, 6, 4), EYE_P)
-    ep.position.set(s * 0.105 * sk, 0.035 * sk, 0.268 * sk)
-    headGroup.add(ep)
-    // Eye highlight (tiny white dot for liveliness)
-    const hl = new THREE.Mesh(new THREE.SphereGeometry(0.006 * sk, 4, 3), EYE_W)
-    hl.position.set(s * 0.095 * sk, 0.045 * sk, 0.27 * sk)
-    headGroup.add(hl)
-    // Upper eyelid
-    const lid = new THREE.Mesh(new THREE.SphereGeometry(0.052 * sk, 8, 4, 0, Math.PI * 2, 0, Math.PI * 0.4), SKIN)
-    lid.position.set(s * 0.105 * sk, 0.065 * sk, 0.235 * sk)
-    lid.scale.set(1, 0.7, 0.7)
-    lid.rotation.x = -0.2
-    headGroup.add(lid)
-    _eyeLids.push(lid)
-  })
-
-  // ── Eyebrows ──
-  ;[-1, 1].forEach(s => {
-    const brow = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.018 * sk, 0.025 * sk), HAIR)
-    brow.position.set(s * 0.105 * sk, 0.11 * sk, 0.23 * sk)
-    brow.rotation.z = s * 0.1
-    headGroup.add(brow)
-  })
-
-  // ── Nose ──
-  const nose = new THREE.Mesh(new THREE.CylinderGeometry(0.018 * sk, 0.025 * sk, 0.08 * sk, 8), NOSE_M)
-  nose.position.set(0, -0.03 * sk, 0.26 * sk)
-  nose.rotation.x = Math.PI / 2 + 0.15
-  headGroup.add(nose)
-  // Nose tip
-  const noseTip = new THREE.Mesh(new THREE.SphereGeometry(0.022 * sk, 8, 6), NOSE_M)
-  noseTip.position.set(0, -0.06 * sk, 0.275 * sk)
-  headGroup.add(noseTip)
-
-  // ── Mouth ──
-  const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.07 * sk, 0.012 * sk, 0.018 * sk), MOUTH)
-  mouth.position.set(0, -0.11 * sk, 0.25 * sk)
-  headGroup.add(mouth)
-  // Lower lip (slight fullness)
-  const lip = new THREE.Mesh(new THREE.SphereGeometry(0.025 * sk, 8, 4), LIP_COLOR)
-  lip.position.set(0, -0.125 * sk, 0.245 * sk)
-  lip.scale.set(1.2, 0.4, 0.5)
-  headGroup.add(lip)
-
-  // ── Ears ──
-  ;[-1, 1].forEach(s => {
-    const ear = new THREE.Mesh(new THREE.SphereGeometry(0.04 * sk, 8, 6), SKIN2)
-    ear.position.set(s * 0.27 * sk, 0.02 * sk, 0.0)
-    ear.scale.set(0.6, 0.8, 0.4)
+    const ear = new THREE.Mesh(new THREE.SphereGeometry(0.045 * sk, 10, 8), SKIN2)
+    ear.position.set(s * 0.28 * sk, 0.02 * sk, 0.0)
+    ear.scale.set(0.5, 0.8, 0.4)
     headGroup.add(ear)
-    // Inner ear
-    const earIn = new THREE.Mesh(new THREE.SphereGeometry(0.02 * sk, 6, 4), EAR_INNER)
-    earIn.position.set(s * 0.275 * sk, 0.02 * sk, 0.005 * sk)
-    earIn.scale.set(0.5, 0.7, 0.3)
+
+    const earIn = new THREE.Mesh(new THREE.SphereGeometry(0.022 * sk, 8, 6), EAR_INNER)
+    earIn.position.set(s * 0.285 * sk, 0.02 * sk, 0.006 * sk)
+    earIn.scale.set(0.4, 0.7, 0.3)
     headGroup.add(earIn)
   })
 
-  // ── Player cap (togglable) ──
-  if (isPlayer && app.accessories?.cap !== false && !app.accessories?.beanie && !app.accessories?.helmet) {
-    const capTop = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), CAP)
-    capTop.position.set(0, 0.12 * sk, -0.01 * sk)
-    capTop.scale.set(1.02, 0.5, 1.02)
-    headGroup.add(capTop)
-    // Brim — curved arc for baseball-cap shape
-    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.28 * sk, 0.30 * sk, 0.02 * sk, 12), CAP_BRIM)
-    brim.position.set(0, 0.10 * sk, 0.12 * sk)
-    brim.scale.set(1, 1, 0.6)
-    headGroup.add(brim)
-    // Button on top
-    const btn = new THREE.Mesh(new THREE.SphereGeometry(0.025 * sk, 6, 4), CAP_BRIM)
-    btn.position.set(0, 0.22 * sk, -0.01 * sk)
-    headGroup.add(btn)
+  // Eyes & Eyelids
+  const _eyeLids = []
+  ;[-1, 1].forEach(s => {
+    const ew = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 12, 10), EYE_W)
+    ew.position.set(s * 0.105 * sk, 0.04 * sk, 0.235 * sk)
+    ew.scale.set(1, 0.88, 0.6)
+    headGroup.add(ew)
+
+    const iris = new THREE.Mesh(new THREE.SphereGeometry(0.030 * sk, 10, 8), EYE_IRIS)
+    iris.position.set(s * 0.105 * sk, 0.038 * sk, 0.260 * sk)
+    headGroup.add(iris)
+
+    const ep = new THREE.Mesh(new THREE.SphereGeometry(0.016 * sk, 8, 6), EYE_P)
+    ep.position.set(s * 0.105 * sk, 0.038 * sk, 0.272 * sk)
+    headGroup.add(ep)
+
+    const hl = new THREE.Mesh(new THREE.SphereGeometry(0.007 * sk, 6, 4), EYE_W)
+    hl.position.set(s * 0.095 * sk, 0.048 * sk, 0.276 * sk)
+    headGroup.add(hl)
+
+    const lid = new THREE.Mesh(new THREE.SphereGeometry(0.054 * sk, 12, 6, 0, Math.PI * 2, 0, Math.PI * 0.45), SKIN)
+    lid.position.set(s * 0.105 * sk, 0.068 * sk, 0.238 * sk)
+    lid.scale.set(1, 0.7, 0.7)
+    lid.rotation.x = -0.18
+    headGroup.add(lid)
+    _eyeLids.push(lid)
+
+    // Eyebrow
+    const brow = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.020 * sk, 0.028 * sk), HAIR)
+    brow.position.set(s * 0.105 * sk, 0.115 * sk, 0.238 * sk)
+    brow.rotation.z = s * 0.12
+    headGroup.add(brow)
+  })
+
+  // Nose
+  const nose = new THREE.Mesh(new THREE.CylinderGeometry(0.020 * sk, 0.028 * sk, 0.085 * sk, 10), NOSE_M)
+  nose.position.set(0, -0.03 * sk, 0.265 * sk)
+  nose.rotation.x = Math.PI / 2 + 0.15
+  headGroup.add(nose)
+
+  const noseTip = new THREE.Mesh(new THREE.SphereGeometry(0.024 * sk, 10, 8), NOSE_M)
+  noseTip.position.set(0, -0.065 * sk, 0.282 * sk)
+  headGroup.add(noseTip)
+
+  // Lips
+  const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.075 * sk, 0.014 * sk, 0.020 * sk), MOUTH)
+  mouth.position.set(0, -0.115 * sk, 0.255 * sk)
+  headGroup.add(mouth)
+
+  const lip = new THREE.Mesh(new THREE.SphereGeometry(0.028 * sk, 10, 6), LIP_M)
+  lip.position.set(0, -0.13 * sk, 0.25 * sk)
+  lip.scale.set(1.2, 0.45, 0.5)
+  headGroup.add(lip)
+
+  // Facial Hair
+  const facialHair = isPlayer ? (app.facialHair || 'none') : 'none'
+  if (facialHair === 'stubble') {
+    const stubble = new THREE.Mesh(new THREE.SphereGeometry(0.22 * sk, 14, 10), HAIR)
+    stubble.position.set(0, -0.18 * sk, 0.10 * sk)
+    stubble.scale.set(0.88, 0.60, 0.80)
+    headGroup.add(stubble)
+  } else if (facialHair === 'beard') {
+    const beard = new THREE.Mesh(new THREE.SphereGeometry(0.23 * sk, 16, 12), HAIR)
+    beard.position.set(0, -0.19 * sk, 0.11 * sk)
+    beard.scale.set(0.92, 0.68, 0.86)
+    headGroup.add(beard)
+  } else if (facialHair === 'mustache') {
+    const stache = new THREE.Mesh(new THREE.TorusGeometry(0.06 * sk, 0.022 * sk, 8, 12, Math.PI * 0.8), HAIR)
+    stache.position.set(0, -0.09 * sk, 0.26 * sk)
+    stache.rotation.z = Math.PI * 0.1
+    headGroup.add(stache)
   }
 
-  // ── Beanie (knit winter hat) ──
-  if (isPlayer && app.accessories?.beanie) {
-    const BEANIE = new THREE.MeshToonMaterial({ color: app.beanieColor || 0x3498db })
-    const BEANIE_RIBBON = new THREE.MeshToonMaterial({ color: app.beanieColor ? new THREE.Color(app.beanieColor).multiplyScalar(0.7).getHex() : 0x2980b9 })
-    // Main dome
-    const dome = new THREE.Mesh(new THREE.SphereGeometry(0.31 * sk, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), BEANIE)
-    dome.position.set(0, 0.10 * sk, -0.02 * sk)
-    dome.scale.set(1.02, 0.55, 1.02)
-    headGroup.add(dome)
-    // Folded brim/ribbon
-    const ribbon = new THREE.Mesh(new THREE.TorusGeometry(0.28 * sk, 0.035 * sk, 8, 14), BEANIE_RIBBON)
-    ribbon.position.set(0, 0.04 * sk, -0.01 * sk)
-    ribbon.rotation.x = Math.PI / 2 + 0.15
-    ribbon.scale.set(1, 1, 0.7)
-    headGroup.add(ribbon)
-    // Pom-pom on top
-    const pompom = new THREE.Mesh(new THREE.SphereGeometry(0.055 * sk, 8, 6), BEANIE_RIBBON)
-    pompom.position.set(0.01 * sk, 0.23 * sk, -0.02 * sk)
-    headGroup.add(pompom)
+  // ─── 2. HAIRSTYLES (11 STYLES) ────────────────────────────────────
+  const hairStyle = isPlayer ? (app.hairStyle || 'quiff') : 'quiff'
+  if (hairStyle !== 'bald') {
+    if (hairStyle === 'buzz' || hairStyle === 'short') {
+      const buzz = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.55), HAIR)
+      buzz.position.set(0, 0.09 * sk, -0.01 * sk)
+      buzz.scale.set(1.02, 0.6, 1.02)
+      headGroup.add(buzz)
+    } else if (hairStyle === 'long_waves' || hairStyle === 'long') {
+      const crown = new THREE.Mesh(new THREE.SphereGeometry(0.30 * sk, 16, 12), HAIR)
+      crown.position.set(0, 0.10 * sk, -0.02 * sk)
+      crown.scale.set(1.02, 0.65, 1.0)
+      headGroup.add(crown)
+      ;[-1, 1].forEach(s => {
+        const flow = limb(0.08 * sk, 0.045 * sk, 0.38 * sk, HAIR, 10)
+        flow.position.set(s * 0.21 * sk, -0.20 * sk, -0.05 * sk)
+        flow.rotation.z = s * 0.08
+        headGroup.add(flow)
+      })
+      const backFlow = limb(0.18 * sk, 0.12 * sk, 0.36 * sk, HAIR, 12)
+      backFlow.position.set(0, -0.16 * sk, -0.16 * sk)
+      headGroup.add(backFlow)
+    } else if (hairStyle === 'ponytail') {
+      const crown = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 16, 12), HAIR)
+      crown.position.set(0, 0.10 * sk, -0.01 * sk)
+      crown.scale.set(1.0, 0.58, 1.0)
+      headGroup.add(crown)
+      const tail = limb(0.06 * sk, 0.035 * sk, 0.32 * sk, HAIR, 10)
+      tail.position.set(0, -0.10 * sk, -0.28 * sk)
+      tail.rotation.x = 0.6
+      headGroup.add(tail)
+      const tie = new THREE.Mesh(new THREE.TorusGeometry(0.05 * sk, 0.014 * sk, 8, 12), SHIRT_ACC)
+      tie.position.set(0, 0.04 * sk, -0.22 * sk)
+      headGroup.add(tie)
+    } else if (hairStyle === 'textured_fade') {
+      const crown = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 16, 12), HAIR)
+      crown.position.set(0, 0.12 * sk, -0.01 * sk)
+      crown.scale.set(0.95, 0.5, 0.95)
+      headGroup.add(crown)
+      for (let i = -2; i <= 2; i++) {
+        const spike = new THREE.Mesh(new THREE.ConeGeometry(0.04 * sk, 0.10 * sk, 6), HAIR_HI)
+        spike.position.set(i * 0.05 * sk, 0.24 * sk, 0.02 * sk)
+        spike.rotation.x = 0.2
+        headGroup.add(spike)
+      }
+    } else if (hairStyle === 'anime_spikes') {
+      const crown = new THREE.Mesh(new THREE.SphereGeometry(0.28 * sk, 14, 10), HAIR)
+      crown.position.set(0, 0.10 * sk, -0.01 * sk)
+      headGroup.add(crown)
+      for (let i = 0; i < 8; i++) {
+        const ang = (i / 8) * Math.PI * 2
+        const sp = new THREE.Mesh(new THREE.ConeGeometry(0.055 * sk, 0.16 * sk, 5), HAIR)
+        sp.position.set(Math.cos(ang) * 0.18 * sk, 0.20 * sk, Math.sin(ang) * 0.18 * sk)
+        sp.rotation.set(Math.sin(ang) * 0.4, 0, -Math.cos(ang) * 0.4)
+        headGroup.add(sp)
+      }
+    } else if (hairStyle === 'turban') {
+      const turbanMain = new THREE.Mesh(new THREE.SphereGeometry(0.34 * sk, 16, 12), SHIRT_ACC)
+      turbanMain.position.set(0, 0.14 * sk, 0)
+      turbanMain.scale.set(1.08, 0.85, 1.15)
+      headGroup.add(turbanMain)
+      const crest = new THREE.Mesh(new THREE.SphereGeometry(0.035 * sk, 8, 8), METALLIC)
+      crest.position.set(0, 0.22 * sk, 0.32 * sk)
+      headGroup.add(crest)
+    } else if (hairStyle === 'hijab') {
+      const hijabWrap = new THREE.Mesh(new THREE.SphereGeometry(0.33 * sk, 18, 14), SHIRT_ACC)
+      hijabWrap.position.set(0, 0.08 * sk, -0.02 * sk)
+      hijabWrap.scale.set(1.05, 1.1, 1.05)
+      headGroup.add(hijabWrap)
+    } else {
+      // Quiff / Classic modern pomp
+      const hairBack = new THREE.Mesh(new THREE.SphereGeometry(0.30 * sk, 16, 12), HAIR)
+      hairBack.position.set(0, 0.06 * sk, -0.04 * sk)
+      hairBack.scale.set(1.0, 0.58, 1.0)
+      headGroup.add(hairBack)
+
+      const quiff = new THREE.Mesh(new THREE.SphereGeometry(0.27 * sk, 14, 10), HAIR)
+      quiff.position.set(0, 0.18 * sk, 0.06 * sk)
+      quiff.scale.set(0.85, 0.42, 1.1)
+      quiff.rotation.x = -0.25
+      headGroup.add(quiff)
+    }
   }
 
-  // ── Helmet (bike/safety helmet) ──
-  if (isPlayer && app.accessories?.helmet) {
-    const HELMET_OUTER = new THREE.MeshToonMaterial({ color: 0xf5f5f5 })
-    const HELMET_STRIPE = new THREE.MeshToonMaterial({ color: 0x2980b9 })
-    const HELMET_PAD = new THREE.MeshToonMaterial({ color: 0x555555 })
-    const HELMET_VISOR = new THREE.MeshToonMaterial({ color: 0x1a1a2e, transparent: true, opacity: 0.5 })
-    // Main dome
-    const hDome = new THREE.Mesh(new THREE.SphereGeometry(0.33 * sk, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), HELMET_OUTER)
-    hDome.position.set(0, 0.10 * sk, -0.02 * sk)
-    hDome.scale.set(1.04, 0.6, 1.06)
-    headGroup.add(hDome)
-    // Center stripe
-    const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.015 * sk, 0.12 * sk, 0.25 * sk), HELMET_STRIPE)
-    stripe.position.set(0, 0.13 * sk, -0.02 * sk)
-    stripe.rotation.x = 0.15
-    headGroup.add(stripe)
-    // Visor
-    const visor = new THREE.Mesh(new THREE.SphereGeometry(0.27 * sk, 8, 6, 0, Math.PI * 1.2, 0, Math.PI * 0.4), HELMET_VISOR)
-    visor.position.set(0, 0.07 * sk, 0.05 * sk)
-    visor.scale.set(1.1, 0.5, 0.9)
-    headGroup.add(visor)
-    // Padding rim
-    const pad = new THREE.Mesh(new THREE.TorusGeometry(0.30 * sk, 0.025 * sk, 6, 14), HELMET_PAD)
-    pad.position.set(0, 0.03 * sk, -0.01 * sk)
-    pad.rotation.x = Math.PI / 2 + 0.15
-    pad.scale.set(1, 0.9, 0.7)
-    headGroup.add(pad)
+  // ─── 3. ACCESSORIES (HEADWEAR & EYEWEAR) ─────────────────────────
+  if (isPlayer && app.accessories) {
+    const acc = app.accessories
+    // Cap
+    if (acc.cap || acc.capBackwards) {
+      const capTop = new THREE.Mesh(new THREE.SphereGeometry(0.30 * sk, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), SHIRT)
+      capTop.position.set(0, 0.12 * sk, -0.01 * sk)
+      capTop.scale.set(1.04, 0.52, 1.04)
+      headGroup.add(capTop)
+
+      const brimDir = acc.capBackwards ? -0.16 : 0.16
+      const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.28 * sk, 0.31 * sk, 0.02 * sk, 14), SHIRT_DK)
+      brim.position.set(0, 0.10 * sk, brimDir * sk)
+      brim.scale.set(1, 1, 0.65)
+      headGroup.add(brim)
+    }
+
+    // Beanie
+    if (acc.beanie) {
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(0.32 * sk, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.6), SHIRT)
+      dome.position.set(0, 0.11 * sk, -0.02 * sk)
+      headGroup.add(dome)
+      const pompom = new THREE.Mesh(new THREE.SphereGeometry(0.06 * sk, 10, 8), SHIRT_ACC)
+      pompom.position.set(0, 0.28 * sk, -0.02 * sk)
+      headGroup.add(pompom)
+    }
+
+    // Racing Helmet
+    if (acc.helmet) {
+      const hDome = new THREE.Mesh(new THREE.SphereGeometry(0.34 * sk, 18, 14), SHIRT)
+      hDome.position.set(0, 0.08 * sk, -0.02 * sk)
+      headGroup.add(hDome)
+      const visor = new THREE.Mesh(new THREE.SphereGeometry(0.28 * sk, 12, 8, 0, Math.PI * 1.2, 0, Math.PI * 0.4), new THREE.MeshStandardMaterial({ color: 0x111122, metalness: 0.9, roughness: 0.1 }))
+      visor.position.set(0, 0.06 * sk, 0.08 * sk)
+      visor.scale.set(1.1, 0.55, 0.95)
+      headGroup.add(visor)
+    }
+
+    // Glasses / Sunglasses / Cyber Visor
+    if (acc.glasses || acc.sunglasses || acc.cyberVisor) {
+      if (acc.cyberVisor) {
+        const visor = new THREE.Mesh(new THREE.BoxGeometry(0.36 * sk, 0.06 * sk, 0.12 * sk), OLED)
+        visor.position.set(0, 0.04 * sk, 0.24 * sk)
+        headGroup.add(visor)
+      } else {
+        const lensMat = acc.sunglasses ? new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.1 }) : new THREE.MeshToonMaterial({ color: 0x88ccff, transparent: true, opacity: 0.4 })
+        ;[-1, 1].forEach(s => {
+          const lens = new THREE.Mesh(new THREE.SphereGeometry(0.075 * sk, 12, 10), lensMat)
+          lens.position.set(s * 0.13 * sk, 0.02 * sk, 0.24 * sk)
+          lens.scale.set(1, 0.75, 0.25)
+          headGroup.add(lens)
+          const frame = new THREE.Mesh(new THREE.TorusGeometry(0.072 * sk, 0.014 * sk, 8, 16), SILVER)
+          frame.position.set(s * 0.13 * sk, 0.02 * sk, 0.24 * sk)
+          headGroup.add(frame)
+        })
+        const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.018 * sk, 0.018 * sk), SILVER)
+        bridge.position.set(0, 0.02 * sk, 0.24 * sk)
+        headGroup.add(bridge)
+      }
+    }
+
+    // Headphones around neck
+    if (acc.headphones) {
+      const band = new THREE.Mesh(new THREE.TorusGeometry(0.24 * sk, 0.025 * sk, 8, 18, Math.PI * 1.1), SILVER)
+      band.position.set(0, -0.16 * sk, 0.02 * sk)
+      band.rotation.x = Math.PI / 2 + 0.3
+      headGroup.add(band)
+      ;[-1, 1].forEach(s => {
+        const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.07 * sk, 0.07 * sk, 0.04 * sk, 12), SHIRT)
+        cup.position.set(s * 0.24 * sk, -0.16 * sk, 0.04 * sk)
+        cup.rotation.z = Math.PI / 2
+        headGroup.add(cup)
+      })
+    }
   }
 
-  // ── Sunglasses (togglable) ──
-  if (isPlayer && app.accessories?.glasses) {
-    const GLASS_FRAME = new THREE.MeshToonMaterial({ color: app.glassesFrame || 0x1a1a1a })
-    const GLASS_LENS = new THREE.MeshToonMaterial({
-      color: app.glassesTint || 0x1a1a2e,
-      transparent: true,
-      opacity: 0.45
-    })
-    const GLASS_HIGHLIGHT = new THREE.MeshToonMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 })
-    ;[-1, 1].forEach(s => {
-      // Larger lens with slight aviator curve
-      const lens = new THREE.Mesh(new THREE.SphereGeometry(0.075 * sk, 10, 8), GLASS_LENS)
-      lens.position.set(s * 0.13 * sk, 0.01 * sk, 0.24 * sk)
-      lens.scale.set(1, 0.75, 0.25)
-      headGroup.add(lens)
-      // Thicker frame ring
-      const frame = new THREE.Mesh(new THREE.TorusGeometry(0.072 * sk, 0.015 * sk, 8, 14), GLASS_FRAME)
-      frame.position.set(s * 0.13 * sk, 0.01 * sk, 0.24 * sk)
-      frame.scale.set(1, 0.85, 0.3)
-      headGroup.add(frame)
-      // Subtle lens highlight (reflection)
-      const hl = new THREE.Mesh(new THREE.SphereGeometry(0.035 * sk, 6, 4), GLASS_HIGHLIGHT)
-      hl.position.set(s * 0.10 * sk, 0.035 * sk, 0.265 * sk)
-      headGroup.add(hl)
-    })
-    // Bridge (wider, more prominent)
-    const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.02 * sk), GLASS_FRAME)
-    bridge.position.set(0, 0.01 * sk, 0.24 * sk)
-    headGroup.add(bridge)
-    // Temples (arms)
-    ;[-1, 1].forEach(s => {
-      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.14 * sk, 0.012 * sk, 0.012 * sk), GLASS_FRAME)
-      arm.position.set(s * 0.19 * sk, 0.01 * sk, 0.12 * sk)
-      headGroup.add(arm)
-      // Temple tip (curved end)
-      const tip = new THREE.Mesh(new THREE.SphereGeometry(0.012 * sk, 4, 3), GLASS_FRAME)
-      tip.position.set(s * 0.26 * sk, 0.01 * sk, 0.12 * sk)
-      headGroup.add(tip)
-    })
-  }
-
-  // ── Cheek blush (subtle, player only) ──
-  if (isPlayer) {
-    const BLUSH = new THREE.MeshToonMaterial({ color: 0xff9999, transparent: true, opacity: 0.12 })
-    ;[-1, 1].forEach(s => {
-      const cheek = new THREE.Mesh(new THREE.SphereGeometry(0.045 * sk, 6, 4), BLUSH)
-      cheek.position.set(s * 0.12 * sk, -0.04 * sk, 0.20 * sk)
-      cheek.scale.set(1, 0.5, 0.6)
-      headGroup.add(cheek)
-    })
-  }
-
-  // ═══ NECK ═══
-  const neck = limb(0.08 * sk, 0.10 * sk, 0.14 * sk, SKIN, 8)
+  // Neck
+  const neck = limb(0.085 * sk, 0.105 * sk, 0.15 * sk, SKIN, 12)
   const neckGroup = new THREE.Group()
   neckGroup.position.y = 1.56 * sk
-  neck.position.y = 0
   neckGroup.add(neck)
   g.add(neckGroup)
-
   g.add(headGroup)
 
-  // ═══ TORSO ═══
-  const tH = 0.65 * sk
+  // ─── 4. TORSO & LAYERED OUTFITS ──────────────────────────────────
+  const tH = 0.66 * sk
   const torsoGroup = new THREE.Group()
   torsoGroup.position.y = 1.23 * sk
 
-  // Chest (upper torso)
-  const chest = limb(0.34 * sk, 0.30 * sk, tH * 0.52, SHIRT, 10)
+  const chest = limb(0.34 * sk, 0.30 * sk, tH * 0.54, SHIRT, 14)
   chest.position.y = tH * 0.15
   torsoGroup.add(chest)
 
-  // Shirt pocket (left chest)
-  const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.07 * sk, 0.015 * sk), SHIRT_DK)
-  pocket.position.set(-0.12 * sk, tH * 0.2, 0.28 * sk)
-  torsoGroup.add(pocket)
-  // Pocket flap
-  const flap = new THREE.Mesh(new THREE.BoxGeometry(0.085 * sk, 0.015 * sk, 0.02 * sk), SHIRT_DK)
-  flap.position.set(-0.12 * sk, tH * 0.24, 0.29 * sk)
-  torsoGroup.add(flap)
-
-  // Shirt buttons
-  for (let i = 0; i < 3; i++) {
-    const btn = new THREE.Mesh(new THREE.SphereGeometry(0.008 * sk, 6, 4), EYE_W)
-    btn.position.set(0, tH * 0.15 - i * 0.08 * sk, 0.31 * sk)
-    torsoGroup.add(btn)
+  const outfit = isPlayer ? (app.outfit || 'streetwear') : 'streetwear'
+  if (outfit === 'kaali_peeli') {
+    // Kaali-Peeli Taxi Hero Yellow Chest Stripe
+    const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.36 * sk, 0.09 * sk, 0.28 * sk), new THREE.MeshToonMaterial({ color: 0xf5b81e, gradientMap: tGrad }))
+    stripe.position.set(0, tH * 0.16, 0.01 * sk)
+    torsoGroup.add(stripe)
+  } else if (outfit === 'safety_vest') {
+    // High-Vis Neon Vest
+    const vest = limb(0.36 * sk, 0.32 * sk, tH * 0.52, new THREE.MeshToonMaterial({ color: 0xccff00 }), 14)
+    vest.position.y = tH * 0.15
+    torsoGroup.add(vest)
+    const refStripe = new THREE.Mesh(new THREE.BoxGeometry(0.38 * sk, 0.04 * sk, 0.30 * sk), REFLECTIVE)
+    refStripe.position.set(0, tH * 0.16, 0.01 * sk)
+    torsoGroup.add(refStripe)
+  } else if (outfit === 'police') {
+    // Police Badges & Pocket
+    const badge = new THREE.Mesh(new THREE.SphereGeometry(0.025 * sk, 8, 8), METALLIC)
+    badge.position.set(-0.12 * sk, tH * 0.22, 0.28 * sk)
+    torsoGroup.add(badge)
+    ;[-1, 1].forEach(s => {
+      const epaulette = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.12 * sk), SHIRT_DK)
+      epaulette.position.set(s * 0.28 * sk, tH * 0.38, 0)
+      torsoGroup.add(epaulette)
+    })
+  } else {
+    // Streetwear Kangaroo Pocket & Drawstrings
+    const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.24 * sk, 0.12 * sk, 0.06 * sk), SHIRT_DK)
+    pocket.position.set(0, tH * 0.06, 0.25 * sk)
+    torsoGroup.add(pocket)
+    ;[-0.05, 0.05].forEach(x => {
+      const string = limb(0.008 * sk, 0.008 * sk, 0.16 * sk, SHIRT_ACC, 6)
+      string.position.set(x * sk, tH * 0.24, 0.28 * sk)
+      torsoGroup.add(string)
+    })
   }
 
-  // Waist (lower torso)
-  const waist = limb(0.30 * sk, 0.26 * sk, tH * 0.48, SHIRT_DK, 10)
+  const waist = limb(0.30 * sk, 0.26 * sk, tH * 0.48, SHIRT_DK, 12)
   waist.position.y = -tH * 0.18
   torsoGroup.add(waist)
 
-  // Belt
-  const belt = new THREE.Mesh(new THREE.TorusGeometry(0.28 * sk, 0.025 * sk, 6, 16), BELT)
+  const belt = new THREE.Mesh(new THREE.TorusGeometry(0.28 * sk, 0.025 * sk, 8, 18), BELT)
   belt.position.y = -tH * 0.40
   belt.rotation.x = Math.PI / 2
   torsoGroup.add(belt)
-  // Belt buckle
-  const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.02 * sk), BELT_BUCKLE)
+
+  const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.02 * sk), SILVER)
   buckle.position.set(0, -tH * 0.40, 0.28 * sk)
   torsoGroup.add(buckle)
 
   g.add(torsoGroup)
 
-  // ═══ SHOULDERS (joint spheres) ═══
-  const lShoulder = jointSphere(0.08 * sk, SHIRT)
-  lShoulder.position.set(-0.37 * sk, 1.42 * sk, 0)
-  g.add(lShoulder)
-  const rShoulder = jointSphere(0.08 * sk, SHIRT)
-  rShoulder.position.set(0.37 * sk, 1.42 * sk, 0)
-  g.add(rShoulder)
-
-  // ═══ ARMS (articulated groups) ═══
+  // ─── 5. ARMS & HANDS ─────────────────────────────────────────────
   const lArmP = new THREE.Group()
   lArmP.position.set(-0.38 * sk, 1.38 * sk, 0)
-  // Upper arm
-  const lUA = limb(0.085 * sk, 0.075 * sk, 0.32 * sk, SHIRT, 10)
+  const lUA = limb(0.085 * sk, 0.075 * sk, 0.32 * sk, SHIRT, 12)
   lUA.position.y = -0.16 * sk
   lArmP.add(lUA)
-  // Elbow joint
-  const lElbow = jointSphere(0.055 * sk, JOINT)
+  const lElbow = jointSphere(0.055 * sk, SHIRT_DK)
   lElbow.position.set(0, -0.33 * sk, 0)
   lArmP.add(lElbow)
-  // Forearm
-  const lFore = limb(0.07 * sk, 0.055 * sk, 0.28 * sk, SKIN, 10)
+  const lFore = limb(0.070 * sk, 0.058 * sk, 0.28 * sk, SKIN, 12)
   lFore.position.set(0, -0.48 * sk, 0)
   lArmP.add(lFore)
-  // Wrist
-  const lWrist = jointSphere(0.038 * sk, WRIST)
+  const lWrist = jointSphere(0.038 * sk, SKIN2)
   lWrist.position.set(0, -0.63 * sk, 0)
   lArmP.add(lWrist)
-  // Hand
-  const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 8, 6), SKIN2)
+
+  // Smartwatch on left wrist
+  if (isPlayer && (app.accessories?.smartwatch !== false)) {
+    const watchBand = new THREE.Mesh(new THREE.TorusGeometry(0.052 * sk, 0.015 * sk, 8, 14), BELT)
+    watchBand.position.set(0, -0.62 * sk, 0)
+    watchBand.rotation.x = Math.PI / 2
+    lArmP.add(watchBand)
+    const watchScreen = new THREE.Mesh(new THREE.BoxGeometry(0.035 * sk, 0.045 * sk, 0.012 * sk), OLED)
+    watchScreen.position.set(0, -0.62 * sk, 0.055 * sk)
+    lArmP.add(watchScreen)
+  }
+
+  const lHand = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 10, 8), SKIN2)
   lHand.position.set(0, -0.68 * sk, 0)
   lHand.scale.set(0.9, 1, 0.7)
   lArmP.add(lHand)
-  // Fingers (simplified — 3 bumps)
-  ;[-0.015, 0, 0.015].forEach((fx, fi) => {
-    const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.008 * sk, 0.006 * sk, 0.06 * sk, 4), SKIN2)
-    finger.position.set(fx * sk, -0.74 * sk, 0)
-    lArmP.add(finger)
-  })
   g.add(lArmP)
 
   const rArmP = new THREE.Group()
   rArmP.position.set(0.38 * sk, 1.38 * sk, 0)
-  const rUA = limb(0.085 * sk, 0.075 * sk, 0.32 * sk, SHIRT, 10)
+  const rUA = limb(0.085 * sk, 0.075 * sk, 0.32 * sk, SHIRT, 12)
   rUA.position.y = -0.16 * sk
   rArmP.add(rUA)
-  const rElbow = jointSphere(0.055 * sk, JOINT)
+  const rElbow = jointSphere(0.055 * sk, SHIRT_DK)
   rElbow.position.set(0, -0.33 * sk, 0)
   rArmP.add(rElbow)
-  const rFore = limb(0.07 * sk, 0.055 * sk, 0.28 * sk, SKIN, 10)
+  const rFore = limb(0.070 * sk, 0.058 * sk, 0.28 * sk, SKIN, 12)
   rFore.position.set(0, -0.48 * sk, 0)
   rArmP.add(rFore)
-  const rWrist = jointSphere(0.038 * sk, WRIST)
+  const rWrist = jointSphere(0.038 * sk, SKIN2)
   rWrist.position.set(0, -0.63 * sk, 0)
   rArmP.add(rWrist)
-  const rHand = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 8, 6), SKIN2)
+  const rHand = new THREE.Mesh(new THREE.SphereGeometry(0.048 * sk, 10, 8), SKIN2)
   rHand.position.set(0, -0.68 * sk, 0)
   rHand.scale.set(0.9, 1, 0.7)
   rArmP.add(rHand)
-  ;[-0.015, 0, 0.015].forEach((fx) => {
-    const finger = new THREE.Mesh(new THREE.CylinderGeometry(0.008 * sk, 0.006 * sk, 0.06 * sk, 4), SKIN2)
-    finger.position.set(fx * sk, -0.74 * sk, 0)
-    rArmP.add(finger)
-  })
   g.add(rArmP)
 
-  // ═══ LEGS (articulated groups) ═══
+  // ─── 6. LEGS & DETAILED FOOTWEAR ─────────────────────────────────
   const lLegP = new THREE.Group()
   lLegP.position.set(-0.14 * sk, 0.82 * sk, 0)
-  // Upper leg (thigh)
-  const lUL = limb(0.11 * sk, 0.095 * sk, 0.42 * sk, PANTS, 10)
+  const lUL = limb(0.11 * sk, 0.095 * sk, 0.42 * sk, PANTS, 12)
   lUL.position.y = -0.21 * sk
   lLegP.add(lUL)
-  // Knee joint
   const lKnee = jointSphere(0.065 * sk, PANTS_DK)
   lKnee.position.set(0, -0.43 * sk, 0)
   lLegP.add(lKnee)
-  // Lower leg (shin)
-  const lLL = limb(0.09 * sk, 0.075 * sk, 0.38 * sk, PANTS_DK, 10)
-  lLL.position.set(0, -0.62 * sk, 0)
+  const lLL = limb(0.09 * sk, 0.075 * sk, 0.38 * sk, PANTS_DK, 12)
+  lLL.position.y = -0.62 * sk
   lLegP.add(lLL)
-  // Ankle
-  const lAnkle = jointSphere(0.04 * sk, SHOES)
-  lAnkle.position.set(0, -0.82 * sk, 0)
-  lLegP.add(lAnkle)
-  // Shoe (with sole detail)
-  const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.07 * sk, 0.20 * sk), SHOES)
-  lShoe.position.set(0.01 * sk, -0.87 * sk, 0.04 * sk)
+  const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.12 * sk, 0.08 * sk, 0.22 * sk), SHOES)
+  lShoe.position.set(0.01 * sk, -0.86 * sk, 0.04 * sk)
   lLegP.add(lShoe)
-  const lSole = new THREE.Mesh(new THREE.BoxGeometry(0.115 * sk, 0.02 * sk, 0.21 * sk), SHOE_SOLE)
-  lSole.position.set(0.01 * sk, -0.91 * sk, 0.04 * sk)
+  const lSole = new THREE.Mesh(new THREE.BoxGeometry(0.125 * sk, 0.025 * sk, 0.23 * sk), SHOE_SOLE)
+  lSole.position.set(0.01 * sk, -0.90 * sk, 0.04 * sk)
   lLegP.add(lSole)
-  // Shoe tongue
-  const lTongue = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.015 * sk), SHIRT_DK)
-  lTongue.position.set(0.01 * sk, -0.83 * sk, 0.14 * sk)
-  lTongue.rotation.x = -0.3
-  lLegP.add(lTongue)
   g.add(lLegP)
 
   const rLegP = new THREE.Group()
   rLegP.position.set(0.14 * sk, 0.82 * sk, 0)
-  const rUL = limb(0.11 * sk, 0.095 * sk, 0.42 * sk, PANTS, 10)
+  const rUL = limb(0.11 * sk, 0.095 * sk, 0.42 * sk, PANTS, 12)
   rUL.position.y = -0.21 * sk
   rLegP.add(rUL)
   const rKnee = jointSphere(0.065 * sk, PANTS_DK)
   rKnee.position.set(0, -0.43 * sk, 0)
   rLegP.add(rKnee)
-  const rLL = limb(0.09 * sk, 0.075 * sk, 0.38 * sk, PANTS_DK, 10)
-  rLL.position.set(0, -0.62 * sk, 0)
+  const rLL = limb(0.09 * sk, 0.075 * sk, 0.38 * sk, PANTS_DK, 12)
+  rLL.position.y = -0.62 * sk
   rLegP.add(rLL)
-  const rAnkle = jointSphere(0.04 * sk, SHOES)
-  rAnkle.position.set(0, -0.82 * sk, 0)
-  rLegP.add(rAnkle)
-  const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.11 * sk, 0.07 * sk, 0.20 * sk), SHOES)
-  rShoe.position.set(-0.01 * sk, -0.87 * sk, 0.04 * sk)
+  const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.12 * sk, 0.08 * sk, 0.22 * sk), SHOES)
+  rShoe.position.set(-0.01 * sk, -0.86 * sk, 0.04 * sk)
   rLegP.add(rShoe)
-  const rSole = new THREE.Mesh(new THREE.BoxGeometry(0.115 * sk, 0.02 * sk, 0.21 * sk), SHOE_SOLE)
-  rSole.position.set(-0.01 * sk, -0.91 * sk, 0.04 * sk)
+  const rSole = new THREE.Mesh(new THREE.BoxGeometry(0.125 * sk, 0.025 * sk, 0.23 * sk), SHOE_SOLE)
+  rSole.position.set(-0.01 * sk, -0.90 * sk, 0.04 * sk)
   rLegP.add(rSole)
-  const rTongue = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.04 * sk, 0.015 * sk), SHIRT_DK)
-  rTongue.position.set(-0.01 * sk, -0.83 * sk, 0.14 * sk)
-  rTongue.rotation.x = -0.3
-  rLegP.add(rTongue)
   g.add(rLegP)
 
-  // ═══ GROUND SHADOW (soft blob) ═══
-  const shadowGeo = new THREE.CircleGeometry(0.3 * sk, 16)
-  const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.2, depthWrite: false })
-  const shadowBlob = new THREE.Mesh(shadowGeo, shadowMat)
+  // ─── 7. BACKPACK & SCARVES ───────────────────────────────────────
+  if (isPlayer && app.accessories?.backpack) {
+    const bag = new THREE.Mesh(new THREE.BoxGeometry(0.32 * sk, 0.42 * sk, 0.18 * sk), SHIRT_DK)
+    bag.position.set(0, 1.28 * sk, -0.24 * sk)
+    g.add(bag)
+    const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.24 * sk, 0.16 * sk, 0.06 * sk), SHIRT)
+    pocket.position.set(0, 1.20 * sk, -0.34 * sk)
+    g.add(pocket)
+  }
+
+  // ─── 8. CONTACT SHADOW & HITBOX ──────────────────────────────────
+  const shadowBlob = new THREE.Mesh(new THREE.CircleGeometry(0.35 * sk, 16), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false }))
   shadowBlob.rotation.x = -Math.PI / 2
   shadowBlob.position.y = 0.01
   g.add(shadowBlob)
 
-  // ═══ PLAYER-SPECIFIC ACCESSORIES ═══
-  let ring = null, nametag = null, nametagGlow = null, nametagGlowOuter = null
-  if (isPlayer) {
-    // ── Backpack (detailed with straps and pocket) ──
-    if (app.accessories?.backpack !== false) {
-      const bagMain = new THREE.Mesh(new THREE.BoxGeometry(0.30 * sk, 0.40 * sk, 0.16 * sk), BAG)
-      bagMain.position.set(0, 1.28 * sk, -0.24 * sk)
-      g.add(bagMain)
-      // Bag front pocket
-      const bagPocket = new THREE.Mesh(new THREE.BoxGeometry(0.24 * sk, 0.12 * sk, 0.04 * sk), BAG_DK)
-      bagPocket.position.set(0, 1.20 * sk, -0.33 * sk)
-      g.add(bagPocket)
-      // Bag zipper
-      const zipper = new THREE.Mesh(new THREE.BoxGeometry(0.22 * sk, 0.008 * sk, 0.005 * sk), BELT_BUCKLE)
-      zipper.position.set(0, 1.27 * sk, -0.325 * sk)
-      g.add(zipper)
-      // Bag flap
-      const bagFlap = new THREE.Mesh(new THREE.BoxGeometry(0.28 * sk, 0.06 * sk, 0.03 * sk), BAG_DK)
-      bagFlap.position.set(0, 1.48 * sk, -0.30 * sk)
-      g.add(bagFlap)
-      // Shoulder straps
-      ;[-1, 1].forEach(s => {
-        const strap = new THREE.Mesh(new THREE.BoxGeometry(0.04 * sk, 0.5 * sk, 0.02 * sk), BAG_STRAP)
-        strap.position.set(s * 0.12 * sk, 1.35 * sk, -0.12 * sk)
-        strap.rotation.x = 0.15
-        g.add(strap)
-      })
-    }
-
-    // ── Scarf (3D draped geometry) ──
-    if (app.accessories?.scarf) {
-      const SCARF = new THREE.MeshToonMaterial({ color: 0xe74c3c })
-      const SCARF_STRIPE = new THREE.MeshToonMaterial({ color: 0xd4a017 })
-      // Main wrap around neck
-      const wrap = new THREE.Mesh(new THREE.TorusGeometry(0.16 * sk, 0.03 * sk, 8, 16), SCARF)
-      wrap.position.set(0, 1.54 * sk, -0.02 * sk)
-      wrap.rotation.x = Math.PI / 2 + 0.2
-      wrap.scale.set(1.2, 1, 0.8)
-      g.add(wrap)
-      // Draped front left segment
-      const segL = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.28 * sk, 0.03 * sk), SCARF)
-      segL.position.set(-0.10 * sk, 1.38 * sk, 0.07 * sk)
-      segL.rotation.x = 0.2
-      segL.rotation.z = 0.1
-      g.add(segL)
-      // Draped front right segment
-      const segR = new THREE.Mesh(new THREE.BoxGeometry(0.06 * sk, 0.28 * sk, 0.03 * sk), SCARF)
-      segR.position.set(0.10 * sk, 1.38 * sk, 0.07 * sk)
-      segR.rotation.x = 0.2
-      segR.rotation.z = -0.1
-      g.add(segR)
-      // Stripe on left segment
-      const stripeL = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.035 * sk), SCARF_STRIPE)
-      stripeL.position.set(-0.10 * sk, 1.34 * sk, 0.075 * sk)
-      g.add(stripeL)
-      // Stripe on right segment
-      const stripeR = new THREE.Mesh(new THREE.BoxGeometry(0.08 * sk, 0.02 * sk, 0.035 * sk), SCARF_STRIPE)
-      stripeR.position.set(0.10 * sk, 1.34 * sk, 0.075 * sk)
-      g.add(stripeR)
-      // Draped back 
-      const segBack = new THREE.Mesh(new THREE.BoxGeometry(0.20 * sk, 0.16 * sk, 0.025 * sk), SCARF)
-      segBack.position.set(0, 1.38 * sk, -0.14 * sk)
-      segBack.rotation.x = -0.15
-      g.add(segBack)
-    }
-
-    // ── Glow ring ──
-    ring = new THREE.Mesh(
-      new THREE.TorusGeometry(0.32 * sk, 0.018, 10, 24),
-      new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.4 })
-    )
-    ring.position.set(0, 0.01, 0)
-    ring.rotation.x = Math.PI / 2
-    g.add(ring)
-    // Outer ring glow
-    const ringOuter = new THREE.Mesh(
-      new THREE.TorusGeometry(0.36 * sk, 0.008, 8, 20),
-      new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.2 })
-    )
-    ringOuter.position.set(0, 0.01, 0)
-    ringOuter.rotation.x = Math.PI / 2
-    g.add(ringOuter)
-
-    // ── Direction arrows (3D chevrons) ──
-    const arrowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.35 })
-    ;[-1, 1].forEach(s => {
-      const ar = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.09, 4), arrowMat)
-      ar.position.set(s * 0.52 * sk, 0.1 * sk, 0)
-      ar.rotation.z = s * Math.PI / 2
-      g.add(ar)
-    })
-    // Forward arrow
-    const fwdAr = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.08, 4), arrowMat)
-    fwdAr.position.set(0, 0.08 * sk, 0.5 * sk)
-    fwdAr.rotation.x = Math.PI / 2
-    g.add(fwdAr)
-
-    // ── Nametag sprite (enhanced: rank icon, name, rank title, XP bar, animated glow) ──
-    const nameTxt = (typeof S !== 'undefined' && S?.name) || 'Player'
-    const _nametagRankTiers = [
-      { min: 0, name: 'Rookie', icon: '🔰', color: '#94a3b8' },
-      { min: 5000, name: 'Bronze', icon: '🥉', color: '#cd7f32' },
-      { min: 15000, name: 'Silver', icon: '🥈', color: '#c0c0c0' },
-      { min: 30000, name: 'Gold', icon: '🥇', color: '#ffd54a' },
-      { min: 50000, name: 'Platinum', icon: '💎', color: '#b89bff' },
-      { min: 100000, name: 'Hero', icon: '🏆', color: '#34d399' }
-    ]
-    const _getNametagRank = (score) => {
-      let rank = _nametagRankTiers[0]
-      for (const r of _nametagRankTiers) { if (score >= r.min) rank = r }
-      return rank
-    }
-    const _playerScore = (typeof S !== 'undefined' && S?.total) || 0
-    const _rank = _getNametagRank(_playerScore)
-    const _nextRank = _nametagRankTiers.find(r => r.min > _playerScore)
-    const _xpPct = _nextRank ? Math.min(1, (_playerScore - _rank.min) / (_nextRank.min - _rank.min)) : 1
-    // Canvas: wider for rank info + progress bar
-    const canvas = document.createElement('canvas')
-    canvas.width = 512; canvas.height = 140
-    const ctx = canvas.getContext('2d')
-    // Rounded background with rank-colored border
-    ctx.fillStyle = 'rgba(0, 15, 10, 0.75)'
-    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 132, 14); ctx.fill() } else { ctx.fillRect(4, 4, 504, 132) }
-    // Rank-colored accent border
-    ctx.strokeStyle = _rank.color + '88'
-    ctx.lineWidth = 2.5
-    if (ctx.roundRect) { ctx.roundRect(4, 4, 504, 132, 14); ctx.stroke() }
-    // Rank icon (emoji)
-    ctx.font = '28px serif'
-    ctx.textAlign = 'left'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(_rank.icon, 20, 38)
-    // Rank name + title
-    ctx.fillStyle = _rank.color
-    ctx.font = 'bold 11px Inter, sans-serif'
-    ctx.textAlign = 'left'
-    ctx.fillText(_rank.name.toUpperCase(), 52, 28)
-    // Player name
-    ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 30px Inter, sans-serif'
-    ctx.fillText(nameTxt, 52, 55)
-    // XP progress bar
-    const barX = 20, barY = 78, barW = 472, barH = 10
-    // Bar background
-    ctx.fillStyle = 'rgba(255,255,255,0.08)'
-    if (ctx.roundRect) { ctx.roundRect(barX, barY, barW, barH, 5); ctx.fill() } else { ctx.fillRect(barX, barY, barW, barH) }
-    // Bar fill with rank color gradient
-    if (_xpPct > 0) {
-      const barGrad = ctx.createLinearGradient(barX, 0, barX + barW * _xpPct, 0)
-      barGrad.addColorStop(0, _rank.color)
-      barGrad.addColorStop(1, _nextRank ? _nextRank.color : _rank.color)
-      ctx.fillStyle = barGrad
-      if (ctx.roundRect) { ctx.roundRect(barX, barY, Math.max(4, barW * _xpPct), barH, 5); ctx.fill() } else { ctx.fillRect(barX, barY, Math.max(4, barW * _xpPct), barH) }
-    }
-    // XP label
-    ctx.fillStyle = 'rgba(255,255,255,0.5)'
-    ctx.font = '10px Inter, sans-serif'
-    ctx.textAlign = 'left'
-    ctx.fillText(_playerScore.toLocaleString() + ' XP', barX, barY + 24)
-    ctx.textAlign = 'right'
-    ctx.fillText(_nextRank ? (_nextRank.min - _playerScore).toLocaleString() + ' to ' + _nextRank.name : 'MAX RANK', barX + barW, barY + 24)
-    const tex = new THREE.CanvasTexture(canvas)
-    tex.minFilter = THREE.LinearFilter
-    nametag = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }))
-    nametag.position.set(0, 2.45 * sk, 0)
-    nametag.scale.set(1.4, 0.38, 1)
-    g.add(nametag)
-    // ── Animated glow ring under nametag (pulses with rank color) ──
-    const _rankColorObj = new THREE.Color(_rank.color)
-    nametagGlow = new THREE.Mesh(
-      new THREE.RingGeometry(0.25 * sk, 0.30 * sk, 24),
-      new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthTest: false })
-    )
-    nametagGlow.position.set(0, 2.45 * sk, -0.01)
-    nametagGlow.rotation.x = -Math.PI / 2
-    g.add(nametagGlow)
-    // Outer glow ring
-    nametagGlowOuter = new THREE.Mesh(
-      new THREE.RingGeometry(0.32 * sk, 0.35 * sk, 24),
-      new THREE.MeshBasicMaterial({ color: _rankColorObj, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthTest: false })
-    )
-    nametagGlowOuter.position.set(0, 2.45 * sk, -0.015)
-    nametagGlowOuter.rotation.x = -Math.PI / 2
-    g.add(nametagGlowOuter)
-
-    // ── Outline glow mesh (adds depth) ──
-    const glowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.04, side: THREE.BackSide })
-    const glowBody = new THREE.Mesh(new THREE.CylinderGeometry(0.38 * sk, 0.32 * sk, 1.6 * sk, 12), glowMat)
-    glowBody.position.y = 0.9 * sk
-    g.add(glowBody)
-  }
-
-  // ═══ NPC BACKPACK (simpler) ═══
-  if (!isPlayer) {
-    const npcBag = new THREE.Mesh(new THREE.BoxGeometry(0.22 * sk, 0.30 * sk, 0.12 * sk), BAG)
-    npcBag.position.set(0, 1.28 * sk, -0.22 * sk)
-    g.add(npcBag)
-    // NPC bag strap
-    ;[-0.08, 0.08].forEach(x => {
-      const s = new THREE.Mesh(new THREE.BoxGeometry(0.025 * sk, 0.35 * sk, 0.015 * sk), BAG_STRAP)
-      s.position.set(x * sk, 1.32 * sk, -0.10 * sk)
-      g.add(s)
-    })
-  }
-
-  // ═══ SHADOWS ═══
-  g.traverse(c => {
-    if (c.isMesh) {
-      c.castShadow = !isPlayer
-      c.receiveShadow = true
-      c.frustumCulled = false
-    }
-  })
-
-  // ═══ HITBOX ═══
-  const hb = new THREE.Mesh(
-    new THREE.BoxGeometry(0.6 * sk, 1.8 * sk, 0.6 * sk),
-    new THREE.MeshBasicMaterial({ visible: false })
-  )
+  const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6 * sk, 1.8 * sk, 0.6 * sk), new THREE.MeshBasicMaterial({ visible: false }))
   hb.position.y = 0.9 * sk
   g.add(hb)
 
-  // ═══ USERDATA (animation refs + NPC behavior) ═══
+  // UserData Kinematics & Emote controller
   g.userData = {
-    lLeg: lLegP,
-    rLeg: rLegP,
-    lArm: lArmP,
-    rArm: rArmP,
-    headGroup,
-    torsoGroup,
-    eyeLids: _eyeLids,
-    ring,
-    nametag,
-    nametagGlow,
-    nametagGlowOuter,
-    shadowBlob,
+    isStylizedHero: true,
     isPlayer,
     _sk: sk,
-    t: Math.random() * 10,
-    spd: 1.5 + Math.random() * 1.5,
-    dir: Math.random() > 0.5 ? 1 : -1,
-    startZ: 0,
-    // For idle animation variation
-    idlePhase: Math.random() * Math.PI * 2,
-    blinkTimer: Math.random() * 4 + Math.random() * 3
+    headGroup,
+    torsoGroup,
+    lArm: lArmP,
+    rArm: rArmP,
+    lLeg: lLegP,
+    rLeg: rLegP,
+    eyeLids: _eyeLids,
+    shadowBlob,
+    pose: 'idle',
+    animTime: 0,
+    walkPhase: 0,
+    blinkTimer: 3.0,
+    update(dt, speed = 0) {
+      this.animTime += dt
+      const t = this.animTime
+
+      // Blinking
+      this.blinkTimer -= dt
+      if (this.blinkTimer <= 0) {
+        this.blinkTimer = 2.5 + Math.random() * 3.5
+      }
+      const isBlinking = this.blinkTimer < 0.15
+      if (this.eyeLids) {
+        this.eyeLids.forEach(lid => { lid.scale.y = isBlinking ? 0.1 : 0.7 })
+      }
+
+      if (this.pose === 'walk' || speed > 0.05) {
+        const strideSpeed = Math.max(8, speed * 22)
+        this.walkPhase += dt * strideSpeed
+        const swing = Math.sin(this.walkPhase) * 0.65
+
+        this.rArm.rotation.x = swing
+        this.lArm.rotation.x = -swing
+        this.rLeg.rotation.x = -swing
+        this.lLeg.rotation.x = swing
+
+        this.headGroup.position.y = (1.72 + Math.abs(Math.sin(this.walkPhase * 2)) * 0.04) * this._sk
+        this.torsoGroup.position.y = (1.23 + Math.abs(Math.sin(this.walkPhase * 2)) * 0.03) * this._sk
+      } else if (this.pose === 'wave') {
+        this.rArm.rotation.x = 0
+        this.rArm.rotation.z = 2.4 + Math.sin(t * 8) * 0.35
+        this.lArm.rotation.set(0, 0, 0)
+        this.rLeg.rotation.set(0, 0, 0)
+        this.lLeg.rotation.set(0, 0, 0)
+        this.headGroup.rotation.y = 0.2
+      } else if (this.pose === 'thumbs_up') {
+        this.rArm.rotation.x = -1.4
+        this.rArm.rotation.z = -0.3
+        this.lArm.rotation.set(0, 0, 0)
+        this.rLeg.rotation.set(0, 0, 0)
+        this.lLeg.rotation.set(0, 0, 0)
+        this.headGroup.rotation.set(0.1, -0.2, 0)
+      } else if (this.pose === 'victory') {
+        this.rArm.rotation.set(0, 0, 2.6 + Math.sin(t * 4) * 0.15)
+        this.lArm.rotation.set(0, 0, -2.6 - Math.sin(t * 4) * 0.15)
+        this.rLeg.rotation.x = -0.15
+        this.lLeg.rotation.x = 0.15
+      } else {
+        // Idle breathing
+        const breathe = Math.sin(t * 2.5) * 0.005
+        this.torsoGroup.position.y = (1.23 + breathe) * this._sk
+        this.headGroup.position.y = (1.72 + breathe * 0.6) * this._sk
+        this.rArm.rotation.x = Math.sin(t * 2.5) * 0.04
+        this.lArm.rotation.x = -Math.sin(t * 2.5) * 0.04
+        this.rLeg.rotation.set(0, 0, 0)
+        this.lLeg.rotation.set(0, 0, 0)
+      }
+    }
   }
+
   return g
-}
+};
+
+// Expose to window
+window._buildHuman = _buildHuman;
+
 
 function updateTrafficAuthUI() {
-  // Check both local storage and Supabase (colUser) for logged in status
+
   const localData = localStorage.getItem('traffic_local_user')
   let user = localData ? JSON.parse(localData) : null
 
-  // If not found locally, check for Supabase user (colUser)
+
   if (!user && window.colUser) {
     const uObj = window.colUser.user || window.colUser
     const meta = uObj.user_metadata || {}
@@ -3878,7 +5670,7 @@ function updateTrafficAuthUI() {
     b.onclick = () => (window.location.href = user ? 'TrafficDashboard.html' : 'TrafficSetup.html')
   })
 
-  // Update Get Started button to Start Academy if logged in
+
   const getStartedBtn = document.getElementById('enter-academy-btn')
   if (getStartedBtn) {
     getStartedBtn.innerHTML = user ? 'Start Academy' : 'Get Started'
@@ -3895,7 +5687,7 @@ function updateTrafficAuthUI() {
 
     if (userName) userName.textContent = user.name || 'Driver'
     
-    // Avatar vs Anagram logic: show ONLY profile picture if available, hide initials completely
+
     if (user.avatar && pfp) {
       pfp.src = user.avatar
       pfp.style.setProperty('display', 'block', 'important')
@@ -3910,20 +5702,20 @@ function updateTrafficAuthUI() {
   }
 }
 
-// Also listen for col-auth-changed event to update UI when Supabase auth changes
+
 if (typeof window !== 'undefined') {
   window.addEventListener('col-auth-changed', function() {
     setTimeout(updateTrafficAuthUI, 500)
   })
 }
 
-// Run immediately
+
 updateTrafficAuthUI()
-// And on load
+
 window.addEventListener('DOMContentLoaded', updateTrafficAuthUI)
 
-// Garage panel functions
-// Legacy fallback — used by old onclick handlers
+
+
 function selectVehicle(vehicleId) {
   if (ui && typeof ui._selectVehicle === 'function') {
     ui._selectVehicle(vehicleId)
@@ -3934,7 +5726,7 @@ function selectVehicle(vehicleId) {
   }
 }
 
-// Mystery reward system (variable reinforcement)
+
 const MYSTERY_REWARDS = [
   { type: 'xp', amount: 500, label: '💎 Bonus XP', desc: '+500 XP injected!' },
   { type: 'wallet', amount: 5000, label: '💰 Cash Bonus', desc: '₹5,000 added to wallet!' },
@@ -3974,7 +5766,7 @@ function showMysteryRewardModal(reward) {
   modal.className = 'modal'
   document.body.appendChild(modal)
   
-  // Add bounce animation
+
   if (!document.getElementById('mystery-anim')) {
     const style = document.createElement('style')
     style.id = 'mystery-anim'
@@ -3983,7 +5775,7 @@ function showMysteryRewardModal(reward) {
   }
 }
 
-// Mumbai consequence modal with real stats
+
 function showConsequenceModal(violationType, severity = 'normal') {
   const stat = window.COURSE?.getMumbaiStat?.(violationType) || { stat: '—', unit: 'data unavailable', year: 2024, source: 'MTP' }
   const violationNames = {
@@ -4046,7 +5838,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
   modal.className = 'modal'
   document.body.appendChild(modal)
   
-  // Add modal animation
+
   if (!document.getElementById('modal-anim')) {
     const style = document.createElement('style')
     style.id = 'modal-anim'
@@ -4055,305 +5847,1386 @@ function showConsequenceModal(violationType, severity = 'normal') {
   }
 }
 
-// ═══ CHARACTER CUSTOMIZATION SYSTEM ═══
+
 (function() {
   const SKINS = [
-    { hex: 0xfce4c7, name: 'Light' }, { hex: 0xf1c27d, name: 'Fair' },
-    { hex: 0xd4a574, name: 'Medium' }, { hex: 0xc68642, name: 'Tan' },
-    { hex: 0x8d5524, name: 'Brown' }, { hex: 0x5c3317, name: 'Dark' }
-  ]
+    { hex: 0xffe0bd, name: 'Fair 1' }, { hex: 0xfce4c7, name: 'Fair 2' },
+    { hex: 0xf1c27d, name: 'Warm Beige' }, { hex: 0xe0ac69, name: 'Wheatish' },
+    { hex: 0xd4a574, name: 'Medium Mumbai' }, { hex: 0xc68642, name: 'Tan' },
+    { hex: 0xb57838, name: 'Dusky' }, { hex: 0x995c2c, name: 'Deep Bronze' },
+    { hex: 0x8d5524, name: 'Rich Brown' }, { hex: 0x6e3c16, name: 'Chestnut' },
+    { hex: 0x5c3317, name: 'Dark' }, { hex: 0x3d200f, name: 'Deep Espresso' }
+  ];
   const HAIRS = [
-    { hex: 0x0a0a0a, name: 'Black' }, { hex: 0x3d2b1f, name: 'Dark Brown' },
-    { hex: 0x654321, name: 'Brown' }, { hex: 0x8B4513, name: 'Chestnut' },
-    { hex: 0xb5651d, name: 'Auburn' }, { hex: 0xd4a017, name: 'Dark Blonde' },
-    { hex: 0xe8c872, name: 'Blonde' }, { hex: 0xc0c0c0, name: 'Silver' },
-    { hex: 0xd32f2f, name: 'Red' }, { hex: 0x7b1fa2, name: 'Purple' }
-  ]
+    { hex: 0x0a0a0a, name: 'Jet Black' }, { hex: 0x221a15, name: 'Espresso' },
+    { hex: 0x3d2b1f, name: 'Dark Brown' }, { hex: 0x5c3a21, name: 'Mocha' },
+    { hex: 0x8B4513, name: 'Chestnut' }, { hex: 0xb5651d, name: 'Auburn' },
+    { hex: 0xd4a017, name: 'Dark Blonde' }, { hex: 0xe8c872, name: 'Golden' },
+    { hex: 0xc0c0c0, name: 'Silver Gray' }, { hex: 0xffffff, name: 'Platinum' },
+    { hex: 0xd32f2f, name: 'Crimson' }, { hex: 0xe91e63, name: 'Neon Pink' },
+    { hex: 0x9c27b0, name: 'Purple' }, { hex: 0x00bcd4, name: 'Cyan Blue' },
+    { hex: 0x4caf50, name: 'Emerald' }, { hex: 0xff9800, name: 'Orange Flame' }
+  ];
+  const HAIRSTYLES = [
+    { id: 'quiff', name: 'Modern Quiff', icon: '💇‍♂️', desc: 'Pompadour fade' },
+    { id: 'textured_fade', name: 'Textured Fade', icon: '✂️', desc: 'Spiky textured top' },
+    { id: 'long_waves', name: 'Long Waves', icon: '🌊', desc: 'Flowing locks' },
+    { id: 'ponytail', name: 'High Ponytail', icon: '🎀', desc: 'Sleek tie & ribbon' },
+    { id: 'side_part', name: 'Executive Part', icon: '💼', desc: 'Classic side parting' },
+    { id: 'curly_afro', name: 'Curly Afro', icon: '🌀', desc: 'Tight textured curls' },
+    { id: 'anime_spikes', name: 'Anime Spikes', icon: '⚡', desc: 'Dynamic styled spikes' },
+    { id: 'turban', name: 'Royal Pagri', icon: '👑', desc: 'Traditional turban & crest' },
+    { id: 'hijab', name: 'Modern Hijab', icon: '🧕', desc: 'Elegant draped wrap' },
+    { id: 'buzz', name: 'Buzz Cut', icon: '💈', desc: 'Clean razor fade' },
+    { id: 'bald', name: 'Sleek Bald', icon: '✨', desc: 'Smooth aerodynamic' }
+  ];
+  const FACIAL_HAIR = [
+    { id: 'none', name: 'Clean Shaved', icon: '🪒' },
+    { id: 'stubble', name: "5 O'Clock Stubble", icon: '🧔‍♂️' },
+    { id: 'beard', name: 'Full Sculpted Beard', icon: '🧔' },
+    { id: 'mustache', name: 'Mumbai Mustache', icon: '🥸' }
+  ];
+  const EYES = [
+    { hex: 0x4a90d9, name: 'Sky Blue' }, { hex: 0x3d2b1f, name: 'Dark Brown' },
+    { hex: 0x2e7d32, name: 'Emerald Green' }, { hex: 0x616161, name: 'Steel Gray' },
+    { hex: 0x6d4c41, name: 'Warm Hazel' }, { hex: 0x00acc1, name: 'Bright Teal' },
+    { hex: 0x8e24aa, name: 'Amethyst' }, { hex: 0xf59e0b, name: 'Amber Gold' },
+    { hex: 0xef4444, name: 'Ruby Glow' }, { hex: 0x111827, name: 'Obsidian' }
+  ];
+  const OUTFIT_MODELS = [
+    { id: 'streetwear', name: 'Urban Hoodie', icon: '🛹', desc: 'Layered streetwear hoodie' },
+    { id: 'kaali_peeli', name: 'Kaali-Peeli Jacket', icon: '🚕', desc: 'Yellow racing stripe pilot' },
+    { id: 'kurta', name: 'Royal Kurta', icon: '✨', desc: 'Traditional Nehru collar' },
+    { id: 'police', name: 'Traffic Police', icon: '👮', desc: 'Khaki duty uniform & badge' },
+    { id: 'varsity', name: 'College Varsity', icon: '🎓', desc: 'Striped ribbed jacket' },
+    { id: 'safety_vest', name: 'High-Vis Rider', icon: '🦺', desc: 'Reflective safety vest' },
+    { id: 'suit', name: 'Executive Suit', icon: '👔', desc: 'Tailored formal blazer' }
+  ];
   const SHIRTS = [
     { hex: 0xe74c3c, name: 'Red' }, { hex: 0x3498db, name: 'Blue' },
     { hex: 0x2ecc71, name: 'Green' }, { hex: 0xf39c12, name: 'Orange' },
     { hex: 0x9b59b6, name: 'Purple' }, { hex: 0x1abc9c, name: 'Teal' },
     { hex: 0xe67e22, name: 'Amber' }, { hex: 0x34495e, name: 'Navy' },
-    { hex: 0xecf0f1, name: 'White' }, { hex: 0x2c3e50, name: 'Dark' },
-    { hex: 0xff69b4, name: 'Pink' }, { hex: 0x00bcd4, name: 'Cyan' }
-  ]
-  const PANTS = [
-    { hex: 0x2c3e50, name: 'Dark' }, { hex: 0x555555, name: 'Gray' },
-    { hex: 0x1a237e, name: 'Navy' }, { hex: 0x333333, name: 'Charcoal' },
-    { hex: 0x5d4037, name: 'Brown' }, { hex: 0x006064, name: 'Teal' }
-  ]
-  const ACCESSORIES = [
-    { id: 'cap', name: '🧢 Cap', on: true },
-    { id: 'beanie', name: '🧶 Beanie', on: false },
-    { id: 'helmet', name: '⛑️ Helmet', on: false },
-    { id: 'backpack', name: '🎒 Backpack', on: true },
-    { id: 'glasses', name: '🕶️ Glasses', on: false },
-    { id: 'scarf', name: '🧣 Scarf', on: false }
-  ]
+    { hex: 0xffffff, name: 'White' }, { hex: 0x18181b, name: 'Black' },
+    { hex: 0xf43f5e, name: 'Rose' }, { hex: 0x06b6d4, name: 'Cyan' },
+    { hex: 0x84cc16, name: 'Lime' }, { hex: 0x6366f1, name: 'Indigo' },
+    { hex: 0xd97706, name: 'Gold' }, { hex: 0x475569, name: 'Slate' }
+  ];
+  const PANTS_MODELS = [
+    { id: 'jeans', name: 'Denim Jeans', icon: '👖' },
+    { id: 'cargo', name: 'Cargo Joggers', icon: '🪖' },
+    { id: 'chinos', name: 'Slim Chinos', icon: '👔' },
+    { id: 'dhoti', name: 'Churidar / Dhoti', icon: '🥻' },
+    { id: 'shorts', name: 'Urban Shorts', icon: '🩳' },
+    { id: 'formal', name: 'Formal Slacks', icon: '🤵' }
+  ];
+  const SHOE_MODELS = [
+    { id: 'hightops', name: 'High-Top Kicks', icon: '👟' },
+    { id: 'runners', name: 'Air Runners', icon: '🏃' },
+    { id: 'boots', name: 'Combat Boots', icon: '🥾' },
+    { id: 'loafers', name: 'Casual Loafers', icon: '👞' },
+    { id: 'sandals', name: 'Kolhapuri Sandals', icon: '👡' },
+    { id: 'oxfords', name: 'Formal Oxfords', icon: '✨' }
+  ];
+  const ACCESSORIES_LIST = [
+    { id: 'cap', name: '🧢 Baseball Cap (Front)' },
+    { id: 'capBackwards', name: '🧢 Snapback (Back)' },
+    { id: 'beanie', name: '🧶 Winter Beanie' },
+    { id: 'helmet', name: '⛑️ Racing Full Helmet' },
+    { id: 'sunglasses', name: '🕶️ Aviator Sunglasses' },
+    { id: 'glasses', name: '👓 Clear Wire Glasses' },
+    { id: 'cyberVisor', name: '⚡ Cyberpunk Visor' },
+    { id: 'backpack', name: '🎒 Tech Backpack' },
+    { id: 'smartwatch', name: '⌚ Glowing Smartwatch' },
+    { id: 'headphones', name: '🎧 DJ Headphones' }
+  ];
 
-  let _current = { skin: 0xd4a574, hair: 0x1a1a1a, shirt: 0xe74c3c, pants: 0x2c3e50, accessories: { cap: true, beanie: false, helmet: false, backpack: true, glasses: false, scarf: false } }
-  let _previewScene, _previewCamera, _previewRenderer, _previewChar, _previewRAF
+  const OUTFIT_PRESETS = [
+    {
+      id: 'mumbai_street',
+      name: 'Mumbai Streetwear',
+      icon: '🛹',
+      outfit: 'streetwear',
+      shirt: 0xe74c3c,
+      shirtAccent: 0xffffff,
+      pants: 0x18181b,
+      shoes: 0xffffff,
+      hairStyle: 'quiff',
+      accessories: { cap: true, smartwatch: true, backpack: true }
+    },
+    {
+      id: 'kaali_peeli_driver',
+      name: 'Kaali-Peeli Pilot',
+      icon: '🚕',
+      outfit: 'kaali_peeli',
+      shirt: 0x18181b,
+      shirtAccent: 0xf5b81e,
+      pants: 0x34495e,
+      shoes: 0x18181b,
+      hairStyle: 'side_part',
+      facialHair: 'mustache',
+      accessories: { sunglasses: true, smartwatch: true }
+    },
+    {
+      id: 'traffic_warden',
+      name: 'Mumbai Traffic Police',
+      icon: '👮',
+      outfit: 'police',
+      shirt: 0xd7b987,
+      shirtAccent: 0x1e293b,
+      pants: 0xd7b987,
+      shoes: 0x18181b,
+      hairStyle: 'buzz',
+      facialHair: 'mustache',
+      accessories: { cap: true }
+    },
+    {
+      id: 'royal_kurta',
+      name: 'Royal Nehru Kurta',
+      icon: '👑',
+      outfit: 'kurta',
+      shirt: 0xffffff,
+      shirtAccent: 0xd97706,
+      pants: 0xf5f5f5,
+      shoes: 0xb57838,
+      hairStyle: 'turban',
+      accessories: { glasses: true }
+    },
+    {
+      id: 'varsity_casual',
+      name: 'Varsity Student',
+      icon: '🎓',
+      outfit: 'varsity',
+      shirt: 0x3498db,
+      shirtAccent: 0xffffff,
+      pants: 0x475569,
+      shoes: 0xffffff,
+      hairStyle: 'textured_fade',
+      accessories: { headphones: true, backpack: true, smartwatch: true }
+    },
+    {
+      id: 'night_rider',
+      name: 'Cyberpunk Night Rider',
+      icon: '⚡',
+      outfit: 'kaali_peeli',
+      shirt: 0x111827,
+      shirtAccent: 0x00f0cc,
+      pants: 0x111827,
+      shoes: 0x00f0cc,
+      hairStyle: 'anime_spikes',
+      hair: 0x00bcd4,
+      accessories: { cyberVisor: true, smartwatch: true }
+    }
+  ];
+
+  let _current = {
+    charType: 'stylized',
+    gender: 'male',
+    mcSkin: 'steve',
+    mcSkinUrl: 'skins/steve.png',
+    mcIsSlim: false,
+    outfit: 'streetwear',
+    skin: 0xd4a574,
+    hair: 0x1a1a1a,
+    hairStyle: 'quiff',
+    hairHighlight: 0x3498db,
+    facialHair: 'none',
+    eyeColor: 0x4a90d9,
+    shirt: 0xe74c3c,
+    shirtAccent: 0xffffff,
+    pants: 0x2c3e50,
+    pantsStyle: 'jeans',
+    shoes: 0x1a1a1a,
+    shoeStyle: 'hightops',
+    accessories: {
+      cap: false,
+      capBackwards: false,
+      beanie: false,
+      helmet: false,
+      sunglasses: false,
+      glasses: false,
+      cyberVisor: false,
+      backpack: true,
+      smartwatch: true,
+      headphones: false
+    }
+  };
+
+  let _activeStudioTab = 'identity';
+  let _activeMCTab = 'presets';
+  let _studioPose = 'idle';
+  let _studioLighting = 'studio';
+  let _previewScene, _previewCamera, _previewRenderer, _previewChar, _previewRAF;
+  let _keyLight, _fillLight, _rimLight;
 
   function _loadSaved() {
     try {
-      const s = JSON.parse(localStorage.getItem('traffic_appearance'))
+      const s = JSON.parse(localStorage.getItem('traffic_appearance'));
       if (s) {
-        _current.skin = s.skin || _current.skin
-        _current.hair = s.hair || _current.hair
-        _current.shirt = s.shirt || _current.shirt
-        _current.pants = s.pants || _current.pants
-        if (s.accessories) _current.accessories = s.accessories
+        _current = Object.assign({}, _current, s);
       }
     } catch (e) {}
   }
 
-  // ── Sync appearance from Supabase to localStorage (fire-and-forget) ──
   async function _syncAppearanceFromCloud() {
-    if (!window.supabaseClient || !window.colUser?.id) return
+    if (!window.supabaseClient || !window.colUser?.id) return;
     try {
       const { data, error } = await window.supabaseClient
         .from('user_profiles')
         .select('appearance, appearance_updated_at')
         .eq('user_id', window.colUser.id)
-        .maybeSingle()
-      if (error || !data || !data.appearance) return
-      // Only overwrite local if cloud version is newer or local doesn't exist
-      const localRaw = localStorage.getItem('traffic_appearance')
+        .maybeSingle();
+      if (error || !data || !data.appearance) return;
+      const localRaw = localStorage.getItem('traffic_appearance');
       if (localRaw) {
         try {
-          const local = JSON.parse(localRaw)
-          const cloudTime = data.appearance_updated_at ? new Date(data.appearance_updated_at).getTime() : 0
-          const localTime = local._updated || 0
-          if (cloudTime <= localTime) return // local is newer or equal
+          const local = JSON.parse(localRaw);
+          const cloudTime = data.appearance_updated_at ? new Date(data.appearance_updated_at).getTime() : 0;
+          const localTime = local._updated || 0;
+          if (cloudTime <= localTime) return;
         } catch (e) {}
       }
-      localStorage.setItem('traffic_appearance', JSON.stringify(data.appearance))
-      // Reload into _current and refresh preview if modal is open
-      _loadSaved()
-      _refreshSwatches()
-      _updatePreviewModel()
+      localStorage.setItem('traffic_appearance', JSON.stringify(data.appearance));
+      _loadSaved();
+      _renderStudioUI();
+      _updatePreviewModel();
     } catch (e) {
-      console.warn('[customize] Cloud sync error:', e)
+      console.warn('[customize] Cloud sync error:', e);
     }
   }
 
-  // ── Sync appearance from localStorage to Supabase (fire-and-forget) ──
   async function _syncAppearanceToCloud() {
-    if (!window.supabaseClient || !window.colUser?.id) return
+    if (!window.supabaseClient || !window.colUser?.id) return;
     try {
       await window.supabaseClient
         .from('user_profiles')
         .upsert({
           user_id: window.colUser.id,
-          appearance: { ..._current, _updated: Date.now() },
+          appearance: Object.assign({}, _current, { _updated: Date.now() }),
           appearance_updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id' })
+        }, { onConflict: 'user_id' });
     } catch (e) {
-      console.warn('[customize] Cloud save error:', e)
+      console.warn('[customize] Cloud save error:', e);
     }
   }
 
   function _swatchHTML(items, selected, group) {
-    return items.map(it => {
-      const sel = it.hex === selected ? 'border:2px solid #fff; transform:scale(1.2);' : 'border:2px solid transparent;'
-      const css = new THREE.Color(it.hex).getStyle()
-      return `<div title="${it.name}" onclick="window._pickSwatch('${group}',${it.hex})" style="width:36px; height:36px; border-radius:10px; background:${css}; cursor:pointer; transition:all 0.15s; ${sel}"></div>`
-    }).join('')
+    return items.map(function(it) {
+      const isSel = it.hex === selected;
+      const css = new THREE.Color(it.hex).getStyle();
+      return '<button title="' + it.name + '" onclick="window._pickSwatch(\'' + group + '\',' + it.hex + ')" class="studio-swatch-btn ' + (isSel ? 'active' : '') + '" style="background:' + css + ';"></button>';
+    }).join('');
   }
 
-  function _accessoryHTML() {
-    return ACCESSORIES.map(a => {
-      const on = _current.accessories[a.id]
-      return `<button onclick="window._toggleAccessory('${a.id}')" style="padding:8px 14px; border-radius:10px; border:1px solid ${on ? 'var(--teal)' : 'var(--border)'}; background:${on ? 'rgba(0,240,204,0.1)' : 'var(--hover)'}; color:${on ? 'var(--teal)' : 'var(--muted)'}; font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.15s;">${a.name}</button>`
-    }).join('')
-  }
+  function _renderStudioUI() {
+    const mStylized = document.getElementById('mode-stylized');
+    const mMC = document.getElementById('mode-minecraft');
+    const stylTabs = document.getElementById('stylized-tabs-bar');
+    const mcTabs = document.getElementById('mc-tabs-bar');
+    const stylPanels = document.getElementById('stylized-panels-container');
+    const mcPanels = document.getElementById('mc-panels-container');
 
-  function _refreshSwatches() {
-    const ss = document.getElementById('skin-swatches')
-    const hs = document.getElementById('hair-swatches')
-    const shs = document.getElementById('shirt-swatches')
-    const ps = document.getElementById('pants-swatches')
-    const ao = document.getElementById('accessory-options')
-    if (ss) ss.innerHTML = _swatchHTML(SKINS, _current.skin, 'skin')
-    if (hs) hs.innerHTML = _swatchHTML(HAIRS, _current.hair, 'hair')
-    if (shs) shs.innerHTML = _swatchHTML(SHIRTS, _current.shirt, 'shirt')
-    if (ps) ps.innerHTML = _swatchHTML(PANTS, _current.pants, 'pants')
-    if (ao) ao.innerHTML = _accessoryHTML()
+    const isMC = _current.charType === 'minecraft';
+    if (mStylized) mStylized.className = 'studio-mode-btn ' + (!isMC ? 'active' : '');
+    if (mMC) mMC.className = 'studio-mode-btn mc-mode ' + (isMC ? 'active' : '');
+    if (stylTabs) stylTabs.style.display = isMC ? 'none' : 'flex';
+    if (mcTabs) mcTabs.style.display = isMC ? 'flex' : 'none';
+    if (stylPanels) stylPanels.style.display = isMC ? 'none' : 'flex';
+    if (mcPanels) mcPanels.style.display = isMC ? 'flex' : 'none';
+
+    const gM = document.getElementById('gender-male');
+    const gF = document.getElementById('gender-female');
+    if (gM) gM.className = 'studio-icon-btn ' + (_current.gender === 'male' ? 'active' : '');
+    if (gF) gF.className = 'studio-icon-btn ' + (_current.gender === 'female' ? 'active' : '');
+
+    const pGrid = document.getElementById('outfit-presets-grid');
+    if (pGrid) {
+      pGrid.innerHTML = OUTFIT_PRESETS.map(function(p) {
+        return '<button class="studio-card-btn" onclick="window._pickOutfitPreset(\'' + p.id + '\')">' +
+          '<span class="studio-card-icon">' + p.icon + '</span>' +
+          '<span class="studio-card-name">' + p.name + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
+    const ss = document.getElementById('skin-swatches');
+    const hs = document.getElementById('hair-swatches');
+    const es = document.getElementById('eye-swatches');
+    const shs = document.getElementById('shirt-swatches');
+    const shAcc = document.getElementById('shirt-accent-swatches');
+    const ps = document.getElementById('pants-swatches');
+    const shoes = document.getElementById('shoe-swatches');
+
+    if (ss) ss.innerHTML = _swatchHTML(SKINS, _current.skin, 'skin');
+    if (hs) hs.innerHTML = _swatchHTML(HAIRS, _current.hair, 'hair');
+    if (es) es.innerHTML = _swatchHTML(EYES, _current.eyeColor, 'eyeColor');
+    if (shs) shs.innerHTML = _swatchHTML(SHIRTS, _current.shirt, 'shirt');
+    if (shAcc) shAcc.innerHTML = _swatchHTML(SHIRTS, _current.shirtAccent, 'shirtAccent');
+    if (ps) ps.innerHTML = _swatchHTML(SHIRTS, _current.pants, 'pants');
+    if (shoes) shoes.innerHTML = _swatchHTML(SHIRTS, _current.shoes, 'shoes');
+
+    const hys = document.getElementById('hairstyle-options');
+    if (hys) {
+      hys.innerHTML = HAIRSTYLES.map(function(h) {
+        return '<button class="studio-card-btn ' + (_current.hairStyle === h.id ? 'active' : '') + '" onclick="window._pickHairstyle(\'' + h.id + '\')">' +
+          '<span class="studio-card-icon">' + h.icon + '</span>' +
+          '<span class="studio-card-name">' + h.name + '</span>' +
+          '<span class="studio-card-sub">' + h.desc + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
+    const fhs = document.getElementById('facial-hair-options');
+    if (fhs) {
+      fhs.innerHTML = FACIAL_HAIR.map(function(f) {
+        return '<button class="studio-card-btn ' + (_current.facialHair === f.id ? 'active' : '') + '" onclick="window._pickFacialHair(\'' + f.id + '\')">' +
+          '<span class="studio-card-icon">' + f.icon + '</span>' +
+          '<span class="studio-card-name">' + f.name + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
+    const oms = document.getElementById('outfit-model-options');
+    if (oms) {
+      oms.innerHTML = OUTFIT_MODELS.map(function(o) {
+        return '<button class="studio-card-btn ' + (_current.outfit === o.id ? 'active' : '') + '" onclick="window._pickOutfitModel(\'' + o.id + '\')">' +
+          '<span class="studio-card-icon">' + o.icon + '</span>' +
+          '<span class="studio-card-name">' + o.name + '</span>' +
+          '<span class="studio-card-sub">' + o.desc + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
+    const pms = document.getElementById('pants-model-options');
+    if (pms) {
+      pms.innerHTML = PANTS_MODELS.map(function(p) {
+        return '<button class="studio-card-btn ' + (_current.pantsStyle === p.id ? 'active' : '') + '" onclick="window._pickPantsModel(\'' + p.id + '\')">' +
+          '<span class="studio-card-icon">' + p.icon + '</span>' +
+          '<span class="studio-card-name">' + p.name + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
+    const sms = document.getElementById('shoe-model-options');
+    if (sms) {
+      sms.innerHTML = SHOE_MODELS.map(function(s) {
+        return '<button class="studio-card-btn ' + (_current.shoeStyle === s.id ? 'active' : '') + '" onclick="window._pickShoeModel(\'' + s.id + '\')">' +
+          '<span class="studio-card-icon">' + s.icon + '</span>' +
+          '<span class="studio-card-name">' + s.name + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
+    const aos = document.getElementById('accessory-options');
+    if (aos) {
+      aos.innerHTML = ACCESSORIES_LIST.map(function(a) {
+        const on = !!_current.accessories[a.id];
+        return '<button class="studio-card-btn ' + (on ? 'active' : '') + '" onclick="window._toggleAccessory(\'' + a.id + '\')">' +
+          '<span class="studio-card-name">' + a.name + '</span>' +
+          '<span class="studio-card-sub">' + (on ? '🟢 Equipped' : '⚪ Unequipped') + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
+    const mcGrid = document.getElementById('mc-presets-grid');
+    if (mcGrid && window.MinecraftSkinManager) {
+      const defSkins = window.MinecraftSkinManager.DEFAULT_SKINS;
+      mcGrid.innerHTML = defSkins.map(function(s) {
+        return '<button class="studio-card-btn ' + (_current.mcSkin === s.id && !_current.mcIsCustom ? 'active' : '') + '" onclick="window._pickMCPreset(\'' + s.id + '\')">' +
+          '<span class="studio-card-icon">' + s.icon + '</span>' +
+          '<span class="studio-card-name">' + s.name + '</span>' +
+          '<span class="studio-card-sub">' + s.desc + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
+    const libGrid = document.getElementById('mc-custom-library-grid');
+    if (libGrid && window.MinecraftSkinManager) {
+      const customs = window.MinecraftSkinManager.getCustomSkins();
+      if (customs.length === 0) {
+        libGrid.innerHTML = '<div style="color:rgba(255,255,255,0.5); font-size:0.85rem; padding:20px; text-align:center; grid-column:1/-1;">No custom skins uploaded yet. Use the Upload tab to add one!</div>';
+      } else {
+        libGrid.innerHTML = customs.map(function(c) {
+          return '<div class="studio-card-btn ' + (_current.mcSkinUrl === c.dataUrl ? 'active' : '') + '" style="position:relative;">' +
+            '<div onclick="window._pickMCCustomSkin(\'' + c.id + '\')" style="cursor:pointer;">' +
+              '<span class="studio-card-icon">🎨</span>' +
+              '<span class="studio-card-name">' + c.name + '</span>' +
+            '</div>' +
+            '<button onclick="window._deleteCustomSkin(\'' + c.id + '\')" style="position:absolute; top:6px; right:6px; background:rgba(239,68,68,0.2); border:none; color:#ef4444; border-radius:6px; width:22px; height:22px; cursor:pointer;" title="Delete Skin">✕</button>' +
+          '</div>';
+        }).join('');
+      }
+    }
   }
 
   function _initPreview() {
-    const canvas = document.getElementById('customize-preview')
-    if (!canvas || !window.THREE) return
-    if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose() }
-    _previewScene = new THREE.Scene()
-    _previewScene.background = new THREE.Color(0x0a0e1a)
-    _previewCamera = new THREE.PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 100)
-    _previewCamera.position.set(0, 1.8, 5)
-    _previewCamera.lookAt(0, 1.2, 0)
-    _previewRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
-    _previewRenderer.setSize(canvas.width, canvas.height)
-    _previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    _previewRenderer.toneMapping = THREE.ACESFilmicToneMapping
-    _previewRenderer.toneMappingExposure = 1.0
-    // ── Cinematic 3-point lighting ──
-    const amb = new THREE.AmbientLight(0x8888ff, 0.25)
-    _previewScene.add(amb)
-    // Key light (warm, from front-right)
-    const key = new THREE.DirectionalLight(0xffeedd, 1.1)
-    key.position.set(3, 4, 4)
-    _previewScene.add(key)
-    // Fill light (cool, from front-left, softer)
-    const fill = new THREE.DirectionalLight(0x8899ff, 0.35)
-    fill.position.set(-2.5, 1.5, 3)
-    _previewScene.add(fill)
-    // Rim/Hair light from behind
-    const rim = new THREE.DirectionalLight(0x88ddff, 0.5)
-    rim.position.set(-1, 3, -5)
-    _previewScene.add(rim)
-    // Soft bottom bounce
-    const bounce = new THREE.DirectionalLight(0x4466aa, 0.2)
-    bounce.position.set(0, -3, 2)
-    _previewScene.add(bounce)
-    // ── Subtle ground reflection ──
-    const groundGeo = new THREE.CircleGeometry(2.5, 24)
-    const groundMat = new THREE.MeshBasicMaterial({
-      color: 0x111622,
-      transparent: true,
-      opacity: 0.6,
-      side: THREE.DoubleSide,
-      depthWrite: false
-    })
-    const ground = new THREE.Mesh(groundGeo, groundMat)
-    ground.rotation.x = -Math.PI / 2
-    ground.position.y = -0.02
-    _previewScene.add(ground)
-    // Gradient ring accent
-    const ringAcc = new THREE.Mesh(
-      new THREE.RingGeometry(0.6, 0.65, 48),
-      new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false })
-    )
-    ringAcc.rotation.x = -Math.PI / 2
-    ringAcc.position.y = -0.01
-    _previewScene.add(ringAcc)
-    _updatePreviewModel()
+    const canvas = document.getElementById('customize-preview');
+    if (!canvas || !window.THREE) return;
+
+    if (!canvas.dataset.dragInit) {
+      canvas.dataset.dragInit = "true";
+      let isDragging = false;
+      let prevX = 0;
+
+      canvas.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        window._autoRotatePreview = false;
+        prevX = e.clientX;
+      });
+      window.addEventListener('mousemove', function(e) {
+        if (isDragging && _previewChar) {
+          const dx = e.clientX - prevX;
+          _previewChar.rotation.y += dx * 0.012;
+          prevX = e.clientX;
+        }
+      });
+      window.addEventListener('mouseup', function() { isDragging = false; });
+
+      canvas.addEventListener('touchstart', function(e) {
+        isDragging = true;
+        window._autoRotatePreview = false;
+        prevX = e.touches[0].clientX;
+      }, { passive: true });
+      window.addEventListener('touchmove', function(e) {
+        if (isDragging && _previewChar && e.touches[0]) {
+          const dx = e.touches[0].clientX - prevX;
+          _previewChar.rotation.y += dx * 0.012;
+          prevX = e.touches[0].clientX;
+        }
+      }, { passive: true });
+      window.addEventListener('touchend', function() { isDragging = false; });
+    }
+
+    if (_previewRenderer) {
+      cancelAnimationFrame(_previewRAF);
+      _previewRenderer.dispose();
+    }
+
+    _previewScene = new THREE.Scene();
+    _previewScene.background = new THREE.Color(0x070a14);
+
+    _previewCamera = new THREE.PerspectiveCamera(32, canvas.width / canvas.height, 0.1, 50);
+    _previewCamera.position.set(0, 0.92, 3.4);
+    _previewCamera.lookAt(0, 0.88, 0);
+
+    _previewRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    _previewRenderer.setSize(canvas.width, canvas.height);
+    _previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    _previewRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+    _previewRenderer.toneMappingExposure = 1.1;
+
+    const amb = new THREE.AmbientLight(0x8899bb, 0.45);
+    _previewScene.add(amb);
+
+    _keyLight = new THREE.DirectionalLight(0xffeedd, 1.2);
+    _keyLight.position.set(3, 4, 4);
+    _previewScene.add(_keyLight);
+
+    _fillLight = new THREE.DirectionalLight(0x88bbff, 0.5);
+    _fillLight.position.set(-3, 2, 3);
+    _previewScene.add(_fillLight);
+
+    _rimLight = new THREE.DirectionalLight(0x5ed4f5, 0.8);
+    _rimLight.position.set(0, 3, -4);
+    _previewScene.add(_rimLight);
+
+    const floorGeo = new THREE.CircleGeometry(2.2, 32);
+    const floorMat = new THREE.MeshBasicMaterial({ color: 0x0e172a, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -0.01;
+    _previewScene.add(floor);
+
+    const floorRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.7, 0.73, 48),
+      new THREE.MeshBasicMaterial({ color: 0x5ed4f5, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false })
+    );
+    floorRing.rotation.x = -Math.PI / 2;
+    floorRing.position.y = 0.001;
+    _previewScene.add(floorRing);
+
+    _updatePreviewModel();
   }
 
   function _updatePreviewModel() {
-    if (!_previewScene) return
-    if (_previewChar) _previewScene.remove(_previewChar)
-    _previewChar = _buildHuman(true, _current)
-    _previewChar.position.set(0, 0, 0)
-    _previewScene.add(_previewChar)
+    if (!_previewScene) return;
+    if (_previewChar) _previewScene.remove(_previewChar);
+    _previewChar = _buildHuman(true, _current);
+    _previewChar.position.set(0, 0, 0);
+    if (_previewChar.userData) _previewChar.userData.pose = _studioPose;
+    _previewScene.add(_previewChar);
   }
 
   function _animatePreview() {
-    if (!_previewRenderer) return
-    _previewRAF = requestAnimationFrame(_animatePreview)
+    if (!_previewRenderer) return;
+    _previewRAF = requestAnimationFrame(_animatePreview);
     if (_previewChar) {
-      _previewChar.rotation.y += 0.006
-      // Subtle idle breathing — torso rises slightly
-      if (_previewChar.userData) {
-        const t = Date.now() * 0.002
-        const breathe = Math.sin(t) * 0.004
-        if (_previewChar.userData.torsoGroup) {
-          _previewChar.userData.torsoGroup.position.y = 1.23 + breathe * 0.5
-        }
-        // Slight head sway
-        if (_previewChar.userData.headGroup) {
-          _previewChar.userData.headGroup.rotation.z = Math.sin(t * 0.7) * 0.004
-        }
-        // Blink timer
-        if (_previewChar.userData.eyeLids) {
-          const blinkPhase = Math.sin(t * 0.5) * 0.5 + 0.5
-          _previewChar.userData.eyeLids.forEach(lid => {
-            lid.scale.y = blinkPhase > 0.98 ? 0.2 : 0.7
-          })
-        }
+      if (window._autoRotatePreview !== false) {
+        _previewChar.rotation.y += 0.005;
+      }
+      if (_previewChar.userData && typeof _previewChar.userData.update === 'function') {
+        _previewChar.userData.pose = _studioPose;
+        _previewChar.userData.update(0.016, _studioPose === 'walk' ? 0.8 : 0);
       }
     }
-    _previewRenderer.render(_previewScene, _previewCamera)
+    _previewRenderer.render(_previewScene, _previewCamera);
   }
+
+  window._setCharMode = function(mode) {
+    _current.charType = mode;
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
+
+  window._switchStudioTab = function(tab) {
+    _activeStudioTab = tab;
+    document.querySelectorAll('#stylized-tabs-bar .studio-tab').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.tab === tab);
+    });
+    document.querySelectorAll('#stylized-panels-container .studio-panel').forEach(function(p) {
+      p.style.display = p.id === 'panel-' + tab ? 'block' : 'none';
+    });
+  };
+
+  window._switchMCTab = function(mctab) {
+    _activeMCTab = mctab;
+    document.querySelectorAll('#mc-tabs-bar .studio-tab').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.mctab === mctab);
+    });
+    document.querySelectorAll('#mc-panels-container .studio-panel').forEach(function(p) {
+      p.style.display = p.id === 'mcpanel-' + mctab ? 'block' : 'none';
+    });
+  };
+
+  window._pickOutfitPreset = function(presetId) {
+    const p = OUTFIT_PRESETS.find(function(x) { return x.id === presetId; });
+    if (p) {
+      _current.outfit = p.outfit;
+      _current.shirt = p.shirt;
+      _current.shirtAccent = p.shirtAccent;
+      _current.pants = p.pants;
+      _current.shoes = p.shoes;
+      if (p.hairStyle) _current.hairStyle = p.hairStyle;
+      if (p.hair) _current.hair = p.hair;
+      if (p.facialHair) _current.facialHair = p.facialHair;
+      if (p.accessories) _current.accessories = Object.assign({}, p.accessories);
+      _renderStudioUI();
+      _updatePreviewModel();
+    }
+  };
+
+  window._setGender = function(gender) {
+    _current.gender = gender;
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
 
   window._pickSwatch = function(group, hex) {
-    _current[group] = hex
-    _refreshSwatches()
-    _updatePreviewModel()
-  }
+    _current[group] = hex;
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
+
+  window._pickHairstyle = function(id) {
+    _current.hairStyle = id;
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
+
+  window._pickFacialHair = function(id) {
+    _current.facialHair = id;
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
+
+  window._pickOutfitModel = function(id) {
+    _current.outfit = id;
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
+
+  window._pickPantsModel = function(id) {
+    _current.pantsStyle = id;
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
+
+  window._pickShoeModel = function(id) {
+    _current.shoeStyle = id;
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
 
   window._toggleAccessory = function(id) {
-    _current.accessories[id] = !_current.accessories[id]
-    // Mutual exclusion for headwear — only one at a time
-    if (id === 'cap' && _current.accessories.cap) {
-      _current.accessories.beanie = false
-      _current.accessories.helmet = false
-    } else if (id === 'beanie' && _current.accessories.beanie) {
-      _current.accessories.cap = false
-      _current.accessories.helmet = false
-    } else if (id === 'helmet' && _current.accessories.helmet) {
-      _current.accessories.cap = false
-      _current.accessories.beanie = false
+    _current.accessories[id] = !_current.accessories[id];
+    if (id === 'cap' && _current.accessories.cap) { _current.accessories.capBackwards = false; _current.accessories.beanie = false; _current.accessories.helmet = false; }
+    if (id === 'capBackwards' && _current.accessories.capBackwards) { _current.accessories.cap = false; _current.accessories.beanie = false; _current.accessories.helmet = false; }
+    if (id === 'beanie' && _current.accessories.beanie) { _current.accessories.cap = false; _current.accessories.capBackwards = false; _current.accessories.helmet = false; }
+    if (id === 'helmet' && _current.accessories.helmet) { _current.accessories.cap = false; _current.accessories.capBackwards = false; _current.accessories.beanie = false; }
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
+
+  window._pickMCPreset = function(id) {
+    _current.mcSkin = id;
+    _current.mcSkinUrl = 'skins/' + id + '.png';
+    _current.mcIsCustom = false;
+    const s = window.MinecraftSkinManager?.DEFAULT_SKINS?.find(function(x) { return x.id === id; });
+    if (s && s.isSlim !== undefined) _current.mcIsSlim = s.isSlim;
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
+
+  window._setMCArm = function(isSlim) {
+    _current.mcIsSlim = isSlim;
+    const cArm = document.getElementById('mc-arm-classic');
+    const sArm = document.getElementById('mc-arm-slim');
+    if (cArm) cArm.classList.toggle('active', !isSlim);
+    if (sArm) sArm.classList.toggle('active', isSlim);
+    _updatePreviewModel();
+  };
+
+  window._handleSkinFileUpload = async function(event) {
+    const file = event.target?.files?.[0];
+    if (!file || !window.MinecraftSkinManager) return;
+    try {
+      const res = await window.MinecraftSkinManager.processSkinFile(file);
+      const saved = window.MinecraftSkinManager.saveCustomSkin(res.name, res.dataUrl);
+      _current.mcSkinUrl = saved.dataUrl;
+      _current.mcSkin = saved.id;
+      _current.mcIsCustom = true;
+      _renderStudioUI();
+      _updatePreviewModel();
+      window._switchMCTab('library');
+      toast('✅ Custom Minecraft Skin loaded!', '#2ecc71');
+    } catch (e) {
+      alert(e.message || 'Failed to upload skin');
     }
-    _refreshSwatches()
-  }
+  };
+
+  window._pickMCCustomSkin = function(id) {
+    const customs = window.MinecraftSkinManager?.getCustomSkins() || [];
+    const skin = customs.find(function(s) { return s.id === id; });
+    if (skin) {
+      _current.mcSkinUrl = skin.dataUrl;
+      _current.mcSkin = skin.id;
+      _current.mcIsCustom = true;
+      _renderStudioUI();
+      _updatePreviewModel();
+    }
+  };
+
+  window._deleteCustomSkin = function(id) {
+    if (window.MinecraftSkinManager) {
+      window.MinecraftSkinManager.deleteCustomSkin(id);
+      _renderStudioUI();
+    }
+  };
+
+  window._setStudioCamera = function(view) {
+    document.querySelectorAll('.studio-controls-row .studio-icon-btn').forEach(function(b) {
+      if (b.id && b.id.startsWith('cam-')) b.classList.toggle('active', b.id === 'cam-' + view);
+    });
+    if (!_previewCamera) return;
+    if (view === 'face') {
+      _previewCamera.position.set(0, 1.56, 1.6);
+      _previewCamera.lookAt(0, 1.50, 0);
+    } else if (view === 'outfit') {
+      _previewCamera.position.set(0, 1.15, 2.2);
+      _previewCamera.lookAt(0, 1.05, 0);
+    } else if (view === 'shoes') {
+      _previewCamera.position.set(0, 0.40, 1.8);
+      _previewCamera.lookAt(0, 0.20, 0);
+    } else {
+      _previewCamera.position.set(0, 0.92, 3.4);
+      _previewCamera.lookAt(0, 0.88, 0);
+    }
+  };
+
+  window._setStudioPose = function(pose) {
+    _studioPose = pose;
+    document.querySelectorAll('.studio-controls-row .studio-icon-btn').forEach(function(b) {
+      if (b.id && b.id.startsWith('pose-')) b.classList.toggle('active', b.id === 'pose-' + (pose === 'thumbs_up' ? 'thumbs' : pose));
+    });
+    if (_previewChar && _previewChar.userData) {
+      _previewChar.userData.pose = pose;
+    }
+  };
+
+  window._setStudioLighting = function(light) {
+    _studioLighting = light;
+    document.querySelectorAll('.studio-controls-row .studio-icon-btn').forEach(function(b) {
+      if (b.id && b.id.startsWith('light-')) b.classList.toggle('active', b.id === 'light-' + light);
+    });
+    if (!_keyLight || !_fillLight || !_rimLight) return;
+    if (light === 'neon') {
+      _keyLight.color.setHex(0x00f0cc); _keyLight.intensity = 1.4;
+      _fillLight.color.setHex(0xff007f); _fillLight.intensity = 1.0;
+      _rimLight.color.setHex(0x38bdf8); _rimLight.intensity = 1.2;
+    } else if (light === 'sunset') {
+      _keyLight.color.setHex(0xffaa44); _keyLight.intensity = 1.5;
+      _fillLight.color.setHex(0x883399); _fillLight.intensity = 0.6;
+      _rimLight.color.setHex(0xffdd66); _rimLight.intensity = 0.9;
+    } else {
+      _keyLight.color.setHex(0xffeedd); _keyLight.intensity = 1.2;
+      _fillLight.color.setHex(0x88bbff); _fillLight.intensity = 0.5;
+      _rimLight.color.setHex(0x5ed4f5); _rimLight.intensity = 0.8;
+    }
+  };
 
   window._randomizeCustomize = function() {
-    _current.skin = SKINS[Math.floor(Math.random() * SKINS.length)].hex
-    _current.hair = HAIRS[Math.floor(Math.random() * HAIRS.length)].hex
-    _current.shirt = SHIRTS[Math.floor(Math.random() * SHIRTS.length)].hex
-    _current.pants = PANTS[Math.floor(Math.random() * PANTS.length)].hex
-    // Randomize headwear first (mutually exclusive)
-    _current.accessories.beanie = Math.random() > 0.8
-    _current.accessories.helmet = !_current.accessories.beanie && Math.random() > 0.85
-    // Cap if neither beanie nor helmet active
-    _current.accessories.cap = !_current.accessories.beanie && !_current.accessories.helmet && Math.random() > 0.3
-    _current.accessories.backpack = Math.random() > 0.3
-    _current.accessories.glasses = Math.random() > 0.7
-    _current.accessories.scarf = Math.random() > 0.8
-    _refreshSwatches()
-    _updatePreviewModel()
-  }
+    if (_current.charType === 'minecraft') {
+      const defs = window.MinecraftSkinManager?.DEFAULT_SKINS || [];
+      const pick = defs[Math.floor(Math.random() * defs.length)];
+      if (pick) window._pickMCPreset(pick.id);
+    } else {
+      _current.skin = SKINS[Math.floor(Math.random() * SKINS.length)].hex;
+      _current.hair = HAIRS[Math.floor(Math.random() * HAIRS.length)].hex;
+      _current.hairStyle = HAIRSTYLES[Math.floor(Math.random() * HAIRSTYLES.length)].id;
+      _current.eyeColor = EYES[Math.floor(Math.random() * EYES.length)].hex;
+      _current.shirt = SHIRTS[Math.floor(Math.random() * SHIRTS.length)].hex;
+      _current.shirtAccent = SHIRTS[Math.floor(Math.random() * SHIRTS.length)].hex;
+      _current.pants = SHIRTS[Math.floor(Math.random() * SHIRTS.length)].hex;
+      _current.shoes = SHIRTS[Math.floor(Math.random() * SHIRTS.length)].hex;
+      _current.outfit = OUTFIT_MODELS[Math.floor(Math.random() * OUTFIT_MODELS.length)].id;
+      _renderStudioUI();
+      _updatePreviewModel();
+    }
+  };
+
+  window._resetCustomizeDefault = function() {
+    _current = {
+      charType: 'stylized',
+      gender: 'male',
+      mcSkin: 'steve',
+      mcSkinUrl: 'skins/steve.png',
+      mcIsSlim: false,
+      outfit: 'streetwear',
+      skin: 0xd4a574,
+      hair: 0x1a1a1a,
+      hairStyle: 'quiff',
+      hairHighlight: 0x3498db,
+      facialHair: 'none',
+      eyeColor: 0x4a90d9,
+      shirt: 0xe74c3c,
+      shirtAccent: 0xffffff,
+      pants: 0x2c3e50,
+      pantsStyle: 'jeans',
+      shoes: 0x1a1a1a,
+      shoeStyle: 'hightops',
+      accessories: { cap: false, capBackwards: false, beanie: false, helmet: false, sunglasses: false, glasses: false, cyberVisor: false, backpack: true, smartwatch: true, headphones: false }
+    };
+    _renderStudioUI();
+    _updatePreviewModel();
+  };
 
   window._saveCustomize = function() {
-    _current._updated = Date.now()
-    localStorage.setItem('traffic_appearance', JSON.stringify(_current))
-    // Sync to Supabase in background
-    _syncAppearanceToCloud()
-    const modal = document.getElementById('customize-modal')
-    if (modal) modal.style.display = 'none'
-    if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose(); _previewRenderer = null }
-    // If in-game, respawn player with new appearance
+    _current._updated = Date.now();
+    localStorage.setItem('traffic_appearance', JSON.stringify(_current));
+    _syncAppearanceToCloud();
+
+    const modal = document.getElementById('customize-modal');
+    if (modal) modal.style.display = 'none';
+    if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose(); _previewRenderer = null; }
+
     if (window.game && window.game.player && window.game.playerCharacter) {
-      const pos = window.game.playerCharacter.position.clone()
-      const rot = window.game.playerCharacter.rotation.y
-      window.game.scene.remove(window.game.playerCharacter)
-      window.game.playerCharacter = _buildHuman(true)
-      window.game.playerCharacter.position.copy(pos)
-      window.game.playerCharacter.rotation.y = rot
-      window.game.scene.add(window.game.playerCharacter)
-      window.game.player = window.game.playerCharacter
-      toast('✨ Character updated!', '#34d399')
+      const pos = window.game.playerCharacter.position.clone();
+      const rot = window.game.playerCharacter.rotation.y;
+      window.game.scene.remove(window.game.playerCharacter);
+      window.game.playerCharacter = _buildHuman(true);
+      window.game.playerCharacter.position.copy(pos);
+      window.game.playerCharacter.rotation.y = rot;
+      window.game.scene.add(window.game.playerCharacter);
+      window.game.player = window.game.playerCharacter;
+      toast('✨ Character & Outfit updated live!', '#34d399');
     } else {
-      toast('✨ Appearance saved!', '#34d399')
+      toast('✨ Appearance saved!', '#34d399');
     }
-  }
+  };
 
   window.openCustomize = function() {
-    _loadSaved()
-    // Try loading cloud appearance (fires in background — local is immediate)
-    _syncAppearanceFromCloud()
-    const modal = document.getElementById('customize-modal')
+    _loadSaved();
+    _syncAppearanceFromCloud();
+    const modal = document.getElementById('customize-modal');
     if (modal) {
-      modal.style.display = 'flex'
-      _refreshSwatches()
-      _initPreview()
-      _animatePreview()
+      modal.style.display = 'flex';
+      _renderStudioUI();
+      _initPreview();
+      _animatePreview();
+    }
+  };
+})();
+
+
+  // ─── TOKEN SHOP SYSTEM ───
+  const TOKEN_SHOP = {
+    categories: {
+      skins: {
+        name: 'Vehicle Skins',
+        icon: '🎨',
+        items: [
+          { id: 'skin_mumbai_taxi', name: 'Mumbai Taxi', desc: 'Classic black & yellow kaali-peeli', price: 500, preview: '🚕', rarity: 'common' },
+          { id: 'skin_police', name: 'Police Livery', desc: 'White with blue/red stripes', price: 800, preview: '🚓', rarity: 'rare' },
+          { id: 'skin_ambulance', name: 'Ambulance', desc: 'White with red cross & sirens', price: 800, preview: '🚑', rarity: 'rare' },
+          { id: 'skin_best_bus', name: 'BEST Bus Red', desc: 'Iconic Mumbai red double-decker', price: 1200, preview: '🚌', rarity: 'epic' },
+          { id: 'skin_gold', name: 'Gold Chrome', desc: 'Shiny 24k gold finish', price: 2500, preview: '✨', rarity: 'legendary' },
+          { id: 'skin_carbon', name: 'Carbon Fiber', desc: 'Matte carbon fiber weave', price: 2000, preview: '🖤', rarity: 'epic' },
+          { id: 'skin_neon', name: 'Neon Glow', desc: 'Cyberpunk neon underglow', price: 3000, preview: '🌈', rarity: 'legendary' },
+          { id: 'skin_camouflage', name: 'Urban Camo', desc: 'Grey-green urban camouflage', price: 1500, preview: '🌿', rarity: 'rare' },
+        ]
+      },
+      horns: {
+        name: 'Horn Sounds',
+        icon: '📢',
+        items: [
+          { id: 'horn_classic', name: 'Classic Beep', desc: 'Standard vehicle horn', price: 100, preview: '🔊', rarity: 'common' },
+          { id: 'horn_mumbai', name: 'Mumbai Traffic', desc: 'Cacophony of horns & bells', price: 300, preview: '🚨', rarity: 'common' },
+          { id: 'horn_bollywood', name: 'Bollywood Hit', desc: 'Famous movie theme snippet', price: 500, preview: '🎵', rarity: 'rare' },
+          { id: 'horn_siren', name: 'Police Siren', desc: 'Wailing police siren', price: 800, preview: '🚔', rarity: 'rare' },
+          { id: 'horn_ambulance', name: 'Ambulance Siren', desc: 'Medical emergency siren', price: 800, preview: '🚑', rarity: 'rare' },
+          { id: 'horn_train', name: 'Local Train', desc: 'Mumbai local train horn', price: 1000, preview: '🚂', rarity: 'epic' },
+          { id: 'horn_custom', name: 'Custom Upload', desc: 'Upload your own 3s audio', price: 2000, preview: '🎤', rarity: 'legendary' },
+        ]
+      },
+      accessories: {
+        name: 'Dashboard Accessories',
+        icon: '🪆',
+        items: [
+          { id: 'acc_ganesh', name: 'Dashboard Ganesha', desc: 'Blessed idol for safe journeys', price: 200, preview: '🐘', rarity: 'common' },
+          { id: 'acc_hamsa', name: 'Hamsa Hand', desc: 'Protection from evil eye', price: 200, preview: '🤚', rarity: 'common' },
+          { id: 'acc_dreamcatcher', name: 'Dreamcatcher', desc: 'Catches bad driving vibes', price: 400, preview: '🕸️', rarity: 'rare' },
+          { id: 'acc_pendant', name: 'Om Pendant', desc: 'Sacred symbol hanging', price: 300, preview: '🕉️', rarity: 'rare' },
+          { id: 'acc_plush', name: 'Plush Toy', desc: 'Cute companion for the ride', price: 500, preview: '🧸', rarity: 'rare' },
+          { id: 'acc_airfresh', name: 'Premium Air Fresh', desc: 'Sandalwood & jasmine scent', price: 600, preview: '🌸', rarity: 'epic' },
+          { id: 'acc_hologram', name: 'Hologram AI', desc: 'Floating nav assistant', price: 2000, preview: '🤖', rarity: 'legendary' },
+        ]
+      },
+      titles: {
+        name: 'Title Prefixes',
+        icon: '🏷️',
+        items: [
+          { id: 'title_learner', name: 'Learner', desc: 'Just starting out', price: 50, preview: '🔰', rarity: 'common' },
+          { id: 'title_citizen', name: 'Smart Citizen', desc: 'Follows all rules', price: 300, preview: '🏙️', rarity: 'common' },
+          { id: 'title_safe', name: 'Safe Driver', desc: 'Zero violations streak', price: 500, preview: '🛡️', rarity: 'rare' },
+          { id: 'title_speed', name: 'Speed Demon', desc: 'Loves the fast lane', price: 800, preview: '🏎️', rarity: 'rare' },
+          { id: 'title_night', name: 'Night Owl', desc: 'Owns the night roads', price: 1000, preview: '🌙', rarity: 'epic' },
+          { id: 'title_chaos', name: 'Chaos Walker', desc: 'Survived max difficulty', price: 1500, preview: '🌪️', rarity: 'epic' },
+          { id: 'title_legend', name: 'Mumbai Legend', desc: 'Completed all campaigns', price: 5000, preview: '👑', rarity: 'legendary' },
+        ]
+      }
+    },
+
+    getOwnedItems() {
+      return S.shopOwned || {};
+    },
+
+    getEquippedItems() {
+      return S.shopEquipped || { skin: null, horn: null, accessory: null, title: null };
+    },
+
+    isOwned(itemId) {
+      return this.getOwnedItems()[itemId] === true;
+    },
+
+    isEquipped(itemId) {
+      const equipped = this.getEquippedItems();
+      return Object.values(equipped).includes(itemId);
+    },
+
+    canAfford(price) {
+      return (S.missionTokens || 0) >= price;
+    },
+
+    purchase(itemId) {
+      const item = this.findItem(itemId);
+      if (!item) return { success: false, reason: 'Item not found' };
+
+      if (this.isOwned(itemId)) return { success: false, reason: 'Already owned' };
+
+      if (!this.canAfford(item.price)) return { success: false, reason: 'Insufficient tokens' };
+
+      // Deduct tokens
+      S.missionTokens = (S.missionTokens || 0) - item.price;
+
+      // Mark as owned
+      if (!S.shopOwned) S.shopOwned = {};
+      S.shopOwned[itemId] = true;
+
+      // Auto-equip if first in category
+      const equipped = this.getEquippedItems();
+      if (!equipped[item.category]) {
+        equipped[item.category] = itemId;
+        S.shopEquipped = equipped;
+      }
+
+      save();
+
+      // Sync to Supabase
+      if (window.game && window.game._syncWalletToSupabase) {
+        window.game._syncWalletToSupabase(-item.price, 'spend', 'shop_purchase_' + itemId);
+      }
+
+      // Update UI
+      this.refreshUI();
+
+      toast(`✅ Purchased ${item.name} for ${item.price} tokens!`, '#34d399');
+      return { success: true, item };
+    },
+
+    equip(itemId) {
+      const item = this.findItem(itemId);
+      if (!item || !this.isOwned(itemId)) return { success: false, reason: 'Not owned' };
+
+      const equipped = this.getEquippedItems();
+      equipped[item.category] = itemId;
+      S.shopEquipped = equipped;
+      save();
+
+      toast(`✨ Equipped ${item.name}`, '#b89bff');
+      this.refreshUI();
+      return { success: true };
+    },
+
+    unequip(category) {
+      const equipped = this.getEquippedItems();
+      delete equipped[category];
+      S.shopEquipped = equipped;
+      save();
+      this.refreshUI();
+    },
+
+    findItem(itemId) {
+      for (const [catKey, cat] of Object.entries(this.categories)) {
+        const item = cat.items.find(i => i.id === itemId);
+        if (item) return { ...item, category: catKey };
+      }
+      return null;
+    },
+
+    getCategoryItems(categoryKey) {
+      return this.categories[categoryKey]?.items || [];
+    },
+
+    renderShop() {
+      const owned = this.getOwnedItems();
+      const equipped = this.getEquippedItems();
+      const tokens = S.missionTokens || 0;
+
+      let html = `
+        <div style="padding: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">🎖️ MISSION TOKENS</div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: #b89bff; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em;" id="shop-token-display">${tokens.toLocaleString()}</div>
+          </div>
+        </div>
+      `;
+
+      for (const [catKey, cat] of Object.entries(this.categories)) {
+        html += `
+          <div style="margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <span style="font-size: 1.5rem;">${cat.icon}</span>
+              <span style="font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">${cat.name}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;">
+        `;
+
+        for (const item of cat.items) {
+          const isOwned = owned[item.id];
+          const isEquipped = equipped[catKey] === item.id;
+          const canAfford = this.canAfford(item.price);
+
+          const rarityColors = {
+            common: 'var(--muted)',
+            rare: 'var(--signal)',
+            epic: 'var(--plasma)',
+            legendary: '#ffd54a'
+          };
+
+          html += `
+            <div style="background: var(--card); border: 1px solid ${isEquipped ? 'var(--signal)' : (isOwned ? 'var(--border)' : (canAfford ? 'rgba(94,212,245,0.3)' : 'rgba(239,68,68,0.3)'))}; border-radius: 12px; padding: 16px; position: relative; transition: all 0.2s;">
+              <div style="font-size: 2.5rem; text-align: center; margin-bottom: 8px;">${item.preview}</div>
+              <div style="font-size: 0.8rem; font-weight: 700; color: var(--text); text-align: center; margin-bottom: 4px;">${item.name}</div>
+              <div style="font-size: 0.65rem; color: var(--muted); text-align: center; margin-bottom: 8px; min-height: 2.5rem;">${item.desc}</div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border);">
+                <span style="font-size: 0.7rem; font-weight: 700; color: ${rarityColors[item.rarity]}; text-transform: uppercase;">${item.rarity}</span>
+                <span style="font-size: 0.85rem; font-weight: 800; color: #b89bff; font-family: 'Bebas Neue', sans-serif;">${item.price}</span>
+              </div>
+              <div style="margin-top: 12px; display: flex; gap: 8px;">
+          `;
+
+          if (!isOwned) {
+            html += `
+                <button class="btn ${canAfford ? '' : 'btn-s'}" style="flex: 1; padding: 8px; font-size: 0.7rem; ${!canAfford ? 'opacity: 0.5; cursor: not-allowed;' : ''}" 
+                        onclick="TOKEN_SHOP.purchase('${item.id}'); TOKEN_SHOP.renderShop()" 
+                        ${!canAfford ? 'disabled' : ''}>
+                  ${canAfford ? 'BUY' : 'TOKENS'}
+                </button>
+            `;
+          } else if (!isEquipped) {
+            html += `
+                <button class="btn" style="flex: 1; padding: 8px; font-size: 0.7rem;" 
+                        onclick="TOKEN_SHOP.equip('${item.id}'); TOKEN_SHOP.renderShop()">
+                  EQUIP
+                </button>
+            `;
+          } else {
+            html += `
+                <button class="btn btn-s" style="flex: 1; padding: 8px; font-size: 0.7rem; background: var(--green); color: #000;" 
+                        onclick="TOKEN_SHOP.unequip('${catKey}'); TOKEN_SHOP.renderShop()">
+                  EQUIPPED
+                </button>
+            `;
+          }
+
+          html += `
+              </div>
+            </div>
+          `;
+        }
+
+        html += `
+            </div>
+          </div>
+        `;
+      }
+
+      return html;
+    },
+
+    refreshUI() {
+      const container = document.getElementById('token-shop-container');
+      if (container) {
+        container.innerHTML = this.renderShop();
+      }
+      // Update token display in HUD
+      const tokenEl = document.getElementById('mission-tokens');
+      if (tokenEl) tokenEl.textContent = (S.missionTokens || 0).toLocaleString();
+      const shopTokenEl = document.getElementById('shop-token-display');
+      if (shopTokenEl) shopTokenEl.textContent = (S.missionTokens || 0).toLocaleString();
+    },
+
+    openShop() {
+      const modal = document.createElement('div');
+      modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
+      modal.innerHTML = `
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:2.5rem;">🏪</span>
+              <div>
+                <div style="font-size:1.5rem;font-weight:800;color:var(--text);font-family:'Bebas Neue',sans-serif;letter-spacing:0.02em;">TOKEN SHOP</div>
+                <div style="font-size:0.75rem;color:var(--muted);">Spend Mission Tokens on cosmetics</div>
+              </div>
+            </div>
+            <button onclick="this.closest('.modal').remove()" style="background:none;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;padding:8px;">✕</button>
+          </div>
+          <div id="token-shop-container">${this.renderShop()}</div>
+        </div>
+      `;
+      modal.className = 'modal';
+      document.body.appendChild(modal);
+    }
+  };
+
+  window.TOKEN_SHOP = TOKEN_SHOP;
+
+  // ─── SYLLABUS MODAL METHODS ───
+  let _currentSyllabusLevel = null;
+  let _syllabusProgress = { theory: false, rules: false, penalties: false, scenarios: false };
+
+  ui.showSyllabus = function(levelId) {
+    _currentSyllabusLevel = levelId;
+    const level = window.COURSE?.getLevel?.(levelId);
+    if (!level || !level.syllabus) {
+      toast('Syllabus not available for this level yet', '#f2b84b');
+      return;
+    }
+
+    const syllabus = level.syllabus;
+    const modal = document.getElementById('syllabus-modal');
+    if (!modal) return;
+
+    // Update header
+    document.getElementById('syl-title').textContent = level.name;
+    document.getElementById('syl-subtitle').textContent = `Level ${level.id} — ${level.module?.name || 'Unknown Module'}`;
+    document.getElementById('syl-icon').textContent = level.icon || '🚦';
+    document.getElementById('syl-icon').style.background = level.color ? `var(${level.color})` : 'var(--signal)';
+
+    // Update theory tab
+    document.getElementById('syl-overview').textContent = syllabus.theory?.overview || '';
+    const learningPoints = syllabus.theory?.rules || [];
+    document.getElementById('syl-learning-points').innerHTML = learningPoints.map(r => `<li>${r}</li>`).join('');
+
+    // Update rules tab
+    document.getElementById('syl-rules-list').innerHTML = learningPoints.map(r => `<li>${r}</li>`).join('');
+
+    // Update penalties tab
+    const penalties = syllabus.theory?.penalties || [];
+    document.getElementById('syl-penalties-body').innerHTML = penalties.map(p => `
+      <tr style="border-bottom: 1px solid var(--border);">
+        <td style="padding: 12px 8px; color: var(--text);">${p.violation}</td>
+        <td style="padding: 12px 8px; color: var(--red); font-weight: 700;">${p.fine}</td>
+        <td style="padding: 12px 8px; color: var(--muted); font-size: 0.8rem;">${p.act}</td>
+        <td style="padding: 12px 8px; color: var(--yellow); font-weight: 700;">${p.points}</td>
+      </tr>
+    `).join('');
+
+    // Update scenarios tab
+    const scenarios = syllabus.theory?.scenarios || [];
+    document.getElementById('syl-scenarios-carousel').innerHTML = scenarios.map((s, i) => `
+      <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, var(--signal), var(--accent));"></div>
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <div style="flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--signal), var(--accent)); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem;">${i + 1}</div>
+          <div style="flex: 1; font-size: 0.9rem; line-height: 1.6; color: var(--text);">${s}</div>
+        </div>
+      </div>
+    `).join('');
+
+    // Reset progress
+    _syllabusProgress = { theory: false, rules: false, penalties: false, scenarios: false };
+    updateSyllabusProgress();
+
+    // Show modal
+    modal.style.display = 'flex';
+    requestAnimationFrame(() => modal.classList.add('show'));
+  };
+
+  function updateSyllabusProgress() {
+    const completed = Object.values(_syllabusProgress).filter(v => v).length;
+    const total = 4;
+    const pct = Math.round((completed / total) * 100);
+    document.getElementById('syl-progress-pct').textContent = pct + '%';
+    document.getElementById('syl-progress-fill').style.width = pct + '%';
+  }
+
+  function switchSyllabusTab(tab) {
+    _syllabusProgress[tab] = true;
+    updateSyllabusProgress();
+    
+    document.querySelectorAll('.syl-tab').forEach(btn => {
+      const isActive = btn.dataset.tab === tab;
+      btn.classList.toggle('active', isActive);
+      btn.style.background = isActive ? 'var(--card)' : 'transparent';
+      btn.style.color = isActive ? 'var(--text)' : 'var(--muted)';
+    });
+    document.querySelectorAll('.syl-tab-content').forEach(content => {
+      content.style.display = content.id === 'syl-tab-' + tab ? 'block' : 'none';
+    });
+  }
+
+  window.switchSyllabusTab = switchSyllabusTab;
+
+  function closeSyllabusModal() {
+    const modal = document.getElementById('syllabus-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    _currentSyllabusLevel = null;
+  }
+
+  window.closeSyllabusModal = closeSyllabusModal;
+
+  function startSyllabusDemo() {
+    if (!_currentSyllabusLevel) return;
+    const level = window.COURSE?.getLevel?.(_currentSyllabusLevel);
+    const demo2dKey = level?.syllabus?.demo2d;
+    if (!demo2dKey) return;
+
+    closeSyllabusModal();
+    
+    // Show 2D scenario screen
+    if (typeof ui !== 'undefined' && ui.show2D) {
+      ui.show2D(demo2dKey);
+    } else if (window.Scenario2D) {
+      window.Scenario2D.play(_currentSyllabusLevel, () => {
+        // Demo complete, return to levels
+        ui.showLevels();
+      });
     }
   }
 
-  // ── Sync appearance on auth change (login/logout) ──
-  window.addEventListener('col-auth-changed', () => {
-    _syncAppearanceFromCloud()
-  })
+  window.startSyllabusDemo = startSyllabusDemo;
 
-  window._buildHuman = _buildHuman
-})()
+  function launchSyllabusTest() {
+    if (!_currentSyllabusLevel) return;
+    const level = window.COURSE?.getLevel?.(_currentSyllabusLevel);
+    if (!level) return;
+
+    closeSyllabusModal();
+
+    // Show loading overlay
+    const overlay = document.getElementById('test-loading-overlay');
+    if (overlay) {
+      overlay.style.display = 'flex';
+      document.getElementById('test-loading-level-name').textContent = level.name;
+      document.getElementById('test-loading-mode').textContent = 'EXAM MODE';
+      
+      // Animate progress
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 15 + 5;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          document.getElementById('test-loading-bar').style.width = '100%';
+          document.getElementById('test-loading-pct').textContent = '100%';
+          document.getElementById('test-loading-status').textContent = 'Launching...';
+          
+          setTimeout(() => {
+            overlay.style.display = 'none';
+            // Navigate to Driving.html with syllabus param
+            window.location.href = `Driving.html?lv=${_currentSyllabusLevel}&mode=exam&syllabus=true`;
+          }, 500);
+        } else {
+          document.getElementById('test-loading-bar').style.width = progress + '%';
+          document.getElementById('test-loading-pct').textContent = Math.round(progress) + '%';
+        }
+      }, 200);
+    }
+  }
+
+  window.launchSyllabusTest = launchSyllabusTest;
+
+  // Add shop button to profile/briefing
+  const originalShowProfile = ui.showProfile;
+  ui.showProfile = function() {
+    originalShowProfile.call(this);
+    // Could add shop button here
+  };
+
+  // Add shop button to briefing screen
+  // ─── ADAPTIVE QUIZ ENGINE ───
+  class AdaptiveQuiz {
+    constructor(levelId, userActions) {
+      this.levelId = levelId;
+      this.userActions = userActions || { violations: [], correctActions: [] };
+      this.questionPool = this._buildPool();
+    }
+    
+    _buildPool() {
+      const level = window.COURSE?.getLevel?.(this.levelId);
+      const syllabus = level?.syllabus;
+      const questions = [];
+      
+      // Syllabus-based questions
+      if (syllabus?.theory?.rules) {
+        syllabus.theory.rules.forEach(rule => questions.push({
+          type: 'rule',
+          text: rule,
+          source: 'syllabus',
+          weight: 1.0
+        }));
+      }
+      
+      // Violation-based questions (learning from mistakes) - higher weight
+      this.userActions.violations?.forEach(v => {
+        const violationText = v.message || v.type || v;
+        questions.push({
+          type: 'corrective',
+          text: `You ${violationText.toLowerCase().replace('violation', '')}. Why is this wrong?`,
+          source: 'violation',
+          weight: 2.0
+        });
+      });
+      
+      // Correct action reinforcement
+      this.userActions.correctActions?.forEach(c => {
+        const actionText = c.message || c.type || c;
+        questions.push({
+          type: 'reinforcement',
+          text: `You correctly ${actionText.toLowerCase().replace('correct', '')}. What rule does this follow?`,
+          source: 'correct',
+          weight: 1.0
+        });
+      });
+      
+      return questions;
+    }
+    
+    generateQuiz(count = 5) {
+      // Weighted random selection
+      const selected = [];
+      const pool = [...this.questionPool];
+      
+      for (let i = 0; i < count && pool.length > 0; i++) {
+        // Calculate total weight
+        const totalWeight = pool.reduce((sum, q) => sum + (q.weight || 1), 0);
+        let random = Math.random() * totalWeight;
+        
+        for (let j = 0; j < pool.length; j++) {
+          random -= pool[j].weight || 1;
+          if (random <= 0) {
+            selected.push(this._formatQuestion(pool[j]));
+            pool.splice(j, 1);
+            break;
+          }
+        }
+      }
+      
+      // Fallback if not enough questions
+      while (selected.length < count) {
+        selected.push(this._getFallbackQuestion(selected.length));
+      }
+      
+      return selected;
+    }
+    
+    _formatQuestion(q) {
+      const baseQuestions = {
+        'rule': (text) => ({
+          q: `Which rule applies: "${text}"?`,
+          o: [text, 'Speed up through intersections', 'Honk to clear the way', 'Ignore if no police'],
+          a: 0
+        }),
+        'corrective': (text) => ({
+          q: `Corrective Check: ${text}`,
+          o: ['It endangers lives and violates traffic law', 'Only wrong if caught by police', 'Acceptable in emergencies', 'Only applies to new drivers'],
+          a: 0
+        }),
+        'reinforcement': (text) => ({
+          q: `Good job! ${text}. This demonstrates:`,
+          o: ['Defensive driving and rule compliance', 'Luck and timing', 'Aggressive driving skills', 'Vehicle performance'],
+          a: 0
+        })
+      };
+      
+      return baseQuestions[q.type] ? baseQuestions[q.type](q.text) : this._getFallbackQuestion(0);
+    }
+    
+    _getFallbackQuestion(index) {
+      const fallbacks = [
+        { q: 'What does a red traffic signal mean?', o: ['Stop completely before the stop line', 'Slow down and proceed', 'Honk and proceed', 'Turn right immediately'], a: 0 },
+        { q: 'What is the speed limit in a school zone?', o: ['30 km/h', '50 km/h', '40 km/h', 'No limit'], a: 0 },
+        { q: 'When must you yield to pedestrians?', o: ['At all crosswalks and intersections', 'Only at marked crosswalks', 'Only when they signal', 'Never - vehicles have priority'], a: 0 },
+        { q: 'What should you do when an ambulance approaches with sirens?', o: ['Pull over to the left and stop', 'Speed up to get out of the way', 'Continue driving normally', 'Honk to alert the ambulance'], a: 0 },
+        { q: 'Using a mobile phone while driving is:', o: ['Prohibited and carries a ₹5,000 fine', 'Allowed with hands-free only', 'Only banned on highways', 'Permitted at red lights'], a: 0 }
+      ];
+      return fallbacks[index % fallbacks.length];
+    }
+  }
+  
+  // Make it globally accessible
+  window.AdaptiveQuiz = AdaptiveQuiz;
+
+  const originalShowBriefing = ui._updateBriefingForMode;
+  ui._updateBriefingForMode = function(lv, mode) {
+    originalShowBriefing.call(this, lv, mode);
+    // Add shop access button to briefing content
+    setTimeout(() => {
+      const contentEl = document.getElementById('br-content');
+      if (contentEl && !contentEl.querySelector('#shop-access-btn')) {
+        const shopBtn = document.createElement('button');
+        shopBtn.id = 'shop-access-btn';
+        shopBtn.className = 'btn';
+        shopBtn.style.marginTop = '16px';
+        shopBtn.style.width = '100%';
+        shopBtn.style.background = 'linear-gradient(90deg, var(--plasma), var(--signal))';
+        shopBtn.style.color = '#000';
+        shopBtn.innerHTML = '🏪 Open Token Shop';
+        shopBtn.onclick = () => TOKEN_SHOP.openShop();
+        contentEl.appendChild(shopBtn);
+      }
+    }, 100);
+  };

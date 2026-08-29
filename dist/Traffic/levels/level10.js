@@ -27,6 +27,8 @@ window.LVS.push({
   scenarioType: 'mixed',
   npcDensity: 'heavy',
   startOutside: true,
+  isParkingChallenge: true,
+  hasMarketStalls: true,
   tasks: [
     { id: 'navigate_market', text: 'Navigate through market', type: 'reach', target: 'market_zone', done: false },
     { id: 'find_zone', text: 'Find parking zone', type: 'reach', target: 'parking_zone', done: false },

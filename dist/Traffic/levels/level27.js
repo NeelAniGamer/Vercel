@@ -23,6 +23,8 @@ window.LVS.push({
   scenarioType: 'cars_only',
   npcDensity: 'light',
   startOutside: true,
+  isNarrowStreet: true,
+  roadWidth: 8,
   tasks: [
     { id: 'crawl_slow', text: 'Crawl at walking pace', type: 'avoid', target: 'speed', done: false },
     { id: 'find_gap', text: 'Find gap for oncoming auto', type: 'reach', target: 'wider_spot', done: false },

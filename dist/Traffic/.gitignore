@@ -1,1 +1,7 @@
 .env
+node_modules/
+.playwright-mcp/
+dist-electron/
+scratch/
+screen_*.png
+*.log

@@ -1,13 +1,15 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
     <meta name="description" content="Class of Learners - Gesture. An educational tool and resource." />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gesture Controller | Class Of Learners</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <style>
-      /* â”€â”€ CYBER THEME VARIABLES â”€â”€ */
+      /* ──── CYBER THEME VARIABLES ──── */
       :root {
         --bg: #06080d;
         --panel: #0a0d14;
@@ -51,7 +53,7 @@
           repeating-linear-gradient(90deg, transparent 0, transparent 39px, rgba(0, 255, 204, 0.02) 39px, rgba(0, 255, 204, 0.02) 40px);
       }
 
-      /* â”€â”€ CUSTOM SCROLLBAR (GESTURE) â”€â”€ */
+      /* ──── CUSTOM SCROLLBAR (GESTURE) ──── */
       ::-webkit-scrollbar {
         width: 12px;
       }
@@ -69,7 +71,7 @@
         background: var(--accent);
       }
 
-      /* â”€â”€ GLOBAL NAVBAR â”€â”€ */
+      /* ──── GLOBAL NAVBAR ──── */
       .top-nav {
         width: 100%;
         display: flex;
@@ -120,7 +122,7 @@
         color: var(--accent);
       }
 
-      /* â”€â”€ PROJECTS DROPDOWN â”€â”€ */
+      /* ──── PROJECTS DROPDOWN ──── */
       .dropdown {
         position: relative;
         display: inline-block;
@@ -212,7 +214,7 @@
         padding-left: 25px;
       }
 
-      /* â”€â”€ UTILITY BUTTONS â”€â”€ */
+      /* ──── UTILITY BUTTONS ──── */
       .nav-dl-btn {
         background: var(--accent);
         color: #000;
@@ -240,7 +242,7 @@
         display: none;
       }
 
-      /* â”€â”€ GLOBAL ACCOUNT UI â”€â”€ */
+      /* ──── GLOBAL ACCOUNT UI ──── */
       .nav-login-btn {
         background: rgba(0, 255, 204, 0.1);
         color: var(--accent);
@@ -297,7 +299,7 @@
         overflow: hidden;
       }
 
-      /* â”€â”€ CENTERED HERO SECTION â”€â”€ */
+      /* ──── CENTERED HERO SECTION ──── */
       .game-hero {
         width: 100%;
         padding: 160px 20px 80px;
@@ -390,7 +392,7 @@
         box-shadow: 0 10px 30px var(--accent-dim);
       }
 
-      /* â”€â”€ ANIMATION TRIGGERS â”€â”€ */
+      /* ──── ANIMATION TRIGGERS ──── */
       .anim-target {
         opacity: 0;
         transform: translateY(30px);
@@ -423,7 +425,7 @@
         transform: translateY(0);
       }
 
-      /* â”€â”€ UPGRADED ENGINE CONTAINER BOX (GESTURE) â”€â”€ */
+      /* ──── UPGRADED ENGINE CONTAINER BOX (GESTURE) ──── */
       .engine-container {
         width: 90%;
         max-width: 1100px;
@@ -471,7 +473,7 @@
         letter-spacing: 1px;
       }
 
-      /* â”€â”€ UPGRADED ENGINE OVERLAY â”€â”€ */
+      /* ──── UPGRADED ENGINE OVERLAY ──── */
       .engine-overlay {
         position: absolute;
         top: 41px;
@@ -706,7 +708,7 @@
         transform: scaleX(-1);
       }
 
-      /* â”€â”€ FOOTER â”€â”€ */
+      /* ──── FOOTER ──── */
       .site-footer {
         width: 100%;
         padding: 40px 20px 30px;
@@ -732,7 +734,7 @@
         color: var(--accent);
       }
 
-      /* â”€â”€ UPGRADED AUTHENTICATION MODAL BOX (GESTURE) â”€â”€ */
+      /* ──── UPGRADED AUTHENTICATION MODAL BOX (GESTURE) ──── */
       .mo {
         position: fixed;
         inset: 0;
@@ -1097,7 +1099,7 @@
     <div class="engine-container anim-target">
       <div class="engine-hud-header">
         <div class="hud-title">GESTURECTRL <span style="color: var(--muted); font-weight: 400; margin-left: 5px"> V1.2 (GLOBAL SCOPE)</span></div>
-        <div id="local-engine-status">â— OFFLINE</div>
+        <div id="local-engine-status">● OFFLINE</div>
       </div>
 
       <div class="engine-overlay" id="local-webcam-overlay" onclick="window.startGlobalGesture && window.startGlobalGesture()">
@@ -1118,21 +1120,21 @@
 
           <div class="gesture-grid">
             <div class="gesture-card left-click">
-              <div class="g-icon">ðŸ¤</div>
+              <div class="g-icon">🤏</div>
               <div class="g-text">
                 <span class="g-title">Left Click</span>
                 <span class="g-desc">Thumb + Index</span>
               </div>
             </div>
             <div class="gesture-card right-click">
-              <div class="g-icon">âœŒï¸</div>
+              <div class="g-icon">✌️</div>
               <div class="g-text">
                 <span class="g-title">Right Click</span>
                 <span class="g-desc">Thumb + Middle</span>
               </div>
             </div>
             <div class="gesture-card scroll-ui">
-              <div class="g-icon">ðŸ‘†</div>
+              <div class="g-icon">👆</div>
               <div class="g-text">
                 <span class="g-title">Scroll</span>
                 <span class="g-desc">Index + Middle Up</span>
@@ -1146,15 +1148,6 @@
         <canvas id="output_canvas" width="1280" height="720"></canvas>
       </div>
     </div>
-
-    <footer class="site-footer">
-      <div class="footer-links">
-        <a href="privacy">Privacy Policy</a>
-        <a href="terms">Terms of Service</a>
-        <a href="feedback">Provide Feedback</a>
-      </div>
-      <div class="footer-copy">&copy; 2026 Class Of Learners. Developed By Neel, Ansh, Aarush And Yash Raj. All Rights Reserved.</div>
-    </footer>
 
     <script defer src="global-gesture.js"></script>
 

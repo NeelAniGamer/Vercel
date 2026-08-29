@@ -23,6 +23,7 @@ window.LVS.push({
   scenarioType: 'highway',
   npcDensity: 'heavy',
   startOutside: true,
+  isHighway: true,
   tasks: [
     { id: 'match_speed', text: 'Match highway speed', type: 'avoid', target: 'slow_merge', done: false },
     { id: 'blind_spot', text: 'Check blind spot', type: 'avoid', target: 'blind_spot_miss', done: false },

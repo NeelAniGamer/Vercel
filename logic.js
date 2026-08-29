@@ -286,8 +286,17 @@ function updateMilkyWay(cd) {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
-//  PROCEDURAL TEXTURE LIBRARY  (100% offline)
+//  PROCEDURAL TEXTURE LIBRARY (100% offline)
 // ════════════════════════════════════════════════════════════════════════════
+
+// ── Procedural Texture Cache (GPU Allocation Optimizer) ─────────────────────
+const _texCache = new Map();
+function getCachedTexture(key, generatorFn) {
+  if (_texCache.has(key)) return _texCache.get(key);
+  const tex = generatorFn();
+  _texCache.set(key, tex);
+  return tex;
+}
 
 function makeSunGlow(c1, c2) {
   const cvs = document.createElement('canvas')
@@ -2982,6 +2991,13 @@ function updateScaleIndicator(cd) {
 }
 
 // ════════════════════════════════════════════════════════════════════════════
+
+// ── Static Reusable Vectors for Zero GC Churn ───────────────────────────────
+const _reusableLabelWp = new THREE.Vector3();
+const _reusableMeasureA = new THREE.Vector3();
+const _reusableMeasureB = new THREE.Vector3();
+const _unitSphereGeo = new THREE.SphereGeometry(1, 8, 8);
+
 //  MAIN RENDER LOOP
 // ════════════════════════════════════════════════════════════════════════════
 const clock = new THREE.Clock()

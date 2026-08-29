@@ -27,6 +27,8 @@ window.LVS.push({
   scenarioType: 'cars_only',
   npcDensity: 'light',
   startOutside: true,
+  isParkingChallenge: true,
+  hasResidentialGate: true,
   tasks: [
     { id: 'move_gate', text: "Move from resident's gate", type: 'reach', target: 'away_gate', done: false },
     { id: 'find_visitor', text: 'Find visitor parking spot', type: 'reach', target: 'visitor_parking', done: false },

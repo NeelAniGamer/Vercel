@@ -24,7 +24,7 @@ window.LVS.push({
   npcDensity: 'heavy',
   crowdFestival: true,
   hasMusicVehicle: true,
-  hasFestivalLights: false,
+  hasFestivalLights: true,
   hasPoliceVolunteer: true,
   startOutside: true,
   tasks: [

@@ -23,6 +23,7 @@ window.LVS.push({
   scenarioType: 'cars_only',
   npcDensity: 'light',
   startOutside: true,
+  hasBlindCorner: true,
   tasks: [
     { id: 'honk_warn', text: 'Honk once to warn', type: 'toggle', target: 'honk', done: false },
     { id: 'crawl_corner', text: 'Crawl around corner', type: 'avoid', target: 'speed', done: false },

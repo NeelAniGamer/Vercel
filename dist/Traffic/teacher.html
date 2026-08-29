@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>Teacher Dashboard - Mumbai Traffic Hero Academy</title>
@@ -10,9 +12,8 @@
   <meta property="og:description" content="Manage your class and track student driving progress" />
   <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
   <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/teacher" />
-  
-  <!-- Cloud Auth & Sync Logic -->
-  <script>
+
+    <script>
     const _oldFetch = window.fetch
     window.fetch = function () {
       if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
@@ -28,12 +29,13 @@
       _oldWarn.apply(console, args)
     }
   </script>
-  
+
   <script defer src="../col-router.js"></script>
   <link rel="stylesheet" href="../col-ui.css" />
+  <link rel="stylesheet" href="traffic-mobile.css" />
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/4.1.0/phaser.min.js"></script>
@@ -43,8 +45,8 @@
    <link rel="stylesheet" href="welcome-back.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <script src="course.js"></script>
-  <script src="../ui.js"></script>
-  
+  <script src="ui.js"></script>
+
   <style>
     :root {
       --bg: #070a14;
@@ -814,15 +816,15 @@
   </div>
 
   <script>
-    // Parse URL parameters
+
     const urlParams = new URLSearchParams(window.location.search);
     const teacherId = urlParams.get('teacherId') || localStorage.getItem('currentTeacherId') || 'TEA-' + Math.floor(100000 + Math.random() * 900000)
     const classId = urlParams.get('classId') || localStorage.getItem('currentClassId') || 'CLS-' + Math.floor(100000 + Math.random() * 900000)
-    
+
     localStorage.setItem('currentTeacherId', teacherId)
     localStorage.setItem('currentClassId', classId)
 
-    // Mock student data for demonstration
+
     const mockStudents = [
       { id: 'STU-123456', name: 'Aarav Sharma', avatar: null, progress: 85, score: 4250, civic: 320, violations: 2, lastActive: '2026-01-15', levelsDone: 44 },
       { id: 'STU-234567', name: 'Priya Patel', avatar: null, progress: 92, score: 4890, civic: 410, violations: 0, lastActive: '2026-01-14', levelsDone: 48 },
@@ -851,16 +853,16 @@
       { studentId: 'STU-567890', type: 'no_horn', count: 1, date: '2026-01-11' },
     ]
 
-    // Teacher info
+
     const teacherName = 'Mr. Rajesh Kumar'
     const teacherInitials = 'RK'
 
-    // Initialize UI
+
     document.getElementById('teacher-name').textContent = teacherName
     document.getElementById('class-id').textContent = 'Class ID: ' + classId
     document.getElementById('student-count').textContent = mockStudents.length + ' Students'
 
-    // Stats
+
     const totalStudents = mockStudents.length
     const avgProgress = Math.round(mockStudents.reduce((sum, s) => sum + s.progress, 0) / totalStudents)
     const avgScore = Math.round(mockStudents.reduce((sum, s) => sum + s.score, 0) / totalStudents)
@@ -871,7 +873,7 @@
     document.getElementById('t-avg-score').textContent = avgScore.toLocaleString()
     document.getElementById('t-avg-civic').textContent = avgCivic
 
-    // Render students table
+
     function renderStudentsTable(students = mockStudents) {
       const tbody = document.getElementById('students-tbody')
       if (students.length === 0) {
@@ -892,7 +894,7 @@
         const initials = student.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
         const progressBar = student.progress
         const civicTier = getCivicTier(student.civic)
-        
+
         return `
           <tr>
             <td>
@@ -947,7 +949,7 @@
       const progressFilter = document.getElementById('progress-filter').value
       const sortBy = document.getElementById('sort-select').value
 
-      let filtered = mockStudents.filter(s => 
+      let filtered = mockStudents.filter(s =>
         s.name.toLowerCase().includes(search) || s.id.toLowerCase().includes(search)
       )
 
@@ -971,11 +973,11 @@
       renderStudentsTable(filtered)
     }
 
-    // Tab switching
+
     function switchTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'))
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'))
-      
+
       event.target.classList.add('active')
       document.getElementById('tab-' + tabName).classList.add('active')
 
@@ -985,18 +987,18 @@
       else if (tabName === 'certificates') renderCertificatesView()
     }
 
-    // Progress view
+
     function renderProgressView() {
       const levelFilter = document.getElementById('progress-level-filter').value
       const tbody = document.getElementById('progress-tbody')
-      
+
       tbody.innerHTML = mockStudents.map(student => {
         const levelsDone = student.levelsDone
         const totalScore = student.score
         const avgScore = student.levelsDone > 0 ? Math.round(student.score / student.levelsDone) : 0
-        const timeSpent = Math.round(student.levelsDone * 15) // approx 15 min per level
+        const timeSpent = Math.round(student.levelsDone * 15)
         const lastActive = student.lastActive
-        
+
         return `
           <tr>
             <td>
@@ -1022,8 +1024,8 @@
       const violationFilter = document.getElementById('violation-filter').value
       const studentFilter = document.getElementById('violation-student-filter').value
       const tbody = document.getElementById('violations-tbody')
-      
-      // Populate student filter
+
+
       const studentSelect = document.getElementById('violation-student-filter')
       if (studentSelect.options.length <= 1) {
         mockStudents.forEach(s => {
@@ -1056,7 +1058,7 @@
         const student = mockStudents.find(s => s.id === v.studentId)
         const vType = violationTypes[v.type] || { name: v.type, fine: 500 }
         const totalFine = vType.fine * v.count
-        
+
         return `
           <tr>
             <td>
@@ -1080,7 +1082,7 @@
     function renderCertificatesView() {
       const certFilter = document.getElementById('cert-filter').value
       const tbody = document.getElementById('certificates-tbody')
-      
+
       const certifiedStudents = mockStudents.filter(s => s.levelsDone === 52)
       let filtered = certifiedStudents
       if (certFilter === 'unlocked') filtered = certifiedStudents
@@ -1106,7 +1108,7 @@
         const certScore = isUnlocked ? student.score : '-'
         const certRef = isUnlocked ? 'CERT-' + student.id.slice(-6).toUpperCase() : '-'
         const status = isUnlocked ? '<span style="color:var(--green)">✅ Issued</span>' : '<span style="color:var(--muted)">🔒 Locked</span>'
-        
+
         return `
           <tr>
             <td>
@@ -1134,7 +1136,7 @@
       }).join('')
     }
 
-    // Actions
+
     function viewStudent(studentId) {
       window.location.href = 'student.html?studentId=' + studentId
     }
@@ -1145,10 +1147,10 @@
 
     function downloadCertificate(studentId) {
       toast('📄 Generating certificate PDF...', '#34d399')
-      // Would trigger PDF generation
+
     }
 
-    // Horizon Toggle
+
     function hzInit() {
       const t = localStorage.getItem('theme')
       if (t === 'light') document.body.classList.add('lm')
@@ -1168,7 +1170,7 @@
     }
     hzInit()
 
-    // Logout
+
     function logoutAndClear() {
       localStorage.removeItem('trafficSetupComplete')
       localStorage.removeItem('traffic_local_user')
@@ -1178,7 +1180,7 @@
       window.location.href = 'Academy.html'
     }
 
-    // Initialize
+
     document.addEventListener('DOMContentLoaded', () => {
       renderStudentsTable()
       if (typeof TrafficWelcomeBack !== 'undefined') {

@@ -24,6 +24,7 @@ window.LVS.push({
   npcDensity: 'light',
   isNight: true,
   startOutside: true,
+  hasDog: true,
   tasks: [
     { id: 'no_honk_night', text: 'Do not honk in residential night', type: 'avoid', target: 'honk', done: false },
     { id: 'reach_main', text: 'Reach main road quietly', type: 'reach', target: 'main_road', done: false }

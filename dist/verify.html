@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Verify official student achievement certificates and credentials from Class Of Learners." />
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/verify" />
     <title>Verify Certificate | Achievement Engine</title>
     <link rel="stylesheet" href="col-ui.css">
     <style>
@@ -261,16 +265,24 @@
     <script src="col-achievements.js"></script>
 
     <script>
-        async function init() {
+        let hasRun = false;
+        async function runVerification() {
+            if (hasRun) return;
             const params = new URLSearchParams(window.location.search);
             const slug = params.get('cert');
             const token = params.get('token');
 
             if (!slug || !token) {
+                hasRun = true;
                 showNotFound('Missing Information', 'Verification requires both a certificate slug and a token.');
                 return;
             }
 
+            if (!window.supabaseClient) {
+                return;
+            }
+
+            hasRun = true;
             try {
                 const { data, error } = await verifyCertificate(slug, token);
 
@@ -314,7 +326,19 @@
             document.getElementById('notFound').style.display = 'block';
         }
 
-        window.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('col-auth-changed', runVerification);
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.supabaseClient) {
+                runVerification();
+            } else {
+                setTimeout(() => {
+                    if (!hasRun) {
+                        runVerification();
+                        if (!hasRun) showNotFound('Connection Error', 'Could not establish connection to the verification server.');
+                    }
+                }, 3000);
+            }
+        });
     </script>
 </body>
 </html>

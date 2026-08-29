@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
     <meta name="description" content="Class of Learners - Qr Editor. An educational tool and resource.">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +13,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script defer src="qr-dynamic.js"></script>
 <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr-editor" />
 
 <script defer src="col-router.js"></script>
@@ -21,7 +24,7 @@
     <link rel="icon" type="image/png" href="Icon.png" />
   </head>
 <style>
-/* â”€â”€ EXACT UI THEME â”€â”€ */
+/* ──── EXACT UI THEME ──── */
 :root {
   --bg: #030712; --panel: rgba(17, 24, 39, 0.6); --panel-hover: rgba(31, 41, 55, 0.8);
   --border: rgba(255, 255, 255, 0.08); --border-focus: #10b981;
@@ -237,7 +240,7 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
 .btn-nx, .btn-cp { padding: 15px 40px; background: var(--pri); border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s; box-shadow: 0 10px 30px var(--glow-strong); display: flex; align-items: center; gap: 10px; margin-left: auto; }
 .btn-nx:hover, .btn-cp:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 15px 40px var(--pri); }
 
-/* â”€â”€ PREVIEW PANEL â”€â”€ */
+/* ──── PREVIEW PANEL ──── */
 .prev-p { background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; box-shadow: -10px 0 30px rgba(0,0,0,0.2); z-index: 10;}
 .prev-hd { padding: 25px 25px 15px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; text-align: center; }
 .prev-hd h3 { font-size: 1rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 2px; }
@@ -250,6 +253,8 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
 #qrWrap.frame-ticket { outline: 4px dashed rgba(16,185,129,0.7); outline-offset: 6px; }
 #qrWrap.frame-badge { border-radius: 50%; padding: 20px; }
 #qrWrap.frame-phone { outline: 6px solid var(--pri); outline-offset: 10px; border-radius: 24px; }
+#qrWrap.frame-polaroid { padding: 16px 16px 36px 16px; background: #ffffff; box-shadow: 0 20px 45px rgba(0,0,0,0.6); border-radius: 4px; }
+#qrWrap.frame-neon { outline: 3px solid var(--pri); box-shadow: 0 0 25px var(--pri), inset 0 0 15px var(--pri); border-radius: 16px; }
 .fr-lbl { text-align: center; font-size: 0.85rem; font-weight: 800; color: var(--pri); text-transform: uppercase; letter-spacing: 2px; margin-top: 25px; display: none; text-shadow: 0 0 10px var(--glow); }
 .fr-lbl.show { display: block; }
 .prev-act { padding: 25px; display: flex; flex-direction: column; gap: 15px; border-top: 1px solid var(--border); }
@@ -584,7 +589,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <p class="type-slbl" style="margin-top: 30px;">Static Formats (Offline & Encoded)</p>
         <div class="type-grid" id="statG" role="radiogroup" aria-label="Static QR code types"></div>
       </div>
-      <div class="sn-row"><div style="flex:1"></div><button class="btn-nx" onclick="nextFrom1()">Continue to Content →</button></div>
+      <div class="sn-row"><div style="flex:1"></div><button class="btn-nx" id="btn-next-1" onclick="nextFrom1()">Continue to Content →</button></div>
     </div>
 
     <div class="sp" id="sp2">
@@ -674,7 +679,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
           </div>
       </div>
-      <div class="sn-row"><button class="btn-bk" onclick="goStep(1)">← Back</button><button class="btn-nx" onclick="nextFrom2()">Proceed to Design →</button></div>
+      <div class="sn-row"><button class="btn-bk" onclick="goStep(1)">← Back</button><button class="btn-nx" id="btn-next-2" onclick="nextFrom2()">Proceed to Design →</button></div>
     </div>
 
     <div class="sp" id="sp3">
@@ -897,14 +902,20 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     <div class="dlr">
       <button class="dl-main" onclick="dlQR('png')">⬇️ Download PNG</button>
       <label for="dlSz" class="sr-only">Download size</label>
-      <select class="dl-sz" id="dlSz">
-        <option value="400">400px</option>
-        <option value="800" selected>800px</option>
-        <option value="1200">1200px</option>
-        <option value="2400">2400px</option>
+      <select class="dl-sz" id="dlSz" title="Export Resolution">
+        <option value="400">400px (Mobile)</option>
+        <option value="800" selected>800px (Web)</option>
+        <option value="1200">1200px (HD)</option>
+        <option value="2400">2400px (Ultra)</option>
+        <option value="4000">4000px (300 DPI Print)</option>
       </select>
     </div>
-    <button class="dl-svg" onclick="dlQR('svg')">Download Vector (SVG)</button>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+      <button class="dl-svg" onclick="dlQR('copy')" title="Copy directly to clipboard" style="padding:10px; font-size:0.8rem;">📋 Copy Image</button>
+      <button class="dl-svg" onclick="dlQR('svg')" title="Lossless Vector format" style="padding:10px; font-size:0.8rem;">📐 Vector (SVG)</button>
+      <button class="dl-svg" onclick="dlQR('webp')" title="Modern WebP image" style="padding:10px; font-size:0.8rem;">🖼️ WebP</button>
+      <button class="dl-svg" onclick="dlQR('print')" title="Generate printable flyer" style="padding:10px; font-size:0.8rem;">🖨️ Print Sheet</button>
+    </div>
     <button class="sv-btn" onclick="saveQR(false)">💾 Save to Dashboard</button>
   </div>
 </aside>
@@ -1191,7 +1202,7 @@ function getContent(){
   }catch(e){return 'https://classoflearners.com';}
 }
 
-// â”€â”€ QR ENGINE â”€â”€
+// ──── QR ENGINE ────
 function getQRDataString() {
     const isStatic = ['text','vcard','wifi','whatsapp','email','sms'].indexOf(selType) !== -1;
     let d = '';
@@ -1364,7 +1375,18 @@ function setPad(val) {
     if(qrInst) qrInst.update({margin: opts.margin});
 }
 
-const FRAMES=[ {id:'none',label:'Borderless'}, {id:'border',label:'Container'}, {id:'shadow',label:'Elevated'}, {id:'rounded',label:'Smooth'}, {id:'scan',label:'CTA Tag'}, {id:'ticket',label:'Coupon'}, {id:'badge',label:'Circular'}, {id:'phone',label:'Mobile'} ];
+const FRAMES=[ 
+  {id:'none',label:'Borderless'}, 
+  {id:'border',label:'Container'}, 
+  {id:'shadow',label:'Elevated'}, 
+  {id:'rounded',label:'Smooth'}, 
+  {id:'scan',label:'CTA Tag'}, 
+  {id:'ticket',label:'Coupon'}, 
+  {id:'badge',label:'Circular'}, 
+  {id:'phone',label:'Mobile'},
+  {id:'polaroid',label:'Polaroid'},
+  {id:'neon',label:'Glow Neon'}
+];
 const F_SVG = {
   none: '<svg width="54" height="54" viewBox="0 0 54 54"><rect x="15" y="15" width="24" height="24" rx="2" fill="#10b981" opacity=".8"/><path d="M21 21h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4z" fill="#fff"/></svg>',
   border: '<svg width="54" height="54" viewBox="0 0 54 54"><rect x="8" y="8" width="38" height="38" fill="none" stroke="#10b981" stroke-width="2"/><rect x="15" y="15" width="24" height="24" rx="2" fill="#10b981" opacity=".5"/><path d="M21 21h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4z" fill="#fff"/></svg>',
@@ -1373,7 +1395,9 @@ const F_SVG = {
   scan: '<svg width="54" height="54" viewBox="0 0 54 54"><path d="M8 8h38v38H8z" fill="none" stroke="#10b981" stroke-width="2"/><rect x="8" y="38" width="38" height="8" fill="#10b981"/><text x="27" y="44" font-size="6" fill="#fff" text-anchor="middle" font-weight="bold" font-family="sans-serif">SCAN</text><rect x="15" y="11" width="24" height="24" rx="2" fill="#10b981" opacity=".5"/><path d="M21 17h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4z" fill="#fff"/></svg>',
   ticket: '<svg width="54" height="54" viewBox="0 0 54 54"><path d="M10 10h34v8a4 4 0 0 0 0 8v18H10V26a4 4 0 0 0 0-8v-8z" fill="none" stroke="#10b981" stroke-width="2"/><rect x="15" y="15" width="24" height="24" rx="2" fill="#10b981" opacity=".5"/><path d="M21 21h4v4h-4zm8 0h4v4h-4zm-8 8h4v4h-4z" fill="#fff"/></svg>',
   badge: '<svg width="54" height="54" viewBox="0 0 54 54"><circle cx="27" cy="27" r="20" fill="none" stroke="#10b981" stroke-width="2"/><rect x="18" y="18" width="18" height="18" rx="2" fill="#10b981" opacity=".5"/><path d="M21 21h3v3h-3zm6 0h3v3h-3zm-6 6h3v3h-3z" fill="#fff"/></svg>',
-  phone: '<svg width="54" height="54" viewBox="0 0 54 54"><rect x="14" y="6" width="26" height="42" rx="4" fill="none" stroke="#10b981" stroke-width="2"/><rect x="19" y="13" width="16" height="16" rx="1" fill="#10b981" opacity=".5"/><circle cx="27" cy="43" r="2" fill="#10b981"/><path d="M22 16h2v2h-2zm4 0h2v2h-2zm-4 4h2v2h-2z" fill="#fff"/></svg>'
+  phone: '<svg width="54" height="54" viewBox="0 0 54 54"><rect x="14" y="6" width="26" height="42" rx="4" fill="none" stroke="#10b981" stroke-width="2"/><rect x="19" y="13" width="16" height="16" rx="1" fill="#10b981" opacity=".5"/><circle cx="27" cy="43" r="2" fill="#10b981"/><path d="M22 16h2v2h-2zm4 0h2v2h-2zm-4 4h2v2h-2z" fill="#fff"/></svg>',
+  polaroid: '<svg width="54" height="54" viewBox="0 0 54 54"><rect x="10" y="8" width="34" height="38" rx="2" fill="#ffffff" stroke="#10b981" stroke-width="1.5"/><rect x="14" y="12" width="26" height="24" fill="#10b981" opacity=".5"/><line x1="16" y1="41" x2="38" y2="41" stroke="#10b981" stroke-width="2"/></svg>',
+  neon: '<svg width="54" height="54" viewBox="0 0 54 54"><rect x="8" y="8" width="38" height="38" rx="6" fill="none" stroke="#10b981" stroke-width="2.5"/><rect x="15" y="15" width="24" height="24" rx="2" fill="#10b981" opacity=".6"/></svg>'
 };
 function buildFrameGrid(){
   const g=document.getElementById('frGrid');if(!g)return;g.innerHTML='';
@@ -1511,18 +1535,33 @@ function tt(){ const on=document.getElementById('bgT').checked; opts.backgroundO
 
 const SVG_LOGOS = {
   wa: 'data:image/svg+xml;utf8,<svg fill="%2325D366" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a5.8 5.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.82 9.82 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.81 11.81 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.88 11.88 0 0 0 5.683 1.448h.005c6.559 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.413Z"/></svg>',
+  ig: 'data:image/svg+xml;utf8,<svg fill="%23E4405F" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>',
+  yt: 'data:image/svg+xml;utf8,<svg fill="%23FF0000" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>',
+  x: 'data:image/svg+xml;utf8,<svg fill="%23111827" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+  li: 'data:image/svg+xml;utf8,<svg fill="%230A66C2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.5a1.6 1.6 0 0 0-1.6 1.6 1.6 1.6 0 0 0 1.6 1.6 1.6 1.6 0 0 0 1.6-1.6 1.6 1.6 0 0 0-1.6-1.6z"/></svg>',
+  tg: 'data:image/svg+xml;utf8,<svg fill="%23229ED9" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>',
   wifi: 'data:image/svg+xml;utf8,<svg fill="%2310b981" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C7.2 3 2.8 4.7 0 7.5L2 9.5C4.4 7 8.1 5.5 12 5.5s7.6 1.5 10 4l2-2C21.2 4.7 16.8 3 12 3zm0 5C8.5 8 5.3 9.3 3.1 11.3l2 2C6.8 11.8 9.2 10.7 12 10.7s5.2 1.1 6.9 2.6l2-2C18.7 9.3 15.5 8 12 8zm0 5c-1.3 0-2.6.4-3.6 1.1l2 2c.5-.3 1-.5 1.6-.5s1.1.2 1.6.5l2-2c-1-.7-2.3-1.1-3.6-1.1zm0 5c-.8 0-1.5.7-1.5 1.5S11.2 21 12 21s1.5-.7 1.5-1.5S12.8 18 12 18z"/></svg>',
   email: 'data:image/svg+xml;utf8,<svg fill="%233b82f6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>',
   link: 'data:image/svg+xml;utf8,<svg fill="%238b5cf6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>',
-  star: 'data:image/svg+xml;utf8,<svg fill="%23f59e0b" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>'
+  star: 'data:image/svg+xml;utf8,<svg fill="%23f59e0b" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>',
+  gh: 'data:image/svg+xml;utf8,<svg fill="%23111827" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>',
+  sp: 'data:image/svg+xml;utf8,<svg fill="%231DB954" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>',
+  upi: 'data:image/svg+xml;utf8,<svg fill="%23097939" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4H3V6h18v2zm0 10H3v-6h18v6zm-8-3H5v-2h8v2z"/></svg>'
 };
 const LOGO_PRESETS=[
-  {id:'none', icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--q-text-m)"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>'},
-  {id:'wa', icon:'<svg width="24" height="24" viewBox="0 0 24 24" fill="%2325D366" stroke="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a5.8 5.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.82 9.82 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.81 11.81 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.88 11.88 0 0 0 5.683 1.448h.005c6.559 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.413Z"/></svg>'},
-  {id:'link', icon:'<div style="background:%238b5cf6; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="3"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></div>'},
-  {id:'map', icon:'<div style="background:%23ef4444; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div>'},
-  {id:'wifi', icon:'<div style="background:%2314b8a6; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="2.5"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg></div>'},
-  {id:'email', icon:'<div style="background:%23eab308; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%23fff" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>'}
+  {id:'none', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--q-text-m)"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>'},
+  {id:'wa', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%2325D366"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.91-2.2-.25-.6-.49-.51-.67-.52h-.57c-.2 0-.52.08-.8.38s-1.04 1.02-1.04 2.48 1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.7.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.42.25-.7.25-1.29.17-1.42-.07-.12-.27-.2-.57-.35z"/></svg>'},
+  {id:'ig', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23E4405F"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.26.07 1.64.07 4.85 0 3.2-.01 3.58-.07 4.85-.15 3.22-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07-3.2 0-3.58-.01-4.85-.07-3.26-.15-4.77-1.7-4.92-4.92-.06-1.27-.07-1.65-.07-4.85 0-3.2.01-3.58.07-4.85.15-3.23 1.66-4.77 4.92-4.92 1.27-.06 1.65-.07 4.85-.07zm0 3.68c-3.4 0-6.16 2.76-6.16 6.16s2.76 6.16 6.16 6.16 6.16-2.76 6.16-6.16c0-3.4-2.76-6.16-6.16-6.16zm0 10.16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>'},
+  {id:'yt', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23FF0000"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.2C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg>'},
+  {id:'x', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23ffffff"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24H16.17l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25H8.08l4.71 6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z"/></svg>'},
+  {id:'li', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%230A66C2"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.5a1.6 1.6 0 0 0-1.6 1.6 1.6 1.6 0 0 0 1.6 1.6 1.6 1.6 0 0 0 1.6-1.6 1.6 1.6 0 0 0-1.6-1.6z"/></svg>'},
+  {id:'tg', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23229ED9"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>'},
+  {id:'wifi', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%2310b981"><path d="M12 3C7.2 3 2.8 4.7 0 7.5L2 9.5C4.4 7 8.1 5.5 12 5.5s7.6 1.5 10 4l2-2C21.2 4.7 16.8 3 12 3zm0 5C8.5 8 5.3 9.3 3.1 11.3l2 2C6.8 11.8 9.2 10.7 12 10.7s5.2 1.1 6.9 2.6l2-2C18.7 9.3 15.5 8 12 8zm0 5c-1.3 0-2.6.4-3.6 1.1l2 2c.5-.3 1-.5 1.6-.5s1.1.2 1.6.5l2-2c-1-.7-2.3-1.1-3.6-1.1zm0 5c-.8 0-1.5.7-1.5 1.5S11.2 21 12 21s1.5-.7 1.5-1.5S12.8 18 12 18z"/></svg>'},
+  {id:'gh', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23ffffff"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.1.82-.26.82-.57 0-.29-.01-1.23-.01-2.24-3.02.56-3.8-.73-4.04-1.41-.13-.34-.72-1.41-1.23-1.7-.42-.22-1.02-.78-.01-.79.94-.02 1.62.87 1.84 1.23 1.08 1.81 2.81 1.3 3.5.99.1-.78.42-1.3.76-1.6-2.67-.3-5.46-1.34-5.46-5.93 0-1.3.47-2.38 1.23-3.22-.12-.3-.54-1.53.12-3.18 0 0 1-.32 3.3 1.23.96-.27 1.98-.4 3-.4s2.04.13 3 .4c2.3-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.23 0 4.6-2.8 5.62-5.48 5.92.44.38.81 1.1.81 2.22 0 1.6-.02 2.9-.02 3.3 0 .32.23.69.83.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>'},
+  {id:'sp', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%231DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.52 17.34c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14 4.38-1.32 9.78-.66 13.5 1.62.36.18.54.78.24 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3z"/></svg>'},
+  {id:'upi', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23097939"><path d="M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4H3V6h18v2zm0 10H3v-6h18v6zm-8-3H5v-2h8v2z"/></svg>'},
+  {id:'link', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%238b5cf6"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>'},
+  {id:'email', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%233b82f6"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>'}
 ];
 function buildLogoPresets(){
   const w=document.getElementById('logoPs');if(!w)return;w.innerHTML='';
@@ -1607,7 +1646,8 @@ function removeBgImage(){
     document.getElementById('qrWrap').style.backgroundImage = '';
     const rmb = document.getElementById('rmBgImg'); 
     if(rmb) rmb.style.display='none'; 
-    document.getElementById('bgImgFile').value = '';
+    const bgInput = document.getElementById('bgImgFile');
+    if (bgInput) bgInput.value = '';
     
     // Auto-set QR background back to white
     opts.backgroundOptions = Object.assign({}, opts.backgroundOptions, {color: '#ffffff'});
@@ -1694,35 +1734,45 @@ function dlQR(ext){
   const realData = getQRDataString();
   const dlOpts = Object.assign({}, opts, {width:sz,height:sz, data: realData});
   
-  // Check if background image exists
+  if (ext === 'copy') {
+    copyQRImage(dlOpts);
+    return;
+  }
+  
+  if (ext === 'print' || ext === 'pdf') {
+    printQRSheet(dlOpts);
+    return;
+  }
+
   const hasBgImg = document.getElementById('qrWrap').style.backgroundImage !== '';
 
-  // If no frame is selected, no background image is set, or exporting SVG, use native download
   if((selFrame === 'none' && !hasBgImg) || ext === 'svg') {
       const dl=new QRCodeStyling(dlOpts);
-      dl.download({name:'qr-'+selType+'-'+Date.now(),extension:ext});
+      dl.download({name:'qr-'+selType+'-'+Date.now(), extension: ext === 'webp' ? 'webp' : ext});
       saveQR(true); 
+      toast('Downloaded ' + ext.toUpperCase() + ' successfully!', 'green');
       return;
   }
   
-  // For custom frames or background images, use html2canvas
   toast('Rendering high-res format...', 'green');
   const tmpWrapper = document.createElement('div');
   tmpWrapper.style.position = 'fixed';
   tmpWrapper.style.left = '-9999px';
   tmpWrapper.style.top = '-9999px';
-  tmpWrapper.style.background = '#ffffff'; // Ensure background for frame
+  tmpWrapper.style.background = '#ffffff';
   tmpWrapper.style.padding = '40px';
   
   if (selFrame !== 'none') {
-      tmpWrapper.className = 'frame-' + selFrame; // Apply frame CSS
+      tmpWrapper.className = 'frame-' + selFrame;
       if(selFrame === 'border') tmpWrapper.style.outline = '8px solid var(--pri)';
       if(selFrame === 'shadow') tmpWrapper.style.boxShadow = '0 30px 60px rgba(0,0,0,0.8)';
       if(selFrame === 'ticket') tmpWrapper.style.outline = '8px dashed rgba(16,185,129,0.7)';
       if(selFrame === 'phone') tmpWrapper.style.outline = '12px solid var(--pri)';
       if(selFrame === 'badge') tmpWrapper.style.borderRadius = '50%';
+      if(selFrame === 'polaroid') { tmpWrapper.style.padding = '30px 30px 70px 30px'; tmpWrapper.style.borderRadius = '6px'; }
+      if(selFrame === 'neon') { tmpWrapper.style.outline = '6px solid var(--pri)'; tmpWrapper.style.boxShadow = '0 0 40px var(--pri)'; }
   } else {
-      tmpWrapper.style.padding = '0'; // No padding if no frame
+      tmpWrapper.style.padding = '0';
   }
   
   if (hasBgImg) {
@@ -1742,17 +1792,77 @@ function dlQR(ext){
           backgroundColor: null,
           useCORS: true
       }).then(canvas => {
+          const mime = ext === 'webp' ? 'image/webp' : 'image/png';
           const link = document.createElement('a');
-          link.download = 'qr-'+selType+'-'+Date.now()+'.png';
-          link.href = canvas.toDataURL('image/png');
+          link.download = 'qr-'+selType+'-'+Date.now()+ (ext === 'webp' ? '.webp' : '.png');
+          link.href = canvas.toDataURL(mime);
           link.click();
           document.body.removeChild(tmpWrapper);
           saveQR(true);
+          toast('Downloaded ' + ext.toUpperCase() + ' successfully!', 'green');
       }).catch(err => {
           toast('Error rendering frame', '');
           document.body.removeChild(tmpWrapper);
       });
-  }, 1000); // Wait for QR code to fully render inside
+  }, 1000);
+}
+
+function copyQRImage(dlOpts) {
+  toast('Copying QR image...', 'green');
+  const dl = new QRCodeStyling(Object.assign({}, dlOpts, {width: 1000, height: 1000}));
+  dl.getRawData('png').then(blob => {
+    if (navigator.clipboard && navigator.clipboard.write) {
+      navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => {
+        toast('QR Code copied to clipboard!', 'green');
+      }).catch(e => {
+        toast('Clipboard copy failed. Try downloading.', '');
+      });
+    } else {
+      toast('Clipboard API not supported in browser.', '');
+    }
+  }).catch(() => toast('Failed to generate image.', ''));
+}
+
+function printQRSheet(dlOpts) {
+  toast('Preparing printable flyer...', 'green');
+  const dl = new QRCodeStyling(Object.assign({}, dlOpts, {width: 1200, height: 1200}));
+  dl.getRawData('png').then(blob => {
+    const url = URL.createObjectURL(blob);
+    const w = window.open('', '_blank');
+    const to = DYN.concat(STA).filter(x => x.id === selType)[0] || {name: 'Class Of Learners QR'};
+    const frText = document.getElementById('frTextInput') ? document.getElementById('frTextInput').value : 'SCAN WITH CAMERA';
+    w.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Printable QR Flyer - ${to.name}</title>
+        <style>
+          body { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #fff; color: #111; text-align: center; }
+          .card { border: 3px solid #111; border-radius: 24px; padding: 40px; max-width: 500px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+          .title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+          .sub { font-size: 1rem; color: #555; margin-bottom: 25px; }
+          .qr-img { width: 320px; height: 320px; border-radius: 12px; margin-bottom: 20px; }
+          .cta { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #10b981; margin-bottom: 8px; }
+          .footer { font-size: 0.8rem; color: #888; margin-top: 20px; }
+          @media print { body { background: #fff; } .card { box-shadow: none; } }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="title">${to.name}</div>
+          <div class="sub">Scan the code below with your smartphone camera</div>
+          <img class="qr-img" src="${url}" alt="QR Code" />
+          <div class="cta">${frText}</div>
+          <div class="footer">Powered by Class Of Learners • advancedlogiclabs.dpdns.org</div>
+        </div>
+        <script>
+          window.onload = function() { window.print(); }
+        <\/script>
+      </body>
+      </html>
+    `);
+    w.document.close();
+  }).catch(() => toast('Failed to create print sheet', ''));
 }
 
 function validateContent(){
@@ -1824,8 +1934,8 @@ function saveQR(silent = false){
         if (existing && existing.shortCode) existingShortCode = existing.shortCode;
     }
 
-    const shortCode = existingShortCode || (isDynamic ? DYNAMIC_QR.generateShortCode() : null);
-    const shortUrl = shortCode ? `https://advancedlogiclabs.dpdns.org/qr/r/${shortCode}` : null;
+    const shortCode = existingShortCode || (isDynamic ? (typeof DYNAMIC_QR !== 'undefined' ? DYNAMIC_QR.generateShortCode() : 'QR' + Math.random().toString(36).substr(2,6).toUpperCase()) : null);
+    const shortUrl = shortCode ? (typeof DYNAMIC_QR !== 'undefined' ? `${DYNAMIC_QR.baseUrl}?id=${shortCode}` : `${window.location.origin}/q.html?id=${shortCode}`) : null;
 
     const entry={
         id: idToSave, 
@@ -1853,6 +1963,21 @@ function saveQR(silent = false){
     if(saved.length>500) saved.length=500;
     Storage.set('qrs_min',JSON.stringify(saved));
     
+    // Sync to DYNAMIC_QR storage
+    if (isDynamic && shortCode && typeof DYNAMIC_QR !== 'undefined') {
+        DYNAMIC_QR.save({
+            id: idToSave,
+            shortCode: shortCode,
+            destination: getContent(),
+            type: selType,
+            title: advSettings.name || to.name,
+            password: advSettings.password || null,
+            expiry: advSettings.expiry || null,
+            schedule: advSettings.hasSchedule ? { start: advSettings.schedStart, end: advSettings.schedEnd } : null,
+            created: entry.date
+        });
+    }
+
     if (window.colUser && window.supabaseClient) {
         try {
             await window.supabaseClient.from('qr_codes').upsert({
@@ -2191,7 +2316,21 @@ document.addEventListener('keydown', function(e){
   buildCF();
   
 
-  if(typeof QRCodeStyling!=='undefined'){initQR();}
+  function waitForQRCodeStyling(cb) {
+    if (typeof QRCodeStyling !== 'undefined') { cb(); return; }
+    let tries = 0;
+    const iv = setInterval(() => {
+      tries++;
+      if (typeof QRCodeStyling !== 'undefined' || tries > 60) {
+        clearInterval(iv);
+        if (typeof QRCodeStyling !== 'undefined') cb();
+      }
+    }, 50);
+  }
+
+  waitForQRCodeStyling(function() {
+    initQR();
+  });
   loadEditData();
   // Deep linking: ?step=N&type=TYPE&data=DATA
   var urlP = new URLSearchParams(location.search);
@@ -2202,7 +2341,10 @@ document.addEventListener('keydown', function(e){
     var match = DYN.concat(STA).filter(function(x){ return x.id===dType; })[0];
     if(match) { selType=dType; document.querySelectorAll('.tc').forEach(function(x){ if(x.dataset.t===dType){x.classList.add('sel');x.setAttribute('aria-checked','true');} else {x.classList.remove('sel');x.setAttribute('aria-checked','false');} }); }
   }
-  if(dData) { document.getElementById('inUrl').value = dData; }
+  if(dData) { 
+    const inUrl = document.getElementById('inUrl') || document.getElementById('cf_url') || document.getElementById('cf_text'); 
+    if (inUrl) inUrl.value = dData; 
+  }
   if(dStep >= 1 && dStep <= 3) { goStep(dStep); }
 })();
 
@@ -2210,190 +2352,6 @@ function toggleTheme(element){
     if(element && element.checked){ document.body.classList.remove('light'); Storage.set('theme', 'dark'); }
     else{ document.body.classList.add('light'); Storage.set('theme', 'light'); }
   }
-
-// â”€â”€ DYNAMIC QR MODULE (QRFY-style) â”€â”€
-const DYNAMIC_QR = {
-  baseUrl: 'https://advancedlogiclabs.dpdns.org/qr',
-  shortDomain: 'cl.ink',
-  
-  generateShortCode: function() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = '';
-    for(let i=0; i<6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    return code;
-  },
-  
-  create: function(qrData) {
-    const shortCode = this.generateShortCode();
-    const entry = {
-      id: Date.now(),
-      shortCode: shortCode,
-      shortUrl: `${this.baseUrl}/r/${shortCode}`,
-      destination: qrData.destination,
-      type: qrData.type,
-      title: qrData.title || '',
-      password: qrData.password || null,
-      expiry: qrData.expiry || null,
-      schedule: qrData.schedule || null,
-      utmcp tool codex
-    };
-    return entry;
-  },
-  
-  updateDestination: function(shortCode, newDestination) {
-    const stored = this.getAll();
-    const idx = stored.findIndex(q => q.shortCode === shortCode);
-    if(idx !== -1) {
-      stored[idx].destination = newDestination;
-      stored[idx].updated = new Date().toISOString();
-      this.saveAll(stored);
-      return true;
-    }
-    return false;
-  },
-  
-  trackScan: function(shortCode, scanData) {
-    const stored = this.getAll();
-    const idx = stored.findIndex(q => q.shortCode === shortCode);
-    if(idx !== -1) {
-      stored[idx].scans = (stored[idx].scans || 0) + 1;
-      const ipHash = this.hashIP(scanData.ip);
-      if(!stored[idx].uniqueIPs) stored[idx].uniqueIPs = new Set();
-      const wasNew = !stored[idx].uniqueIPs.has(ipHash);
-      stored[idx].uniqueIPs.add(ipHash);
-      stored[idx].uniqueScans = stored[idx].uniqueIPs.size;
-      
-      stored[idx].analytics.push({
-        time: new Date().toISOString(),
-        ip: ipHash,
-        country: scanData.country || 'Unknown',
-        city: scanData.city || 'Unknown',
-        device: scanData.device || 'Unknown',
-        os: scanData.os || 'Unknown',
-        browser: scanData.browser || 'Unknown',
-        referrer: scanData.referrer || 'Direct'
-      });
-      this.saveAll(stored);
-    }
-  },
-  
-  checkPassword: function(shortCode, password) {
-    const stored = this.getAll();
-    const entry = stored.find(q => q.shortCode === shortCode);
-    if(!entry || !entry.password) return true;
-    return entry.password === this.hashPassword(password);
-  },
-  
-  isExpired: function(entry) {
-    if(!entry.expiry) return false;
-    return new Date(entry.expiry) < new Date();
-  },
-  
-  isActive: function(entry) {
-    if(entry.schedule) {
-      const now = new Date();
-      const start = entry.schedule.start ? new Date(entry.schedule.start) : null;
-      const end = entry.schedule.end ? new Date(entry.schedule.end) : null;
-      if(start && now < start) return false;
-      if(end && now > end) return false;
-    }
-    return true;
-  },
-  
-  getAnalytics: function(shortCode, period = '30d') {
-    const entry = this.getAll().find(q => q.shortCode === shortCode);
-    if(!entry) return null;
-    
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - parseInt(period));
-    
-    const filtered = entry.analytics.filter(a => new Date(a.time) >= cutoff);
-    
-    const byDay = {};
-    filtered.forEach(a => { const day = a.time.split('T')[0]; byDay[day] = (byDay[day] || 0) + 1; });
-    
-    const byCountry = {}; filtered.forEach(a => { byCountry[a.country] = (byCountry[a.country] || 0) + 1; });
-    const byDevice = {}; filtered.forEach(a => { byDevice[a.device] = (byDevice[a.device] || 0) + 1; });
-    const byOS = {}; filtered.forEach(a => { byOS[a.os] = (byOS[a.os] || 0) + 1; });
-    const byBrowser = {}; filtered.forEach(a => { byBrowser[a.browser] = (byBrowser[a.browser] || 0) + 1; });
-    
-    return {
-      totalScans: entry.scans,
-      uniqueScans: entry.uniqueScans,
-      scansToday: filtered.filter(a => a.time.startsWith(new Date().toISOString().split('T')[0])).length,
-      scansThisWeek: filtered.filter(a => new Date(a.time) >= new Date(Date.now() - 7*86400000)).length,
-      byDay: byDay, byCountry: byCountry, byDevice: byDevice, byOS: byOS, byBrowser: byBrowser,
-      recentScans: entry.analytics.slice(-50)
-    };
-  },
-  
-  exportCSV: function(shortCode) {
-    const entry = this.getAll().find(q => q.shortCode === shortCode);
-    if(!entry) return '';
-    const headers = ['Time','Country','City','Device','OS','Browser','Referrer','IP Hash'];
-    const rows = entry.analytics.map(a => [a.time, a.country, a.city, a.device, a.os, a.browser, a.referrer, a.ip]);
-    return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-  },
-  
-  getAll: function() {
-    try { return JSON.parse(localStorage.getItem('col_dynamic_qr')) || []; }
-    catch(e) { return []; }
-  },
-  saveAll: function(data) { localStorage.setItem('col_dynamic_qr', JSON.stringify(data)); },
-  getByCode: function(shortCode) { return this.getAll().find(q => q.shortCode === shortCode); },
-  
-  hashIP: function(ip) {
-    let hash = 0; for(let i=0;i<ip.length;i++) hash = ((hash<<5)-hash)+ip.charCodeAt(i), hash|=0;
-    return 'ip_'+Math.abs(hash).toString(36);
-  },
-  hashPassword: function(pwd) {
-    let hash = 0; for(let i=0;i<pwd.length;i++) hash = ((hash<<5)-hash)+pwd.charCodeAt(i), hash|=0;
-    return 'pwd_'+Math.abs(hash).toString(36);
-  },
-  
-  bulkCreate: function(items) {
-    const results = items.map(item => this.create(item));
-    this.saveAll([...this.getAll(), ...results]);
-    return results;
-  },
-  
-  bulkDelete: function(shortCodes) {
-    const stored = this.getAll().filter(q => !shortCodes.includes(q.shortCode));
-    this.saveAll(stored);
-  },
-  
-  templates: {
-    getAll: function() {
-      try { return JSON.parse(localStorage.getItem('col_qr_templates')) || []; }
-      catch(e) { return []; }
-    },
-    save: function(template) {
-      const all = this.getAll();
-      template.id = Date.now();
-      template.created = new Date().toISOString();
-      all.push(template);
-      localStorage.setItem('col_qr_templates', JSON.stringify(all));
-      return template;
-    },
-    delete: function(id) {
-      const all = this.getAll().filter(t => t.id !== id);
-      localStorage.setItem('col_qr_templates', JSON.stringify(all));
-    },
-    apply: function(template, qrData) {
-      return { ...qrData, ...template, id: Date.now(), shortCode: DYNAMIC_QR.generateShortCode() };
-    }
-  }
-};
-
-if(!localStorage.getItem('col_qr_templates')) {
-  DYNAMIC_QR.templates.saveAll([
-    {id:1,name:'Business Card',type:'vcard',opts:{dotsOptions:{type:'extra-rounded',color:'#3b82f6'},cornersSquareOptions:{type:'extra-rounded',color:'#2dd4bf'},backgroundOptions:{color:'#ffffff'}}},
-    {id:2,name:'Wi-Fi Neon',type:'wifi',opts:{dotsOptions:{type:'extra-rounded',color:'#10b981'},cornersSquareOptions:{type:'extra-rounded',color:'#f59e0b'},backgroundOptions:{color:'#0f172a'}}},
-    {id:3,name:'Minimal Menu',type:'url',opts:{dotsOptions:{type:'square',color:'#111827'},cornersSquareOptions:{type:'square',color:'#111827'},backgroundOptions:{color:'#fafafa'}}},
-    {id:4,name:'Social Hub',type:'url',opts:{dotsOptions:{type:'dot',color:'#8b5cf6'},cornersSquareOptions:{type:'dot',color:'#6366f1'},backgroundOptions:{color:'#faf5ff'}}},
-    {id:5,name:'Event Promo',type:'event',opts:{dotsOptions:{type:'classy',color:'#f97316'},cornersSquareOptions:{type:'extra-rounded',color:'#ea580c'},backgroundOptions:{color:'#fff7ed'}}}
-  ]);
-}
 </script>
 
 <footer class="sf">

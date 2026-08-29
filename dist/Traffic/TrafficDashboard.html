@@ -1,8 +1,12 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="description" content="View driver stats, violation telemetry, achievements, and leaderboard for Traffic Academy." />
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
     <title>Traffic Academy - Dashboard</title>
     <link rel="icon" type="image/png" href="../Icon.png" />
 
@@ -13,9 +17,9 @@
     <link rel="stylesheet" href="traffic-charts.css" />
     <link rel="stylesheet" href="welcome-back.css" />
 
-    <!-- Shared Auth/UI logic -->
-    <script defer src="../col-router.js"></script>
+        <script defer src="../col-router.js"></script>
     <link rel="stylesheet" href="../col-ui.css" />
+  <link rel="stylesheet" href="traffic-mobile.css" />
     <script defer src="../col-ui.js"></script>
     <script defer src="../col-auth.js"></script>
 
@@ -26,23 +30,17 @@
         --text: var(--ink);
         --border: var(--line);
         --hover: rgba(255, 255, 255, 0.06);
-        /* Two-tier muted text: --muted for secondary copy/labels, --muted2 one step quieter
-           for tertiary metadata (timestamps, ref IDs). Both verified against --bg at their
-           actual smallest-use-size threshold (WCAG AA, 4.5:1 normal text): --muted computes
-           to 7.65:1, --muted2 to 4.60:1 — both clear the bar with a margin. */
+
         --muted: var(--dim);
         --muted2: #727a8d;
-        /* --accent (gold) is the ONE hero color — license card, score, certificate, primary CTA.
-           --signal (cyan) is the ONE secondary accent — interactive/informational only.
-           Everything else below is used sparingly, tied to one specific existing purpose,
-           not sprinkled wherever a card needs "a color". */
+
         --accent: var(--signal);
         --signal: var(--ion);
-        --green: #34d399;   /* semantic success only */
-        --red: #ef4444;     /* semantic error only */
-        --teal: #00f0cc;    /* gradient partner to --accent (score glow, sparkline) only */
+        --green: #34d399;
+        --red: #ef4444;
+        --teal: #00f0cc;
         --yellow: #d97706;
-        --plasma: #b89bff;  /* civic-tier badge only */
+        --plasma: #b89bff;
         --r: 16px;
         --r-sm: 12px;
         --r-md: 20px;
@@ -71,9 +69,7 @@
         --plasma: #b89bff;
       }
 
-      /* Visible keyboard focus — applied once, globally, rather than per-component.
-         Uses the secondary accent so it reads as "navigation", distinct from gold's
-         "reward/achievement" role. */
+
       :focus-visible {
         outline: 2px solid var(--signal);
         outline-offset: 2px;
@@ -82,8 +78,8 @@
 
       body {
         background: var(--bg);
-        background-image: 
-          radial-gradient(circle at 15% 50%, rgba(217, 119, 6, 0.08), transparent 40%), 
+        background-image:
+          radial-gradient(circle at 15% 50%, rgba(217, 119, 6, 0.08), transparent 40%),
           radial-gradient(circle at 85% 30%, rgba(52, 211, 153, 0.08), transparent 40%),
           url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
         color: var(--text);
@@ -102,7 +98,7 @@
         }
       }
 
-      /* ── Top Bar ── */
+
       .top-bar {
         position: fixed;
         top: 24px;
@@ -202,7 +198,7 @@
 
       .profile-name-sm { font-size: 0.85rem; font-weight: 600; color: var(--text); }
 
-      /* ── Action Menu Dropdown ── */
+
       .menu-container { position: relative; }
       .btn-menu {
         width: 36px;
@@ -249,14 +245,14 @@
       .dropdown-item:hover { background: var(--hover); }
       .dropdown-item.danger { color: var(--red); }
 
-      /* ── Main Content ── */
+
       .dashboard-container {
         max-width: 1440px;
         margin: 100px auto 40px;
         padding: 0 24px;
       }
 
-      /* ── Hero License ── */
+
       .hero-license {
         background: linear-gradient(145deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.8));
         backdrop-filter: blur(20px);
@@ -274,7 +270,7 @@
         position: relative;
         overflow: hidden;
       }
-      /* Gold ambient glow, offset toward the left where the name/avatar sit */
+
       .hero-license::before {
         content: '';
         position: absolute;
@@ -291,9 +287,7 @@
         background: radial-gradient(circle at bottom right, rgba(94, 212, 245, 0.15) 0%, transparent 70%);
         pointer-events: none;
       }
-      /* Hologram-strip hairline along the top edge — a quiet nod to a real ID card's security
-         strip. A plain element rather than a third pseudo-element, since ::before/::after are
-         already spoken for above; no z-index or isolation needed, it simply sits in flow. */
+
       .hero-license .hologram-strip {
         position: absolute;
         top: 0; left: 0; right: 0;
@@ -334,8 +328,7 @@
       }
       .license-id {
         font-family: 'Space Mono', monospace;
-        /* Moved off bright teal to muted — reads as authentic small-print serial rather than
-           a bright accent competing with the name/score for attention right next to it. */
+
         color: var(--muted);
         font-weight: 700;
         font-size: 0.95rem;
@@ -377,7 +370,7 @@
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
       }
 
-      /* ── Bento Grid ── */
+
       .bento-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -432,7 +425,7 @@
         margin-top: 20px;
       }
 
-      /* ── Trophy Room ── */
+
       .trophy-room {
         text-align: center;
         margin-top: 80px;
@@ -468,9 +461,9 @@
         margin-top: 40px;
         box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3), inset 0 2px 0 rgba(255,255,255,0.4);
       }
-      .btn-reward:hover { 
-        transform: scale(1.05) translateY(-2px); 
-        box-shadow: 0 15px 40px rgba(245, 158, 11, 0.5), inset 0 2px 0 rgba(255,255,255,0.6); 
+      .btn-reward:hover {
+        transform: scale(1.05) translateY(-2px);
+        box-shadow: 0 15px 40px rgba(245, 158, 11, 0.5), inset 0 2px 0 rgba(255,255,255,0.6);
       }
 
       .share-bar {
@@ -493,15 +486,15 @@
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       }
-      .share-btn:hover { 
-        transform: translateY(-4px) scale(1.02); 
-        box-shadow: 0 12px 28px rgba(0,0,0,0.3); 
+      .share-btn:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.3);
       }
       .share-wa { background: linear-gradient(135deg, #25D366, #128C7E); }
       .share-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
       .share-copy { background: linear-gradient(135deg, #334155, #1e293b); }
 
-      /* ── Certificate Original Styles (Preserved for PDF) ── */
+
       .crt {
         background: #fbfbf9;
         background-image: radial-gradient(#d4d4cb 1px, transparent 0);
@@ -550,7 +543,7 @@
         box-shadow: inset 0 1px 0 #fff;
       }
 
-      /* ── Certificate Gallery Card ── (rendered by loadCertificateGallery() in the script below) */
+
       .cert-gallery-card {
         background: var(--card);
         border: 1px solid var(--border);
@@ -558,9 +551,7 @@
         padding: var(--space-3);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
-      /* :focus-within (not just :hover) so a keyboard user tabbing to the Share button inside
-         gets the same lift feedback a mouse user gets from hovering the card — the original
-         onmouseover/onmouseout wiring had no keyboard equivalent at all. */
+
       .cert-gallery-card:hover,
       .cert-gallery-card:focus-within {
         transform: translateY(-4px);
@@ -587,7 +578,7 @@
       }
       .cert-gallery-card .btn-share:hover { opacity: 0.85; }
 
-      /* ── Leaderboard Row ── */
+
       .leaderboard-row {
         display: flex; align-items: center; gap: 12px; padding: 12px 14px;
         background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
@@ -626,18 +617,16 @@
       [data-board="modules"] .rank { background: linear-gradient(135deg, var(--accent), var(--yellow)); }
       [data-board="civic"] .rank { background: linear-gradient(135deg, var(--teal), var(--green)); }
       [data-board="badges"] .rank { background: linear-gradient(135deg, var(--plasma), var(--signal)); }
-      /* Top 3 rank pops */
+
       .leaderboard-row:nth-child(1) .rank { width: 36px; height: 36px; font-size: 0.85rem; box-shadow: 0 0 12px rgba(242,184,75,0.4); border-radius: 12px; }
       .leaderboard-row:nth-child(2) .rank { width: 34px; height: 34px; border-radius: 11px; }
       .leaderboard-row:nth-child(3) .rank { width: 33px; height: 33px; border-radius: 10px; }
-      /* You highlight */
-      .leaderboard-row.you { border-color: rgba(242,184,75,0.5); background: linear-gradient(90deg, rgba(242,184,75,0.08), rgba(242,184,75,0.02)); box-shadow: inset 0 0 0 1px rgba(242,184,75,0.2); }
+
+      .leaderboard-row.you { border-color: rgba(242,184,75,0.35); background: rgba(242,184,75,0.06); }
       .leaderboard-row.you::before { background: linear-gradient(180deg, var(--accent), var(--teal)); }
       .leaderboard-row.you .name::after { content: ' · You'; color: var(--accent); font-size: 0.7rem; font-weight: 700; }
-      .leaderboard-row.you .rank-num { box-shadow: 0 0 8px rgba(242,184,75,0.4); }
-      .leaderboard-row.you:hover { background: linear-gradient(90deg, rgba(242,184,75,0.12), rgba(242,184,75,0.04)); transform: translateX(4px); }
 
-      /* ── Tier Badges ── */
+
       .tier-badge {
         display: inline-flex; align-items: center; gap: 3px;
         font-size: 0.55rem; font-weight: 800; text-transform: uppercase;
@@ -648,22 +637,7 @@
       .tier-badge.silver { background: linear-gradient(135deg, rgba(148,163,184,0.2), rgba(148,163,184,0.08)); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
       .tier-badge.bronze { background: linear-gradient(135deg, rgba(180,83,9,0.2), rgba(180,83,9,0.08)); color: #d97706; border: 1px solid rgba(180,83,9,0.3); }
 
-      /* ── Device Badge (for multiple devices on same Google account) ── */
-      .device-badge {
-        display: inline-flex; align-items: center; gap: 3px;
-        font-size: 0.55rem; font-weight: 800; text-transform: uppercase;
-        letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px;
-        flex-shrink: 0; line-height: 1;
-        background: linear-gradient(135deg, rgba(94,212,245,0.2), rgba(94,212,245,0.08));
-        color: var(--signal); border: 1px solid rgba(94,212,245,0.3);
-        cursor: help;
-      }
-      .device-badge:hover {
-        background: linear-gradient(135deg, rgba(94,212,245,0.3), rgba(94,212,245,0.15));
-        border-color: rgba(94,212,245,0.5);
-      }
 
-      /* ── Podium ── */
       .lb-podium {
         display: flex; align-items: flex-end; justify-content: center;
         gap: 8px; padding: 20px 0 16px; margin-bottom: 8px;
@@ -689,17 +663,17 @@
         font-weight: 800; color: #000; font-size: 0.85rem;
         transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
-      /* 1st place — center, tallest */
+
       .podium-spot.first .podium-avatar { width: 64px; height: 64px; border-radius: 18px; border-color: rgba(245,158,11,0.5); box-shadow: 0 0 20px rgba(245,158,11,0.3); }
       .podium-spot.first .podium-base { width: 90px; height: 60px; background: linear-gradient(180deg, rgba(245,158,11,0.25), rgba(245,158,11,0.08)); border: 1px solid rgba(245,158,11,0.3); color: var(--text); }
-      /* 2nd place */
+
       .podium-spot.second .podium-avatar { border-color: rgba(148,163,184,0.4); }
       .podium-spot.second .podium-base { width: 76px; height: 44px; background: linear-gradient(180deg, rgba(148,163,184,0.2), rgba(148,163,184,0.06)); border: 1px solid rgba(148,163,184,0.25); color: var(--text); }
-      /* 3rd place */
+
       .podium-spot.third .podium-avatar { border-color: rgba(180,83,9,0.4); }
       .podium-spot.third .podium-base { width: 70px; height: 34px; background: linear-gradient(180deg, rgba(180,83,9,0.18), rgba(180,83,9,0.06)); border: 1px solid rgba(180,83,9,0.25); color: var(--text); }
 
-      /* ── Your Rank Card ── */
+
       .lb-your-rank {
         display: flex; align-items: center; gap: 14px;
         padding: 14px 16px; margin-bottom: 12px;
@@ -730,7 +704,7 @@
         flex-shrink: 0;
       }
 
-      /* ── Leaderboard Stats Header ── */
+
       .lb-stats-header {
         display: flex; align-items: center; justify-content: space-between;
         padding: 10px 14px; margin-bottom: 8px;
@@ -745,7 +719,7 @@
       }
       @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-      /* ── Leaderboard Tabs ── */
+
       .lb-panel { max-height: 60vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
       .lb-panel::-webkit-scrollbar { width: 6px; }
       .lb-panel::-webkit-scrollbar-track { background: transparent; }
@@ -764,7 +738,7 @@
       .lb-tab.active { background: rgba(255,255,255,0.09); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
       .lb-tab:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.04); }
 
-      /* ── Loading Skeleton ── */
+
       .lb-skeleton {
         height: 50px;
         background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.03) 75%);
@@ -773,7 +747,7 @@
       }
       @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-      /* ── Leaderboard Rank Animation ── */
+
       .leaderboard-row {
         opacity: 0;
         transform: translateX(-16px);
@@ -794,7 +768,7 @@
         to   { opacity: 1; transform: translateX(0); }
       }
 
-      /* Rank number count-up effect */
+
       .rank .rank-num {
         display: inline-block;
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -808,7 +782,7 @@
         100% { transform: scale(1); }
       }
 
-      /* Rank-change celebration: gold glow + bounce */
+
       .leaderboard-row.rank-up {
         animation: lbRowSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, rankUpCelebrate 0.6s 0.4s ease-out;
       }
@@ -826,7 +800,7 @@
         100% { box-shadow: inset 0 0 0 0 rgba(239, 68, 68, 0); }
       }
 
-      /* New entry sparkle */
+
       .leaderboard-row.new-entry-row {
         animation: lbRowSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, newEntryGlow 0.8s 0.4s ease-out;
       }
@@ -836,7 +810,7 @@
         100% { box-shadow: inset 0 0 0 0 rgba(94, 212, 245, 0); }
       }
 
-      /* Rank change badge bounce-in */
+
       .rank-change {
         opacity: 0;
         transform: scale(0.5);
@@ -847,7 +821,7 @@
         to   { opacity: 1; transform: scale(1); }
       }
 
-      /* Top-3 rank special entrance */
+
       .leaderboard-row:nth-child(1) .rank {
         animation: topRankEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
       }
@@ -862,7 +836,7 @@
         to   { opacity: 1; transform: scale(1) rotate(0deg); }
       }
 
-      /* Your-rank highlight pulse */
+
       .leaderboard-row.you .rank {
         animation: yourRankPulse 2s ease-in-out 1s infinite;
       }
@@ -871,7 +845,7 @@
         50%      { box-shadow: 0 0 0 6px rgba(242, 184, 75, 0); }
       }
 
-      /* Reduced motion */
+
       @media (prefers-reduced-motion: reduce) {
         .leaderboard-row, .rank .rank-num, .rank-change, .leaderboard-row .rank {
           animation: none !important;
@@ -882,7 +856,6 @@
 
 
 
-      /* ── Bento Card Accents ── */
       .bento-card.accent-cyan { border-color: rgba(94,212,245,0.18); }
       .bento-card.accent-cyan:hover { border-color: rgba(94,212,245,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(94,212,245,0.15); }
       .bento-card.accent-gold { border-color: rgba(242,184,75,0.18); }
@@ -894,7 +867,7 @@
       .bento-card.accent-teal { border-color: rgba(0,240,204,0.18); }
       .bento-card.accent-teal:hover { border-color: rgba(0,240,204,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(0,240,204,0.15); }
 
-      /* ── Bento Label Hover Glow ── */
+
       .bento-label span {
         transition: transform 0.3s ease;
         display: inline-block;
@@ -903,13 +876,13 @@
         transform: scale(1.15);
       }
 
-      /* ── Achievement Card Glow Ring ── */
+
       .bento-card.accent-plasma:hover .achievements-grid .badge-card {
         border-color: rgba(184,155,255,0.25);
       }
 
 
-      /* ── Modals & Others ── */
+
       .modal-overlay {
         display: none;
         position: fixed;
@@ -948,19 +921,14 @@
       .btn-save { flex: 1; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
       .btn-cancel { flex: 1; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--border); padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; }
 
-      /* Light mode modal */
+
       body.lm .modal-box { background: #ffffff; color: #1e293b; border-color: rgba(0,0,0,0.1); }
       body.lm .modal-box h3 { color: var(--accent); }
       body.lm .modal-box .field label { color: var(--muted); }
       body.lm .modal-box .field input, body.lm .modal-box .field select { background: #f8fafc; color: #1e293b; border-color: rgba(0,0,0,0.1); }
       body.lm .modal-actions .btn-cancel { background: rgba(0,0,0,0.05); color: #475569; border-color: rgba(0,0,0,0.1); }
 
-      /* ── Sync Conflict Modal ── (built in JS by injectConflictModal(), see script below).
-         Reuses the .modal-overlay backdrop, but needs a wider box for two side-by-side save
-         cards, so gets its own .modal-box.wide rather than overloading the 420px default.
-         Everything here reads from the shared token system — no hardcoded fallback colors —
-         so it can't silently drift from the rest of the theme the way the old inline-style
-         version (with var(--card, #111827) style fallbacks) could. */
+
       .modal-box.wide { max-width: 640px; width: 90vw; }
       .conflict-modal-head {
         border-bottom: 1px solid var(--border);
@@ -1000,7 +968,7 @@
       .conflict-save-card.local .btn-choose { background: var(--accent); color: #000; }
 
 
-      /* ── Horizon Toggle ── */
+
       .hz-toggle {
         width: 120px; height: 48px;
         border-radius: 24px;
@@ -1123,7 +1091,7 @@
         to { transform: scaleX(0); }
       }
 
-      /* ── Performance Trends ── */
+
       .trend-chart-container {
         position: relative;
         height: 80px;
@@ -1141,8 +1109,8 @@
       .civic-val {
         text-shadow: 0 0 20px rgba(242, 184, 75, 0.4);
       }
-      
-      /* ── Badges Grid ── */
+
+
       .achievements-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -1196,7 +1164,7 @@
       .badge-card:hover .badge-name { color: #fff; }
       .badge-empty { padding: 32px 20px; text-align: center; border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; color: var(--muted); font-size: 0.9rem; }
 
-      /* ── Bento Value Micro-interactions ── */
+
       .bento-value {
         transition: text-shadow 0.3s ease, transform 0.3s ease;
       }
@@ -1209,7 +1177,7 @@
       .bento-card.accent-cyan:hover .bento-value { text-shadow: 0 0 24px rgba(94,212,245,0.35); }
       .bento-card.accent-teal:hover .bento-value { text-shadow: 0 0 24px rgba(0,240,204,0.35); }
 
-      /* ── Trend Chart Glow on Hover ── */
+
       .trend-val {
         transition: text-shadow 0.3s ease;
       }
@@ -1220,12 +1188,12 @@
         text-shadow: 0 0 28px rgba(242, 184, 75, 0.6);
       }
 
-      /* ── Performance Card Sparkline Pulse ── */
+
       .bento-card.accent-teal:hover .trend-chart-container {
         background: linear-gradient(180deg, rgba(0,240,204,0.04) 0%, transparent 100%);
       }
 
-      /* ── Module Progress SVG ── */
+
       .svg-progress {
         transform: rotate(-90deg);
         filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.4));
@@ -1245,9 +1213,9 @@
       .bento-card.accent-green:hover .svg-progress-bar {
         stroke: #4ade80;
       }
-      /* ── Bottom Navigation ── */
+
       .dashboard-container {
-        padding-bottom: 90px; /* Space for bottom nav */
+        padding-bottom: 90px;
       }
       .bottom-nav {
         position: fixed;
@@ -1332,8 +1300,7 @@
 
     <div class="dashboard-container">
       <div id="tab-profile" class="main-tab-view active" style="transition: opacity 0.3s ease;">
-      <!-- Hero License -->
-      <div class="hero-license">
+            <div class="hero-license">
         <div class="hologram-strip" aria-hidden="true"></div>
         <div class="license-left">
           <div class="hero-avatar" id="hero-avatar"></div>
@@ -1353,8 +1320,7 @@
         </div>
       </div>
 
-      <!-- Bento Grid -->
-      <div class="bento-grid">
+            <div class="bento-grid">
         <div class="bento-card accent-gold">
           <div class="bento-label" style="color: var(--accent);"><span aria-hidden="true">🚗</span> Vehicle</div>
           <div class="bento-value" id="s-veh">-</div>
@@ -1429,8 +1395,7 @@
         </div>
       </div>
 
-      <!-- Trophy Room -->
-      <div class="trophy-room">
+            <div class="trophy-room">
         <h2 class="trophy-title">The Trophy Room</h2>
         <div class="cert-stage" id="cert-wrapper">
           <div class="crt" id="cert">
@@ -1478,25 +1443,20 @@
         </div>
       </div>
 
-      <!-- Certificate Gallery -->
-      <div class="dashboard-section" style="margin-top: 40px;">
+            <div class="dashboard-section" style="margin-top: 40px;">
         <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">🏆 Certificate Gallery</h2>
         <div id="cert-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px;">
-          <!-- Certificates will be rendered here -->
-        </div>
+                  </div>
         <div id="no-certs-msg" style="text-align: center; padding: 40px; color: var(--muted); display: none;">
           <p>Complete all 4 modes of all 5 levels in a module to earn a certificate.</p>
         </div>
       </div>
-      </div> <!-- End tab-profile -->
-
+      </div>
       <div id="tab-leaderboards" class="main-tab-view" style="display: none; opacity: 0; transition: opacity 0.3s ease;">
-      <!-- Leaderboards -->
-      <div class="dashboard-section" style="margin-top: 48px;">
+            <div class="dashboard-section" style="margin-top: 48px;">
         <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">📊 Leaderboards</h2>
 
-        <!-- Player & Level Search -->
-        <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+                <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
           <div style="position: relative; flex: 1; min-width: 250px;">
             <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1.1rem;">🔍</span>
             <input type="text" id="lb-player-search" placeholder="Search players by username..." oninput="_debouncedSearch()" style="width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
@@ -1509,54 +1469,44 @@
         <div id="lb-search-results" style="display: none; margin-bottom: 20px;"></div>
 
         <div style="background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-          <!-- Tab Nav -->
-          <div class="lb-tabs" role="tablist" aria-label="Leaderboard categories">
+                    <div class="lb-tabs" role="tablist" aria-label="Leaderboard categories">
             <button class="lb-tab active" id="lb-tab-xp" data-board="xp" role="tab" aria-selected="true" aria-controls="lb-panel-xp" onclick="switchLbTab('xp')">🌍 Global XP</button>
             <button class="lb-tab" id="lb-tab-modules" data-board="modules" role="tab" aria-selected="false" aria-controls="lb-panel-modules" onclick="switchLbTab('modules')">✅ Modules</button>
             <button class="lb-tab" id="lb-tab-civic" data-board="civic" role="tab" aria-selected="false" aria-controls="lb-panel-civic" onclick="switchLbTab('civic')">💰 Wallet</button>
             <button class="lb-tab" id="lb-tab-badges" data-board="badges" role="tab" aria-selected="false" aria-controls="lb-panel-badges" onclick="switchLbTab('badges')">🎖️ Badges</button>
           </div>
 
-          <!-- Podium (shown for top 3) -->
-          <div id="lb-podium-xp" class="lb-podium" style="display:none;"></div>
+                    <div id="lb-podium-xp" class="lb-podium" style="display:none;"></div>
           <div id="lb-podium-modules" class="lb-podium" style="display:none;"></div>
           <div id="lb-podium-civic" class="lb-podium" style="display:none;"></div>
           <div id="lb-podium-badges" class="lb-podium" style="display:none;"></div>
 
-          <!-- Your Rank Card -->
-          <div id="lb-your-rank-xp" class="lb-your-rank" style="display:none;"></div>
+                    <div id="lb-your-rank-xp" class="lb-your-rank" style="display:none;"></div>
           <div id="lb-your-rank-modules" class="lb-your-rank" style="display:none;"></div>
           <div id="lb-your-rank-civic" class="lb-your-rank" style="display:none;"></div>
           <div id="lb-your-rank-badges" class="lb-your-rank" style="display:none;"></div>
 
-          <!-- Stats Header -->
-          <div class="lb-stats-header">
+                    <div class="lb-stats-header">
             <div class="total-players"><span class="dot"></span> <span id="lb-total-count">Loading...</span></div>
             <div>Top performers</div>
           </div>
 
-          <!-- XP Panel -->
-          <div id="lb-panel-xp" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-xp">
+                    <div id="lb-panel-xp" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-xp">
             <div id="leaderboard-xp" data-board="xp" style="display: flex; flex-direction: column; gap: 8px;"></div>
           </div>
-          <!-- Modules Panel -->
-          <div id="lb-panel-modules" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-modules" style="display:none;">
+                    <div id="lb-panel-modules" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-modules" style="display:none;">
             <div id="leaderboard-modules" data-board="modules" style="display: flex; flex-direction: column; gap: 8px;"></div>
           </div>
-          <!-- Civic Panel -->
-          <div id="lb-panel-civic" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-civic" style="display:none;">
+                    <div id="lb-panel-civic" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-civic" style="display:none;">
             <div id="leaderboard-civic" data-board="civic" style="display: flex; flex-direction: column; gap: 8px;"></div>
           </div>
-          <!-- Badges Panel -->
-          <div id="lb-panel-badges" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-badges" style="display:none;">
+                    <div id="lb-panel-badges" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-badges" style="display:none;">
             <div id="leaderboard-badges" data-board="badges" style="display: flex; flex-direction: column; gap: 8px;"></div>
           </div>
         </div>
       </div>
-      </div> <!-- End tab-leaderboards -->
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav" aria-label="Main Navigation">
+      </div>
+        <nav class="bottom-nav" aria-label="Main Navigation">
       <button id="nav-btn-profile" class="nav-btn active" onclick="switchMainTab('profile')">
         <span class="nav-icon" aria-hidden="true">👤</span>
         <span class="nav-text">Profile</span>
@@ -1567,8 +1517,7 @@
       </button>
     </nav>
 
-    <!-- Edit Profile Modal -->
-    <div class="modal-overlay" id="edit-modal">          <div class="modal-box">
+        <div class="modal-overlay" id="edit-modal">          <div class="modal-box">
         <h3>Edit Profile</h3>
         <div class="field">
           <label>Name</label>
@@ -1603,7 +1552,7 @@
       const _studentIdParam = _urlParams.get('studentId')
       const _userParam = _urlParams.get('user')
       let _isReadOnlyMode = !!(_uidParam || _studentIdParam || _userParam)
-      let _resolvedUserId = _uidParam // will be set by profile resolution for studentId/user params
+      let _resolvedUserId = _uidParam
 
       let S = {}
       try {
@@ -1642,7 +1591,7 @@
           const { data: progress } = await client.from('game_progress').select('*').eq('user_id', userId)
           const { data: badges } = await client.from('badges').select('badge_type').eq('user_id', userId)
           const { data: wallet } = await client.from('wallets').select('balance').eq('user_id', userId).maybeSingle()
-          
+
           if (progress && progress.length > 0) {
             const comp = {}
             const scenario2d = { total: 0 }
@@ -1672,10 +1621,10 @@
       async function _syncCloudToLocal(userId) {
         const cloudS = await _loadCloudProgress(userId)
         if (!cloudS) return false
-        
+
         const cloudHasData = cloudS.total > 0 || (cloudS.badges && cloudS.badges.length > 0) || cloudS.wallet !== 50000
         const localHasData = S.total > 0 || (S.badges && S.badges.length > 0) || S.wallet !== 50000
-        
+
         if (cloudHasData && !localHasData) {
           S = { ...S, ...cloudS }
           try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
@@ -1683,10 +1632,10 @@
           if (window.ui && window.ui.init) ui.init()
           return true
         } else if (cloudHasData && localHasData) {
-          const isDifferent = cloudS.total !== S.total || 
+          const isDifferent = cloudS.total !== S.total ||
             (cloudS.badges && S.badges && cloudS.badges.length !== S.badges.length) ||
             Object.keys(cloudS.comp || {}).length !== Object.keys(S.comp || {}).length
-          
+
           if (isDifferent) {
             injectConflictModal(cloudS)
             document.getElementById('conflictMo').style.display = 'flex'
@@ -1724,29 +1673,32 @@
           return data.id
         } catch (e) {
           console.error('Certificate Sync Exception:', e)
-          return null 
+          return null
         }
       }
 
-      // Sync all dashboard data to Supabase user_profiles on every load
+
       async function _syncDashboardProgress() {
         const client = await _initSupabase()
         if (!client || !window.colUser || !window.colUser.id) return
         try {
           const completedCount = S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
           const badgeCount = S.badges ? S.badges.length : 0
+          const googleMeta = (window.colUser && window.colUser.user_metadata) || {}
+          const googleAvatarUrl = googleMeta.avatar_url || googleMeta.picture || googleMeta.avatar || null
           await client.from('user_profiles').upsert({
             user_id: window.colUser.id,
-            display_name: tUser.name || S.name || null,
+            display_name: tUser.name || S.name || googleMeta.full_name || null,
             username: tUser.username || S.username || null,
             total_score: S.total || 0,
             modules_completed: completedCount,
             badges_count: badgeCount,
             preferred_vehicle: tUser.vehicle || S.vehicle || null,
             ...(S.studentId ? { student_id: S.studentId } : {}),
+            ...(googleAvatarUrl ? { avatar_url: googleAvatarUrl } : {}),
             updated_at: new Date().toISOString()
           }, { onConflict: 'user_id' }).catch(() => {})
-          // Sync badges to badges table (one row per badge_type)
+
           if (S.badges && S.badges.length > 0) {
             try {
               const { data: existing } = await client.from('badges').select('badge_type').eq('user_id', window.colUser.id)
@@ -1757,7 +1709,7 @@
               }
             } catch (e) { console.warn('Badge sync failed:', e) }
           }
-          // Sync wallet to wallets table
+
           const walletBal = S.wallet || 0
           if (walletBal > 0) {
             try {
@@ -1767,7 +1719,7 @@
         } catch (e) { console.warn('Dashboard sync exception:', e) }
       }
 
-      // Resolve ?studentId=XXX or ?user=@username to a Supabase user_id
+
       async function _resolveProfileUrl() {
         if (_resolvedUserId) return _resolvedUserId
         const client = await _initSupabase()
@@ -1781,7 +1733,7 @@
             const uname = _userParam.startsWith('@') ? _userParam : '@' + _userParam
             const { data } = await client.from('user_profiles').select('user_id').eq('username', uname).maybeSingle()
             if (data && data.user_id) { _resolvedUserId = data.user_id; return data.user_id }
-            // Also try profiles table username field
+
             const { data: pdata } = await client.from('profiles').select('id').eq('username', uname).maybeSingle()
             if (pdata && pdata.id) { _resolvedUserId = pdata.id; return pdata.id }
           }
@@ -1791,12 +1743,12 @@
 
       async function renderDashboardUI() {
         if (_isReadOnlyMode) {
-            // Resolve ?studentId=XXX or ?user=@username to a real user_id
+
             const resolvedId = await _resolveProfileUrl()
             const targetId = resolvedId || _uidParam
             const client = await _initSupabase();
             if (client && targetId) {
-              // Try user_profiles first (has richer data we sync), fallback to profiles
+
               const { data: upData } = await client.from('user_profiles').select('*').eq('user_id', targetId).maybeSingle()
               if (upData) {
                 tUser.name = upData.display_name || 'Driver';
@@ -1807,20 +1759,13 @@
                 S.total = upData.total_score || 0
                 S.studentId = upData.student_id || null
               }
-              const { data } = await client.from('profiles').select('id, raw_user_meta_data').eq('id', targetId).maybeSingle();
-              if (data && data.raw_user_meta_data) {
-                 const meta = data.raw_user_meta_data;
-                 if (!tUser.name || tUser.name === 'Driver') tUser.name = meta.full_name || 'Driver';
-                 if (!tUser.username) tUser.username = meta.username || '';
-                 if (!tUser.vehicle || tUser.vehicle === 'Car') tUser.vehicle = meta.vehicle || 'Car';
-                 tUser.age = tUser.age || meta.age || 18;
-                 tUser.language = tUser.language || meta.language || 'en';
-                 if (meta.traffic_save && (!S.total || S.total === 0)) {
-                    S = typeof meta.traffic_save === 'string' ? JSON.parse(meta.traffic_save) : meta.traffic_save;
-                 }
+              const { data } = await client.from('profiles').select('username, full_name').eq('id', targetId).maybeSingle();
+              if (data) {
+                 if (!tUser.name || tUser.name === 'Driver') tUser.name = data.full_name || 'Driver';
+                 if (!tUser.username) tUser.username = data.username || '';
               }
             }
-            // Hide edit controls in read-only mode
+
             const menuContainer = document.querySelector('.menu-container');
             if (menuContainer) menuContainer.style.display = 'none';
             const topActions = document.querySelector('.top-bar-actions');
@@ -1829,11 +1774,11 @@
             }
             document.title = (tUser.name || 'Driver') + "'s Profile | Traffic Hero";
         } else {
-          // Sync own dashboard data to Supabase on every load
+
           _syncDashboardProgress()
         }
 
-        // Hide Share Profile button in read-only mode (viewing someone else's profile)
+
         if (_isReadOnlyMode) {
           const shareBtn = document.getElementById('btn-share-profile')
           if (shareBtn) shareBtn.style.display = 'none'
@@ -1846,12 +1791,7 @@
           if (!el) return;
           let userPhoto = null
           try {
-            // Priority 1: Google OAuth avatar from Supabase auth
-            if (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.avatar_url) {
-              userPhoto = window.colUser.user_metadata.avatar_url
-            }
-            // Priority 2: Local storage avatar
-            else if (!_isReadOnlyMode) {
+            if (!_isReadOnlyMode) {
               const ls = localStorage.getItem('col_user')
               if (ls) { const u = JSON.parse(ls); userPhoto = u.avatar || u.photo || null }
             }
@@ -1874,13 +1814,13 @@
         const rawId = S.studentId || (window.colUser?.id ? window.colUser.id.substring(0, 8).toUpperCase() : '') || 'NEW'
         document.getElementById('h-id').innerText = 'ID: STU-' + rawId.replace('STU-', '')
 
-        // Profile view counter — increment when others view this profile
+
         if (_isReadOnlyMode && _resolvedUserId) {
           try {
             const client = await _initSupabase()
             if (client) {
               await client.rpc('increment_profile_views', { target_user_id: _resolvedUserId }).catch(() => {})
-              // Fetch and display view count
+
               const { data: vp } = await client.from('user_profiles').select('profile_views').eq('user_id', _resolvedUserId).maybeSingle()
               if (vp && vp.profile_views) {
                 const viewBadge = document.createElement('div')
@@ -1926,7 +1866,7 @@
         document.getElementById('cert-progress-pct').textContent = progressPct + '%'
         document.getElementById('cert-progress-text').textContent = completed >= 52 ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
 
-        // Module Progress Update
+
         const modulePctText = document.getElementById('cert-progress-pct')
         const moduleStatusText = document.getElementById('cert-progress-text')
         const moduleFractionText = document.getElementById('s-prog')
@@ -1938,30 +1878,30 @@
           const offset = 283 - (283 * progressPct) / 100;
           setTimeout(() => moduleBar.style.strokeDashoffset = offset, 100);
         }
-  
+
         const completions = S.comp
           ? Object.values(S.comp)
               .filter(c => c && typeof c.score === 'number' && c.score > 0)
               .sort((a, b) => (a.time || 0) - (b.time || 0))
           : []
-  
+
         const uiScoreVal = document.getElementById('ui-score-val')
         const uiCivicVal = document.getElementById('ui-civic-val')
         if (uiScoreVal) uiScoreVal.textContent = (S.total || 0).toLocaleString()
         if (uiCivicVal) uiCivicVal.textContent = '₹' + civicScore.toLocaleString()
-  
+
         if (completions.length > 0) {
           let runningScore = 0
           const scoreData = completions.map(c => (runningScore += c.score))
           if (scoreData.length === 1) scoreData.unshift(0)
           drawSvgTrend('score-svg-path', scoreData)
-          
+
           const steps = Math.max(completions.length, 1)
           const civicData = completions.map((_, i) => Math.round((civicScore / steps) * (i + 1)))
           if (civicData.length === 1) civicData.unshift(0)
           drawSvgTrend('civic-svg-path', civicData)
         }
-  
+
         const badgeList = document.getElementById('achievement-list')
         if (S.badges && S.badges.length > 0) {
           const recentBadges = [...S.badges].reverse().slice(0, 6)
@@ -1973,19 +1913,19 @@
             </div>`
           }).join('')
         }
-  
+
         document.getElementById('cert-name').innerText = displayName.toUpperCase()
         document.getElementById('cert-score').innerText = S.total || 0
         document.getElementById('cert-date').innerText = new Date().toLocaleDateString()
         const _certRefId = S.studentId || (window.colUser?.id || '').substring(0, 8).toUpperCase() || 'UNKNOWN'
         document.getElementById('cert-ref').innerText = 'TH-' + _certRefId.replace('STU-', '')
-  
+
         const certWrapper = document.getElementById('cert-wrapper')
         const noCertMsg = document.getElementById('no-cert-msg')
         const shareBar = document.getElementById('share-bar')
         const dlBtn = document.getElementById('btn-dl-cert')
         const _done = _getCompleted()
-  
+
         if (_done >= 52) {
           certWrapper.style.filter = 'none'
           certWrapper.style.opacity = '1'
@@ -2022,11 +1962,11 @@
       }
 
       window.addEventListener('col-auth-changed', async (e) => {
-        const customUser = e.detail && e.detail.user ? e.detail.user : window.colUser
-        const user = customUser ? customUser.session.user : null
+        const user = e.detail && e.detail.user ? e.detail.user : window.colUser
 
         if (user) {
           const meta = user.user_metadata || {}
+          const googleAvatar = meta.avatar_url || meta.picture || meta.avatar || null
           const name = meta.full_name || 'Driver'
           const fName = name.split(' ')[0]
 
@@ -2038,8 +1978,8 @@
             document.getElementById('navUserName').innerText = fName
             const pfp = document.getElementById('navUserPfp')
             const ini = document.getElementById('navUserInitials')
-            if (meta.avatar_url && pfp && ini) {
-              pfp.src = meta.avatar_url
+            if (googleAvatar && pfp && ini) {
+              pfp.src = googleAvatar
               pfp.style.display = 'block'
               ini.style.display = 'none'
             } else if (ini) {
@@ -2060,8 +2000,8 @@
           if (acadName) acadName.textContent = fName
           const acadPfp = document.getElementById('trafficUserPfp')
           const acadIni = document.getElementById('trafficUserInitials')
-          if (meta.avatar_url && acadPfp && acadIni) {
-            acadPfp.src = meta.avatar_url
+          if (googleAvatar && acadPfp && acadIni) {
+            acadPfp.src = googleAvatar
             acadPfp.style.display = 'block'
             acadIni.style.display = 'none'
           } else if (acadIni) {
@@ -2073,8 +2013,6 @@
           const oldSStr2 = JSON.stringify(S)
           await _syncCloudToLocal(user.id)
           if (JSON.stringify(S) !== oldSStr2) window.location.reload()
-          // Refresh avatars with Google profile pic
-          renderDashboardUI()
         } else {
           const acadBtn = document.getElementById('academy-sign-in-btn')
           const acadProf = document.getElementById('trafficUserProfile')
@@ -2097,7 +2035,7 @@
         }
       }
 
-      // --- PLAYER SEARCH (leaderboard) ---
+
       let _searchDebounce = null
       function _debouncedSearch() { clearTimeout(_searchDebounce); _searchDebounce = setTimeout(searchPlayerLb, 300) }
       async function searchPlayerLb() {
@@ -2109,44 +2047,44 @@
         resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);">Searching...</div>'
         try {
           if (!window.supabaseClient) throw new Error('Not connected')
-          // Fuzzy search: ilike with wildcards on both sides for real-time results
+
           const searchPattern = '%' + uname + '%'
           const { data, error: searchErr } = await window.supabaseClient
             .from('user_profiles')
-            .select('user_id, display_name, username, total_score, modules_completed')
+            .select('user_id, display_name, username, total_score, modules_completed, badges_count')
             .ilike('username', searchPattern)
             .order('total_score', { ascending: false })
-            .limit(20)
+            .limit(1)
           if (searchErr) console.warn('Player search error:', searchErr)
-          if (!data) {
-            // Fallback to profiles table
+          const result = data && data[0]
+          if (!result) {
+
             const { data: pData } = await window.supabaseClient
               .from('profiles')
-              .select('id, raw_user_meta_data')
-              .eq('raw_user_meta_data->>username', uname)
+              .select('id, username, full_name')
+              .eq('username', uname)
               .maybeSingle()
             if (!pData) {
               resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">Player not found. Try a different username.</div>'
               return
             }
-            const meta = pData.raw_user_meta_data || {}
             resultsEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;" onclick="window.open('TrafficDashboard.html?uid=${pData.id}','_blank')">
-              <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;">${(meta.full_name||'U')[0]}</div>
-              <div style="flex:1;"><div style="font-weight:700;">${meta.full_name||'Unknown'}</div><div style="color:var(--signal);font-size:0.85rem;">${uname}</div></div>
+              <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;">${(pData.full_name||'U')[0]}</div>
+              <div style="flex:1;"><div style="font-weight:700;">${pData.full_name||'Unknown'}</div><div style="color:var(--signal);font-size:0.85rem;">${uname}</div></div>
               <div style="text-align:right;"><div style="font-size:0.85rem;font-weight:600;color:var(--dim);">Profile</div><div style="font-size:0.7rem;color:var(--muted);">VIEW &rarr;</div></div>
             </div>`
             return
           }
           const baseUrl = 'TrafficDashboard.html?user=' + encodeURIComponent(uname)
           resultsEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;" onclick="window.open('${baseUrl}','_blank')" onmouseover="this.style.borderColor='rgba(94,212,245,0.4)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:1.2rem;">${(data.display_name||'U')[0]}</div>
+            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:1.2rem;">${(result.display_name||'U')[0]}</div>
             <div style="flex:1;min-width:0;">
-              <div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${data.display_name||'Unknown'}</div>
+              <div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${result.display_name||'Unknown'}</div>
               <div style="color:var(--signal);font-size:0.85rem;">${uname}</div>
             </div>
             <div style="text-align:right;flex-shrink:0;">
-              <div style="font-size:1.2rem;font-weight:800;">${(data.total_score||0).toLocaleString()} XP</div>
-              <div style="font-size:0.7rem;color:var(--muted);">${data.modules_completed||0}/52 modules · ${data.badges_count||0} badges</div>
+              <div style="font-size:1.2rem;font-weight:800;">${(result.total_score||0).toLocaleString()} XP</div>
+              <div style="font-size:0.7rem;color:var(--muted);">${result.modules_completed||0}/52 modules · ${result.badges_count||0} badges</div>
             </div>
           </div>`
         } catch (e) {
@@ -2154,9 +2092,9 @@
         }
       }
 
-      // --- LEVEL SEARCH ---
-      // Static level names for dashboard search (LVS not loaded here)
-      // NOTE: Keep in sync with level1.js–level20.js
+
+
+
       const _LEVEL_NAMES = [
         { id: 1, name: 'Free Roam', desc: 'Explore the open city', icon: '🌍' },
         { id: 2, name: 'Pedestrian Courtesy', desc: 'Pedestrian priority rules', icon: '🚶' },
@@ -2209,7 +2147,7 @@
         }
       }
 
-      // --- USERNAME AVAILABILITY CHECK (dashboard edit modal) ---
+
       let _edUsernameCheckTimeout = null
       async function checkUsernameAvail(username) {
         const statusEl = document.getElementById('ed-username-status')
@@ -2278,7 +2216,7 @@
         if (name) {
           tUser.name = name; tUser.age = age; tUser.vehicle = vehicle
           S.name = name; S.age = age; S.vehicle = vehicle
-          
+
           if (usernameInput) {
             if (!usernameInput.startsWith('@')) usernameInput = '@' + usernameInput;
             tUser.username = usernameInput;
@@ -2289,16 +2227,16 @@
               }).catch(console.error);
             }
           }
-          
+
           localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
           localStorage.setItem('th-save', JSON.stringify(S))
           if (window.save) window.save()
-          
+
           setTimeout(() => window.location.reload(), 300)
         }
       }
 
-      // Helper: count completed modules (avoid computing 3 times)
+
       function _getCompleted() {
         return S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
       }
@@ -2532,14 +2470,14 @@
         if (!window.supabaseClient || !targetUserId) return;
         const gallery = document.getElementById('cert-gallery')
         if (!gallery) return
-        
+
         try {
           const { data: certs } = await window.supabaseClient
             .from('certificates')
             .select('*')
             .eq('user_id', targetUserId)
             .order('issued_at', { ascending: false })
-          
+
           if (certs && certs.length > 0) {
             gallery.innerHTML = certs.map(c => `
               <div class="cert-gallery-card">
@@ -2566,35 +2504,35 @@
       }
 
       function switchMainTab(tabId) {
-        // Clear leaderboard search results when leaving leaderboard tab
+
         const searchResults = document.getElementById('lb-search-results');
         if (searchResults && tabId !== 'leaderboards') searchResults.style.display = 'none';
-        // Update nav buttons
+
         document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
         const activeBtn = document.getElementById('nav-btn-' + tabId);
         if (activeBtn) activeBtn.classList.add('active');
 
-        // Handle views with opacity transition
+
         const views = document.querySelectorAll('.main-tab-view');
         views.forEach(view => {
           if (view.id === 'tab-' + tabId) {
             view.style.display = 'block';
-            // Slight delay to allow display block to take effect before opacity transition
+
             setTimeout(() => view.style.opacity = '1', 10);
           } else {
             view.style.opacity = '0';
             setTimeout(() => {
               if (view.style.opacity === '0') view.style.display = 'none';
-            }, 300); // match CSS transition duration
+            }, 300);
           }
         });
-        
-        // Scroll to top when switching
+
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       function switchLbTab(board) {
-        // Clear search results when switching leaderboard tabs
+
         const sr = document.getElementById('lb-search-results')
         if (sr) sr.style.display = 'none'
         document.querySelectorAll('.lb-tab').forEach(t => {
@@ -2602,15 +2540,15 @@
           t.classList.toggle('active', active)
           t.setAttribute('aria-selected', active)
         })
-        // Hide all panels
+
         document.querySelectorAll('.lb-panel').forEach(p => p.style.display = 'none')
         const panel = document.getElementById('lb-panel-' + board)
         if (panel) panel.style.display = 'block'
-        // Toggle podium visibility per board
+
         document.querySelectorAll('.lb-podium').forEach(p => p.style.display = 'none')
         const podium = document.getElementById('lb-podium-' + board)
         if (podium && podium.children.length > 0) podium.style.display = 'flex'
-        // Toggle your-rank visibility per board
+
         document.querySelectorAll('.lb-your-rank').forEach(p => p.style.display = 'none')
         const yr = document.getElementById('lb-your-rank-' + board)
         if (yr && yr.innerHTML.trim()) yr.style.display = 'flex'
@@ -2648,7 +2586,7 @@
           if (!container) return
           if (!users || users.length === 0) { container.innerHTML = EMPTY_MSG; return }
 
-          // ── Podium ──
+
           const podiumEl = document.getElementById('lb-podium-' + board)
           if (podiumEl) {
             if (users.length >= 1) {
@@ -2662,13 +2600,11 @@
                 const name = profileMap[u.user_id] || u.display_name || u.username || 'Anon'
                 const score = u.score || u.badge_count || u.modules_completed || 0
                 const initial = name.charAt(0).toUpperCase()
-                const isMultiDevice = u.user_id && multiDeviceUserIds.has(u.user_id)
-                const deviceBadge = isMultiDevice ? '<span class="device-badge" title="Multiple devices on this account" style="font-size:0.8rem;vertical-align:middle;margin-left:4px;">📱</span>' : ''
                 return `<div class="podium-spot ${podiumClasses[idx]}">
                   <div class="podium-avatar" style="background: linear-gradient(135deg, ${idx===1?'#fbbf24':idx===0?'#94a3b8':'#d97706'}, ${idx===1?'#f59e0b':idx===0?'#64748b':'#b45309'})">
                     ${initial}
                   </div>
-                  <div class="podium-name">${name}${deviceBadge}</div>
+                  <div class="podium-name">${name}</div>
                   <div class="podium-score">${score.toLocaleString()}</div>
                   <div class="podium-base">${podiumMedals[idx]}</div>
                 </div>`
@@ -2679,7 +2615,7 @@
             }
           }
 
-          // ── Your Rank Card ──
+
           const yourRankEl = document.getElementById('lb-your-rank-' + board)
           if (yourRankEl && currentUserId) {
             const youIdx = users.findIndex(u => u.user_id === currentUserId)
@@ -2689,13 +2625,11 @@
               const totalPlayers = users.length
               const percentile = totalPlayers > 1 ? Math.round(((totalPlayers - yourRank) / (totalPlayers - 1)) * 100) : 100
               const name = profileMap[you.user_id] || you.display_name || 'You'
-              const isMultiDevice = multiDeviceUserIds.has(currentUserId)
-              const deviceBadgeHtml = isMultiDevice ? '<span class="device-badge" style="font-size:0.5rem;padding:1px 6px;margin-left:8px;">📱 Multiple devices</span>' : ''
               yourRankEl.innerHTML = `
                 <div class="your-rank-num">#${yourRank}</div>
                 <div class="your-rank-info">
-                  <div class="your-rank-label">Your Rank <span class="you-badge" style="font-size:0.55rem;padding:1px 6px;border-radius:4px;background:linear-gradient(135deg,rgba(242,184,75,0.2),rgba(242,184,75,0.08));color:var(--accent);border:1px solid rgba(242,184,75,0.3);font-weight:800;text-transform:uppercase;letter-spacing:0.06em;">You</span></div>
-                  <div class="your-rank-detail">${name} · ${metric(you)} ${deviceBadgeHtml}</div>
+                  <div class="your-rank-label">Your Rank</div>
+                  <div class="your-rank-detail">${name} · ${metric(you)}</div>
                 </div>
                 <div class="your-rank-percentile">Top ${100 - percentile}%</div>
               `
@@ -2707,11 +2641,11 @@
             yourRankEl.style.display = 'none'
           }
 
-          // ── Stats Header ──
+
           const totalEl = document.getElementById('lb-total-count')
           if (totalEl) totalEl.textContent = users.length + ' players'
 
-          // Per-user localStorage key so different accounts don't collide
+
           const storageKey = 'lb_ranks_' + (currentUserId || 'anon') + '_' + board
           let prevRanks = {}
           let hasPrevData = false
@@ -2719,14 +2653,14 @@
             const stored = localStorage.getItem(storageKey)
             if (stored) { prevRanks = JSON.parse(stored); hasPrevData = true }
           } catch(e) {}
-          // Save current rankings for next comparison
+
           const currentRanks = {}
           users.forEach((u, i) => { if (u.user_id) currentRanks[u.user_id] = i + 1 })
           try {
             localStorage.setItem(storageKey, JSON.stringify(currentRanks))
           } catch(e) {}
 
-          // Tier badge helper
+
           function tierBadge(rank) {
             if (rank === 1) return '<span class="tier-badge gold">👑 GOLD</span>'
             if (rank === 2) return '<span class="tier-badge silver">🥈 SILVER</span>'
@@ -2734,7 +2668,7 @@
             return ''
           }
 
-          // Show all rows but starting rank from 1 (podium + rows both show same players)
+
           const rows = users.slice(0).map((u, i) => {
             const isYou = u.user_id && u.user_id === currentUserId
             const displayUsername = profileMap[u.user_id] || u.display_name || u.username || u.full_name || 'Anonymous'
@@ -2742,11 +2676,8 @@
             const prevRank = u.user_id ? prevRanks[u.user_id] : null
             let rankChangeHtml = ''
             let rowClass = isYou ? ' you' : ''
-            // Multi-device indicator
-            const isMultiDevice = u.user_id && multiDeviceUserIds.has(u.user_id)
-            const deviceBadge = isMultiDevice ? '<span class="device-badge" title="Multiple devices on this account">📱</span>' : ''
             if (prevRank != null) {
-              const delta = prevRank - curRank // positive = moved up
+              const delta = prevRank - curRank
               if (delta > 0) {
                 rowClass += ' rank-up'
                 const displayNum = delta > 9 ? '+9' : delta
@@ -2767,36 +2698,36 @@
               <div class="rank"><span class="rank-num" data-target="${curRank}">${curRank}</span></div>
               ${rankChangeHtml}
               <div class="who">
-                <div class="name">${displayUsername} ${tierBadge(curRank)} ${deviceBadge}</div>
+                <div class="name">${displayUsername} ${tierBadge(curRank)}</div>
                 <div class="metric">${metric(u)}</div>
               </div>
               ${curRank <= 3 ? `<div class="crown">${crowns[board]}</div>` : ''}
             </div>`
           }).join('')
           container.innerHTML = rows
-          // Animate rank numbers: count from 1 to actual rank
+
           _animateRanks(container)
         }
 
-        // ── Rank Count-Up Animation ──
-        // Track active intervals for cleanup on re-render
+
+
         const _activeRankIntervals = []
         function _animateRanks(container) {
-          // Clear any previous rank intervals to prevent leaks
+
           _activeRankIntervals.forEach(id => clearInterval(id))
           _activeRankIntervals.length = 0
           const nums = container.querySelectorAll('.rank-num')
           nums.forEach((el, idx) => {
             const target = parseInt(el.getAttribute('data-target')) || (idx + 1)
-            const delay = 120 + idx * 80 // stagger each row
+            const delay = 120 + idx * 80
             el.textContent = '—'
             setTimeout(() => {
-              if (!el.isConnected) return // bail if DOM was re-rendered
+              if (!el.isConnected) return
               el.classList.add('counting')
               let current = 0
               const step = Math.max(1, Math.floor(target / 6))
               const interval = setInterval(() => {
-                if (!el.isConnected) { clearInterval(interval); return } // cleanup detached nodes
+                if (!el.isConnected) { clearInterval(interval); return }
                 current += step
                 if (current >= target) {
                   current = target
@@ -2810,7 +2741,7 @@
           })
         }
 
-        // ── Expose for post-level-completion rank animation ──
+
         window._animateLeaderboardRanks = _animateRanks
 
         let certsByScore = null
@@ -2828,7 +2759,7 @@
           if (data) data.forEach(d => allUserIds.add(d.user_id))
         } catch (e) { console.warn('Leaderboard XP fetch failed:', e) }
 
-        // Fallback: if certificates table is empty, pull from user_profiles
+
         if (!certsByScore || certsByScore.length === 0) {
           try {
             const { data: upData } = await window.supabaseClient
@@ -2866,57 +2797,36 @@
           else { allBadges = bData; if (bData) bData.forEach(d => allUserIds.add(d.user_id)) }
         } catch (e) { console.warn('Leaderboard badges fetch failed:', e); allBadges = [] }
 
-        // Fetch usernames from user_profiles first, then profiles as fallback
-        // Also fetch emails from profiles to detect multiple devices per Google account
-        const emailMap = {} // user_id -> email
-        const emailToUserIds = {} // email -> [user_id, ...]
+
         if (allUserIds.size > 0) {
-          const userIdsArray = Array.from(allUserIds).filter(id => 
-            typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
-          )
-          if (userIdsArray.length > 0) {
-            try {
-              const { data: upProfiles } = await window.supabaseClient
-                .from('user_profiles')
-                .select('user_id, display_name, username')
-                .in('user_id', userIdsArray)
-              if (upProfiles) {
-                upProfiles.forEach(p => {
-                  const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
-                  if (name) profileMap[p.user_id] = name
-                })
-              }
-            } catch (e) {}
-            // Fetch emails from profiles table (contains Google OAuth metadata)
-            try {
+          try {
+            const { data: upProfiles } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id, display_name, username')
+              .in('user_id', Array.from(allUserIds))
+            if (upProfiles) {
+              upProfiles.forEach(p => {
+                const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
+                if (name) profileMap[p.user_id] = name
+              })
+            }
+          } catch (e) {}
+
+          try {
+            const missingIds = Array.from(allUserIds).filter(id => !profileMap[id])
+            if (missingIds.length > 0) {
               const { data: profiles } = await window.supabaseClient
                 .from('profiles')
-                .select('id, raw_user_meta_data, username')
-                .in('id', userIdsArray)
+                .select('id, username')
+                .in('id', missingIds)
               if (profiles) {
                 profiles.forEach(p => {
-                  const meta = p.raw_user_meta_data || {}
-                  const email = meta.email || meta.provider_email || null
-                  if (email) {
-                    emailMap[p.id] = email.toLowerCase()
-                    if (!emailToUserIds[email.toLowerCase()]) emailToUserIds[email.toLowerCase()] = []
-                    emailToUserIds[email.toLowerCase()].push(p.id)
-                  }
-                  // Fallback username if not in user_profiles
-                  if (!profileMap[p.id] && p.username) {
-                    profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
-                  }
+                  if (p.username) profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
                 })
               }
-            } catch (e) { console.warn('Leaderboard profiles email fetch failed:', e) }
-          }
+            }
+          } catch (e) { console.warn('Leaderboard profiles fetch failed:', e) }
         }
-
-        // Track which user_ids have "siblings" (same email, different device)
-        const multiDeviceUserIds = new Set()
-        Object.values(emailToUserIds).forEach(ids => {
-          if (ids.length > 1) ids.forEach(id => multiDeviceUserIds.add(id))
-        })
 
         if (certsByScore && certsByScore.length > 0) {
           renderBoard('leaderboard-xp', 'xp', certsByScore, u => `${(u.score || 0).toLocaleString()} XP`)
@@ -2945,7 +2855,7 @@
         }
       }
 
-      // Load gallery and leaderboard on page load
+
       setTimeout(() => {
         loadCertificateGallery()
         loadLeaderboard()
@@ -2958,7 +2868,7 @@
 
       function shareProfile() {
         const baseUrl = window.location.origin + window.location.pathname
-        // Prefer username-based URL, then studentId, then uid
+
         const username = tUser.username || S.username || null
         const studentId = S.studentId || window.colUser?.uid || null
         let url
@@ -2976,7 +2886,7 @@
         navigator.clipboard.writeText(url).then(() => toast('Profile link copied! 🎉', '#5ed4f5'))
       }
 
-      // Welcome back popup is handled by welcome-back.js module (no inline duplicate needed).
+
     </script>
   <script src="welcome-back.js"></script>
 </body>

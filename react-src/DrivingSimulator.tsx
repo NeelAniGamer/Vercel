@@ -444,8 +444,13 @@ export default function DrivingSimulator({
 
       // Build player vehicles from GLB
       setStatus("Building scene…");
-      const profileStr = localStorage.getItem('traffic_profile');
-      const profile = profileStr ? JSON.parse(profileStr) : {};
+      let profile: any = {};
+      try {
+        const profileStr = localStorage.getItem('traffic_profile');
+        if (profileStr) profile = JSON.parse(profileStr);
+      } catch (e) {
+        console.warn('Failed to parse traffic_profile from localStorage', e);
+      }
       const username = profile.username || ((window as any).colUser?.user_metadata?.username) || 'Anonymous';
 
       const playerVehicle = await getOrBuildVehicle('car', 0xe63946);

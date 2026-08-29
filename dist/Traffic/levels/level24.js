@@ -23,6 +23,7 @@ window.LVS.push({
   scenarioType: 'cars_only',
   npcDensity: 'light',
   startOutside: true,
+  hasElderlyCrossing: true,
   tasks: [
     { id: 'stop_zebra', text: 'Stop at zebra crossing', type: 'stop', target: 'zebra', done: false },
     { id: 'wait_cross', text: 'Wait for pedestrian to cross', type: 'stop', target: 'pedestrian_crossed', done: false },

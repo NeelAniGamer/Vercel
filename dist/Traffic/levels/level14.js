@@ -3,35 +3,45 @@ window.LVS.push({
   id: 14,
   icon: '🌙',
   name: 'Lesson 14 - Night Crossing',
-  modes: ['pedestrian', 'car', 'bike'],
+  modes: ['car', 'bike', 'pedestrian'],
   col: '#e74c3c',
-  ds: 'It is late at night. Visibility is poor. An elderly person with a walking stick is slowly crossing at an unmarked crossing point. NPCs are speeding past — do not follow them.',
+  ds: 'It is late at night. Visibility is poor. An elderly citizen with a walking stick is slowly crossing at an unmarked crossing point ahead. Pedestrians in dark and reflective clothes are crossing along the route. Drive with headlights on, dip for oncoming traffic (press H), and yield to all crossing pedestrians.',
   hps: [
-    'Use your headlights properly — dip them for oncoming traffic.',
-    'At unmarked crossings, pedestrians still have the right of way.',
-    'Reduce speed at night — reaction times are halved in low visibility.'
+    'Turn on headlights and dip them (press H) for oncoming traffic to avoid blinding other drivers.',
+    'Pedestrians have right of way at both marked zebra crossings and unmarked crossing points.',
+    'Reduce speed at night (stay below 40 km/h) — stopping distances double in the dark.'
   ],
   law: {
-    sec: 'MV Act Section 128',
+    sec: 'MV Act Section 128 & 177',
     fine: '₹1000 - ₹3000',
-    off: 'Failing to Yield at Night',
-    secHi: 'मोटर वाहन अधिनियम धारा 128',
+    off: 'Failing to Yield to Pedestrians / High Beam Abuse at Night',
+    secHi: 'मोटर वाहन अधिनियम धारा 128 व 177',
     fineHi: '₹1000 - ₹3000',
-    offHi: 'रात में रास्ता न देना'
+    offHi: 'रात में पैदल यात्री को रास्ता न देना / हाई बीम का दुरुपयोग'
   },
   theory:
-    '<h2>Night Crossing</h2><p>Raat ko India mein driving karna bahut mushkil hai. Roads andheri hain, gaadiyan tez chal rahi hain, aur log dark kapdon mein sadak cross kar rahe hain — yeh recipe hai disaster ki!</p><p>Ek buzurg stick leke slowly cross kar raha hai — unhe tumhari gaadi dikh bhi nahi sakti, sun bhi nahi sakti. NPC tez ja rahe hain — ek unhe touch kar sakta hai!</p><h3>🌙 Kya karna hai?</h3><ul><li>Buzurg slowly cross kar raha hai — ruk jao, poori tarah cross hone do!</li><li>NPC tez ja rahe hain — unki mat suno.</li><li>Headlights dikh rahe hain, lekin shadows mein khatna chhupa hai — dheere jao.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>MV Act Section 128 kehta hai — raat mein extreme caution zaroori hai. Pedestrian ko kisi bhi crossing pe (marked ya unmarked) rukna padega — ₹1000 se ₹3000 fine!</p>',
-  pract: 'Slow down, use headlights responsibly, and wait for the elderly person to cross completely.',
+    '<h2>Night Crossing & Headlight Etiquette</h2><p>Raat ko India mein driving karna sabse bada challenge hai. Roads pe lighting kam hoti hai, log dark kapdon mein crossing karte hain, aur tez gaadiyan high beam se aankhein chaundhiye kar deti hain.</p><p>Is lesson mein tumhein:</p><ul><li><b>Headlights On</b> rakhna hai aur oncoming traffic ke aate hi <b>H daba kar Low Beam (Dip)</b> karna hai.</li><li>Aage <b>Z = -50m</b> pe ek buzurg stick le kar cross kar rahe hain — gaadi rok kar unhe poora cross karne do!</li><li>Zebra crossings pe crossing pedestrians ko rasta do.</li><li>Speed 40 km/h se kam rakho.</li></ul>',
+  pract: 'Drive carefully through the night streets, manage headlights (press H to dip), and yield to all crossing pedestrians.',
   mode: 'practical',
   themeType: 'pedestrian_courtesy',
   scenarioType: 'mixed',
   npcDensity: 'moderate',
   isNight: true,
+  sky: 0x060814,
+  fog: 400,
+  amb: 0.15,
+  ground: 0x142014,
   startOutside: true,
+  hasNightCrossing: true,
+  hasElderlyCrossing: true,
+  elderlyCrossX: 0,
+  elderlyCrossZ: -50,
   tasks: [
-    { id: 'dip_headlights', text: 'Dip headlights for oncoming traffic', type: 'toggle', target: 'headlights', done: false },
-    { id: 'yield_elderly', text: 'Wait for elderly to cross', type: 'stop', target: 'stationary', done: false },
-    { id: 'no_speed', text: 'Do not speed at night', type: 'avoid', target: 'speed_night', done: false }
+    { id: 'dip_headlights', text: 'Dip headlights for oncoming traffic (Press H)', type: 'toggle', target: 'headlights', done: false },
+    { id: 'yield_elderly', text: 'Stop and yield to elderly citizen crossing at -50m', type: 'stop', target: 'stationary', done: false },
+    { id: 'yield_pedestrians', text: 'Yield to pedestrians at zebra crossings', type: 'avoid', target: 'pedestrian_yield', done: false },
+    { id: 'no_speed', text: 'Do not exceed 40 km/h speed limit at night', type: 'avoid', target: 'speed_night', done: false }
   ],
   assets: ['suburban', 'industrial']
 })
+

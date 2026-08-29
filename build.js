@@ -5,7 +5,7 @@ const esbuild = require('esbuild');
 const distDir = path.join(__dirname, 'dist');
 
 const excludes = [
-  'node_modules', '.git', '.claude', '.agents', 'dist', 
+  'node_modules', '.git', '.claude', '.agents', 'dist', 'android', '.gradle',
   'react-src', '.playwright-mcp', 'tests', 'build.js', 'package.json', 'package-lock.json',
   'tsconfig.json', '.github'
 ];

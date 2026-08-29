@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
@@ -1215,6 +1217,7 @@
     <div class="toast" id="toast"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="col-3d.js"></script>
     <script>
         window.addEventListener('load', function () { setTimeout(function () { var l = document.getElementById('loader'); if (l) l.classList.add('gone'); }, 1300); });
         var navEl = document.getElementById('topNav'); window.addEventListener('scroll', function () { navEl.classList.toggle('s', scrollY > 60); }, { passive: true });
@@ -1347,6 +1350,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', loadFb);
+        window.addEventListener('col-auth-changed', loadFb);
 
         // Animated Range Slider Logic
         var urgSlider = document.getElementById('fbUrg');
@@ -1365,7 +1369,7 @@
                 }
 
                 sliderContainer.style.setProperty('--active-color', activeHex);
-                urgSlider.style.background =\`linear-gradient(to right, \${activeHex} \${val}%, var(--lineb) \${val}%)\`;
+                urgSlider.style.background = `linear-gradient(to right, ${activeHex} ${val}%, var(--lineb) ${val}%)`;
 
             urgLabels.forEach(function(lbl, index) {
                 if (index + 1 == urgSlider.value) {
@@ -1512,13 +1516,13 @@
         document.addEventListener('mousemove', function(e) {
             dx = e.clientX; 
             dy = e.clientY;
-            dot.style.transform = \`translate3d(\${dx}px, \${dy}px, 0) translate(-50%, -50%)\`;
+            dot.style.transform = `translate3d(${dx}px, ${dy}px, 0) translate(-50%, -50%)`;
         });
         
         function rf() {
             rx += (dx - rx) * 0.15;
             ry += (dy - ry) * 0.15;
-            ring.style.transform = \`translate3d(\${rx}px, \${ry}px, 0) translate(-50%, -50%)\`;
+            ring.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`;
             requestAnimationFrame(rf);
         }
         rf();

@@ -21,6 +21,10 @@ window.LVS.push({
   mode: 'practical',
   themeType: 'rural',
   startOutside: true,
+  isRural: true,
+  hasCow: true,
+  hasDog: true,
+  ground: 0x8b7355,
   tasks: [
     { id: 'crawl', text: 'Crawl through potholes', type: 'avoid', target: 'speed', done: false },
     { id: 'move_animals', text: 'Move stray animals', type: 'avoid', target: 'animal_hit', done: false },

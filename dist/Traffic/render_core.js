@@ -1,12 +1,8 @@
-/**
- * RenderCore - Performance Engine Core
- * Handles WebGL renderer initialization, quality preset management, DRS, and frame budget monitoring.
- * Compatible with Three.js r128+.
- */
+
 
 const QUALITY_PRESETS = {
     LOW: {
-        resScale: 0.5,
+        resScale: 0.85,
         shadowRes: 512,
         shadowCascades: 1,
         shadowBias: -0.0005,
@@ -15,7 +11,7 @@ const QUALITY_PRESETS = {
         bloomThreshold: 1.0,
         bloomStrength: 0,
         bloomRadius: 0,
-        fps: 30,
+        fps: 60,
         textureFilter: THREE.LinearFilter,
         maxAnisotropy: 1,
         lodMultiplier: 0.5,
@@ -23,55 +19,55 @@ const QUALITY_PRESETS = {
         description: 'Performance mode'
     },
     MED: {
-        resScale: 0.75,
+        resScale: 1.0,
         shadowRes: 1024,
-        shadowCascades: 2,
+        shadowCascades: 1,
         shadowBias: -0.0003,
         shadowNormalBias: 0.015,
-        bloom: true,
-        bloomThreshold: 0.85,
-        bloomStrength: 0.4,
-        bloomRadius: 0.6,
+        bloom: false,
+        bloomThreshold: 0.9,
+        bloomStrength: 0.2,
+        bloomRadius: 0.4,
         fps: 60,
         textureFilter: THREE.LinearMipmapLinearFilter,
         maxAnisotropy: 4,
         lodMultiplier: 0.75,
-        maxParticles: 2000,
+        maxParticles: 1500,
         description: 'Balanced'
     },
     HIGH: {
         resScale: 1.0,
-        shadowRes: 2048,
-        shadowCascades: 3,
+        shadowRes: 1024,
+        shadowCascades: 2,
         shadowBias: -0.0001,
         shadowNormalBias: 0.01,
-        bloom: true,
-        bloomThreshold: 0.75,
-        bloomStrength: 0.7,
-        bloomRadius: 0.8,
+        bloom: false,
+        bloomThreshold: 0.88,
+        bloomStrength: 0.25,
+        bloomRadius: 0.45,
         fps: 60,
         textureFilter: THREE.LinearMipmapLinearFilter,
-        maxAnisotropy: 8,
+        maxAnisotropy: 4,
         lodMultiplier: 1.0,
-        maxParticles: 5000,
+        maxParticles: 3000,
         description: 'High Quality'
     },
     ULTRA: {
-        resScale: 1.5,
-        shadowRes: 4096,
-        shadowCascades: 4,
+        resScale: 1.0,
+        shadowRes: 2048,
+        shadowCascades: 2,
         shadowBias: -0.00005,
         shadowNormalBias: 0.005,
         bloom: true,
-        bloomThreshold: 0.65,
-        bloomStrength: 1.0,
-        bloomRadius: 1.0,
-        fps: 144,
+        bloomThreshold: 0.86,
+        bloomStrength: 0.25,
+        bloomRadius: 0.5,
+        fps: 60,
         textureFilter: THREE.LinearMipmapLinearFilter,
-        maxAnisotropy: 16,
-        lodMultiplier: 1.5,
-        maxParticles: 10000,
-        description: 'Ultra Cinematic'
+        maxAnisotropy: 8,
+        lodMultiplier: 1.25,
+        maxParticles: 5000,
+        description: 'Ultra Quality'
     }
 };
 
@@ -92,10 +88,7 @@ class RenderCore {
         this._lastQualityCheck = 0;
     }
 
-    /**
-     * Initializes the WebGL renderer with the provided canvas.
-     * @param {HTMLCanvasElement} canvas
-     */
+    
     init(canvas) {
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({
@@ -108,27 +101,24 @@ class RenderCore {
             preserveDrawingBuffer: false
         });
 
-        // Three.js r128+ Color Management
+
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.0;
+        this.renderer.toneMappingExposure = 0.60;
 
-        // Shadow defaults
+
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.shadowMap.autoUpdate = true;
         this.renderer.shadowMap.needsUpdate = true;
 
-        // Auto-detect quality based on hardware
+
         this.autoDetectQuality();
 
         return this.renderer;
     }
 
-    /**
-     * Updates the quality preset and applies corresponding settings.
-     * @param {string} presetKey - Key from QUALITY_PRESETS (LOW, MED, HIGH, ULTRA)
-     */
+    
     setQuality(presetKey) {
         if (!QUALITY_PRESETS[presetKey]) {
             console.error(`RenderCore: Invalid quality preset: ${presetKey}`);
@@ -140,23 +130,26 @@ class RenderCore {
         console.log(`RenderCore: Quality set to ${presetKey}`);
     }
 
-    /**
-     * Enables/disables automatic quality adjustment based on frame budget.
-     * @param {boolean} enabled
-     */
+    
     setAutoQuality(enabled) {
         this._autoQualityEnabled = enabled;
     }
 
-    /**
-     * Automatically detects hardware capabilities and selects the best quality preset.
-     * @private
-     */
+    
     autoDetectQuality() {
         console.log("RenderCore: Auto-detecting hardware capabilities...");
-        let score = 2; // Start at MED
+        const savedQuality = localStorage.getItem('traffic_quality');
+        if (savedQuality && QUALITY_PRESETS[savedQuality]) {
+            console.log(`RenderCore: Using saved quality preset from localStorage: ${savedQuality}`);
+            this.setQuality(savedQuality);
+            this.setAutoQuality(false);
+            // DPR-aware resScale correction even for saved presets (720p→2K)
+            this._applyDPRCorrection();
+            return;
+        }
+        let score = 2;
 
-        // 1. GPU Analysis
+
         const gl = this.renderer.getContext();
         const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
         if (debugInfo) {
@@ -167,34 +160,34 @@ class RenderCore {
             const lowEnd = /Adreno|Mali|Intel.*HD|Intel.*UHD|Apple GPU|PowerVR|VideoCore/i;
 
             if (highEnd.test(renderer)) {
-                score += 1; // Potential HIGH
-                if (/RTX|GTX 30|GTX 40|RX 6[0-9]{3}|RX 7[0-9]{3}/i.test(renderer)) score += 1; // Potential ULTRA
+                score += 1;
+                if (/RTX|GTX 30|GTX 40|RX 6[0-9]{3}|RX 7[0-9]{3}/i.test(renderer)) score += 1;
             } else if (lowEnd.test(renderer)) {
-                score -= 1; // Potential LOW
+                score -= 1;
             }
         }
 
-        // 2. Hardware Concurrency (CPU cores)
+
         if (navigator.hardwareConcurrency) {
             console.log(`RenderCore: CPU Cores: ${navigator.hardwareConcurrency}`);
             if (navigator.hardwareConcurrency <= 2) score -= 1;
             else if (navigator.hardwareConcurrency >= 8) score += 1;
         }
 
-        // 3. Memory (deprecated but still useful)
+
         if (navigator.deviceMemory) {
             console.log(`RenderCore: Device Memory: ${navigator.deviceMemory}GB`);
             if (navigator.deviceMemory < 4) score -= 1;
             else if (navigator.deviceMemory >= 16) score += 1;
         }
 
-        // 4. Burn-in FPS Test
+
         const msPerFrame = this._perfTest();
         console.log(`RenderCore: Burn-in test: ${msPerFrame.toFixed(2)}ms/frame`);
         if (msPerFrame > 16.67) score -= 2;
         else if (msPerFrame > 10) score -= 1;
 
-        // Map score to preset
+
         let finalPreset = 'MED';
         if (score <= 0) finalPreset = 'LOW';
         else if (score === 1) finalPreset = 'LOW';
@@ -202,18 +195,46 @@ class RenderCore {
         else if (score === 3) finalPreset = 'HIGH';
         else if (score >= 4) finalPreset = 'ULTRA';
 
-        // Absolute override for very poor performance
+
         if (msPerFrame > 33) finalPreset = 'LOW';
 
-        console.log(`RenderCore: Auto-detected quality: ${finalPreset} (score: ${score})`);
+        // ── 720p→2K correction: mobile DPR + viewport size ──
+        const vw = window.innerWidth;
+        const dpr = window.devicePixelRatio || 1;
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || vw <= 767;
+        if (isMobile) {
+            // 720p budget phones (360w @3x): force LOW, 1080p mid: cap at MED, 2K tablets allow HIGH
+            if (vw <= 389 && dpr >= 2.8) finalPreset = 'LOW';
+            else if (vw <= 479 && finalPreset === 'ULTRA') finalPreset = 'HIGH';
+            else if (vw <= 599 && finalPreset === 'ULTRA') finalPreset = 'HIGH';
+        }
+        // High-DPI desktop 2K: allow ULTRA but with resScale correction
+        console.log(`RenderCore: Auto-detected quality: ${finalPreset} (score: ${score}, vw:${vw}, dpr:${dpr.toFixed(1)})`);
         this.setQuality(finalPreset);
+        this._applyDPRCorrection();
     }
 
-    /**
-     * Performs a brief burn-in test to measure baseline rendering speed.
-     * @private
-     * @returns {number} Average milliseconds per frame.
-     */
+    _applyDPRCorrection() {
+        // Keep fill-rate sane on high-DPI mobiles: effective res = preset.resScale * dprFactor
+        const dpr = window.devicePixelRatio || 1;
+        const vw = window.innerWidth;
+        const isMobile = vw <= 767 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (!isMobile || dpr <= 1.5) return;
+        const preset = QUALITY_PRESETS[this.currentPreset];
+        if (!preset) return;
+        // 720p@3x: multiply by 0.62 → ~0.52 effective; 1080p@2.6x: 0.71; 2K tablet@2x: 0.82
+        const dprFactor = dpr >= 3 ? 0.62 : dpr >= 2.5 ? 0.71 : dpr >= 2 ? 0.82 : 1;
+        const corrected = Math.max(0.5, Math.min(1, preset.resScale * dprFactor));
+        if (Math.abs(corrected - preset.resScale) > 0.02) {
+            console.log(`RenderCore: DPR correction resScale ${preset.resScale} → ${corrected.toFixed(2)} (dpr ${dpr.toFixed(1)})`);
+            // Store corrected without mutating preset
+            this._dprResScale = corrected;
+        } else {
+            this._dprResScale = null;
+        }
+    }
+
+    
     _perfTest() {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera();
@@ -225,20 +246,17 @@ class RenderCore {
         return (performance.now() - start) / iterations;
     }
 
-    /**
-     * Sets up the render target and blit scene for Dynamic Resolution Scaling.
-     * @private
-     */
+    
     _setupRenderBypass() {
         if (!this.renderer || !this.canvas) return;
 
         const preset = this.getPreset();
-        const scale = preset.resScale;
+        const scale = this._dprResScale != null ? this._dprResScale : preset.resScale;
 
         const width = Math.floor(this.canvas.width * scale);
         const height = Math.floor(this.canvas.height * scale);
 
-        // Dispose old target
+
         if (this.renderTarget) this.renderTarget.dispose();
 
         this.renderTarget = new THREE.WebGLRenderTarget(width, height, {
@@ -250,7 +268,7 @@ class RenderCore {
             stencilBuffer: false
         });
 
-        // Setup Blit Scene for upscaling/downscaling
+
         if (!this.blitScene) {
             this.blitScene = new THREE.Scene();
             this.blitCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -267,16 +285,13 @@ class RenderCore {
         this.blitMesh.material.needsUpdate = true;
     }
 
-    /**
-     * Applies the numeric settings of a preset to the renderer and effects.
-     * @private
-     */
+    
     _applyQualitySettings(preset) {
         if (!this.renderer) return;
 
         console.log(`RenderCore: Applying quality settings - ${preset.description}`);
 
-        // Dynamic Resolution Scaling
+
         if (preset.resScale !== 1.0) {
             this._setupRenderBypass();
         } else {
@@ -286,25 +301,25 @@ class RenderCore {
             }
         }
 
-        // Shadow quality
+
         if (this.renderer.shadowMap) {
-            // Note: shadowMap.size is per-light, but we set a default for new lights
+
             this._defaultShadowRes = preset.shadowRes;
             this._defaultShadowBias = preset.shadowBias;
             this._defaultShadowNormalBias = preset.shadowNormalBias;
         }
 
-        // Texture quality
+
         this._defaultTextureFilter = preset.textureFilter;
         this._defaultAnisotropy = preset.maxAnisotropy;
 
-        // LOD multiplier for LODChunk system
+
         this._lodMultiplier = preset.lodMultiplier;
 
-        // Particle budget
+
         this._maxParticles = preset.maxParticles;
 
-        // Bloom
+
         if (this.composer && this.bloomPass) {
             this.bloomPass.enabled = preset.bloom;
             if (preset.bloom) {
@@ -315,22 +330,18 @@ class RenderCore {
         }
     }
 
-    /**
-     * Renders the scene using either direct canvas rendering or DRS.
-     * @param {THREE.Scene} scene
-     * @param {THREE.Camera} camera
-     */
+    
     render(scene, camera) {
         if (!this.renderer) return;
 
         const preset = this.getPreset();
-        const scale = preset.resScale;
+        const scale = this._dprResScale != null ? this._dprResScale : preset.resScale;
 
-        if (scale === 1.0) {
-            // High Quality: Render directly to canvas
+        if (scale === 1.0 && this._dprResScale == null) {
+
             this.renderer.render(scene, camera);
         } else {
-            // DRS: Render to target, then blit to canvas
+
             if (!this.renderTarget) this._setupRenderBypass();
 
             this.renderer.setRenderTarget(this.renderTarget);
@@ -340,14 +351,11 @@ class RenderCore {
             this.renderer.render(this.blitScene, this.blitCamera);
         }
 
-        // Frame budget monitoring
+
         if (this._autoQualityEnabled) this._checkFrameBudget();
     }
 
-    /**
-     * Monitors frame time and auto-adjusts quality if budget exceeded.
-     * @private
-     */
+    
     _checkFrameBudget() {
         const now = performance.now();
         if (!this._lastFrameTime) this._lastFrameTime = now;
@@ -360,7 +368,7 @@ class RenderCore {
 
         this._frameBudgetFrames++;
         
-        // Check every 60 frames (1 second at 60fps)
+
         if (this._frameBudgetFrames >= 60) {
             this._frameBudgetFrames = 0;
             const avg = this._frameTimeHistory.reduce((a, b) => a + b, 0) / this._frameTimeHistory.length;
@@ -393,10 +401,7 @@ class RenderCore {
         }
     }
 
-    /**
-     * Creates/updates the EffectComposer with bloom for post-processing.
-     * Call after scene setup.
-     */
+    
     setupPostProcessing(width, height, isMobile) {
         if (!THREE.EffectComposer || isMobile) {
             this.composer = null;
@@ -424,9 +429,7 @@ class RenderCore {
         }
     }
 
-    /**
-     * Updates post-processing resolution on resize.
-     */
+    
     resizePostProcessing(width, height) {
         if (this.composer) {
             this.composer.setSize(width, height);
@@ -469,6 +472,6 @@ class RenderCore {
     }
 }
 
-// Export
+
 window.RenderCore = RenderCore;
 window.QUALITY_PRESETS = QUALITY_PRESETS;

@@ -7,3 +7,7 @@ screen_*.png
 dist-electron/
 Traffic/dist-electron/
 Traffic/node_modules/
+android/.gradle/
+android/app/build/
+android/build/
+.gradle/

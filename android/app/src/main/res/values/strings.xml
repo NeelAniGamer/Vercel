@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Class Of Learners</string>
+    <string name="update_available">Update Available</string>
+    <string name="update_message">A new version of Class Of Learners is available. Would you like to update now?</string>
+    <string name="update_now">Update Now</string>
+    <string name="later">Later</string>
+    <string name="retry">Retry Connection</string>
+</resources>

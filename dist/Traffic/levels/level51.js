@@ -21,6 +21,7 @@ window.LVS.push({
   mode: 'practical',
   themeType: 'lane_discipline',
   startOutside: true,
+  isHighway: true,
   tasks: [
     { id: 'reach_end', text: 'Drive to the end of the highway', type: 'reach', target: 'destination', done: false },
     { id: 'avoid_npc', text: 'Avoid NPC collisions', type: 'avoid', target: 'collision', done: false }

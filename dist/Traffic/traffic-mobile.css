@@ -1,0 +1,824 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   traffic-mobile.css — Engineered Mobile HUD for Mumbai Traffic Hero
+   Coverage: 720p (360×720 @2x) → 1080p (412×915 @2.6x) → 1440p → 2K (600+)
+   Philosophy: Fluid HUD, thumb-first controls, DPR-aware, safe-area perfect.
+   Load AFTER col-ui.css + Driving/Academy inline styles.
+   Version: 1.0 — 2026-08-27
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────
+   0. TOKENS — Fluid HUD Scale (no jumps)
+   ───────────────────────────────────────────────────────────────── */
+:root {
+  /* Fluid HUD base: 0.78 @320 → 0.86 @390 → 0.92 @412 → 1.0 @600 → 1.08 @768 → 1.14 @1440 */
+  --hud-scale: clamp(0.78, 0.72 + 1.1vw, 1.14);
+  /* Controls */
+  --ctrl: clamp(42px, 11vw, 56px);
+  --ctrl-gas: clamp(46px, 12vw, 60px);
+  --gauge: clamp(44px, 12vw, 64px);
+  --gauge-sm: clamp(36px, 9vw, 48px);
+  --minimap: clamp(56px, 17vw, 84px);
+  --steer: clamp(68px, 18vw, 96px);
+  --tap-traffic: 44px;
+  /* Type */
+  --hud-fs-xs: clamp(0.52rem, 1.6vw, 0.62rem);
+  --hud-fs-sm: clamp(0.58rem, 1.9vw, 0.7rem);
+  --hud-fs-md: clamp(0.68rem, 2.2vw, 0.82rem);
+  /* Gaps */
+  --hud-gap: clamp(4px, 1.4vw, 8px);
+  --hud-pad: clamp(4px, 1.6vw, 10px);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   1. ROOT — Fluid type, viewport, safe-area
+   ───────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  html {
+    font-size: clamp(14px, calc(3.4vw + 1px), 16px);
+  }
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  min-height: 100dvh;
+  min-height: 100svh;
+  overflow-x: clip;
+  overscroll-behavior-y: contain;
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+a:active,
+button:active,
+.mc-btn:active,
+.btn:active {
+  transform: scale(0.96);
+}
+@media (prefers-reduced-motion: reduce) {
+  a:active,
+  button:active {
+    transform: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   2. SAFE-ZONE GRID — Fluid override (replaces 3-breakpoint coarse)
+   ───────────────────────────────────────────────────────────────── */
+.safe-zone {
+  gap: var(--hud-gap) !important;
+  padding: var(--hud-pad) !important;
+}
+/* Fluid scale per breakpoint via CSS — supersedes JS presets visually */
+@media (max-width: 374px) {
+  :root {
+    --hud-scale: 0.78;
+  }
+  .safe-zone {
+    --sz-gap: 4px;
+    --sz-inset: 4px;
+  }
+}
+@media (min-width: 375px) and (max-width: 389px) {
+  :root {
+    --hud-scale: 0.82;
+  }
+}
+@media (min-width: 390px) and (max-width: 411px) {
+  :root {
+    --hud-scale: 0.86;
+  }
+}
+@media (min-width: 412px) and (max-width: 479px) {
+  :root {
+    --hud-scale: 0.92;
+  }
+}
+@media (min-width: 480px) and (max-width: 599px) {
+  :root {
+    --hud-scale: 0.98;
+  }
+}
+@media (min-width: 600px) and (max-width: 767px) {
+  :root {
+    --hud-scale: 1.04;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --hud-scale: 1.08;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1439px) {
+  :root {
+    --hud-scale: 1.12;
+  }
+}
+@media (min-width: 1440px) {
+  :root {
+    --hud-scale: 1.16;
+  }
+}
+@media (min-width: 1920px) {
+  :root {
+    --hud-scale: 1.2;
+  }
+}
+
+/* Apply scale to sz items without breaking SafeZoneGrid JS compact logic */
+.sz-item {
+  scale: var(--hud-scale);
+  transform-origin: var(--sz-x, center) var(--sz-y, center);
+}
+/* Keep compact logic but now fluid */
+.sz-item.compact {
+  scale: calc(var(--hud-scale) * 0.92) !important;
+}
+.sz-item.ultra-compact {
+  scale: calc(var(--hud-scale) * 0.84) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   3. DRIVING.HUD — Fluid controls (replaces fixed 72px/52px chaos)
+   ───────────────────────────────────────────────────────────────── */
+/* Minimap */
+#mmc {
+  width: var(--minimap) !important;
+  height: var(--minimap) !important;
+  border-width: clamp(1px, 0.35vw, 2px) !important;
+  border-radius: clamp(10px, 2.8vw, 14px) !important;
+  overflow: hidden;
+}
+/* Speed gauge */
+#spgauge {
+  width: var(--gauge) !important;
+  height: var(--gauge) !important;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(92px, 22vw, 110px)) !important;
+  left: calc(env(safe-area-inset-left, 0px) + clamp(6px, 2vw, 12px)) !important;
+}
+#spgauge svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+/* Boost gauge */
+#boostgauge {
+  width: var(--gauge-sm) !important;
+  height: var(--gauge-sm) !important;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(150px, 34vw, 180px)) !important;
+  right: calc(env(safe-area-inset-right, 0px) + clamp(6px, 2vw, 10px)) !important;
+}
+#boostgauge svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Steering wheel */
+#steer-wheel-container {
+  width: var(--steer) !important;
+  height: var(--steer) !important;
+  border-width: clamp(1.5px, 0.4vw, 2px) !important;
+  margin-left: clamp(6px, 2vw, 14px) !important;
+  touch-action: none;
+}
+/* Gas/Brake */
+#mc-gas,
+#mc-brake,
+.mc-btn {
+  width: var(--ctrl) !important;
+  height: var(--ctrl) !important;
+  min-width: var(--tap-traffic) !important;
+  min-height: var(--tap-traffic) !important;
+  border-radius: clamp(10px, 2.8vw, 14px) !important;
+  font-size: clamp(11px, 2.6vw, 14px) !important;
+  border-width: clamp(1px, 0.3vw, 2px) !important;
+  touch-action: manipulation;
+}
+#mc-gas,
+#mc-brake {
+  width: var(--ctrl-gas) !important;
+  height: var(--ctrl-gas) !important;
+}
+
+/* Mobile controls bar */
+#mobile-controls {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(2px, 1vw, 8px)) !important;
+  left: 0 !important;
+  right: 0 !important;
+  padding: 0 clamp(4px, 2vw, 10px) calc(env(safe-area-inset-bottom, 0px) + 2px) !important;
+  gap: clamp(4px, 1.4vw, 8px) !important;
+  background: linear-gradient(to top, rgba(7, 10, 20, 0.55) 0%, transparent 100%) !important;
+  backdrop-filter: none !important;
+  pointer-events: none;
+}
+#mobile-controls > * {
+  pointer-events: auto;
+}
+
+/* HUD top stacks */
+#hud {
+  gap: clamp(2px, 0.9vw, 4px) !important;
+  top: calc(env(safe-area-inset-top, 0px) + clamp(4px, 1.4vw, 8px)) !important;
+  left: calc(env(safe-area-inset-left, 0px) + clamp(4px, 1.4vw, 8px)) !important;
+}
+.hp {
+  padding: clamp(2px, 1vw, 6px) clamp(6px, 1.8vw, 10px) !important;
+  font-size: var(--hud-fs-xs) !important;
+  border-radius: clamp(6px, 1.6vw, 8px) !important;
+}
+#hudbar {
+  gap: clamp(2px, 1vw, 4px) !important;
+  top: calc(env(safe-area-inset-top, 0px) + clamp(28px, 7vw, 36px)) !important;
+  left: calc(env(safe-area-inset-left, 0px) + clamp(4px, 1.4vw, 8px)) !important;
+}
+.hb {
+  padding: clamp(2px, 1vw, 5px) clamp(5px, 1.6vw, 8px) !important;
+  font-size: var(--hud-fs-xs) !important;
+  border-radius: clamp(5px, 1.4vw, 7px) !important;
+}
+
+/* Objective + task tracker — centered, fluid width */
+#objective-overlay {
+  max-width: min(62vw, 420px) !important;
+  width: auto !important;
+  padding: clamp(4px, 1.2vw, 6px) clamp(8px, 2.4vw, 12px) !important;
+  font-size: var(--hud-fs-sm) !important;
+  border-radius: clamp(8px, 2vw, 12px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: calc(env(safe-area-inset-top, 0px) + clamp(4px, 1.4vw, 8px)) !important;
+  line-height: 1.35 !important;
+  text-wrap: balance;
+  backdrop-filter: blur(10px);
+}
+#objective-title {
+  font-size: var(--hud-fs-xs) !important;
+  letter-spacing: 0.06em !important;
+}
+#objective-desc {
+  font-size: var(--hud-fs-sm) !important;
+  line-height: 1.35 !important;
+}
+
+#task-tracker {
+  max-width: min(62vw, 380px) !important;
+  max-height: min(22vh, 160px) !important;
+  font-size: var(--hud-fs-sm) !important;
+  padding: clamp(5px, 1.4vw, 8px) clamp(8px, 2vw, 10px) !important;
+  border-radius: clamp(8px, 2vw, 12px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: calc(env(safe-area-inset-top, 0px) + clamp(44px, 11vw, 56px)) !important;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Signal + clock centered top */
+#sig-ind,
+#dn-clock {
+  font-size: var(--hud-fs-xs) !important;
+  padding: clamp(3px, 1vw, 5px) clamp(6px, 1.8vw, 10px) !important;
+  border-radius: 999px !important;
+}
+
+/* Compass strip — bottom above controls */
+#compass-strip {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(96px, 22vw, 116px)) !important;
+  font-size: var(--hud-fs-sm) !important;
+  padding: clamp(3px, 1vw, 5px) clamp(8px, 2.2vw, 12px) !important;
+  border-radius: 999px !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Gear indicator */
+#gp {
+  bottom: clamp(56px, 13vw, 68px) !important;
+  gap: clamp(2px, 0.8vw, 4px) !important;
+  padding: 2px !important;
+}
+.gb {
+  width: clamp(30px, 7.5vw, 36px) !important;
+  height: clamp(30px, 7.5vw, 36px) !important;
+  font-size: var(--hud-fs-xs) !important;
+}
+
+/* Civic controls — pill */
+#civic-controls {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(150px, 34vw, 172px)) !important;
+  right: calc(env(safe-area-inset-right, 0px) + clamp(8px, 2vw, 14px)) !important;
+  gap: clamp(4px, 1.2vw, 6px) !important;
+  padding: clamp(4px, 1.2vw, 6px) clamp(6px, 1.6vw, 8px) !important;
+  border-radius: clamp(10px, 2.4vw, 14px) !important;
+  scale: var(--hud-scale);
+  transform-origin: bottom right;
+}
+#civic-controls .civic-btn {
+  padding: clamp(3px, 1vw, 5px) clamp(6px, 1.8vw, 8px) !important;
+  font-size: var(--hud-fs-xs) !important;
+  border-radius: 999px !important;
+  min-height: 28px !important;
+}
+
+/* Phone GPS */
+#phone-gps-btn {
+  font-size: var(--hud-fs-sm) !important;
+  padding: clamp(5px, 1.4vw, 7px) clamp(8px, 2vw, 12px) !important;
+  border-radius: 999px !important;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(188px, 42vw, 210px)) !important;
+  left: calc(env(safe-area-inset-left, 0px) + clamp(12px, 3vw, 20px)) !important;
+}
+
+/* Top bar container — pill, fluid */
+#top-bar-container {
+  top: calc(env(safe-area-inset-top, 0px) + clamp(6px, 1.6vw, 10px)) !important;
+  right: calc(env(safe-area-inset-right, 0px) + clamp(6px, 1.6vw, 10px)) !important;
+  left: auto !important;
+  gap: clamp(6px, 1.6vw, 10px) !important;
+  padding: clamp(6px, 1.6vw, 8px) clamp(8px, 2.2vw, 12px) !important;
+  border-radius: clamp(12px, 3vw, 16px) !important;
+  backdrop-filter: blur(16px) !important;
+  max-width: calc(100vw - 16px);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   4. ACADEMY — Top bar + syllabus + map fluid
+   ───────────────────────────────────────────────────────────────── */
+/* Academy top bar (tb, top-bar-container) */
+.tb,
+#top-bar-container {
+  width: min(100vw - 16px, 960px);
+}
+.tb {
+  padding: clamp(8px, 1.8vw, 12px) clamp(10px, 2.4vw, 16px) !important;
+  border-radius: clamp(12px, 3vw, 16px) !important;
+}
+.tb-logo {
+  width: clamp(28px, 7vw, 38px) !important;
+  height: clamp(28px, 7vw, 38px) !important;
+}
+.tb-title {
+  font-size: clamp(0.9rem, 2.6vw, 1.15rem) !important;
+}
+.tb-sub {
+  font-size: clamp(0.6rem, 1.6vw, 0.72rem) !important;
+}
+.tb-center {
+  max-width: min(380px, 44vw);
+}
+.tb-search-wrap input {
+  font-size: max(16px, clamp(0.82rem, 2vw, 0.88rem)) !important;
+  padding: clamp(7px, 1.8vw, 8px) 36px clamp(7px, 1.8vw, 8px) 36px !important;
+  height: clamp(36px, 8.5vw, 40px) !important;
+}
+.tb-btn {
+  height: clamp(34px, 8vw, 38px) !important;
+  padding: 0 clamp(10px, 2.4vw, 16px) !important;
+  font-size: clamp(0.78rem, 2vw, 0.88rem) !important;
+  border-radius: clamp(10px, 2.4vw, 12px) !important;
+}
+.tb-btn-icon {
+  width: clamp(34px, 8vw, 38px) !important;
+  height: clamp(34px, 8vw, 38px) !important;
+}
+
+/* Start screen top nav */
+.start-top-nav {
+  padding: clamp(10px, 2.4vw, 16px) clamp(12px, 3vw, 24px) !important;
+}
+.start-logo {
+  width: clamp(32px, 7vw, 42px) !important;
+  height: clamp(32px, 7vw, 42px) !important;
+}
+.start-title {
+  font-size: clamp(0.95rem, 2.8vw, 1.25rem) !important;
+}
+.start-controls .top-btn {
+  height: clamp(36px, 8.5vw, 46px) !important;
+  padding: 0 clamp(12px, 2.8vw, 20px) !important;
+  font-size: clamp(0.82rem, 2vw, 0.95rem) !important;
+}
+
+/* Syllabus: brutally fluid — stacked on mobile, sidebar on >=861 */
+.br-w {
+  padding: 0 clamp(8px, 2vw, 32px) !important;
+  gap: clamp(12px, 2.4vw, 32px) !important;
+}
+.br-l {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+@media (min-width: 861px) {
+  .br-l {
+    flex: 0 0 clamp(280px, 28vw, 340px) !important;
+    position: sticky !important;
+    top: 80px !important;
+  }
+}
+.syl-item {
+  padding: clamp(12px, 2.8vw, 16px) clamp(12px, 2.8vw, 16px) !important;
+  min-height: 44px !important;
+}
+.syl-lbl {
+  font-size: clamp(0.84rem, 2.2vw, 1rem) !important;
+}
+.syl-sub {
+  font-size: clamp(0.72rem, 1.9vw, 0.82rem) !important;
+}
+
+/* Level cards: horizontal snap on mobile, grid on >=769 */
+@media (max-width: 768px) {
+  .category-grid {
+    gap: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  .category-grid > * {
+    flex: 0 0 clamp(76%, 78vw, 340px) !important;
+  }
+  .lcard {
+    padding: 18px !important;
+    min-height: 140px !important;
+  }
+  .lnm {
+    font-size: clamp(1.05rem, 3.2vw, 1.2rem) !important;
+  }
+}
+
+/* Academy level map SVG — fluid width */
+.level-path-svg {
+  width: min(96vw, 960px) !important;
+  height: auto !important;
+}
+.map-scroll-area {
+  padding-bottom: clamp(60px, 14vw, 90px) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   5. GENERIC TRAFFIC PAGES — TrafficDashboard, Setup, etc.
+   ───────────────────────────────────────────────────────────────── */
+.top-bar {
+  width: min(1440px, calc(100vw - 16px)) !important;
+  height: clamp(52px, 10vw, 64px) !important;
+  top: calc(env(safe-area-inset-top, 0px) + clamp(8px, 2vw, 14px)) !important;
+  padding: 0 clamp(12px, 2.6vw, 24px) !important;
+  border-radius: clamp(16px, 3.6vw, 32px) !important;
+}
+.top-bar .brand {
+  font-size: clamp(0.9rem, 2.6vw, 1.05rem) !important;
+}
+.dashboard-container {
+  margin-top: clamp(80px, 16vw, 100px) !important;
+  padding: 0 clamp(12px, 2.6vw, 24px) !important;
+}
+.hero-license {
+  padding: clamp(20px, 4.5vw, 48px) !important;
+  border-radius: clamp(18px, 3.6vw, 32px) !important;
+  flex-direction: row;
+  gap: clamp(16px, 3vw, 40px);
+}
+.hero-avatar {
+  width: clamp(72px, 16vw, 110px) !important;
+  height: clamp(72px, 16vw, 110px) !important;
+  border-radius: clamp(16px, 3.2vw, 28px) !important;
+  font-size: clamp(1.6rem, 4.5vw, 2.5rem) !important;
+}
+.license-info h1 {
+  font-size: clamp(1.5rem, 5vw, 3rem) !important;
+}
+.license-score-val {
+  font-size: clamp(2rem, 7vw, 4rem) !important;
+}
+.bento-grid {
+  gap: clamp(12px, 2.4vw, 20px) !important;
+}
+.bento-card {
+  padding: clamp(16px, 3.2vw, 28px) !important;
+  border-radius: clamp(16px, 3vw, 28px) !important;
+}
+
+/* Stack hero license on narrow 720p */
+@media (max-width: 600px) {
+  .hero-license {
+    flex-direction: column;
+    text-align: center;
+  }
+  .license-left {
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+  }
+  .license-right {
+    text-align: center;
+    width: 100%;
+  }
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .bento-card.wide {
+    grid-column: span 1 !important;
+  }
+  .bottom-nav {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100vw - 24px) !important;
+    max-width: 420px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   6. TOUCH & ACCESSIBILITY — 720p budget thumbs
+   ───────────────────────────────────────────────────────────────── */
+.mc-btn,
+.btn,
+.qo,
+.back-btn,
+.tb-btn,
+.start-controls .top-btn,
+.syl-item,
+.lcard {
+  min-height: 44px;
+}
+@media (pointer: coarse) {
+  .lcard:hover,
+  .syl-item:hover,
+  .bento-card:hover {
+    transform: none !important;
+  }
+  .lcard:active {
+    transform: scale(0.98) !important;
+  }
+  .syl-item:active {
+    transform: scale(0.98) !important;
+  }
+}
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid var(--signal, #f2b84b);
+  outline-offset: 3px;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   7. HIGH-DPI — Crisp 720p @2x, 1080p @2.6x, 2K @3x/4x
+   ───────────────────────────────────────────────────────────────── */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .safe-zone,
+  #mobile-controls,
+  #top-bar-container,
+  .tb,
+  .top-bar {
+    border-width: 0.5px;
+  }
+  .sz-item {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+  :root {
+    --hud-gap: 3px;
+  }
+  .hp,
+  .hb {
+    border-width: 0.5px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   8. RESOLUTION SEGMENTS — 720p → 2K fine tuning
+   ───────────────────────────────────────────────────────────────── */
+/* 720p small budget 320-359 */
+@media (max-width: 359px) {
+  :root {
+    --ctrl: 40px;
+    --ctrl-gas: 44px;
+    --gauge: 42px;
+    --minimap: 52px;
+    --steer: 64px;
+  }
+  #objective-overlay,
+  #task-tracker {
+    max-width: 68vw !important;
+  }
+  .tb-center {
+    display: none !important;
+  }
+}
+/* 720p standard 360-389 */
+@media (min-width: 360px) and (max-width: 389px) {
+  #mmc {
+    width: 60px !important;
+    height: 60px !important;
+  }
+}
+/* 1080p 390-423 */
+@media (min-width: 390px) and (max-width: 423px) {
+  #steer-wheel-container {
+    width: 72px !important;
+    height: 72px !important;
+  }
+}
+/* 1080p+ 424-599 */
+@media (min-width: 424px) and (max-width: 599px) {
+  #spgauge {
+    width: 56px !important;
+    height: 56px !important;
+  }
+  #objective-overlay,
+  #task-tracker {
+    max-width: 58vw !important;
+  }
+}
+/* 2K-ish fold inner / small tablet 600-767 */
+@media (min-width: 600px) and (max-width: 767px) {
+  :root {
+    --ctrl: 52px;
+    --ctrl-gas: 56px;
+    --gauge: 60px;
+    --minimap: 76px;
+    --steer: 86px;
+  }
+  #mobile-controls {
+    padding-inline: 12px !important;
+  }
+}
+/* Tablet 768-1023 */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --hud-scale: 1.08;
+  }
+  #objective-overlay,
+  #task-tracker {
+    max-width: 52vw !important;
+  }
+}
+/* Desktop 1024-1439 */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  :root {
+    --hud-scale: 1.12;
+  }
+}
+/* 2K 1440+ */
+@media (min-width: 1440px) {
+  :root {
+    --hud-scale: 1.16;
+    --ctrl: 56px;
+    --ctrl-gas: 60px;
+    --gauge: 64px;
+    --minimap: 84px;
+    --steer: 96px;
+  }
+  #mobile-controls {
+    max-width: 960px;
+    margin-inline: auto;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%);
+    width: 100%;
+  }
+}
+/* 2K ultra 1920+ */
+@media (min-width: 1920px) {
+  html {
+    font-size: 17.5px;
+  }
+  .dashboard-container {
+    max-width: 1600px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   9. LANDSCAPE — Critical for 720p phones rotated
+   ───────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --ctrl: 36px;
+    --ctrl-gas: 40px;
+    --gauge: 40px;
+    --minimap: 48px;
+    --steer: 56px;
+  }
+  #hud {
+    top: 2px !important;
+  }
+  #mmc {
+    width: 48px !important;
+    height: 48px !important;
+  }
+  #mobile-controls {
+    bottom: 2px !important;
+    padding-bottom: 2px !important;
+  }
+  #steer-wheel-container {
+    width: 56px !important;
+    height: 56px !important;
+  }
+  #objective-overlay {
+    top: 2px !important;
+    max-width: 44vw !important;
+    font-size: 0.52rem !important;
+    padding: 2px 6px !important;
+  }
+  #task-tracker {
+    top: 28px !important;
+    max-width: 44vw !important;
+    max-height: 18vh !important;
+    font-size: 0.52rem !important;
+  }
+  #spgauge,
+  #boostgauge {
+    scale: 0.88;
+  }
+  #compass-strip,
+  #civic-controls,
+  #phone-gps-btn,
+  #dn-clock,
+  #sig-ind {
+    scale: 0.9;
+  }
+  .tb,
+  #top-bar-container {
+    scale: 0.94;
+    transform-origin: top right;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   10. REDUCED MOTION & LOW-END 720p — Save GPU
+   ───────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@media (max-width: 389px) {
+  /* Budget 720p: kill blur/shadow to save fillrate */
+  .bento-card,
+  .hero-license,
+  .top-bar,
+  .tb,
+  #top-bar-container {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   11. PRINT & PWA STANDALONE
+   ───────────────────────────────────────────────────────────────── */
+@media (display-mode: standalone) {
+  #top-bar-container,
+  .tb,
+  .top-bar {
+    top: max(8px, env(safe-area-inset-top, 0px)) !important;
+  }
+}
+@media print {
+  #mobile-controls,
+  #mmc,
+  #spgauge,
+  #hud,
+  #top-bar-container,
+  .tb {
+    display: none !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   12. FIX: Prevent horizontal scroll from long words on narrow 720p
+   ───────────────────────────────────────────────────────────────── */
+p,
+span,
+h1,
+h2,
+h3,
+.lnm,
+.st {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+pre,
+code {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   13. CANVAS — Ensure 100dvh on mobile, not 100vh (address bar)
+   ───────────────────────────────────────────────────────────────── */
+#3c,
+#gc,
+canvas#gc {
+  width: 100vw !important;
+  height: 100dvh !important;
+  height: 100svh !important;
+  display: block;
+  max-width: 100vw;
+  max-height: 100dvh;
+}

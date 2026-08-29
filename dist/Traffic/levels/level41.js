@@ -25,6 +25,7 @@ window.LVS.push({
   isNight: true,
   scenarioType: 'emergency',
   startOutside: true,
+  hasRain: true,
   tasks: [
     { id: 'use_headlights', text: 'Use headlights properly', type: 'avoid', target: 'no_lights', done: false },
     { id: 'crawl_puddles', text: 'Crawl through flooded roads', type: 'avoid', target: 'splash', done: false },

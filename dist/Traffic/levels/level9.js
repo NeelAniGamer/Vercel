@@ -25,6 +25,7 @@ window.LVS.push({
   hasRain: true,
   hasBusStop: true,
   startOutside: true,
+  hasPuddles: true,
   tasks: [
     { id: 'wait_clear', text: 'Wait for commuters to clear', type: 'stop', target: 'stationary', done: false },
     { id: 'slow_pass', text: 'Pass slowly when clear', type: 'avoid', target: 'speed_puddle', done: false },

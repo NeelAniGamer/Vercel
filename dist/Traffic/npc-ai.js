@@ -10,8 +10,208 @@ const NPC_STATE = {
   PULL_OVER: 'PULL_OVER',
   EMERGENCY_BRAKE: 'EMERGENCY_BRAKE',
   DISTRACTED: 'DISTRACTED',
-  ROAD_RAGE: 'ROAD_RAGE'
+  ROAD_RAGE: 'ROAD_RAGE',
+  BUS_STOP: 'BUS_STOP',
+  YIELD: 'YIELD'
 };
+
+const VehicleClassProfiles = {
+  car: { v0: 13.89, T: 1.4, s0: 2.5, aMax: 2.0, b: 2.0, bSafe: 4.0, p: 0.50, delta: 4, wheelbase: 2.7, length: 4.5, bMax: 8.0 },
+  auto: { v0: 11.11, T: 1.0, s0: 1.8, aMax: 1.8, b: 2.2, bSafe: 4.5, p: 0.25, delta: 4, wheelbase: 2.0, length: 3.2, bMax: 8.0 },
+  bike: { v0: 16.67, T: 0.8, s0: 1.2, aMax: 2.8, b: 2.5, bSafe: 5.5, p: 0.10, delta: 4, wheelbase: 1.4, length: 2.0, bMax: 8.0 },
+  bus: { v0: 10.00, T: 2.0, s0: 4.0, aMax: 1.2, b: 1.5, bSafe: 3.5, p: 0.75, delta: 4, wheelbase: 6.0, length: 9.0, bMax: 6.0 },
+  truck: { v0: 8.33, T: 2.2, s0: 4.5, aMax: 1.0, b: 1.4, bSafe: 3.0, p: 0.60, delta: 4, wheelbase: 7.5, length: 8.5, bMax: 6.0 }
+};
+
+/**
+ * Computes IDM dynamic desired headway s*(v, Delta v)
+ * s*(v, Delta v) = s0 + max(0, v * T + (v * Delta v) / (2 * sqrt(aMax * b)))
+ */
+function calcIDMDesiredGap(v, dv, s0, T, aMax, b) {
+  const dynamicTerm = (v * dv) / (2 * Math.sqrt(Math.max(0.01, aMax * b)));
+  return s0 + Math.max(0, v * T + dynamicTerm);
+}
+
+/**
+ * Computes IDM continuous longitudinal acceleration
+ * a(v, s, Delta v) = aMax * [ 1 - (v / v0)^delta - (s*(v, Delta v) / max(0.1, s))^2 ]
+ */
+function calcIDMAcceleration(v, v0, s, dv, s0, T, aMax, b, delta = 4, maxBraking = 8.0) {
+  const sStar = calcIDMDesiredGap(v, dv, s0, T, aMax, b);
+  const freeTerm = Math.pow(Math.max(0, v) / Math.max(0.1, v0), delta);
+  const interactionTerm = Math.pow(sStar / Math.max(0.1, s), 2);
+  const rawAccel = aMax * (1 - freeTerm - interactionTerm);
+  return Math.max(-maxBraking, Math.min(aMax, rawAccel));
+}
+
+/**
+ * Evaluates MOBIL lane change criteria
+ * Safety Criterion: a_n_tilde >= -bSafe
+ * Incentive Criterion: (a_c_tilde - a_c) + p * [ (a_n_tilde - a_n) + (a_o_tilde - a_o) ] > a_th +/- a_bias
+ */
+function evaluateMOBILDecision({
+  a_c, a_c_tilde,
+  a_n = 0, a_n_tilde = 0,
+  a_o = 0, a_o_tilde = 0,
+  p = 0.5,
+  bSafe = 4.0,
+  aTh = 0.2,
+  aBias = 0.1,
+  isRightLaneChange = false,
+  lanesOnRoad = 2
+}) {
+  if (lanesOnRoad <= 1) {
+    return { shouldChange: false, reason: 'SINGLE_LANE_ROAD' };
+  }
+
+  // Safety Criterion (Hard Gate)
+  if (a_n_tilde < -bSafe) {
+    return { shouldChange: false, reason: 'SAFETY_VIOLATION_FOLLOWER_BRAKING', targetFollowerDecel: a_n_tilde };
+  }
+
+  // Incentive Criterion
+  const egoAdvantage = a_c_tilde - a_c;
+  const otherAdvantage = (a_n_tilde - a_n) + (a_o_tilde - a_o);
+  const totalIncentive = egoAdvantage + p * otherAdvantage;
+  const threshold = aTh + (isRightLaneChange ? aBias : -aBias);
+
+  if (totalIncentive > threshold) {
+    return { shouldChange: true, totalIncentive, threshold, egoAdvantage, otherAdvantage };
+  }
+
+  return { shouldChange: false, reason: 'INSUFFICIENT_INCENTIVE', totalIncentive, threshold };
+}
+
+/**
+ * Adaptive Pure Pursuit Lookahead
+ * Ld(v) = clamp(kLook * v, Lmin, Lmax)
+ */
+function calcAdaptiveLookahead(v, kLook = 0.85, Lmin = 3.5, Lmax = 20.0) {
+  return Math.max(Lmin, Math.min(Lmax, kLook * Math.max(0, v)));
+}
+
+/**
+ * Pure Pursuit Steering Curvature & Yaw Rate
+ */
+function calcPurePursuit({ localX, localZ, Ld, wheelbase = 2.7, speed = 10.0 }) {
+  const alpha = Math.atan2(localX, localZ);
+  const kappa = (2 * Math.sin(alpha)) / Math.max(0.1, Ld);
+  const steerAngle = Math.atan(kappa * wheelbase);
+  const yawRate = (speed * Math.tan(steerAngle)) / wheelbase;
+  return { alpha, kappa, steerAngle, yawRate };
+}
+
+/**
+ * Pedestrian Time-To-Collision (TTC) & Gap Acceptance
+ */
+function calcPedestrianTTC(arg1, arg2, arg3, arg4) {
+  let pedX = 0, pedZ = 0, vehX = 0, vehZ = 0, vehHeading = 0, vehSpeed = 0, laneWidth = 3.5;
+  if (arg1 && typeof arg1 === 'object' && ('pedX' in arg1 || 'pedZ' in arg1)) {
+    pedX = arg1.pedX || 0;
+    pedZ = arg1.pedZ || 0;
+    vehX = arg1.vehX || 0;
+    vehZ = arg1.vehZ || 0;
+    vehHeading = arg1.vehHeading || 0;
+    vehSpeed = arg1.vehSpeed !== undefined ? arg1.vehSpeed : 0;
+    if (arg1.laneWidth !== undefined) laneWidth = arg1.laneWidth;
+  } else if (arg1 && arg2) {
+    pedX = arg1.x || 0;
+    pedZ = arg1.z || 0;
+    vehX = arg2.x || 0;
+    vehZ = arg2.z || 0;
+    if (arg3 && typeof arg3 === 'object') {
+      const vx = arg3.x || 0;
+      const vz = arg3.z || 0;
+      vehSpeed = Math.hypot(vx, vz);
+      vehHeading = Math.atan2(vx, vz);
+    } else if (typeof arg3 === 'number') {
+      vehSpeed = arg3;
+      vehHeading = typeof arg4 === 'number' ? arg4 : 0;
+    }
+    if (typeof arg4 === 'number' && typeof arg3 === 'object') {
+      laneWidth = arg4;
+    }
+  } else {
+    return { oncoming: false, ttc: Infinity, dLong: 0, dLat: 0 };
+  }
+
+  const dx = pedX - vehX;
+  const dz = pedZ - vehZ;
+  const forwardX = Math.sin(vehHeading);
+  const forwardZ = Math.cos(vehHeading);
+  const rightX = Math.cos(vehHeading);
+  const rightZ = -Math.sin(vehHeading);
+
+  const dLong = dx * forwardX + dz * forwardZ;
+  const dLat = Math.abs(dx * rightX + dz * rightZ);
+
+  if (dLong <= 0 || dLat > (laneWidth / 2 + 1.5)) {
+    return { oncoming: false, ttc: Infinity, dLong, dLat };
+  }
+
+  const effectiveSpeed = Math.max(0.5, vehSpeed);
+  const ttc = dLong / effectiveSpeed;
+  return { oncoming: true, ttc, dLong, dLat };
+}
+
+function evaluatePedestrianGapAcceptance(options) {
+  let minTTC = Infinity, roadWidth = 12.0, walkSpeed = 1.3, tMargin = 2.0;
+  if (typeof options === 'number') {
+    minTTC = options;
+    if (arguments[1] !== undefined) roadWidth = arguments[1];
+    if (arguments[2] !== undefined) walkSpeed = arguments[2];
+    if (arguments[3] !== undefined) tMargin = arguments[3];
+  } else if (options && typeof options === 'object') {
+    minTTC = options.minTTC !== undefined ? options.minTTC : Infinity;
+    if (options.roadWidth !== undefined) roadWidth = options.roadWidth;
+    if (options.walkSpeed !== undefined) walkSpeed = options.walkSpeed;
+    if (options.tMargin !== undefined) tMargin = options.tMargin;
+  }
+  const tSafe = (roadWidth / Math.max(0.5, walkSpeed)) + tMargin;
+  return { safeToCross: minTTC >= tSafe, minTTC, tSafe };
+}
+
+function evaluatePedestrianFleeing(options) {
+  let minTTC = Infinity, dLong = 100, currentSpeed = 1.3, walkSpeed = 1.3;
+  if (options && typeof options === 'object') {
+    if (options.minTTC !== undefined) minTTC = options.minTTC;
+    if (options.dLong !== undefined) dLong = options.dLong;
+    if (options.currentSpeed !== undefined) currentSpeed = options.currentSpeed;
+    if (options.walkSpeed !== undefined) walkSpeed = options.walkSpeed;
+  }
+  const shouldFlee = (minTTC < 2.2 && dLong < 10.0) || (minTTC < 2.0 && dLong < 6.0);
+  const fleeSpeed = shouldFlee ? walkSpeed * 1.8 : walkSpeed;
+  return { shouldFlee, fleeSpeed };
+}
+
+/**
+ * 2-Phase Anti-Deadlock Arbitration
+ */
+function arbitrateDeadlock(stalledVehicles, stuckDurationSec) {
+  if (stuckDurationSec < 3.5) {
+    return { resolved: false, phase: 0, reason: 'BELOW_WATCHDOG_THRESHOLD' };
+  }
+
+  if (stuckDurationSec >= 3.5 && stuckDurationSec < 8.0) {
+    // Phase 1: Soft Token Arbitration
+    const scored = (stalledVehicles || []).map(v => {
+      const typeWeight = v.type === 'bus' ? 30 : (v.type === 'truck' ? 25 : (v.type === 'car' ? 20 : 15));
+      const aggressionBias = (v.aggression || 0.5) * 10;
+      const score = (v.arrivalTimeMs || 0) * 0.001 + typeWeight + aggressionBias;
+      return { vehicle: v, score };
+    });
+    scored.sort((a, b) => b.score - a.score);
+    return {
+      resolved: true,
+      phase: 1,
+      grantedVehicleId: scored.length > 0 ? scored[0].vehicle.id : null,
+      priorityOverrides: scored.map(s => ({ id: s.vehicle.id, priority: s.score }))
+    };
+  }
+
+  // Phase 2: Hard Recycling
+  return { resolved: true, phase: 2, action: 'RECYCLE_OR_REROUTE' };
+}
 
 const NPC_PROFILES = {
   normal: {
@@ -20,7 +220,7 @@ const NPC_PROFILES = {
     aggression: 0.3,
     patience: 0.7,
     signalCompliance: 0.95,
-    laneDiscipline: 0.9,
+    laneDiscipline: 0.95,
     speedVariance: 0.15,
     overtakeThreshold: 0.6,
     sidewalkProbability: 0.0,
@@ -32,10 +232,10 @@ const NPC_PROFILES = {
     aggression: 0.8,
     patience: 0.3,
     signalCompliance: 0.6,
-    laneDiscipline: 0.5,
+    laneDiscipline: 0.7,
     speedVariance: 0.35,
     overtakeThreshold: 0.3,
-    sidewalkProbability: 0.1,
+    sidewalkProbability: 0.0,
     parkingSkill: 0.5
   },
   reckless_bike: {
@@ -44,10 +244,10 @@ const NPC_PROFILES = {
     aggression: 0.9,
     patience: 0.1,
     signalCompliance: 0.3,
-    laneDiscipline: 0.2,
+    laneDiscipline: 0.6,
     speedVariance: 0.5,
     overtakeThreshold: 0.15,
-    sidewalkProbability: 0.35,
+    sidewalkProbability: 0.0,
     parkingSkill: 0.2
   },
   rulebreaker: {
@@ -56,10 +256,10 @@ const NPC_PROFILES = {
     aggression: 0.6,
     patience: 0.4,
     signalCompliance: 0.25,
-    laneDiscipline: 0.3,
+    laneDiscipline: 0.65,
     speedVariance: 0.4,
     overtakeThreshold: 0.25,
-    sidewalkProbability: 0.25,
+    sidewalkProbability: 0.0,
     parkingSkill: 0.35
   },
   cautious: {
@@ -73,17 +273,17 @@ const NPC_PROFILES = {
     overtakeThreshold: 0.85,
     sidewalkProbability: 0.0,
     parkingSkill: 0.95
-  },    // ── New personalities based on Mumbai traffic research ──
+  },
   teen: {
     name: 'Teen Driver',
     weight: 6,
     aggression: 0.7,
     patience: 0.2,
     signalCompliance: 0.4,
-    laneDiscipline: 0.35,
+    laneDiscipline: 0.7,
     speedVariance: 0.45,
     overtakeThreshold: 0.2,
-    sidewalkProbability: 0.15,
+    sidewalkProbability: 0.0,
     parkingSkill: 0.3
   },
   elderly: {
@@ -92,7 +292,7 @@ const NPC_PROFILES = {
     aggression: 0.05,
     patience: 0.95,
     signalCompliance: 0.98,
-    laneDiscipline: 0.85,
+    laneDiscipline: 0.92,
     speedVariance: 0.1,
     overtakeThreshold: 0.95,
     sidewalkProbability: 0.0,
@@ -104,10 +304,10 @@ const NPC_PROFILES = {
     aggression: 0.75,
     patience: 0.15,
     signalCompliance: 0.35,
-    laneDiscipline: 0.3,
+    laneDiscipline: 0.7,
     speedVariance: 0.3,
     overtakeThreshold: 0.15,
-    sidewalkProbability: 0.2,
+    sidewalkProbability: 0.0,
     parkingSkill: 0.4
   },
   tourist: {
@@ -116,7 +316,7 @@ const NPC_PROFILES = {
     aggression: 0.2,
     patience: 0.6,
     signalCompliance: 0.85,
-    laneDiscipline: 0.5,
+    laneDiscipline: 0.8,
     speedVariance: 0.2,
     overtakeThreshold: 0.7,
     sidewalkProbability: 0.0,
@@ -160,10 +360,15 @@ class NPCAI {
     this.crashTimer = 0;
     this.lastSignalCheck = 0;
     this.signalViolation = false;
-    this.laneChangeCooldown = 0;
+    this.laneChangeCooldown = 1.0 + Math.random() * 2.0;
+    this.isChangingLane = false;
+    this.laneChangeStartLane = 0;
+    this.laneChangeTargetLane = 0;
+    this.laneChangeProgress = 0;
+    this.laneChangeDuration = 1.8;
     this.desiredSpeed = 0;
     this.currentSpeed = 0;
-    this.followDistance = 15 + Math.random() * 10;
+    this.currentAcceleration = 0;
     this.reactionDelay = 0.1 + Math.random() * 0.3;
     this.reactionTimer = 0;
     this.isRuleBreaker = ['reckless_bike', 'rulebreaker', 'aggressive'].includes(this.profileKey);
@@ -173,12 +378,389 @@ class NPCAI {
       lightFlashFrequency: p.aggression * 0.3,
       tailgateDistance: (1 - p.patience) * 10 + 5
     };
-    // Distracted driving: some NPCs check phones periodically (~1-5% chance per second at 60fps)
+
     this.distractTimer = 0;
     this.distractChance = this.profileKey === 'normal' ? 0.0003 : this.profileKey === 'cautious' ? 0.0001 : this.profileKey === 'aggressive' ? 0.0008 : 0.0005;
-    // Road rage: aggressive NPCs get angry when blocked
+
     this.rageTimer = 0;
-    this.rageLevel = 0; // 0-100, triggers ROAD_RAGE at 100
+    this.rageLevel = 0;
+
+    // IDM Parameters setup
+    this._initIDMParameters();
+    this.followDistance = this.idmParams.s0 + this.idmParams.v0 * this.idmParams.T;
+
+    // Fixed speed variance per vehicle to eliminate per-frame speed jitter
+    this._speedVarianceOffset = (Math.random() - 0.5) * 2 * (this.profile?.speedVariance || 0.15);
+
+    // Mumbai Micro-Behaviors State Variables
+    this._probePhase = Math.random() * Math.PI * 2;
+    this._autoProbeOffset = 0;
+    this._filterOffset = 0;
+    this._isFiltering = false;
+
+    // Cascading Horn Reactions State Variables
+    this._hornAlertTimer = 0;
+    this._hornAlertDecel = 0;
+    this._hornYieldOffset = 0;
+    this._hornCascadeCooldown = 0;
+    this._queuedHornTimer = 0;
+
+    // Stuck detection & Anti-Deadlock
+    this._stuckCheckTimer = 0;
+    this._stuckTimer = 0;
+    this._stuckLastX = 0;
+    this._stuckLastZ = 0;
+    this._stallStartTime = null;
+  }
+
+  _initIDMParameters() {
+    const vType = (this.vehicle?.type || this.vehicle?.userData?.npcType || 'car').toLowerCase();
+    let baseKey = 'car';
+    if (['bike', 'splendor', 'activa', 'ktm', 'cycle'].includes(vType)) baseKey = 'bike';
+    else if (['auto', 'auto_yellow'].includes(vType)) baseKey = 'auto';
+    else if (['bus'].includes(vType)) baseKey = 'bus';
+    else if (['truck', 'ace'].includes(vType)) baseKey = 'truck';
+
+    const base = VehicleClassProfiles[baseKey] || VehicleClassProfiles.car;
+
+    // Driver personality modulation
+    let aMod = 1.0;
+    let TMod = 1.0;
+    let s0Mod = 1.0;
+    let pMod = 1.0;
+    if (this.profileKey === 'aggressive') { aMod = 1.2; TMod = 0.8; s0Mod = 0.85; pMod = 0.3; }
+    else if (this.profileKey === 'cautious') { aMod = 0.85; TMod = 1.25; s0Mod = 1.2; pMod = 1.4; }
+    else if (this.profileKey === 'reckless_bike') { aMod = 1.3; TMod = 0.7; s0Mod = 0.75; pMod = 0.1; }
+    else if (this.profileKey === 'elderly') { aMod = 0.8; TMod = 1.3; s0Mod = 1.25; pMod = 1.3; }
+    else if (this.profileKey === 'teen') { aMod = 1.15; TMod = 0.85; s0Mod = 0.9; pMod = 0.4; }
+
+    const effectiveP = Math.max(0.0, Math.min(1.0, base.p * pMod));
+
+    this.idmParams = {
+      v0: base.v0,
+      T: Math.max(0.5, base.T * TMod),
+      s0: Math.max(0.8, base.s0 * s0Mod),
+      aMax: base.aMax * aMod,
+      b: base.b,
+      bSafe: base.bSafe,
+      p: effectiveP,
+      politeness: effectiveP,
+      delta: base.delta || 4,
+      bMax: base.bMax || 8.0,
+      wheelbase: base.wheelbase,
+      length: base.length
+    };
+  }
+
+  /**
+   * Calculates continuous IDM acceleration
+   * @param {Object|null} leadVehicle - Detected lead vehicle or null
+   * @param {number} distToLead - Bumper-to-bumper distance to lead (m)
+   * @param {number} vLead - Lead vehicle speed (m/s)
+   * @param {number} virtualObstacleDist - Distance to stationary virtual obstacle (m)
+   * @returns {number} Acceleration in m/s^2 clamped in [-bMax, aMax]
+   */
+  calculateIDMAcceleration(leadVehicle = null, distToLead = Infinity, vLead = 0, virtualObstacleDist = Infinity) {
+    const v = Math.max(0, this.currentSpeed);
+    const targetV0 = this.desiredSpeed > 0 ? this.desiredSpeed : (this._getTargetSpeed ? this._getTargetSpeed() : this.idmParams.v0);
+    const v0 = Math.max(0.5, targetV0);
+    const { s0, T, aMax, b, delta, bMax } = this.idmParams;
+
+    // 1. Acceleration with respect to lead vehicle (or free road if none)
+    let aLead;
+    if (leadVehicle && isFinite(distToLead) && distToLead > 0) {
+      const dv = v - vLead;
+      aLead = calcIDMAcceleration(v, v0, distToLead, dv, s0, T, aMax, b, delta, bMax);
+    } else {
+      const freeTerm = Math.pow(v / v0, delta);
+      aLead = aMax * (1 - freeTerm);
+      aLead = Math.max(-bMax, Math.min(aMax, aLead));
+    }
+
+    // 2. Acceleration with respect to virtual stationary obstacle (if present)
+    let aVirtual = aLead;
+    if (isFinite(virtualObstacleDist) && virtualObstacleDist > 0) {
+      const dvObs = v - 0; // Virtual obstacle is stationary
+      aVirtual = calcIDMAcceleration(v, v0, virtualObstacleDist, dvObs, s0, T, aMax, b, delta, bMax);
+    }
+
+    return Math.max(-bMax, Math.min(aLead, aVirtual));
+  }
+
+  /**
+   * Evaluates candidate lanes using MOBIL game-theoretic algorithm
+   * @param {number[]|null} candidateLanes - Array of candidate lane indices, or null to evaluate all adjacent lanes
+   * @param {Object|null} trafficManager - Traffic manager instance
+   * @returns {{ shouldChange: boolean, targetLane: number, totalIncentive?: number, reason?: string, details?: any }}
+   */
+  evaluateMOBIL(candidateLanes = null, trafficManager = null) {
+    if (!this.currentEdge || !this.vehicle || !this.vehicle.position) {
+      return { shouldChange: false, targetLane: this.currentLane, reason: 'NO_EDGE_OR_VEHICLE' };
+    }
+
+    const totalLanes = Math.max(1, this.currentEdge.lanes || 1);
+    if (totalLanes <= 1) {
+      return { shouldChange: false, targetLane: this.currentLane, reason: 'SINGLE_LANE_ROAD' };
+    }
+
+    let candidates = candidateLanes;
+    if (!Array.isArray(candidates) || candidates.length === 0) {
+      candidates = [];
+      if (this.currentLane > 0) candidates.push(this.currentLane - 1);
+      if (this.currentLane < totalLanes - 1) candidates.push(this.currentLane + 1);
+    }
+    // Filter valid candidate lane indices
+    candidates = candidates.filter(l => typeof l === 'number' && l >= 0 && l < totalLanes && l !== this.currentLane);
+    if (candidates.length === 0) {
+      return { shouldChange: false, targetLane: this.currentLane, reason: 'NO_CANDIDATE_LANES' };
+    }
+
+    const tm = trafficManager || this.trafficManager;
+    const myPos = this.vehicle.position;
+    const forward = this.currentEdge.getForwardVector(this.vehicle.currentNode || this.targetNode);
+    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), forward).normalize();
+
+    // Gather surrounding vehicles on current edge
+    let edgeVehicles = [];
+    if (tm && typeof tm.getVehiclesOnEdge === 'function') {
+      edgeVehicles = tm.getVehiclesOnEdge(this.currentEdge.id) || [];
+    }
+    if (!edgeVehicles.length && tm && tm.vehicles) {
+      edgeVehicles = tm.vehicles.filter(v => v && v.active && (v.currentEdge === this.currentEdge || (v.npcAI && v.npcAI.currentEdge === this.currentEdge)));
+    }
+
+    // Include player if nearby on same roadway
+    const player = tm?.game?.playerVehicle || tm?.game?.player;
+    const allVehicles = [...edgeVehicles];
+    if (player && player.position && !allVehicles.includes(player) && player !== this.vehicle) {
+      allVehicles.push(player);
+    }
+
+    // Classify surrounding vehicles by longitudinal position and lane
+    const myLane = this.currentLane;
+    const egoHalfD = (this.vehicle?.mesh?.userData?.halfD) || (this.idmParams.length / 2) || 2.2;
+    const vEgo = Math.max(0, this.currentSpeed);
+    const targetV0 = this.desiredSpeed > 0 ? this.desiredSpeed : (this._getTargetSpeed ? this._getTargetSpeed() : this.idmParams.v0);
+    const v0Ego = Math.max(0.5, targetV0);
+    const { s0: s0Ego, T: TEgo, aMax: aMaxEgo, b: bEgo, delta: deltaEgo, bMax: bMaxEgo, bSafe: bSafeEgo, p: pEgo } = this.idmParams;
+    const politeness = (pEgo !== undefined) ? pEgo : 0.5;
+    const bSafe = (bSafeEgo !== undefined) ? bSafeEgo : 4.0;
+
+    // Helper to determine lane index of a vehicle
+    const getVehicleLane = (v) => {
+      if (typeof v.currentLane === 'number') return v.currentLane;
+      if (v.npcAI && typeof v.npcAI.currentLane === 'number') return v.npcAI.currentLane;
+      // Infer from lateral offset relative to road edge
+      const toV = new THREE.Vector3().subVectors(v.position, myPos);
+      const lat = toV.x * right.x + toV.z * right.z;
+      const offsets = this.currentEdge.getLaneOffsets();
+      let bestL = 0, bestDist = Infinity;
+      for (let i = 0; i < totalLanes; i++) {
+        const off = (offsets[i] !== undefined ? offsets[i] : 0) - (offsets[myLane] !== undefined ? offsets[myLane] : 0);
+        const d = Math.abs(lat - off);
+        if (d < bestDist) { bestDist = d; bestL = i; }
+      }
+      return bestL;
+    };
+
+    // Group vehicles into longitudinal records
+    const laneVehicles = {};
+    for (let i = 0; i < totalLanes; i++) laneVehicles[i] = [];
+
+    for (let i = 0; i < allVehicles.length; i++) {
+      const v = allVehicles[i];
+      if (!v || v === this.vehicle || !v.position) continue;
+      const dx = v.position.x - myPos.x;
+      const dz = v.position.z - myPos.z;
+      const dLong = dx * forward.x + dz * forward.z;
+      if (Math.abs(dLong) > 80) continue; // outside MOBIL horizon
+
+      const vLane = getVehicleLane(v);
+      if (laneVehicles[vLane]) {
+        const vSpeed = Math.max(0, v.npcAI?.currentSpeed || v.speed || 0);
+        const vHalfD = v.mesh?.userData?.halfD || v.userData?.halfD || 2.2;
+        const vParams = v.npcAI?.idmParams || this.idmParams;
+        laneVehicles[vLane].push({ vehicle: v, dLong, speed: vSpeed, halfD: vHalfD, params: vParams });
+      }
+    }
+
+    // Helper to find lead and follower in a specific lane
+    const findLeadAndFollower = (laneIdx) => {
+      const list = laneVehicles[laneIdx] || [];
+      let lead = null, leadDist = Infinity;
+      let fol = null, folDist = -Infinity; // closest behind ego (dLong < -0.5, largest negative)
+      for (let i = 0; i < list.length; i++) {
+        const item = list[i];
+        if (item.dLong > 0.5 && item.dLong < leadDist) {
+          leadDist = item.dLong;
+          lead = item;
+        } else if (item.dLong < -0.5 && item.dLong > folDist) {
+          folDist = item.dLong;
+          fol = item;
+        }
+      }
+      return { lead, fol };
+    };
+
+    // Current lane surrounding vehicles
+    const { lead: lead_o, fol: fol_o } = findLeadAndFollower(myLane);
+
+    // 1. Compute ego acceleration in current lane (a_c)
+    let a_c;
+    if (lead_o) {
+      const gap_c = Math.max(0.1, lead_o.dLong - (egoHalfD + lead_o.halfD));
+      const dv_c = vEgo - lead_o.speed;
+      a_c = calcIDMAcceleration(vEgo, v0Ego, gap_c, dv_c, s0Ego, TEgo, aMaxEgo, bEgo, deltaEgo || 4, bMaxEgo || 8.0);
+    } else {
+      a_c = aMaxEgo * (1 - Math.pow(vEgo / v0Ego, deltaEgo || 4));
+      a_c = Math.max(-bMaxEgo, Math.min(aMaxEgo, a_c));
+    }
+
+    // 2. Compute old follower accelerations (a_o, a_o_tilde)
+    let a_o = 0, a_o_tilde = 0;
+    if (fol_o) {
+      const pO = fol_o.params || this.idmParams;
+      const vFolO = fol_o.speed;
+      const v0FolO = pO.v0 || v0Ego;
+      const gap_o = Math.max(0.1, -fol_o.dLong - (fol_o.halfD + egoHalfD));
+      const dv_o = vFolO - vEgo;
+      a_o = calcIDMAcceleration(vFolO, v0FolO, gap_o, dv_o, pO.s0, pO.T, pO.aMax, pO.b, pO.delta || 4, pO.bMax || 8.0);
+
+      if (lead_o) {
+        const gap_tilde_o = Math.max(0.1, (lead_o.dLong - fol_o.dLong) - (fol_o.halfD + lead_o.halfD));
+        const dv_tilde_o = vFolO - lead_o.speed;
+        a_o_tilde = calcIDMAcceleration(vFolO, v0FolO, gap_tilde_o, dv_tilde_o, pO.s0, pO.T, pO.aMax, pO.b, pO.delta || 4, pO.bMax || 8.0);
+      } else {
+        a_o_tilde = pO.aMax * (1 - Math.pow(vFolO / v0FolO, pO.delta || 4));
+        a_o_tilde = Math.max(-pO.bMax, Math.min(pO.aMax, a_o_tilde));
+      }
+    }
+
+    let bestDecision = null;
+    let bestIncentive = -Infinity;
+    let bestTargetLane = null;
+
+    // Evaluate each candidate lane
+    for (let c = 0; c < candidates.length; c++) {
+      const targetLane = candidates[c];
+      const { lead: lead_n, fol: fol_n } = findLeadAndFollower(targetLane);
+
+      // Ego prospective acceleration in target lane (a_c_tilde)
+      let a_c_tilde;
+      if (lead_n) {
+        const gap_tilde_c = Math.max(0.1, lead_n.dLong - (egoHalfD + lead_n.halfD));
+        // Strict physical collision boundary check
+        if (gap_tilde_c < s0Ego * 0.75) continue;
+        const dv_tilde_c = vEgo - lead_n.speed;
+        a_c_tilde = calcIDMAcceleration(vEgo, v0Ego, gap_tilde_c, dv_tilde_c, s0Ego, TEgo, aMaxEgo, bEgo, deltaEgo || 4, bMaxEgo || 8.0);
+      } else {
+        a_c_tilde = aMaxEgo * (1 - Math.pow(vEgo / v0Ego, deltaEgo || 4));
+        a_c_tilde = Math.max(-bMaxEgo, Math.min(aMaxEgo, a_c_tilde));
+      }
+
+      // Target follower accelerations (a_n, a_n_tilde)
+      let a_n = 0, a_n_tilde = 0;
+      if (fol_n) {
+        const pN = fol_n.params || this.idmParams;
+        const vFolN = fol_n.speed;
+        const v0FolN = pN.v0 || v0Ego;
+        const gap_tilde_n = Math.max(0.1, -fol_n.dLong - (fol_n.halfD + egoHalfD));
+        // Strict safety headway boundary check
+        if (gap_tilde_n < pN.s0 * 0.75) continue;
+
+        const dv_tilde_n = vFolN - vEgo;
+        a_n_tilde = calcIDMAcceleration(vFolN, v0FolN, gap_tilde_n, dv_tilde_n, pN.s0, pN.T, pN.aMax, pN.b, pN.delta || 4, pN.bMax || 8.0);
+
+        if (lead_n) {
+          const gap_n = Math.max(0.1, (lead_n.dLong - fol_n.dLong) - (fol_n.halfD + lead_n.halfD));
+          const dv_n = vFolN - lead_n.speed;
+          a_n = calcIDMAcceleration(vFolN, v0FolN, gap_n, dv_n, pN.s0, pN.T, pN.aMax, pN.b, pN.delta || 4, pN.bMax || 8.0);
+        } else {
+          a_n = pN.aMax * (1 - Math.pow(vFolN / v0FolN, pN.delta || 4));
+          a_n = Math.max(-pN.bMax, Math.min(pN.aMax, a_n));
+        }
+      }
+
+      const isRightLaneChange = targetLane > myLane;
+      const decision = evaluateMOBILDecision({
+        a_c,
+        a_c_tilde,
+        a_n,
+        a_n_tilde,
+        a_o,
+        a_o_tilde,
+        p: politeness,
+        bSafe,
+        aTh: 0.2,
+        aBias: 0.25,
+        isRightLaneChange,
+        lanesOnRoad: totalLanes
+      });
+
+      if (decision.shouldChange && decision.totalIncentive > bestIncentive) {
+        bestIncentive = decision.totalIncentive;
+        bestTargetLane = targetLane;
+        bestDecision = decision;
+      }
+    }
+
+    if (bestTargetLane !== null && bestDecision && bestDecision.shouldChange) {
+      return {
+        shouldChange: true,
+        targetLane: bestTargetLane,
+        totalIncentive: bestIncentive,
+        details: bestDecision
+      };
+    }
+
+    return {
+      shouldChange: false,
+      targetLane: this.currentLane,
+      reason: bestDecision ? bestDecision.reason : 'INSUFFICIENT_INCENTIVE'
+    };
+  }
+
+  _startLaneChange(targetLane) {
+    if (this.isChangingLane || targetLane === this.currentLane || !this.currentEdge) return;
+    this.isChangingLane = true;
+    this.laneChangeStartLane = this.currentLane;
+    this.laneChangeTargetLane = targetLane;
+    this.laneChangeProgress = 0.0;
+    this.laneChangeDuration = 1.6 + Math.random() * 0.4; // 1.6 - 2.0s
+    this.laneChangeCooldown = 3.0 + Math.random() * 1.0; // 3.0 - 4.0s
+    if (this.vehicle) {
+      this.vehicle.targetLane = targetLane;
+    }
+  }
+
+
+  _getPedestrianObstacleAhead() {
+    const peds = this.trafficManager?.game?.peds || [];
+    if (!peds.length || !this.vehicle || !this.vehicle.position) return Infinity;
+    const myPos = this.vehicle.position;
+    const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+    const right = new THREE.Vector3(Math.cos(this.vehicle.rotation.y), 0, -Math.sin(this.vehicle.rotation.y));
+    let minPedDist = Infinity;
+
+    for (let i = 0; i < peds.length; i++) {
+      const p = peds[i];
+      const pPos = p.position || p.ped?.position;
+      if (!pPos) continue;
+      const dx = pPos.x - myPos.x;
+      const dz = pPos.z - myPos.z;
+      const dLong = dx * forward.x + dz * forward.z;
+      const dLat = Math.abs(dx * right.x + dz * right.z);
+
+      if (dLong > 0.5 && dLong < 25.0 && dLat < 2.2) {
+        const pState = p.state || (p.pedAI && p.pedAI.state);
+        if (pState === 'CROSSING' || pState === 'JAYWALKING' || dLat < 1.4) {
+          if (dLong < minPedDist) {
+            minPedDist = dLong;
+          }
+        }
+      }
+    }
+    return minPedDist < Infinity ? Math.max(0.1, minPedDist - 2.0) : Infinity;
   }
 
   init() {}
@@ -191,28 +773,189 @@ class NPCAI {
   }
 
   _pickNextTarget() {
-    if (this.routeIndex < this.route.length) {
+    if (this.route && this.route.length > 0 && this.routeIndex < this.route.length) {
       this.targetNode = this.route[this.routeIndex];
-      const edge = this.roadGraph.getEdgeTo(this.vehicle.currentNode, this.targetNode);
+      let edge = null;
+      if (this.vehicle.currentNode && this.roadGraph) {
+        edge = this.roadGraph.getEdgeTo(this.vehicle.currentNode, this.targetNode);
+      }
       if (edge) {
         this.currentEdge = edge;
         this.currentLane = this._pickInitialLane(edge);
+        this.vehicle.routeProgress = 0;
+        return;
       }
-    } else {
-      this.state = NPC_STATE.COMPLETE;
     }
+
+    // Connect to adjacent node if available
+    if (this.vehicle.currentNode && this.vehicle.currentNode.neighbors && this.vehicle.currentNode.neighbors.length > 0) {
+      const neighbors = this.vehicle.currentNode.neighbors;
+      const nb = neighbors[Math.floor(Math.random() * neighbors.length)];
+      const edge = this.roadGraph ? this.roadGraph.getEdgeTo(this.vehicle.currentNode, nb) : null;
+      if (edge) {
+        this.targetNode = nb;
+        this.currentEdge = edge;
+        this.currentLane = this._pickInitialLane(edge);
+        this.vehicle.routeProgress = 0;
+        this.state = NPC_STATE.FOLLOW_LANE;
+        return;
+      }
+    }
+
+    if (this.trafficManager && this.trafficManager._assignRoute) {
+      if (this.trafficManager._assignRoute(this.vehicle)) {
+        return;
+      }
+    }
+
+    this.state = NPC_STATE.COMPLETE;
+  }
+
+  _advanceRoute() {
+    this.routeIndex++;
+    if (this.targetNode) {
+      this.vehicle.currentNode = this.targetNode;
+    }
+    this._pickNextTarget();
+  }
+
+  _getVehicleAhead() {
+    if (!this.trafficManager || !this.vehicle) return null;
+    const myPos = this.vehicle.position;
+    if (!myPos) return null;
+    const myForward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+    const right = new THREE.Vector3(Math.cos(this.vehicle.rotation.y), 0, -Math.sin(this.vehicle.rotation.y));
+    let closestVeh = null;
+    let closestDist = Infinity;
+    const maxCheckDist = 40;
+
+    // Check other NPC vehicles
+    const vehicles = this.trafficManager.vehicles || [];
+    for (let i = 0; i < vehicles.length; i++) {
+      const v = vehicles[i];
+      if (!v || v === this.vehicle || !v.position) continue;
+      const dx = v.position.x - myPos.x;
+      const dz = v.position.z - myPos.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist > maxCheckDist || dist >= closestDist) continue;
+
+      const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
+      if (forwardDot > 0.60) {
+        const lateral = Math.abs(dx * right.x + dz * right.z);
+        // Heading alignment check: are we driving in the same general direction?
+        const vRot = v.rotation ? v.rotation.y : (v.mesh ? v.mesh.rotation.y : 0);
+        const vForwardX = Math.sin(vRot), vForwardZ = Math.cos(vRot);
+        const headingDot = myForward.x * vForwardX + myForward.z * vForwardZ;
+
+        // Same-lane trailing vehicle: narrow lateral check to 1.4m so parallel lane cars never brake
+        if (headingDot > 0.4 && lateral < 1.4) {
+          closestDist = dist;
+          closestVeh = v;
+        } else if (dist < 3.2 && lateral < 1.5 && Math.abs(headingDot) < 0.4) {
+          // Cross-traffic at intersection: only yield if other vehicle is already ahead or faster
+          const mySpd = this.currentSpeed || 0;
+          const otherSpd = v.npcAI?.currentSpeed || v.speed || 0;
+          if (otherSpd >= mySpd || (this._stuckTimer || 0) < 1.5) {
+            closestDist = dist;
+            closestVeh = v;
+          }
+        }
+      }
+    }
+
+    // Check player vehicle
+    const p = this.trafficManager.game?.playerVehicle || this.trafficManager.game?.player;
+    if (p && p.position && p !== this.vehicle) {
+      const dx = p.position.x - myPos.x;
+      const dz = p.position.z - myPos.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist <= maxCheckDist && dist < closestDist) {
+        const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
+        if (forwardDot > 0.60) {
+          const lateral = Math.abs(dx * right.x + dz * right.z);
+          // Check player only in our direct lane path
+          if (lateral < 1.6) {
+            closestDist = dist;
+            closestVeh = p;
+          }
+        }
+      }
+    }
+
+    return closestVeh;
+  }
+
+  _getSignalAhead(signals) {
+    if (!signals || !signals.length || !this.vehicle || !this.vehicle.position) return null;
+    const myPos = this.vehicle.position;
+    const myForward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+    const myRight = new THREE.Vector3(Math.cos(this.vehicle.rotation.y), 0, -Math.sin(this.vehicle.rotation.y));
+    let nearestSignal = null;
+    let nearestDist = Infinity;
+
+    for (let i = 0; i < signals.length; i++) {
+      const sig = signals[i];
+      const pos = sig.pos || sig.position || sig.mesh?.position;
+      if (!pos) continue;
+      const dx = pos.x - myPos.x;
+      const dz = pos.z - myPos.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist > 35 || dist >= nearestDist) continue;
+
+      const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
+      // Signal must be in front of us within road cone (forwardDot > 0.65)
+      if (forwardDot > 0.65) {
+        // Lateral check: Signal must be near our driving corridor (within 10m)
+        const lateral = Math.abs(dx * myRight.x + dz * myRight.z);
+        if (lateral > 10.0) continue;
+
+        // Axis Matching: Match vehicle road axis ('v' vs 'h') with signal's control axis
+        const isVehicleVertical = Math.abs(myForward.z) > Math.abs(myForward.x);
+        if (sig.userData && sig.userData.axis) {
+          if (isVehicleVertical && sig.userData.axis !== 'v') continue;
+          if (!isVehicleVertical && sig.userData.axis !== 'h') continue;
+        }
+
+        nearestDist = dist;
+        nearestSignal = sig;
+      }
+    }
+    return nearestSignal;
+  }
+
+  _distanceToSignal(signal) {
+    if (!signal || !this.vehicle || !this.vehicle.position) return Infinity;
+    const pos = signal.pos || signal.position || signal.mesh?.position;
+    if (!pos) return Infinity;
+    const dx = pos.x - this.vehicle.position.x;
+    const dz = pos.z - this.vehicle.position.z;
+    return Math.sqrt(dx * dx + dz * dz);
   }
 
   _pickInitialLane(edge) {
-    const lanes = edge.lanes;
+    const lanes = edge.lanes || 1;
     if (lanes <= 1) return 0;
+    // Preserve current lane if valid to prevent sudden lateral teleport/jump
+    if (this.currentLane !== undefined && this.currentLane < lanes) {
+      return this.currentLane;
+    }
     if (this.profile.laneDiscipline > 0.8) return 0;
-    return Math.floor(Math.random() * lanes);
+    return Math.min(this.currentLane || 0, lanes - 1);
   }
 
   update(dt, playerVehicle, signals) {
     this.reactionTimer -= dt;
     this.laneChangeCooldown = Math.max(0, this.laneChangeCooldown - dt);
+
+    // Cascading horn reactions & cascade cooldown timers
+    if (this._hornAlertTimer > 0) this._hornAlertTimer = Math.max(0, this._hornAlertTimer - dt);
+    if (this._hornCascadeCooldown > 0) this._hornCascadeCooldown = Math.max(0, this._hornCascadeCooldown - dt);
+    if (this._queuedHornTimer > 0) {
+      this._queuedHornTimer -= dt;
+      if (this._queuedHornTimer <= 0) {
+        this.triggerHorn('CASCADE_REACTION');
+      }
+    }
 
     switch (this.state) {
       case NPC_STATE.IDLE:
@@ -251,11 +994,73 @@ class NPCAI {
       case NPC_STATE.ROAD_RAGE:
         this._updateRoadRage(dt);
         break;
+      case NPC_STATE.BUS_STOP:
+        this._updateBusStop(dt);
+        break;
+      case NPC_STATE.YIELD:
+        this._updateYield(dt, playerVehicle);
+        break;
+    }
+
+    // Bus-type vehicles check for approaching bus stops
+    if (this.state === NPC_STATE.FOLLOW_LANE && this.vehicle?.userData?.type === 'bus') {
+      this._checkBusStop();
     }
 
     this._applyPhysics(dt);
-    this._checkTransitions(playerVehicle, signals);
+    this._checkTransitions(playerVehicle, signals, dt);
     this._checkEmergencyAvoidance(playerVehicle);
+
+    // ── High-Reliability Anti-Deadlock & Stuck Detection ──
+    // Never allow an NPC to remain permanently frozen at intersections or signals
+    const isExempt = (this.state === NPC_STATE.PARK || this.state === NPC_STATE.CRASH || this.state === NPC_STATE.COMPLETE);
+    const isWaitingValidSignal = (this.state === NPC_STATE.WAIT_SIGNAL && this.waitTimer < 5.0);
+
+    if (!isExempt && !isWaitingValidSignal && this.vehicle && this.vehicle.position) {
+      this._stuckCheckTimer += dt;
+      if (this._stuckCheckTimer >= 1.5) {
+        this._stuckCheckTimer = 0;
+        const vx = this.vehicle.position.x, vz = this.vehicle.position.z;
+        const moved = Math.hypot(vx - (this._stuckLastX || vx), vz - (this._stuckLastZ || vz));
+        if (moved < 0.8) {
+          this._stuckTimer = (this._stuckTimer || 0) + 1.5;
+        } else {
+          this._stuckTimer = 0;
+        }
+        this._stuckLastX = vx;
+        this._stuckLastZ = vz;
+
+        const playerPos = this.trafficManager?.game?.player?.position;
+        const distToPlayer = playerPos ? Math.hypot(vx - playerPos.x, vz - playerPos.z) : 100;
+
+        // Phase 1: Smooth un-stuck recovery (at 3.5s) — nudge lane and resume driving
+        if (this._stuckTimer >= 3.5 && this._stuckTimer < 8.0) {
+          this.state = NPC_STATE.FOLLOW_LANE;
+          this.waitTimer = 0;
+          this.signalViolation = false;
+          this._committedToIntersection = true;
+          if (this.route && this.route.length > 0 && this.routeIndex < this.route.length - 1) {
+            this.routeIndex++;
+            this._pickNextTarget();
+          }
+          this.desiredSpeed = Math.max(5.0, this._getTargetSpeed ? this._getTargetSpeed() : 7.0);
+          this.currentSpeed = Math.max(this.currentSpeed, 3.5);
+        } else if (this._stuckTimer >= 8.0) {
+          // Phase 2: If far away from player, quietly recycle. If near player, smoothly advance without teleporting.
+          if (distToPlayer > 90) {
+            this._stuckTimer = 0;
+            this._respawn();
+          } else {
+            // Near player: force lane nudge and continue driving
+            this._stuckTimer = 0;
+            this.state = NPC_STATE.FOLLOW_LANE;
+            this._committedToIntersection = true;
+            this.desiredSpeed = 6.0;
+            this.currentSpeed = 4.0;
+          }
+        }
+      }
+    }
   }
 
   _updateIdle(dt) {
@@ -271,37 +1076,115 @@ class NPCAI {
       return;
     }
 
-    const aheadVehicle = this._getVehicleAhead();
-    const signalAhead = this._getSignalAhead(signals);
+    this.desiredSpeed = this._getTargetSpeed();
+    const aheadVehicle = (typeof this._getVehicleAhead === 'function') ? this._getVehicleAhead() : null;
+    const signalAhead = (typeof this._getSignalAhead === 'function') ? this._getSignalAhead(signals) : null;
 
-    if (signalAhead && signalAhead.state === 'red') {
+    let virtualObstacleDist = Infinity;
+
+    // 1. Red Signal Detection & Virtual Obstacle (stop-line aware)
+    if (signalAhead && (signalAhead.state === 'red' || signalAhead.state === 'yellow')) {
       const distToSignal = this._distanceToSignal(signalAhead);
-      if (distToSignal < 25) {
-        if (this.profile.signalCompliance < Math.random()) {
-          this.signalViolation = true;
-          this.state = NPC_STATE.FOLLOW_LANE;
-        } else {
-          this.state = NPC_STATE.WAIT_SIGNAL;
-          this.waitTimer = 0;
-        }
-        return;
-      }
-    }
+      const egoHalfD = (this.vehicle?.mesh?.userData?.halfD) || 2.2;
+      const distToStopLine = Math.max(0.1, (distToSignal - 5.5) - egoHalfD);
 
-    if (aheadVehicle) {
-      const dist = this.vehicle.position.distanceTo(aheadVehicle.position);
-      if (dist < this.followDistance) {
-        this.desiredSpeed = Math.min(this.desiredSpeed, aheadVehicle.speed * 0.9);
-        if (dist < this.followDistance * 0.5 && this.profile.overtakeThreshold > Math.random() && this.laneChangeCooldown <= 0) {
-          this._attemptOvertake(aheadVehicle);
-          return;
+      if (this._committedToIntersection) {
+        // Once inside or passing junction, continue clearing across intersection without stalling
+        if (distToSignal > 16.0) this._committedToIntersection = false;
+      } else if (distToSignal < 6.0) {
+        // Within 6m of intersection center — commit to clearing through
+        this._committedToIntersection = true;
+      } else if (distToSignal < 40.0) {
+        if (this.profile.signalCompliance < Math.random() && this.isRuleBreaker) {
+          this.signalViolation = true;
+          this._committedToIntersection = true;
+        } else {
+          virtualObstacleDist = distToStopLine;
+          if (distToSignal < 7.0 && this.currentSpeed < 0.4) {
+            this.state = NPC_STATE.WAIT_SIGNAL;
+            this.waitTimer = 0;
+          }
         }
-      } else {
-        this.desiredSpeed = this._getTargetSpeed();
       }
     } else {
-      this.desiredSpeed = this._getTargetSpeed();
+      if (this._committedToIntersection) {
+        const distToSignal = signalAhead ? this._distanceToSignal(signalAhead) : 20;
+        if (distToSignal > 12.0) this._committedToIntersection = false;
+      }
     }
+
+    // 2. Pedestrian Crosswalk & Jaywalking Obstacle Detection
+    const pedDist = this._getPedestrianObstacleAhead();
+    if (pedDist < Infinity) {
+      virtualObstacleDist = Math.min(virtualObstacleDist, pedDist);
+    }
+
+    // 3. Lead Vehicle Bumper-to-Bumper Distance and Speed
+    let distToLead = Infinity;
+    let vLead = 0;
+    const vType = (this.vehicle?.type || this.vehicle?.userData?.npcType || 'car').toLowerCase();
+    const isAuto = ['auto', 'auto_yellow'].includes(vType);
+    const isBike = ['bike', 'splendor', 'activa', 'ktm', 'cycle'].includes(vType);
+
+    if (aheadVehicle && aheadVehicle.position) {
+      const centerDist = this.vehicle.position.distanceTo(aheadVehicle.position);
+      const egoHalfD = (this.vehicle?.mesh?.userData?.halfD) || (this.idmParams.length / 2);
+      const leadHalfD = (aheadVehicle.mesh?.userData?.halfD || aheadVehicle.userData?.halfD) || 2.2;
+      distToLead = Math.max(0.1, centerDist - (egoHalfD + leadHalfD));
+      vLead = aheadVehicle.npcAI?.currentSpeed || aheadVehicle.speed || 0;
+
+      // ── Mumbai Micro-Behavior 1: Auto-Rickshaw Gap Probing ──
+      // When auto following slow lead (s < 12m), add subtle lateral sinusoidal probing offset (+/- 0.8m)
+      if (isAuto && distToLead < 12.0) {
+        this._probePhase = (this._probePhase || Math.random() * Math.PI * 2) + dt * 2.0;
+        this._autoProbeOffset = Math.sin(this._probePhase) * 0.8;
+      } else {
+        this._autoProbeOffset = (this._autoProbeOffset || 0) * Math.exp(-dt * 3.0);
+      }
+
+      // ── Mumbai Micro-Behavior 2: Two-Wheeler / Bike Lane Filtering ──
+      // When bike behind slow/stopped traffic (vLead < 3.0 m/s or s < 12m), allow sub-lane filtering (+/- 1.2m)
+      if (isBike && (vLead < 3.0 || distToLead < 12.0)) {
+        if (!this._isFiltering) {
+          this._isFiltering = true;
+          this._filterOffset = (this.currentLane === 0 ? -1.2 : 1.2);
+        }
+        // Sub-lane filtering allows maintaining crawl speed (3.5 - 5.0 m/s) when corridor is clear
+        this.desiredSpeed = Math.max(3.5, Math.min(5.0, this.desiredSpeed));
+        // Effective perceived distance to lead is expanded as bike slips past the side
+        distToLead = Math.max(distToLead, 8.0);
+      } else if (isBike) {
+        this._isFiltering = false;
+        this._filterOffset = (this._filterOffset || 0) * Math.exp(-dt * 3.5);
+      }
+
+      // If queued/crawling behind slow lead vehicle and road has multiple lanes, evaluate overtake
+      if (distToLead < this.followDistance * 0.75 && this.laneChangeCooldown <= 0 && !this.isChangingLane && this.profile.overtakeThreshold > 0.15) {
+        this._attemptOvertake(aheadVehicle);
+      }
+    } else {
+      this._autoProbeOffset = (this._autoProbeOffset || 0) * Math.exp(-dt * 3.0);
+      this._filterOffset = (this._filterOffset || 0) * Math.exp(-dt * 3.5);
+      this._isFiltering = false;
+
+      // Keep-left return evaluation on multi-lane road when cruising in right lane with no lead
+      if (this.currentLane > 0 && this.laneChangeCooldown <= 0 && !this.isChangingLane && this.currentEdge && (this.currentEdge.lanes || 1) > 1) {
+        const returnMobil = this.evaluateMOBIL([this.currentLane - 1], this.trafficManager);
+        if (returnMobil && returnMobil.shouldChange) {
+          this._startLaneChange(returnMobil.targetLane);
+        }
+      }
+    }
+
+    // 4. Calculate continuous IDM acceleration
+    let rawAccel = this.calculateIDMAcceleration(aheadVehicle, distToLead, vLead, virtualObstacleDist);
+
+    // Apply cascading horn reaction defensive deceleration
+    if (this._hornAlertTimer > 0) {
+      rawAccel += (this._hornAlertDecel || -0.5) * (this._hornAlertTimer / 1.5);
+    }
+
+    this.currentAcceleration = Math.max(-(this.idmParams.bMax || 8.0), Math.min(this.idmParams.aMax, rawAccel));
 
     this._steerTowardsTarget(dt);
     this._maintainLane(dt);
@@ -311,288 +1194,352 @@ class NPCAI {
     this.overtakeTimer += dt;
 
     if (this.overtakePhase === 0) {
-      this._initiateOvertake();
-      this.overtakePhase = 1;
+      if (!this.isChangingLane) {
+        this.overtakePhase = 1;
+      }
+      this._maintainLane(dt);
     } else if (this.overtakePhase === 1) {
-      this._executeOvertake(dt);
-      if (this._overtakeComplete()) {
+      this.desiredSpeed = this._getTargetSpeed() * 1.25;
+      this._maintainLane(dt);
+      if (this._overtakeComplete() && !this.isChangingLane && this.laneChangeCooldown <= 0) {
         this.overtakePhase = 2;
       }
     } else if (this.overtakePhase === 2) {
-      this._returnToLane(dt);
-      if (this._laneReturnComplete()) {
+      const returnLane = Math.max(0, this.currentLane - 1);
+      if (returnLane !== this.currentLane && !this.isChangingLane) {
+        const mobil = this.evaluateMOBIL([returnLane], this.trafficManager);
+        if (mobil && mobil.shouldChange) {
+          this._startLaneChange(returnLane);
+        } else if (this.overtakeTimer > 6.0) {
+          if (this._isLaneClear(returnLane, this.overtakeTarget)) {
+            this._startLaneChange(returnLane);
+          }
+        }
+      }
+      this.desiredSpeed = this._getTargetSpeed();
+      this._maintainLane(dt);
+      if (!this.isChangingLane && this._laneReturnComplete()) {
         this.state = NPC_STATE.FOLLOW_LANE;
         this.overtakeTimer = 0;
         this.overtakeTarget = null;
         this.overtakePhase = 0;
-        this.laneChangeCooldown = 3 + Math.random() * 5;
+        this.laneChangeCooldown = 3.0 + Math.random() * 2.0;
       }
     }
 
-    if (this.overtakeTimer > 10) {
+    if (this.overtakeTimer > 12.0) {
       this._abortOvertake();
     }
   }
 
   _updateWaitSignal(dt, signals) {
     this.waitTimer += dt;
+    this.desiredSpeed = 0;
     const signal = this._getSignalAhead(signals);
-    if (signal && signal.state === 'green') {
+    const stopDist = signal ? Math.max(0.1, this._distanceToSignal(signal) - 5.5) : 0.1;
+    this.currentAcceleration = this.calculateIDMAcceleration(null, Infinity, 0, stopDist);
+
+    if (!signal || signal.state === 'green' || this.waitTimer > 5.5) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.waitTimer = 0;
       this.signalViolation = false;
-    } else if (this.waitTimer > 30 && this.profile.patience < 0.3) {
-      if (Math.random() < 0.02 * dt) {
-        this.signalViolation = true;
-        this.state = NPC_STATE.FOLLOW_LANE;
-      }
+      this._committedToIntersection = true;
+      this.desiredSpeed = this._getTargetSpeed ? this._getTargetSpeed() : 7.0;
+      this.currentSpeed = Math.max(this.currentSpeed, 2.5);
+    } else if (this.waitTimer > 3.5 && this.profile.patience < 0.4) {
+      this.signalViolation = true;
+      this.state = NPC_STATE.FOLLOW_LANE;
+      this._committedToIntersection = true;
+      this.desiredSpeed = 5.0;
+      this.currentSpeed = Math.max(this.currentSpeed, 2.0);
     }
   }
 
   _updateSidewalkDetour(dt) {
-    this.sidewalkTimer += dt;
-    this.desiredSpeed = this._getTargetSpeed() * 0.4;
-    this._steerTowardsTarget(dt);
-
-    if (this.sidewalkTimer > 5 + Math.random() * 10) {
-      this.state = NPC_STATE.FOLLOW_LANE;
-      this.sidewalkTimer = 0;
-    }
+    this.state = NPC_STATE.FOLLOW_LANE;
+    this.sidewalkTimer = 0;
   }
 
   _updatePark(dt) {
-    if (!this.parkingSpot) {
-      this._findParkingSpot();
-      return;
-    }
-
-    const dist = this.vehicle.position.distanceTo(this.parkingSpot.position);
-
-    switch (this.parkingPhase) {
-      case 0:
-        this.desiredSpeed = this._getTargetSpeed() * 0.5;
-        this._steerTowardsSpot(dt);
-        if (dist < 8) this.parkingPhase = 1;
-        break;
-      case 1:
-        this.desiredSpeed = this._getTargetSpeed() * 0.2;
-        this._alignForParking(dt);
-        if (dist < 3) this.parkingPhase = 2;
-        break;
-      case 2:
-        this.desiredSpeed = 0;
-        this.vehicle.velocity.set(0, 0, 0);
-        this.parkingPhase = 3;
-        break;
-      case 3:
-        this.state = NPC_STATE.COMPLETE;
-        break;
-    }
+    this.desiredSpeed = 0;
+    this.currentAcceleration = -(this.idmParams?.b || 2.0);
   }
 
   _updateComplete(dt) {
     this.desiredSpeed = 0;
-    this.vehicle.velocity.lerp(new THREE.Vector3(0, 0, 0), 0.1);
+    this.currentAcceleration = -(this.idmParams?.b || 2.0);
+    // Seamlessly re-assign new route if road graph is active
+    if (this.trafficManager && typeof this.trafficManager._assignRoute === 'function') {
+      if (this.trafficManager._assignRoute(this.vehicle)) {
+        this.state = NPC_STATE.FOLLOW_LANE;
+        return;
+      }
+    }
+    this._respawn();
   }
 
   _updateCrash(dt) {
+    this.desiredSpeed = 0;
+    this.currentAcceleration = -(this.idmParams?.bMax || 8.0);
+    if (!this.crashTimer) this.crashTimer = 0;
     this.crashTimer += dt;
-    this.vehicle.velocity.multiplyScalar(0.95);
-    if (this.crashTimer > 5) {
+    if (this.crashTimer > 6) {
+      this.crashTimer = 0;
       this._respawn();
     }
   }
 
-  _checkTransitions(playerVehicle, signals) {
-    if (this.state === NPC_STATE.CRASH || this.state === NPC_STATE.COMPLETE) return;
-
-    if (this.vehicle.health <= 0) {
-      this.state = NPC_STATE.CRASH;
-      this.crashTimer = 0;
-      return;
+  _updateYield(dt, playerVehicle) {
+    this.desiredSpeed = 0;
+    this.currentAcceleration = -(this.idmParams?.b || 2.0);
+    const p = playerVehicle || (this.trafficManager?.game?.playerVehicle || this.trafficManager?.game?.player);
+    if (!p || !p.position || this.vehicle.position.distanceTo(p.position) > 16) {
+      this.state = NPC_STATE.FOLLOW_LANE;
+      this.desiredSpeed = this._getTargetSpeed ? this._getTargetSpeed() : 6;
     }
+    this._steerTowardsTarget(dt);
+    this._maintainLane(dt);
+  }
 
-    if (this.routeIndex >= this.route.length) {
-      if (this.profile.parkingSkill > 0.7 && Math.random() < 0.1) {
-        this.state = NPC_STATE.PARK;
-        this.parkingPhase = 0;
-      } else {
-        this.state = NPC_STATE.COMPLETE;
-      }
-      return;
-    }
-
-    const signal = this._getSignalAhead(signals);
-    if (signal && signal.state === 'red') {
-      const dist = this._distanceToSignal(signal);
-      if (dist < 30 && this.state !== NPC_STATE.WAIT_SIGNAL) {
-        if (this.profile.signalCompliance >= Math.random()) {
-          this.state = NPC_STATE.WAIT_SIGNAL;
-        }
-      }
-    }
-
-    if (this.isRuleBreaker && this.profile.sidewalkProbability > Math.random()) {
-      if (this.state === NPC_STATE.FOLLOW_LANE && Math.random() < 0.001 * dt) {
-        this.state = NPC_STATE.SIDEWALK_DETOUR;
-        this.sidewalkTimer = 0;
-      }
-    }
-
-    // Emergency vehicle response: pull over for ambulances (throttled to every 0.5s)
-    this._ambCheckTimer = (this._ambCheckTimer || 0) + dt;
-    if (this.state === NPC_STATE.FOLLOW_LANE && this._ambCheckTimer > 0.5) {
-      this._ambCheckTimer = 0;
-      if (this._isAmbulanceNearby()) {
-        this.state = NPC_STATE.PULL_OVER;
-        this.pullOverTimer = 0;
-        return;
-      }
-    }
-
-    if (playerVehicle && this._isNearPlayer(playerVehicle)) {
+  _checkTransitions(playerVehicle, signals, dt) {
+    if (playerVehicle) {
       this._reactToPlayer(playerVehicle);
     }
+    if (this.state === NPC_STATE.FOLLOW_LANE && this._isAmbulanceNearby()) {
+      this.state = NPC_STATE.PULL_OVER;
+    }
+  }
 
-    // Distracted driving: some NPCs check phones, drift, slow suddenly
-    if (this.state === NPC_STATE.FOLLOW_LANE && Math.random() < this.distractChance) {
-      this.state = NPC_STATE.DISTRACTED;
-      this.distractTimer = 0;
+  /**
+   * Calculates dynamic speed-dependent lookahead distance
+   * @param {number|null} speed 
+   * @returns {number}
+   */
+  calculateLookaheadDistance(speed = null) {
+    const v = Math.max(0, speed !== null ? speed : this.currentSpeed);
+    const kLook = 0.85;
+    const Lmin = 3.5;
+    const Lmax = 20.0;
+    return calcAdaptiveLookahead(v, kLook, Lmin, Lmax);
+  }
+
+  /**
+   * Computes Adaptive Pure Pursuit trajectory steering towards lookahead point on road spline
+   * @param {number} dt 
+   * @param {number|null} lookaheadDist 
+   * @returns {{ alpha: number, kappa: number, steerAngle: number, yawRate: number, lookPoint: any, lookaheadDist: number }}
+   */
+  computePurePursuitSteering(dt, lookaheadDist = null) {
+    if (!this.targetNode || !this.vehicle || !this.vehicle.position) {
+      return { alpha: 0, kappa: 0, steerAngle: 0, yawRate: 0, lookPoint: null, lookaheadDist: 0 };
     }
 
-    // Road rage: aggressive NPCs get angry when blocked behind slow vehicles
-    if (this.state === NPC_STATE.FOLLOW_LANE && this.profile.aggression > 0.5) {
-      const ahead = this._getVehicleAhead();
-      if (ahead) {
-        const dist = this.vehicle.position.distanceTo(ahead.position);
-        if (dist < this.followDistance * 0.6 && this.currentSpeed < this.desiredSpeed * 0.5) {
-          this.rageLevel = Math.min(100, this.rageLevel + dt * 35);
-          if (this.rageLevel >= 100) {
-            this.state = NPC_STATE.ROAD_RAGE;
-            this.rageTimer = 0;
+    const v = Math.max(0, this.currentSpeed);
+    const Ld = lookaheadDist !== null ? lookaheadDist : this.calculateLookaheadDistance(v);
+    const wheelbase = this.idmParams?.wheelbase || 2.7;
+
+    let lookPoint = null;
+
+    if (this.currentEdge) {
+      const edgeLen = Math.max(1.0, this.currentEdge.length || 100.0);
+      const progress = Math.max(0, Math.min(1.0, this.vehicle.routeProgress || 0));
+      const lookProgress = progress + (Ld / edgeLen);
+
+      if (lookProgress <= 1.0) {
+        lookPoint = this.currentEdge.getLaneCenter(this.currentLane, lookProgress);
+      } else {
+        // Lookahead extends into the next junction edge / route segment
+        let nextEdge = null;
+        if (this.route && this.route.length > 0 && this.routeIndex + 1 < this.route.length) {
+          const nextNode = this.route[this.routeIndex + 1];
+          if (this.roadGraph) {
+            nextEdge = this.roadGraph.getEdgeTo(this.targetNode, nextNode);
           }
+        }
+
+        if (nextEdge) {
+          const excessDist = (lookProgress - 1.0) * edgeLen;
+          const nextEdgeLen = Math.max(1.0, nextEdge.length || 100.0);
+          const nextProgress = Math.min(1.0, excessDist / nextEdgeLen);
+          const nextLane = Math.min(this.currentLane, (nextEdge.lanes || 1) - 1);
+          lookPoint = nextEdge.getLaneCenter(nextLane, nextProgress);
         } else {
-          this.rageLevel = Math.max(0, this.rageLevel - dt * 10);
+          lookPoint = this.targetNode.position ? this.targetNode.position.clone() : null;
         }
       }
     }
+
+    if (!lookPoint) {
+      lookPoint = this.targetNode.position ? this.targetNode.position.clone() : this.vehicle.position.clone();
+    }
+    lookPoint.y = this.vehicle.position.y;
+
+    const dx = lookPoint.x - this.vehicle.position.x;
+    const dz = lookPoint.z - this.vehicle.position.z;
+    const distToLook = Math.hypot(dx, dz);
+
+    if (distToLook < 0.05) {
+      return { alpha: 0, kappa: 0, steerAngle: 0, yawRate: 0, lookPoint, lookaheadDist: Ld };
+    }
+
+    const cosR = Math.cos(this.vehicle.rotation.y);
+    const sinR = Math.sin(this.vehicle.rotation.y);
+    const localX = dx * cosR - dz * sinR;
+    const localZ = dx * sinR + dz * cosR;
+
+    const effectiveSpeed = Math.max(v, 1.5);
+    const pp = calcPurePursuit({ localX, localZ, Ld, wheelbase, speed: effectiveSpeed });
+
+    const vType = (this.vehicle?.type || this.vehicle?.userData?.npcType || 'car').toLowerCase();
+    let maxOmega = 1.8; // Car default: 1.8 rad/s
+    if (['bike', 'splendor', 'activa', 'ktm', 'cycle', 'auto', 'auto_yellow'].includes(vType)) {
+      maxOmega = 2.2;
+    } else if (['bus', 'truck', 'ace'].includes(vType)) {
+      maxOmega = 1.2;
+    }
+
+    const clampedYawRate = THREE.MathUtils.clamp(pp.yawRate, -maxOmega, maxOmega);
+
+    return {
+      alpha: pp.alpha,
+      kappa: pp.kappa,
+      steerAngle: pp.steerAngle,
+      yawRate: clampedYawRate,
+      lookPoint,
+      lookaheadDist: Ld
+    };
   }
-
-  _advanceRoute() {
-    this.routeIndex++;
-    this._pickNextTarget();
-  }
-
-  _getVehicleAhead() {
-    if (!this.currentEdge) return null;
-    const vehicles = this.trafficManager.getVehiclesOnEdge(this.currentEdge.id);
-    const forward = this.currentEdge.getForwardVector(this.vehicle.currentNode);
-    let closest = null, minDist = Infinity;
-    vehicles.forEach(v => {
-      if (v === this.vehicle) return;
-      const toV = new THREE.Vector3().subVectors(v.position, this.vehicle.position);
-      const proj = toV.dot(forward);
-      if (proj > 0 && proj < minDist) {
-        minDist = proj;
-        closest = v;
-      }
-    });
-    return closest;
-  }
-
-  _getSignalAhead(signals) {
-    if (!this.currentEdge) return null;
-    const forward = this.currentEdge.getForwardVector(this.vehicle.currentNode);
-    let closest = null, minDist = Infinity;
-    signals.forEach(s => {
-      const toS = new THREE.Vector3().subVectors(s.position, this.vehicle.position);
-      const proj = toS.dot(forward);
-      if (proj > 0 && proj < 100 && proj < minDist) {
-        minDist = proj;
-        closest = s;
-      }
-    });
-    return closest;
-  }
-
-  _distanceToSignal(signal) {
-    return this.vehicle.position.distanceTo(signal.position);
-  }
-
-
 
   _steerTowardsTarget(dt) {
     if (!this.targetNode) return;
-    const targetPos = this.targetNode.position.clone();
-    targetPos.y = this.vehicle.position.y;
-    const toTarget = new THREE.Vector3().subVectors(targetPos, this.vehicle.position);
+    const toTarget = new THREE.Vector3().subVectors(this.targetNode.position, this.vehicle.position);
+    toTarget.y = 0;
     const dist = toTarget.length();
-    if (dist < 5) {
+    if (dist < 4.0 || ((this.vehicle.routeProgress || 0) >= 0.98 && dist < 8.0)) {
       this._advanceRoute();
       return;
     }
-    const desiredDir = toTarget.normalize();
-    const currentDir = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
-    const angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
-    const maxTurn = this.vehicle.stats.turn * dt * 60;
-    const clampedAngle = THREE.MathUtils.clamp(angle, -maxTurn, maxTurn);
-    this.vehicle.rotation.y += clampedAngle;
+
+    const steering = this.computePurePursuitSteering(dt);
+    this.vehicle.rotation.y += steering.yawRate * dt;
+    while (this.vehicle.rotation.y > Math.PI) this.vehicle.rotation.y -= Math.PI * 2;
+    while (this.vehicle.rotation.y < -Math.PI) this.vehicle.rotation.y += Math.PI * 2;
   }
 
   _maintainLane(dt) {
     if (!this.currentEdge) return;
-    const laneCenter = this.currentEdge.getLaneCenter(this.currentLane, this.vehicle.routeProgress);
-    const toCenter = new THREE.Vector3().subVectors(laneCenter, this.vehicle.position);
-    toCenter.y = 0;
-    const offset = toCenter.length();
-    if (offset > 1.5) {
-      const right = new THREE.Vector3().crossVectors(
-        new THREE.Vector3(0, 1, 0),
-        new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y))
-      );
-      const correction = right.dot(toCenter.normalize()) * dt * 2;
-      this.vehicle.rotation.y += correction;
+    const progress = Math.max(0, Math.min(1, this.vehicle.routeProgress || 0));
+
+    // Dynamic lateral offset combining auto probing, bike filtering, and defensive yielding
+    let subLaneOffset = (this._autoProbeOffset || 0) + (this._filterOffset || 0);
+    if (this._hornAlertTimer > 0 && this._hornYieldOffset) {
+      subLaneOffset += this._hornYieldOffset * (this._hornAlertTimer / 1.5);
+    }
+
+    const forward = this.currentEdge.getForwardVector ? this.currentEdge.getForwardVector(this.vehicle.currentNode || this.targetNode) : new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), forward).normalize();
+
+    if (this.isChangingLane) {
+      this.laneChangeProgress += dt / Math.max(0.1, this.laneChangeDuration);
+      const u = Math.max(0, Math.min(1, this.laneChangeProgress));
+      // Smooth sinusoidal transition curve: 0.5 * (1 - cos(pi * u))
+      const blend = 0.5 * (1 - Math.cos(Math.PI * u));
+
+      const startCenter = this.currentEdge.getLaneCenter(this.laneChangeStartLane, progress);
+      const targetCenter = this.currentEdge.getLaneCenter(this.laneChangeTargetLane, progress);
+      if (startCenter && targetCenter) {
+        const laneCenter = new THREE.Vector3().lerpVectors(startCenter, targetCenter, blend);
+        if (Math.abs(subLaneOffset) > 0.01) {
+          laneCenter.addScaledVector(right, subLaneOffset);
+        }
+        const toCenter = new THREE.Vector3().subVectors(laneCenter, this.vehicle.position);
+        toCenter.y = 0;
+        const lateralOffset = toCenter.length();
+        if (lateralOffset > 0.01) {
+          const convergence = 1.0 - Math.exp(-dt * 5.0);
+          this.vehicle.position.x += toCenter.x * convergence;
+          this.vehicle.position.z += toCenter.z * convergence;
+        }
+      }
+
+      if (this.laneChangeProgress >= 1.0) {
+        this.currentLane = this.laneChangeTargetLane;
+        if (this.vehicle) {
+          this.vehicle.currentLane = this.currentLane;
+          this.vehicle.targetLane = this.currentLane;
+        }
+        this.isChangingLane = false;
+        this.laneChangeProgress = 0;
+      }
+    } else {
+      const laneCenter = this.currentEdge.getLaneCenter(this.currentLane, progress);
+      if (!laneCenter) return;
+
+      if (Math.abs(subLaneOffset) > 0.01) {
+        laneCenter.addScaledVector(right, subLaneOffset);
+      }
+
+      // Smooth exponential convergence towards lane center (zero-jitter, framerate independent)
+      const toCenter = new THREE.Vector3().subVectors(laneCenter, this.vehicle.position);
+      toCenter.y = 0;
+      const lateralOffset = toCenter.length();
+      if (lateralOffset > 0.01) {
+        const blend = 1.0 - Math.exp(-dt * 4.5);
+        this.vehicle.position.x += toCenter.x * blend;
+        this.vehicle.position.z += toCenter.z * blend;
+      }
     }
   }
 
   _attemptOvertake(vehicle) {
-    if (!this.currentEdge || this.currentEdge.lanes < 2) return;
-    const currentLane = this.currentLane;
-    const targetLane = currentLane === 0 ? 1 : 0;
-    if (this._isLaneClear(targetLane, vehicle)) {
+    if (!this.currentEdge || this.currentEdge.lanes < 2 || this.isChangingLane || this.laneChangeCooldown > 0) return;
+    const mobil = this.evaluateMOBIL(null, this.trafficManager);
+    if (mobil && mobil.shouldChange && mobil.targetLane !== this.currentLane) {
       this.state = NPC_STATE.OVERTAKE;
       this.overtakeTarget = vehicle;
       this.overtakeTimer = 0;
       this.overtakePhase = 0;
+      this._startLaneChange(mobil.targetLane);
     }
   }
 
   _isLaneClear(lane, ignoreVehicle) {
     if (!this.currentEdge) return false;
-    const vehicles = this.trafficManager.getVehiclesOnEdge(this.currentEdge.id);
-    const forward = this.currentEdge.getForwardVector(this.vehicle.currentNode);
+    const forward = this.currentEdge.getForwardVector(this.vehicle.currentNode || this.targetNode);
+    let vehicles = [];
+    if (this.trafficManager && typeof this.trafficManager.getVehiclesOnEdge === 'function') {
+      vehicles = this.trafficManager.getVehiclesOnEdge(this.currentEdge.id) || [];
+    }
+    if (!vehicles.length && this.trafficManager && this.trafficManager.vehicles) {
+      vehicles = this.trafficManager.vehicles.filter(v => v && v.active && v.currentEdge === this.currentEdge);
+    }
     return !vehicles.some(v => {
-      if (v === this.vehicle || v === ignoreVehicle) return false;
-      if (v.currentLane !== lane) return false;
+      if (v === this.vehicle || v === ignoreVehicle || !v.position) return false;
+      const vLane = typeof v.currentLane === 'number' ? v.currentLane : (v.npcAI?.currentLane || 0);
+      if (vLane !== lane) return false;
       const toV = new THREE.Vector3().subVectors(v.position, this.vehicle.position);
-      return toV.dot(forward) > -5 && toV.dot(forward) < 30;
+      const dLong = toV.dot(forward);
+      return dLong > -8 && dLong < 25;
     });
   }
 
   _initiateOvertake() {
-    this.currentLane = this.currentLane === 0 ? 1 : 0;
+    if (!this.isChangingLane && this.currentEdge) {
+      const target = this.currentLane < (this.currentEdge.lanes || 1) - 1 ? this.currentLane + 1 : (this.currentLane > 0 ? this.currentLane - 1 : 0);
+      this._startLaneChange(target);
+    }
   }
 
   _executeOvertake(dt) {
-    this.desiredSpeed = this._getTargetSpeed() * 1.3;
+    this.desiredSpeed = this._getTargetSpeed() * 1.25;
     this._maintainLane(dt);
   }
 
   _overtakeComplete() {
-    if (!this.overtakeTarget) return true;
+    if (!this.overtakeTarget || !this.overtakeTarget.position) return true;
     const toTarget = new THREE.Vector3().subVectors(this.overtakeTarget.position, this.vehicle.position);
     const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
-    return toTarget.dot(forward) < -5;
+    return toTarget.dot(forward) < -6;
   }
 
   _returnToLane(dt) {
@@ -602,17 +1549,17 @@ class NPCAI {
 
   _laneReturnComplete() {
     if (!this.currentEdge) return true;
-    const laneCenter = this.currentEdge.getLaneCenter(this.currentLane, this.vehicle.routeProgress);
-    return this.vehicle.position.distanceTo(laneCenter) < 1;
+    const laneCenter = this.currentEdge.getLaneCenter(this.currentLane, this.vehicle.routeProgress || 0);
+    if (!laneCenter) return true;
+    return this.vehicle.position.distanceTo(laneCenter) < 1.0;
   }
 
   _abortOvertake() {
-    this.currentLane = this.currentLane === 0 ? 1 : 0;
     this.state = NPC_STATE.FOLLOW_LANE;
     this.overtakeTimer = 0;
     this.overtakeTarget = null;
     this.overtakePhase = 0;
-    this.laneChangeCooldown = 5;
+    this.laneChangeCooldown = 4.0;
   }
 
   _findParkingSpot() {
@@ -630,16 +1577,20 @@ class NPCAI {
     toSpot.y = 0;
     const desiredDir = toSpot.normalize();
     const currentDir = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
-    const angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
-    const maxTurn = this.vehicle.stats.turn * dt * 60 * 0.5;
+    let angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
+    while (angle > Math.PI) angle -= Math.PI * 2;
+    while (angle < -Math.PI) angle += Math.PI * 2;
+    const maxTurn = (this.vehicle.stats?.turn || 0.05) * dt * 60 * 0.5;
     this.vehicle.rotation.y += THREE.MathUtils.clamp(angle, -maxTurn, maxTurn);
   }
 
   _alignForParking(dt) {
     if (!this.parkingSpot) return;
     const targetRot = this.parkingSpot.rotation;
-    const diff = targetRot - this.vehicle.rotation.y;
-    const maxTurn = this.vehicle.stats.turn * dt * 60 * 0.3;
+    let diff = targetRot - this.vehicle.rotation.y;
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    const maxTurn = (this.vehicle.stats?.turn || 0.05) * dt * 60 * 0.3;
     this.vehicle.rotation.y += THREE.MathUtils.clamp(diff, -maxTurn, maxTurn);
   }
 
@@ -647,9 +1598,35 @@ class NPCAI {
     return this.vehicle.position.distanceTo(player.position) < 30;
   }
 
-  _honk() {
-    if (this.trafficManager.audio && this.vehicle.hornSound) {
+  triggerHorn(reason = 'HORN_ALERT') {
+    if (this.trafficManager?.audio && this.vehicle?.hornSound) {
       this.trafficManager.audio.playHorn(this.vehicle.hornSound, this.vehicle.position);
+    } else if (typeof window !== 'undefined' && window.sfx && window.sfx.play) {
+      window.sfx.play('horn');
+    }
+    if (this.trafficManager && typeof this.trafficManager.propagateHornReaction === 'function' && this.vehicle && this.vehicle.position) {
+      this.trafficManager.propagateHornReaction(this.vehicle.position, this.vehicle, 15.0);
+    }
+  }
+
+  _honk() {
+    this.triggerHorn('HONK');
+  }
+
+  receiveHornAlert(sourcePos, sourceVehicle) {
+    this._hornAlertTimer = 1.5;
+    this._hornAlertDecel = -0.5;
+    // Calculate defensive lateral nudge away from horn source (towards road curb / edge)
+    this._hornYieldOffset = (Math.random() > 0.5 ? 0.3 : -0.3);
+
+    // Cascading horn reaction with cooldown
+    if (!this._hornCascadeCooldown || this._hornCascadeCooldown <= 0) {
+      this._hornCascadeCooldown = 5.0;
+      const agg = this.profile?.aggression || 0.5;
+      const cascadeProb = agg * 0.65;
+      if (Math.random() < cascadeProb) {
+        this._queuedHornTimer = 0.3 + Math.random() * 0.3; // 0.3-0.6s delayed horn
+      }
     }
   }
 
@@ -658,10 +1635,10 @@ class NPCAI {
     setTimeout(() => { this.vehicle.flashHighBeams = false; }, 200);
   }
 
-  // ── Emergency Vehicle Response: Pull Over for ambulances ──
+
   _updatePullOver(dt) {
     this.pullOverTimer = (this.pullOverTimer || 0) + dt;
-    // Steer toward the curb (right side of the road)
+
     if (this.currentEdge) {
       const curbPos = this.currentEdge.getLaneCenter(0, this.vehicle.routeProgress);
       const right = new THREE.Vector3().crossVectors(
@@ -674,13 +1651,15 @@ class NPCAI {
       if (toTarget.length() > 0.5) {
         const desiredDir = toTarget.normalize();
         const currentDir = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
-        const angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
+        let angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
+        while (angle > Math.PI) angle -= Math.PI * 2;
+        while (angle < -Math.PI) angle += Math.PI * 2;
         this.vehicle.rotation.y += THREE.MathUtils.clamp(angle, -this.vehicle.stats.turn * dt * 60 * 0.5, this.vehicle.stats.turn * dt * 60 * 0.5);
       }
     }
     this.desiredSpeed = 0;
-    this.currentSpeed *= 0.92;
-    // Resume after ambulance passes or 8 seconds
+    this.currentAcceleration = -(this.idmParams?.b || 2.0) * 0.8;
+
     if (this.pullOverTimer > 8 || !this._isAmbulanceNearby()) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.pullOverTimer = 0;
@@ -688,15 +1667,15 @@ class NPCAI {
     }
   }
 
-  // ── Distracted Driving: Some NPCs check phones, drift, slow suddenly ──
+
   _updateDistracted(dt) {
     this.distractTimer += dt;
-    // Drift slightly while distracted
+
     this.vehicle.rotation.y += (Math.random() - 0.5) * 0.003;
-    // Slow down significantly
-    this.desiredSpeed *= 0.5;
-    this.currentSpeed *= 0.97;
-    // Resume after 2-5 seconds
+
+    this.desiredSpeed = this._getTargetSpeed() * 0.5;
+    this.currentAcceleration = this.calculateIDMAcceleration(null, Infinity, 0, Infinity);
+
     if (this.distractTimer > 2 + Math.random() * 3) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.distractTimer = 0;
@@ -704,26 +1683,180 @@ class NPCAI {
     }
   }
 
-  // ── Road Rage: Aggressive NPCs tailgate, honk, flash lights ──
+
   _updateRoadRage(dt) {
     this.rageTimer += dt;
-    // Aggressive acceleration toward target
+
     this.desiredSpeed = this._getTargetSpeed() * 1.2;
-    // Honk frequently
+
     if (this.rageTimer % 1.5 < dt) this._honk();
-    // Flash lights
+
     if (this.rageTimer % 2 < dt) this._flashLights();
-    // Tailgate closely
+
     this.followDistance = 5;
-    // Calm down after 6 seconds
+    this.currentAcceleration = this.calculateIDMAcceleration(null, Infinity, 0, Infinity);
+
     if (this.rageTimer > 6) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.rageTimer = 0;
       this.rageLevel = 0;
-      this.followDistance = 15 + Math.random() * 10;
+      this.followDistance = this.idmParams.s0 + this.idmParams.v0 * this.idmParams.T;
       this.desiredSpeed = this._getTargetSpeed();
     }
   }
+
+  // ── BUS STOP LOGIC ──────────────────────────────────────────────────────────
+
+  _checkBusStop() {
+    if (!this.vehicle || !this.vehicle.position) return;
+    const stops = this.trafficManager?.game?.busStops;
+    if (!stops || !stops.length) return;
+    if (this._busStopCooldowns == null) this._busStopCooldowns = {};
+
+    const myPos = this.vehicle.position;
+    const myFwd = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+
+    for (let i = 0; i < stops.length; i++) {
+      const bs = stops[i];
+      if (this._busStopCooldowns[i]) continue; // already visited this stop recently
+      const dx = bs.x - myPos.x, dz = bs.z - myPos.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist > 18) continue;
+      const fwd = (dx * myFwd.x + dz * myFwd.z) / (dist || 1);
+      if (fwd < 0.3) continue; // stop is behind us
+
+      // Approaching bus stop — begin docking
+      this._currentBusStopIdx = i;
+      this._busStopTimer = 0;
+      this._busStopDuration = 5 + Math.random() * 4; // 5-9 seconds
+      this._busStopCooldowns[i] = true;
+      setTimeout(() => { if (this._busStopCooldowns) this._busStopCooldowns[i] = false; }, 90000); // re-enable after 90s
+      this.state = NPC_STATE.BUS_STOP;
+      this._busPassengers = [];
+      this._passengerSpawned = false;
+      return;
+    }
+  }
+
+  _updateBusStop(dt) {
+    this._busStopTimer += dt;
+    this.desiredSpeed = 0;
+    this.currentAcceleration = -(this.idmParams?.b || 2.0) * 1.5;
+
+    // Spawn passengers at 1.5s mark
+    if (!this._passengerSpawned && this._busStopTimer >= 1.5) {
+      this._passengerSpawned = true;
+      this._spawnBusPassengers();
+    }
+
+    // Clear passengers at 75% of dwell time
+    if (this._passengerSpawned && this._busStopTimer >= this._busStopDuration * 0.75) {
+      this._despawnBusPassengers();
+    }
+
+    // Resume after full dwell time
+    if (this._busStopTimer >= this._busStopDuration) {
+      this.state = NPC_STATE.FOLLOW_LANE;
+      this.desiredSpeed = this._getTargetSpeed ? this._getTargetSpeed() : 6;
+    }
+  }
+
+  _spawnBusPassengers() {
+    if (!this.vehicle || !this.vehicle.position) return;
+    const scene = this.trafficManager?.game?.scene;
+    if (!scene) return;
+
+    const THREE_local = window.THREE || (typeof THREE !== 'undefined' ? THREE : null);
+    if (!THREE_local) return;
+
+    const boardCount   = 2 + Math.floor(Math.random() * 3); // 2–4 boarding
+    const alightCount  = 1 + Math.floor(Math.random() * 3); // 1–3 alighting
+    const skinColors   = [0xf5cba7, 0xe0a96d, 0xc68642, 0x8d5524, 0x603813];
+    const clothColors  = [0x3498db, 0xe74c3c, 0x2ecc71, 0x9b59b6, 0xf39c12, 0x1abc9c, 0xe67e22];
+
+    const toonGrad = window._toonGrad;
+
+    const makePassenger = (x, z, standing) => {
+      const g = new THREE_local.Group();
+      const skin = skinColors[Math.floor(Math.random() * skinColors.length)];
+      const cloth = clothColors[Math.floor(Math.random() * clothColors.length)];
+      const clothMat = new THREE_local.MeshToonMaterial({ color: cloth, gradientMap: toonGrad });
+      const skinMat  = new THREE_local.MeshToonMaterial({ color: skin,  gradientMap: toonGrad });
+
+      // Torso
+      const torso = new THREE_local.Mesh(new THREE_local.BoxGeometry(0.5, 0.65, 0.3), clothMat);
+      torso.position.y = 0.9;
+      g.add(torso);
+      // Head
+      const head = new THREE_local.Mesh(new THREE_local.SphereGeometry(0.22, 8, 6), skinMat);
+      head.position.y = 1.45;
+      g.add(head);
+      // Legs
+      [-0.13, 0.13].forEach(lx => {
+        const leg = new THREE_local.Mesh(new THREE_local.BoxGeometry(0.2, 0.55, 0.25), clothMat);
+        leg.position.set(lx, 0.35, 0);
+        g.add(leg);
+      });
+      // Arms
+      [-0.32, 0.32].forEach(ax => {
+        const arm = new THREE_local.Mesh(new THREE_local.BoxGeometry(0.18, 0.52, 0.2), clothMat);
+        arm.position.set(ax, 0.88, 0);
+        g.add(arm);
+      });
+
+      g.position.set(x, 0, z);
+      g.rotation.y = Math.random() * Math.PI * 2;
+      g.userData = { isBusPassenger: true };
+      scene.add(g);
+      this._busPassengers.push(g);
+
+      // Animate: walk toward/away from bus
+      const busX = this.vehicle.position.x, busZ = this.vehicle.position.z;
+      const targetX = standing ? busX + (Math.random()-0.5)*2 : x + (Math.random()-0.5)*4 + 4;
+      const targetZ = standing ? busZ + (Math.random()-0.5)*2 : z + (Math.random()-0.5)*4 + 4;
+      const walkDist = Math.hypot(targetX - x, targetZ - z);
+      const walkDur  = 1.5 + walkDist / 3;
+      const startTime = performance.now();
+
+      const animate = () => {
+        if (!g.parent) return;
+        const elapsed = (performance.now() - startTime) / 1000;
+        const t = Math.min(elapsed / walkDur, 1);
+        g.position.x = x + (targetX - x) * t;
+        g.position.z = z + (targetZ - z) * t;
+        // Bob
+        g.position.y = Math.abs(Math.sin(elapsed * 4)) * 0.06;
+        if (t < 1) requestAnimationFrame(animate);
+        else if (standing) {
+          // Boarding passenger disappears into bus
+          if (g.parent) scene.remove(g);
+        }
+      };
+      requestAnimationFrame(animate);
+    };
+
+    const vpos = this.vehicle.position;
+    const side = 4; // passengers appear beside the bus
+    // Alighting passengers come from bus door
+    for (let i = 0; i < alightCount; i++) {
+      makePassenger(vpos.x + (Math.random()-0.5)*2, vpos.z + side + i*1.2, false);
+    }
+    // Boarding passengers come from sidewalk
+    for (let i = 0; i < boardCount; i++) {
+      makePassenger(vpos.x + (Math.random()-0.5)*3, vpos.z + side + 3 + i*1.2, true);
+    }
+  }
+
+  _despawnBusPassengers() {
+    const scene = this.trafficManager?.game?.scene;
+    if (!scene) return;
+    (this._busPassengers || []).forEach(p => {
+      if (p.parent) scene.remove(p);
+    });
+    this._busPassengers = [];
+  }
+
+  // ── END BUS STOP LOGIC ──────────────────────────────────────────────────────
 
   _isAmbulanceNearby() {
     if (!this.trafficManager || !this.trafficManager.vehicles) return false;
@@ -731,33 +1864,33 @@ class NPCAI {
     for (const v of this.trafficManager.vehicles) {
       if (v === this.vehicle) continue;
       if (v.userData && v.userData.isAmb && v.position.distanceTo(myPos) < 80) {
-        // Check if ambulance is behind us (coming toward us)
+
         const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
         const toAmb = new THREE.Vector3().subVectors(v.position, myPos);
-        if (toAmb.dot(forward) < 0) return true; // Ambulance is behind us
+        if (toAmb.dot(forward) < 0) return true;
       }
     }
     return false;
   }
 
-  // ── Emergency Brake: React to sudden obstacles ──
+
   _updateEmergencyBrake(dt) {
     this.emergencyBrakeTimer = (this.emergencyBrakeTimer || 0) + dt;
-    this.currentSpeed *= 0.85; // Hard deceleration
     this.desiredSpeed = 0;
+    this.currentAcceleration = -(this.idmParams?.bMax || 8.0);
     if (this.vehicle.brakeLights) this.vehicle.brakeLights.intensity = 3;
-    // Resume after stopping or 3 seconds
-    if (this.currentSpeed < 0.5 || this.emergencyBrakeTimer > 3) {
+
+    if (this.currentSpeed < 0.1 || this.emergencyBrakeTimer > 3) {
       this.state = NPC_STATE.FOLLOW_LANE;
       this.emergencyBrakeTimer = 0;
       this.desiredSpeed = this._getTargetSpeed();
     }
   }
 
-  // ── Emergency Avoidance: Check for imminent collisions ──
+
   _checkEmergencyAvoidance(playerVehicle) {
     if (this.state === NPC_STATE.CRASH || this.state === NPC_STATE.EMERGENCY_BRAKE) return;
-    if (this.currentSpeed < 3) return; // Only check at meaningful speed
+    if (this.currentSpeed < 3) return;
     const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
     const myPos = this.vehicle.position;
     const checkRadius = 12;
@@ -774,13 +1907,13 @@ class NPCAI {
         }
       }
     }
-    // Check NPC vehicles — only iterate if any are within checkRadius
+
     if (this.trafficManager && this.trafficManager.vehicles) {
       for (const v of this.trafficManager.vehicles) {
         if (v === this.vehicle) continue;
         const toV = new THREE.Vector3().subVectors(v.position, myPos);
         const dist = toV.length();
-        if (dist > checkRadius) continue; // Early exit for distant vehicles
+        if (dist > checkRadius) continue;
         const proj = toV.dot(forward);
         if (proj > 0 && proj < 8 && dist < 6 && Math.abs(toV.x * forward.z - toV.z * forward.x) < 2) {
           this.state = NPC_STATE.EMERGENCY_BRAKE;
@@ -792,27 +1925,30 @@ class NPCAI {
     }
   }
 
-  // ── Enhanced Player Interaction: Swerve, honk, brake ──
+
   _reactToPlayer(player) {
     const dist = this.vehicle.position.distanceTo(player.position);
     const aggression = this.profile.aggression;
 
-    // Aggressive NPCs honk when player is too close
+
     if (aggression > 0.5 && dist < 15 && Math.random() < 0.02) {
       this._honk();
     }
 
-    // All NPCs brake when player cuts them off
-    if (dist < 12 && this.currentSpeed > 2) {
+
+    if (dist < 20) {
       const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
       const toPlayer = new THREE.Vector3().subVectors(player.position, this.vehicle.position);
       const proj = toPlayer.dot(forward);
-      if (proj > 0 && proj < 10) {
-        this.desiredSpeed = Math.min(this.desiredSpeed, this.currentSpeed * 0.5);
+      if (proj > 0 && proj < 16) {
+        this.desiredSpeed = Math.min(this.desiredSpeed, Math.max(0, (proj - 4) * 0.7));
+        if (proj < 7) {
+          this.state = (window.NPC_STATE && window.NPC_STATE.YIELD) || 'YIELD';
+        }
       }
     }
 
-    // Aggressive NPCs swerve around slow players
+
     if (aggression > 0.6 && dist < 20 && this.currentSpeed > 3) {
       const right = new THREE.Vector3().crossVectors(
         new THREE.Vector3(0, 1, 0),
@@ -825,32 +1961,32 @@ class NPCAI {
       }
     }
 
-    // Cautious NPCs brake early when player approaches
+
     if (aggression < 0.2 && dist < 25 && Math.random() < 0.01) {
       this.desiredSpeed *= 0.8;
     }
 
-    // ── Trait-specific behaviors ──
-    // Teen: extra distracted — double distractChance
+
+
     if (this.profileKey === 'teen' && this.state === NPC_STATE.FOLLOW_LANE) {
       if (Math.random() < this.distractChance * 2) {
         this.state = NPC_STATE.DISTRACTED;
         this.distractTimer = 0;
       }
     }
-    // Elderly: slower reaction — only set once per reaction cycle
+
     if (this.profileKey === 'elderly' && this.reactionTimer <= 0) {
       this.reactionTimer = 0.3 + Math.random() * 0.6;
     }
-    // Delivery: double-park near destinations — stop in road briefly
+
     if (this.profileKey === 'delivery' && this.routeIndex >= this.route.length - 1) {
       if (this.state === NPC_STATE.FOLLOW_LANE && Math.random() < 0.005) {
         this.desiredSpeed = 0;
-        this.currentSpeed *= 0.9;
+        this.currentAcceleration = -(this.idmParams?.b || 2.0);
         this._honk();
       }
     }
-    // Tourist: erratic lane changes — swerve randomly
+
     if (this.profileKey === 'tourist' && this.state === NPC_STATE.FOLLOW_LANE) {
       if (Math.random() < 0.002) {
         this.vehicle.rotation.y += (Math.random() - 0.5) * 0.08;
@@ -858,17 +1994,17 @@ class NPCAI {
     }
   }
 
-  // ── Weather-Affected Driving: Slow down in rain ──
+
   _getTargetSpeed() {
     const baseSpeed = this.currentEdge ? this.currentEdge.speedLimit / 3.6 : 10;
-    const variance = (Math.random() - 0.5) * 2 * this.profile.speedVariance * baseSpeed;
-    let speed = Math.max(2, baseSpeed + variance);
-    // Rain/night penalties via trafficManager reference (avoids fragile gameRef chain)
+    const offset = this._speedVarianceOffset !== undefined ? this._speedVarianceOffset : 0;
+    let speed = Math.max(2, baseSpeed * (1 + offset));
+
     const tm = this.trafficManager;
     if (tm && tm.game) {
       const cfg = tm.game.mapCfg;
       if (cfg) {
-        if (cfg.hasRain || cfg.hasPuddles) speed *= (0.65 + Math.random() * 0.15);
+        if (cfg.hasRain || cfg.hasPuddles) speed *= 0.75;
         if (cfg.isNight) speed *= 0.85;
       }
     }
@@ -876,15 +2012,12 @@ class NPCAI {
   }
 
   _applyPhysics(dt) {
-    const accel = this.vehicle.stats.accel * dt * 60;
-    const fric = this.vehicle.stats.fric;
-    const maxSpd = this.desiredSpeed;
-
-    if (this.currentSpeed < maxSpd) {
-      this.currentSpeed = Math.min(maxSpd, this.currentSpeed + accel);
-    } else {
-      this.currentSpeed = Math.max(maxSpd, this.currentSpeed * fric);
+    const a = this.currentAcceleration !== undefined ? this.currentAcceleration : 0;
+    this.currentSpeed = Math.max(0, this.currentSpeed + a * dt);
+    if (this.currentSpeed < 0.01 && a <= 0) {
+      this.currentSpeed = 0;
     }
+    this.vehicle.speed = this.currentSpeed;
 
     const forward = new THREE.Vector3(
       Math.sin(this.vehicle.rotation.y),
@@ -898,12 +2031,14 @@ class NPCAI {
 
   _respawn() {
     this.vehicle.health = 100;
-    this.vehicle.position.set(0, 0.5, 0);
     this.vehicle.velocity.set(0, 0, 0);
     this.currentSpeed = 0;
     this.state = NPC_STATE.IDLE;
     this.routeIndex = 0;
     this.crashTimer = 0;
+    if (this.trafficManager && this.trafficManager._despawnVehicle) {
+      this.trafficManager._despawnVehicle(this.vehicle);
+    }
   }
 
   getDebugInfo() {
@@ -919,23 +2054,31 @@ class NPCAI {
   }
 }
 
-// ── Pedestrian AI System ──
+
 const PED_STATE = {
+  IDLE: 'IDLE',
+  WALKING: 'WALKING',
   WAITING: 'WAITING',
   CROSSING: 'CROSSING',
-  WALKING: 'WALKING',
   JAYWALKING: 'JAYWALKING',
   FLEEING: 'FLEEING',
-  FROZEN: 'FROZEN'
+  FROZEN: 'FROZEN',
+  WAITING_FOR_BUS: 'WAITING_FOR_BUS',
+  QUEUING: 'QUEUING',
+  BOARDING: 'BOARDING',
+  IN_TRANSIT: 'IN_TRANSIT',
+  ALIGHTING: 'ALIGHTING',
+  WALKING_SIDEWALK: 'WALKING_SIDEWALK'
 };
 
 const PED_PROFILES = {
-  normal: { speed: 2.5, jaywalkChance: 0.15, waitPatience: 0.8, groupBehavior: 0.3 },
-  rusher: { speed: 4.0, jaywalkChance: 0.5, waitPatience: 0.2, groupBehavior: 0.1 },
-  cautious: { speed: 1.8, jaywalkChance: 0.02, waitPatience: 0.95, groupBehavior: 0.5 },
-  child: { speed: 2.0, jaywalkChance: 0.3, waitPatience: 0.4, groupBehavior: 0.7 },
-  elderly_ped: { speed: 1.2, jaywalkChance: 0.05, waitPatience: 0.9, groupBehavior: 0.4 },
-  phone_user: { speed: 1.5, jaywalkChance: 0.35, waitPatience: 0.3, groupBehavior: 0.1 }
+  normal: { speed: 2.5, jaywalkChance: 0.15, waitPatience: 0.8, groupBehavior: 0.3, ttcThreshold: 4.0 },
+  rusher: { speed: 4.0, jaywalkChance: 0.50, waitPatience: 0.2, groupBehavior: 0.1, ttcThreshold: 3.0 },
+  aggressive: { speed: 3.5, jaywalkChance: 0.45, waitPatience: 0.25, groupBehavior: 0.1, ttcThreshold: 3.0 },
+  cautious: { speed: 1.8, jaywalkChance: 0.02, waitPatience: 0.95, groupBehavior: 0.5, ttcThreshold: 5.5 },
+  child: { speed: 2.0, jaywalkChance: 0.30, waitPatience: 0.4, groupBehavior: 0.7, ttcThreshold: 4.5 },
+  elderly_ped: { speed: 1.2, jaywalkChance: 0.05, waitPatience: 0.9, groupBehavior: 0.4, ttcThreshold: 5.5 },
+  phone_user: { speed: 1.5, jaywalkChance: 0.35, waitPatience: 0.3, groupBehavior: 0.1, ttcThreshold: 3.5 }
 };
 
 const PED_PROFILE_KEYS = Object.keys(PED_PROFILES);
@@ -948,8 +2091,8 @@ class PedestrianAI {
   constructor(pedMesh, trafficManager) {
     this.ped = pedMesh;
     this.tm = trafficManager;
-    this.profileKey = pedMesh.profileKey || pickRandomPedProfile();
-    this.profile = PED_PROFILES[this.profileKey];
+    this.profileKey = pedMesh?.profileKey || (pedMesh?.userData && pedMesh.userData.profileKey) || pickRandomPedProfile();
+    this.profile = PED_PROFILES[this.profileKey] || PED_PROFILES.normal;
     this.state = PED_STATE.WALKING;
     this.target = null;
     this.waitTimer = 0;
@@ -959,36 +2102,275 @@ class PedestrianAI {
     this.facing = Math.random() * Math.PI * 2;
     this.lookTimer = 0;
     this.onCrosswalk = false;
+    this.currentBusStop = null;
+    this.assignedBus = null;
+    this.transitTimer = 0;
+    this._syncMeshState();
+  }
+
+  _syncMeshState() {
+    if (!this.ped) return;
+    this.ped.state = this.state;
+    if (!this.ped.userData) this.ped.userData = {};
+    this.ped.userData.aiState = this.state.toLowerCase();
+    this.ped.userData.state = this.state.toLowerCase();
+  }
+
+  evaluateTTC(oncomingVehicles) {
+    if (!this.ped || !this.ped.position) return { safeToCross: true, minTTC: Infinity, minDLong: Infinity, oncomingCount: 0 };
+    const pedPos = this.ped.position;
+    let minTTC = Infinity;
+    let minDLong = Infinity;
+    let oncomingCount = 0;
+
+    const vehicles = Array.isArray(oncomingVehicles) ? oncomingVehicles : [];
+    for (let i = 0; i < vehicles.length; i++) {
+      const v = vehicles[i];
+      if (!v) continue;
+      const vPos = v.position || (v.mesh && v.mesh.position);
+      if (!vPos) continue;
+
+      let vSpeed = 0;
+      let vHeading = 0;
+
+      if (v.velocity && (v.velocity.x !== undefined || v.velocity.z !== undefined)) {
+        vSpeed = Math.hypot(v.velocity.x || 0, v.velocity.z || 0);
+        vHeading = Math.atan2(v.velocity.x || 0, v.velocity.z || 0);
+      } else {
+        vSpeed = Math.abs(v.speed !== undefined ? v.speed : (v.userData?.spd ? v.userData.spd * 20 : 0));
+        const rotY = v.rotation ? (typeof v.rotation.y === 'number' ? v.rotation.y : v.rotation) : (v.mesh?.rotation?.y || 0);
+        vHeading = rotY;
+      }
+
+      const ttcRes = calcPedestrianTTC({
+        pedX: pedPos.x,
+        pedZ: pedPos.z,
+        vehX: vPos.x,
+        vehZ: vPos.z,
+        vehHeading: vHeading,
+        vehSpeed: vSpeed,
+        laneWidth: 3.5
+      });
+
+      if (ttcRes.oncoming) {
+        oncomingCount++;
+        if (ttcRes.ttc < minTTC) {
+          minTTC = ttcRes.ttc;
+          minDLong = ttcRes.dLong;
+        }
+      }
+    }
+
+    const threshold = this.profile.ttcThreshold || 4.0;
+    const safeToCross = minTTC >= threshold;
+    return { safeToCross, minTTC, minDLong, oncomingCount };
+  }
+
+  triggerFlee(threatPosition, threatDir) {
+    if (!this.ped || !this.ped.position) return;
+    this.state = PED_STATE.FLEEING;
+    this.fleeTimer = 0;
+    this._syncMeshState();
+
+    const myPos = this.ped.position;
+    let away;
+    if (threatPosition) {
+      away = new THREE.Vector3().subVectors(myPos, threatPosition);
+      away.y = 0;
+      if (away.lengthSq() < 0.01) away.set(Math.random() - 0.5, 0, Math.random() - 0.5);
+      away.normalize();
+    } else if (threatDir) {
+      away = threatDir.clone().normalize();
+      away.y = 0;
+    } else {
+      away = new THREE.Vector3(Math.sin(this.facing + Math.PI), 0, Math.cos(this.facing + Math.PI));
+    }
+
+    const roadC = this.ped.userData?.roadC || 0;
+    const isV = this.ped.userData?.isV !== false;
+    const lateralDir = isV ? (myPos.x >= roadC ? 1 : -1) : (myPos.z >= roadC ? 1 : -1);
+    if (isV) {
+      away.x += lateralDir * 0.8;
+    } else {
+      away.z += lateralDir * 0.8;
+    }
+    away.normalize();
+
+    this.target = myPos.clone().addScaledVector(away, 12);
+    this.facing = Math.atan2(away.x, away.z);
+    this.ped.rotation.y = this.facing;
+  }
+
+  handleBusStopLifecycle(busStop, dt) {
+    if (!busStop || !this.ped || !this.ped.position) return;
+    this.currentBusStop = busStop;
+    this.transitTimer = (this.transitTimer || 0) + dt;
+
+    const myPos = this.ped.position;
+    const stopX = busStop.x || 0;
+    const stopZ = busStop.z || 0;
+
+    switch (this.state) {
+      case PED_STATE.WAITING_FOR_BUS:
+      case PED_STATE.WAITING: {
+        const shelterX = stopX + (this.ped.userData?.shelterOffset?.x || 0);
+        const shelterZ = stopZ + (this.ped.userData?.shelterOffset?.z || 0);
+        const distToShelter = Math.hypot(myPos.x - shelterX, myPos.z - shelterZ);
+        if (distToShelter > 1.0) {
+          const dirX = (shelterX - myPos.x) / distToShelter;
+          const dirZ = (shelterZ - myPos.z) / distToShelter;
+          myPos.x += dirX * this.profile.speed * dt;
+          myPos.z += dirZ * this.profile.speed * dt;
+          this._smoothFacing({ x: dirX, z: dirZ }, dt);
+        }
+
+        const npcs = this.tm?.vehicles || this.tm?.game?.npcs || [];
+        for (let i = 0; i < npcs.length; i++) {
+          const npc = npcs[i];
+          const nPos = npc.position || npc.mesh?.position;
+          if (!nPos) continue;
+          const isBus = npc.type === 'bus' || npc.userData?.npcType === 'bus' || npc.userData?.type === 'bus';
+          const distToBus = Math.hypot(nPos.x - stopX, nPos.z - stopZ);
+          if (isBus && distToBus < 15.0) {
+            this.state = PED_STATE.QUEUING;
+            this.assignedBus = npc;
+            this.transitTimer = 0;
+            this._syncMeshState();
+            break;
+          }
+        }
+        break;
+      }
+
+      case PED_STATE.QUEUING: {
+        const curbX = stopX + (this.ped.userData?.curbOffset?.x || 2.5);
+        const curbZ = stopZ + (this.ped.userData?.curbOffset?.z || 0);
+        const distToCurb = Math.hypot(myPos.x - curbX, myPos.z - curbZ);
+        if (distToCurb > 0.5) {
+          const dirX = (curbX - myPos.x) / distToCurb;
+          const dirZ = (curbZ - myPos.z) / distToCurb;
+          myPos.x += dirX * this.profile.speed * dt;
+          myPos.z += dirZ * this.profile.speed * dt;
+          this._smoothFacing({ x: dirX, z: dirZ }, dt);
+        }
+
+        const bus = this.assignedBus;
+        const busSpeed = bus ? (bus.speed !== undefined ? bus.speed : (bus.userData?.spd || 0)) : 1;
+        const busState = bus?.npcAI?.state;
+        if (bus && (Math.abs(busSpeed) < 0.2 || busState === 'BUS_STOP') && this.transitTimer > 0.5) {
+          this.state = PED_STATE.BOARDING;
+          this.transitTimer = 0;
+          this._syncMeshState();
+        }
+        break;
+      }
+
+      case PED_STATE.BOARDING: {
+        const bus = this.assignedBus;
+        const busPos = bus ? (bus.position || bus.mesh?.position) : null;
+        if (busPos) {
+          const doorX = busPos.x;
+          const doorZ = busPos.z;
+          const distToDoor = Math.hypot(myPos.x - doorX, myPos.z - doorZ);
+          if (distToDoor > 0.8) {
+            const dirX = (doorX - myPos.x) / distToDoor;
+            const dirZ = (doorZ - myPos.z) / distToDoor;
+            myPos.x += dirX * this.profile.speed * 0.9 * dt;
+            myPos.z += dirZ * this.profile.speed * 0.9 * dt;
+            this._smoothFacing({ x: dirX, z: dirZ }, dt);
+          } else {
+            this.state = PED_STATE.IN_TRANSIT;
+            this.ped.visible = false;
+            this._syncMeshState();
+          }
+        } else {
+          this.state = PED_STATE.WALKING;
+          this._syncMeshState();
+        }
+        break;
+      }
+
+      case PED_STATE.ALIGHTING: {
+        const sidewalkX = stopX + (this.ped.userData?.side > 0 ? 5.0 : -5.0);
+        const sidewalkZ = stopZ;
+        const distToSidewalk = Math.hypot(myPos.x - sidewalkX, myPos.z - sidewalkZ);
+        if (distToSidewalk > 1.0) {
+          const dirX = (sidewalkX - myPos.x) / distToSidewalk;
+          const dirZ = (sidewalkZ - myPos.z) / distToSidewalk;
+          myPos.x += dirX * this.profile.speed * dt;
+          myPos.z += dirZ * this.profile.speed * dt;
+          this._smoothFacing({ x: dirX, z: dirZ }, dt);
+        } else {
+          this.state = PED_STATE.WALKING;
+          this._syncMeshState();
+        }
+        break;
+      }
+    }
   }
 
   update(dt, npcs, playerVehicle) {
+    if (!this.ped || !this.ped.position) return;
     this.lookTimer += dt;
 
-    switch (this.state) {
-      case PED_STATE.WALKING:
-        this._updateWalking(dt);
-        break;
-      case PED_STATE.WAITING:
-        this._updateWaiting(dt, npcs);
-        break;
-      case PED_STATE.CROSSING:
-        this._updateCrossing(dt, npcs, playerVehicle);
-        break;
-      case PED_STATE.JAYWALKING:
-        this._updateJaywalking(dt, npcs, playerVehicle);
-        break;
-      case PED_STATE.FLEEING:
-        this._updateFleeing(dt);
-        break;
-      case PED_STATE.FROZEN:
-        break;
+    const allVehicles = [];
+    if (playerVehicle && playerVehicle.position) {
+      allVehicles.push(playerVehicle);
+    }
+    if (npcs && Array.isArray(npcs)) {
+      for (let i = 0; i < npcs.length; i++) {
+        if (npcs[i]) allVehicles.push(npcs[i]);
+      }
     }
 
-    this._checkVehicleProximity(playerVehicle, npcs);
+    if (this.state !== PED_STATE.FLEEING && this.state !== PED_STATE.IN_TRANSIT && this.state !== PED_STATE.FROZEN) {
+      this._checkVehicleProximity(playerVehicle, npcs);
+    }
+
+    if (this.currentBusStop && (this.state === PED_STATE.WAITING_FOR_BUS || this.state === PED_STATE.QUEUING || this.state === PED_STATE.BOARDING || this.state === PED_STATE.ALIGHTING)) {
+      this.handleBusStopLifecycle(this.currentBusStop, dt);
+    } else {
+      switch (this.state) {
+        case PED_STATE.WALKING:
+        case PED_STATE.WALKING_SIDEWALK:
+          this._updateWalking(dt, allVehicles);
+          break;
+        case PED_STATE.WAITING:
+          this._updateWaiting(dt, allVehicles);
+          break;
+        case PED_STATE.CROSSING:
+          this._updateCrossing(dt, allVehicles);
+          break;
+        case PED_STATE.JAYWALKING:
+          this._updateJaywalking(dt, allVehicles);
+          break;
+        case PED_STATE.FLEEING:
+          this._updateFleeing(dt);
+          break;
+        case PED_STATE.FROZEN:
+          break;
+        default:
+          this._updateWalking(dt, allVehicles);
+          break;
+      }
+    }
+
+    this._updateLegAnimation(dt);
     this._keepOnGround();
+    this._syncMeshState();
   }
 
-  _updateWalking(dt) {
+  _smoothFacing(dir, dt) {
+    if (!dir || (dir.x === 0 && dir.z === 0)) return;
+    const targetFacing = Math.atan2(dir.x, dir.z);
+    let diff = targetFacing - (this.facing || 0);
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    this.facing = (this.facing || 0) + diff * Math.min(1, dt * 10);
+    this.ped.rotation.y = this.facing;
+  }
+
+  _updateWalking(dt, allVehicles) {
     if (this.target) {
       const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
       toTarget.y = 0;
@@ -997,15 +2379,14 @@ class PedestrianAI {
         this.state = PED_STATE.WAITING;
         this.waitTimer = 0;
         this.target = null;
+        this._syncMeshState();
         return;
       }
       const dir = toTarget.normalize();
       this.ped.position.x += dir.x * this.profile.speed * dt;
       this.ped.position.z += dir.z * this.profile.speed * dt;
-      this.facing = Math.atan2(dir.x, dir.z);
-      this.ped.rotation.y = this.facing;
+      this._smoothFacing(dir, dt);
     } else {
-      // Pick a random nearby target on sidewalk
       const angle = Math.random() * Math.PI * 2;
       const dist = 8 + Math.random() * 15;
       this.target = new THREE.Vector3(
@@ -1016,37 +2397,66 @@ class PedestrianAI {
     }
   }
 
-  _updateWaiting(dt, npcs) {
+  _updateWaiting(dt, allVehicles) {
     this.waitTimer += dt;
-    // Look left and right while waiting
+
     if (this.lookTimer > 1.5) {
       this.lookTimer = 0;
       this.facing += (Math.random() - 0.5) * 1.5;
       this.ped.rotation.y = this.facing;
     }
-    // Decide to cross after waiting
-    if (!this._waitThreshold) this._waitThreshold = 2 + Math.random() * 4;
-    if (this.waitTimer > this._waitThreshold) {
-      if (this.profile.jaywalkChance > Math.random()) {
-        this.state = PED_STATE.JAYWALKING;
+
+    if (!this._waitThreshold) {
+      this._waitThreshold = 1.5 + (1.0 - this.profile.waitPatience) * 4.0;
+    }
+
+    if (this.waitTimer >= this._waitThreshold) {
+      const ttcEval = this.evaluateTTC(allVehicles);
+      const isJaywalk = Math.random() < this.profile.jaywalkChance;
+
+      if (ttcEval.safeToCross) {
+        if (isJaywalk) {
+          this.state = PED_STATE.JAYWALKING;
+        } else {
+          this.state = PED_STATE.CROSSING;
+        }
         this.crossingTimer = 0;
         this._waitThreshold = null;
         this._pickCrossingTarget();
-      } else {
-        // Check if road is clear to cross properly
-        if (this._isRoadClear(npcs)) {
-          this.state = PED_STATE.CROSSING;
-          this.crossingTimer = 0;
-          this._waitThreshold = null;
-          this._pickCrossingTarget();
-        }
+        this._syncMeshState();
       }
     }
   }
 
-  _updateCrossing(dt, npcs, playerVehicle) {
+  _updateCrossing(dt, allVehicles) {
     this.crossingTimer += dt;
-    // Walk across the road
+
+    if (this.target) {
+      const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
+      toTarget.y = 0;
+      const dist = toTarget.length();
+      if (dist < 1.5 || this.crossingTimer > 12) {
+        this.state = PED_STATE.WALKING;
+        this.target = null;
+        if (this.ped.userData) {
+          this.ped.userData.side = -(this.ped.userData.side || 1);
+          this.ped.userData.distTraveled = 0;
+          this.ped.userData.destDist = 15 + Math.random() * 25;
+        }
+        this._syncMeshState();
+        return;
+      }
+      const dir = toTarget.normalize();
+      this.ped.position.x += dir.x * this.profile.speed * dt;
+      this.ped.position.z += dir.z * this.profile.speed * dt;
+      this._smoothFacing(dir, dt);
+    }
+  }
+
+  _updateJaywalking(dt, allVehicles) {
+    this.crossingTimer += dt;
+    const jaywalkSpeed = this.profile.speed * 1.3;
+
     if (this.target) {
       const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
       toTarget.y = 0;
@@ -1054,125 +2464,225 @@ class PedestrianAI {
       if (dist < 1.5 || this.crossingTimer > 10) {
         this.state = PED_STATE.WALKING;
         this.target = null;
-        return;
-      }
-      const dir = toTarget.normalize();
-      this.ped.position.x += dir.x * this.profile.speed * dt;
-      this.ped.position.z += dir.z * this.profile.speed * dt;
-      this.facing = Math.atan2(dir.x, dir.z);
-      this.ped.rotation.y = this.facing;
-    }
-  }
-
-  _updateJaywalking(dt, npcs, playerVehicle) {
-    this.crossingTimer += dt;
-    // Faster pace when jaywalking (rushing across)
-    const jaywalkSpeed = this.profile.speed * 1.3;
-    if (this.target) {
-      const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
-      toTarget.y = 0;
-      const dist = toTarget.length();
-      if (dist < 1.5 || this.crossingTimer > 8) {
-        this.state = PED_STATE.WALKING;
-        this.target = null;
+        if (this.ped.userData) {
+          this.ped.userData.side = -(this.ped.userData.side || 1);
+          this.ped.userData.distTraveled = 0;
+          this.ped.userData.destDist = 15 + Math.random() * 25;
+        }
+        this._syncMeshState();
         return;
       }
       const dir = toTarget.normalize();
       this.ped.position.x += dir.x * jaywalkSpeed * dt;
       this.ped.position.z += dir.z * jaywalkSpeed * dt;
-      this.facing = Math.atan2(dir.x, dir.z);
-      this.ped.rotation.y = this.facing;
+      this._smoothFacing(dir, dt);
     }
   }
 
   _updateFleeing(dt) {
     this.fleeTimer += dt;
-    // Run away from danger
+    const sprintSpeed = this.profile.speed * 1.8;
+
     if (this.target) {
       const toTarget = new THREE.Vector3().subVectors(this.target, this.ped.position);
       toTarget.y = 0;
       const dist = toTarget.length();
-      if (dist < 1.5 || this.fleeTimer > 3) {
+      if (dist < 1.5 || this.fleeTimer > 3.0) {
         this.state = PED_STATE.WALKING;
         this.target = null;
+        this._syncMeshState();
         return;
       }
       const dir = toTarget.normalize();
-      this.ped.position.x += dir.x * 5 * dt;
-      this.ped.position.z += dir.z * 5 * dt;
-      this.facing = Math.atan2(dir.x, dir.z);
-      this.ped.rotation.y = this.facing;
+      this.ped.position.x += dir.x * sprintSpeed * dt;
+      this.ped.position.z += dir.z * sprintSpeed * dt;
+      this._smoothFacing(dir, dt);
+    } else {
+      if (this.fleeTimer > 2.5) {
+        this.state = PED_STATE.WALKING;
+        this._syncMeshState();
+      }
     }
   }
 
   _checkVehicleProximity(playerVehicle, npcs) {
     if (this.state === PED_STATE.FLEEING || this.state === PED_STATE.FROZEN) return;
     const myPos = this.ped.position;
-    // Check player vehicle
-    if (playerVehicle) {
+
+    if (playerVehicle && playerVehicle.position) {
       const dist = myPos.distanceTo(playerVehicle.position);
-      if (dist < 8) {
-        this.state = PED_STATE.FLEEING;
-        this.fleeTimer = 0;
-        // Flee perpendicular to vehicle direction
-        const away = new THREE.Vector3().subVectors(myPos, playerVehicle.position).normalize();
-        away.y = 0;
-        this.target = myPos.clone().addScaledVector(away, 10);
-        return;
+      if (dist < 15.0) {
+        let pSpeed = Math.abs(playerVehicle.speed || 0);
+        let pHeading = playerVehicle.rotation?.y || 0;
+        if (playerVehicle.velocity) {
+          pSpeed = Math.hypot(playerVehicle.velocity.x || 0, playerVehicle.velocity.z || 0);
+          pHeading = Math.atan2(playerVehicle.velocity.x || 0, playerVehicle.velocity.z || 0);
+        }
+        const ttcRes = calcPedestrianTTC({
+          pedX: myPos.x,
+          pedZ: myPos.z,
+          vehX: playerVehicle.position.x,
+          vehZ: playerVehicle.position.z,
+          vehHeading: pHeading,
+          vehSpeed: pSpeed,
+          laneWidth: 3.5
+        });
+        const fleeCheck = evaluatePedestrianFleeing({
+          minTTC: ttcRes.ttc,
+          dLong: ttcRes.dLong,
+          currentSpeed: this.profile.speed,
+          walkSpeed: this.profile.speed
+        });
+        if (fleeCheck.shouldFlee || (dist < 6.0 && ttcRes.oncoming && ttcRes.ttc < 2.0) || dist < 4.0) {
+          this.triggerFlee(playerVehicle.position);
+          return;
+        }
       }
     }
-    // Check NPC vehicles
-    if (npcs) {
-      for (const npc of npcs) {
-        if (!npc.position) continue;
-        const dist = myPos.distanceTo(npc.position);
-        if (dist < 6) {
-          this.state = PED_STATE.FLEEING;
-          this.fleeTimer = 0;
-          const away = new THREE.Vector3().subVectors(myPos, npc.position).normalize();
-          away.y = 0;
-          this.target = myPos.clone().addScaledVector(away, 8);
-          return;
+
+    if (npcs && Array.isArray(npcs)) {
+      for (let i = 0; i < npcs.length; i++) {
+        const npc = npcs[i];
+        if (!npc) continue;
+        const nPos = npc.position || npc.mesh?.position;
+        if (!nPos) continue;
+        const dist = myPos.distanceTo(nPos);
+        if (dist < 15.0) {
+          let nSpeed = Math.abs(npc.speed !== undefined ? npc.speed : (npc.userData?.spd ? npc.userData.spd * 20 : 0));
+          let nHeading = npc.rotation ? (typeof npc.rotation.y === 'number' ? npc.rotation.y : npc.rotation) : (npc.mesh?.rotation?.y || 0);
+          if (npc.velocity) {
+            nSpeed = Math.hypot(npc.velocity.x || 0, npc.velocity.z || 0);
+            nHeading = Math.atan2(npc.velocity.x || 0, npc.velocity.z || 0);
+          }
+          const ttcRes = calcPedestrianTTC({
+            pedX: myPos.x,
+            pedZ: myPos.z,
+            vehX: nPos.x,
+            vehZ: nPos.z,
+            vehHeading: nHeading,
+            vehSpeed: nSpeed,
+            laneWidth: 3.5
+          });
+          const fleeCheck = evaluatePedestrianFleeing({
+            minTTC: ttcRes.ttc,
+            dLong: ttcRes.dLong,
+            currentSpeed: this.profile.speed,
+            walkSpeed: this.profile.speed
+          });
+          if (fleeCheck.shouldFlee || (dist < 6.0 && ttcRes.oncoming && ttcRes.ttc < 2.0) || dist < 4.0) {
+            this.triggerFlee(nPos);
+            return;
+          }
         }
       }
     }
   }
 
-  _isRoadClear(npcs) {
-    // Simple check: no vehicles within 10 units ahead
-    if (!npcs) return true;
-    const myPos = this.ped.position;
-    for (const npc of npcs) {
-      if (!npc.position) continue;
-      const dist = myPos.distanceTo(npc.position);
-      if (dist < 10) return false;
+  _pickCrossingTarget() {
+    const isV = this.ped.userData?.isV;
+    const roadC = this.ped.userData?.roadC || 0;
+    const curSide = this.ped.userData?.side || 1;
+    const otherSide = -curSide;
+    const targetDist = this.ped.userData?.targetDist || (18 / 2 + 1.25);
+    const crossOffset = otherSide * targetDist;
+
+    if (isV !== undefined) {
+      this.target = new THREE.Vector3(
+        isV ? roadC + crossOffset : this.ped.position.x,
+        0,
+        isV ? this.ped.position.z : roadC + crossOffset
+      );
+    } else {
+      const crossAngle = this.facing + Math.PI / 2 + (Math.random() - 0.5) * 0.5;
+      const crossDist = 12 + Math.random() * 8;
+      this.target = new THREE.Vector3(
+        this.ped.position.x + Math.sin(crossAngle) * crossDist,
+        0,
+        this.ped.position.z + Math.cos(crossAngle) * crossDist
+      );
     }
-    return true;
   }
 
-  _pickCrossingTarget() {
-    // Pick a point across the road
-    const crossAngle = this.facing + Math.PI / 2 + (Math.random() - 0.5) * 0.5;
-    const crossDist = 12 + Math.random() * 8;
-    this.target = new THREE.Vector3(
-      this.ped.position.x + Math.sin(crossAngle) * crossDist,
-      0,
-      this.ped.position.z + Math.cos(crossAngle) * crossDist
-    );
+  _updateLegAnimation(dt) {
+    if (!this.ped) return;
+    const isFleeing = this.state === PED_STATE.FLEEING;
+    const isMoving = this.state === PED_STATE.WALKING || this.state === PED_STATE.CROSSING || this.state === PED_STATE.JAYWALKING || isFleeing || this.state === PED_STATE.BOARDING || this.state === PED_STATE.ALIGHTING;
+
+    if (!this._animT) this._animT = 0;
+    const animSpeed = isFleeing ? 20.0 : (isMoving ? 10.0 : 0.5);
+    this._animT += dt * animSpeed;
+
+    const lLeg = this.ped.children && this.ped.children.find(c => c.name === 'lLeg');
+    const rLeg = this.ped.children && this.ped.children.find(c => c.name === 'rLeg');
+    if (lLeg && rLeg) {
+      if (isMoving) {
+        const amp = isFleeing ? 0.75 : 0.45;
+        lLeg.rotation.x = Math.sin(this._animT) * amp;
+        rLeg.rotation.x = -Math.sin(this._animT) * amp;
+      } else {
+        lLeg.rotation.x = 0;
+        rLeg.rotation.x = 0;
+      }
+    }
+
+    if (this.ped.userData && this.ped.userData.isFBXAnimated && this.ped.userData.mixer) {
+      const targetIdle = isMoving ? 0 : 1;
+      const targetRun = isMoving ? 1 : 0;
+      if (this.ped.userData.idleAction && this.ped.userData.runAction) {
+        const curIdle = this.ped.userData.idleAction.getEffectiveWeight();
+        const curRun = this.ped.userData.runAction.getEffectiveWeight();
+        this.ped.userData.idleAction.setEffectiveWeight(curIdle + (targetIdle - curIdle) * 0.1);
+        this.ped.userData.runAction.setEffectiveWeight(curRun + (targetRun - curRun) * 0.1);
+      }
+      this.ped.userData.mixer.update(dt);
+    }
   }
 
   _keepOnGround() {
-    // Respect model's natural height offset (player at y=0.5, peds at y=0)
     if (!this._groundY) this._groundY = this.ped.position.y > 0.1 ? 0.5 : 0;
     this.ped.position.y = this._groundY;
   }
 }
 
-window.NPC_STATE = NPC_STATE;
-window.NPC_PROFILES = NPC_PROFILES;
-window.NPCAI = NPCAI;
-window.pickRandomProfile = pickRandomProfile;
-window.PED_STATE = PED_STATE;
-window.PED_PROFILES = PED_PROFILES;
-window.PedestrianAI = PedestrianAI;
-window.pickRandomPedProfile = pickRandomPedProfile;
+const _globalObj = typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : globalThis);
+_globalObj.NPC_STATE = NPC_STATE;
+_globalObj.NPC_PROFILES = NPC_PROFILES;
+_globalObj.VehicleClassProfiles = VehicleClassProfiles;
+_globalObj.calcIDMDesiredGap = calcIDMDesiredGap;
+_globalObj.calcIDMAcceleration = calcIDMAcceleration;
+_globalObj.evaluateMOBILDecision = evaluateMOBILDecision;
+_globalObj.calcAdaptiveLookahead = calcAdaptiveLookahead;
+_globalObj.calcPurePursuit = calcPurePursuit;
+_globalObj.calcPedestrianTTC = calcPedestrianTTC;
+_globalObj.evaluatePedestrianGapAcceptance = evaluatePedestrianGapAcceptance;
+_globalObj.evaluatePedestrianFleeing = evaluatePedestrianFleeing;
+_globalObj.arbitrateDeadlock = arbitrateDeadlock;
+_globalObj.NPCAI = NPCAI;
+_globalObj.pickRandomProfile = pickRandomProfile;
+_globalObj.PED_STATE = PED_STATE;
+_globalObj.PED_PROFILES = PED_PROFILES;
+_globalObj.PedestrianAI = PedestrianAI;
+_globalObj.pickRandomPedProfile = pickRandomPedProfile;
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    NPC_STATE,
+    NPC_PROFILES,
+    VehicleClassProfiles,
+    calcIDMDesiredGap,
+    calcIDMAcceleration,
+    evaluateMOBILDecision,
+    calcAdaptiveLookahead,
+    calcPurePursuit,
+    calcPedestrianTTC,
+    evaluatePedestrianGapAcceptance,
+    evaluatePedestrianFleeing,
+    arbitrateDeadlock,
+    NPCAI,
+    pickRandomProfile,
+    PED_STATE,
+    PED_PROFILES,
+    PedestrianAI,
+    pickRandomPedProfile
+  };
+}

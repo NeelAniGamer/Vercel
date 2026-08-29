@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import DrivingSimulator from './DrivingSimulator';
 import AchievementToast from './components/HUD';
-import { supabase } from '../supabase';
+const getSupabase = () => (typeof window !== 'undefined' ? ((window as any).supabaseClient || (window as any).supabase) : null);
 
 const GamePage = () => {
   const [achievement, setAchievement] = useState<{ title: string; message: string } | null>(null);
@@ -13,6 +13,9 @@ const GamePage = () => {
   useEffect(() => {
     const initGameSession = async () => {
       try {
+        const supabase = getSupabase();
+        if (!supabase) return;
+
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           userIdRef.current = user.id;
@@ -36,6 +39,9 @@ const GamePage = () => {
   }, []);
 
   const triggerAchievement = useCallback(async (slug: string) => {
+    const supabase = getSupabase();
+    if (!supabase) return;
+
     const { data, error } = await supabase.rpc('complete_achievement', { target_achievement_slug: slug });
     if (data) {
       setAchievement({
@@ -51,8 +57,9 @@ const GamePage = () => {
   const syncScore = useCallback(async (score: number) => {
     const userId = userIdRef.current;
     const achievementId = globalScoreIdRef.current;
+    const supabase = getSupabase();
 
-    if (!userId || !achievementId) return;
+    if (!userId || !achievementId || !supabase) return;
 
     const { error } = await supabase.from('user_achievements').upsert({
       user_id: userId,

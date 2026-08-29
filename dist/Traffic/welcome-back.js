@@ -14,7 +14,7 @@
     DAILY_BONUS: 'traffic_daily_bonus',
   };
 
-  // ── Daily Bonus System ──
+
   const DAILY_BONUS_TIERS = [
     { days: 1, amount: 500, label: 'Day 1', emoji: '🎉' },
     { days: 2, amount: 750, label: 'Day 2', emoji: '🔥' },
@@ -38,7 +38,7 @@
     try { localStorage.setItem(STORAGE_KEYS.DAILY_BONUS, JSON.stringify(data)); } catch (e) {}
   }
 
-  // Shared streak computation — single source of truth
+
   function _computeNextStreak(bonus) {
     const now = Date.now();
     const elapsed = now - bonus.lastClaim;
@@ -54,11 +54,11 @@
 
     const elapsed = Date.now() - bonus.lastClaim;
     if (bonus.lastClaim === 0) {
-      // First time — allow claiming
+
       const tier = DAILY_BONUS_TIERS[0];
       return { streak: 1, amount: tier.amount, tier, isNew: true };
     }
-    if (elapsed < TWENTY_FOUR_HOURS) return null; // Already claimed today
+    if (elapsed < TWENTY_FOUR_HOURS) return null;
     const nextStreak = _computeNextStreak(bonus);
     const tier = DAILY_BONUS_TIERS[Math.min(nextStreak - 1, DAILY_BONUS_TIERS.length - 1)];
     return { streak: nextStreak, amount: tier.amount, tier, isNew: false };
@@ -69,7 +69,7 @@
     if (!info) return null;
     const now = Date.now();
 
-    // Save streak first (idempotent) — then credit wallet
+
     saveDailyBonusData({ lastClaim: now, streak: info.streak });
 
     try {
@@ -101,7 +101,7 @@
     popup.setAttribute('aria-labelledby', 'db-title');
     popup.style.cssText = 'position:fixed;inset:0;z-index:10001;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);opacity:0;transition:opacity 0.3s ease;';
 
-    // Build streak dots
+
     let streakDots = '';
     for (let i = 0; i < 7; i++) {
       const filled = i < bonusInfo.streak;
@@ -174,7 +174,7 @@
   function getCurrentPageKey() {
     const path = window.location.pathname;
     const filename = path.split('/').pop().toLowerCase().replace('.html', '');
-    
+
     if (filename.includes('setup') || filename === 'trafficsetup') return 'setup';
     if (filename.includes('academy')) return 'academy';
     if (filename.includes('driving')) return 'driving';
@@ -197,7 +197,7 @@
       gameState: extraState.gameState || null,
       scrollPosition: extraState.scrollPosition || window.scrollY,
     };
-    
+
     try {
       localStorage.setItem(STORAGE_KEYS.LAST_PAGE, JSON.stringify(state));
       localStorage.setItem(STORAGE_KEYS.SESSION_TIMESTAMP, timestamp.toString());
@@ -211,16 +211,16 @@
       const raw = localStorage.getItem(STORAGE_KEYS.LAST_PAGE);
       if (!raw) return null;
       const state = JSON.parse(raw);
-      
+
       const sessionTime = parseInt(localStorage.getItem(STORAGE_KEYS.SESSION_TIMESTAMP) || '0', 10);
       const now = Date.now();
       const MAX_SESSION_AGE = 7 * 24 * 60 * 60 * 1000;
-      
+
       if (now - sessionTime > MAX_SESSION_AGE) {
         clearSessionState();
         return null;
       }
-      
+
       return state;
     } catch (e) {
       console.warn('Failed to load session state:', e);
@@ -298,7 +298,7 @@
 
     let actionText = 'Continue';
     let actionAriaLabel = `Continue ${data.screenLabel} from ${data.timeLabel}`;
-    
+
     if (isGame) {
       actionText = 'Resume Game';
       actionAriaLabel = `Resume driving simulation from ${data.timeLabel}`;
@@ -379,7 +379,7 @@
 
     bindPopupEvents(popup, data);
 
-    // Real-time countdown timer — updates the time chip every second
+
     const timeChip = popup.querySelector('.wb-time-chip');
     if (timeChip && data.session && data.session.timestamp) {
       const timerInterval = setInterval(() => {
@@ -468,7 +468,7 @@
       setTimeout(() => createWelcomeBackPopup(data), 800);
     }
 
-    // Check for daily bonus (show after welcome-back if applicable)
+
     const bonusInfo = checkDailyBonus();
     if (bonusInfo) {
       const delay = data ? 1600 : 600;

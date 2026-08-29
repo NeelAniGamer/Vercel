@@ -196,7 +196,7 @@
     const rainTrails = []
     const rainKeys = ['em', 'teal', 'ion']
     for (let c = 0; c < 40; c++) {
-      const rx = (Math.random() - 0.5) * 100
+      let rx = (Math.random() - 0.5) * 100
       const rz = (Math.random() - 0.5) * 40 - 15
       if (Math.abs(rx) < 15 && Math.abs(rz) < 15) rx += 20 * Math.sign(rx)
 

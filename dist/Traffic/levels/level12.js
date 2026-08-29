@@ -23,6 +23,9 @@ window.LVS.push({
   scenarioType: 'emergency',
   npcDensity: 'heavy',
   startOutside: true,
+  hasAmbulanceBehind: true,
+  isHighway: true,
+  highwaySpeed: 80,
   tasks: [
     { id: 'indicate_left', text: 'Indicate left before merging', type: 'toggle', target: 'indicator', done: false },
     { id: 'merge_left', text: 'Merge to left lane', type: 'reach', target: 'left_lane', done: false },

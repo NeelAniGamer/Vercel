@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
     <meta name="description" content="Solar System Visualization Engine — 3D interactive solar system with realistic orbits, planet data, and space exploration." />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -33,58 +35,6 @@
       <link rel="icon" type="image/png" href="Icon.png" />
   </head>
   <body>
-    <nav class="top-nav">
-      <a href="/" class="nav-brand">
-        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
-        <span class="brand-name">Class Of Learners</span>
-      </a>
-      <button class="mmb" id="mmb">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
-      <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link">Home</a>
-        <a href="about" class="nav-link">About</a>
-        <a href="school" class="nav-link">School</a>
-        <a href="sneh-asha" class="nav-link">Sneh Asha</a>
-        <div class="dropdown" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn">Projects <span class="darr">▼</span></button>
-          <div class="dropdown-content">
-            <div class="dropdown-content-inner">
-              <a href="ati">Typing Instructor <span>⌨️</span></a>
-              <a href="solar">Solar Engine <span>🌍</span></a>
-              <a href="gesture">Gesture Control <span>🖐️</span></a>
-              <a href="rpg">RPG Game <span>⚔️</span></a>
-              <a href="qr">QR Generator <span>⬛</span></a>
-            </div>
-          </div>
-        </div>
-        <div class="tw">
-          <span class="tl" id="tLabel">Light</span>
-          <label class="tsb">
-            <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)" />
-            <div class="tst"><div class="tsth"></div></div>
-          </label>
-        </div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          Sign In
-        </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
-          <div class="nav-user-avatar" id="navUserAv">?</div>
-          <span class="nun" id="navUserName">User</span>
-        </div>
-        <a href="download" class="nav-dl-btn mobile-dl">Download Hub</a>
-      </div>
-      <a href="download" class="nav-dl-btn desktop-dl">Download Hub</a>
-    </nav>
-
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
     <script>
@@ -867,7 +817,7 @@
         if (window.setSensitivity) window.setSensitivity('perfMode', btn.classList.contains('active') ? 1 : 0)
       }
 
-      // Shortcuts ----------------------------------------
+            // Shortcuts ----------------------------------------
       window.closeShortcuts = function () {
         document.getElementById('shortcuts-overlay').classList.remove('active')
       }
@@ -998,7 +948,7 @@
         if (k === '+' || k === '=') {
           if (window.speedUp) window.speedUp()
         }
-        if (k === '-') {
+        if (k === '-' || k === '_') {
           if (window.speedDown) window.speedDown()
         }
         if (k === 'd' || k === 'D') showRandomFact()
@@ -1011,12 +961,5 @@
     </script>
 
     <script defer type="module" src="logic.js"></script>
-    <footer class="sf">
-      <div class="fi">
-        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
-        <div class="fl"><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
-      </div>
-    </footer>
   </body>
 </html>

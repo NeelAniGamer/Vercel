@@ -23,6 +23,8 @@ window.LVS.push({
   scenarioType: 'emergency',
   npcDensity: 'heavy',
   startOutside: true,
+  hasAmbulanceBehind: true,
+  hasTrafficJam: true,
   tasks: [
     { id: 'hazards_on', text: 'Turn on hazard lights', type: 'toggle', target: 'hazards', done: false },
     { id: 'inch_forward', text: 'Inch forward to create space', type: 'reach', target: 'forward_space', done: false },

@@ -1303,3 +1303,170 @@ body.lm .ms {
   height: 34px;
   border-radius: 17px;
 }
+
+/* ==========================================================================
+   COMPREHENSIVE GLOBAL LIGHT MODE SUITE (ALL MAIN PAGES)
+   ========================================================================== */
+body.lm {
+  --bg: #f8fafc;
+  --bg-subtle: #f1f5f9;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.16);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --modal-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* Light mode scrollbar */
+body.lm::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+}
+body.lm::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border: 3px solid #f1f5f9 !important;
+}
+body.lm::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+/* Cards, Content Blocks & Grids */
+body.lm .card,
+body.lm .content-card,
+body.lm .feature-card,
+body.lm .info-card,
+body.lm .section-card,
+body.lm .profile-card,
+body.lm .stat-card,
+body.lm .box,
+body.lm .panel,
+body.lm .trophy-card,
+body.lm .dl-card,
+body.lm .cert-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.lm .card:hover,
+body.lm .content-card:hover,
+body.lm .feature-card:hover,
+body.lm .trophy-card:hover,
+body.lm .dl-card:hover {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Headings & Text Contrast */
+body.lm h1,
+body.lm h2,
+body.lm h3,
+body.lm h4,
+body.lm h5,
+body.lm h6,
+body.lm .title,
+body.lm .hero-title,
+body.lm .card-title,
+body.lm .section-title {
+  color: #0f172a !important;
+}
+
+body.lm p,
+body.lm .desc,
+body.lm .subtitle,
+body.lm .card-desc,
+body.lm .meta,
+body.lm .text-dim {
+  color: #475569 !important;
+}
+
+/* Form Controls, Inputs & Textareas */
+body.lm input[type='text'],
+body.lm input[type='email'],
+body.lm input[type='password'],
+body.lm input[type='search'],
+body.lm input[type='number'],
+body.lm textarea,
+body.lm select {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  color: #0f172a !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+body.lm input::placeholder,
+body.lm textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+body.lm input:focus,
+body.lm textarea:focus,
+body.lm select:focus {
+  border-color: #4f46e5 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+}
+
+/* Badges, Chips & Tech Tags */
+body.lm .tech-tag,
+body.lm .badge,
+body.lm .chip,
+body.lm .tag {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #334155 !important;
+}
+
+body.lm .tech-tag:hover,
+body.lm .chip:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+}
+
+/* Tables & Data Displays */
+body.lm table {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+body.lm th {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+body.lm td {
+  color: #334155 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+body.lm tr:nth-child(even) td {
+  background: rgba(248, 250, 252, 0.6) !important;
+}
+
+body.lm tr:hover td {
+  background: rgba(79, 70, 229, 0.04) !important;
+}
+
+/* Modals & Popups */
+body.lm .modal,
+body.lm .modal-content,
+body.lm .dialog {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18) !important;
+  color: #0f172a !important;
+}
+
+/* Footers */
+body.lm footer,
+body.lm .site-footer {
+  background: #f1f5f9 !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #64748b !important;
+}
+

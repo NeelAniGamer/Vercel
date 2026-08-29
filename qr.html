@@ -1,10 +1,13 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
     <meta name="description" content="Class of Learners - Qr. An educational tool and resource." />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QR Dashboard | Class Of Learners</title>
+    <script defer src="qr-dynamic.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -1295,14 +1298,14 @@
         <a href="sneh-asha" class="nav-link">Sneh Asha</a>
         <a href="download" class="nav-dl-btn mobile-dl">Downloads</a>
         <div class="dropdown" id="projectsDropdown">
-          <button class="dropdown-btn act" onclick="this.parentElement.classList.toggle('active'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('active'))" aria-haspopup="true" aria-expanded="false">Projects <span>â–¼</span></button>
+          <button class="dropdown-btn act" onclick="this.parentElement.classList.toggle('active'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('active'))" aria-haspopup="true" aria-expanded="false">Projects <span>▼</span></button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati">Typing Instructor <span>&#9109;&#65039;</span></a>
-              <a href="solar">Solar Engine <span>&#127760;</span></a>
-              <a href="gesture">Gesture Control <span>&#128400;&#65039;</span></a>
-              <a href="rpg">RPG Game <span>&#9876;&#65039;</span></a>
-              <a href="qr">QR Generator <span>&#11035;</span></a>
+              <a href="ati">Typing Instructor <span>⌨️</span></a>
+              <a href="solar">Solar Engine <span>☀️</span></a>
+              <a href="gesture">Gesture Control <span>🖐️</span></a>
+              <a href="rpg">RPG Game <span>⚔️</span></a>
+              <a href="qr">QR Generator <span>📱</span></a>
             </div>
           </div>
         </div>
@@ -1912,8 +1915,13 @@
             </a>
             
             <a href="qr-editor.html?template=social_hub" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="font-size: 4rem;">🔒—</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="font-size: 4rem;">🔗</div></div>
                 <div class="dbb"><h3>Social Media Hub</h3><div class="ddt">Optimized for Linktree or social profiles</div></div>
+            </a>
+
+            <a href="qr-editor.html?template=event_promo" class="dbc" style="cursor:pointer;">
+                <div class="dbt" style="background: linear-gradient(135deg, #f97316, #ea580c);"><div style="font-size: 4rem;">🎟️</div></div>
+                <div class="dbb"><h3>Event &amp; Ticket Promo</h3><div class="ddt">High-conversion flyer &amp; badge styling</div></div>
             </a>
         </div>
     `
@@ -2159,6 +2167,8 @@ async function loadFromDrive() {
       }
 
       async function syncDrive() {
+        toast('Cloud sync not yet implemented for QR Studio', 'yellow')
+      }
 
       async function loadFromDrive() {
         toast('Cloud sync not yet implemented for QR Studio', 'yellow')

@@ -23,6 +23,8 @@ window.LVS.push({
   hasFireHydrant: true,
   scenarioType: 'cars_only',
   startOutside: true,
+  isParkingChallenge: true,
+  parkingType: "commercial",
   tasks: [
     { id: 'avoid_hydrant', text: 'Avoid hydrant area', type: 'avoid', target: 'hydrant_zone', done: false },
     { id: 'find_parking', text: 'Find parking zone', type: 'reach', target: 'parking_zone', done: false },

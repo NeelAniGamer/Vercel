@@ -1,3 +1,4 @@
+@import url('col-mobile.css');
 /* col-ui.css - Shared UI styles for Class Of Learners (Navbar, Footer, Cursor) */
 :root {
   --void: #070a14;
@@ -49,14 +50,14 @@ body {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
-/* Enforce capitalization without performance-killing universal selectors */
-body {
-  text-transform: capitalize;
-}
-h1, h2, h3, h4, h5, h6, p, a, span, button, input, label, li, .nav-link, .btn {
-  text-transform: capitalize !important;
-}
-code, pre, .tech-tag, kbd, .brand, [style*="monospace"], .term-dot {
+
+code,
+pre,
+.tech-tag,
+kbd,
+.brand,
+[style*='monospace'],
+.term-dot {
   text-transform: none !important;
 }
 input,
@@ -321,8 +322,13 @@ body.lm .tsb input:checked + .tst .tsth {
   flex-shrink: 0;
   margin-left: 6px;
   background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
-  transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.25), inset 0 -1px 2px rgba(255, 255, 255, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition:
+    background 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s ease;
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.25),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
@@ -331,7 +337,16 @@ body.lm .tsb input:checked + .tst .tsth {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 56px 17px, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.2) 8px, transparent 9px, transparent 13px, rgba(255, 255, 255, 0.15) 14px, rgba(255, 255, 255, 0.15) 20px, transparent 21px);
+  background: radial-gradient(
+    circle at 56px 17px,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.2) 8px,
+    transparent 9px,
+    transparent 13px,
+    rgba(255, 255, 255, 0.15) 14px,
+    rgba(255, 255, 255, 0.15) 20px,
+    transparent 21px
+  );
   pointer-events: none;
   transition: opacity 0.5s ease;
   opacity: 1;
@@ -339,12 +354,24 @@ body.lm .tsb input:checked + .tst .tsth {
 
 .hz-toggle.night {
   background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 -1px 2px rgba(255, 255, 255, 0.05), 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.5),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.4);
   border-color: rgba(255, 255, 255, 0.08);
 }
 
 .hz-toggle.night::before {
-  background: radial-gradient(circle at 18px 17px, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.06) 8px, transparent 9px, transparent 13px, rgba(255, 255, 255, 0.04) 14px, rgba(255, 255, 255, 0.04) 20px, transparent 21px);
+  background: radial-gradient(
+    circle at 18px 17px,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.06) 8px,
+    transparent 9px,
+    transparent 13px,
+    rgba(255, 255, 255, 0.04) 14px,
+    rgba(255, 255, 255, 0.04) 20px,
+    transparent 21px
+  );
 }
 
 /* 4-Point Diamond Sparkle Stars (Dark Mode) */
@@ -374,7 +401,9 @@ body.lm .tsb input:checked + .tst .tsth {
   height: 22px;
   pointer-events: none;
   opacity: 1;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 24'%3E%3Cpath fill='rgba(255,255,255,0.45)' d='M22,24 A10,10 0 0,1 40,15 A8,8 0 0,1 50,24 Z'/%3E%3Cpath fill='rgba(255,255,255,0.75)' d='M16,24 A8,8 0 0,1 33,18 A7,7 0 0,1 45,24 Z'/%3E%3Cpath fill='%23ffffff' d='M26,24 A6,6 0 0,1 39,21 A5,5 0 0,1 48,24 Z'/%3E%3C/svg%3E");
   background-size: cover;
   z-index: 1;
@@ -401,9 +430,15 @@ body.lm .tsb input:checked + .tst .tsth {
   top: 3px;
   left: 4px;
   z-index: 4;
-  transition: left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.45s ease, box-shadow 0.45s ease, transform 0.45s ease;
+  transition:
+    left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.45s ease,
+    box-shadow 0.45s ease,
+    transform 0.45s ease;
   background: radial-gradient(circle at 35% 35%, #fef08a 0%, #f59e0b 55%, #d97706 100%);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 /* Sun Outer Glow Pulse */
@@ -418,8 +453,15 @@ body.lm .tsb input:checked + .tst .tsth {
 }
 
 @keyframes hz-sun-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.1); opacity: 0.15; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.15;
+  }
 }
 
 /* Moon Craters (Dark Mode) */
@@ -432,9 +474,10 @@ body.lm .tsb input:checked + .tst .tsth {
   height: 6px;
   border-radius: 50%;
   background: #94a3b8;
-  box-shadow: inset 0.5px 0.5px 1px rgba(0, 0, 0, 0.4),
-              -7px 6px 0 -0.5px #94a3b8,
-              -5px 12px 0 0px #94a3b8;
+  box-shadow:
+    inset 0.5px 0.5px 1px rgba(0, 0, 0, 0.4),
+    -7px 6px 0 -0.5px #94a3b8,
+    -5px 12px 0 0px #94a3b8;
   opacity: 0;
   transition: opacity 0.35s ease 0.1s;
   pointer-events: none;
@@ -443,7 +486,9 @@ body.lm .tsb input:checked + .tst .tsth {
 .hz-toggle.night .hz-orb {
   left: 40px;
   background: radial-gradient(circle at 35% 35%, #f8fafc 0%, #cbd5e1 55%, #94a3b8 100%);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
 .hz-toggle.night .hz-orb::before {
@@ -456,8 +501,15 @@ body.lm .tsb input:checked + .tst .tsth {
 }
 
 @keyframes hz-moon-glow {
-  0%, 100% { transform: scale(1); opacity: 0.4; }
-  50% { transform: scale(1.08); opacity: 0.15; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.15;
+  }
 }
 
 .hz-toggle:active {
@@ -485,12 +537,26 @@ body.lm .tsb input:checked + .tst .tsth {
     top: -3px;
     left: 5px;
   }
-  .hz-skyline { height: 10px; }
-  .hz-windows { height: 10px; }
+  .hz-skyline {
+    height: 10px;
+  }
+  .hz-windows {
+    height: 10px;
+  }
   .hz-stars {
     top: 3px;
     left: 6px;
-    box-shadow: 12px 3px 0 0 rgba(255,255,255,0.9), 30px 7px 0 0 rgba(255,255,255,0.7), 20px 13px 0 0 rgba(255,255,255,1), 46px 3px 0 0 rgba(255,255,255,0.6), 58px 11px 0 0 rgba(255,255,255,0.8), 72px 5px 0 0 rgba(255,255,255,0.9), 86px 14px 0 0 rgba(255,255,255,0.5), 100px 3px 0 0 rgba(255,255,255,0.8), 38px 18px 0 0 rgba(255,255,255,0.7), 68px 16px 0 0 rgba(255,255,255,0.6);
+    box-shadow:
+      12px 3px 0 0 rgba(255, 255, 255, 0.9),
+      30px 7px 0 0 rgba(255, 255, 255, 0.7),
+      20px 13px 0 0 rgba(255, 255, 255, 1),
+      46px 3px 0 0 rgba(255, 255, 255, 0.6),
+      58px 11px 0 0 rgba(255, 255, 255, 0.8),
+      72px 5px 0 0 rgba(255, 255, 255, 0.9),
+      86px 14px 0 0 rgba(255, 255, 255, 0.5),
+      100px 3px 0 0 rgba(255, 255, 255, 0.8),
+      38px 18px 0 0 rgba(255, 255, 255, 0.7),
+      68px 16px 0 0 rgba(255, 255, 255, 0.6);
   }
 }
 
@@ -718,7 +784,7 @@ body.lm .nav-login-btn:hover {
     backdrop-filter: blur(15px) !important;
     -webkit-backdrop-filter: blur(15px) !important;
     border: 1px solid var(--line) !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
     z-index: 1000 !important;
   }
   .desktop-dl {
@@ -777,7 +843,9 @@ body.lm .nav-login-btn:hover {
     height: 2px !important;
     background: var(--ink) !important;
     border-radius: 2px !important;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s !important;
+    transition:
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.3s !important;
   }
   .mmb.active .m-line:nth-child(1) {
     transform: translateY(6px) rotate(45deg) !important;
@@ -823,7 +891,7 @@ body.lm .nav-login-btn:hover {
   body.lm .nav-links {
     background: var(--void) !important;
   }
-  
+
   .nav-links.active {
     opacity: 1;
     visibility: visible;
@@ -840,14 +908,30 @@ body.lm .nav-login-btn:hover {
     opacity: 1;
     transform: translateX(0);
   }
-  .nav-links.active > :nth-child(1) { transition-delay: 0.06s; }
-  .nav-links.active > :nth-child(2) { transition-delay: 0.1s; }
-  .nav-links.active > :nth-child(3) { transition-delay: 0.14s; }
-  .nav-links.active > :nth-child(4) { transition-delay: 0.18s; }
-  .nav-links.active > :nth-child(5) { transition-delay: 0.22s; }
-  .nav-links.active > :nth-child(6) { transition-delay: 0.26s; }
-  .nav-links.active > :nth-child(7) { transition-delay: 0.3s; }
-  .nav-links.active > :nth-child(8) { transition-delay: 0.34s; }
+  .nav-links.active > :nth-child(1) {
+    transition-delay: 0.06s;
+  }
+  .nav-links.active > :nth-child(2) {
+    transition-delay: 0.1s;
+  }
+  .nav-links.active > :nth-child(3) {
+    transition-delay: 0.14s;
+  }
+  .nav-links.active > :nth-child(4) {
+    transition-delay: 0.18s;
+  }
+  .nav-links.active > :nth-child(5) {
+    transition-delay: 0.22s;
+  }
+  .nav-links.active > :nth-child(6) {
+    transition-delay: 0.26s;
+  }
+  .nav-links.active > :nth-child(7) {
+    transition-delay: 0.3s;
+  }
+  .nav-links.active > :nth-child(8) {
+    transition-delay: 0.34s;
+  }
 
   /* ── Nav links (icon + label row) ── */
   .nav-links .nav-link,
@@ -1218,5 +1302,171 @@ body.lm .ms {
   width: 72px;
   height: 34px;
   border-radius: 17px;
+}
+
+/* ==========================================================================
+   COMPREHENSIVE GLOBAL LIGHT MODE SUITE (ALL MAIN PAGES)
+   ========================================================================== */
+body.lm {
+  --bg: #f8fafc;
+  --bg-subtle: #f1f5f9;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.16);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --modal-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* Light mode scrollbar */
+body.lm::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+}
+body.lm::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border: 3px solid #f1f5f9 !important;
+}
+body.lm::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+/* Cards, Content Blocks & Grids */
+body.lm .card,
+body.lm .content-card,
+body.lm .feature-card,
+body.lm .info-card,
+body.lm .section-card,
+body.lm .profile-card,
+body.lm .stat-card,
+body.lm .box,
+body.lm .panel,
+body.lm .trophy-card,
+body.lm .dl-card,
+body.lm .cert-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.lm .card:hover,
+body.lm .content-card:hover,
+body.lm .feature-card:hover,
+body.lm .trophy-card:hover,
+body.lm .dl-card:hover {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Headings & Text Contrast */
+body.lm h1,
+body.lm h2,
+body.lm h3,
+body.lm h4,
+body.lm h5,
+body.lm h6,
+body.lm .title,
+body.lm .hero-title,
+body.lm .card-title,
+body.lm .section-title {
+  color: #0f172a !important;
+}
+
+body.lm p,
+body.lm .desc,
+body.lm .subtitle,
+body.lm .card-desc,
+body.lm .meta,
+body.lm .text-dim {
+  color: #475569 !important;
+}
+
+/* Form Controls, Inputs & Textareas */
+body.lm input[type='text'],
+body.lm input[type='email'],
+body.lm input[type='password'],
+body.lm input[type='search'],
+body.lm input[type='number'],
+body.lm textarea,
+body.lm select {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  color: #0f172a !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+body.lm input::placeholder,
+body.lm textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+body.lm input:focus,
+body.lm textarea:focus,
+body.lm select:focus {
+  border-color: #4f46e5 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+}
+
+/* Badges, Chips & Tech Tags */
+body.lm .tech-tag,
+body.lm .badge,
+body.lm .chip,
+body.lm .tag {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #334155 !important;
+}
+
+body.lm .tech-tag:hover,
+body.lm .chip:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+}
+
+/* Tables & Data Displays */
+body.lm table {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+body.lm th {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+body.lm td {
+  color: #334155 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+body.lm tr:nth-child(even) td {
+  background: rgba(248, 250, 252, 0.6) !important;
+}
+
+body.lm tr:hover td {
+  background: rgba(79, 70, 229, 0.04) !important;
+}
+
+/* Modals & Popups */
+body.lm .modal,
+body.lm .modal-content,
+body.lm .dialog {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.18) !important;
+  color: #0f172a !important;
+}
+
+/* Footers */
+body.lm footer,
+body.lm .site-footer {
+  background: #f1f5f9 !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #64748b !important;
 }
 
