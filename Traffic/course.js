@@ -1,7 +1,5 @@
 
 
-
-
 const MODES = {
   LEARN:   { id: 'learn',   label: 'LEARN',   icon: '📖', color: '--ion',    desc: 'Theory & rules' },
   PRACTICE:{ id: 'practice',label: 'PRACTICE',icon: '🚗', color: '--signal', desc: 'Hands-on driving' },
@@ -10,15 +8,18 @@ const MODES = {
 };
 
 const VEHICLES = [
-  { id: 'car',       name: 'Sedan',       icon: '🚗', recommended: [1,2,3,4,5,7,9,10,11,13,14,15] },
-  { id: 'bike',      name: 'Motorcycle',  icon: '🏍️', recommended: [3,4,6,8,12] },
-  { id: 'auto',      name: 'Auto-rickshaw',icon: '🛺', recommended: [2,5,6,12] },
-  { id: 'bus',       name: 'BEST Bus',    icon: '🚌', recommended: [1,4,7,10] },
-  { id: 'truck',     name: 'Truck',       icon: '🚚', recommended: [1,9,11] },
-  { id: 'taxi',      name: 'Kaali-Peeli', icon: '🚕', recommended: [1,3,7,13] },
-  { id: 'cycle',     name: 'Bicycle',     icon: '🚲', recommended: [3,6] },
-  { id: 'ambulance', name: 'Ambulance',   icon: '🚑', recommended: [8] },
-  { id: 'police',    name: 'Police Jeep', icon: '🚓', recommended: [8,14] }
+  { id: 'car',            name: 'Supercar Sedan',   icon: '🏎️', recommended: [1,2,3,4,5,7,9,10,11,13,14,15] },
+  { id: 'bmw_m4',         name: 'BMW M4 Widebody',  icon: '🏎️', recommended: [1,4,7,10,13,15] },
+  { id: 'nilu_27',        name: 'Nilu 27 Hypercar', icon: '⚡', recommended: [1,4,7,10,15] },
+  { id: 'bike',           name: 'Motorcycle',       icon: '🏍️', recommended: [3,4,6,8,12] },
+  { id: 'cyberpunk_bike', name: 'Cyber Bike',       icon: '⚡', recommended: [3,4,6,8,12] },
+  { id: 'auto',           name: 'Auto-rickshaw',    icon: '🛺', recommended: [2,5,6,12] },
+  { id: 'bus',            name: 'BEST Bus',         icon: '🚌', recommended: [1,4,7,10] },
+  { id: 'truck',          name: 'Truck',            icon: '🚚', recommended: [1,9,11] },
+  { id: 'taxi',           name: 'Kaali-Peeli',      icon: '🚕', recommended: [1,3,7,13] },
+  { id: 'cycle',          name: 'Bicycle',          icon: '🚲', recommended: [3,6] },
+  { id: 'ambulance',      name: 'Ambulance',        icon: '🚑', recommended: [8] },
+  { id: 'police',         name: 'Police Interceptor',icon: '🚓', recommended: [8,14] }
 ];
 
 const MUMBAI_STATS = {

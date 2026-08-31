@@ -1743,7 +1743,7 @@
         width: 100%;
         max-width: 960px;
         min-width: 320px;
-        height: auto;
+        flex-shrink: 0;
         display: block;
         overflow: visible;
         margin: 0 auto;
@@ -7296,6 +7296,8 @@ function _onbComplete() {
           svg.setAttribute('viewBox', `0 0 ${viewBoxWidth} ${maxY}`)
           svg.setAttribute('preserveAspectRatio', 'xMidYMin meet')
           svg.style.height = `${maxY}px`
+          svg.style.minHeight = `${maxY}px`
+          svg.style.flexShrink = '0'
           svg.style.width = '100%'
 
           // Ambient Background Tree / City Decorations
@@ -7951,7 +7953,8 @@ function _onbComplete() {
       </script>
 
       
-      <div style="position: fixed; bottom: 5px; right: 10px; font-size: 0.7rem; color: var(--muted2); opacity: 0.3; cursor: pointer; z-index: 9999" onclick="handleDevClick()" title="Dev options">v2.4.1</div>
+      <!-- Clickable Version Badge (Dev & Unlimited Health Cheat Code) -->
+      <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: pointer; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" onclick="window.handleDevClick && window.handleDevClick()" onmouseover="this.style.opacity='1'; this.style.color='#ffd700';" onmouseout="this.style.opacity='0.45'; this.style.color='var(--muted2, #aaa)';" title="Click 3 times for Unlimited Health Cheat Code">v2.4.1 🛡️</div>
       
       
       <nav class="mobile-bottom-nav">
@@ -8002,6 +8005,10 @@ function _onbComplete() {
         <div class="studio-viewport-card">
           <div class="studio-canvas-wrap">
             <canvas id="customize-preview" width="340" height="460"></canvas>
+            <div style="position:absolute; top:10px; right:10px; display:flex; gap:6px; z-index:10;">
+              <button id="studio-autorotate-btn" class="studio-icon-btn" onclick="window._toggleAutoRotatePreview()" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); border-radius:10px; padding:4px 8px; font-size:0.72rem; color:#fff; border:1px solid rgba(255,255,255,0.15);" title="Toggle 360° Auto Rotation">🔄 Spin</button>
+              <button class="studio-icon-btn" onclick="window._resetPreviewRotation()" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); border-radius:10px; padding:4px 8px; font-size:0.72rem; color:#fff; border:1px solid rgba(255,255,255,0.15);" title="Reset to Front Angle">🎯 Front</button>
+            </div>
             <div class="studio-hint-pill">Drag to Rotate 360°</div>
           </div>
 
@@ -8056,6 +8063,11 @@ function _onbComplete() {
           <div id="stylized-panels-container">
             <!-- Identity Tab -->
             <div id="panel-identity" class="studio-panel active">
+              <div class="studio-section">
+                <div class="studio-section-title">🌟 3D Character Models (Sample Avatars)</div>
+                <div id="sample-models-grid" class="studio-grid-2"></div>
+              </div>
+
               <div class="studio-section">
                 <div class="studio-section-title">Gender & Frame</div>
                 <div style="display:flex; gap:10px;">
@@ -8208,142 +8220,6 @@ function _onbComplete() {
     </div>
   </div>
   </div>
-
-  
-  <div id="game-settings-modal" style="display:none; position:fixed; inset:0; z-index:10002; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); align-items:center; justify-content:center; padding:20px;">
-    <div style="background:var(--card,#1e293b); border:1px solid var(--border,rgba(255,255,255,0.08)); border-radius:20px; max-width:460px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.5);">
-      <div style="padding:24px 24px 0; display:flex; align-items:center; justify-content:space-between;">
-        <h2 style="font-family:'Lora',serif; font-size:1.4rem; color:var(--text); margin:0;">⚙️ Game Settings</h2>
-        <button onclick="document.getElementById('game-settings-modal').style.display='none'" style="width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--hover); color:var(--text); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
-      </div>
-      <div style="padding:20px 24px 24px;">
-        
-        
-        <div style="margin-bottom:20px; background:rgba(0,0,0,0.2); padding:16px; border-radius:14px; border:1px solid var(--border);">
-          <div style="font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:4px;">🖥️ Graphics Quality</div>
-          <div style="font-size:0.75rem; color:var(--muted); margin-bottom:12px;">Saved setting will be remembered automatically.</div>
-          <div id="settings-quality-btns" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
-            <button class="menu-qbtn" data-q="LOW" onclick="setMenuQuality('LOW')" style="padding:10px 4px; border:1px solid var(--border); border-radius:10px; background:var(--panel); color:var(--text); font-weight:600; cursor:pointer; font-size:0.8rem; transition:0.2s;">Low</button>
-            <button class="menu-qbtn" data-q="MED" onclick="setMenuQuality('MED')" style="padding:10px 4px; border:1px solid var(--border); border-radius:10px; background:var(--panel); color:var(--text); font-weight:600; cursor:pointer; font-size:0.8rem; transition:0.2s;">Med</button>
-            <button class="menu-qbtn" data-q="HIGH" onclick="setMenuQuality('HIGH')" style="padding:10px 4px; border:1px solid var(--border); border-radius:10px; background:var(--panel); color:var(--text); font-weight:600; cursor:pointer; font-size:0.8rem; transition:0.2s;">High</button>
-            <button class="menu-qbtn" data-q="ULTRA" onclick="setMenuQuality('ULTRA')" style="padding:10px 4px; border:1px solid var(--border); border-radius:10px; background:var(--panel); color:var(--text); font-weight:600; cursor:pointer; font-size:0.8rem; transition:0.2s;">Ultra</button>
-          </div>
-        </div>
-
-        
-        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
-          <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left; background:rgba(242,184,75,0.1); border-color:rgba(242,184,75,0.3); color:#f2b84b;" onclick="document.getElementById('game-settings-modal').style.display='none'; openAcademyTutorial();">
-            📖 Open Interactive Guide / Tutorial
-          </button>
-          <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left;" onclick="document.getElementById('game-settings-modal').style.display='none'; if(window.openCustomize) window.openCustomize();">
-            🎨 Customize Character
-          </button>
-          <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left;" onclick="hzToggle();">
-            🌓 Toggle Theme (Light / Dark)
-          </button>
-        </div>
-
-        
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          <button class="btn btn-g" style="width:100%; justify-content:flex-start; gap:12px; font-size:0.95rem; text-align:left;" onclick="document.getElementById('game-settings-modal').style.display='none'; openCompareModal();">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            Compare Drivers
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <script>
-  window.openSettingsModal = function openSettingsModal() {
-    const modal = document.getElementById('game-settings-modal');
-    if (modal) {
-      modal.style.display = 'flex';
-      const currentQ = localStorage.getItem('traffic_quality') || 'HIGH';
-      updateQualityBtnsUI(currentQ);
-    }
-  };
-
-  function updateTopProfileBtn() {
-    const label = document.getElementById('top-profile-label');
-    if (!label) return;
-    const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
-    let userName = '';
-    if (localStorage.getItem('traffic_local_user')) {
-      try { userName = JSON.parse(localStorage.getItem('traffic_local_user')).name; } catch(e){}
-    }
-    if (!userName && window.colUser) {
-      const uObj = window.colUser.user || window.colUser;
-      const meta = uObj.user_metadata || {};
-      userName = meta.full_name || meta.name || '';
-    }
-    if (isLoggedIn && userName) {
-      label.textContent = userName;
-    } else if (isLoggedIn) {
-      label.textContent = 'Account Profile';
-    } else {
-      label.textContent = 'Sign In';
-    }
-  }
-
-  function handleAccountClick() {
-    const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
-    if (isLoggedIn) {
-      if (typeof ui !== 'undefined' && ui.showProfile) ui.showProfile();
-      else window.location.href = 'TrafficSetup.html';
-    } else {
-      window.location.href = 'TrafficSetup.html';
-    }
-  }
-
-  window.addEventListener('col-auth-changed', updateTopProfileBtn);
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateTopProfileBtn);
-  } else {
-    updateTopProfileBtn();
-  }
-
-  function setMenuQuality(preset) {
-    localStorage.setItem('traffic_quality', preset);
-    if (window.game && window.game.renderCore) {
-      window.game.renderCore.setQuality(preset);
-      window.game.renderCore.setAutoQuality(false);
-    }
-    updateQualityBtnsUI(preset);
-  }
-
-  function updateQualityBtnsUI(preset) {
-    document.querySelectorAll('.menu-qbtn').forEach(btn => {
-      if (btn.dataset.q === preset) {
-        btn.style.background = 'var(--signal, #5ed4f5)';
-        btn.style.color = '#000';
-        btn.style.borderColor = 'var(--signal, #5ed4f5)';
-      } else {
-        btn.style.background = 'var(--panel, #111827)';
-        btn.style.color = 'var(--text, #e8e3d8)';
-        btn.style.borderColor = 'var(--border, rgba(255,255,255,0.08))';
-      }
-    });
-  }
-
-
-  (function() {
-    function checkPhoneScreen() {
-      const btn = document.getElementById('download-app-btn');
-      if (!btn) return;
-      const isPhone = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-                      (window.innerWidth <= 768 && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
-      btn.style.display = isPhone ? 'inline-flex' : 'none';
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', checkPhoneScreen);
-    } else {
-      checkPhoneScreen();
-    }
-    window.addEventListener('resize', checkPhoneScreen);
-  })();
-  </script>
 
   <script src="welcome-back.js"></script>
 

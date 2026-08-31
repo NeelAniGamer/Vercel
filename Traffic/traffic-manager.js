@@ -112,19 +112,50 @@ class TrafficManager {
     this._checkDeadlocks(dt, playerVehicle);
 
     const COMPLETE = (window.NPC_STATE && window.NPC_STATE.COMPLETE) || 'COMPLETE';
+    const isMobile = this.game?._isMobile;
+    const playerPos = playerVehicle?.position;
+    const rDist = (this.game?.renderDistance || (isMobile ? 120 : 180));
+    const rDistSq = (rDist + 35) * (rDist + 35);
+    const midDistSq = isMobile ? (75 * 75) : (130 * 130);
+
     this.vehicles.slice().forEach(vehicle => {
       if (!vehicle.active || !vehicle.npcAI) return;
-
-
 
       if (vehicle.npcAI.state === COMPLETE && !this._assignRoute(vehicle)) {
         this._despawnVehicle(vehicle);
         return;
       }
 
+      // ── Simulation LOD & GPU Mesh Culling ──
+      if (playerPos && vehicle.position) {
+        const dx = vehicle.position.x - playerPos.x;
+        const dz = vehicle.position.z - playerPos.z;
+        const distSq = dx * dx + dz * dz;
+
+        if (distSq > rDistSq) {
+          // Out of render distance: hide mesh to save draw calls
+          if (vehicle.mesh && vehicle.mesh.visible) vehicle.mesh.visible = false;
+          // Throttle AI calculation to every 4th frame
+          vehicle._simTick = ((vehicle._simTick || 0) + 1) % 4;
+          if (vehicle._simTick !== 0) return;
+        } else if (distSq > midDistSq) {
+          // Mid-range: show mesh, update AI every 2nd frame
+          if (vehicle.mesh && !vehicle.mesh.visible) vehicle.mesh.visible = true;
+          vehicle._simTick = ((vehicle._simTick || 0) + 1) % 2;
+          if (vehicle._simTick !== 0) return;
+        } else {
+          // Close range: full 60Hz update
+          if (vehicle.mesh && !vehicle.mesh.visible) vehicle.mesh.visible = true;
+        }
+      }
+
       vehicle.npcAI.update(dt, playerVehicle, signals);
-      vehicle.mesh.position.copy(vehicle.position);
-      vehicle.mesh.rotation.y = vehicle.rotation.y;
+      if (vehicle.mesh) {
+        vehicle.mesh.position.copy(vehicle.position);
+        vehicle.mesh.rotation.y = vehicle.rotation.y;
+        vehicle.mesh.rotation.x = 0;
+        vehicle.mesh.rotation.z = 0;
+      }
     });
   }
 
@@ -180,18 +211,24 @@ class TrafficManager {
         const curSpd = vehicle.npcAI.currentSpeed || vehicle.speed || 0;
         if (curSpd < 0.25 && vehicle.npcAI.state !== 'PARK') {
           vehicle._stoppedSeconds = (vehicle._stoppedSeconds || 0) + 0.05;
-          // If far away from player (>90m) and stuck for >15s, quietly recycle
-          if (dist > 90 && vehicle._stoppedSeconds > 15.0) {
+          // If far away from player (>90m) and stuck for >12s, quietly recycle
+          if (dist > 90 && vehicle._stoppedSeconds > 12.0) {
             vehicle._stoppedSeconds = 0;
             this._despawnVehicle(vehicle);
-          } else if (vehicle._stoppedSeconds > 4.0) {
-            // Near player: smoothly un-stick by nudging lane and restoring flow
-            vehicle.npcAI.state = 'FOLLOW_LANE';
-            vehicle.npcAI.waitTimer = 0;
-            vehicle.npcAI._committedToIntersection = true;
-            vehicle.npcAI.desiredSpeed = Math.max(vehicle.npcAI.desiredSpeed || 0, 5.0);
-            vehicle.npcAI.currentSpeed = Math.max(vehicle.npcAI.currentSpeed || 0, 3.0);
-            if (vehicle._stoppedSeconds > 8.0) {
+          } else if (vehicle._stoppedSeconds > 3.0) {
+            // Check if blocked immediately ahead before nudging speed
+            const ahead = vehicle.npcAI._getVehicleAhead ? vehicle.npcAI._getVehicleAhead() : null;
+            const isBlocked = ahead && ahead.position && vehicle.position.distanceTo(ahead.position) < 4.2;
+            if (!isBlocked) {
+              vehicle.npcAI.state = 'FOLLOW_LANE';
+              vehicle.npcAI.waitTimer = 0;
+              vehicle.npcAI._committedToIntersection = true;
+              vehicle.npcAI._clearingIntersection = true;
+              vehicle.npcAI.desiredSpeed = Math.max(vehicle.npcAI.desiredSpeed || 0, 5.0);
+              vehicle.npcAI.currentSpeed = Math.max(vehicle.npcAI.currentSpeed || 0, 3.0);
+              vehicle.npcAI.currentAcceleration = (vehicle.npcAI.idmParams?.aMax || 2.0) * 0.8;
+            }
+            if (vehicle._stoppedSeconds > 6.0) {
               vehicle._stoppedSeconds = 0;
             }
           }
@@ -765,33 +802,41 @@ class TrafficManager {
     if (arbitration.resolved && arbitration.phase === 1) {
       const winner = stalledGroup.find(v => (v.id || v.type || 'veh') === arbitration.grantedVehicleId) || stalledVehicle;
       if (winner && winner.npcAI) {
-        winner.npcAI._committedToIntersection = true;
-        winner.npcAI.state = (typeof window !== 'undefined' && window.NPC_STATE && window.NPC_STATE.FOLLOW_LANE) || 'FOLLOW_LANE';
-        winner.npcAI.desiredSpeed = Math.max(5.0, winner.npcAI._getTargetSpeed ? winner.npcAI._getTargetSpeed() : 7.0);
-        winner.npcAI.currentSpeed = Math.max(winner.npcAI.currentSpeed, 3.5);
-        winner.npcAI.waitTimer = 0;
-        winner.npcAI.signalViolation = false;
+        const ahead = winner.npcAI._getVehicleAhead ? winner.npcAI._getVehicleAhead() : null;
+        const isBlocked = ahead && ahead.position && winner.position.distanceTo(ahead.position) < 4.2;
+        if (!isBlocked) {
+          winner.npcAI._committedToIntersection = true;
+          winner.npcAI._clearingIntersection = true;
+          winner.npcAI.state = (typeof window !== 'undefined' && window.NPC_STATE && window.NPC_STATE.FOLLOW_LANE) || 'FOLLOW_LANE';
+          winner.npcAI.desiredSpeed = Math.max(5.0, winner.npcAI._getTargetSpeed ? winner.npcAI._getTargetSpeed() : 7.0);
+          winner.npcAI.currentSpeed = Math.max(winner.npcAI.currentSpeed, 3.0);
+          winner.npcAI.currentAcceleration = (winner.npcAI.idmParams?.aMax || 2.0) * 0.9;
+          winner.npcAI.waitTimer = 0;
+          winner.npcAI.signalViolation = false;
+        }
         winner._stuckTimer = 0;
       }
       stalledGroup.forEach(v => {
         if (v !== winner && v.npcAI) {
           v.npcAI.state = (typeof window !== 'undefined' && window.NPC_STATE && window.NPC_STATE.YIELD) || 'YIELD';
-          v.npcAI.currentAcceleration = -(v.npcAI.idmParams?.b || 2.0);
+          v.npcAI.currentAcceleration = -(v.npcAI.idmParams?.b || 2.2);
         }
       });
     } else if (arbitration.resolved && arbitration.phase === 2) {
       const playerPos = this.game?.playerVehicle?.position || this.game?.player?.position;
       stalledGroup.forEach(v => {
         const dist = playerPos && v.position ? v.position.distanceTo(playerPos) : 100;
-        if (dist > 80) {
+        if (dist > 75) {
           this._despawnVehicle(v);
           this._spawnSingleVehicle();
         } else if (v.npcAI) {
           v._stuckTimer = 0;
           v.npcAI.state = (typeof window !== 'undefined' && window.NPC_STATE && window.NPC_STATE.FOLLOW_LANE) || 'FOLLOW_LANE';
           v.npcAI._committedToIntersection = true;
-          v.npcAI.desiredSpeed = 6.0;
-          v.npcAI.currentSpeed = 4.0;
+          v.npcAI._clearingIntersection = true;
+          v.npcAI.desiredSpeed = 5.5;
+          v.npcAI.currentSpeed = Math.max(v.npcAI.currentSpeed || 0, 3.0);
+          v.npcAI.currentAcceleration = (v.npcAI.idmParams?.aMax || 2.0) * 0.8;
         }
       });
     }
@@ -807,7 +852,7 @@ class TrafficManager {
       if (st === 'PARK' || st === 'CRASH' || st === 'COMPLETE') continue;
 
       const spd = v.npcAI.currentSpeed || v.speed || 0;
-      if (spd < 0.15 && (st !== 'WAIT_SIGNAL' || v.npcAI.waitTimer > 4.5)) {
+      if (spd < 0.15 && (st !== 'WAIT_SIGNAL' || v.npcAI.waitTimer > 8.5)) {
         if (!v._stallStartTime) v._stallStartTime = Date.now();
         v._stuckTimer = (v._stuckTimer || 0) + dt;
         if (v._stuckTimer >= 3.5) {

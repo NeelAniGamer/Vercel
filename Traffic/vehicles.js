@@ -923,6 +923,13 @@ window.IndianVehicles = {
       this.addFourWheels(g, 1.6, 3.8)
     }
 
+    const isHeavy = ['truck', 'eicher', 'bus', 'msrtc', 'school_bus'].includes(type)
+    const isTwoWheeler = ['bike', 'splendor', 'activa', 'scooter', 'cycle', 'bicycle', 'twowheeler'].includes(type)
+    const isAuto = ['auto', 'rickshaw'].includes(type)
+    g.userData = g.userData || {}
+    g.userData.halfW = isHeavy ? 1.35 : (isTwoWheeler ? 0.40 : (isAuto ? 0.70 : 0.95))
+    g.userData.halfD = isHeavy ? 4.80 : (isTwoWheeler ? 0.95 : (isAuto ? 1.35 : 2.25))
+
     g.type = type
     return g
   }

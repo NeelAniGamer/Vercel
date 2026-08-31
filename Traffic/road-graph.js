@@ -237,7 +237,7 @@ class RoadGraph {
   }
 
   buildBuildingSlots(cfg) {
-    const buildSpacing = cfg.is50km ? 280 : 10;
+    const buildSpacing = cfg.is50km ? 240 : 7.5;
     this.segments.forEach(seg => {
       const slotCount = Math.max(1, Math.floor(seg.length / buildSpacing));
       ['left', 'right'].forEach(side => {
@@ -246,9 +246,18 @@ class RoadGraph {
           const pos = seg.getPointAt(t);
           const zone = this.getZoneAt(pos.x, pos.z);
           const roadHalfW = (seg.width || 20) / 2;
-          const depth = roadHalfW + 10 + Math.random() * 4;
-          const slot = new BuildingSlot(seg, side, t, depth, zone);
-          this.buildingSlots.push(slot);
+          
+          // Row 1: Primary street-facing buildings
+          const depth1 = roadHalfW + 8.5 + (s % 2 === 0 ? 0 : 2.5);
+          const slot1 = new BuildingSlot(seg, side, t, depth1, zone);
+          this.buildingSlots.push(slot1);
+
+          // Row 2: Layered skyline depth
+          if (!cfg.is50km && s % 2 === 0) {
+            const depth2 = roadHalfW + 24.0 + Math.random() * 4.0;
+            const slot2 = new BuildingSlot(seg, side, t + 0.25 / slotCount, depth2, zone);
+            this.buildingSlots.push(slot2);
+          }
         }
       });
     });

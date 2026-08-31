@@ -155,6 +155,9 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     toast('🔓 Developer Unlock Triggered!', '#00c851')
     this.showLevels()
   },
+  toggleGodMode(force) {
+    return window.toggleGodModeCheat(force)
+  },
   async hardReset() {
     if (confirm('Reset all progress?')) {
       S = { comp: {}, badges: [], total: 0, name: null, wallet: 50000, civicScore: 0 }
@@ -4472,7 +4475,7 @@ const initGTex = () => {
 
 const _buildVehicle = (type, col) => {
   let baseModel = null
-  let s = 1.0
+  let s = 1.20
   const normalizedType = (type || 'car').toLowerCase()
 
   // 1. Authentic Indian Two-Wheelers (Bikes, Scooters, Cycles)
@@ -4482,7 +4485,7 @@ const _buildVehicle = (type, col) => {
       if (bikeModel) {
         bikeModel.type = normalizedType
         bikeModel.userData = bikeModel.userData || {}
-        bikeModel.userData.halfW = 0.45
+        bikeModel.userData.halfW = 0.40
         bikeModel.userData.halfD = 0.95
         return bikeModel
       }
@@ -4496,8 +4499,8 @@ const _buildVehicle = (type, col) => {
       if (autoModel) {
         autoModel.type = 'auto'
         autoModel.userData = autoModel.userData || {}
-        autoModel.userData.halfW = 0.75
-        autoModel.userData.halfD = 1.3
+        autoModel.userData.halfW = 0.70
+        autoModel.userData.halfD = 1.35
         return autoModel
       }
     }
@@ -4511,20 +4514,39 @@ const _buildVehicle = (type, col) => {
         busModel.type = 'bus'
         busModel.userData = busModel.userData || {}
         busModel.userData.halfW = 1.35
-        busModel.userData.halfD = 4.75
+        busModel.userData.halfD = 4.80
         return busModel
       }
     }
   }
 
-  // 4. Supercar / Lamborghini
-  if (normalizedType === 'lambo') {
+  // 4. Supercars & Custom Rides (BMW M4, Nilu 27, Cyberpunk Bike, Lambo)
+  if (['bmw_m4', 'bmw', 'm4'].includes(normalizedType)) {
+    if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['bmw_m4']) {
+      const bSrc = window.PRELOADED_MODELS['bmw_m4']
+      baseModel = bSrc.clone ? bSrc.clone(true) : bSrc
+      s = 1.15
+    }
+  } else if (['nilu_27', 'nilu', 'hypercar'].includes(normalizedType)) {
+    if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['nilu_27']) {
+      const nSrc = window.PRELOADED_MODELS['nilu_27']
+      baseModel = nSrc.clone ? nSrc.clone(true) : nSrc
+      s = 1.15
+    }
+  } else if (['cyberpunk_bike', 'cyberbike', 'scifi_bike'].includes(normalizedType)) {
+    if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['cyberpunk_bike']) {
+      const cbSrc = window.PRELOADED_MODELS['cyberpunk_bike']
+      baseModel = cbSrc.clone ? cbSrc.clone(true) : cbSrc
+      s = 1.05
+    }
+  } else if (normalizedType === 'lambo') {
     if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['lambo']) {
-      baseModel = window.PRELOADED_MODELS['lambo'].clone()
-      s = 0.85
+      const lSrc = window.PRELOADED_MODELS['lambo']
+      baseModel = lSrc.clone ? lSrc.clone(true) : lSrc
+      s = 1.20
     } else if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['car_race-future']) {
-      baseModel = window.PRELOADED_MODELS['car_race-future'].clone()
-      s = 0.88
+      baseModel = window.PRELOADED_MODELS['car_race-future'].clone(true)
+      s = 1.22
     }
   }
 
@@ -4559,18 +4581,20 @@ const _buildVehicle = (type, col) => {
     const chosenKey = available.length ? available[Math.floor(Math.random() * available.length)] : (window.PRELOADED_MODELS['car'] ? 'car' : null)
 
     if (chosenKey && window.PRELOADED_MODELS[chosenKey]) {
-      baseModel = window.PRELOADED_MODELS[chosenKey].clone()
+      const srcModel = window.PRELOADED_MODELS[chosenKey]
+      baseModel = srcModel.clone ? srcModel.clone(true) : srcModel
       
       // Determine normalized scale based on vehicle type
       if (chosenKey.includes('truck') || chosenKey.includes('firetruck') || chosenKey.includes('garbage')) {
-        s = 0.95
+        s = 1.32
       } else if (chosenKey.includes('suv') || chosenKey.includes('van') || chosenKey.includes('delivery')) {
-        s = 0.90
+        s = 1.25
       } else {
-        s = 0.85
+        s = 1.20
       }
 
-      const paintColor = col || (chosenKey === 'taxi' ? 0xffd54a : (chosenKey === 'police' ? 0x1e3a8a : 0x3b82f6))
+      const paintPool = [0x3b82f6, 0xef4444, 0x10b981, 0xf59e0b, 0x8b5cf6, 0xec4899, 0xffffff, 0x222222, 0x94a3b8]
+      const paintColor = col || (chosenKey === 'taxi' ? 0xffd54a : (chosenKey === 'police' ? 0x1e3a8a : (chosenKey === 'ambulance' ? 0xffffff : paintPool[Math.floor(Math.random() * paintPool.length)])))
       baseModel.traverse((child) => {
         if (child.isMesh) {
           child.castShadow = true
@@ -4590,14 +4614,30 @@ const _buildVehicle = (type, col) => {
   // If GLB model is ready, assemble clean container group with correct extents
   if (baseModel) {
     const g = new THREE.Group()
+    
+    // Universal vehicle grounding & scale calibration
+    baseModel.updateMatrixWorld(true)
+    const vBoxRaw = new THREE.Box3().setFromObject(baseModel)
+    const vSizeRaw = new THREE.Vector3()
+    vBoxRaw.getSize(vSizeRaw)
+
+    // If model is a unit-length GLB (like sample 1/2 with length ~1m), scale to 4.5m automotive length
+    if (vSizeRaw.z < 1.8 && vSizeRaw.x < 1.8 && vSizeRaw.z > 0.4) {
+      s = 4.4
+    }
+
     baseModel.scale.set(s, s, s)
-    baseModel.position.set(0, 0, 0)
+    baseModel.updateMatrixWorld(true)
+    const vBoxScaled = new THREE.Box3().setFromObject(baseModel)
+    
+    // Lift so bottom of tires sits flush on ground at y = 0
+    baseModel.position.y = -vBoxScaled.min.y
     g.add(baseModel)
 
     const isHeavy = normalizedType.includes('truck') || normalizedType.includes('bus')
-    const hw = isHeavy ? 1.35 : 0.95
-    const hl = isHeavy ? 4.2 : 2.1
-    g.userData = { halfW: hw, halfD: hl }
+    const hw = isHeavy ? 1.35 : 1.05
+    const hl = isHeavy ? 4.80 : 2.25
+    g.userData = { halfW: hw, halfD: hl, isVehicle: true }
 
     // Clean interactive door anchors for player entry
     const dpL = new THREE.Group()
@@ -4919,15 +4959,148 @@ const _buildVehicle = (type, col) => {
  * Character Studio & High-Fidelity Human Model Implementation for UI.js
  */
 
+const SAMPLE_MODELS = [
+  { id: 'player_sample', file: 'Models/sample.glb', name: 'Hero Protagonist', tag: 'Hero', icon: '🏃', desc: 'Default stylized protagonist avatar' }
+]
+window.SAMPLE_MODELS = SAMPLE_MODELS
+
+const _buildSampleGLBPlayer = (isPlayer = true, app = {}) => {
+  const g = new THREE.Group()
+  const PM = window.PRELOADED_MODELS || {}
+  
+  const sampleDef = SAMPLE_MODELS[0]
+  const baseModel = PM['player_sample'] || window['_sampleGLBModel_player_sample']
+
+  const container = new THREE.Group()
+  g.add(container)
+
+  function setupScene(scene) {
+    scene.traverse(function(c) {
+      if (c.isMesh) {
+        c.castShadow = true
+        c.receiveShadow = true
+        if (c.material) {
+          c.material.roughness = 0.75
+          c.material.metalness = 0.10
+          if (c.material.map && window.THREE && THREE.sRGBEncoding) {
+            c.material.map.encoding = THREE.sRGBEncoding
+          }
+        }
+      }
+    })
+
+    // Universal Bounding-Box Height & Axis Normalizer
+    scene.updateMatrixWorld(true)
+    let box = new THREE.Box3().setFromObject(scene)
+    let size = new THREE.Vector3()
+    box.getSize(size)
+
+    // Check dominant height axis
+    if (size.z > size.y && size.z > size.x) {
+      // Z-up export (convert to Y-up)
+      scene.rotation.x = -Math.PI / 2
+    } else if (size.x > size.y && size.x > size.z) {
+      // X-up export (convert to Y-up)
+      scene.rotation.z = Math.PI / 2
+    }
+
+    scene.updateMatrixWorld(true)
+    box.setFromObject(scene)
+    box.getSize(size)
+
+    // Scale to standard human height (1.75m for player, ~1.55m for pedestrian)
+    const targetHeight = isPlayer ? 1.75 : 1.55
+    const currentHeight = Math.max(0.1, size.y)
+    const scale = targetHeight / currentHeight
+    scene.scale.multiplyScalar(scale)
+
+    // Recompute box and center horizontally, place feet flush on ground (y = 0)
+    scene.updateMatrixWorld(true)
+    box.setFromObject(scene)
+    const center = new THREE.Vector3()
+    box.getCenter(center)
+    scene.position.x -= center.x
+    scene.position.y -= box.min.y
+    scene.position.z -= center.z
+
+    // Natural forward orientation (+Z)
+    scene.rotation.y = 0
+
+    container.add(scene)
+  }
+
+  if (baseModel) {
+    const clone = baseModel.clone ? baseModel.clone(true) : baseModel
+    setupScene(clone)
+  } else if (typeof THREE !== 'undefined' && typeof THREE.GLTFLoader !== 'undefined') {
+    new THREE.GLTFLoader().load('Models/sample.glb', function(gltf) {
+      window['_sampleGLBModel_player_sample'] = gltf.scene
+      setupScene(gltf.scene)
+    }, undefined, function(err) {
+      console.warn('[Player] Models/sample.glb load error:', err)
+    })
+  }
+
+  // Hitbox & Shadow Blob
+  const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.8, 0.6), new THREE.MeshBasicMaterial({ visible: false }))
+  hb.position.y = 0.9
+  g.add(hb)
+
+  const shadowBlob = new THREE.Mesh(
+    new THREE.CircleGeometry(0.35, 16),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false })
+  )
+  shadowBlob.rotation.x = -Math.PI / 2
+  shadowBlob.position.y = 0.01
+  g.add(shadowBlob)
+
+  g.userData = {
+    isGLB: true,
+    isPlayer: isPlayer,
+    isSampleGLB: true,
+    shadowBlob: shadowBlob,
+    container: container,
+    t: 0,
+    update: function(dt, speed) {
+      const t = (this.t || 0) + dt * 9
+      this.t = t
+      const walkW = Math.min(Math.abs(speed || 0) * 3.5, 1)
+      if (walkW > 0.05) {
+        container.position.y = Math.abs(Math.sin(t * 2)) * 0.04 * walkW
+        container.rotation.z = Math.sin(t) * 0.025 * walkW
+        container.rotation.x = Math.sin(t * 2) * 0.015 * walkW
+      } else {
+        container.position.y = Math.sin(t * 0.5) * 0.004
+        container.rotation.z = 0
+        container.rotation.x = 0
+      }
+    }
+  }
+
+  return g
+}
+window._buildSampleGLBPlayer = _buildSampleGLBPlayer
+
 const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
   const app = (isPlayer && (() => { try { return JSON.parse(localStorage.getItem('traffic_appearance')) } catch(e){} return null })()) || appearance || {}
-  const variant = app.variant || 'normal' // 'normal'|'elderly'|'child'|'guard'|'volunteer'|'worker'|'commuter'
-  const sk = isPlayer ? 1.0 : (variant === 'child' ? 0.72 : 0.92)
+  const variant = app.variant || 'normal'
+  const sk = isPlayer ? 0.80 : (variant === 'child' ? 0.58 : 0.74)
 
   // ── Minecraft Engine Support ─────────────────────────────────────────────
   if (app.charType === 'minecraft' && typeof window._buildMinecraftHuman === 'function') {
     return window._buildMinecraftHuman(isPlayer, app)
+  }
+
+  // ── Default GLB Player Character Support (sample.glb) ───────────────────
+  if (isPlayer && (app.charType === 'sample' || !app.charType || app.charType === 'default' || app.charType === 'stylized')) {
+    return _buildSampleGLBPlayer(isPlayer, app)
+  }
+
+  // ── NPC Pedestrians using 3D Hero/Citizen mesh ─────────────────────────
+  if (!isPlayer && Math.random() < 0.35) {
+    const npcSample = _buildSampleGLBPlayer(false, { variant })
+    if (npcSample) return npcSample
   }
 
   const PM = window.PRELOADED_MODELS || {}
@@ -4939,7 +5112,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     if (fbxChar && typeof THREE.AnimationMixer !== 'undefined' && variant === 'normal') {
       try {
         const fbxScene = fbxChar.clone ? fbxChar.clone(true) : fbxChar;
-        fbxScene.scale.setScalar(sk * 0.012);
+        fbxScene.scale.setScalar(sk * 0.0098);
         fbxScene.rotation.y = Math.PI;
         g.add(fbxScene);
 
@@ -4961,7 +5134,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
           runAction.play();
         }
 
-        const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6*sk, 1.8*sk, 0.6*sk), new THREE.MeshBasicMaterial({ visible: false }));
+        const hb = new THREE.Mesh(new THREE.BoxGeometry(0.5*sk, 1.8*sk, 0.5*sk), new THREE.MeshBasicMaterial({ visible: false }));
         hb.position.y = 0.9 * sk;
         g.add(hb);
 
@@ -4998,7 +5171,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
 
     if (charGLB && charGLB.scene) {
       const charScene = charGLB.scene.clone(true)
-      charScene.scale.setScalar(sk * 1.15)
+      charScene.scale.setScalar(sk * 0.90)
       charScene.rotation.y = Math.PI
 
       const variantColors = {
@@ -6139,12 +6312,26 @@ function showConsequenceModal(violationType, severity = 'normal') {
     if (gM) gM.className = 'studio-icon-btn ' + (_current.gender === 'male' ? 'active' : '');
     if (gF) gF.className = 'studio-icon-btn ' + (_current.gender === 'female' ? 'active' : '');
 
+    const smGrid = document.getElementById('sample-models-grid');
+    if (smGrid) {
+      smGrid.innerHTML = SAMPLE_MODELS.map(function(s) {
+        const isCur = (_current.sampleModel || 'player_sample') === s.id;
+        return '<button class="studio-card-btn ' + (isCur ? 'active' : '') + '" onclick="window._pickSampleModel(\'' + s.id + '\')" style="' + (isCur ? 'border-color:#5ed4f5; box-shadow:0 0 12px rgba(94,212,245,0.35);' : '') + '">' +
+          '<span class="studio-card-icon">' + s.icon + '</span>' +
+          '<span class="studio-card-name">' + s.name + '</span>' +
+          '<span class="studio-card-sub" style="color:' + (isCur ? '#5ed4f5' : 'inherit') + ';">' + (isCur ? '🟢 Active Hero' : s.tag + ' • Click to Select') + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
     const pGrid = document.getElementById('outfit-presets-grid');
     if (pGrid) {
       pGrid.innerHTML = OUTFIT_PRESETS.map(function(p) {
-        return '<button class="studio-card-btn" onclick="window._pickOutfitPreset(\'' + p.id + '\')">' +
+        const isCur = _current.outfit === p.outfit && _current.shirt === p.shirt;
+        return '<button class="studio-card-btn ' + (isCur ? 'active' : '') + '" onclick="window._pickOutfitPreset(\'' + p.id + '\')">' +
           '<span class="studio-card-icon">' + p.icon + '</span>' +
           '<span class="studio-card-name">' + p.name + '</span>' +
+          '<span class="studio-card-sub">' + (isCur ? 'Equipped Outfit' : 'Click to Apply') + '</span>' +
         '</button>';
       }).join('');
     }
@@ -6372,10 +6559,32 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _previewRenderer.render(_previewScene, _previewCamera);
   }
 
+  window._toggleAutoRotatePreview = function() {
+    window._autoRotatePreview = !window._autoRotatePreview;
+    const btn = document.getElementById('studio-autorotate-btn');
+    if (btn) btn.classList.toggle('active', !!window._autoRotatePreview);
+  };
+
+  window._resetPreviewRotation = function() {
+    if (_previewChar) _previewChar.rotation.y = 0;
+    window._autoRotatePreview = false;
+    const btn = document.getElementById('studio-autorotate-btn');
+    if (btn) btn.classList.remove('active');
+  };
+
   window._setCharMode = function(mode) {
     _current.charType = mode;
     _renderStudioUI();
     _updatePreviewModel();
+  };
+
+  window._pickSampleModel = function(id) {
+    _current.sampleModel = id;
+    _current.charType = 'sample';
+    _renderStudioUI();
+    _updatePreviewModel();
+    const s = SAMPLE_MODELS.find(function(x) { return x.id === id; });
+    if (s && typeof toast === 'function') toast('✨ Selected: ' + s.name, '#5ed4f5', 2000);
   };
 
   window._switchStudioTab = function(tab) {
@@ -7230,3 +7439,74 @@ function showConsequenceModal(violationType, severity = 'normal') {
       }
     }, 100);
   };
+
+  // ═══════════════════════════════════════════════════════════════
+  // CHEAT CODE & UNLIMITED HEALTH (GOD MODE) SYSTEM
+  // ═══════════════════════════════════════════════════════════════
+  window.toggleGodModeCheat = function(forceState) {
+    var current = (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
+    var next = typeof forceState === 'boolean' ? forceState : !current;
+    window._trafficGodMode = next;
+    try {
+      localStorage.setItem('traffic_god_mode', next ? 'true' : 'false');
+    } catch(e) {}
+    
+    if (typeof game !== 'undefined' && game) {
+      game.hp = 100;
+      if (typeof game._uh === 'function') game._uh();
+    }
+    
+    var badge = document.getElementById('god-mode-hud-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'god-mode-hud-badge';
+      badge.style.cssText = 'position:fixed; top:14px; left:14px; z-index:999999; background:linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,140,0,0.35)); border:1.5px solid #ffd700; color:#ffd700; font-weight:800; font-size:0.75rem; padding:6px 12px; border-radius:20px; box-shadow:0 0 16px rgba(255,215,0,0.6); backdrop-filter:blur(8px); display:none; pointer-events:auto; cursor:pointer; letter-spacing:0.5px; transition:all 0.3s ease;';
+      badge.title = 'Click to disable Unlimited Health';
+      badge.onclick = function() { window.toggleGodModeCheat(false); };
+      document.body.appendChild(badge);
+    }
+    badge.innerHTML = '🛡️ GOD MODE: UNLIMITED HP ACTIVE';
+    badge.style.display = next ? 'block' : 'none';
+
+    if (typeof toast === 'function') {
+      if (next) {
+        toast('⚡ CHEAT ACTIVATED: UNLIMITED HEALTH (ALL LEVELS) 🛡️', '#ffd700', 4000);
+      } else {
+        toast('🛡️ God Mode (Unlimited Health) Disabled', '#aaa', 3000);
+      }
+    }
+    return next;
+  };
+
+  if (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true') {
+    window._trafficGodMode = true;
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() { window.toggleGodModeCheat(true); });
+    } else {
+      setTimeout(function() { window.toggleGodModeCheat(true); }, 300);
+    }
+  }
+
+  var _devClicks = 0;
+  window.handleDevClick = function() {
+    _devClicks++;
+    if (_devClicks >= 3) {
+      _devClicks = 0;
+      var p = prompt('⚡ CHEAT CODE & DEVELOPER ACCESS:\nType "god" / "health" or press OK to toggle Unlimited Health on all levels:');
+      if (p !== null) {
+        var code = (p || '').trim().toLowerCase();
+        if (['neel', 'ansh', 'sanjana'].includes(p.trim())) {
+          if (typeof ui !== 'undefined' && ui && ui.adminUnlock) ui.adminUnlock();
+          window.toggleGodModeCheat(true);
+        } else {
+          window.toggleGodModeCheat();
+        }
+      }
+    } else {
+      var rem = 3 - _devClicks;
+      if (typeof toast === 'function') {
+        toast('🛡️ Cheat Menu: Tap ' + rem + ' more time' + (rem > 1 ? 's' : '') + ' to toggle Unlimited Health!', '#ffd700', 1200);
+      }
+    }
+  };
+

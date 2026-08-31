@@ -1,1 +1,17 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #070a14;
+  color: #f8fafc;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}

@@ -45,7 +45,12 @@ window.ASSET_MANIFEST = {}
   function obj(p, m) { return { path: p, fmt: 'obj', mtl: m || null } }
 
 
-  M.car = glb(carKit + 'sedan.glb');
+  // ── Vehicles & Supercars ──────────────────────────────────────────────
+  M.car = glb('Models/sample (1).glb'); // Supercar Default Sedan
+  M.car_supercar_1 = glb('Models/sample (1).glb');
+  M.car_supercar_2 = glb('Models/sample (2).glb');
+  M.car_supercar_3 = glb('Models/sample (3).glb');
+  M.car_sedan_kenney = glb(carKit + 'sedan.glb');
   M.taxi = glb(carKit + 'taxi.glb');
   M.police = glb(carKit + 'police.glb');
   M.ambulance = glb(carKit + 'ambulance.glb');
@@ -66,9 +71,10 @@ window.ASSET_MANIFEST = {}
   ;['hatchback-sports','suv','suv-luxury','race-future','sedan-sports','kart-oobi','kart-oodi','kart-ooli','kart-oopi','kart-oozi','tractor','tractor-police','tractor-shovel'].forEach(c => { M['car_'+c] = glb(carKit + c + '.glb') });
   ;['firetruck','garbage-truck','truck-flat'].forEach(t => { M['truck_'+t] = glb(carKit + t + '.glb') });
 
-
-  M.lowpoly_cars = fbx('Models/uploads_files_3354643_LowPoly_Cars_01_fbx.FBX')
-
+  M.bmw_m4 = glb('Models/bmw_m4_widebody__www.vecarz.com.glb');
+  M.nilu_27 = glb('Models/nilu_27_concept_2024__www.vecarz.com.glb');
+  M.cyberpunk_bike = glb('Models/cyberpunk_bike.glb');
+  M.lowpoly_cars = fbx('Models/uploads_files_3354643_LowPoly_Cars_01_fbx.FBX');
 
   M.road_straight = glb(roadKit + 'road-straight.glb'); M.road_intersect = glb(roadKit + 'road-intersection.glb')
   M.road_cross = glb(roadKit + 'road-crossroad.glb'); M.road_cross_path = glb(roadKit + 'road-crossroad-path.glb')
@@ -77,12 +83,12 @@ window.ASSET_MANIFEST = {}
   M.barrier = glb(roadKit + 'construction-barrier.glb'); M.cone = glb(roadKit + 'construction-cone.glb'); M.sign_highway = glb(roadKit + 'sign-highway.glb')
   M.road_avenue = { path: 'Models/road__avenue__street/scene.gltf', fmt: 'gltf' }
 
-
+  // ── Characters (Human / Pedestrians) ──────────────────────────────────
   M.char_f_a = glb(charKit + 'character-female-a.glb'); M.char_f_b = glb(charKit + 'character-female-b.glb'); M.char_f_c = glb(charKit + 'character-female-c.glb')
   M.char_f_d = glb(charKit + 'character-female-d.glb'); M.char_f_e = glb(charKit + 'character-female-e.glb'); M.char_f_f = glb(charKit + 'character-female-f.glb')
   M.char_m_a = glb(charKit + 'character-male-a.glb'); M.char_m_b = glb(charKit + 'character-male-b.glb'); M.char_m_c = glb(charKit + 'character-male-c.glb')
   M.char_m_d = glb(charKit + 'character-male-d.glb'); M.char_m_e = glb(charKit + 'character-male-e.glb'); M.char_m_f = glb(charKit + 'character-male-f.glb')
-  M.char_aid_cane = glb(charKit + 'aid-cane.glb')
+  M.player_sample = glb('Models/sample.glb') // Hero 3D Character
 
 
 
@@ -214,7 +220,7 @@ window.ASSET_MANIFEST = {}
 window.ASSET_GROUPS = {
   suburban:  'abcdefghijklmnopqrstu'.split('').map(l => 'suburban_' + l),
   industrial:'abcdefghijklmnopqrst'.split('').map(l => 'industrial_' + l),
-  cars:      ['car_hatchback-sports','car_suv','car_suv-luxury','car_race-future','car_sedan-sports','car_kart-oobi','car_kart-oodi','car_kart-ooli','car_kart-oopi','car_kart-oozi','car_tractor','car_tractor-police','car_tractor-shovel'],
+  cars:      ['car_supercar_1','car_supercar_2','car_supercar_3','bmw_m4','nilu_27','cyberpunk_bike','car_hatchback-sports','car_suv','car_suv-luxury','car_race-future','car_sedan-sports','car_kart-oobi','car_kart-oodi','car_kart-ooli','car_kart-oopi','car_kart-oozi','car_tractor','car_tractor-police','car_tractor-shovel'],
   trucks:    ['truck_firetruck','truck_garbage-truck','truck_truck-flat'],
   modular:   ['mbuilding_sample-house-a','mbuilding_sample-house-b','mbuilding_sample-house-c','mbuilding_sample-tower-a','mbuilding_sample-tower-b','mbuilding_sample-tower-c','mbuilding_sample-tower-d'],
   bkit:      ['bkit_wall','bkit_wall-doorway-square','bkit_wall-doorway-round','bkit_wall-doorway-wide-round','bkit_wall-doorway-wide-square',
@@ -248,7 +254,8 @@ window.ASSET_GROUPS = {
 
 
 window.CORE_ASSETS = [
-  'car','taxi','police','ambulance','bus','truck','auto','bike','cars','trucks','emergency',
+  'player_sample',
+  'car','car_supercar_1','car_supercar_2','car_supercar_3','bmw_m4','nilu_27','cyberpunk_bike','taxi','police','ambulance','bus','truck','auto','bike','cars','trucks','emergency',
   'road_straight','road_intersect','road_cross','road_cross_path','road_intersect_path','road_bend','road_crossing','road_roundabout','road_avenue',
   'char_f_a','char_f_b','char_f_c','char_f_d','char_f_e','char_f_f',
   'char_m_a','char_m_b','char_m_c','char_m_d','char_m_e','char_m_f',
@@ -323,57 +330,72 @@ window.loadLevelAssets = function (keys, callback) {
   function done() {
     if (ld && ld.parentNode) {
       ld.innerHTML = '<h1 style="color:#34D399;">World Ready!</h1><div style="font-size:1rem;color:#8891AA;">Entering level...</div>'
-      setTimeout(() => { ld.style.opacity = '0'; ld.style.transform = 'scale(1.05)'; setTimeout(() => { if (ld.parentNode) ld.remove() }, 800) }, 600)
+      setTimeout(() => { ld.style.opacity = '0'; ld.style.transform = 'scale(1.05)'; setTimeout(() => { if (ld.parentNode) ld.remove() }, 400) }, 300)
     }
     callback()
   }
 
-  const loadNext = (index) => {
-    if (index >= toLoad.length) { done(); return }
-    const key = toLoad[index]
-    const entry = manifest[key]
-    if (!entry) { tick(); setTimeout(() => loadNext(index + 1), 0); return }
-    if (statusEl) statusEl.textContent = 'Loading: ' + key + '...'
+  const gltfLoader = (typeof THREE.GLTFLoader !== 'undefined') ? new THREE.GLTFLoader() : null
+  const fbxLoader = (typeof THREE.FBXLoader !== 'undefined') ? new THREE.FBXLoader() : null
+  const objLoader = (typeof THREE.OBJLoader !== 'undefined') ? new THREE.OBJLoader() : null
 
+  function loadSingleAsset(key) {
+    return new Promise((resolve) => {
+      const entry = manifest[key]
+      if (!entry) { tick(); resolve(); return }
+      if (statusEl) statusEl.textContent = 'Loading: ' + key + '...'
 
-    const fmt = (typeof entry === 'string') ? 'glb' : (entry.fmt || 'glb')
-    const filePath = (typeof entry === 'string') ? entry : entry.path
+      const fmt = (typeof entry === 'string') ? 'glb' : (entry.fmt || 'glb')
+      const filePath = (typeof entry === 'string') ? entry : entry.path
 
-    const onOk = (root) => {
-      postProcess(root, key)
-
-      const isFBXOBJ = (fmt === 'fbx' || fmt === 'obj')
-      if (!isFBXOBJ) root.scale.set(4.5, 4.5, 4.5)
-      window.PRELOADED_MODELS[key] = root
-      tick()
-      setTimeout(() => loadNext(index + 1), 0)
-    }
-    const onErr = (err) => {
-      console.error('Error loading asset:', key, filePath, err)
-      tick()
-      setTimeout(() => loadNext(index + 1), 0)
-    }
-
-    if (fmt === 'fbx' && typeof THREE.FBXLoader !== 'undefined') {
-      new THREE.FBXLoader().load(filePath, (fbx) => { onOk(fbx) }, undefined, onErr)
-    } else if (fmt === 'obj' && typeof THREE.OBJLoader !== 'undefined') {
-      if (entry.mtl && typeof THREE.MTLLoader !== 'undefined') {
-        new THREE.MTLLoader().load(entry.mtl, (mtl) => {
-          mtl.preload()
-          new THREE.OBJLoader().setMaterials(mtl).load(filePath, (obj) => { onOk(obj) }, undefined, onErr)
-        }, undefined, onErr)
-      } else {
-        new THREE.OBJLoader().load(filePath, (obj) => { onOk(obj) }, undefined, onErr)
+      const onOk = (root) => {
+        postProcess(root, key)
+        const isFBXOBJ = (fmt === 'fbx' || fmt === 'obj')
+        if (!isFBXOBJ) root.scale.set(4.5, 4.5, 4.5)
+        window.PRELOADED_MODELS[key] = root
+        tick()
+        resolve()
       }
-    } else if ((fmt === 'glb' || fmt === 'gltf') && typeof THREE.GLTFLoader !== 'undefined') {
-      new THREE.GLTFLoader().load(filePath, (gltf) => { onOk(gltf.scene) }, undefined, onErr)
-    } else {
-      console.warn('Unknown format or missing loader for:', key, fmt)
-      tick()
-      setTimeout(() => loadNext(index + 1), 0)
+      const onErr = (err) => {
+        console.warn('Error loading asset:', key, filePath, err)
+        tick()
+        resolve()
+      }
+
+      if (fmt === 'fbx' && fbxLoader) {
+        fbxLoader.load(filePath, onOk, undefined, onErr)
+      } else if (fmt === 'obj' && objLoader) {
+        if (entry.mtl && typeof THREE.MTLLoader !== 'undefined') {
+          new THREE.MTLLoader().load(entry.mtl, (mtl) => {
+            mtl.preload()
+            objLoader.setMaterials(mtl).load(filePath, onOk, undefined, onErr)
+          }, undefined, onErr)
+        } else {
+          objLoader.load(filePath, onOk, undefined, onErr)
+        }
+      } else if ((fmt === 'glb' || fmt === 'gltf') && gltfLoader) {
+        gltfLoader.load(filePath, (gltf) => { onOk(gltf.scene) }, undefined, onErr)
+      } else {
+        tick()
+        resolve()
+      }
+    })
+  }
+
+  // Concurrent worker queue (concurrency = 8)
+  const concurrency = 8
+  let curIndex = 0
+  async function worker() {
+    while (curIndex < toLoad.length) {
+      const idx = curIndex++
+      await loadSingleAsset(toLoad[idx])
     }
   }
-  setTimeout(() => loadNext(0), 50)
+
+  const workers = Array.from({ length: Math.min(concurrency, toLoad.length) }, () => worker())
+  Promise.all(workers).then(() => {
+    done()
+  })
 }
 
 
@@ -627,6 +649,11 @@ preloadModels(() => {
         }, 3000)
 
         function _doStartLevel() {
+          const overlay = document.getElementById('play-overlay')
+          if (overlay) {
+            overlay.style.display = 'none'
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay)
+          }
           try {
             if (!window.game || typeof window.game.startLevel !== 'function') {
               console.warn('Game not ready yet, retrying...')
@@ -658,7 +685,10 @@ preloadModels(() => {
 
         function _onPlayClick() {
           const overlay = document.getElementById('play-overlay')
-          if (overlay) overlay.style.display = 'none'
+          if (overlay) {
+            overlay.style.display = 'none'
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay)
+          }
           if (!_isMobile && document.documentElement.requestFullscreen && !document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(() => {})
           }
@@ -675,27 +705,18 @@ preloadModels(() => {
           }
         }
 
-        function _ensureOverlay() {
-          let overlay = document.getElementById('play-overlay')
-          if (!overlay) {
-            overlay = document.createElement('div')
-            overlay.id = 'play-overlay'
-            overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);cursor:pointer;backdrop-filter:blur(8px);'
-            overlay.innerHTML = '<div style="text-align:center;animation:pulse 2s infinite"><div style="font-size:4rem;margin-bottom:16px">🚗</div><div style="font-family:\'Instrument Serif\',serif;font-size:2.5rem;color:#e8e3d8;margin-bottom:8px">Click to Play</div><div style="font-size:1rem;color:#8891aa">Fullscreen mode for the best experience</div></div>'
-            document.body.appendChild(overlay)
-            overlay.addEventListener('click', _onPlayClick)
-          }
-          overlay.style.display = 'flex'
+        // Start level directly without blocking overlay
+        if (window.game) {
+          _doStartLevel()
+        } else {
+          var _loadWait = setInterval(function() {
+            if (window.game) {
+              clearInterval(_loadWait)
+              _doStartLevel()
+            }
+          }, 100)
+          setTimeout(function() { clearInterval(_loadWait) }, 5000)
         }
-
-        _ensureOverlay()
-
-        setTimeout(function _delayedStart() {
-          const overlay = document.getElementById('play-overlay')
-          if (overlay && overlay.style.display !== 'none') {
-            _doStartLevel()
-          }
-        }, 1500)
       } else {
         console.warn('[Driving] Level not found');
       }

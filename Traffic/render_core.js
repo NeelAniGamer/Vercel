@@ -3,10 +3,10 @@
 const QUALITY_PRESETS = {
     LOW: {
         resScale: 0.85,
-        shadowRes: 512,
-        shadowCascades: 1,
-        shadowBias: -0.0005,
-        shadowNormalBias: 0.02,
+        shadowRes: 0,
+        shadowCascades: 0,
+        shadowBias: 0,
+        shadowNormalBias: 0,
         bloom: false,
         bloomThreshold: 1.0,
         bloomStrength: 0,
@@ -16,11 +16,11 @@ const QUALITY_PRESETS = {
         maxAnisotropy: 1,
         lodMultiplier: 0.5,
         maxParticles: 500,
-        description: 'Performance mode'
+        description: 'Performance (Blob Shadows)'
     },
     MED: {
         resScale: 1.0,
-        shadowRes: 1024,
+        shadowRes: 512,
         shadowCascades: 1,
         shadowBias: -0.0003,
         shadowNormalBias: 0.015,
@@ -30,7 +30,7 @@ const QUALITY_PRESETS = {
         bloomRadius: 0.4,
         fps: 60,
         textureFilter: THREE.LinearMipmapLinearFilter,
-        maxAnisotropy: 4,
+        maxAnisotropy: 2,
         lodMultiplier: 0.75,
         maxParticles: 1500,
         description: 'Balanced'
@@ -303,7 +303,7 @@ class RenderCore {
 
 
         if (this.renderer.shadowMap) {
-
+            this.renderer.shadowMap.enabled = (preset.shadowRes > 0);
             this._defaultShadowRes = preset.shadowRes;
             this._defaultShadowBias = preset.shadowBias;
             this._defaultShadowNormalBias = preset.shadowNormalBias;
@@ -367,17 +367,21 @@ class RenderCore {
         if (this._frameTimeHistory.length > 120) this._frameTimeHistory.shift();
 
         this._frameBudgetFrames++;
-        
 
-        if (this._frameBudgetFrames >= 60) {
+        if (this._frameBudgetFrames >= 120) { // Check every 2s
             this._frameBudgetFrames = 0;
+            // Cooldown of 6s before allowing another auto adjustment
+            if (this._lastQualityShift && now - this._lastQualityShift < 6000) return;
+
             const avg = this._frameTimeHistory.reduce((a, b) => a + b, 0) / this._frameTimeHistory.length;
             const preset = this.getPreset();
             const budget = 1000 / preset.fps;
             
-            if (avg > budget * 1.3 && this.currentPreset !== 'LOW') {
+            if (avg > budget * 1.35 && this.currentPreset !== 'LOW') {
+                this._lastQualityShift = now;
                 this._downgradePreset();
-            } else if (avg < budget * 0.6 && this.currentPreset !== 'ULTRA') {
+            } else if (avg < budget * 0.55 && this.currentPreset !== 'ULTRA') {
+                this._lastQualityShift = now;
                 this._upgradePreset();
             }
         }

@@ -451,7 +451,7 @@ button:active,
 /* Academy level map SVG — fluid width */
 .level-path-svg {
   width: min(96vw, 960px) !important;
-  height: auto !important;
+  flex-shrink: 0 !important;
 }
 .map-scroll-area {
   padding-bottom: clamp(60px, 14vw, 90px) !important;
@@ -692,10 +692,10 @@ button:active,
 /* ─────────────────────────────────────────────────────────────────
    9. LANDSCAPE — Critical for 720p phones rotated
    ───────────────────────────────────────────────────────────────── */
-@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+@media (max-width: 950px) and (orientation: landscape), (max-height: 520px) and (orientation: landscape) {
   :root {
-    --ctrl: 36px;
-    --ctrl-gas: 40px;
+    --ctrl: 38px;
+    --ctrl-gas: 42px;
     --gauge: 40px;
     --minimap: 48px;
     --steer: 56px;
@@ -708,8 +708,34 @@ button:active,
     height: 48px !important;
   }
   #mobile-controls {
-    bottom: 2px !important;
-    padding-bottom: 2px !important;
+    display: flex !important;
+    visibility: visible !important;
+    bottom: 0 !important;
+    padding: 6px 12px calc(env(safe-area-inset-bottom, 0px) + 6px) !important;
+    z-index: 9999 !important;
+  }
+  #joystick-zone {
+    display: block !important;
+  }
+  #civic-controls {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 76px) !important;
+    right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
+    top: auto !important;
+    left: auto !important;
+    scale: 0.88 !important;
+    transform-origin: bottom right !important;
+    z-index: 9999 !important;
+  }
+  #phone-gps-btn {
+    display: flex !important;
+    visibility: visible !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 78px) !important;
+    left: calc(env(safe-area-inset-left, 0px) + 12px) !important;
+    scale: 0.88 !important;
+    z-index: 9999 !important;
   }
   #steer-wheel-container {
     width: 56px !important;
@@ -732,8 +758,6 @@ button:active,
     scale: 0.88;
   }
   #compass-strip,
-  #civic-controls,
-  #phone-gps-btn,
   #dn-clock,
   #sig-ind {
     scale: 0.9;

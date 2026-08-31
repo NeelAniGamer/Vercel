@@ -6562,7 +6562,7 @@
     }
 
     #objective-overlay {
-      position: relative !important;
+      position: static !important;
       top: auto !important;
       right: auto !important;
       left: auto !important;
@@ -6584,7 +6584,7 @@
     }
 
     #task-tracker {
-      position: relative !important;
+      position: static !important;
       top: auto !important;
       right: auto !important;
       left: auto !important;
@@ -6733,6 +6733,12 @@
 
     /* P R N D Gear Selector Row */
     #gp {
+      position: static !important;
+      top: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      right: auto !important;
+      transform: none !important;
       display: flex !important;
       flex-direction: row !important;
       justify-content: space-between !important;
@@ -6774,27 +6780,28 @@
     /* ═══════════════════════════════════════════════════════════════ */
     #civic-controls {
       position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 82px) !important;
+      right: calc(env(safe-area-inset-right, 0px) + 14px) !important;
       top: auto !important;
       left: auto !important;
-      z-index: 55 !important;
-      width: 290px !important;
-      max-width: calc(100vw - 32px) !important;
+      z-index: 9999 !important;
+      width: auto !important;
+      max-width: calc(100vw - 28px) !important;
       box-sizing: border-box !important;
-      display: none;
-      justify-content: space-between !important;
+      display: flex !important;
+      justify-content: flex-end !important;
       align-items: center !important;
       gap: 4px !important;
-      background: #0d131f !important;
+      background: rgba(13, 19, 31, 0.85) !important;
       border: 1.5px solid #26354a !important;
       border-radius: 10px !important;
       padding: 4px 6px !important;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
       margin: 0 !important;
       transform: none !important;
+      pointer-events: auto !important;
     }
     #gc.on ~ #civic-controls,
     #civic-controls.on {
@@ -7008,31 +7015,7 @@
   </div>
 
   
-  <div id="virtual-joystick" style="
-        position: fixed;
-        bottom: clamp(40px, 12vh, 100px);
-        left: clamp(20px, 6vw, 40px);
-        width: clamp(120px, 18vw, 160px);
-        height: clamp(120px, 18vw, 160px);
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.15);
-        border: 3px solid rgba(255, 255, 255, 0.35);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        touch-action: none;
-        z-index: 10000;
-        backdrop-filter: blur(4px);
-      ">
-    <div id="joystick-knob" style="
-          width: 55px;
-          height: 55px;
-          border-radius: 50%;
-          background: linear-gradient(145deg, #ffd54a, #ffb300);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4);
-          transition: transform 0.05s ease-out;
-        "></div>
-  </div>
+
 
   
   <div id="camera-joystick" style="
@@ -7091,7 +7074,10 @@
     </div>
   </div>
 
-  <!-- Mobile Pause Button -->
+  <!-- Mobile Pause & Render Distance HUD Buttons -->
+  <div id="hud-rd-btn" onclick="cycleGlobalRenderDistance()" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:calc(env(safe-area-inset-right,0px) + 112px);z-index:10000;padding:6px 12px;background:rgba(13,19,31,0.75);border:1.5px solid rgba(94,212,245,0.4);border-radius:20px;display:flex;align-items:center;justify-content:center;color:#5ed4f5;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:700;pointer-events:auto;cursor:pointer;backdrop-filter:blur(6px);user-select:none;-webkit-user-select:none;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+    🔭 <span id="hud-rd-text" style="margin-left:4px;">150m</span>
+  </div>
   <div id="mobile-pause-btn" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);right:calc(env(safe-area-inset-right,0px) + 60px);z-index:10000;width:44px;height:44px;background:rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.2);border-radius:50%;display:none;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;backdrop-filter:blur(4px);">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
   </div>
@@ -7235,13 +7221,13 @@
 
   <!-- Top-Right Unified Auto-Flowing HUD Stack (Zero Overlaps) -->
   <div id="top-right-hud-stack">
-    <div id="objective-overlay">
-      <div id="objective-title">Current Objective</div>
-      <div id="objective-desc">Loading...</div>
-    </div>
     <div id="task-tracker">
       <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--yellow, #f59e0b); font-weight: 800; margin-bottom: 8px">📋 Tasks</div>
       <div id="task-list" style="display: flex; flex-direction: column; gap: 6px"></div>
+    </div>
+    <div id="objective-overlay">
+      <div id="objective-title">Current Objective</div>
+      <div id="objective-desc">Loading...</div>
     </div>
     <div id="challan-summary-box" onclick="window.ui && window.ui.openChallanHistoryModal && window.ui.openChallanHistoryModal()">
       <div class="csb-left">
@@ -7307,6 +7293,15 @@
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🔭 Render Distance (Active Scene De-load)</label>
+        <div id="pause-render-dist-btns" style="display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:8px; padding:4px;">
+          <button class="rdbtn" data-rd="80" onclick="pauseSetRenderDistance(80)" style="flex:1; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; padding:8px 2px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">80m</button>
+          <button class="rdbtn" data-rd="150" onclick="pauseSetRenderDistance(150)" style="flex:1; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; padding:8px 2px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">150m</button>
+          <button class="rdbtn" data-rd="250" onclick="pauseSetRenderDistance(250)" style="flex:1; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; padding:8px 2px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">250m</button>
+          <button class="rdbtn" data-rd="400" onclick="pauseSetRenderDistance(400)" style="flex:1; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; padding:8px 2px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">400m</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
         <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🌙 Night Mode</label>
         <div style="display:flex; align-items:center; gap:12px;">
           <button id="pause-night-toggle" onclick="pauseToggleNight()" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); cursor:pointer; min-height:40px; transition:all 0.2s;">Off</button>
@@ -7325,6 +7320,12 @@
           <input type="range" id="pause-amb-volume" min="0" max="100" value="70" oninput="pauseSetAmbVolume(this.value)" style="flex:1; height:6px; border-radius:3px; background:rgba(255,255,255,0.2); outline:none; -webkit-appearance:none; cursor:pointer;">
           <span id="pause-amb-volume-val" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:700; color:#fff; min-width:36px; text-align:right;">70%</span>
         </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🎭 Character & Skins</label>
+        <button onclick="if(window.openCustomize){ pauseToggle(); window.openCustomize(); }" style="display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg, rgba(242,184,75,0.2) 0%, rgba(94,212,245,0.15) 100%); border:1px solid rgba(242,184,75,0.45); color:#f2b84b; font-family:'Inter',sans-serif; font-size:0.88rem; font-weight:700; padding:12px 16px; border-radius:12px; cursor:pointer; box-shadow:0 4px 14px rgba(242,184,75,0.2); transition:all 0.2s;">
+          ✨ Open Character Studio
+        </button>
       </div>
     </div>
     
@@ -7970,6 +7971,35 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           " id="btn-weather">
         ☀️ Clear
+      </button>
+      <button class="nav-login-btn" id="btn-rd-start" onclick="cycleGlobalRenderDistance()" style="
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          ">
+        🔭 Render: 150m
+      </button>
+
+      <button class="nav-login-btn" id="btn-char-start" onclick="window.openCustomize && window.openCustomize()" style="
+            background: linear-gradient(135deg, rgba(242,184,75,0.15), rgba(94,212,245,0.15));
+            border: 1px solid rgba(242,184,75,0.4);
+            color: var(--text);
+            border-radius: 30px;
+            padding: 8px 18px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          ">
+        🎭 Character
       </button>
 
       <div class="nav-user-profile" id="navUserProfile" data-preserve-click="true" onclick="ui.showProfile()" style="
@@ -9151,6 +9181,31 @@
       localStorage.setItem('traffic_quality', preset);
     }
 
+    function pauseSetRenderDistance(dist) {
+      const d = parseInt(dist, 10) || 150;
+      document.querySelectorAll('.rdbtn').forEach(b => {
+        const isActive = parseInt(b.dataset.rd, 10) === d;
+        b.style.background = isActive ? 'rgba(94,212,245,0.35)' : 'transparent';
+        b.style.color = isActive ? '#5ed4f5' : 'rgba(255,255,255,0.6)';
+        b.style.fontWeight = isActive ? '700' : '600';
+      });
+      const startBtn = document.getElementById('btn-rd-start');
+      if (startBtn) startBtn.innerHTML = '🔭 Render: ' + d + 'm';
+      const hudText = document.getElementById('hud-rd-text');
+      if (hudText) hudText.textContent = d + 'm';
+      if (window.game && window.game.setRenderDistance) {
+        window.game.setRenderDistance(d);
+      }
+      localStorage.setItem('traffic_render_distance', d);
+    }
+
+    window.cycleGlobalRenderDistance = function() {
+      const distances = [80, 150, 250, 400];
+      const current = parseInt(localStorage.getItem('traffic_render_distance') || '150', 10);
+      const nextIdx = (distances.indexOf(current) + 1) % distances.length;
+      pauseSetRenderDistance(distances[nextIdx]);
+    };
+
 
     let _pauseNightOn = false;
     function pauseToggleNight() {
@@ -9220,6 +9275,9 @@
       }
       const savedQ = localStorage.getItem('traffic_quality') || 'HIGH';
       pauseSetQuality(savedQ);
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const savedRD = localStorage.getItem('traffic_render_distance') || (isMobile ? '120' : '150');
+      pauseSetRenderDistance(savedRD);
       // Restore gyro setting
       const savedGyro = localStorage.getItem('traffic_gyro');
       if (savedGyro === '1') pauseToggleGyro();
@@ -9263,6 +9321,10 @@
         <div class="studio-viewport-card">
           <div class="studio-canvas-wrap">
             <canvas id="customize-preview" width="340" height="460"></canvas>
+            <div style="position:absolute; top:10px; right:10px; display:flex; gap:6px; z-index:10;">
+              <button id="studio-autorotate-btn" class="studio-icon-btn" onclick="window._toggleAutoRotatePreview()" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); border-radius:10px; padding:4px 8px; font-size:0.72rem; color:#fff; border:1px solid rgba(255,255,255,0.15);" title="Toggle 360° Auto Rotation">🔄 Spin</button>
+              <button class="studio-icon-btn" onclick="window._resetPreviewRotation()" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); border-radius:10px; padding:4px 8px; font-size:0.72rem; color:#fff; border:1px solid rgba(255,255,255,0.15);" title="Reset to Front Angle">🎯 Front</button>
+            </div>
             <div class="studio-hint-pill">Drag to Rotate 360°</div>
           </div>
 
@@ -9317,6 +9379,11 @@
           <div id="stylized-panels-container">
             <!-- Identity Tab -->
             <div id="panel-identity" class="studio-panel active">
+              <div class="studio-section">
+                <div class="studio-section-title">🌟 3D Character Models (Sample Avatars)</div>
+                <div id="sample-models-grid" class="studio-grid-2"></div>
+              </div>
+
               <div class="studio-section">
                 <div class="studio-section-title">Gender & Frame</div>
                 <div style="display:flex; gap:10px;">
@@ -9721,25 +9788,8 @@
         }
       }, { passive: true });
 
-      // Dynamic stacking: position #task-tracker directly below #objective-overlay
-      function stackTaskBelowObjective() {
-        const oo = document.getElementById('objective-overlay');
-        const tt = document.getElementById('task-tracker');
-        if (!oo || !tt) return;
-        const ooRect = oo.getBoundingClientRect();
-        if (ooRect.height > 0 && oo.style.display !== 'none' && !oo.classList.contains('hidden')) {
-          tt.style.setProperty('top', (ooRect.bottom + 8) + 'px', 'important');
-        } else {
-          tt.style.setProperty('top', (16 + (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sai-top') || '0'))) + 'px', 'important');
-        }
-      }
-
-      // Observe objective-overlay for size changes
-      if (window.ResizeObserver) {
-        const ro = new ResizeObserver(stackTaskBelowObjective);
-        const oo = document.getElementById('objective-overlay');
-        if (oo) ro.observe(oo);
-      }
+      // Dynamic stacking: flex layout inside #top-right-hud-stack handles natural order
+      function stackTaskBelowObjective() {}
     });
   </script>
 
@@ -9767,7 +9817,8 @@
       </div>
     </div>
   </div>
+  <!-- Clickable Version Badge (Dev & Unlimited Health Cheat Code) -->
+  <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: pointer; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" onclick="window.handleDevClick && window.handleDevClick()" onmouseover="this.style.opacity='1'; this.style.color='#ffd700';" onmouseout="this.style.opacity='0.45'; this.style.color='var(--muted2, #aaa)';" title="Click 3 times for Unlimited Health Cheat Code">v2.4.1 🛡️</div>
 
 </body>
 </html>
-

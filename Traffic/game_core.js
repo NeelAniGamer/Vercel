@@ -1,28 +1,35 @@
 // ── Per-vehicle handling profiles ──
 const VEHICLE_STATS = {
-  bike:        { maxSpd: 1.35, accel: 0.058, fric: 0.935, turn: 0.088, grip: 0.48 },
-  car:         { maxSpd: 1.10, accel: 0.045, fric: 0.945, turn: 0.080, grip: 0.62 },
-  car_highway: { maxSpd: 1.25, accel: 0.052, fric: 0.948, turn: 0.080, grip: 0.65 },
-  bus:         { maxSpd: 0.80, accel: 0.028, fric: 0.965, turn: 0.045, grip: 0.44 },
-  truck:       { maxSpd: 0.90, accel: 0.033, fric: 0.960, turn: 0.050, grip: 0.50 },
-  auto:        { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.082, grip: 0.40 },
+  bike:            { maxSpd: 1.35, accel: 0.058, fric: 0.935, turn: 0.088, grip: 0.48 },
+  cyberpunk_bike:  { maxSpd: 1.60, accel: 0.075, fric: 0.940, turn: 0.092, grip: 0.65 },
+  car:             { maxSpd: 1.10, accel: 0.045, fric: 0.945, turn: 0.080, grip: 0.62 },
+  car_highway:     { maxSpd: 1.25, accel: 0.052, fric: 0.948, turn: 0.080, grip: 0.65 },
+  bmw_m4:          { maxSpd: 1.55, accel: 0.068, fric: 0.952, turn: 0.085, grip: 0.78 },
+  nilu_27:         { maxSpd: 1.70, accel: 0.078, fric: 0.955, turn: 0.088, grip: 0.82 },
+  lambo:           { maxSpd: 1.65, accel: 0.072, fric: 0.950, turn: 0.086, grip: 0.80 },
+  taxi:            { maxSpd: 1.15, accel: 0.048, fric: 0.945, turn: 0.082, grip: 0.60 },
+  police:          { maxSpd: 1.40, accel: 0.062, fric: 0.948, turn: 0.084, grip: 0.72 },
+  ambulance:       { maxSpd: 1.20, accel: 0.050, fric: 0.950, turn: 0.068, grip: 0.58 },
+  bus:             { maxSpd: 0.80, accel: 0.028, fric: 0.965, turn: 0.045, grip: 0.44 },
+  truck:           { maxSpd: 0.90, accel: 0.033, fric: 0.960, turn: 0.050, grip: 0.50 },
+  auto:            { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.082, grip: 0.40 },
 };
 window.VEHICLE_STATS = VEHICLE_STATS;
 
 // ── Per-vehicle chase camera profiles ──
-// dist:     distance behind the vehicle
-// height:   camera height above ground
-// lookAhead:how far ahead the camera looks (speed-proportional cap)
-// lookDist: fixed look-at distance ahead of vehicle
-// baseFov:  base field of view (expands with speed)
-// fovRange: max additional FOV from speed
-// lerpSmoothing: camera lerp factor (higher = snappier)
 const VEHICLE_CAM = {
-  bike:  { dist: 7.2,  height: 3.8, lookAhead: 2.5, lookDist: 5.0, baseFov: 66, fovRange: 18, lerpSmoothing: 7 },
-  car:   { dist: 9.5,  height: 4.8, lookAhead: 3.5, lookDist: 6.5, baseFov: 62, fovRange: 15, lerpSmoothing: 6 },
-  bus:   { dist: 16.5, height: 7.5, lookAhead: 5.0, lookDist: 9.0, baseFov: 56, fovRange: 10, lerpSmoothing: 5 },
-  truck: { dist: 15.0, height: 7.0, lookAhead: 4.5, lookDist: 8.5, baseFov: 58, fovRange: 12, lerpSmoothing: 5 },
-  auto:  { dist: 8.2,  height: 4.2, lookAhead: 3.0, lookDist: 5.2, baseFov: 65, fovRange: 16, lerpSmoothing: 7 },
+  bike:            { dist: 7.8,  height: 5.0, lookAhead: 2.8, lookDist: 5.5, baseFov: 70, fovRange: 16, lerpSmoothing: 7 },
+  cyberpunk_bike:  { dist: 8.2,  height: 4.8, lookAhead: 3.2, lookDist: 6.0, baseFov: 72, fovRange: 18, lerpSmoothing: 8 },
+  car:             { dist: 10.0, height: 6.2, lookAhead: 4.0, lookDist: 7.0, baseFov: 66, fovRange: 15, lerpSmoothing: 6 },
+  bmw_m4:          { dist: 10.5, height: 5.8, lookAhead: 4.5, lookDist: 7.5, baseFov: 68, fovRange: 18, lerpSmoothing: 7 },
+  nilu_27:         { dist: 10.8, height: 5.5, lookAhead: 4.8, lookDist: 8.0, baseFov: 70, fovRange: 20, lerpSmoothing: 7 },
+  lambo:           { dist: 10.5, height: 5.6, lookAhead: 4.6, lookDist: 7.8, baseFov: 70, fovRange: 20, lerpSmoothing: 7 },
+  taxi:            { dist: 10.0, height: 6.2, lookAhead: 4.0, lookDist: 7.0, baseFov: 66, fovRange: 15, lerpSmoothing: 6 },
+  police:          { dist: 10.5, height: 6.4, lookAhead: 4.2, lookDist: 7.2, baseFov: 66, fovRange: 16, lerpSmoothing: 6 },
+  ambulance:       { dist: 12.0, height: 7.0, lookAhead: 4.5, lookDist: 8.0, baseFov: 64, fovRange: 14, lerpSmoothing: 6 },
+  bus:             { dist: 17.5, height: 9.2, lookAhead: 5.5, lookDist: 10.0, baseFov: 58, fovRange: 10, lerpSmoothing: 5 },
+  truck:           { dist: 16.0, height: 8.8, lookAhead: 5.0, lookDist: 9.5, baseFov: 60, fovRange: 12, lerpSmoothing: 5 },
+  auto:            { dist: 8.6,  height: 5.4, lookAhead: 3.2, lookDist: 6.0, baseFov: 68, fovRange: 16, lerpSmoothing: 7 },
 };
 const VEHICLE_CAM_DEFAULT = VEHICLE_CAM.car;
 
@@ -1387,7 +1394,9 @@ class Game {
         this.renderCore.init(this.rendererDom);
         // Setup post-processing (bloom, etc.) based on quality preset
         this.renderCore.setupPostProcessing(innerWidth, innerHeight, isMobile);
-        this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
+        this.renderDistance = parseInt(localStorage.getItem('traffic_render_distance') || (isMobile ? '120' : '150'), 10);
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(65, w / h, .1, Math.max(200, this.renderDistance + 60));
 
         // Post-processing (bloom) handled entirely by RenderCore.
         // No separate EffectComposer needed here.
@@ -1416,6 +1425,30 @@ class Game {
           if (overlay) overlay.classList.remove('on');
         }
       }
+
+      setRenderDistance(dist) {
+        this.renderDistance = parseInt(dist, 10) || 150;
+        localStorage.setItem('traffic_render_distance', this.renderDistance);
+        if (this.camera) {
+          this.camera.far = Math.max(100, this.renderDistance + 40);
+          this.camera.updateProjectionMatrix();
+        }
+        if (this.scene) {
+          if (!this.scene.fog) {
+            this.scene.fog = new THREE.Fog(0x0a101d, this.renderDistance * 0.55, this.renderDistance);
+          } else {
+            this.scene.fog.near = this.renderDistance * 0.55;
+            this.scene.fog.far = this.renderDistance;
+          }
+        }
+        if (this.sceneryKit && this.player && this.player.position) {
+          this.sceneryKit.updateVisibility(this.player.position, this.renderDistance, true);
+        }
+        if (typeof this._updateDynamicLOD === 'function') {
+          this._updateDynamicLOD(1, true);
+        }
+      }
+
       _initIn() {
         // ── GYRO CONTROLS ──
         this._gyroSensing = false;
@@ -1468,26 +1501,25 @@ class Game {
         // Left/right look is handled by click-drag orbit handlers below.
         this._lastPointerUnlock = 0;
         this.isPointerLocked = false;
-         document.addEventListener('mousemove', (e) => {
-           if (this.isPointerLocked) {
-             if (this.isPedestrian) {
-               if (this.player) this.player.rotation.y -= e.movementX * 0.003;
-             } else {
-               this.targetCamYaw -= e.movementX * 0.003;
-               this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
-             }
-             this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
-           } else if (this._isDraggingCamera) {
-             this.targetCamYaw -= e.movementX * 0.005;
-             this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
-             this.targetCamPitch -= e.movementY * 0.005;
-             this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
-           }
-         });
+        document.addEventListener('mousemove', (e) => {
+          if (this.isPointerLocked) {
+            this.targetCamYaw -= e.movementX * 0.003;
+            if (!this.isPedestrian) {
+              this.targetCamYaw = Math.max(-Math.PI, Math.min(Math.PI, this.targetCamYaw));
+            }
+            this.targetCamPitch = Math.max(-1.2, Math.min(1.2, (this.targetCamPitch || 0) - e.movementY * 0.003));
+          } else if (this._isDraggingCamera) {
+            this.targetCamYaw -= e.movementX * 0.005;
+            if (!this.isPedestrian) {
+              this.targetCamYaw = Math.max(-Math.PI, Math.min(Math.PI, this.targetCamYaw));
+            }
+            this.targetCamPitch = Math.max(-1.2, Math.min(1.2, (this.targetCamPitch || 0) - e.movementY * 0.005));
+          }
+        });
         // Left-click drag for third-person camera orbit (desktop only)
         if (this.renderCore.renderer && this.renderCore.renderer.domElement) {
           this.renderCore.renderer.domElement.addEventListener('mousedown', (e) => {
-            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse') && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse')) {
               this._isDraggingLeft = true;
               this._isDraggingCamera = true;
             }
@@ -1752,17 +1784,8 @@ class Game {
         };
         sb('tl', 'arrowleft'); sb('tr', 'arrowright'); sb('tu', 'arrowup'); sb('abb', 'b'); sb('abh', ' ');
 
-
         this._initMobileCameraLook();
         this._initCameraJoystick();
-        this._initSwipeTurn();
-        // _initMouseSteer() disabled: it bound its own mousedown/mousemove on the same
-        // canvas as the camera-drag-orbit handler above, fighting it for every click —
-        // one system orbited the camera (relative drag), the other directly rotated the
-        // player using absolute cursor position. Same click, two systems, is why mouse
-        // look/steer felt broken. Re-enable only if you specifically want click-to-face
-        // steering for stationary/pedestrian mode, and give it its own input mode first.
-        // this._initMouseSteer();
         this._initMobileHudAutohide();
       }
       _initG() {
@@ -1786,33 +1809,30 @@ class Game {
       }
 
 
-      // Touch-capable is not the same as touch-driven: a Windows laptop with a
-      // touchscreen reports maxTouchPoints > 0 while still being a mouse+keyboard
-      // machine, which used to paste both on-screen joysticks over the desktop HUD.
-      // Require a coarse primary pointer with no hover (or a phone/tablet UA).
+      // Reliable touch device detection for mobile gameplay HUD
       _useTouchControls() {
         if (this._isMobile) return true;
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return false;
-        if (window.matchMedia) {
-          return window.matchMedia('(pointer: coarse)').matches && window.matchMedia('(hover: none)').matches;
-        }
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return true;
+        if (window.matchMedia && (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches)) return true;
         return false;
       }
 
       // ── VIRTUAL JOYSTICK FOR MOBILE ──
       _initVirtualJoystick() {
-        if (!this._useTouchControls()) return;
-
+        const isTouch = this._useTouchControls();
         const joystickZone = document.getElementById('joystick-zone');
         const knob = document.getElementById('joystick-knob');
         if (!joystickZone || !knob) return;
 
-        // Show joystick on mobile
-        joystickZone.style.display = 'block';
+        if (isTouch) {
+          joystickZone.style.display = 'block';
+          const mc = document.getElementById('mobile-controls');
+          if (mc) mc.style.display = 'flex';
+        }
 
         let isDragging = false;
         let touchId = null;
-        const maxDist = 38; // Max distance knob can move from center
+        const maxDist = 42; // Max distance knob can move from center
 
         const handleJoystickMove = (clientX, clientY) => {
           const rect = joystickZone.getBoundingClientRect();
@@ -1845,19 +1865,33 @@ class Game {
           window.analogThrottle = 0;
         };
 
-        // Touch events for joystick
+        // Touch events for joystick zone
         joystickZone.addEventListener('touchstart', (e) => {
           e.preventDefault();
           e.stopPropagation();
           isDragging = true;
-          touchId = e.touches[0].identifier;
-          handleJoystickMove(e.touches[0].clientX, e.touches[0].clientY);
+          touchId = e.changedTouches[0].identifier;
+          handleJoystickMove(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
         }, { passive: false });
 
-        joystickZone.addEventListener('touchmove', (e) => {
-          if (!isDragging) return;
-          e.preventDefault();
-          // Find our touch
+        // Also allow dynamic touch start anywhere on bottom-left screen
+        document.addEventListener('touchstart', (e) => {
+          if (!this.playing || this.pause || isDragging) return;
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            const t = e.changedTouches[i];
+            if (t.clientX < window.innerWidth * 0.42 && t.clientY > window.innerHeight * 0.35) {
+              const el = t.target;
+              if (el.closest && (el.closest('#mobile-pause-btn') || el.closest('#top-bar-container') || el.closest('#hud'))) continue;
+              isDragging = true;
+              touchId = t.identifier;
+              handleJoystickMove(t.clientX, t.clientY);
+              break;
+            }
+          }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+          if (!isDragging || touchId === null) return;
           for (let i = 0; i < e.touches.length; i++) {
             if (e.touches[i].identifier === touchId) {
               handleJoystickMove(e.touches[i].clientX, e.touches[i].clientY);
@@ -1866,18 +1900,20 @@ class Game {
           }
         }, { passive: false });
 
-        joystickZone.addEventListener('touchend', (e) => {
-          // Check if our touch ended
-          let found = false;
-          for (let i = 0; i < e.touches.length; i++) {
-            if (e.touches[i].identifier === touchId) { found = true; break; }
+        const endTouchHandler = (e) => {
+          if (!isDragging) return;
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === touchId) {
+              resetJoystick();
+              break;
+            }
           }
-          if (!found) resetJoystick();
-        });
+        };
 
-        joystickZone.addEventListener('touchcancel', resetJoystick);
+        document.addEventListener('touchend', endTouchHandler, { passive: true });
+        document.addEventListener('touchcancel', endTouchHandler, { passive: true });
 
-        // Also support mouse for testing
+        // Mouse fallback for desktop testing
         joystickZone.addEventListener('mousedown', (e) => {
           isDragging = true;
           touchId = 'mouse';
@@ -1900,17 +1936,15 @@ class Game {
 
       // ── CAMERA JOYSTICK FOR MOBILE LOOK-AROUND ──
       _initCameraJoystick() {
-        if (!this._useTouchControls()) return;
-
         const camJoy = document.getElementById('camera-joystick');
         const camKnob = document.getElementById('camera-joystick-knob');
         if (!camJoy || !camKnob) return;
 
-        camJoy.style.display = 'flex';
-
         let isDragging = false;
         const maxDist = 35;
         this._camJoyActive = false;
+        this._camJoyDx = 0;
+        this._camJoyDy = 0;
 
         const handleCamMove = (clientX, clientY) => {
           const rect = camJoy.getBoundingClientRect();
@@ -1924,17 +1958,17 @@ class Game {
             dy = (dy / dist) * maxDist;
           }
           camKnob.style.transform = `translate(${dx}px, ${dy}px)`;
-           // Map joystick displacement to camYaw/camPitch changes
-           const sensitivity = 0.12; // Increased sensitivity significantly
-           this.targetCamYaw -= dx * sensitivity;
-           this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
-           this.targetCamPitch -= dy * sensitivity;
-           this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
+          // Store normalized deflection as angular velocity (rad/sec at full tilt)
+          const angularSpeed = 3.5;
+          this._camJoyDx = (dx / maxDist) * angularSpeed;
+          this._camJoyDy = (dy / maxDist) * angularSpeed;
         };
 
         const resetCamJoy = () => {
           isDragging = false;
           this._camJoyActive = false;
+          this._camJoyDx = 0;
+          this._camJoyDy = 0;
           camKnob.style.transform = 'translate(0px, 0px)';
         };
 
@@ -1955,18 +1989,6 @@ class Game {
 
         camJoy.addEventListener('touchend', resetCamJoy);
         camJoy.addEventListener('touchcancel', resetCamJoy);
-
-        // Mouse fallback for testing
-        camJoy.addEventListener('mousedown', (e) => {
-          isDragging = true;
-          this._camJoyActive = true;
-          handleCamMove(e.clientX, e.clientY);
-        });
-        window.addEventListener('mousemove', (e) => {
-          if (!isDragging) return;
-          handleCamMove(e.clientX, e.clientY);
-        });
-        window.addEventListener('mouseup', resetCamJoy);
       }
 
       // ── HUD AUTO-HIDE ON MOBILE ──
@@ -1980,8 +2002,8 @@ class Game {
         if (!panels.length) return;
 
         let fadeTimer = null;
-        const FADE_DELAY = 3000;
-        const FADE_OPACITY = '0.25';
+        const FADE_DELAY = 4000;
+        const FADE_OPACITY = '0.35';
         const NORMAL_OPACITY = '1';
 
         const doFade = () => {
@@ -2002,183 +2024,83 @@ class Game {
           fadeTimer = setTimeout(doFade, FADE_DELAY);
         };
 
-        // Start fade after level loads
         fadeTimer = setTimeout(doFade, FADE_DELAY);
 
-        // Tap anywhere on canvas (not on controls) to reveal
         document.addEventListener('touchstart', (e) => {
           const t = e.target;
-          if (t.closest('#mobile-controls') || t.closest('#hud') || t.closest('#hudbar') ||
+          if (t.closest && (t.closest('#mobile-controls') || t.closest('#hud') || t.closest('#hudbar') ||
               t.closest('#hwrap') || t.closest('#civic-controls') || t.closest('#camera-joystick') ||
-              t.closest('#virtual-joystick') || t.closest('#gp') || t.closest('#phone-gps')) return;
+              t.closest('#joystick-zone') || t.closest('#gp') || t.closest('#phone-gps'))) return;
           restartTimer();
         }, { passive: true });
 
-        // Also reveal briefly on score/objective change
         this._hudShowBrief = () => restartTimer();
       }
 
+      // ── FREE FIRE STYLE DUAL-ZONE TOUCH CAMERA SWIPE ──
       _initMobileCameraLook() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
         const isControl = (el) => {
           if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-enter','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-enter','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'joystick-zone', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob', 'mobile-pause-btn', 'phone-gps-close'];
           for (const id of ctrlIds) {
             const c = document.getElementById(id);
             if (c && (el === c || c.contains(el))) return true;
           }
-          if (el.closest && el.closest('#mobile-controls')) return true;
-          if (el.closest && el.closest('#hud')) return true;
-          if (el.closest && el.closest('#hudbar')) return true;
-          if (el.closest && el.closest('#civic-controls')) return true;
+          if (el.closest && (el.closest('#mobile-controls') || el.closest('#hud') || el.closest('#hudbar') || el.closest('#civic-controls') || el.closest('#top-bar-container') || el.closest('#pause-overlay'))) return true;
           return false;
         };
-        const lookThreshold = 10;
+
         let lookCandidateX = 0, lookCandidateY = 0;
-        document.addEventListener('touchstart', (e) => {
-          if (!this.playing || this.pause) return;
-          const t = e.changedTouches[0];
-          if (isControl(t.target)) return;
-          lookCandidateX = t.clientX;
-          lookCandidateY = t.clientY;
-        }, { passive: true });
-        document.addEventListener('touchmove', (e) => {
-          if (!this.playing || this.pause) return;
-          if (this._isDraggingMobileLook) {
-            for (let i = 0; i < e.touches.length; i++) {
-              if (e.touches[i].identifier === this._mobileLookTouchId) {
-                 const dx = e.touches[i].clientX - this._prevMobileLookX;
-                 const dy = e.touches[i].clientY - this._prevMobileLookY;
-                 this._prevMobileLookX = e.touches[i].clientX;
-                 this._prevMobileLookY = e.touches[i].clientY;
-                 this.targetCamYaw -= dx * 0.005;
-                 this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
-                 this.targetCamPitch -= dy * 0.005;
-                 this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
-                e.preventDefault();
-                return;
-              }
-            }
-          } else {
-            for (let i = 0; i < e.touches.length; i++) {
-              if (Math.abs(e.touches[i].clientX - lookCandidateX) > lookThreshold || Math.abs(e.touches[i].clientY - lookCandidateY) > lookThreshold) {
-                if (!isControl(e.touches[i].target)) {
-                  this._isDraggingMobileLook = true;
-                  this._mobileLookTouchId = e.touches[i].identifier;
-                  this._prevMobileLookX = e.touches[i].clientX;
-                  this._prevMobileLookY = e.touches[i].clientY;
-                  e.preventDefault();
-                  return;
-                }
-              }
-            }
-          }
-        }, { passive: false });
-        document.addEventListener('touchend', (e) => {
-          if (!this._isDraggingMobileLook) return;
-          for (let i = 0; i < e.changedTouches.length; i++) {
-            if (e.changedTouches[i].identifier === this._mobileLookTouchId) {
-              this._isDraggingMobileLook = false;
-              this._mobileLookTouchId = null;
-              return;
-            }
-          }
-        }, { passive: true });
-        document.addEventListener('touchcancel', () => {
-          this._isDraggingMobileLook = false;
-          this._mobileLookTouchId = null;
-        }, { passive: true });
-      }
-
-      // ── SWIPE TO TURN: Touch swipe turns player character toward swipe direction ──
-      _initSwipeTurn() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
-
-        const isControl = (el) => {
-          if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-enter','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
-          for (const id of ctrlIds) {
-            const c = document.getElementById(id);
-            if (c && (el === c || c.contains(el))) return true;
-          }
-          if (el.closest && el.closest('#mobile-controls')) return true;
-          if (el.closest && el.closest('#hud')) return true;
-          if (el.closest && el.closest('#hudbar')) return true;
-          if (el.closest && el.closest('#civic-controls')) return true;
-          return false;
-        };
-
-        const SWIPE_THRESHOLD = 20;
-        let touchStartX = 0, touchStartY = 0;
-        let swipeTouchId = null;
 
         document.addEventListener('touchstart', (e) => {
           if (!this.playing || this.pause) return;
-          // Only enable swipe turn in pedestrian mode OR when stationary
-          if (!this.isPedestrian && Math.abs(this.speed) > 0.1) return;
-
           for (let i = 0; i < e.changedTouches.length; i++) {
             const t = e.changedTouches[i];
-            if (isControl(t.target)) continue;
-            if (swipeTouchId !== null) continue; // Already tracking
-
-            touchStartX = t.clientX;
-            touchStartY = t.clientY;
-            swipeTouchId = t.identifier;
-            break;
-          }
-        }, { passive: true });
-
-        document.addEventListener('touchmove', (e) => {
-          if (swipeTouchId === null) return;
-          if (!this.playing || this.pause) return;
-
-          for (let i = 0; i < e.changedTouches.length; i++) {
-            const t = e.changedTouches[i];
-            if (t.identifier !== swipeTouchId) continue;
-
-            const dx = t.clientX - touchStartX;
-            const dy = t.clientY - touchStartY;
-
-            if (Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_THRESHOLD) {
-              // Calculate angle from swipe direction
-              // Swipe UP = turn forward (0), SWIPE DOWN = turn backward (PI)
-              // Swipe LEFT = turn left, SWIPE RIGHT = turn right
-              const angle = Math.atan2(dx, -dy); // Negate dy because screen Y is inverted
-
-              // Smoothly rotate player toward swipe direction
-              const targetRot = angle;
-              if (!this.player) return
-              const currentRot = this.player.rotation.y;
-
-              // Shortest rotation path
-              let diff = targetRot - currentRot;
-              while (diff > Math.PI) diff -= Math.PI * 2;
-              while (diff < -Math.PI) diff += Math.PI * 2;
-
-              // Apply rotation (smooth interpolation)
-              this.player.rotation.y += diff * 0.15;
-
-              // Reset start for continuous tracking
-              touchStartX = t.clientX;
-              touchStartY = t.clientY;
-            }
-            break;
-          }
-        }, { passive: true });
-
-        document.addEventListener('touchend', (e) => {
-          for (let i = 0; i < e.changedTouches.length; i++) {
-            if (e.changedTouches[i].identifier === swipeTouchId) {
-              swipeTouchId = null;
+            // Right-side screen area dedicated to Free Fire style camera swipe & look
+            if (t.clientX >= window.innerWidth * 0.45 && !isControl(t.target)) {
+              this._isDraggingMobileLook = true;
+              this._mobileLookTouchId = t.identifier;
+              this._prevMobileLookX = t.clientX;
+              this._prevMobileLookY = t.clientY;
               break;
             }
           }
         }, { passive: true });
 
-        document.addEventListener('touchcancel', () => {
-          swipeTouchId = null;
+        document.addEventListener('touchmove', (e) => {
+          if (!this.playing || this.pause || !this._isDraggingMobileLook) return;
+          for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === this._mobileLookTouchId) {
+              const dx = e.touches[i].clientX - this._prevMobileLookX;
+              const dy = e.touches[i].clientY - this._prevMobileLookY;
+              this._prevMobileLookX = e.touches[i].clientX;
+              this._prevMobileLookY = e.touches[i].clientY;
+
+              // Unbounded 360 degree yaw rotation in pedestrian mode
+              this.targetCamYaw -= dx * 0.005;
+              if (!this.isPedestrian) {
+                this.targetCamYaw = Math.max(-Math.PI, Math.min(Math.PI, this.targetCamYaw));
+              }
+              this.targetCamPitch -= dy * 0.005;
+              this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
+              break;
+            }
+          }
         }, { passive: true });
+
+        const endLook = (e) => {
+          if (!this._isDraggingMobileLook) return;
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === this._mobileLookTouchId) {
+              this._isDraggingMobileLook = false;
+              this._mobileLookTouchId = null;
+              break;
+            }
+          }
+        };
+
+        document.addEventListener('touchend', endLook, { passive: true });
+        document.addEventListener('touchcancel', endLook, { passive: true });
       }
 
       // ── MOUSE STEER: Mouse position controls direction when not in pointer lock ──
@@ -2229,23 +2151,52 @@ class Game {
         });
       }
 
+      _pollGamepad(dt) {
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        for (let i = 0; i < gamepads.length; i++) {
+          const gp = gamepads[i];
+          if (!gp) continue;
+          // Right stick: axes[2] = X, axes[3] = Y (standard gamepad mapping)
+          const rx = Math.abs(gp.axes[2]) > 0.15 ? gp.axes[2] : 0;
+          const ry = Math.abs(gp.axes[3]) > 0.15 ? gp.axes[3] : 0;
+          if (rx || ry) {
+            const gpSens = 2.5; // rad/sec at full deflection
+            this.targetCamYaw -= rx * gpSens * dt;
+            this.targetCamPitch -= ry * gpSens * dt;
+            if (!this.isPedestrian) {
+              this.targetCamYaw = Math.max(-Math.PI, Math.min(Math.PI, this.targetCamYaw));
+            }
+            this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
+          }
+          // Left stick → movement (axes[0] = steering, axes[1] = throttle/brake)
+          if (Math.abs(gp.axes[0]) > 0.1) window.analogSteering = gp.axes[0];
+          else window.analogSteering = 0;
+          if (Math.abs(gp.axes[1]) > 0.1) window.analogThrottle = -gp.axes[1];
+          else window.analogThrottle = 0;
+          break; // Use first connected gamepad
+        }
+      }
+
       _decayCameraLook(dt) {
+        if (this.isPedestrian) return; // Keep persistent 360 camera heading in Free Fire/TPS mode
         if (this._isDraggingMobileLook) return;
         if (this._camJoyActive) return;
         if (this.isPointerLocked || this._isDraggingCamera) return;
-        // After camera joystick use, use very slow decay so angle is preserved
-        // Reduced from 4 to 0.8 so camera angles persist longer before resetting
         const decayRate = this._camJoyEverUsed ? 0.15 : 0.8;
         const threshold = 0.005;
         if (Math.abs(this.camYaw) > threshold || Math.abs(this.camPitch) > threshold) {
           const factor = Math.max(0, 1 - decayRate * dt);
           this.camYaw *= factor;
           this.camPitch *= factor;
-          if (Math.abs(this.camYaw) < threshold) this.camYaw = 0;
-          if (Math.abs(this.camPitch) < threshold) this.camPitch = 0;
+          this.targetCamYaw *= factor;
+          this.targetCamPitch *= factor;
+          if (Math.abs(this.camYaw) < threshold) { this.camYaw = 0; this.targetCamYaw = 0; }
+          if (Math.abs(this.camPitch) < threshold) { this.camPitch = 0; this.targetCamPitch = 0; }
         } else {
           this.camYaw = 0;
           this.camPitch = 0;
+          this.targetCamYaw = 0;
+          this.targetCamPitch = 0;
         }
       }
 
@@ -3418,6 +3369,7 @@ class Game {
         this._updateLoading(100, 'Ready!');
         await new Promise(r => setTimeout(r, 300)); // brief pause so player sees 100%
         this._hideLoading();
+        const po = document.getElementById('play-overlay'); if (po) po.remove();
         this.playing = true; this.pause = false; ui.show(null);
         this._initViolationsLog();
         if (window.TaskManager) {
@@ -3934,9 +3886,33 @@ class Game {
           this._breadcrumbLine.visible = this.kidModeActive;
         }
       }
-      _uh() { const p = Math.max(0, this.hp); const f = this.dom['hfill']; if (f) f.style.width = p + '%'; if (p <= 0) this._go("Structural Failure"); }
+      _uh() {
+        const isGod = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
+        if (isGod) this.hp = 100;
+        const p = Math.max(0, this.hp);
+        const f = this.dom['hfill'];
+        if (f) {
+          if (isGod) {
+            f.style.width = '100%';
+            f.style.background = 'linear-gradient(90deg, #ffd700, #ff8c00)';
+            f.style.boxShadow = '0 0 12px rgba(255, 215, 0, 0.8)';
+          } else {
+            f.style.width = p + '%';
+            f.style.background = '';
+            f.style.boxShadow = '';
+          }
+        }
+        if (p <= 0 && !isGod) this._go("Structural Failure");
+      }
       
       _showIRLDeathPopup(cause) {
+        const isGod = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
+        if (isGod) {
+          this.hp = 100;
+          this._uh();
+          toast('🛡️ GOD MODE: Collision Absorbed! (Unlimited Health)', '#ffd700', 1500);
+          return;
+        }
         this.pause = true; // Pause game immediately
         
         // Hide kid HUD elements so they don't overlap with the popup
@@ -4242,6 +4218,13 @@ class Game {
       }
       
       _go(reason) {
+        const isGod = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
+        if (isGod) {
+          this.hp = 100;
+          this._uh();
+          toast('🛡️ GOD MODE: Damage Prevented! (Unlimited Health)', '#ffd700', 1500);
+          return;
+        }
         this.stopPlay();
         toast('💥 ' + (reason || 'Structural Failure!'), '#ff3b30');
         setTimeout(() => {
@@ -6359,6 +6342,85 @@ class Game {
           this.trafficManager.spawnInitialTraffic(this.roadGraph, cfg.route, initCount, cfg);
         }
       }
+      // Initialize starting sidewalk pedestrians
+      if (this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
+        if (!this.peds) this.peds = [];
+        if (!this.pedestrianAIs) this.pedestrianAIs = [];
+        const initPedCount = this._isMobile ? 12 : 24;
+        const pStartX = this.player ? this.player.position.x : 0;
+        const pStartZ = this.player ? this.player.position.z : -35;
+
+        for (let i = 0; i < initPedCount; i++) {
+          const r = this.mapCfg.roads[i % this.mapCfg.roads.length];
+          const isV = r.type === 'v';
+          const side = (i % 2 === 0) ? 1 : -1;
+          const swDist = 18 / 2 + 1.25;
+          // Spawn along sidewalks in 15m - 65m active radius from player
+          const distOffset = (i % 2 === 0 ? 1 : -1) * (15 + (i * 3.5));
+
+          const px = isV ? (r.x + side * swDist) : (pStartX + distOffset);
+          const pz = isV ? (pStartZ + distOffset) : (r.z + side * swDist);
+
+          const ped = _buildHuman();
+          ped.position.set(px, 0, pz);
+          ped.userData = {
+            t: Math.random() * 10,
+            spd: 0.3 + Math.random() * 0.35,
+            isV: isV,
+            dir: Math.random() > 0.5 ? 1 : -1,
+            startZ: isV ? pz : px,
+            roadC: isV ? r.x : r.z,
+            side: side,
+            targetDist: swDist,
+            destDist: 20 + Math.random() * 30,
+            distTraveled: 0
+          };
+          ped.rotation.y = isV ? (ped.userData.dir > 0 ? 0 : Math.PI) : (ped.userData.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
+          ped.frustumCulled = true;
+          this.scene.add(ped);
+          this.peds.push(ped);
+
+          if (typeof PedestrianAI !== 'undefined') {
+            const pedAI = new PedestrianAI(ped, this.trafficManager);
+            this.pedestrianAIs.push(pedAI);
+            ped._pedAI = pedAI;
+          }
+        }
+      }
+
+      this._initBlobShadow();
+      this._updateDynamicLOD(1, true);
+    }
+
+      _initBlobShadow() {
+        if (this._blobShadow) {
+          this.scene.remove(this._blobShadow);
+          this._blobShadow = null;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createRadialGradient(32, 32, 4, 32, 32, 30);
+        grad.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
+        grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.35)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 64, 64);
+        const texture = new THREE.CanvasTexture(canvas);
+        const isPed = !!this.isPedestrian;
+        const geo = new THREE.PlaneGeometry(isPed ? 1.8 : 3.8, isPed ? 1.8 : 5.8);
+        const mat = new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          opacity: 0.65,
+          depthWrite: false
+        });
+        this._blobShadow = new THREE.Mesh(geo, mat);
+        this._blobShadow.rotation.x = -Math.PI / 2;
+        this._blobShadow.position.y = 0.05;
+        this._blobShadow.renderOrder = 1;
+        this.scene.add(this._blobShadow);
       }
       _buildRoadsFromGraph(roadWidth) {
         const graph = this.roadGraph;
@@ -8060,7 +8122,7 @@ class Game {
         const instancedData = {};
         const modelKeys = window.PRELOADED_MODELS 
           ? Object.keys(window.PRELOADED_MODELS).filter(k => 
-              k.startsWith('suburban_') || k.startsWith('industrial_') || k.startsWith('mbuilding_')
+              k.startsWith('suburban_') || k.startsWith('industrial_') || k.startsWith('mbuilding_') || k.startsWith('lowpoly_eco_') || k.startsWith('lowpoly_regular_')
             )
           : [];
 
@@ -8068,20 +8130,20 @@ class Game {
         const getBldgType = (zone, distFromCenter) => {
           const rnd = Math.random();
           if (zone === 'Commercial') {
-            if (distFromCenter < 200 && rnd > 0.8) return 'skyscraper';
-            if (distFromCenter < 400 && rnd > 0.6) return 'tower';
-            if (rnd > 0.7) return 'skyscraper';
-            if (rnd > 0.45) return 'shop';
-            if (rnd > 0.25) return 'bank';
+            if (distFromCenter < 200 && rnd > 0.7) return 'skyscraper';
+            if (distFromCenter < 400 && rnd > 0.5) return 'tower';
+            if (rnd > 0.6) return 'skyscraper';
+            if (rnd > 0.4) return 'shop';
+            if (rnd > 0.2) return 'bank';
             return 'hospital';
           } else if (zone === 'Industrial') {
-            if (rnd > 0.8) return 'warehouse';
-            if (rnd > 0.5) return 'factory';
+            if (rnd > 0.7) return 'warehouse';
+            if (rnd > 0.4) return 'factory';
             return 'industrial';
           } else if (zone === 'Residential') {
-            if (distFromCenter < 300 && rnd > 0.7) return 'apartment';
-            if (rnd > 0.7) return 'apartment';
-            if (rnd > 0.5) return 'house';
+            if (distFromCenter < 300 && rnd > 0.6) return 'apartment';
+            if (rnd > 0.6) return 'apartment';
+            if (rnd > 0.4) return 'house';
             return 'chawl';
           } else if (zone === 'Slums') {
             return rnd > 0.2 ? 'chawl' : 'shack';
@@ -8094,19 +8156,19 @@ class Game {
         };
 
         const typeMap = {
-          'skyscraper': ['mbuilding_sample-tower', 'industrial_q', 'industrial_r', 'industrial_t'],
-          'tower': ['mbuilding_sample-tower', 'industrial_l', 'industrial_m', 'industrial_n'],
-          'apartment': ['mbuilding_sample-house', 'suburban_l', 'suburban_m', 'suburban_n', 'suburban_o', 'suburban_p'],
+          'skyscraper': ['lowpoly_regular_building_twistedtower_large', 'mbuilding_sample-tower', 'industrial_q', 'industrial_r', 'industrial_t'],
+          'tower': ['lowpoly_eco_building_grid', 'lowpoly_eco_building_terrace', 'mbuilding_sample-tower', 'industrial_l', 'industrial_m', 'industrial_n'],
+          'apartment': ['lowpoly_eco_building_slope', 'mbuilding_sample-house', 'suburban_l', 'suburban_m', 'suburban_n', 'suburban_o', 'suburban_p'],
           'shop': ['suburban_d', 'suburban_e', 'suburban_f', 'suburban_g', 'suburban_h'],
           'bank': ['mbuilding_sample-house-a', 'mbuilding_sample-house-b', 'suburban_i', 'suburban_j'],
-          'hospital': ['mbuilding_sample-house-c', 'suburban_k', 'suburban_l'],
+          'hospital': ['lowpoly_eco_building_grid', 'mbuilding_sample-house-c', 'suburban_k', 'suburban_l'],
           'school': ['mbuilding_sample-house-a', 'suburban_m', 'suburban_n'],
           'police': ['suburban_p', 'suburban_q', 'suburban_r'],
           'warehouse': ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_l'],
           'factory': ['industrial_e', 'industrial_f', 'industrial_g', 'industrial_h', 'industrial_i', 'industrial_j'],
           'industrial': ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_e'],
-          'house': ['suburban_a', 'suburban_b', 'suburban_c', 'suburban_d', 'suburban_e'],
-          'chawl': ['suburban_f', 'suburban_g', 'suburban_h', 'suburban_i', 'suburban_j'],
+          'house': ['suburban_a', 'suburban_b', 'suburban_c', 'suburban_d', 'suburban_e', 'suburban_k', 'suburban_r'],
+          'chawl': ['suburban_f', 'suburban_g', 'suburban_h', 'suburban_i', 'suburban_j', 'suburban_o'],
           'shack': ['suburban_a', 'suburban_b']
         };
 
@@ -8135,22 +8197,23 @@ class Game {
 
           if (key && modelKeys.length > 0) {
             if (!instancedData[key]) instancedData[key] = [];
-            const bScale = (type === 'house' || type === 'shop') ? 3.8 : ((type === 'tower' || type === 'skyscraper') ? 6.0 : 4.5);
+            const isMega = key.includes('twisted') || key.includes('eco_') || key.includes('tower');
+            const bScale = isMega ? 4.8 : ((type === 'house' || type === 'shop') ? 3.8 : ((type === 'tower' || type === 'skyscraper') ? 6.0 : 4.5));
             instancedData[key].push({ x: pos.x, z: pos.z, r: rot, s: bScale });
             slot.occupied = true;
             return;
           }
 
-          // Fallback: procedural box building with variety
+          // Fallback: procedural box building with rich architectural variety
           const g = new THREE.Group();
           const mat = bMats[Math.floor(Math.random() * bMats.length)];
           const roofColor = roofColors[Math.floor(Math.random() * roofColors.length)];
 
           // Varied heights: low households (5-8m), medium flats/chawls (10-16m), commercial (18-28m)
           const heightClass = Math.random();
-          const bh = heightClass < 0.4 ? 5 + Math.random() * 4
-                   : heightClass < 0.8 ? 10 + Math.random() * 6
-                   : 18 + Math.random() * 12;
+          const bh = heightClass < 0.35 ? 6 + Math.random() * 4
+                   : heightClass < 0.75 ? 12 + Math.random() * 6
+                   : 20 + Math.random() * 14;
           const bw = 7 + Math.random() * 4;
           const bd = 8 + Math.random() * 4;
 
@@ -8160,11 +8223,19 @@ class Game {
           bMesh.receiveShadow = true;
           g.add(bMesh);
 
-          // Flat roof slab with colour variation
+          // Flat roof slab with parapet
           const roofMat = new THREE.MeshToonMaterial({ color: roofColor, gradientMap: window._toonGrad });
           const roofMesh = new THREE.Mesh(new THREE.BoxGeometry(bw + 0.3, 0.5, bd + 0.3), roofMat);
           roofMesh.position.y = bh + 0.25;
           g.add(roofMesh);
+
+          // Rooftop Sintex / overhead water tank (authentic Indian urban skyline)
+          if (Math.random() > 0.3) {
+            const tankMat = new THREE.MeshToonMaterial({ color: Math.random() > 0.5 ? 0x1e293b : 0xf59e0b });
+            const tankMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 1.4, 12), tankMat);
+            tankMesh.position.set(bw * 0.2, bh + 1.2, bd * 0.2);
+            g.add(tankMesh);
+          }
 
           // Daytime window grid (small dark panels)
           if (!cfg.is50km) {
@@ -8185,8 +8256,8 @@ class Game {
             }
           }
 
-          // Commercial awning for short buildings
-          if (type === 'shop' || (heightClass < 0.4 && Math.random() > 0.4)) {
+          // Commercial shopfront awning for lower floors
+          if (type === 'shop' || (heightClass < 0.4 && Math.random() > 0.35)) {
             const awningColors = [0xcc2222, 0x1a6633, 0x224488, 0xcc8800, 0x662266];
             const awMat = new THREE.MeshToonMaterial({ color: awningColors[Math.floor(Math.random() * awningColors.length)], gradientMap: window._toonGrad });
             const awMesh = new THREE.Mesh(new THREE.BoxGeometry(bw + 1, 0.3, 2.5), awMat);
@@ -8792,7 +8863,8 @@ class Game {
 
       _buildTrafficSignals(cfg, RW) {
         if (!this.sigs) this.sigs = [];
-        const rwHalf = (RW || 12) / 2;
+        const roadWidth = RW || 12;
+        const rwHalf = roadWidth / 2;
         const spawnedAt = new Set();
 
         const addSigAt = (ix, iz) => {
@@ -8803,13 +8875,13 @@ class Game {
           // Signal 1: Mast arm extending over incoming vertical lane (Phase 0: North-South)
           const sig1 = this._sig(ix + rwHalf + 1.2, iz + rwHalf + 1.2);
           sig1.rotation.y = -Math.PI / 2;
-          sig1.userData = { axis: 'v', phaseOffset: 0, st: 'green', t: 0, rd: 7.5, gd: 6.0, yd: 1.5 };
+          sig1.userData = { axis: 'v', phaseOffset: 0, st: 'green', t: 0, rd: 7.5, gd: 6.0, yd: 1.5, junctionX: ix, junctionZ: iz, roadWidth };
           sig1.state = 'green';
 
           // Signal 2: Mast arm extending over opposing horizontal lane (Phase 1: East-West, shifted by 7.5s)
           const sig2 = this._sig(ix - rwHalf - 1.2, iz - rwHalf - 1.2);
           sig2.rotation.y = Math.PI / 2;
-          sig2.userData = { axis: 'h', phaseOffset: 7.5, st: 'red', t: 0, rd: 7.5, gd: 6.0, yd: 1.5 };
+          sig2.userData = { axis: 'h', phaseOffset: 7.5, st: 'red', t: 0, rd: 7.5, gd: 6.0, yd: 1.5, junctionX: ix, junctionZ: iz, roadWidth };
           sig2.state = 'red';
         };
 
@@ -8818,6 +8890,11 @@ class Game {
           cfg.signals.forEach(s => {
             const sig = this._sig(s.x, s.z);
             if (s.rotY !== undefined) sig.rotation.y = s.rotY;
+            sig.userData = sig.userData || {};
+            sig.userData.junctionX = s.x;
+            sig.userData.junctionZ = s.z;
+            sig.userData.roadWidth = roadWidth;
+            if (s.axis) sig.userData.axis = s.axis;
           });
         }
 
@@ -9070,7 +9147,24 @@ class Game {
           this._camOverride = false;
           this._enterState = 'IDLE'; if (window.TrafficAudio) window.TrafficAudio.playDoorClose();
         }
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); if (this.taskManager) this.taskManager.update(dt); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
+        // Camera joystick: apply stored angular velocity (Fix 1 — no runaway)
+        if (this._camJoyActive && (this._camJoyDx || this._camJoyDy)) {
+          this.targetCamYaw -= this._camJoyDx * dt;
+          if (!this.isPedestrian) {
+            this.targetCamYaw = Math.max(-Math.PI, Math.min(Math.PI, this.targetCamYaw));
+          }
+          this.targetCamPitch -= this._camJoyDy * dt;
+          this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
+        }
+        // Gamepad polling (Fix 5)
+        this._pollGamepad(dt);
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); if (this.taskManager) this.taskManager.update(dt); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt); if (this.sceneryKit && this.player && this.player.position) this.sceneryKit.updateVisibility(this.player.position, this.renderDistance);
+        if (this._blobShadow && this.player && this.player.position) {
+          this._blobShadow.position.x = this.player.position.x;
+          this._blobShadow.position.z = this.player.position.z;
+          this._blobShadow.position.y = 0.05;
+          if (this.player.rotation) this._blobShadow.rotation.z = -this.player.rotation.y;
+        }
         if (this._cattle) {
           this._cattle.forEach(c => {
             c.waitTimer -= dt;
@@ -9268,39 +9362,50 @@ class Game {
         let overrideMove = false;
         
         if (this.isPedestrian) {
-          const shift = this.keys['shift'] ? 2.2 : 1.0;
-          let dx = 0, dz = 0;
-          
-          if (this.isPointerLocked) {
-            if (up) dz = 1; if (dn) dz = -1;
-            if (lt) dx = 1; if (rt) dx = -1;
-            if (dx !== 0 || dz !== 0) {
-              const yaw = this.player.rotation.y;
-              const moveX = Math.sin(yaw) * dz + Math.sin(yaw + Math.PI/2) * dx;
-              const moveZ = Math.cos(yaw) * dz + Math.cos(yaw + Math.PI/2) * dx;
-              const len = Math.hypot(moveX, moveZ);
-              
-              this.vx += ((moveX / len) * this.maxSpd * shift - this.vx) * 0.6;
-              this.vz += ((moveZ / len) * this.maxSpd * shift - this.vz) * 0.6;
-              this.speed = Math.hypot(this.vx, this.vz);
-            } else {
-              this.vx *= 0.6; this.vz *= 0.6;
-              this.speed = 0;
-            }
-            overrideMove = true;
+          const shift = (this.keys['shift'] || this.boosting) ? 2.2 : 1.0;
+          let inpForward = 0, inpRight = 0;
+          let at = window.analogThrottle || 0;
+          let as = window.analogSteering || 0;
+
+          if (this.keys['w'] || this.keys['arrowup']) inpForward += 1;
+          if (this.keys['s'] || this.keys['arrowdown']) inpForward -= 1;
+          if (this.keys['d'] || this.keys['arrowright']) inpRight += 1;
+          if (this.keys['a'] || this.keys['arrowleft']) inpRight -= 1;
+
+          if (Math.abs(at) > 0.08) inpForward = at;
+          if (Math.abs(as) > 0.08) inpRight = as;
+
+          // Camera-Relative Movement: Forward is +Z along camera orbit heading
+          const camHeading = (this.camYaw || 0);
+          const fwdX = Math.sin(camHeading);
+          const fwdZ = Math.cos(camHeading);
+          const rgtX = Math.cos(camHeading);
+          const rgtZ = -Math.sin(camHeading);
+
+          const moveX = fwdX * inpForward + rgtX * inpRight;
+          const moveZ = fwdZ * inpForward + rgtZ * inpRight;
+          const inputMag = Math.min(1, Math.hypot(moveX, moveZ));
+
+          if (inputMag > 0.05) {
+            this.speed = (this.maxSpd || 0.4) * shift * inputMag;
+            // Smoothly rotate character model to face movement direction
+            const targetAngle = Math.atan2(moveX, moveZ);
+            let diff = targetAngle - this.player.rotation.y;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            this.player.rotation.y += diff * Math.min(1, dt * 15);
+
+            const pYaw = this.player.rotation.y;
+            this.vx = Math.sin(pYaw) * this.speed;
+            this.vz = Math.cos(pYaw) * this.speed;
+            this.player.position.x += this.vx;
+            this.player.position.z += this.vz;
           } else {
-            // Mouse steering for pedestrian without clicking
-            if (!this.isPointerLocked && this._mouseX !== undefined) {
-              const dx = this._mouseX - window.innerWidth / 2;
-              if (dx < -60) this.player.rotation.y += 0.035;
-              if (dx > 60) this.player.rotation.y -= 0.035;
-            }
-            if (lt) this.player.rotation.y += 0.05;
-            if (rt) this.player.rotation.y -= 0.05;
-            if (up) this.speed = this.maxSpd * shift;
-            else if (dn) this.speed = -this.maxSpd * shift * 0.5;
-            else this.speed = 0;
+            this.speed = 0;
+            this.vx = 0;
+            this.vz = 0;
           }
+          overrideMove = true;
         } else {
           // ── Frame-rate independent acceleration ──
           if (up && this.gear !== 'P' && this.gear !== 'N') {
@@ -9393,10 +9498,10 @@ class Game {
 
         if (!overrideMove) {
           let tAmt = 0;
-          if (lt) tAmt = 1;
-          else if (rt) tAmt = -1;
-          else if (this.gyroOn) tAmt = -window.gyroSteering;
-          else if (window.analogSteering) tAmt = -window.analogSteering;
+          if (lt) tAmt = -1;
+          else if (rt) tAmt = 1;
+          else if (this.gyroOn) tAmt = window.gyroSteering;
+          else if (window.analogSteering) tAmt = window.analogSteering;
 
           // ── Dual-Track Dynamic Physics & Pacejka Yaw Calculations ──
           if (!this.isPedestrian) {
@@ -9411,13 +9516,13 @@ class Game {
 
           if (this.gyroOn) this._checkGyroAutoRecal(tAmt);
           // Camera tilt: smooth follow of lateral input, scaled by speed
-          const tiltTarget = -tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04);
+          const tiltTarget = tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04);
           this._camTilt += (tiltTarget - this._camTilt) * Math.min(1, dt * 8);
 
           // ── Indicator non-use fine (F) ──
           // Track sustained turning; fine if turning > 1.5s without indicator
           if (!this.isPedestrian && tAmt !== 0 && Math.abs(this.speed) > 0.05) {
-            const turnDir = tAmt > 0 ? -1 : 1; // left=1, right=-1 (maps to turnSignal convention)
+            const turnDir = tAmt < 0 ? -1 : 1; // left=-1, right=1 (maps to turnSignal convention)
             if (this._turnAccumDir === turnDir) {
               this._turnAccum += dt;
             } else {
@@ -9991,20 +10096,26 @@ class Game {
       // scene.remove()) so buildings correctly reappear if the player drives back toward
       // them, and only re-scans a slice of the scene every few frames rather than the whole
       // thing every frame.
-      _updateDynamicLOD(lodMult = 1) {
-        if (!this.player) return;
+      _updateDynamicLOD(lodMult = 1, force = false) {
+        if (!this.player || !this.player.position || !this.scene) return;
         this._lodFrame = (this._lodFrame || 0) + 1;
-        if (this._lodFrame % 30 !== 0) return; // ~2x/sec at 60fps
+        if (!force && this._lodFrame % 15 !== 0) return; // ~4x/sec for smooth de-loading
         const px = this.player.position.x, pz = this.player.position.z;
-        if (!this._lodChildren || this._lodFrame % 300 === 0) {
-          this._lodChildren = this.scene.children.filter(c => c.isMesh || c.isInstancedMesh);
+        if (!this._lodChildren || force || this._lodFrame % 180 === 0) {
+          this._lodChildren = [];
+          this.scene.children.forEach(c => {
+            if (c.userData?.isGround || c.userData?.noLod || c === this.player) return;
+            if (c.isMesh || c.isInstancedMesh || c.isGroup) {
+              this._lodChildren.push(c);
+            }
+          });
         }
-        const baseDist = this._isMobile ? 350 : 500;
-        const visDistSq = (baseDist * lodMult) * (baseDist * lodMult);
+        const effectiveDist = (this.renderDistance || (this._isMobile ? 120 : 180)) * lodMult;
+        const visDistSq = effectiveDist * effectiveDist;
         const len = this._lodChildren.length;
         for (let i = 0; i < len; i++) {
           const child = this._lodChildren[i];
-          if (!child || !child.position || child.userData?.noLod || child.userData?.isGround) continue;
+          if (!child || !child.position) continue;
           const dx = child.position.x - px, dz = child.position.z - pz;
           const dSq = dx * dx + dz * dz;
           const shouldShow = dSq < visDistSq;
@@ -10047,33 +10158,70 @@ class Game {
           // ── Real-time Traffic NPC to Player Physical Collision Pass ──
           if (this.player && this.trafficManager.vehicles) {
             const px = this.player.position.x, pz = this.player.position.z;
-            const pR = 1.6;
+            const isPed = !!this.isPedestrian;
+            const pHalfW = isPed ? 0.35 : (this.vehMode === 'bike' ? 0.40 : (this.vehMode === 'auto' ? 0.70 : (this.vehMode === 'bus' || this.vehMode === 'truck' ? 1.35 : 0.95)));
+            const pHalfD = isPed ? 0.35 : (this.vehMode === 'bike' ? 0.95 : (this.vehMode === 'auto' ? 1.35 : (this.vehMode === 'bus' || this.vehMode === 'truck' ? 4.80 : 2.25)));
+            const pRot = this.player.rotation ? this.player.rotation.y : 0;
+
             this.trafficManager.vehicles.forEach(v => {
               if (!v.active || !v.mesh) return;
               if (this._spawnInvulnerable > 0) return;
               const vx = v.position.x, vz = v.position.z;
               const dx = px - vx, dz = pz - vz;
-              if (dx * dx + dz * dz < 18) {
-                const overlapX = pR + 1.2 - Math.abs(dx);
-                const overlapZ = pR + 2.0 - Math.abs(dz);
+              const distSq = dx * dx + dz * dz;
+
+              const vHalfW = v.mesh?.userData?.halfW || v.userData?.halfW || (v.type === 'bike' ? 0.40 : (v.type === 'auto' ? 0.70 : (v.type === 'bus' || v.type === 'truck' ? 1.35 : 0.95)));
+              const vHalfD = v.mesh?.userData?.halfD || v.userData?.halfD || (v.type === 'bike' ? 0.95 : (v.type === 'auto' ? 1.35 : (v.type === 'bus' || v.type === 'truck' ? 4.80 : 2.25)));
+              const maxRad = Math.max(pHalfD, pHalfW) + Math.max(vHalfD, vHalfW);
+
+              if (distSq < (maxRad + 0.5) * (maxRad + 0.5)) {
+                // Check oriented relative coordinates in vehicle local space
+                const vRot = v.rotation ? v.rotation.y : (v.mesh ? v.mesh.rotation.y : 0);
+                const cosV = Math.cos(-vRot), sinV = Math.sin(-vRot);
+                const vLocX = cosV * dx - sinV * dz;
+                const vLocZ = sinV * dx + cosV * dz;
+
+                // Check oriented projection of player bounds onto vehicle axes
+                const angleDiff = pRot - vRot;
+                const cosDiff = Math.abs(Math.cos(angleDiff)), sinDiff = Math.abs(Math.sin(angleDiff));
+                const pProjW = pHalfW * cosDiff + pHalfD * sinDiff;
+                const pProjD = pHalfW * sinDiff + pHalfD * cosDiff;
+
+                const overlapX = (vHalfW + pProjW) - Math.abs(vLocX);
+                const overlapZ = (vHalfD + pProjD) - Math.abs(vLocZ);
+
                 if (overlapX > 0 && overlapZ > 0 && !v._justHit) {
                   v._justHit = true;
-                  setTimeout(() => { v._justHit = false; }, 1200);
-                  const dmg = this.seatbeltOn ? 10 : 20;
-                  this.hp = Math.max(0, this.hp - dmg);
-                  if (this.hp <= 0) this._go('Vehicle Crash');
-                  else this._uh();
-                  this.speed *= -0.3;
-                  this._camShakeAmt = Math.max(this._camShakeAmt, 0.5);
-                  if (overlapX < overlapZ) {
-                    this.player.position.x += (dx > 0 ? overlapX + 0.2 : -(overlapX + 0.2));
+                  setTimeout(() => { v._justHit = false; }, 1000);
+
+                  const relSpeed = Math.abs((v.npcAI?.currentSpeed || 0) - (this.speed || 0));
+                  // Soft touch check: low speed bumper contact gently pushes without catastrophic failure
+                  const isGentleTouch = relSpeed < 2.5 && !isPed;
+
+                  if (isGentleTouch) {
+                    // Soft bumper nudge
+                    const pushAngle = Math.atan2(dx, dz);
+                    this.player.position.x += Math.sin(pushAngle) * (Math.min(overlapX, overlapZ) + 0.15);
+                    this.player.position.z += Math.cos(pushAngle) * (Math.min(overlapX, overlapZ) + 0.15);
+                    if (window.TrafficAudio && Math.random() < 0.3) window.TrafficAudio.playHonk(1.0);
                   } else {
-                    this.player.position.z += (dz > 0 ? overlapZ + 0.2 : -(overlapZ + 0.2));
+                    const dmg = isPed ? 35 : (this.seatbeltOn ? 8 : 15);
+                    this.hp = Math.max(0, this.hp - dmg);
+                    if (this.hp <= 0) this._go('Vehicle Crash');
+                    else this._uh();
+                    this.speed *= -0.25;
+                    this._camShakeAmt = Math.max(this._camShakeAmt, 0.4);
+
+                    const pushAngle = Math.atan2(dx, dz);
+                    const pushDist = Math.min(overlapX, overlapZ) + 0.2;
+                    this.player.position.x += Math.sin(pushAngle) * pushDist;
+                    this.player.position.z += Math.cos(pushAngle) * pushDist;
+
+                    if (window.TrafficAudio) window.TrafficAudio.playCrash(1.2);
+                    toast('💥 Contact with traffic! HP -' + dmg, '#ef4444', 2500);
+                    this.violationsLog.push('TRAFFIC_COLLISION');
+                    if (window.GameplayRecorder) GameplayRecorder.record('TRAFFIC_HIT', { hp: Math.round(this.hp) });
                   }
-                  if (window.TrafficAudio) window.TrafficAudio.playCrash(1.4);
-                  toast('💥 CRASH! Hit Traffic Vehicle! HP -' + dmg, '#ef4444', 3000);
-                  this.violationsLog.push('TRAFFIC_COLLISION');
-                  if (window.GameplayRecorder) GameplayRecorder.record('TRAFFIC_HIT', { hp: Math.round(this.hp) });
                 }
               }
             });
@@ -10950,495 +11098,57 @@ class Game {
           }
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // COMPREHENSIVE PEDESTRIAN AI SYSTEM
-        // State Machine: IDLE → WALKING → WAITING → CROSSING → FLEEING → ENTERING
-        // ═══════════════════════════════════════════════════════════════
+        // ── Inter-pedestrian soft repulsion & Player contact pass ──────────────
+        const pLen = this.peds.length;
+        const px = this.player.position.x;
+        const pz = this.player.position.z;
+        const pSpd = Math.abs(this.speed || 0);
 
-        // ── DYNAMIC MUMBAI JAYWALKER HAZARD IN PLAYER'S TRAVEL DIRECTION ──
-        if (!this._jaywalkerCooldown) this._jaywalkerCooldown = 8;
-        this._jaywalkerCooldown -= dt;
-        if (this._jaywalkerCooldown <= 0 && this.player && !this.isPedestrian && Math.abs(this.speed || 0) > 2) {
-          const pFwdX = -Math.sin(this.player.rotation.y);
-          const pFwdZ = -Math.cos(this.player.rotation.y);
-          
-          // Find an eligible pedestrian ahead of player (20m - 45m in forward driving direction)
-          const eligible = this.peds.filter(p => {
-            if (!p || !p.userData || p.userData.aiState === 'crossing' || p.userData.aiState === 'fleeing') return false;
-            const dx = p.position.x - this.player.position.x;
-            const dz = p.position.z - this.player.position.z;
-            const fwdDist = dx * pFwdX + dz * pFwdZ;
-            const latDist = Math.abs(-dx * pFwdZ + dz * pFwdX);
-            return fwdDist > 20 && fwdDist < 45 && latDist < 18;
-          });
+        for (let i = 0; i < pLen; i++) {
+          const p = this.peds[i];
+          if (!p || !p.position || !p.visible) continue;
 
-          if (eligible.length > 0) {
-            const jay = eligible[Math.floor(Math.random() * eligible.length)];
-            const jud = jay.userData;
-            const otherSide = -jud.side;
-            const crossOffset = otherSide * (jud.targetDist || (18 / 2 + 1.25));
-            jud.aiState = 'crossing';
-            jud.state = 'crossing';
-            jud.spd = 0.55; // Brisk walk across traffic
-            jud.crossTarget = {
-              x: jud.isV ? jud.roadC + crossOffset : jay.position.x,
-              z: jud.isV ? jay.position.z : jud.roadC + crossOffset
-            };
-            jud.crossRoadCenter = jud.roadC;
-            jud.crossTargetDist = Math.abs(crossOffset);
-            this._jaywalkerCooldown = 18 + Math.random() * 12; // 18-30s between jaywalkers
+          // Maintain soft spacing between pedestrians (prevent clumping & stacking)
+          for (let j = i + 1; j < pLen; j++) {
+            const o = this.peds[j];
+            if (!o || !o.position || !o.visible) continue;
+            const dx = p.position.x - o.position.x;
+            const dz = p.position.z - o.position.z;
+            const dSq = dx * dx + dz * dz;
+            if (dSq < 1.44 && dSq > 0.0001) {
+              const d = Math.sqrt(dSq);
+              const push = (1.2 - d) * 0.5 * Math.min(1.0, dt * 6);
+              const nx = dx / d;
+              const nz = dz / d;
+              p.position.x += nx * push;
+              p.position.z += nz * push;
+              o.position.x -= nx * push;
+              o.position.z -= nz * push;
+            }
+          }
+
+          // Player to Pedestrian physical contact
+          const pdx = p.position.x - px;
+          const pdz = p.position.z - pz;
+          const pDistSq = pdx * pdx + pdz * pdz;
+
+          if (pDistSq < 4.0) {
+            if (!this.isPedestrian && pSpd > 1.2 && (!this._spawnInvulnerable || this._spawnInvulnerable <= 0)) {
+              this.speed = 0;
+              this.hp = 0;
+              toast('💥 HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
+              this._uh();
+              this._go('Hit Pedestrian');
+              break;
+            } else if (pDistSq < 1.69) {
+              const pDist = Math.sqrt(pDistSq);
+              if (pDist > 0.01) {
+                p.position.x += (pdx / pDist) * 0.15;
+                p.position.z += (pdz / pDist) * 0.15;
+              }
+            }
           }
         }
-
-        // Helper: Check traffic light state for crossing pedestrians
-        const _checkTrafficLight = (pedPos, game) => {
-          if (!game.sigs || game.sigs.length === 0) return { shouldWait: false, signalState: 'none' };
-
-          for (const sig of game.sigs) {
-            const sigDist = pedPos.distanceTo(sig.position);
-            // Check if signal is nearby (within crossing distance)
-            if (sigDist < 15) {
-              const sigState = sig.userData?.st || 'green';
-              // Pedestrians can cross on green, but should wait on red
-              if (sigState === 'red') {
-                return { shouldWait: true, signalState: 'red' };
-              }
-            }
-          }
-          return { shouldWait: false, signalState: 'green' };
-        };
-
-        // Helper: Find nearest intersection to a position (for crosswalk crossing)
-        const _nearestIntersection = (px, pz, ints) => {
-          if (!ints || ints.length === 0) return null;
-          let best = null, bestD = Infinity;
-          for (const [ix, iz] of ints) {
-            const d = Math.hypot(px - ix, pz - iz);
-            if (d < bestD) { bestD = d; best = [ix, iz]; }
-          }
-          return bestD < 30 ? best : null; // Only if within 30 units
-        };
-
-        // Helper: Check for approaching vehicles (player + NPCs)
-        const _checkVehicleApproaching = (ped, game) => {
-          let approaching = false;
-          let threatDir = null;
-          let minDist = Infinity;
-
-          // Check player vehicle
-          if (game.player && !game.isPedestrian && game.speed && Math.abs(game.speed) > 0.1) {
-            const pvDist = game.player.position.distanceTo(ped.position);
-            if (pvDist < 30 && pvDist < minDist) {
-              const isV = ped.userData.isV;
-              const pedDir = ped.userData.dir;
-              const approachingDir = isV
-                ? (game.player.position.z - ped.position.z) * pedDir
-                : (game.player.position.x - ped.position.x) * pedDir;
-              if (approachingDir > 0 && pvDist < 25) {
-                approaching = true;
-                threatDir = game.player.position.clone();
-                minDist = pvDist;
-              }
-            }
-          }
-
-          // Check NPC vehicles
-          if (!approaching && game.npcs) {
-            for (const n of game.npcs) {
-              if (!n.userData || !n.userData.spd || Math.abs(n.userData.spd) < 0.05) continue;
-              const npcDist = n.position.distanceTo(ped.position);
-              if (npcDist < 30 && npcDist < minDist) {
-                const isV = ped.userData.isV;
-                const pedDir = ped.userData.dir;
-                const approachingDir = isV
-                  ? (n.position.z - ped.position.z) * pedDir
-                  : (n.position.x - ped.position.x) * pedDir;
-                if (approachingDir > 0 && npcDist < 20) {
-                  approaching = true;
-                  threatDir = n.position.clone();
-                  minDist = npcDist;
-                  break;
-                }
-              }
-            }
-          }
-
-          return { approaching, threatDir, dist: minDist };
-        };
-
-        // Helper: Get safe escape direction from vehicle
-        const _getFleeVector = (pedPos, threatPos, sidewalkSide) => {
-          const fleeDir = this._v1.subVectors(pedPos, threatPos).normalize();
-          // Push toward sidewalk (away from road)
-          fleeDir.y = 0;
-          if (sidewalkSide) {
-            // Add lateral push toward sidewalk
-            const lateral = this._v3.set(-fleeDir.z, 0, fleeDir.x).multiplyScalar(sidewalkSide * 0.5);
-            fleeDir.add(lateral).normalize();
-          }
-          return fleeDir;
-        };
-
-        // ═══════════════════════════════════════════════════════════════
-        // MAIN PEDESTRIAN UPDATE LOOP
-        // ═══════════════════════════════════════════════════════════════
-        this.peds.forEach(p => {
-          const ud = p.userData;
-          if (!ud) return;
-          if (p._pedAI) {
-            // Cleanly delegated to PedestrianAI instance - avoid conflicting position overwrites
-            return;
-          }
-
-          if (ud.isChild) {
-            ud.t = (ud.t || 0) + dt * (ud.spd || 0.03);
-            const targetX = ud.targetX || 7.5;
-            const dirX = targetX > p.position.x ? 1 : -1;
-            p.position.x += dirX * (ud.spd || 0.03) * 60 * dt;
-            p.rotation.y = dirX > 0 ? Math.PI / 2 : -Math.PI / 2;
-            if (Math.abs(p.position.x - targetX) < 0.4) {
-              ud.targetX = targetX > 0 ? -7.5 : 7.5;
-            }
-            const lLeg = p.children && p.children.find(c => c.name === 'lLeg');
-            const rLeg = p.children && p.children.find(c => c.name === 'rLeg');
-            if (lLeg && rLeg) {
-              lLeg.rotation.x = Math.sin(ud.t * 8) * 0.45;
-              rLeg.rotation.x = -Math.sin(ud.t * 8) * 0.45;
-            }
-            return;
-          }
-
-          // Initialize pedestrian AI state if needed
-          p.userData.aiState = p.userData.aiState || 'walking'; // walking, idle, waiting, crossing, fleeing, exiting, entering
-          p.userData.t += dt * p.userData.spd;
-
-          const isPoliceVolunteer = p.userData.isPoliceVolunteer;
-
-          // ── BOUNDARY ENFORCEMENT: Keep pedestrians on sidewalks AND within world ──
-          // Enforce lateral bounds (sidewalk width)
-          const sidewalkMin = ud.roadC - ud.targetDist - 2; // Inner edge
-          const sidewalkMax = ud.roadC + ud.targetDist + 2;  // Outer edge
-
-          // World boundary limits (keep pedestrians within playable area)
-          const WORLD_BOUND = 150;
-
-          if (ud.isV) {
-            // Vertical road - enforce X bounds
-            if (p.position.x < sidewalkMin) p.position.x = sidewalkMin;
-            if (p.position.x > sidewalkMax) p.position.x = sidewalkMax;
-            // Enforce world bounds
-            if (p.position.z < -WORLD_BOUND) p.position.z = -WORLD_BOUND;
-            if (p.position.z > WORLD_BOUND) p.position.z = WORLD_BOUND;
-          } else {
-            // Horizontal road - enforce Z bounds
-            if (p.position.z < sidewalkMin) p.position.z = sidewalkMin;
-            if (p.position.z > sidewalkMax) p.position.z = sidewalkMax;
-            // Enforce world bounds
-            if (p.position.x < -WORLD_BOUND) p.position.x = -WORLD_BOUND;
-            if (p.position.x > WORLD_BOUND) p.position.x = WORLD_BOUND;
-          }
-
-          // ── VEHICLE THREAT DETECTION: Check for nearby vehicles ──
-          const vehicleCheck = _checkVehicleApproaching(p, this);
-          const threatDist = vehicleCheck.dist;
-          const isThreatClose = threatDist < 12;
-
-          // ── STATE MACHINE ──
-
-          // STATE: FLEEING (highest priority) - Vehicle very close
-          if (isThreatClose && ud.aiState !== 'fleeing' && ud.aiState !== 'exiting' && ud.aiState !== 'entering') {
-            ud.aiState = 'fleeing';
-            ud.fleeTimer = 0;
-          }
-
-          if (ud.aiState === 'fleeing') {
-            ud.fleeTimer += dt;
-            if (vehicleCheck.approaching && threatDist < 10) {
-              // Active flee - run away from threat
-              const fleeVec = _getFleeVector(p.position, vehicleCheck.threatDir, ud.side);
-              const fleeSpeed = 4.5; // Faster than walking when fleeing
-              p.position.x += fleeVec.x * dt * fleeSpeed;
-              p.position.z += fleeVec.z * dt * fleeSpeed;
-              // Face away from threat
-              p.rotation.y = Math.atan2(-fleeVec.x, -fleeVec.z);
-            } else if (ud.fleeTimer > 1.5) {
-              // Threat passed, return to walking after brief pause
-              ud.aiState = 'walking';
-              ud.fleeTimer = 0;
-            }
-            // Skip other states while fleeing
-            return;
-          }
-
-          // STATE: EXITING BUILDING
-          if (ud.state === 'exiting') {
-            ud.aiState = 'exiting';
-            const moveSpeed = ud.spd * 3.5;
-            if (ud.isV) {
-              p.position.x += -ud.side * dt * moveSpeed;
-              if (Math.abs(p.position.x - ud.roadC) <= ud.targetDist) {
-                p.position.x = ud.roadC + ud.side * ud.targetDist;
-                ud.state = 'sidewalk';
-                ud.aiState = 'walking';
-                p.rotation.y = ud.dir > 0 ? 0 : Math.PI;
-                ud.startZ = p.position.z;
-                ud.destDist = 10 + Math.random() * 20;
-                ud.distTraveled = 0;
-              }
-            } else {
-              p.position.z += -ud.side * dt * moveSpeed;
-              if (Math.abs(p.position.z - ud.roadC) <= ud.targetDist) {
-                p.position.z = ud.roadC + ud.side * ud.targetDist;
-                ud.state = 'sidewalk';
-                ud.aiState = 'walking';
-                p.rotation.y = ud.dir > 0 ? Math.PI/2 : -Math.PI/2;
-                ud.startZ = p.position.x;
-                ud.destDist = 10 + Math.random() * 20;
-                ud.distTraveled = 0;
-              }
-            }
-            return;
-          }
-
-          // STATE: WAITING (at crosswalk, checking for vehicles AND traffic lights)
-          // Check traffic light state first
-          const trafficLightCheck = _checkTrafficLight(p.position, this);
-          const shouldWaitForLight = trafficLightCheck.shouldWait && ud.aiState !== 'fleeing';
-
-          if (ud.aiState !== 'crossing' && (shouldWaitForLight || (vehicleCheck.approaching && ud.aiState !== 'idle' && ud.aiState !== 'entering'))) {
-            ud.aiState = 'waiting';
-            ud.waitTimer = (ud.waitTimer || 0) + dt;
-            // Look toward approaching vehicle
-            if (vehicleCheck.threatDir) {
-              p.rotation.y = Math.atan2(
-                vehicleCheck.threatDir.x - p.position.x,
-                vehicleCheck.threatDir.z - p.position.z
-              );
-            }
-            // Stop movement while waiting
-            return;
-          }
-          // Was waiting for crossing and light is now green — proceed to cross
-          if (ud._crossPending && ud.aiState === 'waiting') {
-            ud._crossPending = false;
-            ud.aiState = 'crossing';
-            ud.state = 'crossing';
-            return;
-          }
-
-          // STATE: CROSSING (crossing the road perpendicular to traffic)
-          if (ud.aiState === 'crossing') {
-            const cx = ud.crossTarget.x - p.position.x;
-            const cz = ud.crossTarget.z - p.position.z;
-            const crossDist = Math.sqrt(cx * cx + cz * cz);
-            if (crossDist < 1.0) {
-              // Reached the other side — resume walking on new sidewalk
-              ud.aiState = 'walking';
-              ud.state = 'sidewalk';
-              ud.side = -ud.side; // Now on opposite side
-              ud.roadC = ud.crossRoadCenter;
-              ud.targetDist = ud.crossTargetDist;
-              ud.dir = Math.random() > 0.5 ? 1 : -1;
-              ud.distTraveled = 0;
-              ud.destDist = 15 + Math.random() * 25;
-              p.rotation.y = ud.isV
-                ? (ud.dir > 0 ? 0 : Math.PI)
-                : (ud.dir > 0 ? Math.PI/2 : -Math.PI/2);
-            } else {
-              // Move toward crossing target
-              const crossSpeed = ud.spd * 2.5; // Slower than walking when crossing
-              p.position.x += (cx / crossDist) * crossSpeed * dt;
-              p.position.z += (cz / crossDist) * crossSpeed * dt;
-              // Face crossing direction
-              p.rotation.y = Math.atan2(cx, cz);
-              // Check for approaching vehicles mid-crossing — freeze if danger
-              const midCheck = _checkVehicleApproaching(p, this);
-              if (midCheck.approaching && midCheck.dist < 15) {
-                ud.aiState = 'waiting';
-                ud.waitTimer = 0;
-                ud._crossPending = true; // Remember to resume crossing after
-              }
-            }
-            return;
-          }
-
-          // STATE: IDLE (phone, look around, rest)
-          // Skip idle for police volunteer
-          if (!ud._idleState && !isPoliceVolunteer && ud.aiState === 'walking') {
-            ud._idleTimer = (ud._idleTimer !== undefined ? ud._idleTimer : Math.random() * 8);
-            ud._idleTimer -= dt;
-            if (ud._idleTimer <= 0) {
-              const idleRoll = Math.random();
-              if (idleRoll < 0.30) {
-                ud._idleState = true;
-                ud._idleDur = 2 + Math.random() * 4;
-                ud._idleType = 'phone';
-              } else if (idleRoll < 0.50) {
-                ud._idleState = true;
-                ud._idleDur = 2 + Math.random() * 5;
-                ud._idleType = 'look';
-              } else {
-                ud._idleTimer = 6 + Math.random() * 12;
-              }
-            }
-          }
-
-          if (ud._idleState) {
-            ud.aiState = 'idle';
-            ud._idleDur -= dt;
-            // Animate based on idle type
-            if (ud._idleType === 'phone') {
-              p.rotation.y += Math.sin(ud.t * 2.5) * 0.003;
-            } else if (ud._idleType === 'look') {
-              // Look left-right periodically
-              p.rotation.y += Math.sin(ud.t * 0.8) * 0.004;
-            }
-            if (ud._idleDur <= 0) {
-              ud._idleState = false;
-              ud._idleTimer = 4 + Math.random() * 10;
-              ud.aiState = 'walking';
-            }
-            // Skip walking while idle
-            return;
-          }
-
-          // STATE: WALKING (default: strictly locked to sidewalk centerline)
-          ud.aiState = 'walking';
-          const walkSpeed = ud.spd * 3.5;
-          const moveAmt = walkSpeed * dt;
-
-          // Lock lateral position strictly to sidewalk centerline
-          const targetSidewalk = ud.roadC + (ud.side > 0 ? ud.targetDist : -ud.targetDist);
-          if (ud.isV) {
-            p.position.x += (targetSidewalk - p.position.x) * 0.15;
-            p.position.z += ud.dir * moveAmt;
-            ud.distTraveled += moveAmt;
-          } else {
-            p.position.z += (targetSidewalk - p.position.z) * 0.15;
-            p.position.x += ud.dir * moveAmt;
-            ud.distTraveled += moveAmt;
-          }
-
-          // Reverse direction at destination — or cross the road
-          if (ud.distTraveled >= ud.destDist) {
-            // ~25% chance to cross the road (more likely at intersections)
-            const ints = this.mapCfg && this.mapCfg.ints;
-            const nearInt = _nearestIntersection(p.position.x, p.position.z, ints);
-            const crossChance = nearInt ? 0.45 : 0.2;
-            if (Math.random() < crossChance) {
-              // Calculate crossing target on the other side of the road
-              const isV = ud.isV;
-              const roadC = isV ? ud.roadC : ud.roadC;
-              const otherSide = -ud.side;
-              const crossOffset = otherSide * (18 / 2 + 1.25); // Sidewalk center distance
-              let targetX, targetZ;
-              if (isV) {
-                targetX = roadC + crossOffset;
-                targetZ = p.position.z; // Move perpendicular (X-axis) while keeping Z
-              } else {
-                targetX = p.position.x; // Move perpendicular (Z-axis) while keeping X
-                targetZ = roadC + crossOffset;
-              }
-
-              // If near an intersection, prefer to cross there — adjust target toward it
-              if (nearInt) {
-                if (isV) {
-                  targetZ = nearInt[1] + (Math.random() - 0.5) * 4; // Slight Z offset near crosswalk
-                } else {
-                  targetX = nearInt[0] + (Math.random() - 0.5) * 4;
-                }
-              }
-
-              ud.aiState = 'crossing';
-              ud.state = 'crossing';
-              ud.crossTarget = { x: targetX, z: targetZ };
-              ud.crossRoadCenter = ud.roadC;
-              ud.crossTargetDist = Math.abs(crossOffset);
-              // Freeze until traffic light allows
-              const tlCheck = _checkTrafficLight(p.position, this);
-              if (tlCheck.shouldWait) {
-                ud.aiState = 'waiting';
-                ud.waitTimer = 0;
-                ud._crossPending = true; // Remember we want to cross after waiting
-              }
-            } else {
-              ud.dir *= -1;
-              p.rotation.y = ud.isV ? (ud.dir > 0 ? 0 : Math.PI) : (ud.dir > 0 ? Math.PI/2 : -Math.PI/2);
-              ud.distTraveled = 0;
-              ud.destDist = 10 + Math.random() * 25;
-            }
-          }
-
-          // ── INTER-PEDESTRIAN AVOIDANCE ──
-          this.peds.forEach(other => {
-            if (other === p || !other.userData) return;
-            const dx = p.position.x - other.position.x;
-            const dz = p.position.z - other.position.z;
-            const dist = Math.sqrt(dx * dx + dz * dz);
-            // Maintain safe distance (1.5 units)
-            if (dist < 1.5 && dist > 0.01) {
-              const push = (1.5 - dist) * 0.6;
-              const nx = dx / dist;
-              const nz = dz / dist;
-              p.position.x += nx * push * dt * 6;
-              p.position.z += nz * push * dt * 6;
-            }
-          });
-
-          // ── OBSTACLE AVOIDANCE (buildings, poles, etc) ──
-          if (this.obstacles) {
-            this.obstacles.forEach(obs => {
-              const dx = p.position.x - obs.position.x;
-              const dz = p.position.z - obs.position.z;
-              const dist = Math.sqrt(dx * dx + dz * dz);
-              const obsRadius = (obs.userData?.halfW || 1.5) + 0.8; // Obstacle size + pedestrian radius
-              if (dist < obsRadius && dist > 0.01) {
-                const push = (obsRadius - dist) * 0.8;
-                p.position.x += (dx / dist) * push;
-                p.position.z += (dz / dist) * push;
-              }
-            });
-          }
-
-          // ── LEG ANIMATION ──
-          const legAnimSpeed = ud.aiState === 'idle' ? 0.08 : 12;
-          const legAnimAmp = ud.aiState === 'idle' ? 0.05 : 0.55;
-          if (ud.lLeg) ud.lLeg.rotation.x = Math.sin(ud.t * legAnimSpeed) * legAnimAmp;
-          if (ud.rLeg) ud.rLeg.rotation.x = Math.sin(ud.t * legAnimSpeed + Math.PI) * legAnimAmp;
-
-          // ── FBX ANIMATED CHARACTER BLEND ──
-          if (ud.isFBXAnimated && ud.mixer) {
-            const moving = ud.aiState === 'walk' || ud.aiState === 'chase'
-            if (ud.idleAction && ud.runAction) {
-              const targetIdle = moving ? 0 : 1
-              const targetRun = moving ? 1 : 0
-              ud.idleAction.setEffectiveWeight(ud.idleAction.getEffectiveWeight() + (targetIdle - ud.idleAction.getEffectiveWeight()) * 0.1)
-              ud.runAction.setEffectiveWeight(ud.runAction.getEffectiveWeight() + (targetRun - ud.runAction.getEffectiveWeight()) * 0.1)
-            }
-            ud.mixer.update(dt)
-          }
-
-          // ── POLICE VOLUNTEER SPECIAL BEHAVIOR ──
-          if (isPoliceVolunteer) {
-            ud.t += dt * 3;
-            const armWave = Math.sin(ud.t) * 0.8;
-            p.children.forEach(ch => {
-              if (ch.name && ch.name.includes('Arm')) {
-                ch.rotation.z = armWave;
-              }
-            });
-            p.rotation.y = Math.sin(ud.t * 0.5) * 0.3 + (ud.isV ? Math.PI/2 : 0);
-          }
-
-          // ── PLAYER COLLISION CHECK (INSTANT FAILURE ON HIT) ──
-          if (!this.isPedestrian && Math.abs(this.speed) > 0.1 && (!this._spawnInvulnerable || this._spawnInvulnerable <= 0) && this.player.position.distanceTo(p.position) < 2.0) {
-            this.speed = 0;
-            this.hp = 0;
-            toast('💥 HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
-            this._uh();
-            this._go("Hit Pedestrian");
-          }
-        });
       }
       _uobs(dt) {
         if (!this.player) return;
@@ -11839,7 +11549,7 @@ class Game {
             const dx = veh.position.x - char.position.x;
             const dz = veh.position.z - char.position.z;
             const angle = (dx !== 0 || dz !== 0) ? Math.atan2(dx, dz) : veh.rotation.y;
-            _camOrbit(char.position, 3.0, 2.2, angle + Math.PI, 1.2);
+            _camOrbit(char.position, 3.8, 3.4, angle + Math.PI, 1.6);
             if (p >= 1) { this._enterState = 'SITTING_DOWN'; this._enterTimer = 0; }
           } else if (s === 'SITTING_DOWN') {
             const dur = 0.6;
@@ -11856,14 +11566,14 @@ class Game {
             _vehBounce(veh, this._enterDoorSide, ease * 1.0);
             const camAngle = veh.rotation.y + Math.PI;
             const _vcamSit = VEHICLE_CAM[this.vehMode] || VEHICLE_CAM_DEFAULT;
-            const orbDist = 3.5 + ease * (_vcamSit.dist - 3.5);
-            const orbHeight = 2.5 + ease * (_vcamSit.height - 2.5);
+            const orbDist = 4.2 + ease * (_vcamSit.dist - 4.2);
+            const orbHeight = 3.6 + ease * (_vcamSit.height - 3.6);
             this.camera.position.set(
               veh.position.x + Math.sin(camAngle) * orbDist,
               veh.position.y + orbHeight,
               veh.position.z + Math.cos(camAngle) * orbDist
             );
-            this.camera.lookAt(veh.position.x, veh.position.y + 1.0, veh.position.z);
+            this.camera.lookAt(veh.position.x, veh.position.y + 1.6, veh.position.z);
             if (p >= 1) { this._enterState = 'CLOSING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
           } else if (s === 'CLOSING_DOOR') {
             const dur = 0.3;
@@ -11907,7 +11617,7 @@ class Game {
               );
               this.camera.lookAt(
                 veh.position.x + Math.sin(rotY) * (_vcamEnter.lookDist || 8),
-                veh.position.y + 1.0,
+                veh.position.y + 1.6,
                 veh.position.z + Math.cos(rotY) * (_vcamEnter.lookDist || 8)
               );
               const vt = this.vehMode || 'car';
@@ -12001,7 +11711,7 @@ class Game {
       _animateCharacterWalk(character, speed, dt) {
         if (!character) return
         const ud = character.userData
-        if (ud && ud.isMinecraft && typeof ud.update === 'function') {
+        if (ud && typeof ud.update === 'function') {
           ud.update(dt, speed);
           return;
         }
@@ -12182,18 +11892,19 @@ class Game {
           // ── Third Person Chase Cam — per-vehicle profiles ──
           const _vcam = (this.isPedestrian ? null : VEHICLE_CAM[this.vehMode]) || VEHICLE_CAM_DEFAULT;
           const camDist = this.isPedestrian ? 4 : _vcam.dist;
-          const camHeight = this.isPedestrian ? 2.5 : _vcam.height;
-          const rotY = this.player.rotation.y + (this.camYaw || 0);
+          const camHeight = this.isPedestrian ? 2.2 : _vcam.height;
+          const rotY = this.isPedestrian ? (this.camYaw || 0) : this.player.rotation.y + (this.camYaw || 0);
           // Speed-based look-ahead: camera leads in the direction of travel
           const lookAhead = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) * 5, _vcam.lookAhead);
-          const pitchOffset = (this.camPitch || 0) * 2;
+          const pitchOffset = (this.camPitch || 0) * 1.2;
           this._camTarget.set(
               this.player.position.x - Math.sin(rotY) * camDist + Math.sin(rotY) * lookAhead,
               this.player.position.y + camHeight - pitchOffset,
               this.player.position.z - Math.cos(rotY) * camDist + Math.cos(rotY) * lookAhead
           );
-          // ── Camera collision: raycast from player to target ──
-          if (this.obstacles && this.obstacles.length > 0) {
+          // ── Camera collision: throttled raycast from player to target ──
+          this._camRayFrame = (this._camRayFrame || 0) + 1;
+          if (this._camRayFrame % 2 === 0 && this.obstacles && this.obstacles.length > 0) {
             const _pp = this.player.position;
             this._camRayOrigin.set(_pp.x, _pp.y + (this.isPedestrian ? 1.6 : 1.2), _pp.z);
             this._camRayVec.subVectors(this._camTarget, this._camRayOrigin);
@@ -12222,14 +11933,14 @@ class Game {
                   return true;
                 });
                 if (validHits.length > 0 && validHits[0].distance < rayLen) {
-                  const pullBack = 0.5;
+                  const pullBack = 0.4;
                   const dx = this._camTarget.x - _pp.x;
                   const dz = this._camTarget.z - _pp.z;
                   const d = Math.sqrt(dx * dx + dz * dz) || 1;
-                  const safeDist = Math.max(3.0, validHits[0].distance - pullBack);
+                  const safeDist = Math.max(2.4, validHits[0].distance - pullBack);
                   this._camTarget.set(
                     _pp.x + (dx / d) * safeDist,
-                    this._camTarget.y,  // preserve intended height
+                    Math.max(this._camTarget.y, _pp.y + (this.isPedestrian ? 2.8 : camHeight)),
                     _pp.z + (dz / d) * safeDist
                   );
                 }
@@ -12248,18 +11959,16 @@ class Game {
           const camLerp = transT > 0 ? Math.min(1, dt * 3) : baseLerp; // slower during transition
           this.camera.position.lerp(this._camTarget, camLerp);
           // Hard floor clamp: whatever produced this._camTarget, never let the rendered
-          // camera end up at/below ground level (the "camera stuck under the city" bug —
-          // it can't recover on its own once below the ground plane, since everything it
-          // would see from there is the underside of road/building meshes).
-          if (this.camera.position.y < 0.6) this.camera.position.y = 0.6;
+          // camera end up at/below ground level
+          if (this.camera.position.y < 1.2) this.camera.position.y = 1.2;
 
           const tiltRoll = this._camTilt || 0;
           this.camera.up.set(0, 1, 0);
-          const lookAheadDist = this.isPedestrian ? 3 : _vcam.lookDist;
-          const targetLookY = this.player.position.y + (this.isPedestrian ? 1.4 : 0.8);
+          const lookAheadDist = this.isPedestrian ? 2 : _vcam.lookDist;
+          const targetLookY = this.player.position.y + (this.isPedestrian ? 1.4 : 1.8);
           this.camera.lookAt(
             this.player.position.x + Math.sin(rotY) * lookAheadDist + shakeX,
-            targetLookY - pitchOffset * 0.3 + shakeY,
+            targetLookY - pitchOffset * 0.8 + shakeY,
             this.player.position.z + Math.cos(rotY) * lookAheadDist
           );
           // Camera tilt: subtle roll based on steering input

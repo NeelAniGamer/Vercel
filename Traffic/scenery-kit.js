@@ -9,6 +9,9 @@ class SceneryKit {
     this.game = game;
     this.placedObjects = [];
     this.instancedMeshes = [];
+    this.chunks = new Map(); // "cx,cz" -> { group, x, z, visible }
+    this.chunkSize = 60; // 60m spatial grid
+    this._lastUpdatePos = { x: 999999, z: 999999 };
   }
 
   /**
@@ -16,6 +19,7 @@ class SceneryKit {
    */
   decorateLevel(cfg) {
     if (!cfg.roads || cfg.roads.length === 0) return;
+    this.clear();
 
     const roads = cfg.roads;
     const theme = cfg.themeType || 'urban_grid';
@@ -28,7 +32,12 @@ class SceneryKit {
     this.placeBuildingsBehindRoads(roads, theme);
     this.placeThemeSpecific(roads, theme);
 
-    console.log(`[SceneryKit] Placed ${this.placedObjects.length} objects for theme "${theme}"`);
+    // Initial visibility pass
+    const pPos = (this.game && this.game.player && this.game.player.position) || { x: 0, z: 0 };
+    const rDist = (this.game && this.game.renderDistance) || 150;
+    this.updateVisibility(pPos, rDist, true);
+
+    console.log(`[SceneryKit] Placed ${this.placedObjects.length} object groups in ${this.chunks.size} chunks for theme "${theme}"`);
   }
 
   /**
@@ -216,8 +225,8 @@ class SceneryKit {
     const buildingKeys = this._getThemeBuildings(theme);
     if (buildingKeys.length === 0) return;
 
-    const spacing = 25; // meters between buildings
-    const setback = 15; // meters behind road edge
+    const spacing = 16; // meters between buildings
+    const setback = 14; // meters behind road edge
 
     const instances = [];
 
@@ -227,7 +236,7 @@ class SceneryKit {
       const numBuildings = Math.floor(len / spacing);
 
       for (let i = 0; i < numBuildings; i++) {
-        if (Math.random() > 0.6) continue;
+        if (Math.random() > 0.85) continue;
 
         const t = (i + 0.5) / numBuildings;
         let x, z;
@@ -473,7 +482,7 @@ class SceneryKit {
   }
 
   /**
-   * Place instances using individual clones (for variety)
+   * Place instances partitioned by spatial grid chunks
    */
   _placeInstances(instances, groupName) {
     if (instances.length === 0) return;
@@ -482,14 +491,31 @@ class SceneryKit {
     const scene = this.game.scene;
     if (!scene) return;
 
-    const group = new THREE.Group();
-    group.name = `scenery_${groupName}`;
-
-    let placed = 0;
+    const cSize = this.chunkSize;
 
     instances.forEach(inst => {
       const model = window.PRELOADED_MODELS[inst.key];
       if (!model) return;
+
+      const cx = Math.floor(inst.x / cSize);
+      const cz = Math.floor(inst.z / cSize);
+      const chunkKey = `${cx},${cz}`;
+
+      let chunk = this.chunks.get(chunkKey);
+      if (!chunk) {
+        const chunkGroup = new THREE.Group();
+        chunkGroup.name = `scenery_chunk_${chunkKey}`;
+        scene.add(chunkGroup);
+        this.placedObjects.push(chunkGroup);
+        chunk = {
+          group: chunkGroup,
+          cx, cz,
+          x: (cx + 0.5) * cSize,
+          z: (cz + 0.5) * cSize,
+          visible: true
+        };
+        this.chunks.set(chunkKey, chunk);
+      }
 
       const obj = model.clone();
       obj.position.set(inst.x, 0, inst.z);
@@ -499,20 +525,44 @@ class SceneryKit {
 
       obj.traverse(c => {
         if (c.isMesh) {
-          c.castShadow = s > 0.5;
+          // PERFORMANCE: Scenery never casts shadows to save 90%+ shadow draw calls on mobile
+          c.castShadow = false;
           c.receiveShadow = true;
           c.frustumCulled = true;
         }
       });
 
-      group.add(obj);
-      placed++;
+      chunk.group.add(obj);
     });
+  }
 
-    if (placed > 0) {
-      scene.add(group);
-      this.placedObjects.push(group);
-    }
+  /**
+   * Dynamically loads/deloads scenery chunks based on player distance
+   */
+  updateVisibility(playerPos, renderDistance, force = false) {
+    if (!playerPos) return;
+    const rDist = renderDistance || 150;
+    const rDistSq = (rDist + this.chunkSize * 0.7) * (rDist + this.chunkSize * 0.7);
+
+    // Only update if player moved more than 8m or forced
+    const dx = playerPos.x - this._lastUpdatePos.x;
+    const dz = playerPos.z - this._lastUpdatePos.z;
+    if (!force && (dx * dx + dz * dz < 64)) return;
+
+    this._lastUpdatePos.x = playerPos.x;
+    this._lastUpdatePos.z = playerPos.z;
+
+    this.chunks.forEach(chunk => {
+      const cdx = chunk.x - playerPos.x;
+      const cdz = chunk.z - playerPos.z;
+      const distSq = cdx * cdx + cdz * cdz;
+      const shouldBeVisible = distSq <= rDistSq;
+
+      if (chunk.group.visible !== shouldBeVisible) {
+        chunk.group.visible = shouldBeVisible;
+        chunk.visible = shouldBeVisible;
+      }
+    });
   }
 
   /**
@@ -533,6 +583,8 @@ class SceneryKit {
       });
     });
     this.placedObjects = [];
+    this.chunks.clear();
+    this._lastUpdatePos = { x: 999999, z: 999999 };
   }
 }
 
