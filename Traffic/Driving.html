@@ -589,6 +589,18 @@
       height: 100dvh;
     }
 
+    html, body {
+      overflow: hidden !important;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      position: fixed;
+      inset: 0;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
     body {
       background: var(--bg);
       color: var(--text);
@@ -2674,13 +2686,37 @@
       flex-shrink: 0;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 950px), (orientation: landscape) and (max-height: 500px) {
       #mmc {
-        left: calc(env(safe-area-inset-left, 0px) + 12px) !important;
-        top: calc(env(safe-area-inset-top, 0px) + 64px) !important;
+        left: calc(env(safe-area-inset-left, 0px) + 14px) !important;
+        top: 124px !important;
         bottom: auto !important;
-        width: 110px !important;
-        height: 110px !important;
+        width: 80px !important;
+        height: 80px !important;
+        border-width: 2px !important;
+        z-index: 60 !important;
+      }
+      #player-hud-card {
+        transform: scale(0.82) !important;
+        transform-origin: top left !important;
+        top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
+        left: calc(env(safe-area-inset-left, 0px) + 8px) !important;
+      }
+      #top-right-hud-stack {
+        width: 220px !important;
+        max-width: 32vw !important;
+        top: calc(env(safe-area-inset-top, 0px) + 6px) !important;
+        right: calc(env(safe-area-inset-right, 0px) + 8px) !important;
+      }
+      #hud-rd-btn {
+        right: calc(env(safe-area-inset-right, 0px) + 64px) !important;
+        top: calc(env(safe-area-inset-top, 0px) + 6px) !important;
+        transform: scale(0.85);
+      }
+      #mobile-pause-btn {
+        right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
+        top: calc(env(safe-area-inset-top, 0px) + 6px) !important;
+        transform: scale(0.85);
       }
     }
 
@@ -7059,7 +7095,7 @@
     </div>
     <!-- Right: Pedals + Actions -->
     <div style="display:flex;gap:12px;pointer-events:auto;align-items:flex-end;">
-      <div id="mc-enter" class="mc-btn" style="width:52px;height:52px;background:rgba(241,196,15,0.5);border:2px solid rgba(241,196,15,0.7);border-radius:50%;display:none;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;">
+      <div id="mc-enter" class="mc-btn" onclick="window.game && window.game.toggleVehicleEntry()" style="width:52px;height:52px;background:rgba(241,196,15,0.5);border:2px solid rgba(241,196,15,0.7);border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none;">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
       </div>
       <div id="mc-boost" class="mc-btn" style="width:52px;height:52px;background:rgba(94,212,245,0.5);border:2px solid rgba(94,212,245,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;">

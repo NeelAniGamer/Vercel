@@ -73,6 +73,10 @@
         --r: 16px;
       }
 
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
       body {
         background: var(--void);
         color: var(--ink);
@@ -234,16 +238,26 @@
         .setup-container {
           flex-direction: column;
           max-width: 480px;
+          width: calc(100% - 24px);
+          overflow: hidden;
         }
         .setup-left-pane {
           width: 100%;
           border-right: none;
           border-bottom: 1px solid var(--lineb);
-          padding: 30px;
+          padding: 24px 20px;
         }
         .setup-right-pane {
           width: 100%;
-          padding: 30px;
+          padding: 24px 20px;
+          overflow: hidden;
+        }
+        .remote-auth-panel a,
+        .auth-slide a,
+        .remote-auth-panel label {
+          min-height: 44px;
+          display: inline-flex;
+          align-items: center;
         }
       }
 
@@ -913,10 +927,10 @@
               <div id="col-auth-err" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; text-align: left;"></div>
               
               <div class="remote-input-group">
-                <input type="email" id="auth-email" class="remote-input" placeholder="Email address" autocomplete="email" />
+                <input type="text" id="auth-email" class="remote-input" placeholder="Email address or @username" autocomplete="username" />
               </div>
               <div class="remote-input-group">
-                <input type="password" id="auth-pass" class="remote-input" placeholder="Password" autocomplete="current-password" />
+                <input type="password" id="auth-pass" class="remote-input" placeholder="Password or Local PIN" autocomplete="current-password" />
               </div>
 
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 0.85rem; color: var(--dim);">
@@ -1587,7 +1601,7 @@
           }
         } else {
           const email = document.getElementById('auth-email').value.trim()
-          const pass = document.getElementById('auth-pass').value
+          const pass = document.getElementById('auth-pass').value.trim()
           const errDiv = document.getElementById('col-auth-err')
 
           if (!email || !pass) {
@@ -1598,19 +1612,167 @@
           errDiv.textContent = 'Authenticating...'
           errDiv.style.color = 'var(--dim)'
 
+          // 1. Check local accounts first (by email, @username, or username)
+          let localAccounts = []
           try {
-            let res = await window.supabaseClient.auth.signInWithPassword({ email, password: pass })
+            const raw = localStorage.getItem('col_local_accounts')
+            if (raw) localAccounts = JSON.parse(raw)
+            const rawT = localStorage.getItem('traffic_local_user')
+            if (rawT) {
+              const tu = JSON.parse(rawT)
+              if (tu && (tu.name || tu.username)) {
+                if (!localAccounts.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))) {
+                  localAccounts.push(tu)
+                }
+              }
+            }
+          } catch(e) {}
+
+          const normInput = email.toLowerCase()
+          const normUname = normInput.startsWith('@') ? normInput : '@' + normInput
+
+          const matched = localAccounts.find(acc => {
+            const accEmail = (acc.email || '').toLowerCase()
+            const accUname = (acc.username || '').toLowerCase()
+            const accName = (acc.name || '').toLowerCase()
+            return accEmail === normInput || accUname === normInput || accUname === normUname || accName === normInput
+          })
+
+          if (matched) {
+            const expectedPin = (matched.pin || matched.password || '').toString().trim()
+            if (!expectedPin || expectedPin === pass) {
+              errDiv.textContent = 'Success! Welcome back, ' + (matched.name || 'Driver') + '!'
+              errDiv.style.color = 'var(--em)'
+              
+              matched.updatedAt = new Date().toISOString()
+              localStorage.setItem('traffic_local_user', JSON.stringify(matched))
+              localStorage.setItem('col_active_local_user', JSON.stringify(matched))
+              localStorage.setItem('trafficSetupComplete', 'true')
+              
+              let L = {}
+              try {
+                const r = localStorage.getItem('th-save')
+                if (r) L = JSON.parse(r)
+              } catch(e) {}
+              L.name = matched.name
+              L.vehicle = matched.vehicle || 'Car'
+              if (matched.pin) L.localPin = matched.pin
+              localStorage.setItem('th-save', JSON.stringify(L))
+
+              window.colUser = {
+                id: matched.id || ('local_' + Date.now()),
+                name: matched.name,
+                email: matched.email || (matched.username ? (matched.username.replace('@','') + '@local.col') : 'local@col.io'),
+                username: matched.username,
+                isLocal: true,
+                user_metadata: {
+                  full_name: matched.name,
+                  name: matched.name,
+                  role: matched.role || 'student',
+                  preferred_vehicle: matched.vehicle || 'Car'
+                }
+              }
+              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+              showLocalSetup()
+              return
+            } else {
+              errDiv.textContent = 'Incorrect PIN or password for local account ' + (matched.username || matched.name) + '.'
+              errDiv.style.color = '#ef4444'
+              return
+            }
+          }
+
+          if (window.supabaseClient) {
+            try {
+              const rpcAuth = await window.supabaseClient.rpc('authenticate_account', {
+                p_identifier: email,
+                p_pin: pass
+              })
+              if (rpcAuth && rpcAuth.data && rpcAuth.data.success) {
+                const acc = rpcAuth.data
+                errDiv.textContent = 'Success! Welcome back, ' + (acc.display_name || acc.username) + '!'
+                errDiv.style.color = 'var(--em)'
+                const matchedAcc = {
+                  id: acc.id,
+                  name: acc.display_name || acc.username,
+                  username: acc.username,
+                  email: acc.email || '',
+                  pin: pass,
+                  password: pass,
+                  role: acc.role || 'student',
+                  vehicle: acc.preferred_vehicle || 'Car',
+                  age: acc.age || 18,
+                  language: acc.language || 'en',
+                  total: acc.total_score || 0,
+                  studentId: acc.student_id || null,
+                  updatedAt: new Date().toISOString()
+                }
+                localStorage.setItem('traffic_local_user', JSON.stringify(matchedAcc))
+                localStorage.setItem('col_active_local_user', JSON.stringify(matchedAcc))
+                localStorage.setItem('trafficSetupComplete', 'true')
+                
+                try {
+                  let accounts = []
+                  const rawAccs = localStorage.getItem('col_local_accounts')
+                  if (rawAccs) accounts = JSON.parse(rawAccs)
+                  const uIdx = accounts.findIndex(a => a.id === acc.id || (a.username && a.username.toLowerCase() === acc.username.toLowerCase()))
+                  if (uIdx >= 0) accounts[uIdx] = { ...accounts[uIdx], ...matchedAcc }
+                  else accounts.push(matchedAcc)
+                  localStorage.setItem('col_local_accounts', JSON.stringify(accounts))
+                } catch(e) {}
+
+                let L = {}
+                try {
+                  const r = localStorage.getItem('th-save')
+                  if (r) L = JSON.parse(r)
+                } catch(e) {}
+                L.name = matchedAcc.name
+                L.vehicle = matchedAcc.vehicle
+                L.localPin = pass
+                localStorage.setItem('th-save', JSON.stringify(L))
+
+                window.colUser = {
+                  id: acc.id,
+                  name: matchedAcc.name,
+                  email: matchedAcc.email || (acc.username ? (acc.username.replace('@','') + '@local.col') : 'local@col.io'),
+                  username: acc.username,
+                  isLocal: true,
+                  user_metadata: {
+                    full_name: matchedAcc.name,
+                    name: matchedAcc.name,
+                    role: matchedAcc.role,
+                    preferred_vehicle: matchedAcc.vehicle
+                  }
+                }
+                window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+                showLocalSetup()
+                return
+              }
+            } catch(rpcErr) {
+              console.warn('Account system authentication RPC bypassed:', rpcErr)
+            }
+          }
+
+          if (!window.supabaseClient) {
+            errDiv.textContent = 'No local account found with that username/email. Please sign up or click "Skip & Play Locally".'
+            errDiv.style.color = '#ef4444'
+            return
+          }
+
+          try {
+            let res = await window.supabaseClient.auth.signInWithPassword({ email: email, password: pass })
 
             if (res.error) throw res.error
 
             errDiv.textContent = 'Success!'
             errDiv.style.color = 'var(--em)'
-            showLocalSetup()            } catch (err) {
-              errDiv.textContent = friendlyAuthError(err)
-              errDiv.style.color = '#ef4444'
-            }
+            showLocalSetup()
+          } catch (err) {
+            errDiv.textContent = friendlyAuthError(err)
+            errDiv.style.color = '#ef4444'
           }
         }
+      }
 
       async function handleGoogleAuth() {
         if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
@@ -1964,8 +2126,53 @@
           }
         }
 
-        const tUser = { name, username, vehicle: veh, pin, age, language, createdAt: new Date().toISOString() }
+        const tUser = { 
+          id: 'local_' + (username.replace(/[^a-zA-Z0-9_]/g, '') || Date.now()),
+          name, 
+          username, 
+          vehicle: veh, 
+          pin, 
+          password: pin,
+          role: document.getElementById('signup-role')?.value || 'student',
+          age, 
+          language, 
+          createdAt: new Date().toISOString() 
+        }
         localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
+        localStorage.setItem('col_active_local_user', JSON.stringify(tUser))
+
+        try {
+          let accounts = []
+          const existingRaw = localStorage.getItem('col_local_accounts')
+          if (existingRaw) accounts = JSON.parse(existingRaw)
+          const normUname = (username || '').toLowerCase()
+          const normName = (name || '').toLowerCase()
+          const idx = accounts.findIndex(a => 
+            (normUname && (a.username || '').toLowerCase() === normUname) ||
+            (normName && (a.name || '').toLowerCase() === normName)
+          )
+          if (idx >= 0) {
+            accounts[idx] = { ...accounts[idx], ...tUser }
+          } else {
+            accounts.push(tUser)
+          }
+          localStorage.setItem('col_local_accounts', JSON.stringify(accounts))
+        } catch(e) {}
+
+        window.colUser = {
+          id: tUser.id,
+          name: tUser.name,
+          email: tUser.username ? (tUser.username.replace('@','') + '@local.col') : 'local@col.io',
+          username: tUser.username,
+          isLocal: true,
+          user_metadata: {
+            full_name: tUser.name,
+            name: tUser.name,
+            role: tUser.role,
+            preferred_vehicle: tUser.vehicle
+          }
+        }
+        window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
 
         let L = {}
         try {
@@ -1994,6 +2201,28 @@
         if (!saveData.studentId) saveData.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
         localStorage.setItem(walletKey, JSON.stringify(saveData))
 
+
+        if (window.supabaseClient) {
+          try {
+            const regRes = await window.supabaseClient.rpc('register_account', {
+              p_username: username,
+              p_pin: pin || '1234',
+              p_display_name: name,
+              p_email: tUser.email,
+              p_role: tUser.role || 'student',
+              p_vehicle: veh,
+              p_age: parseInt(age, 10) || 18,
+              p_language: language || 'en',
+              p_student_id: saveData.studentId || null
+            })
+            if (regRes && regRes.data && regRes.data.success) {
+              tUser.id = regRes.data.id
+              if (window.colUser) window.colUser.id = regRes.data.id
+              localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
+              localStorage.setItem('col_active_local_user', JSON.stringify(tUser))
+            }
+          } catch(err) { console.warn('Could not register account to cloud DB', err) }
+        }
 
         if (window.supabaseClient && window.colUser) {
           try {

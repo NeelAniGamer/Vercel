@@ -104,7 +104,8 @@
       this.lastDepartureCheck = false
       this.laneComplianceFrames = 0
       this.speedComplianceFrames = 0
-      this.drawerOpen = true
+      const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 950 || window.innerHeight <= 500 || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0))
+      this.drawerOpen = !isMobile
       this.containerEl = null
       this._initialized = false
     }
@@ -119,6 +120,8 @@
       this.laneComplianceFrames = 0
       this.speedComplianceFrames = 0
       this.lastDepartureCheck = false
+      const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 950 || window.innerHeight <= 500 || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0))
+      this.drawerOpen = !isMobile
       this._injectStyles()
       this._renderHUDDrawer()
       this._initialized = true

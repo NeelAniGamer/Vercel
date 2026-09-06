@@ -188,14 +188,19 @@ export class BuildingSlot {
     const forward = this.segment.edge.direction.clone();
     const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0));
     const sideMult = this.side === 'left' ? 1 : -1;
-    const roadHalfWidth = this.segment.edge.width / 2;
-    return p.add(right.multiplyScalar(sideMult * (roadHalfWidth + this.depth / 2 + 2)));
+    const roadHalfWidth = (this.segment.edge.width || 12) / 2;
+    // Setback from road edge: accommodates sidewalk (4m) + front garden (4m) + building half-depth (6m) = 14m
+    const setback = roadHalfWidth + (this.depth || 14.0);
+    return p.add(right.multiplyScalar(sideMult * setback));
   }
 
   getRotation(): number {
-    const forward = this.segment.edge.direction.clone();
-    const angle = Math.atan2(forward.x, forward.z);
-    return this.side === 'left' ? angle : angle + Math.PI;
+    // Direct vector from building slot position towards road centerline ensures front facade faces the street
+    const pos = this.getWorldPosition();
+    const t = this.segment.startT + this.offset * (this.segment.endT - this.segment.startT);
+    const roadPoint = this.segment.edge.getPointAt(t);
+    const toRoad = new THREE.Vector3().subVectors(roadPoint, pos).normalize();
+    return Math.atan2(toRoad.x, toRoad.z);
   }
 
   getZone(): string {
@@ -261,29 +266,86 @@ export class RoadGraph {
       graph.segments.push(...edge.segments);
     });
 
-    graph.buildBuildingSlots(cfg);
-    graph.buildSpatialIndex();
-    graph.classifyNodes();
-
     if (cfg.anchorNodes) {
       graph.setAnchorNodes(cfg.anchorNodes);
     }
+
+    graph.buildBuildingSlots(cfg);
+    graph.buildSpatialIndex();
+    graph.classifyNodes();
 
     return graph;
   }
 
   buildBuildingSlots(cfg: RoadConfig): void {
-    const buildSpacing = cfg.is50km ? 280 : 60;
+    const slotGrid = new Map<string, THREE.Vector3[]>();
+    const slotGridSize = 25;
+    const isSlotTooClose = (p: THREE.Vector3, minD: number): boolean => {
+      const gx = Math.floor(p.x / slotGridSize);
+      const gz = Math.floor(p.z / slotGridSize);
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dz = -1; dz <= 1; dz++) {
+          const key = `${gx + dx},${gz + dz}`;
+          const existing = slotGrid.get(key);
+          if (existing) {
+            for (let k = 0; k < existing.length; k++) {
+              const ep = existing[k];
+              const dist = Math.hypot(p.x - ep.x, p.z - ep.z);
+              if (dist < minD) return true;
+            }
+          }
+        }
+      }
+      return false;
+    };
+    const registerSlot = (slot: BuildingSlot, pos: THREE.Vector3): void => {
+      this.buildingSlots.push(slot);
+      const gx = Math.floor(pos.x / slotGridSize);
+      const gz = Math.floor(pos.z / slotGridSize);
+      const key = `${gx},${gz}`;
+      if (!slotGrid.has(key)) slotGrid.set(key, []);
+      slotGrid.get(key)!.push(pos);
+    };
+
     this.segments.forEach(seg => {
-      const slotCount = Math.max(1, Math.floor(seg.length / buildSpacing));
+      const len = seg.length;
+      const midPoint = seg.getPointAt(0.5);
+      const isResidentialSeg = this.getZoneAt(midPoint.x, midPoint.z) === 'Residential';
+      const buildSpacing = isResidentialSeg ? 24 : (cfg.is50km ? 240 : 28);
+      const slotCount = Math.max(1, Math.floor(len / buildSpacing));
+
       (['left', 'right'] as const).forEach(side => {
         for (let s = 0; s < slotCount; s++) {
           const t = (s + 0.5) / slotCount;
           const pos = seg.getPointAt(t);
           const zone = this.getZoneAt(pos.x, pos.z);
-          const depth = 15 + Math.random() * 20;
-          const slot = new BuildingSlot(seg, side, t, depth, zone);
-          this.buildingSlots.push(slot);
+          const isRes = (zone === 'Residential');
+
+          // Keep clearance near intersection junctions
+          const distFromStart = t * len;
+          const distFromEnd = (1 - t) * len;
+          if (seg.startT === 0 && seg.edge.nodes[0].edges.length >= 3 && distFromStart < 14) continue;
+          if (seg.endT === 1 && seg.edge.nodes[1].edges.length >= 3 && distFromEnd < 14) continue;
+
+          // Row 1: Primary street-facing buildings
+          // Houses: 14m setback (sidewalk 4m + garden 4m + house half-depth 6m)
+          // Commercial/Towers: 20m setback (sidewalk 4m + plaza 6m + tower half-depth 10m)
+          const depth1 = isRes ? 14.0 : 20.0;
+          const slot1 = new BuildingSlot(seg, side, t, depth1, zone);
+          const pos1 = slot1.getWorldPosition();
+          if (!isSlotTooClose(pos1, isRes ? 16.0 : 18.0)) {
+            registerSlot(slot1, pos1);
+          }
+
+          // Row 2: Deep skyline only in Commercial/Downtown, never cramped in Residential
+          if (!isRes && !cfg.is50km && s % 2 === 0) {
+            const depth2 = depth1 + 24.0;
+            const slot2 = new BuildingSlot(seg, side, t, depth2, zone);
+            const pos2 = slot2.getWorldPosition();
+            if (!isSlotTooClose(pos2, 18.0)) {
+              registerSlot(slot2, pos2);
+            }
+          }
         }
       });
     });

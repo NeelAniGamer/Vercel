@@ -3450,7 +3450,10 @@ class Game {
           if (document.getElementById('task-tracker')) SZ.register('tasks', document.getElementById('task-tracker'), 'TR', { order: 1, priority: 'medium' });
           if (document.getElementById('civic-controls')) SZ.register('civic', document.getElementById('civic-controls'), 'BR', { order: 2, priority: 'low' });
           if (this.dom.mmc) {
-            SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
+            const isMob = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 950);
+            if (!isMob) {
+              SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
+            }
             // Tap/click minimap → open fullscreen map
             this.dom.mmc.addEventListener('click', () => {
               const ov = document.getElementById('fs-map-overlay');
@@ -4836,7 +4839,8 @@ class Game {
           this._createVehicleBeacon();
 
           setTimeout(() => {
-              toast('🚶 WASD to walk, F to enter your vehicle!', '#3498db', 6000);
+              const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 950);
+              toast(isTouch ? '🚶 Use joystick to walk, tap to enter your vehicle!' : '🚶 WASD to walk, F to enter your vehicle!', '#3498db', 6000);
           }, 500);
         }
       }
@@ -6642,8 +6646,8 @@ class Game {
           t = Math.max(0, Math.min(1, t));
           const dist = Math.hypot(a.x + abx * t - pos.x, a.z + abz * t - pos.z);
           const width = edge.width || 12;
-          // Must stay outside road half-width + full sidewalk (6m) + building half-width (11m) + buffer (1m)
-          if (dist < width / 2 + 18.0) {
+          // Must stay outside road half-width + full sidewalk width (4-6m) + clearance buffer (2.5m)
+          if (dist < width / 2 + 8.5) {
             return true;
           }
         }
@@ -8141,9 +8145,8 @@ class Game {
             if (rnd > 0.4) return 'factory';
             return 'industrial';
           } else if (zone === 'Residential') {
-            if (distFromCenter < 300 && rnd > 0.6) return 'apartment';
-            if (rnd > 0.6) return 'apartment';
-            if (rnd > 0.4) return 'house';
+            if (rnd > 0.3) return 'house';
+            if (rnd > 0.12) return 'apartment';
             return 'chawl';
           } else if (zone === 'Slums') {
             return rnd > 0.2 ? 'chawl' : 'shack';
@@ -8167,7 +8170,13 @@ class Game {
           'warehouse': ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_l'],
           'factory': ['industrial_e', 'industrial_f', 'industrial_g', 'industrial_h', 'industrial_i', 'industrial_j'],
           'industrial': ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_e'],
-          'house': ['suburban_a', 'suburban_b', 'suburban_c', 'suburban_d', 'suburban_e', 'suburban_k', 'suburban_r'],
+          'house': [
+            'suburban_a', 'suburban_b', 'suburban_c', 'suburban_d', 'suburban_e',
+            'suburban_f', 'suburban_g', 'suburban_h', 'suburban_i', 'suburban_j',
+            'suburban_k', 'suburban_l', 'suburban_m', 'suburban_n', 'suburban_o',
+            'suburban_p', 'suburban_q', 'suburban_r', 'suburban_s', 'suburban_t',
+            'suburban_u'
+          ],
           'chawl': ['suburban_f', 'suburban_g', 'suburban_h', 'suburban_i', 'suburban_j', 'suburban_o'],
           'shack': ['suburban_a', 'suburban_b']
         };
@@ -8178,6 +8187,7 @@ class Game {
           return candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : null;
         };
 
+        const placedBuildings = [];
         graph.buildingSlots.forEach(slot => {
           if (slot.occupied) return;
           
@@ -8189,16 +8199,26 @@ class Game {
             return;
           }
 
-          const rot = slot.getRotation();
           const distFromCenter = Math.hypot(pos.x, pos.z);
           const type = getBldgType(zone, distFromCenter);
+          const isHouseOrShop = (type === 'house' || type === 'shop');
+          const minClearance = isHouseOrShop ? 16.0 : 22.0;
+
+          const tooClose = placedBuildings.some(p => Math.hypot(p.x - pos.x, p.z - pos.z) < minClearance);
+          if (tooClose) {
+            slot.occupied = true;
+            return;
+          }
+          placedBuildings.push(pos);
+
+          const rot = slot.getRotation();
           const prefixes = typeMap[type] || typeMap['house'];
           const key = pickModel(prefixes);
 
           if (key && modelKeys.length > 0) {
             if (!instancedData[key]) instancedData[key] = [];
             const isMega = key.includes('twisted') || key.includes('eco_') || key.includes('tower');
-            const bScale = isMega ? 4.8 : ((type === 'house' || type === 'shop') ? 3.8 : ((type === 'tower' || type === 'skyscraper') ? 6.0 : 4.5));
+            const bScale = isMega ? 4.8 : (isHouseOrShop ? 3.8 : ((type === 'tower' || type === 'skyscraper') ? 6.0 : 4.5));
             instancedData[key].push({ x: pos.x, z: pos.z, r: rot, s: bScale });
             slot.occupied = true;
             return;
@@ -8223,18 +8243,26 @@ class Game {
           bMesh.receiveShadow = true;
           g.add(bMesh);
 
-          // Flat roof slab with parapet
+          // Roof: pitched roof for residential houses, flat roof with water tank for commercial/industrial
           const roofMat = new THREE.MeshToonMaterial({ color: roofColor, gradientMap: window._toonGrad });
-          const roofMesh = new THREE.Mesh(new THREE.BoxGeometry(bw + 0.3, 0.5, bd + 0.3), roofMat);
-          roofMesh.position.y = bh + 0.25;
-          g.add(roofMesh);
+          if (type === 'house') {
+            const pitchH = 2.5 + Math.random() * 1.0;
+            const roofMesh = new THREE.Mesh(new THREE.ConeGeometry(Math.hypot(bw, bd) * 0.45, pitchH, 4), roofMat);
+            roofMesh.position.y = bh + pitchH / 2;
+            roofMesh.rotation.y = Math.PI / 4;
+            g.add(roofMesh);
+          } else {
+            const roofMesh = new THREE.Mesh(new THREE.BoxGeometry(bw + 0.3, 0.5, bd + 0.3), roofMat);
+            roofMesh.position.y = bh + 0.25;
+            g.add(roofMesh);
 
-          // Rooftop Sintex / overhead water tank (authentic Indian urban skyline)
-          if (Math.random() > 0.3) {
-            const tankMat = new THREE.MeshToonMaterial({ color: Math.random() > 0.5 ? 0x1e293b : 0xf59e0b });
-            const tankMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 1.4, 12), tankMat);
-            tankMesh.position.set(bw * 0.2, bh + 1.2, bd * 0.2);
-            g.add(tankMesh);
+            // Rooftop Sintex / overhead water tank (authentic Indian urban skyline)
+            if (Math.random() > 0.3) {
+              const tankMat = new THREE.MeshToonMaterial({ color: Math.random() > 0.5 ? 0x1e293b : 0xf59e0b });
+              const tankMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 1.4, 12), tankMat);
+              tankMesh.position.set(bw * 0.2, bh + 1.2, bd * 0.2);
+              g.add(tankMesh);
+            }
           }
 
           // Daytime window grid (small dark panels)
@@ -9306,41 +9334,7 @@ class Game {
 
         if (this.keys['f']) {
           if (!this._fPressed && this._enterState === 'IDLE') {
-            if (this.playerVehicle && this.playerCharacter) {
-              if (this.isPedestrian) {
-                const dist = this.player.position.distanceTo(this.playerVehicle.position);
-                if (dist < 6.0) { if (window.TrafficAudio) window.TrafficAudio.playDoorOpen();
-                  this._enterDir = 1;
-                  this._enterTimer = 0;
-                  this._enterState = 'WALKING_TO_DOOR';
-                  this._camOverride = true;
-                  this._enterDoorSide = 'L';
-                  const vehPos = this.playerVehicle.position;
-                  const vehRot = this.playerVehicle.rotation.y;
-                  const doorLocal = new THREE.Vector3(1.2, 0, 0.4);
-                  doorLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
-                this._enterWalkStart = this.player.position.clone();
-                this._enterWalkEnd = vehPos.clone().add(doorLocal);
-                  this._enterWalkEnd.y = 0;
-                  toast('Walking to vehicle...', '#f39c12');
-                } else {
-                  toast('Too far from vehicle.', '#ff9500');
-                }
-              } else {
-                this._enterDir = -1;
-                this._enterTimer = 0;
-                this._enterState = 'OPENING_DOOR';
-                this._camOverride = true;
-                this._enterDoorSide = 'L';
-                const vehPos = this.playerVehicle.position;
-                const vehRot = this.playerVehicle.rotation.y;
-                const outLocal = new THREE.Vector3(3.0, 0, 0.4);
-                outLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
-                this._enterWalkEnd = vehPos.clone().add(outLocal);
-                this._enterWalkEnd.y = 0;
-                toast('Exiting vehicle...', '#f39c12');
-              }
-            }
+            this.toggleVehicleEntry();
           }
           this._fPressed = true;
         } else {
@@ -11447,6 +11441,47 @@ class Game {
         }
         if (this.mode === 'silentzone' && this.ms && this.player) this.ms.inSz = this.player.position.z > -60 && this.player.position.z < 20;
       }
+
+      toggleVehicleEntry() {
+        if (this._enterState !== 'IDLE') return;
+        if (this.playerVehicle && this.playerCharacter) {
+          if (this.isPedestrian) {
+            const dist = this.player.position.distanceTo(this.playerVehicle.position);
+            if (dist < 6.0) {
+              if (window.TrafficAudio) window.TrafficAudio.playDoorOpen();
+              this._enterDir = 1;
+              this._enterTimer = 0;
+              this._enterState = 'WALKING_TO_DOOR';
+              this._camOverride = true;
+              this._enterDoorSide = 'L';
+              const vehPos = this.playerVehicle.position;
+              const vehRot = this.playerVehicle.rotation.y;
+              const doorLocal = new THREE.Vector3(1.2, 0, 0.4);
+              doorLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
+              this._enterWalkStart = this.player.position.clone();
+              this._enterWalkEnd = vehPos.clone().add(doorLocal);
+              this._enterWalkEnd.y = 0;
+              toast('Walking to vehicle...', '#f39c12');
+            } else {
+              toast('Too far from vehicle.', '#ff9500');
+            }
+          } else {
+            this._enterDir = -1;
+            this._enterTimer = 0;
+            this._enterState = 'OPENING_DOOR';
+            this._camOverride = true;
+            this._enterDoorSide = 'L';
+            const vehPos = this.playerVehicle.position;
+            const vehRot = this.playerVehicle.rotation.y;
+            const outLocal = new THREE.Vector3(3.0, 0, 0.4);
+            outLocal.applyAxisAngle(new THREE.Vector3(0, 1, 0), vehRot);
+            this._enterWalkEnd = vehPos.clone().add(outLocal);
+            this._enterWalkEnd.y = 0;
+            toast('Exiting vehicle...', '#f39c12');
+          }
+        }
+      }
+
       // ── GTA-style enter/exit state machine ──
       _tickEnterExit(dt) {
         const s = this._enterState;
@@ -12152,7 +12187,8 @@ class Game {
         const hits = this.hits || 0;
         const totalCps = (this.cps && this.cps.length) ? this.cps.length : 1;
 
-        let step1Html = isCar ? '<span style="color:#00e676;">✔ Step 1: In Vehicle [F]</span>' : '<span style="color:#facc15;font-weight:700;">➔ Step 1: Press [F] to enter Car</span>';
+        const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 950);
+        let step1Html = isCar ? '<span style="color:#00e676;">✔ Step 1: In Vehicle</span>' : (isTouch ? '<span style="color:#facc15;font-weight:700;">➔ Step 1: Tap to enter Car</span>' : '<span style="color:#facc15;font-weight:700;">➔ Step 1: Press [F] to enter Car</span>');
         let step2Html = (isCar && !isGreen) ? '<span style="color:#facc15;font-weight:700;">➔ Step 2: Stop at Red Signal & Wait</span>' : (isGreen ? '<span style="color:#00e676;">✔ Step 2: Signal Green</span>' : '<span style="color:#64748b;">Step 2: Red Signal</span>');
         let step3Html = (isCar && isGreen)
           ? `<span style="color:#38bdf8;font-weight:700;">➔ Step 3: Drive to Destination (${distToGoal}m) [${hits}/${totalCps}]</span>`
@@ -12201,19 +12237,32 @@ class Game {
         if (warnMsg) {
             this.warnEl.innerHTML = warnMsg;
             this.warnEl.style.display = 'block';
+            this.warnEl.style.pointerEvents = 'none';
+            this.warnEl.onclick = null;
             if (!this.warnEl.classList.contains('flash')) { this.warnEl.classList.add('flash'); }
         } else {
             // ── Interaction Hint ──
             if (this._enterState !== 'IDLE') {
               this.warnEl.style.display = 'none';
+              this.warnEl.style.pointerEvents = 'none';
+              this.warnEl.onclick = null;
               const mcEnter = document.getElementById('mc-enter');
               if (mcEnter) mcEnter.style.display = 'none';
             } else if (this.isPedestrian && this.playerVehicle) {
               const dist = this.player.position.distanceTo(this.playerVehicle.position);
               const mcEnter = document.getElementById('mc-enter');
               if (dist < 5) {
-                this.warnEl.innerHTML = `
-                  <div style="background:linear-gradient(135deg, rgba(13, 19, 31, 0.95), rgba(21, 29, 45, 0.95)); border:2px solid #f59e0b; border-radius:30px; padding:10px 22px; color:#ffffff; font-weight:800; font-size:0.98rem; letter-spacing:0.4px; box-shadow:0 12px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.35); display:flex; align-items:center; gap:10px;">
+                const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 950);
+                this.warnEl.style.pointerEvents = 'auto';
+                this.warnEl.onclick = () => { this.toggleVehicleEntry(); };
+                this.warnEl.innerHTML = isTouch ? `
+                  <div style="background:linear-gradient(135deg, rgba(13, 19, 31, 0.95), rgba(21, 29, 45, 0.95)); border:2px solid #f59e0b; border-radius:30px; padding:10px 22px; color:#ffffff; font-weight:800; font-size:0.98rem; letter-spacing:0.4px; box-shadow:0 12px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.35); display:flex; align-items:center; gap:10px; cursor:pointer;-webkit-tap-highlight-color:rgba(245,158,11,0.3);">
+                    <span style="font-size:1.3rem;">🚗</span>
+                    <span style="background:linear-gradient(180deg, #f59e0b, #d97706); color:#070a14; padding:3px 12px; border-radius:15px; font-weight:900; margin:0 4px; font-size:0.88rem; box-shadow:0 2px 8px rgba(245,158,11,0.5);">TAP</span>
+                    <span>TO ENTER VEHICLE</span>
+                  </div>
+                ` : `
+                  <div style="background:linear-gradient(135deg, rgba(13, 19, 31, 0.95), rgba(21, 29, 45, 0.95)); border:2px solid #f59e0b; border-radius:30px; padding:10px 22px; color:#ffffff; font-weight:800; font-size:0.98rem; letter-spacing:0.4px; box-shadow:0 12px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.35); display:flex; align-items:center; gap:10px; cursor:pointer;">
                     <span style="font-size:1.3rem;">🚗</span>
                     <span>PRESS <kbd style="background:linear-gradient(180deg, #f59e0b, #d97706); color:#070a14; padding:3px 10px; border-radius:6px; font-weight:900; box-shadow:0 3px 0 #92400e; margin:0 4px; font-family:'Space Mono', monospace; font-size:0.95rem;">F</kbd> TO ENTER CAR</span>
                   </div>
@@ -12222,10 +12271,14 @@ class Game {
                 if (mcEnter) mcEnter.style.display = 'flex';
               } else {
                 this.warnEl.style.display = 'none';
+                this.warnEl.style.pointerEvents = 'none';
+                this.warnEl.onclick = null;
                 if (mcEnter) mcEnter.style.display = 'none';
               }
             } else {
               this.warnEl.style.display = 'none';
+              this.warnEl.style.pointerEvents = 'none';
+              this.warnEl.onclick = null;
               const mcEnterHide = document.getElementById('mc-enter');
               if (mcEnterHide) mcEnterHide.style.display = 'none';
             }

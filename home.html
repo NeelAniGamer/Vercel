@@ -470,6 +470,9 @@
         align-items: center;
         overflow: hidden;
       }
+      /* =========================================================
+         INTERACTIVE 3D ORRERY LABORATORY & STAGE MODE
+         ========================================================= */
       #orrery {
         position: absolute;
         inset: 0;
@@ -478,6 +481,8 @@
         display: block;
         opacity: 0;
         transition: opacity 1.8s var(--ease);
+        z-index: 1;
+        pointer-events: auto;
       }
       #orrery.v {
         opacity: 1;
@@ -488,6 +493,7 @@
         background: linear-gradient(to right, var(--void) 0%, rgba(7, 10, 20, 0.92) 20%, rgba(7, 10, 20, 0.52) 40%, rgba(7, 10, 20, 0.12) 60%, transparent 78%);
         z-index: 2;
         pointer-events: none;
+        transition: opacity 0.5s var(--ease);
       }
       .hvigb {
         position: absolute;
@@ -498,6 +504,7 @@
         background: linear-gradient(to top, var(--void), transparent);
         z-index: 2;
         pointer-events: none;
+        transition: opacity 0.5s var(--ease);
       }
       body.lm .hvig {
         background: linear-gradient(to right, var(--void) 0%, rgba(243, 242, 235, 0.92) 20%, rgba(243, 242, 235, 0.52) 40%, rgba(243, 242, 235, 0.12) 60%, transparent 78%);
@@ -507,13 +514,490 @@
       }
       .hc {
         position: relative;
-        z-index: 2;
+        z-index: 3;
         max-width: 1360px;
         width: 100%;
         margin: 0 auto;
         padding: 160px 52px 80px;
         /* Isolate layout so h1/p repaints don't bubble up to full page */
         contain: layout style;
+        pointer-events: none;
+        transition: opacity 0.5s var(--ease), transform 0.5s var(--ease), filter 0.5s var(--ease);
+      }
+      .hc h1, .hc p, .hc .hey, .hc .hcta, .hc .btn-p, .hc .btn-g {
+        pointer-events: auto;
+      }
+      .hero.stage-mode .hc {
+        opacity: 0.04;
+        pointer-events: none;
+        transform: scale(0.96) translateY(-8px);
+        filter: blur(5px);
+      }
+      .hero.stage-mode .hc * {
+        pointer-events: none !important;
+      }
+      .hero.stage-mode .hvig,
+      .hero.stage-mode .hvigb {
+        opacity: 0.08;
+      }
+
+      /* 3D HUD Controls */
+      .orrery-hud {
+        position: absolute;
+        top: 96px;
+        right: 48px;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        pointer-events: auto;
+      }
+      .hud-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(14, 20, 36, 0.72);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--lineb);
+        padding: 4px 6px;
+        border-radius: 30px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      }
+      .hud-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--ink);
+        padding: 6px 13px;
+        border-radius: 20px;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s var(--ease);
+        user-select: none;
+      }
+      .hud-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--line);
+        transform: translateY(-1px);
+      }
+      .hud-btn:active {
+        transform: translateY(1px);
+      }
+      .hud-mode-btn {
+        background: rgba(242, 184, 75, 0.12);
+        border: 1px solid rgba(242, 184, 75, 0.35);
+        color: var(--signal);
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 30px;
+        box-shadow: 0 10px 25px -5px rgba(242, 184, 75, 0.25);
+      }
+      .hud-mode-btn:hover {
+        background: rgba(242, 184, 75, 0.22);
+        border-color: var(--signal);
+      }
+      .hero.stage-mode .hud-mode-btn {
+        background: var(--signal);
+        color: #070a14;
+        border-color: var(--signal);
+        font-weight: 700;
+        box-shadow: 0 0 24px -2px var(--signal);
+      }
+
+      /* Planetary Quick-Focus Dock */
+      .orrery-dock {
+        position: absolute;
+        bottom: 36px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(10, 14, 26, 0.82);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--lineb);
+        border-radius: 40px;
+        padding: 6px 10px;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+        max-width: calc(100vw - 32px);
+        overflow-x: auto;
+        scrollbar-width: none;
+        pointer-events: auto;
+      }
+      .orrery-dock::-webkit-scrollbar {
+        display: none;
+      }
+      .dock-label {
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        letter-spacing: 0.18em;
+        color: var(--signal);
+        font-weight: 700;
+        padding: 0 8px;
+        border-right: 1px solid var(--lineb);
+        white-space: nowrap;
+      }
+      .dock-chips {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .dock-chip {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--dim);
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-family: var(--sans);
+        font-size: 0.78rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        transition: all 0.22s var(--ease);
+      }
+      .dock-chip:hover {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .dock-chip.active {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.14);
+        border-color: var(--chip-glow, var(--signal));
+        box-shadow: 0 0 16px -4px var(--chip-glow, var(--signal));
+        font-weight: 600;
+      }
+
+      /* Holographic Node Inspector Card */
+      .node-inspector {
+        position: absolute;
+        top: 50%;
+        right: 48px;
+        transform: translateY(-50%) translateX(24px);
+        width: 380px;
+        max-width: calc(100vw - 32px);
+        background: rgba(10, 14, 26, 0.9);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--lineb);
+        border-radius: 22px;
+        padding: 24px;
+        z-index: 25;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 40px -10px rgba(242, 184, 75, 0.15);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.35s var(--ease), transform 0.35s var(--ease), visibility 0.35s;
+      }
+      .node-inspector.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateY(-50%) translateX(0);
+      }
+      .ni-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        position: relative;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--lineb);
+      }
+      .ni-icon {
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--lineb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .ni-meta {
+        flex: 1;
+        min-width: 0;
+      }
+      .ni-badge {
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--signal);
+        margin-bottom: 4px;
+      }
+      .ni-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+      .ni-close {
+        background: transparent;
+        border: none;
+        color: var(--dim);
+        font-size: 1.4rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 8px;
+        transition: color 0.2s, background 0.2s;
+      }
+      .ni-close:hover {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .ni-telemetry {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      .ni-tele-cell {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--lineb);
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .ni-tele-k {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        letter-spacing: 0.1em;
+        color: var(--dim);
+      }
+      .ni-tele-v {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .ni-desc {
+        font-size: 0.88rem;
+        color: var(--dim);
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+      .ni-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .ni-btn {
+        font-family: var(--sans);
+        font-size: 0.82rem;
+        font-weight: 600;
+        border-radius: 24px;
+        padding: 10px 18px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: all 0.2s var(--ease);
+        text-decoration: none;
+      }
+      .ni-btn-primary {
+        background: var(--signal);
+        color: #070a14;
+        border: 1px solid var(--signal);
+        box-shadow: 0 8px 20px -6px var(--signal);
+      }
+      .ni-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px -4px var(--signal);
+      }
+      .ni-btn-secondary {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--ink);
+        border: 1px solid var(--lineb);
+      }
+      .ni-btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.14);
+        border-color: var(--line);
+        transform: translateY(-1px);
+      }
+      .ni-btn-ghost {
+        background: transparent;
+        color: var(--dim);
+        border: 1px solid transparent;
+      }
+      .ni-btn-ghost:hover {
+        color: var(--ink);
+      }
+
+      /* 3D Stage Mode Active Banner Hint */
+      .stage-hint {
+        position: absolute;
+        bottom: 84px;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        z-index: 18;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        background: rgba(14, 20, 36, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(242, 184, 75, 0.3);
+        border-radius: 30px;
+        padding: 6px 16px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--ink);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.4s var(--ease);
+      }
+      .hero.stage-mode .stage-hint {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(-50%) translateY(0);
+      }
+      .stage-hint .sh-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--signal);
+        box-shadow: 0 0 10px var(--signal);
+        animation: pulseDot 1.8s infinite;
+      }
+      @keyframes pulseDot {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.4); opacity: 0.6; }
+      }
+
+      /* Tooltip */
+      .ntip {
+        background: rgba(10, 14, 26, 0.94);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--lineb);
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        pointer-events: none;
+      }
+      .ntip-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      /* Light Mode Overrides for 3D Elements */
+      body.lm .hud-group,
+      body.lm .orrery-dock {
+        background: rgba(243, 242, 235, 0.88);
+        border-color: rgba(0, 0, 0, 0.12);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+      body.lm .hud-btn {
+        color: #070a14;
+      }
+      body.lm .hud-btn:hover {
+        background: rgba(0, 0, 0, 0.08);
+      }
+      body.lm .dock-chip {
+        color: #4b5563;
+      }
+      body.lm .dock-chip:hover {
+        color: #070a14;
+        background: rgba(0, 0, 0, 0.06);
+      }
+      body.lm .dock-chip.active {
+        color: #070a14;
+        background: rgba(0, 0, 0, 0.1);
+      }
+      body.lm .node-inspector {
+        background: rgba(243, 242, 235, 0.95);
+        border-color: rgba(0, 0, 0, 0.12);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+      }
+      body.lm .ni-title {
+        color: #070a14;
+      }
+      body.lm .ni-desc {
+        color: #4b5563;
+      }
+      body.lm .ni-tele-cell {
+        background: rgba(0, 0, 0, 0.04);
+        border-color: rgba(0, 0, 0, 0.08);
+      }
+      body.lm .ni-tele-v {
+        color: #070a14;
+      }
+      body.lm .stage-hint {
+        background: rgba(243, 242, 235, 0.92);
+        border-color: rgba(184, 114, 10, 0.35);
+        color: #070a14;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 900px) {
+        .orrery-hud {
+          top: 84px;
+          right: 20px;
+        }
+        .node-inspector {
+          right: 20px;
+          width: calc(100vw - 40px);
+        }
+      }
+      @media (max-width: 640px) {
+        .orrery-hud {
+          top: 76px;
+          right: 12px;
+          left: 12px;
+          justify-content: flex-end;
+        }
+        .hud-mode-label {
+          display: none;
+        }
+        .orrery-dock {
+          bottom: 24px;
+          padding: 4px 6px;
+        }
+        .dock-label {
+          display: none;
+        }
+        .dock-chip {
+          padding: 5px 9px;
+          font-size: 0.72rem;
+        }
+        .node-inspector {
+          right: 12px;
+          left: 12px;
+          width: auto;
+          top: auto;
+          bottom: 80px;
+          transform: translateY(20px);
+          max-height: 70vh;
+          overflow-y: auto;
+        }
+        .node-inspector.active {
+          transform: translateY(0);
+        }
       }
       .hey {
         font-family: var(--mono);
@@ -1777,11 +2261,28 @@
       <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
     </nav>
 
-    <section class="hero">
+    <section class="hero" id="heroSection">
       <canvas id="orrery"></canvas>
       <div class="hvig"></div>
       <div class="hvigb"></div>
-      <div class="hc">
+
+      <!-- 3D Interactive Control Deck (HUD) -->
+      <div class="orrery-hud" id="orreryHud" aria-label="3D Laboratory Controls">
+        <button class="hud-btn hud-mode-btn" id="stageModeBtn" title="Toggle 3D Lab / Stage Mode">
+          <span class="hud-mode-icon">🌌</span>
+          <span class="hud-mode-label">3D Lab Mode</span>
+        </button>
+        <div class="hud-group">
+          <button class="hud-btn" id="orbitToggleBtn" title="Pause / Resume Orbital Revolution">⏸ Pause</button>
+          <button class="hud-btn" id="speedToggleBtn" title="Cycle Orbital Speed (1x, 2x, 0.5x)">1.0x</button>
+          <button class="hud-btn" id="zoomInBtn" title="Zoom In (+)">+</button>
+          <button class="hud-btn" id="zoomOutBtn" title="Zoom Out (−)">&minus;</button>
+          <button class="hud-btn" id="resetCamBtn" title="Reset Camera Orientation & Zoom">⟲ Reset</button>
+          <button class="hud-btn hud-sound-btn" id="soundToggleBtn" title="Toggle Procedural Synth Chimes">🔇 Sound</button>
+        </div>
+      </div>
+
+      <div class="hc" id="heroContent">
         <div class="hey">Mumbai &middot; India &middot; Est.&nbsp;2024</div>
         <h1>Engineering The <em>Future</em> Of Interactive Learning.</h1>
         <p class="hlede">
@@ -1797,6 +2298,78 @@
           <a href="COL.apk" class="btn-g mobile-dl" download style="border-color: var(--signal); color: var(--signal)">Download Android App</a>
         </div>
       </div>
+
+      <!-- Planetary Quick-Focus Dock -->
+      <nav class="orrery-dock" id="orreryDock" aria-label="Quick Focus Planetary Dock">
+        <div class="dock-label">FOCUS</div>
+        <div class="dock-chips">
+          <button class="dock-chip active" data-node="core" style="--chip-glow: var(--signal)">
+            <span class="dock-icon">🪐</span><span class="dock-name">Core</span>
+          </button>
+          <button class="dock-chip" data-node="Traffic" style="--chip-glow: var(--signal)">
+            <span class="dock-icon">🏎️</span><span class="dock-name">Traffic Hero</span>
+          </button>
+          <button class="dock-chip" data-node="Solar" style="--chip-glow: var(--teal)">
+            <span class="dock-icon">☀️</span><span class="dock-name">Solar Engine</span>
+          </button>
+          <button class="dock-chip" data-node="ATI" style="--chip-glow: var(--ion)">
+            <span class="dock-icon">⌨️</span><span class="dock-name">ATI Typing</span>
+          </button>
+          <button class="dock-chip" data-node="Gesture" style="--chip-glow: var(--plasma)">
+            <span class="dock-icon">👁️</span><span class="dock-name">Vision Engine</span>
+          </button>
+          <button class="dock-chip" data-node="RPG" style="--chip-glow: var(--em)">
+            <span class="dock-icon">🎮</span><span class="dock-name">RPG Game</span>
+          </button>
+          <button class="dock-chip" data-node="QR" style="--chip-glow: var(--dim)">
+            <span class="dock-icon">📱</span><span class="dock-name">QR Matrix</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Holographic In-Place Node Inspector Card -->
+      <div class="node-inspector" id="nodeInspector" aria-hidden="true">
+        <div class="ni-header">
+          <div class="ni-icon" id="niIcon">🏎️</div>
+          <div class="ni-meta">
+            <div class="ni-badge" id="niBadge">3D Simulation & AI</div>
+            <h3 class="ni-title" id="niTitle">Mumbai Traffic Hero</h3>
+          </div>
+          <button class="ni-close" id="niCloseBtn" aria-label="Close Inspector">&times;</button>
+        </div>
+        <div class="ni-telemetry" id="niTelemetry">
+          <div class="ni-tele-cell"><span class="ni-tele-k">STATUS</span><span class="ni-tele-v" id="niTeleStatus">ONLINE</span></div>
+          <div class="ni-tele-cell"><span class="ni-tele-k">ENGINE</span><span class="ni-tele-v" id="niTeleEngine">THREE.JS / WEBGL</span></div>
+          <div class="ni-tele-cell"><span class="ni-tele-k">ORBIT</span><span class="ni-tele-v" id="niTeleOrbit">R=20 AU</span></div>
+          <div class="ni-tele-cell"><span class="ni-tele-k">FPS</span><span class="ni-tele-v" id="niTeleFps">60 STABLE</span></div>
+        </div>
+        <p class="ni-desc" id="niDesc">
+          An authentic Mumbai city driving simulator featuring procedurally controlled intersections, real-time traffic signal logic, pedestrians, and dynamic camera angles.
+        </p>
+        <div class="ni-actions">
+          <a href="Traffic/Driving" class="ni-btn ni-btn-primary" id="niLaunchBtn">
+            Launch Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <button class="ni-btn ni-btn-secondary" id="niFocusBtn">
+            Center View 🎯
+          </button>
+          <button class="ni-btn ni-btn-ghost" id="niDismissBtn">
+            Return Orbit ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- 3D Stage Hint Banner -->
+      <div class="stage-hint" id="stageHint">
+        <span class="sh-dot"></span> 3D Lab Active: Drag to Orbit &middot; Scroll to Zoom &middot; Click Planets to Inspect
+      </div>
+
+      <!-- 3D Node Tooltip -->
+      <div id="ntip" class="ntip" style="display:none; opacity:0; position:fixed; pointer-events:none; z-index:1000;">
+        <span id="ntip-dot" class="ntip-dot"></span>
+        <span id="ntip-name" class="ntip-name"></span>
+      </div>
+
       <div class="sci">
         <span>Scroll</span>
         <div class="scl"></div>
@@ -2984,13 +3557,324 @@
         })
       })()
     </script>
+    <!-- =========================================================
+         INTERACTIVE 3D ORRERY CONTROLLER & HUD ORCHESTRATION
+         ========================================================= -->
+    <script>
+      ;(function () {
+        // Project Knowledgebase & Telemetry
+        var PROJECTS_DATA = {
+          core: {
+            name: 'Class Of Learners',
+            badge: 'Studio Engine Hub',
+            key: 'signal',
+            page: 'about',
+            icon: '🪐',
+            stats: {
+              status: 'ONLINE',
+              engine: 'NATIVE WEBGL',
+              orbit: 'R=0 CORE',
+              fps: '60 STABLE'
+            },
+            desc: 'The central computational core synchronizing all six independent simulation engines. Built natively with zero bloat for maximum performance and fluid physics.',
+            cta: 'About Studio'
+          },
+          Traffic: {
+            name: 'Mumbai Traffic Hero',
+            badge: '3D Simulation & AI',
+            key: 'signal',
+            page: 'Traffic/Driving',
+            icon: '🏎️',
+            stats: {
+              status: 'ONLINE',
+              engine: 'THREE.JS / WEBGL',
+              orbit: 'R=20 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'An authentic Mumbai city driving simulator featuring procedurally controlled intersections, real-time traffic signal logic, pedestrians, and dynamic camera angles.',
+            cta: 'Launch Driving Sim'
+          },
+          Solar: {
+            name: 'Solar System Engine',
+            badge: 'Astrophysics & Orbitals',
+            key: 'teal',
+            page: 'solar',
+            icon: '☀️',
+            stats: {
+              status: 'ONLINE',
+              engine: 'HIGH-PRECISION 64B',
+              orbit: 'R=26 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'Deep-space telemetry and accurate orbital mechanics simulated in real-time. Explore celestial bodies, trajectory paths, and orbital resonance with variable time warp.',
+            cta: 'Open Solar Engine'
+          },
+          ATI: {
+            name: 'Advanced Typing Instructor',
+            badge: 'Interactive Learning',
+            key: 'ion',
+            page: 'ati',
+            icon: '⌨️',
+            stats: {
+              status: 'ONLINE',
+              engine: 'TOUCH TYPING UX',
+              orbit: 'R=14 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'Master Python, C++, and JavaScript syntax with real-time adaptive heatmaps, virtual mechanical switches, and developer-tailored code challenges.',
+            cta: 'Launch ATI'
+          },
+          Gesture: {
+            name: 'Perceptus Vision Engine',
+            badge: 'Spatial Machine Vision',
+            key: 'plasma',
+            page: 'gesture',
+            icon: '👁️',
+            stats: {
+              status: 'ONLINE',
+              engine: '10 HZ CV PIPELINE',
+              orbit: 'R=17 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'Contactless spatial human-computer interaction engine. Streams 10 Hz continuous posture and discrete gesture events for hands-free 3D control.',
+            cta: 'Explore Vision Engine'
+          },
+          RPG: {
+            name: 'RPG Game Engine',
+            badge: 'Gameplay & Physics',
+            key: 'em',
+            page: 'rpg',
+            icon: '🎮',
+            stats: {
+              status: 'ACTIVE DEV',
+              engine: 'CUSTOM CANVAS 2D',
+              orbit: 'R=23 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'An epic retro-modern browser RPG exploring procedural dungeon crawling, tilemap streaming, leveling mechanics, and dynamic battle state machines.',
+            cta: 'Preview RPG Game'
+          },
+          QR: {
+            name: 'QR Studio Matrix',
+            badge: 'Utility & Cryptography',
+            key: 'dim',
+            page: 'qr',
+            icon: '📱',
+            stats: {
+              status: 'ONLINE',
+              engine: 'FAST CLIENT JS',
+              orbit: 'R=30 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'Generate custom, scannable QR codes instantly. Customize dot shapes, vibrant gradients, and embedded logos with real-time high-res export.',
+            cta: 'Generate QR Code'
+          }
+        }
+
+        var heroSection = document.getElementById('heroSection')
+        var inspector = document.getElementById('nodeInspector')
+        var niIcon = document.getElementById('niIcon')
+        var niBadge = document.getElementById('niBadge')
+        var niTitle = document.getElementById('niTitle')
+        var niTeleStatus = document.getElementById('niTeleStatus')
+        var niTeleEngine = document.getElementById('niTeleEngine')
+        var niTeleOrbit = document.getElementById('niTeleOrbit')
+        var niTeleFps = document.getElementById('niTeleFps')
+        var niDesc = document.getElementById('niDesc')
+        var niLaunchBtn = document.getElementById('niLaunchBtn')
+        var niFocusBtn = document.getElementById('niFocusBtn')
+        var niCloseBtn = document.getElementById('niCloseBtn')
+        var niDismissBtn = document.getElementById('niDismissBtn')
+
+        var stageModeBtn = document.getElementById('stageModeBtn')
+        var orbitToggleBtn = document.getElementById('orbitToggleBtn')
+        var speedToggleBtn = document.getElementById('speedToggleBtn')
+        var zoomInBtn = document.getElementById('zoomInBtn')
+        var zoomOutBtn = document.getElementById('zoomOutBtn')
+        var resetCamBtn = document.getElementById('resetCamBtn')
+        var soundToggleBtn = document.getElementById('soundToggleBtn')
+        var dockChips = document.querySelectorAll('.dock-chip')
+
+        var currentNodeKey = null
+
+        // Open Holographic Inspector
+        window.openNodeInspector = function (nodeKey) {
+          if (!nodeKey) return
+          var data = PROJECTS_DATA[nodeKey] || PROJECTS_DATA[nodeKey.toLowerCase()]
+          if (!data) {
+            var keys = Object.keys(PROJECTS_DATA)
+            for (var k = 0; k < keys.length; k++) {
+              if (keys[k].toLowerCase() === nodeKey.toLowerCase()) {
+                data = PROJECTS_DATA[keys[k]]
+                nodeKey = keys[k]
+                break
+              }
+            }
+          }
+          if (!data) return
+
+          currentNodeKey = nodeKey
+
+          if (niIcon) niIcon.textContent = data.icon
+          if (niBadge) {
+            niBadge.textContent = data.badge
+            niBadge.style.color = 'var(--' + data.key + ')'
+          }
+          if (niTitle) niTitle.textContent = data.name
+          if (niTeleStatus) niTeleStatus.textContent = data.stats.status
+          if (niTeleEngine) niTeleEngine.textContent = data.stats.engine
+          if (niTeleOrbit) niTeleOrbit.textContent = data.stats.orbit
+          if (niTeleFps) niTeleFps.textContent = data.stats.fps
+          if (niDesc) niDesc.textContent = data.desc
+          if (niLaunchBtn) {
+            niLaunchBtn.href = data.page
+            niLaunchBtn.innerHTML = (data.cta || 'Launch Engine') + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
+            niLaunchBtn.style.background = 'var(--' + data.key + ')'
+            niLaunchBtn.style.borderColor = 'var(--' + data.key + ')'
+          }
+
+          if (inspector) {
+            inspector.classList.add('active')
+            inspector.setAttribute('aria-hidden', 'false')
+          }
+
+          // Sync dock chip
+          dockChips.forEach(function (chip) {
+            chip.classList.toggle('active', chip.dataset.node.toLowerCase() === nodeKey.toLowerCase())
+          })
+        }
+
+        // Close Inspector
+        window.closeNodeInspector = function () {
+          if (inspector) {
+            inspector.classList.remove('active')
+            inspector.setAttribute('aria-hidden', 'true')
+          }
+          currentNodeKey = null
+          dockChips.forEach(function (chip) { chip.classList.remove('active') })
+        }
+
+        if (niCloseBtn) niCloseBtn.addEventListener('click', function () {
+          window.closeNodeInspector()
+          if (window.__col3d && window.__col3d.resetView) window.__col3d.resetView()
+        })
+        if (niDismissBtn) niDismissBtn.addEventListener('click', function () {
+          window.closeNodeInspector()
+          if (window.__col3d && window.__col3d.resetView) window.__col3d.resetView()
+        })
+        if (niFocusBtn) niFocusBtn.addEventListener('click', function () {
+          if (currentNodeKey && window.__col3d && window.__col3d.flyToNode) {
+            window.__col3d.flyToNode(currentNodeKey)
+          }
+          if (window.__col3d && window.__col3d.zoom) {
+            window.__col3d.zoom(-10)
+          }
+        })
+
+        // Dock Chips Interaction
+        dockChips.forEach(function (chip) {
+          chip.addEventListener('click', function () {
+            var nodeName = chip.dataset.node
+            if (window.__col3d && window.__col3d.flyToNode) {
+              window.__col3d.flyToNode(nodeName)
+            }
+            window.openNodeInspector(nodeName)
+          })
+        })
+
+        // Stage Mode Toggle
+        if (stageModeBtn && heroSection) {
+          stageModeBtn.addEventListener('click', function () {
+            var isStage = heroSection.classList.toggle('stage-mode')
+            var label = stageModeBtn.querySelector('.hud-mode-label')
+            if (label) label.textContent = isStage ? 'Exit 3D Lab ✕' : '3D Lab Mode'
+            if (window.__col3d && window.__col3d.setStageMode) {
+              window.__col3d.setStageMode(isStage)
+            }
+            if (window.__col3d && window.__col3d.playChime) {
+              window.__col3d.playChime('ping')
+            }
+          })
+        }
+
+        // Orbit Pause / Resume
+        if (orbitToggleBtn) {
+          orbitToggleBtn.addEventListener('click', function () {
+            if (!window.__col3d) return
+            var isAuto = window.__col3d.toggleAutoOrbit()
+            orbitToggleBtn.textContent = isAuto ? '⏸ Pause' : '▶ Orbit'
+            if (window.__col3d.playChime) window.__col3d.playChime('ping')
+          })
+        }
+
+        // Orbit Speed Cycle (1.0x -> 2.0x -> 0.5x -> 1.0x)
+        var speeds = [1.0, 2.0, 0.5]
+        var speedIdx = 0
+        if (speedToggleBtn) {
+          speedToggleBtn.addEventListener('click', function () {
+            if (!window.__col3d) return
+            speedIdx = (speedIdx + 1) % speeds.length
+            var spd = speeds[speedIdx]
+            window.__col3d.setSpeed(spd)
+            speedToggleBtn.textContent = spd.toFixed(1) + 'x'
+            if (window.__col3d.playChime) window.__col3d.playChime('ping')
+          })
+        }
+
+        // Zoom Controls
+        if (zoomInBtn) {
+          zoomInBtn.addEventListener('click', function () {
+            if (window.__col3d && window.__col3d.zoom) window.__col3d.zoom(-8)
+          })
+        }
+        if (zoomOutBtn) {
+          zoomOutBtn.addEventListener('click', function () {
+            if (window.__col3d && window.__col3d.zoom) window.__col3d.zoom(8)
+          })
+        }
+
+        // Reset Camera
+        if (resetCamBtn) {
+          resetCamBtn.addEventListener('click', function () {
+            if (window.__col3d && window.__col3d.resetView) window.__col3d.resetView()
+            window.closeNodeInspector()
+          })
+        }
+
+        // Sound Toggle
+        if (soundToggleBtn) {
+          var isSound = false
+          try { isSound = localStorage.getItem('col_3d_sound') === 'true' } catch(e) {}
+          soundToggleBtn.textContent = isSound ? '🔊 Sound' : '🔇 Sound'
+
+          soundToggleBtn.addEventListener('click', function () {
+            if (!window.__col3d) return
+            var s = window.__col3d.toggleSound()
+            soundToggleBtn.textContent = s ? '🔊 Sound' : '🔇 Sound'
+          })
+        }
+
+        // Keyboard navigation (Escape resets view & closes inspector)
+        window.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            if (inspector && inspector.classList.contains('active')) {
+              window.closeNodeInspector()
+              if (window.__col3d && window.__col3d.resetView) window.__col3d.resetView()
+            } else if (heroSection && heroSection.classList.contains('stage-mode')) {
+              heroSection.classList.remove('stage-mode')
+              var label = stageModeBtn.querySelector('.hud-mode-label')
+              if (label) label.textContent = '3D Lab Mode'
+              if (window.__col3d && window.__col3d.setStageMode) window.__col3d.setStageMode(false)
+            }
+          }
+        })
+      })()
+    </script>
     <script>
     function hzInit(){var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}hzSync()}
     function hzSync(){var el=document.querySelector('.hz-toggle');if(!el)return;if(document.body.classList.contains('lm')){el.classList.remove('night')}else{el.classList.add('night')}}
-    // rAF-deferred so the click event completes instantly (fixes 651ms INP on hz-toggle)
     function hzToggle(){requestAnimationFrame(function(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');hzSync()})}
     hzInit()
-
     </script>
   </body>
 </html>

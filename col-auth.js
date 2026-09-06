@@ -45,6 +45,149 @@ if (!window.closeMo) {
   if (window._colAuthRunning) return
   window._colAuthRunning = true
 
+  // --- Local Account Storage Utilities ---
+  function getLocalAccounts() {
+    try {
+      const raw = localStorage.getItem('col_local_accounts')
+      const list = raw ? JSON.parse(raw) : []
+      const trafficRaw = localStorage.getItem('traffic_local_user')
+      if (trafficRaw) {
+        const tu = JSON.parse(trafficRaw)
+        if (tu && (tu.name || tu.username)) {
+          const exists = list.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))
+          if (!exists) {
+            list.push({
+              id: tu.id || ('local_' + Date.now()),
+              name: tu.name || tu.username,
+              username: tu.username || ('@' + (tu.name || 'driver').toLowerCase().replace(/\s+/g, '')),
+              email: tu.email || '',
+              pin: tu.pin || tu.password || '',
+              password: tu.pin || tu.password || '',
+              role: tu.role || 'student',
+              vehicle: tu.vehicle || 'Car',
+              age: tu.age || 18,
+              language: tu.language || 'en',
+              createdAt: tu.createdAt || new Date().toISOString()
+            })
+            localStorage.setItem('col_local_accounts', JSON.stringify(list))
+          }
+        }
+      }
+      return list
+    } catch (e) {
+      return []
+    }
+  }
+
+  function saveLocalAccount(acc) {
+    try {
+      const list = getLocalAccounts()
+      const normUname = (acc.username || '').toLowerCase()
+      const normEmail = (acc.email || '').toLowerCase()
+      const idx = list.findIndex(a => 
+        (normUname && (a.username || '').toLowerCase() === normUname) ||
+        (normEmail && (a.email || '').toLowerCase() === normEmail) ||
+        (acc.id && a.id === acc.id)
+      )
+      if (idx >= 0) {
+        list[idx] = { ...list[idx], ...acc }
+      } else {
+        list.push(acc)
+      }
+      localStorage.setItem('col_local_accounts', JSON.stringify(list))
+    } catch (e) {
+      console.warn('[col-auth] Could not save local account:', e)
+    }
+  }
+
+  function getActiveLocalUser() {
+    try {
+      let raw = localStorage.getItem('col_active_local_user')
+      if (!raw) {
+        raw = localStorage.getItem('traffic_local_user')
+      }
+      if (!raw) return null
+      const u = JSON.parse(raw)
+      if (!u || (!u.name && !u.username)) return null
+      return {
+        id: u.id || ('local_' + (u.username || u.name).replace(/[^a-zA-Z0-9_]/g, '')),
+        name: u.name || u.username,
+        email: u.email || (u.username ? (u.username.replace('@','') + '@local.col') : 'local@col.io'),
+        username: u.username || ('@' + (u.name || 'user').toLowerCase().replace(/\s+/g, '')),
+        picture: u.picture || u.avatar || null,
+        isLocal: true,
+        user_metadata: {
+          full_name: u.name || u.username,
+          name: u.name || u.username,
+          role: u.role || 'student',
+          preferred_vehicle: u.vehicle || 'Car'
+        }
+      }
+    } catch (e) {
+      return null
+    }
+  }
+
+  function setActiveLocalUser(acc) {
+    try {
+      const fullAcc = {
+        id: acc.id || ('local_' + Date.now()),
+        name: acc.name || acc.username,
+        username: acc.username || ('@' + (acc.name || 'user').toLowerCase().replace(/\s+/g, '')),
+        email: acc.email || '',
+        pin: acc.pin || acc.password || '',
+        password: acc.pin || acc.password || '',
+        role: acc.role || 'student',
+        vehicle: acc.vehicle || 'Car',
+        age: acc.age || 18,
+        language: acc.language || 'en',
+        updatedAt: new Date().toISOString()
+      }
+      saveLocalAccount(fullAcc)
+      localStorage.setItem('col_active_local_user', JSON.stringify(fullAcc))
+      localStorage.setItem('traffic_local_user', JSON.stringify(fullAcc))
+      localStorage.setItem('trafficSetupComplete', 'true')
+      window.colUser = {
+        id: fullAcc.id,
+        name: fullAcc.name,
+        email: fullAcc.email || (fullAcc.username.replace('@','') + '@local.col'),
+        username: fullAcc.username,
+        picture: fullAcc.picture || null,
+        isLocal: true,
+        user_metadata: {
+          full_name: fullAcc.name,
+          name: fullAcc.name,
+          role: fullAcc.role,
+          preferred_vehicle: fullAcc.vehicle
+        }
+      }
+    } catch (e) {
+      console.warn('[col-auth] Could not set active local user:', e)
+    }
+  }
+
+  function clearActiveLocalUser() {
+    try {
+      localStorage.removeItem('col_active_local_user')
+      localStorage.removeItem('traffic_local_user')
+      localStorage.removeItem('trafficSetupComplete')
+      window.colUser = null
+    } catch (e) {}
+  }
+
+  // Pre-seed local user if present
+  const initialLocal = getActiveLocalUser()
+  if (initialLocal && !window.colUser) {
+    window.colUser = initialLocal
+  }
+
+  // Expose local auth utilities for sub-apps
+  window.colGetLocalAccounts = getLocalAccounts
+  window.colSaveLocalAccount = saveLocalAccount
+  window.colGetActiveLocalUser = getActiveLocalUser
+  window.colSetActiveLocalUser = setActiveLocalUser
+  window.colClearActiveLocalUser = clearActiveLocalUser
+
   // 1. Fetch Global Configuration to get Supabase Keys
   let authConfig = null
   try {
@@ -75,7 +218,8 @@ if (!window.closeMo) {
       initSupabase(authConfig.url, authConfig.key)
     }
   } else {
-    window.colUser = null
+    const localUser = getActiveLocalUser()
+    window.colUser = localUser || null
     dispatchAuthEvent()
   }
 
@@ -173,12 +317,13 @@ if (!window.closeMo) {
           console.error('[col-auth] Profile sync error:', e);
         }
       } else {
-        window.colUser = null
+        const localUser = getActiveLocalUser()
+        window.colUser = localUser || null
       }
       dispatchAuthEvent()
       updateAuthUI()
 
-      if (!session && !window._oneTapAttempted && (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT')) {
+      if (!session && !window.colUser && !window._oneTapAttempted && (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT')) {
         window._oneTapAttempted = true
         if (event === 'INITIAL_SESSION') {
           initOneTap()
@@ -363,13 +508,15 @@ if (!window.closeMo) {
     if (!body) return
 
     if (window.colUser) {
+      const isLocal = !!window.colUser.isLocal
       body.innerHTML = `
                 <div style="text-align:center; margin-bottom: 25px;">
                     <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--signal, #F2B84B); margin: 0 auto 15px; display: flex; justify-content: center; align-items: center; font-size: 2rem; overflow: hidden; border: 2px solid var(--signal, #F2B84B); color: var(--void, #070A14); font-weight: 800;">
                         ${window.colUser.picture ? `<img src="${window.colUser.picture}" style="width:100%; height:100%; object-fit:cover;">` : (window.colUser.name || '?').charAt(0).toUpperCase()}
                     </div>
                     <h3 style="margin-bottom: 5px; font-size: 1.2rem; color: var(--ink, #E8E3D8);">${window.colUser.name}</h3>
-                    <p style="color: var(--dim, #8891AA); font-size: 0.9rem;">${window.colUser.email}</p>
+                    <p style="color: var(--dim, #8891AA); font-size: 0.9rem;">${window.colUser.email || window.colUser.username || 'Local Profile'}</p>
+                    ${isLocal ? `<span style="display:inline-block; margin-top:8px; padding:4px 10px; background:rgba(94,212,245,0.15); color:var(--ion,#5ED4F5); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(94,212,245,0.3);">💾 Local Account</span>` : ''}
                 </div>
                 <button class="col-auth-danger" onclick="colDoLogout()">Disconnect Account</button>
             `
@@ -383,7 +530,7 @@ if (!window.closeMo) {
                 <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                 Continue with Google
             </button>
-            <div class="col-auth-div">OR EMAIL</div>
+            <div class="col-auth-div">OR EMAIL / USERNAME</div>
             
             <div class="col-auth-tab-group">
                 <div class="col-auth-tab ${isLogin ? 'active' : ''}" onclick="window._renderAuthTab('login')">Sign In</div>
@@ -394,8 +541,8 @@ if (!window.closeMo) {
 
             <form id="colAuthForm" onsubmit="window._handleColAuthSubmit(event, '${tab}')">
                 ${!isLogin ? `<input type="text" id="colAuthName" class="col-auth-inp" placeholder="Display Name" required>` : ''}
-                <input type="email" id="colAuthEmail" class="col-auth-inp" placeholder="Email Address" required>
-                <input type="password" id="colAuthPass" class="col-auth-inp" placeholder="Password" required minlength="6">
+                <input type="text" id="colAuthEmail" class="col-auth-inp" placeholder="${isLogin ? 'Email Address or @username' : 'Email Address'}" required>
+                <input type="password" id="colAuthPass" class="col-auth-inp" placeholder="${isLogin ? 'Password or Local PIN' : 'Password (min 6 characters)'}" required minlength="${isLogin ? 1 : 6}">
                 <button type="submit" class="col-auth-btn" id="colAuthSubmitBtn">${isLogin ? 'Sign In' : 'Create Account'}</button>
             </form>
         `
@@ -425,10 +572,9 @@ if (!window.closeMo) {
 
   window._handleColAuthSubmit = async (e, mode) => {
     e.preventDefault()
-    if (!supabaseClient) return
 
-    const email = document.getElementById('colAuthEmail').value
-    const pass = document.getElementById('colAuthPass').value
+    const emailInput = document.getElementById('colAuthEmail').value.trim()
+    const pass = document.getElementById('colAuthPass').value.trim()
     const btn = document.getElementById('colAuthSubmitBtn')
     const errDiv = document.getElementById('colAuthError')
 
@@ -437,29 +583,167 @@ if (!window.closeMo) {
     errDiv.style.display = 'none'
 
     try {
-      let res
-      if (mode === 'signup') {
-        const name = document.getElementById('colAuthName').value
-        res = await supabaseClient.auth.signUp({
-          email: email,
-          password: pass,
-          options: { data: { full_name: name } }
+      if (mode === 'login') {
+        // 1. Check local accounts first (by email or username or display name)
+        const localAccounts = getLocalAccounts()
+        const normInput = emailInput.toLowerCase()
+        const normUname = normInput.startsWith('@') ? normInput : '@' + normInput
+
+        const matched = localAccounts.find(acc => {
+          const accEmail = (acc.email || '').toLowerCase()
+          const accUname = (acc.username || '').toLowerCase()
+          const accName = (acc.name || '').toLowerCase()
+          return accEmail === normInput || accUname === normInput || accUname === normUname || accName === normInput
         })
-      } else {
-        res = await supabaseClient.auth.signInWithPassword({
-          email: email,
+
+        if (matched) {
+          const expectedPin = (matched.pin || matched.password || '').toString().trim()
+          if (!expectedPin || expectedPin === pass) {
+            setActiveLocalUser(matched)
+            const mo = document.getElementById('colAuthModal')
+            if (mo) mo.classList.remove('open')
+            const loginMo = document.getElementById('loginMo')
+            if (loginMo) loginMo.classList.remove('open')
+            dispatchAuthEvent()
+            updateAuthUI()
+            btn.textContent = 'Sign In'
+            btn.disabled = false
+            return
+          } else {
+            throw new Error('Incorrect password or PIN for this local account.')
+          }
+        }
+
+        // 2. If not found in local accounts, try Supabase account system RPC first
+        if (supabaseClient) {
+          try {
+            const rpcRes = await supabaseClient.rpc('authenticate_account', {
+              p_identifier: emailInput,
+              p_pin: pass
+            })
+            if (rpcRes && rpcRes.data && rpcRes.data.success) {
+              const acc = rpcRes.data
+              setActiveLocalUser({
+                id: acc.id,
+                name: acc.display_name || acc.username,
+                username: acc.username,
+                email: acc.email || '',
+                pin: pass,
+                password: pass,
+                role: acc.role || 'student',
+                vehicle: acc.preferred_vehicle || 'Car',
+                age: acc.age || 18,
+                language: acc.language || 'en',
+                total: acc.total_score || 0,
+                badges: acc.badges || [],
+                updatedAt: new Date().toISOString()
+              })
+              const mo = document.getElementById('colAuthModal')
+              if (mo) mo.classList.remove('open')
+              const loginMo = document.getElementById('loginMo')
+              if (loginMo) loginMo.classList.remove('open')
+              dispatchAuthEvent()
+              updateAuthUI()
+              btn.textContent = 'Sign In'
+              btn.disabled = false
+              return
+            }
+          } catch (rpcErr) {
+            console.warn('[col-auth] Account system RPC auth bypass/error:', rpcErr)
+          }
+        }
+
+        if (!supabaseClient) {
+          throw new Error('Local account not found. Please check your username or PIN.')
+        }
+
+        let res = await supabaseClient.auth.signInWithPassword({
+          email: emailInput,
           password: pass
         })
-      }
 
-      if (res.error) throw res.error
-
-      if (mode === 'signup' && res.data.user && !res.data.session) {
-        errDiv.textContent = 'Please check your email to confirm registration.'
-        errDiv.style.color = '#10b981'
-        errDiv.style.display = 'block'
+        if (res.error) throw res.error
+        const mo = document.getElementById('colAuthModal')
+        if (mo) mo.classList.remove('open')
+        const loginMo = document.getElementById('loginMo')
+        if (loginMo) loginMo.classList.remove('open')
       } else {
-        document.getElementById('colAuthModal').classList.remove('open')
+        // Signup mode
+        const name = document.getElementById('colAuthName').value.trim()
+        if (supabaseClient) {
+          try {
+            const res = await supabaseClient.auth.signUp({
+              email: emailInput,
+              password: pass,
+              options: { data: { full_name: name } }
+            })
+            if (res.error) throw res.error
+
+            if (res.data.user && !res.data.session) {
+              errDiv.textContent = 'Please check your email to confirm registration.'
+              errDiv.style.color = '#10b981'
+              errDiv.style.display = 'block'
+            } else {
+              const mo = document.getElementById('colAuthModal')
+              if (mo) mo.classList.remove('open')
+            }
+          } catch (cloudErr) {
+            console.warn('[col-auth] Cloud signup failed, saving to account system:', cloudErr)
+            // Fallback: save as account
+            const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + Math.floor(Math.random() * 1000))
+            const newAcc = {
+              id: 'local_' + Date.now(),
+              name: name,
+              username: uname,
+              email: emailInput,
+              pin: pass,
+              password: pass,
+              role: 'student',
+              vehicle: 'Car',
+              createdAt: new Date().toISOString()
+            }
+            try {
+              const reg = await supabaseClient.rpc('register_account', {
+                p_username: uname,
+                p_pin: pass,
+                p_display_name: name,
+                p_email: emailInput,
+                p_role: 'student',
+                p_vehicle: 'Car'
+              })
+              if (reg && reg.data && reg.data.success) {
+                newAcc.id = reg.data.id
+              }
+            } catch (regErr) {
+              console.warn('[col-auth] Account system cloud registration failed:', regErr)
+            }
+            setActiveLocalUser(newAcc)
+            const mo = document.getElementById('colAuthModal')
+            if (mo) mo.classList.remove('open')
+            dispatchAuthEvent()
+            updateAuthUI()
+            return
+          }
+        } else {
+          // Offline / local only
+          const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + Math.floor(Math.random() * 1000))
+          const newAcc = {
+            id: 'local_' + Date.now(),
+            name: name,
+            username: uname,
+            email: emailInput,
+            pin: pass,
+            password: pass,
+            role: 'student',
+            vehicle: 'Car',
+            createdAt: new Date().toISOString()
+          }
+          setActiveLocalUser(newAcc)
+          const mo = document.getElementById('colAuthModal')
+          if (mo) mo.classList.remove('open')
+          dispatchAuthEvent()
+          updateAuthUI()
+        }
       }
     } catch (error) {
       errDiv.textContent = error.message
@@ -471,10 +755,30 @@ if (!window.closeMo) {
   }
 
   window.colDoLogout = async () => {
-    if (!supabaseClient) return
-    await supabaseClient.auth.signOut()
-    document.getElementById('colAuthModal').classList.remove('open')
+    if (window.colUser && window.colUser.isLocal) {
+      clearActiveLocalUser()
+      const modal = document.getElementById('colAuthModal')
+      if (modal) modal.classList.remove('open')
+      const loginMo = document.getElementById('loginMo')
+      if (loginMo) loginMo.classList.remove('open')
+      dispatchAuthEvent()
+      updateAuthUI()
+      return
+    }
+    if (supabaseClient) {
+      try {
+        await supabaseClient.auth.signOut()
+      } catch (e) {}
+    }
+    clearActiveLocalUser()
+    const modal = document.getElementById('colAuthModal')
+    if (modal) modal.classList.remove('open')
+    const loginMo = document.getElementById('loginMo')
+    if (loginMo) loginMo.classList.remove('open')
+    dispatchAuthEvent()
+    updateAuthUI()
   }
+  window.doLogout = window.colDoLogout
 
   // --- Secure Profile Linking (Verification Code Flow) ---
   window.colAuthGenerateCode = async () => {
