@@ -2,18 +2,13 @@
 <html lang="en">
   <head>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
-    <meta name="description" content="Perceptus — Push Producer Spatial Machine Vision Engine. Local & API-mode in-browser gesture, face, and screen telemetry streaming." />
+    <meta name="description" content="Perceptus — the AI brain that understands your voice, your screen, and your intent. Talk or type, and it answers, writes, and acts. Hosted or local brain." />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Perceptus Engine | Spatial Vision & Push Producer</title>
+    <title>Perceptus Brain | Voice &amp; Screen Understanding</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
-    
-    <!-- MediaPipe Vision SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
 
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
@@ -35,7 +30,6 @@
         --amber: #ffb703;
         --emerald: #00e676;
         --rose: #ff3366;
-        --purple: #b388ff;
         --text-primary: #f8fafc;
         --text-secondary: #94a3b8;
         --text-dim: #475569;
@@ -58,20 +52,18 @@
         position: relative;
       }
 
-      /* Subtle Grid Backdrop */
       body::before {
         content: '';
         position: fixed;
         inset: 0;
         pointer-events: none;
         z-index: -1;
-        background-image: 
+        background-image:
           linear-gradient(to right, rgba(0, 240, 255, 0.02) 1px, transparent 1px),
           linear-gradient(to bottom, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
         background-size: 40px 40px;
       }
 
-      /* Top Hero Section */
       .perceptus-hero {
         padding: 60px 24px 40px;
         max-width: 1200px;
@@ -116,7 +108,6 @@
         line-height: 1.6;
       }
 
-      /* Main Architecture Grid */
       .engine-layout {
         max-width: 1400px;
         margin: 0 auto 60px;
@@ -175,8 +166,8 @@
       .status-live { background: rgba(0, 230, 118, 0.15); color: var(--emerald); border: 1px solid rgba(0, 230, 118, 0.3); }
       .status-push { background: rgba(0, 240, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3); }
 
-      /* Video & Vision Viewport */
-      .vision-viewport {
+      /* Conversation viewport */
+      .chat-viewport {
         position: relative;
         width: 100%;
         height: 480px;
@@ -185,61 +176,102 @@
         background: #020306;
         border: 1px solid rgba(0, 240, 255, 0.2);
         display: flex;
-        justify-content: center;
-        align-items: center;
+        flex-direction: column;
       }
 
-      #vision_canvas {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transform: scaleX(-1);
-      }
-
-      .vision-overlay-ui {
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 18px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        padding: 16px;
+        gap: 12px;
       }
 
-      .crosshair-grid {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+      .msg {
+        max-width: 82%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        animation: msgin 0.25s ease;
       }
-
-      .live-hud-stats {
-        display: flex;
-        justify-content: space-between;
-        z-index: 10;
-      }
-
-      .stat-chip {
-        background: rgba(5, 8, 15, 0.85);
+      @keyframes msgin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+      .msg-you {
+        align-self: flex-end;
+        background: rgba(0, 240, 255, 0.12);
         border: 1px solid var(--border-active);
-        border-radius: 8px;
-        padding: 6px 12px;
+        color: var(--text-primary);
+        border-bottom-right-radius: 4px;
+      }
+      .msg-brain {
+        align-self: flex-start;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        border-bottom-left-radius: 4px;
+      }
+      .msg-brain .msg-say { color: var(--cyan); font-weight: 600; display: block; margin-bottom: 4px; }
+      .msg-meta {
         font-family: var(--font-mono);
-        font-size: 0.78rem;
-        color: var(--cyan);
-        backdrop-filter: blur(8px);
+        font-size: 0.68rem;
+        color: var(--text-dim);
+        margin-top: 6px;
       }
 
-      /* Push Producer Controls Form */
+      .chat-input-row {
+        display: flex;
+        gap: 10px;
+        padding: 12px;
+        border-top: 1px solid rgba(0, 240, 255, 0.15);
+        background: rgba(5, 8, 15, 0.85);
+      }
+
+      .chat-input-row input {
+        flex: 1;
+        background: rgba(4, 7, 14, 0.9);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        padding: 12px 16px;
+        border-radius: 12px;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .chat-input-row input:focus {
+        border-color: var(--cyan);
+        box-shadow: 0 0 12px var(--cyan-glow);
+      }
+
+      .mic-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        border: 1px solid var(--border-active);
+        background: rgba(0, 240, 255, 0.1);
+        color: var(--cyan);
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      .mic-btn:hover { background: rgba(0, 240, 255, 0.25); }
+      .mic-btn.listening {
+        background: var(--rose);
+        border-color: var(--rose);
+        color: #fff;
+        animation: pulse 1.1s infinite;
+      }
+      @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.5); } 50% { box-shadow: 0 0 0 12px rgba(255, 51, 102, 0); } }
+
       .config-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 16px;
       }
-
       @media (max-width: 600px) {
-        .config-grid {
-          grid-template-columns: 1fr;
-        }
+        .config-grid { grid-template-columns: 1fr; }
       }
 
       .form-group {
@@ -310,7 +342,6 @@
       input:checked + .slider { background-color: var(--cyan); }
       input:checked + .slider:before { transform: translateX(20px); }
 
-      /* Action Buttons */
       .btn-primary {
         background: linear-gradient(135deg, var(--cyan), #00b4d8);
         color: #000;
@@ -352,7 +383,6 @@
         color: var(--cyan);
       }
 
-      /* Live Terminal Log */
       .terminal-window {
         background: #030408;
         border: 1px solid rgba(0, 240, 255, 0.2);
@@ -360,7 +390,7 @@
         padding: 14px;
         font-family: var(--font-mono);
         font-size: 0.8rem;
-        height: 260px;
+        height: 200px;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
@@ -373,7 +403,6 @@
       .log-success { color: var(--emerald); }
       .log-error { color: var(--rose); }
 
-      /* Telemetry Cards */
       .telemetry-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -403,155 +432,156 @@
         <a href="/" class="nav-link">Home</a>
         <a href="about" class="nav-link">About</a>
         <a href="ati" class="nav-link">Typing ⌨️</a>
-        <a href="solar" class="nav-link">Solar 🌍</a>
-        <a href="gesture" class="nav-link active" style="color: var(--cyan);">Perceptus 👁️</a>
+        <a href="solar" class="nav-link">Solar 🌌</a>
+        <a href="gesture" class="nav-link active" style="color: var(--cyan);">Perceptus 🧠</a>
         <a href="Career" class="nav-link">Career 🧭</a>
-        <a href="Database_Logic" class="nav-link">Database ⚡</a>
+        <a href="Database_Logic" class="nav-link">Database ⨜</a>
         <a href="qr" class="nav-link">QR Studio ⬛</a>
       </div>
     </nav>
 
     <!-- Hero Header -->
     <header class="perceptus-hero">
-      <div class="badge-pill">⚡ Push Producer Spatial Engine</div>
-      <h1 class="hero-title">PERCEPTUS VISION</h1>
+      <div class="badge-pill">🧠 Perceptus AI Brain</div>
+      <h1 class="hero-title">PERCEPTUS BRAIN</h1>
       <p class="hero-subtitle">
-        In-browser MediaPipe WASM/GPU spatial gesture &amp; facial telemetry. Streams 10 Hz telemetry frames and instantaneous discrete events directly to local Python agents or remote REST APIs.
+        Talk or type — Perceptus understands your voice, your screen, and what you actually mean.
+        It answers, writes text for you, and can control your whole Windows PC through the desktop app.
+        Connect to the hosted brain or run it locally.
       </p>
     </header>
 
     <!-- Main App Grid -->
     <main class="engine-layout">
-      <!-- Left Column: Vision Viewport & Live Stream -->
+      <!-- Left Column: Conversation -->
       <section class="panel">
         <div class="panel-header">
           <div class="panel-title">
-            <span>👁️</span> Vision Stream &amp; Landmarks
+            <span>💬</span> Talk to the Brain
           </div>
-          <div id="engine-badge" class="status-pill status-offline">● OFFLINE</div>
+          <div id="engine-badge" class="status-pill status-offline">◌ NOT CONNECTED</div>
         </div>
 
-        <div class="vision-viewport">
-          <canvas id="vision_canvas" width="1280" height="720"></canvas>
-          <div class="vision-overlay-ui">
-            <div class="live-hud-stats">
-              <div class="stat-chip" id="hud-fps">FPS: 0</div>
-              <div class="stat-chip" id="hud-gesture">GESTURE: NONE</div>
-              <div class="stat-chip" id="hud-push">PUSH: IDLE</div>
-            </div>
-            <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.75rem; color: rgba(255,255,255,0.6);">
-              <span>RESOLUTION: 1280x720</span>
-              <span id="hud-pointer">POINTER: (0.00, 0.00)</span>
+        <div class="chat-viewport">
+          <div class="chat-messages" id="chat-messages">
+            <div class="msg msg-brain">
+              <span class="msg-say">Perceptus</span>
+              Hi — I'm listening. Type below or press the mic and speak. Try: "summarize this page", "write an email to my teacher", or "what should I do next?"
             </div>
           </div>
-          <video id="webcam_video" style="display: none;" playsinline></video>
+          <div class="chat-input-row">
+            <input type="text" id="chat-input" placeholder="Say or type what you want…" autocomplete="off" />
+            <button id="btn-mic" class="mic-btn" title="Hold a thought — click and speak" onclick="toggleMic()">🎙️</button>
+          </div>
         </div>
 
         <!-- Telemetry Summary Cards -->
         <div class="telemetry-grid">
           <div class="telemetry-card">
-            <span class="tele-title">Active Hand</span>
-            <span class="tele-val" id="tele-hand">None</span>
+            <span class="tele-title">Brain Status</span>
+            <span class="tele-val" id="tele-status">Idle</span>
           </div>
           <div class="telemetry-card">
-            <span class="tele-title">Confidence</span>
-            <span class="tele-val" id="tele-conf">0%</span>
+            <span class="tele-title">Last Latency</span>
+            <span class="tele-val" id="tele-latency">— ms</span>
           </div>
           <div class="telemetry-card">
-            <span class="tele-title">Packets Sent</span>
-            <span class="tele-val" id="tele-packets">0</span>
+            <span class="tele-title">Turns</span>
+            <span class="tele-val" id="tele-turns">0</span>
           </div>
         </div>
 
-        <!-- Camera Activation Trigger -->
-        <button id="btn-toggle-camera" class="btn-primary" onclick="toggleVisionEngine()">
-          <span>▶</span> Start Perceptus Vision Engine
+        <button id="btn-send" class="btn-primary" onclick="sendUtterance()">
+          <span>⚡</span> Send to Perceptus
         </button>
       </section>
 
-      <!-- Right Column: Push Producer Configuration & Terminal -->
+      <!-- Right Column: Brain Connection & Log -->
       <section class="panel">
         <div class="panel-header">
           <div class="panel-title">
-            <span>📡</span> Push Producer Console
+            <span>🔌</span> Brain Connection
           </div>
-          <div class="status-pill status-push">HTTP PUSH 10Hz</div>
+          <div class="status-pill status-push">CLOUD + LOCAL</div>
         </div>
 
-        <!-- Configuration Settings -->
         <div class="config-grid">
           <div class="form-group">
-            <label class="form-label">Mode</label>
+            <label class="form-label">Brain</label>
             <select id="cfg-mode" class="form-select" onchange="updateEndpointPreset()">
-              <option value="local">Local Mode (Windows Agent)</option>
-              <option value="api">API Mode (Custom HTTPS)</option>
+              <option value="cloud">Hosted brain (recommended)</option>
+              <option value="local">This computer (local dev)</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">X-API-Key</label>
-            <input type="password" id="cfg-key" class="form-input" placeholder="Optional API Key" />
+            <label class="form-label">Thinking</label>
+            <select id="cfg-speed" class="form-select">
+              <option value="fast">Fast — quick answers</option>
+              <option value="deep">Deep — careful thinking</option>
+            </select>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Target Endpoint URL</label>
-          <input type="text" id="cfg-endpoint" class="form-input" value="http://localhost:8765/perceptus" />
+          <label class="form-label">Brain URL</label>
+          <input type="text" id="cfg-endpoint" class="form-input" value="https://window-mind-whisper.lovable.app/api/public/brain" />
         </div>
 
-        <!-- Stream Options -->
+        <div class="form-group">
+          <label class="form-label">Access Key (optional)</label>
+          <input type="password" id="cfg-key" class="form-input" placeholder="X-API-Key if your brain asks for one" />
+        </div>
+
         <div class="toggle-row">
           <div>
-            <div style="font-weight: 600; font-size: 0.9rem;">Stream Telemetry Frames (~10 Hz)</div>
-            <div style="font-size: 0.75rem; color: var(--text-dim);">Continuous posture, face, and pointer updates</div>
+            <div style="font-weight: 600; font-size: 0.9rem;">Read replies out loud</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim);">The brain speaks its answers</div>
           </div>
           <label class="toggle-switch">
-            <input type="checkbox" id="cfg-stream-frames" checked />
+            <input type="checkbox" id="cfg-speak" checked />
             <span class="slider"></span>
           </label>
         </div>
 
         <div class="toggle-row">
           <div>
-            <div style="font-weight: 600; font-size: 0.9rem;">Screen Context Telemetry</div>
-            <div style="font-size: 0.75rem; color: var(--text-dim);">Include active window &amp; UI action recommendations</div>
+            <div style="font-weight: 600; font-size: 0.9rem;">Share page context</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim);">Sends page title &amp; URL so the brain knows where you are</div>
           </div>
           <label class="toggle-switch">
-            <input type="checkbox" id="cfg-screen-context" checked />
+            <input type="checkbox" id="cfg-context" checked />
             <span class="slider"></span>
           </label>
         </div>
 
-        <!-- Live Terminal Stream -->
-        <div class="form-label" style="margin-top: 4px;">Live Dispatch Packet Stream</div>
+        <!-- Live Log -->
+        <div class="form-label" style="margin-top: 4px;">Brain Activity Log</div>
         <div class="terminal-window" id="terminal-feed">
           <div class="log-entry">
             <span class="log-ts">[00:00:00]</span>
-            <span class="log-success">Perceptus Engine ready. Configure receiver at http://localhost:8765/perceptus</span>
+            <span class="log-success">Perceptus Brain ready. Hosted brain pre-selected — just talk.</span>
           </div>
         </div>
 
         <div style="display: flex; gap: 12px;">
-          <button class="btn-secondary" style="flex: 1;" onclick="testPushAgent()">⚡ Test Agent Ping</button>
-          <a href="perceptus_agent.py" download class="btn-secondary" style="flex: 1; text-decoration: none;">📥 Download Agent.py</a>
+          <button class="btn-secondary" style="flex: 1;" onclick="testBrain()">⚡ Test Brain Ping</button>
+          <a href="https://github.com/NeelAniGamer/perceptus-flow" target="_blank" rel="noopener" class="btn-secondary" style="flex: 1; text-decoration: none;">🖥️ Get the Windows App</a>
         </div>
       </section>
     </main>
 
-    <!-- Perceptus Client Engine Script -->
+    <!-- Perceptus Brain Client Script -->
     <script>
-      let isRunning = false;
-      let camera = null;
-      let hands = null;
-      let sessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
-      let packetCount = 0;
-      let lastFramePush = 0;
-      let lastGestureName = '';
-      let isPinching = false;
+      let turnCount = 0;
+      let sessionId = 'web_' + Math.random().toString(36).substring(2, 10);
+      let history = [];
+      let listening = false;
+      let recognizer = null;
 
-      const videoElement = document.getElementById('webcam_video');
-      const canvasElement = document.getElementById('vision_canvas');
-      const canvasCtx = canvasElement.getContext('2d');
+      const chatMessages = document.getElementById('chat-messages');
+      const chatInput = document.getElementById('chat-input');
       const termFeed = document.getElementById('terminal-feed');
+      const micBtn = document.getElementById('btn-mic');
 
       function logTerminal(type, msg) {
         const timeStr = new Date().toTimeString().split(' ')[0];
@@ -565,210 +595,153 @@
       function updateEndpointPreset() {
         const mode = document.getElementById('cfg-mode').value;
         const ep = document.getElementById('cfg-endpoint');
-        if (mode === 'local') {
-          ep.value = 'http://localhost:8765/perceptus';
-        } else {
-          ep.value = 'https://api.perceptus.ai/v1/telemetry';
-        }
+        ep.value = mode === 'cloud'
+          ? 'https://window-mind-whisper.lovable.app/api/public/brain'
+          : 'http://localhost:8080/api/public/brain';
       }
 
-      async function pushPayload(payload) {
+      function addMessage(role, text, say, meta) {
+        const div = document.createElement('div');
+        div.className = role === 'you' ? 'msg msg-you' : 'msg msg-brain';
+        let html = '';
+        if (role !== 'you' && say) html += `<span class="msg-say">Perceptus</span>`;
+        html += escapeHtml(text || say || '');
+        if (meta) html += `<div class="msg-meta">${meta}</div>`;
+        div.innerHTML = html;
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+
+      function speak(text) {
+        if (!document.getElementById('cfg-speak').checked || !text || !('speechSynthesis' in window)) return;
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 1.05;
+        speechSynthesis.speak(u);
+      }
+
+      async function sendUtterance() {
+        const utterance = chatInput.value.trim();
+        if (!utterance) return;
+        chatInput.value = '';
+        addMessage('you', utterance);
+
         const endpoint = document.getElementById('cfg-endpoint').value;
         const apiKey = document.getElementById('cfg-key').value;
+        const speed = document.getElementById('cfg-speed').value;
+        const shareCtx = document.getElementById('cfg-context').checked;
+        const badge = document.getElementById('engine-badge');
 
+        document.getElementById('tele-status').textContent = 'Thinking…';
+        badge.className = 'status-pill status-push';
+        badge.textContent = '◈ THINKING';
+        logTerminal('event', `→ "${utterance.substring(0, 60)}"`);
+
+        const payload = {
+          session: sessionId,
+          mode: speed,
+          utterance: utterance,
+          history: history.slice(-10),
+          os_context: shareCtx ? {
+            os: 'web',
+            app: 'Perceptus Brain Web',
+            window_title: document.title,
+            activity: location.href
+          } : { os: 'web', app: 'Perceptus Brain Web' }
+        };
+
+        const t0 = performance.now();
         try {
           const headers = { 'Content-Type': 'application/json' };
           if (apiKey) headers['X-API-Key'] = apiKey;
-
           const res = await fetch(endpoint, {
             method: 'POST',
             headers,
             body: JSON.stringify(payload)
           });
+          const ms = Math.round(performance.now() - t0);
+          if (!res.ok) throw new Error(`brain ${res.status}: ${(await res.text()).substring(0, 120)}`);
+          const data = await res.json();
 
-          packetCount++;
-          document.getElementById('tele-packets').textContent = packetCount;
-          document.getElementById('hud-push').textContent = `PUSH: ACK (${res.status})`;
+          const say = data.say || '';
+          const text = data.text || (data.plan && data.plan.text) || '';
+          const intent = (data.intent && data.intent.label) || '';
+          const actions = (data.plan && data.plan.actions) || [];
 
-          if (payload.kind === 'event') {
-            logTerminal('event', `EVENT [${payload.type}] ${payload.name} -> ACK ${res.status}`);
-          }
-        } catch (e) {
-          document.getElementById('hud-push').textContent = 'PUSH: ERR';
-          if (payload.kind === 'event') {
-            logTerminal('error', `POST Failed: ${e.message}`);
-          }
-        }
-      }
+          addMessage('brain', text || say, say,
+            `${intent ? 'intent: ' + intent + ' · ' : ''}${actions.length} action${actions.length === 1 ? '' : 's'} · ${ms} ms`);
+          speak(say || text);
 
-      async function testPushAgent() {
-        logTerminal('event', 'Sending test ping packet to endpoint...');
-        const testEvent = {
-          kind: 'event',
-          v: 1,
-          session: sessionId,
-          ts: Date.now(),
-          type: 'gesture.start',
-          source: 'hand',
-          name: 'Test_Ping',
-          confidence: 1.0,
-          payload: { hand: 'Right', pointer: { x: 0.5, y: 0.5 } }
-        };
-        await pushPayload(testEvent);
-      }
+          history.push({ role: 'user', content: utterance });
+          history.push({ role: 'assistant', content: say || text });
 
-      function onVisionResults(results) {
-        canvasCtx.save();
-        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-        canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
-
-        let detectedHand = null;
-        let detectedGesture = 'None';
-        let confidence = 0;
-        let pointer = { x: 0.5, y: 0.5 };
-        let palm = { x: 0.5, y: 0.5 };
-        let pinchDist = 1.0;
-
-        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-          const landmarks = results.multiHandLandmarks[0];
-          const handedness = results.multiHandedness && results.multiHandedness[0] ? results.multiHandedness[0].label : 'Right';
-          detectedHand = handedness;
-          confidence = (results.multiHandedness && results.multiHandedness[0] ? results.multiHandedness[0].score : 0.9).toFixed(2);
-
-          // Draw skeleton mesh
-          drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#00f0ff', lineWidth: 3 });
-          drawLandmarks(canvasCtx, landmarks, { color: '#ffb703', lineWidth: 2, radius: 4 });
-
-          // Pointer coords (Index Tip Landmark 8)
-          pointer = { x: Number((1 - landmarks[8].x).toFixed(3)), y: Number(landmarks[8].y.toFixed(3)) };
-          palm = { x: Number((1 - landmarks[0].x).toFixed(3)), y: Number(landmarks[0].y.toFixed(3)) };
-
-          // Pinch distance (Thumb 4 to Index 8)
-          const dx = landmarks[4].x - landmarks[8].x;
-          const dy = landmarks[4].y - landmarks[8].y;
-          pinchDist = Math.sqrt(dx * dx + dy * dy);
-
-          // Gesture heuristics
-          if (pinchDist < 0.065) {
-            detectedGesture = 'Pinch';
-          } else if (landmarks[8].y < landmarks[6].y && landmarks[12].y > landmarks[10].y) {
-            detectedGesture = 'Pointing_Up';
-          } else if (landmarks[8].y < landmarks[6].y && landmarks[12].y < landmarks[10].y && landmarks[16].y > landmarks[14].y) {
-            detectedGesture = 'Victory';
-          } else if (landmarks[8].y > landmarks[6].y && landmarks[12].y > landmarks[10].y && landmarks[16].y > landmarks[14].y) {
-            detectedGesture = 'Closed_Fist';
-          } else {
-            detectedGesture = 'Open_Palm';
-          }
-        }
-
-        // Update UI HUD
-        document.getElementById('hud-gesture').textContent = `GESTURE: ${detectedGesture.toUpperCase()}`;
-        document.getElementById('hud-pointer').textContent = `POINTER: (${pointer.x.toFixed(2)}, ${pointer.y.toFixed(2)})`;
-        document.getElementById('tele-hand').textContent = detectedHand || 'None';
-        document.getElementById('tele-conf').textContent = `${Math.round(confidence * 100)}%`;
-
-        // 1. Trigger Discrete Events on Gesture Change
-        if (detectedGesture !== lastGestureName && detectedGesture !== 'None') {
-          lastGestureName = detectedGesture;
-          pushPayload({
-            kind: 'event',
-            v: 1,
-            session: sessionId,
-            ts: Date.now(),
-            type: detectedGesture === 'Pinch' ? 'pinch.start' : 'gesture.start',
-            source: 'hand',
-            name: detectedGesture,
-            confidence: Number(confidence),
-            payload: { hand: detectedHand, pointer }
-          });
-        }
-
-        // 2. Stream Continuous Frame Telemetry (~10 Hz / every 100ms)
-        const now = Date.now();
-        const streamFrames = document.getElementById('cfg-stream-frames').checked;
-        if (streamFrames && now - lastFramePush >= 100) {
-          lastFramePush = now;
-          const framePayload = {
-            kind: 'frame',
-            v: 1,
-            session: sessionId,
-            ts: now,
-            fps: 24,
-            face: {
-              yaw: 0.0, pitch: 0.0, roll: 0.0,
-              center: { x: 0.5, y: 0.45 },
-              mouthOpen: 0.02, blinkLeft: 0.04, blinkRight: 0.04,
-              browRaise: 0.08, smile: 0.15, attention: true
-            },
-            hands: detectedHand ? [{
-              handedness: detectedHand,
-              gesture: detectedGesture,
-              confidence: Number(confidence),
-              pointer,
-              palm,
-              pinch: Number(pinchDist.toFixed(3)),
-              pinching: detectedGesture === 'Pinch'
-            }] : [],
-            screen: document.getElementById('cfg-screen-context').checked ? {
-              app: "Perceptus Spatial Workspace",
-              window_title: "Active Viewport",
-              activity: "Gesture tracking active",
-              ui_elements: ["Vision Stream", "Push Console", "Telemetry Ticker"],
-              suggested_actions: ["Pinch to select", "Point up to scroll"],
-              confidence: 0.95,
-              analyzed_at: new Date().toISOString()
-            } : null
-          };
-          pushPayload(framePayload);
-        }
-
-        canvasCtx.restore();
-      }
-
-      async function toggleVisionEngine() {
-        const btn = document.getElementById('btn-toggle-camera');
-        const badge = document.getElementById('engine-badge');
-
-        if (isRunning) {
-          if (camera) camera.stop();
-          isRunning = false;
-          btn.innerHTML = '<span>▶</span> Start Perceptus Vision Engine';
-          badge.className = 'status-pill status-offline';
-          badge.textContent = '● OFFLINE';
-          logTerminal('event', 'Perceptus Vision Engine stopped.');
-        } else {
-          btn.innerHTML = '<span>⏹</span> Stop Perceptus Engine';
+          turnCount++;
+          document.getElementById('tele-turns').textContent = turnCount;
+          document.getElementById('tele-latency').textContent = ms + ' ms';
+          document.getElementById('tele-status').textContent = 'Ready';
           badge.className = 'status-pill status-live';
-          badge.textContent = '● STREAMING (10 Hz)';
-          logTerminal('success', 'Initializing MediaPipe WASM/GPU pipeline...');
-
-          hands = new Hands({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-          });
-
-          hands.setOptions({
-            maxNumHands: 1,
-            modelComplexity: 1,
-            minDetectionConfidence: 0.6,
-            minTrackingConfidence: 0.6
-          });
-
-          hands.onResults(onVisionResults);
-
-          camera = new Camera(videoElement, {
-            onFrame: async () => {
-              await hands.send({ image: videoElement });
-            },
-            width: 1280,
-            height: 720
-          });
-
-          await camera.start();
-          isRunning = true;
-          logTerminal('success', 'Vision pipeline streaming telemetry packets.');
+          badge.textContent = '◈ CONNECTED';
+          logTerminal('success', `← reply in ${ms} ms${intent ? ' · intent ' + intent : ''}`);
+        } catch (e) {
+          document.getElementById('tele-status').textContent = 'Error';
+          badge.className = 'status-pill status-offline';
+          badge.textContent = '◌ UNREACHABLE';
+          addMessage('brain', 'I could not reach the brain: ' + e.message, null, 'error');
+          logTerminal('error', 'POST failed: ' + e.message);
         }
       }
+
+      async function testBrain() {
+        logTerminal('event', 'Sending test ping to brain…');
+        chatInput.value = 'ping — just reply that you are alive';
+        await sendUtterance();
+      }
+
+      function toggleMic() {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) {
+          logTerminal('error', 'Speech recognition not supported in this browser — type instead.');
+          return;
+        }
+        if (listening) {
+          recognizer && recognizer.stop();
+          return;
+        }
+        recognizer = new SR();
+        recognizer.lang = 'en-US';
+        recognizer.interimResults = false;
+        recognizer.maxAlternatives = 1;
+        recognizer.onstart = () => {
+          listening = true;
+          micBtn.classList.add('listening');
+          document.getElementById('tele-status').textContent = 'Listening…';
+          logTerminal('event', 'Listening — speak now.');
+        };
+        recognizer.onresult = (e) => {
+          const said = e.results[0][0].transcript;
+          chatInput.value = said;
+          logTerminal('success', `Heard: "${said.substring(0, 60)}"`);
+          sendUtterance();
+        };
+        recognizer.onerror = (e) => {
+          logTerminal('error', 'Mic error: ' + e.error);
+        };
+        recognizer.onend = () => {
+          listening = false;
+          micBtn.classList.remove('listening');
+          if (document.getElementById('tele-status').textContent === 'Listening…') {
+            document.getElementById('tele-status').textContent = 'Ready';
+          }
+        };
+        recognizer.start();
+      }
+
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendUtterance();
+      });
     </script>
     <footer class="sf">
       <div class="fi">
