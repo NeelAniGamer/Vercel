@@ -25,7 +25,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var import_electron = require("electron");
 var path = __toESM(require("path"));
 var fs = __toESM(require("fs"));
-var import_electron_updater = require("electron-updater");
 var isDev = !import_electron.app.isPackaged;
 var mainWindow = null;
 function getStatePath() {
@@ -109,22 +108,6 @@ async function importSave() {
   }
 }
 function setupAutoUpdater() {
-  if (isDev) return;
-  import_electron_updater.autoUpdater.autoDownload = true;
-  import_electron_updater.autoUpdater.autoInstallOnAppQuit = true;
-  import_electron_updater.autoUpdater.on("update-available", () => {
-    mainWindow?.webContents.send("updater-status", { event: "update-available" });
-  });
-  import_electron_updater.autoUpdater.on("update-downloaded", () => {
-    mainWindow?.webContents.send("updater-status", { event: "update-downloaded" });
-  });
-  import_electron_updater.autoUpdater.on("error", (err) => {
-    console.warn("[updater]", err.message);
-  });
-  setTimeout(() => import_electron_updater.autoUpdater.checkForUpdates().catch(() => {
-  }), 1e4);
-  setInterval(() => import_electron_updater.autoUpdater.checkForUpdates().catch(() => {
-  }), 60 * 60 * 1e3);
 }
 function createWindow() {
   const state = loadWindowState();
@@ -214,8 +197,13 @@ function createMenu() {
             detail: "A 3D driving & pedestrian safety simulator.\nClass Of Learners \u2014 Traffic Academy"
           });
         } },
-        { label: "Check for Updates", click: () => import_electron_updater.autoUpdater.checkForUpdates().catch(() => {
-        }) },
+        { label: "Check for Updates", click: () => {
+          import_electron.dialog.showMessageBox(mainWindow, {
+            type: "info",
+            title: "Updates",
+            message: `Mumbai Traffic Hero is up to date (v${import_electron.app.getVersion()})`
+          });
+        } },
         { type: "separator" },
         { label: "Report Bug", click: () => import_electron.shell.openExternal("https://github.com/anomalyco/opencode/issues") }
       ]
@@ -248,8 +236,6 @@ import_electron.ipcMain.handle("get-app-version", () => import_electron.app.getV
 import_electron.ipcMain.handle("get-save-path", () => import_electron.app.getPath("userData"));
 import_electron.ipcMain.handle("export-save", () => exportSave());
 import_electron.ipcMain.handle("import-save", () => importSave());
-import_electron.ipcMain.handle("check-updates", () => isDev ? Promise.resolve({ dev: true }) : import_electron_updater.autoUpdater.checkForUpdates());
-import_electron.ipcMain.handle("install-update", () => {
-  import_electron_updater.autoUpdater.quitAndInstall();
-});
+import_electron.ipcMain.handle("check-updates", () => Promise.resolve({ upToDate: true, version: import_electron.app.getVersion() }));
+import_electron.ipcMain.handle("install-update", () => Promise.resolve({ ok: true }));
 import_electron.ipcMain.handle("is-dev", () => isDev);

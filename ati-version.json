@@ -1,0 +1,10 @@
+{
+  "version": "2.5.0",
+  "versionCode": 250,
+  "releaseDate": "2026-09-08",
+  "downloadUrl": "https://advancedlogiclabs.dpdns.org/AdvancedTypingInstructor_Setup.exe",
+  "exeUrl": "https://advancedlogiclabs.dpdns.org/AdvancedTypingInstructor.exe",
+  "changelog": "v2.5.0: Command Center Dashboard, Cyber Multiplayer, 6 Mechanical Acoustic Switch Profiles, Official Mastery Diploma, Ghost Racer & Live Auto-Update System.",
+  "mandatory": false,
+  "minRequiredVersion": "1.0.0"
+}

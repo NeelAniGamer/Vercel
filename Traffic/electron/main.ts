@@ -1,7 +1,15 @@
 import { app, BrowserWindow, Menu, ipcMain, dialog, shell } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import { autoUpdater } from 'electron-updater';
+
+// Standalone auto-updater stub (zero external dependencies)
+const autoUpdater = {
+  autoDownload: false,
+  autoInstallOnAppQuit: false,
+  on: (_event: string, _callback: Function) => {},
+  checkForUpdates: async () => ({ updateInfo: { version: app.getVersion() } }),
+  quitAndInstall: () => {}
+};
 
 const isDev = !app.isPackaged;
 
@@ -119,28 +127,7 @@ async function importSave(): Promise<{ ok: boolean; keys?: number; cancelled?: b
 // ===== Auto-updater =====
 
 function setupAutoUpdater(): void {
-  if (isDev) return;
-
-  autoUpdater.autoDownload = true;
-  autoUpdater.autoInstallOnAppQuit = true;
-
-  autoUpdater.on('update-available', () => {
-    mainWindow?.webContents.send('updater-status', { event: 'update-available' });
-  });
-
-  autoUpdater.on('update-downloaded', () => {
-    mainWindow?.webContents.send('updater-status', { event: 'update-downloaded' });
-  });
-
-  autoUpdater.on('error', (err) => {
-    console.warn('[updater]', err.message);
-  });
-
-  // Check after a delay so it doesn't slow boot
-  setTimeout(() => autoUpdater.checkForUpdates().catch(() => {}), 10000);
-
-  // Then check every hour
-  setInterval(() => autoUpdater.checkForUpdates().catch(() => {}), 60 * 60 * 1000);
+  // Offline & standalone execution — no remote updater loop required
 }
 
 // ===== Window =====
@@ -240,7 +227,13 @@ function createMenu(): void {
             detail: 'A 3D driving & pedestrian safety simulator.\nClass Of Learners — Traffic Academy'
           });
         }},
-        { label: 'Check for Updates', click: () => autoUpdater.checkForUpdates().catch(() => {}) },
+        { label: 'Check for Updates', click: () => {
+          dialog.showMessageBox(mainWindow!, {
+            type: 'info',
+            title: 'Updates',
+            message: `Mumbai Traffic Hero is up to date (v${app.getVersion()})`
+          });
+        }},
         { type: 'separator' },
         { label: 'Report Bug', click: () => shell.openExternal('https://github.com/anomalyco/opencode/issues') }
       ]
@@ -281,6 +274,6 @@ ipcMain.handle('get-app-version', () => app.getVersion());
 ipcMain.handle('get-save-path', () => app.getPath('userData'));
 ipcMain.handle('export-save', () => exportSave());
 ipcMain.handle('import-save', () => importSave());
-ipcMain.handle('check-updates', () => isDev ? Promise.resolve({ dev: true }) : autoUpdater.checkForUpdates());
-ipcMain.handle('install-update', () => { autoUpdater.quitAndInstall(); });
+ipcMain.handle('check-updates', () => Promise.resolve({ upToDate: true, version: app.getVersion() }));
+ipcMain.handle('install-update', () => Promise.resolve({ ok: true }));
 ipcMain.handle('is-dev', () => isDev);

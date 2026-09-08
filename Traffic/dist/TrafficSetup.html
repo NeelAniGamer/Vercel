@@ -1,0 +1,2033 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="description" content="Configure driver profile, vehicle parameters, and simulation environment for Traffic Academy." />
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+    <title>Traffic Academy - Setup</title>
+    <link rel="icon" type="image/png" href="../Icon.png" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&display=swap" rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>    <script>
+    (async function() {
+      try {
+        if (window.supabaseClient) return;
+        var res = await fetch('config.json?t=' + Date.now());
+        var cfg = await res.json();
+        var auth = (cfg.auth || cfg.supabase || {});
+        var url = auth.supabaseUrl || auth.url || '';
+        var key = auth.supabaseKey || auth.anonKey || auth.key || '';
+        if (url && key && window.supabase) {
+          window.supabaseClient = window.supabase.createClient(url, key, {
+            auth: { persistSession: true, detectSessionInUrl: true }
+          });
+
+          window.supabaseClient.auth.onAuthStateChange(function(event, session) {
+            if (session && session.user) {
+              window.colUser = session.user;
+              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: session.user } }));
+            }
+          });
+          try {
+            var session = await Promise.race([
+              window.supabaseClient.auth.getSession(),
+              new Promise(function(_, reject) { setTimeout(function() { reject(new Error('timeout')); }, 10000); })
+            ]);
+            var user = session && session.data && session.data.session && session.data.session.user;
+            if (user) {
+              window.colUser = user;
+              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: user } }));
+            }
+          } catch(sessionErr) {
+            if (sessionErr.message !== 'timeout') {
+              window.supabaseClient.auth.signOut().catch(function() {});
+            }
+          }
+        }
+      } catch(e) {}
+    })();
+  </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="traffic-charts.js"></script>
+    <link rel="stylesheet" href="traffic-charts.css" />
+    <link rel="stylesheet" href="welcome-back.css" />
+
+<style>
+      :root {
+        
+        --void: #070a14;
+        --ink: #e8e3d8;
+        --line: rgba(255, 255, 255, 0.08);
+        --lineb: rgba(255, 255, 255, 0.16);
+        --signal: #f2b84b;    
+        --em: #34d399;        
+        --teal: #00f0cc;      
+        --ion: #5ed4f5;       
+        --plasma: #b89bff;    
+        --red: #ef4444;       
+        --r: 16px;
+      }
+
+      body {
+        background: var(--void);
+        color: var(--ink);
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeSlideRight {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.92); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      @keyframes shimmerPulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      .setup-container { animation: scaleIn 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+      .setup-left-pane > * { animation: fadeSlideRight 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+      .setup-left-pane > *:nth-child(1) { animation-delay: 0.15s; }
+      .setup-left-pane > *:nth-child(2) { animation-delay: 0.25s; }
+      .setup-left-pane > *:nth-child(3) { animation-delay: 0.35s; }
+      .wizard-step, #authArea { animation: fadeSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+
+      
+      .wizard-step {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      .wizard-step[style*="display: none"] {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      body.lm {
+        --void: #f3f2eb;
+        --ink: #111827;
+        --line: rgba(0, 0, 0, 0.08);
+        --lineb: rgba(0, 0, 0, 0.16);
+        --signal: #b8720a;
+        --em: #1b9d66;
+        --teal: #0a8c7a;
+        --ion: #0e72a0;
+        --plasma: #6f4fe0;
+        --red: #dc2626;
+        background: var(--void);
+        color: var(--ink);
+      }
+
+      #bg-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .setup-container {
+        position: relative;
+        z-index: 10;
+        background: rgba(11, 16, 26, 0.65);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        width: 98%;
+        max-width: 1500px;
+        min-height: 600px;
+        display: flex;
+        overflow: hidden;
+        box-shadow:
+          0 40px 80px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        transition: all 0.4s ease;
+        margin: auto;
+      }
+
+      
+
+      .setup-left-pane {
+        width: 40%;
+        background: linear-gradient(135deg, rgba(7, 10, 20, 0.7) 0%, rgba(12, 18, 36, 0.7) 100%);
+        border-right: 1px solid var(--lineb);
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+      
+      body.lm .setup-left-pane {
+        background: linear-gradient(135deg, rgba(240, 244, 255, 0.7) 0%, rgba(220, 230, 255, 0.7) 100%);
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      
+      .setup-right-pane {
+        width: 60%;
+        padding: 40px 48px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .auth-slider-wrapper {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      .auth-slider {
+        display: flex;
+        width: 200%;
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        align-self: flex-start;
+      }
+      
+      .auth-slide {
+        width: 50%;
+        flex-shrink: 0;
+        padding-right: 10px;
+        transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      .slide-login #login-panel { opacity: 1; transform: scale(1); pointer-events: auto; }
+      .slide-login #signup-panel { opacity: 0; transform: scale(0.95); pointer-events: none; }
+      .slide-signup #signup-panel { opacity: 1; transform: scale(1); pointer-events: auto; }
+      .slide-signup #login-panel { opacity: 0; transform: scale(0.95); pointer-events: none; }
+
+      .slide-login .auth-slider {
+        transform: translateX(0);
+      }
+      
+      .slide-signup .auth-slider {
+        transform: translateX(-50%);
+      }
+
+      @media (max-width: 768px) {
+        .setup-container {
+          flex-direction: column;
+          max-width: 480px;
+        }
+        .setup-left-pane {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--lineb);
+          padding: 30px;
+        }
+        .setup-right-pane {
+          width: 100%;
+          padding: 30px;
+        }
+      }
+
+      body.lm .setup-container {
+        background: rgba(255, 255, 255, 0.7);
+        border-color: rgba(0, 0, 0, 0.1);
+        box-shadow:
+          0 25px 60px rgba(0, 0, 0, 0.1),
+          inset 0 1px 1px rgba(255, 255, 255, 0.8);
+      }
+
+      
+      .wizard-stepper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 32px;
+        position: relative;
+      }
+
+      .wizard-stepper::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: var(--line);
+        z-index: 0;
+        border-radius: 2px;
+      }
+
+      .wizard-stepper .step-progress {
+        position: absolute;
+        top: 20px;
+        left: 10%;
+        height: 2px;
+        background: linear-gradient(90deg, var(--signal), var(--em));
+        border-radius: 2px;
+        z-index: 1;
+        transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        position: relative;
+        z-index: 2;
+      }
+
+      .step-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        background: var(--void);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--muted);
+        transition: all 0.3s ease;
+      }
+
+      .step-item.active .step-circle {
+        border-color: var(--signal);
+        background: var(--signal);
+        color: #000;
+        box-shadow: 0 0 0 4px rgba(242, 184, 75, 0.2);
+      }
+
+      .step-item.completed .step-circle {
+        border-color: var(--em);
+        background: var(--em);
+        color: #fff;
+      }
+
+      .step-item.completed .step-circle::before {
+        content: '✓';
+        font-size: 1rem;
+      }
+
+      .step-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .step-item.active .step-label {
+        color: var(--signal);
+      }
+
+      .step-item.completed .step-label {
+        color: var(--em);
+      }
+
+      h1 {
+        font-family: 'Lora', serif;
+        font-size: 2.4rem;
+        color: var(--ink);
+        margin-bottom: 10px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      p.subtitle {
+        color: var(--dim);
+        margin-bottom: 30px;
+        font-size: 1rem;
+      }
+
+      
+      .setup-progress-ring {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin: 24px 0;
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+
+      .setup-progress-ring canvas {
+        max-width: 80px;
+        max-height: 80px;
+      }
+
+      .progress-ring-info {
+        text-align: left;
+      }
+
+      .progress-ring-pct {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--signal);
+        line-height: 1;
+      }
+
+      .progress-ring-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 4px;
+      }
+
+      
+      .input-group {
+        margin-bottom: 24px;
+        text-align: left;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--ink);
+      }
+
+      input[type='text'],
+      input[type='password'],
+      input[type='email'],
+      input[type='number'],
+      select {
+        width: 100%;
+        padding: 14px 16px;
+        min-height: 48px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        font-size: max(1rem, 16px);
+        font-family: 'Inter', sans-serif;
+        transition: 0.3s;
+        outline: none;
+        color: var(--ink);
+      }
+
+      body.lm input[type='text'],
+      body.lm input[type='password'],
+      body.lm input[type='email'],
+      body.lm input[type='number'],
+      body.lm select {
+        background: rgba(255, 255, 255, 0.6);
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+
+      input:focus,
+      select:focus {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: var(--signal);
+        box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.15);
+      }
+
+      body.lm input:focus,
+      body.lm select:focus {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 0 3px rgba(14, 114, 160, 0.15);
+      }
+
+      
+      .btn-submit {
+        background: var(--signal);
+        color: #000;
+        border: none;
+        padding: 16px;
+        width: 100%;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        margin-top: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 8px 25px rgba(242, 184, 75, 0.2);
+      }
+
+      body.lm .btn-submit {
+        color: #fff;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(242, 184, 75, 0.4);
+        background: #fff;
+      }
+
+      body.lm .btn-submit:hover {
+        background: var(--page-theme-light);
+      }
+
+      .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        margin-bottom: 10px;
+        box-shadow: none;
+      }
+
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink);
+        box-shadow: none;
+        border-color: var(--lineb);
+      }
+
+      body.lm .btn-outline {
+        color: var(--ink);
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+
+      body.lm .btn-outline:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      
+      .tab-btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--dim);
+      }
+      .tab-btn.active {
+        background: rgba(242, 184, 75, 0.1);
+        border-color: var(--signal);
+        color: var(--signal);
+      }
+      body.lm .tab-btn.active {
+        background: rgba(14, 114, 160, 0.1);
+        color: var(--page-theme-light);
+        border-color: var(--page-theme-light);
+      }
+
+      
+      @media (max-width: 600px) {
+        .setup-container {
+          padding: 24px 16px;
+          border-radius: 16px;
+          margin: 12px;
+          max-width: calc(100vw - 24px);
+        }
+        h1 {
+          font-size: clamp(1.4rem, 5vw, 2rem) !important;
+          margin-bottom: 6px;
+        }
+        .subtitle {
+          font-size: clamp(0.8rem, 3vw, 0.95rem) !important;
+          margin-bottom: 20px;
+        }
+        .input-group {
+          margin-bottom: 18px;
+        }
+        label {
+          font-size: 0.85rem;
+          margin-bottom: 6px;
+        }
+        .btn-submit {
+          min-height: 48px;
+          font-size: 1rem;
+          padding: 14px;
+          border-radius: 10px;
+        }
+        .tab-btn {
+          min-height: 48px;
+          font-size: 0.95rem;
+          padding: 10px;
+        }
+        input[type='text'],
+        input[type='password'],
+        input[type='email'],
+        input[type='number'],
+        select {
+          font-size: max(1rem, 16px) !important;
+          min-height: 48px !important;
+          padding: 12px 14px !important;
+        }
+        
+        .wizard-stepper::before {
+          top: 18px;
+        }
+        .wizard-stepper .step-progress {
+          top: 18px;
+        }
+        .step-circle {
+          width: 32px;
+          height: 32px;
+          font-size: 0.8rem;
+        }
+        .step-label {
+          font-size: 0.6rem;
+        }
+        .setup-progress-ring canvas {
+          max-width: 60px;
+          max-height: 60px;
+        }
+        .progress-ring-pct {
+          font-size: 1.4rem;
+        }
+        
+        #authArea > div:nth-child(3) {
+          margin: 12px 0;
+        }
+      }
+    </style>
+      <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+      <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/Traffic/TrafficSetup" />
+  <style>
+      .tab-btn:hover:not(.active) { color: var(--ink) !important; background: rgba(255,255,255,0.05) !important; }
+      .tab-btn.active { background: rgba(255,255,255,0.05) !important; color: var(--signal) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+      .btn-submit { font-family: var(--sans, 'Inter'), sans-serif; }
+    </style>
+<style>
+      .remote-auth-panel { background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; margin: 0 auto; width: 100%; max-width: 520px; display: flex; flex-direction: column; justify-content: center; min-height: 100%; }
+      .remote-auth-title { font-size: 1.8rem; color: var(--ink); font-weight: 700; margin-bottom: 8px; font-family: var(--sans, 'Inter'), sans-serif; text-align: center; }
+      .remote-auth-subtitle { font-size: 0.95rem; color: var(--dim); margin-bottom: 30px; text-align: center; }
+      .remote-auth-subtitle a { color: var(--ion); text-decoration: none; font-weight: 600; cursor: pointer; transition: color 0.2s; }
+      .remote-auth-subtitle a:hover { color: #fff; text-decoration: underline; }
+      .remote-input-group { margin-bottom: 16px; position: relative; }
+      .remote-input { width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; color: var(--ink); font-size: 0.95rem; outline: none; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); font-family: var(--sans, 'Inter'), sans-serif; }
+      .remote-input:-webkit-autofill,
+      .remote-input:-webkit-autofill:hover,
+      .remote-input:-webkit-autofill:focus,
+      .remote-input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #1a2333 inset !important;
+        -webkit-text-fill-color: var(--ink) !important;
+        transition: background-color 5000s ease-in-out 0s;
+        border-radius: 12px;
+      }
+      .remote-input:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255,255,255,0.2); }
+      .remote-input:focus { background: rgba(255, 255, 255, 0.1); border-color: var(--ion); box-shadow: 0 0 0 3px rgba(94, 212, 245, 0.15); }
+      .remote-btn-primary { position: relative; overflow: hidden; width: 100%; background: var(--ion); color: var(--void); border: none; border-radius: 24px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 10px; font-family: var(--sans, 'Inter'), sans-serif; }
+      .remote-btn-primary::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent); transform: skewX(-20deg); transition: all 0.6s ease; }
+      .remote-btn-primary:hover::after { left: 150%; }
+      .remote-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(94, 212, 245, 0.35); }
+      .remote-divider { display: flex; align-items: center; text-align: center; color: var(--dim); font-size: 0.8rem; margin: 25px 0; font-weight: 600; letter-spacing: 1px; }
+      .remote-divider::before, .remote-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--line); }
+      .remote-divider:not(:empty)::before { margin-right: 15px; }
+      .remote-divider:not(:empty)::after { margin-left: 15px; }
+      .remote-btn-google { width: 100%; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 24px; padding: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--sans, 'Inter'), sans-serif; }
+      .remote-btn-google:hover { background: var(--line); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+      .remote-role-group { display: flex; gap: 10px; margin-bottom: 20px; }
+      .remote-role-btn { flex: 1; background: var(--void); border: 1px solid var(--line); border-radius: 12px; padding: 12px; color: var(--dim); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+      .remote-role-btn.active { background: rgba(94, 212, 245, 0.1); border-color: var(--ion); color: var(--ion); }
+      .remote-role-btn:hover:not(.active) { border-color: var(--lineb); color: var(--ink); }
+      body.lm .remote-role-btn { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); color: var(--dim); }
+      body.lm .remote-role-btn.active { background: rgba(14, 114, 160, 0.1); border-color: var(--ion); color: var(--ion); }
+      body.lm .remote-role-btn:hover:not(.active) { border-color: rgba(0,0,0,0.2); color: var(--ink); }
+      .remote-bottom-links { display: flex; flex-direction: row; gap: 12px; margin-top: 24px; align-items: center; justify-content: center; }
+      .remote-bottom-link {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        color: var(--dim);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 10px 20px;
+        transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        justify-content: center;
+        min-height: 44px;
+        font-family: var(--sans, 'Inter'), sans-serif;
+      }
+      .remote-bottom-link:hover {
+        background: rgba(255,255,255,0.08);
+        border-color: var(--lineb);
+        color: var(--ink);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      .remote-bottom-link:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+      .remote-bottom-link.primary {
+        border-color: var(--signal);
+        color: var(--signal);
+        background: rgba(242,184,75,0.08);
+      }
+      .remote-bottom-link.primary:hover {
+        background: rgba(242,184,75,0.15);
+        box-shadow: 0 4px 12px rgba(242,184,75,0.15);
+      }
+      body.lm .remote-bottom-link {
+        background: rgba(0,0,0,0.03);
+        border-color: rgba(0,0,0,0.1);
+      }
+      body.lm .remote-bottom-link:hover {
+        background: rgba(0,0,0,0.06);
+      }
+
+      
+      .custom-select-wrapper {
+        position: relative;
+        width: 100%;
+        z-index: 50;
+      }
+      .custom-select-trigger {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 14px 16px;
+        min-height: 48px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        font-size: max(1rem, 16px);
+        font-family: 'Inter', sans-serif;
+        color: var(--ink);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        outline: none;
+        user-select: none;
+      }
+      .custom-select-trigger:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255,255,255,0.2);
+      }
+      .custom-select-wrapper.open .custom-select-trigger {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: var(--signal);
+        box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.15);
+      }
+      body.lm .custom-select-trigger {
+        background: rgba(255, 255, 255, 0.6);
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+      body.lm .custom-select-wrapper.open .custom-select-trigger {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 0 3px rgba(14, 114, 160, 0.15);
+      }
+      .custom-select-icon { font-size: 1.2rem; flex-shrink: 0; }
+      .custom-select-text { flex: 1; font-weight: 500; }
+      .custom-select-arrow {
+        flex-shrink: 0;
+        color: var(--dim);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        pointer-events: none;
+      }
+      .custom-select-wrapper.open .custom-select-arrow {
+        transform: rotate(180deg);
+      }
+      .custom-select-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: rgba(17, 24, 39, 0.97);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 6px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        max-height: 280px;
+        overflow-y: auto;
+      }
+      .custom-select-wrapper.open .custom-select-dropdown {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+      body.lm .custom-select-dropdown {
+        background: rgba(255, 255, 255, 0.97);
+        border-color: rgba(0, 0, 0, 0.08);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+      }
+      .custom-select-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        min-height: 44px;
+      }
+      .custom-select-option:hover { background: rgba(255, 255, 255, 0.07); }
+      body.lm .custom-select-option:hover { background: rgba(0, 0, 0, 0.04); }
+      .custom-select-option:active { transform: scale(0.98); }
+      .custom-select-option.selected { background: rgba(242, 184, 75, 0.12); }
+      body.lm .custom-select-option.selected { background: rgba(14, 114, 160, 0.1); }
+      .option-icon { font-size: 1.3rem; flex-shrink: 0; width: 28px; text-align: center; }
+      .option-label { flex: 1; font-size: 0.95rem; font-weight: 500; color: var(--ink); }
+      body.lm .option-label { color: #1e293b; }
+      .option-check {
+        flex-shrink: 0;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: var(--signal);
+      }
+      body.lm .option-check { color: var(--ion); }
+      .custom-select-option.selected .option-check {
+        opacity: 1;
+        transform: scale(1);
+      }
+    </style>
+    <style>
+      
+      @keyframes toastSlideIn {
+        from { opacity: 0; transform: translateY(-24px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes toastSlideOut {
+        from { opacity: 1; transform: translateY(0) scale(1); }
+        to { opacity: 0; transform: translateY(-24px) scale(0.95); }
+      }
+      .auth-toast {
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 99999;
+        background: rgba(5, 150, 105, 0.95);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        color: #fff;
+        padding: 16px 32px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 12px 40px rgba(5, 150, 105, 0.35), 0 0 0 1px rgba(255,255,255,0.08);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: toastSlideIn 0.45s cubic-bezier(0.16,1,0.3,1) both;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .auth-toast.out {
+        animation: toastSlideOut 0.35s cubic-bezier(0.16,1,0.3,1) both;
+      }
+      body.lm .auth-toast {
+        background: rgba(5, 150, 105, 0.92);
+        color: #fff;
+      }
+    </style>
+  <link rel="stylesheet" href="traffic-mobile.css" />
+</head>
+  <body>
+    <div id="auth-toast" class="auth-toast" style="display:none;">✅ You're signed in!</div>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="setup-container">
+      
+      <div class="setup-left-pane">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:16px; margin-bottom:24px; cursor:pointer;" onclick="window.location.href='Academy.html'">
+          <img src="../Icon.png" alt="Class Of Learners" style="height:72px; width:72px; border-radius:16px; object-fit:contain; box-shadow:0 8px 24px rgba(0,0,0,0.4);" onerror="this.src='/Icon.png'" />
+          <span style="font-family:'Lora',serif; font-weight:700; font-size:1.8rem; color:var(--ink); letter-spacing:-0.02em;">Traffic Academy</span>
+        </div>
+        <p class="subtitle" style="font-size: 0.95rem; opacity: 0.85; line-height: 1.5; margin-bottom: 24px;">The ultimate driving simulator.<br>Master the roads, rules, and reality.</p>
+        
+        
+        <div class="setup-progress-ring" style="border:none; background:transparent; padding:0; margin-top:16px;">
+          <canvas id="setup-progress-ring" width="80" height="80" data-chart="progress-ring" data-value="0"></canvas>
+          <div class="progress-ring-info">
+            <div class="progress-ring-pct" id="progress-pct">0%</div>
+            <div class="progress-ring-label">Setup Complete</div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="setup-right-pane">
+        
+        <div class="wizard-stepper" id="wizard-stepper">
+          <div class="step-progress" id="step-progress" style="width: 0%"></div>
+          <div class="step-item" data-step="1">
+            <div class="step-circle">1</div>
+            <span class="step-label">Sign In</span>
+          </div>
+          <div class="step-item" data-step="2">
+            <div class="step-circle">2</div>
+            <span class="step-label">Profile</span>
+          </div>
+          <div class="step-item" data-step="3">
+            <div class="step-circle">3</div>
+            <span class="step-label">Vehicle</span>
+          </div>
+        </div>
+
+        <h1 id="step-title-h1" style="font-size: 2rem;">Welcome</h1>
+        <p class="subtitle" id="subtitle-text">Let's setup your driver profile to get started.</p>
+
+            
+      <div id="authArea" class="wizard-step" data-step="1">
+        <div class="remote-auth-panel auth-slider-wrapper slide-login" id="auth-slider-container" style="flex: 1; display: flex; align-items: center;">
+          <div class="auth-slider">
+            
+            <div id="login-panel" class="auth-slide">
+              <div id="col-auth-err" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; text-align: left;"></div>
+              
+              <div class="remote-input-group">
+                <input type="email" id="auth-email" class="remote-input" placeholder="Email address" autocomplete="email" />
+              </div>
+              <div class="remote-input-group">
+                <input type="password" id="auth-pass" class="remote-input" placeholder="Password" autocomplete="current-password" />
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 0.85rem; color: var(--dim);">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <input type="checkbox" style="accent-color: var(--ion); cursor: pointer;" checked> Remember me
+                </label>
+                <a href="#" style="color: var(--ion); text-decoration: none;">Forgot password?</a>
+              </div>
+
+              <button class="remote-btn-primary" id="auth-submit-btn" onclick="handleEmailAuth()">Log in</button>
+              <button class="remote-btn-primary" id="auth-otp-btn" onclick="sendLoginOtp()" style="margin-top: 10px; background: transparent; border: 1px solid var(--ion); color: var(--ion);">Log in with Email Code</button>
+              
+              <div id="login-otp-section" style="display: none; margin-top: 15px;">
+                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter the 6-digit code sent to your email:</p>
+                <input type="text" id="login-otp-input" class="remote-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-family: 'Space Mono', monospace;" />
+                <button class="remote-btn-primary" onclick="verifyLoginOtp()" style="margin-top: 10px; background: var(--signal); color: var(--void);">Verify Code</button>
+                <button type="button" onclick="cancelLoginOtp()" style="margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--line); color: var(--dim); border-radius: 24px; padding: 12px; cursor: pointer;">Cancel</button>
+              </div>
+
+              <div class="remote-divider">OR</div>
+
+              <button class="remote-btn-google" onclick="handleGoogleAuth()">
+                <svg width="18" height="18" viewBox="0 0 48 48">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Log In With Google
+              </button>
+              
+              <p class="remote-auth-subtitle" style="margin-top: 24px;">Don't have an account yet? <a onclick="switchTab('signup')" style="cursor:pointer; color:var(--signal);">Sign up now</a></p>
+              
+              <button class="remote-btn-primary" id="auth-dashboard-btn" style="display: none; margin-top: 15px; background: transparent; border: 1px solid var(--em); color: var(--em)" onclick="window.location.href = 'Academy.html'">Go to Academy Hub &rarr;</button>
+            </div>
+
+            
+            <div id="signup-panel" class="auth-slide">
+              <div id="col-auth-err-signup" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; text-align: left;"></div>
+
+              <div class="remote-role-group">
+                <button type="button" class="remote-role-btn active" id="btn-signup-student" onclick="selectRole('student', 'signup')">
+                  <span style="font-size: 1.1rem;">🎓</span> Student
+                </button>
+                <button type="button" class="remote-role-btn" id="btn-signup-parent" onclick="selectRole('parent_teacher', 'signup')">
+                  <span style="font-size: 1.1rem;">👨‍👩‍👧‍👦</span> Parent/Teacher
+                </button>
+              </div>
+              
+              <input type="hidden" id="signup-role" value="student" />
+
+              <div class="remote-input-group">
+                <input type="email" id="signup-email" class="remote-input" placeholder="Email address" autocomplete="email" />
+              </div>
+              <div class="remote-input-group">
+                <input type="password" id="signup-pass" class="remote-input" placeholder="Password" autocomplete="new-password" />
+              </div>
+              <div class="remote-input-group">
+                <input type="password" id="signup-pass-confirm" class="remote-input" placeholder="Confirm Password" autocomplete="new-password" />
+              </div>
+
+              <button class="remote-btn-primary" id="signup-submit-btn" onclick="handleEmailAuth()">Create Account</button>
+              <div id="signup-otp-section" style="display: none; margin-top: 15px;">
+                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter the 6-digit code sent to your email to confirm:</p>
+                <input type="text" id="signup-otp-input" class="remote-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-family: 'Space Mono', monospace;" />
+                <button class="remote-btn-primary" onclick="verifySignupOtp()" style="margin-top: 10px; background: var(--signal); color: var(--void);">Verify Code</button>
+              </div>
+
+              <div class="remote-divider">OR</div>
+
+              <button class="remote-btn-google" onclick="handleGoogleAuth()">
+                <svg width="18" height="18" viewBox="0 0 48 48">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Log In With Google
+              </button>
+              
+              <p class="remote-auth-subtitle" style="margin-top: 24px;">Already have an account? <a onclick="switchTab('login')" style="cursor:pointer; color:var(--signal);">Log in</a></p>
+            </div>
+          </div>
+
+          <div class="remote-bottom-links" style="margin-top: 24px;">
+            <button type="button" class="remote-bottom-link primary" onclick="goToStep(2); updateWizardStep(2)">🎮 Skip & Play Locally</button>
+            <button type="button" class="remote-bottom-link" onclick="window.location.href = 'Academy.html'">← Back to Academy</button>
+          </div>
+        </div>
+      </div>
+
+        
+      <div id="setupFormArea" class="wizard-step" data-step="2" style="display: none">
+        <div id="cloud-status" style="margin-bottom: 20px; font-weight: 600; color: var(--em); display: none">✅ Cloud Account Connected</div>
+        <form id="setupForm">
+          <div class="input-group">
+            <label for="prof-name">Full Name (For Certificate)</label>
+            <input type="text" id="prof-name" placeholder="E.g., John Doe" required autocomplete="name" />
+          </div>
+
+          <div class="input-group">
+            <label for="prof-username">Username (Public on Leaderboard)</label>
+            <input type="text" id="prof-username" placeholder="@your_username" required autocomplete="username" oninput="if(this.value && !this.value.startsWith('@')) this.value = '@' + this.value; checkUsernameAvailability(this.value);" style="padding-right: 40px;" />
+            <div id="username-status" style="font-size: 0.8rem; margin-top: 6px; min-height: 18px; font-weight: 600;"></div>
+          </div>
+
+          <div class="input-group">
+            <label for="prof-age">Your Age <span style="color:var(--dim);font-weight:400;font-size:0.8rem">(for best experience)</span></label>
+            <input type="number" id="prof-age" min="8" max="99" placeholder="E.g., 18" required autocomplete="off" />
+          </div>
+
+          <div class="input-group">
+            <label for="prof-lang">Preferred Language</label>
+            <select id="prof-lang" autocomplete="off">
+              <option value="en">English</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn-submit" onclick="goToStep(3); updateWizardStep(3)" style="margin-top: 10px">Next: Choose Vehicle &rarr;</button>
+          <button type="button" class="btn-submit btn-outline" onclick="goToStep(1); updateWizardStep(1)" style="margin-top: 15px">← Back</button>
+        </form>
+      </div>
+
+      
+      <div id="vehicleStep" class="wizard-step" data-step="3" style="display: none">
+        <form id="vehicleForm">
+          <div class="input-group">
+            <label for="prof-veh">Preferred Vehicle</label>
+            <div class="custom-select-wrapper" id="veh-select-wrapper">
+              <div class="custom-select-trigger" id="veh-select-trigger" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-label="Preferred Vehicle" tabindex="0" onclick="toggleCustomSelect('veh')" onkeydown="handleSelectKeydown(event, 'veh')">
+                <span class="custom-select-icon" aria-hidden="true">🚗</span>
+                <span class="custom-select-text" id="veh-select-text">Standard Car</span>
+                <svg class="custom-select-arrow" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="custom-select-dropdown" id="veh-select-dropdown" role="listbox" aria-label="Vehicle options">
+                <div class="custom-select-option selected" data-value="Car" data-icon="🚗" role="option" aria-selected="true" tabindex="-1" onclick="selectCustomOption('veh', 'Car', '🚗', 'Standard Car')">
+                  <span class="option-icon" aria-hidden="true">🚗</span>
+                  <span class="option-label">Standard Car</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Bike" data-icon="🏍️" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Bike', '🏍️', 'Motorcycle')">
+                  <span class="option-icon" aria-hidden="true">🏍️</span>
+                  <span class="option-label">Motorcycle</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Bus" data-icon="🚌" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Bus', '🚌', 'Bus')">
+                  <span class="option-icon" aria-hidden="true">🚌</span>
+                  <span class="option-label">Bus</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Truck" data-icon="🚛" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Truck', '🚛', 'Truck')">
+                  <span class="option-icon" aria-hidden="true">🚛</span>
+                  <span class="option-label">Truck</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="custom-select-option" data-value="Auto" data-icon="🛺" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Auto', '🛺', 'Auto Rickshaw')">
+                  <span class="option-icon" aria-hidden="true">🛺</span>
+                  <span class="option-label">Auto Rickshaw</span>
+                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="prof-veh" value="Car" />
+          </div>
+
+          <div class="input-group">
+            <label for="prof-pin">Local Login PIN (Optional)</label>
+            <input type="password" id="prof-pin" placeholder="4-digit PIN (e.g. 1234)" autocomplete="off" />
+          </div>
+
+          <button type="submit" class="btn-submit" form="vehicleForm">Complete Setup &rarr;</button>
+          <button type="button" class="btn-submit btn-outline" onclick="goToStep(2); updateWizardStep(2)" style="margin-top: 15px">← Back</button>
+          <button
+            type="button"
+            class="btn-submit btn-outline"
+            id="setup-dashboard-btn"
+            style="display: none; margin-top: 15px; border-color: var(--em); color: var(--em)"
+            onclick="window.location.href = 'Academy.html'"
+          >
+            Go to Academy Hub &rarr;
+          </button>
+        </form>
+      </div>
+      </div> 
+    </div>
+
+    <script>
+
+      function applyTheme() {
+        const currentTheme = localStorage.getItem('theme') || 'dark'
+        if (currentTheme === 'light') {
+          document.body.classList.add('lm')
+        } else {
+          document.body.classList.remove('lm')
+        }
+      }
+      applyTheme()
+      
+
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'theme') applyTheme()
+      })
+
+
+      let currentStep = 1
+      const totalSteps = 3
+      let setupProgressRing = null
+
+      function updateWizardStep(step) {
+        currentStep = Math.max(1, Math.min(step, totalSteps))
+
+
+        document.querySelectorAll('.step-item').forEach((item, i) => {
+          const stepNum = i + 1
+          item.classList.remove('active', 'completed')
+          if (stepNum < currentStep) item.classList.add('completed')
+          else if (stepNum === currentStep) item.classList.add('active')
+        })
+
+
+        const progress = ((currentStep - 1) / (totalSteps - 1)) * 100
+        document.querySelector('.wizard-stepper .step-progress').style.width = `${progress}%`
+
+
+        if (setupProgressRing && window.TrafficCharts) {
+          const pct = Math.round(((currentStep - 1) / (totalSteps - 1)) * 100)
+          setupProgressRing.update(pct)
+
+          const pctEl = document.getElementById('progress-pct')
+          if (pctEl) {
+            pctEl.textContent = pct + '%'
+          }
+        }
+
+
+        document.querySelectorAll('.wizard-step').forEach(el => {
+          el.style.display = parseInt(el.dataset.step) === currentStep ? 'block' : 'none'
+        })
+
+
+        const authArea = document.getElementById('authArea')
+        if (authArea) {
+          authArea.style.display = currentStep === 1 ? 'block' : 'none'
+        }
+
+
+        var titles = {
+          1: 'Welcome',
+          2: window.colUser ? 'Welcome, ' + (window.colUser.user_metadata?.full_name?.split(' ')[0] || 'Driver') + '!' : 'Your Profile',
+          3: 'Choose Your Vehicle'
+        }
+        var subtitles = {
+          1: "Let's setup your driver profile to get started.",
+          2: window.colUser ? 'Almost done — just fill in a few details to complete your setup.' : 'Tell us about yourself so we can personalize your experience.',
+          3: 'Pick your preferred vehicle and you\'ll be ready to hit the road.'
+        }
+        var titleEl = document.getElementById('step-title-h1')
+        var subEl = document.getElementById('subtitle-text')
+        if (titleEl) titleEl.textContent = titles[currentStep] || 'Welcome'
+        if (subEl) subEl.textContent = subtitles[currentStep] || ''
+      }
+
+      function goToStep(step) {
+
+        if (step > currentStep) {
+          if (currentStep === 1) {
+
+          } else if (currentStep === 2) {
+            const name = document.getElementById('prof-name').value.trim()
+            const age = parseInt(document.getElementById('prof-age').value) || 0
+            if (name.length < 2) {
+              alert('Please enter a valid name (at least 2 characters).')
+              return
+            }
+            if (age < 8 || age > 99) {
+              alert('Please enter a valid age (8-99).')
+              return
+            }
+          }
+        }
+        updateWizardStep(step)
+      }
+
+
+      function initProgressRing() {
+        const canvas = document.getElementById('setup-progress-ring')
+        if (canvas && window.TrafficCharts) {
+          setupProgressRing = window.TrafficCharts.createProgressRing(canvas, 0, { cutout: '70%' })
+
+
+          var _nativeUpdate = setupProgressRing.update.bind(setupProgressRing)
+          setupProgressRing.update = function(value) {
+            this.data.datasets[0].data = [value, 100 - value]
+            _nativeUpdate('none')
+          }
+
+          const pctEl = document.getElementById('progress-pct')
+          if (pctEl) pctEl.textContent = '0%'
+        }
+      }
+
+
+      let scene, camera, renderer, particles
+      const init3D = () => {
+        const canvas = document.getElementById('bg-canvas')
+        scene = new THREE.Scene()
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+
+        const isLowEnd = /iPhone|iPad|Android/i.test(navigator.userAgent) || window.innerWidth < 768
+
+        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isLowEnd })
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.setPixelRatio(isLowEnd ? 1 : Math.min(window.devicePixelRatio, 2))
+
+        const isLight = document.body.classList.contains('lm')
+
+        const count = isLowEnd ? 800 : 3000
+        const geometry = new THREE.BufferGeometry()
+        const positions = new Float32Array(count * 3)
+        const colors = new Float32Array(count * 3)
+
+        const color1 = new THREE.Color(isLight ? 0x0e72a0 : 0xf2b84b)
+        const color2 = new THREE.Color(isLight ? 0x34d399 : 0x00f0cc)
+
+        for (let i = 0; i < count; i++) {
+          const radius = 2 + Math.random() * 15
+          const theta = Math.random() * 2 * Math.PI
+          const y = (Math.random() - 0.5) * 4 * (1 - radius / 18)
+
+          positions[i * 3] = radius * Math.cos(theta)
+          positions[i * 3 + 1] = y
+          positions[i * 3 + 2] = radius * Math.sin(theta)
+
+          const mix = Math.random()
+          const mixedColor = color1.clone().lerp(color2, mix)
+          colors[i * 3] = mixedColor.r
+          colors[i * 3 + 1] = mixedColor.g
+          colors[i * 3 + 2] = mixedColor.b
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+
+        const texCanvas = document.createElement('canvas')
+        texCanvas.width = 32
+        texCanvas.height = 32
+        const context = texCanvas.getContext('2d')
+        const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16)
+        gradient.addColorStop(0, 'rgba(255,255,255,1)')
+        gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)')
+        gradient.addColorStop(1, 'rgba(0,0,0,0)')
+        context.fillStyle = gradient
+        context.fillRect(0, 0, 32, 32)
+        const texture = new THREE.CanvasTexture(texCanvas)
+
+        const material = new THREE.PointsMaterial({
+          size: 0.15,
+          vertexColors: true,
+          map: texture,
+          transparent: true,
+          opacity: 0.8,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+
+        particles = new THREE.Points(geometry, material)
+        particles.rotation.x = 0.3
+        scene.add(particles)
+
+        const grid = new THREE.GridHelper(40, 40, isLight ? 0x0e72a0 : 0xf2b84b, isLight ? 0x0e72a0 : 0xf2b84b)
+        grid.position.y = -3
+        grid.material.opacity = 0.08
+        grid.material.transparent = true
+        grid.material.blending = THREE.AdditiveBlending
+        scene.add(grid)
+
+        camera.position.z = 8
+        camera.position.y = 1
+
+        let mouseX = 0
+        let mouseY = 0
+        document.addEventListener('mousemove', (event) => {
+          mouseX = (event.clientX / window.innerWidth) * 2 - 1
+          mouseY = -(event.clientY / window.innerHeight) * 2 - 1
+        })
+
+        let time = 0
+        const animate = () => {
+          requestAnimationFrame(animate)
+          time += 0.005
+
+          particles.rotation.y = time * 0.5
+
+          if (!isLowEnd) {
+            const positions = particles.geometry.attributes.position.array
+            for (let i = 0; i < count; i++) {
+              const i3 = i * 3
+              positions[i3 + 1] += Math.sin(time * 2 + positions[i3]) * 0.002
+            }
+            particles.geometry.attributes.position.needsUpdate = true
+          }
+
+          grid.position.z = (time * 5) % 1
+
+          camera.position.x += (mouseX * 2 - camera.position.x) * 0.05
+          camera.position.y += (-mouseY * 1 - camera.position.y + 1) * 0.05
+          camera.lookAt(scene.position)
+
+          renderer.render(scene, camera)
+        }
+
+        animate()
+
+        window.addEventListener('resize', () => {
+          camera.aspect = window.innerWidth / window.innerHeight
+          camera.updateProjectionMatrix()
+          renderer.setSize(window.innerWidth, window.innerHeight)
+        })
+      }
+
+      window.addEventListener('load', () => {
+        if (typeof THREE !== 'undefined') {
+          init3D()
+        }
+
+        initProgressRing()
+        updateWizardStep(1)
+      })
+
+
+      let authMode = 'login'
+      let selectedRole = 'student'
+
+      function selectRole(role, mode) {
+        selectedRole = role
+        if (mode === 'signup') {
+          document.getElementById('signup-role').value = role
+
+          document.querySelectorAll('#signup-panel .remote-role-btn').forEach(btn => {
+            btn.classList.remove('active')
+            btn.style.borderColor = ''
+            btn.style.background = ''
+            btn.style.color = ''
+          })
+          const btnId = role === 'student' ? 'btn-signup-student' : 'btn-signup-parent'
+          const btn = document.getElementById(btnId)
+          if(btn) {
+            btn.classList.add('active')
+          }
+        } else {
+
+          document.querySelectorAll('#login-panel .remote-role-btn').forEach(btn => {
+            btn.classList.remove('active')
+            btn.style.borderColor = ''
+            btn.style.background = ''
+            btn.style.color = ''
+          })
+          const btnId = role === 'student' ? 'btn-login-student' : 'btn-login-parent'
+          const btn = document.getElementById(btnId)
+          if(btn) {
+            btn.classList.add('active')
+          }
+        }
+      }
+
+      function switchTab(mode) {
+        authMode = mode
+        const container = document.getElementById('auth-slider-container')
+        const stepTitle = document.getElementById('step-title-h1')
+        
+        if (mode === 'login') {
+          container.classList.remove('slide-signup')
+          container.classList.add('slide-login')
+          if (stepTitle) stepTitle.textContent = "Welcome back!"
+        } else {
+          container.classList.remove('slide-login')
+          container.classList.add('slide-signup')
+          if (stepTitle) stepTitle.textContent = "Create an account"
+        }
+      }
+
+
+
+      
+      function friendlyAuthError(err) {
+        var msg = (err.message || '').toLowerCase();
+        if (msg.includes('rate limit') || msg.includes('too many')) return 'Too many attempts. Please wait a few minutes and try again.';
+        if (msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch') || msg.includes('networkerror')) return 'Network error — check your connection and try again.';
+        if (msg.includes('invalid login credentials') || msg.includes('invalid email') || msg.includes('invalid grant')) return 'No account found with this email. Please sign up first.';
+        if (msg.includes('email not confirmed')) return 'Please confirm your email address before logging in.';
+        if (msg.includes('signup disabled') || msg.includes('signups not allowed')) return 'New signups are currently disabled. Please contact support.';
+        if (msg.includes('token has expired') || msg.includes('invalid token') || msg.includes('invalid otp')) return 'Code is invalid or expired. Please request a new one.';
+        if (msg.includes('email rate limit exceeded')) return 'Too many emails sent. Please wait a few minutes.';
+        if (msg.includes('email address invalid')) return 'Please enter a valid email address.';
+        return err.message || 'Something went wrong. Please try again.';
+      }
+
+      async function sendLoginOtp() {
+        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
+        const email = document.getElementById('auth-email').value.trim()
+        const errDiv = document.getElementById('col-auth-err')
+        if (!email) {
+          errDiv.textContent = 'Please enter an email address.'
+          return
+        }
+
+        document.getElementById('auth-otp-btn').textContent = 'Sending...'
+        document.getElementById('auth-otp-btn').disabled = true
+        errDiv.textContent = ''
+
+        try {
+          const res = await window.supabaseClient.auth.signInWithOtp({ email })
+          if (res.error) throw res.error
+          
+          document.getElementById('auth-pass').parentElement.style.display = 'none'
+          document.getElementById('auth-submit-btn').style.display = 'none'
+          document.getElementById('auth-otp-btn').style.display = 'none'
+          document.getElementById('login-otp-section').style.display = 'block'
+          errDiv.innerHTML = '<span style="color:var(--em)">✓ Code sent to ' + email + '</span>'
+        } catch (err) {
+          errDiv.textContent = friendlyAuthError(err)
+          document.getElementById('auth-otp-btn').textContent = 'Log in with Email Code'
+          document.getElementById('auth-otp-btn').disabled = false
+        }
+      }
+
+      function cancelLoginOtp() {
+        document.getElementById('auth-pass').parentElement.style.display = 'block'
+        document.getElementById('auth-submit-btn').style.display = 'block'
+        document.getElementById('auth-otp-btn').style.display = 'block'
+        document.getElementById('login-otp-section').style.display = 'none'
+        document.getElementById('auth-otp-btn').textContent = 'Log in with Email Code'
+        document.getElementById('auth-otp-btn').disabled = false
+      }
+
+      async function verifyLoginOtp() {
+        const email = document.getElementById('auth-email').value.trim()
+        const token = document.getElementById('login-otp-input').value.trim()
+        const errDiv = document.getElementById('col-auth-err')
+        const verifyBtn = document.querySelector('#login-otp-section .remote-btn-primary')
+
+        if (!token) {
+          errDiv.textContent = 'Please enter the 6-digit code.'
+          return
+        }
+        if (token.length < 6) {
+          errDiv.textContent = 'Code must be 6 digits.'
+          return
+        }
+
+        errDiv.textContent = ''
+        if (verifyBtn) { verifyBtn.textContent = 'Verifying...'; verifyBtn.disabled = true; }
+
+        try {
+          const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'email' })
+          if (res.error) throw res.error
+
+          if (res.data.session) {
+            window.colUser = res.data.session.user
+            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+            document.getElementById('cloud-status').style.display = 'block'
+            
+            const p = await window.supabaseClient.from('user_profiles').select('*').eq('user_id', window.colUser.id).maybeSingle()
+            if (p.data) {
+              window.colUser.uid = p.data.user_id;
+              document.getElementById('auth-dashboard-btn').style.display = 'block'
+            }
+            goToStep(2); updateWizardStep(2);
+          } else {
+            errDiv.textContent = 'Verification succeeded but no session was created. Please try again.'
+          }
+        } catch (err) {
+          errDiv.textContent = friendlyAuthError(err)
+        } finally {
+          if (verifyBtn) { verifyBtn.textContent = 'Verify Code'; verifyBtn.disabled = false; }
+        }
+      }
+
+      async function verifySignupOtp() {
+        const email = document.getElementById('signup-email').value.trim()
+        const token = document.getElementById('signup-otp-input').value.trim()
+        const errDiv = document.getElementById('col-auth-err-signup')
+        const verifyBtn = document.querySelector('#signup-otp-section .remote-btn-primary')
+
+        if (!token) {
+          errDiv.textContent = 'Please enter the 6-digit code.'
+          return
+        }
+        if (token.length < 6) {
+          errDiv.textContent = 'Code must be 6 digits.'
+          return
+        }
+
+        errDiv.textContent = ''
+        if (verifyBtn) { verifyBtn.textContent = 'Verifying...'; verifyBtn.disabled = true; }
+
+        try {
+          const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'signup' })
+          if (res.error) throw res.error
+
+          if (res.data.session) {
+            window.colUser = res.data.session.user
+            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+            document.getElementById('cloud-status').style.display = 'block'
+            goToStep(2); updateWizardStep(2);
+          } else {
+            errDiv.textContent = 'Verification succeeded but no session was created. Please try again.'
+          }
+        } catch (err) {
+          errDiv.textContent = friendlyAuthError(err)
+        } finally {
+          if (verifyBtn) { verifyBtn.textContent = 'Verify Code'; verifyBtn.disabled = false; }
+        }
+      }
+
+      async function handleEmailAuth() {
+        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
+
+        if (authMode === 'signup') {
+          const email = document.getElementById('signup-email').value.trim()
+          const pass = document.getElementById('signup-pass').value
+          const passConfirm = document.getElementById('signup-pass-confirm').value
+          const role = document.getElementById('signup-role').value
+          const errDiv = document.getElementById('col-auth-err-signup')
+
+          if (!email || !pass) {
+            errDiv.textContent = 'Please fill out all fields.'
+            return
+          }
+          if (pass !== passConfirm) {
+            errDiv.textContent = 'Passwords do not match.'
+            return
+          }
+          if (!role) {
+            errDiv.textContent = 'Please select a role.'
+            return
+          }
+
+          errDiv.textContent = 'Creating account...'
+          errDiv.style.color = 'var(--dim)'
+
+          try {
+            const res = await window.supabaseClient.auth.signUp({
+              email,
+              password: pass,
+              options: {
+                data: {
+                  full_name: email.split('@')[0],
+                  role: role
+                }
+              }
+            })
+
+            if (res.error) throw res.error
+
+            if (res.data.user && !res.data.session) {
+              errDiv.textContent = 'Please check your email to confirm registration!'
+              errDiv.style.color = 'var(--em)'
+            } else {
+              errDiv.textContent = 'Success!'
+              errDiv.style.color = 'var(--em)'
+              showLocalSetup()
+            }
+          } catch (err) {
+            errDiv.textContent = err.message || 'Authentication failed.'
+            errDiv.style.color = '#ef4444'
+          }
+        } else {
+          const email = document.getElementById('auth-email').value.trim()
+          const pass = document.getElementById('auth-pass').value
+          const errDiv = document.getElementById('col-auth-err')
+
+          if (!email || !pass) {
+            errDiv.textContent = 'Please fill out all fields.'
+            return
+          }
+
+          errDiv.textContent = 'Authenticating...'
+          errDiv.style.color = 'var(--dim)'
+
+          try {
+            let res = await window.supabaseClient.auth.signInWithPassword({ email, password: pass })
+
+            if (res.error) throw res.error
+
+            errDiv.textContent = 'Success!'
+            errDiv.style.color = 'var(--em)'
+            showLocalSetup()            } catch (err) {
+              errDiv.textContent = friendlyAuthError(err)
+              errDiv.style.color = '#ef4444'
+            }
+          }
+        }
+
+      async function handleGoogleAuth() {
+        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
+        try {
+          var redirectTo = new URL('TrafficSetup.html', window.location.href).href
+          
+          let res = await window.supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+              redirectTo: redirectTo,
+            },
+          })
+          if (res.error) throw res.error
+        } catch (err) {
+          alert('Google Sign-In failed: ' + err.message)
+        }
+      }
+
+      function showLocalSetup() {
+        var toast = document.getElementById('auth-toast')
+        if (toast && toast.dataset.advancing === '1') return
+        if (toast) {
+          toast.dataset.advancing = '1'
+          toast.style.display = 'flex'
+          toast.classList.remove('out')
+          setTimeout(function() {
+            toast.classList.add('out')
+            setTimeout(function() {
+              toast.style.display = 'none'
+              toast.classList.remove('out')
+            }, 400)
+            goToStep(2)
+          }, 1800)
+        } else {
+          goToStep(2)
+        }
+      }
+
+      window.addEventListener('col-auth-changed', async (e) => {
+        const user = e.detail && e.detail.user ? e.detail.user : window.colUser
+        if (user) {
+
+          const pendingRole = localStorage.getItem('pending_role');
+          if (pendingRole && (!user.user_metadata || !user.user_metadata.role)) {
+            try {
+              await window.supabaseClient.auth.updateUser({
+                data: { role: pendingRole }
+              });
+              user.user_metadata = user.user_metadata || {};
+              user.user_metadata.role = pendingRole;
+            } catch(err) {
+              console.error("Failed to update role:", err);
+            }
+            localStorage.removeItem('pending_role');
+          }
+
+          showLocalSetup()
+          document.getElementById('cloud-status').style.display = 'block'
+          if (user.user_metadata && (user.user_metadata.full_name || user.user_metadata.name)) {
+            document.getElementById('prof-name').value = user.user_metadata.full_name || user.user_metadata.name
+          }
+          if (window.supabaseClient) {
+            try {
+              const { data } = await window.supabaseClient.from('user_profiles').select('username').eq('user_id', user.id).maybeSingle()
+              if (data && data.username) {
+                document.getElementById('prof-username').value = data.username.startsWith('@') ? data.username : '@' + data.username
+              }
+            } catch (e) {}
+          }
+        }
+      })
+
+
+      if (window.colUser) {
+        showLocalSetup()
+        document.getElementById('cloud-status').style.display = 'block'
+        if (window.colUser.user_metadata && (window.colUser.user_metadata.full_name || window.colUser.user_metadata.name)) {
+          if (!document.getElementById('prof-name').value) {
+            document.getElementById('prof-name').value = window.colUser.user_metadata.full_name || window.colUser.user_metadata.name
+          }
+        }
+        if (window.supabaseClient) {
+          window.supabaseClient.from('user_profiles').select('username').eq('user_id', window.colUser.id).maybeSingle().then(function(res) {
+            if (res.data && res.data.username && !document.getElementById('prof-username').value) {
+              document.getElementById('prof-username').value = res.data.username.startsWith('@') ? res.data.username : '@' + res.data.username
+            }
+          }).catch(function() {})
+        }
+      }
+
+
+      let _usernameCheckTimeout = null
+      async function checkUsernameAvailability(username) {
+        const statusEl = document.getElementById('username-status')
+        if (!statusEl) return
+        username = username.trim()
+        if (!username || username.length < 3) {
+          statusEl.textContent = ''
+          statusEl.style.color = ''
+          return
+        }
+        if (!username.startsWith('@')) username = '@' + username
+        if (username.length < 3) {
+          statusEl.textContent = 'Username must be at least 2 characters after @'
+          statusEl.style.color = 'var(--red)'
+          return
+        }
+        statusEl.textContent = 'Checking...'
+        statusEl.style.color = 'var(--dim)'
+        clearTimeout(_usernameCheckTimeout)
+        _usernameCheckTimeout = setTimeout(async () => {
+          try {
+            if (!window.supabaseClient) {
+              statusEl.textContent = '✓ Username accepted (offline)'
+              statusEl.style.color = 'var(--em)'
+              return
+            }
+
+            const uname = username.startsWith('@') ? username : '@' + username
+            const { data: upData } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id')
+              .ilike('username', uname)
+              .maybeSingle()
+            if (upData) {
+
+              if (window.colUser && upData.user_id === window.colUser.id) {
+                statusEl.textContent = '✓ This is your current username'
+                statusEl.style.color = 'var(--em)'
+              } else {
+                statusEl.textContent = '✕ Username already taken'
+                statusEl.style.color = 'var(--red)'
+              }
+              return
+            }
+
+            statusEl.textContent = '✓ Username available!'
+            statusEl.style.color = 'var(--em)'
+          } catch (e) {
+            statusEl.textContent = '✓ Username accepted'
+            statusEl.style.color = 'var(--em)'
+          }
+        }, 500)
+      }
+
+      let S = {}
+      try {
+        const raw = localStorage.getItem('traffic_local_user')
+        if (raw) S = JSON.parse(raw)
+      } catch (e) {}
+
+      if (S.name) document.getElementById('prof-name').value = S.name
+      if (S.username) document.getElementById('prof-username').value = S.username
+      if (S.vehicle) document.getElementById('prof-veh').value = S.vehicle
+      if (S.age) document.getElementById('prof-age').value = S.age
+      if (S.language) document.getElementById('prof-lang').value = S.language
+
+
+      if (localStorage.getItem('trafficSetupComplete') === 'true' || S.name) {
+        const authDashBtn = document.getElementById('auth-dashboard-btn')
+        const setupDashBtn = document.getElementById('setup-dashboard-btn')
+        if (authDashBtn) authDashBtn.style.display = 'inline-flex'
+        if (setupDashBtn) setupDashBtn.style.display = 'inline-flex'
+
+        updateWizardStep(totalSteps)
+      }
+
+
+      function toggleCustomSelect(prefix) {
+        const wrapper = document.getElementById(prefix + '-select-wrapper')
+        const trigger = document.getElementById(prefix + '-select-trigger')
+        const isOpen = wrapper.classList.contains('open')
+
+        document.querySelectorAll('.custom-select-wrapper.open').forEach(el => {
+          el.classList.remove('open')
+          const t = el.querySelector('.custom-select-trigger')
+          if (t) t.setAttribute('aria-expanded', 'false')
+        })
+        if (!isOpen) {
+          wrapper.classList.add('open')
+          trigger.setAttribute('aria-expanded', 'true')
+
+          const selected = wrapper.querySelector('.custom-select-option.selected')
+          if (selected) selected.focus()
+        } else {
+          trigger.setAttribute('aria-expanded', 'false')
+        }
+      }
+
+      function selectCustomOption(prefix, value, icon, label) {
+        const wrapper = document.getElementById(prefix + '-select-wrapper')
+        const trigger = document.getElementById(prefix + '-select-trigger')
+        const hidden = document.getElementById('prof-' + prefix)
+        const textEl = document.getElementById(prefix + '-select-text')
+        const iconEl = trigger.querySelector('.custom-select-icon')
+
+
+        if (hidden) {
+          hidden.value = value
+          hidden.dispatchEvent(new Event('change', { bubbles: true }))
+        }
+
+        if (textEl) textEl.textContent = label
+        if (iconEl) iconEl.textContent = icon
+
+
+        trigger.setAttribute('aria-expanded', 'false')
+
+
+        wrapper.querySelectorAll('.custom-select-option').forEach(opt => {
+          const isSelected = opt.dataset.value === value
+          opt.classList.toggle('selected', isSelected)
+          opt.setAttribute('aria-selected', isSelected ? 'true' : 'false')
+        })
+
+
+        wrapper.classList.remove('open')
+        trigger.focus()
+      }
+
+
+      function handleSelectKeydown(e, prefix) {
+        const wrapper = document.getElementById(prefix + '-select-wrapper')
+        const options = Array.from(wrapper.querySelectorAll('.custom-select-option'))
+        const currentIdx = options.findIndex(opt => opt.classList.contains('selected'))
+
+        switch (e.key) {
+          case 'Enter':
+          case ' ':
+            e.preventDefault()
+            if (wrapper.classList.contains('open') && currentIdx >= 0) {
+              const opt = options[currentIdx]
+              selectCustomOption(prefix, opt.dataset.value, opt.dataset.icon, opt.querySelector('.option-label').textContent)
+            } else {
+              toggleCustomSelect(prefix)
+            }
+            break
+          case 'ArrowDown':
+            e.preventDefault()
+            if (!wrapper.classList.contains('open')) {
+              toggleCustomSelect(prefix)
+            } else {
+              const nextIdx = Math.min(currentIdx + 1, options.length - 1)
+              options[nextIdx].focus()
+            }
+            break
+          case 'ArrowUp':
+            e.preventDefault()
+            if (!wrapper.classList.contains('open')) {
+              toggleCustomSelect(prefix)
+            } else {
+              const prevIdx = Math.max(currentIdx - 1, 0)
+              options[prevIdx].focus()
+            }
+            break
+          case 'Escape':
+            wrapper.classList.remove('open')
+            break
+        }
+      }
+
+
+      document.querySelectorAll('.custom-select-option').forEach(opt => {
+        opt.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            this.click()
+          } else if (e.key === 'Escape') {
+            const wrapper = this.closest('.custom-select-wrapper')
+            if (wrapper) {
+              wrapper.classList.remove('open')
+              wrapper.querySelector('.custom-select-trigger').focus()
+            }
+          } else if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            const next = this.nextElementSibling
+            if (next && next.classList.contains('custom-select-option')) next.focus()
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            const prev = this.previousElementSibling
+            if (prev && prev.classList.contains('custom-select-option')) prev.focus()
+          }
+        })
+      })
+
+
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-select-wrapper')) {
+          document.querySelectorAll('.custom-select-wrapper.open').forEach(el => el.classList.remove('open'))
+        }
+      })
+
+      document.getElementById('vehicleForm').addEventListener('submit', async function (e) {
+        e.preventDefault()
+
+        const name = document.getElementById('prof-name').value.trim()
+        const veh = document.getElementById('prof-veh').value
+        const pin = document.getElementById('prof-pin').value.trim()
+        const age = parseInt(document.getElementById('prof-age').value) || 18
+        const language = document.getElementById('prof-lang').value
+        let username = document.getElementById('prof-username').value.trim()
+
+        if (name.length < 2) {
+          alert('Please enter a valid name.')
+          return
+        }
+
+        if (age < 8 || age > 99) {
+          alert('Please enter a valid age (8-99).')
+          return
+        }
+
+        if (username) {
+          if (!username.startsWith('@')) username = '@' + username
+          if (username.length < 3) {
+            alert('Username must be at least 2 characters long.')
+            return
+          }
+          if (window.supabaseClient && window.colUser) {
+            try {
+
+              const { data: upExisting } = await window.supabaseClient
+                .from('user_profiles')
+                .select('user_id')
+                .ilike('username', username)
+                .neq('user_id', window.colUser.id)
+                .maybeSingle()
+              if (upExisting) {
+                alert('That username is already taken. Please choose another.')
+                return
+              }
+
+
+              const studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+              await window.supabaseClient
+                .from('user_profiles')
+                .upsert({
+                  user_id: window.colUser.id,
+                  display_name: name,
+                  username: username,
+                  student_id: studentId,
+                  preferred_vehicle: veh,
+                  age: age,
+                  language: language,
+                  role: document.getElementById('signup-role')?.value || 'student',
+                  updated_at: new Date().toISOString()
+                }, { onConflict: 'user_id' })
+            } catch (err) {
+              console.warn('Error saving profile to cloud', err)
+            }
+          }
+        }
+
+        const tUser = { name, username, vehicle: veh, pin, age, language, createdAt: new Date().toISOString() }
+        localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
+
+        let L = {}
+        try {
+          const r = localStorage.getItem('th-save')
+          if (r) L = JSON.parse(r)
+        } catch (e) {}
+        L.name = name
+        L.vehicle = veh
+        if (pin) L.localPin = pin
+        localStorage.setItem('th-save', JSON.stringify(L))
+        localStorage.setItem('trafficSetupComplete', 'true')
+
+
+
+        const walletKey = 'mth4'
+        let saveData = {}
+        try {
+          const raw = localStorage.getItem(walletKey)
+          if (raw) saveData = JSON.parse(raw)
+        } catch(e) {}
+        if (!saveData.wallet) saveData.wallet = 50000
+        if (!saveData.name) saveData.name = name
+        if (!saveData.vehicle) saveData.vehicle = veh
+        if (!saveData.comp) saveData.comp = {}
+        if (!saveData.badges) saveData.badges = []
+        if (!saveData.studentId) saveData.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+        localStorage.setItem(walletKey, JSON.stringify(saveData))
+
+
+        if (window.supabaseClient && window.colUser) {
+          try {
+            const gMeta = window.colUser.user_metadata || {}
+            const gAvatar = gMeta.avatar_url || gMeta.picture || gMeta.avatar || null
+            await window.supabaseClient.from('user_profiles').upsert({
+              user_id: window.colUser.id,
+              display_name: name,
+              preferred_vehicle: veh,
+              ...(gAvatar ? { avatar_url: gAvatar } : {}),
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id' })
+          } catch(err) { console.warn('Could not sync wallet to cloud', err) }
+        }
+
+
+        updateWizardStep(totalSteps)
+        
+        setTimeout(() => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const returnTo = urlParams.get('returnTo');
+          if (returnTo && /^[a-zA-Z0-9_-]+\.html$/.test(returnTo)) {
+            window.location.href = returnTo;
+          } else {
+            sessionStorage.setItem('just_signed_up', 'true');
+            window.location.href = 'Academy.html?signup=1';
+          }
+        }, 500)
+      })
+
+
+
+
+    </script>
+  <script src="welcome-back.js"></script>
+</body>
+</html>

@@ -2,144 +2,513 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; connect-src 'self' https: wss: data: blob:; font-src 'self' https: data:;" />
-  <title>Mumbai Traffic Hero Academy</title>
-  <link rel="icon" type="image/png" href="./assets/Icon-nY8OFMj5.png" />
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <meta name="theme-color" content="#070a14" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <title>Mumbai Traffic Hero — Desktop Edition</title>
+  <link rel="icon" type="image/png" href="icon-192.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #070a14;
+      --card: rgba(17, 24, 39, 0.85);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --gold: #f2b84b;
+      --green: #34d399;
+      --red: #ef4444;
+    }
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #070a14;
+      background: var(--bg);
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      color: #e8e3d8;
+      color: var(--text);
     }
-    #game-canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-    #loading {
-      position: fixed;
-      inset: 0;
+    #desktop-app {
       display: flex;
       flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+    /* Top Desktop Header */
+    #desktop-header {
+      height: 54px;
+      background: rgba(11, 15, 26, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
       align-items: center;
-      justify-content: center;
-      background: #070a14;
-      z-index: 999999;
-      transition: opacity 0.5s ease;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 1000;
+      user-select: none;
     }
-    #loading.hidden {
-      opacity: 0;
-      pointer-events: none;
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    #loading h1 {
-      font-size: 2rem;
+    .brand-title {
       font-weight: 800;
-      margin-bottom: 1rem;
+      font-size: 15px;
+      letter-spacing: 0.5px;
       background: linear-gradient(135deg, #f2b84b, #5ed4f5);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
-    #loading-bar {
-      width: 300px;
-      height: 4px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 2px;
-      overflow: hidden;
+    .badge-tag {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
     }
-    #loading-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #f2b84b, #5ed4f5);
-      border-radius: 2px;
-      transition: width 0.3s ease;
-    }
-    #loading-text {
-      margin-top: 0.75rem;
-      font-size: 0.85rem;
-      color: #8891aa;
-    }
-    #error-display {
-      position: fixed;
-      inset: 0;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #070a14;
-      z-index: 999999;
-      padding: 2rem;
-      text-align: center;
-    }
-    #error-display.visible {
+    .nav-tabs {
       display: flex;
+      gap: 6px;
     }
-    #error-display h2 {
-      color: #ef4444;
-      margin-bottom: 1rem;
-    }
-    #error-display pre {
-      background: rgba(255,0,0,0.1);
-      padding: 1rem;
+    .nav-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
       border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+    }
+    .nav-tab:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .nav-tab.active {
+      color: #ffffff;
+      background: rgba(56, 189, 248, 0.16);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .action-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.12);
+    }
+    /* Main Viewport Container */
+    #view-container {
+      flex: 1;
+      width: 100%;
+      height: calc(100% - 54px);
+      position: relative;
+      background: #060810;
+    }
+    .view-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+    }
+    .view-frame.active {
+      display: block;
+    }
+    /* Home Hub Screen */
+    #home-hub {
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 32px 40px;
+      display: none;
+    }
+    #home-hub.active {
+      display: block;
+    }
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85)), url('./assets/suburban_scenery-CKrSMiRY.js');
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 44px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+    .hero-text h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #f8fafc, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-text p {
+      font-size: 15px;
+      color: var(--muted);
       max-width: 600px;
-      overflow-x: auto;
-      font-size: 0.8rem;
-      text-align: left;
-      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+      border: none;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(37, 99, 235, 0.5);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+    /* Stats Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'Space Mono', monospace;
+    }
+    .stat-sub {
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 600;
+    }
+    /* Features Grid */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .feature-card:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+    }
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    .feature-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    .feature-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+    .feature-link {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    /* Shortcuts Bar */
+    .shortcuts-bar {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kbd-pill {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 11px;
     }
   </style>
-  <script type="module" crossorigin src="./assets/main-BctwBoQL.js"></script>
 </head>
 <body>
-  <canvas id="game-canvas"></canvas>
+  <div id="desktop-app">
+    <!-- Desktop Header -->
+    <header id="desktop-header">
+      <div class="brand-section">
+        <span style="font-size: 20px;">🚦</span>
+        <span class="brand-title">MUMBAI TRAFFIC HERO</span>
+        <span class="badge-tag">DESKTOP PRO</span>
+      </div>
 
-  <div id="loading">
-    <h1>Mumbai Traffic Hero</h1>
-    <div id="loading-bar"><div id="loading-fill"></div></div>
-    <div id="loading-text">Initializing...</div>
-  </div>
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-target="home-hub" onclick="switchView('home-hub')">
+          🏠 Home Hub
+        </button>
+        <button class="nav-tab" data-target="driving-frame" onclick="switchView('driving-frame')">
+          🚗 3D Driving Simulator
+        </button>
+        <button class="nav-tab" data-target="dashboard-frame" onclick="switchView('dashboard-frame')">
+          📊 Driver Dashboard
+        </button>
+        <button class="nav-tab" data-target="academy-frame" onclick="switchView('academy-frame')">
+          🚶 Pedestrian Academy
+        </button>
+        <button class="nav-tab" data-target="setup-frame" onclick="switchView('setup-frame')">
+          ⚙️ Vehicle Setup
+        </button>
+      </nav>
 
-  <div id="error-display">
-    <h2>Something went wrong</h2>
-    <pre id="error-message"></pre>
+      <div class="header-actions">
+        <button class="action-btn" title="Toggle Fullscreen" onclick="toggleAppFullscreen()">⛶ F11</button>
+        <button class="action-btn" title="Reload View" onclick="reloadCurrentView()">🔄</button>
+      </div>
+    </header>
+
+    <!-- Main Viewport -->
+    <main id="view-container">
+      <!-- 1. Home Hub -->
+      <div id="home-hub" class="active">
+        <div class="hero-banner">
+          <div class="hero-text">
+            <h1>Welcome to Traffic Hero Academy</h1>
+            <p>Experience realistic 3D Mumbai driving physics, 360° fullscreen mouselook, suburban neighborhoods, intelligent traffic fleets, and complete driver telemetry analytics.</p>
+          </div>
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="switchView('driving-frame')">
+              🚗 Launch Simulator
+            </button>
+            <button class="btn-secondary" onclick="switchView('dashboard-frame')">
+              📊 Open Dashboard
+            </button>
+          </div>
+        </div>
+
+        <!-- Live Statistics Row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Driver Safety Score</div>
+            <div class="stat-value" style="color: var(--green);">100 / 100</div>
+            <div class="stat-sub">🟢 Exemplary Driver Standing</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Vehicle</div>
+            <div class="stat-value" style="color: var(--accent); font-size: 20px;">SPORTS GT</div>
+            <div class="stat-sub">Aerodynamic Carbon Splitter & Wing</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending Challans</div>
+            <div class="stat-value" style="color: var(--gold);">₹ 0</div>
+            <div class="stat-sub">Zero traffic violations logged</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Scenarios Ready</div>
+            <div class="stat-value" style="color: #ffffff;">15 LEVELS</div>
+            <div class="stat-sub">Marine Drive, Dadar, Sealink</div>
+          </div>
+        </div>
+
+        <!-- Feature Showcase Cards -->
+        <div class="section-title">✨ Featured Simulator Systems</div>
+        <div class="features-grid">
+          <div class="feature-card" onclick="switchView('driving-frame')">
+            <div>
+              <div class="feature-icon">🏎️</div>
+              <div class="feature-title">3D Driving Simulator</div>
+              <div class="feature-desc">Drive the high-performance Sports GT Coupe through traffic with authentic Pacejka tire physics and dynamic 4-wheel weight transfer.</div>
+            </div>
+            <div class="feature-link">Launch Game →</div>
+          </div>
+
+          <div class="feature-card" onclick="switchView('dashboard-frame')">
+            <div>
+              <div class="feature-icon">📊</div>
+              <div class="feature-title">Driver Dashboard</div>
+              <div class="feature-desc">Real-time driver telemetry, speed compliance charts, lane discipline logs, and official safety certificate issuance.</div>
+            </div>
+            <div class="feature-link">View Stats →</div>
+          </div>
+
+          <div class="feature-card" onclick="switchView('academy-frame')">
+            <div>
+              <div class="feature-icon">🚶</div>
+              <div class="feature-title">Pedestrian Academy</div>
+              <div class="feature-desc">Master pedestrian safety, zebra crosswalk rules, jaywalking laws, and pedestrian rights in Mumbai streetscapes.</div>
+            </div>
+            <div class="feature-link">Start Academy →</div>
+          </div>
+
+          <div class="feature-card" onclick="switchView('setup-frame')">
+            <div>
+              <div class="feature-icon">🛠️</div>
+              <div class="feature-title">Vehicle Customizer</div>
+              <div class="feature-desc">Customize suspension stiffness, tire friction coefficients, camera chase offsets, and aerodynamic components.</div>
+            </div>
+            <div class="feature-link">Tune Vehicle →</div>
+          </div>
+        </div>
+
+        <!-- Shortcuts Bar -->
+        <div class="shortcuts-bar">
+          <div><strong>Keyboard Shortcuts:</strong> <span class="kbd-pill">F1</span> Home Hub &nbsp;|&nbsp; <span class="kbd-pill">F2</span> Driving Simulator &nbsp;|&nbsp; <span class="kbd-pill">F3</span> Dashboard &nbsp;|&nbsp; <span class="kbd-pill">F4</span> Academy &nbsp;|&nbsp; <span class="kbd-pill">F11</span> Fullscreen</div>
+          <div>Desktop Version 1.0.0 • Class Of Learners</div>
+        </div>
+      </div>
+
+      <!-- 2. Driving Simulator Frame -->
+      <iframe id="driving-frame" class="view-frame" src="Driving.html" allow="fullscreen; pointer-lock"></iframe>
+
+      <!-- 3. Driver Dashboard Frame -->
+      <iframe id="dashboard-frame" class="view-frame" src="TrafficDashboard.html" allow="fullscreen; pointer-lock"></iframe>
+
+      <!-- 4. Pedestrian Academy Frame -->
+      <iframe id="academy-frame" class="view-frame" src="Academy.html" allow="fullscreen; pointer-lock"></iframe>
+
+      <!-- 5. Vehicle Setup Frame -->
+      <iframe id="setup-frame" class="view-frame" src="TrafficSetup.html" allow="fullscreen; pointer-lock"></iframe>
+    </main>
   </div>
 
   <script>
-    // Hide loading screen when game is ready
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const loading = document.getElementById('loading');
-        if (loading) loading.classList.add('hidden');
-      }, 500);
-    });
+    let currentActiveView = 'home-hub';
 
-    // Register service worker (web only — Electron skips this)
-    if ('serviceWorker' in navigator && !window.electron) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch((err) =>
-          console.warn('[SW] registration failed:', err)
-        );
+    function switchView(viewId) {
+      currentActiveView = viewId;
+      document.querySelectorAll('.view-frame, #home-hub').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add('active');
+
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        if (tab.getAttribute('data-target') === viewId) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
       });
     }
 
-    // Error handling
-    window.addEventListener('error', (e) => {
-      const display = document.getElementById('error-display');
-      const msg = document.getElementById('error-message');
-      if (display && msg) {
-        msg.textContent = e.message + '\n\n' + (e.error?.stack || '');
-        display.classList.add('visible');
+    function toggleAppFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function reloadCurrentView() {
+      if (currentActiveView !== 'home-hub') {
+        const frame = document.getElementById(currentActiveView);
+        if (frame && frame.contentWindow) {
+          frame.contentWindow.location.reload();
+        }
+      } else {
+        window.location.reload();
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      switch (e.key) {
+        case 'F1': e.preventDefault(); switchView('home-hub'); break;
+        case 'F2': e.preventDefault(); switchView('driving-frame'); break;
+        case 'F3': e.preventDefault(); switchView('dashboard-frame'); break;
+        case 'F4': e.preventDefault(); switchView('academy-frame'); break;
+        case 'F5':
+          if (e.ctrlKey) return;
+          e.preventDefault(); switchView('setup-frame'); break;
+        case 'F11': e.preventDefault(); toggleAppFullscreen(); break;
       }
     });
   </script>

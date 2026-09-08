@@ -1,0 +1,2893 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="description" content="View driver stats, violation telemetry, achievements, and leaderboard for Traffic Academy." />
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+    <title>Traffic Academy - Dashboard</title>
+    <link rel="icon" type="image/png" href="../Icon.png" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="traffic-charts.js"></script>
+    <link rel="stylesheet" href="traffic-charts.css" />
+    <link rel="stylesheet" href="welcome-back.css" />
+
+        <script defer src="../col-router.js"></script>
+    <link rel="stylesheet" href="../col-ui.css" />
+  <link rel="stylesheet" href="traffic-mobile.css" />
+    <script defer src="../col-ui.js"></script>
+    <script defer src="../col-auth.js"></script>
+
+    <style>
+      :root {
+        --bg: var(--void);
+        --card: rgba(17, 24, 39, 0.85);
+        --text: var(--ink);
+        --border: var(--line);
+        --hover: rgba(255, 255, 255, 0.06);
+
+        --muted: var(--dim);
+        --muted2: #727a8d;
+
+        --accent: var(--signal);
+        --signal: var(--ion);
+        --green: #34d399;
+        --red: #ef4444;
+        --teal: #00f0cc;
+        --yellow: #d97706;
+        --plasma: #b89bff;
+        --r: 16px;
+        --r-sm: 12px;
+        --r-md: 20px;
+        --r-lg: 28px;
+        --space-1: 6px;
+        --space-2: 12px;
+        --space-3: 20px;
+        --space-4: 28px;
+        --space-5: 40px;
+        --space-6: 64px;
+      }
+
+      body.lm {
+        --bg: #f3f2eb;
+        --card: #ffffff;
+        --text: #111827;
+        --border: #e2e8f0;
+        --hover: #f1f5f9;
+        --muted: #64748b;
+        --muted2: #94a3b8;
+        --accent: #d97706;
+        --signal: #0369a1;
+        --green: #34d399;
+        --teal: #00f0cc;
+        --yellow: #d97706;
+        --plasma: #b89bff;
+      }
+
+
+      :focus-visible {
+        outline: 2px solid var(--signal);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      body {
+        background: var(--bg);
+        background-image:
+          radial-gradient(circle at 15% 50%, rgba(217, 119, 6, 0.08), transparent 40%),
+          radial-gradient(circle at 85% 30%, rgba(52, 211, 153, 0.08), transparent 40%),
+          url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
+        color: var(--text);
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        transition: background 0.3s ease;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+
+      .top-bar {
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(1440px, 94vw);
+        height: 64px;
+        background: rgba(17, 24, 39, 0.6);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        z-index: 1000;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+      }
+
+      .top-bar .brand {
+        font-family: 'Lora', serif;
+        font-weight: 600;
+        font-style: italic;
+        font-size: 1.05rem;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+      }
+
+      .global-progress-wrap {
+        flex: 1;
+        max-width: 400px;
+        margin: 0 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .progress-track {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--teal));
+        width: 0%;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .progress-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+
+      .top-bar-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .profile-compact {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        cursor: default;
+      }
+
+      .avatar-sm {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.3);
+      }
+
+      .avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+
+      .profile-name-sm { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+
+
+      .menu-container { position: relative; }
+      .btn-menu {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .btn-menu:hover { background: var(--hover); }
+
+      .dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        width: 200px;
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 1100;
+      }
+      .dropdown.show { display: flex; }
+      .dropdown-item {
+        padding: 12px 16px;
+        color: var(--text);
+        text-decoration: none;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .dropdown-item:hover { background: var(--hover); }
+      .dropdown-item.danger { color: var(--red); }
+
+
+      .dashboard-container {
+        max-width: 1440px;
+        margin: 100px auto 40px;
+        padding: 0 24px;
+      }
+
+
+      .hero-license {
+        background: linear-gradient(145deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.8));
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 32px;
+        padding: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 40px;
+        margin-bottom: 32px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-license::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -20%;
+        width: 150%; height: 150%;
+        background: radial-gradient(circle at center, rgba(242, 184, 75, 0.15) 0%, transparent 60%);
+        pointer-events: none;
+      }
+      .hero-license::after {
+        content: '';
+        position: absolute;
+        right: 0; bottom: 0;
+        width: 300px; height: 300px;
+        background: radial-gradient(circle at bottom right, rgba(94, 212, 245, 0.15) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .hero-license .hologram-strip {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(242, 184, 75, 0.6), rgba(0, 240, 204, 0.5), transparent);
+        pointer-events: none;
+      }
+
+      .license-left {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        z-index: 1;
+      }
+      .hero-avatar {
+        width: 110px;
+        height: 110px;
+        border-radius: 28px;
+        background: linear-gradient(135deg, var(--accent), #f59e0b);
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 800;
+        overflow: hidden;
+        border: 4px solid rgba(255,255,255,0.2);
+        box-shadow: 0 12px 32px rgba(217, 119, 6, 0.4), inset 0 -4px 12px rgba(0,0,0,0.2);
+      }
+      .hero-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+      .license-info h1 {
+        font-family: 'Lora', serif;
+        font-size: 3rem;
+        margin: 0;
+        color: #fff;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      }
+      .license-id {
+        font-family: 'Space Mono', monospace;
+
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 0.95rem;
+        opacity: 0.95;
+        margin-top: 8px;
+        letter-spacing: 0.1em;
+      }
+
+      .license-right {
+        text-align: right;
+        z-index: 1;
+      }
+      .license-score-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--muted2);
+        font-weight: 700;
+      }
+      .license-score-val {
+        font-size: 4rem;
+        font-weight: 800;
+        background: linear-gradient(to right, #fcd34d, #f59e0b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1;
+        display: block;
+        margin: 8px 0 12px 0;
+        filter: drop-shadow(0 4px 12px rgba(245,158,11,0.3));
+      }
+      .license-tier {
+        background: linear-gradient(135deg, rgba(184, 159, 255, 0.15), rgba(184, 159, 255, 0.05));
+        color: var(--plasma);
+        padding: 8px 18px;
+        border-radius: 24px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        border: 1px solid rgba(184, 159, 255, 0.3);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+      }
+
+
+      .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: minmax(200px, auto);
+        gap: 20px;
+        margin-bottom: 48px;
+      }
+
+      .bento-card {
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 28px;
+        padding: 28px;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.2);
+        min-height: 0;
+      }
+      .bento-card:hover {
+        transform: translateY(-6px) scale(1.01);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 20px 40px rgba(0, 0, 0, 0.4);
+        border-color: rgba(255,255,255,0.15);
+        background: rgba(30, 41, 59, 0.6);
+      }
+
+      .bento-card.wide { grid-column: span 2; }
+      .bento-card.tall { grid-row: span 2; }
+
+      .bento-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .bento-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .bento-sparkline {
+        width: 100%;
+        height: 60px;
+        margin-top: 20px;
+      }
+
+
+      .trophy-room {
+        text-align: center;
+        margin-top: 80px;
+      }
+      .trophy-title {
+        font-family: 'Lora', serif;
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+        background: linear-gradient(to right, #fff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .cert-stage {
+        position: relative;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .btn-reward {
+        background: linear-gradient(135deg, #fcd34d, #f59e0b);
+        color: #451a03;
+        border: 1px solid #fbbf24;
+        padding: 16px 32px;
+        border-radius: 30px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 40px;
+        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3), inset 0 2px 0 rgba(255,255,255,0.4);
+      }
+      .btn-reward:hover {
+        transform: scale(1.05) translateY(-2px);
+        box-shadow: 0 15px 40px rgba(245, 158, 11, 0.5), inset 0 2px 0 rgba(255,255,255,0.6);
+      }
+
+      .share-bar {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        margin-top: 24px;
+      }
+      .share-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #fff;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      }
+      .share-btn:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+      }
+      .share-wa { background: linear-gradient(135deg, #25D366, #128C7E); }
+      .share-ig { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+      .share-copy { background: linear-gradient(135deg, #334155, #1e293b); }
+
+
+      .crt {
+        background: #fbfbf9;
+        background-image: radial-gradient(#d4d4cb 1px, transparent 0);
+        background-size: 24px 24px;
+        color: #2c2b25;
+        padding: 70px 60px 90px 60px;
+        border-radius: 8px;
+        border: 14px solid #1a1a17;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 0 0 6px #e0dfd7, inset 0 0 40px rgba(217, 119, 6, 0.1);
+        position: relative;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        aspect-ratio: 1.414 / 1;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .crtn {
+        font-family: 'Instrument Serif', serif;
+        font-size: 4.5rem;
+        font-weight: 400;
+        font-style: italic;
+        background: linear-gradient(135deg, #b48608 0%, #fcd34d 50%, #b48608 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.1;
+        margin-bottom: 24px;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+      }
+      .crt-body { font-size: 1.25rem; color: #44433c; max-width: 80%; margin: 0 auto; line-height: 1.7; }
+      .crt-course {
+        font-family: 'Space Mono', monospace;
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: #1a1a17;
+        margin: 30px 0;
+        padding: 12px 30px;
+        background: linear-gradient(to right, #e0dfd7, #ebebe3, #e0dfd7);
+        border: 1px solid #c2c1b8;
+        border-radius: 4px;
+        display: inline-block;
+        box-shadow: inset 0 1px 0 #fff;
+      }
+
+
+      .cert-gallery-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        padding: var(--space-3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .cert-gallery-card:hover,
+      .cert-gallery-card:focus-within {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      }
+      .cert-gallery-card .logos { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); }
+      .cert-gallery-card .logos img { height: 40px; object-fit: contain; }
+      .cert-gallery-card .kicker {
+        font-weight: 600; letter-spacing: 0.1em; color: #7c7968;
+        text-transform: uppercase; font-size: 0.9rem; margin-bottom: var(--space-2);
+      }
+      .cert-gallery-card .module-name { font-family: 'Lora', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: var(--space-2); }
+      .cert-gallery-card .issued { color: var(--muted); margin-bottom: var(--space-2); font-size: 0.9rem; }
+      .cert-gallery-card .score { font-size: 0.85rem; color: var(--signal); font-weight: 600; }
+      .cert-gallery-card .footer {
+        margin-top: var(--space-2); padding-top: var(--space-2); border-top: 1px solid var(--border);
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .cert-gallery-card .ref { font-size: 0.75rem; color: var(--muted); }
+      .cert-gallery-card .btn-share {
+        padding: 8px 16px; font-size: 0.8rem; background: var(--signal); color: #000;
+        border: none; border-radius: var(--r-sm); font-weight: 600; cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+      .cert-gallery-card .btn-share:hover { opacity: 0.85; }
+
+
+      .leaderboard-row {
+        display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+        background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+        border-radius: var(--r-sm); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative; overflow: hidden;
+      }
+      .leaderboard-row::before {
+        content: '';
+        position: absolute; left: 0; top: 0; bottom: 0;
+        width: 3px; background: transparent;
+        transition: background 0.25s ease;
+      }
+      .leaderboard-row:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); transform: translateX(2px); }
+      .leaderboard-row .rank {
+        width: 32px; height: 32px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; color: #000; font-size: 0.75rem; flex-shrink: 0;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .leaderboard-row:hover .rank { transform: scale(1.1); }
+      .leaderboard-row .who { flex: 1; min-width: 0; }
+      .leaderboard-row .name { font-weight: 600; font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+      .leaderboard-row .metric { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+      .leaderboard-row .crown { font-size: 1.1rem; flex-shrink: 0; }
+      .leaderboard-row .rank-change {
+        font-size: 0.7rem; font-weight: 800; flex-shrink: 0; min-width: 20px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 6px; padding: 2px 4px; line-height: 1;
+        transition: all 0.3s ease;
+      }
+      .rank-change.up { color: #34d399; background: rgba(52,211,153,0.12); }
+      .rank-change.down { color: #ef4444; background: rgba(239,68,68,0.12); }
+      .rank-change.same { color: var(--muted, #64748b); background: rgba(255,255,255,0.04); }
+      .rank-change.new-entry { color: var(--signal, #0ea5e9); background: rgba(14,165,233,0.12); font-size: 0.6rem; }
+      [data-board="xp"] .rank { background: linear-gradient(135deg, var(--signal), var(--accent)); }
+      [data-board="modules"] .rank { background: linear-gradient(135deg, var(--accent), var(--yellow)); }
+      [data-board="civic"] .rank { background: linear-gradient(135deg, var(--teal), var(--green)); }
+      [data-board="badges"] .rank { background: linear-gradient(135deg, var(--plasma), var(--signal)); }
+
+      .leaderboard-row:nth-child(1) .rank { width: 36px; height: 36px; font-size: 0.85rem; box-shadow: 0 0 12px rgba(242,184,75,0.4); border-radius: 12px; }
+      .leaderboard-row:nth-child(2) .rank { width: 34px; height: 34px; border-radius: 11px; }
+      .leaderboard-row:nth-child(3) .rank { width: 33px; height: 33px; border-radius: 10px; }
+
+      .leaderboard-row.you { border-color: rgba(242,184,75,0.35); background: rgba(242,184,75,0.06); }
+      .leaderboard-row.you::before { background: linear-gradient(180deg, var(--accent), var(--teal)); }
+      .leaderboard-row.you .name::after { content: ' · You'; color: var(--accent); font-size: 0.7rem; font-weight: 700; }
+
+
+      .tier-badge {
+        display: inline-flex; align-items: center; gap: 3px;
+        font-size: 0.55rem; font-weight: 800; text-transform: uppercase;
+        letter-spacing: 0.06em; padding: 2px 6px; border-radius: 4px;
+        flex-shrink: 0; line-height: 1;
+      }
+      .tier-badge.gold { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.08)); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+      .tier-badge.silver { background: linear-gradient(135deg, rgba(148,163,184,0.2), rgba(148,163,184,0.08)); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+      .tier-badge.bronze { background: linear-gradient(135deg, rgba(180,83,9,0.2), rgba(180,83,9,0.08)); color: #d97706; border: 1px solid rgba(180,83,9,0.3); }
+
+
+      .lb-podium {
+        display: flex; align-items: flex-end; justify-content: center;
+        gap: 8px; padding: 20px 0 16px; margin-bottom: 8px;
+      }
+      .podium-spot {
+        display: flex; flex-direction: column; align-items: center;
+        gap: 6px; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .podium-spot:hover { transform: translateY(-4px); }
+      .podium-avatar {
+        width: 52px; height: 52px; border-radius: 16px;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; color: #000; font-size: 1.1rem;
+        overflow: hidden; border: 3px solid rgba(255,255,255,0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .podium-spot:hover .podium-avatar { transform: scale(1.08); }
+      .podium-avatar img { width: 100%; height: 100%; object-fit: cover; }
+      .podium-name { font-size: 0.72rem; font-weight: 600; color: var(--text); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+      .podium-score { font-size: 0.65rem; color: var(--muted); font-weight: 700; }
+      .podium-base {
+        width: 80px; border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: center;
+        font-weight: 800; color: #000; font-size: 0.85rem;
+        transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .podium-spot.first .podium-avatar { width: 64px; height: 64px; border-radius: 18px; border-color: rgba(245,158,11,0.5); box-shadow: 0 0 20px rgba(245,158,11,0.3); }
+      .podium-spot.first .podium-base { width: 90px; height: 60px; background: linear-gradient(180deg, rgba(245,158,11,0.25), rgba(245,158,11,0.08)); border: 1px solid rgba(245,158,11,0.3); color: var(--text); }
+
+      .podium-spot.second .podium-avatar { border-color: rgba(148,163,184,0.4); }
+      .podium-spot.second .podium-base { width: 76px; height: 44px; background: linear-gradient(180deg, rgba(148,163,184,0.2), rgba(148,163,184,0.06)); border: 1px solid rgba(148,163,184,0.25); color: var(--text); }
+
+      .podium-spot.third .podium-avatar { border-color: rgba(180,83,9,0.4); }
+      .podium-spot.third .podium-base { width: 70px; height: 34px; background: linear-gradient(180deg, rgba(180,83,9,0.18), rgba(180,83,9,0.06)); border: 1px solid rgba(180,83,9,0.25); color: var(--text); }
+
+
+      .lb-your-rank {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 16px; margin-bottom: 12px;
+        background: linear-gradient(135deg, rgba(242,184,75,0.08), rgba(242,184,75,0.02));
+        border: 1px solid rgba(242,184,75,0.2);
+        border-radius: var(--r-sm); position: relative; overflow: hidden;
+      }
+      .lb-your-rank::before {
+        content: '';
+        position: absolute; top: -50%; right: -20%;
+        width: 120px; height: 120px;
+        background: radial-gradient(circle, rgba(242,184,75,0.15), transparent 70%);
+        pointer-events: none;
+      }
+      .lb-your-rank .your-rank-num {
+        width: 42px; height: 42px; border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), #f59e0b);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; color: #000; font-size: 1.1rem;
+        box-shadow: 0 4px 12px rgba(245,158,11,0.3); flex-shrink: 0;
+      }
+      .lb-your-rank .your-rank-info { flex: 1; min-width: 0; }
+      .lb-your-rank .your-rank-label { font-size: 0.7rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+      .lb-your-rank .your-rank-detail { font-size: 0.85rem; color: var(--text); font-weight: 600; margin-top: 2px; }
+      .lb-your-rank .your-rank-percentile {
+        font-size: 0.75rem; color: var(--accent); font-weight: 700;
+        background: rgba(242,184,75,0.1); padding: 4px 10px; border-radius: 20px;
+        flex-shrink: 0;
+      }
+
+
+      .lb-stats-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 10px 14px; margin-bottom: 8px;
+        font-size: 0.72rem; color: var(--muted); font-weight: 600;
+      }
+      .lb-stats-header .total-players {
+        display: flex; align-items: center; gap: 6px;
+      }
+      .lb-stats-header .total-players .dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--green); animation: pulse-dot 2s ease-in-out infinite;
+      }
+      @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+
+      .lb-panel { max-height: 60vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+      .lb-panel::-webkit-scrollbar { width: 6px; }
+      .lb-panel::-webkit-scrollbar-track { background: transparent; }
+      .lb-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+      .lb-panel::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+      .lb-tabs {
+        display: flex; gap: 4px; margin-bottom: 18px;
+        background: rgba(255,255,255,0.04); padding: 4px; border-radius: 12px;
+      }
+      .lb-tab {
+        flex: 1; padding: 9px 4px; border: none; background: transparent;
+        color: var(--muted); font-size: 0.65rem; font-weight: 700;
+        letter-spacing: 0.04em; border-radius: 8px; cursor: pointer;
+        transition: all 0.2s; text-transform: uppercase; font-family: inherit;
+      }
+      .lb-tab.active { background: rgba(255,255,255,0.09); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+      .lb-tab:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.04); }
+
+
+      .lb-skeleton {
+        height: 50px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.03) 75%);
+        background-size: 200% 100%; animation: shimmer 1.5s infinite;
+        border-radius: var(--r-sm);
+      }
+      @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+
+      .leaderboard-row {
+        opacity: 0;
+        transform: translateX(-16px);
+        animation: lbRowSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .leaderboard-row:nth-child(1) { animation-delay: 0.05s; }
+      .leaderboard-row:nth-child(2) { animation-delay: 0.10s; }
+      .leaderboard-row:nth-child(3) { animation-delay: 0.15s; }
+      .leaderboard-row:nth-child(4) { animation-delay: 0.20s; }
+      .leaderboard-row:nth-child(5) { animation-delay: 0.25s; }
+      .leaderboard-row:nth-child(6) { animation-delay: 0.30s; }
+      .leaderboard-row:nth-child(7) { animation-delay: 0.35s; }
+      .leaderboard-row:nth-child(8) { animation-delay: 0.40s; }
+      .leaderboard-row:nth-child(9) { animation-delay: 0.45s; }
+      .leaderboard-row:nth-child(10) { animation-delay: 0.50s; }
+      @keyframes lbRowSlideIn {
+        from { opacity: 0; transform: translateX(-16px); }
+        to   { opacity: 1; transform: translateX(0); }
+      }
+
+
+      .rank .rank-num {
+        display: inline-block;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .rank .rank-num.counting {
+        animation: rankCountPulse 0.15s ease-in-out;
+      }
+      @keyframes rankCountPulse {
+        0%   { transform: scale(1); }
+        50%  { transform: scale(1.3); }
+        100% { transform: scale(1); }
+      }
+
+
+      .leaderboard-row.rank-up {
+        animation: lbRowSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, rankUpCelebrate 0.6s 0.4s ease-out;
+      }
+      @keyframes rankUpCelebrate {
+        0%   { box-shadow: inset 0 0 0 0 rgba(52, 211, 153, 0); }
+        30%  { box-shadow: inset 0 0 20px 2px rgba(52, 211, 153, 0.25), 0 0 16px rgba(52, 211, 153, 0.15); }
+        100% { box-shadow: inset 0 0 0 0 rgba(52, 211, 153, 0); }
+      }
+      .leaderboard-row.rank-down {
+        animation: lbRowSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, rankDownFade 0.5s 0.4s ease-out;
+      }
+      @keyframes rankDownFade {
+        0%   { box-shadow: inset 0 0 0 0 rgba(239, 68, 68, 0); }
+        30%  { box-shadow: inset 0 0 16px 2px rgba(239, 68, 68, 0.15); }
+        100% { box-shadow: inset 0 0 0 0 rgba(239, 68, 68, 0); }
+      }
+
+
+      .leaderboard-row.new-entry-row {
+        animation: lbRowSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards, newEntryGlow 0.8s 0.4s ease-out;
+      }
+      @keyframes newEntryGlow {
+        0%   { box-shadow: inset 0 0 0 0 rgba(94, 212, 245, 0); }
+        30%  { box-shadow: inset 0 0 20px 2px rgba(94, 212, 245, 0.2), 0 0 12px rgba(94, 212, 245, 0.1); }
+        100% { box-shadow: inset 0 0 0 0 rgba(94, 212, 245, 0); }
+      }
+
+
+      .rank-change {
+        opacity: 0;
+        transform: scale(0.5);
+        animation: rankBadgePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+      }
+      @keyframes rankBadgePop {
+        from { opacity: 0; transform: scale(0.5); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+
+
+      .leaderboard-row:nth-child(1) .rank {
+        animation: topRankEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+      }
+      .leaderboard-row:nth-child(2) .rank {
+        animation: topRankEntrance 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
+      }
+      .leaderboard-row:nth-child(3) .rank {
+        animation: topRankEntrance 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+      }
+      @keyframes topRankEntrance {
+        from { opacity: 0; transform: scale(0.3) rotate(-20deg); }
+        to   { opacity: 1; transform: scale(1) rotate(0deg); }
+      }
+
+
+      .leaderboard-row.you .rank {
+        animation: yourRankPulse 2s ease-in-out 1s infinite;
+      }
+      @keyframes yourRankPulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(242, 184, 75, 0.3); }
+        50%      { box-shadow: 0 0 0 6px rgba(242, 184, 75, 0); }
+      }
+
+
+      @media (prefers-reduced-motion: reduce) {
+        .leaderboard-row, .rank .rank-num, .rank-change, .leaderboard-row .rank {
+          animation: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      }
+
+
+
+      .bento-card.accent-cyan { border-color: rgba(94,212,245,0.18); }
+      .bento-card.accent-cyan:hover { border-color: rgba(94,212,245,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(94,212,245,0.15); }
+      .bento-card.accent-gold { border-color: rgba(242,184,75,0.18); }
+      .bento-card.accent-gold:hover { border-color: rgba(242,184,75,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(242,184,75,0.15); }
+      .bento-card.accent-green { border-color: rgba(52,211,153,0.18); }
+      .bento-card.accent-green:hover { border-color: rgba(52,211,153,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(52,211,153,0.15); }
+      .bento-card.accent-plasma { border-color: rgba(184,155,255,0.18); }
+      .bento-card.accent-plasma:hover { border-color: rgba(184,155,255,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(184,155,255,0.15); }
+      .bento-card.accent-teal { border-color: rgba(0,240,204,0.18); }
+      .bento-card.accent-teal:hover { border-color: rgba(0,240,204,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 32px rgba(0,240,204,0.15); }
+
+
+      .bento-label span {
+        transition: transform 0.3s ease;
+        display: inline-block;
+      }
+      .bento-card:hover .bento-label span {
+        transform: scale(1.15);
+      }
+
+
+      .bento-card.accent-plasma:hover .achievements-grid .badge-card {
+        border-color: rgba(184,155,255,0.25);
+      }
+
+
+
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(8px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .modal-overlay.show { display: flex; }
+      .modal-box {
+        background: #0f172a;
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #f8fafc;
+        border-radius: 24px;
+        padding: 32px;
+        width: min(420px, 90vw);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      }
+      .modal-box h3 { margin: 0 0 20px; font-family: 'Lora', serif; color: var(--accent); font-size: 1.5rem; }
+      .modal-box .field { margin-bottom: 20px; }
+      .modal-box .field label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; }
+      .modal-box .field input, .modal-box .field select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        font-size: 1rem;
+        background: #1e293b;
+        color: #fff;
+      }
+      .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+      .btn-save { flex: 1; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+      .btn-cancel { flex: 1; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--border); padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+
+
+      body.lm .modal-box { background: #ffffff; color: #1e293b; border-color: rgba(0,0,0,0.1); }
+      body.lm .modal-box h3 { color: var(--accent); }
+      body.lm .modal-box .field label { color: var(--muted); }
+      body.lm .modal-box .field input, body.lm .modal-box .field select { background: #f8fafc; color: #1e293b; border-color: rgba(0,0,0,0.1); }
+      body.lm .modal-actions .btn-cancel { background: rgba(0,0,0,0.05); color: #475569; border-color: rgba(0,0,0,0.1); }
+
+
+      .modal-box.wide { max-width: 640px; width: 90vw; }
+      .conflict-modal-head {
+        border-bottom: 1px solid var(--border);
+        margin-bottom: var(--space-3);
+        padding-bottom: var(--space-3);
+        text-align: center;
+      }
+      .conflict-modal-head h2 {
+        font-family: 'Lora', serif;
+        font-size: 2rem;
+        margin: 0 0 var(--space-2);
+        color: var(--accent);
+      }
+      .conflict-modal-head p { color: var(--muted); font-size: 1rem; margin: 0; }
+      .conflict-save-options { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+      .conflict-save-card {
+        flex: 1; min-width: 220px; border-radius: var(--r-sm);
+        padding: var(--space-3); display: flex; flex-direction: column; gap: 8px;
+      }
+      .conflict-save-card.cloud { background: rgba(94, 212, 245, 0.05); border: 1px solid rgba(94, 212, 245, 0.3); }
+      .conflict-save-card.local { background: rgba(242, 184, 75, 0.05); border: 1px solid rgba(242, 184, 75, 0.3); }
+      .conflict-save-card .title { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+      .conflict-save-card.cloud .title { color: var(--signal); }
+      .conflict-save-card.local .title { color: var(--accent); }
+      .conflict-save-card .stat { font-size: 0.9rem; color: var(--muted); }
+      .conflict-save-card .stat b { color: var(--text); }
+      .conflict-save-card .last-played {
+        font-size: 0.8rem; color: var(--muted); margin-top: 10px; padding-top: 10px;
+        border-top: 1px solid var(--border);
+      }
+      .conflict-save-card .btn-choose {
+        margin-top: auto; padding: 12px; font-weight: 700; border-radius: var(--r-sm);
+        border: none; cursor: pointer; width: 100%; transition: opacity 0.2s ease;
+      }
+      .conflict-save-card .btn-choose:hover { opacity: 0.88; }
+      .conflict-save-card.cloud .btn-choose { background: var(--signal); color: #000; }
+      .conflict-save-card.local .btn-choose { background: var(--accent); color: #000; }
+
+
+
+      .hz-toggle {
+        width: 120px; height: 48px;
+        border-radius: 24px;
+        cursor: pointer;
+        overflow: hidden;
+        position: relative;
+        background: linear-gradient(180deg, #3B82F6 0%, #F59E0B 100%);
+        transition: background 0.7s ease;
+      }
+      .hz-toggle.night { background: linear-gradient(180deg, #070B1A 0%, #1E1B4B 100%); }
+      .hz-orb {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        width: 36px; height: 36px; border-radius: 50%;
+        left: 6px; background: radial-gradient(circle, #FFF7C2, #F59E0B);
+        transition: left 0.7s cubic-bezier(0.4,0,0.2,1), background 0.7s ease;
+      }
+      .hz-toggle.night .hz-orb { left: 78px; background: radial-gradient(circle, #E2E8F0, #475569); }
+
+      @media (max-width: 768px) {
+        .top-bar { width: 94vw; padding: 0 12px; height: 52px; }
+        .global-progress-wrap { display: none; }
+        .profile-name-sm { display: none; }
+        .profile-compact { padding: 4px; }
+        .hz-toggle { width: 44px; height: 28px; border-radius: 14px; }
+        .hz-orb { width: 22px; height: 22px; }
+        .hz-toggle.night .hz-orb { left: 18px; }
+        .hero-license { flex-direction: column; text-align: center; padding: 30px 20px; }
+        .license-left { flex-direction: column; text-align: center; }
+        .license-right { text-align: center; }
+        .bento-grid { grid-template-columns: 1fr; }
+        .bento-card.wide { grid-column: span 1; }
+        .crt { padding: 30px 20px; font-size: 0.8rem; aspect-ratio: auto; min-height: 500px; }
+        .crtn { font-size: 2rem; }
+        .crt-course { font-size: 1.2rem; }
+        .share-bar { flex-wrap: wrap; gap: 8px; }
+        .share-btn { padding: 10px 16px; font-size: 0.85rem; }
+        .bottom-nav { bottom: 12px; padding: 6px; gap: 4px; }
+        .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
+        .leaderboard-row .rank-change { font-size: 0.6rem; padding: 2px 3px; min-width: 16px; }
+      }
+
+      @media print {
+        body { background: white !important; }
+        .top-bar, .hero-license, .bento-grid, .trophy-title, .btn-reward, .share-bar { display: none !important; }
+        .cert-stage { display: block !important; }
+        .crt { width: 100% !important; max-width: 700px !important; margin: 0 auto !important; border-width: 6px !important; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .bento-card:hover, .badge-card:hover, .badge-card:hover .badge-icon, .svg-progress {
+          transform: none !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+      #welcome-back-popup {
+        position: fixed;
+        top: -100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(17, 24, 39, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 12px 20px;
+        border-radius: 100px;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+        transition: top 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+        opacity: 0;
+        overflow: hidden;
+      }
+      #welcome-back-popup.show {
+        top: 24px;
+        opacity: 1;
+      }
+      #welcome-back-popup .wb-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: linear-gradient(135deg, var(--plasma), var(--signal));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #000;
+        font-size: 0.9rem;
+      }
+      #welcome-back-popup .wb-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding-right: 8px;
+      }
+      #welcome-back-popup .wb-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+      }
+      #welcome-back-popup .wb-subtitle {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin: 0;
+      }
+      .wb-timer-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: var(--signal);
+        width: 100%;
+        transform-origin: left;
+        animation: wb-timer 5s linear forwards;
+      }
+      @keyframes wb-timer {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(0); }
+      }
+
+
+      .trend-chart-container {
+        position: relative;
+        height: 80px;
+        width: 100%;
+        margin-top: 8px;
+        overflow: hidden;
+        border-radius: 8px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+      }
+      .trend-val {
+        font-size: 1.8rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+        text-shadow: 0 0 20px rgba(0, 240, 204, 0.4);
+        font-family: var(--sans);
+      }
+      .civic-val {
+        text-shadow: 0 0 20px rgba(242, 184, 75, 0.4);
+      }
+
+
+      .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .badge-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: default;
+        position: relative;
+      }
+      .badge-card::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, rgba(184,155,255,0.0), rgba(0,240,204,0.0));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+      }
+      .badge-card:hover {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(184, 155, 255, 0.5);
+        transform: translateY(-3px) scale(1.04);
+        box-shadow: 0 4px 20px rgba(184, 155, 255, 0.15), 0 0 24px rgba(184, 155, 255, 0.08);
+      }
+      .badge-card:hover::before {
+        opacity: 1;
+        background: linear-gradient(135deg, rgba(184,155,255,0.2), rgba(0,240,204,0.15));
+      }
+      .badge-icon {
+        font-size: 1.8rem;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+      }
+      .badge-card:hover .badge-icon {
+        transform: scale(1.2) rotate(-5deg);
+        filter: drop-shadow(0 4px 12px rgba(184,155,255,0.4)) drop-shadow(0 0 8px rgba(0,240,204,0.3));
+      }
+      .badge-name { font-size: 0.75rem; font-weight: 600; color: var(--text); line-height: 1.2; text-transform: capitalize; transition: color 0.2s ease; }
+      .badge-card:hover .badge-name { color: #fff; }
+      .badge-empty { padding: 32px 20px; text-align: center; border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px; color: var(--muted); font-size: 0.9rem; }
+
+
+      .bento-value {
+        transition: text-shadow 0.3s ease, transform 0.3s ease;
+      }
+      .bento-card:hover .bento-value {
+        text-shadow: 0 0 20px rgba(255,255,255,0.15);
+        transform: scale(1.02);
+      }
+      .bento-card.accent-gold:hover .bento-value { text-shadow: 0 0 24px rgba(242,184,75,0.35); }
+      .bento-card.accent-plasma:hover .bento-value { text-shadow: 0 0 24px rgba(184,155,255,0.35); }
+      .bento-card.accent-cyan:hover .bento-value { text-shadow: 0 0 24px rgba(94,212,245,0.35); }
+      .bento-card.accent-teal:hover .bento-value { text-shadow: 0 0 24px rgba(0,240,204,0.35); }
+
+
+      .trend-val {
+        transition: text-shadow 0.3s ease;
+      }
+      .bento-card.accent-teal:hover .trend-val {
+        text-shadow: 0 0 28px rgba(0, 240, 204, 0.6);
+      }
+      .bento-card.accent-teal:hover .civic-val {
+        text-shadow: 0 0 28px rgba(242, 184, 75, 0.6);
+      }
+
+
+      .bento-card.accent-teal:hover .trend-chart-container {
+        background: linear-gradient(180deg, rgba(0,240,204,0.04) 0%, transparent 100%);
+      }
+
+
+      .svg-progress {
+        transform: rotate(-90deg);
+        filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.4));
+        transition: filter 0.4s ease, transform 0.4s ease;
+      }
+      .bento-card.accent-green:hover .svg-progress {
+        filter: drop-shadow(0 0 16px rgba(52, 211, 153, 0.7)) drop-shadow(0 0 32px rgba(52, 211, 153, 0.3));
+        transform: rotate(-90deg) scale(1.06);
+      }
+      .svg-progress-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
+      .svg-progress-bar {
+        fill: none; stroke: var(--green); stroke-width: 8; stroke-linecap: round;
+        stroke-dasharray: 283;
+        stroke-dashoffset: 283;
+        transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.4s ease;
+      }
+      .bento-card.accent-green:hover .svg-progress-bar {
+        stroke: #4ade80;
+      }
+
+      .dashboard-container {
+        padding-bottom: 90px;
+      }
+      .bottom-nav {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        background: rgba(17, 24, 39, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 8px;
+        border-radius: 100px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+      }
+      .nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        border-radius: 100px;
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        font-family: var(--sans);
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .nav-btn:hover {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .nav-btn.active {
+        background: var(--signal);
+        color: #000;
+        box-shadow: 0 4px 12px rgba(242, 184, 75, 0.3);
+      }
+      .nav-icon {
+        font-size: 1.1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <div class="brand" onclick="window.location.href = 'Academy.html'">Traffic Academy</div>
+
+      <div class="global-progress-wrap">
+        <div class="progress-labels">
+          <span>Start</span>
+          <span id="global-pct">0%</span>
+          <span>Certified</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="global-fill"></div>
+        </div>
+      </div>
+
+      <div class="top-bar-actions">
+        <div class="profile-compact">
+          <div class="avatar-sm" id="avatar-sm"></div>
+          <span class="profile-name-sm" id="top-name">Driver</span>
+        </div>
+
+        <div class="menu-container">
+          <button class="btn-menu" onclick="toggleMenu()">☰</button>
+          <div class="dropdown" id="action-menu">
+            <div class="dropdown-item" onclick="openEditModal()">✏️ Edit Profile</div>
+            <div class="dropdown-item" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</div>
+            <div class="dropdown-item danger" onclick="logoutAndClear()">🚪 Sign Out</div>
+          </div>
+        </div>
+
+        <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-orb"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-container">
+      <div id="tab-profile" class="main-tab-view active" style="transition: opacity 0.3s ease;">
+            <div class="hero-license">
+        <div class="hologram-strip" aria-hidden="true"></div>
+        <div class="license-left">
+          <div class="hero-avatar" id="hero-avatar"></div>
+          <div class="license-info">
+            <h1 id="h-name">Driver Name</h1>
+            <div id="h-username" style="display:none; color:var(--signal); font-size:0.95rem; font-weight:600; margin-top:-4px; margin-bottom:4px;"></div>
+            <div class="license-id" id="h-id">ID: Loading...</div>
+          </div>
+        </div>
+        <div class="license-right">
+          <div class="license-score-label">Total Experience</div>
+          <div class="license-score-val" id="h-score">0</div>
+          <div class="license-tier" id="h-tier">Civic Score</div>
+          <button class="share-btn share-copy" id="btn-share-profile" onclick="shareProfile()" style="margin-top:16px;padding:8px 16px;font-size:0.8rem;border-radius:20px;">
+            &#128279; Share Profile
+          </button>
+        </div>
+      </div>
+
+            <div class="bento-grid">
+        <div class="bento-card accent-gold">
+          <div class="bento-label" style="color: var(--accent);"><span aria-hidden="true">🚗</span> Vehicle</div>
+          <div class="bento-value" id="s-veh">-</div>
+        </div>
+        <div class="bento-card accent-plasma">
+          <div class="bento-label" style="color: var(--plasma);"><span aria-hidden="true">🎂</span> Age Group</div>
+          <div class="bento-value" id="s-age">-</div>
+        </div>
+        <div class="bento-card accent-cyan">
+          <div class="bento-label" style="color: var(--signal);"><span aria-hidden="true">🌐</span> Language</div>
+          <div class="bento-value" id="s-lang">-</div>
+        </div>
+        <div class="bento-card wide accent-teal">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div class="bento-label" style="color: var(--teal); margin:0;"><span aria-hidden="true">📈</span> Performance Trends</div>
+          </div>
+          <div style="display: flex; gap: 24px;">
+             <div style="flex:1">
+               <div style="font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">Global Score</div>
+               <div class="trend-val" id="ui-score-val">0</div>
+               <div class="trend-chart-container">
+                 <svg width="100%" height="100%" preserveAspectRatio="none" style="position:absolute; bottom:0;">
+                   <defs>
+                     <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
+                       <stop offset="0%" stop-color="rgba(0, 240, 204, 0.4)" />
+                       <stop offset="100%" stop-color="rgba(0, 240, 204, 0)" />
+                     </linearGradient>
+                   </defs>
+                   <path id="score-svg-path" d="M0,80 L100,80" fill="url(#scoreGrad)" stroke="var(--teal)" stroke-width="2" vector-effect="non-scaling-stroke" />
+                 </svg>
+               </div>
+             </div>
+             <div style="flex:1">
+               <div style="font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">Civic Balance</div>
+               <div class="trend-val civic-val" id="ui-civic-val">₹0</div>
+               <div class="trend-chart-container">
+                 <svg width="100%" height="100%" preserveAspectRatio="none" style="position:absolute; bottom:0;">
+                   <defs>
+                     <linearGradient id="civicGrad" x1="0" y1="0" x2="0" y2="1">
+                       <stop offset="0%" stop-color="rgba(242, 184, 75, 0.4)" />
+                       <stop offset="100%" stop-color="rgba(242, 184, 75, 0)" />
+                     </linearGradient>
+                   </defs>
+                   <path id="civic-svg-path" d="M0,80 L100,80" fill="url(#civicGrad)" stroke="var(--signal)" stroke-width="2" vector-effect="non-scaling-stroke" />
+                 </svg>
+               </div>
+             </div>
+          </div>
+        </div>
+        <div class="bento-card tall accent-green">
+          <div class="bento-label" style="color: var(--green); margin-bottom: 24px;"><span aria-hidden="true">🎯</span> Module Progress</div>
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="position:relative; width: 140px; height: 140px;">
+              <svg class="svg-progress" viewBox="0 0 100 100" width="140" height="140">
+                <circle class="svg-progress-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="svg-progress-bar" id="module-svg-bar" cx="50" cy="50" r="45"></circle>
+              </svg>
+              <div style="position:absolute; top:0; left:0; right:0; bottom:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div id="cert-progress-pct" style="font-size:1.5rem; font-weight:800; line-height:1; text-shadow:0 0 12px rgba(255,255,255,0.3);">0%</div>
+                <div id="cert-progress-text" style="font-size:0.6rem; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.05em;">Start!</div>
+              </div>
+            </div>
+            <div id="s-prog" style="margin-top:24px; font-size:1.5rem; font-weight:700; color:var(--text);">0/52</div>
+            <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">Completed</div>
+          </div>
+        </div>
+        <div class="bento-card wide accent-plasma">
+          <div class="bento-label" style="color: var(--plasma);"><span aria-hidden="true">✨</span> Recent Achievements</div>
+          <div id="achievement-list" class="achievements-grid">
+            <div class="badge-empty" style="grid-column: 1 / -1;">No badges yet. Complete more modules to earn them!</div>
+          </div>
+        </div>
+      </div>
+
+            <div class="trophy-room">
+        <h2 class="trophy-title">The Trophy Room</h2>
+        <div class="cert-stage" id="cert-wrapper">
+          <div class="crt" id="cert">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%">
+              <div style="display: flex; gap: 14px; align-items: center">
+                <img loading="lazy" src="mumbai-police-logo.png" style="height: 65px; object-fit: contain" alt="Mumbai Police" onerror="this.style.display='none'" />
+                <img loading="lazy" src="sneh-logo.png" style="height: 65px; object-fit: contain" alt="Sneh Asha" onerror="this.style.display='none'" />
+              </div>
+            </div>
+            <div style="font-weight: 600; letter-spacing: 0.1em; color: #7c7968; text-transform: uppercase; font-size: 1.2rem; margin-top: 20px">Certificate of Completion</div>
+            <div class="crtn">Traffic Hero Certification</div>
+            <div class="crt-body" style="margin-top: 32px">This document certifies that</div>
+            <div class="crt-course" id="cert-name">DRIVER</div>
+            <div class="crt-body" style="margin-bottom: 40px">
+              has successfully completed the comprehensive traffic regulations and virtual operations training program, demonstrating mastery across 15 real-world compliance scenarios.
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-top: auto; padding-top: 24px; border-top: 1px solid #e0dfd7; text-align: left">
+              <div class="crt-meta" style="color: #2c2b25">
+                <div style="margin-bottom: 8px"><span style="font-weight: 600; width: 100px; display: inline-block">Date:</span><span id="cert-date">-</span></div>
+                <div style="margin-bottom: 8px"><span style="font-weight: 600; width: 100px; display: inline-block">Score:</span><span id="cert-score">0</span></div>
+                <div><span style="font-weight: 600; width: 100px; display: inline-block">Ref ID:</span><span id="cert-ref">TH-XXX</span></div>
+              </div>
+              <div style="text-align: right">
+                <div style="font-family: 'Lora', serif; font-size: 1.6rem; font-weight: 600; color: #2c2b25; margin-bottom: 4px; width: 200px; line-height: 1.3;">
+                  Authorized
+                </div>
+                <div style="border-top: 1px solid #7c7968; width: 200px; margin-bottom: 6px;"></div>
+                <div style="font-size: 0.9rem; color: #7c7968">Joint Commissioner of Police (Traffic)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="no-cert-msg" style="display: none; padding: 40px; text-align: center; background: rgba(255, 255, 255, 0.1); border-radius: 24px; margin: 20px auto; max-width: 600px; border: 1px solid var(--border);">
+          <h3 style="margin-top: 0; color: var(--muted)">Certificate Locked</h3>
+          <p>Complete all 52 modules to unlock your Traffic Hero Certification.</p>
+        </div>
+
+        <button class="btn-reward" id="btn-dl-cert" onclick="dlCert()">🎓 Download Certificate</button>
+
+<div id="share-bar" class="share-bar" style="display: none;">
+          <button class="share-btn share-wa" onclick="shareWhatsApp()">&#128172; WhatsApp</button>
+          <button class="share-btn share-ig" onclick="shareInstagram()">&#128247; Instagram</button>
+          <button class="share-btn share-copy" onclick="copyCertLink()">&#128279; Copy Link</button>
+        </div>
+      </div>
+
+            <div class="dashboard-section" style="margin-top: 40px;">
+        <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">🏆 Certificate Gallery</h2>
+        <div id="cert-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                  </div>
+        <div id="no-certs-msg" style="text-align: center; padding: 40px; color: var(--muted); display: none;">
+          <p>Complete all 4 modes of all 5 levels in a module to earn a certificate.</p>
+        </div>
+      </div>
+      </div>
+      <div id="tab-leaderboards" class="main-tab-view" style="display: none; opacity: 0; transition: opacity 0.3s ease;">
+            <div class="dashboard-section" style="margin-top: 48px;">
+        <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">📊 Leaderboards</h2>
+
+                <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+          <div style="position: relative; flex: 1; min-width: 250px;">
+            <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1.1rem;">🔍</span>
+            <input type="text" id="lb-player-search" placeholder="Search players by username..." oninput="_debouncedSearch()" style="width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
+          </div>
+          <div style="position: relative; flex: 1; min-width: 250px;">
+            <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1.1rem;">📚</span>
+            <input type="text" id="lb-level-search" placeholder="Search levels..." oninput="searchLevels()" style="width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text); font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
+          </div>
+        </div>
+        <div id="lb-search-results" style="display: none; margin-bottom: 20px;"></div>
+
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <div class="lb-tabs" role="tablist" aria-label="Leaderboard categories">
+            <button class="lb-tab active" id="lb-tab-xp" data-board="xp" role="tab" aria-selected="true" aria-controls="lb-panel-xp" onclick="switchLbTab('xp')">🌍 Global XP</button>
+            <button class="lb-tab" id="lb-tab-modules" data-board="modules" role="tab" aria-selected="false" aria-controls="lb-panel-modules" onclick="switchLbTab('modules')">✅ Modules</button>
+            <button class="lb-tab" id="lb-tab-civic" data-board="civic" role="tab" aria-selected="false" aria-controls="lb-panel-civic" onclick="switchLbTab('civic')">💰 Wallet</button>
+            <button class="lb-tab" id="lb-tab-badges" data-board="badges" role="tab" aria-selected="false" aria-controls="lb-panel-badges" onclick="switchLbTab('badges')">🎖️ Badges</button>
+          </div>
+
+                    <div id="lb-podium-xp" class="lb-podium" style="display:none;"></div>
+          <div id="lb-podium-modules" class="lb-podium" style="display:none;"></div>
+          <div id="lb-podium-civic" class="lb-podium" style="display:none;"></div>
+          <div id="lb-podium-badges" class="lb-podium" style="display:none;"></div>
+
+                    <div id="lb-your-rank-xp" class="lb-your-rank" style="display:none;"></div>
+          <div id="lb-your-rank-modules" class="lb-your-rank" style="display:none;"></div>
+          <div id="lb-your-rank-civic" class="lb-your-rank" style="display:none;"></div>
+          <div id="lb-your-rank-badges" class="lb-your-rank" style="display:none;"></div>
+
+                    <div class="lb-stats-header">
+            <div class="total-players"><span class="dot"></span> <span id="lb-total-count">Loading...</span></div>
+            <div>Top performers</div>
+          </div>
+
+                    <div id="lb-panel-xp" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-xp">
+            <div id="leaderboard-xp" data-board="xp" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          </div>
+                    <div id="lb-panel-modules" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-modules" style="display:none;">
+            <div id="leaderboard-modules" data-board="modules" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          </div>
+                    <div id="lb-panel-civic" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-civic" style="display:none;">
+            <div id="leaderboard-civic" data-board="civic" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          </div>
+                    <div id="lb-panel-badges" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-badges" style="display:none;">
+            <div id="leaderboard-badges" data-board="badges" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          </div>
+        </div>
+      </div>
+      </div>
+        <nav class="bottom-nav" aria-label="Main Navigation">
+      <button id="nav-btn-profile" class="nav-btn active" onclick="switchMainTab('profile')">
+        <span class="nav-icon" aria-hidden="true">👤</span>
+        <span class="nav-text">Profile</span>
+      </button>
+      <button id="nav-btn-leaderboards" class="nav-btn" onclick="switchMainTab('leaderboards')">
+        <span class="nav-icon" aria-hidden="true">🏆</span>
+        <span class="nav-text">Leaderboard</span>
+      </button>
+    </nav>
+
+        <div class="modal-overlay" id="edit-modal">          <div class="modal-box">
+        <h3>Edit Profile</h3>
+        <div class="field">
+          <label>Name</label>
+          <input id="ed-name" type="text" placeholder="Your name" />
+        </div>
+        <div class="field" id="ed-username-field">
+          <label>Username <span style="font-size:0.65rem;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:400;">(locked after setup)</span></label>
+          <input id="ed-username" type="text" placeholder="@username" readonly style="opacity:0.6;cursor:not-allowed;" />
+          <div id="ed-username-status" style="font-size: 0.75rem; margin-top: 4px; min-height: 14px; font-weight: 600;"></div>
+        </div>
+        <div class="field">
+          <label>Age</label>
+          <input id="ed-age" type="number" min="5" max="100" placeholder="e.g. 22" />
+        </div>
+        <div class="field">
+          <label>Vehicle</label>
+          <select id="ed-vehicle">
+            <option value="car">Car</option>
+            <option value="bike">Bike</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+          <button class="btn-save" onclick="saveEditModal()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const _urlParams = new URLSearchParams(window.location.search)
+      const _uidParam = _urlParams.get('uid')
+      const _studentIdParam = _urlParams.get('studentId')
+      const _userParam = _urlParams.get('user')
+      let _isReadOnlyMode = !!(_uidParam || _studentIdParam || _userParam)
+      let _resolvedUserId = _uidParam
+
+      let S = {}
+      try {
+        const raw = localStorage.getItem('mth4')
+        if (raw) S = JSON.parse(raw)
+      } catch (e) {}
+
+      let tUser = {}
+      try {
+        const raw = localStorage.getItem('traffic_local_user')
+        if (raw) tUser = JSON.parse(raw)
+      } catch (e) {}
+
+      const _certParam = _urlParams.get('cert')
+      let _syncedCertId = null
+
+      async function _initSupabase() {
+        if (window.supabaseClient) return window.supabaseClient
+        try {
+          const res = await fetch('config.json?t=' + Date.now())
+          const cfg = await res.json()
+          const auth = cfg.auth || cfg.supabase || {}
+          const url = auth.supabaseUrl || auth.url || ''
+          const key = auth.supabaseKey || auth.anonKey || auth.key || ''
+          if (url && key && window.supabase) {
+            window.supabaseClient = window.supabase.createClient(url, key)
+          }
+        } catch (e) {}
+        return window.supabaseClient || null
+      }
+
+      async function _loadCloudProgress(userId) {
+        const client = await _initSupabase()
+        if (!client) return null
+        try {
+          const { data: progress } = await client.from('game_progress').select('*').eq('user_id', userId)
+          const { data: badges } = await client.from('badges').select('badge_type').eq('user_id', userId)
+          const { data: wallet } = await client.from('wallets').select('balance').eq('user_id', userId).maybeSingle()
+
+          if (progress && progress.length > 0) {
+            const comp = {}
+            const scenario2d = { total: 0 }
+            progress.forEach(p => {
+              if (p.level_id.startsWith('s') && !isNaN(parseInt(p.level_id.replace('s', '')))) {
+                scenario2d[`${p.level_id}_done`] = true
+                scenario2d[`${p.level_id}_stars`] = p.stars || 0
+                if (p.completed) scenario2d.total++
+              } else {
+                comp[p.level_id] = { score: p.score, time: new Date(p.completed_at || Date.now()).getTime() }
+              }
+            })
+            return {
+              comp,
+              scenario2d,
+              badges: badges ? badges.map(b => b.badge_type) : [],
+              total: Object.keys(comp).length,
+              wallet: wallet?.balance ?? 50000
+            }
+          }
+        } catch (err) {
+          console.warn('Cloud load failed:', err)
+        }
+        return null
+      }
+
+      async function _syncCloudToLocal(userId) {
+        const cloudS = await _loadCloudProgress(userId)
+        if (!cloudS) return false
+
+        const cloudHasData = cloudS.total > 0 || (cloudS.badges && cloudS.badges.length > 0) || cloudS.wallet !== 50000
+        const localHasData = S.total > 0 || (S.badges && S.badges.length > 0) || S.wallet !== 50000
+
+        if (cloudHasData && !localHasData) {
+          S = { ...S, ...cloudS }
+          try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
+          toast('☁️ Cloud Data Auto-Restored!', '#5ED4F5')
+          if (window.ui && window.ui.init) ui.init()
+          return true
+        } else if (cloudHasData && localHasData) {
+          const isDifferent = cloudS.total !== S.total ||
+            (cloudS.badges && S.badges && cloudS.badges.length !== S.badges.length) ||
+            Object.keys(cloudS.comp || {}).length !== Object.keys(S.comp || {}).length
+
+          if (isDifferent) {
+            injectConflictModal(cloudS)
+            document.getElementById('conflictMo').style.display = 'flex'
+            return true
+          }
+        }
+        return false
+      }
+
+      async function _loadSharedCertificate(id) {
+        const client = await _initSupabase()
+        if (!client) return null
+        const { data, error } = await client.from('certificates').select('*').eq('id', id).maybeSingle()
+        if (error || !data) return null
+        return data
+      }
+
+      async function _syncOwnCertificate(name, completedCount, scoreTotal) {
+        if (completedCount < 52) return null
+        const client = await _initSupabase()
+        if (!client || !window.colUser || !window.colUser.id) {
+          console.warn('Certificate Sync failed: User not logged in or Supabase client missing.')
+          return null
+        }
+        try {
+          const { data, error } = await client.from('certificates').upsert(
+            { user_id: window.colUser.id, display_name: name, modules_completed: completedCount, total_modules: 52, score: scoreTotal, updated_at: new Date().toISOString() },
+            { onConflict: 'user_id' }
+          ).select().maybeSingle()
+          if (error) {
+            console.error('Supabase Upsert Error for Certificate:', error)
+            return null
+          }
+          localStorage.setItem('own_cert_id', data.id)
+          return data.id
+        } catch (e) {
+          console.error('Certificate Sync Exception:', e)
+          return null
+        }
+      }
+
+
+      async function _syncDashboardProgress() {
+        const client = await _initSupabase()
+        if (!client || !window.colUser || !window.colUser.id) return
+        try {
+          const completedCount = S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
+          const badgeCount = S.badges ? S.badges.length : 0
+          const googleMeta = (window.colUser && window.colUser.user_metadata) || {}
+          const googleAvatarUrl = googleMeta.avatar_url || googleMeta.picture || googleMeta.avatar || null
+          await client.from('user_profiles').upsert({
+            user_id: window.colUser.id,
+            display_name: tUser.name || S.name || googleMeta.full_name || null,
+            username: tUser.username || S.username || null,
+            total_score: S.total || 0,
+            modules_completed: completedCount,
+            badges_count: badgeCount,
+            preferred_vehicle: tUser.vehicle || S.vehicle || null,
+            ...(S.studentId ? { student_id: S.studentId } : {}),
+            ...(googleAvatarUrl ? { avatar_url: googleAvatarUrl } : {}),
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'user_id' }).catch(() => {})
+
+          if (S.badges && S.badges.length > 0) {
+            try {
+              const { data: existing } = await client.from('badges').select('badge_type').eq('user_id', window.colUser.id)
+              const existingTypes = new Set((existing || []).map(b => b.badge_type))
+              const newBadges = S.badges.filter(b => !existingTypes.has(b))
+              if (newBadges.length > 0) {
+                await client.from('badges').insert(newBadges.map(b => ({ user_id: window.colUser.id, badge_type: b }))).catch(() => {})
+              }
+            } catch (e) { console.warn('Badge sync failed:', e) }
+          }
+
+          const walletBal = S.wallet || 0
+          if (walletBal > 0) {
+            try {
+              await client.from('wallets').upsert({ user_id: window.colUser.id, balance: walletBal }, { onConflict: 'user_id' }).catch(() => {})
+            } catch (e) { console.warn('Wallet sync failed:', e) }
+          }
+        } catch (e) { console.warn('Dashboard sync exception:', e) }
+      }
+
+
+      async function _resolveProfileUrl() {
+        if (_resolvedUserId) return _resolvedUserId
+        const client = await _initSupabase()
+        if (!client) return null
+        try {
+          if (_studentIdParam) {
+            const { data } = await client.from('user_profiles').select('user_id').eq('student_id', _studentIdParam).maybeSingle()
+            if (data && data.user_id) { _resolvedUserId = data.user_id; return data.user_id }
+          }
+          if (_userParam) {
+            const uname = _userParam.startsWith('@') ? _userParam : '@' + _userParam
+            const { data } = await client.from('user_profiles').select('user_id').eq('username', uname).maybeSingle()
+            if (data && data.user_id) { _resolvedUserId = data.user_id; return data.user_id }
+
+            const { data: pdata } = await client.from('profiles').select('id').eq('username', uname).maybeSingle()
+            if (pdata && pdata.id) { _resolvedUserId = pdata.id; return pdata.id }
+          }
+        } catch (e) { console.warn('Profile URL resolve failed:', e) }
+        return null
+      }
+
+      async function renderDashboardUI() {
+        if (_isReadOnlyMode) {
+
+            const resolvedId = await _resolveProfileUrl()
+            const targetId = resolvedId || _uidParam
+            const client = await _initSupabase();
+            if (client && targetId) {
+
+              const { data: upData } = await client.from('user_profiles').select('*').eq('user_id', targetId).maybeSingle()
+              if (upData) {
+                tUser.name = upData.display_name || 'Driver';
+                tUser.username = upData.username || '';
+                tUser.vehicle = upData.preferred_vehicle || 'Car';
+                tUser.age = upData.age || 18;
+                tUser.language = upData.language || 'en';
+                S.total = upData.total_score || 0
+                S.studentId = upData.student_id || null
+              }
+              const { data } = await client.from('profiles').select('username, full_name').eq('id', targetId).maybeSingle();
+              if (data) {
+                 if (!tUser.name || tUser.name === 'Driver') tUser.name = data.full_name || 'Driver';
+                 if (!tUser.username) tUser.username = data.username || '';
+              }
+            }
+
+            const menuContainer = document.querySelector('.menu-container');
+            if (menuContainer) menuContainer.style.display = 'none';
+            const topActions = document.querySelector('.top-bar-actions');
+            if (topActions && !document.getElementById('ro-badge')) {
+              topActions.insertAdjacentHTML('afterbegin', '<div id="ro-badge" style="background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; color: var(--muted); margin-right: 12px; border: 1px solid var(--border);">Read-Only Mode</div>');
+            }
+            document.title = (tUser.name || 'Driver') + "'s Profile | Traffic Hero";
+        } else {
+
+          _syncDashboardProgress()
+        }
+
+
+        if (_isReadOnlyMode) {
+          const shareBtn = document.getElementById('btn-share-profile')
+          if (shareBtn) shareBtn.style.display = 'none'
+        }
+
+        const displayName = tUser.name || S.name || 'Driver'
+        const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+
+        ;[document.getElementById('avatar-sm'), document.getElementById('hero-avatar')].forEach(el => {
+          if (!el) return;
+          let userPhoto = null
+          try {
+            if (!_isReadOnlyMode) {
+              const ls = localStorage.getItem('col_user')
+              if (ls) { const u = JSON.parse(ls); userPhoto = u.avatar || u.photo || null }
+            }
+          } catch (e) {}
+          if (userPhoto) el.innerHTML = '<img src="' + userPhoto + '" alt="avatar" />'
+          else el.textContent = userInitials
+        })
+
+        document.getElementById('top-name').innerText = displayName
+        document.getElementById('h-name').innerText = displayName
+
+        const displayUsername = tUser.username || S.username || (!_isReadOnlyMode && window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || '';
+        const hUsername = document.getElementById('h-username');
+        if (hUsername && displayUsername) {
+          hUsername.innerText = displayUsername.startsWith('@') ? displayUsername : '@' + displayUsername;
+          hUsername.style.display = 'block';
+        }
+
+        const role = (tUser.role || S.role || 'student')
+        const rawId = S.studentId || (window.colUser?.id ? window.colUser.id.substring(0, 8).toUpperCase() : '') || 'NEW'
+        document.getElementById('h-id').innerText = 'ID: STU-' + rawId.replace('STU-', '')
+
+
+        if (_isReadOnlyMode && _resolvedUserId) {
+          try {
+            const client = await _initSupabase()
+            if (client) {
+              await client.rpc('increment_profile_views', { target_user_id: _resolvedUserId }).catch(() => {})
+
+              const { data: vp } = await client.from('user_profiles').select('profile_views').eq('user_id', _resolvedUserId).maybeSingle()
+              if (vp && vp.profile_views) {
+                const viewBadge = document.createElement('div')
+                viewBadge.style.cssText = 'margin-top:8px;font-size:0.8rem;color:var(--muted);font-weight:600;'
+                viewBadge.textContent = '👁️ ' + vp.profile_views + ' profile view' + (vp.profile_views !== 1 ? 's' : '')
+                document.getElementById('h-id').after(viewBadge)
+              }
+            }
+          } catch (e) {}
+        }
+
+        document.getElementById('s-veh').innerText = tUser.vehicle || S.vehicle || 'Car'
+        const ageVal = tUser.age || S.age || 18
+        const ageLabels = { child: '8-12 (Kids)', teen: '13-17 (Teens)', young: '18-25 (Young)', adult: '26-50 (Adult)', senior: '51+ (Senior)' }
+        const ageBracket = ageVal <= 12 ? 'child' : ageVal <= 17 ? 'teen' : ageVal <= 25 ? 'young' : ageVal <= 50 ? 'adult' : 'senior'
+        document.getElementById('s-age').innerText = ageLabels[ageBracket] || '18'
+        document.getElementById('s-lang').innerText = (tUser.language || S.language || 'en') === 'hi' ? 'हिंदी' : 'English'
+        document.getElementById('h-score').innerText = (S.total || 0).toLocaleString()
+
+        const civicScore = S.civicScore || 0
+        const civicTiers = [
+          { at: 500, label: 'Platinum Citizen', emoji: '🌟' },
+          { at: 250, label: 'Gold Citizen', emoji: '🏆' },
+          { at: 100, label: 'Silver Citizen', emoji: '🥈' },
+          { at: 25, label: 'Bronze Citizen', emoji: '🥉' },
+          { at: 0, label: 'Civic Score', emoji: '🌱' }
+        ]
+        const civicTier = civicTiers.find((t) => civicScore >= t.at)
+        document.getElementById('h-tier').innerText = `${civicTier.emoji} ${civicTier.label}`
+
+        let completed = 0
+        if (S.comp) completed = Object.keys(S.comp).filter((k) => S.comp[k] && S.comp[k].score > 0).length
+        document.getElementById('s-prog').innerText = `${completed}/52`
+
+        const progressPct = Math.round((completed / 52) * 100)
+        document.getElementById('global-fill').style.width = progressPct + '%'
+        document.getElementById('global-pct').innerText = progressPct + '%'
+
+        const certProgressCanvas = document.getElementById('cert-progress-canvas')
+        if (certProgressCanvas && window.TrafficCharts) {
+          window.TrafficCharts.createProgressRing(certProgressCanvas, progressPct, { cutout: '70%' })
+        }
+        document.getElementById('cert-progress-pct').textContent = progressPct + '%'
+        document.getElementById('cert-progress-text').textContent = completed >= 52 ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
+
+
+        const modulePctText = document.getElementById('cert-progress-pct')
+        const moduleStatusText = document.getElementById('cert-progress-text')
+        const moduleFractionText = document.getElementById('s-prog')
+        const moduleBar = document.getElementById('module-svg-bar')
+        if (modulePctText) modulePctText.textContent = progressPct + '%'
+        if (moduleStatusText) moduleStatusText.textContent = completed >= 52 ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
+        if (moduleFractionText) moduleFractionText.textContent = completed + '/52'
+        if (moduleBar) {
+          const offset = 283 - (283 * progressPct) / 100;
+          setTimeout(() => moduleBar.style.strokeDashoffset = offset, 100);
+        }
+
+        const completions = S.comp
+          ? Object.values(S.comp)
+              .filter(c => c && typeof c.score === 'number' && c.score > 0)
+              .sort((a, b) => (a.time || 0) - (b.time || 0))
+          : []
+
+        const uiScoreVal = document.getElementById('ui-score-val')
+        const uiCivicVal = document.getElementById('ui-civic-val')
+        if (uiScoreVal) uiScoreVal.textContent = (S.total || 0).toLocaleString()
+        if (uiCivicVal) uiCivicVal.textContent = '₹' + civicScore.toLocaleString()
+
+        if (completions.length > 0) {
+          let runningScore = 0
+          const scoreData = completions.map(c => (runningScore += c.score))
+          if (scoreData.length === 1) scoreData.unshift(0)
+          drawSvgTrend('score-svg-path', scoreData)
+
+          const steps = Math.max(completions.length, 1)
+          const civicData = completions.map((_, i) => Math.round((civicScore / steps) * (i + 1)))
+          if (civicData.length === 1) civicData.unshift(0)
+          drawSvgTrend('civic-svg-path', civicData)
+        }
+
+        const badgeList = document.getElementById('achievement-list')
+        if (S.badges && S.badges.length > 0) {
+          const recentBadges = [...S.badges].reverse().slice(0, 6)
+          badgeList.innerHTML = recentBadges.map(b => {
+            const formatted = b.replace(/_/g, ' ')
+            return `<div class="badge-card">
+              <div class="badge-icon">🏅</div>
+              <div class="badge-name">${formatted}</div>
+            </div>`
+          }).join('')
+        }
+
+        document.getElementById('cert-name').innerText = displayName.toUpperCase()
+        document.getElementById('cert-score').innerText = S.total || 0
+        document.getElementById('cert-date').innerText = new Date().toLocaleDateString()
+        const _certRefId = S.studentId || (window.colUser?.id || '').substring(0, 8).toUpperCase() || 'UNKNOWN'
+        document.getElementById('cert-ref').innerText = 'TH-' + _certRefId.replace('STU-', '')
+
+        const certWrapper = document.getElementById('cert-wrapper')
+        const noCertMsg = document.getElementById('no-cert-msg')
+        const shareBar = document.getElementById('share-bar')
+        const dlBtn = document.getElementById('btn-dl-cert')
+        const _done = _getCompleted()
+
+        if (_done >= 52) {
+          certWrapper.style.filter = 'none'
+          certWrapper.style.opacity = '1'
+          shareBar.style.display = 'flex'
+          noCertMsg.style.display = 'none'
+          try {
+            const cachedId = localStorage.getItem('own_cert_id')
+            if (cachedId) _syncedCertId = cachedId
+            _syncOwnCertificate(displayName, _done, S.total || 0).then(id => { if (id) _syncedCertId = id })
+          } catch (e) {}
+        } else {
+          const blurPx = ((52 - _done) / 52 * 5).toFixed(1)
+          certWrapper.style.filter = `grayscale(1) blur(${blurPx}px)`
+          certWrapper.style.opacity = (0.55 + (_done / 52) * 0.45).toFixed(2)
+          noCertMsg.style.display = 'block'
+          noCertMsg.querySelector('p').innerText = `Complete all 52 modules to unlock your certificate. (${_done}/52 done)`
+          dlBtn.style.display = 'none'
+        }
+      }
+      renderDashboardUI();
+
+      function drawSvgTrend(pathId, data) {
+        const path = document.getElementById(pathId);
+        if (!path || data.length < 2) return;
+        const minVal = Math.min(...data);
+        const maxVal = Math.max(...data);
+        const range = maxVal - minVal || 1;
+        const pts = data.map((val, i) => {
+          const x = (i / (data.length - 1)) * 100;
+          const y = 80 - ((val - minVal) / range) * 70;
+          return `${x},${y}`;
+        });
+        path.setAttribute('d', `M0,80 L${pts.join(' L')} L100,80`);
+      }
+
+      window.addEventListener('col-auth-changed', async (e) => {
+        const user = e.detail && e.detail.user ? e.detail.user : window.colUser
+
+        if (user) {
+          const meta = user.user_metadata || {}
+          const googleAvatar = meta.avatar_url || meta.picture || meta.avatar || null
+          const name = meta.full_name || 'Driver'
+          const fName = name.split(' ')[0]
+
+          const navBtn = document.getElementById('nav-sign-in-btn')
+          const navProf = document.getElementById('navUserProfile')
+          if (navBtn && navProf) {
+            navBtn.style.display = 'none'
+            navProf.style.display = 'flex'
+            document.getElementById('navUserName').innerText = fName
+            const pfp = document.getElementById('navUserPfp')
+            const ini = document.getElementById('navUserInitials')
+            if (googleAvatar && pfp && ini) {
+              pfp.src = googleAvatar
+              pfp.style.display = 'block'
+              ini.style.display = 'none'
+            } else if (ini) {
+              ini.innerText = fName.charAt(0).toUpperCase()
+              ini.style.display = 'flex'
+              if (pfp) pfp.style.display = 'none'
+            }
+          }
+
+          const acadBtn = document.getElementById('academy-sign-in-btn')
+          const acadProf = document.getElementById('trafficUserProfile')
+          if (acadBtn) acadBtn.style.display = 'none'
+          if (acadProf) {
+            acadProf.style.display = 'flex'
+            acadProf.onclick = () => (window.location.href = 'TrafficDashboard.html')
+          }
+          const acadName = document.getElementById('trafficUserName')
+          if (acadName) acadName.textContent = fName
+          const acadPfp = document.getElementById('trafficUserPfp')
+          const acadIni = document.getElementById('trafficUserInitials')
+          if (googleAvatar && acadPfp && acadIni) {
+            acadPfp.src = googleAvatar
+            acadPfp.style.display = 'block'
+            acadIni.style.display = 'none'
+          } else if (acadIni) {
+            acadIni.textContent = fName.charAt(0).toUpperCase()
+            acadIni.style.display = 'flex'
+            if (acadPfp) acadPfp.style.display = 'none'
+          }
+
+          const oldSStr2 = JSON.stringify(S)
+          await _syncCloudToLocal(user.id)
+          if (JSON.stringify(S) !== oldSStr2) window.location.reload()
+        } else {
+          const acadBtn = document.getElementById('academy-sign-in-btn')
+          const acadProf = document.getElementById('trafficUserProfile')
+          if (acadBtn) acadBtn.style.display = 'block'
+          if (acadProf) acadProf.style.display = 'none'
+        }
+      });
+;(async () => {
+        if (window.colUser && window.colUser.id) {
+          const oldSStr = JSON.stringify(S)
+          await _syncCloudToLocal(window.colUser.id)
+          if (JSON.stringify(S) !== oldSStr) window.location.reload()
+        }
+      })()
+
+      function toggleMenu() { document.getElementById('action-menu').classList.toggle('show') }
+      window.onclick = (e) => {
+        if (!e.target.closest('.menu-container')) {
+          document.getElementById('action-menu').classList.remove('show')
+        }
+      }
+
+
+      let _searchDebounce = null
+      function _debouncedSearch() { clearTimeout(_searchDebounce); _searchDebounce = setTimeout(searchPlayerLb, 300) }
+      async function searchPlayerLb() {
+        const q = document.getElementById('lb-player-search').value.trim()
+        const resultsEl = document.getElementById('lb-search-results')
+        if (!q || q.length < 2) { resultsEl.style.display = 'none'; return }
+        const uname = q.startsWith('@') ? q : '@' + q
+        resultsEl.style.display = 'block'
+        resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);">Searching...</div>'
+        try {
+          if (!window.supabaseClient) throw new Error('Not connected')
+
+          const searchPattern = '%' + uname + '%'
+          const { data, error: searchErr } = await window.supabaseClient
+            .from('user_profiles')
+            .select('user_id, display_name, username, total_score, modules_completed, badges_count')
+            .ilike('username', searchPattern)
+            .order('total_score', { ascending: false })
+            .limit(1)
+          if (searchErr) console.warn('Player search error:', searchErr)
+          const result = data && data[0]
+          if (!result) {
+
+            const { data: pData } = await window.supabaseClient
+              .from('profiles')
+              .select('id, username, full_name')
+              .eq('username', uname)
+              .maybeSingle()
+            if (!pData) {
+              resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">Player not found. Try a different username.</div>'
+              return
+            }
+            resultsEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;" onclick="window.open('TrafficDashboard.html?uid=${pData.id}','_blank')">
+              <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;">${(pData.full_name||'U')[0]}</div>
+              <div style="flex:1;"><div style="font-weight:700;">${pData.full_name||'Unknown'}</div><div style="color:var(--signal);font-size:0.85rem;">${uname}</div></div>
+              <div style="text-align:right;"><div style="font-size:0.85rem;font-weight:600;color:var(--dim);">Profile</div><div style="font-size:0.7rem;color:var(--muted);">VIEW &rarr;</div></div>
+            </div>`
+            return
+          }
+          const baseUrl = 'TrafficDashboard.html?user=' + encodeURIComponent(uname)
+          resultsEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;" onclick="window.open('${baseUrl}','_blank')" onmouseover="this.style.borderColor='rgba(94,212,245,0.4)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:1.2rem;">${(result.display_name||'U')[0]}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${result.display_name||'Unknown'}</div>
+              <div style="color:var(--signal);font-size:0.85rem;">${uname}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:1.2rem;font-weight:800;">${(result.total_score||0).toLocaleString()} XP</div>
+              <div style="font-size:0.7rem;color:var(--muted);">${result.modules_completed||0}/52 modules · ${result.badges_count||0} badges</div>
+            </div>
+          </div>`
+        } catch (e) {
+          resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">Connection issue. Make sure you are signed in.</div>'
+        }
+      }
+
+
+
+
+      const _LEVEL_NAMES = [
+        { id: 1, name: 'Free Roam', desc: 'Explore the open city', icon: '🌍' },
+        { id: 2, name: 'Pedestrian Courtesy', desc: 'Pedestrian priority rules', icon: '🚶' },
+        { id: 3, name: 'Parking Rules', desc: 'Street parking etiquette', icon: '🅿️' },
+        { id: 4, name: 'Emergency Priority', desc: 'Ambulance & fire truck yielding', icon: '🚑' },
+        { id: 5, name: 'Rain Driving', desc: 'Wet road handling', icon: '🌧️' },
+        { id: 6, name: 'Silence Zone', desc: 'No honking areas', icon: '🔇' },
+        { id: 7, name: 'Traffic Signs', desc: 'Road sign recognition', icon: '🚦' },
+        { id: 8, name: 'One Way', desc: 'One-way street navigation', icon: '➡️' },
+        { id: 9, name: 'Road Discipline', desc: 'Lane discipline & patience', icon: '😡' },
+        { id: 10, name: 'Signal Jump', desc: 'Red light running consequences', icon: '🔴' },
+        { id: 11, name: 'Cyclist Safety', desc: 'Cyclist awareness on roads', icon: '🚴' },
+        { id: 12, name: 'Narrow Streets', desc: 'Tight space navigation', icon: '🏘️' },
+        { id: 13, name: 'Rain Puddles', desc: 'Puddle splash avoidance', icon: '💦' },
+        { id: 14, name: 'Auto Rickshaw', desc: 'Auto rickshaw etiquette', icon: '🛺' },
+        { id: 15, name: 'Night Monsoon', desc: 'Night driving in rain', icon: '🌙' },
+        { id: 16, name: 'Hospital Quiet', desc: 'Hospital zone silence', icon: '🏥' },
+        { id: 17, name: 'Wildlife Crossing', desc: 'Animal crossing awareness', icon: '🐄' },
+        { id: 18, name: 'Toll Plaza', desc: 'Toll booth navigation', icon: '💰' },
+        { id: 19, name: 'Hill Driving', desc: 'Mountain road skills', icon: '⛰️' },
+        { id: 20, name: 'Highway Merge', desc: 'Highway entry & merge', icon: '🛣️' }
+      ]
+      function searchLevels() {
+        const q = document.getElementById('lb-level-search').value.trim().toLowerCase()
+        const resultsEl = document.getElementById('lb-search-results')
+        if (!q) { resultsEl.style.display = 'none'; return }
+        resultsEl.style.display = 'block'
+        try {
+          const matches = _LEVEL_NAMES.filter(lv => {
+            const searchStr = (lv.name + ' ' + lv.desc).toLowerCase()
+            return searchStr.includes(q)
+          })
+          if (matches.length === 0) {
+            resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">No levels match that search.</div>'
+            return
+          }
+          resultsEl.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;">' + matches.map(lv => {
+            const isDone = S.comp && S.comp[lv.id] && S.comp[lv.id].score > 0
+            return `<div style="background:var(--card);border:1px solid ${isDone?'rgba(52,211,153,0.3)':'var(--border)'};border-radius:12px;padding:14px;cursor:pointer;transition:all 0.2s;" onclick="window.location.href='Academy.html?screen=levels&lv=${lv.id}'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <span style="font-size:1.3rem;">${lv.icon}</span>
+                <span style="font-size:0.7rem;padding:2px 8px;border-radius:20px;background:${isDone?'rgba(52,211,153,0.15);color:var(--green)':'rgba(255,255,255,0.06);color:var(--muted)'};font-weight:700;">${isDone?'\u2713 Done':'Level '+lv.id}</span>
+              </div>
+              <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">${lv.name}</div>
+              <div style="font-size:0.75rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${lv.desc}</div>
+            </div>`
+          }).join('') + '</div>'
+        } catch (e) {
+          resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);">Search error.</div>'
+        }
+      }
+
+
+      let _edUsernameCheckTimeout = null
+      async function checkUsernameAvail(username) {
+        const statusEl = document.getElementById('ed-username-status')
+        if (!statusEl) return
+        username = username.trim()
+        if (!username || username.length < 3) {
+          statusEl.textContent = ''
+          return
+        }
+        if (!username.startsWith('@')) username = '@' + username
+        statusEl.textContent = 'Checking...'
+        statusEl.style.color = 'var(--muted)'
+        clearTimeout(_edUsernameCheckTimeout)
+        _edUsernameCheckTimeout = setTimeout(async () => {
+          try {
+            if (!window.supabaseClient) {
+              statusEl.textContent = '✓ Accepted (offline)'
+              statusEl.style.color = 'var(--green)'
+              return
+            }
+            const uname = username.startsWith('@') ? username : '@' + username
+            const { data: upData } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id')
+              .ilike('username', uname)
+              .maybeSingle()
+            if (upData && window.colUser && upData.user_id !== window.colUser.id) {
+              statusEl.textContent = '✕ Already taken'
+              statusEl.style.color = 'var(--red)'
+              return
+            }
+            const { data: pData } = await window.supabaseClient
+              .from('profiles')
+              .select('id')
+              .eq('username', uname)
+              .maybeSingle()
+            if (pData && window.colUser && pData.id !== window.colUser.id) {
+              statusEl.textContent = '✕ Already taken'
+              statusEl.style.color = 'var(--red)'
+              return
+            }
+            statusEl.textContent = '✓ Available!'
+            statusEl.style.color = 'var(--green)'
+          } catch (e) {
+            statusEl.textContent = '✓ Accepted'
+            statusEl.style.color = 'var(--green)'
+          }
+        }, 500)
+      }
+
+      function openEditModal() {
+        const m = document.getElementById('edit-modal')
+        document.getElementById('ed-name').value = tUser.name || S.name || ''
+        document.getElementById('ed-username').value = tUser.username || S.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || ''
+        document.getElementById('ed-age').value = tUser.age || S.age || ''
+        document.getElementById('ed-vehicle').value = tUser.vehicle || S.vehicle || 'car'
+        m.classList.add('show')
+        document.getElementById('action-menu').classList.remove('show')
+      }
+      function closeEditModal() { document.getElementById('edit-modal').classList.remove('show') }
+      function saveEditModal() {
+        const name = document.getElementById('ed-name').value.trim()
+        let usernameInput = document.getElementById('ed-username').value.trim()
+        const age = parseInt(document.getElementById('ed-age').value) || 18
+        const vehicle = document.getElementById('ed-vehicle').value
+        if (name) {
+          tUser.name = name; tUser.age = age; tUser.vehicle = vehicle
+          S.name = name; S.age = age; S.vehicle = vehicle
+
+          if (usernameInput) {
+            if (!usernameInput.startsWith('@')) usernameInput = '@' + usernameInput;
+            tUser.username = usernameInput;
+            S.username = usernameInput;
+            if (window.supabaseClient && window.colUser) {
+              window.supabaseClient.auth.updateUser({
+                data: { username: usernameInput }
+              }).catch(console.error);
+            }
+          }
+
+          localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
+          localStorage.setItem('th-save', JSON.stringify(S))
+          if (window.save) window.save()
+
+          setTimeout(() => window.location.reload(), 300)
+        }
+      }
+
+
+      function _getCompleted() {
+        return S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
+      }
+
+      function dlCert() {
+        const _done = _getCompleted()
+        if (_done < 52) return alert('Unlock your certificate first!')
+        if (typeof html2pdf !== 'undefined') {
+          const el = document.getElementById('cert-wrapper')
+          if (!el) { alert('Certificate not rendered. Please refresh and try again.'); return; }
+          html2pdf().set({
+            margin: 0, filename: 'Traffic_Hero_Certificate.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+          }).from(el).save()
+        } else {
+          alert('PDF library not loaded. Please ensure you have internet access.')
+        }
+      }
+
+      async function getCertUrl() {
+        let cid = _syncedCertId || localStorage.getItem('own_cert_id')
+        const _done = _getCompleted()
+        if (!cid && _done >= 52) {
+          const displayName = (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.full_name) || S.name || 'Driver'
+          cid = await _syncOwnCertificate(displayName, _done, S.total || 0)
+          if (cid) _syncedCertId = cid
+        }
+        if (!cid) {
+          return null;
+        }
+        return `${window.location.origin}${window.location.pathname}?cert=${cid}`
+      }
+      function getShareText() {
+        const n = tUser.name || S.name || 'Driver'
+        let c = 0
+        if (S.comp) c = Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length
+        return `I completed my Traffic Hero Certification! ${n} — ${c}/52 modules done.`
+      }
+
+      async function _certImageFile() {
+        const el = document.getElementById('cert-wrapper')
+        if (!el || typeof html2canvas === 'undefined') return null
+        const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#070a14' })
+        const blob = await new Promise(r => canvas.toBlob(r, 'image/png'))
+        return blob ? new File([blob], 'Traffic_Hero_Certificate.png', { type: 'image/png' }) : null
+      }
+
+      async function shareWhatsApp() {
+        const file = await _certImageFile()
+        const url = await getCertUrl()
+        if (!url) { toast('Complete 52 modules or check connection!', '#ff4444'); return }
+        const textToShare = getShareText() + '\n' + url
+        if (file && navigator.canShare && navigator.canShare({ files: [file], text: textToShare })) {
+          try { await navigator.share({ files: [file], text: textToShare }); return } catch (e) {}
+        }
+        window.open(`https://wa.me/?text=${encodeURIComponent(textToShare)}`, '_blank')
+      }
+
+      async function shareInstagram() {
+        const file = await _certImageFile()
+        const url = await getCertUrl()
+        if (!url) { toast('Complete 52 modules or check connection!', '#ff4444'); return }
+        const textToShare = getShareText() + '\n' + url
+        if (file && navigator.canShare && navigator.canShare({ files: [file], text: textToShare })) {
+          try { await navigator.share({ files: [file], text: textToShare }); return } catch (e) {}
+        }
+        navigator.clipboard.writeText(textToShare).then(() => toast('Copied! Paste in your story.', '#5ed4f5'))
+      }
+
+      async function copyCertLink() {
+        const url = await getCertUrl()
+        if (!url) { toast('Complete 52 modules or check connection!', '#ff4444'); return }
+        navigator.clipboard.writeText(url).then(() => toast('Link copied!', '#5ed4f5'))
+      }
+
+      function logoutAndClear() {
+        localStorage.removeItem('trafficSetupComplete'); localStorage.removeItem('traffic_local_user')
+        if (window.doLogout) window.doLogout()
+        window.location.href = 'Academy.html'
+      }
+
+      function resetProgressFromDashboard() {
+        if (confirm('⚠️ Reset ALL progress? This cannot be undone!')) {
+          localStorage.removeItem('traffic_local_user'); localStorage.removeItem('trafficSetupComplete'); localStorage.removeItem('col_user')
+          window.location.href = 'Academy.html'
+        }
+      }
+
+      function hzInit() {
+        var t = localStorage.getItem('theme');
+        if (t === 'light') { document.body.classList.add('lm'); }
+        else { document.body.classList.remove('lm'); }
+        hzSync();
+      }
+      function hzSync() {
+        var el = document.querySelector('.hz-toggle');
+        if (!el) return;
+        if (document.body.classList.contains('lm')) { el.classList.remove('night'); }
+        else { el.classList.add('night'); }
+      }
+      function hzToggle() {
+        document.body.classList.toggle('lm');
+        localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
+        hzSync();
+      }
+      hzInit();
+
+      function toast(msg, color) {
+        const t = document.createElement('div');
+        t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:${color||'#34d399'};color:#000;padding:12px 24px;border-radius:30px;font-weight:700;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:toastIn 0.3s ease-out;`;
+        t.textContent = msg;
+        if (!document.getElementById('toast-style')) {
+          const s = document.createElement('style');
+          s.id = 'toast-style';
+          s.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
+          document.head.appendChild(s);
+        }
+        document.body.appendChild(t);
+        setTimeout(() => { t.style.animation = 'toastIn 0.3s ease-out reverse'; setTimeout(() => t.remove(), 300); }, 3000);
+      }
+
+      let _conflictReturnFocus = null
+      function injectConflictModal(cloudS) {
+        window.__pendingCloudS = cloudS
+        if (document.getElementById('conflictMo')) document.getElementById('conflictMo').remove()
+
+        const getStats = (state) => {
+          const lvls = Object.keys(state.comp || {}).length
+          const wlt = state.wallet || 0
+          const bdg = (state.badges || []).length
+          let latest = 0
+          if (state.comp) {
+            for (let k in state.comp) {
+              if (state.comp[k].time > latest) latest = state.comp[k].time
+            }
+          }
+          const dateStr = latest > 0 ? new Date(latest).toLocaleString() : 'Unknown'
+          return { lvls, wlt, bdg, dateStr }
+        }
+
+        const cSt = getStats(cloudS)
+        const lSt = getStats(S)
+
+        _conflictReturnFocus = document.activeElement
+
+        const mo = document.createElement('div')
+        mo.className = 'modal-overlay show'
+        mo.id = 'conflictMo'
+        mo.setAttribute('role', 'dialog')
+        mo.setAttribute('aria-modal', 'true')
+        mo.setAttribute('aria-labelledby', 'conflict-modal-title')
+        mo.innerHTML = `
+          <div class="modal-box wide">
+            <div class="conflict-modal-head">
+              <h2 id="conflict-modal-title">Sync Conflict</h2>
+              <p>We found existing cloud data that differs from your local device. Which save do you want to keep?</p>
+            </div>
+            <div class="conflict-save-options">
+              <div class="conflict-save-card cloud">
+                <div class="title"><span aria-hidden="true">☁️</span> Cloud Save</div>
+                <div class="stat">Levels Completed: <b>${cSt.lvls}</b></div>
+                <div class="stat">Wallet: <b>₹${cSt.wlt.toLocaleString()}</b></div>
+                <div class="stat">Badges: <b>${cSt.bdg}</b></div>
+                <div class="last-played">Last Played:<br/>${cSt.dateStr}</div>
+                <button class="btn-choose" onclick="resolveConflict('cloud')">Download This</button>
+              </div>
+              <div class="conflict-save-card local">
+                <div class="title"><span aria-hidden="true">📱</span> Local Save</div>
+                <div class="stat">Levels Completed: <b>${lSt.lvls}</b></div>
+                <div class="stat">Wallet: <b>₹${lSt.wlt.toLocaleString()}</b></div>
+                <div class="stat">Badges: <b>${lSt.bdg}</b></div>
+                <div class="last-played">Last Played:<br/>${lSt.dateStr}</div>
+                <button class="btn-choose" onclick="resolveConflict('local')">Keep This (Overwrite Cloud)</button>
+              </div>
+            </div>
+          </div>
+        `
+        document.body.appendChild(mo)
+
+        const firstBtn = mo.querySelector('.btn-choose')
+        if (firstBtn) firstBtn.focus()
+
+        mo.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') resolveConflict('local')
+        })
+      }
+
+
+      window.resolveConflict = function (choice) {
+        const modal = document.getElementById('conflictMo')
+        if (modal) modal.remove()
+        if (_conflictReturnFocus && document.contains(_conflictReturnFocus)) {
+          _conflictReturnFocus.focus()
+        }
+        _conflictReturnFocus = null
+
+        if (choice === 'cloud') {
+          const cloudS = window.__pendingCloudS
+          if (cloudS) {
+            S = cloudS
+            try {
+              localStorage.setItem('mth4', JSON.stringify(S))
+            } catch (e) {}
+            if (window.ui && window.ui.init) ui.init()
+            toast('☁️ Cloud Data Restored!', '#5ED4F5')
+          }
+        } else {
+          try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
+          toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
+        }
+      }
+;(async function () {
+        if (!_certParam) return
+        const cert = await _loadSharedCertificate(_certParam)
+        ;[document.querySelector('.hero-license'), document.querySelector('.bento-grid'), document.getElementById('btn-dl-cert'), document.getElementById('share-bar')].forEach(el => { if (el) el.style.display = 'none' })
+        if (!cert) {
+          const noCertMsg = document.getElementById('no-cert-msg')
+          if (noCertMsg) { noCertMsg.style.display = 'block'; noCertMsg.querySelector('p').innerText = 'Invalid certificate link.' }
+          document.getElementById('cert-wrapper').style.filter = 'grayscale(1) blur(6px)'
+          return
+        }
+        document.getElementById('cert-name').innerText = (cert.display_name || '').toUpperCase()
+        document.getElementById('cert-score').innerText = (cert.score || 0).toLocaleString()
+        document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
+      })();
+
+      async function loadCertificateGallery() {
+        const targetUserId = _isReadOnlyMode ? _uidParam : (window.colUser && window.colUser.id);
+        if (!window.supabaseClient || !targetUserId) return;
+        const gallery = document.getElementById('cert-gallery')
+        if (!gallery) return
+
+        try {
+          const { data: certs } = await window.supabaseClient
+            .from('certificates')
+            .select('*')
+            .eq('user_id', targetUserId)
+            .order('issued_at', { ascending: false })
+
+          if (certs && certs.length > 0) {
+            gallery.innerHTML = certs.map(c => `
+              <div class="cert-gallery-card">
+                <div class="logos">
+                  <img loading="lazy" src="mumbai-police-logo.png" onerror="this.style.display='none'" alt="Mumbai Police">
+                  <img loading="lazy" src="sneh-logo.png" onerror="this.style.display='none'" alt="Sneh Asha">
+                </div>
+                <div class="kicker">Certificate of Completion</div>
+                <div class="module-name">${c.module_name || 'Traffic Hero'}</div>
+                <div class="issued">Issued: ${new Date(c.issued_at).toLocaleDateString()}</div>
+                <div class="score">Score: ${(c.score || 0).toLocaleString()}</div>
+                <div class="footer">
+                  <div class="ref">Ref: ${c.id.slice(0,8).toUpperCase()}</div>
+                  <button class="btn-share" onclick="shareCertificate('${c.id}')" aria-label="Share this certificate">Share</button>
+                </div>
+              </div>
+            `).join('')
+          } else {
+            gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">No certificates yet. Complete all 52 levels to earn your first!</div>'
+          }
+        } catch (e) {
+          gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">Unable to load certificates.</div>'
+        }
+      }
+
+      function switchMainTab(tabId) {
+
+        const searchResults = document.getElementById('lb-search-results');
+        if (searchResults && tabId !== 'leaderboards') searchResults.style.display = 'none';
+
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById('nav-btn-' + tabId);
+        if (activeBtn) activeBtn.classList.add('active');
+
+
+        const views = document.querySelectorAll('.main-tab-view');
+        views.forEach(view => {
+          if (view.id === 'tab-' + tabId) {
+            view.style.display = 'block';
+
+            setTimeout(() => view.style.opacity = '1', 10);
+          } else {
+            view.style.opacity = '0';
+            setTimeout(() => {
+              if (view.style.opacity === '0') view.style.display = 'none';
+            }, 300);
+          }
+        });
+
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function switchLbTab(board) {
+
+        const sr = document.getElementById('lb-search-results')
+        if (sr) sr.style.display = 'none'
+        document.querySelectorAll('.lb-tab').forEach(t => {
+          const active = t.dataset.board === board
+          t.classList.toggle('active', active)
+          t.setAttribute('aria-selected', active)
+        })
+
+        document.querySelectorAll('.lb-panel').forEach(p => p.style.display = 'none')
+        const panel = document.getElementById('lb-panel-' + board)
+        if (panel) panel.style.display = 'block'
+
+        document.querySelectorAll('.lb-podium').forEach(p => p.style.display = 'none')
+        const podium = document.getElementById('lb-podium-' + board)
+        if (podium && podium.children.length > 0) podium.style.display = 'flex'
+
+        document.querySelectorAll('.lb-your-rank').forEach(p => p.style.display = 'none')
+        const yr = document.getElementById('lb-your-rank-' + board)
+        if (yr && yr.innerHTML.trim()) yr.style.display = 'flex'
+      }
+
+      async function loadLeaderboard() {
+        const boards = ['xp', 'modules', 'civic', 'badges']
+        const crowns = { xp: '🌍', modules: '✅', civic: '💰', badges: '🎖️' }
+        const currentUserId = (window.colUser && window.colUser.id) ? window.colUser.id : null
+
+        boards.forEach(board => {
+          const el = document.getElementById('leaderboard-' + board)
+          if (el) el.innerHTML = Array(5).fill('<div class="lb-skeleton" style="margin-bottom:8px;"></div>').join('')
+        })
+
+        let attempts = 0
+        while (!window.supabaseClient && attempts < 12) {
+          await new Promise(r => setTimeout(r, 500))
+          attempts++
+        }
+
+        const EMPTY_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">No data yet — be the first! 🚀</div>'
+        const ERROR_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Unable to load. Check connection.</div>'
+        const AUTH_MSG  = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Sign in to view the leaderboard.</div>'
+
+        if (!window.supabaseClient) {
+          boards.forEach(b => { const el = document.getElementById('leaderboard-' + b); if (el) el.innerHTML = AUTH_MSG })
+          return
+        }
+
+        const profileMap = {}
+
+        function renderBoard(containerId, board, users, metric) {
+          const container = document.getElementById(containerId)
+          if (!container) return
+          if (!users || users.length === 0) { container.innerHTML = EMPTY_MSG; return }
+
+
+          const podiumEl = document.getElementById('lb-podium-' + board)
+          if (podiumEl) {
+            if (users.length >= 1) {
+              const podiumOrder = []
+              const podiumClasses = []
+              const podiumMedals = []
+              if (users.length >= 2) { podiumOrder.push(users[1]); podiumClasses.push('second'); podiumMedals.push('🥈') }
+              if (users.length >= 1) { podiumOrder.push(users[0]); podiumClasses.push('first'); podiumMedals.push('🥇') }
+              if (users.length >= 3) { podiumOrder.push(users[2]); podiumClasses.push('third'); podiumMedals.push('🥉') }
+              podiumEl.innerHTML = podiumOrder.map((u, idx) => {
+                const name = profileMap[u.user_id] || u.display_name || u.username || 'Anon'
+                const score = u.score || u.badge_count || u.modules_completed || 0
+                const initial = name.charAt(0).toUpperCase()
+                return `<div class="podium-spot ${podiumClasses[idx]}">
+                  <div class="podium-avatar" style="background: linear-gradient(135deg, ${idx===1?'#fbbf24':idx===0?'#94a3b8':'#d97706'}, ${idx===1?'#f59e0b':idx===0?'#64748b':'#b45309'})">
+                    ${initial}
+                  </div>
+                  <div class="podium-name">${name}</div>
+                  <div class="podium-score">${score.toLocaleString()}</div>
+                  <div class="podium-base">${podiumMedals[idx]}</div>
+                </div>`
+              }).join('')
+              podiumEl.style.display = 'flex'
+            } else {
+              podiumEl.style.display = 'none'
+            }
+          }
+
+
+          const yourRankEl = document.getElementById('lb-your-rank-' + board)
+          if (yourRankEl && currentUserId) {
+            const youIdx = users.findIndex(u => u.user_id === currentUserId)
+            if (youIdx >= 0) {
+              const you = users[youIdx]
+              const yourRank = youIdx + 1
+              const totalPlayers = users.length
+              const percentile = totalPlayers > 1 ? Math.round(((totalPlayers - yourRank) / (totalPlayers - 1)) * 100) : 100
+              const name = profileMap[you.user_id] || you.display_name || 'You'
+              yourRankEl.innerHTML = `
+                <div class="your-rank-num">#${yourRank}</div>
+                <div class="your-rank-info">
+                  <div class="your-rank-label">Your Rank</div>
+                  <div class="your-rank-detail">${name} · ${metric(you)}</div>
+                </div>
+                <div class="your-rank-percentile">Top ${100 - percentile}%</div>
+              `
+              yourRankEl.style.display = 'flex'
+            } else {
+              yourRankEl.style.display = 'none'
+            }
+          } else if (yourRankEl) {
+            yourRankEl.style.display = 'none'
+          }
+
+
+          const totalEl = document.getElementById('lb-total-count')
+          if (totalEl) totalEl.textContent = users.length + ' players'
+
+
+          const storageKey = 'lb_ranks_' + (currentUserId || 'anon') + '_' + board
+          let prevRanks = {}
+          let hasPrevData = false
+          try {
+            const stored = localStorage.getItem(storageKey)
+            if (stored) { prevRanks = JSON.parse(stored); hasPrevData = true }
+          } catch(e) {}
+
+          const currentRanks = {}
+          users.forEach((u, i) => { if (u.user_id) currentRanks[u.user_id] = i + 1 })
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(currentRanks))
+          } catch(e) {}
+
+
+          function tierBadge(rank) {
+            if (rank === 1) return '<span class="tier-badge gold">👑 GOLD</span>'
+            if (rank === 2) return '<span class="tier-badge silver">🥈 SILVER</span>'
+            if (rank === 3) return '<span class="tier-badge bronze">🥉 BRONZE</span>'
+            return ''
+          }
+
+
+          const rows = users.slice(0).map((u, i) => {
+            const isYou = u.user_id && u.user_id === currentUserId
+            const displayUsername = profileMap[u.user_id] || u.display_name || u.username || u.full_name || 'Anonymous'
+            const curRank = i + 1
+            const prevRank = u.user_id ? prevRanks[u.user_id] : null
+            let rankChangeHtml = ''
+            let rowClass = isYou ? ' you' : ''
+            if (prevRank != null) {
+              const delta = prevRank - curRank
+              if (delta > 0) {
+                rowClass += ' rank-up'
+                const displayNum = delta > 9 ? '+9' : delta
+                rankChangeHtml = `<div class="rank-change up" title="Up ${delta} place${delta > 1 ? 's' : ''}">▲${displayNum !== delta ? displayNum : (delta > 1 ? delta : '')}</div>`
+              } else if (delta < 0) {
+                rowClass += ' rank-down'
+                const absDelta = Math.abs(delta)
+                const displayNum = absDelta > 9 ? '+9' : absDelta
+                rankChangeHtml = `<div class="rank-change down" title="Down ${absDelta} place${absDelta > 1 ? 's' : ''}">▼${displayNum !== absDelta ? displayNum : (absDelta > 1 ? absDelta : '')}</div>`
+              } else {
+                rankChangeHtml = `<div class="rank-change same" title="No change">●</div>`
+              }
+            } else if (hasPrevData && curRank <= 20) {
+              rowClass += ' new-entry-row'
+              rankChangeHtml = `<div class="rank-change new-entry" title="New to leaderboard">NEW</div>`
+            }
+            return `<div class="leaderboard-row${rowClass}" data-rank="${curRank}" data-user-id="${u.user_id || ''}">
+              <div class="rank"><span class="rank-num" data-target="${curRank}">${curRank}</span></div>
+              ${rankChangeHtml}
+              <div class="who">
+                <div class="name">${displayUsername} ${tierBadge(curRank)}</div>
+                <div class="metric">${metric(u)}</div>
+              </div>
+              ${curRank <= 3 ? `<div class="crown">${crowns[board]}</div>` : ''}
+            </div>`
+          }).join('')
+          container.innerHTML = rows
+
+          _animateRanks(container)
+        }
+
+
+
+        const _activeRankIntervals = []
+        function _animateRanks(container) {
+
+          _activeRankIntervals.forEach(id => clearInterval(id))
+          _activeRankIntervals.length = 0
+          const nums = container.querySelectorAll('.rank-num')
+          nums.forEach((el, idx) => {
+            const target = parseInt(el.getAttribute('data-target')) || (idx + 1)
+            const delay = 120 + idx * 80
+            el.textContent = '—'
+            setTimeout(() => {
+              if (!el.isConnected) return
+              el.classList.add('counting')
+              let current = 0
+              const step = Math.max(1, Math.floor(target / 6))
+              const interval = setInterval(() => {
+                if (!el.isConnected) { clearInterval(interval); return }
+                current += step
+                if (current >= target) {
+                  current = target
+                  clearInterval(interval)
+                  el.classList.remove('counting')
+                }
+                el.textContent = current
+              }, 40)
+              _activeRankIntervals.push(interval)
+            }, delay)
+          })
+        }
+
+
+        window._animateLeaderboardRanks = _animateRanks
+
+        let certsByScore = null
+        let wallets = null
+        let allBadges = null
+        let allUserIds = new Set()
+
+        try {
+          const { data } = await window.supabaseClient
+            .from('certificates')
+            .select('user_id, display_name, score, modules_completed')
+            .order('score', { ascending: false })
+            .limit(500)
+          certsByScore = data
+          if (data) data.forEach(d => allUserIds.add(d.user_id))
+        } catch (e) { console.warn('Leaderboard XP fetch failed:', e) }
+
+
+        if (!certsByScore || certsByScore.length === 0) {
+          try {
+            const { data: upData } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id, display_name, username, total_score, modules_completed')
+              .order('total_score', { ascending: false })
+              .limit(500)
+            if (upData && upData.length > 0) {
+              certsByScore = upData.map(u => ({
+                user_id: u.user_id,
+                display_name: u.display_name || u.username || 'Learner',
+                score: u.total_score || 0,
+                modules_completed: u.modules_completed || 0
+              }))
+              certsByScore.forEach(d => allUserIds.add(d.user_id))
+            }
+          } catch (e) { console.warn('Leaderboard user_profiles fallback failed:', e) }
+        }
+
+        try {
+          const { data: wData, error: wErr } = await window.supabaseClient
+            .from('wallets')
+            .select('user_id, balance')
+            .order('balance', { ascending: false })
+            .limit(500)
+          if (wErr) { console.warn('Leaderboard wallets query error:', wErr); wallets = [] }
+          else { wallets = wData; if (wData) wData.forEach(d => allUserIds.add(d.user_id)) }
+        } catch (e) { console.warn('Leaderboard wallets fetch failed:', e); wallets = [] }
+
+        try {
+          const { data: bData, error: bErr } = await window.supabaseClient
+            .from('badges')
+            .select('user_id, badge_type')
+          if (bErr) { console.warn('Leaderboard badges query error:', bErr); allBadges = [] }
+          else { allBadges = bData; if (bData) bData.forEach(d => allUserIds.add(d.user_id)) }
+        } catch (e) { console.warn('Leaderboard badges fetch failed:', e); allBadges = [] }
+
+
+        if (allUserIds.size > 0) {
+          try {
+            const { data: upProfiles } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id, display_name, username')
+              .in('user_id', Array.from(allUserIds))
+            if (upProfiles) {
+              upProfiles.forEach(p => {
+                const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
+                if (name) profileMap[p.user_id] = name
+              })
+            }
+          } catch (e) {}
+
+          try {
+            const missingIds = Array.from(allUserIds).filter(id => !profileMap[id])
+            if (missingIds.length > 0) {
+              const { data: profiles } = await window.supabaseClient
+                .from('profiles')
+                .select('id, username')
+                .in('id', missingIds)
+              if (profiles) {
+                profiles.forEach(p => {
+                  if (p.username) profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
+                })
+              }
+            }
+          } catch (e) { console.warn('Leaderboard profiles fetch failed:', e) }
+        }
+
+        if (certsByScore && certsByScore.length > 0) {
+          renderBoard('leaderboard-xp', 'xp', certsByScore, u => `${(u.score || 0).toLocaleString()} XP`)
+          const byModules = [...certsByScore].sort((a, b) => (b.modules_completed || 0) - (a.modules_completed || 0))
+          renderBoard('leaderboard-modules', 'modules', byModules, u => `${u.modules_completed || 0} / 52 modules`)
+        } else {
+          ;['leaderboard-xp', 'leaderboard-modules'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = EMPTY_MSG })
+        }
+
+        if (wallets && wallets.length > 0) {
+          const walletsNamed = wallets.map(w => ({ ...w, display_name: profileMap[w.user_id] || 'Learner' }))
+          renderBoard('leaderboard-civic', 'civic', walletsNamed, u => `₹${(u.balance || 0).toLocaleString()}`)
+        } else {
+          const el = document.getElementById('leaderboard-civic'); if (el) el.innerHTML = EMPTY_MSG
+        }
+
+        if (allBadges && allBadges.length > 0) {
+          const badgeCount = {}
+          allBadges.forEach(b => { badgeCount[b.user_id] = (badgeCount[b.user_id] || 0) + 1 })
+          const badgeUsers = Object.entries(badgeCount)
+            .sort((a, b) => b[1] - a[1])
+            .map(([uid, count]) => ({ user_id: uid, display_name: profileMap[uid] || 'Learner', badge_count: count }))
+          renderBoard('leaderboard-badges', 'badges', badgeUsers, u => `${u.badge_count} badge${u.badge_count !== 1 ? 's' : ''}`)
+        } else {
+          const el = document.getElementById('leaderboard-badges'); if (el) el.innerHTML = EMPTY_MSG
+        }
+      }
+
+
+      setTimeout(() => {
+        loadCertificateGallery()
+        loadLeaderboard()
+      }, 1000)
+
+      function shareCertificate(certId) {
+        const url = `${window.location.origin}${window.location.pathname}?cert=${certId}`
+        navigator.clipboard.writeText(url).then(() => toast('Link copied!', '#5ed4f5'))
+      }
+
+      function shareProfile() {
+        const baseUrl = window.location.origin + window.location.pathname
+
+        const username = tUser.username || S.username || null
+        const studentId = S.studentId || window.colUser?.uid || null
+        let url
+        if (username) {
+          const uname = username.startsWith('@') ? username : '@' + username
+          url = baseUrl + '?user=' + encodeURIComponent(uname)
+        } else if (studentId) {
+          url = baseUrl + '?studentId=' + encodeURIComponent(studentId)
+        } else if (window.colUser && window.colUser.id) {
+          url = baseUrl + '?uid=' + window.colUser.id
+        } else {
+          toast('Sign in to share your profile!', '#ff4444')
+          return
+        }
+        navigator.clipboard.writeText(url).then(() => toast('Profile link copied! 🎉', '#5ed4f5'))
+      }
+
+
+    </script>
+  <script src="welcome-back.js"></script>
+</body>
+</html>
